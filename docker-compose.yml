@@ -1,0 +1,23 @@
+services:
+  codearts-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: codearts-mcp
+    environment:
+      - MCP_TRANSPORT=http
+      - MCP_HTTP_PORT=3000
+      - MCP_SERVER_NAME=codearts-mcp
+      - MCP_SERVER_VERSION=0.1.0
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: codearts-mcp-nginx
+    depends_on:
+      - codearts-mcp
+    ports:
+      - "80:80"
+    volumes:
+      - ./deploy/nginx/codearts-mcp.conf:/etc/nginx/conf.d/default.conf:ro
+    restart: unless-stopped

@@ -1,0 +1,69 @@
+import { asListResult } from "../../../contracts/tool-result.js";
+import { toPageInfo } from "../../../core/pagination/page-info.js";
+import { reqListProjectMembersInput } from "../schemas.js";
+
+export function mapReqProjectMembers(
+  items: Array<{
+    domain_id?: string;
+    domain_name?: string;
+    user_id: string;
+    user_name?: string;
+    user_num_id?: number;
+    role_id?: number;
+    nick_name?: string;
+    role_name?: string;
+    user_type?: string;
+    forbidden?: number;
+  }>,
+  page: number,
+  pageSize: number,
+  total?: number
+) {
+  return asListResult(
+    `${items.length} project members found`,
+    items.map((item) => ({
+      id: item.user_id,
+      userName: item.user_name,
+      userNumId: item.user_num_id,
+      nickName: item.nick_name,
+      roleId: item.role_id,
+      roleName: item.role_name,
+      userType: item.user_type,
+      forbidden: item.forbidden,
+      domainId: item.domain_id,
+      domainName: item.domain_name
+    })),
+    toPageInfo(page, pageSize, total)
+  );
+}
+
+type ReqListProjectMembersClient = {
+  listProjectMembers: (input: { project_id: string; page: number; page_size: number }) => Promise<{
+    members: Array<{
+      domain_id?: string;
+      domain_name?: string;
+      user_id: string;
+      user_name?: string;
+      user_num_id?: number;
+      role_id?: number;
+      nick_name?: string;
+      role_name?: string;
+      user_type?: string;
+      forbidden?: number;
+    }>;
+    total?: number;
+  }>;
+};
+
+export function createReqListProjectMembersHandler(client: ReqListProjectMembersClient) {
+  return async (input: unknown) => {
+    const parsed = reqListProjectMembersInput.parse(input);
+    const response = await client.listProjectMembers(parsed);
+    const result = mapReqProjectMembers(response.members, parsed.page, parsed.page_size, response.total);
+
+    return {
+      content: [{ type: "text" as const, text: result.summary }],
+      structuredContent: result
+    };
+  };
+}
