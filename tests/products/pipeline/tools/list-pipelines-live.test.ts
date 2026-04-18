@@ -9,7 +9,16 @@ describe("createPipelineListPipelinesHandler", () => {
           {
             pipeline_id: "pipe-1",
             name: "release-main",
-            creator_name: "yao"
+            creator_name: "yao",
+            project_id: "owner-project",
+            project_name: "housekeeper",
+            manifest_version: "3.0",
+            latest_run: {
+              pipeline_run_id: "run-1",
+              status: "COMPLETED",
+              run_number: 8,
+              trigger_type: "Manual"
+            }
           }
         ],
         total: 1
@@ -22,7 +31,14 @@ describe("createPipelineListPipelinesHandler", () => {
     expect(result.structuredContent.items?.[0]).toEqual({
       id: "pipe-1",
       name: "release-main",
-      creatorName: "yao"
+      creatorName: "yao",
+      projectId: "owner-project",
+      projectName: "housekeeper",
+      manifestVersion: "3.0",
+      latestRunId: "run-1",
+      latestRunStatus: "COMPLETED",
+      latestRunNumber: 8,
+      latestRunTriggerType: "Manual"
     });
   });
 });

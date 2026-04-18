@@ -16,7 +16,14 @@ describe("createArtifactGetFileTreeHandler", () => {
       repo_name: "release"
     });
 
-    expect(result.structuredContent.item?.repoName).toBe("release");
-    expect(result.structuredContent.item?.nodeCount).toBe(1);
+    expect(result.structuredContent.item).toEqual({
+      id: "release",
+      tenantId: "tenant-1",
+      projectId: "project-1",
+      repoName: "release",
+      rootPath: "/",
+      nodeCount: 1,
+      nodes: [{ path: "/releases", name: "releases", type: "folder" }]
+    });
   });
 });

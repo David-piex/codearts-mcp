@@ -77,3 +77,85 @@ export const buildStopJobInput = z.object({
   build_no: z.number().int().positive(),
   dry_run: z.boolean().default(true)
 });
+
+export const buildUpdateJobStepInput = z
+  .object({
+    job_id: idSchema,
+    step_name: z.string().min(1),
+    image: z.string().min(1).optional(),
+    command: z.string().min(1).optional(),
+    pre_condition: z.string().min(1).optional(),
+    dry_run: z.boolean().default(true)
+  })
+  .refine((input) => input.image || input.command || input.pre_condition, {
+    message: "At least one of image, command, or pre_condition must be provided.",
+    path: ["image"]
+  });
+
+export const buildAppendJobStepInput = z.object({
+  job_id: idSchema,
+  step_name: z.string().min(1),
+  module_id: z.string().min(1),
+  enable: z.boolean().default(true),
+  version: z.string().min(1).optional(),
+  image: z.string().min(1).optional(),
+  command: z.string().min(1).optional(),
+  pre_condition: z.string().min(1).optional(),
+  properties: z.record(z.string(), z.unknown()).optional(),
+  insert_after_step_name: z.string().min(1).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const buildAppendReleaseUploadStepInput = z.object({
+  job_id: idSchema,
+  path: z.string().min(1),
+  package_name: z.string().min(1).optional(),
+  package_version: z.string().min(1).optional(),
+  custom_upload_path: z.string().min(1).optional(),
+  upload_tool: z.string().min(1).default("curl"),
+  continue_on_failure: z.boolean().default(false),
+  step_name: z.string().min(1).default("Upload package to release repository"),
+  pre_condition: z.string().min(1).default("SUCCESS"),
+  insert_after_step_name: z.string().min(1).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const buildPrepareNodeRuntimeBundleInput = z.object({
+  job_id: idSchema,
+  step_name: z.string().min(1).optional(),
+  output_file: z.string().min(1).default("codearts-mcp.tgz"),
+  staging_dir: z.string().min(1).default(".release-bundle"),
+  replace_existing: z.boolean().default(false),
+  dry_run: z.boolean().default(true)
+});
+
+export const buildPrepareDeployableNodeAppInput = z.object({
+  job_id: idSchema,
+  step_name: z.string().min(1).optional(),
+  entry_file: z.string().min(1).default("src/server/deploy-entry.ts"),
+  bootstrap_entry_file: z.string().min(1).optional(),
+  bootstrap_entry_source: z.string().min(1).optional(),
+  output_file: z.string().min(1).default("app.js"),
+  target_runtime: z.string().min(1).default("node20"),
+  replace_existing: z.boolean().default(false),
+  dry_run: z.boolean().default(true)
+}).refine(
+  (input) => input.bootstrap_entry_file === undefined || input.bootstrap_entry_source !== undefined,
+  {
+    message: "bootstrap_entry_source is required when bootstrap_entry_file is provided.",
+    path: ["bootstrap_entry_source"]
+  }
+);
+
+export const buildConfigureReleaseUploadStepInput = z.object({
+  job_id: idSchema,
+  step_name: z.string().min(1).default("Upload package to release repository"),
+  file: z.string().min(1),
+  package_name: z.string().min(1).optional(),
+  build_version: z.string().min(1).optional(),
+  custom_upload_path: z.string().optional(),
+  upload_tool: z.string().min(1).default("curl"),
+  remain_origin_path: z.string().min(1).default("FLAT"),
+  pre_condition: z.string().min(1).optional(),
+  dry_run: z.boolean().default(true)
+});

@@ -18,6 +18,8 @@ async function main() {
   await startStdioServer();
 }
 
+export { main };
+
 if (import.meta.url === `file://${process.argv[1]?.replace(/\\/g, "/")}`) {
   void main();
 }

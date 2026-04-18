@@ -1,4 +1,5 @@
 import type { ReturnTypeCreateHttpClient } from "../types.js";
+import { normalizeProviderError } from "../../core/errors/app-error.js";
 
 export type PipelineClient = {
   getRunParameters: (input: {
@@ -149,9 +150,26 @@ export type PipelineClient = {
     manifest_version?: string;
     creator_name?: string;
     is_publish?: boolean;
+    project_id?: string;
+    project_name?: string;
+    detail_url?: string;
+    modify_url?: string;
   }>;
   listPipelines: (input: { project_id: string; page: number; page_size: number; keyword?: string }) => Promise<{
-    records: Array<{ pipeline_id: string; name: string; creator_name?: string }>;
+    records: Array<{
+      pipeline_id: string;
+      name: string;
+      creator_name?: string;
+      project_id?: string;
+      project_name?: string;
+      manifest_version?: string;
+      latest_run?: {
+        pipeline_run_id?: string;
+        status?: string;
+        run_number?: number;
+        trigger_type?: string;
+      };
+    }>;
     total?: number;
   }>;
   getRun: (input: { project_id: string; pipeline_id: string; run_id: string }) => Promise<{
@@ -165,6 +183,26 @@ export type PipelineClient = {
     total?: number;
   }>;
 };
+
+function unwrapPipelinePayload<T>(input: T): T {
+  if (
+    input &&
+    typeof input === "object" &&
+    "error_msg" in input &&
+    typeof (input as { error_msg?: unknown }).error_msg === "string"
+  ) {
+    throw normalizeProviderError({
+      status: 400,
+      message: String((input as { error_msg: string }).error_msg),
+      code:
+        "error_code" in input && typeof (input as { error_code?: unknown }).error_code === "string"
+          ? String((input as { error_code: string }).error_code)
+          : undefined
+    });
+  }
+
+  return input;
+}
 
 export function createPipelineClient(_http: ReturnTypeCreateHttpClient): PipelineClient {
   return {
@@ -487,7 +525,7 @@ export function createPipelineClient(_http: ReturnTypeCreateHttpClient): Pipelin
       };
     },
     async getPipeline(input) {
-      const response = (await _http.get(
+      const response = unwrapPipelinePayload((await _http.get(
         `/v5/${encodeURIComponent(input.project_id)}/api/pipelines/${encodeURIComponent(input.pipeline_id)}`
       )) as {
         id?: string;
@@ -497,7 +535,11 @@ export function createPipelineClient(_http: ReturnTypeCreateHttpClient): Pipelin
         manifest_version?: string;
         creator_name?: string;
         is_publish?: boolean;
-      };
+        project_id?: string;
+        project_name?: string;
+        detail_url?: string;
+        modify_url?: string;
+      });
 
       return {
         id: response.id ?? response.pipeline_id ?? input.pipeline_id,
@@ -505,20 +547,50 @@ export function createPipelineClient(_http: ReturnTypeCreateHttpClient): Pipelin
         description: response.description,
         manifest_version: response.manifest_version,
         creator_name: response.creator_name,
-        is_publish: response.is_publish
+        is_publish: response.is_publish,
+        project_id: response.project_id,
+        project_name: response.project_name,
+        detail_url: response.detail_url,
+        modify_url: response.modify_url
       };
     },
     async listPipelines(input) {
       const offset = (input.page - 1) * input.page_size;
-      const response = (await _http.post(`/v5/${encodeURIComponent(input.project_id)}/api/pipelines/list`, {
+      const response = unwrapPipelinePayload((await _http.post(`/v5/${encodeURIComponent(input.project_id)}/api/pipelines/list`, {
         offset,
         limit: input.page_size,
         name: input.keyword
       })) as {
-        pipelines?: Array<{ pipeline_id: string; name: string; creator_name?: string }>;
-        records?: Array<{ pipeline_id: string; name: string; creator_name?: string }>;
+        pipelines?: Array<{
+          pipeline_id: string;
+          name: string;
+          creator_name?: string;
+          project_id?: string;
+          project_name?: string;
+          manifest_version?: string;
+          latest_run?: {
+            pipeline_run_id?: string;
+            status?: string;
+            run_number?: number;
+            trigger_type?: string;
+          };
+        }>;
+        records?: Array<{
+          pipeline_id: string;
+          name: string;
+          creator_name?: string;
+          project_id?: string;
+          project_name?: string;
+          manifest_version?: string;
+          latest_run?: {
+            pipeline_run_id?: string;
+            status?: string;
+            run_number?: number;
+            trigger_type?: string;
+          };
+        }>;
         total?: number;
-      };
+      });
 
       return {
         records: response.records ?? response.pipelines ?? [],

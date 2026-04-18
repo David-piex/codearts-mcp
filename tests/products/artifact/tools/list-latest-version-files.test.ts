@@ -3,7 +3,7 @@ import { mapArtifactLatestVersionFiles } from "../../../../src/products/artifact
 
 describe("mapArtifactLatestVersionFiles", () => {
   it("returns normalized latest version file data", () => {
-    const result = mapArtifactLatestVersionFiles([
+    const result = mapArtifactLatestVersionFiles("project-1", [
       {
         path: "/releases/a.jar",
         name: "a.jar",
@@ -14,6 +14,7 @@ describe("mapArtifactLatestVersionFiles", () => {
     ]);
 
     expect(result.items?.[0]?.path).toBe("/releases/a.jar");
+    expect(result.items?.[0]?.projectId).toBe("project-1");
     expect(result.items?.[0]?.version).toBe("1.2.0");
   });
 });

@@ -1,89 +1,80 @@
 # Capability Matrix
 
-基于当前仓库实现、单元测试覆盖情况，以及 `2026-04-17` 在北京四 `cn-north-4` 的真实联调结果，对 11 个 CodeArts 技术模块做能力矩阵整理。
+Capability snapshot based on the current repository implementation, local test coverage, and the latest real Beijing 4 (`cn-north-4`) validation as of `2026-04-19`.
 
 ## Legend
 
-- `Read`: 已实现的只读工具数
-- `Write`: 已实现的写工具数
-- `Live`: 当前真实环境状态
-- `Key Gaps`: 当前仍明确存在的关键缺口
+- `Read`: implemented read tools
+- `Write`: implemented write tools
+- `Live`: current live-validation status
+- `Key Gaps`: main remaining closure gap
 
 ## Matrix
 
+<!-- GENERATED:capability-matrix:start -->
 | Module | Read | Write | Live | Key Gaps |
 | --- | --- | --- | --- | --- |
-| Req | 6 | 2 | Validated | 当前暴露范围内无明确闭环缺口 |
-| Repo | 17 | 7 | Validated | 当前暴露范围内无明确闭环缺口 |
-| Pipeline | 10 | 6 | Validated | 可继续补更多非空 live 样本，但无结构性缺口 |
-| Check | 5 | 3 | Validated | 工具级真实闭环已完成，详见 `docs/wiki/Check-Live-Validated.md` |
-| TestPlan | 6 | 1 | Empty-but-validated | 当前租户未开通 TestPlan |
-| Deploy | 10 | 3 | Empty-but-validated | 当前租户缺少真实 deploy apps/tasks/histories |
-| Build | 14 | 2 | Empty-but-validated | 当前租户缺少真实 build jobs/records |
-| Artifact | 11 | 1 | Empty-but-validated | 当前租户缺少真实 artifact repositories/versions/files |
-| Govern | 20 | 8 | Partial | `govern_list_tasks` URI 未确认；`sbc/osi/item/dependency` 当前环境未发布 |
-| Inspector | 7 | 0 | Empty-but-validated | 当前租户缺少真实 domain/task 样本 |
-| PerfTest | 9 | 0 | Empty-but-validated | 当前账号未开通 PerfTest |
+| Req | 6 | 2 | Validated | Project and work-item read/write paths are now fully live-validated |
+| Repo | 17 | 7 | Validated | No material gap in the currently exposed surface |
+| Pipeline | 11 | 5 | Validated | More non-empty samples would help, but no structural gap remains |
+| Check | 5 | 3 | Validated | Tool-level live closure is complete |
+| TestPlan | 6 | 1 | Partial | `get_plan / list_runs / get_case / run_cases` are unpublished in Beijing 4 |
+| Deploy | 44 | 15 | Partial | Expanded Deploy v4 environment/record/variable surface is implemented; the detailed live split is maintained in `docs/wiki/Deploy-Live-Validated.md` |
+| Build | 14 | 8 | Validated | 19 tools are fully live-validated and 3 helper/configuration tools are currently code/test-only |
+| Artifact | 11 | 1 | Partial | 5 tools are fully live-validated, and 7 routes are now re-confirmed by live smoke as unpublished in Beijing 4 |
+<!-- GENERATED:capability-matrix:end -->
 
-## Check Update
+## Focus Areas
 
-CodeArts Check 当前已完成真实工具级闭环验证，已确认：
+### Already fully validated
 
-- `check_create_task`
-- `check_run_task`
-- `check_stop_task`
-- `check_get_task`
-- `check_get_metrics`
-- `check_list_task_issues`
-- `check_list_tasks`
-- `check_list_rulesets`
+- Req
+- Repo
+- Pipeline
+- Check
+- Build
 
-详见：
+### Now partially but concretely live-validated
 
-- `docs/wiki/Check-Live-Validated.md`
-- `docs/check-live-findings-2026-04-17.md`
+- TestPlan
+- Deploy
+- Artifact
 
-## Govern Detail
+## Notes
 
-当前 Govern 已实现能力：
+### TestPlan
 
-- Task lifecycle: `create/start/stop/delete/status`
-- Multipart upload: `create/upload/notify`
-- Report flow: `pdf/excel create/status/download`
-- Summary & report: `open source / info leak / sec compile / sec config`
-- Quota: `get / alter`
-- Vulnerability & user: `vuln info / vuln map / user info`
-- OSI: `statistics / item names / item versions / item detail / item vulns`
+- `testplan_list_plans` is now fully validated with real plan samples on two scanned projects.
+- `testplan_list_issues` and `testplan_list_cases` are reachable and currently empty on the known live plans.
+- `testplan_get_plan`, `testplan_list_runs`, `testplan_get_case`, and `testplan_run_cases` are currently `APIGW.0101` in Beijing 4.
 
-当前 Govern 明确未做：
+### Artifact
 
-- `govern_list_tasks`
-  - 权限名可见，但公开文档和真实探测仍没有可信正式 URI
-- `sbc/osi/item/dependency`
-  - 官方 PDF 权限矩阵里出现过
-  - 但北京四真实环境当前仍返回 `APIGW.0101`
+- `artifact_get_file_tree`, `artifact_get_repository`, `artifact_list_repositories`, `artifact_list_versions`, and `artifact_list_latest_version_files` are now fully live-validated.
+- `artifact_delete_file`, `artifact_list_build_archives`, `artifact_list_files`, `artifact_get_file`, `artifact_get_download_url`, `artifact_search_artifacts`, and `artifact_show_audit` are currently unpublished in Beijing 4.
+- Those 7 unpublished-route conclusions are now covered by the consolidated real `AK/SK` smoke, not just one-off manual probes.
+- The local MCP output shape has also been normalized across:
+  - repository ids
+  - version ids
+  - archive ids
+  - file ids
 
-当前 Govern 输入约束里需要特别注意：
+### Build
 
-- `govern_get_osi_item_detail`
-- `govern_list_osi_item_vulns`
+- Real live samples now exist for job listing, job detail, record listing, record detail, script, history details, real-time log, error log, run, stop, and project-level record views.
+- `build_list_build_parameters`, `build_get_full_stages`, and `build_get_record_flow_graph` are live-valid with empty business payloads on the sampled builds.
 
-这两项当前建议使用 `software_name + software_version`。只传 `artifact_id` 在北京四真实环境仍会报 `group_id` 缺失，所以当前仓库没有把 artifact-only 形态当作可用输入。
+### Deploy
 
-## How To Use This Page
-
-如果你的目标是“判断模块是否已经可用于日常协作”，优先看：
-
-1. `Live`
-2. `Key Gaps`
-
-如果你的目标是“继续追到每个子功能 / 每个 MCP tool 的完成度”，继续看：
-
-1. `docs/wiki/Tool-Status-Matrix.md`
-2. `docs/wiki/Check-Live-Validated.md`
-
-如果你的目标是“决定下一步继续开发什么”，推荐顺序是：
-
-1. 先补“官方已确认且环境已发布”的缺口
-2. 再补“实现已完成但缺更多非空 live 样本”的模块
-3. 最后再考虑纯扩展型能力
+- Real live samples now exist for application listing, app-visible host-group listing, environment creation, environment-host listing, task listing, host-group listing, host-group detail, and host-group host listing.
+- `Codearts-mcp` now has a real app, task, environment, and connected host path.
+- `deploy_list_host_group_environments` is now non-empty on the known real host group.
+- the older `Deploy.00011042` conclusion is no longer the main summary
+- the healthy Node.js template path now creates real execution records and validates:
+  - `deploy_start_app`
+  - `deploy_get_execution_params`
+  - `deploy_get_status`
+  - `deploy_get_history_detail`
+  - `deploy_get_app_log`
+  - `deploy_stop_app`
+- the current main blocker has moved later into the outdated template runtime (`Node v10.9.0` + `forever`)

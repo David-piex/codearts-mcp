@@ -3,6 +3,7 @@ import { toPageInfo } from "../../../core/pagination/page-info.js";
 import { artifactListLatestVersionFilesInput } from "../schemas.js";
 
 export function mapArtifactLatestVersionFiles(
+  projectId: string,
   items: Array<{
     path?: string;
     name?: string;
@@ -19,6 +20,7 @@ export function mapArtifactLatestVersionFiles(
     `${items.length} latest artifact version files found`,
     items.map((item) => ({
       id: item.path ?? item.name ?? "",
+      projectId,
       path: item.path,
       name: item.name,
       version: item.version,
@@ -55,6 +57,7 @@ export function createArtifactListLatestVersionFilesHandler(
     const parsed = artifactListLatestVersionFilesInput.parse(input);
     const response = await client.listLatestVersionFiles(parsed);
     const result = mapArtifactLatestVersionFiles(
+      parsed.project_id,
       response.files,
       parsed.page,
       parsed.page_size,

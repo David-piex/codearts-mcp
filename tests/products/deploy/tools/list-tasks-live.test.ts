@@ -31,4 +31,106 @@ describe("createDeployListTasksHandler", () => {
       deployType: "docker"
     });
   });
+
+  it("keeps task name and status when client returns the normalized documented shape", async () => {
+    const handler = createDeployListTasksHandler({
+      listTasks: async () => ({
+        tasks: [
+          {
+            task_id: "task-1",
+            application_id: "app-1",
+            application_name: "gateway-prod",
+            project_id: "project-1",
+            status: "Available",
+            deploy_type: "docker"
+          }
+        ],
+        total: 1
+      })
+    });
+
+    const result = await handler({ project_id: "project-1", page: 1, page_size: 20 });
+
+    expect(result.structuredContent.items?.[0]).toEqual({
+      id: "task-1",
+      applicationId: "app-1",
+      name: "gateway-prod",
+      projectId: "project-1",
+      status: "Available",
+      deployType: "docker"
+    });
+  });
+
+  it("exposes execution and permission fields in the MCP task list output", async () => {
+    const handler = createDeployListTasksHandler({
+      listTasks: async () => ({
+        tasks: [
+          {
+            task_id: "task-1",
+            application_id: "app-1",
+            application_name: "gateway-prod",
+            project_id: "project-1",
+            status: "Available",
+            deploy_type: "docker",
+            execution_state: "succeeded",
+            can_execute: true,
+            can_modify: true,
+            can_delete: false,
+            can_view: true,
+            can_manage: false,
+            can_disable: true,
+            is_disable: false
+          }
+        ],
+        total: 1
+      })
+    });
+
+    const result = await handler({ project_id: "project-1", page: 1, page_size: 20 });
+
+    expect(result.structuredContent.items?.[0]).toEqual({
+      id: "task-1",
+      applicationId: "app-1",
+      name: "gateway-prod",
+      projectId: "project-1",
+      status: "Available",
+      deployType: "docker",
+      executionState: "succeeded",
+      canExecute: true,
+      canModify: true,
+      canDelete: false,
+      canView: true,
+      canManage: false,
+      canDisable: true,
+      disabled: false
+    });
+  });
+
+  it("falls back to requested project_id for task items", async () => {
+    const handler = createDeployListTasksHandler({
+      listTasks: async () => ({
+        tasks: [
+          {
+            task_id: "task-2",
+            application_id: "app-2",
+            application_name: "gateway-staging",
+            status: "Draft",
+            deploy_type: "docker"
+          }
+        ],
+        total: 1
+      })
+    });
+
+    const result = await handler({ project_id: "project-1", page: 1, page_size: 20 });
+
+    expect(result.structuredContent.items?.[0]).toEqual({
+      id: "task-2",
+      applicationId: "app-2",
+      name: "gateway-staging",
+      projectId: "project-1",
+      status: "Draft",
+      deployType: "docker"
+    });
+  });
 });

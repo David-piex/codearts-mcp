@@ -3,7 +3,13 @@ import { toPageInfo } from "../../../core/pagination/page-info.js";
 import { artifactListRepositoriesInput } from "../schemas.js";
 
 export function mapArtifactRepositories(
-  items: Array<{ id: string; name: string; project_id?: string; format?: string }>,
+  items: Array<{
+    id: string;
+    name: string;
+    project_id?: string;
+    format?: string;
+    description?: string;
+  }>,
   page: number,
   pageSize: number,
   total?: number
@@ -12,9 +18,11 @@ export function mapArtifactRepositories(
     `${items.length} artifact repositories found`,
     items.map((item) => ({
       id: item.id,
+      repositoryId: item.id,
       name: item.name,
       projectId: item.project_id,
-      format: item.format
+      format: item.format,
+      description: item.description
     })),
     toPageInfo(page, pageSize, total)
   );
@@ -28,7 +36,13 @@ type ArtifactListRepositoriesClient = {
     page_size: number;
     keyword?: string;
   }) => Promise<{
-    repositories: Array<{ id: string; name: string; project_id?: string; format?: string }>;
+    repositories: Array<{
+      id: string;
+      name: string;
+      project_id?: string;
+      format?: string;
+      description?: string;
+    }>;
     total?: number;
   }>;
 };

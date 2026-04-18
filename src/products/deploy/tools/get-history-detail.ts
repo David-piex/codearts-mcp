@@ -9,17 +9,30 @@ export function mapDeployHistoryDetail(input: {
   operator_name?: string;
   start_time?: string;
   end_time?: string;
-  step_states?: Array<{ step_name?: string; status?: string }>;
+  step_states?: Array<{
+    id?: number;
+    name?: string;
+    step_name?: string;
+    status?: string;
+    region?: string;
+    offset?: number;
+    current_offset?: number;
+    elapsed_time?: number;
+    enable?: boolean;
+    faq_url?: string;
+  }>;
 }) {
   return asItemResult(`Loaded deploy history detail ${input.record_id}`, {
-    id: input.task_id,
+    id: input.record_id,
+    taskId: input.task_id,
     recordId: input.record_id,
     state: input.state,
     percentage: input.percentage,
     operatorName: input.operator_name,
     startedAt: input.start_time,
     finishedAt: input.end_time,
-    stepCount: input.step_states?.length ?? 0
+    stepCount: input.step_states?.length ?? 0,
+    stepStates: input.step_states
   });
 }
 
@@ -32,7 +45,18 @@ type DeployGetHistoryDetailClient = {
     operator_name?: string;
     start_time?: string;
     end_time?: string;
-    step_states?: Array<{ step_name?: string; status?: string }>;
+    step_states?: Array<{
+      id?: number;
+      name?: string;
+      step_name?: string;
+      status?: string;
+      region?: string;
+      offset?: number;
+      current_offset?: number;
+      elapsed_time?: number;
+      enable?: boolean;
+      faq_url?: string;
+    }>;
   }>;
 };
 

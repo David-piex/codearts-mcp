@@ -40,7 +40,7 @@ export function createHttpApp(config = loadServerMetadataConfig()) {
 
     const url = new URL(req.url, "http://127.0.0.1");
 
-    if (req.method === "GET" && url.pathname === "/health") {
+    if (req.method === "GET" && (url.pathname === "/" || url.pathname === "/health")) {
       writeJson(res, 200, { status: "ok" });
       return;
     }

@@ -31,6 +31,10 @@ describe("createArtifactShowAuditHandler", () => {
     expect(result.structuredContent.summary).toContain("1 artifact audit logs");
     expect(result.structuredContent.items?.[0]).toEqual({
       id: "audit-1",
+      tenantId: "tenant-1",
+      projectId: "project-1",
+      module: "file",
+      repo: "libs-release",
       operation: "deleteArtifactFile",
       userId: "user-1",
       userName: "yao",

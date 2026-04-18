@@ -84,8 +84,13 @@ export type TestPlanClient = {
 export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPlanClient {
   return {
     async listIssues(input) {
+      const query = new URLSearchParams({
+        offset: "0",
+        limit: "100"
+      });
+
       const response = (await _http.get(
-        `/v1/projects/${encodeURIComponent(input.project_id)}/plans/${encodeURIComponent(input.plan_id)}/issues`
+        `/v1/projects/${encodeURIComponent(input.project_id)}/plans/${encodeURIComponent(input.plan_id)}/issues?${query.toString()}`
       )) as
         | Array<{
             issue_id?: string | number;

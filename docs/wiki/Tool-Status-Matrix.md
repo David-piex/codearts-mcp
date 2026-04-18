@@ -1,124 +1,116 @@
 # Tool Status Matrix
 
-基于当前仓库实现、测试文件分布，以及 `2026-04-17` 北京四真实联调结果整理。
-
-这个页面的目标不是重复 README 的工具列表，而是回答两个更具体的问题：
-
-- 哪些 CodeArts 子功能已经 MCP 化
-- 每个 tool 当前处于“已实现 / 有单测 / 有 live / 已真实验证 / 仍有缺口”的哪一层
+Status matrix based on the current repository implementation, local tests, and the latest real Beijing 4 (`cn-north-4`) validation as of `2026-04-19`.
 
 ## Status Legend
 
-- `Validated`: 已做真实联调，且当前租户拿到过成功响应
-- `Empty-but-validated`: 已命中真实服务并成功返回，但当前样本为空或当前租户业务数据不足
-- `Partial`: 已实现，但真实闭环仍不完整
-- `Validated (manual)`: 当前没有独立 live 测试文件，但已手工做过真实验证
+- `AK/SK Full`
+  - Verified with real `AK/SK`, a real Huawei Cloud endpoint, and a successful business response.
+- `AK/SK Reachable`
+  - Verified against the real service, but blocked by tenant data, permissions, or missing execution records.
+- `Region Unpublished`
+  - Implemented locally, but the real region currently returns `APIGW.0101`.
+- `Code/Test Only`
+  - Implemented and locally tested, but not yet confirmed with real `AK/SK`.
 
-## Summary
+## Module Summary
 
-| Module | Tools | Unit-Tested | Live-Tested | Overall Status | Notes |
-| --- | --- | --- | --- | --- | --- |
-| Req | 8 | 8 | 8 | Validated | 模块级真实闭环已完成 |
-| Repo | 24 | 24 | 24 | Validated | 模块级真实闭环已完成 |
-| Pipeline | 16 | 16 | 16 | Validated | 模块级真实闭环已完成 |
-| Check | 8 | 8 | 8 | Validated | 工具级真实闭环已完成 |
-| TestPlan | 7 | 0 | 7 | Empty-but-validated | 当前租户未开通 TestPlan |
-| Deploy | 13 | 0 | 13 | Empty-but-validated | 路径已验证，缺真实 app/task/history |
-| Build | 16 | 3 | 16 | Empty-but-validated | 路径已验证，缺真实 job/record |
-| Artifact | 12 | 3 | 12 | Empty-but-validated | 路径已验证，缺真实 repository/version/file |
-| Govern | 28 | 25 | 4 | Partial | 已实现 28 tools；仍保留明确缺口 |
-| Inspector | 8 | 1 | 7 | Empty-but-validated | 路径已验证，缺真实 domain/task |
-| PerfTest | 9 | 0 | 9 | Empty-but-validated | 当前账号未开通 PerfTest |
+<!-- GENERATED:tool-status-module-summary:start -->
+| Module | Tools | Real-Live Summary | Current Conclusion |
+| --- | --- | --- | --- |
+| Req | 8 | `8 Full` | Project and work-item read/write paths are fully live-validated. |
+| Repo | 24 | `24 Full` | Module-level closure is complete. |
+| Pipeline | 16 | `16 Full` | Module-level closure is complete. |
+| Check | 8 | `8 Full` | Tool-level closure is complete. |
+| TestPlan | 7 | `1 Full / 2 Reachable / 4 Unpublished / 0 Code` | Real plan samples now exist on two projects, but detail/run routes are still unpublished in Beijing 4. |
+| Deploy | 59 | Expanded surface; see `docs/wiki/Deploy-Live-Validated.md` | The Deploy MCP surface now includes v4 application/environment/cluster/record/variable tools. The detailed live split is maintained in the dedicated Deploy page. |
+| Build | 22 | `19 Full / 0 Reachable / 0 Unpublished / 3 Code` | The remote Build surface is fully live-validated for 19 tools; 3 helper/configuration tools are currently covered by code/test validation only. |
+| Artifact | 12 | `5 Full / 0 Reachable / 7 Unpublished / 0 Code` | Five tools are fully validated; seven routes are unpublished in Beijing 4. The current tenant now exposes a real published file sample at `/codearts-mcp/1.0.0/codearts-mcp.tgz`. |
+<!-- GENERATED:tool-status-module-summary:end -->
 
-## Check
+## Latest Shape Notes
 
-| Tool | Kind | Unit Test | Live Test | Live Status | Notes |
-| --- | --- | --- | --- | --- | --- |
-| `check_create_task` | write | yes | yes | Validated | 已用 CodeHub SSH `git_url` 真实创建成功 |
-| `check_get_metrics` | read | yes | yes | Validated | 已核实真实路径 `/v2/{project_id}/tasks/{task_id}/metrics-summary` |
-| `check_get_task` | read | yes | yes | Validated | 已用完成检查的真实任务验证成功 |
-| `check_list_rulesets` | read | yes | yes | Validated | 真实非空 ruleset 已验证 |
-| `check_list_task_issues` | read | yes | yes | Validated | 已修正到 `defects-detail`，真实返回过非空和空列表两种样本 |
-| `check_list_tasks` | read | yes | yes | Validated | 真实非空 task 列表已验证 |
-| `check_run_task` | write | yes | yes | Validated | 已核实发送 `{}` 后真实触发成功 |
-| `check_stop_task` | write | yes | yes | Validated | 已用真实运行中任务验证；成功响应为 `200` 空 body |
+- `Deploy`
+  - record-bound and detail-style tools now preserve typed identifiers and request context more consistently, especially around `recordId`, `taskId`, and `stepId`
+- `Artifact`
+  - repository/version/archive/file lines now expose stable typed ids alongside their primary `id`
 
-## Req
+## Fully Closed Modules
 
-| Tool | Kind | Unit Test | Live Test | Live Status | Notes |
-| --- | --- | --- | --- | --- | --- |
-| `req_create_work_item` | write | yes | yes | Validated | 真实非空 live 已验证 |
-| `req_get_project` | read | yes | yes | Validated | 真实非空 live 已验证 |
-| `req_get_work_item` | read | yes | yes | Validated | 真实非空 live 已验证 |
-| `req_list_iterations` | read | yes | yes | Validated | 真实非空 live 已验证 |
-| `req_list_project_members` | read | yes | yes | Validated | 真实非空 live 已验证 |
-| `req_list_projects` | read | yes | yes | Validated | 真实非空 live 已验证 |
-| `req_list_work_items` | read | yes | yes | Validated | 真实非空 live 已验证 |
-| `req_update_work_item` | write | yes | yes | Validated | 真实非空 live 已验证 |
+- Req
+- Repo
+- Pipeline
+- Check
+- Build
 
-## Repo
+## Partially Closed Modules
 
-| Tool | Kind | Unit Test | Live Test | Live Status | Notes |
-| --- | --- | --- | --- | --- | --- |
-| `repo_close_merge_request` | write | yes | yes | Validated | 真实非空 live 已验证 |
-| `repo_compare_refs` | read | yes | yes | Validated | 真实非空 live 已验证 |
-| `repo_create_merge_request` | write | yes | yes | Validated | 真实非空 live 已验证 |
-| `repo_create_merge_request_discussion` | write | yes | yes | Validated | 真实非空 live 已验证 |
-| `repo_create_tag` | write | yes | yes | Validated | 真实非空 live 已验证 |
-| `repo_delete_tag` | write | yes | yes | Validated | 真实非空 live 已验证 |
-| `repo_get_branch` | read | yes | yes | Validated | 真实非空 live 已验证 |
-| `repo_get_commit` | read | yes | yes | Validated | 真实非空 live 已验证 |
-| `repo_get_file` | read | yes | yes | Validated | 真实非空 live 已验证 |
-| `repo_get_merge_request` | read | yes | yes | Validated | 真实非空 live 已验证 |
-| `repo_get_repository` | read | yes | yes | Validated | 真实非空 live 已验证 |
-| `repo_get_tag` | read | yes | yes | Validated | 真实非空 live 已验证 |
-| `repo_list_branches` | read | yes | yes | Validated | 真实非空 live 已验证 |
-| `repo_list_commits` | read | yes | yes | Validated | 真实非空 live 已验证 |
-| `repo_list_events` | read | yes | yes | Validated | 真实非空 live 已验证 |
-| `repo_list_merge_request_changes` | read | yes | yes | Validated | 真实非空 live 已验证 |
-| `repo_list_merge_request_discussions` | read | yes | yes | Validated | 真实非空 live 已验证 |
-| `repo_list_merge_requests` | read | yes | yes | Validated | 真实非空 live 已验证 |
-| `repo_list_protected_branches` | read | yes | yes | Validated | 真实非空 live 已验证 |
-| `repo_list_repositories` | read | yes | yes | Validated | 真实非空 live 已验证 |
-| `repo_list_repository_labels` | read | yes | yes | Validated | 真实非空 live 已验证 |
-| `repo_list_tags` | read | yes | yes | Validated | 真实非空 live 已验证 |
-| `repo_merge_merge_request` | write | yes | yes | Validated | 真实非空 live 已验证 |
-| `repo_review_merge_request` | write | yes | yes | Validated | 真实非空 live 已验证 |
+### TestPlan
 
-## Pipeline
+- `AK/SK Full`
+  - `testplan_list_plans`
+- `AK/SK Reachable`
+  - `testplan_list_cases`
+  - `testplan_list_issues`
+- `Region Unpublished`
+  - `testplan_get_plan`
+  - `testplan_get_case`
+  - `testplan_list_runs`
+  - `testplan_run_cases`
 
-| Tool | Kind | Unit Test | Live Test | Live Status | Notes |
-| --- | --- | --- | --- | --- | --- |
-| `pipeline_approve_run` | write | yes | yes | Validated | 真实非空 live 已验证 |
-| `pipeline_get_manual_review_context` | read | yes | yes | Validated | 真实非空 live 已验证 |
-| `pipeline_get_pipeline` | read | yes | yes | Validated | 真实非空 live 已验证 |
-| `pipeline_get_run` | read | yes | yes | Validated | 真实非空 live 已验证 |
-| `pipeline_get_run_detail` | read | yes | yes | Validated | 真实非空 live 已验证 |
-| `pipeline_get_run_log` | read | yes | yes | Validated | 真实非空 live 已验证 |
-| `pipeline_get_run_parameters` | read | yes | yes | Validated | 真实非空 live 已验证 |
-| `pipeline_get_step_outputs` | read | yes | yes | Validated | 真实非空 live 已验证 |
-| `pipeline_list_artifacts` | read | yes | yes | Validated | 真实非空 live 已验证 |
-| `pipeline_list_pipelines` | read | yes | yes | Validated | 真实非空 live 已验证 |
-| `pipeline_list_runs` | read | yes | yes | Validated | 真实非空 live 已验证 |
-| `pipeline_list_templates` | read | yes | yes | Validated | 真实非空 live 已验证 |
-| `pipeline_reject_run` | write | yes | yes | Validated | 真实非空 live 已验证 |
-| `pipeline_retry_run` | write | yes | yes | Validated | 真实非空 live 已验证 |
-| `pipeline_run_pipeline` | write | yes | yes | Validated | 真实非空 live 已验证 |
-| `pipeline_stop_run` | write | yes | yes | Validated | 真实非空 live 已验证 |
+### Deploy
 
-## Govern
+- `AK/SK Full`
+  - `deploy_create_environment`
+  - `deploy_list_apps`
+  - `deploy_list_app_host_groups`
+  - `deploy_list_host_groups`
+  - `deploy_get_host_group`
+  - `deploy_list_host_group_hosts`
+  - `deploy_list_app_operations_log`
+  - `deploy_list_environment_hosts`
+  - `deploy_list_environments`
+  - `deploy_list_tasks`
+  - `deploy_get_app`
+  - `deploy_get_task`
+  - `deploy_get_status`
+  - `deploy_list_histories`
+- `AK/SK Full (empty but successful business response)`
+  - `deploy_list_host_group_environments`
+- `AK/SK Reachable`
+  - `deploy_import_hosts_to_environment`
+  - `deploy_rollback_app`
+  - note:
+    - `deploy_get_app_log`
+    - `deploy_get_execution_params`
+    - `deploy_get_history_detail`
+    - `deploy_start_app`
+    - `deploy_stop_app`
+    - these are no longer only theoretical; the real healthy Node.js template path now has successful record-bound validation, and the detailed page is the source of truth for the latest split
 
-当前 Govern 需要单独看，因为它不是“没做”，而是“实现很多，但 live 闭环层次不完全一致”。
+### Artifact
 
-明确已知缺口：
+- `AK/SK Full`
+  - `artifact_get_file_tree`
+  - `artifact_get_repository`
+  - `artifact_list_repositories`
+  - `artifact_list_versions`
+  - `artifact_list_latest_version_files`
+- `Region Unpublished`
+  - `artifact_delete_file`
+  - `artifact_list_build_archives`
+  - `artifact_list_files`
+  - `artifact_get_file`
+  - `artifact_get_download_url`
+  - `artifact_search_artifacts`
+  - `artifact_show_audit`
 
-- `govern_list_tasks` 仍未实现，因为公开文档和真实环境都还没有可信正式 URI
-- `sbc/osi/item/dependency` 当前北京四真实环境仍返回 `APIGW.0101`，不作为可接入接口
-- `govern_get_osi_item_detail` / `govern_list_osi_item_vulns` 当前只建议用 `software_name + software_version`
+- MCP output note:
+  - even for unpublished routes, the local MCP surface is implemented and now normalized with typed ids such as `repositoryId`, `versionId`, `archiveId`, and `fileId`
 
 ## Related Docs
 
+- `docs/wiki/AKSK-Verification-Ledger-2026-04-17.md`
+- `docs/wiki/Current-Implementation-Status-2026-04-17.md`
 - `docs/wiki/Capability-Matrix.md`
 - `docs/wiki/Module-Live-Readiness.md`
-- `docs/wiki/Check-Live-Validated.md`
-- `docs/check-live-findings-2026-04-17.md`

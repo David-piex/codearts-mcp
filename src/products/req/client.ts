@@ -6,6 +6,7 @@ export type ReqClient = {
     title: string;
     work_item_type: string;
     description?: string;
+    priority_id?: number;
   }) => Promise<{
     id: number | string;
     name: string;
@@ -26,6 +27,7 @@ export type ReqClient = {
     work_item_type?: string;
     description?: string;
     status_id?: number;
+    priority_id?: number;
   }) => Promise<{
     id: number | string;
     name: string;
@@ -105,13 +107,43 @@ function toTrackerId(workItemType?: string): number | undefined {
   return mapping[normalized];
 }
 
+function toPriorityId(priorityId?: number): number {
+  return priorityId ?? 2;
+}
+
+function unwrapReqPayload<T>(input: T): T {
+  if (typeof input === "string") {
+    const trimmed = input.trim();
+
+    if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
+      try {
+        return unwrapReqPayload(JSON.parse(trimmed)) as T;
+      } catch {
+        return input;
+      }
+    }
+  }
+
+  return input;
+}
+
+type ReqIssueListItem = {
+  id: number | string;
+  subject?: string;
+  name?: string;
+  status?: { name?: string };
+  tracker?: { name?: string };
+  tracker_name?: string;
+};
+
 export function createReqClient(_http: ReturnTypeCreateHttpClient): ReqClient {
   return {
     async createWorkItem(input) {
       const response = (await _http.post(`/v4/projects/${encodeURIComponent(input.project_id)}/issue`, {
         name: input.title,
         description: input.description,
-        tracker_id: toTrackerId(input.work_item_type)
+        tracker_id: toTrackerId(input.work_item_type),
+        priority_id: toPriorityId(input.priority_id)
       })) as {
         id?: number | string;
         name?: string;
@@ -130,17 +162,24 @@ export function createReqClient(_http: ReturnTypeCreateHttpClient): ReqClient {
     },
     async getProject(input) {
       const response = (await _http.get(`/v4/projects/${encodeURIComponent(input.project_id)}`)) as {
+        project?: {
+          project_id?: string;
+          name?: string;
+          project_num_id?: number;
+          description?: string;
+        };
         project_id?: string;
         name?: string;
         project_num_id?: number;
         description?: string;
       };
+      const project = response.project ?? response;
 
       return {
-        project_id: response.project_id ?? input.project_id,
-        name: response.name ?? "",
-        project_num_id: response.project_num_id,
-        description: response.description
+        project_id: project.project_id ?? input.project_id,
+        name: project.name ?? "",
+        project_num_id: project.project_num_id,
+        description: project.description
       };
     },
     async listIterations(input) {
@@ -173,7 +212,8 @@ export function createReqClient(_http: ReturnTypeCreateHttpClient): ReqClient {
           name: input.title,
           description: input.description,
           status_id: input.status_id,
-          tracker_id: toTrackerId(input.work_item_type)
+          tracker_id: toTrackerId(input.work_item_type),
+          priority_id: toPriorityId(input.priority_id)
         }
       )) as {
         id?: number | string;
@@ -263,38 +303,43 @@ export function createReqClient(_http: ReturnTypeCreateHttpClient): ReqClient {
       }
 
       const response = (await _http.get(
-        `/v4/projects/${encodeURIComponent(input.project_id)}/work-items?${query.toString()}`
+        `/v4/projects/${encodeURIComponent(input.project_id)}/issues?${query.toString()}`
       )) as {
-        work_items?: Array<{
-          id: number | string;
-          subject: string;
-          status?: { name?: string };
-          tracker_name?: string;
-        }>;
+        issues?: ReqIssueListItem[];
+        work_items?: ReqIssueListItem[];
         total?: number;
       };
+      const payload = unwrapReqPayload(response);
+      const items: ReqIssueListItem[] = payload.issues ?? payload.work_items ?? [];
 
       return {
-        work_items: response.work_items ?? [],
-        total: response.total
+        work_items: items.map((item) => ({
+          id: item.id,
+          subject: item.subject ?? item.name ?? "",
+          status: item.status,
+          tracker_name: item.tracker_name ?? item.tracker?.name
+        })),
+        total: payload.total
       };
     },
     async getWorkItem(input) {
       const response = (await _http.get(
-        `/v4/projects/${encodeURIComponent(input.project_id)}/work-items/${encodeURIComponent(input.work_item_id)}`
+        `/v4/projects/${encodeURIComponent(input.project_id)}/issues/${encodeURIComponent(input.work_item_id)}`
       )) as {
         id?: number | string;
         subject?: string;
+        name?: string;
         status?: { name?: string };
+        tracker?: { name?: string };
         tracker_name?: string;
         description?: string;
       };
 
       return {
         id: response.id ?? input.work_item_id,
-        subject: response.subject ?? "",
+        subject: response.subject ?? response.name ?? "",
         status: response.status,
-        tracker_name: response.tracker_name,
+        tracker_name: response.tracker_name ?? response.tracker?.name,
         description: response.description
       };
     }

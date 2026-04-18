@@ -23,6 +23,7 @@ describe("createDeployListAppOperationsLogHandler", () => {
     expect(result.structuredContent.summary).toContain("1 deploy app operation logs");
     expect(result.structuredContent.items?.[0]).toEqual({
       id: "user-1:1713420888000:modify",
+      appId: "app-1",
       operator: "yao",
       operatorId: "user-1",
       operationType: "modify",

@@ -3,7 +3,14 @@ import { toPageInfo } from "../../../core/pagination/page-info.js";
 import { buildListRecordsInput } from "../schemas.js";
 
 export function mapBuildRecords(
-  items: Array<{ record_id: string; job_id?: string; status?: string; trigger_type?: string }>,
+  items: Array<{
+    record_id: string;
+    job_id?: string;
+    build_no?: number;
+    daily_build_number?: string;
+    status?: string;
+    trigger_type?: string;
+  }>,
   page: number,
   pageSize: number,
   total?: number
@@ -13,6 +20,8 @@ export function mapBuildRecords(
     items.map((item) => ({
       id: item.record_id,
       jobId: item.job_id,
+      buildNo: item.build_no,
+      dailyBuildNumber: item.daily_build_number,
       status: item.status,
       triggerType: item.trigger_type
     })),
@@ -26,7 +35,14 @@ type BuildListRecordsClient = {
     page: number;
     page_size: number;
   }) => Promise<{
-    records: Array<{ record_id: string; job_id?: string; status?: string; trigger_type?: string }>;
+    records: Array<{
+      record_id: string;
+      job_id?: string;
+      build_no?: number;
+      daily_build_number?: string;
+      status?: string;
+      trigger_type?: string;
+    }>;
     total?: number;
   }>;
 };

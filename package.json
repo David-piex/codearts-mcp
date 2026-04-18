@@ -7,6 +7,9 @@
     "dev": "tsx src/server/index.ts",
     "dev:http": "tsx src/server/index.ts",
     "build": "tsc -p tsconfig.json",
+    "stats:modules": "tsx src/server/print-module-stats.ts",
+    "stats:check-docs": "tsx src/server/check-module-stats-docs.ts",
+    "stats:sync-docs": "tsx src/server/sync-module-stats-docs.ts",
     "test": "vitest run",
     "lint": "eslint ."
   },
@@ -16,6 +19,7 @@
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
+    "esbuild": "^0.28.0",
     "eslint": "^9.0.0",
     "tsx": "^4.19.0",
     "typescript": "^5.8.0",

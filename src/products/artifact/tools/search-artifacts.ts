@@ -3,6 +3,8 @@ import { toPageInfo } from "../../../core/pagination/page-info.js";
 import { artifactSearchArtifactsInput } from "../schemas.js";
 
 export function mapArtifactSearchResults(
+  projectId: string | undefined,
+  repoName: string | undefined,
   items: Array<{
     name?: string;
     relative_path?: string;
@@ -19,10 +21,11 @@ export function mapArtifactSearchResults(
     `${items.length} artifacts found`,
     items.map((item) => ({
       id: `${item.repo ?? ""}:${item.relative_path ?? ""}/${item.name ?? ""}`,
+      projectId,
       name: item.name ?? "",
       path: item.relative_path,
       repositoryId: item.repo,
-      repositoryName: item.repo_name,
+      repositoryName: item.repo_name ?? repoName,
       displayName: item.display_name,
       repositoryType: item.repo_type
     })),
@@ -55,6 +58,8 @@ export function createArtifactSearchArtifactsHandler(client: ArtifactSearchArtif
     const parsed = artifactSearchArtifactsInput.parse(input);
     const response = await client.searchArtifacts(parsed);
     const result = mapArtifactSearchResults(
+      parsed.project_id,
+      parsed.repo_name,
       response.artifacts,
       parsed.page,
       parsed.page_size,

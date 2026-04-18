@@ -22,14 +22,16 @@ describe("createDeployGetHistoryDetailHandler", () => {
     });
 
     expect(result.structuredContent.item).toEqual({
-      id: "task-1",
+      id: "record-1",
+      taskId: "task-1",
       recordId: "record-1",
       state: "SUCCEEDED",
       percentage: 100,
       operatorName: "yao",
       startedAt: "2026-04-16T10:00:00Z",
       finishedAt: "2026-04-16T10:10:00Z",
-      stepCount: 1
+      stepCount: 1,
+      stepStates: [{ step_name: "deploy", status: "SUCCEEDED" }]
     });
   });
 });

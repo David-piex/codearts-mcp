@@ -1,0 +1,63 @@
+- generic [ref=e1]:
+  - generic [ref=e5]:
+    - link [ref=e7] [cursor=pointer]:
+      - /url: https://www.huaweicloud.com/intl
+      - img [ref=e8]
+    - generic [ref=e9]:
+      - link "Home" [ref=e11] [cursor=pointer]:
+        - /url: https://www.huaweicloud.com/intl
+      - link "Documentation" [ref=e13] [cursor=pointer]:
+        - /url: https://support.huaweicloud.com/intl/
+      - generic [ref=e14]: English
+  - generic [ref=e16]:
+    - link [ref=e18] [cursor=pointer]:
+      - /url: https://www.huaweicloud.com/intl/en-us/product/ecs.html
+      - img [ref=e19]
+    - generic [ref=e21]:
+      - generic [ref=e29]:
+        - generic [ref=e30]:
+          - generic [ref=e31]:
+            - generic [ref=e33]:
+              - paragraph [ref=e37]:
+                - generic [ref=e39]: HUAWEI ID
+              - paragraph
+            - textbox "Phone/Email/Login ID/HUAWEI CLOUD account name" [ref=e43]: "18788826840"
+            - text: 
+            - generic [ref=e46]:
+              - textbox "Password" [ref=e47]: Yaowenjie1998
+              - button "Display password" [ref=e49] [cursor=pointer]
+          - button "Forgot password?" [ref=e56] [cursor=pointer]:
+            - generic [ref=e57]: Forgot password?
+          - generic [ref=e59]:
+            - button "REGISTER" [ref=e61] [cursor=pointer]:
+              - generic [ref=e64]: REGISTER
+            - button "LOG IN" [active] [ref=e66] [cursor=pointer]:
+              - generic [ref=e69]: LOG IN
+        - text:  
+      - generic [ref=e70]:
+        - generic [ref=e71]: Use Another Account
+        - generic [ref=e73]:
+          - generic [ref=e74]: IAM User
+          - text: "|"
+          - generic [ref=e76] [cursor=pointer]:
+            - text: More
+            - img [ref=e78]
+      - generic [ref=e79]:
+        - text: Your account and network information will be used to help improve your login experience.
+        - link "Learn more" [ref=e80] [cursor=pointer]:
+          - /url: https://legal.cloud.huawei.asia/legal/id/unifiedidprivacyurl.htm?language=en-us&code=HK&version=20200901
+  - generic [ref=e82]:
+    - generic [ref=e84]:
+      - img [ref=e85]
+      - text: We use cookies to improve your browsing experience. By continuing to browse our site, you accept our cookie policy. Learn more
+    - generic [ref=e87]:
+      - generic [ref=e88]: © 2026, Huawei Cloud Computing Technologies Co., Ltd. and/or its affiliates. All rights reserved.
+      - generic [ref=e90]:
+        - link "Site Terms" [ref=e91] [cursor=pointer]:
+          - /url: https://intl.huaweicloud.com/en-us/declaration-sg/sa_st.html
+        - text: "|"
+        - link "Privacy Statement" [ref=e92] [cursor=pointer]:
+          - /url: https://intl.huaweicloud.com/en-us/declaration-sg/sa_prp.html
+        - text: "|"
+        - link "Cookies" [ref=e93] [cursor=pointer]:
+          - /url: https://intl.huaweicloud.com/en-us/declaration-sg/sa_cookies.html

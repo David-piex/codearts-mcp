@@ -10,6 +10,7 @@ export function mapArtifactRepository(input: {
 }) {
   return asItemResult(`Loaded artifact repository ${input.name}`, {
     id: input.id,
+    repositoryId: input.id,
     name: input.name,
     projectId: input.project_id,
     format: input.format,

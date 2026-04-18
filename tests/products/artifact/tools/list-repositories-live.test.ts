@@ -10,7 +10,8 @@ describe("createArtifactListRepositoriesHandler", () => {
             id: "repo-1",
             name: "libs-release",
             project_id: "project-1",
-            format: "maven2"
+            format: "maven2",
+            description: "release repository"
           }
         ],
         total: 1
@@ -27,9 +28,11 @@ describe("createArtifactListRepositoriesHandler", () => {
     expect(result.structuredContent.summary).toContain("1 artifact repositories");
     expect(result.structuredContent.items?.[0]).toEqual({
       id: "repo-1",
+      repositoryId: "repo-1",
       name: "libs-release",
       projectId: "project-1",
-      format: "maven2"
+      format: "maven2",
+      description: "release repository"
     });
   });
 });

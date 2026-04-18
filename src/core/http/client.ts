@@ -180,6 +180,6 @@ export function createHttpClient(input: HttpClientInput) {
     postMultipart: (path: string, body: FormData) => request("POST", path, body),
     put: (path: string, body?: unknown) => request("PUT", path, body),
     patch: (path: string, body?: unknown) => request("PATCH", path, body),
-    delete: (path: string) => request("DELETE", path)
+    delete: (path: string, body?: unknown) => request("DELETE", path, body)
   };
 }

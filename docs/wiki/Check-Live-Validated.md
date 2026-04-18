@@ -1,16 +1,16 @@
 # Check Live Validated
 
-This page records the latest confirmed live status of the CodeArts Check module in `cn-north-4`.
+Last updated: `2026-04-17`
 
-## Scope
+Region: `cn-north-4`
+
+Base URL: `https://codecheck-ext.cn-north-4.myhuaweicloud.com`
 
 Validated with real `AK/SK`, real endpoints, and real tenant data.
 
-Base URL:
-- `https://codecheck-ext.cn-north-4.myhuaweicloud.com`
+Repository live-smoke entry:
 
-Verification date:
-- `2026-04-17`
+- `tests/products/check/client-live-smoke.test.ts`
 
 ## Tool Status
 
@@ -43,6 +43,11 @@ Verification date:
   - `d5026e942a7b4d639f4ea6369f45a6f5`
 - Newly created clean task:
   - `db8b9d30a38e45c09ab61dc9cf392844`
+
+## Suggested live-smoke env overrides
+
+- `HUAWEICLOUD_CHECK_LIVE_PROJECT_ID`
+- `HUAWEICLOUD_CHECK_LIVE_TASK_ID`
 
 ## Related Docs
 

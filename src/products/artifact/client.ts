@@ -8,11 +8,14 @@ export type ArtifactClient = {
   }) => Promise<{
     versions: Array<{
       version?: string;
+      build_version?: string;
       repo_name?: string;
       artifact_name?: string;
       created_at?: string;
       updated_at?: string;
       downloads?: number;
+      files_count?: number;
+      category?: string;
     }>;
     total?: number;
   }>;
@@ -175,6 +178,34 @@ function readArray<T>(input: unknown): T[] {
   return Array.isArray(input) ? (input as T[]) : [];
 }
 
+function unwrapArtifactPayload<T>(input: T): T {
+  if (typeof input === "string") {
+    const trimmed = input.trim();
+
+    if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
+      try {
+        return unwrapArtifactPayload(JSON.parse(trimmed)) as T;
+      } catch {
+        return input;
+      }
+    }
+  }
+
+  return input;
+}
+
+function readEnvelope(input: unknown) {
+  if (input && typeof input === "object" && !Array.isArray(input)) {
+    return input as Record<string, unknown>;
+  }
+
+  return undefined;
+}
+
+function readOptionalNumber(input: unknown) {
+  return typeof input === "number" ? input : undefined;
+}
+
 export function createArtifactClient(_http: ReturnTypeCreateHttpClient): ArtifactClient {
   return {
     async listVersions(input) {
@@ -195,24 +226,43 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
         total?: number;
         total_count?: number;
       };
-      const payload = response.result ?? response;
+      const payloadResponse = unwrapArtifactPayload(response);
+      const payload = Array.isArray(payloadResponse.result)
+        ? { versions: payloadResponse.result }
+        : (payloadResponse.result ?? payloadResponse);
       const versions = readArray<{
         version?: string;
+        build_version?: string;
         repo_name?: string;
         artifact_name?: string;
         created_at?: string;
         updated_at?: string;
         downloads?: number;
+        files_count?: number;
+        category?: string;
       }>(payload.versions);
 
       return {
-        versions,
+        versions: versions.map((item) => ({
+          version: item.version ?? item.build_version,
+          repo_name: item.repo_name,
+          artifact_name: item.artifact_name,
+          created_at: item.created_at,
+          updated_at: item.updated_at,
+          downloads: item.downloads,
+          files_count: item.files_count,
+          category: item.category
+        })),
         total: payload.total ?? payload.total_count
       };
     },
     async getFileTree(input) {
-      const response = (await _http.get(
-        `/cloudartifact/v5/${encodeURIComponent(input.tenant_id)}/${encodeURIComponent(input.project_id)}/${encodeURIComponent(input.repo_name)}/file-tree`
+      const query = new URLSearchParams({
+        path: "/"
+      });
+
+      const response = unwrapArtifactPayload((await _http.get(
+        `/cloudartifact/v5/${encodeURIComponent(input.tenant_id)}/${encodeURIComponent(input.project_id)}/${encodeURIComponent(input.repo_name)}/file-tree?${query.toString()}`
       )) as {
         root_path?: string;
         rootPath?: string;
@@ -222,7 +272,7 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
           rootPath?: string;
           nodes?: unknown;
         };
-      };
+      });
       const payload = response.result ?? response;
 
       return {
@@ -240,7 +290,7 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
         offset: String(offset),
         limit: String(input.page_size)
       });
-      const response = (await _http.get(
+      const response = unwrapArtifactPayload((await _http.get(
         `/devreposerver/v5/${encodeURIComponent(input.project_id)}/files/version?${query.toString()}`
       )) as {
         files?: unknown;
@@ -251,8 +301,8 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
         };
         total?: number;
         total_count?: number;
-      };
-      const payload = response.result ?? response;
+      });
+      const payload = Array.isArray(response.result) ? { files: response.result } : (response.result ?? response);
       const files = readArray<{
         path?: string;
         name?: string;
@@ -290,7 +340,7 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
       if (input.format) query.set("format", input.format);
       if (input.resource_id) query.set("resource_id", input.resource_id);
 
-      const response = (await _http.get(`/cloudartifact/v5/audit?${query.toString()}`)) as {
+      const response = unwrapArtifactPayload((await _http.get(`/cloudartifact/v5/audit?${query.toString()}`)) as {
         records?: unknown;
         total?: number;
         total_count?: number;
@@ -299,7 +349,7 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
           total?: number;
           total_count?: number;
         };
-      };
+      });
 
       const payload = response.result ?? response;
       const records = readArray<{
@@ -318,7 +368,7 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
     },
     async searchArtifacts(input) {
       const offset = (input.page - 1) * input.page_size;
-      const response = (await _http.post("/cloudartifact/v5/artifacts", {
+      const response = unwrapArtifactPayload((await _http.post("/cloudartifact/v5/artifacts", {
         artifact_name: input.artifact_name,
         offset,
         limit: input.page_size,
@@ -333,7 +383,7 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
           total?: number;
           total_count?: number;
         };
-      };
+      });
 
       const payload = response.result ?? response;
       const artifacts = readArray<{
@@ -386,7 +436,7 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
         format: input.format
       });
 
-      const response = (await _http.get(`/cloudartifact/v5/file-detail?${query.toString()}`)) as {
+      const response = unwrapArtifactPayload((await _http.get(`/cloudartifact/v5/file-detail?${query.toString()}`)) as {
         path?: string;
         name?: string;
         file_name?: string;
@@ -403,7 +453,7 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
           expires_at?: string;
           expired_at?: string;
         };
-      };
+      });
 
       const item = response.result ?? response;
 
@@ -424,15 +474,15 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
         query.set("search", input.keyword);
       }
 
-      const response = (await _http.get(
+      const response = unwrapArtifactPayload((await _http.get(
         `/cloudartifact/v5/${encodeURIComponent(input.tenant_id)}/${encodeURIComponent(input.project_id)}/repositories?${query.toString()}`
       )) as {
         repositories?: unknown;
         result?: unknown;
         total?: number;
         total_count?: number;
-      };
-
+      });
+      const payload = readEnvelope(response.result) ?? response;
       const repositories = readArray<{
         id?: string | number;
         repository_id?: string | number;
@@ -441,7 +491,7 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
         package_type?: string;
         format?: string;
         description?: string;
-      }>(response.repositories ?? response.result);
+      }>(payload.repositories);
 
       return {
         repositories: repositories.map((item) => ({
@@ -451,11 +501,15 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
           format: item.format ?? item.package_type,
           description: item.description
         })),
-        total: response.total ?? response.total_count
+        total:
+          readOptionalNumber(payload.total) ??
+          readOptionalNumber(payload.total_count) ??
+          readOptionalNumber(response.total) ??
+          readOptionalNumber(response.total_count)
       };
     },
     async getRepository(input) {
-      const response = (await _http.get(
+      const response = unwrapArtifactPayload((await _http.get(
         `/cloudartifact/v5/repositories/${encodeURIComponent(input.repository_id)}`
       )) as {
         id?: string | number;
@@ -474,7 +528,7 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
           format?: string;
           description?: string;
         };
-      };
+      });
 
       const item = response.result ?? response;
 
@@ -488,7 +542,7 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
     },
     async listFiles(input) {
       const offset = (input.page - 1) * input.page_size;
-      const response = (await _http.post("/cloudartifact/v5/file-detail", {
+      const response = unwrapArtifactPayload((await _http.post("/cloudartifact/v5/file-detail", {
         project_id: input.project_id,
         repo_name: input.repo_name,
         offset,
@@ -499,15 +553,15 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
         result?: unknown;
         total?: number;
         total_count?: number;
-      };
-
+      });
+      const payload = readEnvelope(response.result) ?? response;
       const files = readArray<{
         path?: string;
         name?: string;
         file_name?: string;
         type?: string;
         size?: string | number;
-      }>(response.files ?? response.result);
+      }>(payload.files);
 
       return {
         files: files.map((item) => ({
@@ -516,7 +570,11 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
           type: item.type,
           size: item.size === undefined ? undefined : String(item.size)
         })),
-        total: response.total ?? response.total_count
+        total:
+          readOptionalNumber(payload.total) ??
+          readOptionalNumber(payload.total_count) ??
+          readOptionalNumber(response.total) ??
+          readOptionalNumber(response.total_count)
       };
     },
     async getFile(input) {
@@ -528,7 +586,7 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
         format: input.format
       });
 
-      const response = (await _http.get(`/cloudartifact/v5/file-detail?${query.toString()}`)) as {
+      const response = unwrapArtifactPayload((await _http.get(`/cloudartifact/v5/file-detail?${query.toString()}`)) as {
         path?: string;
         name?: string;
         file_name?: string;
@@ -545,7 +603,7 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
           size?: string | number;
           md5?: string;
         };
-      };
+      });
 
       const item = response.result ?? response;
 
@@ -568,15 +626,15 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
         query.set("search", input.keyword);
       }
 
-      const response = (await _http.get(
+      const response = unwrapArtifactPayload((await _http.get(
         `/cloudartifact/v5/build-archives?${query.toString()}`
       )) as {
         archives?: unknown;
         result?: unknown;
         total?: number;
         total_count?: number;
-      };
-
+      });
+      const payload = readEnvelope(response.result) ?? response;
       const archives = readArray<{
         id?: string | number;
         archive_id?: string | number;
@@ -585,7 +643,7 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
         size?: string | number;
         download_url?: string;
         md5?: string;
-      }>(response.archives ?? response.result);
+      }>(payload.archives);
 
       return {
         archives: archives.map((item) => ({
@@ -595,7 +653,11 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
           download_url: item.download_url,
           md5: item.md5
         })),
-        total: response.total ?? response.total_count
+        total:
+          readOptionalNumber(payload.total) ??
+          readOptionalNumber(payload.total_count) ??
+          readOptionalNumber(response.total) ??
+          readOptionalNumber(response.total_count)
       };
     }
   };

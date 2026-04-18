@@ -11,10 +11,18 @@ export function previewRunJob(input: { job_id: string; branch?: string; dry_run:
   });
 }
 
-export function mapRunJobResult(input: { job_id: string; record_id?: string; status?: string }) {
+export function mapRunJobResult(input: {
+  job_id: string;
+  record_id?: string;
+  build_no?: number;
+  daily_build_number?: string;
+  status?: string;
+}) {
   return asItemResult(`Executed build job ${input.job_id}`, {
     id: input.job_id,
     recordId: input.record_id,
+    buildNo: input.build_no,
+    dailyBuildNumber: input.daily_build_number,
     status: input.status,
     executed: true
   });
@@ -24,6 +32,8 @@ type BuildRunJobClient = {
   runJob: (input: { job_id: string; branch?: string }) => Promise<{
     job_id: string;
     record_id?: string;
+    build_no?: number;
+    daily_build_number?: string;
     status?: string;
   }>;
 };

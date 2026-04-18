@@ -19,12 +19,12 @@ All `8` tools are `AK/SK Full`.
 
 - `req_list_projects`
 - `req_get_project`
+- `req_list_iterations`
+- `req_list_project_members`
 - `req_list_work_items`
 - `req_get_work_item`
 - `req_create_work_item`
 - `req_update_work_item`
-- `req_list_iterations`
-- `req_list_project_members`
 
 ## Repo
 
@@ -95,6 +95,7 @@ All `8` tools are `AK/SK Full`.
 
 - `deploy_list_apps`
 - `deploy_list_app_operations_log`
+- `deploy_list_environments`
 - `deploy_list_tasks`
 - `deploy_get_app`
 - `deploy_get_task`
@@ -106,71 +107,16 @@ All `8` tools are `AK/SK Full`.
 - `deploy_get_app_log`
 - `deploy_get_execution_params`
 - `deploy_get_history_detail`
-
-`Code/Test Only`
-
 - `deploy_start_app`
 - `deploy_stop_app`
 - `deploy_rollback_app`
-
-## Govern
-
-`AK/SK Full`
-
-- `govern_get_quota_info`
-- `govern_get_osi_statistics`
-- `govern_list_osi_item_names`
-- `govern_list_osi_item_versions`
-- `govern_get_osi_item_detail`
-- `govern_list_osi_item_vulns`
-
-`AK/SK Reachable`
-
-- `govern_get_task_status`
-- `govern_get_open_source_summary`
-- `govern_get_open_source_report`
-
-`Region Unpublished`
-
-- `govern_list_osi_item_dependency`
-
-`Code/Test Only`
-
-- `govern_alter_quota_info`
-- `govern_create_task`
-- `govern_create_task_multipart_file`
-- `govern_upload_task_multipart_file`
-- `govern_notify_task_multipart_file`
-- `govern_stop_task`
-- `govern_delete_task`
-- `govern_create_pdf_report`
-- `govern_get_pdf_report_status`
-- `govern_download_pdf_report`
-- `govern_create_excel_report`
-- `govern_get_excel_report_status`
-- `govern_download_excel_report`
-- `govern_list_sbc_vuln_map`
-- `govern_get_vuln_info`
-- `govern_get_user_info`
-- `govern_get_info_leak_summary`
-- `govern_get_sec_compile_summary`
-- `govern_get_sec_config_summary`
 
 ## Build
 
 `AK/SK Full`
 
 - `build_list_jobs`
-
-`AK/SK Reachable`
-
 - `build_get_job`
-- `build_get_record`
-- `build_get_record_script`
-- `build_get_record_flow_graph`
-
-`Code/Test Only`
-
 - `build_list_records`
 - `build_get_error_log`
 - `build_get_history_details`
@@ -181,63 +127,48 @@ All `8` tools are `AK/SK Full`.
 - `build_list_project_records`
 - `build_get_project_record_statistics`
 - `build_run_job`
+- `build_get_record`
+- `build_get_record_script`
+- `build_get_record_flow_graph`
 - `build_stop_job`
 
 ## Artifact
 
-All `12` tools are currently `Code/Test Only`.
+`AK/SK Full`
 
-- `artifact_list_repositories`
+- `artifact_get_file_tree`
 - `artifact_get_repository`
+- `artifact_list_repositories`
+- `artifact_list_versions`
+- `artifact_list_latest_version_files`
+
+`Region Unpublished`
+
+- `artifact_delete_file`
+- `artifact_list_build_archives`
 - `artifact_list_files`
 - `artifact_get_file`
 - `artifact_get_download_url`
-- `artifact_delete_file`
-- `artifact_list_build_archives`
-- `artifact_list_versions`
-- `artifact_get_file_tree`
-- `artifact_list_latest_version_files`
 - `artifact_search_artifacts`
 - `artifact_show_audit`
 
-## Inspector
-
-All `8` tools are currently `Code/Test Only`.
-
-- `inspector_list_domains`
-- `inspector_get_task`
-- `inspector_list_task_histories`
-- `inspector_list_results`
-- `inspector_list_ports`
-- `inspector_list_business_risks`
-- `inspector_get_report_status`
-- `inspector_create_domain`
-
 ## TestPlan
 
-All `7` tools are currently `Code/Test Only`.
+`AK/SK Full`
 
 - `testplan_list_plans`
-- `testplan_get_plan`
+
+`AK/SK Reachable`
+
 - `testplan_list_cases`
+- `testplan_list_issues`
+
+`Region Unpublished`
+
+- `testplan_get_plan`
 - `testplan_get_case`
 - `testplan_list_runs`
-- `testplan_list_issues`
 - `testplan_run_cases`
-
-## PerfTest
-
-All `9` tools are currently `Code/Test Only`.
-
-- `perftest_list_projects`
-- `perftest_get_project`
-- `perftest_list_tasks`
-- `perftest_get_task`
-- `perftest_list_variables`
-- `perftest_list_task_cases`
-- `perftest_list_latest_runs`
-- `perftest_list_offline_reports`
-- `perftest_get_report`
 
 ## Summary
 

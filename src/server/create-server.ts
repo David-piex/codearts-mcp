@@ -33,11 +33,16 @@ import { createArtifactSearchArtifactsHandler } from "../products/artifact/tools
 import { createArtifactShowAuditHandler } from "../products/artifact/tools/show-audit.js";
 import { createBuildClient } from "../products/build/client.js";
 import {
+  buildAppendReleaseUploadStepInput,
+  buildAppendJobStepInput,
+  buildConfigureReleaseUploadStepInput,
+  buildPrepareDeployableNodeAppInput,
   buildGetErrorLogInput,
   buildGetFullStagesInput,
   buildGetHistoryDetailsInput,
   buildGetInfoRecordInput,
   buildGetProjectRecordStatisticsInput,
+  buildPrepareNodeRuntimeBundleInput,
   buildGetRecordFlowGraphInput,
   buildGetRecordInput,
   buildGetRecordScriptInput,
@@ -48,9 +53,15 @@ import {
   buildListProjectRecordsInput,
   buildListRecordsInput,
   buildRunJobInput,
-  buildStopJobInput
+  buildStopJobInput,
+  buildUpdateJobStepInput
 } from "../products/build/schemas.js";
 import { createBuildGetErrorLogHandler } from "../products/build/tools/get-error-log.js";
+import { createBuildAppendReleaseUploadStepHandler } from "../products/build/tools/append-release-upload-step.js";
+import { createBuildAppendJobStepHandler } from "../products/build/tools/append-job-step.js";
+import { createBuildConfigureReleaseUploadStepHandler } from "../products/build/tools/configure-release-upload-step.js";
+import { createBuildPrepareDeployableNodeAppHandler } from "../products/build/tools/prepare-deployable-node-app.js";
+import { createBuildPrepareNodeRuntimeBundleHandler } from "../products/build/tools/prepare-node-runtime-bundle.js";
 import { createBuildGetFullStagesHandler } from "../products/build/tools/get-full-stages.js";
 import { createBuildGetProjectRecordStatisticsHandler } from "../products/build/tools/get-project-record-statistics.js";
 import { createBuildGetRecordFlowGraphHandler } from "../products/build/tools/get-record-flow-graph.js";
@@ -66,6 +77,7 @@ import { createBuildListProjectRecordsHandler } from "../products/build/tools/li
 import { createBuildListRecordsHandler } from "../products/build/tools/list-records.js";
 import { createBuildRunJobHandler } from "../products/build/tools/run-job.js";
 import { createBuildStopJobHandler } from "../products/build/tools/stop-job.js";
+import { createBuildUpdateJobStepHandler } from "../products/build/tools/update-job-step.js";
 import { createCheckClient } from "../products/check/client.js";
 import {
   checkCreateTaskInput,
@@ -87,134 +99,125 @@ import { createCheckRunTaskHandler } from "../products/check/tools/run-task.js";
 import { createCheckStopTaskHandler } from "../products/check/tools/stop-task.js";
 import { createDeployClient } from "../products/deploy/client.js";
 import {
+  deployCreateEnvironmentInput,
+  deployCreateApplicationInput,
+  deployModifyApplicationInput,
+  deployCreateTaskByTemplateInput,
   deployGetAppInput,
+  deployGetDeploySourceDetailInput,
+  deployGetTemplateDetailInput,
+  deployGetHostGroupInput,
   deployGetTaskInput,
+  deployImportHostsToEnvironmentInput,
+  deployListSystemConfigsInput,
   deployListAppOperationsLogInput,
+  deployListAppHostGroupsInput,
+  deployListEnvironmentsInput,
+  deployListEnvironmentHostsInput,
+  deployListV4ApplicationsInput,
+  deployListV4ClustersInput,
+  deployGetV4ClusterInput,
+  deployDeleteV4ClusterHostsInput,
+  deployGetV4ClusterCountInput,
+  deployGetV4ClusterHostInput,
+  deployListV4ClusterHostsInput,
+  deployGetV4EnvironmentInput,
+  deployGetV4EnvironmentResourceDetailInput,
+  deployListV4EnvironmentHostsInput,
+  deployAddV4EnvironmentHostsInput,
+  deployDeleteV4EnvironmentHostsInput,
+  deployListV4EnvironmentApplicationsInput,
+  deployListV4EnvironmentsInput,
+  deployListDeploymentUnitsInput,
+  deployListV4OrchestrationsInput,
+  deployListV4DeployRecordsInput,
   deployGetAppLogInput,
   deployGetExecutionParamsInput,
+  deployGetRuntimeVariablesInput,
   deployGetHistoryDetailInput,
+  deployGetLastRecordDetailInput,
+  deployGetV4DeployRecordInput,
+  deployGetV4DeployRecordStepDetailInput,
+  deployGetV4DeployRecordStepLogsInput,
+  deployCancelV4DeployRecordInput,
+  deployRerunV4DeployRecordInput,
+  deployRetryV4DeployRecordInput,
+  deployRollbackV4DeployRecordInput,
+  deployPassV4ManualCheckInput,
+  deployRefuseV4ManualCheckInput,
+  deployListVariableHistoryInput,
+  deployListVariablesInput,
+  deployListHostGroupEnvironmentsInput,
+  deployListHostGroupHostsInput,
+  deployListHostGroupsInput,
   deployGetStatusInput,
   deployListAppsInput,
   deployListTasksInput,
   deployListHistoriesInput,
+  deployQueryVariablesInput,
   deployRollbackAppInput,
   deployStartAppInput,
   deployStopAppInput
 } from "../products/deploy/schemas.js";
+import { createDeployCreateEnvironmentHandler } from "../products/deploy/tools/create-environment.js";
+import { createDeployCreateApplicationHandler } from "../products/deploy/tools/create-application.js";
+import { createDeployModifyApplicationHandler } from "../products/deploy/tools/modify-application.js";
+import { createDeployCreateTaskByTemplateHandler } from "../products/deploy/tools/create-task-by-template.js";
 import { createDeployGetAppHandler } from "../products/deploy/tools/get-app.js";
+import { createDeployGetDeploySourceDetailHandler } from "../products/deploy/tools/get-deploy-source-detail.js";
+import { createDeployGetTemplateDetailHandler } from "../products/deploy/tools/get-template-detail.js";
+import { createDeployGetHostGroupHandler } from "../products/deploy/tools/get-host-group.js";
 import { createDeployGetTaskHandler } from "../products/deploy/tools/get-task.js";
+import { createDeployImportHostsToEnvironmentHandler } from "../products/deploy/tools/import-hosts-to-environment.js";
 import { createDeployGetAppLogHandler } from "../products/deploy/tools/get-app-log.js";
 import { createDeployGetExecutionParamsHandler } from "../products/deploy/tools/get-execution-params.js";
 import { createDeployGetHistoryDetailHandler } from "../products/deploy/tools/get-history-detail.js";
 import { createDeployGetStatusHandler } from "../products/deploy/tools/get-status.js";
+import { createDeployGetRuntimeVariablesHandler } from "../products/deploy/tools/get-runtime-variables.js";
+import { createDeployListSystemConfigsHandler } from "../products/deploy/tools/list-system-configs.js";
 import { createDeployListAppOperationsLogHandler } from "../products/deploy/tools/list-app-operations-log.js";
+import { createDeployListAppHostGroupsHandler } from "../products/deploy/tools/list-app-host-groups.js";
 import { createDeployListAppsHandler } from "../products/deploy/tools/list-apps.js";
+import { createDeployListDeploymentUnitsHandler } from "../products/deploy/tools/list-deployment-units.js";
+import { createDeployGetLastRecordDetailHandler } from "../products/deploy/tools/get-last-record-detail.js";
+import { createDeployGetV4DeployRecordHandler } from "../products/deploy/tools/get-v4-deploy-record.js";
+import { createDeployGetV4DeployRecordStepDetailHandler } from "../products/deploy/tools/get-v4-deploy-record-step-detail.js";
+import { createDeployGetV4DeployRecordStepLogsHandler } from "../products/deploy/tools/get-v4-deploy-record-step-logs.js";
+import { createDeployCancelV4DeployRecordHandler } from "../products/deploy/tools/cancel-v4-deploy-record.js";
+import { createDeployListV4ApplicationsHandler } from "../products/deploy/tools/list-v4-applications.js";
+import { createDeployListV4ClustersHandler } from "../products/deploy/tools/list-v4-clusters.js";
+import { createDeployGetV4ClusterHandler } from "../products/deploy/tools/get-v4-cluster.js";
+import { createDeployDeleteV4ClusterHostsHandler } from "../products/deploy/tools/delete-v4-cluster-hosts.js";
+import { createDeployGetV4ClusterCountHandler } from "../products/deploy/tools/get-v4-cluster-count.js";
+import { createDeployGetV4ClusterHostHandler } from "../products/deploy/tools/get-v4-cluster-host.js";
+import { createDeployListV4ClusterHostsHandler } from "../products/deploy/tools/list-v4-cluster-hosts.js";
+import { createDeployGetV4EnvironmentHandler } from "../products/deploy/tools/get-v4-environment.js";
+import { createDeployGetV4EnvironmentResourceDetailHandler } from "../products/deploy/tools/get-v4-environment-resource-detail.js";
+import { createDeployListV4EnvironmentHostsHandler } from "../products/deploy/tools/list-v4-environment-hosts.js";
+import { createDeployAddV4EnvironmentHostsHandler } from "../products/deploy/tools/add-v4-environment-hosts.js";
+import { createDeployDeleteV4EnvironmentHostsHandler } from "../products/deploy/tools/delete-v4-environment-hosts.js";
+import { createDeployListV4DeployRecordsHandler } from "../products/deploy/tools/list-v4-deploy-records.js";
+import { createDeployListV4EnvironmentApplicationsHandler } from "../products/deploy/tools/list-v4-environment-applications.js";
+import { createDeployListV4EnvironmentsHandler } from "../products/deploy/tools/list-v4-environments.js";
+import { createDeployListV4OrchestrationsHandler } from "../products/deploy/tools/list-v4-orchestrations.js";
+import { createDeployListEnvironmentsHandler } from "../products/deploy/tools/list-environments.js";
+import { createDeployListEnvironmentHostsHandler } from "../products/deploy/tools/list-environment-hosts.js";
+import { createDeployListHostGroupEnvironmentsHandler } from "../products/deploy/tools/list-host-group-environments.js";
+import { createDeployListHostGroupHostsHandler } from "../products/deploy/tools/list-host-group-hosts.js";
+import { createDeployListHostGroupsHandler } from "../products/deploy/tools/list-host-groups.js";
 import { createDeployListTasksHandler } from "../products/deploy/tools/list-tasks.js";
 import { createDeployListHistoriesHandler } from "../products/deploy/tools/list-histories.js";
+import { createDeployListVariableHistoryHandler } from "../products/deploy/tools/list-variable-history.js";
+import { createDeployListVariablesHandler } from "../products/deploy/tools/list-variables.js";
+import { createDeployPassV4ManualCheckHandler } from "../products/deploy/tools/pass-v4-manual-check.js";
+import { createDeployQueryVariablesHandler } from "../products/deploy/tools/query-variables.js";
+import { createDeployRefuseV4ManualCheckHandler } from "../products/deploy/tools/refuse-v4-manual-check.js";
 import { createDeployRollbackAppHandler } from "../products/deploy/tools/rollback-app.js";
+import { createDeployRollbackV4DeployRecordHandler } from "../products/deploy/tools/rollback-v4-deploy-record.js";
+import { createDeployRerunV4DeployRecordHandler } from "../products/deploy/tools/rerun-v4-deploy-record.js";
+import { createDeployRetryV4DeployRecordHandler } from "../products/deploy/tools/retry-v4-deploy-record.js";
 import { createDeployStartAppHandler } from "../products/deploy/tools/start-app.js";
 import { createDeployStopAppHandler } from "../products/deploy/tools/stop-app.js";
-import { createGovernClient } from "../products/govern/client.js";
-import {
-  governAlterQuotaInfoInput,
-  governCreateExcelReportInput,
-  governCreatePdfReportInput,
-  governCreateTaskInput,
-  governCreateTaskMultipartFileInput,
-  governDeleteTaskInput,
-  governDownloadExcelReportInput,
-  governDownloadPdfReportInput,
-  governGetExcelReportStatusInput,
-  governGetInfoLeakSummaryInput,
-  governGetOpenSourceReportInput,
-  governGetOpenSourceSummaryInput,
-  governGetOsiItemDetailInput,
-  governGetOsiStatisticsInput,
-  governGetPdfReportStatusInput,
-  governGetQuotaInfoInput,
-  governGetSecCompileSummaryInput,
-  governGetSecConfigSummaryInput,
-  governListOsiItemNamesInput,
-  governListOsiItemDependencyInput,
-  governListOsiItemVersionsInput,
-  governListOsiItemVulnsInput,
-  governGetUserInfoInput,
-  governGetVulnInfoInput,
-  governNotifyTaskMultipartFileInput,
-  governStopTaskInput,
-  governUploadTaskMultipartFileInput,
-  governGetTaskStatusInput,
-  governListSbcVulnMapInput
-} from "../products/govern/schemas.js";
-import { createGovernAlterQuotaInfoHandler } from "../products/govern/tools/alter-quota-info.js";
-import { createGovernCreateExcelReportHandler } from "../products/govern/tools/create-excel-report.js";
-import { createGovernCreatePdfReportHandler } from "../products/govern/tools/create-pdf-report.js";
-import { createGovernCreateTaskMultipartFileHandler } from "../products/govern/tools/create-task-multipart-file.js";
-import { createGovernCreateTaskHandler } from "../products/govern/tools/create-task.js";
-import { createGovernDeleteTaskHandler } from "../products/govern/tools/delete-task.js";
-import { createGovernDownloadExcelReportHandler } from "../products/govern/tools/download-excel-report.js";
-import { createGovernDownloadPdfReportHandler } from "../products/govern/tools/download-pdf-report.js";
-import { createGovernGetExcelReportStatusHandler } from "../products/govern/tools/get-excel-report-status.js";
-import { createGovernGetInfoLeakSummaryHandler } from "../products/govern/tools/get-info-leak-summary.js";
-import { createGovernGetOpenSourceReportHandler } from "../products/govern/tools/get-open-source-report.js";
-import { createGovernGetOpenSourceSummaryHandler } from "../products/govern/tools/get-open-source-summary.js";
-import { createGovernGetOsiItemDetailHandler } from "../products/govern/tools/get-osi-item-detail.js";
-import { createGovernGetOsiStatisticsHandler } from "../products/govern/tools/get-osi-statistics.js";
-import { createGovernGetPdfReportStatusHandler } from "../products/govern/tools/get-pdf-report-status.js";
-import { createGovernGetQuotaInfoHandler } from "../products/govern/tools/get-quota-info.js";
-import { createGovernGetSecCompileSummaryHandler } from "../products/govern/tools/get-sec-compile-summary.js";
-import { createGovernGetSecConfigSummaryHandler } from "../products/govern/tools/get-sec-config-summary.js";
-import { createGovernGetUserInfoHandler } from "../products/govern/tools/get-user-info.js";
-import { createGovernGetVulnInfoHandler } from "../products/govern/tools/get-vuln-info.js";
-import { createGovernListOsiItemNamesHandler } from "../products/govern/tools/list-osi-item-names.js";
-import { createGovernListOsiItemDependencyHandler } from "../products/govern/tools/list-osi-item-dependency.js";
-import { createGovernListOsiItemVersionsHandler } from "../products/govern/tools/list-osi-item-versions.js";
-import { createGovernListOsiItemVulnsHandler } from "../products/govern/tools/list-osi-item-vulns.js";
-import { createGovernListSbcVulnMapHandler } from "../products/govern/tools/list-sbc-vuln-map.js";
-import { createGovernNotifyTaskMultipartFileHandler } from "../products/govern/tools/notify-task-multipart-file.js";
-import { createGovernStopTaskHandler } from "../products/govern/tools/stop-task.js";
-import { createGovernGetTaskStatusHandler } from "../products/govern/tools/get-task-status.js";
-import { createGovernUploadTaskMultipartFileHandler } from "../products/govern/tools/upload-task-multipart-file.js";
-import { createInspectorClient } from "../products/inspector/client.js";
-import {
-  inspectorCreateDomainInput,
-  inspectorGetReportStatusInput,
-  inspectorGetTaskInput,
-  inspectorListBusinessRisksInput,
-  inspectorListDomainsInput,
-  inspectorListPortsInput,
-  inspectorListResultsInput,
-  inspectorListTaskHistoriesInput
-} from "../products/inspector/schemas.js";
-import { createInspectorCreateDomainHandler } from "../products/inspector/tools/create-domain.js";
-import { createInspectorGetReportStatusHandler } from "../products/inspector/tools/get-report-status.js";
-import { createInspectorGetTaskHandler } from "../products/inspector/tools/get-task.js";
-import { createInspectorListBusinessRisksHandler } from "../products/inspector/tools/list-business-risks.js";
-import { createInspectorListDomainsHandler } from "../products/inspector/tools/list-domains.js";
-import { createInspectorListPortsHandler } from "../products/inspector/tools/list-ports.js";
-import { createInspectorListResultsHandler } from "../products/inspector/tools/list-results.js";
-import { createInspectorListTaskHistoriesHandler } from "../products/inspector/tools/list-task-histories.js";
-import { createPerfTestClient } from "../products/perftest/client.js";
-import {
-  perftestGetProjectInput,
-  perftestGetReportInput,
-  perftestGetTaskInput,
-  perftestListLatestRunsInput,
-  perftestListOfflineReportsInput,
-  perftestListProjectsInput,
-  perftestListTaskCasesInput,
-  perftestListTasksInput,
-  perftestListVariablesInput
-} from "../products/perftest/schemas.js";
-import { createPerfTestGetProjectHandler } from "../products/perftest/tools/get-project.js";
-import { createPerfTestGetReportHandler } from "../products/perftest/tools/get-report.js";
-import { createPerfTestGetTaskHandler } from "../products/perftest/tools/get-task.js";
-import { createPerfTestListLatestRunsHandler } from "../products/perftest/tools/list-latest-runs.js";
-import { createPerfTestListOfflineReportsHandler } from "../products/perftest/tools/list-offline-reports.js";
-import { createPerfTestListProjectsHandler } from "../products/perftest/tools/list-projects.js";
-import { createPerfTestListTaskCasesHandler } from "../products/perftest/tools/list-task-cases.js";
-import { createPerfTestListTasksHandler } from "../products/perftest/tools/list-tasks.js";
-import { createPerfTestListVariablesHandler } from "../products/perftest/tools/list-variables.js";
 import { createPipelineClient } from "../products/pipeline/client.js";
 import {
   pipelineApproveRunInput,
@@ -338,24 +341,24 @@ import { createTestPlanListPlansHandler } from "../products/testplan/tools/list-
 import { createTestPlanListRunsHandler } from "../products/testplan/tools/list-runs.js";
 import { createTestPlanRunCasesHandler } from "../products/testplan/tools/run-cases.js";
 import { collectToolNames, createServerInfo } from "./register-tools.js";
+import {
+  mergeSessionEndpointOverrides,
+  resolveRegionDefaults
+} from "./region-defaults.js";
 import type { SessionCredentialStore } from "./session-store.js";
 
 const configureSessionInputSchema = z.object({
   access_key: z.string().min(1),
   secret_key: z.string().min(1),
   region: z.string().min(1),
-  req_base_url: z.string().url(),
-  repo_base_url: z.string().url(),
-  pipeline_base_url: z.string().url(),
-  check_base_url: z.string().url(),
-  testplan_base_url: z.string().url(),
-  deploy_base_url: z.string().url(),
-  build_base_url: z.string().url(),
-  artifact_base_url: z.string().url(),
-  govern_base_url: z.string().url().optional()
-  ,
-  inspector_base_url: z.string().url().optional(),
-  perftest_base_url: z.string().url().optional()
+  req_base_url: z.string().url().optional(),
+  repo_base_url: z.string().url().optional(),
+  pipeline_base_url: z.string().url().optional(),
+  check_base_url: z.string().url().optional(),
+  testplan_base_url: z.string().url().optional(),
+  deploy_base_url: z.string().url().optional(),
+  build_base_url: z.string().url().optional(),
+  artifact_base_url: z.string().url().optional()
 });
 
 function requireSessionId(sessionId?: string): string {
@@ -375,9 +378,22 @@ export function createConfigureSessionHandler(store: SessionCredentialStore) {
   ) => {
     const parsed = configureSessionInputSchema.parse(input);
     const sessionId = requireSessionId(extra.sessionId);
+    const endpoints = mergeSessionEndpointOverrides(resolveRegionDefaults(parsed.region), {
+      req_base_url: parsed.req_base_url,
+      repo_base_url: parsed.repo_base_url,
+      pipeline_base_url: parsed.pipeline_base_url,
+      check_base_url: parsed.check_base_url,
+      testplan_base_url: parsed.testplan_base_url,
+      deploy_base_url: parsed.deploy_base_url,
+      build_base_url: parsed.build_base_url,
+      artifact_base_url: parsed.artifact_base_url
+    });
 
     store.set(sessionId, {
-      ...parsed,
+      access_key: parsed.access_key,
+      secret_key: parsed.secret_key,
+      region: parsed.region,
+      ...endpoints,
       updated_at: new Date().toISOString()
     });
 
@@ -434,9 +450,6 @@ function buildClientsFromCredentialConfig(config: {
   deployBaseUrl: string;
   buildBaseUrl: string;
   artifactBaseUrl: string;
-  governBaseUrl: string;
-  inspectorBaseUrl: string;
-  perfTestBaseUrl: string;
 }) {
   const authHeaders = createHuaweiAuthHeaders(config.accessKey, config.secretKey);
 
@@ -451,13 +464,6 @@ function buildClientsFromCredentialConfig(config: {
     repoClient: createRepoClient(createHttpClient({ baseUrl: config.repoBaseUrl, authHeaders })),
     pipelineClient: createPipelineClient(
       createHttpClient({ baseUrl: config.pipelineBaseUrl, authHeaders })
-    ),
-    governClient: createGovernClient(createHttpClient({ baseUrl: config.governBaseUrl, authHeaders })),
-    inspectorClient: createInspectorClient(
-      createHttpClient({ baseUrl: config.inspectorBaseUrl, authHeaders })
-    ),
-    perfTestClient: createPerfTestClient(
-      createHttpClient({ baseUrl: config.perfTestBaseUrl, authHeaders })
     ),
     testPlanClient: createTestPlanClient(
       createHttpClient({ baseUrl: config.testPlanBaseUrl, authHeaders })
@@ -486,13 +492,7 @@ function buildClientsForSession(store: SessionCredentialStore, sessionId?: strin
     testPlanBaseUrl: sessionConfig.testplan_base_url,
     deployBaseUrl: sessionConfig.deploy_base_url,
     buildBaseUrl: sessionConfig.build_base_url,
-    artifactBaseUrl: sessionConfig.artifact_base_url,
-    governBaseUrl:
-      sessionConfig.govern_base_url ??
-      `https://devsecurity.${sessionConfig.region}.myhuaweicloud.com`,
-    inspectorBaseUrl: sessionConfig.inspector_base_url ?? "https://vss.myhuaweicloud.com",
-    perfTestBaseUrl:
-      sessionConfig.perftest_base_url ?? `https://cpts.${sessionConfig.region}.myhuaweicloud.com`
+    artifactBaseUrl: sessionConfig.artifact_base_url
   });
 }
 
@@ -601,6 +601,435 @@ export function createSessionAwareDeployListAppsHandler(
   };
 }
 
+export function createSessionAwareDeployListV4ApplicationsHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployListV4ApplicationsHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployListV4ApplicationsHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployListV4ClustersHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployListV4ClustersHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployListV4ClustersHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployGetV4ClusterHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployGetV4ClusterHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployGetV4ClusterHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployDeleteV4ClusterHostsHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployDeleteV4ClusterHostsHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployDeleteV4ClusterHostsHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployGetV4ClusterCountHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployGetV4ClusterCountHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployGetV4ClusterCountHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployGetV4ClusterHostHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployGetV4ClusterHostHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployGetV4ClusterHostHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployListV4ClusterHostsHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployListV4ClusterHostsHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployListV4ClusterHostsHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployGetV4EnvironmentHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployGetV4EnvironmentHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployGetV4EnvironmentHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployGetV4EnvironmentResourceDetailHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployGetV4EnvironmentResourceDetailHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployGetV4EnvironmentResourceDetailHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployListV4EnvironmentHostsHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployListV4EnvironmentHostsHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployListV4EnvironmentHostsHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployAddV4EnvironmentHostsHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployAddV4EnvironmentHostsHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployAddV4EnvironmentHostsHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployDeleteV4EnvironmentHostsHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployDeleteV4EnvironmentHostsHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployDeleteV4EnvironmentHostsHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployListV4EnvironmentsHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployListV4EnvironmentsHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployListV4EnvironmentsHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployListV4EnvironmentApplicationsHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployListV4EnvironmentApplicationsHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployListV4EnvironmentApplicationsHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployListDeploymentUnitsHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployListDeploymentUnitsHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployListDeploymentUnitsHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployListV4OrchestrationsHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployListV4OrchestrationsHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployListV4OrchestrationsHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployListV4DeployRecordsHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployListV4DeployRecordsHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployListV4DeployRecordsHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployGetLastRecordDetailHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployGetLastRecordDetailHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployGetLastRecordDetailHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployGetV4DeployRecordHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployGetV4DeployRecordHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployGetV4DeployRecordHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployGetV4DeployRecordStepDetailHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployGetV4DeployRecordStepDetailHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployGetV4DeployRecordStepDetailHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployGetV4DeployRecordStepLogsHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployGetV4DeployRecordStepLogsHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployGetV4DeployRecordStepLogsHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployCancelV4DeployRecordHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployCancelV4DeployRecordHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployCancelV4DeployRecordHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployRerunV4DeployRecordHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployRerunV4DeployRecordHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployRerunV4DeployRecordHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployRetryV4DeployRecordHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployRetryV4DeployRecordHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployRetryV4DeployRecordHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployRollbackV4DeployRecordHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployRollbackV4DeployRecordHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployRollbackV4DeployRecordHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployPassV4ManualCheckHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployPassV4ManualCheckHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployPassV4ManualCheckHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployRefuseV4ManualCheckHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployRefuseV4ManualCheckHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployRefuseV4ManualCheckHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployListAppHostGroupsHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployListAppHostGroupsHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployListAppHostGroupsHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployListHostGroupsHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployListHostGroupsHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployListHostGroupsHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployGetHostGroupHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployGetHostGroupHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployGetHostGroupHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployListHostGroupHostsHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployListHostGroupHostsHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployListHostGroupHostsHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployListHostGroupEnvironmentsHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployListHostGroupEnvironmentsHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployListHostGroupEnvironmentsHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployCreateEnvironmentHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployCreateEnvironmentHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployCreateEnvironmentHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployCreateApplicationHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployCreateApplicationHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployCreateApplicationHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployModifyApplicationHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployModifyApplicationHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployModifyApplicationHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployCreateTaskByTemplateHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployCreateTaskByTemplateHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployCreateTaskByTemplateHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployListEnvironmentHostsHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployListEnvironmentHostsHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployListEnvironmentHostsHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployImportHostsToEnvironmentHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployImportHostsToEnvironmentHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployImportHostsToEnvironmentHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployListEnvironmentsHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployListEnvironmentsHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployListEnvironmentsHandler(deployClient)(input);
+  };
+}
+
 export function createSessionAwareDeployListTasksHandler(
   store: SessionCredentialStore,
   injectedClient?: Parameters<typeof createDeployListTasksHandler>[0]
@@ -631,6 +1060,28 @@ export function createSessionAwareDeployGetTaskHandler(
     const deployClient =
       injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
     return createDeployGetTaskHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployGetDeploySourceDetailHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployGetDeploySourceDetailHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployGetDeploySourceDetailHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployGetTemplateDetailHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployGetTemplateDetailHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployGetTemplateDetailHandler(deployClient)(input);
   };
 }
 
@@ -667,6 +1118,39 @@ export function createSessionAwareDeployGetExecutionParamsHandler(
   };
 }
 
+export function createSessionAwareDeployGetRuntimeVariablesHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployGetRuntimeVariablesHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployGetRuntimeVariablesHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployListVariablesHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployListVariablesHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployListVariablesHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployListVariableHistoryHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployListVariableHistoryHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployListVariableHistoryHandler(deployClient)(input);
+  };
+}
+
 export function createSessionAwareDeployListHistoriesHandler(
   store: SessionCredentialStore,
   injectedClient?: Parameters<typeof createDeployListHistoriesHandler>[0]
@@ -689,6 +1173,17 @@ export function createSessionAwareDeployGetStatusHandler(
   };
 }
 
+export function createSessionAwareDeployQueryVariablesHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployQueryVariablesHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployQueryVariablesHandler(deployClient)(input);
+  };
+}
+
 export function createSessionAwareDeployStartAppHandler(
   store: SessionCredentialStore,
   injectedClient?: Parameters<typeof createDeployStartAppHandler>[0]
@@ -697,6 +1192,17 @@ export function createSessionAwareDeployStartAppHandler(
     const deployClient =
       injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
     return createDeployStartAppHandler(deployClient)(input);
+  };
+}
+
+export function createSessionAwareDeployListSystemConfigsHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createDeployListSystemConfigsHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const deployClient =
+      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+    return createDeployListSystemConfigsHandler(deployClient)(input);
   };
 }
 
@@ -813,6 +1319,56 @@ export function createSessionAwareBuildRunJobHandler(
   };
 }
 
+export function createSessionAwareBuildAppendJobStepHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createBuildAppendJobStepHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const buildClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).buildClient;
+    return createBuildAppendJobStepHandler(buildClient)(input);
+  };
+}
+
+export function createSessionAwareBuildAppendReleaseUploadStepHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createBuildAppendReleaseUploadStepHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const buildClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).buildClient;
+    return createBuildAppendReleaseUploadStepHandler(buildClient)(input);
+  };
+}
+
+export function createSessionAwareBuildConfigureReleaseUploadStepHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createBuildConfigureReleaseUploadStepHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const buildClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).buildClient;
+    return createBuildConfigureReleaseUploadStepHandler(buildClient)(input);
+  };
+}
+
+export function createSessionAwareBuildPrepareNodeRuntimeBundleHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createBuildPrepareNodeRuntimeBundleHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const buildClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).buildClient;
+    return createBuildPrepareNodeRuntimeBundleHandler(buildClient)(input);
+  };
+}
+
+export function createSessionAwareBuildPrepareDeployableNodeAppHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createBuildPrepareDeployableNodeAppHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const buildClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).buildClient;
+    return createBuildPrepareDeployableNodeAppHandler(buildClient)(input);
+  };
+}
+
 export function createSessionAwareBuildStopJobHandler(
   store: SessionCredentialStore,
   injectedClient?: Parameters<typeof createBuildStopJobHandler>[0]
@@ -820,6 +1376,17 @@ export function createSessionAwareBuildStopJobHandler(
   return async (input: unknown, extra: SessionToolExtra) => {
     const buildClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).buildClient;
     return createBuildStopJobHandler(buildClient)(input);
+  };
+}
+
+export function createSessionAwareBuildUpdateJobStepHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createBuildUpdateJobStepHandler>[0]
+) {
+  return async (input: unknown, extra: SessionToolExtra) => {
+    const buildClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).buildClient;
+
+    return createBuildUpdateJobStepHandler(buildClient)(input);
   };
 }
 
@@ -1022,483 +1589,6 @@ export function createSessionAwareArtifactShowAuditHandler(
     const artifactClient =
       injectedClient ?? buildClientsForSession(store, extra.sessionId).artifactClient;
     return createArtifactShowAuditHandler(artifactClient)(input);
-  };
-}
-
-export function createSessionAwareGovernCreateTaskHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createGovernCreateTaskHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const governClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).governClient;
-    return createGovernCreateTaskHandler(governClient)(input);
-  };
-}
-
-export function createSessionAwareGovernAlterQuotaInfoHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createGovernAlterQuotaInfoHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const governClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).governClient;
-    return createGovernAlterQuotaInfoHandler(governClient)(input);
-  };
-}
-
-export function createSessionAwareGovernCreatePdfReportHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createGovernCreatePdfReportHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const governClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).governClient;
-    return createGovernCreatePdfReportHandler(governClient)(input);
-  };
-}
-
-export function createSessionAwareGovernGetPdfReportStatusHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createGovernGetPdfReportStatusHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const governClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).governClient;
-    return createGovernGetPdfReportStatusHandler(governClient)(input);
-  };
-}
-
-export function createSessionAwareGovernDownloadPdfReportHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createGovernDownloadPdfReportHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const governClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).governClient;
-    return createGovernDownloadPdfReportHandler(governClient)(input);
-  };
-}
-
-export function createSessionAwareGovernCreateExcelReportHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createGovernCreateExcelReportHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const governClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).governClient;
-    return createGovernCreateExcelReportHandler(governClient)(input);
-  };
-}
-
-export function createSessionAwareGovernGetExcelReportStatusHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createGovernGetExcelReportStatusHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const governClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).governClient;
-    return createGovernGetExcelReportStatusHandler(governClient)(input);
-  };
-}
-
-export function createSessionAwareGovernDownloadExcelReportHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createGovernDownloadExcelReportHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const governClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).governClient;
-    return createGovernDownloadExcelReportHandler(governClient)(input);
-  };
-}
-
-export function createSessionAwareGovernCreateTaskMultipartFileHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createGovernCreateTaskMultipartFileHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const governClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).governClient;
-    return createGovernCreateTaskMultipartFileHandler(governClient)(input);
-  };
-}
-
-export function createSessionAwareGovernGetTaskStatusHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createGovernGetTaskStatusHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const governClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).governClient;
-    return createGovernGetTaskStatusHandler(governClient)(input);
-  };
-}
-
-export function createSessionAwareGovernNotifyTaskMultipartFileHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createGovernNotifyTaskMultipartFileHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const governClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).governClient;
-    return createGovernNotifyTaskMultipartFileHandler(governClient)(input);
-  };
-}
-
-export function createSessionAwareGovernUploadTaskMultipartFileHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createGovernUploadTaskMultipartFileHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const governClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).governClient;
-    return createGovernUploadTaskMultipartFileHandler(governClient)(input);
-  };
-}
-
-export function createSessionAwareGovernStopTaskHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createGovernStopTaskHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const governClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).governClient;
-    return createGovernStopTaskHandler(governClient)(input);
-  };
-}
-
-export function createSessionAwareGovernDeleteTaskHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createGovernDeleteTaskHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const governClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).governClient;
-    return createGovernDeleteTaskHandler(governClient)(input);
-  };
-}
-
-export function createSessionAwareGovernGetOpenSourceSummaryHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createGovernGetOpenSourceSummaryHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const governClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).governClient;
-    return createGovernGetOpenSourceSummaryHandler(governClient)(input);
-  };
-}
-
-export function createSessionAwareGovernGetOsiStatisticsHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createGovernGetOsiStatisticsHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const governClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).governClient;
-    return createGovernGetOsiStatisticsHandler(governClient)(input);
-  };
-}
-
-export function createSessionAwareGovernGetOsiItemDetailHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createGovernGetOsiItemDetailHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const governClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).governClient;
-    return createGovernGetOsiItemDetailHandler(governClient)(input);
-  };
-}
-
-export function createSessionAwareGovernListOsiItemNamesHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createGovernListOsiItemNamesHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const governClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).governClient;
-    return createGovernListOsiItemNamesHandler(governClient)(input);
-  };
-}
-
-export function createSessionAwareGovernListOsiItemVersionsHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createGovernListOsiItemVersionsHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const governClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).governClient;
-    return createGovernListOsiItemVersionsHandler(governClient)(input);
-  };
-}
-
-export function createSessionAwareGovernListOsiItemVulnsHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createGovernListOsiItemVulnsHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const governClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).governClient;
-    return createGovernListOsiItemVulnsHandler(governClient)(input);
-  };
-}
-
-export function createSessionAwareGovernListOsiItemDependencyHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createGovernListOsiItemDependencyHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const governClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).governClient;
-    return createGovernListOsiItemDependencyHandler(governClient)(input);
-  };
-}
-
-export function createSessionAwareGovernGetInfoLeakSummaryHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createGovernGetInfoLeakSummaryHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const governClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).governClient;
-    return createGovernGetInfoLeakSummaryHandler(governClient)(input);
-  };
-}
-
-export function createSessionAwareGovernGetSecCompileSummaryHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createGovernGetSecCompileSummaryHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const governClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).governClient;
-    return createGovernGetSecCompileSummaryHandler(governClient)(input);
-  };
-}
-
-export function createSessionAwareGovernGetSecConfigSummaryHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createGovernGetSecConfigSummaryHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const governClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).governClient;
-    return createGovernGetSecConfigSummaryHandler(governClient)(input);
-  };
-}
-
-export function createSessionAwareGovernListSbcVulnMapHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createGovernListSbcVulnMapHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const governClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).governClient;
-    return createGovernListSbcVulnMapHandler(governClient)(input);
-  };
-}
-
-export function createSessionAwareGovernGetVulnInfoHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createGovernGetVulnInfoHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const governClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).governClient;
-    return createGovernGetVulnInfoHandler(governClient)(input);
-  };
-}
-
-export function createSessionAwareGovernGetUserInfoHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createGovernGetUserInfoHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const governClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).governClient;
-    return createGovernGetUserInfoHandler(governClient)(input);
-  };
-}
-
-export function createSessionAwareGovernGetOpenSourceReportHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createGovernGetOpenSourceReportHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const governClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).governClient;
-    return createGovernGetOpenSourceReportHandler(governClient)(input);
-  };
-}
-
-export function createSessionAwareGovernGetQuotaInfoHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createGovernGetQuotaInfoHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const governClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).governClient;
-    return createGovernGetQuotaInfoHandler(governClient)(input);
-  };
-}
-
-export function createSessionAwareInspectorListDomainsHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createInspectorListDomainsHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const inspectorClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).inspectorClient;
-    return createInspectorListDomainsHandler(inspectorClient)(input);
-  };
-}
-
-export function createSessionAwareInspectorCreateDomainHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createInspectorCreateDomainHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const inspectorClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).inspectorClient;
-    return createInspectorCreateDomainHandler(inspectorClient)(input);
-  };
-}
-
-export function createSessionAwareInspectorGetTaskHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createInspectorGetTaskHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const inspectorClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).inspectorClient;
-    return createInspectorGetTaskHandler(inspectorClient)(input);
-  };
-}
-
-export function createSessionAwareInspectorListTaskHistoriesHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createInspectorListTaskHistoriesHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const inspectorClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).inspectorClient;
-    return createInspectorListTaskHistoriesHandler(inspectorClient)(input);
-  };
-}
-
-export function createSessionAwareInspectorListResultsHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createInspectorListResultsHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const inspectorClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).inspectorClient;
-    return createInspectorListResultsHandler(inspectorClient)(input);
-  };
-}
-
-export function createSessionAwareInspectorListPortsHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createInspectorListPortsHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const inspectorClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).inspectorClient;
-    return createInspectorListPortsHandler(inspectorClient)(input);
-  };
-}
-
-export function createSessionAwareInspectorListBusinessRisksHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createInspectorListBusinessRisksHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const inspectorClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).inspectorClient;
-    return createInspectorListBusinessRisksHandler(inspectorClient)(input);
-  };
-}
-
-export function createSessionAwareInspectorGetReportStatusHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createInspectorGetReportStatusHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const inspectorClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).inspectorClient;
-    return createInspectorGetReportStatusHandler(inspectorClient)(input);
-  };
-}
-
-export function createSessionAwarePerfTestListProjectsHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createPerfTestListProjectsHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const perfTestClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).perfTestClient;
-    return createPerfTestListProjectsHandler(perfTestClient)(input);
-  };
-}
-
-export function createSessionAwarePerfTestGetProjectHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createPerfTestGetProjectHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const perfTestClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).perfTestClient;
-    return createPerfTestGetProjectHandler(perfTestClient)(input);
-  };
-}
-
-export function createSessionAwarePerfTestListTasksHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createPerfTestListTasksHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const perfTestClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).perfTestClient;
-    return createPerfTestListTasksHandler(perfTestClient)(input);
-  };
-}
-
-export function createSessionAwarePerfTestGetTaskHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createPerfTestGetTaskHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const perfTestClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).perfTestClient;
-    return createPerfTestGetTaskHandler(perfTestClient)(input);
-  };
-}
-
-export function createSessionAwarePerfTestListVariablesHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createPerfTestListVariablesHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const perfTestClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).perfTestClient;
-    return createPerfTestListVariablesHandler(perfTestClient)(input);
-  };
-}
-
-export function createSessionAwarePerfTestListTaskCasesHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createPerfTestListTaskCasesHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const perfTestClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).perfTestClient;
-    return createPerfTestListTaskCasesHandler(perfTestClient)(input);
-  };
-}
-
-export function createSessionAwarePerfTestListLatestRunsHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createPerfTestListLatestRunsHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const perfTestClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).perfTestClient;
-    return createPerfTestListLatestRunsHandler(perfTestClient)(input);
-  };
-}
-
-export function createSessionAwarePerfTestListOfflineReportsHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createPerfTestListOfflineReportsHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const perfTestClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).perfTestClient;
-    return createPerfTestListOfflineReportsHandler(perfTestClient)(input);
-  };
-}
-
-export function createSessionAwarePerfTestGetReportHandler(
-  store: SessionCredentialStore,
-  injectedClient?: Parameters<typeof createPerfTestGetReportHandler>[0]
-) {
-  return async (input: unknown, extra: SessionToolExtra) => {
-    const perfTestClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).perfTestClient;
-    return createPerfTestGetReportHandler(perfTestClient)(input);
   };
 }
 
@@ -2084,10 +2174,7 @@ export function createServer(options: CreateServerOptions) {
           testPlanBaseUrl: options.config.testPlanBaseUrl,
           deployBaseUrl: options.config.deployBaseUrl,
           buildBaseUrl: options.config.buildBaseUrl,
-          artifactBaseUrl: options.config.artifactBaseUrl,
-          governBaseUrl: options.config.governBaseUrl,
-          inspectorBaseUrl: options.config.inspectorBaseUrl,
-          perfTestBaseUrl: options.config.perfTestBaseUrl
+          artifactBaseUrl: options.config.artifactBaseUrl
         })
       : undefined;
 
@@ -2096,23 +2183,9 @@ export function createServer(options: CreateServerOptions) {
       "auth_configure_session",
       {
         title: "auth_configure_session",
-        description: "Configure Huawei Cloud credentials for the current MCP session",
-        inputSchema: {
-          access_key: z.string().min(1),
-          secret_key: z.string().min(1),
-          region: z.string().min(1),
-          req_base_url: z.string().url(),
-          repo_base_url: z.string().url(),
-          pipeline_base_url: z.string().url(),
-          check_base_url: z.string().url(),
-          testplan_base_url: z.string().url(),
-          deploy_base_url: z.string().url(),
-          build_base_url: z.string().url(),
-          artifact_base_url: z.string().url(),
-          govern_base_url: z.string().url().optional(),
-          inspector_base_url: z.string().url().optional(),
-          perftest_base_url: z.string().url().optional()
-        }
+        description:
+          "Configure Huawei Cloud credentials for the current MCP session. Standard CodeArts regions only need access_key, secret_key, and region; *_base_url fields are optional overrides.",
+        inputSchema: configureSessionInputSchema
       },
       createConfigureSessionHandler(options.sessionStore)
     );
@@ -2309,696 +2382,6 @@ export function createServer(options: CreateServerOptions) {
       continue;
     }
 
-    if (toolName === "govern_alter_quota_info") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "Alter CodeArts Governance quota info",
-          inputSchema: governAlterQuotaInfoInput
-        },
-        options.mode === "http"
-          ? createSessionAwareGovernAlterQuotaInfoHandler(options.sessionStore)
-          : createGovernAlterQuotaInfoHandler(stdioClients!.governClient)
-      );
-      continue;
-    }
-
-    if (toolName === "govern_create_task") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "Create CodeArts Governance task",
-          inputSchema: governCreateTaskInput
-        },
-        options.mode === "http"
-          ? createSessionAwareGovernCreateTaskHandler(options.sessionStore)
-          : createGovernCreateTaskHandler(stdioClients!.governClient)
-      );
-      continue;
-    }
-
-    if (toolName === "govern_create_pdf_report") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "Create CodeArts Governance pdf report",
-          inputSchema: governCreatePdfReportInput
-        },
-        options.mode === "http"
-          ? createSessionAwareGovernCreatePdfReportHandler(options.sessionStore)
-          : createGovernCreatePdfReportHandler(stdioClients!.governClient)
-      );
-      continue;
-    }
-
-    if (toolName === "govern_get_pdf_report_status") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "Get CodeArts Governance pdf report status",
-          inputSchema: governGetPdfReportStatusInput
-        },
-        options.mode === "http"
-          ? createSessionAwareGovernGetPdfReportStatusHandler(options.sessionStore)
-          : createGovernGetPdfReportStatusHandler(stdioClients!.governClient)
-      );
-      continue;
-    }
-
-    if (toolName === "govern_download_pdf_report") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "Download CodeArts Governance pdf report",
-          inputSchema: governDownloadPdfReportInput
-        },
-        options.mode === "http"
-          ? createSessionAwareGovernDownloadPdfReportHandler(options.sessionStore)
-          : createGovernDownloadPdfReportHandler(stdioClients!.governClient)
-      );
-      continue;
-    }
-
-    if (toolName === "govern_create_excel_report") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "Create CodeArts Governance excel report",
-          inputSchema: governCreateExcelReportInput
-        },
-        options.mode === "http"
-          ? createSessionAwareGovernCreateExcelReportHandler(options.sessionStore)
-          : createGovernCreateExcelReportHandler(stdioClients!.governClient)
-      );
-      continue;
-    }
-
-    if (toolName === "govern_get_excel_report_status") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "Get CodeArts Governance excel report status",
-          inputSchema: governGetExcelReportStatusInput
-        },
-        options.mode === "http"
-          ? createSessionAwareGovernGetExcelReportStatusHandler(options.sessionStore)
-          : createGovernGetExcelReportStatusHandler(stdioClients!.governClient)
-      );
-      continue;
-    }
-
-    if (toolName === "govern_download_excel_report") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "Download CodeArts Governance excel report",
-          inputSchema: governDownloadExcelReportInput
-        },
-        options.mode === "http"
-          ? createSessionAwareGovernDownloadExcelReportHandler(options.sessionStore)
-          : createGovernDownloadExcelReportHandler(stdioClients!.governClient)
-      );
-      continue;
-    }
-
-    if (toolName === "govern_create_task_multipart_file") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "Create CodeArts Governance multipart upload task",
-          inputSchema: governCreateTaskMultipartFileInput
-        },
-        options.mode === "http"
-          ? createSessionAwareGovernCreateTaskMultipartFileHandler(options.sessionStore)
-          : createGovernCreateTaskMultipartFileHandler(stdioClients!.governClient)
-      );
-      continue;
-    }
-
-    if (toolName === "govern_get_task_status") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "Get CodeArts Governance task status",
-          inputSchema: governGetTaskStatusInput
-        },
-        options.mode === "http"
-          ? createSessionAwareGovernGetTaskStatusHandler(options.sessionStore)
-          : createGovernGetTaskStatusHandler(stdioClients!.governClient)
-      );
-      continue;
-    }
-
-    if (toolName === "govern_notify_task_multipart_file") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "Notify CodeArts Governance multipart upload completion",
-          inputSchema: governNotifyTaskMultipartFileInput
-        },
-        options.mode === "http"
-          ? createSessionAwareGovernNotifyTaskMultipartFileHandler(options.sessionStore)
-          : createGovernNotifyTaskMultipartFileHandler(stdioClients!.governClient)
-      );
-      continue;
-    }
-
-    if (toolName === "govern_upload_task_multipart_file") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "Upload CodeArts Governance multipart file chunk",
-          inputSchema: governUploadTaskMultipartFileInput
-        },
-        options.mode === "http"
-          ? createSessionAwareGovernUploadTaskMultipartFileHandler(options.sessionStore)
-          : createGovernUploadTaskMultipartFileHandler(stdioClients!.governClient)
-      );
-      continue;
-    }
-
-    if (toolName === "govern_stop_task") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "Stop CodeArts Governance task",
-          inputSchema: governStopTaskInput
-        },
-        options.mode === "http"
-          ? createSessionAwareGovernStopTaskHandler(options.sessionStore)
-          : createGovernStopTaskHandler(stdioClients!.governClient)
-      );
-      continue;
-    }
-
-    if (toolName === "govern_delete_task") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "Delete CodeArts Governance task",
-          inputSchema: governDeleteTaskInput
-        },
-        options.mode === "http"
-          ? createSessionAwareGovernDeleteTaskHandler(options.sessionStore)
-          : createGovernDeleteTaskHandler(stdioClients!.governClient)
-      );
-      continue;
-    }
-
-    if (toolName === "govern_get_open_source_summary") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "Get CodeArts Governance open source summary",
-          inputSchema: governGetOpenSourceSummaryInput
-        },
-        options.mode === "http"
-          ? createSessionAwareGovernGetOpenSourceSummaryHandler(options.sessionStore)
-          : createGovernGetOpenSourceSummaryHandler(stdioClients!.governClient)
-      );
-      continue;
-    }
-
-    if (toolName === "govern_get_osi_statistics") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "Get CodeArts Governance OSI statistics",
-          inputSchema: governGetOsiStatisticsInput
-        },
-        options.mode === "http"
-          ? createSessionAwareGovernGetOsiStatisticsHandler(options.sessionStore)
-          : createGovernGetOsiStatisticsHandler(stdioClients!.governClient)
-      );
-      continue;
-    }
-
-    if (toolName === "govern_get_osi_item_detail") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "Get CodeArts Governance OSI item detail",
-          inputSchema: governGetOsiItemDetailInput
-        },
-        options.mode === "http"
-          ? createSessionAwareGovernGetOsiItemDetailHandler(options.sessionStore)
-          : createGovernGetOsiItemDetailHandler(stdioClients!.governClient)
-      );
-      continue;
-    }
-
-    if (toolName === "govern_list_osi_item_names") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "List CodeArts Governance OSI item names",
-          inputSchema: governListOsiItemNamesInput
-        },
-        options.mode === "http"
-          ? createSessionAwareGovernListOsiItemNamesHandler(options.sessionStore)
-          : createGovernListOsiItemNamesHandler(stdioClients!.governClient)
-      );
-      continue;
-    }
-
-    if (toolName === "govern_list_osi_item_versions") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "List CodeArts Governance OSI item versions",
-          inputSchema: governListOsiItemVersionsInput
-        },
-        options.mode === "http"
-          ? createSessionAwareGovernListOsiItemVersionsHandler(options.sessionStore)
-          : createGovernListOsiItemVersionsHandler(stdioClients!.governClient)
-      );
-      continue;
-    }
-
-    if (toolName === "govern_list_osi_item_vulns") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "List CodeArts Governance OSI item vulns",
-          inputSchema: governListOsiItemVulnsInput
-        },
-        options.mode === "http"
-          ? createSessionAwareGovernListOsiItemVulnsHandler(options.sessionStore)
-          : createGovernListOsiItemVulnsHandler(stdioClients!.governClient)
-      );
-      continue;
-    }
-
-    if (toolName === "govern_list_osi_item_dependency") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "List CodeArts Governance OSI item dependency",
-          inputSchema: governListOsiItemDependencyInput
-        },
-        options.mode === "http"
-          ? createSessionAwareGovernListOsiItemDependencyHandler(options.sessionStore)
-          : createGovernListOsiItemDependencyHandler(stdioClients!.governClient)
-      );
-      continue;
-    }
-
-    if (toolName === "govern_get_info_leak_summary") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "Get CodeArts Governance info leak summary",
-          inputSchema: governGetInfoLeakSummaryInput
-        },
-        options.mode === "http"
-          ? createSessionAwareGovernGetInfoLeakSummaryHandler(options.sessionStore)
-          : createGovernGetInfoLeakSummaryHandler(stdioClients!.governClient)
-      );
-      continue;
-    }
-
-    if (toolName === "govern_get_sec_compile_summary") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "Get CodeArts Governance sec compile summary",
-          inputSchema: governGetSecCompileSummaryInput
-        },
-        options.mode === "http"
-          ? createSessionAwareGovernGetSecCompileSummaryHandler(options.sessionStore)
-          : createGovernGetSecCompileSummaryHandler(stdioClients!.governClient)
-      );
-      continue;
-    }
-
-    if (toolName === "govern_get_sec_config_summary") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "Get CodeArts Governance sec config summary",
-          inputSchema: governGetSecConfigSummaryInput
-        },
-        options.mode === "http"
-          ? createSessionAwareGovernGetSecConfigSummaryHandler(options.sessionStore)
-          : createGovernGetSecConfigSummaryHandler(stdioClients!.governClient)
-      );
-      continue;
-    }
-
-    if (toolName === "govern_list_sbc_vuln_map") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "List CodeArts Governance sbc vuln map",
-          inputSchema: governListSbcVulnMapInput
-        },
-        options.mode === "http"
-          ? createSessionAwareGovernListSbcVulnMapHandler(options.sessionStore)
-          : createGovernListSbcVulnMapHandler(stdioClients!.governClient)
-      );
-      continue;
-    }
-
-    if (toolName === "govern_get_vuln_info") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "Get CodeArts Governance vuln info",
-          inputSchema: governGetVulnInfoInput
-        },
-        options.mode === "http"
-          ? createSessionAwareGovernGetVulnInfoHandler(options.sessionStore)
-          : createGovernGetVulnInfoHandler(stdioClients!.governClient)
-      );
-      continue;
-    }
-
-    if (toolName === "govern_get_user_info") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "Get CodeArts Governance user info",
-          inputSchema: governGetUserInfoInput
-        },
-        options.mode === "http"
-          ? createSessionAwareGovernGetUserInfoHandler(options.sessionStore)
-          : createGovernGetUserInfoHandler(stdioClients!.governClient)
-      );
-      continue;
-    }
-
-    if (toolName === "govern_get_open_source_report") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "Get CodeArts Governance open source report",
-          inputSchema: governGetOpenSourceReportInput
-        },
-        options.mode === "http"
-          ? createSessionAwareGovernGetOpenSourceReportHandler(options.sessionStore)
-          : createGovernGetOpenSourceReportHandler(stdioClients!.governClient)
-      );
-      continue;
-    }
-
-    if (toolName === "govern_get_quota_info") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "Get CodeArts Governance quota info",
-          inputSchema: governGetQuotaInfoInput
-        },
-        options.mode === "http"
-          ? createSessionAwareGovernGetQuotaInfoHandler(options.sessionStore)
-          : createGovernGetQuotaInfoHandler(stdioClients!.governClient)
-      );
-      continue;
-    }
-
-    if (toolName === "inspector_list_domains") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "List CodeArts Inspector domains",
-          inputSchema: inspectorListDomainsInput
-        },
-        options.mode === "http"
-          ? createSessionAwareInspectorListDomainsHandler(options.sessionStore)
-          : createInspectorListDomainsHandler(stdioClients!.inspectorClient)
-      );
-      continue;
-    }
-
-    if (toolName === "inspector_create_domain") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "Create CodeArts Inspector domain",
-          inputSchema: inspectorCreateDomainInput
-        },
-        options.mode === "http"
-          ? createSessionAwareInspectorCreateDomainHandler(options.sessionStore)
-          : createInspectorCreateDomainHandler(stdioClients!.inspectorClient)
-      );
-      continue;
-    }
-
-    if (toolName === "inspector_get_task") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "Get CodeArts Inspector task detail",
-          inputSchema: inspectorGetTaskInput
-        },
-        options.mode === "http"
-          ? createSessionAwareInspectorGetTaskHandler(options.sessionStore)
-          : createInspectorGetTaskHandler(stdioClients!.inspectorClient)
-      );
-      continue;
-    }
-
-    if (toolName === "inspector_list_task_histories") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "List CodeArts Inspector task histories",
-          inputSchema: inspectorListTaskHistoriesInput
-        },
-        options.mode === "http"
-          ? createSessionAwareInspectorListTaskHistoriesHandler(options.sessionStore)
-          : createInspectorListTaskHistoriesHandler(stdioClients!.inspectorClient)
-      );
-      continue;
-    }
-
-    if (toolName === "inspector_list_results") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "List CodeArts Inspector vulnerabilities",
-          inputSchema: inspectorListResultsInput
-        },
-        options.mode === "http"
-          ? createSessionAwareInspectorListResultsHandler(options.sessionStore)
-          : createInspectorListResultsHandler(stdioClients!.inspectorClient)
-      );
-      continue;
-    }
-
-    if (toolName === "inspector_list_ports") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "List CodeArts Inspector exposed ports",
-          inputSchema: inspectorListPortsInput
-        },
-        options.mode === "http"
-          ? createSessionAwareInspectorListPortsHandler(options.sessionStore)
-          : createInspectorListPortsHandler(stdioClients!.inspectorClient)
-      );
-      continue;
-    }
-
-    if (toolName === "inspector_list_business_risks") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "List CodeArts Inspector business risks",
-          inputSchema: inspectorListBusinessRisksInput
-        },
-        options.mode === "http"
-          ? createSessionAwareInspectorListBusinessRisksHandler(options.sessionStore)
-          : createInspectorListBusinessRisksHandler(stdioClients!.inspectorClient)
-      );
-      continue;
-    }
-
-    if (toolName === "inspector_get_report_status") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "Get CodeArts Inspector report status",
-          inputSchema: inspectorGetReportStatusInput
-        },
-        options.mode === "http"
-          ? createSessionAwareInspectorGetReportStatusHandler(options.sessionStore)
-          : createInspectorGetReportStatusHandler(stdioClients!.inspectorClient)
-      );
-      continue;
-    }
-
-    if (toolName === "perftest_list_projects") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "List CodeArts PerfTest projects",
-          inputSchema: perftestListProjectsInput
-        },
-        options.mode === "http"
-          ? createSessionAwarePerfTestListProjectsHandler(options.sessionStore)
-          : createPerfTestListProjectsHandler(stdioClients!.perfTestClient)
-      );
-      continue;
-    }
-
-    if (toolName === "perftest_get_project") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "Get CodeArts PerfTest project detail",
-          inputSchema: perftestGetProjectInput
-        },
-        options.mode === "http"
-          ? createSessionAwarePerfTestGetProjectHandler(options.sessionStore)
-          : createPerfTestGetProjectHandler(stdioClients!.perfTestClient)
-      );
-      continue;
-    }
-
-    if (toolName === "perftest_list_tasks") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "List CodeArts PerfTest tasks",
-          inputSchema: perftestListTasksInput
-        },
-        options.mode === "http"
-          ? createSessionAwarePerfTestListTasksHandler(options.sessionStore)
-          : createPerfTestListTasksHandler(stdioClients!.perfTestClient)
-      );
-      continue;
-    }
-
-    if (toolName === "perftest_get_task") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "Get CodeArts PerfTest task detail",
-          inputSchema: perftestGetTaskInput
-        },
-        options.mode === "http"
-          ? createSessionAwarePerfTestGetTaskHandler(options.sessionStore)
-          : createPerfTestGetTaskHandler(stdioClients!.perfTestClient)
-      );
-      continue;
-    }
-
-    if (toolName === "perftest_list_variables") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "List CodeArts PerfTest variables",
-          inputSchema: perftestListVariablesInput
-        },
-        options.mode === "http"
-          ? createSessionAwarePerfTestListVariablesHandler(options.sessionStore)
-          : createPerfTestListVariablesHandler(stdioClients!.perfTestClient)
-      );
-      continue;
-    }
-
-    if (toolName === "perftest_list_task_cases") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "List CodeArts PerfTest task cases",
-          inputSchema: perftestListTaskCasesInput
-        },
-        options.mode === "http"
-          ? createSessionAwarePerfTestListTaskCasesHandler(options.sessionStore)
-          : createPerfTestListTaskCasesHandler(stdioClients!.perfTestClient)
-      );
-      continue;
-    }
-
-    if (toolName === "perftest_list_latest_runs") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "List CodeArts PerfTest latest runs",
-          inputSchema: perftestListLatestRunsInput
-        },
-        options.mode === "http"
-          ? createSessionAwarePerfTestListLatestRunsHandler(options.sessionStore)
-          : createPerfTestListLatestRunsHandler(stdioClients!.perfTestClient)
-      );
-      continue;
-    }
-
-    if (toolName === "perftest_list_offline_reports") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "List CodeArts PerfTest offline reports",
-          inputSchema: perftestListOfflineReportsInput
-        },
-        options.mode === "http"
-          ? createSessionAwarePerfTestListOfflineReportsHandler(options.sessionStore)
-          : createPerfTestListOfflineReportsHandler(stdioClients!.perfTestClient)
-      );
-      continue;
-    }
-
-    if (toolName === "perftest_get_report") {
-      server.registerTool(
-        toolName,
-        {
-          title: toolName,
-          description: "Get CodeArts PerfTest report detail",
-          inputSchema: perftestGetReportInput
-        },
-        options.mode === "http"
-          ? createSessionAwarePerfTestGetReportHandler(options.sessionStore)
-          : createPerfTestGetReportHandler(stdioClients!.perfTestClient)
-      );
-      continue;
-    }
-
     if (toolName === "build_list_jobs") {
       server.registerTool(
         toolName,
@@ -3119,6 +2502,81 @@ export function createServer(options: CreateServerOptions) {
       continue;
     }
 
+    if (toolName === "build_append_job_step") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "Append a new step to a CodeArts Build job",
+          inputSchema: buildAppendJobStepInput
+        },
+        options.mode === "http"
+          ? createSessionAwareBuildAppendJobStepHandler(options.sessionStore)
+          : createBuildAppendJobStepHandler(stdioClients!.buildClient)
+      );
+      continue;
+    }
+
+    if (toolName === "build_append_release_upload_step") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "Append the official release repository upload step to a CodeArts Build job",
+          inputSchema: buildAppendReleaseUploadStepInput
+        },
+        options.mode === "http"
+          ? createSessionAwareBuildAppendReleaseUploadStepHandler(options.sessionStore)
+          : createBuildAppendReleaseUploadStepHandler(stdioClients!.buildClient)
+      );
+      continue;
+    }
+
+    if (toolName === "build_configure_release_upload_step") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "Configure an existing release repository upload step in a CodeArts Build job",
+          inputSchema: buildConfigureReleaseUploadStepInput
+        },
+        options.mode === "http"
+          ? createSessionAwareBuildConfigureReleaseUploadStepHandler(options.sessionStore)
+          : createBuildConfigureReleaseUploadStepHandler(stdioClients!.buildClient)
+      );
+      continue;
+    }
+
+    if (toolName === "build_prepare_node_runtime_bundle") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "Prepare a Node runtime bundle by appending packaging commands to a build step",
+          inputSchema: buildPrepareNodeRuntimeBundleInput
+        },
+        options.mode === "http"
+          ? createSessionAwareBuildPrepareNodeRuntimeBundleHandler(options.sessionStore)
+          : createBuildPrepareNodeRuntimeBundleHandler(stdioClients!.buildClient)
+      );
+      continue;
+    }
+
+    if (toolName === "build_prepare_deployable_node_app") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "Prepare a single-file deployable Node app by appending bundling commands to a build step",
+          inputSchema: buildPrepareDeployableNodeAppInput
+        },
+        options.mode === "http"
+          ? createSessionAwareBuildPrepareDeployableNodeAppHandler(options.sessionStore)
+          : createBuildPrepareDeployableNodeAppHandler(stdioClients!.buildClient)
+      );
+      continue;
+    }
+
     if (toolName === "build_stop_job") {
       server.registerTool(
         toolName,
@@ -3130,6 +2588,21 @@ export function createServer(options: CreateServerOptions) {
         options.mode === "http"
           ? createSessionAwareBuildStopJobHandler(options.sessionStore)
           : createBuildStopJobHandler(stdioClients!.buildClient)
+      );
+      continue;
+    }
+
+    if (toolName === "build_update_job_step") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "Update CodeArts Build job step image or command",
+          inputSchema: buildUpdateJobStepInput
+        },
+        options.mode === "http"
+          ? createSessionAwareBuildUpdateJobStepHandler(options.sessionStore)
+          : createBuildUpdateJobStepHandler(stdioClients!.buildClient)
       );
       continue;
     }
@@ -3374,6 +2847,441 @@ export function createServer(options: CreateServerOptions) {
       continue;
     }
 
+    if (toolName === "deploy_list_v4_applications") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "List CodeArts Deploy v4 applications",
+          inputSchema: deployListV4ApplicationsInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployListV4ApplicationsHandler(options.sessionStore)
+          : createDeployListV4ApplicationsHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_list_v4_clusters") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "List CodeArts Deploy v4 clusters",
+          inputSchema: deployListV4ClustersInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployListV4ClustersHandler(options.sessionStore)
+          : createDeployListV4ClustersHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_get_v4_cluster_count") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "Get CodeArts Deploy v4 cluster counts",
+          inputSchema: deployGetV4ClusterCountInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployGetV4ClusterCountHandler(options.sessionStore)
+          : createDeployGetV4ClusterCountHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_get_v4_cluster") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "Get CodeArts Deploy v4 cluster detail",
+          inputSchema: deployGetV4ClusterInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployGetV4ClusterHandler(options.sessionStore)
+          : createDeployGetV4ClusterHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_delete_v4_cluster_hosts") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "Delete hosts from a CodeArts Deploy v4 cluster",
+          inputSchema: deployDeleteV4ClusterHostsInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployDeleteV4ClusterHostsHandler(options.sessionStore)
+          : createDeployDeleteV4ClusterHostsHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_get_v4_cluster_host") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "Get CodeArts Deploy v4 cluster host detail",
+          inputSchema: deployGetV4ClusterHostInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployGetV4ClusterHostHandler(options.sessionStore)
+          : createDeployGetV4ClusterHostHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_list_v4_cluster_hosts") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "List CodeArts Deploy v4 cluster hosts",
+          inputSchema: deployListV4ClusterHostsInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployListV4ClusterHostsHandler(options.sessionStore)
+          : createDeployListV4ClusterHostsHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_get_v4_environment") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "Get CodeArts Deploy v4 environment detail",
+          inputSchema: deployGetV4EnvironmentInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployGetV4EnvironmentHandler(options.sessionStore)
+          : createDeployGetV4EnvironmentHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_get_v4_environment_resource_detail") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "Get CodeArts Deploy v4 environment resource detail",
+          inputSchema: deployGetV4EnvironmentResourceDetailInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployGetV4EnvironmentResourceDetailHandler(options.sessionStore)
+          : createDeployGetV4EnvironmentResourceDetailHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_list_v4_environment_hosts") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "List CodeArts Deploy v4 environment hosts",
+          inputSchema: deployListV4EnvironmentHostsInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployListV4EnvironmentHostsHandler(options.sessionStore)
+          : createDeployListV4EnvironmentHostsHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_add_v4_environment_hosts") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "Add hosts into a CodeArts Deploy v4 environment",
+          inputSchema: deployAddV4EnvironmentHostsInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployAddV4EnvironmentHostsHandler(options.sessionStore)
+          : createDeployAddV4EnvironmentHostsHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_delete_v4_environment_hosts") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "Delete hosts from a CodeArts Deploy v4 environment",
+          inputSchema: deployDeleteV4EnvironmentHostsInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployDeleteV4EnvironmentHostsHandler(options.sessionStore)
+          : createDeployDeleteV4EnvironmentHostsHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_list_v4_environments") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "List CodeArts Deploy v4 environments",
+          inputSchema: deployListV4EnvironmentsInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployListV4EnvironmentsHandler(options.sessionStore)
+          : createDeployListV4EnvironmentsHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_list_v4_environment_applications") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "List CodeArts Deploy v4 applications under an environment",
+          inputSchema: deployListV4EnvironmentApplicationsInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployListV4EnvironmentApplicationsHandler(options.sessionStore)
+          : createDeployListV4EnvironmentApplicationsHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_list_deployment_units") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "List CodeArts Deploy deployment units for an application",
+          inputSchema: deployListDeploymentUnitsInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployListDeploymentUnitsHandler(options.sessionStore)
+          : createDeployListDeploymentUnitsHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_list_v4_orchestrations") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "List CodeArts Deploy v4 orchestrations",
+          inputSchema: deployListV4OrchestrationsInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployListV4OrchestrationsHandler(options.sessionStore)
+          : createDeployListV4OrchestrationsHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_list_v4_deploy_records") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "List CodeArts Deploy v4 deploy records",
+          inputSchema: deployListV4DeployRecordsInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployListV4DeployRecordsHandler(options.sessionStore)
+          : createDeployListV4DeployRecordsHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_list_app_host_groups") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "List CodeArts Deploy host groups available to an application",
+          inputSchema: deployListAppHostGroupsInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployListAppHostGroupsHandler(options.sessionStore)
+          : createDeployListAppHostGroupsHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_list_host_groups") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "List CodeArts Deploy host groups",
+          inputSchema: deployListHostGroupsInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployListHostGroupsHandler(options.sessionStore)
+          : createDeployListHostGroupsHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_get_host_group") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "Get CodeArts Deploy host group detail",
+          inputSchema: deployGetHostGroupInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployGetHostGroupHandler(options.sessionStore)
+          : createDeployGetHostGroupHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_list_host_group_hosts") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "List CodeArts Deploy hosts in a host group",
+          inputSchema: deployListHostGroupHostsInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployListHostGroupHostsHandler(options.sessionStore)
+          : createDeployListHostGroupHostsHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_list_host_group_environments") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "List CodeArts Deploy environments linked to a host group",
+          inputSchema: deployListHostGroupEnvironmentsInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployListHostGroupEnvironmentsHandler(options.sessionStore)
+          : createDeployListHostGroupEnvironmentsHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_create_environment") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "Create CodeArts Deploy environment",
+          inputSchema: deployCreateEnvironmentInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployCreateEnvironmentHandler(options.sessionStore)
+          : createDeployCreateEnvironmentHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_create_application") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "Create CodeArts Deploy application",
+          inputSchema: deployCreateApplicationInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployCreateApplicationHandler(options.sessionStore)
+          : createDeployCreateApplicationHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_modify_application") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "Modify CodeArts Deploy application",
+          inputSchema: deployModifyApplicationInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployModifyApplicationHandler(options.sessionStore)
+          : createDeployModifyApplicationHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_create_task_by_template") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "Create CodeArts Deploy task from template",
+          inputSchema: deployCreateTaskByTemplateInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployCreateTaskByTemplateHandler(options.sessionStore)
+          : createDeployCreateTaskByTemplateHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_list_environment_hosts") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "List CodeArts Deploy hosts in an environment",
+          inputSchema: deployListEnvironmentHostsInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployListEnvironmentHostsHandler(options.sessionStore)
+          : createDeployListEnvironmentHostsHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_import_hosts_to_environment") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "Import hosts into a CodeArts Deploy environment",
+          inputSchema: deployImportHostsToEnvironmentInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployImportHostsToEnvironmentHandler(options.sessionStore)
+          : createDeployImportHostsToEnvironmentHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_list_environments") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "List CodeArts Deploy application environments",
+          inputSchema: deployListEnvironmentsInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployListEnvironmentsHandler(options.sessionStore)
+          : createDeployListEnvironmentsHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
     if (toolName === "deploy_list_tasks") {
       server.registerTool(
         toolName,
@@ -3415,6 +3323,111 @@ export function createServer(options: CreateServerOptions) {
         options.mode === "http"
           ? createSessionAwareDeployGetTaskHandler(options.sessionStore)
           : createDeployGetTaskHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_get_deploy_source_detail") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "Get CodeArts Deploy task source detail",
+          inputSchema: deployGetDeploySourceDetailInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployGetDeploySourceDetailHandler(options.sessionStore)
+          : createDeployGetDeploySourceDetailHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_get_template_detail") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "Get CodeArts Deploy template detail",
+          inputSchema: deployGetTemplateDetailInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployGetTemplateDetailHandler(options.sessionStore)
+          : createDeployGetTemplateDetailHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_get_last_record_detail") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "Get CodeArts Deploy v4 orchestration last record detail",
+          inputSchema: deployGetLastRecordDetailInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployGetLastRecordDetailHandler(options.sessionStore)
+          : createDeployGetLastRecordDetailHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_get_v4_deploy_record") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "Get CodeArts Deploy v4 deploy record detail",
+          inputSchema: deployGetV4DeployRecordInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployGetV4DeployRecordHandler(options.sessionStore)
+          : createDeployGetV4DeployRecordHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_get_v4_deploy_record_step_detail") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "Get CodeArts Deploy v4 deploy record step detail",
+          inputSchema: deployGetV4DeployRecordStepDetailInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployGetV4DeployRecordStepDetailHandler(options.sessionStore)
+          : createDeployGetV4DeployRecordStepDetailHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_get_v4_deploy_record_step_logs") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "Get CodeArts Deploy v4 deploy record step logs",
+          inputSchema: deployGetV4DeployRecordStepLogsInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployGetV4DeployRecordStepLogsHandler(options.sessionStore)
+          : createDeployGetV4DeployRecordStepLogsHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_cancel_v4_deploy_record") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "Cancel CodeArts Deploy v4 deploy record",
+          inputSchema: deployCancelV4DeployRecordInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployCancelV4DeployRecordHandler(options.sessionStore)
+          : createDeployCancelV4DeployRecordHandler(stdioClients!.deployClient)
       );
       continue;
     }
@@ -3464,6 +3477,51 @@ export function createServer(options: CreateServerOptions) {
       continue;
     }
 
+    if (toolName === "deploy_get_runtime_variables") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "Get CodeArts Deploy runtime variables",
+          inputSchema: deployGetRuntimeVariablesInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployGetRuntimeVariablesHandler(options.sessionStore)
+          : createDeployGetRuntimeVariablesHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_list_variables") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "List CodeArts Deploy variables by scope",
+          inputSchema: deployListVariablesInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployListVariablesHandler(options.sessionStore)
+          : createDeployListVariablesHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_list_variable_history") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "List CodeArts Deploy variable history by scope",
+          inputSchema: deployListVariableHistoryInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployListVariableHistoryHandler(options.sessionStore)
+          : createDeployListVariableHistoryHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
     if (toolName === "deploy_list_histories") {
       server.registerTool(
         toolName,
@@ -3494,6 +3552,51 @@ export function createServer(options: CreateServerOptions) {
       continue;
     }
 
+    if (toolName === "deploy_query_variables") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "Query CodeArts Deploy variables by scope",
+          inputSchema: deployQueryVariablesInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployQueryVariablesHandler(options.sessionStore)
+          : createDeployQueryVariablesHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_pass_v4_manual_check") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "Pass CodeArts Deploy v4 manual check step",
+          inputSchema: deployPassV4ManualCheckInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployPassV4ManualCheckHandler(options.sessionStore)
+          : createDeployPassV4ManualCheckHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_refuse_v4_manual_check") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "Refuse CodeArts Deploy v4 manual check step",
+          inputSchema: deployRefuseV4ManualCheckInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployRefuseV4ManualCheckHandler(options.sessionStore)
+          : createDeployRefuseV4ManualCheckHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
     if (toolName === "deploy_start_app") {
       server.registerTool(
         toolName,
@@ -3505,6 +3608,21 @@ export function createServer(options: CreateServerOptions) {
         options.mode === "http"
           ? createSessionAwareDeployStartAppHandler(options.sessionStore)
           : createDeployStartAppHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_list_system_configs") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "List CodeArts Deploy system config keys",
+          inputSchema: deployListSystemConfigsInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployListSystemConfigsHandler(options.sessionStore)
+          : createDeployListSystemConfigsHandler(stdioClients!.deployClient)
       );
       continue;
     }
@@ -3535,6 +3653,51 @@ export function createServer(options: CreateServerOptions) {
         options.mode === "http"
           ? createSessionAwareDeployRollbackAppHandler(options.sessionStore)
           : createDeployRollbackAppHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_rollback_v4_deploy_record") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "Rollback CodeArts Deploy v4 deploy record",
+          inputSchema: deployRollbackV4DeployRecordInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployRollbackV4DeployRecordHandler(options.sessionStore)
+          : createDeployRollbackV4DeployRecordHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_rerun_v4_deploy_record") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "Rerun CodeArts Deploy v4 deploy record",
+          inputSchema: deployRerunV4DeployRecordInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployRerunV4DeployRecordHandler(options.sessionStore)
+          : createDeployRerunV4DeployRecordHandler(stdioClients!.deployClient)
+      );
+      continue;
+    }
+
+    if (toolName === "deploy_retry_v4_deploy_record") {
+      server.registerTool(
+        toolName,
+        {
+          title: toolName,
+          description: "Retry CodeArts Deploy v4 deploy record",
+          inputSchema: deployRetryV4DeployRecordInput
+        },
+        options.mode === "http"
+          ? createSessionAwareDeployRetryV4DeployRecordHandler(options.sessionStore)
+          : createDeployRetryV4DeployRecordHandler(stdioClients!.deployClient)
       );
       continue;
     }

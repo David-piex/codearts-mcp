@@ -22,9 +22,15 @@ describe("createDeployGetExecutionParamsHandler", () => {
     expect(result.structuredContent.summary).toContain("2 deploy execution params");
     expect(result.structuredContent.items?.[0]).toEqual({
       id: "service_port",
+      taskId: "task-1",
+      recordId: "record-1",
       name: "service_port",
       type: "text",
       value: "8080"
+    });
+    expect(result.structuredContent.scope).toEqual({
+      taskId: "task-1",
+      recordId: "record-1"
     });
   });
 });

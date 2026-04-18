@@ -18,6 +18,50 @@ describe("createPipelineClient", () => {
     expect(result.total).toBe(1);
   });
 
+  it("preserves owner project fields and latest run summary when listing pipelines", async () => {
+    const client = createPipelineClient({
+      post: async () => ({
+        records: [
+          {
+            pipeline_id: "pipe-1",
+            name: "release-main",
+            creator_name: "yao",
+            project_id: "owner-project",
+            project_name: "owner-name",
+            manifest_version: "3.0",
+            latest_run: {
+              pipeline_run_id: "run-1",
+              status: "COMPLETED",
+              run_number: 8,
+              trigger_type: "Manual"
+            }
+          }
+        ],
+        total: 1
+      })
+    } as never);
+
+    const result = await client.listPipelines({ project_id: "p-1", page: 1, page_size: 20 });
+
+    expect(result.records).toEqual([
+      {
+        pipeline_id: "pipe-1",
+        name: "release-main",
+        creator_name: "yao",
+        project_id: "owner-project",
+        project_name: "owner-name",
+        manifest_version: "3.0",
+        latest_run: {
+          pipeline_run_id: "run-1",
+          status: "COMPLETED",
+          run_number: 8,
+          trigger_type: "Manual"
+        }
+      }
+    ]);
+    expect(result.total).toBe(1);
+  });
+
   it("maps pipeline artifacts responses", async () => {
     const client = createPipelineClient({
       get: async () => ({
@@ -102,6 +146,54 @@ describe("createPipelineClient", () => {
       status: "COMPLETED",
       executor_name: "yao",
       trigger_type: "Manual"
+    });
+  });
+
+  it("surfaces provider errors from getPipeline instead of returning an empty pipeline", async () => {
+    const client = createPipelineClient({
+      get: async () => ({
+        error_code: "DEVPIPE.00011136",
+        error_msg: "项目ID和流水线不匹配"
+      })
+    } as never);
+
+    await expect(
+      client.getPipeline({ project_id: "wrong-project", pipeline_id: "pipe-1" })
+    ).rejects.toMatchObject({
+      code: "DEVPIPE.00011136",
+      status: 400
+    });
+  });
+
+  it("maps richer pipeline detail fields", async () => {
+    const client = createPipelineClient({
+      get: async () => ({
+        id: "pipe-1",
+        name: "release-main",
+        description: "Release flow",
+        manifest_version: "3.0",
+        creator_name: "Bob",
+        is_publish: true,
+        project_id: "owner-project",
+        project_name: "owner-name",
+        detail_url: "https://example.com/detail",
+        modify_url: "https://example.com/modify"
+      })
+    } as never);
+
+    const result = await client.getPipeline({ project_id: "p-1", pipeline_id: "pipe-1" });
+
+    expect(result).toEqual({
+      id: "pipe-1",
+      name: "release-main",
+      description: "Release flow",
+      manifest_version: "3.0",
+      creator_name: "Bob",
+      is_publish: true,
+      project_id: "owner-project",
+      project_name: "owner-name",
+      detail_url: "https://example.com/detail",
+      modify_url: "https://example.com/modify"
     });
   });
 

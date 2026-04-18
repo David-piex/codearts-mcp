@@ -2,6 +2,8 @@ import { asItemResult } from "../../../contracts/tool-result.js";
 import { artifactGetFileTreeInput } from "../schemas.js";
 
 export function mapArtifactFileTree(
+  tenantId: string,
+  projectId: string,
   repoName: string,
   rootPath: string,
   nodes: Array<{
@@ -12,6 +14,8 @@ export function mapArtifactFileTree(
 ) {
   return asItemResult(`Loaded artifact file tree for ${repoName}`, {
     id: repoName,
+    tenantId,
+    projectId,
     repoName,
     rootPath,
     nodeCount: nodes.length,
@@ -42,7 +46,13 @@ export function createArtifactGetFileTreeHandler(client: ArtifactGetFileTreeClie
   return async (input: unknown) => {
     const parsed = artifactGetFileTreeInput.parse(input);
     const response = await client.getFileTree(parsed);
-    const result = mapArtifactFileTree(parsed.repo_name, response.root_path, response.nodes);
+    const result = mapArtifactFileTree(
+      parsed.tenant_id,
+      parsed.project_id,
+      parsed.repo_name,
+      response.root_path,
+      response.nodes
+    );
 
     return {
       content: [{ type: "text" as const, text: result.summary }],

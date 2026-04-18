@@ -3,6 +3,7 @@ import { toPageInfo } from "../../../core/pagination/page-info.js";
 import { deployListAppOperationsLogInput } from "../schemas.js";
 
 export function mapDeployAppOperationsLog(
+  appId: string,
   items: Array<{
     operator?: string;
     operator_id?: string;
@@ -18,6 +19,7 @@ export function mapDeployAppOperationsLog(
     `${items.length} deploy app operation logs found`,
     items.map((item) => ({
       id: `${item.operator_id ?? ""}:${item.operation_time ?? ""}:${item.operation_type ?? ""}`,
+      appId,
       operator: item.operator,
       operatorId: item.operator_id,
       operationType: item.operation_type,
@@ -52,6 +54,7 @@ export function createDeployListAppOperationsLogHandler(client: DeployListAppOpe
     const parsed = deployListAppOperationsLogInput.parse(input);
     const response = await client.listAppOperationsLog(parsed);
     const result = mapDeployAppOperationsLog(
+      parsed.app_id,
       response.logs,
       parsed.page_index,
       parsed.page_size,

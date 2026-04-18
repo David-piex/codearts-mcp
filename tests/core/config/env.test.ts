@@ -2,9 +2,8 @@ import { describe, expect, it } from "vitest";
 import { loadEnvConfig } from "../../../src/core/config/env.js";
 
 describe("loadEnvConfig", () => {
-  it("loads required Huawei Cloud settings", () => {
+  it("derives standard CodeArts endpoints from region when product urls are omitted", () => {
     const config = loadEnvConfig({
-      HUAWEICLOUD_BASE_URL: "https://example.com",
       HUAWEICLOUD_REGION: "cn-north-4",
       HUAWEICLOUD_AK: "ak",
       HUAWEICLOUD_SK: "sk",
@@ -12,20 +11,21 @@ describe("loadEnvConfig", () => {
       MCP_SERVER_VERSION: "0.1.0"
     });
 
-    expect(config.baseUrl).toBe("https://example.com");
+    expect(config.baseUrl).toBe("https://codearts.cn-north-4.myhuaweicloud.com");
     expect(config.region).toBe("cn-north-4");
     expect(config.serverName).toBe("codearts-mcp");
-    expect(config.checkBaseUrl).toBe("https://example.com");
-    expect(config.testPlanBaseUrl).toBe("https://example.com");
-    expect(config.deployBaseUrl).toBe("https://example.com");
-    expect(config.buildBaseUrl).toBe("https://example.com");
-    expect(config.artifactBaseUrl).toBe("https://example.com");
-    expect(config.inspectorBaseUrl).toBe("https://vss.myhuaweicloud.com");
+    expect(config.reqBaseUrl).toBe("https://projectman-ext.cn-north-4.myhuaweicloud.com");
+    expect(config.repoBaseUrl).toBe("https://codehub-ext.cn-north-4.myhuaweicloud.com");
+    expect(config.pipelineBaseUrl).toBe("https://cloudpipeline-ext.cn-north-4.myhuaweicloud.com");
+    expect(config.checkBaseUrl).toBe("https://codecheck-ext.cn-north-4.myhuaweicloud.com");
+    expect(config.testPlanBaseUrl).toBe("https://cloudtest-ext.cn-north-4.myhuaweicloud.com");
+    expect(config.deployBaseUrl).toBe("https://codearts-deploy.cn-north-4.myhuaweicloud.com");
+    expect(config.buildBaseUrl).toBe("https://cloudbuild-ext.cn-north-4.myhuaweicloud.com");
+    expect(config.artifactBaseUrl).toBe("https://artifact.cn-north-4.myhuaweicloud.cn");
   });
 
-  it("allows product-specific base urls to override the fallback url", () => {
+  it("allows product-specific base urls to override region defaults", () => {
     const config = loadEnvConfig({
-      HUAWEICLOUD_BASE_URL: "https://example.com",
       HUAWEICLOUD_REGION: "cn-north-4",
       HUAWEICLOUD_AK: "ak",
       HUAWEICLOUD_SK: "sk",
@@ -43,5 +43,7 @@ describe("loadEnvConfig", () => {
     expect(config.deployBaseUrl).toBe("https://deploy.example.com");
     expect(config.buildBaseUrl).toBe("https://build.example.com");
     expect(config.artifactBaseUrl).toBe("https://artifact.example.com");
+    expect(config.reqBaseUrl).toBe("https://projectman-ext.cn-north-4.myhuaweicloud.com");
+    expect(config.repoBaseUrl).toBe("https://codehub-ext.cn-north-4.myhuaweicloud.com");
   });
 });

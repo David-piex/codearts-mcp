@@ -3,9 +3,6 @@ import { buildToolNames } from "../products/build/tools/index.js";
 import { checkToolNames } from "../products/check/tools/index.js";
 import type { AppConfig } from "../core/config/env.js";
 import { deployToolNames } from "../products/deploy/tools/index.js";
-import { governToolNames } from "../products/govern/tools/index.js";
-import { inspectorToolNames } from "../products/inspector/tools/index.js";
-import { perftestToolNames } from "../products/perftest/tools/index.js";
 import { pipelineToolNames } from "../products/pipeline/tools/index.js";
 import { repoToolNames } from "../products/repo/tools/index.js";
 import { reqToolNames } from "../products/req/tools/index.js";
@@ -17,9 +14,6 @@ export function collectToolNames(): string[] {
     ...buildToolNames,
     ...checkToolNames,
     ...deployToolNames,
-    ...governToolNames,
-    ...inspectorToolNames,
-    ...perftestToolNames,
     ...reqToolNames,
     ...repoToolNames,
     ...pipelineToolNames,

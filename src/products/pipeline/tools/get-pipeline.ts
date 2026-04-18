@@ -8,6 +8,10 @@ export function mapPipelineDetail(input: {
   manifest_version?: string;
   creator_name?: string;
   is_publish?: boolean;
+  project_id?: string;
+  project_name?: string;
+  detail_url?: string;
+  modify_url?: string;
 }) {
   return asItemResult(`Loaded pipeline ${input.name}`, {
     id: input.id,
@@ -15,7 +19,11 @@ export function mapPipelineDetail(input: {
     description: input.description,
     manifestVersion: input.manifest_version,
     creatorName: input.creator_name,
-    isPublish: input.is_publish
+    isPublish: input.is_publish,
+    projectId: input.project_id,
+    projectName: input.project_name,
+    detailUrl: input.detail_url,
+    modifyUrl: input.modify_url
   });
 }
 
@@ -27,6 +35,10 @@ type PipelineGetPipelineClient = {
     manifest_version?: string;
     creator_name?: string;
     is_publish?: boolean;
+    project_id?: string;
+    project_name?: string;
+    detail_url?: string;
+    modify_url?: string;
   }>;
 };
 

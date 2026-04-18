@@ -10,6 +10,7 @@ export const reqCreateWorkItemInput = z.object({
   title: z.string().min(1),
   work_item_type: z.string().min(1),
   description: z.string().optional(),
+  priority_id: z.number().int().positive().optional(),
   dry_run: z.boolean().default(true)
 });
 
@@ -20,6 +21,7 @@ export const reqUpdateWorkItemInput = z.object({
   work_item_type: z.string().min(1).optional(),
   description: z.string().optional(),
   status_id: z.number().int().positive().optional(),
+  priority_id: z.number().int().positive().optional(),
   dry_run: z.boolean().default(true)
 });
 

@@ -22,7 +22,13 @@ describe("createArtifactGetDownloadUrlHandler", () => {
 
     expect(result.structuredContent.item).toEqual({
       id: "/com/demo/gateway/1.0.0/gateway-1.0.0.jar",
+      fileId: "/com/demo/gateway/1.0.0/gateway-1.0.0.jar",
+      path: "/com/demo/gateway/1.0.0/gateway-1.0.0.jar",
       name: "gateway-1.0.0.jar",
+      tenantId: "tenant-1",
+      projectId: "project-1",
+      repoName: "libs-release",
+      format: "maven2",
       downloadUrl: "https://download.example.com/gateway.jar",
       expiresAt: "2026-04-16T11:00:00Z"
     });

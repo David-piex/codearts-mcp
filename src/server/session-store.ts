@@ -10,9 +10,6 @@ export type SessionCredentialConfig = {
   deploy_base_url: string;
   build_base_url: string;
   artifact_base_url: string;
-  govern_base_url?: string;
-  inspector_base_url?: string;
-  perftest_base_url?: string;
   updated_at: string;
 };
 

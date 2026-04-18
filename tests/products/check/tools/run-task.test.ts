@@ -1,20 +1,58 @@
 import { describe, expect, it } from "vitest";
-import {
-  mapRunTaskResult,
-  previewRunTask
-} from "../../../../src/products/check/tools/run-task.js";
+import { createCheckRunTaskHandler, mapRunTaskResult } from "../../../../src/products/check/tools/run-task.js";
 
-describe("previewRunTask", () => {
-  it("returns a dry-run summary for running a check task", () => {
-    const result = previewRunTask({
-      task_id: "task-1",
-      dry_run: true
+describe("createCheckRunTaskHandler", () => {
+  it("returns a real dry-run summary for running a check task", async () => {
+    const handler = createCheckRunTaskHandler({
+      getTask: async () => ({
+        task_id: "task-1",
+        task_name: "gateway-check",
+        project_name: "codearts-mcp",
+        repository_name: "gateway",
+        branch_name: "master",
+        language: "ts",
+        status: "READY"
+      }),
+      runTask: async () => {
+        throw new Error("should not execute");
+      }
     });
 
-    expect(result.summary).toContain("Dry run");
-    expect(result.item).toEqual({
+    const result = await handler({
+      task_id: "task-1"
+    });
+
+    expect(result.structuredContent.summary).toContain("Dry run");
+    expect(result.structuredContent.item).toEqual({
       id: "task-1",
+      taskName: "gateway-check",
+      projectName: "codearts-mcp",
+      repositoryName: "gateway",
+      branchName: "master",
+      language: "ts",
+      status: "READY",
       executed: false
+    });
+  });
+
+  it("fails in dry-run mode when the task does not exist", async () => {
+    const handler = createCheckRunTaskHandler({
+      getTask: async () => {
+        const error = new Error("task not found") as Error & { status?: number };
+        error.status = 404;
+        throw error;
+      },
+      runTask: async () => {
+        throw new Error("should not execute");
+      }
+    });
+
+    await expect(
+      handler({
+        task_id: "task-1"
+      })
+    ).rejects.toMatchObject({
+      status: 404
     });
   });
 });

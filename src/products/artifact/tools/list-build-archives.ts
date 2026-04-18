@@ -18,6 +18,7 @@ export function mapArtifactBuildArchives(
     `${items.length} build archives found`,
     items.map((item) => ({
       id: item.id,
+      archiveId: item.id,
       name: item.name,
       size: item.size,
       downloadUrl: item.download_url,

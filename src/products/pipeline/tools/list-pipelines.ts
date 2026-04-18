@@ -3,7 +3,20 @@ import { toPageInfo } from "../../../core/pagination/page-info.js";
 import { pipelineListInput } from "../schemas.js";
 
 export function mapPipelineList(
-  items: Array<{ pipeline_id: string; name: string; creator_name?: string }>,
+  items: Array<{
+    pipeline_id: string;
+    name: string;
+    creator_name?: string;
+    project_id?: string;
+    project_name?: string;
+    manifest_version?: string;
+    latest_run?: {
+      pipeline_run_id?: string;
+      status?: string;
+      run_number?: number;
+      trigger_type?: string;
+    };
+  }>,
   page: number,
   pageSize: number,
   total?: number
@@ -13,7 +26,14 @@ export function mapPipelineList(
     items.map((item) => ({
       id: item.pipeline_id,
       name: item.name,
-      creatorName: item.creator_name
+      creatorName: item.creator_name,
+      projectId: item.project_id,
+      projectName: item.project_name,
+      manifestVersion: item.manifest_version,
+      latestRunId: item.latest_run?.pipeline_run_id,
+      latestRunStatus: item.latest_run?.status,
+      latestRunNumber: item.latest_run?.run_number,
+      latestRunTriggerType: item.latest_run?.trigger_type
     })),
     toPageInfo(page, pageSize, total)
   );
@@ -26,7 +46,20 @@ type PipelineListPipelinesClient = {
     page_size: number;
     keyword?: string;
   }) => Promise<{
-    records: Array<{ pipeline_id: string; name: string; creator_name?: string }>;
+    records: Array<{
+      pipeline_id: string;
+      name: string;
+      creator_name?: string;
+      project_id?: string;
+      project_name?: string;
+      manifest_version?: string;
+      latest_run?: {
+        pipeline_run_id?: string;
+        status?: string;
+        run_number?: number;
+        trigger_type?: string;
+      };
+    }>;
     total?: number;
   }>;
 };

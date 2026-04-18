@@ -5,6 +5,8 @@ export function previewArtifactDeleteFile(input: {
   repo_name: string;
   path: string;
   format: string;
+  file_name?: string;
+  size?: string;
   dry_run: boolean;
 }) {
   const mode = input.dry_run ? "Dry run" : "Executed";
@@ -13,6 +15,8 @@ export function previewArtifactDeleteFile(input: {
     id: input.path,
     repositoryName: input.repo_name,
     format: input.format,
+    fileName: input.file_name,
+    size: input.size,
     executed: !input.dry_run
   });
 }
@@ -33,6 +37,19 @@ export function mapDeletedArtifactFile(input: {
 }
 
 type ArtifactDeleteFileClient = {
+  getFile: (input: {
+    tenant_id: string;
+    project_id: string;
+    repo_name: string;
+    path: string;
+    format: string;
+  }) => Promise<{
+    path: string;
+    name: string;
+    download_uri?: string;
+    size?: string;
+    md5?: string;
+  }>;
   deleteFile: (input: {
     tenant_id: string;
     project_id: string;
@@ -50,7 +67,12 @@ export function createArtifactDeleteFileHandler(client: ArtifactDeleteFileClient
     const parsed = artifactDeleteFileInput.parse(input);
 
     if (parsed.dry_run) {
-      const result = previewArtifactDeleteFile(parsed);
+      const file = await client.getFile(parsed);
+      const result = previewArtifactDeleteFile({
+        ...parsed,
+        file_name: file.name,
+        size: file.size
+      });
 
       return {
         content: [{ type: "text" as const, text: result.summary }],

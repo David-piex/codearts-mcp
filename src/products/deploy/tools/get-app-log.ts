@@ -4,6 +4,7 @@ import { deployGetAppLogInput } from "../schemas.js";
 export function mapDeployAppLog(input: {
   application_id: string;
   record_id: string;
+  step_id?: string;
   status?: string;
   has_more?: boolean;
   text?: string;
@@ -12,7 +13,9 @@ export function mapDeployAppLog(input: {
 }) {
   return asItemResult(`Loaded deploy app log ${input.record_id}`, {
     id: input.record_id,
+    recordId: input.record_id,
     applicationId: input.application_id,
+    stepId: input.step_id,
     status: input.status,
     hasMore: input.has_more,
     text: input.text,
@@ -43,7 +46,10 @@ export function createDeployGetAppLogHandler(client: DeployGetAppLogClient) {
   return async (input: unknown) => {
     const parsed = deployGetAppLogInput.parse(input);
     const response = await client.getAppLog(parsed);
-    const result = mapDeployAppLog(response);
+    const result = mapDeployAppLog({
+      ...response,
+      step_id: parsed.step_id
+    });
 
     return {
       content: [{ type: "text" as const, text: result.summary }],

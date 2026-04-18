@@ -23,6 +23,7 @@ describe("createArtifactListBuildArchivesHandler", () => {
     expect(result.structuredContent.summary).toContain("1 build archives");
     expect(result.structuredContent.items?.[0]).toEqual({
       id: "archive-1",
+      archiveId: "archive-1",
       name: "gateway-1.0.0.zip",
       size: "2048",
       downloadUrl: "https://download.example.com/gateway.zip",

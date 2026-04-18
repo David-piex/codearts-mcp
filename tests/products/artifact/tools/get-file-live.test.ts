@@ -23,7 +23,13 @@ describe("createArtifactGetFileHandler", () => {
 
     expect(result.structuredContent.item).toEqual({
       id: "/com/demo/gateway/1.0.0/gateway-1.0.0.jar",
+      fileId: "/com/demo/gateway/1.0.0/gateway-1.0.0.jar",
+      path: "/com/demo/gateway/1.0.0/gateway-1.0.0.jar",
       name: "gateway-1.0.0.jar",
+      tenantId: "tenant-1",
+      projectId: "project-1",
+      repoName: "libs-release",
+      format: "maven2",
       downloadUri: "https://download.example.com/gateway.jar",
       size: "1024",
       md5: "abc123"

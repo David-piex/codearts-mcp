@@ -2,9 +2,9 @@
 
 这份清单适合在以下场景使用：
 
-- 本地准备接入前
+- 本地接入前
 - 团队共享部署前
-- 服务上线前
+- 服务正式上线前
 - 对外发布给团队使用前
 
 建议逐条核对。
@@ -22,10 +22,8 @@
 - [ ] 已配置 `HUAWEICLOUD_AK`
 - [ ] 已配置 `HUAWEICLOUD_SK`
 - [ ] 已配置 `HUAWEICLOUD_REGION=cn-north-4`
-- [ ] 已配置 `HUAWEICLOUD_REQ_BASE_URL`
-- [ ] 已配置 `HUAWEICLOUD_REPO_BASE_URL`
-- [ ] 已配置 `HUAWEICLOUD_PIPELINE_BASE_URL`
 - [ ] 已配置 `MCP_TRANSPORT=stdio`
+- [ ] 如租户使用非标准路由，才按需配置对应的 `HUAWEICLOUD_*_BASE_URL`
 
 ### 启动与验证
 
@@ -61,7 +59,7 @@
 
 ### 凭证策略
 
-- [ ] 没有把所有团队成员的 `AK/SK` 固定写入服务端
+- [ ] 没有把所有团队成员的 `AK/SK` 固定写进服务端
 - [ ] 已明确共享模式使用 `auth_configure_session`
 - [ ] 已明确共享模式下每个人使用自己的凭证
 - [ ] 已明确如需清理会话可调用 `auth_clear_session`
@@ -69,7 +67,7 @@
 ### 权限与边界
 
 - [ ] 已确认使用者的华为云账号拥有目标产品权限
-- [ ] 已确认最小权限原则
+- [ ] 已确认遵循最小权限原则
 - [ ] 已确认写操作场景优先使用 `dry_run`
 
 ## 四、用户接入前检查
@@ -85,7 +83,9 @@
 ### 首次接入路径
 
 - [ ] 已明确告诉用户本次使用 `stdio` 还是 `http`
-- [ ] 如果是 `http`，已明确告诉用户先执行 `auth_configure_session`
+- [ ] 如使用共享 `http` 模式，已明确告诉用户先执行 `auth_configure_session`
+- [ ] 已明确告诉用户：标准地区通常只需要自己的 `AK/SK + region`
+- [ ] 已明确告诉用户：只有非标准路由才需要手动覆盖 `*_base_url`
 - [ ] 已准备一个可直接验证的 `project_id`
 
 ## 五、业务能力检查
@@ -118,6 +118,13 @@
 - [ ] `pipeline_get_run` 可用
 - [ ] `pipeline_list_templates` 可用
 
+### 部分但可用模块
+
+- [ ] `Build` 已至少验证一个读工具
+- [ ] `Deploy` 已至少验证一个读工具
+- [ ] `Artifact` 已至少验证一个读工具
+- [ ] `TestPlan` 已至少验证一个读工具
+
 ### 写操作
 
 - [ ] `req_create_work_item` 已用 `dry_run` 验证
@@ -140,19 +147,20 @@
 1. `req_list_projects`
 2. `repo_list_repositories`
 3. `pipeline_list_pipelines`
-4. `auth_configure_session`（仅共享模式）
-5. `req_create_work_item` 的 `dry_run`
-6. `pipeline_run_pipeline` 的 `dry_run`
+4. `build_list_jobs`
+5. `auth_configure_session`（仅共享模式）
+6. `req_create_work_item` 的 `dry_run`
+7. `pipeline_run_pipeline` 的 `dry_run`
 
 ## 八、常见上线遗漏项
 
 最常漏掉的是：
 
 - [ ] 忘了构建 `dist`
-- [ ] `/mcp` 只代理了 `POST`，没放开其他请求
-- [ ] base URL 写错产品域名
-- [ ] 团队共享模式下忘了先配会话凭证
-- [ ] 写操作直接真执行，没先 `dry_run`
+- [ ] `/mcp` 只代理了 `POST`，没有放开实际需要的方法/头
+- [ ] 错把标准地区也当成必须手填所有产品 `BASE_URL`
+- [ ] 共享模式下忘了先配置 `auth_configure_session`
+- [ ] 写操作直接真执行，没有先过 `dry_run`
 
 ## 九、建议的发布资料包
 

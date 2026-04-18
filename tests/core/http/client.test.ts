@@ -42,6 +42,32 @@ describe("createHttpClient", () => {
     expect(result).toEqual({ ok: true });
   });
 
+  it("supports delete requests with a json body", async () => {
+    const fetcher = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ ok: true }), {
+        status: 200,
+        headers: { "content-type": "application/json" }
+      })
+    );
+
+    const client = createHttpClient({
+      baseUrl: "https://example.com",
+      authHeaders: async () => ({ Authorization: "SDK-HMAC-SHA256 signed" }),
+      fetcher
+    });
+
+    const result = await client.delete("/v1/projects/p-1/hosts", ["host-1"]);
+
+    expect(result).toEqual({ ok: true });
+    expect(fetcher).toHaveBeenCalledWith(
+      "https://example.com/v1/projects/p-1/hosts",
+      expect.objectContaining({
+        method: "DELETE",
+        body: JSON.stringify(["host-1"])
+      })
+    );
+  });
+
   it("treats successful empty responses as null", async () => {
     const fetcher = vi.fn().mockResolvedValue(
       new Response("", {

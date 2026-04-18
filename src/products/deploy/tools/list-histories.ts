@@ -3,6 +3,8 @@ import { toPageInfo } from "../../../core/pagination/page-info.js";
 import { deployListHistoriesInput } from "../schemas.js";
 
 export function mapDeployHistories(
+  projectId: string,
+  taskId: string,
   items: Array<{ id: string; task_id?: string; operator_name?: string; status?: string }>,
   page: number,
   pageSize: number,
@@ -12,7 +14,8 @@ export function mapDeployHistories(
     `${items.length} deploy histories found`,
     items.map((item) => ({
       id: item.id,
-      taskId: item.task_id,
+      projectId,
+      taskId: item.task_id ?? taskId,
       operatorName: item.operator_name,
       status: item.status
     })),
@@ -36,7 +39,14 @@ export function createDeployListHistoriesHandler(client: DeployListHistoriesClie
   return async (input: unknown) => {
     const parsed = deployListHistoriesInput.parse(input);
     const response = await client.listHistories(parsed);
-    const result = mapDeployHistories(response.histories, parsed.page, parsed.page_size, response.total);
+    const result = mapDeployHistories(
+      parsed.project_id,
+      parsed.task_id,
+      response.histories,
+      parsed.page,
+      parsed.page_size,
+      response.total
+    );
 
     return {
       content: [{ type: "text" as const, text: result.summary }],

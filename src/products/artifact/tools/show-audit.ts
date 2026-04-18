@@ -3,6 +3,10 @@ import { toPageInfo } from "../../../core/pagination/page-info.js";
 import { artifactShowAuditInput } from "../schemas.js";
 
 export function mapArtifactAuditRecords(
+  tenantId: string,
+  projectId: string,
+  module: string,
+  repo: string,
   items: Array<{
     id?: string;
     operation?: string;
@@ -19,6 +23,10 @@ export function mapArtifactAuditRecords(
     `${items.length} artifact audit logs found`,
     items.map((item) => ({
       id: item.id ?? `${item.user_id ?? ""}:${item.op_time ?? ""}:${item.operation ?? ""}`,
+      tenantId,
+      projectId,
+      module,
+      repo,
       operation: item.operation,
       userId: item.user_id,
       userName: item.user_name,
@@ -59,6 +67,10 @@ export function createArtifactShowAuditHandler(client: ArtifactShowAuditClient) 
     const parsed = artifactShowAuditInput.parse(input);
     const response = await client.showAudit(parsed);
     const result = mapArtifactAuditRecords(
+      parsed.tenant_id,
+      parsed.project_id,
+      parsed.module,
+      parsed.repo,
       response.records,
       parsed.page,
       parsed.page_size,

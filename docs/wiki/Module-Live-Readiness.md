@@ -1,54 +1,83 @@
 # Module Live Readiness
 
-当前结论基于 `2026-04-16` 的北京四真实租户验证。
+Current readiness summary based on the latest real Beijing 4 (`cn-north-4`) tenant validation as of `2026-04-19`.
 
-| 模块 | 首次建议工具 | `project_id` 类型 | 当前状态 | 非空前提 |
+| Module | Recommended First Tool | `project_id` Type | Current Live State | Non-empty Prerequisite |
 | --- | --- | --- | --- | --- |
-| Req | `req_list_projects` | 无 | Validated | 已有项目 |
-| Repo | `repo_list_repositories` | CodeArts 项目 UUID | Validated | 已有仓库 |
-| Pipeline | `pipeline_list_pipelines` | CodeArts 项目 UUID | Validated | 已有流水线 |
-| Check | `check_list_tasks` / `check_list_rulesets` | CodeArts 项目 UUID | Validated | 已有检查任务；规则集本身可非空 |
-| TestPlan | `testplan_list_plans` | CodeArts 项目 UUID | Empty-but-validated | 项目已开通 TestPlan |
-| Deploy | `deploy_list_apps` | CodeArts 项目 UUID | Empty-but-validated | 已有部署应用/记录 |
-| Build | `build_list_jobs` | CodeArts 项目 UUID | Empty-but-validated | 已有构建任务/记录 |
-| Artifact | `artifact_list_repositories` | CodeArts 项目 UUID + tenant id | Empty-but-validated | 已有仓库/版本 |
-| Govern | `govern_get_quota_info` | CodeArts 项目 UUID | Empty-but-validated | 已开通治理且已有真实任务 |
-| Inspector | `inspector_list_domains` | CodeArts 项目 UUID | Empty-but-validated | 已配置扫描域名并产生任务 |
-| PerfTest | `perftest_list_projects` | 区域 IAM project id | Empty-but-validated | 已开通 PerfTest 且已有工程/任务 |
+| Req | `req_list_projects` | none | Validated | Existing CodeArts projects; one writable project for full work-item closure |
+| Repo | `repo_list_repositories` | CodeArts project UUID | Validated | Existing repositories |
+| Pipeline | `pipeline_list_pipelines` | CodeArts project UUID | Validated | Existing pipelines |
+| Check | `check_list_tasks` / `check_list_rulesets` | CodeArts project UUID | Validated | Existing check tasks or rulesets |
+| TestPlan | `testplan_list_plans` | CodeArts project UUID | Partial | TestPlan is now confirmed on 2 of 4 scanned projects; richer plan/case/run data is still needed for non-empty validation |
+| Deploy | `deploy_list_apps` | CodeArts project UUID | Partial | Existing deploy apps/tasks/histories |
+| Build | `build_list_jobs` | CodeArts project UUID | Validated | Existing build jobs/records |
+| Artifact | `artifact_list_repositories` | CodeArts project UUID + account `tenant_id` | Partial | Existing artifact repositories/versions/files |
 
-## 已确认非空的模块
+## Non-empty validated modules
 
-- Req
 - Repo
 - Pipeline
 - Check
-
-## 已确认路径正确但当前租户为空/未开通的模块
-
-- TestPlan
-- Deploy
 - Build
+- Req
+
+## Partial modules
+
+- Deploy
+- TestPlan
 - Artifact
-- Govern
-- Inspector
-- PerfTest
 
-## Detail path 补充结论
+## Notable detail-path conclusions
 
-### Govern
+### Req
 
-- `govern_get_task_status`
-- `govern_get_open_source_summary`
-- `govern_get_open_source_report`
+- `req_list_projects`, `req_get_project`, `req_list_iterations`, and `req_list_project_members` now have real tenant validation.
+- `req_list_work_items` and `req_get_work_item` are now confirmed live on the published `/issues` route family.
+- `req_create_work_item` and `req_update_work_item` now have real successful AK/SK samples on writable project `7bd39587c14048aebdadd0f9c22b1402`.
 
-对伪造 task id 会返回 `APIGW.0106` 参数校验错误，说明官方 `sbc/*` 路径已接通。
+### Artifact
 
-### Inspector
+- `artifact_get_file_tree`
+- `artifact_get_repository`
 
-- `inspector_get_task`
-- `inspector_list_results`
-- `inspector_list_ports`
-- `inspector_list_business_risks`
-- `inspector_get_report_status`
+These routes are live and reachable.
 
-对伪造 task id 会返回 `CodeArtsInspector.00009999`，说明请求已进入服务 ACL/归属校验层，不是 route miss。
+- latest MCP output normalization:
+  - repository outputs now also expose `repositoryId`
+  - version outputs now also expose `versionId`
+  - build archive outputs now also expose `archiveId`
+  - file outputs now also expose `fileId`
+
+- `artifact_delete_file`
+- `artifact_list_build_archives`
+- `artifact_list_files`
+- `artifact_get_file`
+- `artifact_get_download_url`
+- `artifact_search_artifacts`
+- `artifact_show_audit`
+
+These currently return `APIGW.0101` in Beijing 4 and should be treated as `Region Unpublished`.
+
+### TestPlan
+
+- `testplan_list_plans` returns real live samples on two scanned projects.
+- `testplan_list_issues` and `testplan_list_cases` are live and currently return empty results on the known plan.
+- `testplan_get_plan`, `testplan_list_runs`, and `testplan_get_case` currently return `APIGW.0101` in Beijing 4.
+
+### Build
+
+- `build_list_jobs`, `build_get_job`, and `build_list_records` now have real non-empty live samples.
+- `build_run_job` and `build_stop_job` both have real execution samples in the current tenant.
+- `build_get_info_record`, `build_get_record`, `build_get_record_script`, `build_get_history_details`, `build_get_real_time_log`, `build_get_error_log`, `build_list_project_records`, `build_get_project_record_statistics`, and `build_get_record_flow_graph` all now have real success samples.
+- `build_list_build_parameters`, `build_get_full_stages`, and `build_get_record_flow_graph` are live-valid and may return empty business payloads on the sampled builds.
+
+### Deploy
+
+- the healthy Node.js template path now has real successful record-bound validation for:
+  - `deploy_start_app`
+  - `deploy_get_execution_params`
+  - `deploy_get_status`
+  - `deploy_get_history_detail`
+  - `deploy_get_app_log`
+  - `deploy_stop_app`
+- the remaining practical live blocker is now template runtime age, not missing basic app/environment/host resources

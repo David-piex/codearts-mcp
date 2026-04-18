@@ -3,6 +3,8 @@ import { toPageInfo } from "../../../core/pagination/page-info.js";
 import { artifactListFilesInput } from "../schemas.js";
 
 export function mapArtifactFiles(
+  projectId: string,
+  repoName: string,
   items: Array<{ path: string; name: string; type?: string; size?: string }>,
   page: number,
   pageSize: number,
@@ -12,7 +14,11 @@ export function mapArtifactFiles(
     `${items.length} artifact files found`,
     items.map((item) => ({
       id: item.path,
+      fileId: item.path,
+      path: item.path,
       name: item.name,
+      projectId,
+      repoName,
       type: item.type,
       size: item.size
     })),
@@ -37,7 +43,14 @@ export function createArtifactListFilesHandler(client: ArtifactListFilesClient) 
   return async (input: unknown) => {
     const parsed = artifactListFilesInput.parse(input);
     const response = await client.listFiles(parsed);
-    const result = mapArtifactFiles(response.files, parsed.page, parsed.page_size, response.total);
+    const result = mapArtifactFiles(
+      parsed.project_id,
+      parsed.repo_name,
+      response.files,
+      parsed.page,
+      parsed.page_size,
+      response.total
+    );
 
     return {
       content: [{ type: "text" as const, text: result.summary }],

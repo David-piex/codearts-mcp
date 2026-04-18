@@ -1,12 +1,8 @@
-# CodeArts MCP 产品说明
+# Product Overview
 
-## 这是什么
+The current repository only keeps these `8` CodeArts modules:
 
-`codearts-mcp` 是一套面向华为云中国站 CodeArts 的 MCP 服务。
-
-它的目标是把 CodeArts 常用能力以 MCP 工具的方式统一暴露出来，让大模型、编码工具、智能体工作流可以直接访问：
-
-- Req / ProjectMan
+- Req
 - Repo
 - Pipeline
 - Check
@@ -14,261 +10,39 @@
 - Deploy
 - Build
 - Artifact
-- Governance
-- Inspector
-- PerfTest
 
-这意味着模型不再只是“生成代码”或“回答问题”，而是可以进一步：
+## Positioning
 
-- 查询项目和工作项
-- 读取仓库和提交历史
-- 查询合并请求
-- 查询和触发流水线
+`codearts-mcp` is a unified MCP server layer for CodeArts. It exposes the modules above through a consistent authentication model, transport model, and tool style.
 
-## 它解决什么问题
+## Module Boundaries
 
-在很多团队里，CodeArts 数据是分散的：
+- `Req`: projects, iterations, members, and work-item read/write flows
+- `Repo`: repositories, branches, commits, files, tags, and merge requests
+- `Pipeline`: pipelines, runs, logs, approvals, retries, stops, and triggers
+- `Check`: code check tasks, rulesets, issues, metrics, and task execution
+- `TestPlan`: plans, cases, runs, and related issues
+- `Deploy`: applications, tasks, histories, logs, start/stop, and rollback
+- `Build`: jobs, records, stages, logs, parameters, and execution
+- `Artifact`: repositories, versions, files, download, audit, and delete
 
-- 项目管理在 Req
-- 仓库信息在 Repo
-- 发布过程在 Pipeline / Deploy / Build
-- 质量信号在 Check / TestPlan
-- 产物信息在 Artifact
+## Status Entry Points
 
-模型如果无法直接访问这些数据，就只能停留在“离线理解”层面，无法形成真正的工程协作闭环。
+Use these wiki pages as the source of truth:
 
-这套 MCP 的价值在于把几类工程上下文统一起来：
+- `docs/wiki/Home.md`
+- `docs/wiki/Capability-Matrix.md`
+- `docs/wiki/Module-Live-Readiness.md`
+- `docs/wiki/Current-Implementation-Status-2026-04-17.md`
+- `docs/wiki/Deploy-Live-Validated.md`
+- `docs/wiki/Artifact-Live-Validated.md`
 
-- 项目上下文
-- 代码上下文
-- 质量上下文
-- 交付上下文
-- 制品上下文
+## Current Practical Reading
 
-## 适合谁使用
-
-### 研发个人
-
-适合希望在本地编码工具里直接接入 CodeArts 的开发者。
-
-典型用途：
-
-- 查项目需求
-- 读仓库文件
-- 查某次提交
-- 看流水线运行状态
-
-### 团队平台 / 效能团队
-
-适合统一部署 MCP 服务，为整个团队提供标准化接入入口。
-
-典型用途：
-
-- 团队统一接入智能编码工具
-- 建立内部 Agent 工作流
-- 把 CodeArts 能力接给内部 AI 平台
-
-### 管理者 / 架构师
-
-适合需要了解这套能力边界和部署模式的人。
-
-重点关注：
-
-- 它支持哪些产品
-- 安全边界怎么设计
-- 团队共享模式怎么落地
-
-## 当前能力范围
-
-当前已覆盖十一个产品，共 `149` 个业务工具：
-
-- Req：8 个
-- Repo：24 个
-- Pipeline：16 个
-- Check：8 个
-- TestPlan：7 个
-- Deploy：13 个
-- Build：16 个
-- Artifact：12 个
-- Governance：28 个
-- Inspector：7 个
-- PerfTest：9 个
-
-共享模式还额外提供 `2` 个认证工具：
-
-- `auth_configure_session`
-- `auth_clear_session`
-
-总工具数：`151`
-
-## 当前支持的能力类型
-
-### 读操作
-
-可读能力包括：
-
-- 项目列表与项目详情
-- 工作项列表与详情
-- 迭代列表
-- 项目成员列表
-- 仓库列表与仓库详情
-- 分支、提交、文件内容
-- 合并请求列表、详情、改动、讨论、标签、事件
-- 流水线列表、详情、运行记录、运行明细、步骤输出、运行产物、模板列表
-- 检查任务、规则集、问题列表、质量指标
-- 测试计划、测试用例、执行记录、需求树
-- 部署应用、部署历史、部署状态、执行参数、应用日志
-- 构建任务、构建记录
-- 制品仓库、制品文件、构建归档、制品搜索、制品审计日志
-
-### 写操作
-
-当前支持的写操作包括：
-
-- 创建工作项
-- 更新工作项
-- 创建 / 审核 / 合并 / 关闭合并请求
-- 创建 MR 讨论
-- 创建 / 删除标签
-- 运行流水线
-- 重试流水线运行
-- 通过流水线人工审核
-- 驳回流水线人工审核
-- 停止流水线运行
-- 创建 / 执行 / 终止检查任务
-- 启动 / 停止 / 回滚部署任务
-- 执行 / 停止构建任务
-- 删除制品文件
-- 批量执行测试用例
-
-并且这些写操作都支持：
-
-- `dry_run`
-
-这意味着你可以先让模型预演，再决定是否真实执行。
-
-## 两种部署模式
-
-## `stdio` 模式
-
-适合个人本地使用。
-
-特点：
-
-- 简单
-- 直接
-- 不需要单独部署 HTTP 服务
-- 使用启动进程时注入的 `AK/SK`
-
-适合场景：
-
-- 个人开发者
-- 本地 IDE / 编码工具接入
-
-## `http` 模式
-
-适合团队共享部署。
-
-特点：
-
-- 一个服务，多人共用
-- 可放在 nginx / HTTPS 后面
-- 每个用户用自己的华为云凭证
-
-适合场景：
-
-- 团队统一接入
-- 平台化部署
-- 与内部 AI 平台集成
-
-## 安全模型
-
-这套 MCP 的一个关键设计点，是共享模式下不要求服务端集中保存所有人的业务凭证。
-
-共享模式通过以下方式保证边界清晰：
-
-- 服务端统一部署
-- 每个 MCP 会话单独配置自己的 `AK/SK`
-- 会话结束后可清理凭证
-
-也就是说，推荐的团队共享模式是：
-
-- 服务统一
-- 凭证分离
-- 权限归属到个人账号
-
-这比“把全员 `AK/SK` 都写进服务端环境变量”更安全，也更适合审计和权限控制。
-
-## 与普通 API 封装的区别
-
-这套服务不只是简单把 REST API 再包一层。
-
-它更偏向“给模型使用”的接口层，重点在于：
-
-- 输入结构统一
-- 输出结构更适合 LLM 理解
-- 多产品能力统一接入
-- 支持 `dry_run`
-- 支持共享模式下的会话级凭证隔离
-
-## 最典型的使用路径
-
-一个很典型的工程场景是：
-
-1. 模型先查 Req 里的项目、工作项和迭代
-2. 再查 Repo 里的仓库、文件、提交和合并请求
-3. 然后查 Check / TestPlan 的质量与测试上下文
-4. 再查 Pipeline / Build / Deploy 的交付状态
-5. 最后在确认后触发写操作
-
-这样模型拿到的不是孤立信息，而是完整工程上下文。
-
-## 当前边界
-
-这套 MCP 当前已经覆盖工程研发主链路上的核心产品，但仍然保持“高频优先、逐步加深”的策略。
-
-当前策略是：
-
-- 先把高频核心能力做深
-- 保持每个工具都适合 MCP / LLM 调用
-- 统一支持 `stdio` 与 `http + session` 两种模式
-- 写操作默认支持 `dry_run` 预演
-
-## 为什么适合放进编码工具
-
-因为编码工具最需要的不是“再来一个聊天入口”，而是能真正接触工程现场的数据源。
-
-这套 MCP 正好补上了这部分：
-
-- 需求上下文来自 Req / TestPlan
-- 代码上下文来自 Repo
-- 质量上下文来自 Check
-- 交付上下文来自 Pipeline / Build / Deploy
-- 制品上下文来自 Artifact
-
-这样模型才能更像一个真正参与研发流程的助手，而不是只会离线回答问题。
-
-## 推荐阅读顺序
-
-如果你是：
-
-### 第一次了解这个项目
-
-建议先看：
-
-1. `README.md`
-2. `docs/product-overview.md`
-
-### 第一次接入
-
-建议再看：
-
-1. `docs/quickstart.md`
-2. `docs/client-examples.md`
-
-### 已经接上，准备开始使用
-
-建议再看：
-
-1. `docs/tool-examples.md`
-2. `docs/faq.md`
+- If you want the fastest current module summary:
+  - start with `docs/wiki/Home.md`
+- If you want to know what is truly usable right now:
+  - read `docs/wiki/Module-Live-Readiness.md`
+- If you want the latest Deploy and Artifact live reality:
+  - read `docs/wiki/Deploy-Live-Validated.md`
+  - read `docs/wiki/Artifact-Live-Validated.md`

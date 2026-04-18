@@ -1,4 +1,9 @@
 export const buildToolNames = [
+  "build_append_job_step",
+  "build_append_release_upload_step",
+  "build_configure_release_upload_step",
+  "build_prepare_deployable_node_app",
+  "build_prepare_node_runtime_bundle",
   "build_get_error_log",
   "build_get_full_stages",
   "build_get_project_record_statistics",
@@ -14,5 +19,6 @@ export const buildToolNames = [
   "build_list_build_parameters",
   "build_list_records",
   "build_run_job",
-  "build_stop_job"
+  "build_stop_job",
+  "build_update_job_step"
 ];

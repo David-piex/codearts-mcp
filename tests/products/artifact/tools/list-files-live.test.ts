@@ -27,7 +27,11 @@ describe("createArtifactListFilesHandler", () => {
     expect(result.structuredContent.summary).toContain("1 artifact files");
     expect(result.structuredContent.items?.[0]).toEqual({
       id: "/com/demo/gateway/1.0.0/gateway-1.0.0.jar",
+      fileId: "/com/demo/gateway/1.0.0/gateway-1.0.0.jar",
+      path: "/com/demo/gateway/1.0.0/gateway-1.0.0.jar",
       name: "gateway-1.0.0.jar",
+      projectId: "project-1",
+      repoName: "libs-release",
       type: "file",
       size: "1024"
     });

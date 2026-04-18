@@ -10,7 +10,11 @@ describe("createPipelineGetPipelineHandler", () => {
         description: "release flow",
         manifest_version: "3.0",
         creator_name: "yao",
-        is_publish: false
+        is_publish: false,
+        project_id: "owner-project",
+        project_name: "housekeeper",
+        detail_url: "https://example.com/detail",
+        modify_url: "https://example.com/modify"
       })
     });
 
@@ -22,7 +26,11 @@ describe("createPipelineGetPipelineHandler", () => {
       description: "release flow",
       manifestVersion: "3.0",
       creatorName: "yao",
-      isPublish: false
+      isPublish: false,
+      projectId: "owner-project",
+      projectName: "housekeeper",
+      detailUrl: "https://example.com/detail",
+      modifyUrl: "https://example.com/modify"
     });
   });
 });

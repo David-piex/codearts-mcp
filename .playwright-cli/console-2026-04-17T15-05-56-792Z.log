@@ -1,0 +1,5 @@
+[   20596ms] [LOG] WARNING: Tried to load AngularJS more than once. @ https://console-static.huaweicloud.com/static/authui/20260413172816/vendor.bundle.js:174
+[   20719ms] [VERBOSE] [DOM] Password forms should have (optionally hidden) username fields for accessibility: (More info: https://goo.gl/9p2vKq) %o @ https://auth.huaweicloud.com/authui/login.html?service=https%3A%2F%2Fconsole.huaweicloud.com%2Fconsole%2F%3Fregion%3Dcn-north-4%26cloud_route_state%3D%2Fdeploy%2Flist#/login:0
+[   25285ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ https://127.0.0.1:46681/:0
+[   27309ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ https://127.0.0.1:46681/:0
+[   27312ms] Object

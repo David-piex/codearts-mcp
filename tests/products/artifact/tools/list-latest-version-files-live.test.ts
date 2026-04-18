@@ -21,6 +21,7 @@ describe("createArtifactListLatestVersionFilesHandler", () => {
     const result = await handler({ project_id: "project-1", page: 1, page_size: 20 });
 
     expect(result.structuredContent.items?.[0]?.path).toBe("/releases/a.jar");
+    expect(result.structuredContent.items?.[0]?.projectId).toBe("project-1");
     expect(result.structuredContent.items?.[0]?.version).toBe("1.2.0");
   });
 });

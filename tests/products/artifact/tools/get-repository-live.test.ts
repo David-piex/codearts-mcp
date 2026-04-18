@@ -17,6 +17,7 @@ describe("createArtifactGetRepositoryHandler", () => {
 
     expect(result.structuredContent.item).toEqual({
       id: "repo-1",
+      repositoryId: "repo-1",
       name: "libs-release",
       projectId: "project-1",
       format: "maven2",

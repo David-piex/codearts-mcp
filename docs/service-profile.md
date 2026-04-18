@@ -1,129 +1,42 @@
-# 服务简介
+# Service Profile
 
-## 一句话介绍
+## Active Modules
 
-`codearts-mcp` 是一套面向华为云中国站 CodeArts 的 MCP 服务，把 Req、Repo、Pipeline 的高频能力统一暴露给大模型、编码工具和智能体工作流使用。
+The repository currently exposes only these `8` CodeArts modules:
 
-## 它能做什么
+- Req
+- Repo
+- Pipeline
+- Check
+- TestPlan
+- Deploy
+- Build
+- Artifact
 
-当前已支持三类核心能力：
+## Unified Access Model
 
-- Req：项目、工作项、迭代、成员
-- Repo：仓库、分支、提交、文件、合并请求
-- Pipeline：流水线、运行记录、模板、触发运行
+- personal local usage: `stdio`
+- shared team deployment: `http + auth_configure_session`
 
-其中写操作支持：
+## Shared Constraints
 
-- 创建工作项
-- 更新工作项
-- 运行流水线
+- default region is `cn-north-4`
+- standard regions normally only need `AK/SK + region`
+- each module can still override its own base URL when a tenant uses non-standard routes
+- in shared mode, every session uses its own `AK/SK`
+- write tools should prefer `dry_run` first where supported
 
-并支持 `dry_run`，便于先预演、再执行。
+## Module Characteristics
 
-## 当前规模
+- `Req / Repo / Pipeline` are usually the fastest modules to validate first
+- `Check / TestPlan / Deploy / Build / Artifact` depend more on existing tenant business data
+- `Artifact` often needs `tenant_id` in addition to `project_id`
+- `Deploy` is no longer mainly blocked by missing basic resources; the current practical blocker is the outdated healthy-template runtime path
 
-- 业务工具：`22`
-- 认证工具：`2`
-- 总工具数：`24`
+## Recommended Reading Order
 
-## 适合接到哪里
-
-这套服务适合接到：
-
-- 本地编码工具
-- 团队共享 MCP 平台
-- 内部 AI 助手
-- Agent 自动化工作流
-
-## 两种使用方式
-
-### 个人本地
-
-使用 `stdio` 模式：
-
-- 本地启动
-- 本地注入自己的 `AK/SK`
-- 最适合个人开发者
-
-### 团队共享
-
-使用 `http` 模式：
-
-- 服务统一部署
-- 每个用户在自己的 MCP 会话里配置自己的 `AK/SK`
-- 更适合团队共用
-
-## 安全特点
-
-共享模式下推荐的方式不是把所有人的凭证写到服务端，而是：
-
-- 服务端统一部署
-- 每个用户用自己的凭证配置当前会话
-- 用户之间凭证隔离
-
-这样更适合：
-
-- 权限边界控制
-- 审计
-- 凭证轮换
-
-## 适合的典型场景
-
-### 研发协作
-
-模型先看需求，再看仓库，再看流水线状态，拿到完整工程上下文。
-
-### 代码分析
-
-模型直接读取仓库文件、提交、分支和合并请求，而不只是依赖本地文件。
-
-### 发布辅助
-
-模型可在确认后触发流水线，并先通过 `dry_run` 预演。
-
-## 不适合的预期
-
-这套服务当前不是：
-
-- CodeArts 全产品大全套封装
-- 通用 API 网关替代品
-- 权限托管平台
-
-它当前聚焦的是：
-
-- 高价值
-- 高频使用
-- 最适合模型参与研发流程的核心能力
-
-## 推荐阅读
-
-如果你想：
-
-### 快速了解
-
-看：
-
-- `docs/service-profile.md`
-- `docs/product-overview.md`
-
-### 立刻接入
-
-看：
-
-- `docs/live-readiness-checklist.md`
-- `docs/live-readiness-checklist.en.md`
-- `docs/wiki/Home.md`
-- `docs/quickstart.md`
-- `docs/client-examples.md`
-
-### 直接开始调用
-
-看：
-
-- `docs/tool-examples.md`
-
-### 遇到问题排障
-
-看：
-
-- `docs/faq.md`
+1. `README.md`
+2. `docs/quickstart.md`
+3. `docs/client-examples.md`
+4. `docs/tool-examples.md`
+5. `docs/wiki/Home.md`

@@ -304,6 +304,22 @@ export type RepoClient = {
   }>;
 };
 
+function unwrapRepoPayload<T>(input: T): T {
+  if (typeof input === "string") {
+    const trimmed = input.trim();
+
+    if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
+      try {
+        return unwrapRepoPayload(JSON.parse(trimmed)) as T;
+      } catch {
+        return input;
+      }
+    }
+  }
+
+  return input;
+}
+
 export function createRepoClient(_http: ReturnTypeCreateHttpClient): RepoClient {
   return {
     async getBranch(input) {
@@ -452,21 +468,39 @@ export function createRepoClient(_http: ReturnTypeCreateHttpClient): RepoClient 
         per_page: String(input.page_size)
       });
 
-      const response = (await _http.get(
+      const rawResponse = (await _http.get(
         `/v2/repositories/${encodeURIComponent(input.repository_id)}/tags?${query.toString()}`
-      )) as Array<{
-        name?: string;
-        is_double_name?: boolean;
-      }>;
+      )) as
+        | Array<{
+          name?: string;
+          is_double_name?: boolean;
+        }>
+        | {
+          total?: number;
+          tags?: Array<{
+            name?: string;
+            is_double_name?: boolean;
+          }>;
+          result?: {
+            total?: number;
+            tags?: Array<{
+              name?: string;
+              is_double_name?: boolean;
+            }>;
+          };
+        };
+      const response = unwrapRepoPayload(rawResponse);
 
-      const tags = (response ?? []).map((item) => ({
+      const rawTags = Array.isArray(response) ? response : response.result?.tags ?? response.tags ?? [];
+
+      const tags = rawTags.map((item) => ({
         name: item.name ?? "",
         is_double_name: item.is_double_name
       }));
 
       return {
         tags,
-        total: tags.length
+        total: Array.isArray(response) ? tags.length : response.result?.total ?? response.total ?? tags.length
       };
     },
     async deleteTag(input) {

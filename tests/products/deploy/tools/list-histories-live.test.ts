@@ -27,9 +27,40 @@ describe("createDeployListHistoriesHandler", () => {
     expect(result.structuredContent.summary).toContain("1 deploy histories");
     expect(result.structuredContent.items?.[0]).toEqual({
       id: "history-1",
+      projectId: "project-1",
       taskId: "task-1",
       operatorName: "yao",
       status: "SUCCESS"
+    });
+  });
+
+  it("falls back to requested task_id for deploy history items", async () => {
+    const handler = createDeployListHistoriesHandler({
+      listHistories: async () => ({
+        histories: [
+          {
+            id: "history-2",
+            operator_name: "yao",
+            status: "RUNNING"
+          }
+        ],
+        total: 1
+      })
+    });
+
+    const result = await handler({
+      project_id: "project-1",
+      task_id: "task-1",
+      page: 1,
+      page_size: 20
+    });
+
+    expect(result.structuredContent.items?.[0]).toEqual({
+      id: "history-2",
+      projectId: "project-1",
+      taskId: "task-1",
+      operatorName: "yao",
+      status: "RUNNING"
     });
   });
 });
