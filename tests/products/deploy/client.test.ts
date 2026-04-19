@@ -1365,6 +1365,29 @@ describe("createDeployClient", () => {
     ]);
   });
 
+  it("treats null v4 deploy records responses as empty", async () => {
+    const client = createDeployClient({
+      post: async (path: string, body: unknown) => {
+        expect(path).toBe("/v4/projects/project-1/deploy-records");
+        expect(body).toEqual({ limit: 20, offset: 0 });
+        return null;
+      }
+    } as never);
+
+    const result = await client.listV4DeployRecords({
+      project_id: "project-1",
+      limit: 20,
+      offset: 0
+    });
+
+    expect(result).toEqual({
+      project_id: "project-1",
+      total: undefined,
+      records: [],
+      raw: null
+    });
+  });
+
   it("maps last record detail responses", async () => {
     let requestedPath = "";
     const client = createDeployClient({

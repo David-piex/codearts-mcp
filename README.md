@@ -61,10 +61,10 @@ The main reason some modules are still marked `Partial` is not missing MCP code,
   - can be used directly on the current exposed surface
 - `Build`
   - the main live surface can be used directly
-  - `19` tools are real-live validated and `3` helper/configuration tools remain `Code/Test Only`
+  - all `22` tools are now real-live validated
 - `Deploy`
   - the main MCP surface is usable
-  - current gaps are mostly template/runtime age and rollback-sample availability, not missing base app/environment/host paths
+  - current gaps are mostly template/runtime age and SpringBoot template/package compatibility, not missing base app/environment/host paths
 - `Artifact`
   - all currently published routes have corresponding MCP tools
   - the main remaining gap is Beijing 4 unpublished routes, not missing local MCP implementation
@@ -83,7 +83,7 @@ The main reason some modules are still marked `Partial` is not missing MCP code,
 | Check | 8 | Validated | `8 Full` |
 | TestPlan | 7 | Partial | `1 Full / 2 Reachable / 4 Unpublished / 0 Code` |
 | Deploy | 59 | Partial | Expanded surface; see `docs/wiki/Deploy-Live-Validated.md` for the current live split |
-| Build | 22 | Validated | `19 Full / 0 Reachable / 0 Unpublished / 3 Code` |
+| Build | 22 | Validated | `22 Full / 0 Reachable / 0 Unpublished / 0 Code` |
 | Artifact | 12 | Partial | `5 Full / 0 Reachable / 7 Unpublished / 0 Code` |
 <!-- GENERATED:readme-module-numbers:end -->
 
@@ -103,6 +103,7 @@ The main reason some modules are still marked `Partial` is not missing MCP code,
     - `deploy_get_history_detail`
     - `deploy_get_app_log`
     - `deploy_stop_app`
+    - `deploy_rollback_app`
   - the current main blocker has moved later into the outdated template runtime:
     - `Node v10.9.0`
     - `forever`

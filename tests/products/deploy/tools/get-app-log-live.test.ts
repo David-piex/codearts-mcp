@@ -1,70 +1,59 @@
 import { describe, expect, it } from "vitest";
+import { createHuaweiAuthHeaders } from "../../../../src/core/auth/huawei-auth.js";
+import { loadEnvConfig } from "../../../../src/core/config/env.js";
+import { createHttpClient } from "../../../../src/core/http/client.js";
+import { createDeployClient } from "../../../../src/products/deploy/client.js";
 import { createDeployGetAppLogHandler } from "../../../../src/products/deploy/tools/get-app-log.js";
 
-describe("createDeployGetAppLogHandler", () => {
-  it("maps deploy app log into MCP output", async () => {
-    const handler = createDeployGetAppLogHandler({
-      getAppLog: async () => ({
-        application_id: "app-1",
-        record_id: "record-1",
-        status: "success",
-        has_more: true,
-        text: "[INFO] deploy ok",
+function hasLiveEnv(source: NodeJS.ProcessEnv) {
+  return Boolean(
+    source.HUAWEICLOUD_REGION &&
+      source.HUAWEICLOUD_AK &&
+      source.HUAWEICLOUD_SK &&
+      source.HUAWEICLOUD_DEPLOY_BASE_URL &&
+      source.MCP_SERVER_NAME &&
+      source.MCP_SERVER_VERSION
+  );
+}
+
+function readApplicationId(source: NodeJS.ProcessEnv) {
+  return source.HUAWEICLOUD_DEPLOY_LIVE_APPLICATION_ID?.trim() || "4ec9b1c2a08647c385d9a62dd2b1df15";
+}
+
+function readRecordId(source: NodeJS.ProcessEnv) {
+  return source.HUAWEICLOUD_DEPLOY_LIVE_RECORD_ID?.trim() || "bf3093a9c392449b99c6b849b49be28e";
+}
+
+if (hasLiveEnv(process.env)) {
+  describe("createDeployGetAppLogHandler live", () => {
+    const config = loadEnvConfig(process.env);
+    const http = createHttpClient({
+      baseUrl: config.deployBaseUrl,
+      authHeaders: createHuaweiAuthHeaders(config.accessKey, config.secretKey)
+    });
+    const client = createDeployClient(http);
+    const handler = createDeployGetAppLogHandler(client);
+    const applicationId = readApplicationId(process.env);
+    const recordId = readRecordId(process.env);
+
+    it("loads app log text for a real deploy record", async () => {
+      const result = await handler({
+        application_id: applicationId,
+        record_id: recordId,
         offset: "0",
-        end_offset: "3354"
-      })
-    });
+        end_offset: "4000"
+      });
+      const item = result.structuredContent.item;
 
-    const result = await handler({
-      application_id: "app-1",
-      record_id: "record-1",
-      offset: "0",
-      end_offset: "0"
-    });
-
-    expect(result.structuredContent.item).toEqual({
-      id: "record-1",
-      recordId: "record-1",
-      applicationId: "app-1",
-      status: "success",
-      hasMore: true,
-      text: "[INFO] deploy ok",
-      offset: "0",
-      endOffset: "3354"
-    });
+      expect(item).toMatchObject({
+        id: recordId,
+        applicationId,
+        recordId
+      });
+      expect(typeof item?.text).toBe("string");
+      expect(String(item?.text).length > 0).toBe(true);
+    }, 30000);
   });
-
-  it("keeps requested step_id in the MCP app log output", async () => {
-    const handler = createDeployGetAppLogHandler({
-      getAppLog: async () => ({
-        application_id: "app-1",
-        record_id: "record-1",
-        status: "success",
-        has_more: false,
-        text: "[INFO] only step log",
-        offset: "10",
-        end_offset: "42"
-      })
-    });
-
-    const result = await handler({
-      application_id: "app-1",
-      record_id: "record-1",
-      step_id: "step-1",
-      offset: "10",
-      end_offset: "42"
-    });
-
-    expect(result.structuredContent.item).toEqual({
-      id: "record-1",
-      recordId: "record-1",
-      applicationId: "app-1",
-      stepId: "step-1",
-      status: "success",
-      hasMore: false,
-      text: "[INFO] only step log",
-      offset: "10",
-      endOffset: "42"
-    });
-  });
-});
+} else {
+  describe.skip("createDeployGetAppLogHandler live", () => {});
+}

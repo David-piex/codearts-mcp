@@ -27,7 +27,7 @@ function readRollbackRecordId(source: NodeJS.ProcessEnv) {
 }
 
 if (hasLiveRollbackEnv(process.env)) {
-  describe("createDeployRollbackAppHandler live", () => {
+  describe("createDeployRollbackAppHandler live execute", () => {
     const config = loadEnvConfig(process.env);
     const http = createHttpClient({
       baseUrl: config.deployBaseUrl,
@@ -38,22 +38,23 @@ if (hasLiveRollbackEnv(process.env)) {
     const taskId = readRollbackTaskId(process.env);
     const recordId = readRollbackRecordId(process.env);
 
-    it("returns a real dry-run rollback preview against an existing record", async () => {
+    it("executes a real rollback for an explicitly supplied record", async () => {
       const result = await handler({
         task_id: taskId,
         record_id: recordId,
-        dry_run: true
+        dry_run: false
       });
       const item = result.structuredContent.item;
 
       expect(item).toMatchObject({
         id: taskId,
-        recordId,
-        executed: false
+        sourceRecordId: recordId,
+        executed: true
       });
-      expect(typeof item?.status).toBe("string");
+      expect(typeof item?.recordId).toBe("string");
+      expect(String(item?.recordId)).toMatch(/^[0-9a-f]{32}$/);
     }, 30000);
   });
 } else {
-  describe.skip("createDeployRollbackAppHandler live", () => {});
+  describe.skip("createDeployRollbackAppHandler live execute", () => {});
 }

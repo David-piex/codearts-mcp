@@ -80,4 +80,5 @@ These currently return `APIGW.0101` in Beijing 4 and should be treated as `Regio
   - `deploy_get_history_detail`
   - `deploy_get_app_log`
   - `deploy_stop_app`
+  - `deploy_rollback_app`
 - the remaining practical live blocker is now template runtime age, not missing basic app/environment/host resources

@@ -40,7 +40,10 @@ describe("createDeployCreateTaskByTemplateHandler", () => {
       templateOperationCount: 2,
       taskName: "deploy-demo",
       configCount: 1,
-      executed: false
+      executed: false,
+      previewSource: "template_detail",
+      templateDetailAvailable: true,
+      warning: undefined
     });
   });
 
@@ -66,6 +69,56 @@ describe("createDeployCreateTaskByTemplateHandler", () => {
       })
     ).rejects.toMatchObject({
       status: 404
+    });
+  });
+
+  it("falls back to a local preview when template detail is unpublished on the AK/SK gateway", async () => {
+    const handler = createDeployCreateTaskByTemplateHandler({
+      getTemplateDetail: async () => {
+        const error = new Error(
+          "The API does not exist or has not been published in the environment"
+        ) as Error & { status?: number; code?: string };
+        error.status = 404;
+        error.code = "APIGW.0101";
+        throw error;
+      },
+      createTaskByTemplate: async () => {
+        throw new Error("should not execute in dry run");
+      }
+    });
+
+    const result = await handler({
+      project_id: "project-1",
+      project_name: "Codearts-mcp",
+      template_id: "template-1",
+      task_name: "deploy-demo",
+      configs: [
+        {
+          name: "host_group",
+          type: "host_group",
+          value: "group-1"
+        }
+      ]
+    });
+
+    expect(result.content[0]).toEqual(
+      expect.objectContaining({
+        text: expect.stringContaining("local preview only")
+      })
+    );
+    expect(result.structuredContent.item).toEqual({
+      projectId: "project-1",
+      projectName: "Codearts-mcp",
+      templateId: "template-1",
+      templateName: undefined,
+      templateOperationCount: undefined,
+      taskName: "deploy-demo",
+      configCount: 1,
+      executed: false,
+      previewSource: "local_fallback",
+      templateDetailAvailable: false,
+      warning:
+        "Template detail API is not published on the AK/SK gateway; returning a local dry-run preview only."
     });
   });
 

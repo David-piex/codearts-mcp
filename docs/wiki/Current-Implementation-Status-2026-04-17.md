@@ -12,8 +12,8 @@ This page is the corrected implementation snapshot after the latest `Req`, `Arti
 | Pipeline | 16 | 11 | 5 | Validated | Full module-level live loop completed. |
 | Check | 8 | 5 | 3 | Validated | Full tool-level live loop completed. |
 | TestPlan | 7 | 6 | 1 | Partial | Two scanned projects now return real plan samples; 4 routes are re-confirmed as unpublished in Beijing 4. |
-| Deploy | 59 | 44 | 15 | Partial | The detailed Deploy page is the source of truth for the expanded v4 surface. `deploy_create_application`, `deploy_modify_application`, `deploy_start_app`, `deploy_get_execution_params`, `deploy_get_history_detail`, `deploy_get_app_log`, and `deploy_stop_app` now all have real AK/SK validation on at least one healthy path. The remaining real blocker is the outdated Node.js template runtime (`Node v10.9.0` + `forever`), plus a rollback-eligible sample for `deploy_rollback_app`. |
-| Build | 22 | 14 | 8 | Validated | 19 tools are fully AK/SK validated on the current surface, while 3 helper/configuration tools are currently covered by code/test validation only. |
+| Deploy | 59 | 44 | 15 | Partial | The detailed Deploy page is the source of truth for the expanded v4 surface. `deploy_create_application`, `deploy_modify_application`, `deploy_start_app`, `deploy_get_execution_params`, `deploy_get_history_detail`, `deploy_get_app_log`, `deploy_stop_app`, and `deploy_rollback_app` now all have real AK/SK validation on at least one healthy path. The remaining practical blocker is the outdated Node.js template runtime (`Node v10.9.0` + `forever`). |
+| Build | 22 | 14 | 8 | Validated | All 22 tools are now AK/SK Full on the current surface, including the 3 helper/configuration tools through real dry-run previews on the live job config. |
 | Artifact | 12 | 11 | 1 | Partial | Five tools are AK/SK Full; the remaining seven are re-confirmed as unpublished in Beijing 4. |
 <!-- GENERATED:implementation-status-table:end -->
 
@@ -29,8 +29,8 @@ This page is the corrected implementation snapshot after the latest `Req`, `Arti
 ## Latest live-state summary
 
 - `Build`
-  - `19/22` are `AK/SK Full`
-  - `3/22` remain `Code/Test Only`
+  - `22/22` are `AK/SK Full`
+  - `0/22` remain `Code/Test Only`
 - `Req`
   - `8/8` are `AK/SK Full`
   - `0/8` remain `Code/Test Only`
@@ -43,8 +43,17 @@ This page is the corrected implementation snapshot after the latest `Req`, `Arti
   - `4/7` are `Region Unpublished`
 - `Deploy`
   - `59/59` are implemented in code
+  - `deploy_rollback_app` is now real-live validated
   - the detailed live split is maintained in `docs/wiki/Deploy-Live-Validated.md`
   - current explicit skip: `PUT /v4/projects/{project_id}/environments/{environment_id}/hosts`
+
+## Still not AK/SK Full
+
+| Module | Current state | Remaining items |
+| --- | --- | --- |
+| Artifact | `5 Full / 7 Unpublished` | `artifact_delete_file`, `artifact_list_build_archives`, `artifact_list_files`, `artifact_get_file`, `artifact_get_download_url`, `artifact_search_artifacts`, `artifact_show_audit` |
+| TestPlan | `1 Full / 2 Reachable / 4 Unpublished` | Reachable: `testplan_list_issues`, `testplan_list_cases`; Unpublished: `testplan_get_plan`, `testplan_list_runs`, `testplan_get_case`, `testplan_run_cases` |
+| Deploy | `Partial` | `deploy_import_hosts_to_environment` remains `AK/SK Reachable`; practical blocker is the outdated Node.js template runtime (`Node v10.9.0` + `forever`); explicit skipped route: `PUT /v4/projects/{project_id}/environments/{environment_id}/hosts` |
 
 ## Latest MCP normalization summary
 
@@ -138,14 +147,16 @@ This page is the corrected implementation snapshot after the latest `Req`, `Arti
 - Empty but live-valid:
   - `deploy_list_histories` with required `start_date + end_date`
 - Service-layer reachable with safe real probes:
-  - `deploy_import_hosts_to_environment`
-  - `deploy_rollback_app`
+- `deploy_import_hosts_to_environment`
 
 ## Notes
 
 - `Deploy` is not "not implemented". It is fully written at the tool level.
 - The detailed Deploy wiki page is now ahead of this roll-up table for the expanded v4 host/environment routes and the real record-bound execution path.
 - Some additional Deploy portal routes were discovered from HAR, such as `configs/get` and `package_spec`, but they currently behave as browser-session-only endpoints and are therefore not exposed as AK/SK MCP tools.
+- The latest narrow template-management HAR on `2026-04-19` adds a positive browser proof for classic `POST /deployman/open/v1/applications/list` with `total_num: 14`.
+- That same HAR still does not provide a positive browser sample for the `v4` app / deploy-record / orchestration family, so those tools remain best classified as implemented plus reachable, but sample-data-limited on the current tenant.
+- The six `Deploy` v4 write-preview tools no longer hard-fail in `dry_run` on the current known sample-limited record-detail errors; they now fall back to local preview when the tenant lacks a positive v4 record sample.
 - The remaining v4 host-tag write route is no longer an active implementation target in the current tenant:
   - frontend bundle evidence confirms the route exists
   - current sampled app/environment state does not expose a reproducible gray-release UI path
@@ -153,7 +164,8 @@ This page is the corrected implementation snapshot after the latest `Req`, `Arti
 - `deploy_get_template_detail` remains implemented from frontend evidence but region-unpublished in Beijing 4.
 - The main remaining blocker is no longer “no real deploy execution record”:
   - real execution records now exist on the HAR-derived healthy Node.js template path
-  - `deploy_start_app`, `deploy_get_execution_params`, `deploy_get_status`, `deploy_get_history_detail`, `deploy_get_app_log`, and `deploy_stop_app` have all been validated against those real records
+  - `deploy_start_app`, `deploy_get_execution_params`, `deploy_get_status`, `deploy_get_history_detail`, `deploy_get_app_log`, `deploy_stop_app`, and `deploy_rollback_app` have all been validated against real records
+  - `deploy_get_task` remains live-valid for task metadata and step names, but current healthy-task responses still do not reliably expose runtime params in `steps[].params`
   - the older app-created path can still hit `Deploy.00011042`, but that is no longer the headline Deploy summary
   - the healthy HAR-template path now accepts the real Build-produced package `/codearts-mcp/1.0.0/codearts-mcp.tgz`
   - `下载软件包` succeeds and the provider-generated download URL resolves correctly
@@ -162,7 +174,7 @@ This page is the corrected implementation snapshot after the latest `Req`, `Arti
     - later `停止nodeJs服务` installs and checks `forever`
     - `forever` fails under Node 10 because one dependency uses unsupported numeric separators
   - this means the next practical gap is updating or replacing that outdated Node.js deploy template path, not package visibility
-  - `deploy_rollback_app` still needs a rollback-eligible real execution sample
+  - `deploy_rollback_app` is now live-validated on failed-source rollback probes
 
 ## Build detail
 
@@ -218,10 +230,10 @@ This page is the corrected implementation snapshot after the latest `Req`, `Arti
 ### Notes
 
 - `Build` is now fully AK/SK validated for the currently exposed tool surface.
-- The remaining 3 Build tools are helper/configuration tools that are currently covered by code/test validation only:
-  - `build_configure_release_upload_step`
-  - `build_prepare_deployable_node_app`
-  - `build_prepare_node_runtime_bundle`
+- The 3 helper/configuration tools are no longer code/test-only:
+  - `build_configure_release_upload_step` now has a real dry-run preview on the live release upload step
+  - `build_prepare_deployable_node_app` now has a real dry-run preview on the live `Npm构建` step
+  - `build_prepare_node_runtime_bundle` now has a real dry-run preview on the live `Npm构建` step
 - Real job, record, run, log, stop, and flow-graph samples now exist in Beijing 4.
 - `build_append_job_step` is no longer a blind dry-run echo:
   - it now loads the real current job config and computes the inserted step preview against that payload

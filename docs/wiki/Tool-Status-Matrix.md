@@ -24,7 +24,7 @@ Status matrix based on the current repository implementation, local tests, and t
 | Check | 8 | `8 Full` | Tool-level closure is complete. |
 | TestPlan | 7 | `1 Full / 2 Reachable / 4 Unpublished / 0 Code` | Real plan samples now exist on two projects, but detail/run routes are still unpublished in Beijing 4. |
 | Deploy | 59 | Expanded surface; see `docs/wiki/Deploy-Live-Validated.md` | The Deploy MCP surface now includes v4 application/environment/cluster/record/variable tools. The detailed live split is maintained in the dedicated Deploy page. |
-| Build | 22 | `19 Full / 0 Reachable / 0 Unpublished / 3 Code` | The remote Build surface is fully live-validated for 19 tools; 3 helper/configuration tools are currently covered by code/test validation only. |
+| Build | 22 | `22 Full / 0 Reachable / 0 Unpublished / 0 Code` | The remote Build surface is now fully live-validated, including the 3 helper/configuration tools via real dry-run previews on the live job config. |
 | Artifact | 12 | `5 Full / 0 Reachable / 7 Unpublished / 0 Code` | Five tools are fully validated; seven routes are unpublished in Beijing 4. The current tenant now exposes a real published file sample at `/codearts-mcp/1.0.0/codearts-mcp.tgz`. |
 <!-- GENERATED:tool-status-module-summary:end -->
 
@@ -61,6 +61,9 @@ Status matrix based on the current repository implementation, local tests, and t
 ### Deploy
 
 - `AK/SK Full`
+  - `deploy_create_application`
+  - `deploy_modify_application`
+  - `deploy_create_task_by_template`
   - `deploy_create_environment`
   - `deploy_list_apps`
   - `deploy_list_app_host_groups`
@@ -75,18 +78,22 @@ Status matrix based on the current repository implementation, local tests, and t
   - `deploy_get_task`
   - `deploy_get_status`
   - `deploy_list_histories`
+  - `deploy_get_app_log`
+  - `deploy_get_execution_params`
+  - `deploy_get_history_detail`
+  - `deploy_start_app`
+  - `deploy_stop_app`
+  - `deploy_rollback_app`
 - `AK/SK Full (empty but successful business response)`
   - `deploy_list_host_group_environments`
 - `AK/SK Reachable`
   - `deploy_import_hosts_to_environment`
-  - `deploy_rollback_app`
   - note:
-    - `deploy_get_app_log`
-    - `deploy_get_execution_params`
-    - `deploy_get_history_detail`
-    - `deploy_start_app`
-    - `deploy_stop_app`
-    - these are no longer only theoretical; the real healthy Node.js template path now has successful record-bound validation, and the detailed page is the source of truth for the latest split
+    - the remaining practical live blocker is the outdated Node.js template runtime (`Node v10.9.0` + `forever`)
+    - the `v4` app / environment / deploy-record / orchestration discovery family is implemented and route-reachable, but still sample-data-limited on the current tenant
+    - the six `v4` record write-preview tools now degrade to local `dry_run` preview when record detail is sample-limited, instead of hard-failing on the current tenant
+    - the latest template-management HAR on `2026-04-19` again shows browser traffic using classic `v1/applications/list`, not a positive `v4` discovery path
+    - the explicit skipped route outside closure scope is `PUT /v4/projects/{project_id}/environments/{environment_id}/hosts`
 
 ### Artifact
 

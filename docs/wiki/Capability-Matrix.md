@@ -20,7 +20,7 @@ Capability snapshot based on the current repository implementation, local test c
 | Check | 5 | 3 | Validated | Tool-level live closure is complete |
 | TestPlan | 6 | 1 | Partial | `get_plan / list_runs / get_case / run_cases` are unpublished in Beijing 4 |
 | Deploy | 44 | 15 | Partial | Expanded Deploy v4 environment/record/variable surface is implemented; the detailed live split is maintained in `docs/wiki/Deploy-Live-Validated.md` |
-| Build | 14 | 8 | Validated | 19 tools are fully live-validated and 3 helper/configuration tools are currently code/test-only |
+| Build | 14 | 8 | Validated | All 22 tools are now fully live-validated, including the 3 helper/configuration tools via real dry-run previews |
 | Artifact | 11 | 1 | Partial | 5 tools are fully live-validated, and 7 routes are now re-confirmed by live smoke as unpublished in Beijing 4 |
 <!-- GENERATED:capability-matrix:end -->
 

@@ -17,19 +17,30 @@ export function previewCreateTaskByTemplate(input: {
     limits?: Array<{ name: string; value?: string }>;
   }>;
   dry_run: boolean;
+  preview_source?: "template_detail" | "local_fallback";
+  template_detail_available?: boolean;
+  warning?: string;
 }) {
   const mode = input.dry_run ? "Dry run" : "Executed";
+  const fallbackSuffix =
+    input.preview_source === "local_fallback" ? " (local preview only)" : "";
 
-  return asItemResult(`${mode}: create deploy task ${input.task_name} from template`, {
-    projectId: input.project_id,
-    projectName: input.project_name,
-    templateId: input.template_id,
-    templateName: input.template_name,
-    templateOperationCount: input.template_operation_count,
-    taskName: input.task_name,
-    configCount: input.configs.length,
-    executed: !input.dry_run
-  });
+  return asItemResult(
+    `${mode}: create deploy task ${input.task_name} from template${fallbackSuffix}`,
+    {
+      projectId: input.project_id,
+      projectName: input.project_name,
+      templateId: input.template_id,
+      templateName: input.template_name,
+      templateOperationCount: input.template_operation_count,
+      taskName: input.task_name,
+      configCount: input.configs.length,
+      executed: !input.dry_run,
+      previewSource: input.preview_source,
+      templateDetailAvailable: input.template_detail_available,
+      warning: input.warning
+    }
+  );
 }
 
 export function mapCreatedTaskByTemplate(input: { task_name: string; task_id: string }) {
@@ -70,16 +81,48 @@ type DeployCreateTaskByTemplateClient = {
   }>;
 };
 
+function isTemplateDetailGatewayUnpublished(error: unknown) {
+  if (!(error instanceof Error)) {
+    return false;
+  }
+
+  const code = "code" in error && typeof error.code === "string" ? error.code : undefined;
+  return code === "APIGW.0101" || /not been published in the environment/i.test(error.message);
+}
+
 export function createDeployCreateTaskByTemplateHandler(client: DeployCreateTaskByTemplateClient) {
   return async (input: unknown) => {
     const parsed = deployCreateTaskByTemplateInput.parse(input);
 
     if (parsed.dry_run) {
-      const template = await client.getTemplateDetail({ template_id: parsed.template_id });
+      let templateName: string | undefined;
+      let templateOperationCount: number | undefined;
+      let previewSource: "template_detail" | "local_fallback" = "template_detail";
+      let templateDetailAvailable = true;
+      let warning: string | undefined;
+
+      try {
+        const template = await client.getTemplateDetail({ template_id: parsed.template_id });
+        templateName = template.name;
+        templateOperationCount = template.operation_list.length;
+      } catch (error) {
+        if (!isTemplateDetailGatewayUnpublished(error)) {
+          throw error;
+        }
+
+        previewSource = "local_fallback";
+        templateDetailAvailable = false;
+        warning =
+          "Template detail API is not published on the AK/SK gateway; returning a local dry-run preview only.";
+      }
+
       const result = previewCreateTaskByTemplate({
         ...parsed,
-        template_name: template.name,
-        template_operation_count: template.operation_list.length
+        template_name: templateName,
+        template_operation_count: templateOperationCount,
+        preview_source: previewSource,
+        template_detail_available: templateDetailAvailable,
+        warning
       });
 
       return {

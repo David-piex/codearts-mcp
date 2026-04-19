@@ -38,4 +38,29 @@ describe("createDeployListV4DeployRecordsHandler", () => {
       }
     ]);
   });
+
+  it("treats a null provider response as an empty list", async () => {
+    const handler = createDeployListV4DeployRecordsHandler({
+      listV4DeployRecords: async () => ({
+        project_id: "project-1",
+        total: 0,
+        records: [],
+        raw: null
+      })
+    });
+
+    const result = await handler({
+      project_id: "project-1",
+      limit: 20,
+      offset: 0
+    });
+
+    expect(result.structuredContent.summary).toContain("0 v4 deploy records");
+    expect(result.structuredContent.items).toEqual([]);
+    expect(result.structuredContent.page_info).toEqual({
+      page: 1,
+      pageSize: 20,
+      total: 0
+    });
+  });
 });

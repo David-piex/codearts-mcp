@@ -1,17 +1,26 @@
 import { asItemResult } from "../../../contracts/tool-result.js";
 import { deployRollbackV4DeployRecordInput } from "../schemas.js";
+import { resolveV4RecordDryRunPreview } from "./v4-record-dry-run.js";
 
 export function previewRollbackV4DeployRecord(input: {
   project_id: string;
   record_id: string;
   dry_run: boolean;
+  preview_source?: "record_detail" | "local_fallback";
+  record_detail_available?: boolean;
+  warning?: string;
 }) {
+  const fallbackSuffix =
+    input.preview_source === "local_fallback" ? " (local preview only)" : "";
   return asItemResult(
-    `${input.dry_run ? "Dry run" : "Executed"}: rollback v4 deploy record ${input.record_id}`,
+    `${input.dry_run ? "Dry run" : "Executed"}: rollback v4 deploy record ${input.record_id}${fallbackSuffix}`,
     {
       projectId: input.project_id,
       recordId: input.record_id,
-      executed: !input.dry_run
+      executed: !input.dry_run,
+      previewSource: input.preview_source,
+      recordDetailAvailable: input.record_detail_available,
+      warning: input.warning
     }
   );
 }
@@ -36,11 +45,18 @@ export function createDeployRollbackV4DeployRecordHandler(
     const parsed = deployRollbackV4DeployRecordInput.parse(input);
 
     if (parsed.dry_run) {
-      await client.getV4DeployRecord({
-        project_id: parsed.project_id,
-        record_id: parsed.record_id
+      const previewMeta = await resolveV4RecordDryRunPreview(() =>
+        client.getV4DeployRecord({
+          project_id: parsed.project_id,
+          record_id: parsed.record_id
+        })
+      );
+      const result = previewRollbackV4DeployRecord({
+        ...parsed,
+        preview_source: previewMeta.previewSource,
+        record_detail_available: previewMeta.recordDetailAvailable,
+        warning: previewMeta.warning
       });
-      const result = previewRollbackV4DeployRecord(parsed);
       return {
         content: [{ type: "text" as const, text: result.summary }],
         structuredContent: result

@@ -148,7 +148,6 @@
     - `testplan_run_cases`
 - `Deploy`
   - `AK/SK Reachable / Partial closure`
-    - `deploy_rollback_app`
     - healthy template path still blocked by outdated runtime (`Node v10.9.0` + `forever`)
     - one explicit skipped route remains outside closure scope:
       - `PUT /v4/projects/{project_id}/environments/{environment_id}/hosts`

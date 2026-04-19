@@ -20,6 +20,13 @@ Repository live-smoke entry:
 
 - `tests/products/deploy/client-live-smoke.test.ts`
 
+Additional env-gated live probes:
+
+- `tests/products/deploy/tools/rollback-app-live.test.ts`
+- `tests/products/deploy/tools/start-app-execute-live.test.ts`
+- `tests/products/deploy/tools/stop-app-execute-live.test.ts`
+- `tests/products/deploy/tools/rollback-app-execute-live.test.ts`
+
 ## Confirmed live results
 
 - `deploy_list_apps`
@@ -30,6 +37,7 @@ Repository live-smoke entry:
   - Non-empty success, including `arrange_infos`, permission flags, and embedded task metadata.
 - `deploy_get_task`
   - Non-empty success, including `state`, permission flags, and full `steps` when the upstream task is healthy.
+  - Current live Node.js healthy-task detail still returns empty `steps[].params`; runtime parameter truth is record-bound via `deploy_get_execution_params`, not reliably discoverable from `getTask` alone.
 - `deploy_list_app_host_groups`
   - Success on `GET /v1/applications/{application_id}/host-groups/base/infos?...`.
 - `deploy_list_environments`
@@ -66,6 +74,9 @@ Repository live-smoke entry:
 
 - `deploy_create_task_by_template`
   - Official route is MCP-exposed with safe `dry_run` support.
+  - On `2026-04-19`, the local MCP `dry_run` path was hardened:
+    - it still prefers real template-detail enrichment when available
+    - if the template-detail route is unpublished on the AK/SK gateway, it now degrades to a local preview instead of failing the whole tool
   - Real probe reaches `POST /v2/tasks/template-task`.
   - Using the old damaged app/task template marker `4288aeb8b6f6446da359bf5af0aa3a6a` returns:
     - `404 Deploy.00011602`
@@ -171,11 +182,14 @@ Repository live-smoke entry:
   - This proves the old `Deploy.00011042` blocker on the HAR-created path is specifically a draft-finalization problem, not a missing environment-only problem.
 
 - `deploy_get_template_detail`
-  - Frontend bundle exposes `GET /v1/deploytemplate/template/{template_id}/getTemplate?taskId=...`.
+  - Frontend HAR and frontend bundle expose console-side routes such as:
+    - `GET /v1/deploytemplate/template/{template_id}/getTemplate?taskId=...`
+    - `GET /open/v1/deploytemplate/template/{template_id}/getTemplate?taskId=...`
   - Real probes in `cn-north-4` returned:
     - `404 APIGW.0101`
     - `The API does not exist or has not been published in the environment`
-  - MCP read path is implemented, but the route is currently region-unpublished for this tenant.
+  - Direct AK/SK re-check on `2026-04-19` confirmed both the bare `/v1/...` and `/open/v1/...` variants still return `APIGW.0101` on the current Deploy gateway.
+  - MCP read path is implemented, but the route is currently region-unpublished for this tenant on the AK/SK path.
 
 ## Current deploy status
 
@@ -277,7 +291,8 @@ Current inference:
 - the missing piece for the damaged app path is still the raw template `operation_list` configuration that the simplified app/task detail APIs do not recover once `steps` becomes `{}`
 - on the exact HAR-created app path, the missing piece was not only the raw `operation_list`; a second draft-finalization `modifyApplication(... is_draft=false ...)` call is also required before execution
 - the current app-derived `template_id` is not a valid input for the official `CreateDeployTaskByTemplate` route
-- a HAR-captured real template id can create a healthy task with intact steps, discoverable runtime params, and successful `start`
+- a HAR-captured real template id can create a healthy task with intact steps and successful `start`
+- on `2026-04-19`, direct AK/SK re-check confirms the current `getTask` response for the healthy Node.js path still exposes empty `steps[].params`; runtime parameters are confirmed instead from `deploy_get_execution_params`
 - the Deploy MCP surface is therefore past metadata-only validation for the Node.js template path
 - the old `下载软件包` blocker is resolved on the healthy path when using `/codearts-mcp/1.0.0/codearts-mcp.tgz`
 - the new blocker is the outdated template runtime:
@@ -321,8 +336,106 @@ Real record-bound validation:
     - the concrete failure is an invalid generated package URL from fake `package_url`
 - `deploy_stop_app`
   - Real success on running record `3e146a76bd7f45039df694552557c289`
+  - Explicit execute live test now also exists and uses a fresh setup start before stopping:
+    - `tests/products/deploy/tools/stop-app-execute-live.test.ts`
 - `deploy_rollback_app`
-  - Still pending a rollback-eligible real execution sample
+  - Real execution is now confirmed against failed-source records in the current tenant.
+  - Real dry-run preview test now also exists:
+    - `tests/products/deploy/tools/rollback-app-live.test.ts`
+  - Successful rollback probes on `2026-04-19`:
+    - source:
+      - `task_id`: `418443e4c4034b54b0bd399412c6e168`
+      - `record_id`: `bf3093a9c392449b99c6b849b49be28e`
+      - created rollback record: `f143ad7b51b846258358a830f519e290`
+    - source:
+      - `task_id`: `d26cf4b8e8904e69926f43e98603dc71`
+      - `record_id`: `5833101f46c84d7b8fd2ea762a246425`
+      - created rollback record: `a63a751f01a0449e967c7ed820d7da86`
+  - Additional boundary observed on `2026-04-19`:
+    - rolling back aborted running-source record `3e146a76bd7f45039df694552557c289` returned:
+      - `400 Deploy.00060218`
+      - `当前环境正在部署中，请停止历史部署，或稍后重新执行`
+
+## SpringBoot template findings
+
+- The official SpringBoot create-by-template path is now past the earlier generic missing-param blocker.
+- Real start attempts on task `5b9ea99424874552a9338afa2af2c54d` created multiple execution records on `2026-04-19`:
+  - `76f64a2dd4a3405a912d511f83f6c8e2`
+  - `72a329cb37e14452876255d645020e59`
+  - `14414fcb93a341f898c566844aa449e2`
+  - `e53b27fecf554deebd8e9bb501604748`
+  - `63dcfb32203b43a3896a8af30e11fe40`
+- With fake or non-existent `.jar` package paths such as `/codeartsmcpdemo/1.0.0/codeartsmcpdemo.jar`:
+  - `安装JDK` succeeds
+  - `选择部署来源` fails
+  - provider logs show generated `download_package_url` plus:
+    - `file_type: "error"`
+    - `Download error , please check your package_url`
+- With the real existing tenant package `/codearts-mcp/1.0.0/codearts-mcp.tgz`:
+  - record `14414fcb93a341f898c566844aa449e2` proves the download layer works
+  - `安装JDK` succeeds
+  - `选择部署来源` succeeds
+  - `停止SpringBoot服务` and `启动SpringBoot服务` still fail
+  - provider log still uses:
+    - `/usr/local/${package_name}/${package_name}.jar`
+  - runtime shell expands that to:
+    - `/usr/local//.jar`
+- Extra undeclared start-time param `package_name=codearts-mcp` was ignored:
+  - record `e53b27fecf554deebd8e9bb501604748`
+  - `deploy_get_execution_params` does not surface `package_name`
+- Declared-param overrides such as `serviceName`, `spring_path`, and `component_name` are accepted:
+  - record `63dcfb32203b43a3896a8af30e11fe40`
+  - `deploy_get_execution_params` confirms those values are overrideable
+  - but the template still resolves the stop/start path from an internal `package_name` derivation that is not exposed as a start-time param
+- Current practical conclusion:
+  - SpringBoot execution is real-live validated through task creation, start submission, and record generation
+  - the remaining blocker is not MCPization
+  - it is a tenant/template compatibility issue: the current template expects a real `.jar`-aligned package shape and internal `package_name` resolution
+  - an additional Artifact sweep on `2026-04-19` for project `7bd39587c14048aebdadd0f9c22b1402` found published files such as:
+    - `/app/1.0.0/app.js`
+    - `/codearts-mcp/1.0.0/codearts-mcp.js`
+    - `/codearts-mcp/1.0.0/codearts-mcp.tgz`
+  - no published `.jar` file was found in that current live sample set
+- Additional targeted Build-to-Artifact probe on `2026-04-19`:
+  - the live Build job was temporarily updated to emit `codeartsmcpdemo.jar`, upload it, and then restored to the original `codearts-mcp.tgz` configuration
+  - verified successful Build sample:
+    - job `cb9308bf8ece41909247bacd26b32cad`
+    - build `17`
+    - final state: `SUCCESS`
+  - resulting published Artifact sample:
+    - `/codeartsmcpdemo/1.0.0/1.0.0/codeartsmcpdemo.jar`
+  - important provider nuance:
+    - current release upload configuration plus `build_version=1.0.0` produced an extra nested version directory
+    - using `/codeartsmcpdemo/1.0.0/codeartsmcpdemo.jar` still fails download
+    - using the actual published path `/codeartsmcpdemo/1.0.0/1.0.0/codeartsmcpdemo.jar` succeeds download
+- Correct-path real SpringBoot probe on `2026-04-19`:
+  - record `bd700e1e637c44c4bd5cf57928b3b91e`
+  - `deploy_get_execution_params` for that record returns exactly:
+    - `serviceName`
+    - `releaseVersion`
+    - `jdk_path`
+    - `package_url`
+    - `spring_path`
+    - `download_path`
+    - `service_port`
+    - `host_group`
+    - `component_name`
+    - `log_path`
+  - provider log confirms:
+    - `download_package_url` points to the corrected nested Artifact path
+    - `file_type: "file"`
+    - package download succeeds
+  - but stop/start still execute with:
+    - `/usr/local/${package_name}/${package_name}.jar`
+    - expanded at runtime to `/usr/local//.jar`
+  - this is now the strongest current evidence that:
+    - even with a real published `.jar`-named package
+    - and even after successful source download
+    - the template still does not derive internal `package_name` from the uploaded artifact path or file name
+  - Combined with the current HAR sweep:
+    - `package_name` does not appear in the captured request bodies
+    - `package_name` does not appear in the current SpringBoot execution-param surface
+    - `serviceName`, `spring_path`, and `component_name` are public inputs, but `package_name` is still internal-only from the tenant-visible MCP perspective
 
 ## MCP output normalization
 
@@ -410,10 +523,67 @@ Useful new HAR-only evidence from `package_spec`:
     - healthy Deploy records still failing specifically at `下载软件包`
   - because this route is browser-session-only, this remains evidence for diagnosis, not an MCP tool surface
 
+Latest browser HAR re-check on `2026-04-19` (`C:\Users\Yao\Desktop\devcloud.cn-north-4.huaweicloud.com.har`) adds an important negative result:
+
+- the HAR still contains frontend bundle code mentioning v4 route strings
+- but it does **not** contain real runtime requests for:
+  - `/v4/applications/list`
+  - `/v4/projects/{project_id}/environments/list`
+  - `/v4/projects/{project_id}/deploy-records`
+  - `/v4/projects/{project_id}/orchestrations/list`
+  - `/v4/projects/{project_id}/orchestrations/{orchestration_id}/last-record-detail`
+- the only captured browser-side v4 request in that latest HAR is:
+  - `GET /deployman/open/v4/projects/{project_id}/user-status`
+- A second narrow HAR on `2026-04-19` (`C:\Users\Yao\Desktop\32113.har`) captured the template-management page `https://devcloud.cn-north-4.huaweicloud.com/deployman/home/templatemanage/all`.
+  - It contained only 2 real Deploy portal data requests:
+    - `GET /deployman/open/v1/tenant/freeze`
+    - `POST /deployman/open/v1/applications/list`
+  - The `applications/list` response was non-empty and returned `total_num: 14`, including current tenant apps such as:
+    - `codex-springboot-1776434156964`
+    - `codex-template-probe-1776494048234`
+    - `codex-default-final-1776506825208`
+    - `codex-har-create-1776505979974`
+  - This strengthens the current interpretation that the sampled template-management UI path is still backed by the classic `v1` application-list surface, not the `v4` app / record / orchestration discovery family.
+
+Current interpretation:
+
+- the current evidence does not support a hidden browser-only positive sample path for the v4 deploy-record/orchestration family
+- in the latest captured console session, the frontend did not actually issue those v4 data requests at all
+- so the current tenant limitation is not only "AK/SK discovery returned empty", but also "the sampled browser session did not surface a positive v4 record/orchestration path to replay"
+
 ## V4 host and environment surface expansion
 
 Additional real probes against published v4 Deploy routes confirm the following MCP surfaces:
 
+- Tenant-wide AK/SK scan on `2026-04-19`
+  - Current visible Req projects:
+    - `7bd39587c14048aebdadd0f9c22b1402` `Codearts-mcp`
+    - `b60f3ec187f34c35ad3033d1d6d73876` `Demo`
+    - `eed055d650fb49dd88e49e6bdf88d344` `housekeeper`
+    - `eb80951449fa4af8bac57494f0f4defd` `体验项目`
+  - For all 4 projects, the current v4 discovery surfaces returned the same empty shapes:
+    - `deploy_list_v4_applications` -> `total: 0`, `resources: []`
+    - `deploy_list_v4_environments` -> `total: 0`, `resources: []`
+    - `deploy_list_v4_deploy_records` -> raw `null`, normalized by MCP to `records: []`
+  - Current interpretation:
+    - the current tenant has no confirmed positive v4 app / environment / record samples on these discovery routes
+    - this is broader than a single-project data gap
+- `deploy_list_v4_orchestrations`
+  - `POST /v4/projects/{project_id}/orchestrations/list` is published.
+  - Current AK/SK re-check on `2026-04-19` against sampled apps:
+    - `1bde719ea6924c71a9fdd64dbba5b6a1`
+    - `4ec9b1c2a08647c385d9a62dd2b1df15`
+    - `456f2cabc3bb441eb3249cbd44a90e6e`
+    - `a7874e2ef0c847c79690d2a422efe09a`
+  - all returned:
+    - `total: 0`
+    - `resources: []`
+  - Current interpretation:
+    - the route is reachable
+    - the sampled project currently exposes no v4 orchestration samples through this surface
+    - this is consistent with the current tenant-wide 4-project empty scan above
+  - Dedicated live regression test:
+    - `tests/products/deploy/tools/list-v4-orchestrations-live.test.ts`
 - `deploy_list_v4_clusters`
   - `POST /v4/projects/{project_id}/clusters/list` is published.
   - The current sampled project accepts both `host` and `container` cluster types.
@@ -441,6 +611,13 @@ Additional real probes against published v4 Deploy routes confirm the following 
 - `deploy_get_v4_environment_resource_detail`
   - `GET /v4/projects/{project_id}/environments/{environment_id}/resource-detail` is published.
   - The sampled old environment id currently returns `null`.
+- `deploy_list_v4_environments`
+  - `POST /v4/projects/{project_id}/environments/list` is published.
+  - Current AK/SK re-check on `2026-04-19` returned:
+    - `total: 0`
+    - `resources: []`
+  - Dedicated live regression test:
+    - `tests/products/deploy/tools/list-v4-environments-live.test.ts`
 - `deploy_list_v4_environment_hosts`
   - `GET /v4/projects/{project_id}/environments/{environment_id}/hosts` is published.
   - Using the sampled old environment id reaches the route and returns `400 Deploy.00011022`.
@@ -450,6 +627,66 @@ Additional real probes against published v4 Deploy routes confirm the following 
 - `deploy_delete_v4_environment_hosts`
   - `DELETE /v4/projects/{project_id}/environments/{environment_id}/hosts` is published.
   - Real probing confirms the request body shape is also a raw string array such as `["host_id"]`.
+- `deploy_list_v4_deploy_records`
+  - `POST /v4/projects/{project_id}/deploy-records` is published.
+  - Current AK/SK re-check on `2026-04-19` returned raw `null` for project `7bd39587c14048aebdadd0f9c22b1402`.
+  - MCP client normalization now treats that provider `null` as:
+    - `records: []`
+    - `raw: null`
+  - A dedicated live regression test now covers this normalization:
+    - `tests/products/deploy/tools/list-v4-deploy-records-live.test.ts`
+  - Current interpretation:
+    - this is a tenant/project-empty result shape, not `APIGW.0101`
+    - the route is reachable, but the sampled project currently exposes no v4 deploy records through this surface
+- `deploy_list_v4_applications`
+  - `POST /v4/applications/list` is published.
+  - Current AK/SK re-check on `2026-04-19` returned:
+    - `total: 0`
+    - `resources: []`
+  - Dedicated live regression test:
+    - `tests/products/deploy/tools/list-v4-applications-live.test.ts`
+- `deploy_get_v4_deploy_record`
+  - `GET /v4/projects/{project_id}/deploy-records/{record_id}` is published.
+  - Re-checking current classic Deploy record ids on `2026-04-19` returned:
+    - `400 Deploy.00021534`
+    - `部署记录不存在`
+  - Current interpretation:
+    - classic `/v1` and `/v2` deploy record ids are not automatically reusable as `/v4` deploy record ids on this route
+    - the current tenant still lacks a confirmed positive sample id for the v4 record-detail family
+- `deploy_get_last_record_detail`
+  - `GET /v4/projects/{project_id}/orchestrations/{orchestration_id}/last-record-detail` is published.
+  - On `2026-04-19`, no positive probe could be run because the sampled project returned zero items from `deploy_list_v4_orchestrations`.
+  - Current interpretation:
+    - the route family remains published
+    - but the current tenant still lacks a confirmed positive orchestration sample id for this read path
+
+Current implication for the v4 write-preview family:
+
+- `deploy_cancel_v4_deploy_record`
+- `deploy_rerun_v4_deploy_record`
+- `deploy_retry_v4_deploy_record`
+- `deploy_rollback_v4_deploy_record`
+- `deploy_pass_v4_manual_check`
+- `deploy_refuse_v4_manual_check`
+
+All six `dry_run` paths currently depend on `deploy_get_v4_deploy_record`.
+
+- This is not the same problem as `deploy_create_task_by_template`:
+  - no `APIGW.0101` unpublished-route evidence was found here
+  - the current blocker is missing tenant-visible positive sample data for the v4 record-detail family
+  - the latest browser HAR also failed to expose a positive console-side request path for that family
+- On `2026-04-19`, the local MCP `dry_run` behavior for these six tools was hardened:
+  - it still prefers a real `deploy_get_v4_deploy_record` validation preview when that route returns a positive sample
+  - if the current tenant/gateway returns the known sample-limited detail errors such as:
+    - `Deploy.00021534`
+    - `部署记录不存在`
+    - or `APIGW.0101`
+  - the tool now degrades to a local preview instead of failing the whole `dry_run`
+- So these tools should currently be read as:
+  - implemented
+  - route family reachable
+  - execute path still sample-data-limited on the current tenant
+  - `dry_run` is now safe and usable even without a tenant-visible positive v4 record sample
 
 The remaining v4 host-tag write surface is still intentionally skipped:
 
@@ -517,12 +754,21 @@ Current interpretation for the healthy template path:
 - `HUAWEICLOUD_DEPLOY_LIVE_RECORD_ID`
 - `HUAWEICLOUD_DEPLOY_LIVE_HOST_GROUP_PROJECT_ID`
 - `HUAWEICLOUD_DEPLOY_LIVE_HOST_GROUP_ID`
+- `HUAWEICLOUD_DEPLOY_LIVE_START_EXECUTE_TASK_ID`
+- `HUAWEICLOUD_DEPLOY_LIVE_START_EXECUTE_HOST_GROUP`
+- `HUAWEICLOUD_DEPLOY_LIVE_START_EXECUTE_PACKAGE_URL`
+- `HUAWEICLOUD_DEPLOY_LIVE_START_EXECUTE_SERVICE_PORT`
+- `HUAWEICLOUD_DEPLOY_LIVE_STOP_EXECUTE_TASK_ID`
+- `HUAWEICLOUD_DEPLOY_LIVE_STOP_EXECUTE_HOST_GROUP`
+- `HUAWEICLOUD_DEPLOY_LIVE_STOP_EXECUTE_PACKAGE_URL`
+- `HUAWEICLOUD_DEPLOY_LIVE_STOP_EXECUTE_SERVICE_PORT`
+- `HUAWEICLOUD_DEPLOY_LIVE_ROLLBACK_TASK_ID`
+- `HUAWEICLOUD_DEPLOY_LIVE_ROLLBACK_RECORD_ID`
 
 ## Follow-up targets
 
 - Move the healthy Node.js deployment path past the outdated template runtime:
   - either upgrade the runtime/process-manager behavior used by the template
   - or create/use a deployment template that does not depend on `forever` under Node `v10.9.0`
-- Validate `deploy_rollback_app` with a real rollback-eligible `record_id`.
 - Continue expanding safe MCP write coverage beyond the now-validated `POST /v1/applications` and `PUT /v1/applications` paths.
 - Keep the damaged app-path investigation separate from the healthy HAR-template path so `Deploy.00011042` does not block real record-bound validation work.

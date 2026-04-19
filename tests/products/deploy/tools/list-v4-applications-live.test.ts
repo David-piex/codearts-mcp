@@ -3,7 +3,7 @@ import { createHuaweiAuthHeaders } from "../../../../src/core/auth/huawei-auth.j
 import { loadEnvConfig } from "../../../../src/core/config/env.js";
 import { createHttpClient } from "../../../../src/core/http/client.js";
 import { createDeployClient } from "../../../../src/products/deploy/client.js";
-import { createDeployStopAppHandler } from "../../../../src/products/deploy/tools/stop-app.js";
+import { createDeployListV4ApplicationsHandler } from "../../../../src/products/deploy/tools/list-v4-applications.js";
 
 function hasLiveEnv(source: NodeJS.ProcessEnv) {
   return Boolean(
@@ -16,41 +16,40 @@ function hasLiveEnv(source: NodeJS.ProcessEnv) {
   );
 }
 
-function readTaskId(source: NodeJS.ProcessEnv) {
-  return source.HUAWEICLOUD_DEPLOY_LIVE_TASK_ID?.trim() || "418443e4c4034b54b0bd399412c6e168";
-}
-
-function readRecordId(source: NodeJS.ProcessEnv) {
-  return source.HUAWEICLOUD_DEPLOY_LIVE_RECORD_ID?.trim() || "bf3093a9c392449b99c6b849b49be28e";
+function readProjectId(source: NodeJS.ProcessEnv) {
+  return source.HUAWEICLOUD_DEPLOY_LIVE_PROJECT_ID?.trim() || "7bd39587c14048aebdadd0f9c22b1402";
 }
 
 if (hasLiveEnv(process.env)) {
-  describe("createDeployStopAppHandler live", () => {
+  describe("createDeployListV4ApplicationsHandler live", () => {
     const config = loadEnvConfig(process.env);
     const http = createHttpClient({
       baseUrl: config.deployBaseUrl,
       authHeaders: createHuaweiAuthHeaders(config.accessKey, config.secretKey)
     });
     const client = createDeployClient(http);
-    const handler = createDeployStopAppHandler(client);
-    const taskId = readTaskId(process.env);
-    const recordId = readRecordId(process.env);
+    const handler = createDeployListV4ApplicationsHandler(client);
+    const projectId = readProjectId(process.env);
 
-    it("returns a real dry-run stop preview against an existing record", async () => {
+    it("reaches the published v4 applications route and currently returns an empty list on this tenant", async () => {
       const result = await handler({
-        task_id: taskId,
-        record_id: recordId
+        project_id: projectId,
+        limit: 20,
+        offset: 0
       });
-      const item = result.structuredContent.item;
 
-      expect(item).toMatchObject({
-        id: taskId,
-        recordId,
-        executed: false
+      expect(result.structuredContent.items).toEqual([]);
+      expect(result.structuredContent.page_info).toEqual({
+        page: 1,
+        pageSize: 20,
+        total: 0
       });
-      expect(typeof item?.status).toBe("string");
+      expect(result.structuredContent.raw).toEqual({
+        total: 0,
+        resources: []
+      });
     }, 30000);
   });
 } else {
-  describe.skip("createDeployStopAppHandler live", () => {});
+  describe.skip("createDeployListV4ApplicationsHandler live", () => {});
 }

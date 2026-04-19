@@ -1,57 +1,57 @@
 import { describe, expect, it } from "vitest";
+import { createHuaweiAuthHeaders } from "../../../../src/core/auth/huawei-auth.js";
+import { loadEnvConfig } from "../../../../src/core/config/env.js";
+import { createHttpClient } from "../../../../src/core/http/client.js";
+import { createDeployClient } from "../../../../src/products/deploy/client.js";
 import { createDeployGetStatusHandler } from "../../../../src/products/deploy/tools/get-status.js";
 
-describe("createDeployGetStatusHandler", () => {
-  it("maps deploy status into MCP output", async () => {
-    const handler = createDeployGetStatusHandler({
-      getStatus: async () => ({
-        task_id: "task-1",
-        state: "RUNNING",
-        elapsed_time: 60,
-        step_states: [
-          { id: 1, name: "deploy", status: "running", region: "cn-north-4", enable: true },
-          { id: 2, name: "verify", status: "waiting", region: "cn-north-4", enable: false }
-        ]
-      })
-    });
+function hasLiveEnv(source: NodeJS.ProcessEnv) {
+  return Boolean(
+    source.HUAWEICLOUD_REGION &&
+      source.HUAWEICLOUD_AK &&
+      source.HUAWEICLOUD_SK &&
+      source.HUAWEICLOUD_DEPLOY_BASE_URL &&
+      source.MCP_SERVER_NAME &&
+      source.MCP_SERVER_VERSION
+  );
+}
 
-    const result = await handler({ task_id: "task-1" });
+function readTaskId(source: NodeJS.ProcessEnv) {
+  return source.HUAWEICLOUD_DEPLOY_LIVE_TASK_ID?.trim() || "418443e4c4034b54b0bd399412c6e168";
+}
 
-    expect(result.structuredContent.item).toEqual({
-      id: "task-1",
-      taskId: "task-1",
-      state: "RUNNING",
-      elapsedTime: 60,
-      stepCount: 2,
-      stepStates: [
-        { id: 1, name: "deploy", status: "running", region: "cn-north-4", enable: true },
-        { id: 2, name: "verify", status: "waiting", region: "cn-north-4", enable: false }
-      ]
+function readRecordId(source: NodeJS.ProcessEnv) {
+  return source.HUAWEICLOUD_DEPLOY_LIVE_RECORD_ID?.trim() || "bf3093a9c392449b99c6b849b49be28e";
+}
+
+if (hasLiveEnv(process.env)) {
+  describe("createDeployGetStatusHandler live", () => {
+    const config = loadEnvConfig(process.env);
+    const http = createHttpClient({
+      baseUrl: config.deployBaseUrl,
+      authHeaders: createHuaweiAuthHeaders(config.accessKey, config.secretKey)
     });
+    const client = createDeployClient(http);
+    const handler = createDeployGetStatusHandler(client);
+    const taskId = readTaskId(process.env);
+    const recordId = readRecordId(process.env);
+
+    it("loads record-bound status from the live deploy task", async () => {
+      const result = await handler({
+        task_id: taskId,
+        record_id: recordId
+      });
+      const item = result.structuredContent.item;
+
+      expect(item).toMatchObject({
+        id: taskId,
+        taskId,
+        recordId
+      });
+      expect(typeof item?.state).toBe("string");
+      expect((item?.stepCount as number) > 0).toBe(true);
+    }, 30000);
   });
-
-  it("keeps requested record_id in deploy status output", async () => {
-    const handler = createDeployGetStatusHandler({
-      getStatus: async () => ({
-        task_id: "task-1",
-        state: "RUNNING",
-        percentage: 50,
-        elapsed_time: 30,
-        step_states: [{ id: 1, name: "deploy", status: "running" }]
-      })
-    });
-
-    const result = await handler({ task_id: "task-1", record_id: "record-1" });
-
-    expect(result.structuredContent.item).toEqual({
-      id: "task-1",
-      taskId: "task-1",
-      recordId: "record-1",
-      state: "RUNNING",
-      percentage: 50,
-      elapsedTime: 30,
-      stepCount: 1,
-      stepStates: [{ id: 1, name: "deploy", status: "running" }]
-    });
-  });
-});
+} else {
+  describe.skip("createDeployGetStatusHandler live", () => {});
+}

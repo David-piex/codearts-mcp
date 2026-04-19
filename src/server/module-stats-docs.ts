@@ -67,7 +67,7 @@ const readWriteMatrixMeta: Record<ModuleName, ReadWriteMatrixMeta> = {
   Build: {
     live: "Validated",
     keyGaps:
-      "19 tools are fully live-validated and 3 helper/configuration tools are currently code/test-only"
+      "All 22 tools are now fully live-validated, including the 3 helper/configuration tools via real dry-run previews"
   },
   Artifact: {
     live: "Partial",
@@ -102,12 +102,12 @@ const implementationStatusMeta: Record<ModuleName, ImplementationStatusMeta> = {
   Deploy: {
     live: "Partial",
     notes:
-      "The detailed Deploy page is the source of truth for the expanded v4 surface. `deploy_create_application`, `deploy_modify_application`, `deploy_start_app`, `deploy_get_execution_params`, `deploy_get_history_detail`, `deploy_get_app_log`, and `deploy_stop_app` now all have real AK/SK validation on at least one healthy path. The remaining real blocker is the outdated Node.js template runtime (`Node v10.9.0` + `forever`), plus a rollback-eligible sample for `deploy_rollback_app`."
+      "The detailed Deploy page is the source of truth for the expanded v4 surface. `deploy_create_application`, `deploy_modify_application`, `deploy_start_app`, `deploy_get_execution_params`, `deploy_get_history_detail`, `deploy_get_app_log`, `deploy_stop_app`, and `deploy_rollback_app` now all have real AK/SK validation on at least one healthy path. The remaining practical blocker is the outdated Node.js template runtime (`Node v10.9.0` + `forever`)."
   },
   Build: {
     live: "Validated",
     notes:
-      "19 tools are fully AK/SK validated on the current surface, while 3 helper/configuration tools are currently covered by code/test validation only."
+      "All 22 tools are now AK/SK Full on the current surface, including the 3 helper/configuration tools through real dry-run previews on the live job config."
   },
   Artifact: {
     live: "Partial",
@@ -144,9 +144,9 @@ const toolStatusSummaryMeta: Record<ModuleName, ToolStatusSummaryMeta> = {
       "The Deploy MCP surface now includes v4 application/environment/cluster/record/variable tools. The detailed live split is maintained in the dedicated Deploy page."
   },
   Build: {
-    summary: "`19 Full / 0 Reachable / 0 Unpublished / 3 Code`",
+    summary: "`22 Full / 0 Reachable / 0 Unpublished / 0 Code`",
     conclusion:
-      "The remote Build surface is fully live-validated for 19 tools; 3 helper/configuration tools are currently covered by code/test validation only."
+      "The remote Build surface is now fully live-validated, including the 3 helper/configuration tools via real dry-run previews on the live job config."
   },
   Artifact: {
     summary: "`5 Full / 0 Reachable / 7 Unpublished / 0 Code`",
@@ -182,7 +182,7 @@ const readmeModuleNumbersMeta: Record<ModuleName, ReadmeModuleNumbersMeta> = {
   },
   Build: {
     liveStatus: "Validated",
-    breakdown: "`19 Full / 0 Reachable / 0 Unpublished / 3 Code`"
+    breakdown: "`22 Full / 0 Reachable / 0 Unpublished / 0 Code`"
   },
   Artifact: {
     liveStatus: "Partial",

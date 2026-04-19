@@ -3,6 +3,7 @@ import { createHuaweiAuthHeaders } from "../../../src/core/auth/huawei-auth.js";
 import { loadEnvConfig } from "../../../src/core/config/env.js";
 import { createHttpClient } from "../../../src/core/http/client.js";
 import { createArtifactClient } from "../../../src/products/artifact/client.js";
+import { mapSequentiallyWithDelay } from "./live-smoke-helpers.js";
 
 const fallbackProjectIds = [
   "7bd39587c14048aebdadd0f9c22b1402",
@@ -19,6 +20,8 @@ const fallbackRepoNames = [
   "maven",
   "npm"
 ];
+
+const FILE_TREE_SWEEP_DELAY_MS = 150;
 
 function hasLiveEnv(source: NodeJS.ProcessEnv) {
   return Boolean(
@@ -153,25 +156,26 @@ if (hasLiveEnv(process.env)) {
         return;
       }
 
-      const results: Array<{
-        project_id: string;
-        repo_name: string;
-        result: Awaited<ReturnType<typeof client.getFileTree>>;
-      }> = [];
+      const probes = projectIds.flatMap((project_id) =>
+        repoNames.map((repo_name) => ({
+          project_id,
+          repo_name
+        }))
+      );
 
-      for (const project_id of projectIds) {
-        for (const repo_name of repoNames) {
-          results.push({
+      const results = await mapSequentiallyWithDelay(
+        probes,
+        async ({ project_id, repo_name }) => ({
+          project_id,
+          repo_name,
+          result: await client.getFileTree({
+            tenant_id: tenantId,
             project_id,
-            repo_name,
-            result: await client.getFileTree({
-              tenant_id: tenantId,
-              project_id,
-              repo_name
-            })
-          });
-        }
-      }
+            repo_name
+          })
+        }),
+        { delayMs: FILE_TREE_SWEEP_DELAY_MS }
+      );
 
       expect(results.length).toBeGreaterThan(0);
 

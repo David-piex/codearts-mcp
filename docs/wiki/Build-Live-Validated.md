@@ -1,6 +1,6 @@
 # Build Live Validated
 
-Last updated: `2026-04-18`
+Last updated: `2026-04-19`
 
 Region: `cn-north-4`
 
@@ -11,6 +11,12 @@ Validated with real tenant credentials.
 Repository live-smoke entry:
 
 - `tests/products/build/client-live-smoke.test.ts`
+
+Additional live helper probes:
+
+- `tests/products/build/tools/configure-release-upload-step-live.test.ts`
+- `tests/products/build/tools/prepare-deployable-node-app-live.test.ts`
+- `tests/products/build/tools/prepare-node-runtime-bundle-live.test.ts`
 
 Scanned CodeArts project ids:
 
@@ -54,11 +60,15 @@ Scanned CodeArts project ids:
     - `releasePublishingStepCount`
     - `releasePublishingStepNames`
   - Real current job result:
-    - `releasePublishingDetected: false`
-    - `releasePublishingStepCount: 0`
+    - `releasePublishingDetected: true`
+    - `releasePublishingStepCount: 2`
   - This matches the live job config:
-    - the current tenant's only Build job contains a single `Npm构建` step
-    - it does not contain an `上传软件包到软件发布库`-style publishing step
+    - the current tenant's sampled Build job now contains:
+      - `Npm构建`
+      - `Upload package to release repository`
+    - the `Npm构建` step already contains both helper markers:
+      - `# codex-node-runtime-bundle:start`
+      - `# codex-deployable-node-app:start`
 
 - `build_list_records`
   - Real API call succeeds against the confirmed job id.
@@ -242,6 +252,54 @@ Scanned CodeArts project ids:
   - Current boundary:
     - this specialized tool is live-validated in preview mode
     - it intentionally has not yet been executed against the live Build job
+
+- `build_configure_release_upload_step`
+  - `dry_run` now performs a real live preview against the existing live release upload step.
+  - Real validated preview sample on:
+    - `job_id`: `cb9308bf8ece41909247bacd26b32cad`
+    - target step: `Upload package to release repository`
+    - preview input:
+      - `file`: `codearts-mcp.tgz`
+      - `package_name`: `codearts-mcp`
+      - `build_version`: `1.0.0`
+      - `custom_upload_path`: `/codearts-mcp/1.0.0`
+  - Real preview result includes:
+    - `module_id`: `devcloud2018.codeci_action_20018.action`
+    - `upload_tool`: `curl`
+    - `remain_origin_path`: `FLAT`
+
+- `build_prepare_node_runtime_bundle`
+  - `dry_run` now performs a real live preview against the current `Npm构建` step.
+  - Real validated preview sample on:
+    - `job_id`: `cb9308bf8ece41909247bacd26b32cad`
+    - target step: `Npm构建`
+    - preview input:
+      - `output_file`: `codearts-mcp.tgz`
+      - `staging_dir`: `.release-bundle`
+  - Real preview result confirms:
+    - `alreadyConfigured: true`
+    - `updatedCommand` still contains `# codex-node-runtime-bundle:start`
+
+- `build_prepare_deployable_node_app`
+  - `dry_run` now performs a real live preview against the current `Npm构建` step.
+  - Real validated preview sample on:
+    - `job_id`: `cb9308bf8ece41909247bacd26b32cad`
+    - target step: `Npm构建`
+    - preview input:
+      - `entry_file`: `src/server/deploy-entry.ts`
+      - `output_file`: `app.js`
+      - `target_runtime`: `node20`
+  - Real preview result confirms:
+    - `alreadyConfigured: true`
+    - `updatedCommand` still contains `# codex-deployable-node-app:start`
+
+## Current closure
+
+- `Build` is now fully `AK/SK Full` on the currently exposed 22-tool surface.
+- The three former helper/configuration gaps are now backed by explicit real dry-run live tests:
+  - `build_configure_release_upload_step`
+  - `build_prepare_node_runtime_bundle`
+  - `build_prepare_deployable_node_app`
 
 ## Detail paths confirmed reachable
 

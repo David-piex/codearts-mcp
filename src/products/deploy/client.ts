@@ -1841,11 +1841,13 @@ export function createDeployClient(_http: ReturnTypeCreateHttpClient): DeployCli
           limit: input.limit,
           offset: input.offset
         }
-      )) as {
-        total?: number;
-        resources?: unknown;
-        result?: unknown;
-      };
+      )) as
+        | {
+            total?: number;
+            resources?: unknown;
+            result?: unknown;
+          }
+        | null;
 
       const rawItems = asArray<{
         id?: string;
@@ -1853,11 +1855,11 @@ export function createDeployClient(_http: ReturnTypeCreateHttpClient): DeployCli
         orchestration_id?: string;
         start_time?: string;
         end_time?: string;
-      }>(response.resources ?? response.result);
+      }>(response?.resources ?? response?.result);
 
       return {
         project_id: input.project_id,
-        total: response.total,
+        total: response?.total,
         records: rawItems.map((item) => ({
           id: item.id,
           state: item.state,

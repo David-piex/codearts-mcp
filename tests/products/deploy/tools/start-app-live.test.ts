@@ -1,109 +1,69 @@
 import { describe, expect, it } from "vitest";
+import { createHuaweiAuthHeaders } from "../../../../src/core/auth/huawei-auth.js";
+import { loadEnvConfig } from "../../../../src/core/config/env.js";
+import { createHttpClient } from "../../../../src/core/http/client.js";
+import { createDeployClient } from "../../../../src/products/deploy/client.js";
 import { createDeployStartAppHandler } from "../../../../src/products/deploy/tools/start-app.js";
 
-describe("createDeployStartAppHandler", () => {
-  it("returns a real dry-run preview by default", async () => {
-    const handler = createDeployStartAppHandler({
-      getTask: async () => ({
-        task_id: "task-1",
-        name: "demo-task",
-        project_id: "project-1",
-        state: "READY",
-        can_execute: true
-      }),
-      startApp: async () => {
-        throw new Error("should not execute in dry run");
-      }
-    });
+function hasLiveEnv(source: NodeJS.ProcessEnv) {
+  return Boolean(
+    source.HUAWEICLOUD_REGION &&
+      source.HUAWEICLOUD_AK &&
+      source.HUAWEICLOUD_SK &&
+      source.HUAWEICLOUD_DEPLOY_BASE_URL &&
+      source.MCP_SERVER_NAME &&
+      source.MCP_SERVER_VERSION
+  );
+}
 
-    const result = await handler({
-      task_id: "task-1",
-      trigger_source: 1,
-      params: [{ name: "CODEARTS_ARTIFACT_VERSION", type: "text", value: "1.0.0" }]
-    });
+function readTaskId(source: NodeJS.ProcessEnv) {
+  return source.HUAWEICLOUD_DEPLOY_LIVE_TASK_ID?.trim() || "418443e4c4034b54b0bd399412c6e168";
+}
 
-    expect(result.structuredContent.item).toEqual({
-      id: "task-1",
-      taskName: "demo-task",
-      projectId: "project-1",
-      status: "READY",
-      canExecute: true,
-      triggerSource: 1,
-      paramCount: 1,
-      executed: false
-    });
-  });
+function readHostGroup(source: NodeJS.ProcessEnv) {
+  return source.HUAWEICLOUD_DEPLOY_LIVE_EXECUTION_HOST_GROUP?.trim() || "8db92c3991ea4f51ac6e0cf7a895afde";
+}
 
-  it("fails in dry-run mode when the task does not exist", async () => {
-    const handler = createDeployStartAppHandler({
-      getTask: async () => {
-        const error = new Error("task not found") as Error & { status?: number };
-        error.status = 404;
-        throw error;
-      },
-      startApp: async () => {
-        throw new Error("should not execute in dry run");
-      }
-    });
+function readPackageUrl(source: NodeJS.ProcessEnv) {
+  return source.HUAWEICLOUD_DEPLOY_LIVE_PACKAGE_URL?.trim() || "/codearts-mcp/1.0.0/codearts-mcp.tgz";
+}
 
-    await expect(
-      handler({
-        task_id: "missing-task"
-      })
-    ).rejects.toMatchObject({
-      status: 404
-    });
-  });
+function readServicePort(source: NodeJS.ProcessEnv) {
+  return source.HUAWEICLOUD_DEPLOY_LIVE_SERVICE_PORT?.trim() || "3000";
+}
 
-  it("maps start deploy task into MCP output", async () => {
-    const handler = createDeployStartAppHandler({
-      getTask: async () => {
-        throw new Error("should not preview");
-      },
-      startApp: async () => ({
-        task_id: "task-1",
-        record_id: "record-1",
-        job_name: "demo-task",
-        status: "RUNNING",
-        app_component_list: [
-          {
-            task_id: "task-1",
-            app_id: "app-1",
-            app_name: "gateway-prod",
-            comp_id: "component-1",
-            comp_name: "gateway",
-            region: "cn-north-4",
-            state: "RUNNING"
-          }
+if (hasLiveEnv(process.env)) {
+  describe("createDeployStartAppHandler live", () => {
+    const config = loadEnvConfig(process.env);
+    const http = createHttpClient({
+      baseUrl: config.deployBaseUrl,
+      authHeaders: createHuaweiAuthHeaders(config.accessKey, config.secretKey)
+    });
+    const client = createDeployClient(http);
+    const handler = createDeployStartAppHandler(client);
+    const taskId = readTaskId(process.env);
+
+    it("returns a real dry-run preview against the live healthy task", async () => {
+      const result = await handler({
+        task_id: taskId,
+        trigger_source: 1,
+        params: [
+          { name: "host_group", type: "host_group", value: readHostGroup(process.env) },
+          { name: "package_url", type: "text", value: readPackageUrl(process.env) },
+          { name: "service_port", type: "text", value: readServicePort(process.env) }
         ]
-      })
-    });
+      });
+      const item = result.structuredContent.item;
 
-    const result = await handler({
-      task_id: "task-1",
-      trigger_source: 1,
-      params: [{ name: "CODEARTS_ARTIFACT_VERSION", type: "text", value: "1.0.0" }],
-      dry_run: false
-    });
-
-    expect(result.structuredContent.item).toEqual({
-      id: "task-1",
-      recordId: "record-1",
-      jobName: "demo-task",
-      status: "RUNNING",
-      componentCount: 1,
-      components: [
-        {
-          taskId: "task-1",
-          appId: "app-1",
-          appName: "gateway-prod",
-          componentId: "component-1",
-          componentName: "gateway",
-          region: "cn-north-4",
-          state: "RUNNING"
-        }
-      ],
-      executed: true
-    });
+      expect(item).toMatchObject({
+        id: taskId,
+        triggerSource: 1,
+        paramCount: 3,
+        executed: false
+      });
+      expect("taskName" in (item ?? {})).toBe(true);
+    }, 30000);
   });
-});
+} else {
+  describe.skip("createDeployStartAppHandler live", () => {});
+}

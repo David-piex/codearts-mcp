@@ -1,6 +1,6 @@
 # TestPlan Live Validated
 
-Last updated: `2026-04-17`
+Last updated: `2026-04-19`
 
 Region: `cn-north-4`
 
@@ -57,6 +57,11 @@ Known live TestPlan samples:
     - the MCP client now defaults to `offset=0&limit=100`
   - Current tenant returns:
     - `issues: []`
+  - Re-confirmed in the consolidated live smoke on `2026-04-19`.
+  - Additional direct re-check on `2026-04-19` confirms the currently known 3 live plan ids still all return `0` issues:
+    - `7bd39587c14048aebdadd0f9c22b1402 / vd1j00011amm0nec`
+    - `7bd39587c14048aebdadd0f9c22b1402 / vd1k00011am7d6gv`
+    - `eb80951449fa4af8bac57494f0f4defd / vd040000umltrdd2`
 
 - `testplan_list_cases`
   - Real API call succeeds on the known live plans.
@@ -64,6 +69,8 @@ Known live TestPlan samples:
     - `POST /GT3KServer/v4/{project_id}/testcases/batch-query`
   - Current tenant returns:
     - `cases: []`
+  - Re-confirmed in the consolidated live smoke on `2026-04-19`.
+  - Additional direct re-check on `2026-04-19` confirms the same 3 live plan ids still all return `0` cases.
 
 - `testplan_get_plan`
   - Real API call reaches the live gateway but the current Beijing 4 environment returns:
@@ -71,6 +78,7 @@ Known live TestPlan samples:
     - `The API does not exist or has not been published in the environment`
   - Current route under test:
     - `GET /v1/projects/{project_id}/plans/{plan_id}`
+  - Re-confirmed in the consolidated live smoke on `2026-04-19`.
 
 - `testplan_list_runs`
   - Real API call reaches the live gateway but the current Beijing 4 environment returns:
@@ -78,6 +86,7 @@ Known live TestPlan samples:
     - `The API does not exist or has not been published in the environment`
   - Current route under test:
     - `GET /v1/projects/{project_id}/plans/{plan_id}/runs?...`
+  - Re-confirmed in the consolidated live smoke on `2026-04-19`.
 
 - `testplan_get_case`
   - Real API call reaches the live gateway but the current Beijing 4 environment returns:
@@ -85,6 +94,7 @@ Known live TestPlan samples:
     - `The API does not exist or has not been published in the environment`
   - Current route under test:
     - `GET /GT3KServer/v4/{project_id}/testcases/{case_id}`
+  - Re-confirmed in the consolidated live smoke on `2026-04-19`.
 
 - `testplan_run_cases`
   - Real API call reaches the live gateway but the current Beijing 4 environment returns:
@@ -93,12 +103,13 @@ Known live TestPlan samples:
   - Current route under test:
     - `POST /GT3KServer/v4/{project_id}/testcases/execute`
   - Safe validation was performed with a clearly non-existent probe `case_id` to avoid triggering a real execution.
+  - Re-confirmed in the consolidated live smoke on `2026-04-19`.
 
 ## Current tenant state
 
 - TestPlan is not uniformly enabled across the scanned projects.
 - Two scanned projects already have real plan samples.
-- The currently validated live plan still has empty issues and cases.
+- The currently known 3 live plan samples still all have empty issues and cases.
 
 ## Live smoke inputs
 
