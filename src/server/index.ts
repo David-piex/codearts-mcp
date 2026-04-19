@@ -1,3 +1,4 @@
+import { pathToFileURL } from "node:url";
 import { startHttpServer } from "./http.js";
 import { startStdioServer } from "./stdio.js";
 
@@ -20,6 +21,6 @@ async function main() {
 
 export { main };
 
-if (import.meta.url === `file://${process.argv[1]?.replace(/\\/g, "/")}`) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   void main();
 }
