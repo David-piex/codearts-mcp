@@ -1,9 +1,13 @@
+import { randomUUID } from "node:crypto";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { createHuaweiAuthHeaders } from "../core/auth/huawei-auth.js";
 import type { AppConfig, ServerMetadataConfig } from "../core/config/env.js";
 import { AppError } from "../core/errors/app-error.js";
 import { createHttpClient } from "../core/http/client.js";
+import { encryptSecretValue, decryptSecretValue } from "./auth-crypto.js";
+import { createAuthToken } from "./auth-token.js";
+import type { PersistedAuthRecord } from "./auth-repository.js";
 import { createArtifactClient } from "../products/artifact/client.js";
 import {
   artifactDeleteFileInput,
@@ -347,6 +351,20 @@ import {
 } from "./region-defaults.js";
 import type { SessionCredentialStore } from "./session-store.js";
 
+type AuthRepository = {
+  upsert: (record: PersistedAuthRecord) => void;
+  findByTokenHash: (tokenHash: string) => PersistedAuthRecord | undefined;
+  findActiveByAuthId: (authId: string) => PersistedAuthRecord | undefined;
+  revoke: (authId: string, revokedAt: string) => void;
+};
+
+type HttpAuthRuntimeConfig = {
+  repository?: AuthRepository;
+  masterKey?: string;
+};
+
+let httpAuthRuntimeConfig: HttpAuthRuntimeConfig = {};
+
 const configureSessionInputSchema = z.object({
   access_key: z.string().min(1),
   secret_key: z.string().min(1),
@@ -370,6 +388,27 @@ function requireSessionId(sessionId?: string): string {
 }
 
 export function createConfigureSessionHandler(store: SessionCredentialStore) {
+  return createConfigureSessionHandlerWithPersistence({
+    sessionStore: store,
+    repository: httpAuthRuntimeConfig.repository,
+    masterKey: httpAuthRuntimeConfig.masterKey
+  });
+}
+
+export function createClearSessionHandler(store: SessionCredentialStore) {
+  return createClearSessionHandlerWithPersistence({
+    sessionStore: store,
+    repository: httpAuthRuntimeConfig.repository
+  });
+}
+
+export function createConfigureSessionHandlerWithPersistence(options: {
+  sessionStore: SessionCredentialStore;
+  repository?: AuthRepository;
+  masterKey?: string;
+  createToken?: typeof createAuthToken;
+  authTokenTtlSeconds?: number;
+}) {
   return async (
     input: unknown,
     extra: {
@@ -378,6 +417,16 @@ export function createConfigureSessionHandler(store: SessionCredentialStore) {
   ) => {
     const parsed = configureSessionInputSchema.parse(input);
     const sessionId = requireSessionId(extra.sessionId);
+    const repository = options.repository;
+    const masterKey = options.masterKey;
+
+    if (!repository || !masterKey) {
+      throw new AppError(
+        "auth_error",
+        "HTTP auth persistence is not configured for this server."
+      );
+    }
+
     const endpoints = mergeSessionEndpointOverrides(resolveRegionDefaults(parsed.region), {
       req_base_url: parsed.req_base_url,
       repo_base_url: parsed.repo_base_url,
@@ -388,27 +437,47 @@ export function createConfigureSessionHandler(store: SessionCredentialStore) {
       build_base_url: parsed.build_base_url,
       artifact_base_url: parsed.artifact_base_url
     });
+    const now = new Date().toISOString();
+    const token = (options.createToken ?? createAuthToken)();
+    const authId = randomUUID();
 
-    store.set(sessionId, {
-      access_key: parsed.access_key,
-      secret_key: parsed.secret_key,
+    repository.upsert({
+      auth_id: authId,
+      token_hash: token.hash,
+      encrypted_access_key: encryptSecretValue(parsed.access_key, masterKey),
+      encrypted_secret_key: encryptSecretValue(parsed.secret_key, masterKey),
       region: parsed.region,
       ...endpoints,
-      updated_at: new Date().toISOString()
+      created_at: now,
+      updated_at: now,
+      last_used_at: now,
+      expires_at: new Date(
+        Date.now() + (options.authTokenTtlSeconds ?? 60 * 60 * 24 * 30) * 1000
+      ).toISOString()
     });
+
+    options.sessionStore.bind(sessionId, authId);
 
     return {
       content: [{ type: "text" as const, text: `Session ${sessionId} configured for ${parsed.region}.` }],
       structuredContent: {
         session_id: sessionId,
+        auth_id: authId,
         configured: true,
-        region: parsed.region
-      }
+        region: parsed.region,
+        token_issued: true,
+        token_preview: `${token.raw.slice(0, 6)}...`,
+        cookie_expected: true
+      },
+      _httpAuthToken: token.raw
     };
   };
 }
 
-export function createClearSessionHandler(store: SessionCredentialStore) {
+export function createClearSessionHandlerWithPersistence(options: {
+  sessionStore: SessionCredentialStore;
+  repository?: AuthRepository;
+}) {
   return async (
     _input: unknown,
     extra: {
@@ -416,7 +485,13 @@ export function createClearSessionHandler(store: SessionCredentialStore) {
     }
   ) => {
     const sessionId = requireSessionId(extra.sessionId);
-    store.clear(sessionId);
+    const authId = options.sessionStore.getAuthId(sessionId);
+
+    if (authId && options.repository) {
+      options.repository.revoke(authId, new Date().toISOString());
+    }
+
+    options.sessionStore.clear(sessionId);
 
     return {
       content: [{ type: "text" as const, text: `Session ${sessionId} credentials cleared.` }],
@@ -437,6 +512,8 @@ type CreateServerOptions =
       mode: "http";
       config: ServerMetadataConfig;
       sessionStore: SessionCredentialStore;
+      authRepository?: AuthRepository;
+      authMasterKey?: string;
     };
 
 function buildClientsFromCredentialConfig(config: {
@@ -476,15 +553,28 @@ function buildClientsForSession(store: SessionCredentialStore, sessionId?: strin
     throw new AppError("auth_error", "This tool requires an MCP session.");
   }
 
-  const sessionConfig = store.get(sessionId);
+  const authId = store.getAuthId(sessionId);
 
-  if (!sessionConfig) {
+  if (!authId) {
     throw new AppError("auth_error", `No Huawei Cloud credentials configured for session ${sessionId}.`);
   }
 
+  const repository = httpAuthRuntimeConfig.repository;
+  const masterKey = httpAuthRuntimeConfig.masterKey;
+
+  if (!repository || !masterKey) {
+    throw new AppError("auth_error", "HTTP auth persistence is not configured for this server.");
+  }
+
+  const sessionConfig = repository.findActiveByAuthId(authId);
+
+  if (!sessionConfig) {
+    throw new AppError("auth_error", `No Huawei Cloud credentials configured for auth identity ${authId}.`);
+  }
+
   return buildClientsFromCredentialConfig({
-    accessKey: sessionConfig.access_key,
-    secretKey: sessionConfig.secret_key,
+    accessKey: decryptSecretValue(sessionConfig.encrypted_access_key, masterKey),
+    secretKey: decryptSecretValue(sessionConfig.encrypted_secret_key, masterKey),
     reqBaseUrl: sessionConfig.req_base_url,
     repoBaseUrl: sessionConfig.repo_base_url,
     pipelineBaseUrl: sessionConfig.pipeline_base_url,
@@ -498,6 +588,7 @@ function buildClientsForSession(store: SessionCredentialStore, sessionId?: strin
 
 type SessionToolExtra = {
   sessionId?: string;
+  authId?: string;
 };
 
 export function createSessionAwareReqProjectsHandler(
@@ -2156,6 +2247,14 @@ export function createSessionAwareTestPlanRunCasesHandler(
 }
 
 export function createServer(options: CreateServerOptions) {
+  httpAuthRuntimeConfig =
+    options.mode === "http"
+      ? {
+          repository: options.authRepository,
+          masterKey: options.authMasterKey
+        }
+      : {};
+
   const server = new McpServer(createServerInfo(options.config), {
     capabilities: {
       tools: {}

@@ -56,7 +56,7 @@ function isExpired(record: PersistedAuthRecord) {
 
 export function createFileAuthRepository(path: string) {
   return {
-    async upsert(record: PersistedAuthRecord) {
+    upsert(record: PersistedAuthRecord) {
       const data = loadFile(path);
       const records = data.records.filter((item) => item.auth_id !== record.auth_id);
 
@@ -67,18 +67,18 @@ export function createFileAuthRepository(path: string) {
       });
     },
 
-    async findByTokenHash(tokenHash: string) {
+    findByTokenHash(tokenHash: string) {
       return loadFile(path).records.find((item) => item.token_hash === tokenHash);
     },
 
-    async findActiveByAuthId(authId: string) {
+    findActiveByAuthId(authId: string) {
       return loadFile(path).records.find(
         (item) =>
           item.auth_id === authId && item.revoked_at === undefined && !isExpired(item)
       );
     },
 
-    async revoke(authId: string, revokedAt: string) {
+    revoke(authId: string, revokedAt: string) {
       const data = loadFile(path);
 
       saveFile(path, {
