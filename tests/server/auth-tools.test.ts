@@ -1,11 +1,19 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi, afterEach } from "vitest";
 import {
+  createServer,
   createConfigureSessionHandlerWithPersistence,
-  createClearSessionHandlerWithPersistence
+  createClearSessionHandlerWithPersistence,
+  createSessionAwareReqProjectsHandler
 } from "../../src/server/create-server.js";
+import { encryptSecretValue } from "../../src/server/auth-crypto.js";
 import { createSessionCredentialStore } from "../../src/server/session-store.js";
 
 describe("session auth tools", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+  });
+
   it("persists encrypted auth state and returns token metadata", async () => {
     const store = createSessionCredentialStore();
     const persisted: Array<Record<string, unknown>> = [];
@@ -171,5 +179,100 @@ describe("session auth tools", () => {
     expect(result.structuredContent.cleared).toBe(true);
     expect(revoked?.authId).toBe("auth-1");
     expect(store.getAuthId("session-a")).toBeUndefined();
+  });
+
+  it("resolves business tool clients from request auth identity without a pre-bound session", async () => {
+    const store = createSessionCredentialStore();
+    const fetchMock = vi.fn(async () => {
+      return new Response(
+        JSON.stringify({
+          projects: [
+            {
+              project_id: "project-1",
+              name: "Codearts-mcp"
+            }
+          ],
+          total: 1
+        }),
+        {
+          status: 200,
+          headers: {
+            "content-type": "application/json"
+          }
+        }
+      );
+    });
+
+    vi.stubGlobal("fetch", fetchMock as typeof fetch);
+
+    createServer({
+      mode: "http",
+      config: {
+        serverName: "codearts-mcp",
+        serverVersion: "0.1.0",
+        httpPort: 3000
+      },
+      sessionStore: store,
+      authRepository: {
+        upsert: () => undefined,
+        findByTokenHash: () => undefined,
+        findActiveByAuthId: (authId) =>
+          authId === "auth-1"
+            ? {
+                auth_id: "auth-1",
+                token_hash: "hash-1",
+                encrypted_access_key: encryptSecretValue(
+                  "ak-1",
+                  "0123456789abcdef0123456789abcdef"
+                ),
+                encrypted_secret_key: encryptSecretValue(
+                  "sk-1",
+                  "0123456789abcdef0123456789abcdef"
+                ),
+                region: "cn-north-4",
+                req_base_url: "https://projectman-ext.cn-north-4.myhuaweicloud.com",
+                repo_base_url: "https://codehub-ext.cn-north-4.myhuaweicloud.com",
+                pipeline_base_url: "https://cloudpipeline-ext.cn-north-4.myhuaweicloud.com",
+                check_base_url: "https://codecheck-ext.cn-north-4.myhuaweicloud.com",
+                testplan_base_url: "https://cloudtest-ext.cn-north-4.myhuaweicloud.com",
+                deploy_base_url: "https://codearts-deploy.cn-north-4.myhuaweicloud.com",
+                build_base_url: "https://cloudbuild-ext.cn-north-4.myhuaweicloud.com",
+                artifact_base_url: "https://artifact.cn-north-4.myhuaweicloud.cn",
+                created_at: "2026-04-19T10:00:00.000Z",
+                updated_at: "2026-04-19T10:00:00.000Z",
+                last_used_at: "2026-04-19T10:00:00.000Z"
+              }
+            : undefined,
+        revoke: () => undefined
+      },
+      authMasterKey: "0123456789abcdef0123456789abcdef"
+    });
+
+    const handler = createSessionAwareReqProjectsHandler(store);
+
+    await expect(
+      handler(
+        {
+          page: 1,
+          page_size: 20
+        },
+        {
+          authInfo: {
+            authId: "auth-1"
+          }
+        } as never
+      )
+    ).resolves.toMatchObject({
+      structuredContent: {
+        items: [
+          {
+            id: "project-1",
+            name: "Codearts-mcp"
+          }
+        ]
+      }
+    });
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 });

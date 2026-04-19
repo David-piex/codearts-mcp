@@ -32,6 +32,24 @@
 
 - `deploy/nginx/ssl/README.md`
 
+如果你当前就是用仓库自带的 Docker Compose，建议直接叠加：
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.ssl.yml up -d --build
+```
+
+这个覆盖文件会做两件事：
+
+- 把 nginx 配置切换为 `codearts-mcp-ssl.conf`
+- 把宿主机 `deploy/nginx/ssl` 挂载到容器 `/etc/nginx/ssl`
+
+另外它还会为 `codearts-mcp` 服务覆盖：
+
+- `MCP_AUTH_COOKIE_SECURE=true`
+
+这样共享 HTTP 鉴权 cookie 会和 HTTPS 入口保持一致。
+即使 `.env` 里暂时还是 `false`，叠加这个覆盖文件启动时也会被改成 `true`。
+
 ## 推荐做法
 
 - 共享 MCP 服务建议只暴露 `https://your-domain/mcp`

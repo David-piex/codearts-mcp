@@ -365,6 +365,21 @@ type HttpAuthRuntimeConfig = {
 
 let httpAuthRuntimeConfig: HttpAuthRuntimeConfig = {};
 
+type HttpAuthRequestInfo = {
+  authId?: string;
+  rawToken?: string;
+  onTokenIssued?: (rawToken: string) => void;
+  onAuthCleared?: () => void;
+};
+
+function readHttpAuthRequestInfo(extra: { authInfo?: unknown }): HttpAuthRequestInfo | undefined {
+  if (!extra.authInfo || typeof extra.authInfo !== "object") {
+    return undefined;
+  }
+
+  return extra.authInfo as HttpAuthRequestInfo;
+}
+
 const configureSessionInputSchema = z.object({
   access_key: z.string().min(1),
   secret_key: z.string().min(1),
@@ -413,6 +428,7 @@ export function createConfigureSessionHandlerWithPersistence(options: {
     input: unknown,
     extra: {
       sessionId?: string;
+      authInfo?: unknown;
     }
   ) => {
     const parsed = configureSessionInputSchema.parse(input);
@@ -457,6 +473,7 @@ export function createConfigureSessionHandlerWithPersistence(options: {
     });
 
     options.sessionStore.bind(sessionId, authId);
+    readHttpAuthRequestInfo(extra)?.onTokenIssued?.(token.raw);
 
     return {
       content: [{ type: "text" as const, text: `Session ${sessionId} configured for ${parsed.region}.` }],
@@ -482,6 +499,7 @@ export function createClearSessionHandlerWithPersistence(options: {
     _input: unknown,
     extra: {
       sessionId?: string;
+      authInfo?: unknown;
     }
   ) => {
     const sessionId = requireSessionId(extra.sessionId);
@@ -492,6 +510,7 @@ export function createClearSessionHandlerWithPersistence(options: {
     }
 
     options.sessionStore.clear(sessionId);
+    readHttpAuthRequestInfo(extra)?.onAuthCleared?.();
 
     return {
       content: [{ type: "text" as const, text: `Session ${sessionId} credentials cleared.` }],
@@ -548,15 +567,33 @@ function buildClientsFromCredentialConfig(config: {
   };
 }
 
-function buildClientsForSession(store: SessionCredentialStore, sessionId?: string) {
-  if (!sessionId) {
-    throw new AppError("auth_error", "This tool requires an MCP session.");
+function resolveAuthId(store: SessionCredentialStore, extra: SessionToolExtra) {
+  const requestAuthInfo = readHttpAuthRequestInfo(extra);
+  const sessionBoundAuthId = extra.sessionId ? store.getAuthId(extra.sessionId) : undefined;
+  const authId = extra.authId ?? requestAuthInfo?.authId ?? sessionBoundAuthId;
+
+  if (authId && extra.sessionId && !sessionBoundAuthId) {
+    store.bind(extra.sessionId, authId);
   }
 
-  const authId = store.getAuthId(sessionId);
+  return authId;
+}
+
+function buildClientsForSession(store: SessionCredentialStore, extra: SessionToolExtra) {
+  const authId = resolveAuthId(store, extra);
 
   if (!authId) {
-    throw new AppError("auth_error", `No Huawei Cloud credentials configured for session ${sessionId}.`);
+    if (!extra.sessionId) {
+      throw new AppError(
+        "auth_error",
+        "This tool requires an MCP session or request auth identity."
+      );
+    }
+
+    throw new AppError(
+      "auth_error",
+      `No Huawei Cloud credentials configured for session ${extra.sessionId}.`
+    );
   }
 
   const repository = httpAuthRuntimeConfig.repository;
@@ -589,6 +626,7 @@ function buildClientsForSession(store: SessionCredentialStore, sessionId?: strin
 type SessionToolExtra = {
   sessionId?: string;
   authId?: string;
+  authInfo?: unknown;
 };
 
 export function createSessionAwareReqProjectsHandler(
@@ -596,7 +634,7 @@ export function createSessionAwareReqProjectsHandler(
   injectedClient?: Parameters<typeof createReqListProjectsHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const reqClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).reqClient;
+    const reqClient = injectedClient ?? buildClientsForSession(store, extra).reqClient;
     return createReqListProjectsHandler(reqClient)(input);
   };
 }
@@ -606,7 +644,7 @@ export function createSessionAwareCheckListTasksHandler(
   injectedClient?: Parameters<typeof createCheckListTasksHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const checkClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).checkClient;
+    const checkClient = injectedClient ?? buildClientsForSession(store, extra).checkClient;
     return createCheckListTasksHandler(checkClient)(input);
   };
 }
@@ -616,7 +654,7 @@ export function createSessionAwareCheckCreateTaskHandler(
   injectedClient?: Parameters<typeof createCheckCreateTaskHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const checkClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).checkClient;
+    const checkClient = injectedClient ?? buildClientsForSession(store, extra).checkClient;
     return createCheckCreateTaskHandler(checkClient)(input);
   };
 }
@@ -626,7 +664,7 @@ export function createSessionAwareCheckGetTaskHandler(
   injectedClient?: Parameters<typeof createCheckGetTaskHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const checkClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).checkClient;
+    const checkClient = injectedClient ?? buildClientsForSession(store, extra).checkClient;
     return createCheckGetTaskHandler(checkClient)(input);
   };
 }
@@ -636,7 +674,7 @@ export function createSessionAwareCheckListRulesetsHandler(
   injectedClient?: Parameters<typeof createCheckListRulesetsHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const checkClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).checkClient;
+    const checkClient = injectedClient ?? buildClientsForSession(store, extra).checkClient;
     return createCheckListRulesetsHandler(checkClient)(input);
   };
 }
@@ -646,7 +684,7 @@ export function createSessionAwareCheckListTaskIssuesHandler(
   injectedClient?: Parameters<typeof createCheckListTaskIssuesHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const checkClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).checkClient;
+    const checkClient = injectedClient ?? buildClientsForSession(store, extra).checkClient;
     return createCheckListTaskIssuesHandler(checkClient)(input);
   };
 }
@@ -656,7 +694,7 @@ export function createSessionAwareCheckGetMetricsHandler(
   injectedClient?: Parameters<typeof createCheckGetMetricsHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const checkClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).checkClient;
+    const checkClient = injectedClient ?? buildClientsForSession(store, extra).checkClient;
     return createCheckGetMetricsHandler(checkClient)(input);
   };
 }
@@ -666,7 +704,7 @@ export function createSessionAwareCheckRunTaskHandler(
   injectedClient?: Parameters<typeof createCheckRunTaskHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const checkClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).checkClient;
+    const checkClient = injectedClient ?? buildClientsForSession(store, extra).checkClient;
     return createCheckRunTaskHandler(checkClient)(input);
   };
 }
@@ -676,7 +714,7 @@ export function createSessionAwareCheckStopTaskHandler(
   injectedClient?: Parameters<typeof createCheckStopTaskHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const checkClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).checkClient;
+    const checkClient = injectedClient ?? buildClientsForSession(store, extra).checkClient;
     return createCheckStopTaskHandler(checkClient)(input);
   };
 }
@@ -687,7 +725,7 @@ export function createSessionAwareDeployListAppsHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployListAppsHandler(deployClient)(input);
   };
 }
@@ -698,7 +736,7 @@ export function createSessionAwareDeployListV4ApplicationsHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployListV4ApplicationsHandler(deployClient)(input);
   };
 }
@@ -709,7 +747,7 @@ export function createSessionAwareDeployListV4ClustersHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployListV4ClustersHandler(deployClient)(input);
   };
 }
@@ -720,7 +758,7 @@ export function createSessionAwareDeployGetV4ClusterHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployGetV4ClusterHandler(deployClient)(input);
   };
 }
@@ -731,7 +769,7 @@ export function createSessionAwareDeployDeleteV4ClusterHostsHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployDeleteV4ClusterHostsHandler(deployClient)(input);
   };
 }
@@ -742,7 +780,7 @@ export function createSessionAwareDeployGetV4ClusterCountHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployGetV4ClusterCountHandler(deployClient)(input);
   };
 }
@@ -753,7 +791,7 @@ export function createSessionAwareDeployGetV4ClusterHostHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployGetV4ClusterHostHandler(deployClient)(input);
   };
 }
@@ -764,7 +802,7 @@ export function createSessionAwareDeployListV4ClusterHostsHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployListV4ClusterHostsHandler(deployClient)(input);
   };
 }
@@ -775,7 +813,7 @@ export function createSessionAwareDeployGetV4EnvironmentHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployGetV4EnvironmentHandler(deployClient)(input);
   };
 }
@@ -786,7 +824,7 @@ export function createSessionAwareDeployGetV4EnvironmentResourceDetailHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployGetV4EnvironmentResourceDetailHandler(deployClient)(input);
   };
 }
@@ -797,7 +835,7 @@ export function createSessionAwareDeployListV4EnvironmentHostsHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployListV4EnvironmentHostsHandler(deployClient)(input);
   };
 }
@@ -808,7 +846,7 @@ export function createSessionAwareDeployAddV4EnvironmentHostsHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployAddV4EnvironmentHostsHandler(deployClient)(input);
   };
 }
@@ -819,7 +857,7 @@ export function createSessionAwareDeployDeleteV4EnvironmentHostsHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployDeleteV4EnvironmentHostsHandler(deployClient)(input);
   };
 }
@@ -830,7 +868,7 @@ export function createSessionAwareDeployListV4EnvironmentsHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployListV4EnvironmentsHandler(deployClient)(input);
   };
 }
@@ -841,7 +879,7 @@ export function createSessionAwareDeployListV4EnvironmentApplicationsHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployListV4EnvironmentApplicationsHandler(deployClient)(input);
   };
 }
@@ -852,7 +890,7 @@ export function createSessionAwareDeployListDeploymentUnitsHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployListDeploymentUnitsHandler(deployClient)(input);
   };
 }
@@ -863,7 +901,7 @@ export function createSessionAwareDeployListV4OrchestrationsHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployListV4OrchestrationsHandler(deployClient)(input);
   };
 }
@@ -874,7 +912,7 @@ export function createSessionAwareDeployListV4DeployRecordsHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployListV4DeployRecordsHandler(deployClient)(input);
   };
 }
@@ -885,7 +923,7 @@ export function createSessionAwareDeployGetLastRecordDetailHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployGetLastRecordDetailHandler(deployClient)(input);
   };
 }
@@ -896,7 +934,7 @@ export function createSessionAwareDeployGetV4DeployRecordHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployGetV4DeployRecordHandler(deployClient)(input);
   };
 }
@@ -907,7 +945,7 @@ export function createSessionAwareDeployGetV4DeployRecordStepDetailHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployGetV4DeployRecordStepDetailHandler(deployClient)(input);
   };
 }
@@ -918,7 +956,7 @@ export function createSessionAwareDeployGetV4DeployRecordStepLogsHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployGetV4DeployRecordStepLogsHandler(deployClient)(input);
   };
 }
@@ -929,7 +967,7 @@ export function createSessionAwareDeployCancelV4DeployRecordHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployCancelV4DeployRecordHandler(deployClient)(input);
   };
 }
@@ -940,7 +978,7 @@ export function createSessionAwareDeployRerunV4DeployRecordHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployRerunV4DeployRecordHandler(deployClient)(input);
   };
 }
@@ -951,7 +989,7 @@ export function createSessionAwareDeployRetryV4DeployRecordHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployRetryV4DeployRecordHandler(deployClient)(input);
   };
 }
@@ -962,7 +1000,7 @@ export function createSessionAwareDeployRollbackV4DeployRecordHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployRollbackV4DeployRecordHandler(deployClient)(input);
   };
 }
@@ -973,7 +1011,7 @@ export function createSessionAwareDeployPassV4ManualCheckHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployPassV4ManualCheckHandler(deployClient)(input);
   };
 }
@@ -984,7 +1022,7 @@ export function createSessionAwareDeployRefuseV4ManualCheckHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployRefuseV4ManualCheckHandler(deployClient)(input);
   };
 }
@@ -995,7 +1033,7 @@ export function createSessionAwareDeployListAppHostGroupsHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployListAppHostGroupsHandler(deployClient)(input);
   };
 }
@@ -1006,7 +1044,7 @@ export function createSessionAwareDeployListHostGroupsHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployListHostGroupsHandler(deployClient)(input);
   };
 }
@@ -1017,7 +1055,7 @@ export function createSessionAwareDeployGetHostGroupHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployGetHostGroupHandler(deployClient)(input);
   };
 }
@@ -1028,7 +1066,7 @@ export function createSessionAwareDeployListHostGroupHostsHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployListHostGroupHostsHandler(deployClient)(input);
   };
 }
@@ -1039,7 +1077,7 @@ export function createSessionAwareDeployListHostGroupEnvironmentsHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployListHostGroupEnvironmentsHandler(deployClient)(input);
   };
 }
@@ -1050,7 +1088,7 @@ export function createSessionAwareDeployCreateEnvironmentHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployCreateEnvironmentHandler(deployClient)(input);
   };
 }
@@ -1061,7 +1099,7 @@ export function createSessionAwareDeployCreateApplicationHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployCreateApplicationHandler(deployClient)(input);
   };
 }
@@ -1072,7 +1110,7 @@ export function createSessionAwareDeployModifyApplicationHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployModifyApplicationHandler(deployClient)(input);
   };
 }
@@ -1083,7 +1121,7 @@ export function createSessionAwareDeployCreateTaskByTemplateHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployCreateTaskByTemplateHandler(deployClient)(input);
   };
 }
@@ -1094,7 +1132,7 @@ export function createSessionAwareDeployListEnvironmentHostsHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployListEnvironmentHostsHandler(deployClient)(input);
   };
 }
@@ -1105,7 +1143,7 @@ export function createSessionAwareDeployImportHostsToEnvironmentHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployImportHostsToEnvironmentHandler(deployClient)(input);
   };
 }
@@ -1116,7 +1154,7 @@ export function createSessionAwareDeployListEnvironmentsHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployListEnvironmentsHandler(deployClient)(input);
   };
 }
@@ -1127,7 +1165,7 @@ export function createSessionAwareDeployListTasksHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployListTasksHandler(deployClient)(input);
   };
 }
@@ -1138,7 +1176,7 @@ export function createSessionAwareDeployGetAppHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployGetAppHandler(deployClient)(input);
   };
 }
@@ -1149,7 +1187,7 @@ export function createSessionAwareDeployGetTaskHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployGetTaskHandler(deployClient)(input);
   };
 }
@@ -1160,7 +1198,7 @@ export function createSessionAwareDeployGetDeploySourceDetailHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployGetDeploySourceDetailHandler(deployClient)(input);
   };
 }
@@ -1171,7 +1209,7 @@ export function createSessionAwareDeployGetTemplateDetailHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployGetTemplateDetailHandler(deployClient)(input);
   };
 }
@@ -1182,7 +1220,7 @@ export function createSessionAwareDeployListAppOperationsLogHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployListAppOperationsLogHandler(deployClient)(input);
   };
 }
@@ -1193,7 +1231,7 @@ export function createSessionAwareDeployGetAppLogHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployGetAppLogHandler(deployClient)(input);
   };
 }
@@ -1204,7 +1242,7 @@ export function createSessionAwareDeployGetExecutionParamsHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployGetExecutionParamsHandler(deployClient)(input);
   };
 }
@@ -1215,7 +1253,7 @@ export function createSessionAwareDeployGetRuntimeVariablesHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployGetRuntimeVariablesHandler(deployClient)(input);
   };
 }
@@ -1226,7 +1264,7 @@ export function createSessionAwareDeployListVariablesHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployListVariablesHandler(deployClient)(input);
   };
 }
@@ -1237,7 +1275,7 @@ export function createSessionAwareDeployListVariableHistoryHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployListVariableHistoryHandler(deployClient)(input);
   };
 }
@@ -1248,7 +1286,7 @@ export function createSessionAwareDeployListHistoriesHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployListHistoriesHandler(deployClient)(input);
   };
 }
@@ -1259,7 +1297,7 @@ export function createSessionAwareDeployGetStatusHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployGetStatusHandler(deployClient)(input);
   };
 }
@@ -1270,7 +1308,7 @@ export function createSessionAwareDeployQueryVariablesHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployQueryVariablesHandler(deployClient)(input);
   };
 }
@@ -1281,7 +1319,7 @@ export function createSessionAwareDeployStartAppHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployStartAppHandler(deployClient)(input);
   };
 }
@@ -1292,7 +1330,7 @@ export function createSessionAwareDeployListSystemConfigsHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployListSystemConfigsHandler(deployClient)(input);
   };
 }
@@ -1303,7 +1341,7 @@ export function createSessionAwareDeployStopAppHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployStopAppHandler(deployClient)(input);
   };
 }
@@ -1314,7 +1352,7 @@ export function createSessionAwareDeployRollbackAppHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployRollbackAppHandler(deployClient)(input);
   };
 }
@@ -1325,7 +1363,7 @@ export function createSessionAwareDeployGetHistoryDetailHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const deployClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).deployClient;
+      injectedClient ?? buildClientsForSession(store, extra).deployClient;
     return createDeployGetHistoryDetailHandler(deployClient)(input);
   };
 }
@@ -1335,7 +1373,7 @@ export function createSessionAwareBuildListJobsHandler(
   injectedClient?: Parameters<typeof createBuildListJobsHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const buildClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).buildClient;
+    const buildClient = injectedClient ?? buildClientsForSession(store, extra).buildClient;
     return createBuildListJobsHandler(buildClient)(input);
   };
 }
@@ -1345,7 +1383,7 @@ export function createSessionAwareBuildListProjectRecordsHandler(
   injectedClient?: Parameters<typeof createBuildListProjectRecordsHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const buildClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).buildClient;
+    const buildClient = injectedClient ?? buildClientsForSession(store, extra).buildClient;
     return createBuildListProjectRecordsHandler(buildClient)(input);
   };
 }
@@ -1355,7 +1393,7 @@ export function createSessionAwareBuildGetProjectRecordStatisticsHandler(
   injectedClient?: Parameters<typeof createBuildGetProjectRecordStatisticsHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const buildClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).buildClient;
+    const buildClient = injectedClient ?? buildClientsForSession(store, extra).buildClient;
     return createBuildGetProjectRecordStatisticsHandler(buildClient)(input);
   };
 }
@@ -1365,7 +1403,7 @@ export function createSessionAwareBuildGetRecordFlowGraphHandler(
   injectedClient?: Parameters<typeof createBuildGetRecordFlowGraphHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const buildClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).buildClient;
+    const buildClient = injectedClient ?? buildClientsForSession(store, extra).buildClient;
     return createBuildGetRecordFlowGraphHandler(buildClient)(input);
   };
 }
@@ -1375,7 +1413,7 @@ export function createSessionAwareBuildGetJobHandler(
   injectedClient?: Parameters<typeof createBuildGetJobHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const buildClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).buildClient;
+    const buildClient = injectedClient ?? buildClientsForSession(store, extra).buildClient;
     return createBuildGetJobHandler(buildClient)(input);
   };
 }
@@ -1385,7 +1423,7 @@ export function createSessionAwareBuildGetRecordHandler(
   injectedClient?: Parameters<typeof createBuildGetRecordHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const buildClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).buildClient;
+    const buildClient = injectedClient ?? buildClientsForSession(store, extra).buildClient;
     return createBuildGetRecordHandler(buildClient)(input);
   };
 }
@@ -1395,7 +1433,7 @@ export function createSessionAwareBuildListRecordsHandler(
   injectedClient?: Parameters<typeof createBuildListRecordsHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const buildClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).buildClient;
+    const buildClient = injectedClient ?? buildClientsForSession(store, extra).buildClient;
     return createBuildListRecordsHandler(buildClient)(input);
   };
 }
@@ -1405,7 +1443,7 @@ export function createSessionAwareBuildRunJobHandler(
   injectedClient?: Parameters<typeof createBuildRunJobHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const buildClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).buildClient;
+    const buildClient = injectedClient ?? buildClientsForSession(store, extra).buildClient;
     return createBuildRunJobHandler(buildClient)(input);
   };
 }
@@ -1415,7 +1453,7 @@ export function createSessionAwareBuildAppendJobStepHandler(
   injectedClient?: Parameters<typeof createBuildAppendJobStepHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const buildClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).buildClient;
+    const buildClient = injectedClient ?? buildClientsForSession(store, extra).buildClient;
     return createBuildAppendJobStepHandler(buildClient)(input);
   };
 }
@@ -1425,7 +1463,7 @@ export function createSessionAwareBuildAppendReleaseUploadStepHandler(
   injectedClient?: Parameters<typeof createBuildAppendReleaseUploadStepHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const buildClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).buildClient;
+    const buildClient = injectedClient ?? buildClientsForSession(store, extra).buildClient;
     return createBuildAppendReleaseUploadStepHandler(buildClient)(input);
   };
 }
@@ -1435,7 +1473,7 @@ export function createSessionAwareBuildConfigureReleaseUploadStepHandler(
   injectedClient?: Parameters<typeof createBuildConfigureReleaseUploadStepHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const buildClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).buildClient;
+    const buildClient = injectedClient ?? buildClientsForSession(store, extra).buildClient;
     return createBuildConfigureReleaseUploadStepHandler(buildClient)(input);
   };
 }
@@ -1445,7 +1483,7 @@ export function createSessionAwareBuildPrepareNodeRuntimeBundleHandler(
   injectedClient?: Parameters<typeof createBuildPrepareNodeRuntimeBundleHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const buildClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).buildClient;
+    const buildClient = injectedClient ?? buildClientsForSession(store, extra).buildClient;
     return createBuildPrepareNodeRuntimeBundleHandler(buildClient)(input);
   };
 }
@@ -1455,7 +1493,7 @@ export function createSessionAwareBuildPrepareDeployableNodeAppHandler(
   injectedClient?: Parameters<typeof createBuildPrepareDeployableNodeAppHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const buildClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).buildClient;
+    const buildClient = injectedClient ?? buildClientsForSession(store, extra).buildClient;
     return createBuildPrepareDeployableNodeAppHandler(buildClient)(input);
   };
 }
@@ -1465,7 +1503,7 @@ export function createSessionAwareBuildStopJobHandler(
   injectedClient?: Parameters<typeof createBuildStopJobHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const buildClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).buildClient;
+    const buildClient = injectedClient ?? buildClientsForSession(store, extra).buildClient;
     return createBuildStopJobHandler(buildClient)(input);
   };
 }
@@ -1475,7 +1513,7 @@ export function createSessionAwareBuildUpdateJobStepHandler(
   injectedClient?: Parameters<typeof createBuildUpdateJobStepHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const buildClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).buildClient;
+    const buildClient = injectedClient ?? buildClientsForSession(store, extra).buildClient;
 
     return createBuildUpdateJobStepHandler(buildClient)(input);
   };
@@ -1486,7 +1524,7 @@ export function createSessionAwareBuildGetRealTimeLogHandler(
   injectedClient?: Parameters<typeof createBuildGetRealTimeLogHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const buildClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).buildClient;
+    const buildClient = injectedClient ?? buildClientsForSession(store, extra).buildClient;
     return createBuildGetRealTimeLogHandler(buildClient)(input);
   };
 }
@@ -1496,7 +1534,7 @@ export function createSessionAwareBuildGetHistoryDetailsHandler(
   injectedClient?: Parameters<typeof createBuildGetHistoryDetailsHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const buildClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).buildClient;
+    const buildClient = injectedClient ?? buildClientsForSession(store, extra).buildClient;
     return createBuildGetHistoryDetailsHandler(buildClient)(input);
   };
 }
@@ -1506,7 +1544,7 @@ export function createSessionAwareBuildGetErrorLogHandler(
   injectedClient?: Parameters<typeof createBuildGetErrorLogHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const buildClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).buildClient;
+    const buildClient = injectedClient ?? buildClientsForSession(store, extra).buildClient;
     return createBuildGetErrorLogHandler(buildClient)(input);
   };
 }
@@ -1516,7 +1554,7 @@ export function createSessionAwareBuildGetInfoRecordHandler(
   injectedClient?: Parameters<typeof createBuildGetInfoRecordHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const buildClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).buildClient;
+    const buildClient = injectedClient ?? buildClientsForSession(store, extra).buildClient;
     return createBuildGetInfoRecordHandler(buildClient)(input);
   };
 }
@@ -1526,7 +1564,7 @@ export function createSessionAwareBuildGetRecordScriptHandler(
   injectedClient?: Parameters<typeof createBuildGetRecordScriptHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const buildClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).buildClient;
+    const buildClient = injectedClient ?? buildClientsForSession(store, extra).buildClient;
     return createBuildGetRecordScriptHandler(buildClient)(input);
   };
 }
@@ -1536,7 +1574,7 @@ export function createSessionAwareBuildGetFullStagesHandler(
   injectedClient?: Parameters<typeof createBuildGetFullStagesHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const buildClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).buildClient;
+    const buildClient = injectedClient ?? buildClientsForSession(store, extra).buildClient;
     return createBuildGetFullStagesHandler(buildClient)(input);
   };
 }
@@ -1546,7 +1584,7 @@ export function createSessionAwareBuildListBuildParametersHandler(
   injectedClient?: Parameters<typeof createBuildListBuildParametersHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const buildClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).buildClient;
+    const buildClient = injectedClient ?? buildClientsForSession(store, extra).buildClient;
     return createBuildListBuildParametersHandler(buildClient)(input);
   };
 }
@@ -1557,7 +1595,7 @@ export function createSessionAwareArtifactListRepositoriesHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const artifactClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).artifactClient;
+      injectedClient ?? buildClientsForSession(store, extra).artifactClient;
     return createArtifactListRepositoriesHandler(artifactClient)(input);
   };
 }
@@ -1568,7 +1606,7 @@ export function createSessionAwareArtifactListVersionsHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const artifactClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).artifactClient;
+      injectedClient ?? buildClientsForSession(store, extra).artifactClient;
     return createArtifactListVersionsHandler(artifactClient)(input);
   };
 }
@@ -1579,7 +1617,7 @@ export function createSessionAwareArtifactGetFileTreeHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const artifactClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).artifactClient;
+      injectedClient ?? buildClientsForSession(store, extra).artifactClient;
     return createArtifactGetFileTreeHandler(artifactClient)(input);
   };
 }
@@ -1590,7 +1628,7 @@ export function createSessionAwareArtifactListLatestVersionFilesHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const artifactClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).artifactClient;
+      injectedClient ?? buildClientsForSession(store, extra).artifactClient;
     return createArtifactListLatestVersionFilesHandler(artifactClient)(input);
   };
 }
@@ -1601,7 +1639,7 @@ export function createSessionAwareArtifactGetRepositoryHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const artifactClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).artifactClient;
+      injectedClient ?? buildClientsForSession(store, extra).artifactClient;
     return createArtifactGetRepositoryHandler(artifactClient)(input);
   };
 }
@@ -1612,7 +1650,7 @@ export function createSessionAwareArtifactListFilesHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const artifactClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).artifactClient;
+      injectedClient ?? buildClientsForSession(store, extra).artifactClient;
     return createArtifactListFilesHandler(artifactClient)(input);
   };
 }
@@ -1623,7 +1661,7 @@ export function createSessionAwareArtifactGetFileHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const artifactClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).artifactClient;
+      injectedClient ?? buildClientsForSession(store, extra).artifactClient;
     return createArtifactGetFileHandler(artifactClient)(input);
   };
 }
@@ -1634,7 +1672,7 @@ export function createSessionAwareArtifactGetDownloadUrlHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const artifactClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).artifactClient;
+      injectedClient ?? buildClientsForSession(store, extra).artifactClient;
     return createArtifactGetDownloadUrlHandler(artifactClient)(input);
   };
 }
@@ -1645,7 +1683,7 @@ export function createSessionAwareArtifactDeleteFileHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const artifactClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).artifactClient;
+      injectedClient ?? buildClientsForSession(store, extra).artifactClient;
     return createArtifactDeleteFileHandler(artifactClient)(input);
   };
 }
@@ -1656,7 +1694,7 @@ export function createSessionAwareArtifactListBuildArchivesHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const artifactClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).artifactClient;
+      injectedClient ?? buildClientsForSession(store, extra).artifactClient;
     return createArtifactListBuildArchivesHandler(artifactClient)(input);
   };
 }
@@ -1667,7 +1705,7 @@ export function createSessionAwareArtifactSearchArtifactsHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const artifactClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).artifactClient;
+      injectedClient ?? buildClientsForSession(store, extra).artifactClient;
     return createArtifactSearchArtifactsHandler(artifactClient)(input);
   };
 }
@@ -1678,7 +1716,7 @@ export function createSessionAwareArtifactShowAuditHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const artifactClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).artifactClient;
+      injectedClient ?? buildClientsForSession(store, extra).artifactClient;
     return createArtifactShowAuditHandler(artifactClient)(input);
   };
 }
@@ -1688,7 +1726,7 @@ export function createSessionAwareReqGetProjectHandler(
   injectedClient?: Parameters<typeof createReqGetProjectHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const reqClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).reqClient;
+    const reqClient = injectedClient ?? buildClientsForSession(store, extra).reqClient;
     return createReqGetProjectHandler(reqClient)(input);
   };
 }
@@ -1698,7 +1736,7 @@ export function createSessionAwareReqWorkItemsHandler(
   injectedClient?: Parameters<typeof createReqListWorkItemsHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const reqClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).reqClient;
+    const reqClient = injectedClient ?? buildClientsForSession(store, extra).reqClient;
     return createReqListWorkItemsHandler(reqClient)(input);
   };
 }
@@ -1708,7 +1746,7 @@ export function createSessionAwareReqGetWorkItemHandler(
   injectedClient?: Parameters<typeof createReqGetWorkItemHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const reqClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).reqClient;
+    const reqClient = injectedClient ?? buildClientsForSession(store, extra).reqClient;
     return createReqGetWorkItemHandler(reqClient)(input);
   };
 }
@@ -1718,7 +1756,7 @@ export function createSessionAwareReqListIterationsHandler(
   injectedClient?: Parameters<typeof createReqListIterationsHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const reqClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).reqClient;
+    const reqClient = injectedClient ?? buildClientsForSession(store, extra).reqClient;
     return createReqListIterationsHandler(reqClient)(input);
   };
 }
@@ -1728,7 +1766,7 @@ export function createSessionAwareReqCreateWorkItemHandler(
   injectedClient?: Parameters<typeof createReqCreateWorkItemHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const reqClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).reqClient;
+    const reqClient = injectedClient ?? buildClientsForSession(store, extra).reqClient;
     return createReqCreateWorkItemHandler(reqClient)(input);
   };
 }
@@ -1738,7 +1776,7 @@ export function createSessionAwareReqUpdateWorkItemHandler(
   injectedClient?: Parameters<typeof createReqUpdateWorkItemHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const reqClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).reqClient;
+    const reqClient = injectedClient ?? buildClientsForSession(store, extra).reqClient;
     return createReqUpdateWorkItemHandler(reqClient)(input);
   };
 }
@@ -1748,7 +1786,7 @@ export function createSessionAwareReqListProjectMembersHandler(
   injectedClient?: Parameters<typeof createReqListProjectMembersHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const reqClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).reqClient;
+    const reqClient = injectedClient ?? buildClientsForSession(store, extra).reqClient;
     return createReqListProjectMembersHandler(reqClient)(input);
   };
 }
@@ -1758,7 +1796,7 @@ export function createSessionAwareRepoRepositoriesHandler(
   injectedClient?: Parameters<typeof createRepoListRepositoriesHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const repoClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).repoClient;
+    const repoClient = injectedClient ?? buildClientsForSession(store, extra).repoClient;
     return createRepoListRepositoriesHandler(repoClient)(input);
   };
 }
@@ -1768,7 +1806,7 @@ export function createSessionAwareRepoGetBranchHandler(
   injectedClient?: Parameters<typeof createRepoGetBranchHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const repoClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).repoClient;
+    const repoClient = injectedClient ?? buildClientsForSession(store, extra).repoClient;
     return createRepoGetBranchHandler(repoClient)(input);
   };
 }
@@ -1778,7 +1816,7 @@ export function createSessionAwareRepoCompareRefsHandler(
   injectedClient?: Parameters<typeof createRepoCompareRefsHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const repoClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).repoClient;
+    const repoClient = injectedClient ?? buildClientsForSession(store, extra).repoClient;
     return createRepoCompareRefsHandler(repoClient)(input);
   };
 }
@@ -1788,7 +1826,7 @@ export function createSessionAwareRepoGetTagHandler(
   injectedClient?: Parameters<typeof createRepoGetTagHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const repoClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).repoClient;
+    const repoClient = injectedClient ?? buildClientsForSession(store, extra).repoClient;
     return createRepoGetTagHandler(repoClient)(input);
   };
 }
@@ -1798,7 +1836,7 @@ export function createSessionAwareRepoGetRepositoryHandler(
   injectedClient?: Parameters<typeof createRepoGetRepositoryHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const repoClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).repoClient;
+    const repoClient = injectedClient ?? buildClientsForSession(store, extra).repoClient;
     return createRepoGetRepositoryHandler(repoClient)(input);
   };
 }
@@ -1808,7 +1846,7 @@ export function createSessionAwareRepoCreateMergeRequestHandler(
   injectedClient?: Parameters<typeof createRepoCreateMergeRequestHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const repoClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).repoClient;
+    const repoClient = injectedClient ?? buildClientsForSession(store, extra).repoClient;
     return createRepoCreateMergeRequestHandler(repoClient)(input);
   };
 }
@@ -1818,7 +1856,7 @@ export function createSessionAwareRepoCloseMergeRequestHandler(
   injectedClient?: Parameters<typeof createRepoCloseMergeRequestHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const repoClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).repoClient;
+    const repoClient = injectedClient ?? buildClientsForSession(store, extra).repoClient;
     return createRepoCloseMergeRequestHandler(repoClient)(input);
   };
 }
@@ -1828,7 +1866,7 @@ export function createSessionAwareRepoCreateMergeRequestDiscussionHandler(
   injectedClient?: Parameters<typeof createRepoCreateMergeRequestDiscussionHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const repoClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).repoClient;
+    const repoClient = injectedClient ?? buildClientsForSession(store, extra).repoClient;
     return createRepoCreateMergeRequestDiscussionHandler(repoClient)(input);
   };
 }
@@ -1838,7 +1876,7 @@ export function createSessionAwareRepoListMergeRequestChangesHandler(
   injectedClient?: Parameters<typeof createRepoListMergeRequestChangesHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const repoClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).repoClient;
+    const repoClient = injectedClient ?? buildClientsForSession(store, extra).repoClient;
     return createRepoListMergeRequestChangesHandler(repoClient)(input);
   };
 }
@@ -1848,7 +1886,7 @@ export function createSessionAwareRepoListMergeRequestDiscussionsHandler(
   injectedClient?: Parameters<typeof createRepoListMergeRequestDiscussionsHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const repoClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).repoClient;
+    const repoClient = injectedClient ?? buildClientsForSession(store, extra).repoClient;
     return createRepoListMergeRequestDiscussionsHandler(repoClient)(input);
   };
 }
@@ -1858,7 +1896,7 @@ export function createSessionAwareRepoListProtectedBranchesHandler(
   injectedClient?: Parameters<typeof createRepoListProtectedBranchesHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const repoClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).repoClient;
+    const repoClient = injectedClient ?? buildClientsForSession(store, extra).repoClient;
     return createRepoListProtectedBranchesHandler(repoClient)(input);
   };
 }
@@ -1868,7 +1906,7 @@ export function createSessionAwareRepoListRepositoryLabelsHandler(
   injectedClient?: Parameters<typeof createRepoListRepositoryLabelsHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const repoClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).repoClient;
+    const repoClient = injectedClient ?? buildClientsForSession(store, extra).repoClient;
     return createRepoListRepositoryLabelsHandler(repoClient)(input);
   };
 }
@@ -1878,7 +1916,7 @@ export function createSessionAwareRepoCreateTagHandler(
   injectedClient?: Parameters<typeof createRepoCreateTagHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const repoClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).repoClient;
+    const repoClient = injectedClient ?? buildClientsForSession(store, extra).repoClient;
     return createRepoCreateTagHandler(repoClient)(input);
   };
 }
@@ -1888,7 +1926,7 @@ export function createSessionAwareRepoDeleteTagHandler(
   injectedClient?: Parameters<typeof createRepoDeleteTagHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const repoClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).repoClient;
+    const repoClient = injectedClient ?? buildClientsForSession(store, extra).repoClient;
     return createRepoDeleteTagHandler(repoClient)(input);
   };
 }
@@ -1898,7 +1936,7 @@ export function createSessionAwareRepoListTagsHandler(
   injectedClient?: Parameters<typeof createRepoListTagsHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const repoClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).repoClient;
+    const repoClient = injectedClient ?? buildClientsForSession(store, extra).repoClient;
     return createRepoListTagsHandler(repoClient)(input);
   };
 }
@@ -1908,7 +1946,7 @@ export function createSessionAwareRepoListEventsHandler(
   injectedClient?: Parameters<typeof createRepoListEventsHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const repoClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).repoClient;
+    const repoClient = injectedClient ?? buildClientsForSession(store, extra).repoClient;
     return createRepoListEventsHandler(repoClient)(input);
   };
 }
@@ -1918,7 +1956,7 @@ export function createSessionAwareRepoListMergeRequestsHandler(
   injectedClient?: Parameters<typeof createRepoListMergeRequestsHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const repoClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).repoClient;
+    const repoClient = injectedClient ?? buildClientsForSession(store, extra).repoClient;
     return createRepoListMergeRequestsHandler(repoClient)(input);
   };
 }
@@ -1928,7 +1966,7 @@ export function createSessionAwareRepoGetMergeRequestHandler(
   injectedClient?: Parameters<typeof createRepoGetMergeRequestHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const repoClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).repoClient;
+    const repoClient = injectedClient ?? buildClientsForSession(store, extra).repoClient;
     return createRepoGetMergeRequestHandler(repoClient)(input);
   };
 }
@@ -1938,7 +1976,7 @@ export function createSessionAwareRepoReviewMergeRequestHandler(
   injectedClient?: Parameters<typeof createRepoReviewMergeRequestHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const repoClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).repoClient;
+    const repoClient = injectedClient ?? buildClientsForSession(store, extra).repoClient;
     return createRepoReviewMergeRequestHandler(repoClient)(input);
   };
 }
@@ -1948,7 +1986,7 @@ export function createSessionAwareRepoMergeMergeRequestHandler(
   injectedClient?: Parameters<typeof createRepoMergeMergeRequestHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const repoClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).repoClient;
+    const repoClient = injectedClient ?? buildClientsForSession(store, extra).repoClient;
     return createRepoMergeMergeRequestHandler(repoClient)(input);
   };
 }
@@ -1958,7 +1996,7 @@ export function createSessionAwareRepoListCommitsHandler(
   injectedClient?: Parameters<typeof createRepoListCommitsHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const repoClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).repoClient;
+    const repoClient = injectedClient ?? buildClientsForSession(store, extra).repoClient;
     return createRepoListCommitsHandler(repoClient)(input);
   };
 }
@@ -1968,7 +2006,7 @@ export function createSessionAwareRepoGetFileHandler(
   injectedClient?: Parameters<typeof createRepoGetFileHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const repoClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).repoClient;
+    const repoClient = injectedClient ?? buildClientsForSession(store, extra).repoClient;
     return createRepoGetFileHandler(repoClient)(input);
   };
 }
@@ -1978,7 +2016,7 @@ export function createSessionAwareRepoGetCommitHandler(
   injectedClient?: Parameters<typeof createRepoGetCommitHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const repoClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).repoClient;
+    const repoClient = injectedClient ?? buildClientsForSession(store, extra).repoClient;
     return createRepoGetCommitHandler(repoClient)(input);
   };
 }
@@ -1988,7 +2026,7 @@ export function createSessionAwareRepoListBranchesHandler(
   injectedClient?: Parameters<typeof createRepoListBranchesHandler>[0]
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
-    const repoClient = injectedClient ?? buildClientsForSession(store, extra.sessionId).repoClient;
+    const repoClient = injectedClient ?? buildClientsForSession(store, extra).repoClient;
     return createRepoListBranchesHandler(repoClient)(input);
   };
 }
@@ -1999,7 +2037,7 @@ export function createSessionAwarePipelineRunsHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const pipelineClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).pipelineClient;
+      injectedClient ?? buildClientsForSession(store, extra).pipelineClient;
     return createPipelineListRunsHandler(pipelineClient)(input);
   };
 }
@@ -2010,7 +2048,7 @@ export function createSessionAwarePipelineListHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const pipelineClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).pipelineClient;
+      injectedClient ?? buildClientsForSession(store, extra).pipelineClient;
     return createPipelineListPipelinesHandler(pipelineClient)(input);
   };
 }
@@ -2021,7 +2059,7 @@ export function createSessionAwarePipelineGetRunHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const pipelineClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).pipelineClient;
+      injectedClient ?? buildClientsForSession(store, extra).pipelineClient;
     return createPipelineGetRunHandler(pipelineClient)(input);
   };
 }
@@ -2032,7 +2070,7 @@ export function createSessionAwarePipelineGetRunDetailHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const pipelineClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).pipelineClient;
+      injectedClient ?? buildClientsForSession(store, extra).pipelineClient;
     return createPipelineGetRunDetailHandler(pipelineClient)(input);
   };
 }
@@ -2043,7 +2081,7 @@ export function createSessionAwarePipelineGetRunParametersHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const pipelineClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).pipelineClient;
+      injectedClient ?? buildClientsForSession(store, extra).pipelineClient;
     return createPipelineGetRunParametersHandler(pipelineClient)(input);
   };
 }
@@ -2054,7 +2092,7 @@ export function createSessionAwarePipelineGetRunLogHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const pipelineClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).pipelineClient;
+      injectedClient ?? buildClientsForSession(store, extra).pipelineClient;
     return createPipelineGetRunLogHandler(pipelineClient)(input);
   };
 }
@@ -2065,7 +2103,7 @@ export function createSessionAwarePipelineGetManualReviewContextHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const pipelineClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).pipelineClient;
+      injectedClient ?? buildClientsForSession(store, extra).pipelineClient;
     return createPipelineGetManualReviewContextHandler(pipelineClient)(input);
   };
 }
@@ -2076,7 +2114,7 @@ export function createSessionAwarePipelineGetStepOutputsHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const pipelineClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).pipelineClient;
+      injectedClient ?? buildClientsForSession(store, extra).pipelineClient;
     return createPipelineGetStepOutputsHandler(pipelineClient)(input);
   };
 }
@@ -2087,7 +2125,7 @@ export function createSessionAwarePipelineGetPipelineHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const pipelineClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).pipelineClient;
+      injectedClient ?? buildClientsForSession(store, extra).pipelineClient;
     return createPipelineGetPipelineHandler(pipelineClient)(input);
   };
 }
@@ -2098,7 +2136,7 @@ export function createSessionAwarePipelineRunPipelineHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const pipelineClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).pipelineClient;
+      injectedClient ?? buildClientsForSession(store, extra).pipelineClient;
     return createPipelineRunPipelineHandler(pipelineClient)(input);
   };
 }
@@ -2109,7 +2147,7 @@ export function createSessionAwarePipelineStopRunHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const pipelineClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).pipelineClient;
+      injectedClient ?? buildClientsForSession(store, extra).pipelineClient;
     return createPipelineStopRunHandler(pipelineClient)(input);
   };
 }
@@ -2120,7 +2158,7 @@ export function createSessionAwarePipelineRetryRunHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const pipelineClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).pipelineClient;
+      injectedClient ?? buildClientsForSession(store, extra).pipelineClient;
     return createPipelineRetryRunHandler(pipelineClient)(input);
   };
 }
@@ -2131,7 +2169,7 @@ export function createSessionAwarePipelineApproveRunHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const pipelineClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).pipelineClient;
+      injectedClient ?? buildClientsForSession(store, extra).pipelineClient;
     return createPipelineApproveRunHandler(pipelineClient)(input);
   };
 }
@@ -2142,7 +2180,7 @@ export function createSessionAwarePipelineRejectRunHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const pipelineClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).pipelineClient;
+      injectedClient ?? buildClientsForSession(store, extra).pipelineClient;
     return createPipelineRejectRunHandler(pipelineClient)(input);
   };
 }
@@ -2153,7 +2191,7 @@ export function createSessionAwarePipelineListArtifactsHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const pipelineClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).pipelineClient;
+      injectedClient ?? buildClientsForSession(store, extra).pipelineClient;
     return createPipelineListArtifactsHandler(pipelineClient)(input);
   };
 }
@@ -2164,7 +2202,7 @@ export function createSessionAwarePipelineListTemplatesHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const pipelineClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).pipelineClient;
+      injectedClient ?? buildClientsForSession(store, extra).pipelineClient;
     return createPipelineListTemplatesHandler(pipelineClient)(input);
   };
 }
@@ -2175,7 +2213,7 @@ export function createSessionAwareTestPlanListPlansHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const testPlanClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).testPlanClient;
+      injectedClient ?? buildClientsForSession(store, extra).testPlanClient;
     return createTestPlanListPlansHandler(testPlanClient)(input);
   };
 }
@@ -2186,7 +2224,7 @@ export function createSessionAwareTestPlanGetPlanHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const testPlanClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).testPlanClient;
+      injectedClient ?? buildClientsForSession(store, extra).testPlanClient;
     return createTestPlanGetPlanHandler(testPlanClient)(input);
   };
 }
@@ -2197,7 +2235,7 @@ export function createSessionAwareTestPlanGetCaseHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const testPlanClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).testPlanClient;
+      injectedClient ?? buildClientsForSession(store, extra).testPlanClient;
     return createTestPlanGetCaseHandler(testPlanClient)(input);
   };
 }
@@ -2208,7 +2246,7 @@ export function createSessionAwareTestPlanListCasesHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const testPlanClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).testPlanClient;
+      injectedClient ?? buildClientsForSession(store, extra).testPlanClient;
     return createTestPlanListCasesHandler(testPlanClient)(input);
   };
 }
@@ -2219,7 +2257,7 @@ export function createSessionAwareTestPlanListIssuesHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const testPlanClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).testPlanClient;
+      injectedClient ?? buildClientsForSession(store, extra).testPlanClient;
     return createTestPlanListIssuesHandler(testPlanClient)(input);
   };
 }
@@ -2230,7 +2268,7 @@ export function createSessionAwareTestPlanListRunsHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const testPlanClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).testPlanClient;
+      injectedClient ?? buildClientsForSession(store, extra).testPlanClient;
     return createTestPlanListRunsHandler(testPlanClient)(input);
   };
 }
@@ -2241,7 +2279,7 @@ export function createSessionAwareTestPlanRunCasesHandler(
 ) {
   return async (input: unknown, extra: SessionToolExtra) => {
     const testPlanClient =
-      injectedClient ?? buildClientsForSession(store, extra.sessionId).testPlanClient;
+      injectedClient ?? buildClientsForSession(store, extra).testPlanClient;
     return createTestPlanRunCasesHandler(testPlanClient)(input);
   };
 }
@@ -4660,3 +4698,4 @@ export function createServer(options: CreateServerOptions) {
 
   return server;
 }
+

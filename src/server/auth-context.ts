@@ -11,7 +11,9 @@ type ResolvableAuthRecord = {
 export function createAuthContextResolver(options: {
   authCookieName: string;
   repository: {
-    findByTokenHash: (hash: string) => Promise<ResolvableAuthRecord | undefined>;
+    findByTokenHash:
+      | ((hash: string) => Promise<ResolvableAuthRecord | undefined>)
+      | ((hash: string) => ResolvableAuthRecord | undefined);
   };
   sessionStore: SessionCredentialStore;
   hashToken?: (raw: string) => string;

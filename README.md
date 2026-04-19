@@ -1,8 +1,13 @@
 # CodeArts MCP
 
-`codearts-mcp` is an MCP server for Huawei Cloud CodeArts in the China region.
+`codearts-mcp` 是一个面向华为云 CodeArts 中国站的 MCP Server。
 
-It currently exposes:
+它把 CodeArts 的多个产品模块统一封装成一套 MCP 工具，支持两种使用方式：
+
+- 本地个人使用：`stdio`
+- 团队共享部署：`http + session`
+
+当前仓库已经收敛到 `8` 个核心产品模块，并暴露：
 
 <!-- GENERATED:readme-exposure-summary:start -->
 - `8` product modules
@@ -11,19 +16,23 @@ It currently exposes:
 - `158` total MCP tools in shared `http` mode
 <!-- GENERATED:readme-exposure-summary:end -->
 
-Supported transport modes:
+## 这个项目解决什么问题
 
-- `stdio` for local personal use
-- `http + session` for shared team deployment
+如果你直接对接 CodeArts 官方接口，通常会遇到这些问题：
 
-In shared `http + session` mode:
+- 各产品接口风格不一致
+- 不同模块的 `project_id`、`tenant_id`、记录 id 含义容易混
+- 团队共享部署时，既想共用 MCP 服务，又不想共用一套业务账号
+- 很多接口是否在北京四真实可用，需要实际 AK/SK 验证后才知道
 
-- each user configures their own session with their own `AK/SK`
-- standard usage only requires `AK/SK + region`
-- the server resolves the standard CodeArts product endpoints from `region`
-- advanced users can still override individual product endpoints
+这个项目的目标就是把这些问题收口成一套统一的 MCP 使用方式：
 
-## Covered CodeArts modules
+- 统一鉴权
+- 统一工具命名
+- 统一返回结构
+- 对当前北京四真实可用情况给出明确文档，而不是只停留在代码实现层
+
+## 当前覆盖的 CodeArts 模块
 
 - Req / ProjectMan
 - Repo
@@ -34,45 +43,28 @@ In shared `http + session` mode:
 - Build
 - Artifact
 
-## Current live-validation snapshot
+## 当前可用情况
 
-As of `2026-04-19` in `cn-north-4`:
+截至 `2026-04-19`，在 `cn-north-4`（北京四）真实 AK/SK 验证下：
 
-- Fully validated:
+- 已完整闭环：
   - Req
   - Repo
   - Pipeline
   - Check
   - Build
-- Partially but concretely live-validated:
+- 已实现且能用，但仍有真实租户/区域限制：
   - TestPlan
   - Deploy
   - Artifact
 
-The main reason some modules are still marked `Partial` is not missing MCP code, but live tenant conditions:
+这里的 `Partial` 主要不是“没做完”，而是：
 
-- the target tenant has empty business data
-- some official routes are not published in Beijing 4
-- some write flows still lack safe real execution samples
+- 当前租户业务数据不足
+- 某些官方路由在北京四没有发布
+- 某些写操作虽然已经 MCP 化，但还缺安全的真实正样本闭环
 
-## What Works Now
-
-- `Req / Repo / Pipeline / Check`
-  - can be used directly on the current exposed surface
-- `Build`
-  - the main live surface can be used directly
-  - all `22` tools are now real-live validated
-- `Deploy`
-  - the main MCP surface is usable
-  - current gaps are mostly template/runtime age and SpringBoot template/package compatibility, not missing base app/environment/host paths
-- `Artifact`
-  - all currently published routes have corresponding MCP tools
-  - the main remaining gap is Beijing 4 unpublished routes, not missing local MCP implementation
-- `TestPlan`
-  - the published read surface is usable
-  - the main remaining gap is still Beijing 4 unpublished routes
-
-## Current module numbers
+## 模块现状总表
 
 <!-- GENERATED:readme-module-numbers:start -->
 | Module | Tools | Live status | Current breakdown |
@@ -87,65 +79,27 @@ The main reason some modules are still marked `Partial` is not missing MCP code,
 | Artifact | 12 | Partial | `5 Full / 0 Reachable / 7 Unpublished / 0 Code` |
 <!-- GENERATED:readme-module-numbers:end -->
 
-## What is actually blocked
+## 最值得先知道的结论
 
-- `TestPlan`
-  - `get_plan / list_runs / get_case / run_cases` are currently `APIGW.0101` in Beijing 4
-  - current 4-project sweep now finds real plan samples on 2 projects, but issues/cases are still empty
+- `Req / Repo / Pipeline / Check / Build`
+  - 当前暴露出来的 MCP 面已经可以直接用
 - `Deploy`
-  - the control-plane surface is expanded to 59 MCP tools
-  - `Codearts-mcp` project now has a real app, task, environment, and connected host path
-  - the older `Deploy.00011042` conclusion is no longer the current summary
-  - the healthy Node.js template path now has real successful record-bound validation for:
-    - `deploy_start_app`
-    - `deploy_get_execution_params`
-    - `deploy_get_status`
-    - `deploy_get_history_detail`
-    - `deploy_get_app_log`
-    - `deploy_stop_app`
-    - `deploy_rollback_app`
-  - the current main blocker has moved later into the outdated template runtime:
-    - `Node v10.9.0`
-    - `forever`
-  - detailed live split is maintained in `docs/wiki/Deploy-Live-Validated.md`
+  - 绝大多数主干能力已经可用
+  - 当前主要问题不是“没 MCP 化”，而是模板/runtime 较旧、部分 `v4` 记录链路缺正样本
 - `Artifact`
-  - 5 tools are fully live-validated
-  - 7 routes are re-confirmed by live smoke as unpublished in Beijing 4
-  - the local MCP output shape is already normalized across:
-    - `repositoryId`
-    - `versionId`
-    - `archiveId`
-    - `fileId`
+  - 所有当前已发布的主干路由都已有对应 MCP 工具
+  - 主要缺口是北京四仍有 `7` 条未发布路由
+- `TestPlan`
+  - 已发布读面可以用
+  - `get_plan / list_runs / get_case / run_cases` 目前仍是北京四未发布
 
-## Recommended reading order
+## 两种部署/使用方式
 
-- Entry:
-  - `docs/wiki/Home.md`
-- Fast onboarding:
-  - `docs/quickstart.md`
-  - `docs/client-examples.md`
-- Current status:
-  - `docs/wiki/Capability-Matrix.md`
-  - `docs/wiki/Module-Live-Readiness.md`
-  - `docs/wiki/Current-Implementation-Status-2026-04-17.md`
-  - `docs/wiki/AKSK-Verification-Ledger-2026-04-17.md`
-- Detailed live notes:
-  - `docs/wiki/Build-Live-Validated.md`
-  - `docs/wiki/Artifact-Live-Validated.md`
-  - `docs/wiki/TestPlan-Live-Validated.md`
+### 1. 本地个人使用
 
-## Quick start
+适合个人开发、自己在本机接入 MCP 客户端。
 
-Install and build:
-
-```bash
-npm install
-npm run build
-```
-
-For maintainers, use `npm run stats:modules` to inspect the current tool counts, `npm run stats:check-docs` to detect drift, and `npm run stats:sync-docs` after changing the exposed tool surface.
-
-For local `stdio` mode, prepare at least:
+最小环境变量：
 
 ```env
 MCP_TRANSPORT=stdio
@@ -156,11 +110,40 @@ MCP_SERVER_NAME=codearts-mcp
 MCP_SERVER_VERSION=0.1.0
 ```
 
-Standard regions can stop there. The server will resolve the standard CodeArts product endpoints from `region`.
+启动：
 
-If you need custom routes, override only the product `HUAWEICLOUD_*_BASE_URL` values you actually need. See `.env.example` for the full optional key list.
+```bash
+npm install
+npm run build
+node dist/src/server/index.js
+```
 
-For shared `http + session` mode, users usually only need to call `auth_configure_session` with:
+### 2. 团队共享部署
+
+适合把 MCP 服务部署到一台服务器上，让多人共用同一个服务地址。
+
+共享模式下：
+
+- 服务器只部署一份 MCP 服务
+- 每个用户仍然使用自己的华为云 `AK/SK`
+- 每个用户在自己的 MCP 会话里调用 `auth_configure_session`
+- 标准区域通常只需要：
+  - `access_key`
+  - `secret_key`
+  - `region`
+
+共享部署时，服务器侧还需要额外准备持久化鉴权环境变量：
+
+```env
+MCP_AUTH_MASTER_KEY=replace-with-a-long-random-secret
+MCP_AUTH_DATA_PATH=.codearts-mcp/auth-store.json
+# optional:
+# MCP_AUTH_COOKIE_NAME=codearts_mcp_auth
+# MCP_AUTH_COOKIE_SECURE=true
+# MCP_AUTH_TOKEN_TTL_SECONDS=2592000
+```
+
+标准共享用法：
 
 ```json
 {
@@ -170,6 +153,131 @@ For shared `http + session` mode, users usually only need to call `auth_configur
 }
 ```
 
-The server will fill the standard CodeArts product endpoints for that region automatically. If needed, callers can still override any individual `*_base_url`.
+对于标准区域，服务端会根据 `region` 自动补全各产品的标准地址；只有确实使用非标准路由时，才需要手动传 `*_base_url`。
 
-Full onboarding steps are in `docs/quickstart.md`.
+如果你直接用仓库自带部署模板：
+
+- `.env.example`
+  - 已包含共享 HTTP 持久化鉴权所需的关键变量示例
+- `docker-compose.yml`
+  - 已挂载 `./.codearts-mcp` 作为持久化凭证存储目录
+- `ecosystem.config.cjs`
+  - 已为 PM2 共享 HTTP 模式预留 `MCP_AUTH_*` 配置入口
+
+## 快速开始
+
+安装与构建：
+
+```bash
+npm install
+npm run build
+```
+
+如果你只想快速验证接通，建议先按这个顺序试：
+
+1. `req_list_projects`
+2. `repo_list_repositories`
+3. `pipeline_list_pipelines`
+4. `build_list_jobs`
+
+这样可以最快把“鉴权/区域/基础 endpoint 问题”和“具体产品问题”区分开。
+
+## 北京四标准地址参考
+
+大多数用户不需要手填，下面这组地址主要用于排障或定制路由时参考：
+
+- Req: `https://projectman-ext.cn-north-4.myhuaweicloud.com`
+- Repo: `https://codehub-ext.cn-north-4.myhuaweicloud.com`
+- Pipeline: `https://cloudpipeline-ext.cn-north-4.myhuaweicloud.com`
+- Check: `https://codecheck-ext.cn-north-4.myhuaweicloud.com`
+- TestPlan: `https://cloudtest-ext.cn-north-4.myhuaweicloud.com`
+- Deploy: `https://codearts-deploy.cn-north-4.myhuaweicloud.com`
+- Build: `https://cloudbuild-ext.cn-north-4.myhuaweicloud.com`
+- Artifact: `https://artifact.cn-north-4.myhuaweicloud.cn`
+
+## 推荐阅读顺序
+
+- 先看总览：
+  - `docs/wiki/Home.md`
+- 再看接入：
+  - `docs/quickstart.md`
+  - `docs/client-examples.md`
+- 再看当前真实状态：
+  - `docs/wiki/Capability-Matrix.md`
+  - `docs/wiki/Module-Live-Readiness.md`
+  - `docs/wiki/Current-Implementation-Status-2026-04-17.md`
+- 如果你关心细节验证：
+  - `docs/wiki/Deploy-Live-Validated.md`
+  - `docs/wiki/Artifact-Live-Validated.md`
+  - `docs/wiki/TestPlan-Live-Validated.md`
+  - `docs/wiki/Build-Live-Validated.md`
+- 如果你要给团队部署共享服务：
+  - `docs/wiki/Team-Deployment.md`
+
+## 维护命令
+
+- `npm run build`
+  - 构建 TypeScript
+- `npm test`
+  - 跑测试
+- `npm run stats:modules`
+  - 输出模块统计
+- `npm run stats:check-docs`
+  - 检查 README / wiki 统计是否漂移
+- `npm run stats:sync-docs`
+  - 同步自动统计区块
+
+## Shared HTTP Auth Persistence
+
+共享 HTTP 模式现在支持持久化鉴权：
+
+- 服务器使用 `MCP_AUTH_MASTER_KEY` 对每个用户的 `AK/SK` 做加密存储
+- 持久化文件路径默认是 `MCP_AUTH_DATA_PATH=.codearts-mcp/auth-store.json`
+- 用户第一次调用 `auth_configure_session` 后，服务端会签发稳定的 auth cookie/token
+- 同一个用户后续正常重连时，不需要再次填写 `AK/SK`
+- 如果要主动撤销当前用户保存的凭证，调用 `auth_clear_session`
+
+服务器部署时建议至少配置：
+
+```env
+MCP_TRANSPORT=http
+MCP_HTTP_PORT=3000
+MCP_SERVER_NAME=codearts-mcp
+MCP_SERVER_VERSION=0.1.0
+MCP_AUTH_MASTER_KEY=replace-with-a-long-random-secret
+MCP_AUTH_DATA_PATH=.codearts-mcp/auth-store.json
+```
+
+运维上再记住两点：
+
+- `MCP_AUTH_MASTER_KEY` 必须稳定保存；改掉以后，旧的已保存凭证将无法解密，用户需要重新配置
+- `MCP_AUTH_DATA_PATH` 最好放在持久化磁盘；文件丢失后，服务端就无法恢复已保存的用户身份
+
+## 共享 HTTP 客户端配置模板
+
+如果你要把它部署到服务器给多人共用，客户端配置里通常只需要写 MCP 地址，不要直接写 `AK/SK`。
+
+适合 Cursor / Codex Desktop 一类客户端的写法：
+
+```json
+{
+  "mcpServers": {
+    "codearts-shared": {
+      "type": "http",
+      "url": "https://your-host.example.com/mcp"
+    }
+  }
+}
+```
+
+连上后，第一步调用：
+
+```json
+{
+  "access_key": "your-ak",
+  "secret_key": "your-sk",
+  "region": "cn-north-4"
+}
+```
+
+如果是北京四标准环境，通常只需要这三个字段；只有租户明确使用了非标准路由，才需要额外补各产品的 `*_base_url`。

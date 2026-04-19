@@ -2,6 +2,9 @@ node_modules
 dist
 .env
 .env.local
+.codearts-mcp
+deploy/nginx/ssl/*.pem
+deploy/nginx/ssl/*.key
 coverage
 .git
 .worktrees
