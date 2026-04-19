@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { loadEnvConfig } from "../../../src/core/config/env.js";
+import { loadEnvConfig, loadHttpAuthConfig } from "../../../src/core/config/env.js";
 
 describe("loadEnvConfig", () => {
   it("derives standard CodeArts endpoints from region when product urls are omitted", () => {
@@ -45,5 +45,32 @@ describe("loadEnvConfig", () => {
     expect(config.artifactBaseUrl).toBe("https://artifact.example.com");
     expect(config.reqBaseUrl).toBe("https://projectman-ext.cn-north-4.myhuaweicloud.com");
     expect(config.repoBaseUrl).toBe("https://codehub-ext.cn-north-4.myhuaweicloud.com");
+  });
+});
+
+describe("loadHttpAuthConfig", () => {
+  it("loads HTTP auth persistence settings with defaults", () => {
+    expect(
+      loadHttpAuthConfig({
+        MCP_AUTH_MASTER_KEY: "0123456789abcdef0123456789abcdef",
+        MCP_SERVER_NAME: "codearts-mcp",
+        MCP_SERVER_VERSION: "0.1.0"
+      })
+    ).toEqual({
+      masterKey: "0123456789abcdef0123456789abcdef",
+      authDataPath: ".codearts-mcp/auth-store.json",
+      authCookieName: "codearts_mcp_auth",
+      authCookieSecure: false,
+      authTokenTtlSeconds: 2592000
+    });
+  });
+
+  it("rejects missing master key", () => {
+    expect(() =>
+      loadHttpAuthConfig({
+        MCP_SERVER_NAME: "codearts-mcp",
+        MCP_SERVER_VERSION: "0.1.0"
+      })
+    ).toThrow(/MCP_AUTH_MASTER_KEY/);
   });
 });

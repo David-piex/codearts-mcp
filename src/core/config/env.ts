@@ -37,6 +37,14 @@ export type ServerMetadataConfig = {
   httpPort: number;
 };
 
+export type HttpAuthConfig = {
+  masterKey: string;
+  authDataPath: string;
+  authCookieName: string;
+  authCookieSecure: boolean;
+  authTokenTtlSeconds: number;
+};
+
 export function loadEnvConfig(source: Record<string, string | undefined> = process.env): AppConfig {
   const parsed = envSchema.parse(source);
   const defaults = mergeSessionEndpointOverrides(resolveRegionDefaults(parsed.HUAWEICLOUD_REGION), {
@@ -82,5 +90,23 @@ export function loadServerMetadataConfig(
     serverName,
     serverVersion,
     httpPort: Number(source.MCP_HTTP_PORT ?? "3000")
+  };
+}
+
+export function loadHttpAuthConfig(
+  source: Record<string, string | undefined> = process.env
+): HttpAuthConfig {
+  const masterKey = source.MCP_AUTH_MASTER_KEY;
+
+  if (!masterKey) {
+    throw new Error("MCP_AUTH_MASTER_KEY is required in HTTP mode.");
+  }
+
+  return {
+    masterKey,
+    authDataPath: source.MCP_AUTH_DATA_PATH ?? ".codearts-mcp/auth-store.json",
+    authCookieName: source.MCP_AUTH_COOKIE_NAME ?? "codearts_mcp_auth",
+    authCookieSecure: source.MCP_AUTH_COOKIE_SECURE === "true",
+    authTokenTtlSeconds: Number(source.MCP_AUTH_TOKEN_TTL_SECONDS ?? "2592000")
   };
 }
