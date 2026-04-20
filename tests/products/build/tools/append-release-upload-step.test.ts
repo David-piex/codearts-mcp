@@ -138,4 +138,40 @@ describe("createBuildAppendReleaseUploadStepHandler", () => {
       executed: true
     });
   });
+
+  it("surfaces a warning when appending a jar upload step", async () => {
+    const handler = createBuildAppendReleaseUploadStepHandler({
+      previewAppendJobStep: async () => ({
+        job_id: "job-1",
+        name: "gateway-build",
+        appended_step_name: "Upload package to release repository",
+        inserted_after_step_name: "Npm build",
+        module_id: "devcloud2018.codeci_action_20018.action",
+        step_count: 2,
+        pre_condition: "SUCCESS",
+        properties: {
+          path: "codeartsmcpdemo.jar",
+          name: "codeartsmcpdemo",
+          version: "1.0.0",
+          upload_tool: "curl"
+        }
+      }),
+      appendJobStep: async () => {
+        throw new Error("should not execute");
+      }
+    });
+
+    const result = await handler({
+      job_id: "job-1",
+      path: "codeartsmcpdemo.jar",
+      package_name: "codeartsmcpdemo"
+    });
+
+    expect(result.content[0]?.text).toContain("Warning:");
+    expect(result.content[0]?.text).toContain("real Java archive");
+    expect(result.structuredContent.item).toMatchObject({
+      stepName: "Upload package to release repository",
+      warnings: ["java_archive_upload_requires_real_archive"]
+    });
+  });
 });

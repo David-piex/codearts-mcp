@@ -167,6 +167,45 @@ describe("http app", () => {
     expect(body.status).toBe("ok");
   });
 
+  it("emits a structured request log after the response completes", async () => {
+    const logs: unknown[] = [];
+    const app = createHttpApp(
+      {
+        serverName: "codearts-mcp",
+        serverVersion: "0.1.0",
+        httpPort: 0
+      },
+      undefined,
+      {
+        requestLogger: (entry: unknown) => {
+          logs.push(entry);
+        }
+      }
+    );
+    const server = createServer(app);
+    servers.push(server);
+    server.listen(0, "127.0.0.1");
+    await once(server, "listening");
+
+    const address = server.address();
+    if (!address || typeof address === "string") {
+      throw new Error("Expected an address info object");
+    }
+
+    const response = await fetch(`http://127.0.0.1:${address.port}/health`);
+
+    expect(response.status).toBe(200);
+    expect(logs).toHaveLength(1);
+    expect(logs[0]).toEqual(
+      expect.objectContaining({
+        method: "GET",
+        path: "/health",
+        statusCode: 200,
+        durationMs: expect.any(Number)
+      })
+    );
+  });
+
   it("sets an auth cookie after configure_session", async () => {
     const authConfig = createTestAuthConfig();
     const { server, port } = await startServer(authConfig);

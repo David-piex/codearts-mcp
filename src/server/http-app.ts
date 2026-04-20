@@ -11,6 +11,17 @@ import { createSessionCredentialStore } from "./session-store.js";
 
 type SessionTransportMap = Record<string, StreamableHTTPServerTransport>;
 
+export type HttpRequestLogEntry = {
+  method: string;
+  path: string;
+  statusCode: number;
+  durationMs: number;
+};
+
+type HttpAppOptions = {
+  requestLogger?: (entry: HttpRequestLogEntry) => void;
+};
+
 function writeJson(res: ServerResponse, status: number, body: unknown) {
   res.statusCode = status;
   res.setHeader("content-type", "application/json");
@@ -102,12 +113,46 @@ function installAuthResponseHooks(
   }) as ServerResponse["end"];
 }
 
+function installRequestLogging(
+  req: IncomingMessage,
+  res: ServerResponse,
+  pathname: string,
+  requestLogger?: (entry: HttpRequestLogEntry) => void
+) {
+  if (!requestLogger) {
+    return;
+  }
+
+  const startedAt = Date.now();
+  let logged = false;
+
+  const logRequest = () => {
+    if (logged) {
+      return;
+    }
+
+    logged = true;
+    requestLogger({
+      method: req.method ?? "UNKNOWN",
+      path: pathname,
+      statusCode: res.statusCode,
+      durationMs: Date.now() - startedAt
+    });
+  };
+
+  res.once("finish", logRequest);
+  res.once("close", logRequest);
+}
+
 export function createHttpApp(
   config = loadServerMetadataConfig(),
-  authConfig?: HttpAuthConfig
+  authConfig?: HttpAuthConfig,
+  options: HttpAppOptions = {}
 ) {
   const transports: SessionTransportMap = {};
-  const sessionStore = createSessionCredentialStore();
+  const sessionStore = createSessionCredentialStore({
+    ttlMs: authConfig ? authConfig.authTokenTtlSeconds * 1000 : undefined
+  });
   const authRepository = authConfig
     ? createFileAuthRepository(authConfig.authDataPath)
     : undefined;
@@ -127,6 +172,7 @@ export function createHttpApp(
     }
 
     const url = new URL(req.url, "http://127.0.0.1");
+    installRequestLogging(req, res, url.pathname, options.requestLogger);
 
     if (req.method === "GET" && (url.pathname === "/" || url.pathname === "/health")) {
       writeJson(res, 200, { status: "ok" });
@@ -142,6 +188,7 @@ export function createHttpApp(
     const sessionId = Array.isArray(sessionIdHeader) ? sessionIdHeader[0] : sessionIdHeader;
     const authContext = authResolver
       ? await authResolver.resolve({
+          sessionId,
           headers: {
             authorization: normalizeHeaderValue(req.headers.authorization),
             cookie: normalizeHeaderValue(req.headers.cookie)

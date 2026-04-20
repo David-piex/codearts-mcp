@@ -207,6 +207,30 @@ Base URL：`https://cloudbuild-ext.cn-north-4.myhuaweicloud.com`
   - Real success sample:
     - build `4`
   - Real response returns full log text content.
+  - Additional root-cause sample on `2026-04-20`:
+    - build `17`
+    - the log proves the temporary SpringBoot probe artifact was not built as a real Java archive
+    - after `npx esbuild ... --outfile=app.js`, the job executed:
+      - `cp app.js codeartsmcpdemo.jar`
+    - the same build then uploaded:
+      - `codeartsmcpdemo.jar`
+      - `sha256=7ae35e254113d1ec6c1eea32fe7cd37834e701158240fc11bd66188996d3e569`
+    - current conclusion:
+      - the published `/codeartsmcpdemo/1.0.0/1.0.0/codeartsmcpdemo.jar` sample is a Node bundle renamed to `.jar`
+      - it is useful for transport-path validation, but not a valid SpringBoot executable artifact
+  - Successful repair sample on `2026-04-20`:
+    - build `18`
+    - the shared Build job was temporarily rewritten to emit a Java 8 compatible executable jar and then restored
+    - local source artifact was first smoke-tested with:
+      - `java -jar ... --server.port=18080`
+      - HTTP `200 ok`
+    - the Build log then confirmed the uploaded payload:
+      - `codeartsmcpdemo.jar`
+      - `sha256=3241ef0245f0317c051edb0ee2829b6aa8cde77914992fe81d20a7b692f6c881`
+      - upload target `//codeartsmcpdemo/1.0.2/1.0.2/`
+    - current conclusion:
+      - the Build write path can publish a real SpringBoot-compatible executable jar when the source artifact is genuine
+      - the earlier Deploy failure was artifact-content-specific, not a permanent Build or Artifact limitation
 
 - `build_get_error_log`
   - Real API call succeeds on a real executed sample.

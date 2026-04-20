@@ -447,6 +447,63 @@ Real record-bound validation:
     - `package_name` does not appear in the captured request bodies
     - `package_name` does not appear in the current SpringBoot execution-param surface
     - `serviceName`, `spring_path`, and `component_name` are public inputs, but `package_name` is still internal-only from the tenant-visible MCP perspective
+- Additional SpringBoot repair probe on `2026-04-20`:
+  - created task `fb32c07a53df430984c19bc903cbfe82`
+  - created record `f4ec9880ef374af1a3b505c25be1cc56`
+  - create-time config explicitly added:
+    - `package_name=codeartsmcpdemo`
+    - corrected nested Artifact path `/codeartsmcpdemo/1.0.0/1.0.0/codeartsmcpdemo.jar`
+  - observed behavior shift:
+    - `停止SpringBoot服务` now succeeds
+    - `启动SpringBoot服务` becomes the first failing step
+  - provider log now resolves the runtime jar path to:
+    - `/usr/local/codeartsmcpdemo/codeartsmcpdemo.jar`
+  - the new blocker is no longer unresolved template vars:
+    - provider reports `Error: Invalid or corrupt jarfile /usr/local/codeartsmcpdemo/codeartsmcpdemo.jar`
+  - current strongest interpretation:
+    - adding `package_name` is a real repair for the earlier path-resolution failure
+    - the remaining blocker has moved down to artifact quality / package format compatibility rather than MCP parameter transport
+  - Build and download-chain re-check on `2026-04-20` closes the remaining ambiguity:
+    - Build `17` log explicitly shows:
+      - `npx esbuild ... --outfile=app.js`
+      - `cp app.js codeartsmcpdemo.jar`
+    - the same build uploaded:
+      - `codeartsmcpdemo.jar`
+      - `sha256=7ae35e254113d1ec6c1eea32fe7cd37834e701158240fc11bd66188996d3e569`
+    - the Deploy repair record logs the downloaded host file as:
+      - `/usr/local/codeartsmcpdemo//codeartsmcpdemo.jar`
+      - with the same `sha256=7ae35e254113d1ec6c1eea32fe7cd37834e701158240fc11bd66188996d3e569`
+  - current conclusion:
+    - MCP request transport is correct
+    - Deploy download and file placement are correct
+    - the published `codeartsmcpdemo.jar` sample itself is a Node `app.js` bundle renamed to `.jar`
+    - `Invalid or corrupt jarfile` is therefore expected for this artifact and is not a new Deploy-side bug
+- Full SpringBoot write-path closure on `2026-04-20`:
+  - a Java 8 compatible executable HTTP jar was built locally, smoke-tested with `java -jar`, and published through the real Build write path
+  - Build sample:
+    - job `cb9308bf8ece41909247bacd26b32cad`
+    - build `18`
+    - uploaded artifact `/codeartsmcpdemo/1.0.2/1.0.2/codeartsmcpdemo.jar`
+    - uploaded `sha256=3241ef0245f0317c051edb0ee2829b6aa8cde77914992fe81d20a7b692f6c881`
+  - Deploy sample:
+    - task `fb32c07a53df430984c19bc903cbfe82`
+    - record `9b6b3f87eec2425a95e415cfb3a75d6a`
+    - execution params used:
+      - `package_name=codeartsmcpdemo`
+      - `releaseVersion=1.0.2`
+      - `package_url=/codeartsmcpdemo/1.0.2/1.0.2/codeartsmcpdemo.jar`
+      - `service_port=8080`
+  - Final result:
+    - `安装JDK: succeeded`
+    - `选择部署来源: succeeded`
+    - `停止SpringBoot服务: succeeded`
+    - `启动SpringBoot服务: succeeded`
+    - `URL健康测试: succeeded`
+    - overall record state: `succeeded`
+  - Current strongest conclusion:
+    - the SpringBoot template path is now fully validated for real write execution
+    - once the uploaded artifact is a genuine Java executable jar, the Req / Build / Artifact / Deploy chain closes successfully
+    - the shared Build job was restored to the original `codearts-mcp.tgz` configuration after the probe
 
 ## MCP output normalization
 

@@ -591,10 +591,14 @@ export function createPipelineClient(_http: ReturnTypeCreateHttpClient): Pipelin
         }>;
         total?: number;
       });
+      const records = (response.records ?? response.pipelines ?? []).filter(
+        (item) => !item.project_id || item.project_id === input.project_id
+      );
+      const filtered = records.length !== (response.records ?? response.pipelines ?? []).length;
 
       return {
-        records: response.records ?? response.pipelines ?? [],
-        total: response.total
+        records,
+        total: filtered ? records.length : response.total
       };
     },
     async listRuns(input) {

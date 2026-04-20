@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { createAuthContextResolver } from "../../src/server/auth-context.js";
 
 describe("auth context resolver", () => {
@@ -72,5 +72,127 @@ describe("auth context resolver", () => {
     });
 
     expect(result?.authId).toBe("auth-query");
+  });
+
+  it("reuses a session-bound auth identity before re-reading cookie tokens", async () => {
+    const findByTokenHash = vi.fn(async () => ({ auth_id: "auth-cookie" }));
+    const resolver = createAuthContextResolver({
+      authCookieName: "codearts_mcp_auth",
+      repository: {
+        findByTokenHash
+      },
+      sessionStore: {
+        getAuthId: (sessionId: string) =>
+          sessionId === "session-bound" ? "auth-session" : undefined,
+        bind: () => undefined,
+        clear: () => undefined
+      },
+      hashToken: () => "cookie-hash"
+    });
+
+    const result = await resolver.resolve({
+      sessionId: "session-bound",
+      headers: {
+        cookie: "codearts_mcp_auth=token-b"
+      }
+    });
+
+    expect(result).toEqual({
+      authId: "auth-session"
+    });
+    expect(findByTokenHash).not.toHaveBeenCalled();
+  });
+
+  it("reuses cached token lookups within the resolver cache window", async () => {
+    let now = 1_000;
+    const findByTokenHash = vi.fn(async () => ({ auth_id: "auth-cookie" }));
+    const resolver = createAuthContextResolver({
+      authCookieName: "codearts_mcp_auth",
+      repository: {
+        findByTokenHash
+      },
+      sessionStore: {
+        getAuthId: () => undefined,
+        bind: () => undefined,
+        clear: () => undefined
+      },
+      hashToken: () => "cookie-hash",
+      cacheTtlMs: 5_000,
+      now: () => now
+    });
+
+    await expect(
+      resolver.resolve({
+        headers: {
+          cookie: "codearts_mcp_auth=token-b"
+        }
+      })
+    ).resolves.toEqual({
+      authId: "auth-cookie",
+      rawToken: "token-b"
+    });
+
+    now += 100;
+
+    await expect(
+      resolver.resolve({
+        headers: {
+          cookie: "codearts_mcp_auth=token-b"
+        }
+      })
+    ).resolves.toEqual({
+      authId: "auth-cookie",
+      rawToken: "token-b"
+    });
+
+    expect(findByTokenHash).toHaveBeenCalledTimes(1);
+  });
+
+  it("refreshes cached token lookups after the resolver cache window expires", async () => {
+    let now = 10_000;
+    const findByTokenHash = vi
+      .fn(async () => ({ auth_id: "auth-cookie-1" }))
+      .mockResolvedValueOnce({ auth_id: "auth-cookie-1" })
+      .mockResolvedValueOnce({ auth_id: "auth-cookie-2" });
+    const resolver = createAuthContextResolver({
+      authCookieName: "codearts_mcp_auth",
+      repository: {
+        findByTokenHash
+      },
+      sessionStore: {
+        getAuthId: () => undefined,
+        bind: () => undefined,
+        clear: () => undefined
+      },
+      hashToken: () => "cookie-hash",
+      cacheTtlMs: 5_000,
+      now: () => now
+    });
+
+    await expect(
+      resolver.resolve({
+        headers: {
+          cookie: "codearts_mcp_auth=token-b"
+        }
+      })
+    ).resolves.toEqual({
+      authId: "auth-cookie-1",
+      rawToken: "token-b"
+    });
+
+    now += 5_001;
+
+    await expect(
+      resolver.resolve({
+        headers: {
+          cookie: "codearts_mcp_auth=token-b"
+        }
+      })
+    ).resolves.toEqual({
+      authId: "auth-cookie-2",
+      rawToken: "token-b"
+    });
+
+    expect(findByTokenHash).toHaveBeenCalledTimes(2);
   });
 });

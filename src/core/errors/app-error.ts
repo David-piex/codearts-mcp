@@ -1,4 +1,9 @@
-export type ErrorCategory = "auth_error" | "not_found" | "validation_error" | "provider_error";
+export type ErrorCategory =
+  | "auth_error"
+  | "not_found"
+  | "validation_error"
+  | "provider_error"
+  | "rate_limit";
 
 export class AppError extends Error {
   constructor(

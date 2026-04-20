@@ -31,7 +31,13 @@ describe("createBuildGetJobHandler", () => {
             module_id: "official.release.upload",
             image: "linux",
             command: "upload.sh",
-            pre_condition: "SUCCESS"
+            pre_condition: "SUCCESS",
+            properties: {
+              file: "codearts-mcp.tgz",
+              name: "codearts-mcp",
+              buildVersion: "1.0.0",
+              customUploadPath: "/codearts-mcp/1.0.0"
+            }
           }
         ]
       })
@@ -39,7 +45,7 @@ describe("createBuildGetJobHandler", () => {
 
     const result = await handler({ job_id: "job-1" });
 
-    expect(result.structuredContent.item).toEqual({
+    expect(result.structuredContent.item).toMatchObject({
       id: "job-1",
       name: "gateway-build",
       projectId: "project-1",
@@ -58,6 +64,7 @@ describe("createBuildGetJobHandler", () => {
       releasePublishingStepNames: ["Upload package to release repository"],
       deployReady: true,
       deployBlockers: [],
+      deployWarnings: [],
       steps: [
         {
           name: "Npm build",
@@ -71,7 +78,11 @@ describe("createBuildGetJobHandler", () => {
           moduleId: "official.release.upload",
           image: "linux",
           command: "upload.sh",
-          preCondition: "SUCCESS"
+          preCondition: "SUCCESS",
+          artifactFile: "codearts-mcp.tgz",
+          artifactPackageName: "codearts-mcp",
+          artifactBuildVersion: "1.0.0",
+          artifactCustomUploadPath: "/codearts-mcp/1.0.0"
         }
       ]
     });
@@ -105,5 +116,58 @@ describe("createBuildGetJobHandler", () => {
     expect(item!.deployBlockers).toEqual([
       "missing_release_publishing_step"
     ]);
+    expect(item!.deployWarnings).toEqual([]);
+  });
+
+  it("flags suspicious javascript-to-jar packaging as a deploy blocker", async () => {
+    const handler = createBuildGetJobHandler({
+      getJob: async () => ({
+        job_id: "job-3",
+        name: "gateway-build",
+        project_id: "project-1",
+        step_count: 2,
+        scm_repositories: [],
+        steps: [
+          {
+            name: "Npm build",
+            module_id: "official.node.build",
+            image: "nodejs20",
+            command: "npx esbuild .codex-deploy-entry.ts --outfile=app.js\ncp app.js codeartsmcpdemo.jar",
+            pre_condition: "SUCCESS"
+          },
+          {
+            name: "Upload package to release repository",
+            module_id: "official.release.upload",
+            image: "linux",
+            command: "upload.sh",
+            pre_condition: "SUCCESS",
+            properties: {
+              file: "codeartsmcpdemo.jar",
+              name: "codeartsmcpdemo",
+              buildVersion: "1.0.0",
+              customUploadPath: "/codeartsmcpdemo/1.0.0"
+            }
+          }
+        ]
+      })
+    });
+
+    const result = await handler({ job_id: "job-3" });
+    const item = result.structuredContent.item;
+
+    expect(item).toBeDefined();
+    expect(item!.deployReady).toBe(false);
+    expect(item!.deployBlockers).toEqual([
+      "suspicious_java_archive_packaging"
+    ]);
+    expect(item!.deployWarnings).toEqual([
+      "javascript_bundle_renamed_as_java_archive"
+    ]);
+    expect(item!.steps[1]).toMatchObject({
+      artifactFile: "codeartsmcpdemo.jar",
+      artifactPackageName: "codeartsmcpdemo",
+      artifactBuildVersion: "1.0.0",
+      artifactCustomUploadPath: "/codeartsmcpdemo/1.0.0"
+    });
   });
 });

@@ -1,7 +1,11 @@
 import { mkdtempSync } from "node:fs";
+import * as fs from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi, afterEach } from "vitest";
+
+vi.mock("node:fs", { spy: true });
+
 import {
   createFileAuthRepository,
   type PersistedAuthRecord
@@ -40,6 +44,10 @@ function createRecord(overrides: Partial<PersistedAuthRecord> = {}): PersistedAu
 }
 
 describe("file auth repository", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it("persists and reloads auth records", async () => {
     const path = join(mkdtempSync(join(tmpdir(), "codearts-mcp-")), "auth-store.json");
     const repo = createFileAuthRepository(path);
@@ -84,5 +92,69 @@ describe("file auth repository", () => {
       auth_id: "auth-3",
       expires_at: "2020-01-01T00:00:00.000Z"
     });
+  });
+
+  it("reuses cached file contents for repeated reads in the same repository instance", async () => {
+    const path = join(mkdtempSync(join(tmpdir(), "codearts-mcp-")), "auth-store.json");
+    const repo = createFileAuthRepository(path);
+
+    await repo.upsert(createRecord({ auth_id: "auth-cache", token_hash: "hash-cache" }));
+
+    vi.mocked(fs.readFileSync).mockClear();
+
+    expect(await repo.findActiveByAuthId("auth-cache")).toMatchObject({
+      auth_id: "auth-cache"
+    });
+    expect(await repo.findByTokenHash("hash-cache")).toMatchObject({
+      token_hash: "hash-cache"
+    });
+
+    expect(fs.readFileSync).not.toHaveBeenCalled();
+  });
+
+  it("refreshes cached contents when another repository instance updates the file", async () => {
+    const path = join(mkdtempSync(join(tmpdir(), "codearts-mcp-")), "auth-store.json");
+    const firstRepo = createFileAuthRepository(path);
+    const secondRepo = createFileAuthRepository(path);
+
+    await firstRepo.upsert(createRecord({ auth_id: "auth-shared", token_hash: "hash-shared-1" }));
+
+    expect(await firstRepo.findByTokenHash("hash-shared-1")).toMatchObject({
+      token_hash: "hash-shared-1"
+    });
+
+    await secondRepo.upsert(
+      createRecord({
+        auth_id: "auth-shared",
+        token_hash: "hash-shared-2",
+        region: "cn-east-3",
+        req_base_url: "https://projectman-ext.cn-east-3.myhuaweicloud.com"
+      })
+    );
+
+    expect(await firstRepo.findByTokenHash("hash-shared-2")).toMatchObject({
+      auth_id: "auth-shared",
+      token_hash: "hash-shared-2",
+      region: "cn-east-3"
+    });
+  });
+
+  it("uses cached lookup indexes for token and auth-id reads", async () => {
+    const path = join(mkdtempSync(join(tmpdir(), "codearts-mcp-")), "auth-store.json");
+    const repo = createFileAuthRepository(path);
+
+    await repo.upsert(createRecord({ auth_id: "auth-index", token_hash: "hash-index" }));
+
+    const findSpy = vi.spyOn(Array.prototype, "find");
+    findSpy.mockClear();
+
+    expect(await repo.findByTokenHash("hash-index")).toMatchObject({
+      auth_id: "auth-index"
+    });
+    expect(await repo.findActiveByAuthId("auth-index")).toMatchObject({
+      token_hash: "hash-index"
+    });
+
+    expect(findSpy).not.toHaveBeenCalled();
   });
 });

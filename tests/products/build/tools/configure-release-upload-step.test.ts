@@ -84,4 +84,40 @@ describe("createBuildConfigureReleaseUploadStepHandler", () => {
       executed: true
     });
   });
+
+  it("surfaces a warning when a jar upload is configured", async () => {
+    const handler = createBuildConfigureReleaseUploadStepHandler({
+      previewConfigureReleaseUploadStep: async () => {
+        throw new Error("should not preview");
+      },
+      configureReleaseUploadStep: async () => ({
+        job_id: "job-1",
+        name: "gateway-build",
+        configured_step_name: "Upload package to release repository",
+        module_id: "devcloud2018.codeci_action_20018.action",
+        file: "codeartsmcpdemo.jar",
+        package_name: "codeartsmcpdemo",
+        build_version: "1.0.0",
+        custom_upload_path: "",
+        upload_tool: "curl",
+        remain_origin_path: "FLAT",
+        pre_condition: "SUCCESS"
+      })
+    });
+
+    const result = await handler({
+      job_id: "job-1",
+      file: "codeartsmcpdemo.jar",
+      package_name: "codeartsmcpdemo",
+      build_version: "1.0.0",
+      dry_run: false
+    });
+
+    expect(result.content[0]?.text).toContain("Warning:");
+    expect(result.content[0]?.text).toContain("real Java archive");
+    expect(result.structuredContent.item).toMatchObject({
+      file: "codeartsmcpdemo.jar",
+      warnings: ["java_archive_upload_requires_real_archive"]
+    });
+  });
 });

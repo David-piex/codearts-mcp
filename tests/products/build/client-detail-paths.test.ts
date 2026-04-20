@@ -70,7 +70,12 @@ describe("createBuildClient detail paths", () => {
           enable: true,
           image: "nodejs20",
           command: "npm ci && npm run build",
-          pre_condition: "SUCCESS"
+          pre_condition: "SUCCESS",
+          properties: {
+            image: "nodejs20",
+            command: "npm ci && npm run build",
+            preCondition: "SUCCESS"
+          }
         }
       ]
     });

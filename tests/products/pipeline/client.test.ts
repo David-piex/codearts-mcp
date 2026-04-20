@@ -10,7 +10,11 @@ describe("createPipelineClient", () => {
       })
     } as never);
 
-    const result = await client.listPipelines({ project_id: "p-1", page: 1, page_size: 20 });
+    const result = await client.listPipelines({
+      project_id: "owner-project",
+      page: 1,
+      page_size: 20
+    });
 
     expect(result.records).toEqual([
       { pipeline_id: "pipe-1", name: "release-main", creator_name: "yao" }
@@ -41,7 +45,11 @@ describe("createPipelineClient", () => {
       })
     } as never);
 
-    const result = await client.listPipelines({ project_id: "p-1", page: 1, page_size: 20 });
+    const result = await client.listPipelines({
+      project_id: "owner-project",
+      page: 1,
+      page_size: 20
+    });
 
     expect(result.records).toEqual([
       {
@@ -60,6 +68,57 @@ describe("createPipelineClient", () => {
       }
     ]);
     expect(result.total).toBe(1);
+  });
+
+  it("filters out pipelines that belong to a different project than the requested scope", async () => {
+    const client = createPipelineClient({
+      post: async () => ({
+        records: [
+          {
+            pipeline_id: "pipe-foreign",
+            name: "release-main",
+            creator_name: "yao",
+            project_id: "owner-project",
+            project_name: "housekeeper"
+          },
+          {
+            pipeline_id: "pipe-local",
+            name: "deploy-main",
+            creator_name: "alice",
+            project_id: "requested-project",
+            project_name: "codearts-mcp"
+          },
+          {
+            pipeline_id: "pipe-legacy",
+            name: "legacy-pipeline",
+            creator_name: "legacy"
+          }
+        ],
+        total: 3
+      })
+    } as never);
+
+    const result = await client.listPipelines({
+      project_id: "requested-project",
+      page: 1,
+      page_size: 20
+    });
+
+    expect(result.records).toEqual([
+      {
+        pipeline_id: "pipe-local",
+        name: "deploy-main",
+        creator_name: "alice",
+        project_id: "requested-project",
+        project_name: "codearts-mcp"
+      },
+      {
+        pipeline_id: "pipe-legacy",
+        name: "legacy-pipeline",
+        creator_name: "legacy"
+      }
+    ]);
+    expect(result.total).toBe(2);
   });
 
   it("maps pipeline artifacts responses", async () => {

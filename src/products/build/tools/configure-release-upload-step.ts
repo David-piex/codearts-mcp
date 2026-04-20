@@ -1,5 +1,9 @@
 import { asItemResult } from "../../../contracts/tool-result.js";
 import { buildConfigureReleaseUploadStepInput } from "../schemas.js";
+import {
+  collectReleaseUploadWarnings,
+  withReleaseUploadWarningSummary
+} from "./release-upload-diagnostics.js";
 
 type ConfiguredReleaseUploadStep = {
   job_id: string;
@@ -16,6 +20,8 @@ type ConfiguredReleaseUploadStep = {
 };
 
 export function previewConfigureReleaseUploadStep(input: ConfiguredReleaseUploadStep) {
+  const warnings = collectReleaseUploadWarnings(input.file);
+
   return asItemResult(
     `Dry run: configure release upload step ${input.configured_step_name}`,
     {
@@ -30,12 +36,15 @@ export function previewConfigureReleaseUploadStep(input: ConfiguredReleaseUpload
       uploadTool: input.upload_tool,
       remainOriginPath: input.remain_origin_path,
       preCondition: input.pre_condition,
+      warnings,
       executed: false
     }
   );
 }
 
 export function mapConfiguredReleaseUploadStep(input: ConfiguredReleaseUploadStep) {
+  const warnings = collectReleaseUploadWarnings(input.file);
+
   return asItemResult(
     `Configured release upload step ${input.configured_step_name}`,
     {
@@ -50,6 +59,7 @@ export function mapConfiguredReleaseUploadStep(input: ConfiguredReleaseUploadSte
       uploadTool: input.upload_tool,
       remainOriginPath: input.remain_origin_path,
       preCondition: input.pre_condition,
+      warnings,
       executed: true
     }
   );
@@ -91,7 +101,10 @@ export function createBuildConfigureReleaseUploadStepHandler(
       const result = previewConfigureReleaseUploadStep(response);
 
       return {
-        content: [{ type: "text" as const, text: result.summary }],
+        content: [{
+          type: "text" as const,
+          text: withReleaseUploadWarningSummary(result.summary, result.item?.warnings ?? [])
+        }],
         structuredContent: result
       };
     }
@@ -100,7 +113,10 @@ export function createBuildConfigureReleaseUploadStepHandler(
     const result = mapConfiguredReleaseUploadStep(response);
 
     return {
-      content: [{ type: "text" as const, text: result.summary }],
+      content: [{
+        type: "text" as const,
+        text: withReleaseUploadWarningSummary(result.summary, result.item?.warnings ?? [])
+      }],
       structuredContent: result
     };
   };

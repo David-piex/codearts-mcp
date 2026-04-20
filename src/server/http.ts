@@ -3,7 +3,11 @@ import { loadHttpAuthConfig, loadServerMetadataConfig } from "../core/config/env
 import { createHttpApp } from "./http-app.js";
 
 export async function startHttpServer(port = loadServerMetadataConfig().httpPort) {
-  const app = createHttpApp(loadServerMetadataConfig(), loadHttpAuthConfig());
+  const app = createHttpApp(loadServerMetadataConfig(), loadHttpAuthConfig(), {
+    requestLogger: (entry) => {
+      console.info(JSON.stringify(entry));
+    }
+  });
   const server = createNodeServer(app);
 
   await new Promise<void>((resolve, reject) => {

@@ -1,26 +1,10 @@
 import { asItemResult } from "../../../contracts/tool-result.js";
 import { buildGetJobInput } from "../schemas.js";
-
-function isReleasePublishingStep(step: {
-  name?: string;
-  module_id?: string;
-  command?: string;
-}) {
-  const haystacks = [step.name, step.module_id, step.command]
-    .filter((value): value is string => typeof value === "string" && value.length > 0)
-    .map((value) => value.toLowerCase());
-
-  return haystacks.some(
-    (value) =>
-      value.includes("codeci_action_20018") ||
-      value.includes("upload_artifact") ||
-      value.includes("release") ||
-      value.includes("releaseman") ||
-      value.includes("软件发布库") ||
-      value.includes("上传软件包") ||
-      value.includes("upload package")
-  );
-}
+import {
+  getArtifactMetadata,
+  hasSuspiciousJavaArchivePackaging,
+  isReleasePublishingStep
+} from "./release-upload-diagnostics.js";
 
 export function mapBuildJob(input: {
   job_id: string;
@@ -43,11 +27,21 @@ export function mapBuildJob(input: {
     image?: string;
     command?: string;
     pre_condition?: string;
+    properties?: Record<string, unknown>;
   }>;
 }) {
   const releasePublishingSteps = input.steps.filter((step) => isReleasePublishingStep(step));
-  const deployBlockers =
-    releasePublishingSteps.length > 0 ? [] : ["missing_release_publishing_step"];
+  const deployWarnings: string[] = [];
+  const deployBlockers: string[] = [];
+
+  if (releasePublishingSteps.length === 0) {
+    deployBlockers.push("missing_release_publishing_step");
+  }
+
+  if (input.steps.some((step) => hasSuspiciousJavaArchivePackaging(step))) {
+    deployWarnings.push("javascript_bundle_renamed_as_java_archive");
+    deployBlockers.push("suspicious_java_archive_packaging");
+  }
 
   return asItemResult(`Loaded build job ${input.name}`, {
     id: input.job_id,
@@ -59,10 +53,10 @@ export function mapBuildJob(input: {
     repositories: input.scm_repositories.map((repository) => ({
       url: repository.url,
       branch: repository.branch,
-        repoId: repository.repo_id,
-        repoName: repository.repo_name,
-        scmType: repository.scm_type
-      })),
+      repoId: repository.repo_id,
+      repoName: repository.repo_name,
+      scmType: repository.scm_type
+    })),
     releasePublishingDetected: releasePublishingSteps.length > 0,
     releasePublishingStepCount: releasePublishingSteps.length,
     releasePublishingStepNames: releasePublishingSteps
@@ -70,13 +64,15 @@ export function mapBuildJob(input: {
       .filter((value): value is string => Boolean(value)),
     deployReady: deployBlockers.length === 0,
     deployBlockers,
+    deployWarnings,
     steps: input.steps.map((step) => ({
       name: step.name,
       moduleId: step.module_id,
       enabled: step.enable,
       image: step.image,
       command: step.command,
-      preCondition: step.pre_condition
+      preCondition: step.pre_condition,
+      ...getArtifactMetadata(step.properties)
     }))
   });
 }
@@ -103,6 +99,7 @@ type BuildGetJobClient = {
       image?: string;
       command?: string;
       pre_condition?: string;
+      properties?: Record<string, unknown>;
     }>;
   }>;
 };

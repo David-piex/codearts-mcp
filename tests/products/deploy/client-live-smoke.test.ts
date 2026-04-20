@@ -74,6 +74,13 @@ function formatDate(date: Date) {
   return `${year}-${month}-${day}`;
 }
 
+function expectPipelineControlledDeployError(error: unknown) {
+  const status = (error as { status?: number }).status;
+  const code = (error as { code?: string }).code;
+
+  return status === 400 && ["Deploy.00011042", "Deploy.00016004"].includes(code ?? "");
+}
+
 if (hasLiveEnv(process.env)) {
   describe("createDeployClient live smoke", () => {
     const config = loadEnvConfig(process.env);
@@ -189,9 +196,10 @@ if (hasLiveEnv(process.env)) {
         task_name: createdName,
         configs: [
           { name: "serviceName", type: "text", value: "codeartsmcpdemo" },
+          { name: "package_name", type: "text", value: "codeartsmcpdemo" },
           { name: "releaseVersion", type: "text", value: "1.0.0" },
           { name: "jdk_path", type: "text", value: "/usr/local/jdk" },
-          { name: "package_url", type: "text", value: "/codeartsmcpdemo/1.0.0/codeartsmcpdemo.jar" },
+          { name: "package_url", type: "text", value: "/codeartsmcpdemo/1.0.0/1.0.0/codeartsmcpdemo.jar" },
           { name: "spring_path", type: "text", value: "/usr/local/codeartsmcpdemo.jar" },
           { name: "download_path", type: "text", value: "/usr/local/" },
           { name: "service_port", type: "text", value: "8080" },
@@ -314,10 +322,7 @@ if (hasLiveEnv(process.env)) {
         client.startApp({
           task_id: taskId
         })
-      ).rejects.toMatchObject({
-        code: "Deploy.00011042",
-        status: 400
-      });
+      ).rejects.toSatisfy(expectPipelineControlledDeployError);
 
       await expect(
         client.stopApp({
@@ -334,10 +339,7 @@ if (hasLiveEnv(process.env)) {
           task_id: taskId,
           record_id: recordId
         })
-      ).rejects.toMatchObject({
-        code: "Deploy.00011042",
-        status: 400
-      });
+      ).rejects.toSatisfy(expectPipelineControlledDeployError);
     }, 30000);
   });
 } else {

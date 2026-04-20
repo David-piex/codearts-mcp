@@ -1,5 +1,10 @@
 import { asItemResult } from "../../../contracts/tool-result.js";
 import { buildAppendReleaseUploadStepInput } from "../schemas.js";
+import {
+  collectReleaseUploadWarnings,
+  getReleaseUploadFile,
+  withReleaseUploadWarningSummary
+} from "./release-upload-diagnostics.js";
 
 type AppendReleaseUploadStepInput = {
   job_id: string;
@@ -50,6 +55,8 @@ export function toBuildAppendReleaseUploadStepInput(input: AppendReleaseUploadSt
 }
 
 export function previewAppendReleaseUploadStep(input: AppendedJobStep) {
+  const warnings = collectReleaseUploadWarnings(getReleaseUploadFile(input.properties));
+
   return asItemResult(`Dry run: append release upload step ${input.appended_step_name}`, {
     id: input.job_id,
     name: input.name,
@@ -61,11 +68,14 @@ export function previewAppendReleaseUploadStep(input: AppendedJobStep) {
     command: input.command,
     preCondition: input.pre_condition,
     properties: input.properties,
+    warnings,
     executed: false
   });
 }
 
 export function mapAppendedReleaseUploadStep(input: AppendedJobStep) {
+  const warnings = collectReleaseUploadWarnings(getReleaseUploadFile(input.properties));
+
   return asItemResult(`Appended release upload step ${input.appended_step_name}`, {
     id: input.job_id,
     name: input.name,
@@ -77,6 +87,7 @@ export function mapAppendedReleaseUploadStep(input: AppendedJobStep) {
     command: input.command,
     preCondition: input.pre_condition,
     properties: input.properties,
+    warnings,
     executed: true
   });
 }
@@ -98,7 +109,10 @@ export function createBuildAppendReleaseUploadStepHandler(
       const result = previewAppendReleaseUploadStep(response);
 
       return {
-        content: [{ type: "text" as const, text: result.summary }],
+        content: [{
+          type: "text" as const,
+          text: withReleaseUploadWarningSummary(result.summary, result.item?.warnings ?? [])
+        }],
         structuredContent: result
       };
     }
@@ -107,7 +121,10 @@ export function createBuildAppendReleaseUploadStepHandler(
     const result = mapAppendedReleaseUploadStep(response);
 
     return {
-      content: [{ type: "text" as const, text: result.summary }],
+      content: [{
+        type: "text" as const,
+        text: withReleaseUploadWarningSummary(result.summary, result.item?.warnings ?? [])
+      }],
       structuredContent: result
     };
   };

@@ -80,6 +80,14 @@ Base URL：`https://artifact.cn-north-4.myhuaweicloud.cn`
     - `path: /codeartsmcpdemo/1.0.0/1.0.0/`
     - `name: codeartsmcpdemo.jar`
     - `version: 1.0.0`
+  - Additional successful repair sample observed on `2026-04-20`:
+    - `path: /codeartsmcpdemo/1.0.2/1.0.2/`
+    - `name: codeartsmcpdemo.jar`
+    - `version: 1.0.2`
+  - Current interpretation:
+    - the tenant now contains both:
+      - an older fake `.jar` transport sample at `1.0.0`
+      - a newer real executable jar sample at `1.0.2`
 
 - `artifact_get_repository`
   - Real API call succeeds against the live Beijing 4 endpoint.

@@ -262,6 +262,7 @@ export type BuildClient = {
       image?: string;
       command?: string;
       pre_condition?: string;
+      properties?: Record<string, unknown>;
     }>;
   }>;
   listRecords: (input: {
@@ -1164,6 +1165,12 @@ export function createBuildClient(_http: ReturnTypeCreateHttpClient): BuildClien
             image?: string;
             command?: string;
             preCondition?: string;
+            file?: string;
+            name?: string;
+            buildVersion?: string;
+            customUploadPath?: string;
+            remainOriginPath?: string;
+            uploadTool?: string;
           };
         }>;
         result?: {
@@ -1191,6 +1198,12 @@ export function createBuildClient(_http: ReturnTypeCreateHttpClient): BuildClien
               image?: string;
               command?: string;
               preCondition?: string;
+              file?: string;
+              name?: string;
+              buildVersion?: string;
+              customUploadPath?: string;
+              remainOriginPath?: string;
+              uploadTool?: string;
             };
           }>;
         };
@@ -1203,7 +1216,8 @@ export function createBuildClient(_http: ReturnTypeCreateHttpClient): BuildClien
         enable: step.enable,
         image: step.properties?.image,
         command: step.properties?.command,
-        pre_condition: step.properties?.preCondition
+        pre_condition: step.properties?.preCondition,
+        properties: step.properties
       }));
       const scmRepositories = (item.scms ?? []).map((scm) => ({
         url: scm.url,

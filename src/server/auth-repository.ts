@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 
 export type PersistedEncryptedValue = {
@@ -34,6 +34,16 @@ type AuthRepositoryFile = {
   records: PersistedAuthRecord[];
 };
 
+type AuthRepositoryIndexes = {
+  byAuthId: Map<string, PersistedAuthRecord>;
+  byTokenHash: Map<string, PersistedAuthRecord>;
+};
+
+type FileSignature = {
+  mtimeMs: number;
+  size: number;
+};
+
 function loadFile(path: string): AuthRepositoryFile {
   if (!existsSync(path)) {
     return {
@@ -50,38 +60,105 @@ function saveFile(path: string, data: AuthRepositoryFile) {
   writeFileSync(path, JSON.stringify(data, null, 2));
 }
 
+function getFileSignature(path: string): FileSignature | undefined {
+  if (!existsSync(path)) {
+    return undefined;
+  }
+
+  const stats = statSync(path);
+
+  return {
+    mtimeMs: stats.mtimeMs,
+    size: stats.size
+  };
+}
+
+function signaturesMatch(left: FileSignature | undefined, right: FileSignature | undefined) {
+  return left?.mtimeMs === right?.mtimeMs && left?.size === right?.size;
+}
+
 function isExpired(record: PersistedAuthRecord) {
   return record.expires_at !== undefined && Date.parse(record.expires_at) <= Date.now();
 }
 
+function buildIndexes(data: AuthRepositoryFile): AuthRepositoryIndexes {
+  const byAuthId = new Map<string, PersistedAuthRecord>();
+  const byTokenHash = new Map<string, PersistedAuthRecord>();
+
+  for (const record of data.records) {
+    byAuthId.set(record.auth_id, record);
+    byTokenHash.set(record.token_hash, record);
+  }
+
+  return {
+    byAuthId,
+    byTokenHash
+  };
+}
+
 export function createFileAuthRepository(path: string) {
+  let cachedFile: AuthRepositoryFile | undefined;
+  let cachedIndexes: AuthRepositoryIndexes | undefined;
+  let cachedSignature = getFileSignature(path);
+
+  function readCachedFile() {
+    const currentSignature = getFileSignature(path);
+
+    if (cachedFile !== undefined && signaturesMatch(cachedSignature, currentSignature)) {
+      return cachedFile;
+    }
+
+    const nextFile = loadFile(path);
+
+    cachedFile = nextFile;
+    cachedIndexes = buildIndexes(nextFile);
+    cachedSignature = currentSignature;
+
+    return nextFile;
+  }
+
+  function readCachedIndexes() {
+    readCachedFile();
+    return cachedIndexes!;
+  }
+
+  function writeCachedFile(data: AuthRepositoryFile) {
+    saveFile(path, data);
+    cachedFile = data;
+    cachedIndexes = buildIndexes(data);
+    cachedSignature = getFileSignature(path);
+  }
+
   return {
     upsert(record: PersistedAuthRecord) {
-      const data = loadFile(path);
+      const data = readCachedFile();
       const records = data.records.filter((item) => item.auth_id !== record.auth_id);
 
       records.push(record);
-      saveFile(path, {
+      writeCachedFile({
         version: 1,
         records
       });
     },
 
     findByTokenHash(tokenHash: string) {
-      return loadFile(path).records.find((item) => item.token_hash === tokenHash);
+      return readCachedIndexes().byTokenHash.get(tokenHash);
     },
 
     findActiveByAuthId(authId: string) {
-      return loadFile(path).records.find(
-        (item) =>
-          item.auth_id === authId && item.revoked_at === undefined && !isExpired(item)
-      );
+      const record = readCachedIndexes().byAuthId.get(authId);
+
+      if (!record || record.revoked_at !== undefined || isExpired(record)) {
+        return undefined;
+      }
+
+      return record;
     },
 
     revoke(authId: string, revokedAt: string) {
-      const data = loadFile(path);
+      const data = readCachedFile();
 
-      saveFile(path, {
+      writeCachedFile({
         version: data.version,
         records: data.records.map((item) =>
           item.auth_id === authId ? { ...item, revoked_at: revokedAt } : item
