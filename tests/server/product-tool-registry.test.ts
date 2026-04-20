@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { AppError } from "../../src/core/errors/app-error.js";
 import {
   defineProductTool,
   registerDefinedTool
@@ -73,6 +74,38 @@ describe("product tool registry helper", () => {
       }),
       expect.any(Function)
     );
+  });
+
+  it("wraps product handler failures into tool error results", async () => {
+    const registerTool = vi.fn();
+    const demoToolDefinitions = {
+      "demo_tool": defineProductTool({
+        description: "Demo tool",
+        inputSchema: { kind: "schema" },
+        selectHttpClient: (clients: { demoClient: { id: string } }) => clients.demoClient,
+        createProductHandler: () => async () => {
+          throw new AppError("provider_error", "demo boom");
+        }
+      })
+    } as const;
+
+    registerDefinedTool({
+      toolName: "demo_tool",
+      server: { registerTool },
+      definitions: demoToolDefinitions,
+      mode: "stdio",
+      stdioClient: { id: "stdio-client" }
+    });
+
+    const handler = registerTool.mock.calls[0][2] as () => Promise<{
+      isError?: boolean;
+      content?: Array<{ type: string; text: string }>;
+    }>;
+
+    await expect(handler()).resolves.toEqual({
+      content: [{ type: "text", text: "demo boom" }],
+      isError: true
+    });
   });
 
   it("returns false for unknown tools", () => {

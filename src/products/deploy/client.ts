@@ -136,6 +136,14 @@ function buildModifyApplicationPayload(input: DeployModifyApplicationInput) {
   };
 }
 
+function asObjectRecord<T extends Record<string, unknown>>(value: unknown): T | undefined {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    return undefined;
+  }
+
+  return value as T;
+}
+
 export type DeployClient = {
   listAppHostGroups: (input: {
     application_id: string;
@@ -2762,7 +2770,17 @@ export function createDeployClient(_http: ReturnTypeCreateHttpClient): DeployCli
         };
       };
 
-      const item = response.result ?? response;
+      const responseObject = asObjectRecord<typeof response>(response);
+
+      if (!responseObject) {
+        throw new AppError(
+          "provider_error",
+          `Deploy task ${input.task_id} returned an empty or invalid response.`
+        );
+      }
+
+      const item =
+        asObjectRecord<NonNullable<typeof response.result>>(responseObject.result) ?? responseObject;
       let detailItem:
         | {
             task_id?: string;
@@ -2869,9 +2887,18 @@ export function createDeployClient(_http: ReturnTypeCreateHttpClient): DeployCli
               description?: string;
             };
           };
-          detailItem = detailResponse.result ?? detailResponse;
-        } catch {
-          detailItem = undefined;
+          const detailResponseObject = asObjectRecord<typeof detailResponse>(detailResponse);
+          detailItem = detailResponseObject
+            ? asObjectRecord<NonNullable<typeof detailResponse.result>>(
+                detailResponseObject.result
+              ) ?? detailResponseObject
+            : undefined;
+        } catch (error) {
+          if (error instanceof AppError && error.category === "not_found") {
+            detailItem = undefined;
+          } else {
+            detailItem = undefined;
+          }
         }
       }
 

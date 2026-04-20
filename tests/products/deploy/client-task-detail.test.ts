@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { AppError } from "../../../src/core/errors/app-error.js";
 import { createDeployClient } from "../../../src/products/deploy/client.js";
 
 describe("createDeployClient task detail", () => {
@@ -119,5 +120,17 @@ describe("createDeployClient task detail", () => {
       deploy_type: undefined,
       description: "recovered detail"
     });
+  });
+
+  it("throws a provider error when the primary task detail is empty", async () => {
+    const client = createDeployClient({
+      get: async () => null
+    } as never);
+
+    await expect(client.getTask({ task_id: "task-1" })).rejects.toMatchObject({
+      name: "AppError",
+      category: "provider_error",
+      message: "Deploy task task-1 returned an empty or invalid response."
+    } satisfies Partial<AppError>);
   });
 });

@@ -20,6 +20,28 @@ type ProductToolDefinition<TClient> = {
   resolveHandler: (options: ToolModeOptions<TClient>) => any;
 };
 
+function createToolErrorResult(error: unknown) {
+  return {
+    content: [
+      {
+        type: "text" as const,
+        text: error instanceof Error ? error.message : String(error)
+      }
+    ],
+    isError: true
+  };
+}
+
+function wrapToolHandler<THandler extends (...args: any[]) => any>(handler: THandler): THandler {
+  return (async (...args: Parameters<THandler>) => {
+    try {
+      return await handler(...args);
+    } catch (error) {
+      return createToolErrorResult(error);
+    }
+  }) as THandler;
+}
+
 export function defineProductTool<
   THttpClients,
   TClient,
@@ -90,12 +112,14 @@ export function registerDefinedTool<
       description: definition.description,
       inputSchema: definition.inputSchema
     },
-    definition.resolveHandler({
-      mode: options.mode,
-      sessionStore: options.sessionStore,
-      stdioClient: options.stdioClient,
-      rateLimiter: options.rateLimiter
-    })
+    wrapToolHandler(
+      definition.resolveHandler({
+        mode: options.mode,
+        sessionStore: options.sessionStore,
+        stdioClient: options.stdioClient,
+        rateLimiter: options.rateLimiter
+      })
+    )
   );
 
   return true;
