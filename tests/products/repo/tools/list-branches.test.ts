@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { mapRepoBranches } from "../../../../src/products/repo/tools/list-branches.js";
+import {
+  createRepoListBranchesHandler,
+  mapRepoBranches
+} from "../../../../src/products/repo/tools/list-branches.js";
 
 describe("mapRepoBranches", () => {
   it("returns normalized branches with pagination", () => {
@@ -22,5 +25,20 @@ describe("mapRepoBranches", () => {
       pageSize: 20,
       total: 1
     });
+  });
+
+  it("renders readable preview text in MCP content", async () => {
+    const handler = createRepoListBranchesHandler({
+      listBranches: async () => ({
+        branches: [{ name: "main", commit: { id: "abc123" }, protected: true }],
+        total: 1
+      })
+    });
+
+    const result = await handler({ repository_id: "repo-1", page: 1, page_size: 20 });
+
+    expect(result.content[0]?.text).toContain("name: main");
+    expect(result.content[0]?.text).toContain("commitId: abc123");
+    expect(result.content[0]?.text).toContain("protected: true");
   });
 });

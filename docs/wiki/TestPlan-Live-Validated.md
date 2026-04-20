@@ -1,21 +1,39 @@
-# TestPlan Live Validated
+# TestPlan 真实验证记录
 
-Last updated: `2026-04-19`
+最后更新：`2026-04-19`
 
-Region: `cn-north-4`
+区域：`cn-north-4`
 
-Base URL: `https://cloudtest-ext.cn-north-4.myhuaweicloud.com`
+Base URL：`https://cloudtest-ext.cn-north-4.myhuaweicloud.com`
 
-Validated with real tenant credentials.
+已使用真实租户凭证验证。
 
-Scanned CodeArts project ids:
+## 中文速读
+
+- `TestPlan` 当前不是没实现，而是“已发布读路径可用，但 detail/run 族在北京四仍有未发布路由”
+- 当前已经拿到真实计划样本的项目至少有两个，已知真实计划样本共 3 条
+- 当前真实可用的主要工具是：
+  - `testplan_list_plans`
+  - `testplan_list_issues`
+  - `testplan_list_cases`
+- 但目前这几个已知真实计划样本里：
+  - `issues` 仍为空
+  - `cases` 仍为空
+- 当前仍返回 `APIGW.0101` 的包括：
+  - `testplan_get_plan`
+  - `testplan_list_runs`
+  - `testplan_get_case`
+  - `testplan_run_cases`
+- 下面保留原始验证细节，方便后续继续追北京四发布状态和补非空样本
+
+扫描过的 CodeArts 项目 id：
 
 - `7bd39587c14048aebdadd0f9c22b1402`
 - `b60f3ec187f34c35ad3033d1d6d73876`
 - `eed055d650fb49dd88e49e6bdf88d344`
 - `eb80951449fa4af8bac57494f0f4defd`
 
-Known live TestPlan samples:
+已知真实 TestPlan 样本：
 
 - `project_id`: `7bd39587c14048aebdadd0f9c22b1402`
   - `plan_id`: `vd1j00011amm0nec`
@@ -27,7 +45,7 @@ Known live TestPlan samples:
   - `plan_id`: `vd040000umltrdd2`
   - `plan_name`: provider returns a non-empty real plan name on this project
 
-## Confirmed live results
+## 已确认的真实结果
 
 - `testplan_list_plans`
   - Real API call succeeds on projects:
@@ -105,13 +123,13 @@ Known live TestPlan samples:
   - Safe validation was performed with a clearly non-existent probe `case_id` to avoid triggering a real execution.
   - Re-confirmed in the consolidated live smoke on `2026-04-19`.
 
-## Current tenant state
+## 当前租户状态
 
 - TestPlan is not uniformly enabled across the scanned projects.
 - Two scanned projects already have real plan samples.
 - The currently known 3 live plan samples still all have empty issues and cases.
 
-## Live smoke inputs
+## Live smoke 输入
 
 - The repo now includes a real smoke test at:
   - `tests/products/testplan/client-live-smoke.test.ts`
@@ -129,7 +147,7 @@ Known live TestPlan samples:
   - `HUAWEICLOUD_TESTPLAN_LIVE_PLAN_ID`
   - when `HUAWEICLOUD_TESTPLAN_LIVE_PROJECT_IDS` is omitted, the repository now defaults to the 4-project sweep listed above
 
-## Follow-up targets
+## 后续目标
 
 - Re-check `testplan_get_plan`, `testplan_list_runs`, `testplan_get_case`, and `testplan_run_cases` later in case the currently tested routes are not the published Beijing 4 routes.
 - Obtain a non-empty plan sample with issues, cases, and runs so `list_issues` and `list_cases` can be upgraded from empty/reachable to full.

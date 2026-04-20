@@ -1,6 +1,6 @@
-# Product Overview
+# 产品总览
 
-The current repository only keeps these `8` CodeArts modules:
+当前仓库只保留这 `8` 个 CodeArts 核心模块：
 
 - Req
 - Repo
@@ -11,38 +11,41 @@ The current repository only keeps these `8` CodeArts modules:
 - Build
 - Artifact
 
-## Positioning
+## 项目定位
 
-`codearts-mcp` is a unified MCP server layer for CodeArts. It exposes the modules above through a consistent authentication model, transport model, and tool style.
+`codearts-mcp` 是一层统一的 CodeArts MCP Server 封装，目标是把多产品、多接口风格的 CodeArts 能力，收敛成：
 
-## Module Boundaries
+- 统一鉴权方式
+- 统一传输方式
+- 统一工具命名
+- 统一返回结构
 
-- `Req`: projects, iterations, members, and work-item read/write flows
-- `Repo`: repositories, branches, commits, files, tags, and merge requests
-- `Pipeline`: pipelines, runs, logs, approvals, retries, stops, and triggers
-- `Check`: code check tasks, rulesets, issues, metrics, and task execution
-- `TestPlan`: plans, cases, runs, and related issues
-- `Deploy`: applications, tasks, histories, logs, start/stop, and rollback
-- `Build`: jobs, records, stages, logs, parameters, and execution
-- `Artifact`: repositories, versions, files, download, audit, and delete
+## 模块边界
 
-## Status Entry Points
+- `Req`
+  - 项目、迭代、成员、工作项读写
+- `Repo`
+  - 仓库、分支、提交、文件、标签、合并请求
+- `Pipeline`
+  - 流水线、运行记录、日志、审批、重试、停止、触发
+- `Check`
+  - 代码检查任务、规则集、问题、指标与执行
+- `TestPlan`
+  - 测试计划、用例、执行记录、相关问题
+- `Deploy`
+  - 应用、任务、部署记录、日志、启动、停止、回滚
+- `Build`
+  - 构建任务、记录、阶段、日志、参数与执行
+- `Artifact`
+  - 制品仓、版本、文件、下载、审计、删除
 
-Use these wiki pages as the source of truth:
+## 当前推荐阅读方式
 
-- `docs/wiki/Home.md`
-- `docs/wiki/Capability-Matrix.md`
-- `docs/wiki/Module-Live-Readiness.md`
-- `docs/wiki/Current-Implementation-Status-2026-04-17.md`
-- `docs/wiki/Deploy-Live-Validated.md`
-- `docs/wiki/Artifact-Live-Validated.md`
-
-## Current Practical Reading
-
-- If you want the fastest current module summary:
-  - start with `docs/wiki/Home.md`
-- If you want to know what is truly usable right now:
-  - read `docs/wiki/Module-Live-Readiness.md`
-- If you want the latest Deploy and Artifact live reality:
-  - read `docs/wiki/Deploy-Live-Validated.md`
-  - read `docs/wiki/Artifact-Live-Validated.md`
+- 如果你第一次接触这个项目：
+  - 先看 `README.md`
+  - 再看 `docs/wiki/Home.md`
+- 如果你关心“现在到底哪些能用”：
+  - 看 `docs/wiki/Module-Live-Readiness.md`
+  - 看 `docs/wiki/Current-Implementation-Status-2026-04-17.md`
+- 如果你关心某个模块的真实验证细节：
+  - 看 `docs/wiki/*-Live-Validated.md`

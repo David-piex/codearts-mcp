@@ -26,5 +26,8 @@ describe("createReqListWorkItemsHandler", () => {
       status: "Doing",
       type: "Story"
     });
+    expect(result.content[0]?.text).toContain("id: 101");
+    expect(result.content[0]?.text).toContain("title: Implement SSO");
+    expect(result.content[0]?.text).toContain("type: Story");
   });
 });

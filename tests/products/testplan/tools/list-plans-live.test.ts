@@ -26,5 +26,8 @@ describe("createTestPlanListPlansHandler", () => {
       ownerName: "Yao",
       status: "ongoing"
     });
+    expect(result.content[0]?.text).toContain("id: plan-1");
+    expect(result.content[0]?.text).toContain("name: Sprint 12 Regression");
+    expect(result.content[0]?.text).toContain("status: ongoing");
   });
 });

@@ -1,4 +1,5 @@
 import { asListResult } from "../../../contracts/tool-result.js";
+import { formatListToolText } from "../../../contracts/tool-result-text.js";
 import { toPageInfo } from "../../../core/pagination/page-info.js";
 import { repoListMergeRequestsInput } from "../schemas.js";
 
@@ -71,9 +72,17 @@ export function createRepoListMergeRequestsHandler(client: RepoListMergeRequests
       parsed.page_size,
       response.total
     );
+    const text = formatListToolText(result, {
+      fields: [
+        { label: "id", get: (item) => (item as { id?: string }).id },
+        { label: "iid", get: (item) => (item as { iid?: number }).iid },
+        { label: "title", get: (item) => (item as { title?: string }).title },
+        { label: "state", get: (item) => (item as { state?: string }).state }
+      ]
+    });
 
     return {
-      content: [{ type: "text" as const, text: result.summary }],
+      content: [{ type: "text" as const, text }],
       structuredContent: result
     };
   };

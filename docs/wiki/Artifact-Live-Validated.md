@@ -1,28 +1,50 @@
-# Artifact Live Validated
+# Artifact 真实验证记录
 
-Last updated: `2026-04-19`
+最后更新：`2026-04-19`
 
-Region: `cn-north-4`
+区域：`cn-north-4`
 
-Base URL: `https://artifact.cn-north-4.myhuaweicloud.cn`
+Base URL：`https://artifact.cn-north-4.myhuaweicloud.cn`
 
-Validated with real tenant credentials.
+已使用真实租户凭证验证。
 
-Repository live-smoke entry:
+## 中文速读
+
+- `Artifact` 当前不是“没 MCP 化”，而是“已发布主干路由大多已覆盖，但北京四仍有一批路由没有发布”
+- 当前已经真实跑通的主路径包括：
+  - `artifact_list_repositories`
+  - `artifact_list_versions`
+  - `artifact_list_latest_version_files`
+  - `artifact_get_repository`
+  - `artifact_get_file_tree`
+- 当前北京四仍返回 `APIGW.0101` 的包括：
+  - `artifact_list_build_archives`
+  - `artifact_search_artifacts`
+  - `artifact_list_files`
+  - `artifact_get_file`
+  - `artifact_get_download_url`
+  - `artifact_show_audit`
+  - `artifact_delete_file`
+- 当前租户已经能看到真实发布样本，例如：
+  - `/codearts-mcp/1.0.0/codearts-mcp.tgz`
+  - `/codeartsmcpdemo/1.0.0/1.0.0/codeartsmcpdemo.jar`
+- 下面保留原始验证细节，方便继续做 AK/SK 闭环和逐条回归
+
+仓库中的 live-smoke 入口：
 
 - `tests/products/artifact/client-live-smoke.test.ts`
 - Consolidated live-smoke status:
   - `6` test cases passing under real `AK/SK`
   - includes both published and unpublished-route confirmation
 
-Scanned CodeArts project ids:
+扫描过的 CodeArts 项目 id：
 
 - `7bd39587c14048aebdadd0f9c22b1402`
 - `b60f3ec187f34c35ad3033d1d6d73876`
 - `eed055d650fb49dd88e49e6bdf88d344`
 - `eb80951449fa4af8bac57494f0f4defd`
 
-## Confirmed live results
+## 已确认的真实结果
 
 - `artifact_list_repositories`
   - Real API call succeeds against the scanned Beijing 4 project ids when using the real account-level `tenant_id`.
@@ -157,7 +179,7 @@ Scanned CodeArts project ids:
   - Validation was performed with a clearly non-existent probe path to avoid touching any real artifact content.
   - Re-confirmed in the consolidated live smoke on `2026-04-19`.
 
-## Current tenant state
+## 当前租户状态
 
 - The current tenant still returns empty repository lists and empty common-repo file trees on the scanned project sweep.
 - But the Artifact-facing version/file discovery surface is no longer empty:

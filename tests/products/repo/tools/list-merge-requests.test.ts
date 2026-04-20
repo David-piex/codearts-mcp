@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { mapMergeRequests } from "../../../../src/products/repo/tools/list-merge-requests.js";
+import {
+  createRepoListMergeRequestsHandler,
+  mapMergeRequests
+} from "../../../../src/products/repo/tools/list-merge-requests.js";
 
 describe("mapMergeRequests", () => {
   it("returns normalized merge requests with pagination", () => {
@@ -43,5 +46,31 @@ describe("mapMergeRequests", () => {
       pageSize: 20,
       total: 1
     });
+  });
+
+  it("renders readable preview text in MCP content", async () => {
+    const handler = createRepoListMergeRequestsHandler({
+      listMergeRequests: async () => ({
+        merge_requests: [
+          {
+            id: 101,
+            iid: 12,
+            title: "Release 1.2.0",
+            state: "opened",
+            source_branch: "release/1.2.0",
+            target_branch: "main",
+            author: { name: "Alice", nick_name: "alice" },
+            web_url: "https://example.com/mr/12"
+          }
+        ],
+        total: 1
+      })
+    });
+
+    const result = await handler({ repository_id: "repo-1", page: 1, page_size: 20 });
+
+    expect(result.content[0]?.text).toContain("id: 101");
+    expect(result.content[0]?.text).toContain("title: Release 1.2.0");
+    expect(result.content[0]?.text).toContain("state: opened");
   });
 });

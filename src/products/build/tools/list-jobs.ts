@@ -1,4 +1,5 @@
 import { asListResult } from "../../../contracts/tool-result.js";
+import { formatListToolText } from "../../../contracts/tool-result-text.js";
 import { toPageInfo } from "../../../core/pagination/page-info.js";
 import { buildListJobsInput } from "../schemas.js";
 
@@ -50,9 +51,23 @@ export function createBuildListJobsHandler(client: BuildListJobsClient) {
     const parsed = buildListJobsInput.parse(input);
     const response = await client.listJobs(parsed);
     const result = mapBuildJobs(response.jobs, parsed.page, parsed.page_size, response.total);
+    const text = formatListToolText(result, {
+      fields: [
+        { label: "id", get: (item) => (item as { id?: string }).id },
+        { label: "name", get: (item) => (item as { name?: string }).name },
+        {
+          label: "buildProjectId",
+          get: (item) => (item as { buildProjectId?: string }).buildProjectId
+        },
+        {
+          label: "isRunning",
+          get: (item) => (item as { isRunning?: boolean }).isRunning
+        }
+      ]
+    });
 
     return {
-      content: [{ type: "text" as const, text: result.summary }],
+      content: [{ type: "text" as const, text }],
       structuredContent: result
     };
   };

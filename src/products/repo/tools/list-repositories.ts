@@ -1,4 +1,5 @@
 import { asListResult } from "../../../contracts/tool-result.js";
+import { formatListToolText } from "../../../contracts/tool-result-text.js";
 import { toPageInfo } from "../../../core/pagination/page-info.js";
 import { repoListRepositoriesInput } from "../schemas.js";
 
@@ -8,8 +9,9 @@ export function mapRepositories(
   pageSize: number,
   total?: number
 ) {
+  const summary = total !== undefined ? `${items.length} repositories found in this page (total: ${total})` : `${items.length} repositories found`;
   return asListResult(
-    `${items.length} repositories found`,
+    summary,
     items.map((item) => ({
       id: String(item.id),
       name: item.name,
@@ -37,9 +39,17 @@ export function createRepoListRepositoriesHandler(client: RepoListRepositoriesCl
     const parsed = repoListRepositoriesInput.parse(input);
     const response = await client.listRepositories(parsed);
     const result = mapRepositories(response.repositories, parsed.page, parsed.page_size, response.total);
+    const text = formatListToolText(result, {
+      fields: [
+        { label: "id", get: (item) => (item as { id?: string }).id },
+        { label: "name", get: (item) => (item as { name?: string }).name },
+        { label: "sshUrl", get: (item) => (item as { sshUrl?: string }).sshUrl },
+        { label: "httpUrl", get: (item) => (item as { httpUrl?: string }).httpUrl }
+      ]
+    });
 
     return {
-      content: [{ type: "text" as const, text: result.summary }],
+      content: [{ type: "text" as const, text }],
       structuredContent: result
     };
   };

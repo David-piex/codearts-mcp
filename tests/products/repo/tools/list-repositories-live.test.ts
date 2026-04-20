@@ -14,5 +14,8 @@ describe("createRepoListRepositoriesHandler", () => {
 
     expect(result.structuredContent.summary).toContain("1 repositories");
     expect(result.structuredContent.items![0].name).toBe("repo-a");
+    expect(result.content[0]?.text).toContain("id: 1");
+    expect(result.content[0]?.text).toContain("name: repo-a");
+    expect(result.content[0]?.text).toContain("sshUrl: git@example.com:repo-a.git");
   });
 });

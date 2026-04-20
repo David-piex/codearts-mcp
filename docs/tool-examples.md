@@ -1,10 +1,10 @@
-# Tool Examples
+# 工具示例
 
-The examples below only cover the current `8` active modules.
+下面这些示例只覆盖当前保留的 `8` 个活跃模块。
 
-## Shared Session
+## 共享 Session
 
-For shared `http + session` mode in a standard region, start with `auth_configure_session`:
+如果你使用标准区域下的共享 `http + session` 模式，第一步先调用 `auth_configure_session`：
 
 ```json
 {
@@ -14,7 +14,7 @@ For shared `http + session` mode in a standard region, start with `auth_configur
 }
 ```
 
-Only add product `*_base_url` fields if your tenant really uses non-standard routes.
+只有在你的租户确实使用非标准路由时，才需要额外传产品级 `*_base_url` 字段。
 
 ## Req
 

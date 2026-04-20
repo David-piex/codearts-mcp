@@ -1,14 +1,25 @@
-# Deploy Live Validated
+# Deploy 真实验证记录
 
-Last updated: `2026-04-19`
+最后更新：`2026-04-19`
 
-Region: `cn-north-4`
+区域：`cn-north-4`
 
-Base URL: `https://codearts-deploy.cn-north-4.myhuaweicloud.com`
+Base URL：`https://codearts-deploy.cn-north-4.myhuaweicloud.com`
 
-Validated with real tenant credentials against the current `Codearts-mcp` project resources.
+这页是 Deploy 模块的详细验证账本。它已经非常长，因此这一轮不强行整页翻译，而是在顶部先补中文速读，下面保留原始细节证据，避免破坏追踪链路。
 
-Core resource ids used across the latest probes:
+## 中文速读
+
+- 当前 Deploy MCP 面已经不是“没实现”，而是“绝大多数控制面能力已实现且真实可用”
+- `deploy_create_application`、`deploy_modify_application`、`deploy_create_task_by_template`、`deploy_start_app`、`deploy_get_execution_params`、`deploy_get_status`、`deploy_get_history_detail`、`deploy_get_app_log`、`deploy_stop_app`、`deploy_rollback_app` 都已经拿到真实验证样本
+- 当前主要阻塞不再是没有 app / environment / host / record，而是健康模板本身 runtime 老旧
+- 当前最强证据链路是 HAR 反推出的 Node.js 模板路径：
+  - 软件包下载已跑通
+  - 真正的新阻塞点落在 `Node v10.9.0` + `forever` 的老旧组合上
+- `v4` 发现族工具并不是“没写”，而是“路由可达但当前租户样本不足”
+- 下面保留的是原始验证明细，适合排查、回归和继续补 AK/SK 闭环时使用
+
+最近探测中复用的核心资源 id：
 
 - `project_id`: `7bd39587c14048aebdadd0f9c22b1402`
 - base app `application_id`: `1bde719ea6924c71a9fdd64dbba5b6a1`
@@ -16,11 +27,11 @@ Core resource ids used across the latest probes:
 - host-group id `111`: `e3688fe4160640798d6d0612f848ddb5`
 - environment host id: `bb51c89c976c48818310772ddefc79a4`
 
-Repository live-smoke entry:
+仓库中的 live-smoke 入口：
 
 - `tests/products/deploy/client-live-smoke.test.ts`
 
-Additional env-gated live probes:
+额外 env 控制的 live probe：
 
 - `tests/products/deploy/tools/rollback-app-live.test.ts`
 - `tests/products/deploy/tools/start-app-execute-live.test.ts`

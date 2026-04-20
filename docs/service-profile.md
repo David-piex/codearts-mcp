@@ -1,8 +1,8 @@
-# Service Profile
+# 服务画像
 
-## Active Modules
+## 当前活跃模块
 
-The repository currently exposes only these `8` CodeArts modules:
+当前仓库只暴露这 `8` 个 CodeArts 模块：
 
 - Req
 - Repo
@@ -13,27 +13,31 @@ The repository currently exposes only these `8` CodeArts modules:
 - Build
 - Artifact
 
-## Unified Access Model
+## 统一接入模型
 
-- personal local usage: `stdio`
-- shared team deployment: `http + auth_configure_session`
+- 个人本地使用：`stdio`
+- 团队共享部署：`http + auth_configure_session`
 
-## Shared Constraints
+## 共享前提与边界
 
-- default region is `cn-north-4`
-- standard regions normally only need `AK/SK + region`
-- each module can still override its own base URL when a tenant uses non-standard routes
-- in shared mode, every session uses its own `AK/SK`
-- write tools should prefer `dry_run` first where supported
+- 默认区域是 `cn-north-4`
+- 标准区域通常只需要 `AK/SK + region`
+- 如果租户使用非标准路由，各模块仍可单独覆盖自己的 base URL
+- 共享模式下，每个 session 使用自己的 `AK/SK`
+- 写工具在支持时应优先走 `dry_run`
 
-## Module Characteristics
+## 模块特征
 
-- `Req / Repo / Pipeline` are usually the fastest modules to validate first
-- `Check / TestPlan / Deploy / Build / Artifact` depend more on existing tenant business data
-- `Artifact` often needs `tenant_id` in addition to `project_id`
-- `Deploy` is no longer mainly blocked by missing basic resources; the current practical blocker is the outdated healthy-template runtime path
+- `Req / Repo / Pipeline`
+  - 通常是最适合先验证的模块
+- `Check / TestPlan / Deploy / Build / Artifact`
+  - 更依赖租户里已有的真实业务数据
+- `Artifact`
+  - 除了 `project_id` 之外，通常还需要 `tenant_id`
+- `Deploy`
+  - 当前已不再主要受基础资源缺失阻塞，实际主要问题是健康模板路径的 runtime 老旧
 
-## Recommended Reading Order
+## 推荐阅读顺序
 
 1. `README.md`
 2. `docs/quickstart.md`

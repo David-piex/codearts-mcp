@@ -1,19 +1,19 @@
-# Tool Status Matrix
+# 工具状态矩阵
 
-Status matrix based on the current repository implementation, local tests, and the latest real Beijing 4 (`cn-north-4`) validation as of `2026-04-19`.
+这页按工具粒度汇总当前仓库的真实状态，依据包括当前代码实现、本地测试，以及截至 `2026-04-19` 的北京四 `cn-north-4` 真实 `AK/SK` 验证结果。
 
-## Status Legend
+## 状态说明
 
 - `AK/SK Full`
-  - Verified with real `AK/SK`, a real Huawei Cloud endpoint, and a successful business response.
+  - 已用真实 `AK/SK`、真实华为云端点和成功业务响应验证
 - `AK/SK Reachable`
-  - Verified against the real service, but blocked by tenant data, permissions, or missing execution records.
+  - 已确认打到真实服务，但被租户数据、权限或执行记录缺失阻塞
 - `Region Unpublished`
-  - Implemented locally, but the real region currently returns `APIGW.0101`.
+  - 本地已实现，但目标区域当前真实返回 `APIGW.0101`
 - `Code/Test Only`
-  - Implemented and locally tested, but not yet confirmed with real `AK/SK`.
+  - 已实现并做过本地测试，但尚未完成真实 `AK/SK` 确认
 
-## Module Summary
+## 模块汇总
 
 <!-- GENERATED:tool-status-module-summary:start -->
 | Module | Tools | Real-Live Summary | Current Conclusion |
@@ -28,14 +28,14 @@ Status matrix based on the current repository implementation, local tests, and t
 | Artifact | 12 | `5 Full / 0 Reachable / 7 Unpublished / 0 Code` | Five tools are fully validated; seven routes are unpublished in Beijing 4. The current tenant now exposes a real published file sample at `/codearts-mcp/1.0.0/codearts-mcp.tgz`. |
 <!-- GENERATED:tool-status-module-summary:end -->
 
-## Latest Shape Notes
+## 最新输出形态说明
 
 - `Deploy`
-  - record-bound and detail-style tools now preserve typed identifiers and request context more consistently, especially around `recordId`, `taskId`, and `stepId`
+  - 与 record/detail 相关的工具，现在对 `recordId`、`taskId`、`stepId` 等 typed identifier 与请求上下文的保留更一致
 - `Artifact`
-  - repository/version/archive/file lines now expose stable typed ids alongside their primary `id`
+  - repository/version/archive/file 现在都会在主 `id` 之外补充更稳定的 typed id 字段
 
-## Fully Closed Modules
+## 已完整闭环的模块
 
 - Req
 - Repo
@@ -43,7 +43,7 @@ Status matrix based on the current repository implementation, local tests, and t
 - Check
 - Build
 
-## Partially Closed Modules
+## 部分闭环模块
 
 ### TestPlan
 
@@ -89,11 +89,11 @@ Status matrix based on the current repository implementation, local tests, and t
 - `AK/SK Reachable`
   - `deploy_import_hosts_to_environment`
   - note:
-    - the remaining practical live blocker is the outdated Node.js template runtime (`Node v10.9.0` + `forever`)
-    - the `v4` app / environment / deploy-record / orchestration discovery family is implemented and route-reachable, but still sample-data-limited on the current tenant
-    - the six `v4` record write-preview tools now degrade to local `dry_run` preview when record detail is sample-limited, instead of hard-failing on the current tenant
-    - the latest template-management HAR on `2026-04-19` again shows browser traffic using classic `v1/applications/list`, not a positive `v4` discovery path
-    - the explicit skipped route outside closure scope is `PUT /v4/projects/{project_id}/environments/{environment_id}/hosts`
+    - 当前剩余的实际阻塞主要是老旧 Node.js 模板 runtime：`Node v10.9.0` + `forever`
+    - `v4` app / environment / deploy-record / orchestration discovery 家族工具已实现且路由可达，但在当前租户里仍受样本数据限制
+    - `6` 个 `v4` record 写预览工具现在在 record detail 样本不足时会退化为本地 `dry_run` 预览，而不是直接硬失败
+    - `2026-04-19` 最新模板管理 HAR 再次证明浏览器端当前主流仍在走经典 `v1/applications/list`，而不是明确的 `v4` 正样本发现链路
+    - 当前明确跳过、且不在本轮闭环范围内的路由是 `PUT /v4/projects/{project_id}/environments/{environment_id}/hosts`
 
 ### Artifact
 
@@ -112,10 +112,15 @@ Status matrix based on the current repository implementation, local tests, and t
   - `artifact_search_artifacts`
   - `artifact_show_audit`
 
-- MCP output note:
-  - even for unpublished routes, the local MCP surface is implemented and now normalized with typed ids such as `repositoryId`, `versionId`, `archiveId`, and `fileId`
+## MCP 输出补充说明
 
-## Related Docs
+- 即便是当前未发布的 Artifact 路由，本地 MCP 层也已经写完，并统一补齐了：
+  - `repositoryId`
+  - `versionId`
+  - `archiveId`
+  - `fileId`
+
+## 相关文档
 
 - `docs/wiki/AKSK-Verification-Ledger-2026-04-17.md`
 - `docs/wiki/Current-Implementation-Status-2026-04-17.md`

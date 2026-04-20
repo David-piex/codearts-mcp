@@ -14,5 +14,8 @@ describe("createReqListProjectsHandler", () => {
 
     expect(result.structuredContent.summary).toContain("1 projects");
     expect(result.structuredContent.items![0]).toEqual({ id: "p1", name: "Alpha", numberId: 7 });
+    expect(result.content[0]?.text).toContain("project_id: p1");
+    expect(result.content[0]?.text).toContain("name: Alpha");
+    expect(result.content[0]?.text).toContain("numberId: 7");
   });
 });

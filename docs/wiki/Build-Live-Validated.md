@@ -1,30 +1,44 @@
-# Build Live Validated
+# Build 真实验证记录
 
-Last updated: `2026-04-19`
+最后更新：`2026-04-19`
 
-Region: `cn-north-4`
+区域：`cn-north-4`
 
-Base URL: `https://cloudbuild-ext.cn-north-4.myhuaweicloud.com`
+Base URL：`https://cloudbuild-ext.cn-north-4.myhuaweicloud.com`
 
-Validated with real tenant credentials.
+已使用真实租户凭证验证。
 
-Repository live-smoke entry:
+## 中文速读
+
+- `Build` 当前已经是完整闭环模块，当前暴露的 `22` 个工具都已完成真实 `AK/SK` 验证
+- 不只是读接口已通，辅助配置类工具也已经通过真实 `dry_run` 预览验证
+- 当前最关键的真实样本 job 是：
+  - `cb9308bf8ece41909247bacd26b32cad`
+- 这条真实 Build 链路已经能：
+  - 正常触发构建
+  - 查询记录、日志、脚本、历史详情
+  - 追加发布步骤
+  - 产出并上传真实软件包
+- 现在 Build 已经能给 Deploy 健康路径提供真实制品输入
+- 下面保留原始验证细节，方便继续回归或排查 provider 行为差异
+
+仓库中的 live-smoke 入口：
 
 - `tests/products/build/client-live-smoke.test.ts`
 
-Additional live helper probes:
+额外 live helper 探针：
 
 - `tests/products/build/tools/configure-release-upload-step-live.test.ts`
 - `tests/products/build/tools/prepare-deployable-node-app-live.test.ts`
 - `tests/products/build/tools/prepare-node-runtime-bundle-live.test.ts`
 
-Scanned CodeArts project ids:
+扫描过的 CodeArts 项目 id：
 
 - `b60f3ec187f34c35ad3033d1d6d73876`
 - `eed055d650fb49dd88e49e6bdf88d344`
 - `eb80951449fa4af8bac57494f0f4defd`
 
-## Confirmed live results
+## 已确认的真实结果
 
 - `build_list_jobs`
   - Real API call succeeds.

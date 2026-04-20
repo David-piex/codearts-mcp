@@ -1,4 +1,5 @@
 import { asListResult } from "../../../contracts/tool-result.js";
+import { formatListToolText } from "../../../contracts/tool-result-text.js";
 import { toPageInfo } from "../../../core/pagination/page-info.js";
 import { pipelineListRunsInput } from "../schemas.js";
 
@@ -36,9 +37,19 @@ export function createPipelineListRunsHandler(client: PipelineListRunsClient) {
     const parsed = pipelineListRunsInput.parse(input);
     const response = await client.listRuns(parsed);
     const result = mapPipelineRuns(response.records, parsed.page, parsed.page_size, response.total);
+    const text = formatListToolText(result, {
+      fields: [
+        { label: "id", get: (item) => (item as { id?: string }).id },
+        { label: "status", get: (item) => (item as { status?: string }).status },
+        {
+          label: "executorName",
+          get: (item) => (item as { executorName?: string }).executorName
+        }
+      ]
+    });
 
     return {
-      content: [{ type: "text" as const, text: result.summary }],
+      content: [{ type: "text" as const, text }],
       structuredContent: result
     };
   };

@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { mapCheckTasks } from "../../../../src/products/check/tools/list-tasks.js";
+import {
+  createCheckListTasksHandler,
+  mapCheckTasks
+} from "../../../../src/products/check/tools/list-tasks.js";
 
 describe("mapCheckTasks", () => {
   it("returns normalized check tasks with pagination", () => {
@@ -36,5 +39,30 @@ describe("mapCheckTasks", () => {
       pageSize: 20,
       total: 1
     });
+  });
+
+  it("renders readable preview text in MCP content", async () => {
+    const handler = createCheckListTasksHandler({
+      listTasks: async () => ({
+        tasks: [
+          {
+            task_id: "task-1",
+            task_name: "scan-demo",
+            project_name: "demo",
+            repository_name: "demo-repo",
+            branch_name: "main",
+            language: "java",
+            status: "running"
+          }
+        ],
+        total: 1
+      })
+    });
+
+    const result = await handler({ page: 1, page_size: 20 });
+
+    expect(result.content[0]?.text).toContain("id: task-1");
+    expect(result.content[0]?.text).toContain("name: scan-demo");
+    expect(result.content[0]?.text).toContain("status: running");
   });
 });

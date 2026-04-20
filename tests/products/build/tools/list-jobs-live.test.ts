@@ -28,5 +28,8 @@ describe("createBuildListJobsHandler", () => {
       buildProjectId: "build-project-1",
       isRunning: false
     });
+    expect(result.content[0]?.text).toContain("id: job-1");
+    expect(result.content[0]?.text).toContain("name: gateway-build");
+    expect(result.content[0]?.text).toContain("isRunning: false");
   });
 });

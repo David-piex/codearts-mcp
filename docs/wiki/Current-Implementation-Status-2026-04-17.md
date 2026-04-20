@@ -1,8 +1,8 @@
-# Current Implementation Status (2026-04-17)
+# 当前实现状态（2026-04-17）
 
-This page is the corrected implementation snapshot after the latest `Req`, `Artifact`, `TestPlan`, `Build`, and `Deploy` live-validation work.
+这页是最近一轮 `Req`、`Artifact`、`TestPlan`、`Build`、`Deploy` 真实联调之后的修正版实现快照，回答的是“现在仓库里到底已经写到哪里、哪些已经真实跑通”。
 
-## Module completion snapshot
+## 模块完成度快照
 
 <!-- GENERATED:implementation-status-table:start -->
 | Module | Tools Implemented | Read | Write | Real-Live Status | Notes |
@@ -17,7 +17,7 @@ This page is the corrected implementation snapshot after the latest `Req`, `Arti
 | Artifact | 12 | 11 | 1 | Partial | Five tools are AK/SK Full; the remaining seven are re-confirmed as unpublished in Beijing 4. |
 <!-- GENERATED:implementation-status-table:end -->
 
-## Overall numbers
+## 总体数字
 
 <!-- GENERATED:implementation-status-totals:start -->
 - Product modules implemented: `8`
@@ -26,7 +26,7 @@ This page is the corrected implementation snapshot after the latest `Req`, `Arti
 - Total MCP tools exposed: `158`
 <!-- GENERATED:implementation-status-totals:end -->
 
-## Latest live-state summary
+## 最新真实状态摘要
 
 - `Build`
   - `22/22` are `AK/SK Full`
@@ -47,7 +47,7 @@ This page is the corrected implementation snapshot after the latest `Req`, `Arti
   - the detailed live split is maintained in `docs/wiki/Deploy-Live-Validated.md`
   - current explicit skip: `PUT /v4/projects/{project_id}/environments/{environment_id}/hosts`
 
-## Still not AK/SK Full
+## 仍未达到 `AK/SK Full` 的部分
 
 | Module | Current state | Remaining items |
 | --- | --- | --- |
@@ -55,15 +55,15 @@ This page is the corrected implementation snapshot after the latest `Req`, `Arti
 | TestPlan | `1 Full / 2 Reachable / 4 Unpublished` | Reachable: `testplan_list_issues`, `testplan_list_cases`; Unpublished: `testplan_get_plan`, `testplan_list_runs`, `testplan_get_case`, `testplan_run_cases` |
 | Deploy | `Partial` | `deploy_import_hosts_to_environment` remains `AK/SK Reachable`; practical blocker is the outdated Node.js template runtime (`Node v10.9.0` + `forever`); explicit skipped route: `PUT /v4/projects/{project_id}/environments/{environment_id}/hosts` |
 
-## Latest MCP normalization summary
+## 最新 MCP 输出规范化摘要
 
 - `Deploy`
-  - record/detail outputs now use more consistent entity ids:
+  - record/detail 输出现在更统一地使用实体 id：
     - `deploy_get_history_detail`: `id = record_id`, with separate `taskId`
     - `deploy_get_v4_deploy_record`: `id = record_id`
     - `deploy_get_last_record_detail`: `id = resolved record id`
     - `deploy_get_v4_environment_resource_detail`: `id = environment_id`
-  - request context is now preserved more consistently:
+  - request context 现在保留得更一致：
     - `deploy_get_status` now carries explicit `taskId` and preserves request-scoped `recordId`
     - `deploy_get_app_log` now carries explicit `recordId` and preserves request-scoped `stepId`
     - `deploy_get_execution_params` now carries `taskId` + `recordId` both on each item and in outer `scope`
@@ -71,25 +71,28 @@ This page is the corrected implementation snapshot after the latest `Req`, `Arti
   - `deploy_list_system_configs` now uses `id = name`
 
 - `Artifact`
-  - repository outputs now expose:
+  - repository outputs 现在暴露：
     - `repositoryId`
-  - version outputs now expose:
+  - version outputs 现在暴露：
     - `versionId`
-  - build archive outputs now expose:
+  - build archive outputs 现在暴露：
     - `archiveId`
-  - file outputs now expose:
+  - file outputs 现在暴露：
     - `fileId`
-  - search outputs now also preserve:
+  - search outputs 现在也保留：
     - request-derived `projectId`
     - fallback `repositoryName`
 
-- current practical meaning
-  - `Deploy` partial status is now mostly about runtime/template age and rollback sample gaps, not missing basic app/environment/host control-plane paths
-  - `Artifact` partial status is now mostly about Beijing 4 unpublished routes, not missing local MCP implementations
+## 实际含义
 
-## Deploy detail
+- `Deploy`
+  - 当前 `Partial` 的主要原因已经不是控制面没写完，而是模板/runtime 老旧，以及少数 rollback / v4 样本仍不足
+- `Artifact`
+  - 当前 `Partial` 的主要原因已经不是本地 MCP 没实现，而是北京四确实还有未发布路由
 
-### Already written
+## Deploy 细节
+
+### 已经写完
 
 - `deploy_list_apps`
 - `deploy_list_app_host_groups`
@@ -118,9 +121,9 @@ This page is the corrected implementation snapshot after the latest `Req`, `Arti
 - `deploy_stop_app`
 - `deploy_rollback_app`
 
-### Already validated against the real service
+### 已经对真实服务做过验证
 
-- Non-empty live samples:
+- 非空真实样本：
   - `deploy_list_apps`
   - `deploy_list_app_host_groups`
   - `deploy_list_host_groups`
@@ -144,41 +147,43 @@ This page is the corrected implementation snapshot after the latest `Req`, `Arti
   - `deploy_get_execution_params`
   - `deploy_start_app`
   - `deploy_stop_app`
-- Empty but live-valid:
+- 空结果但真实可达：
   - `deploy_list_histories` with required `start_date + end_date`
-- Service-layer reachable with safe real probes:
-- `deploy_import_hosts_to_environment`
+- 服务层真实可达，但仍缺完整成功业务样本：
+  - `deploy_import_hosts_to_environment`
 
-## Notes
+## 备注
 
-- `Deploy` is not "not implemented". It is fully written at the tool level.
-- The detailed Deploy wiki page is now ahead of this roll-up table for the expanded v4 host/environment routes and the real record-bound execution path.
-- Some additional Deploy portal routes were discovered from HAR, such as `configs/get` and `package_spec`, but they currently behave as browser-session-only endpoints and are therefore not exposed as AK/SK MCP tools.
-- The latest narrow template-management HAR on `2026-04-19` adds a positive browser proof for classic `POST /deployman/open/v1/applications/list` with `total_num: 14`.
-- That same HAR still does not provide a positive browser sample for the `v4` app / deploy-record / orchestration family, so those tools remain best classified as implemented plus reachable, but sample-data-limited on the current tenant.
-- The six `Deploy` v4 write-preview tools no longer hard-fail in `dry_run` on the current known sample-limited record-detail errors; they now fall back to local preview when the tenant lacks a positive v4 record sample.
-- The remaining v4 host-tag write route is no longer an active implementation target in the current tenant:
-  - frontend bundle evidence confirms the route exists
-  - current sampled app/environment state does not expose a reproducible gray-release UI path
-  - the user explicitly approved skipping this item for now
-- `deploy_get_template_detail` remains implemented from frontend evidence but region-unpublished in Beijing 4.
-- The main remaining blocker is no longer “no real deploy execution record”:
-  - real execution records now exist on the HAR-derived healthy Node.js template path
-  - `deploy_start_app`, `deploy_get_execution_params`, `deploy_get_status`, `deploy_get_history_detail`, `deploy_get_app_log`, `deploy_stop_app`, and `deploy_rollback_app` have all been validated against real records
-  - `deploy_get_task` remains live-valid for task metadata and step names, but current healthy-task responses still do not reliably expose runtime params in `steps[].params`
-  - the older app-created path can still hit `Deploy.00011042`, but that is no longer the headline Deploy summary
-  - the healthy HAR-template path now accepts the real Build-produced package `/codearts-mcp/1.0.0/codearts-mcp.tgz`
-  - `下载软件包` succeeds and the provider-generated download URL resolves correctly
-  - the new failure has moved later to the template runtime:
-    - the template installs `Node v10.9.0`
-    - later `停止nodeJs服务` installs and checks `forever`
-    - `forever` fails under Node 10 because one dependency uses unsupported numeric separators
-  - this means the next practical gap is updating or replacing that outdated Node.js deploy template path, not package visibility
-  - `deploy_rollback_app` is now live-validated on failed-source rollback probes
+- `Deploy` 不是“没实现”，而是工具面已经写完，真实环境剩余的是样本和模板问题
+- 针对扩大的 `v4` host/environment 路由与真实 record 执行链路，详细页 `docs/wiki/Deploy-Live-Validated.md` 已经比这张汇总表更细
+- 从 HAR 里还发现了一些额外 Deploy portal 路由，比如 `configs/get` 和 `package_spec`
+  - 但它们当前更像浏览器 session 路由，不适合作为 `AK/SK` MCP 工具暴露
+- `2026-04-19` 最新模板管理 HAR 已经再次给出经典 `POST /deployman/open/v1/applications/list` 的正样本，`total_num: 14`
+- 同一份 HAR 仍没有给出 `v4` app / deploy-record / orchestration 家族的正向浏览器样本，所以这些工具仍更适合归类为“代码已实现 + 路由可达 + 当前租户样本不足”
+- `6` 个 `Deploy` `v4` 写预览工具现在在当前已知 record-detail 样本不足时，不再在 `dry_run` 直接硬失败，而是退化为本地预览
+- 剩余的 `v4` host-tag 写路由已经不再是当前租户下的主动实现目标：
+  - 前端 bundle 证据说明路由存在
+  - 当前样本 app/environment 状态并没有暴露可稳定复现的灰度发布 UI 路径
+  - 用户已明确同意本轮先跳过
+- `deploy_get_template_detail`
+  - 仍然是基于前端证据实现，但在北京四属于未发布
+- 当前主要阻塞已经不再是“没有真实部署执行记录”：
+  - 真实执行记录已经出现在 HAR 反推得到的健康 Node.js 模板路径上
+  - `deploy_start_app`、`deploy_get_execution_params`、`deploy_get_status`、`deploy_get_history_detail`、`deploy_get_app_log`、`deploy_stop_app`、`deploy_rollback_app` 都已有真实 record 验证
+  - `deploy_get_task` 对任务元数据和步骤名已经真实可用，但当前健康任务响应仍不稳定暴露 `steps[].params`
+  - 更老的 app-created 路径仍可能打到 `Deploy.00011042`，但这已经不是当前 Deploy 的主结论
+  - 健康 HAR 模板路径现在已经能接受真实 Build 产物 `/codearts-mcp/1.0.0/codearts-mcp.tgz`
+  - `下载软件包` 已成功，provider 生成的下载 URL 也能正确解析
+  - 新的失败已经后移到模板 runtime：
+    - 模板安装 `Node v10.9.0`
+    - 后续 `停止nodeJs服务` 会安装并检查 `forever`
+    - `forever` 在 Node 10 下失败，因为某依赖使用了不兼容的 numeric separators
+  - 这意味着下一步真正要解决的是更新或替换这条老旧 Node.js 部署模板路径，而不是软件包可见性问题
+  - `deploy_rollback_app` 现在也已在失败源回滚探测上做过真实验证
 
-## Build detail
+## Build 细节
 
-### Already written
+### 已经写完
 
 - `build_list_jobs`
 - `build_get_job`
@@ -203,9 +208,9 @@ This page is the corrected implementation snapshot after the latest `Req`, `Arti
 - `build_stop_job`
 - `build_update_job_step`
 
-### Already validated against the real service
+### 已经对真实服务做过验证
 
-- Non-empty live samples:
+- 非空真实样本：
   - `build_list_jobs`
   - `build_get_job`
   - `build_list_records`
@@ -222,44 +227,54 @@ This page is the corrected implementation snapshot after the latest `Req`, `Arti
 - `build_append_release_upload_step`
 - `build_stop_job`
 - `build_update_job_step`
-- Empty but live-valid:
+- 空结果但真实可达：
   - `build_list_build_parameters`
   - `build_get_full_stages`
   - `build_get_record_flow_graph`
 
-### Notes
+### 备注
 
-- `Build` is now fully AK/SK validated for the currently exposed tool surface.
-- The 3 helper/configuration tools are no longer code/test-only:
-  - `build_configure_release_upload_step` now has a real dry-run preview on the live release upload step
-  - `build_prepare_deployable_node_app` now has a real dry-run preview on the live `Npm构建` step
-  - `build_prepare_node_runtime_bundle` now has a real dry-run preview on the live `Npm构建` step
-- Real job, record, run, log, stop, and flow-graph samples now exist in Beijing 4.
-- `build_append_job_step` is no longer a blind dry-run echo:
-  - it now loads the real current job config and computes the inserted step preview against that payload
-  - on the current tenant this preview was validated against job `cb9308bf8ece41909247bacd26b32cad`
-  - the live preview correctly reports `1 -> 2` steps when inserting `official.release.upload` after `Npm构建`
-- `build_append_release_upload_step` now wraps the official release-repository upload module behind a safer dedicated MCP surface:
-  - it fixes `module_id=official.release.upload`
-  - it maps release-upload properties such as `path`, `name`, `version`, and `upload_tool`
-  - on the current tenant, its real `dry_run` preview also reports `1 -> 2` steps on job `cb9308bf8ece41909247bacd26b32cad`
-- The shared `/v1/job/update` write path was re-validated on `2026-04-18` with a same-value no-op `build_update_job_step` request:
-  - provider accepted the update
-  - follow-up `build_get_job` confirmed the job remained unchanged
-- `build_list_records` now also returns `build_no` and `daily_build_number`, which makes follow-up log/detail queries directly scriptable.
-- Real root cause for the latest `SCHEDULE_FAILURE` sample was `scms[0].build_type=tag`.
-- `build_run_job` now reads the current job config and forces branch checkout execution with the configured or requested branch.
-- Real builds `#7` and `#8` now complete successfully after this fix.
-- `build_get_record` now also surfaces richer diagnosis fields such as `status_code`, `execution_id`, `build_yml_path`, and `daily_build_number`.
-- `build_get_job` now also derives whether the job contains a release-library publishing step.
-- That older conclusion is no longer current.
-- On `2026-04-18`, the same real Build job was extended and live-validated to:
-  - create `codearts-mcp.tgz`
-  - append a real release upload step
-  - upload successfully to `/codearts-mcp/1.0.0/`
-- The Build job can now feed the healthy Deploy path with a real package input.
+- `Build` 在当前暴露的工具面上已经达到完整 `AK/SK` 验证
+- `3` 个 helper/configuration 工具已经不再只是 code/test-only：
+  - `build_configure_release_upload_step`
+    - 已在真实 release upload step 上完成 `dry_run` 预览验证
+  - `build_prepare_deployable_node_app`
+    - 已在真实 `Npm构建` step 上完成 `dry_run` 预览验证
+  - `build_prepare_node_runtime_bundle`
+    - 已在真实 `Npm构建` step 上完成 `dry_run` 预览验证
+- 北京四下已经具备真实的 job、record、run、log、stop、flow-graph 样本
+- `build_append_job_step`
+  - 不再是盲目的 `dry_run` echo
+  - 现在会先读取真实当前 job 配置，再基于该 payload 计算插入步骤预览
+  - 在当前租户中，该预览已针对 job `cb9308bf8ece41909247bacd26b32cad` 验证
+  - 在 `Npm构建` 后插入 `official.release.upload` 时，实时预览正确给出 `1 -> 2` steps
+- `build_append_release_upload_step`
+  - 现在以更安全的专用 MCP 面封装官方 release repository upload 模块
+  - 固定使用 `module_id=official.release.upload`
+  - 会映射 `path`、`name`、`version`、`upload_tool` 等 release-upload 属性
+  - 在当前租户中，其真实 `dry_run` 预览同样能在 job `cb9308bf8ece41909247bacd26b32cad` 上给出 `1 -> 2`
+- 共享 `/v1/job/update` 写路径已在 `2026-04-18` 用同值 no-op `build_update_job_step` 请求重新验证：
+  - provider 接受更新
+  - 后续 `build_get_job` 也确认 job 未被破坏
+- `build_list_records`
+  - 现在额外返回 `build_no` 和 `daily_build_number`
+  - 使后续日志/详情查询可以直接脚本化
+- 最新 `SCHEDULE_FAILURE` 样本的真实根因是 `scms[0].build_type=tag`
+- `build_run_job`
+  - 现在会读取当前 job 配置，并用已配置或请求指定的 branch 强制走 branch checkout 执行
+- 修复后，真实构建 `#7` 和 `#8` 都已成功完成
+- `build_get_record`
+  - 现在还会补充更丰富的诊断字段，例如 `status_code`、`execution_id`、`build_yml_path`、`daily_build_number`
+- `build_get_job`
+  - 现在也会推导当前 job 是否包含 release library 发布步骤
+- 旧的 Build 结论已不再适用
+- 在 `2026-04-18`，同一个真实 Build job 已被扩展并完成真实验证，可做到：
+  - 生成 `codearts-mcp.tgz`
+  - 追加真实 release upload step
+  - 成功上传到 `/codearts-mcp/1.0.0/`
+- 这条 Build job 现在已经能为健康 Deploy 路径提供真实软件包输入
 
-## Related pages
+## 相关页面
 
 - `docs/wiki/Deploy-Live-Validated.md`
 - `docs/wiki/Build-Live-Validated.md`

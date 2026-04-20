@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { mapRepoTags } from "../../../../src/products/repo/tools/list-tags.js";
+import {
+  createRepoListTagsHandler,
+  mapRepoTags
+} from "../../../../src/products/repo/tools/list-tags.js";
 
 describe("mapRepoTags", () => {
   it("returns normalized tags with pagination", () => {
@@ -17,5 +20,20 @@ describe("mapRepoTags", () => {
       pageSize: 20,
       total: 1
     });
+  });
+
+  it("renders readable preview text in MCP content", async () => {
+    const handler = createRepoListTagsHandler({
+      listTags: async () => ({
+        tags: [{ name: "v1.0.0", is_double_name: false }],
+        total: 1
+      })
+    });
+
+    const result = await handler({ repository_id: "repo-1", page: 1, page_size: 20 });
+
+    expect(result.content[0]?.text).toContain("id: v1.0.0");
+    expect(result.content[0]?.text).toContain("name: v1.0.0");
+    expect(result.content[0]?.text).toContain("doubleName: false");
   });
 });

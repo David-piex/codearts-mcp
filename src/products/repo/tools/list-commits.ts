@@ -1,4 +1,5 @@
 import { asListResult } from "../../../contracts/tool-result.js";
+import { formatListToolText } from "../../../contracts/tool-result-text.js";
 import { toPageInfo } from "../../../core/pagination/page-info.js";
 import { repoListCommitsInput } from "../schemas.js";
 
@@ -38,9 +39,17 @@ export function createRepoListCommitsHandler(client: RepoListCommitsClient) {
     const parsed = repoListCommitsInput.parse(input);
     const response = await client.listCommits(parsed);
     const result = mapRepoCommits(response.commits, parsed.page, parsed.page_size, response.total);
+    const text = formatListToolText(result, {
+      fields: [
+        { label: "id", get: (item) => (item as { id?: string }).id },
+        { label: "shortId", get: (item) => (item as { shortId?: string }).shortId },
+        { label: "title", get: (item) => (item as { title?: string }).title },
+        { label: "authorName", get: (item) => (item as { authorName?: string }).authorName }
+      ]
+    });
 
     return {
-      content: [{ type: "text" as const, text: result.summary }],
+      content: [{ type: "text" as const, text }],
       structuredContent: result
     };
   };

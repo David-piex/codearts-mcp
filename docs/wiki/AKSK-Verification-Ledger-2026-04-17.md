@@ -1,21 +1,21 @@
-# AK/SK Verification Ledger (2026-04-17)
+# AK/SK 验证台账（2026-04-17）
 
-This page tracks the current per-tool verification status.
+这页按工具粒度记录当前真实 `AK/SK` 验证状态，是判断“哪些功能已经真实跑通、哪些仍受租户或区域限制”的底账。
 
-## Status Legend
+## 状态说明
 
 - `AK/SK Full`
-  - Verified with real `AK/SK`, real Huawei Cloud endpoint, and a successful real business response.
+  - 已用真实 `AK/SK`、真实华为云端点和成功业务响应验证
 - `AK/SK Reachable`
-  - Verified with real `AK/SK` against the real endpoint, but blocked by tenant data, permissions, quota, or missing execution records.
+  - 已确认打到真实端点，但被租户数据、权限、配额或执行记录缺失阻塞
 - `Code/Test Only`
-  - Implemented in the repo and covered by local build/tests, but not yet confirmed end-to-end with real `AK/SK`.
+  - 仓库中已实现，并有本地构建/测试覆盖，但尚未完成真实 `AK/SK` 端到端确认
 - `Region Unpublished`
-  - Implemented in the repo, but the real region currently returns `APIGW.0101`.
+  - 仓库中已实现，但当前区域真实返回 `APIGW.0101`
 
 ## Req
 
-All `8` tools are `AK/SK Full`.
+全部 `8` 个工具均为 `AK/SK Full`。
 
 - `req_list_projects`
 - `req_get_project`
@@ -28,7 +28,7 @@ All `8` tools are `AK/SK Full`.
 
 ## Repo
 
-All `24` tools are `AK/SK Full`.
+全部 `24` 个工具均为 `AK/SK Full`。
 
 - `repo_list_repositories`
 - `repo_get_repository`
@@ -57,7 +57,7 @@ All `24` tools are `AK/SK Full`.
 
 ## Pipeline
 
-All `16` tools are `AK/SK Full`.
+全部 `16` 个工具均为 `AK/SK Full`。
 
 - `pipeline_list_pipelines`
 - `pipeline_list_artifacts`
@@ -78,7 +78,7 @@ All `16` tools are `AK/SK Full`.
 
 ## Check
 
-All `8` tools are `AK/SK Full`.
+全部 `8` 个工具均为 `AK/SK Full`。
 
 - `check_list_tasks`
 - `check_get_task`
@@ -170,9 +170,13 @@ All `8` tools are `AK/SK Full`.
 - `testplan_list_runs`
 - `testplan_run_cases`
 
-## Summary
+## 总结
 
-- `AK/SK Full`: strongest current evidence
-- `AK/SK Reachable`: real endpoint confirmed, but business closure still blocked
-- `Code/Test Only`: repo-complete but not yet truly closed with tenant evidence
-- `Region Unpublished`: implemented locally, blocked by Huawei Cloud regional publication state
+- `AK/SK Full`
+  - 当前证据最强，表示已经完成真实闭环
+- `AK/SK Reachable`
+  - 已确认真实端点可达，但业务闭环仍被现实条件阻塞
+- `Code/Test Only`
+  - 代码层面已完成，但仍缺真实租户证据
+- `Region Unpublished`
+  - 本地实现已就绪，但被华为云区域发布状态阻塞

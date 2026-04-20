@@ -1,4 +1,5 @@
 import { asListResult } from "../../../contracts/tool-result.js";
+import { formatListToolText } from "../../../contracts/tool-result-text.js";
 import { toPageInfo } from "../../../core/pagination/page-info.js";
 import { repoListTagsInput } from "../schemas.js";
 
@@ -41,9 +42,19 @@ export function createRepoListTagsHandler(client: RepoListTagsClient) {
     const parsed = repoListTagsInput.parse(input);
     const response = await client.listTags(parsed);
     const result = mapRepoTags(response.tags, parsed.page, parsed.page_size, response.total);
+    const text = formatListToolText(result, {
+      fields: [
+        { label: "id", get: (item) => (item as { id?: string }).id },
+        { label: "name", get: (item) => (item as { name?: string }).name },
+        {
+          label: "doubleName",
+          get: (item) => (item as { doubleName?: boolean }).doubleName
+        }
+      ]
+    });
 
     return {
-      content: [{ type: "text" as const, text: result.summary }],
+      content: [{ type: "text" as const, text }],
       structuredContent: result
     };
   };

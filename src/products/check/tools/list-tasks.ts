@@ -1,4 +1,5 @@
 import { asListResult } from "../../../contracts/tool-result.js";
+import { formatListToolText } from "../../../contracts/tool-result-text.js";
 import { toPageInfo } from "../../../core/pagination/page-info.js";
 import { checkListTasksInput } from "../schemas.js";
 
@@ -56,9 +57,20 @@ export function createCheckListTasksHandler(client: CheckListTasksClient) {
     const parsed = checkListTasksInput.parse(input);
     const response = await client.listTasks(parsed);
     const result = mapCheckTasks(response.tasks, parsed.page, parsed.page_size, response.total);
+    const text = formatListToolText(result, {
+      fields: [
+        { label: "id", get: (item) => (item as { id?: string }).id },
+        { label: "name", get: (item) => (item as { name?: string }).name },
+        {
+          label: "repositoryName",
+          get: (item) => (item as { repositoryName?: string }).repositoryName
+        },
+        { label: "status", get: (item) => (item as { status?: string }).status }
+      ]
+    });
 
     return {
-      content: [{ type: "text" as const, text: result.summary }],
+      content: [{ type: "text" as const, text }],
       structuredContent: result
     };
   };

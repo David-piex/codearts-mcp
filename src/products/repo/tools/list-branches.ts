@@ -1,4 +1,5 @@
 import { asListResult } from "../../../contracts/tool-result.js";
+import { formatListToolText } from "../../../contracts/tool-result-text.js";
 import { toPageInfo } from "../../../core/pagination/page-info.js";
 import { repoListBranchesInput } from "../schemas.js";
 
@@ -36,9 +37,16 @@ export function createRepoListBranchesHandler(client: RepoListBranchesClient) {
     const parsed = repoListBranchesInput.parse(input);
     const response = await client.listBranches(parsed);
     const result = mapRepoBranches(response.branches, parsed.page, parsed.page_size, response.total);
+    const text = formatListToolText(result, {
+      fields: [
+        { label: "name", get: (item) => (item as { name?: string }).name },
+        { label: "commitId", get: (item) => (item as { commitId?: string }).commitId },
+        { label: "protected", get: (item) => (item as { protected?: boolean }).protected }
+      ]
+    });
 
     return {
-      content: [{ type: "text" as const, text: result.summary }],
+      content: [{ type: "text" as const, text }],
       structuredContent: result
     };
   };
