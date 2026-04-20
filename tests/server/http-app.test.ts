@@ -51,6 +51,7 @@ async function postJsonRpc(
   options?: {
     sessionId?: string;
     cookie?: string;
+    queryToken?: string;
   }
 ) {
   const headers: Record<string, string> = {
@@ -67,7 +68,12 @@ async function postJsonRpc(
     headers.cookie = options.cookie;
   }
 
-  return fetch(`http://127.0.0.1:${port}/mcp`, {
+  const url = new URL(`http://127.0.0.1:${port}/mcp`);
+  if (options?.queryToken) {
+    url.searchParams.set("auth_token", options.queryToken);
+  }
+
+  return fetch(url, {
     method: "POST",
     headers,
     body: JSON.stringify(payload)
@@ -78,6 +84,7 @@ async function initializeSession(
   port: number,
   options?: {
     cookie?: string;
+    queryToken?: string;
   }
 ) {
   const response = await postJsonRpc(
@@ -265,5 +272,81 @@ describe("http app", () => {
     expect(clearResponse.status).toBe(200);
     expect(body.result?.structuredContent?.cleared).toBe(true);
     expect(clearResponse.headers.get("set-cookie")).toContain("Max-Age=0");
+  });
+
+  it("reuses query-token-backed auth after a reconnect", async () => {
+    const authConfig = createTestAuthConfig();
+    const { server, port } = await startServer(authConfig);
+    servers.push(server);
+
+    const firstInit = await initializeSession(port);
+    const firstSessionId = firstInit.sessionId;
+
+    expect(firstSessionId).toBeTruthy();
+
+    const configureResponse = await postJsonRpc(
+      port,
+      {
+        jsonrpc: "2.0",
+        id: "call-1",
+        method: "tools/call",
+        params: {
+          name: "auth_configure_session",
+          arguments: {
+            access_key: "ak-1",
+            secret_key: "sk-1",
+            region: "cn-north-4"
+          }
+        }
+      },
+      {
+        sessionId: firstSessionId ?? undefined
+      }
+    );
+    const configureBody = (await configureResponse.json()) as {
+      result?: {
+        structuredContent?: {
+          auth_token?: string;
+        };
+      };
+    };
+    const authToken = configureBody.result?.structuredContent?.auth_token;
+
+    expect(authToken).toBeTruthy();
+
+    const reconnectInit = await initializeSession(port, {
+      queryToken: authToken
+    });
+    const reconnectSessionId = reconnectInit.sessionId;
+
+    expect(reconnectSessionId).toBeTruthy();
+    expect(reconnectSessionId).not.toBe(firstSessionId);
+
+    const clearResponse = await postJsonRpc(
+      port,
+      {
+        jsonrpc: "2.0",
+        id: "call-2",
+        method: "tools/call",
+        params: {
+          name: "auth_clear_session",
+          arguments: {}
+        }
+      },
+      {
+        sessionId: reconnectSessionId ?? undefined,
+        queryToken: authToken
+      }
+    );
+    const body = (await clearResponse.json()) as {
+      result?: {
+        structuredContent?: {
+          cleared?: boolean;
+        };
+      };
+    };
+
+    expect(clearResponse.status).toBe(200);
+    expect(body.result?.structuredContent?.cleared).toBe(true);
   });
 });

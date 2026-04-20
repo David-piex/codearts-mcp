@@ -14,7 +14,10 @@
   - `region`
 
 这意味着共享的是同一个 MCP 服务入口，不是共享同一套华为云业务凭证。
-现在服务端也支持把每个用户的凭证加密持久化保存，客户端正常重连时不需要重复填写 `AK/SK`。
+现在服务端也支持把每个用户的凭证加密持久化保存：
+
+- 客户端如果保留 cookie，正常重连时不需要重复填写 `AK/SK`
+- 客户端如果不保留 cookie，也可以改用固定 `auth_token` URL 来跨对话复用
 
 ## 服务端怎么部署
 
@@ -90,7 +93,21 @@ docker compose up -d --build
 
 - 这个用户后续调用的各产品工具都会使用他自己的凭证
 - 客户端正常重连时，服务端会通过稳定的 auth cookie/token 自动恢复身份
+- 如果客户端不保留 cookie，把返回的 `auth_token` 写到 `/mcp?auth_token=...` 里也能恢复身份
 - 只有首次配置、主动调用 `auth_clear_session`，或者服务端更换了主密钥后，才需要重新配置
+
+推荐给团队成员的固定配置方式：
+
+```json
+{
+  "mcpServers": {
+    "codearts-shared": {
+      "type": "http",
+      "url": "http://your-server-ip/mcp?auth_token=替换成第一次配置后返回的auth_token"
+    }
+  }
+}
+```
 
 ## 给团队成员的最小接入步骤
 
@@ -157,7 +174,7 @@ docker compose up -d --build
 - `src/server/http-app.ts`
   - 健康检查为 `GET /health`
   - MCP 入口为 `/mcp`
-  - 负责根据请求里的 cookie / bearer 恢复 auth 上下文
+  - 负责根据请求里的 cookie / bearer / query token 恢复 auth 上下文
 - `src/server/create-server.ts`
   - `auth_configure_session` 接收 `access_key`、`secret_key`、`region` 和可选 `*_base_url`
   - HTTP 业务工具会按 `auth_id` 解析真实用户凭证

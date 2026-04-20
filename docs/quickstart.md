@@ -144,5 +144,19 @@ MCP_AUTH_DATA_PATH=.codearts-mcp/auth-store.json
 行为上有两个关键变化：
 
 - 用户第一次调用 `auth_configure_session` 后，服务端会加密保存该用户的 `AK/SK`
-- 后续客户端正常重连时，会通过稳定的 auth cookie/token 自动恢复，不需要重复填写 `AK/SK`
+- 如果客户端保留 cookie，后续正常重连时会自动恢复，不需要重复填写 `AK/SK`
+- 如果客户端不保留 cookie，可以把返回的 `auth_token` 固定写到 `/mcp?auth_token=...`，切换对话后仍可恢复
 - 如果当前用户想撤销服务端已保存的凭证，调用 `auth_clear_session`
+
+推荐的跨对话接法：
+
+```json
+{
+  "mcpServers": {
+    "codearts-shared": {
+      "type": "http",
+      "url": "http://your-server-ip/mcp?auth_token=替换成第一次配置后返回的auth_token"
+    }
+  }
+}
+```

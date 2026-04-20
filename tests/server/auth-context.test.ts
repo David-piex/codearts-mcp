@@ -50,4 +50,27 @@ describe("auth context resolver", () => {
 
     expect(result?.authId).toBe("auth-cookie");
   });
+
+  it("falls back to query tokens when bearer and cookie tokens are absent", async () => {
+    const resolver = createAuthContextResolver({
+      authCookieName: "codearts_mcp_auth",
+      repository: {
+        findByTokenHash: async (hash: string) =>
+          hash === "query-hash" ? { auth_id: "auth-query" } : undefined
+      },
+      sessionStore: {
+        getAuthId: () => undefined,
+        bind: () => undefined,
+        clear: () => undefined
+      },
+      hashToken: () => "query-hash"
+    });
+
+    const result = await resolver.resolve({
+      headers: {},
+      queryToken: "token-q"
+    });
+
+    expect(result?.authId).toBe("auth-query");
+  });
 });

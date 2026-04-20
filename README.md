@@ -234,7 +234,8 @@ npm run build
 - 服务器使用 `MCP_AUTH_MASTER_KEY` 对每个用户的 `AK/SK` 做加密存储
 - 持久化文件路径默认是 `MCP_AUTH_DATA_PATH=.codearts-mcp/auth-store.json`
 - 用户第一次调用 `auth_configure_session` 后，服务端会签发稳定的 auth cookie/token
-- 同一个用户后续正常重连时，不需要再次填写 `AK/SK`
+- 如果客户端保留 cookie，同一个用户后续正常重连时，不需要再次填写 `AK/SK`
+- 如果客户端不保留 cookie，可以把返回的 `auth_token` 固定写进 `/mcp?auth_token=...` 来跨对话复用
 - 如果要主动撤销当前用户保存的凭证，调用 `auth_clear_session`
 
 服务器部署时建议至少配置：
@@ -281,3 +282,25 @@ MCP_AUTH_DATA_PATH=.codearts-mcp/auth-store.json
 ```
 
 如果是北京四标准环境，通常只需要这三个字段；只有租户明确使用了非标准路由，才需要额外补各产品的 `*_base_url`。
+
+如果你的客户端切换对话后不会保留 cookie，推荐把第一次返回的 `auth_token` 固定到 MCP URL：
+
+```json
+{
+  "mcpServers": {
+    "codearts-shared": {
+      "type": "http",
+      "url": "https://your-host.example.com/mcp?auth_token=replace-with-auth-token"
+    }
+  }
+}
+```
+
+这样只要：
+
+- 没有调用 `auth_clear_session`
+- 服务端的 `MCP_AUTH_MASTER_KEY` 没变
+- 持久化鉴权文件没有丢失
+- token 没过期
+
+就不需要在新对话里重新填写 `AK/SK`。

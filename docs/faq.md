@@ -80,9 +80,23 @@
 
 这意味着：
 
-- 后续客户端正常重连时，不需要再次填写 `AK/SK`
+- 如果客户端会保留 cookie，后续正常重连时，不需要再次填写 `AK/SK`
+- 如果客户端不保留 cookie，也可以把返回的 `auth_token` 固定写到 MCP URL 里继续复用
 - 只要服务器端的 `MCP_AUTH_MASTER_KEY` 和 `MCP_AUTH_DATA_PATH` 保持不变，服务重启后也能恢复
 - 如果想撤销当前用户已保存的凭证，调用 `auth_clear_session`
+
+推荐的跨对话写法是：
+
+```json
+{
+  "mcpServers": {
+    "codearts-shared": {
+      "type": "http",
+      "url": "http://your-server-ip/mcp?auth_token=替换成第一次配置后返回的auth_token"
+    }
+  }
+}
+```
 
 ## 9. 为什么不能直接在 MCP 客户端配置里写 `AK/SK`
 

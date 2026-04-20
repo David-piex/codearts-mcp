@@ -145,7 +145,8 @@ export function createHttpApp(
           headers: {
             authorization: normalizeHeaderValue(req.headers.authorization),
             cookie: normalizeHeaderValue(req.headers.cookie)
-          }
+          },
+          queryToken: url.searchParams.get("auth_token") ?? undefined
         })
       : undefined;
     const responseAuthState = {

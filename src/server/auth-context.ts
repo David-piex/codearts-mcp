@@ -21,12 +21,15 @@ export function createAuthContextResolver(options: {
   const hashToken = options.hashToken ?? hashAuthToken;
 
   return {
-    async resolve(request: { headers: Record<string, string | undefined> }) {
+    async resolve(request: {
+      headers: Record<string, string | undefined>;
+      queryToken?: string;
+    }) {
       const authHeader = request.headers.authorization;
       const bearerToken =
         authHeader?.startsWith("Bearer ") === true ? authHeader.slice(7).trim() : undefined;
       const cookies = parseCookieHeader(request.headers.cookie);
-      const rawToken = bearerToken ?? cookies[options.authCookieName];
+      const rawToken = bearerToken ?? request.queryToken ?? cookies[options.authCookieName];
 
       if (!rawToken) {
         return undefined;

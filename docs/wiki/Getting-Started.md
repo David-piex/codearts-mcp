@@ -55,7 +55,8 @@ node dist/src/server/index.js
 现在共享 HTTP 模式已经支持持久化鉴权：
 
 - 用户第一次调用 `auth_configure_session` 后，服务端会加密保存该用户的凭证
-- 客户端后续正常重连时，不需要再次填写 `AK/SK`
+- 如果客户端保留 cookie，后续正常重连时，不需要再次填写 `AK/SK`
+- 如果客户端不保留 cookie，可以直接改用 `/mcp?auth_token=...` 固定连接
 - 如果要主动撤销当前用户保存的凭证，调用 `auth_clear_session`
 
 ## 3. 第一次连通性验证

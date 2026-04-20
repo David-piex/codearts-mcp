@@ -44,6 +44,9 @@ describe("session auth tools", () => {
     expect(result.structuredContent.session_id).toBe("session-a");
     expect(result.structuredContent.auth_id).toBeTypeOf("string");
     expect(result.structuredContent.token_issued).toBe(true);
+    expect(result.structuredContent.auth_token).toBe("token-1");
+    expect(result.structuredContent.query_token_parameter).toBe("auth_token");
+    expect(result.content[0]?.text).toContain("/mcp?auth_token=<token>");
     expect(store.getAuthId("session-a")).toBe(result.structuredContent.auth_id);
     expect(persisted).toHaveLength(1);
     expect(persisted[0]).toMatchObject({
