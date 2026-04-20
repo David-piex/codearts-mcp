@@ -1,5 +1,6 @@
 import { spawn, type ChildProcess } from "node:child_process";
 import { once } from "node:events";
+import { createServer } from "node:net";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import * as serverIndex from "../../src/server/index.js";
@@ -10,10 +11,33 @@ function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function waitForHealth(url: string, timeoutMs: number) {
+async function getFreePort() {
+  const server = createServer();
+
+  await new Promise<void>((resolve, reject) => {
+    server.once("error", reject);
+    server.listen(0, "127.0.0.1", () => resolve());
+  });
+
+  const address = server.address();
+  if (!address || typeof address === "string") {
+    server.close();
+    throw new Error("Failed to allocate a free test port.");
+  }
+
+  const port = address.port;
+  await new Promise<void>((resolve, reject) => server.close((error) => (error ? reject(error) : resolve())));
+  return port;
+}
+
+async function waitForHealth(url: string, timeoutMs: number, child: ChildProcess) {
   const deadline = Date.now() + timeoutMs;
 
   while (Date.now() < deadline) {
+    if (child.exitCode !== null) {
+      throw new Error(`HTTP server process exited early with code ${child.exitCode}.`);
+    }
+
     try {
       const response = await fetch(url);
       if (response.ok) {
@@ -44,7 +68,7 @@ describe("server index exports", () => {
   });
 
   it("starts the HTTP server when executed as the entry module", async () => {
-    const port = 3137;
+    const port = await getFreePort();
     const tsxCli = join(process.cwd(), "node_modules", "tsx", "dist", "cli.mjs");
     const child = spawn(
       process.execPath,
@@ -59,12 +83,12 @@ describe("server index exports", () => {
           MCP_SERVER_VERSION: "0.1.0",
           MCP_AUTH_MASTER_KEY: "test-master-key-0123456789"
         },
-        stdio: "ignore"
+        stdio: ["ignore", "pipe", "pipe"]
       }
     );
     runningProcesses.push(child);
 
-    const response = await waitForHealth(`http://127.0.0.1:${port}/health`, 8000);
+    const response = await waitForHealth(`http://127.0.0.1:${port}/health`, 12000, child);
     const body = (await response.json()) as { status: string };
 
     expect(body.status).toBe("ok");
