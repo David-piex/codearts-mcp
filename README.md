@@ -85,6 +85,7 @@
   - 当前暴露出来的 MCP 面已经可以直接用
 - `Deploy`
   - 绝大多数主干能力已经可用
+  - 当前默认建议先走经典链路，不要先从 `v4` 开始
   - 当前主要问题不是“没 MCP 化”，而是模板/runtime 较旧、部分 `v4` 记录链路缺正样本
 - `Artifact`
   - 所有当前已发布的主干路由都已有对应 MCP 工具
@@ -205,6 +206,8 @@ npm run build
 - 再看当前真实状态：
   - `docs/wiki/Capability-Matrix.md`
   - `docs/wiki/Module-Live-Readiness.md`
+  - `docs/wiki/Unavailable-Items-For-Users.md`
+  - `docs/wiki/Deploy-Classic-Path.md`
   - `docs/wiki/Current-Implementation-Status-2026-04-17.md`
 - 如果你关心细节验证：
   - `docs/wiki/Deploy-Live-Validated.md`

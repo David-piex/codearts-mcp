@@ -42,11 +42,13 @@
 - [Team Deployment](./Team-Deployment.md)
 - [Capability Matrix](./Capability-Matrix.md)
 - [Module Live Readiness](./Module-Live-Readiness.md)
+- [Deploy 经典链路用法](./Deploy-Classic-Path.md)
 
 ### 想知道“现在到底写了多少、哪些能用”
 
 - [Current Implementation Status (2026-04-17)](./Current-Implementation-Status-2026-04-17.md)
 - [Tool Status Matrix](./Tool-Status-Matrix.md)
+- [当前不能用项清单](./Unavailable-Items-For-Users.md)
 - [AK/SK Verification Ledger (2026-04-17)](./AKSK-Verification-Ledger-2026-04-17.md)
 
 ### 想看模块级真实验证细节
@@ -75,7 +77,8 @@
 - `Build`
   - 构建主干能力已完整可用，辅助配置类工具也已真实校验
 - `Deploy`
-  - 主干控制面已可用，当前主要受模板/runtime 老旧与 `v4` 样本不足影响
+  - 主干控制面已可用，默认建议先走经典链路
+  - 当前主要受模板/runtime 老旧与 `v4` 样本不足影响
 - `Artifact`
   - 已发布主干路由已覆盖，当前主要问题是北京四有未发布路由
 - `TestPlan`

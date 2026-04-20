@@ -75,6 +75,19 @@ node dist/src/server/index.js
 - `testplan_list_plans`
 - `artifact_list_repositories`
 
+如果你接下来想试 `Deploy`，当前默认建议走经典链路：
+
+1. `deploy_list_apps`
+2. `deploy_get_app`
+3. `deploy_list_tasks`
+4. `deploy_get_task`
+5. `deploy_start_app`
+6. `deploy_get_status`
+7. `deploy_get_history_detail`
+8. `deploy_get_app_log`
+
+不要一上来就先试 `v4`。
+
 ## 4. 常见第一层问题
 
 - `AK/SK` 填错
@@ -86,6 +99,7 @@ node dist/src/server/index.js
 ## 5. 下一步看哪里
 
 - 看总览：`Home.md`
+- 看 Deploy 经典链路：`Deploy-Classic-Path.md`
 - 看当前真实可用性：`Module-Live-Readiness.md`
 - 看具体工具分档：`Tool-Status-Matrix.md`
 - 看故障排查：`Troubleshooting.md`

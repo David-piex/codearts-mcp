@@ -111,6 +111,8 @@
 
 ## Deploy
 
+当前默认建议先走经典链路，不要先从 `v4` 开始。
+
 ### `deploy_list_apps`
 
 ```json
@@ -121,13 +123,102 @@
 }
 ```
 
-### `deploy_start_app`
+### `deploy_get_app`
+
+```json
+{
+  "application_id": "application-id"
+}
+```
+
+### `deploy_list_tasks`
 
 ```json
 {
   "project_id": "project-id",
   "application_id": "application-id",
+  "page": 1,
+  "page_size": 20
+}
+```
+
+### `deploy_get_task`
+
+```json
+{
+  "task_id": "task-id"
+}
+```
+
+### `deploy_start_app`
+
+```json
+{
+  "task_id": "task-id",
+  "trigger_source": 1,
+  "params": [
+    {
+      "name": "host_group",
+      "type": "host_group",
+      "value": "host-group-id"
+    },
+    {
+      "name": "package_url",
+      "type": "text",
+      "value": "/codearts-mcp/1.0.0/codearts-mcp.tgz"
+    },
+    {
+      "name": "service_port",
+      "type": "text",
+      "value": "3000"
+    }
+  ],
   "dry_run": true
+}
+```
+
+### `deploy_get_status`
+
+```json
+{
+  "task_id": "task-id",
+  "record_id": "record-id"
+}
+```
+
+### `deploy_get_history_detail`
+
+```json
+{
+  "task_id": "task-id",
+  "record_id": "record-id"
+}
+```
+
+### `deploy_get_app_log`
+
+```json
+{
+  "application_id": "application-id",
+  "record_id": "record-id"
+}
+```
+
+### `deploy_stop_app`
+
+```json
+{
+  "task_id": "task-id",
+  "record_id": "record-id"
+}
+```
+
+### `deploy_rollback_app`
+
+```json
+{
+  "task_id": "task-id",
+  "record_id": "record-id"
 }
 ```
 

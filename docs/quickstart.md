@@ -90,12 +90,24 @@ docker compose up -d --build
 2. `repo_list_repositories`
 3. `pipeline_list_pipelines`
 4. `build_list_jobs`
+5. `deploy_list_apps`
 
 这样可以快速确认：
 
 - `AK/SK` 是否有效
 - 区域是否正确
 - 主要产品地址是否正常
+
+如果你准备继续试 `Deploy`，当前默认建议走经典链路，不要先从 `v4` 开始：
+
+1. `deploy_list_apps`
+2. `deploy_get_app`
+3. `deploy_list_tasks`
+4. `deploy_get_task`
+5. `deploy_start_app`
+6. `deploy_get_status`
+7. `deploy_get_history_detail`
+8. `deploy_get_app_log`
 
 ## 6. 常见注意点
 
@@ -121,9 +133,16 @@ docker compose up -d --build
 - Deploy
 - Artifact
 
+其中 `Deploy` 当前最实用的结论是：
+
+- 经典链路已经可以作为主用路径
+- `v4` 先不要当默认入口
+- 如果只是想做查应用、查任务、启动、看状态、看日志、停止、回滚，经典链路已经够用
+
 详细状态请看：
 
 - `docs/wiki/Home.md`
+- `docs/wiki/Deploy-Classic-Path.md`
 - `docs/wiki/Team-Deployment.md`
 - `docs/wiki/Module-Live-Readiness.md`
 - `docs/wiki/Current-Implementation-Status-2026-04-17.md`
