@@ -66,7 +66,6 @@
 ```json
 {
   "project_id": "your-project-id",
-  "application_id": "your-application-id",
   "page": 1,
   "page_size": 20
 }
@@ -75,6 +74,8 @@
 对应工具：
 
 - `deploy_list_tasks`
+
+这一步当前按项目维度列任务；拿到返回结果后，再根据返回里的 `applicationId` / `name` 对齐到目标应用即可。
 
 拿到 `task_id` 后，再看任务详情：
 

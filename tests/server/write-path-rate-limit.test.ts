@@ -5,6 +5,18 @@ import { createSessionCredentialStore } from "../../src/server/session-store.js"
 
 const masterKey = "0123456789abcdef0123456789abcdef";
 
+function expectRateLimitResult(result: unknown, actionName: string) {
+  expect(result).toMatchObject({
+    isError: true,
+    content: [
+      {
+        type: "text",
+        text: `Too many ${actionName} requests for this MCP session. Try again later.`
+      }
+    ]
+  });
+}
+
 function createPersistedAuthRecord() {
   return {
     auth_id: "auth-1",
@@ -112,22 +124,22 @@ describe("write path rate limits", () => {
       ).resolves.toBeTruthy();
     }
 
-    await expect(
-      handler(
-        {
-          project_id: "project-1",
-          title: "Add login blocked",
-          work_item_type: "Story",
-          dry_run: false
-        },
-        {
-          sessionId: "session-write",
-          authInfo: {
-            authId: "auth-1"
-          }
+    const blockedResult = await handler(
+      {
+        project_id: "project-1",
+        title: "Add login blocked",
+        work_item_type: "Story",
+        dry_run: false
+      },
+      {
+        sessionId: "session-write",
+        authInfo: {
+          authId: "auth-1"
         }
-      )
-    ).rejects.toThrow(/Too many req_create_work_item requests/);
+      }
+    );
+
+    expectRateLimitResult(blockedResult, "req_create_work_item");
 
     expect(fetchMock).toHaveBeenCalledTimes(5);
   });
@@ -175,27 +187,27 @@ describe("write path rate limits", () => {
       ).resolves.toBeTruthy();
     }
 
-    await expect(
-      handler(
-        {
-          project_id: "project-1",
-          name: "App-20260420-blocked",
-          arrange_infos: [
-            {
-              template_id: "template-1",
-              operation_list: [{ name: "deploy" }]
-            }
-          ],
-          dry_run: false
-        },
-        {
-          sessionId: "session-write",
-          authInfo: {
-            authId: "auth-1"
+    const blockedResult = await handler(
+      {
+        project_id: "project-1",
+        name: "App-20260420-blocked",
+        arrange_infos: [
+          {
+            template_id: "template-1",
+            operation_list: [{ name: "deploy" }]
           }
+        ],
+        dry_run: false
+      },
+      {
+        sessionId: "session-write",
+        authInfo: {
+          authId: "auth-1"
         }
-      )
-    ).rejects.toThrow(/Too many deploy_create_application requests/);
+      }
+    );
+
+    expectRateLimitResult(blockedResult, "deploy_create_application");
 
     expect(fetchMock).toHaveBeenCalledTimes(5);
   });
@@ -237,23 +249,23 @@ describe("write path rate limits", () => {
       ).resolves.toBeTruthy();
     }
 
-    await expect(
-      handler(
-        {
-          project_id: "project-1",
-          pipeline_id: "pipeline-1",
-          branch: "main",
-          description: "manual trigger blocked",
-          dry_run: false
-        },
-        {
-          sessionId: "session-write",
-          authInfo: {
-            authId: "auth-1"
-          }
+    const blockedResult = await handler(
+      {
+        project_id: "project-1",
+        pipeline_id: "pipeline-1",
+        branch: "main",
+        description: "manual trigger blocked",
+        dry_run: false
+      },
+      {
+        sessionId: "session-write",
+        authInfo: {
+          authId: "auth-1"
         }
-      )
-    ).rejects.toThrow(/Too many pipeline_run_pipeline requests/);
+      }
+    );
+
+    expectRateLimitResult(blockedResult, "pipeline_run_pipeline");
 
     expect(fetchMock).toHaveBeenCalledTimes(5);
   });

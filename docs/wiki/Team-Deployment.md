@@ -190,3 +190,5 @@ docker compose up -d --build
 - `docs/client-examples.md`
 - `docs/faq.md`
 - `docs/wiki/Getting-Started.md`
+- `docs/wiki/Architecture-Deep-Dive.md`
+- `docs/wiki/Testing-and-Live-Ops.md`

@@ -44,6 +44,11 @@ type FileSignature = {
   size: number;
 };
 
+type FileAuthRepositoryOptions = {
+  fileCheckIntervalMs?: number;
+  now?: () => number;
+};
+
 function loadFile(path: string): AuthRepositoryFile {
   if (!existsSync(path)) {
     return {
@@ -96,13 +101,28 @@ function buildIndexes(data: AuthRepositoryFile): AuthRepositoryIndexes {
   };
 }
 
-export function createFileAuthRepository(path: string) {
+export function createFileAuthRepository(
+  path: string,
+  options: FileAuthRepositoryOptions = {}
+) {
+  const fileCheckIntervalMs = options.fileCheckIntervalMs ?? 0;
+  const now = options.now ?? Date.now;
   let cachedFile: AuthRepositoryFile | undefined;
   let cachedIndexes: AuthRepositoryIndexes | undefined;
   let cachedSignature = getFileSignature(path);
+  let lastSignatureCheckAt = now();
 
   function readCachedFile() {
-    const currentSignature = getFileSignature(path);
+    const currentTime = now();
+    let currentSignature = cachedSignature;
+
+    if (
+      cachedFile === undefined ||
+      currentTime - lastSignatureCheckAt >= fileCheckIntervalMs
+    ) {
+      currentSignature = getFileSignature(path);
+      lastSignatureCheckAt = currentTime;
+    }
 
     if (cachedFile !== undefined && signaturesMatch(cachedSignature, currentSignature)) {
       return cachedFile;
@@ -127,6 +147,7 @@ export function createFileAuthRepository(path: string) {
     cachedFile = data;
     cachedIndexes = buildIndexes(data);
     cachedSignature = getFileSignature(path);
+    lastSignatureCheckAt = now();
   }
 
   return {

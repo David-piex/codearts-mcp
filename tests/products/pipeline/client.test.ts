@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { createPipelineClient } from "../../../src/products/pipeline/client.js";
 
 describe("createPipelineClient", () => {
@@ -119,6 +119,83 @@ describe("createPipelineClient", () => {
       }
     ]);
     expect(result.total).toBe(2);
+  });
+
+  it("reuses a short-lived cache for repeated identical pipeline list calls", async () => {
+    let now = 1_000;
+    const post = vi.fn(async () => ({
+      records: [
+        {
+          pipeline_id: "pipe-local",
+          name: "deploy-main",
+          project_id: "requested-project"
+        }
+      ],
+      total: 1
+    }));
+    const client = createPipelineClient(
+      {
+        post
+      } as never,
+      {
+        listCacheTtlMs: 30_000,
+        now: () => now
+      }
+    );
+
+    const first = await client.listPipelines({
+      project_id: "requested-project",
+      page: 1,
+      page_size: 20
+    });
+    now += 1_000;
+    const second = await client.listPipelines({
+      project_id: "requested-project",
+      page: 1,
+      page_size: 20
+    });
+
+    expect(second).toEqual(first);
+    expect(post).toHaveBeenCalledTimes(1);
+  });
+
+  it("refreshes the pipeline list cache after the short cache window expires", async () => {
+    let now = 1_000;
+    const post = vi
+      .fn()
+      .mockResolvedValueOnce({
+        records: [{ pipeline_id: "pipe-1", name: "deploy-main" }],
+        total: 1
+      })
+      .mockResolvedValueOnce({
+        records: [{ pipeline_id: "pipe-2", name: "deploy-next" }],
+        total: 1
+      });
+    const client = createPipelineClient(
+      {
+        post
+      } as never,
+      {
+        listCacheTtlMs: 30_000,
+        now: () => now
+      }
+    );
+
+    const first = await client.listPipelines({
+      project_id: "requested-project",
+      page: 1,
+      page_size: 20
+    });
+    now += 30_001;
+    const second = await client.listPipelines({
+      project_id: "requested-project",
+      page: 1,
+      page_size: 20
+    });
+
+    expect(first.records[0]?.pipeline_id).toBe("pipe-1");
+    expect(second.records[0]?.pipeline_id).toBe("pipe-2");
+    expect(post).toHaveBeenCalledTimes(2);
   });
 
   it("maps pipeline artifacts responses", async () => {

@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { createRepoClient } from "../../../src/products/repo/client.js";
 
 describe("createRepoClient", () => {
@@ -13,6 +13,52 @@ describe("createRepoClient", () => {
       { id: 1, name: "sample", ssh_url: "git@example.com:sample.git" }
     ]);
     expect(result.total).toBe(1);
+  });
+
+  it("reuses a short-lived cache for repeated identical repository list calls", async () => {
+    let now = 1_000;
+    const get = vi.fn(async () => [{ id: 1, name: "sample", ssh_url: "git@example.com:sample.git" }]);
+    const client = createRepoClient(
+      {
+        get
+      } as never,
+      {
+        listCacheTtlMs: 30_000,
+        now: () => now
+      }
+    );
+
+    const first = await client.listRepositories({ project_id: "p-1", page: 1, page_size: 20 });
+    now += 1_000;
+    const second = await client.listRepositories({ project_id: "p-1", page: 1, page_size: 20 });
+
+    expect(second).toEqual(first);
+    expect(get).toHaveBeenCalledTimes(1);
+  });
+
+  it("refreshes the repository list cache after the short cache window expires", async () => {
+    let now = 1_000;
+    const get = vi
+      .fn()
+      .mockResolvedValueOnce([{ id: 1, name: "sample-1" }])
+      .mockResolvedValueOnce([{ id: 2, name: "sample-2" }]);
+    const client = createRepoClient(
+      {
+        get
+      } as never,
+      {
+        listCacheTtlMs: 30_000,
+        now: () => now
+      }
+    );
+
+    const first = await client.listRepositories({ project_id: "p-1", page: 1, page_size: 20 });
+    now += 30_001;
+    const second = await client.listRepositories({ project_id: "p-1", page: 1, page_size: 20 });
+
+    expect(first.repositories[0]?.id).toBe(1);
+    expect(second.repositories[0]?.id).toBe(2);
+    expect(get).toHaveBeenCalledTimes(2);
   });
 
   it("uses repository path when listing branches", async () => {

@@ -212,6 +212,34 @@ describe("auth session runtime", () => {
     expect(findActiveByAuthId).toHaveBeenCalledTimes(1);
   });
 
+  it("keeps the default revalidation window warm for longer bursts", () => {
+    const store = createSessionCredentialStore();
+    store.bind("session-a", "auth-1");
+    let now = 1_000;
+    const record = createRecord("2026-04-20T08:00:00.000Z");
+    const findActiveByAuthId = vi.fn((authId: string) =>
+      authId === "auth-1" ? record : undefined
+    );
+
+    configureHttpAuthRuntimeConfig({
+      repository: {
+        upsert: () => undefined,
+        findByTokenHash: () => undefined,
+        findActiveByAuthId,
+        revoke: () => undefined
+      },
+      masterKey,
+      now: () => now
+    } as never);
+
+    const first = buildClientsForSession(store, { sessionId: "session-a" });
+    now += 30_000;
+    const second = buildClientsForSession(store, { sessionId: "session-a" });
+
+    expect(second).toBe(first);
+    expect(findActiveByAuthId).toHaveBeenCalledTimes(1);
+  });
+
   it("revalidates cached clients after the revalidation window expires", () => {
     const store = createSessionCredentialStore();
     store.bind("session-a", "auth-1");

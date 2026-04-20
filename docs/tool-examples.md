@@ -33,7 +33,8 @@
 {
   "project_id": "project-id",
   "work_item_type": "Epic",
-  "subject": "demo work item",
+  "title": "demo work item",
+  "description": "created from MCP dry run example",
   "dry_run": true
 }
 ```
@@ -54,7 +55,6 @@
 
 ```json
 {
-  "project_id": "project-id",
   "repository_id": "repository-id",
   "source_branch": "feature/demo",
   "target_branch": "master",
@@ -136,7 +136,6 @@
 ```json
 {
   "project_id": "project-id",
-  "application_id": "application-id",
   "page": 1,
   "page_size": 20
 }

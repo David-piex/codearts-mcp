@@ -7,6 +7,7 @@
 - `region` 是否真的是 `cn-north-4`
 - 标准区域下是否误填了错误的 `*_base_url`
 - 如果你走的是共享 `http + session` 模式，是否真的先调用了 `auth_configure_session`
+- 如果你用的是固定 `auth_token` URL，token 是否已经过期，或是否被 `auth_clear_session` 撤销
 
 ## 2. 为什么 `Req` 能用，别的模块不行
 
@@ -30,6 +31,20 @@
 
 这样更适合团队共用，也更安全。
 
+## 4. 共享模式下，客户端到底靠什么记住我
+
+当前共享 `http` 模式支持三种恢复方式：
+
+- session 还活着
+- 客户端保留了 cookie
+- 客户端使用固定 `auth_token` URL
+
+所以“服务重启后还要不要重新配置”取决于：
+
+- `MCP_AUTH_MASTER_KEY` 是否没变
+- `MCP_AUTH_DATA_PATH` 是否还在
+- 当前 token 是否还有效
+
 ## 4. 共享模式下，每个人都要配所有产品地址吗
 
 一般不需要。
@@ -52,6 +67,25 @@
 
 在 `Deploy` 这类写路径较多的模块里，`dry_run` 尤其重要。
 
+## 6. 为什么会看到偶发慢调用
+
+当前项目里“慢”可能有两种来源：
+
+- 应用层真实慢
+  - 首次冷请求会打上游 CodeArts API
+- 外部链路慢
+  - 客户端观测很慢，但服务进程日志里并没有对应慢请求
+
+截至 `2026-04-20` 的最近联调，已经确认：
+
+- 共享 `http` 模式下，部分缓存命中请求在服务日志里已经是毫秒级
+- 外部偶发高延迟和 `502` 仍可能来自入口网络层
+
+所以判断“是不是项目本身慢”，最好同时看：
+
+- 客户端侧耗时
+- 服务端 `durationMs`
+
 ## 6. 为什么有些模块还是 `Partial`
 
 最常见的原因有三个：
@@ -62,19 +96,37 @@
 
 也就是说，`Partial` 往往不是“没 MCP 化”，而是“真实环境还有客观限制”。
 
-## 7. 为什么之前会感觉文档比较乱
+## 7. 为什么会看到 `502`
+
+先不要默认认定是 MCP 应用本身崩了。
+
+最近联调已经遇到过一种情况：
+
+- 客户端请求返回 `502`
+- 但 `codearts-mcp.service` 日志里并没有对应请求
+
+这说明问题可能发生在：
+
+- 外部入口网络层
+- 客户端到服务器之间的链路
+
+而不是应用 handler 自己返回了 `502`。
+
+## 8. 为什么之前会感觉文档比较乱
 
 这个仓库经历过一轮较大的扩张和回收，文档里一度混杂了不同阶段的快照、验证结论和模块范围。
 
 现在建议以这几类文档为准：
 
 - 入口总览：`README.md`、`docs/wiki/Home.md`
+- 架构与维护：`docs/product-overview.md`、`docs/service-profile.md`、`docs/wiki/Architecture-Deep-Dive.md`
 - 团队共享部署：`docs/wiki/Team-Deployment.md`
 - 使用接入：`docs/quickstart.md`、`docs/client-examples.md`
 - 当前状态：`docs/wiki/Current-Implementation-Status-2026-04-17.md`
+- 测试与联调：`docs/wiki/Testing-and-Live-Ops.md`
 - 细粒度验证：`docs/wiki/*-Live-Validated.md`
 
-## 8. Shared HTTP Auth Persistence
+## 9. Shared HTTP Auth Persistence
 
 共享 HTTP 模式下，用户第一次调用 `auth_configure_session` 后，服务器会把该用户的 CodeArts 凭证加密保存，并签发稳定的 auth cookie/token。
 
@@ -98,7 +150,7 @@
 }
 ```
 
-## 9. 为什么不能直接在 MCP 客户端配置里写 `AK/SK`
+## 10. 为什么不能直接在 MCP 客户端配置里写 `AK/SK`
 
 本项目推荐不要把 `AK/SK` 直接写进共享 HTTP 客户端配置，原因有两个：
 
@@ -113,7 +165,7 @@
 
 这样对团队共享部署更安全，也更符合这个项目当前的鉴权模型。
 
-## 10. 日志里反复出现 `Connected` / `Disconnected` 是不是服务有问题
+## 11. 日志里反复出现 `Connected` / `Disconnected` 是不是服务有问题
 
 不一定。
 
@@ -122,3 +174,12 @@
 - 如果客户端已经成功列出了工具，说明服务是可达的
 - 如果后续工具也还能正常调用，通常只是 MCP HTTP transport 在重连
 - 只有在业务工具返回 `auth_error`，或者提示没有已配置凭证时，才需要检查当前用户是否完成了 `auth_configure_session`
+
+## 12. 现在排障时最先看什么
+
+如果你想最快定位，顺序建议固定成：
+
+1. `docs/wiki/Getting-Started.md`
+2. `docs/wiki/Troubleshooting.md`
+3. `docs/wiki/Testing-and-Live-Ops.md`
+4. `docs/wiki/Capability-Matrix.md`

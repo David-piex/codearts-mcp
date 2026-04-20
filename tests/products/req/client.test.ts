@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { createReqClient } from "../../../src/products/req/client.js";
 
 describe("createReqClient", () => {
@@ -13,6 +13,61 @@ describe("createReqClient", () => {
     const result = await client.listProjects({ page: 1, page_size: 20 });
 
     expect(result.projects).toEqual([{ project_id: "p-1", name: "Demo", project_num_id: 7 }]);
+  });
+
+  it("reuses a short-lived cache for repeated identical project list calls", async () => {
+    let now = 1_000;
+    const get = vi.fn(async () => ({
+      projects: [{ project_id: "p-1", project_name: "Demo", project_num_id: 7 }],
+      total: 1
+    }));
+    const client = createReqClient(
+      {
+        get
+      } as never,
+      {
+        listCacheTtlMs: 30_000,
+        now: () => now
+      }
+    );
+
+    const first = await client.listProjects({ page: 1, page_size: 20 });
+    now += 1_000;
+    const second = await client.listProjects({ page: 1, page_size: 20 });
+
+    expect(second).toEqual(first);
+    expect(get).toHaveBeenCalledTimes(1);
+  });
+
+  it("refreshes the project list cache after the short cache window expires", async () => {
+    let now = 1_000;
+    const get = vi
+      .fn()
+      .mockResolvedValueOnce({
+        projects: [{ project_id: "p-1", project_name: "Demo 1", project_num_id: 7 }],
+        total: 1
+      })
+      .mockResolvedValueOnce({
+        projects: [{ project_id: "p-2", project_name: "Demo 2", project_num_id: 8 }],
+        total: 1
+      });
+    const client = createReqClient(
+      {
+        get
+      } as never,
+      {
+        listCacheTtlMs: 30_000,
+        now: () => now
+      }
+    );
+
+    const first = await client.listProjects({ page: 1, page_size: 20 });
+    now += 30_001;
+    const second = await client.listProjects({ page: 1, page_size: 20 });
+
+    expect(first.projects[0]?.project_id).toBe("p-1");
+    expect(second.projects[0]?.project_id).toBe("p-2");
+    expect(get).toHaveBeenCalledTimes(2);
   });
 
   it("reads nested project payload when getting a project", async () => {

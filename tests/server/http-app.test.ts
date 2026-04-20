@@ -206,6 +206,66 @@ describe("http app", () => {
     );
   });
 
+  it("logs MCP tool metadata for tools/call requests", async () => {
+    const logs: unknown[] = [];
+    const authConfig = createTestAuthConfig();
+    const { server, port } = await startServer(authConfig);
+    servers.push(server);
+
+    const app = createHttpApp(
+      {
+        serverName: "codearts-mcp",
+        serverVersion: "0.1.0",
+        httpPort: 0
+      },
+      authConfig,
+      {
+        requestLogger: (entry: unknown) => {
+          logs.push(entry);
+        }
+      }
+    );
+    server.removeAllListeners("request");
+    server.on("request", app);
+
+    const initialized = await initializeSession(port);
+    const sessionId = initialized.sessionId;
+
+    expect(sessionId).toBeTruthy();
+
+    const response = await postJsonRpc(
+      port,
+      {
+        jsonrpc: "2.0",
+        id: "call-tool-log",
+        method: "tools/call",
+        params: {
+          name: "auth_configure_session",
+          arguments: {
+            access_key: "ak-1",
+            secret_key: "sk-1",
+            region: "cn-north-4"
+          }
+        }
+      },
+      {
+        sessionId: sessionId ?? undefined
+      }
+    );
+
+    expect(response.status).toBe(200);
+    expect(logs).toContainEqual(
+      expect.objectContaining({
+        method: "POST",
+        path: "/mcp",
+        statusCode: 200,
+        mcpMethod: "tools/call",
+        toolName: "auth_configure_session",
+        sessionId
+      })
+    );
+  });
+
   it("sets an auth cookie after configure_session", async () => {
     const authConfig = createTestAuthConfig();
     const { server, port } = await startServer(authConfig);

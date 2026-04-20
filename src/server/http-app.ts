@@ -16,6 +16,9 @@ export type HttpRequestLogEntry = {
   path: string;
   statusCode: number;
   durationMs: number;
+  sessionId?: string;
+  mcpMethod?: string;
+  toolName?: string;
 };
 
 type HttpAppOptions = {
@@ -117,6 +120,7 @@ function installRequestLogging(
   req: IncomingMessage,
   res: ServerResponse,
   pathname: string,
+  details: HttpRequestLogEntry,
   requestLogger?: (entry: HttpRequestLogEntry) => void
 ) {
   if (!requestLogger) {
@@ -133,6 +137,7 @@ function installRequestLogging(
 
     logged = true;
     requestLogger({
+      ...details,
       method: req.method ?? "UNKNOWN",
       path: pathname,
       statusCode: res.statusCode,
@@ -142,6 +147,30 @@ function installRequestLogging(
 
   res.once("finish", logRequest);
   res.once("close", logRequest);
+}
+
+function readMcpRequestDetails(payload: unknown): Pick<HttpRequestLogEntry, "mcpMethod" | "toolName"> {
+  if (!payload || typeof payload !== "object") {
+    return {};
+  }
+
+  const candidate = payload as {
+    method?: unknown;
+    params?: {
+      name?: unknown;
+    };
+  };
+
+  const mcpMethod = typeof candidate.method === "string" ? candidate.method : undefined;
+  const toolName =
+    mcpMethod === "tools/call" && typeof candidate.params?.name === "string"
+      ? candidate.params.name
+      : undefined;
+
+  return {
+    mcpMethod,
+    toolName
+  };
 }
 
 export function createHttpApp(
@@ -154,7 +183,9 @@ export function createHttpApp(
     ttlMs: authConfig ? authConfig.authTokenTtlSeconds * 1000 : undefined
   });
   const authRepository = authConfig
-    ? createFileAuthRepository(authConfig.authDataPath)
+    ? createFileAuthRepository(authConfig.authDataPath, {
+        fileCheckIntervalMs: 1_000
+      })
     : undefined;
   const authResolver =
     authConfig && authRepository
@@ -172,7 +203,16 @@ export function createHttpApp(
     }
 
     const url = new URL(req.url, "http://127.0.0.1");
-    installRequestLogging(req, res, url.pathname, options.requestLogger);
+    const sessionIdHeader = req.headers["mcp-session-id"];
+    const sessionId = Array.isArray(sessionIdHeader) ? sessionIdHeader[0] : sessionIdHeader;
+    const requestLogDetails: HttpRequestLogEntry = {
+      method: req.method,
+      path: url.pathname,
+      statusCode: 0,
+      durationMs: 0,
+      sessionId
+    };
+    installRequestLogging(req, res, url.pathname, requestLogDetails, options.requestLogger);
 
     if (req.method === "GET" && (url.pathname === "/" || url.pathname === "/health")) {
       writeJson(res, 200, { status: "ok" });
@@ -184,8 +224,6 @@ export function createHttpApp(
       return;
     }
 
-    const sessionIdHeader = req.headers["mcp-session-id"];
-    const sessionId = Array.isArray(sessionIdHeader) ? sessionIdHeader[0] : sessionIdHeader;
     const authContext = authResolver
       ? await authResolver.resolve({
           sessionId,
@@ -231,6 +269,7 @@ export function createHttpApp(
     try {
       if (req.method === "POST") {
         const parsedBody = await readJsonBody(req);
+        Object.assign(requestLogDetails, readMcpRequestDetails(parsedBody));
         let transport = sessionId ? transports[sessionId] : undefined;
 
         if (transport && authContext?.authId) {

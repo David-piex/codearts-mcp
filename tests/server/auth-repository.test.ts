@@ -157,4 +157,25 @@ describe("file auth repository", () => {
 
     expect(findSpy).not.toHaveBeenCalled();
   });
+
+  it("throttles file signature checks during hot read bursts", async () => {
+    const path = join(mkdtempSync(join(tmpdir(), "codearts-mcp-")), "auth-store.json");
+    const repo = createFileAuthRepository(path, {
+      fileCheckIntervalMs: 60_000,
+      now: () => 1_000
+    });
+
+    await repo.upsert(createRecord({ auth_id: "auth-hot", token_hash: "hash-hot" }));
+
+    vi.mocked(fs.statSync).mockClear();
+
+    expect(await repo.findActiveByAuthId("auth-hot")).toMatchObject({
+      auth_id: "auth-hot"
+    });
+    expect(await repo.findByTokenHash("hash-hot")).toMatchObject({
+      token_hash: "hash-hot"
+    });
+
+    expect(fs.statSync).not.toHaveBeenCalled();
+  });
 });

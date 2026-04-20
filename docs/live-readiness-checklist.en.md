@@ -3,7 +3,7 @@
 Applies to:
 
 - Region: `cn-north-4`
-- Validation date: `2026-04-19`
+- Validation date: `2026-04-20`
 - Active modules: Req / Repo / Pipeline / Check / TestPlan / Deploy / Build / Artifact
 
 ## At a Glance

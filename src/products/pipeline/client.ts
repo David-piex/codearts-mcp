@@ -184,6 +184,11 @@ export type PipelineClient = {
   }>;
 };
 
+type PipelineClientOptions = {
+  listCacheTtlMs?: number;
+  now?: () => number;
+};
+
 function unwrapPipelinePayload<T>(input: T): T {
   if (
     input &&
@@ -204,7 +209,60 @@ function unwrapPipelinePayload<T>(input: T): T {
   return input;
 }
 
-export function createPipelineClient(_http: ReturnTypeCreateHttpClient): PipelineClient {
+export function createPipelineClient(
+  _http: ReturnTypeCreateHttpClient,
+  options: PipelineClientOptions = {}
+): PipelineClient {
+  const listCacheTtlMs = options.listCacheTtlMs ?? 15_000;
+  const now = options.now ?? Date.now;
+  const listCache = new Map<
+    string,
+    {
+      expiresAt: number;
+      value: {
+        records: Array<{
+          pipeline_id: string;
+          name: string;
+          creator_name?: string;
+          project_id?: string;
+          project_name?: string;
+          manifest_version?: string;
+          latest_run?: {
+            pipeline_run_id?: string;
+            status?: string;
+            run_number?: number;
+            trigger_type?: string;
+          };
+        }>;
+        total?: number;
+      };
+    }
+  >();
+
+  function buildListCacheKey(input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    keyword?: string;
+  }) {
+    return JSON.stringify([
+      input.project_id,
+      input.page,
+      input.page_size,
+      input.keyword ?? ""
+    ]);
+  }
+
+  function clearProjectListCache(projectId: string) {
+    for (const key of listCache.keys()) {
+      const [cachedProjectId] = JSON.parse(key) as [string, number, number, string];
+
+      if (cachedProjectId === projectId) {
+        listCache.delete(key);
+      }
+    }
+  }
+
   return {
     async getRunParameters(input) {
       try {
@@ -460,6 +518,7 @@ export function createPipelineClient(_http: ReturnTypeCreateHttpClient): Pipelin
       };
     },
     async runPipeline(input) {
+      clearProjectListCache(input.project_id);
       const body =
         input.branch || input.description
           ? {
@@ -555,6 +614,13 @@ export function createPipelineClient(_http: ReturnTypeCreateHttpClient): Pipelin
       };
     },
     async listPipelines(input) {
+      const cacheKey = buildListCacheKey(input);
+      const cached = listCache.get(cacheKey);
+
+      if (cached && cached.expiresAt > now()) {
+        return cached.value;
+      }
+
       const offset = (input.page - 1) * input.page_size;
       const response = unwrapPipelinePayload((await _http.post(`/v5/${encodeURIComponent(input.project_id)}/api/pipelines/list`, {
         offset,
@@ -596,10 +662,17 @@ export function createPipelineClient(_http: ReturnTypeCreateHttpClient): Pipelin
       );
       const filtered = records.length !== (response.records ?? response.pipelines ?? []).length;
 
-      return {
+      const value = {
         records,
         total: filtered ? records.length : response.total
       };
+
+      listCache.set(cacheKey, {
+        expiresAt: now() + listCacheTtlMs,
+        value
+      });
+
+      return value;
     },
     async listRuns(input) {
       const offset = (input.page - 1) * input.page_size;

@@ -136,7 +136,36 @@ type ReqIssueListItem = {
   tracker_name?: string;
 };
 
-export function createReqClient(_http: ReturnTypeCreateHttpClient): ReqClient {
+type ReqClientOptions = {
+  listCacheTtlMs?: number;
+  now?: () => number;
+};
+
+export function createReqClient(
+  _http: ReturnTypeCreateHttpClient,
+  options: ReqClientOptions = {}
+): ReqClient {
+  const listCacheTtlMs = options.listCacheTtlMs ?? 15_000;
+  const now = options.now ?? Date.now;
+  const listProjectsCache = new Map<
+    string,
+    {
+      expiresAt: number;
+      value: {
+        projects: Array<{ project_id: string; name: string; project_num_id?: number }>;
+        total?: number;
+      };
+    }
+  >();
+
+  function buildListProjectsCacheKey(input: {
+    page: number;
+    page_size: number;
+    keyword?: string;
+  }) {
+    return JSON.stringify([input.page, input.page_size, input.keyword ?? ""]);
+  }
+
   return {
     async createWorkItem(input) {
       const response = (await _http.post(`/v4/projects/${encodeURIComponent(input.project_id)}/issue`, {
@@ -232,6 +261,13 @@ export function createReqClient(_http: ReturnTypeCreateHttpClient): ReqClient {
       };
     },
     async listProjects(input) {
+      const cacheKey = buildListProjectsCacheKey(input);
+      const cached = listProjectsCache.get(cacheKey);
+
+      if (cached && cached.expiresAt > now()) {
+        return cached.value;
+      }
+
       const offset = (input.page - 1) * input.page_size;
       const query = new URLSearchParams({
         offset: String(offset),
@@ -252,7 +288,7 @@ export function createReqClient(_http: ReturnTypeCreateHttpClient): ReqClient {
         total?: number;
       };
 
-      return {
+      const value = {
         projects: (response.projects ?? []).map((project) => ({
           project_id: project.project_id,
           name: project.name ?? project.project_name ?? "",
@@ -260,6 +296,13 @@ export function createReqClient(_http: ReturnTypeCreateHttpClient): ReqClient {
         })),
         total: response.total
       };
+
+      listProjectsCache.set(cacheKey, {
+        expiresAt: now() + listCacheTtlMs,
+        value
+      });
+
+      return value;
     },
     async listProjectMembers(input) {
       const offset = (input.page - 1) * input.page_size;

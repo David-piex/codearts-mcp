@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { createBuildClient } from "../../../src/products/build/client.js";
 
 describe("createBuildClient listJobs", () => {
@@ -99,5 +99,87 @@ describe("createBuildClient listJobs", () => {
       ],
       total: 1
     });
+  });
+
+  it("reuses a short-lived cache for repeated identical build job list calls", async () => {
+    let now = 1_000;
+    const get = vi.fn(async () => ({
+      result: {
+        total: 1,
+        job_list: [
+          {
+            id: "job-1",
+            name: "gateway-build"
+          }
+        ]
+      }
+    }));
+    const client = createBuildClient(
+      {
+        get
+      } as never,
+      {
+        listCacheTtlMs: 30_000,
+        now: () => now
+      }
+    );
+
+    const first = await client.listJobs({
+      project_id: "project-1",
+      page: 1,
+      page_size: 20
+    });
+    now += 1_000;
+    const second = await client.listJobs({
+      project_id: "project-1",
+      page: 1,
+      page_size: 20
+    });
+
+    expect(second).toEqual(first);
+    expect(get).toHaveBeenCalledTimes(1);
+  });
+
+  it("refreshes the build job list cache after the short cache window expires", async () => {
+    let now = 1_000;
+    const get = vi
+      .fn()
+      .mockResolvedValueOnce({
+        result: {
+          total: 1,
+          job_list: [{ id: "job-1", name: "gateway-build-1" }]
+        }
+      })
+      .mockResolvedValueOnce({
+        result: {
+          total: 1,
+          job_list: [{ id: "job-2", name: "gateway-build-2" }]
+        }
+      });
+    const client = createBuildClient(
+      {
+        get
+      } as never,
+      {
+        listCacheTtlMs: 30_000,
+        now: () => now
+      }
+    );
+
+    const first = await client.listJobs({
+      project_id: "project-1",
+      page: 1,
+      page_size: 20
+    });
+    now += 30_001;
+    const second = await client.listJobs({
+      project_id: "project-1",
+      page: 1,
+      page_size: 20
+    });
+
+    expect(first.jobs[0]?.job_id).toBe("job-1");
+    expect(second.jobs[0]?.job_id).toBe("job-2");
+    expect(get).toHaveBeenCalledTimes(2);
   });
 });

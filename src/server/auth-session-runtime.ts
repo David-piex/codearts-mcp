@@ -53,7 +53,7 @@ export type SessionToolExtra = {
 };
 
 let httpAuthRuntimeConfig: HttpAuthRuntimeConfig = {};
-const defaultClientCacheTtlMs = 5_000;
+const defaultClientCacheTtlMs = 60_000;
 const cachedClientsByAuthId = new Map<
   string,
   {

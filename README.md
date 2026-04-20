@@ -45,7 +45,7 @@
 
 ## 当前可用情况
 
-截至 `2026-04-19`，在 `cn-north-4`（北京四）真实 AK/SK 验证下：
+截至 `2026-04-20`，在 `cn-north-4`（北京四）真实 AK/SK 验证下：
 
 - 已完整闭环：
   - Req
@@ -63,6 +63,17 @@
 - 当前租户业务数据不足
 - 某些官方路由在北京四没有发布
 - 某些写操作虽然已经 MCP 化，但还缺安全的真实正样本闭环
+
+## 最近一轮刷新后的维护结论
+
+- 共享 `http` 模式已经具备持久化鉴权、session 复用、写路径联调和回归测试
+- 高频列表工具已经补了短 TTL 缓存：
+  - `pipeline_list_pipelines`
+  - `req_list_projects`
+  - `repo_list_repositories`
+  - `build_list_jobs`
+- 服务进程内部日志显示，缓存命中后的很多工具调用已经下降到毫秒级
+- 外部偶发高延迟和 `502` 目前更像入口网络层问题，而不是 MCP 业务处理本身
 
 ## 模块现状总表
 
@@ -200,9 +211,16 @@ npm run build
 
 - 先看总览：
   - `docs/wiki/Home.md`
+  - `docs/product-overview.md`
+  - `docs/service-profile.md`
 - 再看接入：
   - `docs/quickstart.md`
   - `docs/client-examples.md`
+  - `docs/wiki/Getting-Started.md`
+  - `docs/wiki/Team-Deployment.md`
+- 如果你要快速建立项目深度理解：
+  - `docs/wiki/Architecture-Deep-Dive.md`
+  - `docs/wiki/Testing-and-Live-Ops.md`
 - 再看当前真实状态：
   - `docs/wiki/Capability-Matrix.md`
   - `docs/wiki/Module-Live-Readiness.md`
@@ -223,6 +241,8 @@ npm run build
   - 构建 TypeScript
 - `npm test`
   - 跑测试
+- `npm run lint`
+  - 代码风格检查
 - `npm run stats:modules`
   - 输出模块统计
 - `npm run stats:check-docs`

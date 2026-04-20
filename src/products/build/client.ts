@@ -672,7 +672,44 @@ function mapConfiguredReleaseUploadStepResult(
   };
 }
 
-export function createBuildClient(_http: ReturnTypeCreateHttpClient): BuildClient {
+type BuildClientOptions = {
+  listCacheTtlMs?: number;
+  now?: () => number;
+};
+
+export function createBuildClient(
+  _http: ReturnTypeCreateHttpClient,
+  options: BuildClientOptions = {}
+): BuildClient {
+  const listCacheTtlMs = options.listCacheTtlMs ?? 15_000;
+  const now = options.now ?? Date.now;
+  const listJobsCache = new Map<
+    string,
+    {
+      expiresAt: number;
+      value: {
+        jobs: Array<{
+          job_id: string;
+          name: string;
+          project_id?: string;
+          build_project_id?: string;
+          is_running?: boolean;
+          description?: string;
+        }>;
+        total?: number;
+      };
+    }
+  >();
+
+  function buildListJobsCacheKey(input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    keyword?: string;
+  }) {
+    return JSON.stringify([input.project_id, input.page, input.page_size, input.keyword ?? ""]);
+  }
+
   return {
     async previewAppendJobStep(input) {
       const response = (await _http.get(`/v1/job/${encodeURIComponent(input.job_id)}/config`)) as {
@@ -1070,6 +1107,13 @@ export function createBuildClient(_http: ReturnTypeCreateHttpClient): BuildClien
       };
     },
     async listJobs(input) {
+      const cacheKey = buildListJobsCacheKey(input);
+      const cached = listJobsCache.get(cacheKey);
+
+      if (cached && cached.expiresAt > now()) {
+        return cached.value;
+      }
+
       const offset = (input.page - 1) * input.page_size;
       const query = new URLSearchParams({
         page_index: String(Math.max(0, input.page - 1)),
@@ -1125,7 +1169,7 @@ export function createBuildClient(_http: ReturnTypeCreateHttpClient): BuildClien
 
       const jobs = response.jobs ?? response.result?.jobs ?? response.result?.job_list ?? [];
 
-      return {
+      const value = {
         jobs: jobs.map((item) => ({
           job_id: item.job_id ?? item.id ?? "",
           name: item.name ?? item.job_name ?? "",
@@ -1136,6 +1180,13 @@ export function createBuildClient(_http: ReturnTypeCreateHttpClient): BuildClien
         })),
         total: response.total ?? response.total_count ?? response.result?.total ?? response.result?.total_count
       };
+
+      listJobsCache.set(cacheKey, {
+        expiresAt: now() + listCacheTtlMs,
+        value
+      });
+
+      return value;
     },
     async getJob(input) {
       const response = unwrapBuildPayload((await _http.get(

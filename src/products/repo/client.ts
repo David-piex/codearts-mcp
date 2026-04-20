@@ -320,7 +320,37 @@ function unwrapRepoPayload<T>(input: T): T {
   return input;
 }
 
-export function createRepoClient(_http: ReturnTypeCreateHttpClient): RepoClient {
+type RepoClientOptions = {
+  listCacheTtlMs?: number;
+  now?: () => number;
+};
+
+export function createRepoClient(
+  _http: ReturnTypeCreateHttpClient,
+  options: RepoClientOptions = {}
+): RepoClient {
+  const listCacheTtlMs = options.listCacheTtlMs ?? 15_000;
+  const now = options.now ?? Date.now;
+  const listRepositoriesCache = new Map<
+    string,
+    {
+      expiresAt: number;
+      value: {
+        repositories: Array<{ id: number | string; name: string; ssh_url?: string; http_url?: string }>;
+        total?: number;
+      };
+    }
+  >();
+
+  function buildListRepositoriesCacheKey(input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    keyword?: string;
+  }) {
+    return JSON.stringify([input.project_id, input.page, input.page_size, input.keyword ?? ""]);
+  }
+
   return {
     async getBranch(input) {
       const query = new URLSearchParams({
@@ -906,6 +936,13 @@ export function createRepoClient(_http: ReturnTypeCreateHttpClient): RepoClient 
       };
     },
     async listRepositories(input) {
+      const cacheKey = buildListRepositoriesCacheKey(input);
+      const cached = listRepositoriesCache.get(cacheKey);
+
+      if (cached && cached.expiresAt > now()) {
+        return cached.value;
+      }
+
       const offset = (input.page - 1) * input.page_size;
       const query = new URLSearchParams({
         offset: String(offset),
@@ -927,10 +964,17 @@ export function createRepoClient(_http: ReturnTypeCreateHttpClient): RepoClient 
 
       const repositories = Array.isArray(response) ? response : (response.repositories ?? []);
 
-      return {
+      const value = {
         repositories,
         total: Array.isArray(response) ? response.length : response.total
       };
+
+      listRepositoriesCache.set(cacheKey, {
+        expiresAt: now() + listCacheTtlMs,
+        value
+      });
+
+      return value;
     },
     async listMergeRequests(input) {
       const offset = (input.page - 1) * input.page_size;

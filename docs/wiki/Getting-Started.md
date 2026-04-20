@@ -99,7 +99,9 @@ node dist/src/server/index.js
 ## 5. 下一步看哪里
 
 - 看总览：`Home.md`
+- 看项目结构与运行方式：`Architecture-Deep-Dive.md`
 - 看 Deploy 经典链路：`Deploy-Classic-Path.md`
+- 看测试与联调方式：`Testing-and-Live-Ops.md`
 - 看当前真实可用性：`Module-Live-Readiness.md`
 - 看具体工具分档：`Tool-Status-Matrix.md`
 - 看故障排查：`Troubleshooting.md`
