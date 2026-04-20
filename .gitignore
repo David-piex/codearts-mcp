@@ -4,4 +4,7 @@ dist/
 .env.local
 .codearts-mcp/
 coverage/
+.playwright-cli/
+.deploy-upload*.tgz
+tmp-*.log
 tmp-govern-*
