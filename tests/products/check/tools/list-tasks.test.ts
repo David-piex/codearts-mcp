@@ -65,4 +65,19 @@ describe("mapCheckTasks", () => {
     expect(result.content[0]?.text).toContain("name: scan-demo");
     expect(result.content[0]?.text).toContain("status: running");
   });
+
+  it("adds a project-scoped hint when the check task list is empty", async () => {
+    const handler = createCheckListTasksHandler({
+      listTasks: async () => ({
+        tasks: [],
+        total: 0
+      })
+    });
+
+    const result = await handler({ page: 1, page_size: 20, project_id: "project-empty" });
+
+    expect(result.content[0]?.text).toContain("0 check tasks found");
+    expect(result.content[0]?.text).toContain("If you expected check tasks here");
+    expect(result.content[0]?.text).toContain("project-empty");
+  });
 });

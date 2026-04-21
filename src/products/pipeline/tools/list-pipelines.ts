@@ -1,5 +1,6 @@
 import { asListResult } from "../../../contracts/tool-result.js";
 import { formatListToolText } from "../../../contracts/tool-result-text.js";
+import { formatProjectScopedEmptyText } from "../../../contracts/project-scoped-empty-text.js";
 import { toPageInfo } from "../../../core/pagination/page-info.js";
 import { pipelineListInput } from "../schemas.js";
 
@@ -71,6 +72,14 @@ export function createPipelineListPipelinesHandler(client: PipelineListPipelines
     const response = await client.listPipelines(parsed);
     const result = mapPipelineList(response.records, parsed.page, parsed.page_size, response.total);
     const text = formatListToolText(result, {
+      emptyText: formatProjectScopedEmptyText({
+        summary: result.summary,
+        page: parsed.page,
+        keyword: parsed.keyword,
+        projectId: parsed.project_id,
+        resourceLabel: "pipelines",
+        serviceLabel: "Pipeline"
+      }),
       fields: [
         { label: "id", get: (item) => (item as { id?: string }).id },
         { label: "name", get: (item) => (item as { name?: string }).name },

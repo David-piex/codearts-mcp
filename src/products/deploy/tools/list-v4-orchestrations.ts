@@ -1,4 +1,5 @@
 import { asListResult } from "../../../contracts/tool-result.js";
+import { formatProjectScopedEmptyText } from "../../../contracts/project-scoped-empty-text.js";
 import { deployListV4OrchestrationsInput } from "../schemas.js";
 
 type DeployListV4OrchestrationsClient = {
@@ -46,9 +47,20 @@ export function createDeployListV4OrchestrationsHandler(client: DeployListV4Orch
         raw: response.raw
       }
     );
+    const text = result.items?.length
+      ? result.summary
+      : parsed.offset > 0
+        ? result.summary
+        : formatProjectScopedEmptyText({
+            summary: result.summary,
+            page: 1,
+            projectId: parsed.project_id,
+            resourceLabel: "v4 orchestrations",
+            serviceLabel: "Deploy"
+          });
 
     return {
-      content: [{ type: "text" as const, text: result.summary }],
+      content: [{ type: "text" as const, text }],
       structuredContent: result
     };
   };

@@ -21,4 +21,21 @@ describe("createBuildListBuildParametersHandler", () => {
       { id: "profile", name: "profile", value: "prod" }
     ]);
   });
+
+  it("adds a build-scoped hint when the parameter list is empty", async () => {
+    const handler = createBuildListBuildParametersHandler({
+      listBuildParameters: async () => ({
+        job_id: "job-empty",
+        build_no: 5,
+        parameters: []
+      })
+    });
+
+    const result = await handler({ job_id: "job-empty", build_no: 5 });
+
+    expect(result.content[0]?.text).toContain("0 build parameters found");
+    expect(result.content[0]?.text).toContain("If you expected build parameters here");
+    expect(result.content[0]?.text).toContain("job-empty");
+    expect(result.content[0]?.text).toContain("5");
+  });
 });

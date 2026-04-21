@@ -71,4 +71,25 @@ describe("createDeployListV4EnvironmentsHandler", () => {
       }
     ]);
   });
+
+  it("adds a project-scoped hint when the v4 environment list is empty on the first page", async () => {
+    const handler = createDeployListV4EnvironmentsHandler({
+      listV4Environments: async () => ({
+        project_id: "project-empty",
+        total: 0,
+        environments: [],
+        raw: { total: 0 }
+      })
+    });
+
+    const result = await handler({
+      project_id: "project-empty",
+      limit: 20,
+      offset: 0
+    });
+
+    expect(result.content[0]?.text).toContain("Loaded 0 v4 environments");
+    expect(result.content[0]?.text).toContain("If you expected v4 environments here");
+    expect(result.content[0]?.text).toContain("project-empty");
+  });
 });

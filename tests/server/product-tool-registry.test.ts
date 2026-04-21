@@ -108,6 +108,49 @@ describe("product tool registry helper", () => {
     });
   });
 
+  it("enriches tool error text with actionable hints when a known pattern matches", async () => {
+    const registerTool = vi.fn();
+    const demoToolDefinitions = {
+      "repo_list_repositories": defineProductTool({
+        description: "Demo tool",
+        inputSchema: { kind: "schema" },
+        selectHttpClient: (clients: { demoClient: { id: string } }) => clients.demoClient,
+        createProductHandler: () => async () => {
+          throw new AppError(
+            "auth_error",
+            "Insufficient permissions. Apply for the required permission and try again.",
+            undefined,
+            undefined,
+            403
+          );
+        }
+      })
+    } as const;
+
+    registerDefinedTool({
+      toolName: "repo_list_repositories",
+      server: { registerTool },
+      definitions: demoToolDefinitions,
+      mode: "stdio",
+      stdioClient: { id: "stdio-client" }
+    });
+
+    const handler = registerTool.mock.calls[0][2] as () => Promise<{
+      isError?: boolean;
+      content?: Array<{ type: string; text: string }>;
+    }>;
+
+    await expect(handler()).resolves.toMatchObject({
+      isError: true,
+      content: [
+        {
+          type: "text",
+          text: expect.stringContaining("Check that `project_id` belongs to a project where the current account can access CodeArts Repo")
+        }
+      ]
+    });
+  });
+
   it("returns false for unknown tools", () => {
     const registerTool = vi.fn();
 

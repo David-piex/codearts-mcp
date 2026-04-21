@@ -83,4 +83,25 @@ describe("createDeployListV4ApplicationsHandler", () => {
       }
     ]);
   });
+
+  it("adds a project-scoped hint when the v4 application list is empty on the first page", async () => {
+    const handler = createDeployListV4ApplicationsHandler({
+      listV4Applications: async () => ({
+        project_id: "project-empty",
+        total: 0,
+        applications: [],
+        raw: { total: 0, resources: [] }
+      })
+    });
+
+    const result = await handler({
+      project_id: "project-empty",
+      limit: 20,
+      offset: 0
+    });
+
+    expect(result.content[0]?.text).toContain("0 deploy v4 applications found");
+    expect(result.content[0]?.text).toContain("If you expected deploy v4 applications here");
+    expect(result.content[0]?.text).toContain("project-empty");
+  });
 });

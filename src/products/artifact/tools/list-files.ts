@@ -51,9 +51,17 @@ export function createArtifactListFilesHandler(client: ArtifactListFilesClient) 
       parsed.page_size,
       response.total
     );
+    const text =
+      result.items?.length || parsed.page > 1 || (parsed.keyword ?? "").trim() !== ""
+        ? result.summary
+        : [
+            result.summary,
+            "",
+            `Hint: If you expected artifact files here, confirm project_id \`${parsed.project_id}\` and repo_name \`${parsed.repo_name}\` point to a repository visible to the current account and that files have already been published into it.`
+          ].join("\n");
 
     return {
-      content: [{ type: "text" as const, text: result.summary }],
+      content: [{ type: "text" as const, text }],
       structuredContent: result
     };
   };

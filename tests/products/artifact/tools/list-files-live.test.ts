@@ -36,4 +36,25 @@ describe("createArtifactListFilesHandler", () => {
       size: "1024"
     });
   });
+
+  it("adds a repository-scoped hint when the artifact file list is empty", async () => {
+    const handler = createArtifactListFilesHandler({
+      listFiles: async () => ({
+        files: [],
+        total: 0
+      })
+    });
+
+    const result = await handler({
+      project_id: "project-empty",
+      page: 1,
+      page_size: 20,
+      repo_name: "libs-empty"
+    });
+
+    expect(result.content[0]?.text).toContain("0 artifact files found");
+    expect(result.content[0]?.text).toContain("If you expected artifact files here");
+    expect(result.content[0]?.text).toContain("project-empty");
+    expect(result.content[0]?.text).toContain("libs-empty");
+  });
 });

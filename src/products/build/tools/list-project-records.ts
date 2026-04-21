@@ -1,4 +1,5 @@
 import { asListResult } from "../../../contracts/tool-result.js";
+import { formatProjectScopedEmptyText } from "../../../contracts/project-scoped-empty-text.js";
 import { toPageInfo } from "../../../core/pagination/page-info.js";
 import { buildListProjectRecordsInput } from "../schemas.js";
 
@@ -68,9 +69,19 @@ export function createBuildListProjectRecordsHandler(client: BuildListProjectRec
       parsed.page_size,
       response.total
     );
+    const text = result.items?.length
+      ? result.summary
+      : formatProjectScopedEmptyText({
+          summary: result.summary,
+          page: parsed.page,
+          keyword: parsed.keyword,
+          projectId: parsed.project_id,
+          resourceLabel: "project build records",
+          serviceLabel: "Build"
+        });
 
     return {
-      content: [{ type: "text" as const, text: result.summary }],
+      content: [{ type: "text" as const, text }],
       structuredContent: result
     };
   };

@@ -12,6 +12,34 @@ import type { RateLimiter } from "./rate-limiter.js";
 import type { SessionCredentialStore } from "./session-store.js";
 
 type RegisterableServer = Pick<McpServer, "registerTool">;
+export type ProductToolFamily =
+  | "artifact"
+  | "build"
+  | "check"
+  | "deploy"
+  | "pipeline"
+  | "repo"
+  | "req"
+  | "testplan";
+
+export function resolveProductToolFamily(toolName: string): ProductToolFamily | undefined {
+  const separatorIndex = toolName.indexOf("_");
+  const family = separatorIndex === -1 ? toolName : toolName.slice(0, separatorIndex);
+
+  switch (family) {
+    case "artifact":
+    case "build":
+    case "check":
+    case "deploy":
+    case "pipeline":
+    case "repo":
+    case "req":
+    case "testplan":
+      return family;
+    default:
+      return undefined;
+  }
+}
 
 export function registerProductTool(options: {
   toolName: string;
@@ -21,109 +49,80 @@ export function registerProductTool(options: {
   stdioClients?: ReturnType<typeof buildClientsFromCredentialConfig>;
   rateLimiter?: RateLimiter;
 }) {
-  if (
-    registerArtifactTool({
-      toolName: options.toolName,
-      server: options.server,
-      mode: options.mode,
-      sessionStore: options.sessionStore,
-      stdioClient: options.stdioClients?.artifactClient,
-      rateLimiter: options.rateLimiter
-    })
-  ) {
-    return true;
+  switch (resolveProductToolFamily(options.toolName)) {
+    case "artifact":
+      return registerArtifactTool({
+        toolName: options.toolName,
+        server: options.server,
+        mode: options.mode,
+        sessionStore: options.sessionStore,
+        stdioClient: options.stdioClients?.artifactClient,
+        rateLimiter: options.rateLimiter
+      });
+    case "build":
+      return registerBuildTool({
+        toolName: options.toolName,
+        server: options.server,
+        mode: options.mode,
+        sessionStore: options.sessionStore,
+        stdioClient: options.stdioClients?.buildClient,
+        rateLimiter: options.rateLimiter
+      });
+    case "check":
+      return registerCheckTool({
+        toolName: options.toolName,
+        server: options.server,
+        mode: options.mode,
+        sessionStore: options.sessionStore,
+        stdioClient: options.stdioClients?.checkClient,
+        rateLimiter: options.rateLimiter
+      });
+    case "deploy":
+      return registerDeployTool({
+        toolName: options.toolName,
+        server: options.server,
+        mode: options.mode,
+        sessionStore: options.sessionStore,
+        stdioClient: options.stdioClients?.deployClient,
+        rateLimiter: options.rateLimiter
+      });
+    case "pipeline":
+      return registerPipelineTool({
+        toolName: options.toolName,
+        server: options.server,
+        mode: options.mode,
+        sessionStore: options.sessionStore,
+        stdioClient: options.stdioClients?.pipelineClient,
+        rateLimiter: options.rateLimiter
+      });
+    case "repo":
+      return registerRepoTool({
+        toolName: options.toolName,
+        server: options.server,
+        mode: options.mode,
+        sessionStore: options.sessionStore,
+        stdioClient: options.stdioClients?.repoClient,
+        rateLimiter: options.rateLimiter
+      });
+    case "req":
+      return registerReqTool({
+        toolName: options.toolName,
+        server: options.server,
+        mode: options.mode,
+        sessionStore: options.sessionStore,
+        stdioClient: options.stdioClients?.reqClient,
+        rateLimiter: options.rateLimiter
+      });
+    case "testplan":
+      return registerTestPlanTool({
+        toolName: options.toolName,
+        server: options.server,
+        mode: options.mode,
+        sessionStore: options.sessionStore,
+        stdioClient: options.stdioClients?.testPlanClient,
+        rateLimiter: options.rateLimiter
+      });
+    default:
+      return false;
   }
-
-  if (
-    registerBuildTool({
-      toolName: options.toolName,
-      server: options.server,
-      mode: options.mode,
-      sessionStore: options.sessionStore,
-      stdioClient: options.stdioClients?.buildClient,
-      rateLimiter: options.rateLimiter
-    })
-  ) {
-    return true;
-  }
-
-  if (
-    registerCheckTool({
-      toolName: options.toolName,
-      server: options.server,
-      mode: options.mode,
-      sessionStore: options.sessionStore,
-      stdioClient: options.stdioClients?.checkClient,
-      rateLimiter: options.rateLimiter
-    })
-  ) {
-    return true;
-  }
-
-  if (
-    registerDeployTool({
-      toolName: options.toolName,
-      server: options.server,
-      mode: options.mode,
-      sessionStore: options.sessionStore,
-      stdioClient: options.stdioClients?.deployClient,
-      rateLimiter: options.rateLimiter
-    })
-  ) {
-    return true;
-  }
-
-  if (
-    registerReqTool({
-      toolName: options.toolName,
-      server: options.server,
-      mode: options.mode,
-      sessionStore: options.sessionStore,
-      stdioClient: options.stdioClients?.reqClient,
-      rateLimiter: options.rateLimiter
-    })
-  ) {
-    return true;
-  }
-
-  if (
-    registerRepoTool({
-      toolName: options.toolName,
-      server: options.server,
-      mode: options.mode,
-      sessionStore: options.sessionStore,
-      stdioClient: options.stdioClients?.repoClient,
-      rateLimiter: options.rateLimiter
-    })
-  ) {
-    return true;
-  }
-
-  if (
-    registerPipelineTool({
-      toolName: options.toolName,
-      server: options.server,
-      mode: options.mode,
-      sessionStore: options.sessionStore,
-      stdioClient: options.stdioClients?.pipelineClient,
-      rateLimiter: options.rateLimiter
-    })
-  ) {
-    return true;
-  }
-
-  if (
-    registerTestPlanTool({
-      toolName: options.toolName,
-      server: options.server,
-      mode: options.mode,
-      sessionStore: options.sessionStore,
-      stdioClient: options.stdioClients?.testPlanClient,
-      rateLimiter: options.rateLimiter
-    })
-  ) {
-    return true;
-  }
-
-  return false;
 }

@@ -115,4 +115,19 @@ describe("createDeployListAppsHandler", () => {
       ]
     });
   });
+
+  it("adds a project-scoped hint when the deploy application list is empty", async () => {
+    const handler = createDeployListAppsHandler({
+      listApps: async () => ({
+        applications: [],
+        total: 0
+      })
+    });
+
+    const result = await handler({ project_id: "project-empty", page: 1, page_size: 20 });
+
+    expect(result.content[0]?.text).toContain("0 deploy applications found");
+    expect(result.content[0]?.text).toContain("If you expected deploy applications here");
+    expect(result.content[0]?.text).toContain("project-empty");
+  });
 });

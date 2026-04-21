@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { mapReqWorkItems } from "../../../../src/products/req/tools/list-work-items.js";
+import {
+  createReqListWorkItemsHandler,
+  mapReqWorkItems
+} from "../../../../src/products/req/tools/list-work-items.js";
 
 describe("mapReqWorkItems", () => {
   it("returns normalized work items with pagination", () => {
@@ -23,5 +26,24 @@ describe("mapReqWorkItems", () => {
       pageSize: 20,
       total: 1
     });
+  });
+
+  it("adds a project-scoped hint when the work item list is empty", async () => {
+    const handler = createReqListWorkItemsHandler({
+      listWorkItems: async () => ({
+        work_items: [],
+        total: 0
+      })
+    });
+
+    const result = await handler({
+      project_id: "project-empty",
+      page: 1,
+      page_size: 20
+    });
+
+    expect(result.content[0]?.text).toContain("0 work items found");
+    expect(result.content[0]?.text).toContain("If you expected work items here");
+    expect(result.content[0]?.text).toContain("project-empty");
   });
 });

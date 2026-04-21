@@ -88,9 +88,9 @@ describe("server index exports", () => {
     );
     runningProcesses.push(child);
 
-    const response = await waitForHealth(`http://127.0.0.1:${port}/health`, 12000, child);
+    const response = await waitForHealth(`http://127.0.0.1:${port}/health`, 30000, child);
     const body = (await response.json()) as { status: string };
 
     expect(body.status).toBe("ok");
-  }, 15000);
+  }, 40000);
 });

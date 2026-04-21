@@ -52,9 +52,17 @@ export function createBuildListRecordsHandler(client: BuildListRecordsClient) {
     const parsed = buildListRecordsInput.parse(input);
     const response = await client.listRecords(parsed);
     const result = mapBuildRecords(response.records, parsed.page, parsed.page_size, response.total);
+    const text =
+      result.items?.length || parsed.page > 1
+        ? result.summary
+        : [
+            result.summary,
+            "",
+            `Hint: If you expected build records here, confirm job_id \`${parsed.job_id}\` points to a build job with visible execution records for the current account.`
+          ].join("\n");
 
     return {
-      content: [{ type: "text" as const, text: result.summary }],
+      content: [{ type: "text" as const, text }],
       structuredContent: result
     };
   };

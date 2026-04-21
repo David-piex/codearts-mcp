@@ -36,4 +36,19 @@ describe("createReqListIterationsHandler", () => {
       }
     ]);
   });
+
+  it("adds a project-scoped hint when the iteration list is empty", async () => {
+    const handler = createReqListIterationsHandler({
+      listIterations: async () => ({
+        iterations: [],
+        total: 0
+      })
+    });
+
+    const result = await handler({ project_id: "project-empty", page: 1, page_size: 20 });
+
+    expect(result.content[0]?.text).toContain("0 iterations found");
+    expect(result.content[0]?.text).toContain("If you expected iterations here");
+    expect(result.content[0]?.text).toContain("project-empty");
+  });
 });

@@ -1,4 +1,5 @@
 import { asListResult } from "../../../contracts/tool-result.js";
+import { formatProjectScopedEmptyText } from "../../../contracts/project-scoped-empty-text.js";
 import { deployListV4EnvironmentApplicationsInput } from "../schemas.js";
 
 type DeployListV4EnvironmentApplicationsClient = {
@@ -47,9 +48,20 @@ export function createDeployListV4EnvironmentApplicationsHandler(
         raw: response.raw
       }
     );
+    const text = result.items?.length
+      ? result.summary
+      : parsed.offset > 0
+        ? result.summary
+        : formatProjectScopedEmptyText({
+            summary: result.summary,
+            page: 1,
+            projectId: parsed.project_id,
+            resourceLabel: "v4 environment applications",
+            serviceLabel: "Deploy"
+          });
 
     return {
-      content: [{ type: "text" as const, text: result.summary }],
+      content: [{ type: "text" as const, text }],
       structuredContent: result
     };
   };

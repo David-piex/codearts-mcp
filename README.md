@@ -72,7 +72,20 @@
   - `req_list_projects`
   - `repo_list_repositories`
   - `build_list_jobs`
+- 这些高频列表读路径现在统一走 shared read-through cache，并带有 in-flight dedupe
+  - 相同参数并发命中冷缓存时，只会发起一次上游请求
 - 服务进程内部日志显示，缓存命中后的很多工具调用已经下降到毫秒级
+- shared HTTP request log 现在会额外记录：
+  - `cacheHits`
+  - `upstreamRequestCount`
+  - `upstreamDurationMs`
+  - `upstreamStatusCodes`
+- 共享层现在会额外补两类可操作提示：
+  - 工具报错时，尽量追加按产品归类的权限/服务开通/项目归属 hint
+  - 高频项目级列表返回空结果时，尽量提示先确认 `project_id`、服务配置和账号可见性
+- 基础 HTTP client 现在只对 `GET` 开启受控韧性策略
+  - 单次读取超时上限 `8s`
+  - 瞬时失败时只重试 `1` 次
 - 外部偶发高延迟和 `502` 目前更像入口网络层问题，而不是 MCP 业务处理本身
 
 ## 模块现状总表

@@ -42,16 +42,24 @@ export function createRepoListTagsHandler(client: RepoListTagsClient) {
     const parsed = repoListTagsInput.parse(input);
     const response = await client.listTags(parsed);
     const result = mapRepoTags(response.tags, parsed.page, parsed.page_size, response.total);
-    const text = formatListToolText(result, {
-      fields: [
-        { label: "id", get: (item) => (item as { id?: string }).id },
-        { label: "name", get: (item) => (item as { name?: string }).name },
-        {
-          label: "doubleName",
-          get: (item) => (item as { doubleName?: boolean }).doubleName
-        }
-      ]
-    });
+    const text = result.items?.length
+      ? formatListToolText(result, {
+          fields: [
+            { label: "id", get: (item) => (item as { id?: string }).id },
+            { label: "name", get: (item) => (item as { name?: string }).name },
+            {
+              label: "doubleName",
+              get: (item) => (item as { doubleName?: boolean }).doubleName
+            }
+          ]
+        })
+      : parsed.page > 1
+        ? result.summary
+        : [
+            result.summary,
+            "",
+            `Hint: If you expected tags here, confirm repository_id \`${parsed.repository_id}\` points to a repository visible to the current account and that tag discovery is available for it.`
+          ].join("\n");
 
     return {
       content: [{ type: "text" as const, text }],

@@ -1,4 +1,5 @@
 import { asListResult } from "../../../contracts/tool-result.js";
+import { formatProjectScopedEmptyText } from "../../../contracts/project-scoped-empty-text.js";
 import { toPageInfo } from "../../../core/pagination/page-info.js";
 import { reqListProjectMembersInput } from "../schemas.js";
 
@@ -60,9 +61,19 @@ export function createReqListProjectMembersHandler(client: ReqListProjectMembers
     const parsed = reqListProjectMembersInput.parse(input);
     const response = await client.listProjectMembers(parsed);
     const result = mapReqProjectMembers(response.members, parsed.page, parsed.page_size, response.total);
+    const text = result.items?.length
+      ? result.summary
+      : formatProjectScopedEmptyText({
+          summary: result.summary,
+          page: parsed.page,
+          keyword: parsed.keyword,
+          projectId: parsed.project_id,
+          resourceLabel: "project members",
+          serviceLabel: "Req / ProjectMan"
+        });
 
     return {
-      content: [{ type: "text" as const, text: result.summary }],
+      content: [{ type: "text" as const, text }],
       structuredContent: result
     };
   };

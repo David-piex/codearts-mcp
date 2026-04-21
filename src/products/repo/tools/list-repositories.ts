@@ -1,4 +1,5 @@
 import { asListResult } from "../../../contracts/tool-result.js";
+import { formatProjectScopedEmptyText } from "../../../contracts/project-scoped-empty-text.js";
 import { formatListToolText } from "../../../contracts/tool-result-text.js";
 import { toPageInfo } from "../../../core/pagination/page-info.js";
 import { repoListRepositoriesInput } from "../schemas.js";
@@ -40,6 +41,14 @@ export function createRepoListRepositoriesHandler(client: RepoListRepositoriesCl
     const response = await client.listRepositories(parsed);
     const result = mapRepositories(response.repositories, parsed.page, parsed.page_size, response.total);
     const text = formatListToolText(result, {
+      emptyText: formatProjectScopedEmptyText({
+        summary: result.summary,
+        page: parsed.page,
+        keyword: parsed.keyword,
+        projectId: parsed.project_id,
+        resourceLabel: "repositories",
+        serviceLabel: "Repo"
+      }),
       fields: [
         { label: "id", get: (item) => (item as { id?: string }).id },
         { label: "name", get: (item) => (item as { name?: string }).name },

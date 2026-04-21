@@ -198,6 +198,45 @@ describe("createPipelineClient", () => {
     expect(post).toHaveBeenCalledTimes(2);
   });
 
+  it("deduplicates concurrent listPipelines calls for the same key", async () => {
+    const post = vi.fn(async () => ({
+      records: [
+        {
+          pipeline_id: "pipe-local",
+          name: "deploy-main",
+          project_id: "requested-project"
+        }
+      ],
+      total: 1
+    }));
+    const client = createPipelineClient(
+      {
+        post
+      } as never,
+      {
+        listCacheTtlMs: 30_000,
+        now: () => 1_000
+      }
+    );
+
+    const [left, right] = await Promise.all([
+      client.listPipelines({
+        project_id: "requested-project",
+        page: 1,
+        page_size: 20
+      }),
+      client.listPipelines({
+        project_id: "requested-project",
+        page: 1,
+        page_size: 20
+      })
+    ]);
+
+    expect(left.total).toBe(1);
+    expect(right.total).toBe(1);
+    expect(post).toHaveBeenCalledTimes(1);
+  });
+
   it("maps pipeline artifacts responses", async () => {
     const client = createPipelineClient({
       get: async () => ({

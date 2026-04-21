@@ -94,13 +94,19 @@
 - `src/server/auth-repository.ts`
   - 凭证文件签名检查节流，避免每次请求都频繁 `stat`
 - `src/products/pipeline/client.ts`
-  - `listPipelines` 短 TTL 缓存
+  - `listPipelines` 短 TTL 缓存，现已切到 shared read-through cache
 - `src/products/req/client.ts`
-  - `listProjects` 短 TTL 缓存
+  - `listProjects` 短 TTL 缓存，现已切到 shared read-through cache
 - `src/products/repo/client.ts`
-  - `listRepositories` 短 TTL 缓存
+  - `listRepositories` 短 TTL 缓存，现已切到 shared read-through cache
 - `src/products/build/client.ts`
-  - `listJobs` 短 TTL 缓存
+  - `listJobs` 短 TTL 缓存，现已切到 shared read-through cache
+- `src/core/cache/read-through-cache.ts`
+  - 统一提供 TTL 缓存与 in-flight dedupe，避免高并发冷缓存时重复打上游
+- `src/server/request-context.ts`
+  - 在单次 shared HTTP 请求内聚合 `cacheHits / upstreamRequestCount / upstreamDurationMs / upstreamStatusCodes`
+- `src/core/http/client.ts`
+  - 对 `GET` 增加 `8s` 超时与 `1` 次受控重试，写请求不做自动重试
 - `src/server/http.ts`
   - HTTP keep-alive 已开启，服务端超时参数已显式收敛
 
@@ -118,6 +124,15 @@
   - 已通过缓存和复用大幅下降
 - 入口/网络层
   - 仍有外部链路抖动，需要结合服务器入口网络继续看
+
+现在排查 shared HTTP 慢调用时，可以直接结合新增日志字段判断：
+
+- `durationMs` 高、但 `upstreamDurationMs` 低
+  - 更像入口链路、代理层或 transport 开销
+- `cacheHits` 非空、且 `upstreamRequestCount = 0`
+  - 说明本次请求完全命中进程内缓存
+- `upstreamStatusCodes` 出现重复 `5xx`
+  - 更应该优先排查上游服务稳定性，而不是先改 MCP handler
 
 ## 当前最值得关注的维护热点
 

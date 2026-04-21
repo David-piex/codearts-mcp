@@ -1,5 +1,7 @@
+import { createReadThroughCache } from "../../core/cache/read-through-cache.js";
 import type { ReturnTypeCreateHttpClient } from "../types.js";
 import { normalizeProviderError } from "../../core/errors/app-error.js";
+import { recordRequestCacheHit } from "../../server/request-context.js";
 
 export type PipelineClient = {
   getRunParameters: (input: {
@@ -215,29 +217,30 @@ export function createPipelineClient(
 ): PipelineClient {
   const listCacheTtlMs = options.listCacheTtlMs ?? 15_000;
   const now = options.now ?? Date.now;
-  const listCache = new Map<
+  const listCache = createReadThroughCache<
     string,
     {
-      expiresAt: number;
-      value: {
-        records: Array<{
-          pipeline_id: string;
-          name: string;
-          creator_name?: string;
-          project_id?: string;
-          project_name?: string;
-          manifest_version?: string;
-          latest_run?: {
-            pipeline_run_id?: string;
-            status?: string;
-            run_number?: number;
-            trigger_type?: string;
-          };
-        }>;
-        total?: number;
-      };
+      records: Array<{
+        pipeline_id: string;
+        name: string;
+        creator_name?: string;
+        project_id?: string;
+        project_name?: string;
+        manifest_version?: string;
+        latest_run?: {
+          pipeline_run_id?: string;
+          status?: string;
+          run_number?: number;
+          trigger_type?: string;
+        };
+      }>;
+      total?: number;
     }
-  >();
+  >({
+    ttlMs: listCacheTtlMs,
+    now
+  });
+  const listCacheKeys = new Set<string>();
 
   function buildListCacheKey(input: {
     project_id: string;
@@ -245,20 +248,16 @@ export function createPipelineClient(
     page_size: number;
     keyword?: string;
   }) {
-    return JSON.stringify([
-      input.project_id,
-      input.page,
-      input.page_size,
-      input.keyword ?? ""
-    ]);
+    return JSON.stringify([input.project_id, input.page, input.page_size, input.keyword ?? ""]);
   }
 
   function clearProjectListCache(projectId: string) {
-    for (const key of listCache.keys()) {
+    for (const key of listCacheKeys) {
       const [cachedProjectId] = JSON.parse(key) as [string, number, number, string];
 
       if (cachedProjectId === projectId) {
-        listCache.delete(key);
+        listCache.clear(key);
+        listCacheKeys.delete(key);
       }
     }
   }
@@ -615,64 +614,63 @@ export function createPipelineClient(
     },
     async listPipelines(input) {
       const cacheKey = buildListCacheKey(input);
-      const cached = listCache.get(cacheKey);
+      listCacheKeys.add(cacheKey);
+      const cached = await listCache.getOrLoad(cacheKey, async () => {
+        const offset = (input.page - 1) * input.page_size;
+        const response = unwrapPipelinePayload((await _http.post(
+          `/v5/${encodeURIComponent(input.project_id)}/api/pipelines/list`,
+          {
+            offset,
+            limit: input.page_size,
+            name: input.keyword
+          }
+        )) as {
+          pipelines?: Array<{
+            pipeline_id: string;
+            name: string;
+            creator_name?: string;
+            project_id?: string;
+            project_name?: string;
+            manifest_version?: string;
+            latest_run?: {
+              pipeline_run_id?: string;
+              status?: string;
+              run_number?: number;
+              trigger_type?: string;
+            };
+          }>;
+          records?: Array<{
+            pipeline_id: string;
+            name: string;
+            creator_name?: string;
+            project_id?: string;
+            project_name?: string;
+            manifest_version?: string;
+            latest_run?: {
+              pipeline_run_id?: string;
+              status?: string;
+              run_number?: number;
+              trigger_type?: string;
+            };
+          }>;
+          total?: number;
+        });
+        const records = (response.records ?? response.pipelines ?? []).filter(
+          (item) => !item.project_id || item.project_id === input.project_id
+        );
+        const filtered = records.length !== (response.records ?? response.pipelines ?? []).length;
 
-      if (cached && cached.expiresAt > now()) {
-        return cached.value;
+        return {
+          records,
+          total: filtered ? records.length : response.total
+        };
+      });
+
+      if (cached.cacheHit) {
+        recordRequestCacheHit("pipeline_list_pipelines");
       }
 
-      const offset = (input.page - 1) * input.page_size;
-      const response = unwrapPipelinePayload((await _http.post(`/v5/${encodeURIComponent(input.project_id)}/api/pipelines/list`, {
-        offset,
-        limit: input.page_size,
-        name: input.keyword
-      })) as {
-        pipelines?: Array<{
-          pipeline_id: string;
-          name: string;
-          creator_name?: string;
-          project_id?: string;
-          project_name?: string;
-          manifest_version?: string;
-          latest_run?: {
-            pipeline_run_id?: string;
-            status?: string;
-            run_number?: number;
-            trigger_type?: string;
-          };
-        }>;
-        records?: Array<{
-          pipeline_id: string;
-          name: string;
-          creator_name?: string;
-          project_id?: string;
-          project_name?: string;
-          manifest_version?: string;
-          latest_run?: {
-            pipeline_run_id?: string;
-            status?: string;
-            run_number?: number;
-            trigger_type?: string;
-          };
-        }>;
-        total?: number;
-      });
-      const records = (response.records ?? response.pipelines ?? []).filter(
-        (item) => !item.project_id || item.project_id === input.project_id
-      );
-      const filtered = records.length !== (response.records ?? response.pipelines ?? []).length;
-
-      const value = {
-        records,
-        total: filtered ? records.length : response.total
-      };
-
-      listCache.set(cacheKey, {
-        expiresAt: now() + listCacheTtlMs,
-        value
-      });
-
-      return value;
+      return cached.value;
     },
     async listRuns(input) {
       const offset = (input.page - 1) * input.page_size;

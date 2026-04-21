@@ -1,5 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
 import { createHttpClient } from "../../../src/core/http/client.js";
+import {
+  getCurrentRequestDiagnostics,
+  runWithRequestDiagnostics
+} from "../../../src/server/request-context.js";
 
 describe("createHttpClient", () => {
   it("attaches auth headers and parses json", async () => {
@@ -249,5 +253,45 @@ describe("createHttpClient", () => {
       status: 400,
       message: "无执行记录"
     });
+  });
+  it("retries a transient GET once before succeeding and records upstream diagnostics", async () => {
+    const fetcher = vi
+      .fn()
+      .mockRejectedValueOnce(new Error("socket hang up"))
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ ok: true }), {
+          status: 200,
+          headers: { "content-type": "application/json" }
+        })
+      );
+
+    const client = createHttpClient({
+      baseUrl: "https://example.com",
+      authHeaders: async () => ({ Authorization: "SDK-HMAC-SHA256 signed" }),
+      fetcher
+    });
+
+    const diagnostics = await runWithRequestDiagnostics(async () => {
+      await expect(client.get("/health")).resolves.toEqual({ ok: true });
+      return getCurrentRequestDiagnostics();
+    });
+
+    expect(fetcher).toHaveBeenCalledTimes(2);
+    expect(diagnostics).toMatchObject({
+      upstreamRequestCount: 2,
+      upstreamStatusCodes: [200]
+    });
+  });
+
+  it("does not retry write requests", async () => {
+    const fetcher = vi.fn().mockRejectedValue(new Error("socket hang up"));
+    const client = createHttpClient({
+      baseUrl: "https://example.com",
+      authHeaders: async () => ({ Authorization: "SDK-HMAC-SHA256 signed" }),
+      fetcher
+    });
+
+    await expect(client.post("/projects", { name: "demo" })).rejects.toThrow("socket hang up");
+    expect(fetcher).toHaveBeenCalledTimes(1);
   });
 });

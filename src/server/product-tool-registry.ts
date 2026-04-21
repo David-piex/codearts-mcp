@@ -4,6 +4,7 @@ import type { SessionToolExtra } from "./auth-session-runtime.js";
 import type { RateLimiter } from "./rate-limiter.js";
 import { createSessionAwareProductToolHandler } from "./session-aware-handler.js";
 import type { SessionCredentialStore } from "./session-store.js";
+import { formatToolErrorMessage } from "./tool-error-hints.js";
 
 type RegisterableServer = Pick<McpServer, "registerTool">;
 
@@ -20,24 +21,27 @@ type ProductToolDefinition<TClient> = {
   resolveHandler: (options: ToolModeOptions<TClient>) => any;
 };
 
-function createToolErrorResult(error: unknown) {
+function createToolErrorResult(toolName: string, error: unknown) {
   return {
     content: [
       {
         type: "text" as const,
-        text: error instanceof Error ? error.message : String(error)
+        text: formatToolErrorMessage(toolName, error)
       }
     ],
     isError: true
   };
 }
 
-function wrapToolHandler<THandler extends (...args: any[]) => any>(handler: THandler): THandler {
+function wrapToolHandler<THandler extends (...args: any[]) => any>(
+  toolName: string,
+  handler: THandler
+): THandler {
   return (async (...args: Parameters<THandler>) => {
     try {
       return await handler(...args);
     } catch (error) {
-      return createToolErrorResult(error);
+      return createToolErrorResult(toolName, error);
     }
   }) as THandler;
 }
@@ -113,6 +117,7 @@ export function registerDefinedTool<
       inputSchema: definition.inputSchema
     },
     wrapToolHandler(
+      options.toolName,
       definition.resolveHandler({
         mode: options.mode,
         sessionStore: options.sessionStore,

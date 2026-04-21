@@ -32,4 +32,19 @@ describe("createBuildListJobsHandler", () => {
     expect(result.content[0]?.text).toContain("name: gateway-build");
     expect(result.content[0]?.text).toContain("isRunning: false");
   });
+
+  it("adds a project-scoped hint when the build job list is empty", async () => {
+    const handler = createBuildListJobsHandler({
+      listJobs: async () => ({
+        jobs: [],
+        total: 0
+      })
+    });
+
+    const result = await handler({ project_id: "project-empty", page: 1, page_size: 20 });
+
+    expect(result.content[0]?.text).toContain("0 build jobs found");
+    expect(result.content[0]?.text).toContain("If you expected build jobs here");
+    expect(result.content[0]?.text).toContain("project-empty");
+  });
 });

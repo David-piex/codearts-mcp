@@ -6,6 +6,10 @@ import {
   createSessionAwareReqProjectsHandler
 } from "../../src/server/create-server.js";
 import { encryptSecretValue } from "../../src/server/auth-crypto.js";
+import {
+  getCurrentRequestDiagnostics,
+  runWithRequestDiagnostics
+} from "../../src/server/request-context.js";
 import { createFixedWindowRateLimiter } from "../../src/server/rate-limiter.js";
 import { createSessionCredentialStore } from "../../src/server/session-store.js";
 
@@ -57,6 +61,45 @@ describe("session auth tools", () => {
       req_base_url: "https://projectman-ext.cn-north-4.myhuaweicloud.com",
       deploy_base_url: "https://codearts-deploy.cn-north-4.myhuaweicloud.com"
     });
+  });
+
+  it("records configure-session phase timings in request diagnostics", async () => {
+    const store = createSessionCredentialStore();
+    const handler = createConfigureSessionHandlerWithPersistence({
+      sessionStore: store,
+      repository: {
+        upsert: () => undefined,
+        findByTokenHash: () => undefined,
+        findActiveByAuthId: () => undefined,
+        revoke: () => undefined
+      },
+      masterKey: "0123456789abcdef0123456789abcdef",
+      createToken: () => ({ raw: "token-1", hash: "hash-1" })
+    });
+
+    const diagnostics = await runWithRequestDiagnostics(async () => {
+      await handler(
+        {
+          access_key: "ak-1",
+          secret_key: "sk-1",
+          region: "cn-north-4"
+        },
+        { sessionId: "session-phase" }
+      );
+
+      return getCurrentRequestDiagnostics();
+    });
+
+    expect(diagnostics?.phaseTimings).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ name: "auth_input_parse", durationMs: expect.any(Number) }),
+        expect.objectContaining({ name: "auth_endpoint_resolve", durationMs: expect.any(Number) }),
+        expect.objectContaining({ name: "auth_token_create", durationMs: expect.any(Number) }),
+        expect.objectContaining({ name: "auth_credential_encrypt", durationMs: expect.any(Number) }),
+        expect.objectContaining({ name: "auth_repository_upsert", durationMs: expect.any(Number) }),
+        expect.objectContaining({ name: "auth_session_bind", durationMs: expect.any(Number) })
+      ])
+    );
   });
 
   it("applies explicit endpoint overrides on top of region defaults", async () => {

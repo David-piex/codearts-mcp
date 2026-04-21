@@ -32,4 +32,27 @@ describe("createDeployListV4OrchestrationsHandler", () => {
       }
     ]);
   });
+
+  it("adds a project-scoped hint when the v4 orchestration list is empty on the first page", async () => {
+    const handler = createDeployListV4OrchestrationsHandler({
+      listV4Orchestrations: async () => ({
+        project_id: "project-empty",
+        app_id: "app-empty",
+        total: 0,
+        orchestrations: [],
+        raw: { total: 0 }
+      })
+    });
+
+    const result = await handler({
+      project_id: "project-empty",
+      app_id: "app-empty",
+      limit: 20,
+      offset: 0
+    });
+
+    expect(result.content[0]?.text).toContain("Loaded 0 v4 orchestrations");
+    expect(result.content[0]?.text).toContain("If you expected v4 orchestrations here");
+    expect(result.content[0]?.text).toContain("project-empty");
+  });
 });

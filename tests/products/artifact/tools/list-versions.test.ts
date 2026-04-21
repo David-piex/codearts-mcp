@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { mapArtifactVersions } from "../../../../src/products/artifact/tools/list-versions.js";
+import {
+  createArtifactListVersionsHandler,
+  mapArtifactVersions
+} from "../../../../src/products/artifact/tools/list-versions.js";
 
 describe("mapArtifactVersions", () => {
   it("returns normalized artifact versions", () => {
@@ -19,5 +22,20 @@ describe("mapArtifactVersions", () => {
     expect(result.items?.[0]?.repoName).toBe("release");
     expect(result.items?.[0]?.fileCount).toBe(1);
     expect(result.items?.[0]?.category).toBe("test");
+  });
+
+  it("adds a project-scoped hint when the artifact version list is empty", async () => {
+    const handler = createArtifactListVersionsHandler({
+      listVersions: async () => ({
+        versions: [],
+        total: 0
+      })
+    });
+
+    const result = await handler({ project_id: "project-empty", page: 1, page_size: 20 });
+
+    expect(result.content[0]?.text).toContain("0 artifact versions found");
+    expect(result.content[0]?.text).toContain("If you expected artifact versions here");
+    expect(result.content[0]?.text).toContain("project-empty");
   });
 });

@@ -41,4 +41,19 @@ describe("createRepoListMergeRequestsHandler", () => {
       }
     ]);
   });
+
+  it("adds a repository-scoped hint when the merge request list is empty", async () => {
+    const handler = createRepoListMergeRequestsHandler({
+      listMergeRequests: async () => ({
+        merge_requests: [],
+        total: 0
+      })
+    });
+
+    const result = await handler({ repository_id: "repo-empty", page: 1, page_size: 20 });
+
+    expect(result.content[0]?.text).toContain("0 merge requests found");
+    expect(result.content[0]?.text).toContain("If you expected merge requests here");
+    expect(result.content[0]?.text).toContain("repo-empty");
+  });
 });

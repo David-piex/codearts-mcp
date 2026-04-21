@@ -1,4 +1,5 @@
 import { asListResult } from "../../../contracts/tool-result.js";
+import { formatProjectScopedEmptyText } from "../../../contracts/project-scoped-empty-text.js";
 import { formatListToolText } from "../../../contracts/tool-result-text.js";
 import { toPageInfo } from "../../../core/pagination/page-info.js";
 import { reqListWorkItemsInput } from "../schemas.js";
@@ -49,14 +50,22 @@ export function createReqListWorkItemsHandler(client: ReqListWorkItemsClient) {
     const parsed = reqListWorkItemsInput.parse(input);
     const response = await client.listWorkItems(parsed);
     const result = mapReqWorkItems(response.work_items, parsed.page, parsed.page_size, response.total);
-    const text = formatListToolText(result, {
-      fields: [
-        { label: "id", get: (item) => (item as { id?: string }).id },
-        { label: "title", get: (item) => (item as { title?: string }).title },
-        { label: "status", get: (item) => (item as { status?: string }).status },
-        { label: "type", get: (item) => (item as { type?: string }).type }
-      ]
-    });
+    const text = result.items?.length
+      ? formatListToolText(result, {
+          fields: [
+            { label: "id", get: (item) => (item as { id?: string }).id },
+            { label: "title", get: (item) => (item as { title?: string }).title },
+            { label: "status", get: (item) => (item as { status?: string }).status },
+            { label: "type", get: (item) => (item as { type?: string }).type }
+          ]
+        })
+      : formatProjectScopedEmptyText({
+          summary: result.summary,
+          page: parsed.page,
+          projectId: parsed.project_id,
+          resourceLabel: "work items",
+          serviceLabel: "Req / ProjectMan"
+        });
 
     return {
       content: [{ type: "text" as const, text }],

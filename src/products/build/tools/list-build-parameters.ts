@@ -25,9 +25,16 @@ export function createBuildListBuildParametersHandler(client: BuildListBuildPara
     const parsed = buildListBuildParametersInput.parse(input);
     const response = await client.listBuildParameters(parsed);
     const result = mapBuildParameters(response.parameters);
+    const text = result.items?.length
+      ? result.summary
+      : [
+          result.summary,
+          "",
+          `Hint: If you expected build parameters here, confirm job_id \`${parsed.job_id}\` and build_no \`${parsed.build_no}\` point to a visible build record that actually carries parameter values.`
+        ].join("\n");
 
     return {
-      content: [{ type: "text" as const, text: result.summary }],
+      content: [{ type: "text" as const, text }],
       structuredContent: result
     };
   };

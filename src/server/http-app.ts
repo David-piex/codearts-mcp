@@ -7,6 +7,11 @@ import { serializeAuthCookie } from "./auth-cookie.js";
 import { createAuthContextResolver } from "./auth-context.js";
 import { createFileAuthRepository } from "./auth-repository.js";
 import { createServer } from "./create-server.js";
+import {
+  getCurrentRequestDiagnostics,
+  recordRequestPhase,
+  runWithRequestDiagnostics
+} from "./request-context.js";
 import { createSessionCredentialStore } from "./session-store.js";
 
 type SessionTransportMap = Record<string, StreamableHTTPServerTransport>;
@@ -19,6 +24,14 @@ export type HttpRequestLogEntry = {
   sessionId?: string;
   mcpMethod?: string;
   toolName?: string;
+  cacheHits?: string[];
+  phaseTimings?: Array<{
+    name: string;
+    durationMs: number;
+  }>;
+  upstreamRequestCount?: number;
+  upstreamDurationMs?: number;
+  upstreamStatusCodes?: number[];
 };
 
 type HttpAppOptions = {
@@ -130,20 +143,27 @@ function installRequestLogging(
   const startedAt = Date.now();
   let logged = false;
 
-  const logRequest = () => {
-    if (logged) {
-      return;
-    }
+    const logRequest = () => {
+      if (logged) {
+        return;
+      }
 
-    logged = true;
-    requestLogger({
-      ...details,
-      method: req.method ?? "UNKNOWN",
-      path: pathname,
-      statusCode: res.statusCode,
-      durationMs: Date.now() - startedAt
-    });
-  };
+      const diagnostics = getCurrentRequestDiagnostics();
+
+      logged = true;
+      requestLogger({
+        ...details,
+        method: req.method ?? "UNKNOWN",
+        path: pathname,
+        statusCode: res.statusCode,
+        durationMs: Date.now() - startedAt,
+        cacheHits: diagnostics?.cacheHits ?? [],
+        phaseTimings: diagnostics?.phaseTimings ?? [],
+        upstreamRequestCount: diagnostics?.upstreamRequestCount ?? 0,
+        upstreamDurationMs: diagnostics?.upstreamDurationMs ?? 0,
+        upstreamStatusCodes: diagnostics?.upstreamStatusCodes ?? []
+      });
+    };
 
   res.once("finish", logRequest);
   res.once("close", logRequest);
@@ -197,145 +217,155 @@ export function createHttpApp(
       : undefined;
 
   return async (req: IncomingMessage, res: ServerResponse) => {
-    if (!req.url || !req.method) {
-      writeJson(res, 400, { error: "Invalid request." });
-      return;
-    }
-
-    const url = new URL(req.url, "http://127.0.0.1");
-    const sessionIdHeader = req.headers["mcp-session-id"];
-    const sessionId = Array.isArray(sessionIdHeader) ? sessionIdHeader[0] : sessionIdHeader;
-    const requestLogDetails: HttpRequestLogEntry = {
-      method: req.method,
-      path: url.pathname,
-      statusCode: 0,
-      durationMs: 0,
-      sessionId
-    };
-    installRequestLogging(req, res, url.pathname, requestLogDetails, options.requestLogger);
-
-    if (req.method === "GET" && (url.pathname === "/" || url.pathname === "/health")) {
-      writeJson(res, 200, { status: "ok" });
-      return;
-    }
-
-    if (url.pathname !== "/mcp") {
-      writeJson(res, 404, { error: "Not found." });
-      return;
-    }
-
-    const authContext = authResolver
-      ? await authResolver.resolve({
-          sessionId,
-          headers: {
-            authorization: normalizeHeaderValue(req.headers.authorization),
-            cookie: normalizeHeaderValue(req.headers.cookie)
-          },
-          queryToken: url.searchParams.get("auth_token") ?? undefined
-        })
-      : undefined;
-    const responseAuthState = {
-      issuedToken: undefined as string | undefined,
-      clearCookie: false,
-      headersApplied: false
-    };
-
-    if (authConfig) {
-      installAuthResponseHooks(res, authConfig, responseAuthState);
-    }
-
-    (
-      req as IncomingMessage & {
-        auth?: {
-          authId?: string;
-          rawToken?: string;
-          onTokenIssued?: (rawToken: string) => void;
-          onAuthCleared?: () => void;
-        };
+    return await runWithRequestDiagnostics(async () => {
+      if (!req.url || !req.method) {
+        writeJson(res, 400, { error: "Invalid request." });
+        return;
       }
-    ).auth = {
-      authId: authContext?.authId,
-      rawToken: authContext?.rawToken,
-      onTokenIssued: (rawToken) => {
-        responseAuthState.issuedToken = rawToken;
-        responseAuthState.clearCookie = false;
-      },
-      onAuthCleared: () => {
-        responseAuthState.issuedToken = undefined;
-        responseAuthState.clearCookie = true;
+
+      const url = new URL(req.url, "http://127.0.0.1");
+      const sessionIdHeader = req.headers["mcp-session-id"];
+      const sessionId = Array.isArray(sessionIdHeader) ? sessionIdHeader[0] : sessionIdHeader;
+      const requestLogDetails: HttpRequestLogEntry = {
+        method: req.method,
+        path: url.pathname,
+        statusCode: 0,
+        durationMs: 0,
+        sessionId
+      };
+      installRequestLogging(req, res, url.pathname, requestLogDetails, options.requestLogger);
+
+      if (req.method === "GET" && (url.pathname === "/" || url.pathname === "/health")) {
+        writeJson(res, 200, { status: "ok" });
+        return;
       }
-    };
 
-    try {
-      if (req.method === "POST") {
-        const parsedBody = await readJsonBody(req);
-        Object.assign(requestLogDetails, readMcpRequestDetails(parsedBody));
-        let transport = sessionId ? transports[sessionId] : undefined;
+      if (url.pathname !== "/mcp") {
+        writeJson(res, 404, { error: "Not found." });
+        return;
+      }
 
-        if (transport && authContext?.authId) {
-          sessionStore.bind(sessionId!, authContext.authId);
+      const authResolveStartedAt = Date.now();
+      const authContext = authResolver
+        ? await authResolver.resolve({
+            sessionId,
+            headers: {
+              authorization: normalizeHeaderValue(req.headers.authorization),
+              cookie: normalizeHeaderValue(req.headers.cookie)
+            },
+            queryToken: url.searchParams.get("auth_token") ?? undefined
+          })
+        : undefined;
+      recordRequestPhase("auth_resolve", Date.now() - authResolveStartedAt);
+      const responseAuthState = {
+        issuedToken: undefined as string | undefined,
+        clearCookie: false,
+        headersApplied: false
+      };
+
+      if (authConfig) {
+        installAuthResponseHooks(res, authConfig, responseAuthState);
+      }
+
+      (
+        req as IncomingMessage & {
+          auth?: {
+            authId?: string;
+            rawToken?: string;
+            onTokenIssued?: (rawToken: string) => void;
+            onAuthCleared?: () => void;
+          };
+        }
+      ).auth = {
+        authId: authContext?.authId,
+        rawToken: authContext?.rawToken,
+        onTokenIssued: (rawToken) => {
+          responseAuthState.issuedToken = rawToken;
+          responseAuthState.clearCookie = false;
+        },
+        onAuthCleared: () => {
+          responseAuthState.issuedToken = undefined;
+          responseAuthState.clearCookie = true;
+        }
+      };
+
+      try {
+        if (req.method === "POST") {
+          const bodyReadStartedAt = Date.now();
+          const parsedBody = await readJsonBody(req);
+          recordRequestPhase("request_body_read", Date.now() - bodyReadStartedAt);
+          Object.assign(requestLogDetails, readMcpRequestDetails(parsedBody));
+          let transport = sessionId ? transports[sessionId] : undefined;
+
+          if (transport && authContext?.authId) {
+            sessionStore.bind(sessionId!, authContext.authId);
+          }
+
+          if (!transport) {
+            if (!parsedBody || !isInitializeRequest(parsedBody)) {
+              writeJson(res, 400, { error: "Missing or invalid MCP session." });
+              return;
+            }
+
+            const transportCreateStartedAt = Date.now();
+            transport = new StreamableHTTPServerTransport({
+              enableJsonResponse: true,
+              sessionIdGenerator: () => randomUUID(),
+              onsessioninitialized: (newSessionId) => {
+                transports[newSessionId] = transport!;
+                if (authContext?.authId) {
+                  sessionStore.bind(newSessionId, authContext.authId);
+                }
+              },
+              onsessionclosed: (closedSessionId) => {
+                delete transports[closedSessionId];
+                sessionStore.clear(closedSessionId);
+              }
+            });
+            recordRequestPhase("transport_create", Date.now() - transportCreateStartedAt);
+
+            const server = createServer({
+              mode: "http",
+              config,
+              sessionStore,
+              authRepository,
+              authMasterKey: authConfig?.masterKey
+            });
+            const transportConnectStartedAt = Date.now();
+            await server.connect(transport);
+            recordRequestPhase("transport_connect", Date.now() - transportConnectStartedAt);
+          }
+
+          await transport.handleRequest(req, res, parsedBody);
+          return;
         }
 
-        if (!transport) {
-          if (!parsedBody || !isInitializeRequest(parsedBody)) {
-            writeJson(res, 400, { error: "Missing or invalid MCP session." });
+        if (req.method === "GET") {
+          if (!sessionId || !transports[sessionId]) {
+            writeJson(res, 400, { error: "Invalid or missing session ID." });
             return;
           }
 
-          transport = new StreamableHTTPServerTransport({
-            enableJsonResponse: true,
-            sessionIdGenerator: () => randomUUID(),
-            onsessioninitialized: (newSessionId) => {
-              transports[newSessionId] = transport!;
-              if (authContext?.authId) {
-                sessionStore.bind(newSessionId, authContext.authId);
-              }
-            },
-            onsessionclosed: (closedSessionId) => {
-              delete transports[closedSessionId];
-              sessionStore.clear(closedSessionId);
-            }
-          });
-
-          const server = createServer({
-            mode: "http",
-            config,
-            sessionStore,
-            authRepository,
-            authMasterKey: authConfig?.masterKey
-          });
-          await server.connect(transport);
-        }
-
-        await transport.handleRequest(req, res, parsedBody);
-        return;
-      }
-
-      if (req.method === "GET") {
-        if (!sessionId || !transports[sessionId]) {
-          writeJson(res, 400, { error: "Invalid or missing session ID." });
+          await transports[sessionId].handleRequest(req, res);
           return;
         }
 
-        await transports[sessionId].handleRequest(req, res);
-        return;
-      }
+        if (req.method === "DELETE") {
+          if (!sessionId || !transports[sessionId]) {
+            writeJson(res, 400, { error: "Invalid or missing session ID." });
+            return;
+          }
 
-      if (req.method === "DELETE") {
-        if (!sessionId || !transports[sessionId]) {
-          writeJson(res, 400, { error: "Invalid or missing session ID." });
+          await transports[sessionId].handleRequest(req, res);
           return;
         }
 
-        await transports[sessionId].handleRequest(req, res);
-        return;
+        writeJson(res, 405, { error: "Method not allowed." });
+      } catch (error) {
+        writeJson(res, 500, {
+          error: error instanceof Error ? error.message : "Internal server error"
+        });
       }
-
-      writeJson(res, 405, { error: "Method not allowed." });
-    } catch (error) {
-      writeJson(res, 500, {
-        error: error instanceof Error ? error.message : "Internal server error"
-      });
-    }
+    });
   };
 }

@@ -63,4 +63,24 @@ describe("createDeployListHistoriesHandler", () => {
       status: "RUNNING"
     });
   });
+
+  it("adds a project-scoped hint when the deploy history list is empty", async () => {
+    const handler = createDeployListHistoriesHandler({
+      listHistories: async () => ({
+        histories: [],
+        total: 0
+      })
+    });
+
+    const result = await handler({
+      project_id: "project-empty",
+      task_id: "task-1",
+      page: 1,
+      page_size: 20
+    });
+
+    expect(result.content[0]?.text).toContain("0 deploy histories found");
+    expect(result.content[0]?.text).toContain("If you expected deploy histories here");
+    expect(result.content[0]?.text).toContain("project-empty");
+  });
 });

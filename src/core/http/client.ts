@@ -1,5 +1,6 @@
 import type { AuthHeadersProvider } from "../auth/types.js";
-import { normalizeProviderError } from "../errors/app-error.js";
+import { AppError, normalizeProviderError } from "../errors/app-error.js";
+import { recordUpstreamRequest } from "../../server/request-context.js";
 
 type HttpClientInput = {
   baseUrl: string;
@@ -18,6 +19,9 @@ type BinaryResponse = {
   contentType?: string;
   fileName?: string;
 };
+
+const READ_REQUEST_TIMEOUT_MS = 8_000;
+const READ_REQUEST_RETRY_COUNT = 1;
 
 async function prepareRequestBody(url: string, method: string, body?: unknown): Promise<PreparedRequestBody> {
   if (body === undefined) {
@@ -118,6 +122,33 @@ function parseFileName(contentDisposition?: string | null): string | undefined {
   return plainMatch?.[1]?.trim();
 }
 
+async function fetchWithTimeout(
+  url: string,
+  init: RequestInit,
+  timeoutMs: number,
+  fetcher: typeof fetch
+) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    return await fetcher(url, {
+      ...init,
+      signal: controller.signal
+    });
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+function shouldRetryReadError(error: unknown) {
+  if (error instanceof AppError) {
+    return error.status !== undefined && error.status >= 500;
+  }
+
+  return true;
+}
+
 export function createHttpClient(input: HttpClientInput) {
   const fetcher = input.fetcher ?? fetch;
 
@@ -130,13 +161,49 @@ export function createHttpClient(input: HttpClientInput) {
       body: prepared.signedBody,
       headers: prepared.headers
     });
-    const response = await fetcher(url, { method, headers, body: prepared.body });
+    const maxAttempts = method === "GET" ? READ_REQUEST_RETRY_COUNT + 1 : 1;
 
-    if (!response.ok) {
-      throw normalizeProviderError(await readProviderError(response));
+    for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+      const startedAt = Date.now();
+      let statusCode: number | undefined;
+
+      try {
+        const response =
+          method === "GET"
+            ? await fetchWithTimeout(
+                url,
+                {
+                  method,
+                  headers,
+                  body: prepared.body
+                },
+                READ_REQUEST_TIMEOUT_MS,
+                fetcher
+              )
+            : await fetcher(url, { method, headers, body: prepared.body });
+
+        statusCode = response.status;
+
+        if (!response.ok) {
+          throw normalizeProviderError(await readProviderError(response));
+        }
+
+        return response;
+      } catch (error) {
+        if (method !== "GET" || attempt >= maxAttempts || !shouldRetryReadError(error)) {
+          throw error;
+        }
+      } finally {
+        recordUpstreamRequest({
+          method,
+          path,
+          statusCode,
+          durationMs: Date.now() - startedAt
+        });
+      }
     }
 
-    return response;
+    throw new Error(`GET ${path} exhausted retry attempts`);
   }
 
   async function request(method: string, path: string, body?: unknown) {
