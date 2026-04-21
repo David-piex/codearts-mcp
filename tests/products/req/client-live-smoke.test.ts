@@ -3,6 +3,7 @@ import { createHuaweiAuthHeaders } from "../../../src/core/auth/huawei-auth.js";
 import { loadEnvConfig } from "../../../src/core/config/env.js";
 import { createHttpClient } from "../../../src/core/http/client.js";
 import { createReqClient } from "../../../src/products/req/client.js";
+import { findListedWorkItem } from "./live-smoke-helpers.js";
 
 function hasLiveEnv(source: NodeJS.ProcessEnv) {
   return Boolean(
@@ -143,14 +144,15 @@ if (hasLiveEnv(process.env)) {
       expect(String(updated.id)).toBe(workItemId);
       expect(updated.name).toBe(updatedTitle);
 
-      const listed = await client.listWorkItems({
-        project_id: writableProjectId!,
-        page: 1,
-        page_size: 20
+      const found = await findListedWorkItem(client, {
+        projectId: writableProjectId!,
+        workItemId,
+        pageSize: 20,
+        maxPages: 5
       });
 
-      expect(Array.isArray(listed.work_items)).toBe(true);
-      expect(listed.work_items.some((item) => String(item.id) === workItemId)).toBe(true);
+      expect(found).toBeTruthy();
+      expect(found?.item.subject).toBe(updatedTitle);
     }, 30000);
   });
 } else {
