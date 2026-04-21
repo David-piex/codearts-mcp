@@ -70,6 +70,31 @@ describe("createReqClient", () => {
     expect(get).toHaveBeenCalledTimes(2);
   });
 
+  it("deduplicates concurrent listProjects calls for the same key", async () => {
+    const get = vi.fn(async () => ({
+      projects: [{ project_id: "p-1", project_name: "Demo", project_num_id: 7 }],
+      total: 1
+    }));
+    const client = createReqClient(
+      {
+        get
+      } as never,
+      {
+        listCacheTtlMs: 30_000,
+        now: () => 1_000
+      }
+    );
+
+    const [left, right] = await Promise.all([
+      client.listProjects({ page: 1, page_size: 20 }),
+      client.listProjects({ page: 1, page_size: 20 })
+    ]);
+
+    expect(left.total).toBe(1);
+    expect(right.total).toBe(1);
+    expect(get).toHaveBeenCalledTimes(1);
+  });
+
   it("reads nested project payload when getting a project", async () => {
     const client = createReqClient({
       get: async () => ({

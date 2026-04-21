@@ -1,5 +1,7 @@
+import { createReadThroughCache } from "../../core/cache/read-through-cache.js";
 import type { ReturnTypeCreateHttpClient } from "../types.js";
 import { normalizeProviderError } from "../../core/errors/app-error.js";
+import { recordRequestCacheHit } from "../../server/request-context.js";
 
 export type BuildClient = {
   previewAppendJobStep: (input: {
@@ -683,23 +685,23 @@ export function createBuildClient(
 ): BuildClient {
   const listCacheTtlMs = options.listCacheTtlMs ?? 15_000;
   const now = options.now ?? Date.now;
-  const listJobsCache = new Map<
+  const listJobsCache = createReadThroughCache<
     string,
     {
-      expiresAt: number;
-      value: {
-        jobs: Array<{
-          job_id: string;
-          name: string;
-          project_id?: string;
-          build_project_id?: string;
-          is_running?: boolean;
-          description?: string;
-        }>;
-        total?: number;
-      };
+      jobs: Array<{
+        job_id: string;
+        name: string;
+        project_id?: string;
+        build_project_id?: string;
+        is_running?: boolean;
+        description?: string;
+      }>;
+      total?: number;
     }
-  >();
+  >({
+    ttlMs: listCacheTtlMs,
+    now
+  });
 
   function buildListJobsCacheKey(input: {
     project_id: string;
@@ -1108,38 +1110,22 @@ export function createBuildClient(
     },
     async listJobs(input) {
       const cacheKey = buildListJobsCacheKey(input);
-      const cached = listJobsCache.get(cacheKey);
+      const cached = await listJobsCache.getOrLoad(cacheKey, async () => {
+        const offset = (input.page - 1) * input.page_size;
+        const query = new URLSearchParams({
+          page_index: String(Math.max(0, input.page - 1)),
+          page_size: String(input.page_size),
+          offset: String(offset),
+          limit: String(input.page_size)
+        });
 
-      if (cached && cached.expiresAt > now()) {
-        return cached.value;
-      }
+        if (input.keyword) {
+          query.set("search", input.keyword);
+        }
 
-      const offset = (input.page - 1) * input.page_size;
-      const query = new URLSearchParams({
-        page_index: String(Math.max(0, input.page - 1)),
-        page_size: String(input.page_size),
-        offset: String(offset),
-        limit: String(input.page_size)
-      });
-
-      if (input.keyword) {
-        query.set("search", input.keyword);
-      }
-
-      const response = unwrapBuildPayload((await _http.get(
-        `/v1/job/${encodeURIComponent(input.project_id)}/list?${query.toString()}`
-      )) as {
-        jobs?: Array<{
-          id?: string;
-          job_id?: string;
-          name?: string;
-          job_name?: string;
-          project_id?: string;
-          build_project_id?: string;
-          is_running?: boolean;
-          description?: string;
-        }>;
-        result?: {
+        const response = unwrapBuildPayload((await _http.get(
+          `/v1/job/${encodeURIComponent(input.project_id)}/list?${query.toString()}`
+        )) as {
           jobs?: Array<{
             id?: string;
             job_id?: string;
@@ -1150,43 +1136,58 @@ export function createBuildClient(
             is_running?: boolean;
             description?: string;
           }>;
-          job_list?: Array<{
-            id?: string;
-            job_id?: string;
-            name?: string;
-            job_name?: string;
-            project_id?: string;
-            build_project_id?: string;
-            is_running?: boolean;
-            description?: string;
-          }>;
+          result?: {
+            jobs?: Array<{
+              id?: string;
+              job_id?: string;
+              name?: string;
+              job_name?: string;
+              project_id?: string;
+              build_project_id?: string;
+              is_running?: boolean;
+              description?: string;
+            }>;
+            job_list?: Array<{
+              id?: string;
+              job_id?: string;
+              name?: string;
+              job_name?: string;
+              project_id?: string;
+              build_project_id?: string;
+              is_running?: boolean;
+              description?: string;
+            }>;
+            total?: number;
+            total_count?: number;
+          };
           total?: number;
           total_count?: number;
+        });
+
+        const jobs = response.jobs ?? response.result?.jobs ?? response.result?.job_list ?? [];
+
+        return {
+          jobs: jobs.map((item) => ({
+            job_id: item.job_id ?? item.id ?? "",
+            name: item.name ?? item.job_name ?? "",
+            project_id: item.project_id,
+            build_project_id: item.build_project_id,
+            is_running: item.is_running,
+            description: item.description
+          })),
+          total:
+            response.total ??
+            response.total_count ??
+            response.result?.total ??
+            response.result?.total_count
         };
-        total?: number;
-        total_count?: number;
       });
 
-      const jobs = response.jobs ?? response.result?.jobs ?? response.result?.job_list ?? [];
+      if (cached.cacheHit) {
+        recordRequestCacheHit("build_list_jobs");
+      }
 
-      const value = {
-        jobs: jobs.map((item) => ({
-          job_id: item.job_id ?? item.id ?? "",
-          name: item.name ?? item.job_name ?? "",
-          project_id: item.project_id,
-          build_project_id: item.build_project_id,
-          is_running: item.is_running,
-          description: item.description
-        })),
-        total: response.total ?? response.total_count ?? response.result?.total ?? response.result?.total_count
-      };
-
-      listJobsCache.set(cacheKey, {
-        expiresAt: now() + listCacheTtlMs,
-        value
-      });
-
-      return value;
+      return cached.value;
     },
     async getJob(input) {
       const response = unwrapBuildPayload((await _http.get(

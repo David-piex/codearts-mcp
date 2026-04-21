@@ -201,7 +201,12 @@ describe("http app", () => {
         method: "GET",
         path: "/health",
         statusCode: 200,
-        durationMs: expect.any(Number)
+        durationMs: expect.any(Number),
+        cacheHits: [],
+        phaseTimings: [],
+        upstreamRequestCount: 0,
+        upstreamDurationMs: 0,
+        upstreamStatusCodes: []
       })
     );
   });
@@ -262,6 +267,52 @@ describe("http app", () => {
         mcpMethod: "tools/call",
         toolName: "auth_configure_session",
         sessionId
+      })
+    );
+  });
+
+  it("records initialize phase timings in the request log", async () => {
+    const logs: unknown[] = [];
+    const authConfig = createTestAuthConfig();
+    const app = createHttpApp(
+      {
+        serverName: "codearts-mcp",
+        serverVersion: "0.1.0",
+        httpPort: 0
+      },
+      authConfig,
+      {
+        requestLogger: (entry: unknown) => {
+          logs.push(entry);
+        }
+      }
+    );
+    const server = createServer(app);
+    servers.push(server);
+    server.listen(0, "127.0.0.1");
+    await once(server, "listening");
+
+    const address = server.address();
+    if (!address || typeof address === "string") {
+      throw new Error("Expected an address info object");
+    }
+
+    const initialized = await initializeSession(address.port);
+
+    expect(initialized.response.status).toBe(200);
+    expect(logs).toContainEqual(
+      expect.objectContaining({
+        method: "POST",
+        path: "/mcp",
+        mcpMethod: "initialize",
+        phaseTimings: expect.arrayContaining([
+          expect.objectContaining({ name: "request_body_read", durationMs: expect.any(Number) }),
+          expect.objectContaining({ name: "auth_resolve", durationMs: expect.any(Number) }),
+          expect.objectContaining({ name: "transport_create", durationMs: expect.any(Number) }),
+          expect.objectContaining({ name: "mcp_server_create", durationMs: expect.any(Number) }),
+          expect.objectContaining({ name: "tool_registration", durationMs: expect.any(Number) }),
+          expect.objectContaining({ name: "transport_connect", durationMs: expect.any(Number) })
+        ])
       })
     );
   });

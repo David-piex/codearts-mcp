@@ -35,4 +35,24 @@ describe("createArtifactListRepositoriesHandler", () => {
       description: "release repository"
     });
   });
+
+  it("adds a project-scoped hint when the artifact repository list is empty", async () => {
+    const handler = createArtifactListRepositoriesHandler({
+      listRepositories: async () => ({
+        repositories: [],
+        total: 0
+      })
+    });
+
+    const result = await handler({
+      tenant_id: "tenant-1",
+      project_id: "project-empty",
+      page: 1,
+      page_size: 20
+    });
+
+    expect(result.content[0]?.text).toContain("0 artifact repositories found");
+    expect(result.content[0]?.text).toContain("If you expected artifact repositories here");
+    expect(result.content[0]?.text).toContain("project-empty");
+  });
 });

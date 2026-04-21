@@ -38,4 +38,24 @@ describe("createDeployListEnvironmentsHandler", () => {
       }
     ]);
   });
+
+  it("adds a project-scoped hint when the deploy environment list is empty", async () => {
+    const handler = createDeployListEnvironmentsHandler({
+      listEnvironments: async () => ({
+        environments: [],
+        total: 0
+      })
+    });
+
+    const result = await handler({
+      application_id: "app-1",
+      project_id: "project-empty",
+      page: 1,
+      page_size: 20
+    });
+
+    expect(result.content[0]?.text).toContain("0 deploy environments found");
+    expect(result.content[0]?.text).toContain("If you expected deploy environments here");
+    expect(result.content[0]?.text).toContain("project-empty");
+  });
 });

@@ -1,3 +1,5 @@
+import { createReadThroughCache } from "../../core/cache/read-through-cache.js";
+import { recordRequestCacheHit } from "../../server/request-context.js";
 import type { ReturnTypeCreateHttpClient } from "../types.js";
 
 export type ReqClient = {
@@ -147,16 +149,16 @@ export function createReqClient(
 ): ReqClient {
   const listCacheTtlMs = options.listCacheTtlMs ?? 15_000;
   const now = options.now ?? Date.now;
-  const listProjectsCache = new Map<
+  const listProjectsCache = createReadThroughCache<
     string,
     {
-      expiresAt: number;
-      value: {
-        projects: Array<{ project_id: string; name: string; project_num_id?: number }>;
-        total?: number;
-      };
+      projects: Array<{ project_id: string; name: string; project_num_id?: number }>;
+      total?: number;
     }
-  >();
+  >({
+    ttlMs: listCacheTtlMs,
+    now
+  });
 
   function buildListProjectsCacheKey(input: {
     page: number;
@@ -262,47 +264,42 @@ export function createReqClient(
     },
     async listProjects(input) {
       const cacheKey = buildListProjectsCacheKey(input);
-      const cached = listProjectsCache.get(cacheKey);
+      const cached = await listProjectsCache.getOrLoad(cacheKey, async () => {
+        const offset = (input.page - 1) * input.page_size;
+        const query = new URLSearchParams({
+          offset: String(offset),
+          limit: String(input.page_size)
+        });
 
-      if (cached && cached.expiresAt > now()) {
-        return cached.value;
-      }
+        if (input.keyword) {
+          query.set("search", input.keyword);
+        }
 
-      const offset = (input.page - 1) * input.page_size;
-      const query = new URLSearchParams({
-        offset: String(offset),
-        limit: String(input.page_size)
+        const response = (await _http.get(`/v4/projects?${query.toString()}`)) as {
+          projects?: Array<{
+            project_id: string;
+            name?: string;
+            project_name?: string;
+            project_num_id?: number;
+          }>;
+          total?: number;
+        };
+
+        return {
+          projects: (response.projects ?? []).map((project) => ({
+            project_id: project.project_id,
+            name: project.name ?? project.project_name ?? "",
+            project_num_id: project.project_num_id
+          })),
+          total: response.total
+        };
       });
 
-      if (input.keyword) {
-        query.set("search", input.keyword);
+      if (cached.cacheHit) {
+        recordRequestCacheHit("req_list_projects");
       }
 
-      const response = (await _http.get(`/v4/projects?${query.toString()}`)) as {
-        projects?: Array<{
-          project_id: string;
-          name?: string;
-          project_name?: string;
-          project_num_id?: number;
-        }>;
-        total?: number;
-      };
-
-      const value = {
-        projects: (response.projects ?? []).map((project) => ({
-          project_id: project.project_id,
-          name: project.name ?? project.project_name ?? "",
-          project_num_id: project.project_num_id
-        })),
-        total: response.total
-      };
-
-      listProjectsCache.set(cacheKey, {
-        expiresAt: now() + listCacheTtlMs,
-        value
-      });
-
-      return value;
+      return cached.value;
     },
     async listProjectMembers(input) {
       const offset = (input.page - 1) * input.page_size;

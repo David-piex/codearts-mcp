@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createDeployGetHostGroupHandler } from "../../../../src/products/deploy/tools/get-host-group.js";
+import { createDeployListAppHostGroupsHandler } from "../../../../src/products/deploy/tools/list-app-host-groups.js";
 import { createDeployListHostGroupEnvironmentsHandler } from "../../../../src/products/deploy/tools/list-host-group-environments.js";
 import { createDeployListHostGroupHostsHandler } from "../../../../src/products/deploy/tools/list-host-group-hosts.js";
 import { createDeployListHostGroupsHandler } from "../../../../src/products/deploy/tools/list-host-groups.js";
@@ -73,6 +74,21 @@ describe("deploy host group handlers", () => {
         proxyMode: false
       }
     ]);
+  });
+
+  it("adds a project-scoped hint when the deploy host group list is empty", async () => {
+    const handler = createDeployListHostGroupsHandler({
+      listHostGroups: async () => ({
+        host_groups: [],
+        total: 0
+      })
+    });
+
+    const result = await handler({ project_id: "project-empty", page: 1, page_size: 20 });
+
+    expect(result.content[0]?.text).toContain("0 deploy host groups found");
+    expect(result.content[0]?.text).toContain("If you expected deploy host groups here");
+    expect(result.content[0]?.text).toContain("project-empty");
   });
 
   it("maps deploy host group detail into MCP output", async () => {
@@ -173,5 +189,25 @@ describe("deploy host group handlers", () => {
         hostCount: 1
       }
     ]);
+  });
+
+  it("adds a project-scoped hint when the application host group list is empty", async () => {
+    const handler = createDeployListAppHostGroupsHandler({
+      listAppHostGroups: async () => ({
+        host_groups: [],
+        total: 0
+      })
+    });
+
+    const result = await handler({
+      application_id: "app-1",
+      project_id: "project-empty",
+      page: 1,
+      page_size: 20
+    });
+
+    expect(result.content[0]?.text).toContain("0 deploy host groups available to the application");
+    expect(result.content[0]?.text).toContain("If you expected deploy host groups available to the application here");
+    expect(result.content[0]?.text).toContain("project-empty");
   });
 });

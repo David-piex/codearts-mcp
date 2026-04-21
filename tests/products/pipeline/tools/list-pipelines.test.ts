@@ -78,4 +78,19 @@ describe("mapPipelineList", () => {
     expect(result.content[0]?.text).toContain("name: release-pipeline");
     expect(result.content[0]?.text).toContain("latestRunStatus: COMPLETED");
   });
+
+  it("adds a project-scoped hint when the pipeline list is empty", async () => {
+    const handler = createPipelineListPipelinesHandler({
+      listPipelines: async () => ({
+        records: [],
+        total: 0
+      })
+    });
+
+    const result = await handler({ project_id: "project-empty", page: 1, page_size: 20 });
+
+    expect(result.content[0]?.text).toContain("0 pipelines found");
+    expect(result.content[0]?.text).toContain("If you expected pipelines here");
+    expect(result.content[0]?.text).toContain("project-empty");
+  });
 });

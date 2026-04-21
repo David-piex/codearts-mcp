@@ -14,6 +14,7 @@ import { registerProductTool } from "./register-product-tools.js";
 import { createFixedWindowRateLimiter } from "./rate-limiter.js";
 import { registerScaffoldTool } from "./register-scaffold-tool.js";
 import { collectToolNames, createServerInfo } from "./register-tools.js";
+import { recordRequestPhase } from "./request-context.js";
 import type { SessionCredentialStore } from "./session-store.js";
 
 export * from "./session-aware-product-handlers.js";
@@ -50,11 +51,13 @@ export function createServer(options: CreateServerOptions) {
       : {}
   );
 
+  const serverCreateStartedAt = Date.now();
   const server = new McpServer(createServerInfo(options.config), {
     capabilities: {
       tools: {}
     }
   });
+  recordRequestPhase("mcp_server_create", Date.now() - serverCreateStartedAt);
 
   const stdioClients = buildStdioClients(options);
   const productWriteRateLimiter =
@@ -65,6 +68,7 @@ export function createServer(options: CreateServerOptions) {
         })
       : undefined;
 
+  const toolRegistrationStartedAt = Date.now();
   registerAuthTools({
     server,
     mode: options.mode,
@@ -88,6 +92,7 @@ export function createServer(options: CreateServerOptions) {
       server
     });
   }
+  recordRequestPhase("tool_registration", Date.now() - toolRegistrationStartedAt);
 
   return server;
 }

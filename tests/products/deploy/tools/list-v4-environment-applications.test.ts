@@ -73,4 +73,27 @@ describe("createDeployListV4EnvironmentApplicationsHandler", () => {
       }
     ]);
   });
+
+  it("adds a project-scoped hint when the v4 environment application list is empty on the first page", async () => {
+    const handler = createDeployListV4EnvironmentApplicationsHandler({
+      listV4EnvironmentApplications: async () => ({
+        project_id: "project-empty",
+        environment_id: "env-empty",
+        total: 0,
+        applications: [],
+        raw: { total: 0 }
+      })
+    });
+
+    const result = await handler({
+      project_id: "project-empty",
+      environment_id: "env-empty",
+      limit: 20,
+      offset: 0
+    });
+
+    expect(result.content[0]?.text).toContain("Loaded 0 v4 environment applications");
+    expect(result.content[0]?.text).toContain("If you expected v4 environment applications here");
+    expect(result.content[0]?.text).toContain("project-empty");
+  });
 });

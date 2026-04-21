@@ -27,4 +27,19 @@ describe("createBuildListRecordsHandler", () => {
       triggerType: "MANUAL"
     });
   });
+
+  it("adds a job-scoped hint when the build record list is empty", async () => {
+    const handler = createBuildListRecordsHandler({
+      listRecords: async () => ({
+        records: [],
+        total: 0
+      })
+    });
+
+    const result = await handler({ job_id: "job-empty", page: 1, page_size: 20 });
+
+    expect(result.content[0]?.text).toContain("0 build records found");
+    expect(result.content[0]?.text).toContain("If you expected build records here");
+    expect(result.content[0]?.text).toContain("job-empty");
+  });
 });

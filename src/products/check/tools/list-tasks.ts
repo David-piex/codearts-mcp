@@ -1,4 +1,5 @@
 import { asListResult } from "../../../contracts/tool-result.js";
+import { formatProjectScopedEmptyText } from "../../../contracts/project-scoped-empty-text.js";
 import { formatListToolText } from "../../../contracts/tool-result-text.js";
 import { toPageInfo } from "../../../core/pagination/page-info.js";
 import { checkListTasksInput } from "../schemas.js";
@@ -58,6 +59,17 @@ export function createCheckListTasksHandler(client: CheckListTasksClient) {
     const response = await client.listTasks(parsed);
     const result = mapCheckTasks(response.tasks, parsed.page, parsed.page_size, response.total);
     const text = formatListToolText(result, {
+      emptyText:
+        parsed.project_id === undefined
+          ? result.summary
+          : formatProjectScopedEmptyText({
+              summary: result.summary,
+              page: parsed.page,
+              keyword: parsed.keyword,
+              projectId: parsed.project_id,
+              resourceLabel: "check tasks",
+              serviceLabel: "Check"
+            }),
       fields: [
         { label: "id", get: (item) => (item as { id?: string }).id },
         { label: "name", get: (item) => (item as { name?: string }).name },

@@ -1,3 +1,5 @@
+import { createReadThroughCache } from "../../core/cache/read-through-cache.js";
+import { recordRequestCacheHit } from "../../server/request-context.js";
 import type { ReturnTypeCreateHttpClient } from "../types.js";
 
 export type RepoClient = {
@@ -331,16 +333,16 @@ export function createRepoClient(
 ): RepoClient {
   const listCacheTtlMs = options.listCacheTtlMs ?? 15_000;
   const now = options.now ?? Date.now;
-  const listRepositoriesCache = new Map<
+  const listRepositoriesCache = createReadThroughCache<
     string,
     {
-      expiresAt: number;
-      value: {
-        repositories: Array<{ id: number | string; name: string; ssh_url?: string; http_url?: string }>;
-        total?: number;
-      };
+      repositories: Array<{ id: number | string; name: string; ssh_url?: string; http_url?: string }>;
+      total?: number;
     }
-  >();
+  >({
+    ttlMs: listCacheTtlMs,
+    now
+  });
 
   function buildListRepositoriesCacheKey(input: {
     project_id: string;
@@ -937,44 +939,44 @@ export function createRepoClient(
     },
     async listRepositories(input) {
       const cacheKey = buildListRepositoriesCacheKey(input);
-      const cached = listRepositoriesCache.get(cacheKey);
+      const cached = await listRepositoriesCache.getOrLoad(cacheKey, async () => {
+        const offset = (input.page - 1) * input.page_size;
+        const query = new URLSearchParams({
+          offset: String(offset),
+          limit: String(input.page_size)
+        });
 
-      if (cached && cached.expiresAt > now()) {
-        return cached.value;
-      }
+        if (input.keyword) {
+          query.set("search", input.keyword);
+        }
 
-      const offset = (input.page - 1) * input.page_size;
-      const query = new URLSearchParams({
-        offset: String(offset),
-        limit: String(input.page_size)
+        const response = (await _http.get(
+          `/v4/projects/${encodeURIComponent(input.project_id)}/repositories?${query.toString()}`
+        )) as
+          | Array<{ id: number | string; name: string; ssh_url?: string; http_url?: string }>
+          | {
+              repositories?: Array<{
+                id: number | string;
+                name: string;
+                ssh_url?: string;
+                http_url?: string;
+              }>;
+              total?: number;
+            };
+
+        const repositories = Array.isArray(response) ? response : (response.repositories ?? []);
+
+        return {
+          repositories,
+          total: Array.isArray(response) ? response.length : response.total
+        };
       });
 
-      if (input.keyword) {
-        query.set("search", input.keyword);
+      if (cached.cacheHit) {
+        recordRequestCacheHit("repo_list_repositories");
       }
 
-      const response = (await _http.get(
-        `/v4/projects/${encodeURIComponent(input.project_id)}/repositories?${query.toString()}`
-      )) as
-        | Array<{ id: number | string; name: string; ssh_url?: string; http_url?: string }>
-        | {
-            repositories?: Array<{ id: number | string; name: string; ssh_url?: string; http_url?: string }>;
-            total?: number;
-          };
-
-      const repositories = Array.isArray(response) ? response : (response.repositories ?? []);
-
-      const value = {
-        repositories,
-        total: Array.isArray(response) ? response.length : response.total
-      };
-
-      listRepositoriesCache.set(cacheKey, {
-        expiresAt: now() + listCacheTtlMs,
-        value
-      });
-
-      return value;
+      return cached.value;
     },
     async listMergeRequests(input) {
       const offset = (input.page - 1) * input.page_size;

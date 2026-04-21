@@ -19,4 +19,19 @@ describe("createRepoListBranchesHandler", () => {
       protected: true
     });
   });
+
+  it("adds a repository-scoped hint when the branch list is empty", async () => {
+    const handler = createRepoListBranchesHandler({
+      listBranches: async () => ({
+        branches: [],
+        total: 0
+      })
+    });
+
+    const result = await handler({ repository_id: "repo-empty", page: 1, page_size: 20 });
+
+    expect(result.content[0]?.text).toContain("0 branches found");
+    expect(result.content[0]?.text).toContain("If you expected branches here");
+    expect(result.content[0]?.text).toContain("repo-empty");
+  });
 });

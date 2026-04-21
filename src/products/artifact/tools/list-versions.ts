@@ -1,4 +1,5 @@
 import { asListResult } from "../../../contracts/tool-result.js";
+import { formatProjectScopedEmptyText } from "../../../contracts/project-scoped-empty-text.js";
 import { toPageInfo } from "../../../core/pagination/page-info.js";
 import { artifactListVersionsInput } from "../schemas.js";
 
@@ -68,9 +69,18 @@ export function createArtifactListVersionsHandler(client: ArtifactListVersionsCl
       parsed.page_size,
       response.total
     );
+    const text = result.items?.length
+      ? result.summary
+      : formatProjectScopedEmptyText({
+          summary: result.summary,
+          page: parsed.page,
+          projectId: parsed.project_id,
+          resourceLabel: "artifact versions",
+          serviceLabel: "Artifact"
+        });
 
     return {
-      content: [{ type: "text" as const, text: result.summary }],
+      content: [{ type: "text" as const, text }],
       structuredContent: result
     };
   };

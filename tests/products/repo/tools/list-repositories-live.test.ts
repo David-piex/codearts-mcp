@@ -18,4 +18,19 @@ describe("createRepoListRepositoriesHandler", () => {
     expect(result.content[0]?.text).toContain("name: repo-a");
     expect(result.content[0]?.text).toContain("sshUrl: git@example.com:repo-a.git");
   });
+
+  it("adds a project-scoped hint when the repository list is empty", async () => {
+    const handler = createRepoListRepositoriesHandler({
+      listRepositories: async () => ({
+        repositories: [],
+        total: 0
+      })
+    });
+
+    const result = await handler({ project_id: "project-empty", page: 1, page_size: 20 });
+
+    expect(result.content[0]?.text).toContain("0 repositories found");
+    expect(result.content[0]?.text).toContain("If you expected repositories here");
+    expect(result.content[0]?.text).toContain("project-empty");
+  });
 });

@@ -61,6 +61,28 @@ describe("createRepoClient", () => {
     expect(get).toHaveBeenCalledTimes(2);
   });
 
+  it("deduplicates concurrent listRepositories calls for the same key", async () => {
+    const get = vi.fn(async () => [{ id: 1, name: "sample", ssh_url: "git@example.com:sample.git" }]);
+    const client = createRepoClient(
+      {
+        get
+      } as never,
+      {
+        listCacheTtlMs: 30_000,
+        now: () => 1_000
+      }
+    );
+
+    const [left, right] = await Promise.all([
+      client.listRepositories({ project_id: "p-1", page: 1, page_size: 20 }),
+      client.listRepositories({ project_id: "p-1", page: 1, page_size: 20 })
+    ]);
+
+    expect(left.total).toBe(1);
+    expect(right.total).toBe(1);
+    expect(get).toHaveBeenCalledTimes(1);
+  });
+
   it("uses repository path when listing branches", async () => {
     let requestedPath = "";
     const client = createRepoClient({

@@ -24,4 +24,19 @@ describe("createArtifactListLatestVersionFilesHandler", () => {
     expect(result.structuredContent.items?.[0]?.projectId).toBe("project-1");
     expect(result.structuredContent.items?.[0]?.version).toBe("1.2.0");
   });
+
+  it("adds a project-scoped hint when the latest version file list is empty", async () => {
+    const handler = createArtifactListLatestVersionFilesHandler({
+      listLatestVersionFiles: async () => ({
+        files: [],
+        total: 0
+      })
+    });
+
+    const result = await handler({ project_id: "project-empty", page: 1, page_size: 20 });
+
+    expect(result.content[0]?.text).toContain("0 latest artifact version files found");
+    expect(result.content[0]?.text).toContain("If you expected latest artifact version files here");
+    expect(result.content[0]?.text).toContain("project-empty");
+  });
 });

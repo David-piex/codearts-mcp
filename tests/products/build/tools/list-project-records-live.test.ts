@@ -33,4 +33,24 @@ describe("createBuildListProjectRecordsHandler", () => {
     expect(result.structuredContent.items?.[0]?.jobName).toBe("release-build");
     expect(result.structuredContent.page_info?.page).toBe(1);
   });
+
+  it("adds a project-scoped hint when the project build record list is empty", async () => {
+    const handler = createBuildListProjectRecordsHandler({
+      listProjectRecords: async () => ({
+        records: [],
+        total: 0
+      })
+    });
+
+    const result = await handler({
+      project_id: "project-empty",
+      build_project_id: "build-project-empty",
+      page: 1,
+      page_size: 20
+    });
+
+    expect(result.content[0]?.text).toContain("0 project build records found");
+    expect(result.content[0]?.text).toContain("If you expected project build records here");
+    expect(result.content[0]?.text).toContain("project-empty");
+  });
 });

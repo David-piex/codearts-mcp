@@ -72,14 +72,22 @@ export function createRepoListMergeRequestsHandler(client: RepoListMergeRequests
       parsed.page_size,
       response.total
     );
-    const text = formatListToolText(result, {
-      fields: [
-        { label: "id", get: (item) => (item as { id?: string }).id },
-        { label: "iid", get: (item) => (item as { iid?: number }).iid },
-        { label: "title", get: (item) => (item as { title?: string }).title },
-        { label: "state", get: (item) => (item as { state?: string }).state }
-      ]
-    });
+    const text = result.items?.length
+      ? formatListToolText(result, {
+          fields: [
+            { label: "id", get: (item) => (item as { id?: string }).id },
+            { label: "iid", get: (item) => (item as { iid?: number }).iid },
+            { label: "title", get: (item) => (item as { title?: string }).title },
+            { label: "state", get: (item) => (item as { state?: string }).state }
+          ]
+        })
+      : parsed.page > 1
+        ? result.summary
+        : [
+            result.summary,
+            "",
+            `Hint: If you expected merge requests here, confirm repository_id \`${parsed.repository_id}\` points to a repository visible to the current account and that merge request discovery is available for it.`
+          ].join("\n");
 
     return {
       content: [{ type: "text" as const, text }],

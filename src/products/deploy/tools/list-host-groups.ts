@@ -1,4 +1,5 @@
 import { asListResult } from "../../../contracts/tool-result.js";
+import { formatProjectScopedEmptyText } from "../../../contracts/project-scoped-empty-text.js";
 import { toPageInfo } from "../../../core/pagination/page-info.js";
 import { deployListHostGroupsInput } from "../schemas.js";
 
@@ -69,9 +70,19 @@ export function createDeployListHostGroupsHandler(client: DeployListHostGroupsCl
       parsed.page_size,
       response.total
     );
+    const text = result.items?.length
+      ? result.summary
+      : formatProjectScopedEmptyText({
+          summary: result.summary,
+          page: parsed.page,
+          keyword: parsed.keyword,
+          projectId: parsed.project_id,
+          resourceLabel: "deploy host groups",
+          serviceLabel: "Deploy"
+        });
 
     return {
-      content: [{ type: "text" as const, text: result.summary }],
+      content: [{ type: "text" as const, text }],
       structuredContent: result
     };
   };

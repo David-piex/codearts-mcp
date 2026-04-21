@@ -1,4 +1,5 @@
 import { asListResult } from "../../../contracts/tool-result.js";
+import { formatProjectScopedEmptyText } from "../../../contracts/project-scoped-empty-text.js";
 import { deployListV4ApplicationsInput } from "../schemas.js";
 
 type DeployListV4ApplicationsClient = {
@@ -38,9 +39,20 @@ export function createDeployListV4ApplicationsHandler(client: DeployListV4Applic
         total: response.total
       }
     );
+    const text = result.items?.length
+      ? result.summary
+      : parsed.offset > 0 || (parsed.keyword ?? "").trim() !== ""
+        ? result.summary
+        : formatProjectScopedEmptyText({
+            summary: result.summary,
+            page: 1,
+            projectId: parsed.project_id,
+            resourceLabel: "deploy v4 applications",
+            serviceLabel: "Deploy"
+          });
 
     return {
-      content: [{ type: "text" as const, text: result.summary }],
+      content: [{ type: "text" as const, text }],
       structuredContent: {
         ...result,
         total: response.total,

@@ -1,4 +1,5 @@
 import { asListResult } from "../../../contracts/tool-result.js";
+import { formatProjectScopedEmptyText } from "../../../contracts/project-scoped-empty-text.js";
 import { formatListToolText } from "../../../contracts/tool-result-text.js";
 import { toPageInfo } from "../../../core/pagination/page-info.js";
 import { reqListIterationsInput } from "../schemas.js";
@@ -55,14 +56,23 @@ export function createReqListIterationsHandler(client: ReqListIterationsClient) 
     const parsed = reqListIterationsInput.parse(input);
     const response = await client.listIterations(parsed);
     const result = mapReqIterations(response.iterations, parsed.page, parsed.page_size, response.total);
-    const text = formatListToolText(result, {
-      fields: [
-        { label: "id", get: (item) => (item as { id?: string }).id },
-        { label: "name", get: (item) => (item as { name?: string }).name },
-        { label: "status", get: (item) => (item as { status?: string }).status },
-        { label: "beginTime", get: (item) => (item as { beginTime?: string }).beginTime }
-      ]
-    });
+    const text = result.items?.length
+      ? formatListToolText(result, {
+          fields: [
+            { label: "id", get: (item) => (item as { id?: string }).id },
+            { label: "name", get: (item) => (item as { name?: string }).name },
+            { label: "status", get: (item) => (item as { status?: string }).status },
+            { label: "beginTime", get: (item) => (item as { beginTime?: string }).beginTime }
+          ]
+        })
+      : formatProjectScopedEmptyText({
+          summary: result.summary,
+          page: parsed.page,
+          keyword: parsed.keyword,
+          projectId: parsed.project_id,
+          resourceLabel: "iterations",
+          serviceLabel: "Req / ProjectMan"
+        });
 
     return {
       content: [{ type: "text" as const, text }],

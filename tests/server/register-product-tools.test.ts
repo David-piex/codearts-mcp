@@ -1,5 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
-import { registerProductTool } from "../../src/server/register-product-tools.js";
+import {
+  registerProductTool,
+  resolveProductToolFamily
+} from "../../src/server/register-product-tools.js";
+import { collectToolNames } from "../../src/server/register-tools.js";
 import { createSessionCredentialStore } from "../../src/server/session-store.js";
 
 describe("registerProductTool", () => {
@@ -36,5 +40,15 @@ describe("registerProductTool", () => {
 
     expect(handled).toBe(false);
     expect(registerTool).not.toHaveBeenCalled();
+  });
+
+  it("resolves every published product tool to a direct module family", () => {
+    expect(resolveProductToolFamily("pipeline_list_pipelines")).toBe("pipeline");
+    expect(resolveProductToolFamily("req_list_projects")).toBe("req");
+    expect(resolveProductToolFamily("totally_unknown_tool")).toBeUndefined();
+
+    expect(
+      collectToolNames().every((toolName) => resolveProductToolFamily(toolName) !== undefined)
+    ).toBe(true);
   });
 });

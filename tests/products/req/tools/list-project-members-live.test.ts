@@ -40,4 +40,19 @@ describe("createReqListProjectMembersHandler", () => {
       }
     ]);
   });
+
+  it("adds a project-scoped hint when the project member list is empty", async () => {
+    const handler = createReqListProjectMembersHandler({
+      listProjectMembers: async () => ({
+        members: [],
+        total: 0
+      })
+    });
+
+    const result = await handler({ project_id: "project-empty", page: 1, page_size: 20 });
+
+    expect(result.content[0]?.text).toContain("0 project members found");
+    expect(result.content[0]?.text).toContain("If you expected project members here");
+    expect(result.content[0]?.text).toContain("project-empty");
+  });
 });

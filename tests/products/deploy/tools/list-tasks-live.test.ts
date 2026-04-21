@@ -133,4 +133,19 @@ describe("createDeployListTasksHandler", () => {
       deployType: "docker"
     });
   });
+
+  it("adds a project-scoped hint when the deploy task list is empty", async () => {
+    const handler = createDeployListTasksHandler({
+      listTasks: async () => ({
+        tasks: [],
+        total: 0
+      })
+    });
+
+    const result = await handler({ project_id: "project-empty", page: 1, page_size: 20 });
+
+    expect(result.content[0]?.text).toContain("0 deploy tasks found");
+    expect(result.content[0]?.text).toContain("If you expected deploy tasks here");
+    expect(result.content[0]?.text).toContain("project-empty");
+  });
 });

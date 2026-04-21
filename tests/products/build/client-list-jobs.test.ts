@@ -182,4 +182,44 @@ describe("createBuildClient listJobs", () => {
     expect(second.jobs[0]?.job_id).toBe("job-2");
     expect(get).toHaveBeenCalledTimes(2);
   });
+
+  it("deduplicates concurrent listJobs calls for the same key", async () => {
+    const get = vi.fn(async () => ({
+      result: {
+        total: 1,
+        job_list: [
+          {
+            id: "job-1",
+            name: "gateway-build"
+          }
+        ]
+      }
+    }));
+    const client = createBuildClient(
+      {
+        get
+      } as never,
+      {
+        listCacheTtlMs: 30_000,
+        now: () => 1_000
+      }
+    );
+
+    const [left, right] = await Promise.all([
+      client.listJobs({
+        project_id: "project-1",
+        page: 1,
+        page_size: 20
+      }),
+      client.listJobs({
+        project_id: "project-1",
+        page: 1,
+        page_size: 20
+      })
+    ]);
+
+    expect(left.total).toBe(1);
+    expect(right.total).toBe(1);
+    expect(get).toHaveBeenCalledTimes(1);
+  });
 });

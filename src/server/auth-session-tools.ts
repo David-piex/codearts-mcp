@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { z } from "zod";
 import { AppError } from "../core/errors/app-error.js";
+import { recordRequestPhase } from "./request-context.js";
 import { createAuthToken } from "./auth-token.js";
 import { encryptSecretValue } from "./auth-crypto.js";
 import type { PersistedAuthRecord } from "./auth-repository.js";
@@ -65,6 +66,16 @@ function enforceRateLimit(
   rateLimiter?.check(`${actionName}:${sessionId}`, actionName);
 }
 
+function measurePhase<T>(name: string, work: () => T): T {
+  const startedAt = Date.now();
+
+  try {
+    return work();
+  } finally {
+    recordRequestPhase(name, Date.now() - startedAt);
+  }
+}
+
 export function createConfigureSessionHandlerWithPersistence(options: {
   sessionStore: SessionCredentialStore;
   repository?: AuthRepository;
@@ -80,7 +91,9 @@ export function createConfigureSessionHandlerWithPersistence(options: {
       authInfo?: unknown;
     }
   ) => {
-    const parsed = configureSessionInputSchema.parse(input);
+    const parsed = measurePhase("auth_input_parse", () =>
+      configureSessionInputSchema.parse(input)
+    );
     const sessionId = requireSessionId(extra.sessionId);
     enforceRateLimit(options.rateLimiter, sessionId, "auth_configure_session");
     const repository = options.repository;
@@ -93,37 +106,52 @@ export function createConfigureSessionHandlerWithPersistence(options: {
       );
     }
 
-    const endpoints = mergeSessionEndpointOverrides(resolveRegionDefaults(parsed.region), {
-      req_base_url: parsed.req_base_url,
-      repo_base_url: parsed.repo_base_url,
-      pipeline_base_url: parsed.pipeline_base_url,
-      check_base_url: parsed.check_base_url,
-      testplan_base_url: parsed.testplan_base_url,
-      deploy_base_url: parsed.deploy_base_url,
-      build_base_url: parsed.build_base_url,
-      artifact_base_url: parsed.artifact_base_url
-    });
+    const endpoints = measurePhase("auth_endpoint_resolve", () =>
+      mergeSessionEndpointOverrides(resolveRegionDefaults(parsed.region), {
+        req_base_url: parsed.req_base_url,
+        repo_base_url: parsed.repo_base_url,
+        pipeline_base_url: parsed.pipeline_base_url,
+        check_base_url: parsed.check_base_url,
+        testplan_base_url: parsed.testplan_base_url,
+        deploy_base_url: parsed.deploy_base_url,
+        build_base_url: parsed.build_base_url,
+        artifact_base_url: parsed.artifact_base_url
+      })
+    );
     const now = new Date().toISOString();
-    const token = (options.createToken ?? createAuthToken)();
-    const authId = randomUUID();
+    const token = measurePhase("auth_token_create", () =>
+      (options.createToken ?? createAuthToken)()
+    );
+    const authId = measurePhase("auth_auth_id_create", () => randomUUID());
 
-    repository.upsert({
-      auth_id: authId,
-      token_hash: token.hash,
-      encrypted_access_key: encryptSecretValue(parsed.access_key, masterKey),
-      encrypted_secret_key: encryptSecretValue(parsed.secret_key, masterKey),
-      region: parsed.region,
-      ...endpoints,
-      created_at: now,
-      updated_at: now,
-      last_used_at: now,
-      expires_at: new Date(
-        Date.now() + (options.authTokenTtlSeconds ?? 60 * 60 * 24 * 30) * 1000
-      ).toISOString()
-    });
+    const encryptedAccessKey = measurePhase("auth_credential_encrypt", () =>
+      encryptSecretValue(parsed.access_key, masterKey)
+    );
+    const encryptedSecretKey = measurePhase("auth_secret_encrypt", () =>
+      encryptSecretValue(parsed.secret_key, masterKey)
+    );
 
-    options.sessionStore.bind(sessionId, authId);
-    readHttpAuthRequestInfo(extra)?.onTokenIssued?.(token.raw);
+    measurePhase("auth_repository_upsert", () =>
+      repository.upsert({
+        auth_id: authId,
+        token_hash: token.hash,
+        encrypted_access_key: encryptedAccessKey,
+        encrypted_secret_key: encryptedSecretKey,
+        region: parsed.region,
+        ...endpoints,
+        created_at: now,
+        updated_at: now,
+        last_used_at: now,
+        expires_at: new Date(
+          Date.now() + (options.authTokenTtlSeconds ?? 60 * 60 * 24 * 30) * 1000
+        ).toISOString()
+      })
+    );
+
+    measurePhase("auth_session_bind", () => options.sessionStore.bind(sessionId, authId));
+    measurePhase("auth_token_issue_callback", () =>
+      readHttpAuthRequestInfo(extra)?.onTokenIssued?.(token.raw)
+    );
 
     return {
       content: [
