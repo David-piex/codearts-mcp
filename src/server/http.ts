@@ -1,6 +1,11 @@
 import { createServer as createNodeServer } from "node:http";
 import { loadHttpAuthConfig, loadServerMetadataConfig } from "../core/config/env.js";
-import { createHttpApp, type HttpRequestLogEntry } from "./http-app.js";
+import {
+  createHttpApp,
+  type HttpApp,
+  type HttpRequestLogEntry
+} from "./http-app.js";
+import { createStructuredLogger, type StructuredLogger } from "./logger.js";
 
 const HTTP_SERVER_KEEP_ALIVE_INITIAL_DELAY_MS = 1_000;
 const HTTP_SERVER_KEEP_ALIVE_TIMEOUT_MS = 60_000;
@@ -12,6 +17,7 @@ type StartHttpServerDependencies = {
   loadServerMetadataConfig?: typeof loadServerMetadataConfig;
   loadHttpAuthConfig?: typeof loadHttpAuthConfig;
   requestLogger?: (entry: HttpRequestLogEntry) => void;
+  logger?: StructuredLogger;
 };
 
 export async function startHttpServer(
@@ -21,6 +27,11 @@ export async function startHttpServer(
   const loadMetadata = dependencies.loadServerMetadataConfig ?? loadServerMetadataConfig;
   const metadata = loadMetadata();
   const resolvedPort = port ?? metadata.httpPort;
+  const logger =
+    dependencies.logger ??
+    createStructuredLogger({
+      component: "http_server"
+    });
   const app = (dependencies.createHttpApp ?? createHttpApp)(
     metadata,
     (dependencies.loadHttpAuthConfig ?? loadHttpAuthConfig)(),
@@ -28,10 +39,29 @@ export async function startHttpServer(
       requestLogger:
         dependencies.requestLogger ??
         ((entry) => {
-          console.info(JSON.stringify(entry));
+          logger.info({
+            event: "http_request_completed",
+            message: "HTTP request completed",
+            ...entry
+          });
         })
     }
   );
+
+  const prewarm = (app as HttpApp).prewarm;
+
+  if (typeof prewarm === "function") {
+    const startedAt = Date.now();
+    const result = await prewarm();
+
+    logger.info({
+      event: "http_server_prewarm_completed",
+      message: "HTTP server startup prewarm completed",
+      durationMs: Date.now() - startedAt,
+      warmedComponents: result?.warmedComponents ?? []
+    });
+  }
+
   const server = (dependencies.createNodeServer ?? createNodeServer)(
     {
       keepAlive: true,
@@ -48,6 +78,12 @@ export async function startHttpServer(
     server.once("error", reject);
     server.listen(resolvedPort, "0.0.0.0", () => {
       server.off("error", reject);
+      logger.info({
+        event: "http_server_listening",
+        message: "HTTP server listening",
+        port: resolvedPort,
+        host: "0.0.0.0"
+      });
       resolve();
     });
   });

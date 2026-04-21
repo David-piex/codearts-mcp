@@ -1,4 +1,5 @@
 import { createReadThroughCache } from "../../core/cache/read-through-cache.js";
+import { DEFAULT_READ_CACHE_TTLS } from "../../core/cache/read-cache-ttl.js";
 import type { ReturnTypeCreateHttpClient } from "../types.js";
 import { normalizeProviderError } from "../../core/errors/app-error.js";
 import { recordRequestCacheHit } from "../../server/request-context.js";
@@ -683,7 +684,8 @@ export function createBuildClient(
   _http: ReturnTypeCreateHttpClient,
   options: BuildClientOptions = {}
 ): BuildClient {
-  const listCacheTtlMs = options.listCacheTtlMs ?? 15_000;
+  const listCacheTtlMs =
+    options.listCacheTtlMs ?? DEFAULT_READ_CACHE_TTLS.buildListJobsMs;
   const now = options.now ?? Date.now;
   const listJobsCache = createReadThroughCache<
     string,

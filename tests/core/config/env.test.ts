@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { loadEnvConfig, loadHttpAuthConfig } from "../../../src/core/config/env.js";
+import {
+  loadEnvConfig,
+  loadHttpAuthConfig,
+  loadServerMetadataConfig
+} from "../../../src/core/config/env.js";
 
 describe("loadEnvConfig", () => {
   it("derives standard CodeArts endpoints from region when product urls are omitted", () => {
@@ -22,6 +26,12 @@ describe("loadEnvConfig", () => {
     expect(config.deployBaseUrl).toBe("https://codearts-deploy.cn-north-4.myhuaweicloud.com");
     expect(config.buildBaseUrl).toBe("https://cloudbuild-ext.cn-north-4.myhuaweicloud.com");
     expect(config.artifactBaseUrl).toBe("https://artifact.cn-north-4.myhuaweicloud.cn");
+    expect(config.readCacheTtls).toEqual({
+      reqListProjectsMs: 60_000,
+      repoListRepositoriesMs: 60_000,
+      pipelineListPipelinesMs: 5_000,
+      buildListJobsMs: 5_000
+    });
   });
 
   it("allows product-specific base urls to override region defaults", () => {
@@ -45,6 +55,53 @@ describe("loadEnvConfig", () => {
     expect(config.artifactBaseUrl).toBe("https://artifact.example.com");
     expect(config.reqBaseUrl).toBe("https://projectman-ext.cn-north-4.myhuaweicloud.com");
     expect(config.repoBaseUrl).toBe("https://codehub-ext.cn-north-4.myhuaweicloud.com");
+  });
+
+  it("allows per-tool read cache TTL overrides", () => {
+    const config = loadEnvConfig({
+      HUAWEICLOUD_REGION: "cn-north-4",
+      HUAWEICLOUD_AK: "ak",
+      HUAWEICLOUD_SK: "sk",
+      MCP_SERVER_NAME: "codearts-mcp",
+      MCP_SERVER_VERSION: "0.1.0",
+      MCP_REQ_LIST_PROJECTS_CACHE_TTL_MS: "120000",
+      MCP_REPO_LIST_REPOSITORIES_CACHE_TTL_MS: "90000",
+      MCP_PIPELINE_LIST_PIPELINES_CACHE_TTL_MS: "3000",
+      MCP_BUILD_LIST_JOBS_CACHE_TTL_MS: "2000"
+    });
+
+    expect(config.readCacheTtls).toEqual({
+      reqListProjectsMs: 120_000,
+      repoListRepositoriesMs: 90_000,
+      pipelineListPipelinesMs: 3_000,
+      buildListJobsMs: 2_000
+    });
+  });
+});
+
+describe("loadServerMetadataConfig", () => {
+  it("loads tiered read-cache TTLs for HTTP mode", () => {
+    expect(
+      loadServerMetadataConfig({
+        MCP_SERVER_NAME: "codearts-mcp",
+        MCP_SERVER_VERSION: "0.1.0",
+        MCP_HTTP_PORT: "3100",
+        MCP_REQ_LIST_PROJECTS_CACHE_TTL_MS: "45000",
+        MCP_REPO_LIST_REPOSITORIES_CACHE_TTL_MS: "47000",
+        MCP_PIPELINE_LIST_PIPELINES_CACHE_TTL_MS: "4000",
+        MCP_BUILD_LIST_JOBS_CACHE_TTL_MS: "3500"
+      })
+    ).toEqual({
+      serverName: "codearts-mcp",
+      serverVersion: "0.1.0",
+      httpPort: 3100,
+      readCacheTtls: {
+        reqListProjectsMs: 45_000,
+        repoListRepositoriesMs: 47_000,
+        pipelineListPipelinesMs: 4_000,
+        buildListJobsMs: 3_500
+      }
+    });
   });
 });
 

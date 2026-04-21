@@ -222,4 +222,44 @@ describe("createBuildClient listJobs", () => {
     expect(right.total).toBe(1);
     expect(get).toHaveBeenCalledTimes(1);
   });
+
+  it("refreshes the default build job list cache before the legacy 15 second window", async () => {
+    let now = 1_000;
+    const get = vi
+      .fn()
+      .mockResolvedValueOnce({
+        result: {
+          total: 1,
+          job_list: [{ id: "job-1", name: "gateway-build-1" }]
+        }
+      })
+      .mockResolvedValueOnce({
+        result: {
+          total: 1,
+          job_list: [{ id: "job-2", name: "gateway-build-2" }]
+        }
+      });
+    const client = createBuildClient(
+      {
+        get
+      } as never,
+      {
+        now: () => now
+      }
+    );
+
+    await client.listJobs({
+      project_id: "project-1",
+      page: 1,
+      page_size: 20
+    });
+    now += 6_000;
+    await client.listJobs({
+      project_id: "project-1",
+      page: 1,
+      page_size: 20
+    });
+
+    expect(get).toHaveBeenCalledTimes(2);
+  });
 });

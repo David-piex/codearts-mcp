@@ -155,6 +155,66 @@ describe("auth session runtime", () => {
     ]);
   });
 
+  it("passes tiered read-cache TTLs into downstream product client builders", () => {
+    const capturedOptions: Record<string, unknown> = {};
+
+    const clients = buildClientsFromCredentialConfig(
+      {
+        accessKey: "ak-1",
+        secretKey: "sk-1",
+        reqBaseUrl: "https://projectman-ext.cn-north-4.myhuaweicloud.com",
+        repoBaseUrl: "https://codehub-ext.cn-north-4.myhuaweicloud.com",
+        pipelineBaseUrl: "https://cloudpipeline-ext.cn-north-4.myhuaweicloud.com",
+        checkBaseUrl: "https://codecheck-ext.cn-north-4.myhuaweicloud.com",
+        testPlanBaseUrl: "https://cloudtest-ext.cn-north-4.myhuaweicloud.com",
+        deployBaseUrl: "https://codearts-deploy.cn-north-4.myhuaweicloud.com",
+        buildBaseUrl: "https://cloudbuild-ext.cn-north-4.myhuaweicloud.com",
+        artifactBaseUrl: "https://artifact.cn-north-4.myhuaweicloud.cn",
+        readCacheTtls: {
+          reqListProjectsMs: 60_000,
+          repoListRepositoriesMs: 55_000,
+          pipelineListPipelinesMs: 5_000,
+          buildListJobsMs: 4_000
+        }
+      },
+      {
+        createHttpClient: (options: { baseUrl: string }) => options.baseUrl,
+        createArtifactClient: () => ({ kind: "artifact" }),
+        createBuildClient: (_baseUrl: string, options?: unknown) => {
+          capturedOptions.build = options;
+          return { kind: "build" };
+        },
+        createCheckClient: () => ({ kind: "check" }),
+        createDeployClient: () => ({ kind: "deploy" }),
+        createReqClient: (_baseUrl: string, options?: unknown) => {
+          capturedOptions.req = options;
+          return { kind: "req" };
+        },
+        createRepoClient: (_baseUrl: string, options?: unknown) => {
+          capturedOptions.repo = options;
+          return { kind: "repo" };
+        },
+        createPipelineClient: (_baseUrl: string, options?: unknown) => {
+          capturedOptions.pipeline = options;
+          return { kind: "pipeline" };
+        },
+        createTestPlanClient: () => ({ kind: "testplan" })
+      } as never
+    );
+
+    void clients.reqClient;
+    void clients.repoClient;
+    void clients.pipelineClient;
+    void clients.buildClient;
+
+    expect(capturedOptions).toEqual({
+      req: { listCacheTtlMs: 60_000 },
+      repo: { listCacheTtlMs: 55_000 },
+      pipeline: { listCacheTtlMs: 5_000 },
+      build: { listCacheTtlMs: 4_000 }
+    });
+  });
+
   it("reuses cached clients without re-reading the repository inside the revalidation window", () => {
     const store = createSessionCredentialStore();
     store.bind("session-a", "auth-1");

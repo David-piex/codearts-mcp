@@ -1,5 +1,5 @@
 import { once } from "node:events";
-import { mkdtempSync } from "node:fs";
+import { mkdtempSync, writeFileSync } from "node:fs";
 import { createServer } from "node:http";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -142,6 +142,81 @@ describe("http app", () => {
 
     expect(response.status).toBe(200);
     expect(body.status).toBe("ok");
+  });
+
+  it("serves the readiness endpoint when auth persistence is writable", async () => {
+    const authConfig = createTestAuthConfig();
+    const app = createHttpApp(
+      {
+        serverName: "codearts-mcp",
+        serverVersion: "0.1.0",
+        httpPort: 0
+      },
+      authConfig
+    );
+    const server = createServer(app);
+    servers.push(server);
+    server.listen(0, "127.0.0.1");
+    await once(server, "listening");
+
+    const address = server.address();
+    if (!address || typeof address === "string") {
+      throw new Error("Expected an address info object");
+    }
+
+    const response = await fetch(`http://127.0.0.1:${address.port}/health/ready`);
+    const body = (await response.json()) as {
+      status: string;
+      checks: {
+        auth_persistence?: string;
+      };
+    };
+
+    expect(response.status).toBe(200);
+    expect(body.status).toBe("ready");
+    expect(body.checks.auth_persistence).toBe("ok");
+  });
+
+  it("returns not ready when the auth persistence parent is invalid", async () => {
+    const tempDir = mkdtempSync(join(tmpdir(), "codearts-mcp-ready-"));
+    const parentFile = join(tempDir, "not-a-directory");
+    writeFileSync(parentFile, "placeholder");
+
+    const app = createHttpApp(
+      {
+        serverName: "codearts-mcp",
+        serverVersion: "0.1.0",
+        httpPort: 0
+      },
+      {
+        masterKey: "0123456789abcdef0123456789abcdef",
+        authDataPath: join(parentFile, "auth-store.json"),
+        authCookieName: "codearts_mcp_auth",
+        authCookieSecure: false,
+        authTokenTtlSeconds: 60
+      }
+    );
+    const server = createServer(app);
+    servers.push(server);
+    server.listen(0, "127.0.0.1");
+    await once(server, "listening");
+
+    const address = server.address();
+    if (!address || typeof address === "string") {
+      throw new Error("Expected an address info object");
+    }
+
+    const response = await fetch(`http://127.0.0.1:${address.port}/health/ready`);
+    const body = (await response.json()) as {
+      status: string;
+      checks: {
+        auth_persistence?: string;
+      };
+    };
+
+    expect(response.status).toBe(503);
+    expect(body.status).toBe("not_ready");
+    expect(body.checks.auth_persistence).toBe("error");
   });
 
   it("returns ok on the root path for deploy health probes", async () => {

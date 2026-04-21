@@ -24,6 +24,7 @@ export function buildStdioClients(options:
     testPlanBaseUrl: options.config.testPlanBaseUrl,
     deployBaseUrl: options.config.deployBaseUrl,
     buildBaseUrl: options.config.buildBaseUrl,
-    artifactBaseUrl: options.config.artifactBaseUrl
+    artifactBaseUrl: options.config.artifactBaseUrl,
+    readCacheTtls: options.config.readCacheTtls
   });
 }

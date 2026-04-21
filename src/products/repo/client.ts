@@ -1,4 +1,5 @@
 import { createReadThroughCache } from "../../core/cache/read-through-cache.js";
+import { DEFAULT_READ_CACHE_TTLS } from "../../core/cache/read-cache-ttl.js";
 import { recordRequestCacheHit } from "../../server/request-context.js";
 import type { ReturnTypeCreateHttpClient } from "../types.js";
 
@@ -331,7 +332,8 @@ export function createRepoClient(
   _http: ReturnTypeCreateHttpClient,
   options: RepoClientOptions = {}
 ): RepoClient {
-  const listCacheTtlMs = options.listCacheTtlMs ?? 15_000;
+  const listCacheTtlMs =
+    options.listCacheTtlMs ?? DEFAULT_READ_CACHE_TTLS.repoListRepositoriesMs;
   const now = options.now ?? Date.now;
   const listRepositoriesCache = createReadThroughCache<
     string,

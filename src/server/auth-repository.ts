@@ -82,8 +82,8 @@ function signaturesMatch(left: FileSignature | undefined, right: FileSignature |
   return left?.mtimeMs === right?.mtimeMs && left?.size === right?.size;
 }
 
-function isExpired(record: PersistedAuthRecord) {
-  return record.expires_at !== undefined && Date.parse(record.expires_at) <= Date.now();
+function isExpired(record: PersistedAuthRecord, currentTime = Date.now()) {
+  return record.expires_at !== undefined && Date.parse(record.expires_at) <= currentTime;
 }
 
 function buildIndexes(data: AuthRepositoryFile): AuthRepositoryIndexes {
@@ -151,6 +151,14 @@ export function createFileAuthRepository(
   }
 
   return {
+    prewarm() {
+      const data = readCachedFile();
+
+      return {
+        recordCount: data.records.length
+      };
+    },
+
     upsert(record: PersistedAuthRecord) {
       const data = readCachedFile();
       const records = data.records.filter((item) => item.auth_id !== record.auth_id);
@@ -169,7 +177,7 @@ export function createFileAuthRepository(
     findActiveByAuthId(authId: string) {
       const record = readCachedIndexes().byAuthId.get(authId);
 
-      if (!record || record.revoked_at !== undefined || isExpired(record)) {
+      if (!record || record.revoked_at !== undefined || isExpired(record, now())) {
         return undefined;
       }
 
@@ -184,6 +192,40 @@ export function createFileAuthRepository(
         records: data.records.map((item) =>
           item.auth_id === authId ? { ...item, revoked_at: revokedAt } : item
         )
+      });
+    },
+
+    touchByTokenHash(
+      tokenHash: string,
+      timestamps: {
+        lastUsedAt: string;
+        updatedAt: string;
+        expiresAt: string;
+      }
+    ) {
+      const data = readCachedFile();
+      let touched = false;
+      const records = data.records.map((item) => {
+        if (item.token_hash !== tokenHash) {
+          return item;
+        }
+
+        touched = true;
+        return {
+          ...item,
+          last_used_at: timestamps.lastUsedAt,
+          updated_at: timestamps.updatedAt,
+          expires_at: timestamps.expiresAt
+        };
+      });
+
+      if (!touched) {
+        return;
+      }
+
+      writeCachedFile({
+        version: data.version,
+        records
       });
     }
   };

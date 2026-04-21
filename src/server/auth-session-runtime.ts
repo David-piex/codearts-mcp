@@ -1,4 +1,5 @@
 import { createHuaweiAuthHeaders } from "../core/auth/huawei-auth.js";
+import type { ReadCacheTtls } from "../core/cache/read-cache-ttl.js";
 import { AppError } from "../core/errors/app-error.js";
 import { createHttpClient } from "../core/http/client.js";
 import { createArtifactClient } from "../products/artifact/client.js";
@@ -43,6 +44,7 @@ export type HttpAuthRuntimeConfig = {
   repository?: AuthRepository;
   masterKey?: string;
   clientCacheTtlMs?: number;
+  readCacheTtls?: ReadCacheTtls;
   now?: () => number;
 };
 
@@ -95,6 +97,7 @@ export function buildClientsFromCredentialConfig(config: {
   deployBaseUrl: string;
   buildBaseUrl: string;
   artifactBaseUrl: string;
+  readCacheTtls?: ReadCacheTtls;
 }, dependencies: ClientBuilderDependencies = defaultClientBuilderDependencies): ProductClients {
   const authHeaders = createHuaweiAuthHeaders(config.accessKey, config.secretKey);
   const cachedClients: Partial<ProductClients> = {};
@@ -125,7 +128,10 @@ export function buildClientsFromCredentialConfig(config: {
     get buildClient() {
       return getOrCreateClient("buildClient", () =>
         dependencies.createBuildClient(
-          dependencies.createHttpClient({ baseUrl: config.buildBaseUrl, authHeaders })
+          dependencies.createHttpClient({ baseUrl: config.buildBaseUrl, authHeaders }),
+          {
+            listCacheTtlMs: config.readCacheTtls?.buildListJobsMs
+          }
         )
       );
     },
@@ -146,21 +152,30 @@ export function buildClientsFromCredentialConfig(config: {
     get reqClient() {
       return getOrCreateClient("reqClient", () =>
         dependencies.createReqClient(
-          dependencies.createHttpClient({ baseUrl: config.reqBaseUrl, authHeaders })
+          dependencies.createHttpClient({ baseUrl: config.reqBaseUrl, authHeaders }),
+          {
+            listCacheTtlMs: config.readCacheTtls?.reqListProjectsMs
+          }
         )
       );
     },
     get repoClient() {
       return getOrCreateClient("repoClient", () =>
         dependencies.createRepoClient(
-          dependencies.createHttpClient({ baseUrl: config.repoBaseUrl, authHeaders })
+          dependencies.createHttpClient({ baseUrl: config.repoBaseUrl, authHeaders }),
+          {
+            listCacheTtlMs: config.readCacheTtls?.repoListRepositoriesMs
+          }
         )
       );
     },
     get pipelineClient() {
       return getOrCreateClient("pipelineClient", () =>
         dependencies.createPipelineClient(
-          dependencies.createHttpClient({ baseUrl: config.pipelineBaseUrl, authHeaders })
+          dependencies.createHttpClient({ baseUrl: config.pipelineBaseUrl, authHeaders }),
+          {
+            listCacheTtlMs: config.readCacheTtls?.pipelineListPipelinesMs
+          }
         )
       );
     },
@@ -262,7 +277,8 @@ export function buildClientsForSession(store: SessionCredentialStore, extra: Ses
     testPlanBaseUrl: sessionConfig.testplan_base_url,
     deployBaseUrl: sessionConfig.deploy_base_url,
     buildBaseUrl: sessionConfig.build_base_url,
-    artifactBaseUrl: sessionConfig.artifact_base_url
+    artifactBaseUrl: sessionConfig.artifact_base_url,
+    readCacheTtls: httpAuthRuntimeConfig.readCacheTtls
   });
 
   cachedClientsByAuthId.set(authId, {

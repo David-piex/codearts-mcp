@@ -17,6 +17,14 @@ export type AuthRepository = {
   findByTokenHash: (tokenHash: string) => PersistedAuthRecord | undefined;
   findActiveByAuthId: (authId: string) => PersistedAuthRecord | undefined;
   revoke: (authId: string, revokedAt: string) => void;
+  touchByTokenHash?: (
+    tokenHash: string,
+    timestamps: {
+      lastUsedAt: string;
+      updatedAt: string;
+      expiresAt: string;
+    }
+  ) => void | Promise<void>;
 };
 
 export type HttpAuthRequestInfo = {

@@ -237,6 +237,42 @@ describe("createPipelineClient", () => {
     expect(post).toHaveBeenCalledTimes(1);
   });
 
+  it("refreshes the default pipeline list cache before the legacy 15 second window", async () => {
+    let now = 1_000;
+    const post = vi
+      .fn()
+      .mockResolvedValueOnce({
+        records: [{ pipeline_id: "pipe-1", name: "deploy-main" }],
+        total: 1
+      })
+      .mockResolvedValueOnce({
+        records: [{ pipeline_id: "pipe-2", name: "deploy-next" }],
+        total: 1
+      });
+    const client = createPipelineClient(
+      {
+        post
+      } as never,
+      {
+        now: () => now
+      }
+    );
+
+    await client.listPipelines({
+      project_id: "requested-project",
+      page: 1,
+      page_size: 20
+    });
+    now += 6_000;
+    await client.listPipelines({
+      project_id: "requested-project",
+      page: 1,
+      page_size: 20
+    });
+
+    expect(post).toHaveBeenCalledTimes(2);
+  });
+
   it("maps pipeline artifacts responses", async () => {
     const client = createPipelineClient({
       get: async () => ({

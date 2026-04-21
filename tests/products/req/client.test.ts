@@ -95,6 +95,28 @@ describe("createReqClient", () => {
     expect(get).toHaveBeenCalledTimes(1);
   });
 
+  it("keeps the default project list cache alive beyond the legacy 15 second window", async () => {
+    let now = 1_000;
+    const get = vi.fn(async () => ({
+      projects: [{ project_id: "p-1", project_name: "Demo", project_num_id: 7 }],
+      total: 1
+    }));
+    const client = createReqClient(
+      {
+        get
+      } as never,
+      {
+        now: () => now
+      }
+    );
+
+    await client.listProjects({ page: 1, page_size: 20 });
+    now += 20_000;
+    await client.listProjects({ page: 1, page_size: 20 });
+
+    expect(get).toHaveBeenCalledTimes(1);
+  });
+
   it("reads nested project payload when getting a project", async () => {
     const client = createReqClient({
       get: async () => ({

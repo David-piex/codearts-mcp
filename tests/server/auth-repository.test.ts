@@ -178,4 +178,57 @@ describe("file auth repository", () => {
 
     expect(fs.statSync).not.toHaveBeenCalled();
   });
+
+  it("refreshes timestamps in place when a token record is touched", async () => {
+    const path = join(mkdtempSync(join(tmpdir(), "codearts-mcp-")), "auth-store.json");
+    const repo = createFileAuthRepository(path);
+
+    await repo.upsert(
+      createRecord({
+        auth_id: "auth-touch",
+        token_hash: "hash-touch",
+        updated_at: "2026-04-19T09:00:00.000Z",
+        last_used_at: "2026-04-19T09:00:00.000Z",
+        expires_at: "2026-04-20T09:00:00.000Z"
+      })
+    );
+
+    await repo.touchByTokenHash("hash-touch", {
+      lastUsedAt: "2026-04-21T09:00:00.000Z",
+      updatedAt: "2026-04-21T09:00:00.000Z",
+      expiresAt: "2026-05-21T09:00:00.000Z"
+    });
+
+    expect(await repo.findByTokenHash("hash-touch")).toMatchObject({
+      auth_id: "auth-touch",
+      token_hash: "hash-touch",
+      updated_at: "2026-04-21T09:00:00.000Z",
+      last_used_at: "2026-04-21T09:00:00.000Z",
+      expires_at: "2026-05-21T09:00:00.000Z"
+    });
+  });
+
+  it("prewarms cached indexes so the first lookup does not reread the file", async () => {
+    const path = join(mkdtempSync(join(tmpdir(), "codearts-mcp-")), "auth-store.json");
+    const seedRepo = createFileAuthRepository(path);
+
+    await seedRepo.upsert(
+      createRecord({ auth_id: "auth-prewarm", token_hash: "hash-prewarm" })
+    );
+
+    const repo = createFileAuthRepository(path);
+    vi.mocked(fs.readFileSync).mockClear();
+
+    await repo.prewarm();
+
+    expect(fs.readFileSync).toHaveBeenCalledTimes(1);
+
+    vi.mocked(fs.readFileSync).mockClear();
+
+    expect(await repo.findByTokenHash("hash-prewarm")).toMatchObject({
+      auth_id: "auth-prewarm",
+      token_hash: "hash-prewarm"
+    });
+    expect(fs.readFileSync).not.toHaveBeenCalled();
+  });
 });

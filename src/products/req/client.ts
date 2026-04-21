@@ -1,4 +1,5 @@
 import { createReadThroughCache } from "../../core/cache/read-through-cache.js";
+import { DEFAULT_READ_CACHE_TTLS } from "../../core/cache/read-cache-ttl.js";
 import { recordRequestCacheHit } from "../../server/request-context.js";
 import type { ReturnTypeCreateHttpClient } from "../types.js";
 
@@ -147,7 +148,8 @@ export function createReqClient(
   _http: ReturnTypeCreateHttpClient,
   options: ReqClientOptions = {}
 ): ReqClient {
-  const listCacheTtlMs = options.listCacheTtlMs ?? 15_000;
+  const listCacheTtlMs =
+    options.listCacheTtlMs ?? DEFAULT_READ_CACHE_TTLS.reqListProjectsMs;
   const now = options.now ?? Date.now;
   const listProjectsCache = createReadThroughCache<
     string,

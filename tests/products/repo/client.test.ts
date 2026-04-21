@@ -83,6 +83,25 @@ describe("createRepoClient", () => {
     expect(get).toHaveBeenCalledTimes(1);
   });
 
+  it("keeps the default repository list cache alive beyond the legacy 15 second window", async () => {
+    let now = 1_000;
+    const get = vi.fn(async () => [{ id: 1, name: "sample", ssh_url: "git@example.com:sample.git" }]);
+    const client = createRepoClient(
+      {
+        get
+      } as never,
+      {
+        now: () => now
+      }
+    );
+
+    await client.listRepositories({ project_id: "p-1", page: 1, page_size: 20 });
+    now += 20_000;
+    await client.listRepositories({ project_id: "p-1", page: 1, page_size: 20 });
+
+    expect(get).toHaveBeenCalledTimes(1);
+  });
+
   it("uses repository path when listing branches", async () => {
     let requestedPath = "";
     const client = createRepoClient({

@@ -38,6 +38,7 @@
 - [Capability Matrix](./Capability-Matrix.md)
 - [Module Live Readiness](./Module-Live-Readiness.md)
 - [Tool Status Matrix](./Tool-Status-Matrix.md)
+- [Optimization Roadmap](./Optimization-Roadmap.md)
 - `docs/product-overview.md`
 - `docs/service-profile.md`
 

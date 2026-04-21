@@ -195,4 +195,149 @@ describe("auth context resolver", () => {
 
     expect(findByTokenHash).toHaveBeenCalledTimes(2);
   });
+
+  it("rejects expired tokens returned from persistence", async () => {
+    const touchByTokenHash = vi.fn();
+    const resolver = createAuthContextResolver({
+      authCookieName: "codearts_mcp_auth",
+      repository: {
+        findByTokenHash: async () => ({
+          auth_id: "auth-expired",
+          expires_at: "2026-04-20T00:00:00.000Z"
+        }),
+        touchByTokenHash
+      },
+      sessionStore: {
+        getAuthId: () => undefined,
+        bind: () => undefined,
+        clear: () => undefined
+      },
+      hashToken: () => "expired-hash",
+      now: () => Date.parse("2026-04-21T00:00:00.000Z")
+    });
+
+    await expect(
+      resolver.resolve({
+        headers: {
+          cookie: "codearts_mcp_auth=token-expired"
+        }
+      })
+    ).resolves.toBeUndefined();
+
+    expect(touchByTokenHash).not.toHaveBeenCalled();
+  });
+
+  it("renews cookie tokens that are inside the renewal window", async () => {
+    const touchByTokenHash = vi.fn();
+    const resolver = createAuthContextResolver({
+      authCookieName: "codearts_mcp_auth",
+      repository: {
+        findByTokenHash: async () => ({
+          auth_id: "auth-cookie",
+          expires_at: "2026-04-21T00:00:05.000Z"
+        }),
+        touchByTokenHash
+      },
+      sessionStore: {
+        getAuthId: () => undefined,
+        bind: () => undefined,
+        clear: () => undefined
+      },
+      hashToken: () => "cookie-hash",
+      now: () => Date.parse("2026-04-21T00:00:00.000Z"),
+      authTokenTtlMs: 60_000,
+      renewalWindowMs: 10_000
+    });
+
+    await expect(
+      resolver.resolve({
+        headers: {
+          cookie: "codearts_mcp_auth=token-cookie"
+        }
+      })
+    ).resolves.toEqual({
+      authId: "auth-cookie",
+      rawToken: "token-cookie"
+    });
+
+    expect(touchByTokenHash).toHaveBeenCalledWith("cookie-hash", {
+      lastUsedAt: "2026-04-21T00:00:00.000Z",
+      updatedAt: "2026-04-21T00:00:00.000Z",
+      expiresAt: "2026-04-21T00:01:00.000Z"
+    });
+  });
+
+  it("renews bearer tokens that are inside the renewal window", async () => {
+    const touchByTokenHash = vi.fn();
+    const resolver = createAuthContextResolver({
+      authCookieName: "codearts_mcp_auth",
+      repository: {
+        findByTokenHash: async () => ({
+          auth_id: "auth-bearer",
+          expires_at: "2026-04-21T00:00:02.000Z"
+        }),
+        touchByTokenHash
+      },
+      sessionStore: {
+        getAuthId: () => undefined,
+        bind: () => undefined,
+        clear: () => undefined
+      },
+      hashToken: () => "bearer-hash",
+      now: () => Date.parse("2026-04-21T00:00:00.000Z"),
+      authTokenTtlMs: 60_000,
+      renewalWindowMs: 5_000
+    });
+
+    await expect(
+      resolver.resolve({
+        headers: {
+          authorization: "Bearer token-bearer",
+          cookie: "codearts_mcp_auth=token-cookie"
+        }
+      })
+    ).resolves.toEqual({
+      authId: "auth-bearer",
+      rawToken: "token-bearer"
+    });
+
+    expect(touchByTokenHash).toHaveBeenCalledWith("bearer-hash", {
+      lastUsedAt: "2026-04-21T00:00:00.000Z",
+      updatedAt: "2026-04-21T00:00:00.000Z",
+      expiresAt: "2026-04-21T00:01:00.000Z"
+    });
+  });
+
+  it("does not write persistence state when resolving a session-bound auth identity", async () => {
+    const touchByTokenHash = vi.fn();
+    const resolver = createAuthContextResolver({
+      authCookieName: "codearts_mcp_auth",
+      repository: {
+        findByTokenHash: async () => ({ auth_id: "auth-cookie" }),
+        touchByTokenHash
+      },
+      sessionStore: {
+        getAuthId: (sessionId: string) =>
+          sessionId === "session-bound" ? "auth-session" : undefined,
+        bind: () => undefined,
+        clear: () => undefined
+      },
+      hashToken: () => "cookie-hash",
+      authTokenTtlMs: 60_000,
+      renewalWindowMs: 5_000
+    });
+
+    await expect(
+      resolver.resolve({
+        sessionId: "session-bound",
+        headers: {
+          cookie: "codearts_mcp_auth=token-cookie"
+        }
+      })
+    ).resolves.toEqual({
+      authId: "auth-session"
+    });
+
+    expect(touchByTokenHash).not.toHaveBeenCalled();
+  });
 });

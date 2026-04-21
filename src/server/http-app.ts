@@ -1,12 +1,14 @@
 import { randomUUID } from "node:crypto";
+import { accessSync, constants as fsConstants, existsSync, statSync } from "node:fs";
 import type { IncomingMessage, ServerResponse } from "node:http";
+import { dirname } from "node:path";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { isInitializeRequest } from "@modelcontextprotocol/sdk/types.js";
 import { loadServerMetadataConfig, type HttpAuthConfig, type ServerMetadataConfig } from "../core/config/env.js";
 import { serializeAuthCookie } from "./auth-cookie.js";
 import { createAuthContextResolver } from "./auth-context.js";
 import { createFileAuthRepository } from "./auth-repository.js";
-import { createServer } from "./create-server.js";
+import { createServerFactory } from "./create-server.js";
 import {
   getCurrentRequestDiagnostics,
   recordRequestPhase,
@@ -36,6 +38,32 @@ export type HttpRequestLogEntry = {
 
 type HttpAppOptions = {
   requestLogger?: (entry: HttpRequestLogEntry) => void;
+};
+
+export type HttpAppPrewarmResult = {
+  warmedComponents: string[];
+};
+
+export type HttpApp = ((
+  req: IncomingMessage,
+  res: ServerResponse
+) => Promise<void>) & {
+  prewarm?: () => Promise<HttpAppPrewarmResult> | HttpAppPrewarmResult;
+};
+
+type ReadinessResponse = {
+  statusCode: number;
+  body: {
+    status: "ready" | "not_ready";
+    checks: {
+      http: "ok";
+      auth_persistence: "ok" | "error" | "skipped";
+    };
+    details?: {
+      authDataPath?: string;
+      authPersistenceError?: string;
+    };
+  };
 };
 
 function writeJson(res: ServerResponse, status: number, body: unknown) {
@@ -193,11 +221,91 @@ function readMcpRequestDetails(payload: unknown): Pick<HttpRequestLogEntry, "mcp
   };
 }
 
+function resolvePersistenceReadiness(authConfig?: HttpAuthConfig): ReadinessResponse {
+  if (!authConfig) {
+    return {
+      statusCode: 200,
+      body: {
+        status: "ready",
+        checks: {
+          http: "ok",
+          auth_persistence: "skipped"
+        }
+      }
+    };
+  }
+
+  const targetPath = authConfig.authDataPath;
+
+  try {
+    let currentPath = targetPath;
+
+    if (existsSync(currentPath)) {
+      const targetStats = statSync(currentPath);
+
+      if (!targetStats.isFile()) {
+        throw new Error("auth data path exists but is not a file");
+      }
+
+      accessSync(currentPath, fsConstants.R_OK | fsConstants.W_OK);
+    } else {
+      currentPath = dirname(targetPath);
+
+      while (!existsSync(currentPath)) {
+        const parentPath = dirname(currentPath);
+
+        if (parentPath === currentPath) {
+          throw new Error("could not find a writable parent directory for auth persistence");
+        }
+
+        currentPath = parentPath;
+      }
+
+      const parentStats = statSync(currentPath);
+
+      if (!parentStats.isDirectory()) {
+        throw new Error("auth data parent path is not a directory");
+      }
+
+      accessSync(currentPath, fsConstants.R_OK | fsConstants.W_OK);
+    }
+
+    return {
+      statusCode: 200,
+      body: {
+        status: "ready",
+        checks: {
+          http: "ok",
+          auth_persistence: "ok"
+        },
+        details: {
+          authDataPath: targetPath
+        }
+      }
+    };
+  } catch (error) {
+    return {
+      statusCode: 503,
+      body: {
+        status: "not_ready",
+        checks: {
+          http: "ok",
+          auth_persistence: "error"
+        },
+        details: {
+          authDataPath: targetPath,
+          authPersistenceError: error instanceof Error ? error.message : "unknown error"
+        }
+      }
+    };
+  }
+}
+
 export function createHttpApp(
   config = loadServerMetadataConfig(),
   authConfig?: HttpAuthConfig,
   options: HttpAppOptions = {}
-) {
+): HttpApp {
   const transports: SessionTransportMap = {};
   const sessionStore = createSessionCredentialStore({
     ttlMs: authConfig ? authConfig.authTokenTtlSeconds * 1000 : undefined
@@ -207,16 +315,24 @@ export function createHttpApp(
         fileCheckIntervalMs: 1_000
       })
     : undefined;
+  const createMcpServer = createServerFactory({
+    mode: "http",
+    config,
+    sessionStore,
+    authRepository,
+    authMasterKey: authConfig?.masterKey
+  });
   const authResolver =
     authConfig && authRepository
       ? createAuthContextResolver({
           authCookieName: authConfig.authCookieName,
           repository: authRepository,
-          sessionStore
+          sessionStore,
+          authTokenTtlMs: authConfig.authTokenTtlSeconds * 1000
         })
       : undefined;
 
-  return async (req: IncomingMessage, res: ServerResponse) => {
+  const app = async (req: IncomingMessage, res: ServerResponse) => {
     return await runWithRequestDiagnostics(async () => {
       if (!req.url || !req.method) {
         writeJson(res, 400, { error: "Invalid request." });
@@ -237,6 +353,12 @@ export function createHttpApp(
 
       if (req.method === "GET" && (url.pathname === "/" || url.pathname === "/health")) {
         writeJson(res, 200, { status: "ok" });
+        return;
+      }
+
+      if (req.method === "GET" && url.pathname === "/health/ready") {
+        const readiness = resolvePersistenceReadiness(authConfig);
+        writeJson(res, readiness.statusCode, readiness.body);
         return;
       }
 
@@ -324,13 +446,7 @@ export function createHttpApp(
             });
             recordRequestPhase("transport_create", Date.now() - transportCreateStartedAt);
 
-            const server = createServer({
-              mode: "http",
-              config,
-              sessionStore,
-              authRepository,
-              authMasterKey: authConfig?.masterKey
-            });
+            const server = createMcpServer();
             const transportConnectStartedAt = Date.now();
             await server.connect(transport);
             recordRequestPhase("transport_connect", Date.now() - transportConnectStartedAt);
@@ -368,4 +484,19 @@ export function createHttpApp(
       }
     });
   };
+
+  return Object.assign(app, {
+    prewarm() {
+      const warmedComponents: string[] = [];
+
+      if (authRepository?.prewarm) {
+        authRepository.prewarm();
+        warmedComponents.push("auth_repository");
+      }
+
+      return {
+        warmedComponents
+      };
+    }
+  });
 }

@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
-import { createServer } from "../../src/server/create-server.js";
+import { describe, expect, it, vi } from "vitest";
+import { createServer, createServerFactory } from "../../src/server/create-server.js";
 import { collectToolNames } from "../../src/server/register-tools.js";
 import { createSessionCredentialStore } from "../../src/server/session-store.js";
 
@@ -22,6 +22,31 @@ function readRegisteredTool(server: unknown, name: string) {
         };
       }
     | undefined;
+}
+
+async function invokeInternalListToolsHandler(server: unknown) {
+  const requestHandlers = (
+    server as {
+      server?: {
+        _requestHandlers?: Map<string, (request: unknown, extra: unknown) => Promise<unknown>>;
+      };
+    }
+  ).server?._requestHandlers;
+  const handler = requestHandlers?.get("tools/list");
+
+  if (!handler) {
+    throw new Error("Expected tools/list handler to be registered");
+  }
+
+  return handler(
+    {
+      jsonrpc: "2.0",
+      id: "tools-list-1",
+      method: "tools/list",
+      params: {}
+    },
+    {}
+  );
 }
 
 describe("createServer tool registration", () => {
@@ -96,5 +121,135 @@ describe("createServer tool registration", () => {
     expect(shape?.deploy_base_url?.isOptional?.()).toBe(true);
     expect(shape?.build_base_url?.isOptional?.()).toBe(true);
     expect(shape?.artifact_base_url?.isOptional?.()).toBe(true);
+  });
+
+  it("reuses a cached tools/list result across repeated requests", async () => {
+    const server = createServer({
+      mode: "http",
+      config: {
+        serverName: "codearts-mcp",
+        serverVersion: "0.1.0",
+        httpPort: 3000
+      },
+      sessionStore: createSessionCredentialStore()
+    });
+
+    const firstResult = await invokeInternalListToolsHandler(server);
+    const secondResult = await invokeInternalListToolsHandler(server);
+
+    expect(firstResult).toBe(secondResult);
+    expect((firstResult as { tools?: unknown[] }).tools).toHaveLength(158);
+  });
+
+  it("captures tool registrations once and hydrates later server instances from a template", () => {
+    const collectToolNamesMock = vi.fn(() => ["req_list_projects", "repo_list_repositories"]);
+    const registerAuthToolsMock = vi.fn((options: {
+      server: { registerTool: (name: string, config: unknown, handler: unknown) => void };
+    }) => {
+      options.server.registerTool(
+        "auth_configure_session",
+        {
+          title: "auth_configure_session"
+        },
+        async () => ({})
+      );
+    });
+    const registerProductToolMock = vi.fn((options: {
+      toolName: string;
+      server: { registerTool: (name: string, config: unknown, handler: unknown) => void };
+    }) => {
+      options.server.registerTool(
+        options.toolName,
+        {
+          title: options.toolName
+        },
+        async () => ({})
+      );
+      return true;
+    });
+    const registerScaffoldToolMock = vi.fn();
+    const createdServers: Array<{
+      _registeredTools: Record<string, unknown>;
+      registerToolCalls: string[];
+      _toolHandlersInitialized: boolean;
+      setToolRequestHandlers: ReturnType<typeof vi.fn>;
+      sendToolListChanged: ReturnType<typeof vi.fn>;
+    }> = [];
+    const McpServerMock = vi.fn(function MockMcpServer() {
+      const registeredTools: Record<string, unknown> = {};
+      const registerToolCalls: string[] = [];
+      const server = {
+        _registeredTools: registeredTools,
+        _toolHandlersInitialized: false,
+        registerTool(name: string, config: unknown) {
+          registerToolCalls.push(name);
+          registeredTools[name] = config;
+        },
+        setToolRequestHandlers: vi.fn(() => {
+          server._toolHandlersInitialized = true;
+        }),
+        sendToolListChanged: vi.fn(() => {
+          return undefined;
+        })
+      };
+      createdServers.push({
+        ...server,
+        registerToolCalls
+      });
+      return server;
+    });
+
+    const factory = createServerFactory(
+      {
+        mode: "http",
+        config: {
+          serverName: "codearts-mcp",
+          serverVersion: "0.1.0",
+          httpPort: 3000,
+          readCacheTtls: {
+            reqListProjectsMs: 60_000,
+            repoListRepositoriesMs: 60_000,
+            pipelineListPipelinesMs: 5_000,
+            buildListJobsMs: 5_000
+          }
+        },
+        sessionStore: createSessionCredentialStore()
+      },
+      {
+        McpServer: McpServerMock as never,
+        collectToolNames: collectToolNamesMock,
+        registerAuthTools: registerAuthToolsMock as never,
+        registerProductTool: registerProductToolMock as never,
+        registerScaffoldTool: registerScaffoldToolMock as never
+      }
+    );
+
+    const first = factory();
+    const second = factory();
+
+    expect(collectToolNamesMock).toHaveBeenCalledTimes(1);
+    expect(registerAuthToolsMock).toHaveBeenCalledTimes(1);
+    expect(registerProductToolMock).toHaveBeenCalledTimes(2);
+    expect(registerScaffoldToolMock).not.toHaveBeenCalled();
+    expect(McpServerMock).toHaveBeenCalledTimes(3);
+    expect(createdServers[0]?.registerToolCalls).toEqual([
+      "auth_configure_session",
+      "req_list_projects",
+      "repo_list_repositories"
+    ]);
+    expect(createdServers[1]?.registerToolCalls).toEqual([]);
+    expect(createdServers[2]?.registerToolCalls).toEqual([]);
+    expect(createdServers[1]?.setToolRequestHandlers).toHaveBeenCalledTimes(1);
+    expect(createdServers[2]?.setToolRequestHandlers).toHaveBeenCalledTimes(1);
+    expect(readRegisteredToolNames(first)).toEqual([
+      "auth_configure_session",
+      "repo_list_repositories",
+      "req_list_projects"
+    ]);
+    expect(readRegisteredToolNames(second)).toEqual([
+      "auth_configure_session",
+      "repo_list_repositories",
+      "req_list_projects"
+    ]);
   });
 });

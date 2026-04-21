@@ -15,4 +15,10 @@ describe("project bootstrap", () => {
     expect(pkg.scripts.test).toBe("vitest run");
     expect(pkg.type).toBe("module");
   });
+
+  it("ignores generic tmp artifacts in git", () => {
+    const gitignore = readFileSync(".gitignore", "utf8");
+
+    expect(gitignore).toMatch(/^tmp-\*$/m);
+  });
 });

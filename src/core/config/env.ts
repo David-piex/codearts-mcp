@@ -1,5 +1,9 @@
 import { z } from "zod";
 import {
+  resolveReadCacheTtls,
+  type ReadCacheTtls
+} from "../cache/read-cache-ttl.js";
+import {
   mergeSessionEndpointOverrides,
   resolveCodeArtsBaseUrl,
   resolveRegionDefaults
@@ -29,12 +33,14 @@ export type AppConfig = {
   deployBaseUrl: string;
   buildBaseUrl: string;
   artifactBaseUrl: string;
+  readCacheTtls?: ReadCacheTtls;
 };
 
 export type ServerMetadataConfig = {
   serverName: string;
   serverVersion: string;
   httpPort: number;
+  readCacheTtls?: ReadCacheTtls;
 };
 
 export type HttpAuthConfig = {
@@ -44,6 +50,46 @@ export type HttpAuthConfig = {
   authCookieSecure: boolean;
   authTokenTtlSeconds: number;
 };
+
+function parseReadCacheTtlMs(
+  value: string | undefined,
+  envName: string
+) {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  const parsed = Number(value);
+
+  if (!Number.isFinite(parsed) || parsed < 0) {
+    throw new Error(`${envName} must be a non-negative number.`);
+  }
+
+  return parsed;
+}
+
+function loadReadCacheTtls(
+  source: Record<string, string | undefined>
+): ReadCacheTtls {
+  return resolveReadCacheTtls({
+    reqListProjectsMs: parseReadCacheTtlMs(
+      source.MCP_REQ_LIST_PROJECTS_CACHE_TTL_MS,
+      "MCP_REQ_LIST_PROJECTS_CACHE_TTL_MS"
+    ),
+    repoListRepositoriesMs: parseReadCacheTtlMs(
+      source.MCP_REPO_LIST_REPOSITORIES_CACHE_TTL_MS,
+      "MCP_REPO_LIST_REPOSITORIES_CACHE_TTL_MS"
+    ),
+    pipelineListPipelinesMs: parseReadCacheTtlMs(
+      source.MCP_PIPELINE_LIST_PIPELINES_CACHE_TTL_MS,
+      "MCP_PIPELINE_LIST_PIPELINES_CACHE_TTL_MS"
+    ),
+    buildListJobsMs: parseReadCacheTtlMs(
+      source.MCP_BUILD_LIST_JOBS_CACHE_TTL_MS,
+      "MCP_BUILD_LIST_JOBS_CACHE_TTL_MS"
+    )
+  });
+}
 
 export function loadEnvConfig(source: Record<string, string | undefined> = process.env): AppConfig {
   const parsed = envSchema.parse(source);
@@ -72,7 +118,8 @@ export function loadEnvConfig(source: Record<string, string | undefined> = proce
     testPlanBaseUrl: defaults.testplan_base_url,
     deployBaseUrl: defaults.deploy_base_url,
     buildBaseUrl: defaults.build_base_url,
-    artifactBaseUrl: defaults.artifact_base_url
+    artifactBaseUrl: defaults.artifact_base_url,
+    readCacheTtls: loadReadCacheTtls(source)
   };
 }
 
@@ -89,7 +136,8 @@ export function loadServerMetadataConfig(
   return {
     serverName,
     serverVersion,
-    httpPort: Number(source.MCP_HTTP_PORT ?? "3000")
+    httpPort: Number(source.MCP_HTTP_PORT ?? "3000"),
+    readCacheTtls: loadReadCacheTtls(source)
   };
 }
 
