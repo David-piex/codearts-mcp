@@ -2,6 +2,8 @@
 
 `codearts-mcp` 是一个面向华为云 CodeArts 中国站的 MCP Server，目标是把 Req、Repo、Pipeline、Check、TestPlan、Deploy、Build、Artifact 这些分散的产品接口，收口成一套可本地使用、也可团队共享部署的统一 MCP 工具层。
 
+当前暴露的是围绕真实联调、运维排障和受控写路径整理出来的精选能力面，不是把官方 PDF 中所有 CodeArts API 全量 1:1 镜像成 MCP 工具。
+
 它支持两种接入方式：
 
 - `stdio`
@@ -358,6 +360,10 @@ node dist/src/server/index.js
 - `docs/wiki/Architecture-Deep-Dive.md`
 - `docs/wiki/Capability-Matrix.md`
 - `docs/wiki/Module-Live-Readiness.md`
+- `docs/wiki/Official-API-Alignment.md`
+- `docs/wiki/Official-Category-Coverage-Matrix.md`
+- `docs/wiki/Official-Endpoint-Mapping-Req-Repo-Pipeline.md`
+- `docs/wiki/Official-Endpoint-Mapping-Check-Build-Deploy-Artifact-TestPlan.md`
 
 如果你想看模块级真实验证细节，继续看：
 

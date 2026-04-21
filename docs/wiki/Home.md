@@ -37,6 +37,10 @@
 - [Architecture Deep Dive](./Architecture-Deep-Dive.md)
 - [Capability Matrix](./Capability-Matrix.md)
 - [Module Live Readiness](./Module-Live-Readiness.md)
+- [Official API Alignment](./Official-API-Alignment.md)
+- [Official Category Coverage Matrix](./Official-Category-Coverage-Matrix.md)
+- [Official Endpoint Mapping: Req / Repo / Pipeline](./Official-Endpoint-Mapping-Req-Repo-Pipeline.md)
+- [Official Endpoint Mapping: Check / Build / Deploy / Artifact / TestPlan](./Official-Endpoint-Mapping-Check-Build-Deploy-Artifact-TestPlan.md)
 - [Tool Status Matrix](./Tool-Status-Matrix.md)
 - [Optimization Roadmap](./Optimization-Roadmap.md)
 - `docs/product-overview.md`
