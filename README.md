@@ -18,6 +18,229 @@
 - `158` total MCP tools in shared `http` mode
 <!-- GENERATED:readme-exposure-summary:end -->
 
+## 3 分钟部署使用
+
+如果你是第一次接触这个项目，直接走这条主路径就行：
+
+### 第 1 步：服务器管理员启动共享服务
+
+先复制环境变量模板：
+
+```bash
+cp .env.example .env
+```
+
+把 `.env` 至少改成下面这样：
+
+```env
+MCP_TRANSPORT=http
+MCP_HTTP_PORT=3000
+MCP_SERVER_NAME=codearts-mcp
+MCP_SERVER_VERSION=0.1.0
+MCP_AUTH_MASTER_KEY=replace-with-a-long-random-secret
+MCP_AUTH_DATA_PATH=.codearts-mcp/auth-store.json
+```
+
+然后二选一启动：
+
+方式 A，直接用 Docker Compose：
+
+```bash
+docker compose up -d --build
+```
+
+方式 B，宿主机直接跑：
+
+```bash
+npm install
+npm run build
+node dist/src/server/index.js
+```
+
+### 第 2 步：团队成员在客户端里添加 MCP 服务
+
+客户端配置最小示例：
+
+```json
+{
+  "mcpServers": {
+    "codearts-shared": {
+      "type": "http",
+      "url": "http://your-server-ip/mcp"
+    }
+  }
+}
+```
+
+如果客户端不会保留 cookie，可以在第一次鉴权成功后，把返回的 `auth_token` 固定到 URL：
+
+```json
+{
+  "mcpServers": {
+    "codearts-shared": {
+      "type": "http",
+      "url": "http://your-server-ip/mcp?auth_token=replace-with-auth-token"
+    }
+  }
+}
+```
+
+### 第 3 步：第一次连接后先调用 `auth_configure_session`
+
+首次调用参数：
+
+```json
+{
+  "access_key": "your-ak",
+  "secret_key": "your-sk",
+  "region": "cn-north-4"
+}
+```
+
+标准区域通常只需要这三个字段；只有确实使用非标准路由时，才需要额外传入各产品的 `*_base_url`。
+
+### 第 4 步：看到这些就算接通成功
+
+服务端：
+
+- `GET /health` 可访问
+- `POST /mcp` 可访问
+
+客户端：
+
+- `tools/list` 能列出工具
+- `auth_configure_session` 成功返回
+- 下面四个读工具至少能正常调用：
+  - `req_list_projects`
+  - `repo_list_repositories`
+  - `pipeline_list_pipelines`
+  - `build_list_jobs`
+
+如果四个读工具通了，通常说明共享链路已经是健康的，后面就可以继续进入具体模块和写路径。
+
+## 详细部署与使用
+
+### 1. 团队共享部署
+
+这是当前最推荐的使用方式。
+
+#### 服务器管理员需要做什么
+
+最小环境变量：
+
+```env
+MCP_TRANSPORT=http
+MCP_HTTP_PORT=3000
+MCP_SERVER_NAME=codearts-mcp
+MCP_SERVER_VERSION=0.1.0
+MCP_AUTH_MASTER_KEY=replace-with-a-long-random-secret
+MCP_AUTH_DATA_PATH=.codearts-mcp/auth-store.json
+```
+
+如果你对外暴露的是 HTTPS，建议再加：
+
+```env
+MCP_AUTH_COOKIE_SECURE=true
+```
+
+推荐启动方式：
+
+- 标准容器部署：
+
+```bash
+docker compose up -d --build
+```
+
+- 宿主机直跑：
+
+```bash
+npm install
+npm run build
+node dist/src/server/index.js
+```
+
+#### 团队成员需要做什么
+
+1. 在客户端里添加共享 MCP 服务地址
+2. 连上后先调用 `auth_configure_session`
+3. 先跑四个低风险读工具：
+   - `req_list_projects`
+   - `repo_list_repositories`
+   - `pipeline_list_pipelines`
+   - `build_list_jobs`
+
+共享的是同一个 MCP 服务入口，不是共享同一套业务凭证。每个用户后续调用的产品工具都会使用他自己的 `AK/SK`。
+
+#### 标准区域为什么通常不需要手填 `*_base_url`
+
+标准情况下，服务端会根据 `region` 自动推导产品地址。北京四 `cn-north-4` 默认对应：
+
+- Req: `https://projectman-ext.cn-north-4.myhuaweicloud.com`
+- Repo: `https://codehub-ext.cn-north-4.myhuaweicloud.com`
+- Pipeline: `https://cloudpipeline-ext.cn-north-4.myhuaweicloud.com`
+- Check: `https://codecheck-ext.cn-north-4.myhuaweicloud.com`
+- TestPlan: `https://cloudtest-ext.cn-north-4.myhuaweicloud.com`
+- Deploy: `https://codearts-deploy.cn-north-4.myhuaweicloud.com`
+- Build: `https://cloudbuild-ext.cn-north-4.myhuaweicloud.com`
+- Artifact: `https://artifact.cn-north-4.myhuaweicloud.cn`
+
+所以大多数成员只需要自己的：
+
+- `AK`
+- `SK`
+- `region`
+
+### 2. 本地个人使用
+
+如果你只是自己在本机接入 MCP 客户端，可以走 `stdio`。
+
+最小环境变量：
+
+```env
+MCP_TRANSPORT=stdio
+HUAWEICLOUD_AK=your-ak
+HUAWEICLOUD_SK=your-sk
+HUAWEICLOUD_REGION=cn-north-4
+MCP_SERVER_NAME=codearts-mcp
+MCP_SERVER_VERSION=0.1.0
+```
+
+启动：
+
+```bash
+npm install
+npm run build
+node dist/src/server/index.js
+```
+
+成功标志：
+
+- 客户端能正常拉起 `node dist/src/server/index.js`
+- `req_list_projects`
+- `repo_list_repositories`
+- `pipeline_list_pipelines`
+- `build_list_jobs`
+
+这四个读工具能通，通常说明本地接入已经正常。
+
+## 推荐的最小验证顺序
+
+### 共享 `http`
+
+1. `initialize`
+2. `auth_configure_session`
+3. `req_list_projects`
+4. `repo_list_repositories`
+5. `pipeline_list_pipelines`
+6. `build_list_jobs`
+
+### 本地 `stdio`
+
+1. `req_list_projects`
+2. `repo_list_repositories`
+3. `pipeline_list_pipelines`
+4. `build_list_jobs`
+
 ## 这个项目现在做到哪里了
 
 截至 `2026-04-21`，北京四 `cn-north-4` 的最近一轮真实联调已经确认：
@@ -68,54 +291,6 @@
 | Artifact | 12 | Partial | `5 Full / 0 Reachable / 7 Unpublished / 0 Code` |
 <!-- GENERATED:readme-module-numbers:end -->
 
-## 快速开始
-
-### 1. 本地个人使用
-
-最小环境变量：
-
-```env
-MCP_TRANSPORT=stdio
-HUAWEICLOUD_AK=your-ak
-HUAWEICLOUD_SK=your-sk
-HUAWEICLOUD_REGION=cn-north-4
-MCP_SERVER_NAME=codearts-mcp
-MCP_SERVER_VERSION=0.1.0
-```
-
-启动：
-
-```bash
-npm install
-npm run build
-node dist/src/server/index.js
-```
-
-### 2. 团队共享部署
-
-最小环境变量：
-
-```env
-MCP_TRANSPORT=http
-MCP_HTTP_PORT=3000
-MCP_SERVER_NAME=codearts-mcp
-MCP_SERVER_VERSION=0.1.0
-MCP_AUTH_MASTER_KEY=replace-with-a-long-random-secret
-MCP_AUTH_DATA_PATH=.codearts-mcp/auth-store.json
-```
-
-用户第一次接入共享服务时，先调用：
-
-```json
-{
-  "access_key": "your-ak",
-  "secret_key": "your-sk",
-  "region": "cn-north-4"
-}
-```
-
-标准区域通常只需要这三个字段；只有确实使用非标准路由时，才需要额外传入各产品的 `*_base_url`。
-
 ## 当前已验证的一台共享联调实例
 
 截至 `2026-04-20`，我们已经在下列公网实例上完成了一轮真实部署与深度联调：
@@ -132,51 +307,6 @@ MCP_AUTH_DATA_PATH=.codearts-mcp/auth-store.json
 
 - 仓库不仅能在本地 `stdio` 模式工作
 - 也已经能以共享 `http` 形态对外服务，并完成真实会话恢复、读路径与受控写路径联调
-
-## 当前最值得先看的文档
-
-如果你想快速上手，按这个顺序看最省时间：
-
-1. `docs/wiki/Home.md`
-2. `docs/wiki/Getting-Started.md`
-3. `docs/wiki/Team-Deployment.md`
-4. `docs/wiki/Testing-and-Live-Ops.md`
-5. `docs/wiki/Current-Implementation-Status-2026-04-17.md`
-
-如果你想快速建立项目深度理解，继续看：
-
-- `docs/product-overview.md`
-- `docs/service-profile.md`
-- `docs/wiki/Architecture-Deep-Dive.md`
-- `docs/wiki/Capability-Matrix.md`
-- `docs/wiki/Module-Live-Readiness.md`
-
-如果你想看模块级真实验证细节，继续看：
-
-- `docs/wiki/Req-Live-Validated.md`
-- `docs/wiki/Check-Live-Validated.md`
-- `docs/wiki/Build-Live-Validated.md`
-- `docs/wiki/Deploy-Live-Validated.md`
-- `docs/wiki/Artifact-Live-Validated.md`
-- `docs/wiki/TestPlan-Live-Validated.md`
-
-## 推荐的最小验证顺序
-
-无论是本地还是共享部署，建议先按这个顺序试：
-
-1. `req_list_projects`
-2. `repo_list_repositories`
-3. `pipeline_list_pipelines`
-4. `build_list_jobs`
-
-共享 `http` 模式下，把 `auth_configure_session` 放在最前面：
-
-1. `initialize`
-2. `auth_configure_session`
-3. `req_list_projects`
-4. `repo_list_repositories`
-5. `pipeline_list_pipelines`
-6. `build_list_jobs`
 
 ## 维护命令
 
@@ -210,3 +340,30 @@ MCP_AUTH_DATA_PATH=.codearts-mcp/auth-store.json
 - `MCP_AUTH_DATA_PATH`
 
 否则服务重启后将无法恢复已有会话。
+
+## 进阶文档入口
+
+如果你已经完成部署，后面按这个顺序继续看最省时间：
+
+1. `docs/wiki/Home.md`
+2. `docs/wiki/Getting-Started.md`
+3. `docs/wiki/Team-Deployment.md`
+4. `docs/wiki/Testing-and-Live-Ops.md`
+5. `docs/wiki/Troubleshooting.md`
+
+如果你想快速建立项目深度理解，继续看：
+
+- `docs/product-overview.md`
+- `docs/service-profile.md`
+- `docs/wiki/Architecture-Deep-Dive.md`
+- `docs/wiki/Capability-Matrix.md`
+- `docs/wiki/Module-Live-Readiness.md`
+
+如果你想看模块级真实验证细节，继续看：
+
+- `docs/wiki/Req-Live-Validated.md`
+- `docs/wiki/Check-Live-Validated.md`
+- `docs/wiki/Build-Live-Validated.md`
+- `docs/wiki/Deploy-Live-Validated.md`
+- `docs/wiki/Artifact-Live-Validated.md`
+- `docs/wiki/TestPlan-Live-Validated.md`
