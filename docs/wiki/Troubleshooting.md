@@ -1,51 +1,27 @@
 # 故障排查
 
-这页只做一件事：帮你快速判断问题到底出在鉴权、区域、产品开通、数据不足，还是官方路由没发布。
+这页只做一件事：帮你快速判断问题到底出在接入、鉴权、项目归属、真实样本、区域发布，还是入口网络层。
 
-## 先记住一个排障原则
+## 先记住一个原则
 
 不要把“某个工具失败”直接等同于“整套 MCP 服务坏了”。
 
-当前项目里的问题大致分成四类：
+当前项目里最常见的问题大致分成五类：
 
 - 接入层问题
   - 例如共享 `http` 模式没有先完成 `auth_configure_session`
-- 区域/路由问题
-  - 例如北京四未发布
-- 真实租户样本问题
-  - 例如目标项目没有数据、没有计划、没有部署记录
+- 项目归属或 id 使用问题
+  - 例如 `pipeline_*` 使用了错误的 owner `project_id`
+- 权限/服务开通问题
+  - 例如成员权限不足，或目标项目未开通对应服务
+- 样本或区域问题
+  - 例如当前项目没有数据，或北京四该路由未发布
 - 入口网络层问题
-  - 例如外部偶发高延迟或 `502`，但请求甚至没进入 Node 服务日志
+  - 例如客户端外部看到慢调用或 `502`，但请求根本没进入 Node 服务日志
 
-## 常见错误码
+## 推荐的固定排障顺序
 
-| 错误码 | 含义 | 先检查什么 |
-| --- | --- | --- |
-| `CLOUDTEST.00012003` | TestPlan 没有在目标项目启用 | 项目服务开通状态、`cloudtest-ext` 地址 |
-| `APIGW.0101` | 当前区域该路由未发布 | 产品地址、北京四路由发布情况 |
-| `DEVPIPE.00011136` | 这个 `project_id` 不是该流水线真正所属项目 | 先跑 `pipeline_list_pipelines`，用返回结果里的 owner `project_id` |
-| `auth_error` | 当前 session 没有可用的华为云身份 | 共享 `http` 模式下先确认是否已调用 `auth_configure_session` |
-| `Deploy.00011042` | Deploy 某条老链路或样本路径不健康 | 先回到经典链路，确认是不是样本或模板 runtime 问题 |
-
-## 如果一个模块能用，另一个模块不能用
-
-先不要把问题归到整套 MCP 服务本身。更常见的是：
-
-- 某个产品地址不对
-- 某个产品没有开通
-- 你传的 id 类型错了
-- 当前租户没有足够业务数据
-
-现在还可以多看一眼 MCP 返回文本里有没有附加 hint：
-
-- 如果是权限/服务类错误
-  - 共享层会尽量补产品相关的排查建议
-- 如果是项目级列表返回 `0`
-  - 一部分高频工具会明确提示你先检查 `project_id`、服务配置和当前账号可见性
-
-## 共享 `http` 模式先检查什么
-
-如果你连的是共享 HTTP MCP 服务，排障顺序建议固定为：
+共享 `http` 模式下，先固定排这条链路：
 
 1. `initialize`
 2. `auth_configure_session`
@@ -54,52 +30,68 @@
 5. `pipeline_list_pipelines`
 6. `build_list_jobs`
 
-如果前四步都正常，通常说明：
+如果这条链路本身不通，先不要去怀疑具体业务产品。
 
-- session 建立正常
-- auth token / cookie 复用正常
-- 基础 region 默认地址正常
-- 签名链路正常
+## 常见错误码
 
-如果这里就失败，先不要去怀疑具体产品模块。
+| 错误码 | 含义 | 先检查什么 |
+| --- | --- | --- |
+| `auth_error` | 当前 session 没有可用的华为云身份 | 是否已调用 `auth_configure_session`；cookie / `auth_token` 是否失效 |
+| `DEVPIPE.00011136` | 当前 `project_id` 不是该流水线真实归属项目 | 先跑 `pipeline_list_pipelines`，使用返回记录里的 owner `project_id` |
+| `CLOUDTEST.00012003` | TestPlan 没有在目标项目启用 | 项目服务开通状态、`cloudtest-ext` 地址 |
+| `APIGW.0101` | 当前区域该路由未发布 | 产品地址、北京四路由发布情况 |
+| `Deploy.00011042` | Deploy 某条老链路或样本路径不健康 | 先回到经典链路，确认是否是样本或模板 runtime 问题 |
 
-## 几类最容易传错的 id
+## 如果一个模块能用，另一个模块不能用
+
+先不要把问题归到整套 MCP 服务。
+
+更常见的是：
+
+- 某个产品没有开通
+- 某个产品地址被错误覆盖
+- 你传的 id 类型错了
+- 当前租户没有足够业务数据
+- 该路由在北京四还未发布
+
+现在共享层还会补两类提示：
+
+- 权限/服务类失败时，会尽量追加产品级排查建议
+- 高频项目级列表返回 `0` 时，会提示先确认 `project_id`、服务配置与当前账号可见性
+
+## 最容易传错的 id
 
 - 大多数模块：
   - `project_id` 是 CodeArts 项目 UUID
+- `pipeline_*`
+  - 后续操作使用的 `project_id`，不一定等于你最初查询时的那个项目；以 `pipeline_list_pipelines` 返回的 owner `project_id` 为准
 - `artifact_*`
   - 除了 `project_id`，通常还需要 `tenant_id`
-- `pipeline_*`
-  - `pipeline_list_pipelines` 返回的记录里，真正后续要用的 `project_id` 可能和最初查询的项目不同
 - `deploy_*`
-  - `application_id`、`task_id`、`record_id`、`step_id` 各自含义不同，最好沿着上一个工具返回值继续传
+  - `application_id`、`task_id`、`record_id`、`step_id` 各自含义不同，最好沿着上一个工具的返回值继续传
 
-## 最小排障顺序
+## 如何判断是“空结果”还是“真正错误”
 
-1. 先跑 `req_list_projects`
-2. 再跑 `repo_list_repositories`
-3. 再跑 `pipeline_list_pipelines`
-4. 然后跑目标模块的第一个读接口
-5. 最后根据 provider 错误码判断，不要先猜
+如果工具调用成功，但列表返回 `0` 条，不要立刻判定服务异常。先确认：
 
-如果第 4 步拿到的是“成功但 0 条”，也不要立刻判定为异常。先确认：
+- 当前 `project_id` 是否正确
+- 该项目是否真的开通并使用了对应服务
+- 当前账号是否对这个项目和对应产品可见
 
-- 当前 `project_id` 是不是正确项目
-- 该项目里是否真的开通并使用了对应服务
-- 当前账号是否对这个项目和该产品可见
+如果调用失败，并且返回文本里已经附带权限/服务开通提示，优先按提示排查，而不是直接改代码。
 
 ## 如果你看到慢调用或偶发 `502`
 
-截至 `2026-04-20` 的最新联调结论里，要把两种“慢”分开看：
+截至 `2026-04-20` 的部署联调结论，必须把两种“慢”分开看：
 
 - 服务内部慢
-  - 看 `codearts-mcp.service` 日志里的 `durationMs`
-- 外部链路慢
-  - 客户端外部计时很高，但 Node 日志里没有对应慢请求，甚至没有对应记录
+  - 看 `durationMs`、`upstreamDurationMs`、`cacheHits`
+- 入口链路慢
+  - 客户端外部计时很高，但 Node 日志里没有对应慢请求，甚至没有对应请求记录
 
-当前已确认的一点是：
+当前已经确认：
 
-- 服务内部很多缓存命中请求已经可以做到毫秒级
+- 服务内很多缓存命中请求已经是毫秒级
 - 外部偶发 `502` 不一定来自 MCP 应用本身
 
 所以如果你看到：
@@ -107,24 +99,22 @@
 - 客户端报 `502`
 - 但 `journalctl -u codearts-mcp.service` 里没有对应请求
 
-优先怀疑入口网络层，不要继续在产品 handler 里空转。
+优先怀疑入口代理、网络层或客户端到服务器之间的链路。
 
-## 当前北京四下最常见的真实限制
+## 当前北京四最常见的真实边界
 
 ### TestPlan
 
-- `get_plan`
-- `list_runs`
-- `get_case`
-- `run_cases`
+以下路由目前仍可能直接返回未发布：
 
-这几条目前仍可能直接返回：
-
-- `APIGW.0101`
+- `testplan_get_plan`
+- `testplan_list_runs`
+- `testplan_get_case`
+- `testplan_run_cases`
 
 ### Artifact
 
-下面这些路由当前在北京四仍未发布：
+以下路由当前在北京四仍未发布：
 
 - `artifact_delete_file`
 - `artifact_list_build_archives`
@@ -136,47 +126,35 @@
 
 ### Deploy
 
-`Deploy` 当前大部分主干路径已经能用，但还要注意：
+Deploy 当前主干能力大多已可用，但仍要注意：
 
-- 某些 `v4` record 详情路径当前租户没有正样本
-- `dry_run` 已经尽量做了安全 fallback
-- 剩余实际阻塞更多来自模板/runtime 本身，而不是 MCP 没实现
+- 某些 `v4` record 详情路径仍缺稳定正样本
+- 现实阻塞更多来自模板 runtime，而不是 MCP 没实现
+- 当前更建议优先走经典链路，再看 `v4`
 
 ## 当前最实用的日志观察点
 
-共享 `http` 模式下，服务日志现在会带这些字段：
+共享 `http` 模式下，服务日志建议重点关注：
 
 - `sessionId`
 - `mcpMethod`
 - `toolName`
 - `durationMs`
+- `cacheHits`
+- `upstreamRequestCount`
+- `upstreamDurationMs`
+- `upstreamStatusCodes`
 
-最常用的看法是：
+如果要做入口层采样，可以直接运行：
 
-- 看服务状态
-  - `systemctl is-active codearts-mcp.service`
-- 看最近请求
-  - `journalctl -u codearts-mcp.service -n 80 --no-pager`
-- 看是不是应用层真的处理慢
-  - 对照某个 `toolName` 的 `durationMs`
+```bash
+npm run probe:edge -- --url http://123.249.85.184/mcp --access-key "$HUAWEICLOUD_AK" --secret-key "$HUAWEICLOUD_SK" --region cn-north-4 --iterations 5 --timeout-ms 30000 --output summary
+```
 
-## 什么时候该先看哪份文档
+## 推荐继续看的页面
 
-- 共享部署接入问题：
-  - `docs/wiki/Team-Deployment.md`
-- 不确定服务怎么工作的：
-  - `docs/wiki/Architecture-Deep-Dive.md`
-- 想看当前 live 与性能结论：
-  - `docs/wiki/Testing-and-Live-Ops.md`
-- 想看模块是否真可用：
-  - `docs/wiki/Capability-Matrix.md`
-
-## 相关文档
-
-- `docs/faq.md`
-- `docs/quickstart.md`
-- `docs/client-examples.md`
-- `docs/wiki/Architecture-Deep-Dive.md`
+- `docs/wiki/Team-Deployment.md`
 - `docs/wiki/Testing-and-Live-Ops.md`
-- `docs/wiki/Module-Live-Readiness.md`
+- `docs/wiki/Capability-Matrix.md`
+- `docs/wiki/Current-Implementation-Status-2026-04-17.md`
 - `docs/wiki/Deploy-Live-Validated.md`

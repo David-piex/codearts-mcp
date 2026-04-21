@@ -1,40 +1,63 @@
 # CodeArts MCP Wiki
 
-这里是 `codearts-mcp` 的中文入口页。  
-如果你想快速搞清楚这个项目是什么、现在做到什么程度、哪些页面最值得先看，从这里开始就够了。
+这页是项目文档总入口。  
+如果你想快速判断这个仓库是什么、现在做到哪里、怎么部署、怎么测试，从这里开始即可。
 
-## 最新刷新说明
+## 当前文档整理原则
 
-本页已按 `2026-04-20` 的项目状态重新整理。
+截至 `2026-04-21`，文档已经按下面四条主线重新收口：
 
-这次刷新重点补了三类信息：
-
-- 项目深度理解路径
-- 当前共享 `http` 模式的真实运行方式
-- 测试 / live 验证 / 性能结论的最新入口
+- 入口总览
+  - `README.md`
+  - `docs/wiki/Home.md`
+- 接入与部署
+  - `docs/wiki/Getting-Started.md`
+  - `docs/wiki/Team-Deployment.md`
+- 测试、联调与排障
+  - `docs/wiki/Testing-and-Live-Ops.md`
+  - `docs/wiki/Troubleshooting.md`
+- 当前实现与模块级真实状态
+  - `docs/wiki/Current-Implementation-Status-2026-04-17.md`
+  - `docs/wiki/*-Live-Validated.md`
 
 说明：
 
-- 仓库里有一页历史文件名仍保留为 `Current-Implementation-Status-2026-04-17.md`
-- 但它内部的生成区块仍会随着当前代码和统计脚本同步，不代表内容停留在 `2026-04-17`
+- `Current-Implementation-Status-2026-04-17.md` 这个文件名保留历史日期，是为了保持统计脚本和外部引用稳定
+- 文件内部内容与自动统计区块会随当前仓库状态持续刷新，不代表内容停留在 `2026-04-17`
 
-## 先看哪几页
+## 第一次接触这个项目先看什么
 
-### 第一次接触这个项目
+1. [Getting Started](./Getting-Started.md)
+2. [Team Deployment](./Team-Deployment.md)
+3. [Testing and Live Ops](./Testing-and-Live-Ops.md)
+4. [Current Implementation Status](./Current-Implementation-Status-2026-04-17.md)
 
-- [Getting Started](./Getting-Started.md)
-- [Capability Matrix](./Capability-Matrix.md)
+## 如果你想快速建立项目深度理解
+
 - [Architecture Deep Dive](./Architecture-Deep-Dive.md)
-- [Testing and Live Ops](./Testing-and-Live-Ops.md)
-
-### 想知道“现在到底做到了哪里”
-
-- [Current Implementation Status (tracked file)](./Current-Implementation-Status-2026-04-17.md)
-- [Tool Status Matrix](./Tool-Status-Matrix.md)
+- [Capability Matrix](./Capability-Matrix.md)
 - [Module Live Readiness](./Module-Live-Readiness.md)
-- [Unavailable Items For Users](./Unavailable-Items-For-Users.md)
+- [Tool Status Matrix](./Tool-Status-Matrix.md)
+- `docs/product-overview.md`
+- `docs/service-profile.md`
 
-### 想按模块看真实验证细节
+## 如果你想看当前真实可用度
+
+已完成模块级 live 闭环：
+
+- Req
+- Repo
+- Pipeline
+- Check
+- Build
+
+已实现且可用，但仍受真实租户样本或区域发布限制：
+
+- TestPlan
+- Deploy
+- Artifact
+
+对应明细页：
 
 - [Req Live Validated](./Req-Live-Validated.md)
 - [Check Live Validated](./Check-Live-Validated.md)
@@ -43,62 +66,40 @@
 - [Artifact Live Validated](./Artifact-Live-Validated.md)
 - [TestPlan Live Validated](./TestPlan-Live-Validated.md)
 
-### 想部署、联调或排障
+## 如果你想部署团队共享服务
 
-- [Team Deployment](./Team-Deployment.md)
-- [Testing and Live Ops](./Testing-and-Live-Ops.md)
-- [Troubleshooting](./Troubleshooting.md)
+先看：
 
-## 当前最重要的结论
+1. [Team Deployment](./Team-Deployment.md)
+2. [Testing and Live Ops](./Testing-and-Live-Ops.md)
+3. [Troubleshooting](./Troubleshooting.md)
 
-截至 `2026-04-20`，北京四 `cn-north-4` 的真实 `AK/SK` 验证结论可以概括为：
+目前已经验证过一台公网共享实例：
 
-- 已完成模块级 live 闭环：
-  - Req
-  - Repo
-  - Pipeline
-  - Check
-  - Build
-- 已实现且可用，但仍受真实租户样本或区域发布限制：
-  - TestPlan
-  - Deploy
-  - Artifact
+- `http://123.249.85.184/health`
+- `http://123.249.85.184/mcp`
 
-这里的 `Partial` 主要不是“代码没写完”，而是：
+这轮验证覆盖了：
 
-- 当前租户缺少稳定非空样本
-- 北京四仍存在未发布路由
-- Deploy 的健康路径仍受老旧模板 runtime 影响
+- `initialize`
+- `tools/list`
+- `auth_configure_session`
+- cookie / `auth_token` 重连
+- 读路径抽样
+- Req / Pipeline / Deploy 的受控写路径联调
 
-## 当前项目形态
+## 当前最重要的维护结论
 
-`codearts-mcp` 当前暴露的是一套聚焦 CodeArts 核心产品面的 MCP 工具层：
+- 共享 `http` 模式已经具备持久化鉴权、会话恢复、写路径联调与回归测试
+- 高频列表工具已补共享缓存和 in-flight dedupe
+- 服务内缓存命中后，很多高频调用已经下降到毫秒级
+- 外部偶发慢调用或 `502`，更可能来自入口网络层，而不是 Node 进程内部处理
+- 当前文档不再把“模块实现状态”“接入示例”“历史 live 检查碎片”分散到多个重复页面里
 
-- `8` 个产品模块
-- `156` 个产品工具
-- `2` 个共享 `http` 模式下的 auth/session 工具
-
-接入方式分两类：
-
-- `stdio`
-  - 适合个人本地使用
-- `http + session`
-  - 适合团队共享部署，每个用户使用自己的 `AK/SK`
-
-## 这次最值得特别知道的维护结论
-
-- 共享 `http` 模式已经具备持久化鉴权、会话复用、写路径联调和回归测试
-- 高频列表请求已经做了短 TTL 缓存
-- 服务内部日志显示，缓存命中后很多工具处理已经到了毫秒级
-- 外部偶发高延迟和 `502` 目前更像入口网络层问题，而不是 MCP 业务逻辑慢
-- 读工具现在开始补两类可操作提示：
-  - 错误时会尽量追加按产品归类的权限/服务开通/项目归属提示
-  - 成功但空结果时，会对高频项目级列表补“确认 `project_id` 与服务配置”的提示
-
-## 根文档
-
-除了 wiki，下面几份根文档也建议一起看：
+## 建议保留关注的根文档
 
 - `README.md`
 - `docs/product-overview.md`
 - `docs/service-profile.md`
+- `docs/faq.md`
+- `docs/release-checklist.md`

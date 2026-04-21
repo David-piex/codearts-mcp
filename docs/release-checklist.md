@@ -38,7 +38,7 @@
 
 - [ ] 已明确使用 `http` 模式
 - [ ] 已配置 `MCP_HTTP_PORT`
-- [ ] 已确认部署方式是 Docker、PM2 或宿主机直跑
+- [ ] 已确认部署方式是 Docker、PM2、宿主机直跑或 `systemd + nginx`
 
 ### 服务启动
 
@@ -48,6 +48,13 @@
 - [ ] 已确认 `/health` 可访问
 - [ ] 已确认 `/mcp` 可访问
 
+### 共享鉴权持久化
+
+- [ ] 已配置 `MCP_AUTH_MASTER_KEY`
+- [ ] 已配置 `MCP_AUTH_DATA_PATH`
+- [ ] 已确认持久化目录不会被临时清空
+- [ ] 如使用 HTTPS，已配置 `MCP_AUTH_COOKIE_SECURE=true`
+
 ### 反向代理
 
 - [ ] 已代理 `/health`
@@ -55,7 +62,7 @@
 - [ ] 已确认代理后端端口与服务实际端口一致
 - [ ] 如使用 HTTPS，已正确加载证书
 
-## 三、安全检查
+## 三、安全与边界检查
 
 ### 凭证策略
 
@@ -64,20 +71,20 @@
 - [ ] 已明确共享模式下每个人使用自己的凭证
 - [ ] 已明确如需清理会话可调用 `auth_clear_session`
 
-### 权限与边界
+### 权限与风险控制
 
 - [ ] 已确认使用者的华为云账号拥有目标产品权限
 - [ ] 已确认遵循最小权限原则
-- [ ] 已确认写操作场景优先使用 `dry_run`
+- [ ] 已确认写操作场景会先做受控验证
 
 ## 四、用户接入前检查
 
 ### 接入说明
 
 - [ ] 用户已能看到 `README.md`
-- [ ] 用户已能看到 `docs/quickstart.md`
-- [ ] 用户已能看到 `docs/client-examples.md`
-- [ ] 用户已能看到 `docs/tool-examples.md`
+- [ ] 用户已能看到 `docs/wiki/Home.md`
+- [ ] 用户已能看到 `docs/wiki/Team-Deployment.md`
+- [ ] 用户已能看到 `docs/wiki/Troubleshooting.md`
 - [ ] 用户已能看到 `docs/faq.md`
 
 ### 首次接入路径
@@ -90,86 +97,83 @@
 
 ## 五、业务能力检查
 
-### Req
+### 核心读路径
 
 - [ ] `req_list_projects` 可用
-- [ ] `req_get_project` 可用
-- [ ] `req_list_work_items` 可用
-- [ ] `req_get_work_item` 可用
-- [ ] `req_list_iterations` 可用
-- [ ] `req_list_project_members` 可用
-
-### Repo
-
 - [ ] `repo_list_repositories` 可用
-- [ ] `repo_get_repository` 可用
-- [ ] `repo_list_branches` 可用
-- [ ] `repo_list_commits` 可用
-- [ ] `repo_get_commit` 可用
-- [ ] `repo_get_file` 可用
-- [ ] `repo_list_merge_requests` 可用
-- [ ] `repo_get_merge_request` 可用
-
-### Pipeline
-
 - [ ] `pipeline_list_pipelines` 可用
-- [ ] `pipeline_get_pipeline` 可用
-- [ ] `pipeline_list_runs` 可用
-- [ ] `pipeline_get_run` 可用
-- [ ] `pipeline_list_templates` 可用
+- [ ] `build_list_jobs` 可用
+
+### 已验证模块
+
+- [ ] `Req` 至少验证一个读工具与一个写工具
+- [ ] `Repo` 至少验证一个读工具
+- [ ] `Pipeline` 至少验证一个读工具与一个写工具
+- [ ] `Check` 至少验证一个读工具
+- [ ] `Build` 至少验证一个读工具
 
 ### 部分但可用模块
 
-- [ ] `Build` 已至少验证一个读工具
 - [ ] `Deploy` 已至少验证一个读工具
 - [ ] `Artifact` 已至少验证一个读工具
-- [ ] `TestPlan` 已至少验证一个读工具
+- [ ] `TestPlan` 已至少验证一个已发布读工具
 
-### 写操作
+## 六、共享 HTTP 联调验收
 
-- [ ] `req_create_work_item` 已用 `dry_run` 验证
-- [ ] `req_update_work_item` 已用 `dry_run` 验证
-- [ ] `pipeline_run_pipeline` 已用 `dry_run` 验证
+- [ ] 已完成 `initialize`
+- [ ] 已完成 `auth_configure_session`
+- [ ] 已确认 cookie 或 `auth_token` 可恢复身份
+- [ ] 已确认 `tools/list` 返回完整工具面
 
-## 六、发布前验证
+### 写路径
+
+- [ ] `req_create_work_item` 已验证
+- [ ] `pipeline_run_pipeline` 已验证
+- [ ] `deploy_start_app` 已至少完成一次受控联调
+
+## 七、发布前验证
 
 - [ ] 已执行 `npm test`
 - [ ] 已执行 `npm run build`
+- [ ] 已执行 `npm run stats:check-docs`
 - [ ] 已确认健康检查可访问
 - [ ] 已确认至少 1 个 Req 工具可用
 - [ ] 已确认至少 1 个 Repo 工具可用
 - [ ] 已确认至少 1 个 Pipeline 工具可用
 
-## 七、推荐的最小上线验证顺序
+## 八、推荐的最小上线验证顺序
 
-建议按以下顺序验收：
+### 本地 `stdio`
 
 1. `req_list_projects`
 2. `repo_list_repositories`
 3. `pipeline_list_pipelines`
 4. `build_list_jobs`
-5. `auth_configure_session`（仅共享模式）
-6. `req_create_work_item` 的 `dry_run`
-7. `pipeline_run_pipeline` 的 `dry_run`
 
-## 八、常见上线遗漏项
+### 共享 `http`
 
-最常漏掉的是：
+1. `initialize`
+2. `auth_configure_session`
+3. `req_list_projects`
+4. `repo_list_repositories`
+5. `pipeline_list_pipelines`
+6. `build_list_jobs`
+
+## 九、常见上线遗漏项
 
 - [ ] 忘了构建 `dist`
-- [ ] `/mcp` 只代理了 `POST`，没有放开实际需要的方法/头
-- [ ] 错把标准地区也当成必须手填所有产品 `BASE_URL`
+- [ ] `/mcp` 只做了表面代理，但没有确认实际请求方法和头透传
+- [ ] 把标准区域也当成必须手填所有产品 `BASE_URL`
 - [ ] 共享模式下忘了先配置 `auth_configure_session`
-- [ ] 写操作直接真执行，没有先过 `dry_run`
+- [ ] 服务重启后才发现 `MCP_AUTH_MASTER_KEY` 或持久化目录不稳定
+- [ ] 外部出现 `502` 时，没有先区分应用层与入口网络层
 
-## 九、建议的发布资料包
-
-如果要正式提供给团队使用，建议至少一起提供：
+## 十、建议随发布一起提供的资料
 
 - [ ] `README.md`
-- [ ] `docs/service-profile.md`
-- [ ] `docs/quickstart.md`
-- [ ] `docs/client-examples.md`
-- [ ] `docs/tool-examples.md`
+- [ ] `docs/wiki/Home.md`
+- [ ] `docs/wiki/Team-Deployment.md`
+- [ ] `docs/wiki/Testing-and-Live-Ops.md`
+- [ ] `docs/wiki/Troubleshooting.md`
 - [ ] `docs/faq.md`
 - [ ] `docs/release-checklist.md`

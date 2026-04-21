@@ -18,7 +18,6 @@ Base URL：`https://codecheck-ext.cn-north-4.myhuaweicloud.com`
   - `check_run_task` / `check_stop_task` 需要显式发送 `{}` 请求体
   - `check_list_task_issues` 真实可用路由是 `/defects-detail`，不是 `/issues`
 - `check_get_metrics` 也已经确认真实环境下走的是 project-scoped 路由
-- 下面保留结构化明细，方便后续继续做回归或核对 provider 行为
 
 仓库中的 live-smoke 入口：
 
@@ -41,7 +40,7 @@ Base URL：`https://codecheck-ext.cn-north-4.myhuaweicloud.com`
 
 - `check_create_task` 必须使用文档要求的 payload 结构：
   - `check_type: ["source"]`
-  - `rule_sets` or `language[]`
+  - `rule_sets` 或 `language[]`
 - CodeHub 仓库创建路径验证用的是 SSH `git_url`，不是 HTTPS
 - `check_run_task` 和 `check_stop_task` 需要把 `{}` 作为请求体发送
 - `check_stop_task` 的真实成功响应可能是空 body
@@ -66,4 +65,4 @@ Base URL：`https://codecheck-ext.cn-north-4.myhuaweicloud.com`
 - [Home](./Home.md)
 - [Capability Matrix](./Capability-Matrix.md)
 - [Tool Status Matrix](./Tool-Status-Matrix.md)
-- [Check Live Findings 2026-04-17](../check-live-findings-2026-04-17.md)
+- [Testing and Live Ops](./Testing-and-Live-Ops.md)

@@ -1,41 +1,41 @@
 # Testing and Live Ops
 
-这页把项目当前的测试形态、live 联调方式、部署观察点和性能结论放在一起，方便测试、运维和维护者对齐。
+这页把项目当前的测试层次、真实联调路径、部署观察点和性能结论放在一起，方便研发、测试和运维快速对齐。
 
-## 1. 当前测试层次
+## 当前测试层次
 
-仓库里的测试大致可以分成四层：
+仓库里的测试可以按四层理解：
 
-### 单元与回归测试
+### 1. 单元与回归测试
 
 - `tests/products/*`
-  - 产品 client 映射、错误处理、缓存行为
+  - 产品 client 映射、错误归一化、缓存行为
 - `tests/server/*`
-  - auth、session、http app、注册器、写路径集成
+  - auth、session、http app、工具注册、写路径集成
 
-### 共享 HTTP 模式测试
+### 2. 共享 HTTP 模式测试
 
 - `tests/server/http-app.test.ts`
-  - HTTP app 行为与请求日志
+  - HTTP app 行为、请求日志、会话恢复
 - `tests/server/http.test.ts`
   - HTTP 入口 keep-alive 与服务参数
 - `tests/server/http-live-smoke.test.ts`
-  - 共享 `http` 模式下的真实 initialize / auth / tools/call 链路
+  - `initialize -> auth -> tools/call` 的真实共享链路
 
-### 写路径集成测试
+### 3. 写路径集成测试
 
 - `tests/server/write-path-integration.test.ts`
   - Req / Deploy / Pipeline 写路径
-  - 验证 session-aware runtime client 真正带上了用户鉴权
+  - 验证 session-aware runtime client 是否真正带上了当前用户身份
 
-### live smoke / 模块级联调
+### 4. 模块级 live smoke
 
 - `tests/products/*/client-live-smoke.test.ts`
-  - 用真实 `AK/SK`、真实区域和真实 endpoint 对模块能力做抽样验证
+  - 使用真实 `AK/SK`、真实区域和真实 endpoint 对模块能力做抽样验证
 
-## 2. 当前 live 结论
+## 当前 live 结论
 
-截至 `2026-04-20`：
+截至 `2026-04-21`：
 
 - 已完成模块级 live 闭环：
   - Req
@@ -48,14 +48,15 @@
   - Deploy
   - Artifact
 
-对测试同学最重要的一点是：
+这里的 `Partial` 主要不是“代码没写完”，而是：
 
-- `Partial` 不等于“代码没写”
-- 它更多表示“真实环境里还缺可稳定复现的成功样本”
+- 当前租户缺稳定正样本
+- 北京四仍有未发布路由
+- Deploy 仍受到老旧模板 runtime 的现实约束
 
-## 3. 当前共享 HTTP 模式怎么验证
+## 当前共享 HTTP 模式最小验证路径
 
-推荐的最小验证路径：
+推荐按固定顺序验证：
 
 1. `initialize`
 2. `auth_configure_session`
@@ -64,198 +65,136 @@
 5. `pipeline_list_pipelines`
 6. `build_list_jobs`
 
-如果这几步通了，通常说明：
+如果这条链路通了，通常说明：
 
 - session 建立正常
-- auth token / cookie 复用正常
-- 区域默认地址正常
-- 基础签名能力正常
+- cookie / `auth_token` 恢复正常
+- 标准区域默认地址正常
+- 基础签名链路正常
 
-## 4. 最近几轮真实写路径联调关注点
+## 最近一轮已完成的公网部署联调
 
-最近仓库重点做过的是真实写路径联调，尤其是：
-
-- Req
-  - `req_create_work_item`
-  - `req_update_work_item`
-- Pipeline
-  - `pipeline_run_pipeline`
-- Deploy
-  - `deploy_start_app`
-  - `deploy_get_execution_params`
-  - `deploy_get_history_detail`
-  - `deploy_get_app_log`
-  - `deploy_stop_app`
-  - `deploy_rollback_app`
-
-这类联调的价值在于：
-
-- 不只是验证“工具能返回”
-- 而是验证共享 `http` 模式下，用户身份真的能走完整条写链路
-
-## 5. 当前服务器与部署观察点
-
-当前已知联调服务器：
+截至 `2026-04-20`，已在这台实例上完成真实部署与联调：
 
 - 主机：`123.249.85.184`
-- 服务目录：`/opt/codearts-mcp`
-- systemd 服务：`codearts-mcp.service`
-- 健康检查：
-  - `GET /health`
-  - `POST /mcp`
+- 健康检查：`http://123.249.85.184/health`
+- MCP 入口：`http://123.249.85.184/mcp`
+- 实际部署方式：
+  - `systemd + nginx`
+  - Node 运行时：`/opt/node22`
+  - 应用目录：`/root/codearts-mcp`
+  - 服务名：`codearts-mcp.service`
 
-最近已经确认：
+这轮对部署后服务的真实验证已覆盖：
 
-- 线上服务可正常 build、restart、health-check
-- 共享 MCP endpoint 可正常 initialize
-- 真正的 `tools/call` 已可通过真实 `AK/SK` 会话执行
+- `initialize`
+- `tools/list`
+  - 返回 `158` 个工具
+- `auth_configure_session`
+- cookie 重连
+- `auth_token` 重连
+- 读路径：
+  - `req_list_projects`
+  - `repo_list_repositories`
+  - `pipeline_list_pipelines`
+  - `build_list_jobs`
+- 写路径：
+  - `req_create_work_item`
+  - `pipeline_run_pipeline`
+  - `deploy_start_app`
 
-## 6. 性能结论怎么解读
+其中 `deploy_start_app` 当前返回的是“该应用需通过流水线触发发布”的受控业务错误，这恰恰说明共享写链路已经真正打到了上游 Deploy 服务，而不是只停留在本地参数校验层。
 
-截至 `2026-04-20`，项目已经补上的性能加固包括：
+## 当前性能结论
+
+最近一轮加固后，已落地的性能优化包括：
 
 - 用户级产品 client 缓存
 - auth 仓库文件检查节流
 - 高频列表工具短 TTL 缓存
-- 高频列表读路径 shared read-through cache + in-flight dedupe
+- shared read-through cache + in-flight dedupe
 - HTTP request log 扩展
-- `GET` 只读请求受控超时与单次重试
+- `GET` 请求受控超时与单次重试
 - HTTP keep-alive
 
-最近联调的一个关键结论是：
+最近联调采样得到的关键结论：
 
-- 服务进程内部日志里，缓存命中后的很多调用已经是毫秒级
-- 外部链路仍可能看到 `0.5s-2s` 甚至偶发 `502`
+- 服务内调用：
+  - `req_list_projects` 约 `108ms -> 2.1ms`
+  - `pipeline_list_pipelines` 约 `175.8ms -> 2.3ms`
+  - `build_list_jobs` 约 `568.5ms -> 2.1ms`
+- 公网入口：
+  - `req_list_projects` 约 `187.8ms -> 58.2ms`
 
-这意味着：
+这说明两件事：
 
-- 应用层性能问题已经显著下降
-- 入口链路与外部网络稳定性仍然值得单独排查
+- 应用层内部性能已经明显改善
+- 如果外部仍出现 `0.5s-2s` 或偶发 `502`，优先怀疑入口网络层、代理层或客户端到服务器的链路，而不是先怀疑产品 handler 本身
 
-新增日志字段的解读建议：
+## 现在怎么看请求日志
 
-- `cacheHits` 有值、且 `upstreamRequestCount = 0`
-  - 说明这次工具调用完全命中进程内缓存
+共享 HTTP 请求日志已经扩展为可直接辅助排障：
+
+- `cacheHits`
+- `upstreamRequestCount`
+- `upstreamDurationMs`
+- `upstreamStatusCodes`
+- `durationMs`
+
+最实用的读法：
+
+- `cacheHits` 有值且 `upstreamRequestCount = 0`
+  - 说明这次完全命中进程内缓存
 - `durationMs` 明显高于 `upstreamDurationMs`
-  - 更像入口代理、网络抖动或 transport 额外开销
+  - 更像入口代理或网络抖动
 - `upstreamStatusCodes` 里反复出现 `5xx`
-  - 先查上游服务可用性，再考虑是否需要改 MCP 处理逻辑
+  - 先查上游服务状态，再决定是否需要修改 MCP 逻辑
 
-## 7. 现在最值得继续测试的方向
+## 当前最值得继续回归的方向
 
-如果继续做深度测试，建议优先看下面三类：
+### 1. 可操作提示回归
 
-### 可用性提示回归
+重点关注：
 
-- 共享错误提示已经覆盖多类高频失败：
-  - `repo_*` 权限不足
-  - `build_*` 项目权限不足
-  - `check_*` 成员角色/权限不足
-  - `deploy_*` 项目不存在
-  - `artifact_*` 项目无权限
-  - `testplan_*` 服务未开通
-- 高频项目/资源级列表现在也开始补“空结果但不是报错”的引导提示：
-  - `req_list_work_items`
-  - `req_list_iterations`
-  - `req_list_project_members`
-  - `pipeline_list_pipelines`
-  - `deploy_list_apps`
-  - `deploy_list_environments`
-  - `deploy_list_histories`
-  - `deploy_list_app_host_groups`
-  - `deploy_list_host_groups`
-  - `deploy_list_tasks`
-  - `deploy_list_v4_applications`
-  - `deploy_list_v4_deploy_records`
-  - `deploy_list_v4_environment_applications`
-  - `deploy_list_v4_environments`
-  - `deploy_list_v4_orchestrations`
-  - `artifact_list_repositories`
-  - `artifact_list_files`
-  - `artifact_list_latest_version_files`
-  - `artifact_list_versions`
-  - `repo_list_repositories`
-  - `build_list_jobs`
-  - `build_list_project_records`
-  - `build_list_records`
-  - `build_list_build_parameters`
-  - `repo_list_branches`
-  - `repo_list_merge_requests`
-  - `repo_list_tags`
-  - `check_list_tasks`
+- 权限不足时是否给出产品级 hint
+- 列表空结果时是否补出 `project_id` / 服务开通 / 可见性提示
 
-这层回归的价值是：
+### 2. 入口链路稳定性
 
-- 降低“工具返回 0 条就是坏了”的误判
-- 把排障动作前移到 `project_id`、服务开通和项目成员可见性确认
-- 让 live 联调时更容易区分“实现问题”和“真实租户样本问题”
-
-### 入口链路稳定性
-
-- 外部直连 `/mcp` 的长连接表现
-- 是否存在未进入 Node 进程的 `502`
-
-如果要持续采样入口层稳定性，现在可以直接运行：
+当前已经提供 `probe:edge` 脚本做连续采样：
 
 ```bash
-npm run probe:edge -- --url http://127.0.0.1/mcp --access-key "$HUAWEICLOUD_AK" --secret-key "$HUAWEICLOUD_SK" --region cn-north-4 --iterations 5 --timeout-ms 30000
+npm run probe:edge -- --url http://123.249.85.184/mcp --access-key "$HUAWEICLOUD_AK" --secret-key "$HUAWEICLOUD_SK" --region cn-north-4 --iterations 20 --sleep-ms 1000 --output summary
 ```
 
-这个采样脚本会连续执行：
+它会连续执行：
 
 - `GET /health`
 - `POST /mcp` `initialize`
 - `POST /mcp` `auth_configure_session`
 
-并输出：
+并输出成功率、延迟分位数以及 `502` / network error / timeout 的入口层归因提示。
 
-- 每一步的原始样本
-- 分步骤成功率与延迟分位数
-- 针对 `502` / network error / timeout 的入口层归因提示
+### 3. 写路径回归
 
-### 写路径回归
+继续优先覆盖共享 `http` 模式下的：
 
-- Req / Pipeline / Deploy 的真实写链路
-- 回归时优先共享 `http` 模式，而不是只测 `stdio`
+- Req 写路径
+- Pipeline 写路径
+- Deploy 写路径
 
-### 区域与样本边界
+### 4. 区域与样本边界
 
-- TestPlan 未发布路由是否发生变化
-- Artifact 未发布路由是否发生变化
-- Deploy 是否新增健康模板样本
+持续观察：
 
-## 8. 推荐配套页面
+- TestPlan 未发布路由是否有变化
+- Artifact 未发布路由是否有变化
+- Deploy 是否出现新的健康模板样本
+
+## 配套页面
 
 - `docs/wiki/Architecture-Deep-Dive.md`
 - `docs/wiki/Team-Deployment.md`
 - `docs/wiki/Troubleshooting.md`
 - `docs/wiki/Capability-Matrix.md`
 - `docs/wiki/Tool-Status-Matrix.md`
-
-## 9. 当前最实用的排障心法
-
-看到失败时，先区分三种情况：
-
-- 直接报错，且附带权限/服务提示
-  - 先按提示确认成员权限、服务开通或 `project_id`
-- 正常返回，但列表为空，且附带项目级 hint
-  - 优先怀疑项目样本为空、服务未配置或查错项目
-- 外部调用很慢或直接 `502`
-  - 先看服务日志里有没有对应请求，再判断是应用层还是入口网络层
-
-## Edge Probe Output Modes
-
-`probe:edge` now supports long-running sampling helpers:
-
-```bash
-npm run probe:edge -- --url http://123.249.85.184/mcp --access-key "$HUAWEICLOUD_AK" --secret-key "$HUAWEICLOUD_SK" --region cn-north-4 --iterations 20 --sleep-ms 1000 --output summary
-```
-
-- `--output json`
-  - Full structured report with per-sample details.
-- `--output ndjson`
-  - One machine-readable line per iteration plus a final summary line.
-- `--output summary`
-  - Compact human-readable totals and likely-origin counts.
-- `--sleep-ms <n>`
-  - Pause between iterations so live sampling can run longer without hammering the endpoint.

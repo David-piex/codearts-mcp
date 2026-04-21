@@ -1,6 +1,9 @@
 # 团队共享部署
 
-这页只回答一个问题：如果把 `codearts-mcp` 部署到服务器，团队里的其他人应该怎么接入。
+这页回答两个问题：
+
+- `codearts-mcp` 作为共享 MCP 服务应该怎么部署
+- 团队成员接入时应该怎么用自己的 `AK/SK`
 
 ## 结论先说
 
@@ -8,27 +11,55 @@
 
 - 服务端部署 `http`
 - 每个用户第一次在自己的客户端里调用一次 `auth_configure_session`
-- 标准区域通常只传：
+- 标准区域通常只需要：
   - `access_key`
   - `secret_key`
   - `region`
 
-这意味着共享的是同一个 MCP 服务入口，不是共享同一套华为云业务凭证。
-现在服务端也支持把每个用户的凭证加密持久化保存：
+共享的是同一个 MCP 服务入口，不是共享同一套华为云业务凭证。
 
-- 客户端如果保留 cookie，正常重连时不需要重复填写 `AK/SK`
-- 客户端如果不保留 cookie，也可以改用固定 `auth_token` URL 来跨对话复用
+## 当前支持的部署方式
 
-## 服务端怎么部署
+仓库当前支持三类部署路径：
 
-先安装并构建：
+### 1. 宿主机直跑
 
 ```bash
 npm install
 npm run build
+node dist/src/server/index.js
 ```
 
-最小环境变量：
+### 2. PM2
+
+仓库内已有 `ecosystem.config.cjs`，适合长期驻留进程管理。
+
+### 3. Docker Compose
+
+仓库内已有 `docker-compose.yml`，适合标准容器部署；同时已预留共享鉴权持久化目录与 `MCP_AUTH_*` 配置。
+
+## 一条已验证的部署回退方案
+
+截至 `2026-04-20`，我们还验证过一条宿主机 fallback 部署方案：
+
+- 主机：`123.249.85.184`
+- 入口：
+  - `http://123.249.85.184/health`
+  - `http://123.249.85.184/mcp`
+- 方式：
+  - `systemd + nginx`
+  - Node 运行时：`/opt/node22`
+  - 应用目录：`/root/codearts-mcp`
+  - 服务名：`codearts-mcp.service`
+
+选择这条路径的原因不是仓库不支持 Docker，而是当时该服务器访问 Docker Hub 拉取基础镜像超时，因此改用宿主机进程管理完成部署验证。
+
+结论是：
+
+- 仓库推荐的共享 HTTP 运行形态是成立的
+- 即使不走 Docker，也能稳定对外提供共享 MCP 服务
+
+## 服务端最小环境变量
 
 ```env
 MCP_TRANSPORT=http
@@ -39,47 +70,25 @@ MCP_AUTH_MASTER_KEY=replace-with-a-long-random-secret
 MCP_AUTH_DATA_PATH=.codearts-mcp/auth-store.json
 ```
 
-如果你是通过 HTTPS 对外提供服务，建议再配：
+如果对外走 HTTPS，建议再配：
 
 ```env
 MCP_AUTH_COOKIE_SECURE=true
 ```
 
-启动：
+## 共享模式为什么不在服务器预置固定业务账号
 
-```bash
-node dist/src/server/index.js
-```
+因为项目的共享模型是：
 
-默认监听地址：
+- 服务器提供统一 MCP 服务入口
+- 每个用户的真实业务凭证保存在自己的 session / auth record 中
+- 用户之间的业务身份隔离，不混用同一套 `AK/SK`
 
-- `0.0.0.0:${MCP_HTTP_PORT}`
+这比把一套固定业务账号塞进服务端环境变量更适合团队场景，也更利于审计与权限边界控制。
 
-如果你直接用仓库里的 Docker Compose 模板，建议这样起步：
+## 团队成员怎么接入
 
-1. 复制 `.env.example` 为 `.env`
-2. 在 `.env` 里至少填好：
-   - `MCP_TRANSPORT=http`
-   - `MCP_AUTH_MASTER_KEY`
-   - `MCP_AUTH_DATA_PATH`
-3. 执行：
-
-```bash
-docker compose up -d --build
-```
-
-当前仓库里的 `docker-compose.yml` 已经做了两件关键事：
-
-- 把持久化鉴权目录挂载到宿主机的 `./.codearts-mcp`
-- 把 `MCP_AUTH_MASTER_KEY`、cookie 配置、TTL 等共享 HTTP 所需变量传入容器
-
-## 团队成员怎么接
-
-团队成员在客户端里连共享 MCP 服务后，第一步先调用：
-
-- `auth_configure_session`
-
-标准北京四示例：
+团队成员在客户端里连上共享服务后，第一步调用：
 
 ```json
 {
@@ -91,40 +100,41 @@ docker compose up -d --build
 
 成功后：
 
-- 这个用户后续调用的各产品工具都会使用他自己的凭证
-- 客户端正常重连时，服务端会通过稳定的 auth cookie/token 自动恢复身份
-- 如果客户端不保留 cookie，把返回的 `auth_token` 写到 `/mcp?auth_token=...` 里也能恢复身份
-- 只有首次配置、主动调用 `auth_clear_session`，或者服务端更换了主密钥后，才需要重新配置
+- 这个用户后续调用的所有产品工具都会使用他自己的凭证
+- 客户端保留 cookie 时，正常重连不需要重复填写 `AK/SK`
+- 客户端不保留 cookie 时，也可以改用固定 `auth_token` URL 继续复用
 
-推荐给团队成员的固定配置方式：
+推荐给团队成员的客户端配置方式：
 
 ```json
 {
   "mcpServers": {
     "codearts-shared": {
       "type": "http",
-      "url": "http://your-server-ip/mcp?auth_token=替换成第一次配置后返回的auth_token"
+      "url": "http://your-server-ip/mcp"
     }
   }
 }
 ```
 
-## 给团队成员的最小接入步骤
+如果客户端不会保留 cookie，再改成：
 
-1. 在客户端里添加共享 HTTP MCP 服务地址
-2. 连接后调用 `auth_configure_session`
-3. 先跑四个低风险读接口：
-   - `req_list_projects`
-   - `repo_list_repositories`
-   - `pipeline_list_pipelines`
-   - `build_list_jobs`
-4. 确认基础链路正常后，再进入具体业务模块
+```json
+{
+  "mcpServers": {
+    "codearts-shared": {
+      "type": "http",
+      "url": "http://your-server-ip/mcp?auth_token=replace-with-auth-token"
+    }
+  }
+}
+```
 
-## 为什么通常不需要手填各产品地址
+## 标准区域为什么通常不需要手填 `*_base_url`
 
-标准情况下，服务端会根据 `region` 自动推导各产品标准地址。
+标准情况下，服务端会根据 `region` 自动推导产品地址。
 
-北京四 `cn-north-4` 默认会推导为：
+北京四 `cn-north-4` 默认对应：
 
 - Req: `https://projectman-ext.cn-north-4.myhuaweicloud.com`
 - Repo: `https://codehub-ext.cn-north-4.myhuaweicloud.com`
@@ -135,60 +145,55 @@ docker compose up -d --build
 - Build: `https://cloudbuild-ext.cn-north-4.myhuaweicloud.com`
 - Artifact: `https://artifact.cn-north-4.myhuaweicloud.cn`
 
-所以大多数团队成员只需要自己的：
+所以大多数成员只需要自己的：
 
 - `AK`
 - `SK`
 - `region`
 
-## 什么情况下才需要自定义 `*_base_url`
+## 推荐的团队接入验收顺序
 
-只有在下面这些情况才建议额外传：
+1. `initialize`
+2. `auth_configure_session`
+3. `req_list_projects`
+4. `repo_list_repositories`
+5. `pipeline_list_pipelines`
+6. `build_list_jobs`
 
-- 你的租户明确走了非标准产品路由
-- 你在做排障，需要暂时强制指定某个产品地址
-- 你所在区域不是默认标准路由组合
+如果这条链路通了，再进入具体业务模块或写路径。
 
-如果不是这些情况，直接传 `AK/SK/region` 更稳，文档和排障成本也更低。
+## 运维侧最需要稳定保存的两项
 
-## 运维侧需要注意的事
+- `MCP_AUTH_MASTER_KEY`
+- `MCP_AUTH_DATA_PATH`
 
-- `MCP_AUTH_MASTER_KEY` 必须稳定保存
-  - 如果换了这个值，服务端将无法解密之前已经保存的用户凭证，用户需要重新配置
-- `MCP_AUTH_DATA_PATH` 应该放在持久化磁盘上
-  - 如果这个文件丢失，服务端就无法恢复已保存的用户身份
-- 如果对外是 HTTPS，建议开启 `MCP_AUTH_COOKIE_SECURE=true`
-- 共享部署不需要在服务器环境变量里预置某个固定业务账号的 `AK/SK`
-- 如果你用 Docker Compose，确认宿主机上的 `./.codearts-mcp` 不会被临时清空
+注意：
 
-## 如何判断“连接问题”还是“鉴权问题”
+- 如果 `MCP_AUTH_MASTER_KEY` 被更换，旧的凭证记录将无法解密，用户需要重新配置
+- 如果 `MCP_AUTH_DATA_PATH` 丢失，服务端将无法恢复已保存的用户身份
 
-看客户端日志时，建议这样判断：
+## 什么时候优先看部署问题，而不是业务问题
 
-- 如果 `listTools` 已经成功列出工具，说明共享 MCP 服务本身是可达的
-- 如果日志里出现 `onClose` / `Disconnected`，但下一次又自动连上，通常只是客户端 transport 重建
-- 只有当具体工具调用返回 `auth_error`，或者提示当前没有已配置的华为云凭证时，才需要重新检查 `auth_configure_session`
+如果你遇到的是：
 
-## 相关代码依据
+- `/health` 不通
+- `/mcp` 不通
+- `tools/list` 列不出来
 
-- `src/server/http-app.ts`
-  - 健康检查为 `GET /health`
-  - MCP 入口为 `/mcp`
-  - 负责根据请求里的 cookie / bearer / query token 恢复 auth 上下文
-- `src/server/create-server.ts`
-  - `auth_configure_session` 接收 `access_key`、`secret_key`、`region` 和可选 `*_base_url`
-  - HTTP 业务工具会按 `auth_id` 解析真实用户凭证
-- `src/server/auth-repository.ts`
-  - 服务端持久化保存加密后的鉴权记录
-- `src/core/config/region-defaults.ts`
-  - `resolveRegionDefaults(region)` 负责生成标准产品地址
+先看部署、代理和服务状态。
+
+如果你遇到的是：
+
+- 某个具体产品工具报权限或路由错误
+- 某个列表成功但返回 `0`
+
+优先看 `project_id`、服务开通、成员权限、当前租户样本和区域发布情况。
 
 ## 相关文档
 
 - `README.md`
-- `docs/quickstart.md`
-- `docs/client-examples.md`
 - `docs/faq.md`
+- `docs/release-checklist.md`
 - `docs/wiki/Getting-Started.md`
-- `docs/wiki/Architecture-Deep-Dive.md`
 - `docs/wiki/Testing-and-Live-Ops.md`
+- `docs/wiki/Troubleshooting.md`

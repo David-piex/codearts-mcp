@@ -1,11 +1,13 @@
 # CodeArts MCP
 
-`codearts-mcp` 是一个面向华为云 CodeArts 中国站的 MCP Server。
+`codearts-mcp` 是一个面向华为云 CodeArts 中国站的 MCP Server，目标是把 Req、Repo、Pipeline、Check、TestPlan、Deploy、Build、Artifact 这些分散的产品接口，收口成一套可本地使用、也可团队共享部署的统一 MCP 工具层。
 
-它把 CodeArts 的多个产品模块统一封装成一套 MCP 工具，支持两种使用方式：
+它支持两种接入方式：
 
-- 本地个人使用：`stdio`
-- 团队共享部署：`http + session`
+- `stdio`
+  - 适合个人本地接入 MCP 客户端
+- `http + session`
+  - 适合团队共享一个 MCP 服务入口，但每个用户仍使用自己的 `AK/SK`
 
 当前仓库已经收敛到 `8` 个核心产品模块，并暴露：
 
@@ -16,77 +18,40 @@
 - `158` total MCP tools in shared `http` mode
 <!-- GENERATED:readme-exposure-summary:end -->
 
-## 这个项目解决什么问题
+## 这个项目现在做到哪里了
 
-如果你直接对接 CodeArts 官方接口，通常会遇到这些问题：
+截至 `2026-04-21`，北京四 `cn-north-4` 的最近一轮真实联调已经确认：
 
-- 各产品接口风格不一致
-- 不同模块的 `project_id`、`tenant_id`、记录 id 含义容易混
-- 团队共享部署时，既想共用 MCP 服务，又不想共用一套业务账号
-- 很多接口是否在北京四真实可用，需要实际 AK/SK 验证后才知道
+- 共享 `http` 模式可稳定完成：
+  - `initialize`
+  - `tools/list`
+  - `auth_configure_session`
+  - cookie / `auth_token` 重连
+- 读路径已完成真实验证：
+  - `req_list_projects`
+  - `repo_list_repositories`
+  - `pipeline_list_pipelines`
+  - `build_list_jobs`
+- 写路径已完成受控联调：
+  - `req_create_work_item`
+  - `pipeline_run_pipeline`
+  - `deploy_start_app`
+    - 当前样本返回的是“该应用需走流水线发布”的受控业务错误，这说明写链路已真正到达上游服务
+- 高频读工具已补共享缓存与 in-flight dedupe，缓存命中后服务内很多调用已下降到毫秒级
 
-这个项目的目标就是把这些问题收口成一套统一的 MCP 使用方式：
+已完成模块级 live 闭环：
 
-- 统一鉴权
-- 统一工具命名
-- 统一返回结构
-- 对当前北京四真实可用情况给出明确文档，而不是只停留在代码实现层
-
-## 当前覆盖的 CodeArts 模块
-
-- Req / ProjectMan
+- Req
 - Repo
 - Pipeline
 - Check
+- Build
+
+已实现且可用，但仍受真实租户样本或区域发布限制：
+
 - TestPlan
 - Deploy
-- Build
 - Artifact
-
-## 当前可用情况
-
-截至 `2026-04-20`，在 `cn-north-4`（北京四）真实 AK/SK 验证下：
-
-- 已完整闭环：
-  - Req
-  - Repo
-  - Pipeline
-  - Check
-  - Build
-- 已实现且能用，但仍有真实租户/区域限制：
-  - TestPlan
-  - Deploy
-  - Artifact
-
-这里的 `Partial` 主要不是“没做完”，而是：
-
-- 当前租户业务数据不足
-- 某些官方路由在北京四没有发布
-- 某些写操作虽然已经 MCP 化，但还缺安全的真实正样本闭环
-
-## 最近一轮刷新后的维护结论
-
-- 共享 `http` 模式已经具备持久化鉴权、session 复用、写路径联调和回归测试
-- 高频列表工具已经补了短 TTL 缓存：
-  - `pipeline_list_pipelines`
-  - `req_list_projects`
-  - `repo_list_repositories`
-  - `build_list_jobs`
-- 这些高频列表读路径现在统一走 shared read-through cache，并带有 in-flight dedupe
-  - 相同参数并发命中冷缓存时，只会发起一次上游请求
-- 服务进程内部日志显示，缓存命中后的很多工具调用已经下降到毫秒级
-- shared HTTP request log 现在会额外记录：
-  - `cacheHits`
-  - `upstreamRequestCount`
-  - `upstreamDurationMs`
-  - `upstreamStatusCodes`
-- 共享层现在会额外补两类可操作提示：
-  - 工具报错时，尽量追加按产品归类的权限/服务开通/项目归属 hint
-  - 高频项目级列表返回空结果时，尽量提示先确认 `project_id`、服务配置和账号可见性
-- 基础 HTTP client 现在只对 `GET` 开启受控韧性策略
-  - 单次读取超时上限 `8s`
-  - 瞬时失败时只重试 `1` 次
-- 外部偶发高延迟和 `502` 目前更像入口网络层问题，而不是 MCP 业务处理本身
 
 ## 模块现状总表
 
@@ -103,26 +68,9 @@
 | Artifact | 12 | Partial | `5 Full / 0 Reachable / 7 Unpublished / 0 Code` |
 <!-- GENERATED:readme-module-numbers:end -->
 
-## 最值得先知道的结论
-
-- `Req / Repo / Pipeline / Check / Build`
-  - 当前暴露出来的 MCP 面已经可以直接用
-- `Deploy`
-  - 绝大多数主干能力已经可用
-  - 当前默认建议先走经典链路，不要先从 `v4` 开始
-  - 当前主要问题不是“没 MCP 化”，而是模板/runtime 较旧、部分 `v4` 记录链路缺正样本
-- `Artifact`
-  - 所有当前已发布的主干路由都已有对应 MCP 工具
-  - 主要缺口是北京四仍有 `7` 条未发布路由
-- `TestPlan`
-  - 已发布读面可以用
-  - `get_plan / list_runs / get_case / run_cases` 目前仍是北京四未发布
-
-## 两种部署/使用方式
+## 快速开始
 
 ### 1. 本地个人使用
-
-适合个人开发、自己在本机接入 MCP 客户端。
 
 最小环境变量：
 
@@ -145,136 +93,7 @@ node dist/src/server/index.js
 
 ### 2. 团队共享部署
 
-适合把 MCP 服务部署到一台服务器上，让多人共用同一个服务地址。
-
-共享模式下：
-
-- 服务器只部署一份 MCP 服务
-- 每个用户仍然使用自己的华为云 `AK/SK`
-- 每个用户在自己的 MCP 会话里调用 `auth_configure_session`
-- 标准区域通常只需要：
-  - `access_key`
-  - `secret_key`
-  - `region`
-
-共享部署时，服务器侧还需要额外准备持久化鉴权环境变量：
-
-```env
-MCP_AUTH_MASTER_KEY=replace-with-a-long-random-secret
-MCP_AUTH_DATA_PATH=.codearts-mcp/auth-store.json
-# optional:
-# MCP_AUTH_COOKIE_NAME=codearts_mcp_auth
-# MCP_AUTH_COOKIE_SECURE=true
-# MCP_AUTH_TOKEN_TTL_SECONDS=2592000
-```
-
-标准共享用法：
-
-```json
-{
-  "access_key": "your-ak",
-  "secret_key": "your-sk",
-  "region": "cn-north-4"
-}
-```
-
-对于标准区域，服务端会根据 `region` 自动补全各产品的标准地址；只有确实使用非标准路由时，才需要手动传 `*_base_url`。
-
-如果你直接用仓库自带部署模板：
-
-- `.env.example`
-  - 已包含共享 HTTP 持久化鉴权所需的关键变量示例
-- `docker-compose.yml`
-  - 已挂载 `./.codearts-mcp` 作为持久化凭证存储目录
-- `ecosystem.config.cjs`
-  - 已为 PM2 共享 HTTP 模式预留 `MCP_AUTH_*` 配置入口
-
-## 快速开始
-
-安装与构建：
-
-```bash
-npm install
-npm run build
-```
-
-如果你只想快速验证接通，建议先按这个顺序试：
-
-1. `req_list_projects`
-2. `repo_list_repositories`
-3. `pipeline_list_pipelines`
-4. `build_list_jobs`
-
-这样可以最快把“鉴权/区域/基础 endpoint 问题”和“具体产品问题”区分开。
-
-## 北京四标准地址参考
-
-大多数用户不需要手填，下面这组地址主要用于排障或定制路由时参考：
-
-- Req: `https://projectman-ext.cn-north-4.myhuaweicloud.com`
-- Repo: `https://codehub-ext.cn-north-4.myhuaweicloud.com`
-- Pipeline: `https://cloudpipeline-ext.cn-north-4.myhuaweicloud.com`
-- Check: `https://codecheck-ext.cn-north-4.myhuaweicloud.com`
-- TestPlan: `https://cloudtest-ext.cn-north-4.myhuaweicloud.com`
-- Deploy: `https://codearts-deploy.cn-north-4.myhuaweicloud.com`
-- Build: `https://cloudbuild-ext.cn-north-4.myhuaweicloud.com`
-- Artifact: `https://artifact.cn-north-4.myhuaweicloud.cn`
-
-## 推荐阅读顺序
-
-- 先看总览：
-  - `docs/wiki/Home.md`
-  - `docs/product-overview.md`
-  - `docs/service-profile.md`
-- 再看接入：
-  - `docs/quickstart.md`
-  - `docs/client-examples.md`
-  - `docs/wiki/Getting-Started.md`
-  - `docs/wiki/Team-Deployment.md`
-- 如果你要快速建立项目深度理解：
-  - `docs/wiki/Architecture-Deep-Dive.md`
-  - `docs/wiki/Testing-and-Live-Ops.md`
-- 再看当前真实状态：
-  - `docs/wiki/Capability-Matrix.md`
-  - `docs/wiki/Module-Live-Readiness.md`
-  - `docs/wiki/Unavailable-Items-For-Users.md`
-  - `docs/wiki/Deploy-Classic-Path.md`
-  - `docs/wiki/Current-Implementation-Status-2026-04-17.md`
-- 如果你关心细节验证：
-  - `docs/wiki/Deploy-Live-Validated.md`
-  - `docs/wiki/Artifact-Live-Validated.md`
-  - `docs/wiki/TestPlan-Live-Validated.md`
-  - `docs/wiki/Build-Live-Validated.md`
-- 如果你要给团队部署共享服务：
-  - `docs/wiki/Team-Deployment.md`
-
-## 维护命令
-
-- `npm run build`
-  - 构建 TypeScript
-- `npm test`
-  - 跑测试
-- `npm run lint`
-  - 代码风格检查
-- `npm run stats:modules`
-  - 输出模块统计
-- `npm run stats:check-docs`
-  - 检查 README / wiki 统计是否漂移
-- `npm run stats:sync-docs`
-  - 同步自动统计区块
-
-## Shared HTTP Auth Persistence
-
-共享 HTTP 模式现在支持持久化鉴权：
-
-- 服务器使用 `MCP_AUTH_MASTER_KEY` 对每个用户的 `AK/SK` 做加密存储
-- 持久化文件路径默认是 `MCP_AUTH_DATA_PATH=.codearts-mcp/auth-store.json`
-- 用户第一次调用 `auth_configure_session` 后，服务端会签发稳定的 auth cookie/token
-- 如果客户端保留 cookie，同一个用户后续正常重连时，不需要再次填写 `AK/SK`
-- 如果客户端不保留 cookie，可以把返回的 `auth_token` 固定写进 `/mcp?auth_token=...` 来跨对话复用
-- 如果要主动撤销当前用户保存的凭证，调用 `auth_clear_session`
-
-服务器部署时建议至少配置：
+最小环境变量：
 
 ```env
 MCP_TRANSPORT=http
@@ -285,29 +104,7 @@ MCP_AUTH_MASTER_KEY=replace-with-a-long-random-secret
 MCP_AUTH_DATA_PATH=.codearts-mcp/auth-store.json
 ```
 
-运维上再记住两点：
-
-- `MCP_AUTH_MASTER_KEY` 必须稳定保存；改掉以后，旧的已保存凭证将无法解密，用户需要重新配置
-- `MCP_AUTH_DATA_PATH` 最好放在持久化磁盘；文件丢失后，服务端就无法恢复已保存的用户身份
-
-## 共享 HTTP 客户端配置模板
-
-如果你要把它部署到服务器给多人共用，客户端配置里通常只需要写 MCP 地址，不要直接写 `AK/SK`。
-
-适合 Cursor / Codex Desktop 一类客户端的写法：
-
-```json
-{
-  "mcpServers": {
-    "codearts-shared": {
-      "type": "http",
-      "url": "https://your-host.example.com/mcp"
-    }
-  }
-}
-```
-
-连上后，第一步调用：
+用户第一次接入共享服务时，先调用：
 
 ```json
 {
@@ -317,26 +114,99 @@ MCP_AUTH_DATA_PATH=.codearts-mcp/auth-store.json
 }
 ```
 
-如果是北京四标准环境，通常只需要这三个字段；只有租户明确使用了非标准路由，才需要额外补各产品的 `*_base_url`。
+标准区域通常只需要这三个字段；只有确实使用非标准路由时，才需要额外传入各产品的 `*_base_url`。
 
-如果你的客户端切换对话后不会保留 cookie，推荐把第一次返回的 `auth_token` 固定到 MCP URL：
+## 当前已验证的一台共享联调实例
 
-```json
-{
-  "mcpServers": {
-    "codearts-shared": {
-      "type": "http",
-      "url": "https://your-host.example.com/mcp?auth_token=replace-with-auth-token"
-    }
-  }
-}
-```
+截至 `2026-04-20`，我们已经在下列公网实例上完成了一轮真实部署与深度联调：
 
-这样只要：
+- 地址：`http://123.249.85.184`
+- 健康检查：`http://123.249.85.184/health`
+- MCP 入口：`http://123.249.85.184/mcp`
+- 部署形态：
+  - `systemd + nginx`
+  - Node 运行时位于 `/opt/node22`
+  - 应用目录位于 `/root/codearts-mcp`
 
-- 没有调用 `auth_clear_session`
-- 服务端的 `MCP_AUTH_MASTER_KEY` 没变
-- 持久化鉴权文件没有丢失
-- token 没过期
+这轮验证证明：
 
-就不需要在新对话里重新填写 `AK/SK`。
+- 仓库不仅能在本地 `stdio` 模式工作
+- 也已经能以共享 `http` 形态对外服务，并完成真实会话恢复、读路径与受控写路径联调
+
+## 当前最值得先看的文档
+
+如果你想快速上手，按这个顺序看最省时间：
+
+1. `docs/wiki/Home.md`
+2. `docs/wiki/Getting-Started.md`
+3. `docs/wiki/Team-Deployment.md`
+4. `docs/wiki/Testing-and-Live-Ops.md`
+5. `docs/wiki/Current-Implementation-Status-2026-04-17.md`
+
+如果你想快速建立项目深度理解，继续看：
+
+- `docs/product-overview.md`
+- `docs/service-profile.md`
+- `docs/wiki/Architecture-Deep-Dive.md`
+- `docs/wiki/Capability-Matrix.md`
+- `docs/wiki/Module-Live-Readiness.md`
+
+如果你想看模块级真实验证细节，继续看：
+
+- `docs/wiki/Req-Live-Validated.md`
+- `docs/wiki/Check-Live-Validated.md`
+- `docs/wiki/Build-Live-Validated.md`
+- `docs/wiki/Deploy-Live-Validated.md`
+- `docs/wiki/Artifact-Live-Validated.md`
+- `docs/wiki/TestPlan-Live-Validated.md`
+
+## 推荐的最小验证顺序
+
+无论是本地还是共享部署，建议先按这个顺序试：
+
+1. `req_list_projects`
+2. `repo_list_repositories`
+3. `pipeline_list_pipelines`
+4. `build_list_jobs`
+
+共享 `http` 模式下，把 `auth_configure_session` 放在最前面：
+
+1. `initialize`
+2. `auth_configure_session`
+3. `req_list_projects`
+4. `repo_list_repositories`
+5. `pipeline_list_pipelines`
+6. `build_list_jobs`
+
+## 维护命令
+
+- `npm run build`
+  - 构建 TypeScript
+- `npm test`
+  - 运行测试
+- `npm run lint`
+  - 执行 lint
+- `npm run probe:edge`
+  - 对共享 HTTP 入口做多轮连通性与延迟采样
+- `npm run stats:modules`
+  - 输出模块统计
+- `npm run stats:check-docs`
+  - 检查 README / Wiki 统计块是否漂移
+- `npm run stats:sync-docs`
+  - 同步自动统计区块
+
+## Shared HTTP 持久化鉴权
+
+共享 `http` 模式支持持久化鉴权：
+
+- 用户第一次调用 `auth_configure_session` 后，服务端会加密保存该用户凭证
+- 客户端保留 cookie 时，后续正常重连不需要再次填写 `AK/SK`
+- 客户端不保留 cookie 时，也可以把返回的 `auth_token` 固定写到 `/mcp?auth_token=...`
+- 若需撤销当前用户已保存的凭证，调用 `auth_clear_session`
+
+运维侧需要稳定保存两项：
+
+- `MCP_AUTH_MASTER_KEY`
+- `MCP_AUTH_DATA_PATH`
+
+否则服务重启后将无法恢复已有会话。

@@ -331,4 +331,5 @@ bash deploy/manage-shared.sh start-ssl
 - `ecosystem.config.cjs`
 - `deploy/nginx/README.md`
 - `docs/wiki/Team-Deployment.md`
-- `docs/client-examples.md`
+- `docs/wiki/Testing-and-Live-Ops.md`
+- `docs/faq.md`
