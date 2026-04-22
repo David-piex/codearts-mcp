@@ -4,6 +4,243 @@ import type { ReturnTypeCreateHttpClient } from "../types.js";
 import { normalizeProviderError } from "../../core/errors/app-error.js";
 import { recordRequestCacheHit } from "../../server/request-context.js";
 
+type PipelineGroup = {
+  id?: string;
+  domain_id?: string;
+  project_id?: string;
+  name?: string;
+  parent_id?: string;
+  path_id?: string;
+  ordinal?: number;
+  creator?: string;
+  updater?: string;
+  create_time?: number;
+  update_time?: number;
+  children?: PipelineGroup[];
+};
+
+type PipelineMoveToGroupResult = {
+  code?: string;
+  pipeline_id?: string;
+  pipeline_name?: string;
+};
+
+type PipelineVariableGroupVariable = {
+  name?: string;
+  sequence?: number;
+  type?: string;
+  value?: string;
+  is_secret?: boolean;
+  description?: string;
+};
+
+type PipelineVariableGroupRelatedPipeline = {
+  pipeline_id?: string;
+  pipeline_name?: string;
+};
+
+type PipelineVariableGroup = {
+  id?: string;
+  project_id?: string;
+  domain_id?: string;
+  name?: string;
+  description?: string;
+  variables?: PipelineVariableGroupVariable[];
+  related_pipelines?: PipelineVariableGroupRelatedPipeline[];
+  creator_id?: string;
+  updater_id?: string;
+  creator_name?: string;
+  updater_name?: string;
+  create_time?: number;
+  update_time?: number;
+};
+
+type PipelineTag = {
+  tag_id?: string;
+  name?: string;
+  color?: string;
+  project_id?: string;
+  project_name?: string;
+};
+
+type PipelineRuleProperty = {
+  key?: string;
+  type?: string;
+  name?: string;
+  operator?: string;
+  value?: string;
+  value_type?: string;
+  is_valid?: boolean;
+};
+
+type PipelineRuleContent = {
+  group_name?: string;
+  can_modify_when_inherit?: boolean;
+  editable?: boolean;
+  properties?: PipelineRuleProperty[];
+};
+
+type PipelineRule = {
+  id?: string;
+  type?: string;
+  name?: string;
+  is_valid?: boolean;
+  version?: string;
+  plugin_id?: string;
+  plugin_name?: string;
+  plugin_version?: string;
+  creator?: string;
+  create_time?: string;
+  updater?: string;
+  update_time?: string;
+  content?: PipelineRuleContent[];
+};
+
+type PipelineRuleSummary = {
+  id?: string;
+  type?: string;
+  name?: string;
+  version?: string;
+  operator?: string;
+  operate_time?: number;
+};
+
+type PipelineRuleMutationResult = {
+  status?: boolean;
+  rule_id?: string;
+};
+
+type PipelineRuleRelatedInfo = {
+  rule_set_count?: number;
+  project_count?: number;
+  pipeline_count?: number;
+};
+
+type PipelineRuleType = {
+  typeKey?: string;
+  typeName?: string;
+};
+
+type PipelineStrategyRuleReference = {
+  id?: string;
+  is_valid?: boolean;
+};
+
+type PipelineStrategy = {
+  id?: string;
+  name?: string;
+  type?: string;
+  version?: string;
+  creator?: string;
+  create_time?: string;
+  updater?: string;
+  update_time?: string;
+  is_valid?: boolean;
+  level?: string;
+  is_public?: boolean;
+  rule_instances?: PipelineRule[];
+};
+
+type PipelineStrategySummary = {
+  id?: string;
+  name?: string;
+  type?: string;
+  version?: string;
+  operator?: string;
+  operate_time?: number;
+  is_valid?: boolean;
+  level?: string;
+  is_public?: boolean;
+  is_legacy?: boolean;
+};
+
+type PipelineStrategyMutationResult = {
+  status?: boolean;
+  rule_set_id?: string;
+};
+
+type PipelineStrategyRelatedInfo = {
+  project_count?: number;
+  pipeline_count?: number;
+};
+
+type PipelineExtensionModule = {
+  id?: number;
+  base_url?: string;
+  description?: string;
+  location?: string;
+  module_id?: string;
+  name?: string;
+  properties?: Record<string, unknown>;
+  publisher?: string;
+  type?: string;
+  version?: string;
+  tags?: string[];
+  url_relative?: string;
+  properties_list?: unknown[];
+  manifest_version?: string;
+};
+
+type PipelineExtensionModuleList = {
+  data?: PipelineExtensionModule[];
+  total?: number;
+};
+
+type PipelineExtensionEndpointAuthorization = {
+  parameters?: Record<string, unknown>;
+  scheme?: string;
+};
+
+type PipelineExtensionEndpointCreator = {
+  user_id?: string;
+  username?: string;
+};
+
+type PipelineExtensionEndpoint = {
+  authorization?: PipelineExtensionEndpointAuthorization;
+  uuid?: string;
+  url?: string;
+  name?: string;
+  project_uuid?: string;
+  projectUuid?: string;
+  region_name?: string;
+  regionName?: string;
+  data?: Record<string, unknown>;
+  module_id?: string;
+  moduleId?: string;
+  created_by?: PipelineExtensionEndpointCreator;
+};
+
+type PipelinePluginPublisher = {
+  publisher_unique_id?: string;
+  name?: string;
+  en_name?: string;
+  auth_status?: string;
+  description?: string;
+  logo_url?: string;
+  [key: string]: unknown;
+};
+
+type PipelineStagePlugin = {
+  [key: string]: unknown;
+};
+
+type PipelineBasePlugin = {
+  [key: string]: unknown;
+};
+
+type PipelinePlugin = {
+  [key: string]: unknown;
+};
+
+type PipelinePluginPart = {
+  [key: string]: unknown;
+};
+
+type PipelinePluginVersion = {
+  [key: string]: unknown;
+};
+
 export type PipelineClient = {
   getRunParameters: (input: {
     project_id: string;
@@ -125,6 +362,420 @@ export type PipelineClient = {
     description?: string;
   }) => Promise<{
     pipeline_run_id?: string;
+  }>;
+  deletePipeline: (input: { project_id: string; pipeline_id: string }) => Promise<{
+    pipeline_id: string;
+    deleted: boolean;
+  }>;
+  disablePipeline: (input: { project_id: string; pipeline_id: string }) => Promise<{
+    pipeline_id: string;
+    success: boolean;
+  }>;
+  enablePipeline: (input: { project_id: string; pipeline_id: string }) => Promise<{
+    pipeline_id: string;
+    success: boolean;
+  }>;
+  listGroups: (input: { project_id: string }) => Promise<{
+    groups: PipelineGroup[];
+  }>;
+  createGroup: (input: {
+    project_id: string;
+    name: string;
+    parent_id?: string;
+  }) => Promise<PipelineGroup>;
+  updateGroup: (input: {
+    project_id: string;
+    id: string;
+    name: string;
+  }) => Promise<{
+    id: string;
+    success: boolean;
+  }>;
+  deleteGroup: (input: {
+    project_id: string;
+    id: string;
+  }) => Promise<{
+    id: string;
+    success: boolean;
+  }>;
+  movePipelinesToGroup: (input: {
+    project_id: string;
+    group_id: string;
+    pipelines: Array<{
+      pipeline_id: string;
+      pipeline_name: string;
+    }>;
+  }) => Promise<{
+    results: PipelineMoveToGroupResult[];
+  }>;
+  createVariableGroup: (input: {
+    project_id: string;
+    name: string;
+    description?: string;
+    variables?: PipelineVariableGroupVariable[];
+  }) => Promise<PipelineVariableGroup>;
+  updateVariableGroup: (input: {
+    project_id: string;
+    id: string;
+    name: string;
+    description?: string;
+    variables?: PipelineVariableGroupVariable[];
+  }) => Promise<{
+    id: string;
+    success: boolean;
+  }>;
+  deleteVariableGroup: (input: {
+    project_id: string;
+    id: string;
+  }) => Promise<{
+    id: string;
+    success: boolean;
+  }>;
+  bindVariableGroupsToPipeline: (input: {
+    project_id: string;
+    pipeline_id: string;
+    pipeline_group_ids: string[];
+  }) => Promise<{
+    pipeline_id: string;
+    pipeline_group_ids: string[];
+    success: boolean;
+  }>;
+  getVariableGroup: (input: {
+    project_id: string;
+    id: string;
+  }) => Promise<PipelineVariableGroup>;
+  listPipelineVariableGroups: (input: {
+    project_id: string;
+    pipeline_id: string;
+  }) => Promise<{
+    groups: PipelineVariableGroup[];
+  }>;
+  listVariableGroups: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    name?: string;
+  }) => Promise<{
+    groups: PipelineVariableGroup[];
+    offset: number;
+    limit: number;
+    total?: number;
+  }>;
+  listTags: (input: { project_id: string; proj_id?: string }) => Promise<{
+    tags: PipelineTag[];
+    total: number;
+  }>;
+  createTag: (input: {
+    project_id: string;
+    name: string;
+    color: string;
+  }) => Promise<{
+    success: boolean;
+    project_id: string;
+    name: string;
+    color: string;
+  }>;
+  updateTag: (input: {
+    project_id: string;
+    tag_id: string;
+    name: string;
+    color: string;
+  }) => Promise<{
+    success: boolean;
+    project_id: string;
+    tag_id: string;
+    name: string;
+    color: string;
+  }>;
+  deleteTag: (input: { project_id: string; tag_id: string }) => Promise<{
+    success: boolean;
+    project_id: string;
+    tag_id: string;
+  }>;
+  setTagsForPipelines: (input: {
+    project_id: string;
+    pipeline_ids: string[];
+    tag_ids: string[];
+  }) => Promise<{
+    success: boolean;
+    project_id: string;
+    pipeline_ids: string[];
+    tag_ids: string[];
+  }>;
+  getRule: (input: { domain_id: string; rule_id: string }) => Promise<PipelineRule>;
+  listRules: (input: {
+    domain_id: string;
+    offset: number;
+    limit: number;
+    cloud_project_id?: string;
+    type?: string;
+    name?: string;
+  }) => Promise<{
+    data: PipelineRuleSummary[];
+    total?: number;
+  }>;
+  createRule: (input: {
+    domain_id: string;
+    name: string;
+    type: string;
+    layout_content: string;
+    plugin_id?: string;
+    plugin_name?: string;
+    plugin_version?: string;
+    content: PipelineRuleContent[];
+  }) => Promise<PipelineRuleMutationResult>;
+  updateRule: (input: {
+    domain_id: string;
+    rule_id: string;
+    name: string;
+    type: string;
+    plugin_id?: string;
+    plugin_name?: string;
+    plugin_version?: string;
+    content: PipelineRuleContent[];
+  }) => Promise<PipelineRuleMutationResult>;
+  deleteRule: (input: { domain_id: string; rule_id: string }) => Promise<PipelineRuleMutationResult>;
+  getRuleRelatedInfo: (input: {
+    domain_id: string;
+    rule_id: string;
+  }) => Promise<PipelineRuleRelatedInfo>;
+  getStrategy: (input: {
+    domain_id: string;
+    rule_set_id: string;
+    cloud_project_id?: string;
+  }) => Promise<PipelineStrategy>;
+  listStrategies: (input: {
+    domain_id: string;
+    offset: number;
+    limit: number;
+    include_tenant_rule_set?: boolean;
+    name?: string;
+    is_valid?: boolean;
+    type?: string;
+  }) => Promise<{
+    data: PipelineStrategySummary[];
+    total?: number;
+  }>;
+  createStrategy: (input: {
+    domain_id: string;
+    name: string;
+    rules: PipelineStrategyRuleReference[];
+  }) => Promise<PipelineStrategyMutationResult>;
+  updateStrategy: (input: {
+    domain_id: string;
+    rule_set_id: string;
+    name: string;
+    rules?: PipelineStrategyRuleReference[];
+  }) => Promise<PipelineStrategyMutationResult>;
+  deleteStrategy: (input: {
+    domain_id: string;
+    rule_set_id: string;
+  }) => Promise<PipelineStrategyMutationResult>;
+  switchStrategy: (input: {
+    domain_id: string;
+    rule_set_id: string;
+    is_valid: boolean;
+  }) => Promise<PipelineStrategyMutationResult>;
+  getStrategyRelatedInfo: (input: {
+    domain_id: string;
+    rule_set_id: string;
+  }) => Promise<PipelineStrategyRelatedInfo>;
+  listStrategyChildren: (input: {
+    domain_id: string;
+    rule_set_id: string;
+    offset?: number;
+    limit?: number;
+  }) => Promise<{
+    data: PipelineStrategySummary[];
+    total?: number;
+  }>;
+  listProjectStrategies: (input: {
+    project_id: string;
+    offset: number;
+    limit: number;
+    include_tenant_rule_set?: boolean;
+    name?: string;
+    is_valid?: boolean;
+    type?: string;
+  }) => Promise<{
+    data: PipelineStrategySummary[];
+    total?: number;
+  }>;
+  getProjectStrategy: (input: {
+    project_id: string;
+    rule_set_id: string;
+  }) => Promise<PipelineStrategy>;
+  getProjectStrategyRelatedInfo: (input: {
+    project_id: string;
+    rule_set_id: string;
+  }) => Promise<PipelineStrategyRelatedInfo>;
+  inheritProjectStrategy: (input: {
+    project_id: string;
+    name: string;
+    parent_id: string;
+    rules?: string[];
+    is_valid: boolean;
+  }) => Promise<PipelineStrategyMutationResult>;
+  switchProjectStrategy: (input: {
+    project_id: string;
+    rule_set_id: string;
+    is_valid: boolean;
+  }) => Promise<PipelineStrategyMutationResult>;
+  deleteProjectStrategy: (input: {
+    project_id: string;
+    rule_set_id: string;
+  }) => Promise<PipelineStrategyMutationResult>;
+  getProjectStrategyDetail: (input: {
+    project_id: string;
+    rule_set_id: string;
+  }) => Promise<PipelineStrategySummary>;
+  updateProjectStrategy: (input: {
+    project_id: string;
+    rule_set_id: string;
+    name: string;
+    rules: PipelineStrategyRuleReference[];
+  }) => Promise<PipelineStrategyMutationResult>;
+  createProjectStrategy: (input: {
+    project_id: string;
+    name: string;
+    rules: PipelineStrategyRuleReference[];
+  }) => Promise<PipelineStrategyMutationResult>;
+  listPublishers: (input: {
+    domain_id: string;
+    offset: number;
+    limit: number;
+  }) => Promise<{
+    items: PipelinePluginPublisher[];
+    total: number;
+  }>;
+  listAvailablePublishers: (input: { domain_id: string }) => Promise<{
+    items: PipelinePluginPublisher[];
+  }>;
+  listStagePlugins: (input: {
+    domain_id: string;
+    use_condition: string;
+    business_type?: string[];
+    deploy_type?: string;
+    comp_extend_type?: string;
+  }) => Promise<{
+    items: PipelineStagePlugin[];
+  }>;
+  listBasePlugins: (input: { domain_id: string }) => Promise<{
+    items: PipelineBasePlugin[];
+  }>;
+  listBasePluginsPaged: (input: {
+    domain_id: string;
+    offset: number;
+    limit: number;
+  }) => Promise<{
+    items: PipelineBasePlugin[];
+    total: number;
+  }>;
+  listPlugins: (input: {
+    domain_id: string;
+    offset: number;
+    limit: number;
+    plugin_attribution?: string;
+    business_type?: string[];
+    maintainer?: string;
+    plugin_name?: string;
+  }) => Promise<{
+    items: PipelinePlugin[];
+    total?: number;
+  }>;
+  getPluginInputs: (input: {
+    domain_id: string;
+    plugin_name: string;
+    display_name: string;
+    version: string;
+    plugin_attribution: string;
+  }) => Promise<{
+    items: PipelinePluginPart[];
+  }>;
+  getPluginOutputs: (input: {
+    domain_id: string;
+    plugin_name: string;
+    display_name: string;
+    version: string;
+    plugin_attribution: string;
+  }) => Promise<{
+    items: PipelinePluginPart[];
+  }>;
+  listPluginVersions: (input: {
+    domain_id: string;
+    plugin_name: string;
+    offset: number;
+    limit: number;
+  }) => Promise<{
+    items: PipelinePluginVersion[];
+    total: number;
+  }>;
+  getPluginVersion: (input: {
+    domain_id: string;
+    plugin_name: string;
+    version: string;
+  }) => Promise<{
+    item: PipelinePluginVersion;
+  }>;
+  listExtensionModules: (input: {
+    locations: string[];
+    project_id?: string;
+    region_name?: string;
+    name?: string;
+    product_line?: string;
+    tags?: string[];
+    offset?: number;
+    limit?: number;
+  }) => Promise<{
+    modules: PipelineExtensionModule[];
+    total: number;
+  }>;
+  getExtensionModule: (input: {
+    module_id: string;
+  }) => Promise<{
+    modules: PipelineExtensionModule[];
+  }>;
+  listExtensionEndpoints: (input: {
+    project_id: string;
+    region_name: string;
+    module_id?: string;
+    offset?: number;
+    limit?: number;
+  }) => Promise<{
+    endpoints: PipelineExtensionEndpoint[];
+    total: number;
+  }>;
+  createExtensionEndpoint: (input: {
+    project_id?: string;
+    region_name?: string;
+    module_id?: string;
+    name?: string;
+    url?: string;
+    authorization?: PipelineExtensionEndpointAuthorization;
+    data?: Record<string, unknown>;
+  }) => Promise<PipelineExtensionEndpoint>;
+  updateExtensionEndpoint: (input: {
+    uuid: string;
+    project_id?: string;
+    region_name?: string;
+    module_id?: string;
+    name?: string;
+    url?: string;
+    authorization?: PipelineExtensionEndpointAuthorization;
+    data?: Record<string, unknown>;
+  }) => Promise<PipelineExtensionEndpoint>;
+  getExtensionEndpoint: (input: {
+    uuid: string;
+  }) => Promise<PipelineExtensionEndpoint>;
+  deleteExtensionEndpoint: (input: {
+    uuid: string;
+    project_id?: string;
+  }) => Promise<{
+    uuid: string;
+    success: boolean;
+  }>;
+  listRuleTypes: (input: { organization_id: string }) => Promise<{
+    items: PipelineRuleType[];
   }>;
   listTemplates: (input: {
     tenant_id: string;
@@ -262,6 +913,176 @@ export function createPipelineClient(
         listCacheKeys.delete(key);
       }
     }
+  }
+
+  function normalizeVariableGroup(
+    projectId: string,
+    group: PipelineVariableGroup
+  ): PipelineVariableGroup {
+    return {
+      id: group.id,
+      project_id: group.project_id ?? projectId,
+      domain_id: group.domain_id,
+      name: group.name,
+      description: group.description,
+      variables: group.variables,
+      related_pipelines: group.related_pipelines,
+      creator_id: group.creator_id,
+      updater_id: group.updater_id,
+      creator_name: group.creator_name,
+      updater_name: group.updater_name,
+      create_time: group.create_time,
+      update_time: group.update_time
+    };
+  }
+
+  function extractVariableGroups(
+    projectId: string,
+    response:
+      | PipelineVariableGroup[]
+      | {
+          pipeline_variable_groups?: PipelineVariableGroup[];
+          variable_groups?: PipelineVariableGroup[];
+          result?:
+            | PipelineVariableGroup[]
+            | {
+                pipeline_variable_groups?: PipelineVariableGroup[];
+                variable_groups?: PipelineVariableGroup[];
+              };
+        }
+  ) {
+    const rawGroups = Array.isArray(response)
+      ? response
+      : Array.isArray(response.result)
+        ? response.result
+        : (response.pipeline_variable_groups ??
+          response.variable_groups ??
+          response.result?.pipeline_variable_groups ??
+          response.result?.variable_groups ??
+          []);
+
+    return rawGroups.map((group) => normalizeVariableGroup(projectId, group));
+  }
+
+  function normalizeRuleTypes(
+    response:
+      | PipelineRuleType
+      | PipelineRuleType[]
+      | {
+          data?: PipelineRuleType[];
+          result?: PipelineRuleType | PipelineRuleType[];
+        }
+  ) {
+    if (Array.isArray(response)) {
+      return response;
+    }
+
+    if (response && typeof response === "object") {
+      if ("data" in response && Array.isArray(response.data)) {
+        return response.data;
+      }
+
+      if ("result" in response && Array.isArray(response.result)) {
+        return response.result;
+      }
+
+      if ("typeKey" in response || "typeName" in response) {
+        return [response as PipelineRuleType];
+      }
+
+      if ("result" in response && response.result && typeof response.result === "object") {
+        return [response.result as PipelineRuleType];
+      }
+    }
+
+    return [];
+  }
+
+  function normalizeExtensionModule(
+    module: PipelineExtensionModule,
+    fallbackLocation?: string
+  ): PipelineExtensionModule {
+    return {
+      id: module.id,
+      base_url: module.base_url,
+      description: module.description,
+      location: module.location ?? fallbackLocation,
+      module_id: module.module_id,
+      name: module.name,
+      properties: module.properties,
+      publisher: module.publisher,
+      type: module.type,
+      version: module.version,
+      tags: module.tags ?? [],
+      url_relative: module.url_relative,
+      properties_list: module.properties_list,
+      manifest_version: module.manifest_version
+    };
+  }
+
+  function extractExtensionModules(
+    response:
+      | PipelineExtensionModule[]
+      | {
+          result?:
+            | PipelineExtensionModule[]
+            | Record<string, PipelineExtensionModuleList | undefined>;
+        }
+      | Record<string, PipelineExtensionModuleList | undefined>
+  ) {
+    const payload =
+      response && typeof response === "object" && "result" in response ? response.result : response;
+
+    if (Array.isArray(payload)) {
+      return {
+        modules: payload.map((item: PipelineExtensionModule) => normalizeExtensionModule(item)),
+        total: payload.length
+      };
+    }
+
+    if (payload && typeof payload === "object") {
+      const modules: PipelineExtensionModule[] = [];
+      let total = 0;
+
+      for (const [location, list] of Object.entries(payload)) {
+        if (!list || typeof list !== "object") {
+          continue;
+        }
+
+        const items: PipelineExtensionModule[] = Array.isArray(list.data) ? list.data : [];
+        modules.push(
+          ...items.map((item: PipelineExtensionModule) => normalizeExtensionModule(item, location))
+        );
+        total += typeof list.total === "number" ? list.total : items.length;
+      }
+
+      return {
+        modules,
+        total
+      };
+    }
+
+    return {
+      modules: [],
+      total: 0
+    };
+  }
+
+  function normalizeExtensionEndpoint(
+    endpoint: PipelineExtensionEndpoint,
+    fallbackProjectId?: string
+  ): PipelineExtensionEndpoint {
+    return {
+      authorization: endpoint.authorization,
+      uuid: endpoint.uuid,
+      url: endpoint.url,
+      name: endpoint.name,
+      project_uuid: endpoint.project_uuid ?? endpoint.projectUuid ?? fallbackProjectId,
+      region_name: endpoint.region_name ?? endpoint.regionName,
+      data: endpoint.data,
+      module_id: endpoint.module_id ?? endpoint.moduleId,
+      created_by: endpoint.created_by
+    };
   }
 
   return {
@@ -552,6 +1373,1026 @@ export function createPipelineClient(
 
       return {
         pipeline_run_id: response.pipeline_run_id
+      };
+    },
+    async deletePipeline(input) {
+      clearProjectListCache(input.project_id);
+      const response = (await _http.delete(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipelines/${encodeURIComponent(input.pipeline_id)}`
+      )) as {
+        pipeline_id?: string;
+      };
+
+      return {
+        pipeline_id: response.pipeline_id ?? input.pipeline_id,
+        deleted: true
+      };
+    },
+    async disablePipeline(input) {
+      clearProjectListCache(input.project_id);
+      const response = (await _http.put(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipelines/${encodeURIComponent(input.pipeline_id)}/ban`
+      )) as boolean | { success?: boolean };
+
+      return {
+        pipeline_id: input.pipeline_id,
+        success: typeof response === "boolean" ? response : response.success ?? true
+      };
+    },
+    async enablePipeline(input) {
+      clearProjectListCache(input.project_id);
+      const response = (await _http.put(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipelines/${encodeURIComponent(input.pipeline_id)}/unban`
+      )) as boolean | { success?: boolean };
+
+      return {
+        pipeline_id: input.pipeline_id,
+        success: typeof response === "boolean" ? response : response.success ?? true
+      };
+    },
+    async listGroups(input) {
+      const response = unwrapPipelinePayload((await _http.get(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipeline-group/tree`
+      )) as PipelineGroup[] | { groups?: PipelineGroup[]; result?: PipelineGroup[] });
+
+      return {
+        groups: Array.isArray(response) ? response : (response.groups ?? response.result ?? [])
+      };
+    },
+    async createGroup(input) {
+      const response = unwrapPipelinePayload((await _http.post(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipeline-group/create`,
+        {
+          project_id: input.project_id,
+          name: input.name,
+          ...(input.parent_id ? { parent_id: input.parent_id } : {})
+        }
+      )) as PipelineGroup);
+
+      return {
+        id: response.id,
+        domain_id: response.domain_id,
+        project_id: response.project_id ?? input.project_id,
+        name: response.name ?? input.name,
+        parent_id: response.parent_id ?? input.parent_id,
+        path_id: response.path_id,
+        ordinal: response.ordinal,
+        creator: response.creator,
+        updater: response.updater,
+        create_time: response.create_time,
+        update_time: response.update_time,
+        children: response.children
+      };
+    },
+    async updateGroup(input) {
+      const response = unwrapPipelinePayload((await _http.post(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipeline-group/update`,
+        {
+          id: input.id,
+          name: input.name
+        }
+      )) as {
+        success?: boolean;
+      });
+
+      return {
+        id: input.id,
+        success: response.success ?? true
+      };
+    },
+    async deleteGroup(input) {
+      const query = new URLSearchParams({
+        id: input.id
+      });
+      const response = unwrapPipelinePayload((await _http.delete(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipeline-group/delete?${query.toString()}`
+      )) as {
+        success?: boolean;
+      });
+
+      return {
+        id: input.id,
+        success: response.success ?? true
+      };
+    },
+    async movePipelinesToGroup(input) {
+      clearProjectListCache(input.project_id);
+      const response = unwrapPipelinePayload((await _http.post(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipeline-group/pipeline/move`,
+        {
+          group_id: input.group_id,
+          pipelines: input.pipelines
+        }
+      )) as
+        | PipelineMoveToGroupResult[]
+        | {
+            results?: PipelineMoveToGroupResult[];
+          });
+
+      return {
+        results: Array.isArray(response) ? response : (response.results ?? [])
+      };
+    },
+    async createVariableGroup(input) {
+      const response = unwrapPipelinePayload((await _http.post(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipeline/variable/group/create`,
+        {
+          projectId: input.project_id,
+          name: input.name,
+          ...(typeof input.description !== "undefined" ? { description: input.description } : {}),
+          ...(typeof input.variables !== "undefined" ? { variables: input.variables } : {})
+        }
+      )) as PipelineVariableGroup);
+
+      return {
+        ...normalizeVariableGroup(input.project_id, response),
+        name: response.name ?? input.name,
+        description: response.description ?? input.description,
+        variables: response.variables ?? input.variables
+      };
+    },
+    async updateVariableGroup(input) {
+      const response = unwrapPipelinePayload((await _http.put(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipeline/variable/group/update`,
+        {
+          projectId: input.project_id,
+          id: input.id,
+          name: input.name,
+          ...(typeof input.description !== "undefined" ? { description: input.description } : {}),
+          ...(typeof input.variables !== "undefined" ? { variables: input.variables } : {})
+        }
+      )) as boolean | { success?: boolean });
+
+      return {
+        id: input.id,
+        success: typeof response === "boolean" ? response : response.success ?? true
+      };
+    },
+    async deleteVariableGroup(input) {
+      const query = new URLSearchParams({
+        id: input.id
+      });
+      const response = unwrapPipelinePayload((await _http.delete(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipeline/variable/group/delete?${query.toString()}`
+      )) as boolean | { success?: boolean });
+
+      return {
+        id: input.id,
+        success: typeof response === "boolean" ? response : response.success ?? true
+      };
+    },
+    async bindVariableGroupsToPipeline(input) {
+      const response = unwrapPipelinePayload((await _http.post(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipeline/variable/group/relation`,
+        {
+          pipeline_id: input.pipeline_id,
+          pipeline_group_ids: input.pipeline_group_ids
+        }
+      )) as boolean | { success?: boolean });
+
+      return {
+        pipeline_id: input.pipeline_id,
+        pipeline_group_ids: input.pipeline_group_ids,
+        success: typeof response === "boolean" ? response : response.success ?? true
+      };
+    },
+    async getVariableGroup(input) {
+      const response = unwrapPipelinePayload((await _http.get(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipeline/variable/group/${encodeURIComponent(input.id)}`
+      )) as PipelineVariableGroup);
+
+      return normalizeVariableGroup(input.project_id, response);
+    },
+    async listPipelineVariableGroups(input) {
+      const query = new URLSearchParams({
+        pipelineId: input.pipeline_id
+      });
+      const response = unwrapPipelinePayload((await _http.get(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipeline/variable/group/pipeline?${query.toString()}`
+      )) as
+        | PipelineVariableGroup[]
+        | {
+            pipeline_variable_groups?: PipelineVariableGroup[];
+            variable_groups?: PipelineVariableGroup[];
+            result?:
+              | PipelineVariableGroup[]
+              | {
+                  pipeline_variable_groups?: PipelineVariableGroup[];
+                  variable_groups?: PipelineVariableGroup[];
+                };
+          });
+
+      return {
+        groups: extractVariableGroups(input.project_id, response)
+      };
+    },
+    async listVariableGroups(input) {
+      const offset = (input.page - 1) * input.page_size;
+      const response = unwrapPipelinePayload((await _http.post(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipeline/variable/group/list`,
+        {
+          offset,
+          limit: input.page_size,
+          ...(typeof input.name !== "undefined" ? { name: input.name } : {})
+        }
+      )) as {
+        pipeline_variable_groups?: PipelineVariableGroup[];
+        variable_groups?: PipelineVariableGroup[];
+        offset?: number;
+        limit?: number;
+        total?: number;
+        result?: {
+          pipeline_variable_groups?: PipelineVariableGroup[];
+          variable_groups?: PipelineVariableGroup[];
+          offset?: number;
+          limit?: number;
+          total?: number;
+        };
+      });
+
+      return {
+        groups: extractVariableGroups(input.project_id, response),
+        offset: response.offset ?? response.result?.offset ?? offset,
+        limit: response.limit ?? response.result?.limit ?? input.page_size,
+        total: response.total ?? response.result?.total
+      };
+    },
+    async listTags(input) {
+      const query = new URLSearchParams();
+
+      if (input.proj_id) {
+        query.set("proj_id", input.proj_id);
+      }
+
+      const suffix = query.size > 0 ? `?${query.toString()}` : "";
+      const response = unwrapPipelinePayload((await _http.get(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipeline-tag/list${suffix}`
+      )) as PipelineTag[]);
+
+      return {
+        tags: response,
+        total: response.length
+      };
+    },
+    async createTag(input) {
+      const response = unwrapPipelinePayload((await _http.post(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipeline-tag/create`,
+        {
+          name: input.name,
+          color: input.color
+        }
+      )) as boolean | { success?: boolean });
+
+      return {
+        success: typeof response === "boolean" ? response : response.success ?? true,
+        project_id: input.project_id,
+        name: input.name,
+        color: input.color
+      };
+    },
+    async updateTag(input) {
+      const response = unwrapPipelinePayload((await _http.post(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipeline-tag/update`,
+        {
+          name: input.name,
+          color: input.color,
+          tagId: input.tag_id
+        }
+      )) as boolean | { success?: boolean });
+
+      return {
+        success: typeof response === "boolean" ? response : response.success ?? true,
+        project_id: input.project_id,
+        tag_id: input.tag_id,
+        name: input.name,
+        color: input.color
+      };
+    },
+    async deleteTag(input) {
+      const query = new URLSearchParams({
+        tagId: input.tag_id
+      });
+      const response = unwrapPipelinePayload((await _http.delete(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipeline-tag/delete?${query.toString()}`
+      )) as boolean | { success?: boolean });
+
+      return {
+        success: typeof response === "boolean" ? response : response.success ?? true,
+        project_id: input.project_id,
+        tag_id: input.tag_id
+      };
+    },
+    async setTagsForPipelines(input) {
+      const response = unwrapPipelinePayload((await _http.post(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipeline-tag/set-tags`,
+        {
+          pipelineList: input.pipeline_ids,
+          tagList: input.tag_ids
+        }
+      )) as boolean | { success?: boolean });
+
+      return {
+        success: typeof response === "boolean" ? response : response.success ?? true,
+        project_id: input.project_id,
+        pipeline_ids: input.pipeline_ids,
+        tag_ids: input.tag_ids
+      };
+    },
+    async getRule(input) {
+      const response = unwrapPipelinePayload((await _http.get(
+        `/v2/${encodeURIComponent(input.domain_id)}/rules/${encodeURIComponent(input.rule_id)}/detail`
+      )) as PipelineRule);
+
+      return response;
+    },
+    async listRules(input) {
+      const query = new URLSearchParams();
+
+      if (input.cloud_project_id) {
+        query.set("cloud_project_id", input.cloud_project_id);
+      }
+      query.set("offset", String(input.offset));
+      query.set("limit", String(input.limit));
+      if (input.type) {
+        query.set("type", input.type);
+      }
+      if (input.name) {
+        query.set("name", input.name);
+      }
+
+      const response = unwrapPipelinePayload((await _http.get(
+        `/v2/${encodeURIComponent(input.domain_id)}/rules/query?${query.toString()}`
+      )) as {
+        data?: PipelineRuleSummary[];
+        total?: number;
+      });
+
+      return {
+        data: response.data ?? [],
+        total: response.total
+      };
+    },
+    async createRule(input) {
+      const response = unwrapPipelinePayload((await _http.post(
+        `/v2/${encodeURIComponent(input.domain_id)}/rules/create`,
+        {
+          name: input.name,
+          type: input.type,
+          layout_content: input.layout_content,
+          ...(input.plugin_id ? { plugin_id: input.plugin_id } : {}),
+          ...(input.plugin_name ? { plugin_name: input.plugin_name } : {}),
+          ...(input.plugin_version ? { plugin_version: input.plugin_version } : {}),
+          content: input.content
+        }
+      )) as PipelineRuleMutationResult);
+
+      return {
+        status: response.status ?? true,
+        rule_id: response.rule_id
+      };
+    },
+    async updateRule(input) {
+      const response = unwrapPipelinePayload((await _http.put(
+        `/v2/${encodeURIComponent(input.domain_id)}/rules/${encodeURIComponent(input.rule_id)}/update`,
+        {
+          name: input.name,
+          type: input.type,
+          ...(input.plugin_id ? { plugin_id: input.plugin_id } : {}),
+          ...(input.plugin_name ? { plugin_name: input.plugin_name } : {}),
+          ...(input.plugin_version ? { plugin_version: input.plugin_version } : {}),
+          content: input.content
+        }
+      )) as PipelineRuleMutationResult);
+
+      return {
+        status: response.status ?? true,
+        rule_id: response.rule_id ?? input.rule_id
+      };
+    },
+    async deleteRule(input) {
+      const response = unwrapPipelinePayload((await _http.delete(
+        `/v2/${encodeURIComponent(input.domain_id)}/rules/${encodeURIComponent(input.rule_id)}/delete`
+      )) as PipelineRuleMutationResult);
+
+      return {
+        status: response.status ?? true,
+        rule_id: response.rule_id ?? input.rule_id
+      };
+    },
+    async getRuleRelatedInfo(input) {
+      const response = unwrapPipelinePayload((await _http.get(
+        `/v2/${encodeURIComponent(input.domain_id)}/rules/${encodeURIComponent(input.rule_id)}/related/query`
+      )) as PipelineRuleRelatedInfo);
+
+      return {
+        rule_set_count: response.rule_set_count,
+        project_count: response.project_count,
+        pipeline_count: response.pipeline_count
+      };
+    },
+    async getStrategy(input) {
+      const query = new URLSearchParams();
+      if (input.cloud_project_id) {
+        query.set("cloud_project_id", input.cloud_project_id);
+      }
+
+      const response = unwrapPipelinePayload((await _http.get(
+        `/v2/${encodeURIComponent(input.domain_id)}/tenant/rule-sets/${encodeURIComponent(input.rule_set_id)}/detail${query.size > 0 ? `?${query.toString()}` : ""}`
+      )) as PipelineStrategy);
+
+      return response;
+    },
+    async listStrategies(input) {
+      const query = new URLSearchParams();
+
+      query.set("offset", String(input.offset));
+      query.set("limit", String(input.limit));
+      query.set(
+        "include_tenant_rule_set",
+        String(input.include_tenant_rule_set ?? true)
+      );
+      if (input.name) {
+        query.set("name", input.name);
+      }
+      if (typeof input.is_valid === "boolean") {
+        query.set("is_valid", String(input.is_valid));
+      }
+      if (input.type) {
+        query.set("type", input.type);
+      }
+
+      const response = unwrapPipelinePayload((await _http.get(
+        `/v2/${encodeURIComponent(input.domain_id)}/tenant/rule-sets/query?${query.toString()}`
+      )) as {
+        data?: PipelineStrategySummary[];
+        total?: number;
+      });
+
+      return {
+        data: response.data ?? [],
+        total: response.total
+      };
+    },
+    async createStrategy(input) {
+      const response = unwrapPipelinePayload((await _http.post(
+        `/v2/${encodeURIComponent(input.domain_id)}/tenant/rule-sets/create`,
+        {
+          name: input.name,
+          rules: input.rules
+        }
+      )) as PipelineStrategyMutationResult);
+
+      return {
+        status: response.status ?? true,
+        rule_set_id: response.rule_set_id
+      };
+    },
+    async updateStrategy(input) {
+      const response = unwrapPipelinePayload((await _http.put(
+        `/v2/${encodeURIComponent(input.domain_id)}/tenant/rule-sets/${encodeURIComponent(input.rule_set_id)}/update`,
+        {
+          name: input.name,
+          ...(input.rules ? { rules: input.rules } : {})
+        }
+      )) as PipelineStrategyMutationResult);
+
+      return {
+        status: response.status ?? true,
+        rule_set_id: response.rule_set_id ?? input.rule_set_id
+      };
+    },
+    async deleteStrategy(input) {
+      const response = unwrapPipelinePayload((await _http.delete(
+        `/v2/${encodeURIComponent(input.domain_id)}/tenant/rule-sets/${encodeURIComponent(input.rule_set_id)}/delete`
+      )) as PipelineStrategyMutationResult);
+
+      return {
+        status: response.status ?? true,
+        rule_set_id: response.rule_set_id ?? input.rule_set_id
+      };
+    },
+    async switchStrategy(input) {
+      const response = unwrapPipelinePayload((await _http.put(
+        `/v2/${encodeURIComponent(input.domain_id)}/tenant/rule-sets/${encodeURIComponent(input.rule_set_id)}/switch`,
+        {
+          is_valid: input.is_valid
+        }
+      )) as PipelineStrategyMutationResult);
+
+      return {
+        status: response.status ?? true,
+        rule_set_id: response.rule_set_id ?? input.rule_set_id
+      };
+    },
+    async getStrategyRelatedInfo(input) {
+      const response = unwrapPipelinePayload((await _http.get(
+        `/v2/${encodeURIComponent(input.domain_id)}/tenant/rule-sets/${encodeURIComponent(input.rule_set_id)}/related/query`
+      )) as PipelineStrategyRelatedInfo);
+
+      return {
+        project_count: response.project_count,
+        pipeline_count: response.pipeline_count
+      };
+    },
+    async listStrategyChildren(input) {
+      const query = new URLSearchParams();
+
+      if (typeof input.offset === "number") {
+        query.set("offset", String(input.offset));
+      }
+      if (typeof input.limit === "number") {
+        query.set("limit", String(input.limit));
+      }
+
+      const response = unwrapPipelinePayload((await _http.get(
+        `/v2/${encodeURIComponent(input.domain_id)}/tenant/rule-sets/${encodeURIComponent(input.rule_set_id)}/children${query.size > 0 ? `?${query.toString()}` : ""}`
+      )) as {
+        data?: PipelineStrategySummary[];
+        total?: number;
+      });
+
+      return {
+        data: response.data ?? [],
+        total: response.total
+      };
+    },
+    async listProjectStrategies(input) {
+      const query = new URLSearchParams();
+
+      query.set("offset", String(input.offset));
+      query.set("limit", String(input.limit));
+      query.set(
+        "include_tenant_rule_set",
+        String(input.include_tenant_rule_set ?? false)
+      );
+      if (input.name) {
+        query.set("name", input.name);
+      }
+      if (typeof input.is_valid === "boolean") {
+        query.set("is_valid", String(input.is_valid));
+      }
+      if (input.type) {
+        query.set("type", input.type);
+      }
+
+      const response = unwrapPipelinePayload((await _http.get(
+        `/v2/${encodeURIComponent(input.project_id)}/rule-sets/query?${query.toString()}`
+      )) as {
+        data?: PipelineStrategySummary[];
+        total?: number;
+      });
+
+      return {
+        data: response.data ?? [],
+        total: response.total
+      };
+    },
+    async getProjectStrategy(input) {
+      const response = unwrapPipelinePayload((await _http.get(
+        `/v2/${encodeURIComponent(input.project_id)}/rule-sets/${encodeURIComponent(input.rule_set_id)}/gray/detail`
+      )) as PipelineStrategy);
+
+      return response;
+    },
+    async getProjectStrategyRelatedInfo(input) {
+      const response = unwrapPipelinePayload((await _http.get(
+        `/v2/${encodeURIComponent(input.project_id)}/rule-sets/${encodeURIComponent(input.rule_set_id)}/related/query`
+      )) as PipelineStrategyRelatedInfo);
+
+      return {
+        project_count: response.project_count,
+        pipeline_count: response.pipeline_count
+      };
+    },
+    async inheritProjectStrategy(input) {
+      const response = unwrapPipelinePayload((await _http.post(
+        `/v2/${encodeURIComponent(input.project_id)}/rule-sets/inherit`,
+        {
+          name: input.name,
+          parent_id: input.parent_id,
+          cloud_project_id: input.project_id,
+          ...(input.rules ? { rules: input.rules } : {}),
+          is_valid: input.is_valid
+        }
+      )) as PipelineStrategyMutationResult);
+
+      return {
+        status: response.status ?? true,
+        rule_set_id: response.rule_set_id
+      };
+    },
+    async switchProjectStrategy(input) {
+      const response = unwrapPipelinePayload((await _http.put(
+        `/v2/${encodeURIComponent(input.project_id)}/rule-sets/${encodeURIComponent(input.rule_set_id)}/switch`,
+        {
+          is_valid: input.is_valid
+        }
+      )) as PipelineStrategyMutationResult);
+
+      return {
+        status: response.status ?? true,
+        rule_set_id: response.rule_set_id ?? input.rule_set_id
+      };
+    },
+    async deleteProjectStrategy(input) {
+      const response = unwrapPipelinePayload((await _http.delete(
+        `/v2/${encodeURIComponent(input.project_id)}/rule-sets/${encodeURIComponent(input.rule_set_id)}/delete`
+      )) as PipelineStrategyMutationResult);
+
+      return {
+        status: response.status ?? true,
+        rule_set_id: response.rule_set_id ?? input.rule_set_id
+      };
+    },
+    async getProjectStrategyDetail(input) {
+      const response = unwrapPipelinePayload((await _http.get(
+        `/v2/${encodeURIComponent(input.project_id)}/rule-sets/${encodeURIComponent(input.rule_set_id)}/detail`
+      )) as PipelineStrategySummary);
+
+      return response;
+    },
+    async updateProjectStrategy(input) {
+      const response = unwrapPipelinePayload((await _http.put(
+        `/v2/${encodeURIComponent(input.project_id)}/rule-sets/${encodeURIComponent(input.rule_set_id)}/update`,
+        {
+          name: input.name,
+          rules: input.rules
+        }
+      )) as PipelineStrategyMutationResult);
+
+      return {
+        status: response.status ?? true,
+        rule_set_id: response.rule_set_id ?? input.rule_set_id
+      };
+    },
+    async createProjectStrategy(input) {
+      const response = unwrapPipelinePayload((await _http.post(
+        `/v2/${encodeURIComponent(input.project_id)}/rule-sets/create`,
+        {
+          name: input.name,
+          cloud_project_id: input.project_id,
+          rules: input.rules
+        }
+      )) as PipelineStrategyMutationResult);
+
+      return {
+        status: response.status ?? true,
+        rule_set_id: response.rule_set_id
+      };
+    },
+    async listPublishers(input) {
+      const query = new URLSearchParams({
+        offset: String(input.offset),
+        limit: String(input.limit)
+      });
+      const response = unwrapPipelinePayload((await _http.get(
+        `/v1/${encodeURIComponent(input.domain_id)}/publisher/query-all?${query.toString()}`
+      )) as {
+        data?: PipelinePluginPublisher[];
+        total?: number;
+      });
+
+      const items = response.data ?? [];
+
+      return {
+        items,
+        total: response.total ?? items.length
+      };
+    },
+    async listAvailablePublishers(input) {
+      const response = unwrapPipelinePayload((await _http.get(
+        `/v1/${encodeURIComponent(input.domain_id)}/publisher/optional-publisher`
+      )) as {
+        data?: PipelinePluginPublisher[];
+      });
+
+      return {
+        items: response.data ?? []
+      };
+    },
+    async listStagePlugins(input) {
+      const response = unwrapPipelinePayload((await _http.post(
+        `/v1/${encodeURIComponent(input.domain_id)}/relation/stage-plugins`,
+        {
+          use_condition: input.use_condition,
+          ...(input.business_type ? { business_type: input.business_type } : {}),
+          ...(input.deploy_type ? { deploy_type: input.deploy_type } : {}),
+          ...(input.comp_extend_type ? { comp_extend_type: input.comp_extend_type } : {})
+        }
+      )) as {
+        full_stage_plugins_item_list?: PipelineStagePlugin[];
+      });
+
+      return {
+        items: response.full_stage_plugins_item_list ?? []
+      };
+    },
+    async listBasePlugins(input) {
+      const response = unwrapPipelinePayload((await _http.get(
+        `/v1/${encodeURIComponent(input.domain_id)}/relation/plugin/single`
+      )) as {
+        data?: PipelineBasePlugin[];
+      });
+
+      return {
+        items: response.data ?? []
+      };
+    },
+    async listBasePluginsPaged(input) {
+      const query = new URLSearchParams({
+        offset: String(input.offset),
+        limit: String(input.limit)
+      });
+      const response = unwrapPipelinePayload((await _http.post(
+        `/v1/${encodeURIComponent(input.domain_id)}/relation/plugins?${query.toString()}`,
+        {}
+      )) as {
+        data?: PipelineBasePlugin[];
+        total?: number;
+      });
+      const items = response.data ?? [];
+
+      return {
+        items,
+        total: response.total ?? items.length
+      };
+    },
+    async listPlugins(input) {
+      const query = new URLSearchParams({
+        offset: String(input.offset),
+        limit: String(input.limit)
+      });
+      const response = unwrapPipelinePayload((await _http.post(
+        `/v1/${encodeURIComponent(input.domain_id)}/agent-plugin/query-all?${query.toString()}`,
+        {
+          ...(input.plugin_attribution
+            ? { plugin_attribution: input.plugin_attribution }
+            : {}),
+          ...(input.business_type ? { business_type: input.business_type } : {}),
+          ...(input.maintainer ? { maintainer: input.maintainer } : {}),
+          ...(input.plugin_name ? { plugin_name: input.plugin_name } : {})
+        }
+      )) as {
+        data?: PipelinePlugin[];
+        total?: number;
+      });
+      const items = response.data ?? [];
+
+      return {
+        items,
+        total: response.total ?? items.length
+      };
+    },
+    async getPluginInputs(input) {
+      const response = unwrapPipelinePayload((await _http.post(
+        `/v1/${encodeURIComponent(input.domain_id)}/agent-plugin/plugin-input`,
+        {
+          plugin_name: input.plugin_name,
+          display_name: input.display_name,
+          version: input.version,
+          plugin_attribution: input.plugin_attribution
+        }
+      )) as {
+        data?: PipelinePluginPart[];
+      });
+
+      return {
+        items: response.data ?? []
+      };
+    },
+    async getPluginOutputs(input) {
+      const response = unwrapPipelinePayload((await _http.post(
+        `/v1/${encodeURIComponent(input.domain_id)}/agent-plugin/plugin-output`,
+        {
+          plugin_name: input.plugin_name,
+          display_name: input.display_name,
+          version: input.version,
+          plugin_attribution: input.plugin_attribution
+        }
+      )) as {
+        data?: PipelinePluginPart[];
+      });
+
+      return {
+        items: response.data ?? []
+      };
+    },
+    async listPluginVersions(input) {
+      const query = new URLSearchParams({
+        plugin_name: input.plugin_name,
+        offset: String(input.offset),
+        limit: String(input.limit)
+      });
+      const response = unwrapPipelinePayload((await _http.get(
+        `/v1/${encodeURIComponent(input.domain_id)}/agent-plugin/query?${query.toString()}`
+      )) as {
+        data?: PipelinePluginVersion[];
+        total?: number;
+      });
+      const items = response.data ?? [];
+
+      return {
+        items,
+        total: response.total ?? items.length
+      };
+    },
+    async getPluginVersion(input) {
+      const query = new URLSearchParams({
+        plugin_name: input.plugin_name,
+        version: input.version
+      });
+      const response: PipelinePluginVersion | { data?: PipelinePluginVersion } = unwrapPipelinePayload((await _http.get(
+        `/v1/${encodeURIComponent(input.domain_id)}/agent-plugin/detail?${query.toString()}`
+      )) as PipelinePluginVersion | { data?: PipelinePluginVersion });
+      const item: PipelinePluginVersion =
+        response && typeof response === "object" && "data" in response
+          ? (response.data ?? response) as PipelinePluginVersion
+          : response;
+
+      return {
+        item
+      };
+    },
+    async listExtensionModules(input) {
+      const query = new URLSearchParams();
+
+      for (const location of input.locations) {
+        query.append("locations", location);
+      }
+      if (input.project_id) {
+        query.set("project_uuid", input.project_id);
+      }
+      if (input.region_name) {
+        query.set("region_name", input.region_name);
+      }
+      if (input.name) {
+        query.set("name", input.name);
+      }
+      if (input.product_line) {
+        query.set("productLine", input.product_line);
+      }
+      for (const tag of input.tags ?? []) {
+        query.append("tags", tag);
+      }
+      if (typeof input.offset === "number") {
+        query.set("offset", String(input.offset));
+      }
+      if (typeof input.limit === "number") {
+        query.set("limit", String(input.limit));
+      }
+
+      const response = unwrapPipelinePayload((await _http.get(
+        `/v2/extensions/modules?${query.toString()}`
+      )) as
+        | PipelineExtensionModule[]
+        | {
+            result?: PipelineExtensionModule[] | Record<string, PipelineExtensionModuleList | undefined>;
+          }
+        | Record<string, PipelineExtensionModuleList | undefined>);
+      return extractExtensionModules(response);
+    },
+    async getExtensionModule(input) {
+      const response = unwrapPipelinePayload((await _http.get(
+        `/v1/extensions/modules/${encodeURIComponent(input.module_id)}`
+      )) as
+        | PipelineExtensionModule[]
+        | {
+            result?: PipelineExtensionModule | PipelineExtensionModule[];
+          });
+
+      if (Array.isArray(response)) {
+        return {
+          modules: response.map((item) => normalizeExtensionModule(item))
+        };
+      }
+
+      const payload = Array.isArray(response.result)
+        ? response.result
+        : response.result
+          ? [response.result]
+          : [];
+
+      return {
+        modules: payload.map((item) => normalizeExtensionModule(item))
+      };
+    },
+    async listExtensionEndpoints(input) {
+      const query = new URLSearchParams({
+        project_uuid: input.project_id,
+        region_name: input.region_name
+      });
+
+      if (input.module_id) {
+        query.set("module_id", input.module_id);
+      }
+      if (typeof input.offset === "number") {
+        query.set("offset", String(input.offset));
+      }
+      if (typeof input.limit === "number") {
+        query.set("limit", String(input.limit));
+      }
+
+      const response = unwrapPipelinePayload((await _http.get(
+        `/v1/serviceconnection/endpoints?${query.toString()}`
+      )) as {
+        result?: {
+          endpoints?: PipelineExtensionEndpoint[];
+          total?: number;
+        };
+      });
+
+      return {
+        endpoints: (response.result?.endpoints ?? []).map((endpoint) =>
+          normalizeExtensionEndpoint(endpoint, input.project_id)
+        ),
+        total: response.result?.total ?? response.result?.endpoints?.length ?? 0
+      };
+    },
+    async createExtensionEndpoint(input) {
+      const response = unwrapPipelinePayload((await _http.post(
+        "/v1/serviceconnection/endpoints",
+        {
+          ...(input.project_id ? { project_uuid: input.project_id } : {}),
+          ...(input.region_name ? { region_name: input.region_name } : {}),
+          ...(input.module_id ? { module_id: input.module_id } : {}),
+          ...(input.name ? { name: input.name } : {}),
+          ...(input.url ? { url: input.url } : {}),
+          ...(input.authorization ? { authorization: input.authorization } : {}),
+          ...(input.data ? { data: input.data } : {})
+        }
+      )) as {
+        result?: PipelineExtensionEndpoint;
+      });
+
+      return normalizeExtensionEndpoint(response.result ?? {}, input.project_id);
+    },
+    async updateExtensionEndpoint(input) {
+      const response = unwrapPipelinePayload((await _http.put(
+        `/v1/serviceconnection/endpoints/${encodeURIComponent(input.uuid)}`,
+        {
+          ...(input.project_id ? { project_uuid: input.project_id } : {}),
+          ...(input.region_name ? { region_name: input.region_name } : {}),
+          ...(input.module_id ? { module_id: input.module_id } : {}),
+          ...(input.name ? { name: input.name } : {}),
+          ...(input.url ? { url: input.url } : {}),
+          ...(input.authorization ? { authorization: input.authorization } : {}),
+          ...(input.data ? { data: input.data } : {})
+        }
+      )) as {
+        result?: PipelineExtensionEndpoint;
+      });
+
+      return normalizeExtensionEndpoint(
+        response.result ?? {
+          uuid: input.uuid
+        },
+        input.project_id
+      );
+    },
+    async getExtensionEndpoint(input) {
+      const response = unwrapPipelinePayload((await _http.get(
+        `/v1/serviceconnection/endpoints/${encodeURIComponent(input.uuid)}`
+      )) as {
+        result?: PipelineExtensionEndpoint;
+      });
+
+      return normalizeExtensionEndpoint(
+        response.result ?? {
+          uuid: input.uuid
+        }
+      );
+    },
+    async deleteExtensionEndpoint(input) {
+      const query = new URLSearchParams();
+
+      if (input.project_id) {
+        query.set("project_uuid", input.project_id);
+      }
+
+      const response = unwrapPipelinePayload((await _http.delete(
+        `/v1/serviceconnection/endpoints/${encodeURIComponent(input.uuid)}${query.size > 0 ? `?${query.toString()}` : ""}`
+      )) as {
+        status?: string;
+      });
+
+      return {
+        uuid: input.uuid,
+        success: response.status ? response.status === "success" : true
+      };
+    },
+    async listRuleTypes(input) {
+      const response = unwrapPipelinePayload((await _http.get(
+        `/v2/${encodeURIComponent(input.organization_id)}/types/query`
+      )) as
+        | PipelineRuleType
+        | PipelineRuleType[]
+        | {
+            data?: PipelineRuleType[];
+            result?: PipelineRuleType | PipelineRuleType[];
+          });
+
+      return {
+        items: normalizeRuleTypes(response)
       };
     },
     async listTemplates(input) {

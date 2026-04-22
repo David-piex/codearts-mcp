@@ -40,6 +40,57 @@
 | `pipeline_list_templates` | `ListPipelineTemplates` | Direct | `POST /v5/{tenant_id}/api/pipeline-templates/list` | 模板列表 |
 | `pipeline_list_pipelines` | `ListPipelines` | Direct | `POST /v5/{project_id}/api/pipelines/list` | 项目下流水线列表 |
 | `pipeline_get_pipeline` | `ShowPipelineDetail` | Direct | `GET /v5/{project_id}/api/pipelines/{pipeline_id}` | 流水线详情 |
+| `pipeline_list_extension_modules` | `ListModulesDetail` | Direct | `GET /v2/extensions/modules?locations=...` | 扩展模块列表, 对外统一使用 `project_id` 输入并在内部映射到官方 `project_uuid` |
+| `pipeline_get_extension_module` | `ShowModule` | Direct | `GET /v1/extensions/modules/{module_id}` | 扩展模块详情, 返回该模块的版本集合 |
+| `pipeline_list_extension_endpoints` | `ListEndpointsDetails` | Direct | `GET /v1/serviceconnection/endpoints?project_uuid=...&region_name=...` | 扩展点列表, 对外统一使用 `project_id` 输入并映射到 `project_uuid` |
+| `pipeline_get_extension_endpoint` | `ShowEndpoint` | Direct | `GET /v1/serviceconnection/endpoints/{uuid}` | 扩展点详情 |
+| `pipeline_create_extension_endpoint` | `CreateEndpoint` | Direct | `POST /v1/serviceconnection/endpoints` | 创建扩展点 |
+| `pipeline_update_extension_endpoint` | `UpdateEndpoint` | Direct | `PUT /v1/serviceconnection/endpoints/{uuid}` | 更新扩展点 |
+| `pipeline_delete_extension_endpoint` | `DeleteEndpoint` | Direct | `DELETE /v1/serviceconnection/endpoints/{uuid}?project_uuid=...` | 删除扩展点 |
+| `pipeline_list_tags` | `ListPipelineTags` | Direct | `GET /v5/{project_id}/api/pipeline-tag/list` | 流水线标签列表 |
+| `pipeline_create_tag` | `CreatePipelineTag` | Direct | `POST /v5/{project_id}/api/pipeline-tag/create` | 创建流水线标签 |
+| `pipeline_update_tag` | `UpdatePipelineTag` | Direct | `POST /v5/{project_id}/api/pipeline-tag/update` | 更新流水线标签名称与颜色 |
+| `pipeline_delete_tag` | `DeletePipelineTag` | Direct | `DELETE /v5/{project_id}/api/pipeline-tag/delete?tagId={tag_id}` | 按标签 id 删除流水线标签 |
+| `pipeline_set_tags_for_pipelines` | `BatchSetPipelineTag` | Direct | `POST /v5/{project_id}/api/pipeline-tag/set-tags` | 批量为流水线设置标签 |
+| `pipeline_delete_pipeline` | `DeletePipeline` | Direct | `DELETE /v5/{project_id}/api/pipelines/{pipeline_id}` | 删除流水线 |
+| `pipeline_disable_pipeline` | `DisablePipeline` | Direct | `PUT /v5/{project_id}/api/pipelines/{pipeline_id}/ban` | 禁用流水线 |
+| `pipeline_enable_pipeline` | `EnablePipeline` | Direct | `PUT /v5/{project_id}/api/pipelines/{pipeline_id}/unban` | 启用流水线 |
+| `pipeline_list_groups` | `ShowPipelineGroupTree` | Direct | `GET /v5/{project_id}/api/pipeline-group/tree` | 返回递归分组树 |
+| `pipeline_create_group` | `CreatePipelineGroup` | Direct | `POST /v5/{project_id}/api/pipeline-group/create` | 创建分组 |
+| `pipeline_update_group` | `UpdatePipelineGroup` | Direct | `POST /v5/{project_id}/api/pipeline-group/update` | 更新分组名称 |
+| `pipeline_delete_group` | `DeletePipelineGroup` | Direct | `DELETE /v5/{project_id}/api/pipeline-group/delete?id={group_id}` | 按分组 id 删除分组 |
+| `pipeline_move_pipelines_to_group` | `BatchMovePipelineToGroup` | Direct | `POST /v5/{project_id}/api/pipeline-group/pipeline/move` | 批量移动流水线到分组 |
+| `pipeline_create_variable_group` | `CreateVariableGroup` | Direct | `POST /v5/{project_id}/api/pipeline/variable/group/create` | 创建流水线变量组 |
+| `pipeline_update_variable_group` | `UpdateVariableGroup` | Direct | `PUT /v5/{project_id}/api/pipeline/variable/group/update` | 更新变量组名称、描述和变量项 |
+| `pipeline_delete_variable_group` | `DeleteVariableGroup` | Direct | `DELETE /v5/{project_id}/api/pipeline/variable/group/delete?id={id}` | 按变量组 id 删除变量组 |
+| `pipeline_bind_variable_groups_to_pipeline` | `BindVariableGroupToPipeline` | Direct | `POST /v5/{project_id}/api/pipeline/variable/group/relation` | 将一个或多个变量组绑定到指定流水线 |
+| `pipeline_get_variable_group` | `ShowVariableGroupDetail` | Direct | `GET /v5/{project_id}/api/pipeline/variable/group/{id}` | 变量组详情 |
+| `pipeline_list_pipeline_variable_groups` | `ListPipelineVariableGroup` | Direct | `GET /v5/{project_id}/api/pipeline/variable/group/pipeline?pipelineId={pipeline_id}` | 查看指定流水线已绑定的变量组 |
+| `pipeline_list_variable_groups` | `ListVariableGroups` | Direct | `POST /v5/{project_id}/api/pipeline/variable/group/list` | 按项目分页列出变量组 |
+| `pipeline_get_rule` | `ShowRule` | Direct | `GET /v2/{domain_id}/rules/{rule_id}/detail` | 规则详情 |
+| `pipeline_list_rules` | `ListRule` | Direct | `GET /v2/{domain_id}/rules/query?offset=...&limit=...` | 规则列表, 支持项目、类型和名称过滤 |
+| `pipeline_create_rule` | `CreateRule` | Direct | `POST /v2/{domain_id}/rules/create` | 创建规则 |
+| `pipeline_update_rule` | `UpdateRule` | Direct | `PUT /v2/{domain_id}/rules/{rule_id}/update` | 更新规则 |
+| `pipeline_delete_rule` | `DeleteRule` | Direct | `DELETE /v2/{domain_id}/rules/{rule_id}/delete` | 删除规则 |
+| `pipeline_get_rule_related_info` | `ShowRuleRelatedInfo` | Direct | `GET /v2/{domain_id}/rules/{rule_id}/related/query` | 查看规则关联的规则集、项目和流水线数量 |
+| `pipeline_list_rule_types` | `queryStrategyType` | Direct | `GET /v2/{organization_id}/types/query` | 查询可用规则类型 |
+| `pipeline_get_strategy` | `ShowStrategy` | Direct | `GET /v2/{domain_id}/tenant/rule-sets/{rule_set_id}/detail` | 租户级策略详情, 支持 `cloud_project_id` 查询参数 |
+| `pipeline_list_strategies` | `ListStrategy` | Direct | `GET /v2/{domain_id}/tenant/rule-sets/query?offset=...&limit=...` | 租户级策略列表, 支持 `include_tenant_rule_set / name / is_valid / type` 过滤 |
+| `pipeline_create_strategy` | `CreateStrategy` | Direct | `POST /v2/{domain_id}/tenant/rule-sets/create` | 创建租户级策略 |
+| `pipeline_update_strategy` | `UpdateStrategy` | Direct | `PUT /v2/{domain_id}/tenant/rule-sets/{rule_set_id}/update` | 更新租户级策略 |
+| `pipeline_delete_strategy` | `DeleteStrategy` | Direct | `DELETE /v2/{domain_id}/tenant/rule-sets/{rule_set_id}/delete` | 删除租户级策略 |
+| `pipeline_switch_strategy` | `SwitchStrategy` | Direct | `PUT /v2/{domain_id}/tenant/rule-sets/{rule_set_id}/switch` | 启停切换租户级策略 |
+| `pipeline_get_strategy_related_info` | `ShowStrategyRelatedInfo` | Direct | `GET /v2/{domain_id}/tenant/rule-sets/{rule_set_id}/related/query` | 查看策略关联的项目和流水线数量 |
+| `pipeline_list_strategy_children` | `ListStrategyChildren` | Direct | `GET /v2/{domain_id}/tenant/rule-sets/{rule_set_id}/children` | 查看策略的子策略列表 |
+| `pipeline_list_project_strategies` | `ListProjectStrategy` | Direct | `GET /v2/{project_id}/rule-sets/query?offset=...&limit=...` | 项目级策略列表, 支持 `include_tenant_rule_set / name / is_valid / type` 过滤 |
+| `pipeline_get_project_strategy` | `ShowProjectStrategy` | Direct | `GET /v2/{project_id}/rule-sets/{rule_set_id}/gray/detail` | 项目级策略灰度详情, 返回展开后的规则实例集合 |
+| `pipeline_get_project_strategy_related_info` | `ShowProjectStrategyRelatedInfo` | Direct | `GET /v2/{project_id}/rule-sets/{rule_set_id}/related/query` | 查看项目级策略关联的项目和流水线数量 |
+| `pipeline_inherit_project_strategy` | `CreateInheritProjectStrategy` | Direct | `POST /v2/{project_id}/rule-sets/inherit` | 继承父级策略创建项目级策略 |
+| `pipeline_switch_project_strategy` | `SwitchProjectStrategy` | Direct | `PUT /v2/{project_id}/rule-sets/{rule_set_id}/switch` | 启停切换项目级策略 |
+| `pipeline_delete_project_strategy` | `DeleteProjectStrategy` | Direct | `DELETE /v2/{project_id}/rule-sets/{rule_set_id}/delete` | 删除项目级策略 |
+| `pipeline_get_project_strategy_detail` | `ShowProjectStrategyDetail` | Direct | `GET /v2/{project_id}/rule-sets/{rule_set_id}/detail` | 项目级策略摘要详情 |
+| `pipeline_update_project_strategy` | `UpdateProjectStrategy` | Direct | `PUT /v2/{project_id}/rule-sets/{rule_set_id}/update` | 更新项目级策略 |
+| `pipeline_create_project_strategy` | `CreateProjectStrategy` | Direct | `POST /v2/{project_id}/rule-sets/create` | 创建项目级策略 |
 | `pipeline_list_runs` | `ListPipelineRuns` | Direct | `POST /v5/{project_id}/api/pipelines/{pipeline_id}/pipeline-runs/list` | 执行记录列表 |
 | `pipeline_get_run` | `ShowPipelineRunDetail` | Derived | `GET /v5/{project_id}/api/pipelines/{pipeline_id}/pipeline-runs/detail?pipeline_run_id={run_id}` | MCP 只取 run detail 的较轻量子集 |
 | `pipeline_get_run_detail` | `ShowPipelineRunDetail` | Direct | `GET /v5/{project_id}/api/pipelines/{pipeline_id}/pipeline-runs/detail?pipeline_run_id={run_id}` | 保留 stages / jobs / steps 层级结构 |
@@ -54,12 +105,24 @@
 | `pipeline_list_artifacts` | `ShowPipelineArtifacts` | Direct | `GET /v5/{project_id}/api/pipelines/{pipeline_id}/pipeline-runs/{run_id}/artifacts` | 构建产物 |
 | `pipeline_get_manual_review_context` | `ShowPipelineRunDetail` | Composite | `GET /v5/{project_id}/api/pipelines/{pipeline_id}/pipeline-runs/detail?pipeline_run_id={run_id}` | 这个工具不是官方单个 endpoint 的直接翻版, 而是从 run detail 里提炼待审核步骤上下文 |
 
+| `pipeline_list_publishers` | `ListPublisher` | Direct | `GET /v1/{domain_id}/publisher/query-all` | 4.7 publisher list |
+| `pipeline_list_available_publishers` | `ListAvailablePublisher` | Direct | `GET /v1/{domain_id}/publisher/optional-publisher` | 4.7 available publisher list |
+| `pipeline_list_stage_plugins` | `ListStagePlugins` | Direct | `POST /v1/{domain_id}/relation/stage-plugins` | 4.7 stage plugins |
+| `pipeline_list_base_plugins` | `ListBasePlugins` | Direct | `GET /v1/{domain_id}/relation/plugin/single` | 4.7 base plugins |
+| `pipeline_list_base_plugins_paged` | `ListBasePluginsNewPost` | Direct | `POST /v1/{domain_id}/relation/plugins` | 4.7 paged base plugins |
+| `pipeline_list_plugins` | `ListPlugins` | Direct | `POST /v1/{domain_id}/agent-plugin/query-all` | 4.7 custom plugin list |
+| `pipeline_get_plugin_inputs` | `ShowPluginInputs` | Direct | `POST /v1/{domain_id}/agent-plugin/plugin-input` | 4.7 plugin inputs |
+| `pipeline_get_plugin_outputs` | `ShowPluginOutputs` | Direct | `POST /v1/{domain_id}/agent-plugin/plugin-output` | 4.7 plugin outputs |
+| `pipeline_list_plugin_versions` | `ListPLuginVersion` | Direct | `GET /v1/{domain_id}/agent-plugin/query` | 4.7 plugin versions |
+| `pipeline_get_plugin_version` | `ShowPluginVersion` | Direct | `GET /v1/{domain_id}/agent-plugin/detail` | 4.7 plugin version detail |
+
 ## Repo
 
 ### 仓库 / 分支 / 提交 / 文件 / 标签
 
 | MCP Tool | Official Operation | Mapping | Actual Provider Path | Notes |
 | --- | --- | --- | --- | --- |
+| `repo_create_repository` | `CreateRepository` | Direct | `POST /v1/repositories` | 对齐官方 CreateRepository 页面；以 `project_uuid + name` 为主输入，并支持初始化字段 |
 | `repo_list_repositories` | `ListProjectRepositories` | Direct | `GET /v4/projects/{project_id}/repositories` | 项目下仓库列表 |
 | `repo_get_repository` | `ShowRepository` | Direct | `GET /v4/repositories/{repository_id}` | 仓库详情 |
 | `repo_list_branches` | `ListBranches` | Direct | `GET /v4/repositories/{repository_id}/repository/branches` | 分支列表 |
@@ -111,6 +174,6 @@
 
 如果继续补, 最有价值的顺序仍然是:
 
-1. Pipeline 外围管理面
+1. Pipeline 扩展插件管理面
 2. Repo webhook / group / permission 面
 3. Req 的 Scrum / IPD 非主链能力

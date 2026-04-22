@@ -1,6 +1,15 @@
 import { describe, expect, it, vi } from "vitest";
 import { createBuildClient } from "../../../src/products/build/client.js";
 
+function createProjectPageInput<T extends Record<string, unknown>>(overrides?: T) {
+  return {
+    project_id: "project-1",
+    page: 1,
+    page_size: 20,
+    ...(overrides ?? {})
+  };
+}
+
 describe("createBuildClient listJobs", () => {
   it("uses zero-based page_index for the provider", async () => {
     let requestedPath = "";
@@ -16,11 +25,7 @@ describe("createBuildClient listJobs", () => {
       }
     } as never);
 
-    await client.listJobs({
-      project_id: "project-1",
-      page: 1,
-      page_size: 20
-    });
+    await client.listJobs(createProjectPageInput());
 
     expect(requestedPath).toContain("page_index=0");
   });
@@ -44,11 +49,7 @@ describe("createBuildClient listJobs", () => {
       })
     } as never);
 
-    const result = await client.listJobs({
-      project_id: "project-1",
-      page: 1,
-      page_size: 20
-    });
+    const result = await client.listJobs(createProjectPageInput());
 
     expect(result).toEqual({
       jobs: [
@@ -80,11 +81,7 @@ describe("createBuildClient listJobs", () => {
       })
     } as never);
 
-    const result = await client.listJobs({
-      project_id: "project-1",
-      page: 1,
-      page_size: 20
-    });
+    const result = await client.listJobs(createProjectPageInput());
 
     expect(result).toEqual({
       jobs: [
@@ -124,17 +121,9 @@ describe("createBuildClient listJobs", () => {
       }
     );
 
-    const first = await client.listJobs({
-      project_id: "project-1",
-      page: 1,
-      page_size: 20
-    });
+    const first = await client.listJobs(createProjectPageInput());
     now += 1_000;
-    const second = await client.listJobs({
-      project_id: "project-1",
-      page: 1,
-      page_size: 20
-    });
+    const second = await client.listJobs(createProjectPageInput());
 
     expect(second).toEqual(first);
     expect(get).toHaveBeenCalledTimes(1);
@@ -166,17 +155,9 @@ describe("createBuildClient listJobs", () => {
       }
     );
 
-    const first = await client.listJobs({
-      project_id: "project-1",
-      page: 1,
-      page_size: 20
-    });
+    const first = await client.listJobs(createProjectPageInput());
     now += 30_001;
-    const second = await client.listJobs({
-      project_id: "project-1",
-      page: 1,
-      page_size: 20
-    });
+    const second = await client.listJobs(createProjectPageInput());
 
     expect(first.jobs[0]?.job_id).toBe("job-1");
     expect(second.jobs[0]?.job_id).toBe("job-2");
@@ -206,16 +187,8 @@ describe("createBuildClient listJobs", () => {
     );
 
     const [left, right] = await Promise.all([
-      client.listJobs({
-        project_id: "project-1",
-        page: 1,
-        page_size: 20
-      }),
-      client.listJobs({
-        project_id: "project-1",
-        page: 1,
-        page_size: 20
-      })
+      client.listJobs(createProjectPageInput()),
+      client.listJobs(createProjectPageInput())
     ]);
 
     expect(left.total).toBe(1);
@@ -248,17 +221,9 @@ describe("createBuildClient listJobs", () => {
       }
     );
 
-    await client.listJobs({
-      project_id: "project-1",
-      page: 1,
-      page_size: 20
-    });
+    await client.listJobs(createProjectPageInput());
     now += 6_000;
-    await client.listJobs({
-      project_id: "project-1",
-      page: 1,
-      page_size: 20
-    });
+    await client.listJobs(createProjectPageInput());
 
     expect(get).toHaveBeenCalledTimes(2);
   });

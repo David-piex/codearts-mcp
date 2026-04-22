@@ -1,13 +1,12 @@
-import { once } from "node:events";
-import { existsSync, mkdtempSync, readFileSync } from "node:fs";
-import { createServer } from "node:http";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { existsSync, readFileSync } from "node:fs";
 import { afterEach, describe, expect, it } from "vitest";
-import type { HttpAuthConfig } from "../../src/core/config/env.js";
-import { createHttpApp } from "../../src/server/http-app.js";
-
-const MCP_PROTOCOL_VERSION = "2025-03-26";
+import {
+  callTool,
+  createTestHttpServerRegistry,
+  createTestHttpAuthConfig,
+  initializeConfiguredSession,
+  initializeSession
+} from "./http-mcp-test-helpers.js";
 
 function hasLiveEnv(source: NodeJS.ProcessEnv) {
   return Boolean(
@@ -17,156 +16,11 @@ function hasLiveEnv(source: NodeJS.ProcessEnv) {
   );
 }
 
-function createLiveAuthConfig(): HttpAuthConfig {
-  return {
-    masterKey: "0123456789abcdef0123456789abcdef",
-    authDataPath: join(
-      mkdtempSync(join(tmpdir(), "codearts-mcp-http-live-auth-")),
-      "auth-store.json"
-    ),
-    authCookieName: "codearts_mcp_auth",
-    authCookieSecure: false,
-    authTokenTtlSeconds: 60 * 30
-  };
-}
-
-async function startServer(
-  authConfig: HttpAuthConfig
-): Promise<{ server: ReturnType<typeof createServer>; port: number }> {
-  const app = createHttpApp(
-    {
-      serverName: "codearts-mcp",
-      serverVersion: "0.1.0",
-      httpPort: 0
-    },
-    authConfig
-  );
-  const server = createServer(app);
-  server.listen(0, "127.0.0.1");
-  await once(server, "listening");
-
-  const address = server.address();
-  if (!address || typeof address === "string") {
-    throw new Error("Expected an address info object");
-  }
-
-  return {
-    server,
-    port: address.port
-  };
-}
-
-async function postJsonRpc(
-  port: number,
-  payload: unknown,
-  options?: {
-    sessionId?: string;
-    cookie?: string;
-    queryToken?: string;
-  }
-) {
-  const headers: Record<string, string> = {
-    accept: "application/json, text/event-stream",
-    "content-type": "application/json"
-  };
-
-  if (options?.sessionId) {
-    headers["mcp-session-id"] = options.sessionId;
-    headers["mcp-protocol-version"] = MCP_PROTOCOL_VERSION;
-  }
-
-  if (options?.cookie) {
-    headers.cookie = options.cookie;
-  }
-
-  const url = new URL(`http://127.0.0.1:${port}/mcp`);
-  if (options?.queryToken) {
-    url.searchParams.set("auth_token", options.queryToken);
-  }
-
-  return fetch(url, {
-    method: "POST",
-    headers,
-    body: JSON.stringify(payload)
+function createLiveAuthConfig() {
+  return createTestHttpAuthConfig({
+    prefix: "codearts-mcp-http-live-auth-",
+    ttlSeconds: 60 * 30
   });
-}
-
-async function initializeSession(
-  port: number,
-  options?: {
-    cookie?: string;
-    queryToken?: string;
-  }
-) {
-  const response = await postJsonRpc(
-    port,
-    {
-      jsonrpc: "2.0",
-      id: "init-1",
-      method: "initialize",
-      params: {
-        protocolVersion: MCP_PROTOCOL_VERSION,
-        capabilities: {},
-        clientInfo: {
-          name: "vitest-live",
-          version: "0.1.0"
-        }
-      }
-    },
-    options
-  );
-
-  return {
-    response,
-    sessionId: response.headers.get("mcp-session-id")
-  };
-}
-
-async function callTool(
-  port: number,
-  input: {
-    id: string;
-    name: string;
-    arguments: Record<string, unknown>;
-    sessionId?: string;
-    cookie?: string;
-    queryToken?: string;
-  }
-) {
-  const response = await postJsonRpc(
-    port,
-    {
-      jsonrpc: "2.0",
-      id: input.id,
-      method: "tools/call",
-      params: {
-        name: input.name,
-        arguments: input.arguments
-      }
-    },
-    {
-      sessionId: input.sessionId,
-      cookie: input.cookie,
-      queryToken: input.queryToken
-    }
-  );
-  const body = (await response.json()) as {
-    result?: {
-      structuredContent?: {
-        auth_token?: string;
-        auth_id?: string;
-        item?: Record<string, unknown>;
-        items?: Array<Record<string, unknown>>;
-      };
-      isError?: boolean;
-      content?: Array<{ type?: string; text?: string }>;
-    };
-  };
-
-  return {
-    response,
-    body
-  };
 }
 
 function readReqWritableProjectId(source: NodeJS.ProcessEnv) {
@@ -250,40 +104,32 @@ async function findPipelineViaMcp(
 
 if (hasLiveEnv(process.env)) {
   describe("http live smoke", () => {
-    const servers: Array<ReturnType<typeof createServer>> = [];
+    const servers = createTestHttpServerRegistry();
 
     afterEach(async () => {
-      for (const server of servers.splice(0)) {
-        server.close();
-        await once(server, "close");
-      }
+      await servers.closeAll();
     });
 
     it("reuses persisted auth across reconnects and executes req/deploy/pipeline write tools over HTTP", async () => {
       const authConfig = createLiveAuthConfig();
-      const { server, port } = await startServer(authConfig);
-      servers.push(server);
+      const { port } = await servers.start(authConfig);
 
-      const firstInit = await initializeSession(port);
-      const firstSessionId = firstInit.sessionId;
+      const {
+        initialized: firstInit,
+        configured,
+        sessionId: firstSessionId,
+        cookie,
+        authToken,
+        authId
+      } = await initializeConfiguredSession(port, {
+        clientName: "vitest-live",
+        accessKey: process.env.HUAWEICLOUD_AK!,
+        secretKey: process.env.HUAWEICLOUD_SK!,
+        region: process.env.HUAWEICLOUD_REGION!
+      });
 
       expect(firstInit.response.status).toBe(200);
       expect(firstSessionId).toBeTruthy();
-
-      const configured = await callTool(port, {
-        id: "auth-configure",
-        name: "auth_configure_session",
-        arguments: {
-          access_key: process.env.HUAWEICLOUD_AK!,
-          secret_key: process.env.HUAWEICLOUD_SK!,
-          region: process.env.HUAWEICLOUD_REGION!
-        },
-        sessionId: firstSessionId ?? undefined
-      });
-
-      const cookie = configured.response.headers.get("set-cookie");
-      const authToken = configured.body.result?.structuredContent?.auth_token;
-      const authId = configured.body.result?.structuredContent?.auth_id;
 
       expect(configured.response.status).toBe(200);
       expect(cookie).toContain(`${authConfig.authCookieName}=`);
@@ -293,6 +139,7 @@ if (hasLiveEnv(process.env)) {
       expect(readFileSync(authConfig.authDataPath, "utf8")).toContain(String(authId));
 
       const reconnectInit = await initializeSession(port, {
+        clientName: "vitest-live",
         cookie: cookie ?? undefined
       });
       const reconnectSessionId = reconnectInit.sessionId;

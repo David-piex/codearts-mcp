@@ -1,9 +1,114 @@
 import { describe, expect, it } from "vitest";
 import { createArtifactClient } from "../../../src/products/artifact/client.js";
 
+function createClient(transport: Record<string, unknown>) {
+  return createArtifactClient(transport as never);
+}
+
+function createProjectPageInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  page: number;
+  page_size: number;
+} & T {
+  return {
+    project_id: "project-1",
+    page: 1,
+    page_size: 20,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    page: number;
+    page_size: number;
+  } & T;
+}
+
+function createTenantProjectPageInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  tenant_id: string;
+  project_id: string;
+  page: number;
+  page_size: number;
+} & T {
+  return {
+    tenant_id: "tenant-1",
+    project_id: "project-1",
+    page: 1,
+    page_size: 20,
+    ...(overrides ?? {})
+  } as {
+    tenant_id: string;
+    project_id: string;
+    page: number;
+    page_size: number;
+  } & T;
+}
+
+function createPageInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  page: number;
+  page_size: number;
+} & T {
+  return {
+    page: 1,
+    page_size: 20,
+    ...(overrides ?? {})
+  } as {
+    page: number;
+    page_size: number;
+  } & T;
+}
+
+function createTenantProjectRepoInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  tenant_id: string;
+  project_id: string;
+  repo_name: string;
+} & T {
+  return {
+    tenant_id: "tenant-1",
+    project_id: "project-1",
+    repo_name: "libs-release",
+    ...(overrides ?? {})
+  } as {
+    tenant_id: string;
+    project_id: string;
+    repo_name: string;
+  } & T;
+}
+
+function createTenantProjectRepoFileInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  tenant_id: string;
+  project_id: string;
+  repo_name: string;
+  path: string;
+  format: string;
+} & T {
+  return {
+    tenant_id: "tenant-1",
+    project_id: "project-1",
+    repo_name: "libs-release",
+    path: "/gateway/1.0.0/gateway.jar",
+    format: "maven2",
+    ...(overrides ?? {})
+  } as {
+    tenant_id: string;
+    project_id: string;
+    repo_name: string;
+    path: string;
+    format: string;
+  } & T;
+}
+
 describe("createArtifactClient", () => {
   it("maps versions when provider returns a bare result array", async () => {
-    const client = createArtifactClient({
+    const client = createClient({
       get: async () => ({
         result: [
           {
@@ -16,13 +121,9 @@ describe("createArtifactClient", () => {
           }
         ]
       })
-    } as never);
-
-    const result = await client.listVersions({
-      project_id: "project-1",
-      page: 1,
-      page_size: 20
     });
+
+    const result = await client.listVersions(createProjectPageInput());
 
     expect(result.versions).toEqual([
       {
@@ -39,7 +140,7 @@ describe("createArtifactClient", () => {
   });
 
   it("maps latest version files when provider returns a bare result array", async () => {
-    const client = createArtifactClient({
+    const client = createClient({
       get: async () => ({
         result: [
           {
@@ -51,13 +152,9 @@ describe("createArtifactClient", () => {
           }
         ]
       })
-    } as never);
-
-    const result = await client.listLatestVersionFiles({
-      project_id: "project-1",
-      page: 1,
-      page_size: 20
     });
+
+    const result = await client.listLatestVersionFiles(createProjectPageInput());
 
     expect(result.files).toEqual([
       {
@@ -72,7 +169,7 @@ describe("createArtifactClient", () => {
   });
 
   it("maps search artifact responses with nested result", async () => {
-    const client = createArtifactClient({
+    const client = createClient({
       post: async () => ({
         result: {
           artifacts: [
@@ -88,7 +185,7 @@ describe("createArtifactClient", () => {
           total_count: 1
         }
       })
-    } as never);
+    });
 
     const result = await client.searchArtifacts({
       artifact_name: "gateway",
@@ -111,7 +208,7 @@ describe("createArtifactClient", () => {
 
   it("uses tenant and project path when listing repositories", async () => {
     let requestedPath = "";
-    const client = createArtifactClient({
+    const client = createClient({
       get: async (path: string) => {
         requestedPath = path;
         return {
@@ -126,14 +223,9 @@ describe("createArtifactClient", () => {
           total: 1
         };
       }
-    } as never);
-
-    const result = await client.listRepositories({
-      tenant_id: "tenant-1",
-      project_id: "project-1",
-      page: 1,
-      page_size: 20
     });
+
+    const result = await client.listRepositories(createTenantProjectPageInput());
 
     expect(requestedPath).toContain("/cloudartifact/v5/tenant-1/project-1/repositories?page_no=1&page_size=20");
     expect(result.repositories).toEqual([
@@ -149,7 +241,7 @@ describe("createArtifactClient", () => {
   });
 
   it("reads repositories and total from nested result payload", async () => {
-    const client = createArtifactClient({
+    const client = createClient({
       get: async () => ({
         result: {
           total: 2,
@@ -163,14 +255,9 @@ describe("createArtifactClient", () => {
           ]
         }
       })
-    } as never);
-
-    const result = await client.listRepositories({
-      tenant_id: "tenant-1",
-      project_id: "project-1",
-      page: 1,
-      page_size: 20
     });
+
+    const result = await client.listRepositories(createTenantProjectPageInput());
 
     expect(result.repositories).toEqual([
       {
@@ -186,7 +273,7 @@ describe("createArtifactClient", () => {
 
   it("uses the file-tree endpoint with a root path query", async () => {
     let requestedPath = "";
-    const client = createArtifactClient({
+    const client = createClient({
       get: async (path: string) => {
         requestedPath = path;
         return {
@@ -196,13 +283,9 @@ describe("createArtifactClient", () => {
           }
         };
       }
-    } as never);
-
-    const result = await client.getFileTree({
-      tenant_id: "tenant-1",
-      project_id: "project-1",
-      repo_name: "libs-release"
     });
+
+    const result = await client.getFileTree(createTenantProjectRepoInput());
 
     expect(requestedPath).toBe(
       "/cloudartifact/v5/tenant-1/project-1/libs-release/file-tree?path=%2F"
@@ -214,7 +297,7 @@ describe("createArtifactClient", () => {
   });
 
   it("supports stringified repository payloads from the provider", async () => {
-    const client = createArtifactClient({
+    const client = createClient({
       get: async () =>
         JSON.stringify({
           result: {
@@ -222,14 +305,9 @@ describe("createArtifactClient", () => {
             repositories: [{ repository_id: "repo-1", name: "libs-release", package_type: "maven2" }]
           }
         })
-    } as never);
-
-    const result = await client.listRepositories({
-      tenant_id: "tenant-1",
-      project_id: "project-1",
-      page: 1,
-      page_size: 20
     });
+
+    const result = await client.listRepositories(createTenantProjectPageInput());
 
     expect(result.repositories).toEqual([
       {
@@ -244,7 +322,7 @@ describe("createArtifactClient", () => {
   });
 
   it("reads files and total from nested result payload", async () => {
-    const client = createArtifactClient({
+    const client = createClient({
       post: async () => ({
         result: {
           total: 1,
@@ -258,14 +336,13 @@ describe("createArtifactClient", () => {
           ]
         }
       })
-    } as never);
-
-    const result = await client.listFiles({
-      project_id: "project-1",
-      repo_name: "libs-release",
-      page: 1,
-      page_size: 20
     });
+
+    const result = await client.listFiles(
+      createProjectPageInput({
+        repo_name: "libs-release"
+      })
+    );
 
     expect(result.files).toEqual([
       {
@@ -279,7 +356,7 @@ describe("createArtifactClient", () => {
   });
 
   it("supports stringified file-detail payloads from the provider", async () => {
-    const client = createArtifactClient({
+    const client = createClient({
       get: async () =>
         JSON.stringify({
           result: {
@@ -290,15 +367,9 @@ describe("createArtifactClient", () => {
             md5: "abc123"
           }
         })
-    } as never);
-
-    const result = await client.getFile({
-      tenant_id: "tenant-1",
-      project_id: "project-1",
-      repo_name: "libs-release",
-      path: "/gateway/1.0.0/gateway.jar",
-      format: "maven2"
     });
+
+    const result = await client.getFile(createTenantProjectRepoFileInput());
 
     expect(result).toEqual({
       path: "/gateway/1.0.0/gateway.jar",
@@ -310,7 +381,7 @@ describe("createArtifactClient", () => {
   });
 
   it("supports stringified build archive payloads from the provider", async () => {
-    const client = createArtifactClient({
+    const client = createClient({
       get: async () =>
         JSON.stringify({
           result: {
@@ -326,12 +397,9 @@ describe("createArtifactClient", () => {
             ]
           }
         })
-    } as never);
-
-    const result = await client.listBuildArchives({
-      page: 1,
-      page_size: 20
     });
+
+    const result = await client.listBuildArchives(createPageInput());
 
     expect(result).toEqual({
       archives: [

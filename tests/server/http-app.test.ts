@@ -1,176 +1,63 @@
-import { once } from "node:events";
 import { mkdtempSync, writeFileSync } from "node:fs";
-import { createServer } from "node:http";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { createHttpApp } from "../../src/server/http-app.js";
-import type { HttpAuthConfig } from "../../src/core/config/env.js";
-
-const MCP_PROTOCOL_VERSION = "2025-03-26";
-
-function createTestAuthConfig(): HttpAuthConfig {
-  return {
-    masterKey: "0123456789abcdef0123456789abcdef",
-    authDataPath: join(mkdtempSync(join(tmpdir(), "codearts-mcp-auth-")), "auth-store.json"),
-    authCookieName: "codearts_mcp_auth",
-    authCookieSecure: false,
-    authTokenTtlSeconds: 60
-  };
-}
-
-async function startServer(
-  authConfig?: HttpAuthConfig
-): Promise<{ server: ReturnType<typeof createServer>; port: number }> {
-  const app = createHttpApp(
-    {
-      serverName: "codearts-mcp",
-      serverVersion: "0.1.0",
-      httpPort: 0
-    },
-    authConfig
-  );
-  const server = createServer(app);
-  server.listen(0, "127.0.0.1");
-  await once(server, "listening");
-
-  const address = server.address();
-  if (!address || typeof address === "string") {
-    throw new Error("Expected an address info object");
-  }
-
-  return {
-    server,
-    port: address.port
-  };
-}
-
-async function postJsonRpc(
-  port: number,
-  payload: unknown,
-  options?: {
-    sessionId?: string;
-    cookie?: string;
-    queryToken?: string;
-  }
-) {
-  const headers: Record<string, string> = {
-    accept: "application/json, text/event-stream",
-    "content-type": "application/json"
-  };
-
-  if (options?.sessionId) {
-    headers["mcp-session-id"] = options.sessionId;
-    headers["mcp-protocol-version"] = MCP_PROTOCOL_VERSION;
-  }
-
-  if (options?.cookie) {
-    headers.cookie = options.cookie;
-  }
-
-  const url = new URL(`http://127.0.0.1:${port}/mcp`);
-  if (options?.queryToken) {
-    url.searchParams.set("auth_token", options.queryToken);
-  }
-
-  return fetch(url, {
-    method: "POST",
-    headers,
-    body: JSON.stringify(payload)
-  });
-}
-
-async function initializeSession(
-  port: number,
-  options?: {
-    cookie?: string;
-    queryToken?: string;
-  }
-) {
-  const response = await postJsonRpc(
-    port,
-    {
-      jsonrpc: "2.0",
-      id: "init-1",
-      method: "initialize",
-      params: {
-        protocolVersion: MCP_PROTOCOL_VERSION,
-        capabilities: {},
-        clientInfo: {
-          name: "vitest",
-          version: "0.1.0"
-        }
-      }
-    },
-    options
-  );
-
-  return {
-    response,
-    sessionId: response.headers.get("mcp-session-id")
-  };
-}
+import {
+  clearSessionTool,
+  createTestHttpServerRegistry,
+  createTestHttpAuthConfig,
+  fetchJsonFromTestServer,
+  initializeConfiguredSession,
+  initializeSession
+} from "./http-mcp-test-helpers.js";
+import { masterKey } from "./http-test-helpers.js";
 
 describe("http app", () => {
-  const servers: Array<ReturnType<typeof createServer>> = [];
+  const servers = createTestHttpServerRegistry();
+
+  async function startConfiguredServer(
+    overrides?: Parameters<typeof servers.start>[1]
+  ) {
+    const authConfig = createTestHttpAuthConfig();
+    const server = await servers.start(authConfig, overrides);
+
+    return {
+      authConfig,
+      ...server
+    };
+  }
+
+  function createRequestLogCapture() {
+    const logs: unknown[] = [];
+
+    return {
+      logs,
+      requestLogger(entry: unknown) {
+        logs.push(entry);
+      }
+    };
+  }
 
   afterEach(async () => {
-    for (const server of servers.splice(0)) {
-      server.close();
-      await once(server, "close");
-    }
+    await servers.closeAll();
   });
 
   it("serves the health endpoint", async () => {
-    const app = createHttpApp({
-      serverName: "codearts-mcp",
-      serverVersion: "0.1.0",
-      httpPort: 0
-    });
-    const server = createServer(app);
-    servers.push(server);
-    server.listen(0, "127.0.0.1");
-    await once(server, "listening");
-
-    const address = server.address();
-    if (!address || typeof address === "string") {
-      throw new Error("Expected an address info object");
-    }
-
-    const response = await fetch(`http://127.0.0.1:${address.port}/health`);
-    const body = (await response.json()) as { status: string };
+    const { port } = await servers.start();
+    const { response, body } = await fetchJsonFromTestServer<{ status: string }>(port, "/health");
 
     expect(response.status).toBe(200);
     expect(body.status).toBe("ok");
   });
 
   it("serves the readiness endpoint when auth persistence is writable", async () => {
-    const authConfig = createTestAuthConfig();
-    const app = createHttpApp(
-      {
-        serverName: "codearts-mcp",
-        serverVersion: "0.1.0",
-        httpPort: 0
-      },
-      authConfig
-    );
-    const server = createServer(app);
-    servers.push(server);
-    server.listen(0, "127.0.0.1");
-    await once(server, "listening");
-
-    const address = server.address();
-    if (!address || typeof address === "string") {
-      throw new Error("Expected an address info object");
-    }
-
-    const response = await fetch(`http://127.0.0.1:${address.port}/health/ready`);
-    const body = (await response.json()) as {
+    const { port } = await startConfiguredServer();
+    const { response, body } = await fetchJsonFromTestServer<{
       status: string;
       checks: {
         auth_persistence?: string;
       };
-    };
+    }>(port, "/health/ready");
 
     expect(response.status).toBe(200);
     expect(body.status).toBe("ready");
@@ -182,37 +69,19 @@ describe("http app", () => {
     const parentFile = join(tempDir, "not-a-directory");
     writeFileSync(parentFile, "placeholder");
 
-    const app = createHttpApp(
-      {
-        serverName: "codearts-mcp",
-        serverVersion: "0.1.0",
-        httpPort: 0
-      },
-      {
-        masterKey: "0123456789abcdef0123456789abcdef",
-        authDataPath: join(parentFile, "auth-store.json"),
-        authCookieName: "codearts_mcp_auth",
-        authCookieSecure: false,
-        authTokenTtlSeconds: 60
-      }
-    );
-    const server = createServer(app);
-    servers.push(server);
-    server.listen(0, "127.0.0.1");
-    await once(server, "listening");
-
-    const address = server.address();
-    if (!address || typeof address === "string") {
-      throw new Error("Expected an address info object");
-    }
-
-    const response = await fetch(`http://127.0.0.1:${address.port}/health/ready`);
-    const body = (await response.json()) as {
+    const { port } = await servers.start({
+      masterKey,
+      authDataPath: join(parentFile, "auth-store.json"),
+      authCookieName: "codearts_mcp_auth",
+      authCookieSecure: false,
+      authTokenTtlSeconds: 60
+    });
+    const { response, body } = await fetchJsonFromTestServer<{
       status: string;
       checks: {
         auth_persistence?: string;
       };
-    };
+    }>(port, "/health/ready");
 
     expect(response.status).toBe(503);
     expect(body.status).toBe("not_ready");
@@ -220,54 +89,17 @@ describe("http app", () => {
   });
 
   it("returns ok on the root path for deploy health probes", async () => {
-    const app = createHttpApp({
-      serverName: "codearts-mcp",
-      serverVersion: "0.1.0",
-      httpPort: 0
-    });
-    const server = createServer(app);
-    servers.push(server);
-    server.listen(0, "127.0.0.1");
-    await once(server, "listening");
-
-    const address = server.address();
-    if (!address || typeof address === "string") {
-      throw new Error("Expected an address info object");
-    }
-
-    const response = await fetch(`http://127.0.0.1:${address.port}/`);
-    const body = (await response.json()) as { status: string };
+    const { port } = await servers.start();
+    const { response, body } = await fetchJsonFromTestServer<{ status: string }>(port, "/");
 
     expect(response.status).toBe(200);
     expect(body.status).toBe("ok");
   });
 
   it("emits a structured request log after the response completes", async () => {
-    const logs: unknown[] = [];
-    const app = createHttpApp(
-      {
-        serverName: "codearts-mcp",
-        serverVersion: "0.1.0",
-        httpPort: 0
-      },
-      undefined,
-      {
-        requestLogger: (entry: unknown) => {
-          logs.push(entry);
-        }
-      }
-    );
-    const server = createServer(app);
-    servers.push(server);
-    server.listen(0, "127.0.0.1");
-    await once(server, "listening");
-
-    const address = server.address();
-    if (!address || typeof address === "string") {
-      throw new Error("Expected an address info object");
-    }
-
-    const response = await fetch(`http://127.0.0.1:${address.port}/health`);
+    const { logs, requestLogger } = createRequestLogCapture();
+    const { port } = await servers.start(undefined, { requestLogger });
+    const { response } = await fetchJsonFromTestServer<{ status: string }>(port, "/health");
 
     expect(response.status).toBe(200);
     expect(logs).toHaveLength(1);
@@ -287,53 +119,12 @@ describe("http app", () => {
   });
 
   it("logs MCP tool metadata for tools/call requests", async () => {
-    const logs: unknown[] = [];
-    const authConfig = createTestAuthConfig();
-    const { server, port } = await startServer(authConfig);
-    servers.push(server);
+    const { logs, requestLogger } = createRequestLogCapture();
+    const { port } = await startConfiguredServer({ requestLogger });
 
-    const app = createHttpApp(
-      {
-        serverName: "codearts-mcp",
-        serverVersion: "0.1.0",
-        httpPort: 0
-      },
-      authConfig,
-      {
-        requestLogger: (entry: unknown) => {
-          logs.push(entry);
-        }
-      }
-    );
-    server.removeAllListeners("request");
-    server.on("request", app);
+    const { configured, sessionId } = await initializeConfiguredSession(port);
 
-    const initialized = await initializeSession(port);
-    const sessionId = initialized.sessionId;
-
-    expect(sessionId).toBeTruthy();
-
-    const response = await postJsonRpc(
-      port,
-      {
-        jsonrpc: "2.0",
-        id: "call-tool-log",
-        method: "tools/call",
-        params: {
-          name: "auth_configure_session",
-          arguments: {
-            access_key: "ak-1",
-            secret_key: "sk-1",
-            region: "cn-north-4"
-          }
-        }
-      },
-      {
-        sessionId: sessionId ?? undefined
-      }
-    );
-
-    expect(response.status).toBe(200);
+    expect(configured.response.status).toBe(200);
     expect(logs).toContainEqual(
       expect.objectContaining({
         method: "POST",
@@ -347,32 +138,9 @@ describe("http app", () => {
   });
 
   it("records initialize phase timings in the request log", async () => {
-    const logs: unknown[] = [];
-    const authConfig = createTestAuthConfig();
-    const app = createHttpApp(
-      {
-        serverName: "codearts-mcp",
-        serverVersion: "0.1.0",
-        httpPort: 0
-      },
-      authConfig,
-      {
-        requestLogger: (entry: unknown) => {
-          logs.push(entry);
-        }
-      }
-    );
-    const server = createServer(app);
-    servers.push(server);
-    server.listen(0, "127.0.0.1");
-    await once(server, "listening");
-
-    const address = server.address();
-    if (!address || typeof address === "string") {
-      throw new Error("Expected an address info object");
-    }
-
-    const initialized = await initializeSession(address.port);
+    const { logs, requestLogger } = createRequestLogCapture();
+    const { port } = await startConfiguredServer({ requestLogger });
+    const initialized = await initializeSession(port);
 
     expect(initialized.response.status).toBe(200);
     expect(logs).toContainEqual(
@@ -393,72 +161,19 @@ describe("http app", () => {
   });
 
   it("sets an auth cookie after configure_session", async () => {
-    const authConfig = createTestAuthConfig();
-    const { server, port } = await startServer(authConfig);
-    servers.push(server);
-
-    const initialized = await initializeSession(port);
-    const sessionId = initialized.sessionId;
+    const { authConfig, port } = await startConfiguredServer();
+    const { initialized, configured, cookie } = await initializeConfiguredSession(port);
 
     expect(initialized.response.status).toBe(200);
-    expect(sessionId).toBeTruthy();
-
-    const response = await postJsonRpc(
-      port,
-      {
-        jsonrpc: "2.0",
-        id: "call-1",
-        method: "tools/call",
-        params: {
-          name: "auth_configure_session",
-          arguments: {
-            access_key: "ak-1",
-            secret_key: "sk-1",
-            region: "cn-north-4"
-          }
-        }
-      },
-      {
-        sessionId: sessionId ?? undefined
-      }
-    );
-
-    expect(response.status).toBe(200);
-    expect(response.headers.get("set-cookie")).toContain(
+    expect(configured.response.status).toBe(200);
+    expect(cookie).toContain(
       `${authConfig.authCookieName}=`
     );
   });
 
   it("reuses cookie-backed auth after a reconnect", async () => {
-    const authConfig = createTestAuthConfig();
-    const { server, port } = await startServer(authConfig);
-    servers.push(server);
-
-    const firstInit = await initializeSession(port);
-    const firstSessionId = firstInit.sessionId;
-
-    expect(firstSessionId).toBeTruthy();
-
-    const configureResponse = await postJsonRpc(
-      port,
-      {
-        jsonrpc: "2.0",
-        id: "call-1",
-        method: "tools/call",
-        params: {
-          name: "auth_configure_session",
-          arguments: {
-            access_key: "ak-1",
-            secret_key: "sk-1",
-            region: "cn-north-4"
-          }
-        }
-      },
-      {
-        sessionId: firstSessionId ?? undefined
-      }
-    );
-    const cookie = configureResponse.headers.get("set-cookie");
+    const { authConfig, port } = await startConfiguredServer();
+    const { sessionId: firstSessionId, cookie } = await initializeConfiguredSession(port);
 
     expect(cookie).toContain(`${authConfig.authCookieName}=`);
 
@@ -470,29 +185,10 @@ describe("http app", () => {
     expect(reconnectSessionId).toBeTruthy();
     expect(reconnectSessionId).not.toBe(firstSessionId);
 
-    const clearResponse = await postJsonRpc(
-      port,
-      {
-        jsonrpc: "2.0",
-        id: "call-2",
-        method: "tools/call",
-        params: {
-          name: "auth_clear_session",
-          arguments: {}
-        }
-      },
-      {
-        sessionId: reconnectSessionId ?? undefined,
-        cookie: cookie ?? undefined
-      }
-    );
-    const body = (await clearResponse.json()) as {
-      result?: {
-        structuredContent?: {
-          cleared?: boolean;
-        };
-      };
-    };
+    const { response: clearResponse, body } = await clearSessionTool(port, {
+      sessionId: reconnectSessionId ?? undefined,
+      cookie: cookie ?? undefined
+    });
 
     expect(clearResponse.status).toBe(200);
     expect(body.result?.structuredContent?.cleared).toBe(true);
@@ -500,42 +196,8 @@ describe("http app", () => {
   });
 
   it("reuses query-token-backed auth after a reconnect", async () => {
-    const authConfig = createTestAuthConfig();
-    const { server, port } = await startServer(authConfig);
-    servers.push(server);
-
-    const firstInit = await initializeSession(port);
-    const firstSessionId = firstInit.sessionId;
-
-    expect(firstSessionId).toBeTruthy();
-
-    const configureResponse = await postJsonRpc(
-      port,
-      {
-        jsonrpc: "2.0",
-        id: "call-1",
-        method: "tools/call",
-        params: {
-          name: "auth_configure_session",
-          arguments: {
-            access_key: "ak-1",
-            secret_key: "sk-1",
-            region: "cn-north-4"
-          }
-        }
-      },
-      {
-        sessionId: firstSessionId ?? undefined
-      }
-    );
-    const configureBody = (await configureResponse.json()) as {
-      result?: {
-        structuredContent?: {
-          auth_token?: string;
-        };
-      };
-    };
-    const authToken = configureBody.result?.structuredContent?.auth_token;
+    const { port } = await startConfiguredServer();
+    const { sessionId: firstSessionId, authToken } = await initializeConfiguredSession(port);
 
     expect(authToken).toBeTruthy();
 
@@ -547,29 +209,10 @@ describe("http app", () => {
     expect(reconnectSessionId).toBeTruthy();
     expect(reconnectSessionId).not.toBe(firstSessionId);
 
-    const clearResponse = await postJsonRpc(
-      port,
-      {
-        jsonrpc: "2.0",
-        id: "call-2",
-        method: "tools/call",
-        params: {
-          name: "auth_clear_session",
-          arguments: {}
-        }
-      },
-      {
-        sessionId: reconnectSessionId ?? undefined,
-        queryToken: authToken
-      }
-    );
-    const body = (await clearResponse.json()) as {
-      result?: {
-        structuredContent?: {
-          cleared?: boolean;
-        };
-      };
-    };
+    const { response: clearResponse, body } = await clearSessionTool(port, {
+      sessionId: reconnectSessionId ?? undefined,
+      queryToken: authToken
+    });
 
     expect(clearResponse.status).toBe(200);
     expect(body.result?.structuredContent?.cleared).toBe(true);

@@ -97,10 +97,11 @@ describe("file auth repository", () => {
   it("reuses cached file contents for repeated reads in the same repository instance", async () => {
     const path = join(mkdtempSync(join(tmpdir(), "codearts-mcp-")), "auth-store.json");
     const repo = createFileAuthRepository(path);
+    const readFileSyncSpy = vi.spyOn(fs, "readFileSync");
 
     await repo.upsert(createRecord({ auth_id: "auth-cache", token_hash: "hash-cache" }));
 
-    vi.mocked(fs.readFileSync).mockClear();
+    readFileSyncSpy.mockClear();
 
     expect(await repo.findActiveByAuthId("auth-cache")).toMatchObject({
       auth_id: "auth-cache"
@@ -109,7 +110,7 @@ describe("file auth repository", () => {
       token_hash: "hash-cache"
     });
 
-    expect(fs.readFileSync).not.toHaveBeenCalled();
+    expect(readFileSyncSpy).not.toHaveBeenCalled();
   });
 
   it("refreshes cached contents when another repository instance updates the file", async () => {
@@ -164,10 +165,11 @@ describe("file auth repository", () => {
       fileCheckIntervalMs: 60_000,
       now: () => 1_000
     });
+    const statSyncSpy = vi.spyOn(fs, "statSync");
 
     await repo.upsert(createRecord({ auth_id: "auth-hot", token_hash: "hash-hot" }));
 
-    vi.mocked(fs.statSync).mockClear();
+    statSyncSpy.mockClear();
 
     expect(await repo.findActiveByAuthId("auth-hot")).toMatchObject({
       auth_id: "auth-hot"
@@ -176,7 +178,7 @@ describe("file auth repository", () => {
       token_hash: "hash-hot"
     });
 
-    expect(fs.statSync).not.toHaveBeenCalled();
+    expect(statSyncSpy).not.toHaveBeenCalled();
   });
 
   it("refreshes timestamps in place when a token record is touched", async () => {
@@ -211,24 +213,25 @@ describe("file auth repository", () => {
   it("prewarms cached indexes so the first lookup does not reread the file", async () => {
     const path = join(mkdtempSync(join(tmpdir(), "codearts-mcp-")), "auth-store.json");
     const seedRepo = createFileAuthRepository(path);
+    const readFileSyncSpy = vi.spyOn(fs, "readFileSync");
 
     await seedRepo.upsert(
       createRecord({ auth_id: "auth-prewarm", token_hash: "hash-prewarm" })
     );
 
     const repo = createFileAuthRepository(path);
-    vi.mocked(fs.readFileSync).mockClear();
+    readFileSyncSpy.mockClear();
 
     await repo.prewarm();
 
-    expect(fs.readFileSync).toHaveBeenCalledTimes(1);
+    expect(readFileSyncSpy).toHaveBeenCalledTimes(1);
 
-    vi.mocked(fs.readFileSync).mockClear();
+    readFileSyncSpy.mockClear();
 
     expect(await repo.findByTokenHash("hash-prewarm")).toMatchObject({
       auth_id: "auth-prewarm",
       token_hash: "hash-prewarm"
     });
-    expect(fs.readFileSync).not.toHaveBeenCalled();
+    expect(readFileSyncSpy).not.toHaveBeenCalled();
   });
 });

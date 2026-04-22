@@ -3,6 +3,10 @@ import {
   mapRejectRunResult,
   previewRejectRun
 } from "../../../../src/products/pipeline/tools/reject-run.js";
+import {
+  expectDryRunPreview,
+  expectMappedItem
+} from "./tool-test-helpers.js";
 
 describe("previewRejectRun", () => {
   it("returns a dry-run summary for rejecting a pipeline run", () => {
@@ -15,8 +19,7 @@ describe("previewRejectRun", () => {
       dry_run: true
     });
 
-    expect(result.summary).toContain("Dry run");
-    expect(result.item).toEqual({
+    expectDryRunPreview(result, {
       projectId: "project-1",
       pipelineId: "pipe-1",
       pipelineRunId: "run-1",
@@ -38,7 +41,7 @@ describe("mapRejectRunResult", () => {
       success: true
     });
 
-    expect(result.item).toEqual({
+    expectMappedItem(result, {
       projectId: "project-1",
       pipelineId: "pipe-1",
       pipelineRunId: "run-1",

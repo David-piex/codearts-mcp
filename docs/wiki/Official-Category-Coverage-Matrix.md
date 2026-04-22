@@ -92,19 +92,21 @@
 | Official Category | Current Status | Notes |
 | --- | --- | --- |
 | `模板管理` | Partial | 只覆盖模板列表, 未覆盖模板 CRUD 全量能力 |
-| `流水线管理` | Covered | 运行、停止、重试、人工审核、日志、参数、产物、步骤输出主链已覆盖 |
-| `分组管理` | Not targeted | 未覆盖 |
-| `规则管理` | Not targeted | 未覆盖 |
-| `租户级策略管理` | Not targeted | 未覆盖 |
-| `项目级策略管理` | Not targeted | 未覆盖 |
+| `流水线管理` | Covered | 列表、详情、运行、删除、启停、停止、重试、人工审核、日志、参数、产物、步骤输出主链已覆盖 |
+| `分组管理` | Partial | 已覆盖分组树查询、创建、更新、删除与批量移动流水线, 但还不是官方分组管理全量能力面 |
+| `规则管理` | Partial | 已覆盖规则详情、列表、创建、更新、删除、关联信息与规则类型查询, 但还不是完整规则管理能力面 |
+| `租户级策略管理` | Covered | 已覆盖策略详情、列表、创建、更新、删除、启停切换、关联信息与子策略列表 |
+| `项目级策略管理` | Covered | 已覆盖项目级策略列表、灰度详情、使用情况、继承、启停切换、删除、详情、更新与创建 |
 | `扩展插件管理` | Not targeted | 未覆盖 |
-| `扩展点管理` | Not targeted | 未覆盖 |
-| `流水线标签管理` | Not targeted | 未覆盖 |
+| `扩展点管理` | Partial | 已覆盖扩展模块列表、模块详情、扩展点列表、详情、创建、更新、删除, 但 OAuth 授权 URL 等辅助链路未做 |
+| `流水线标签管理` | Covered | 已覆盖标签列表、创建、更新、删除与批量给流水线设置标签主链 |
 | `变更管理` | Not targeted | 未覆盖 |
 | `微服务管理` | Not targeted | 未覆盖 |
 | `模板管理（旧版）` | Not targeted | 未覆盖 |
 | `流水线管理（旧版）` | Not targeted | 未覆盖 |
 | `GitCode流水线` | Not targeted | 未覆盖 |
+
+Pipeline 4.7 plugin read slice update: `pipeline_list_publishers`, `pipeline_list_available_publishers`, `pipeline_list_stage_plugins`, `pipeline_list_base_plugins`, `pipeline_list_base_plugins_paged`, `pipeline_list_plugins`, `pipeline_get_plugin_inputs`, `pipeline_get_plugin_outputs`, `pipeline_list_plugin_versions`, and `pipeline_get_plugin_version` are now aligned in this matrix scope.
 
 ## TestPlan
 

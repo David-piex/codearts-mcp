@@ -15,10 +15,15 @@
 
 <!-- GENERATED:readme-exposure-summary:start -->
 - `8` product modules
-- `156` product tools
+- `218` product tools
 - `2` session/auth tools for shared `http` mode
-- `158` total MCP tools in shared `http` mode
+- `220` total MCP tools in shared `http` mode
 <!-- GENERATED:readme-exposure-summary:end -->
+
+如果你想直接看“8 个官方 PDF 里哪些已经 MCP 化、哪些还没做、哪些只是代码里有但 live 仍受区域限制”，先看：
+
+- `docs/wiki/Official-PDF-MCP-Coverage-Summary.md`
+- `docs/wiki/Official-Category-Coverage-Matrix.md`
 
 ## 3 分钟部署使用
 
@@ -268,15 +273,18 @@ node dist/src/server/index.js
 
 - Req
 - Repo
-- Pipeline
 - Check
 - Build
 
 已实现且可用，但仍受真实租户样本或区域发布限制：
 
+- Pipeline
 - TestPlan
 - Deploy
 - Artifact
+
+- Repo 新增的 `repo_create_repository` 已完成真实 AK/SK live 联调，当前 25 个 Repo 工具都已进入 live 闭环。
+- Pipeline 新增的管理/分组工具已实现并通过回归测试，但还没有补完真实 AK/SK live 联调。
 
 ## 模块现状总表
 
@@ -284,8 +292,8 @@ node dist/src/server/index.js
 | Module | Tools | Live status | Current breakdown |
 | --- | --- | --- | --- |
 | Req | 8 | Validated | `8 Full / 0 Reachable / 0 Unpublished / 0 Code` |
-| Repo | 24 | Validated | `24 Full` |
-| Pipeline | 16 | Validated | `16 Full` |
+| Repo | 25 | Validated | `25 Full / 0 Reachable / 0 Unpublished / 0 Code` |
+| Pipeline | 77 | Partial | `16 Full / 0 Reachable / 0 Unpublished / 51 Code` |
 | Check | 8 | Validated | `8 Full` |
 | TestPlan | 7 | Partial | `1 Full / 2 Reachable / 4 Unpublished / 0 Code` |
 | Deploy | 59 | Partial | Expanded surface; see `docs/wiki/Deploy-Live-Validated.md` for the current live split |

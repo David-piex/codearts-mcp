@@ -54,10 +54,6 @@ function readTemplateProbeHostGroupId(source: NodeJS.ProcessEnv) {
   );
 }
 
-function readHostId(source: NodeJS.ProcessEnv) {
-  return source.HUAWEICLOUD_DEPLOY_LIVE_HOST_ID?.trim() || "bb51c89c976c48818310772ddefc79a4";
-}
-
 function readRecordId(source: NodeJS.ProcessEnv) {
   return source.HUAWEICLOUD_DEPLOY_LIVE_RECORD_ID?.trim() || "00000000000000000000000000000000";
 }
@@ -81,6 +77,156 @@ function expectPipelineControlledDeployError(error: unknown) {
   return status === 400 && ["Deploy.00011042", "Deploy.00016004"].includes(code ?? "");
 }
 
+function createProjectPageInput<T extends Record<string, unknown>>(
+  projectId: string,
+  overrides?: T
+): {
+  project_id: string;
+  page: number;
+  page_size: number;
+} & T {
+  return {
+    project_id: projectId,
+    page: 1,
+    page_size: 20,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    page: number;
+    page_size: number;
+  } & T;
+}
+
+function createApplicationProjectPageInput<T extends Record<string, unknown>>(
+  applicationId: string,
+  projectId: string,
+  overrides?: T
+): {
+  application_id: string;
+  project_id: string;
+  page: number;
+  page_size: number;
+} & T {
+  return {
+    application_id: applicationId,
+    project_id: projectId,
+    page: 1,
+    page_size: 20,
+    ...(overrides ?? {})
+  } as {
+    application_id: string;
+    project_id: string;
+    page: number;
+    page_size: number;
+  } & T;
+}
+
+function createEnvironmentPageInput<T extends Record<string, unknown>>(
+  applicationId: string,
+  environmentId: string,
+  overrides?: T
+): {
+  application_id: string;
+  environment_id: string;
+  page: number;
+  page_size: number;
+} & T {
+  return {
+    application_id: applicationId,
+    environment_id: environmentId,
+    page: 1,
+    page_size: 20,
+    ...(overrides ?? {})
+  } as {
+    application_id: string;
+    environment_id: string;
+    page: number;
+    page_size: number;
+  } & T;
+}
+
+function createGroupPageInput<T extends Record<string, unknown>>(
+  groupId: string,
+  overrides?: T
+): {
+  group_id: string;
+  page: number;
+  page_size: number;
+} & T {
+  return {
+    group_id: groupId,
+    page: 1,
+    page_size: 20,
+    ...(overrides ?? {})
+  } as {
+    group_id: string;
+    page: number;
+    page_size: number;
+  } & T;
+}
+
+function createProjectLimitOffsetInput<T extends Record<string, unknown>>(
+  projectId: string,
+  overrides?: T
+): {
+  project_id: string;
+  limit: number;
+  offset: number;
+} & T {
+  return {
+    project_id: projectId,
+    limit: 100,
+    offset: 0,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    limit: number;
+    offset: number;
+  } & T;
+}
+
+function createTaskRecordInput<T extends Record<string, unknown>>(
+  taskId: string,
+  recordId: string,
+  overrides?: T
+): {
+  task_id: string;
+  record_id: string;
+} & T {
+  return {
+    task_id: taskId,
+    record_id: recordId,
+    ...(overrides ?? {})
+  } as {
+    task_id: string;
+    record_id: string;
+  } & T;
+}
+
+function createApplicationRecordLogInput<T extends Record<string, unknown>>(
+  applicationId: string,
+  recordId: string,
+  overrides?: T
+): {
+  application_id: string;
+  record_id: string;
+  offset: string;
+  end_offset: string;
+} & T {
+  return {
+    application_id: applicationId,
+    record_id: recordId,
+    offset: "0",
+    end_offset: "2000",
+    ...(overrides ?? {})
+  } as {
+    application_id: string;
+    record_id: string;
+    offset: string;
+    end_offset: string;
+  } & T;
+}
+
 if (hasLiveEnv(process.env)) {
   describe("createDeployClient live smoke", () => {
     const config = loadEnvConfig(process.env);
@@ -97,7 +243,6 @@ if (hasLiveEnv(process.env)) {
     const environmentId = readEnvironmentId(process.env);
     const templateProbeTemplateId = readTemplateProbeTemplateId(process.env);
     const templateProbeHostGroupId = readTemplateProbeHostGroupId(process.env);
-    const hostId = readHostId(process.env);
     const recordId = readRecordId(process.env);
     const endDate = new Date();
     const startDate = new Date(endDate.getTime() - 30 * 24 * 60 * 60 * 1000);
@@ -108,16 +253,8 @@ if (hasLiveEnv(process.env)) {
 
     it("lists apps and tasks for the known live project", async () => {
       const [apps, tasks] = await Promise.all([
-        client.listApps({
-          project_id: projectId,
-          page: 1,
-          page_size: 20
-        }),
-        client.listTasks({
-          project_id: projectId,
-          page: 1,
-          page_size: 20
-        })
+        client.listApps(createProjectPageInput(projectId)),
+        client.listTasks(createProjectPageInput(projectId))
       ]);
 
       expect(Array.isArray(apps.applications)).toBe(true);
@@ -129,23 +266,13 @@ if (hasLiveEnv(process.env)) {
     it("lists the known live host group project and loads host group resources", async () => {
       const [hostGroups, hostGroup, hosts, environments] = await Promise.all([
         client.listHostGroups({
-          project_id: hostGroupProjectId,
-          page: 1,
-          page_size: 20
+          ...createProjectPageInput(hostGroupProjectId)
         }),
         client.getHostGroup({
           group_id: hostGroupId
         }),
-        client.listHostGroupHosts({
-          group_id: hostGroupId,
-          page: 1,
-          page_size: 20
-        }),
-        client.listHostGroupEnvironments({
-          group_id: hostGroupId,
-          page: 1,
-          page_size: 20
-        })
+        client.listHostGroupHosts(createGroupPageInput(hostGroupId)),
+        client.listHostGroupEnvironments(createGroupPageInput(hostGroupId))
       ]);
 
       expect(Array.isArray(hostGroups.host_groups)).toBe(true);
@@ -166,16 +293,10 @@ if (hasLiveEnv(process.env)) {
           task_id: taskId
         }),
         client.listAppHostGroups({
-          application_id: applicationId,
-          project_id: projectId,
-          page: 1,
-          page_size: 20
+          ...createApplicationProjectPageInput(applicationId, projectId)
         }),
         client.listEnvironments({
-          application_id: applicationId,
-          project_id: projectId,
-          page: 1,
-          page_size: 20
+          ...createApplicationProjectPageInput(applicationId, projectId)
         })
       ]);
 
@@ -231,10 +352,9 @@ if (hasLiveEnv(process.env)) {
           end_date: endTimestampText
         }),
         client.listHistories({
-          project_id: projectId,
-          task_id: taskId,
-          page: 1,
-          page_size: 20,
+          ...createProjectPageInput(projectId, {
+            task_id: taskId,
+          }),
           start_date: startDateText,
           end_date: endDateText
         }),
@@ -266,9 +386,7 @@ if (hasLiveEnv(process.env)) {
 
     it("reaches the v4 applications discovery endpoint", async () => {
       const discovered = await client.listV4Applications({
-        project_id: projectId,
-        limit: 100,
-        offset: 0,
+        ...createProjectLimitOffsetInput(projectId),
         keyword: "codex"
       });
 
@@ -279,30 +397,19 @@ if (hasLiveEnv(process.env)) {
 
     it("reaches record-bound deploy detail endpoints with a valid-shape record id", async () => {
       await expect(
-        client.getHistoryDetail({
-          task_id: taskId,
-          record_id: recordId
-        })
+        client.getHistoryDetail(createTaskRecordInput(taskId, recordId))
       ).rejects.toMatchObject({
         code: "Deploy.00011303"
       });
 
       await expect(
-        client.getAppLog({
-          application_id: applicationId,
-          record_id: recordId,
-          offset: "0",
-          end_offset: "2000"
-        })
+        client.getAppLog(createApplicationRecordLogInput(applicationId, recordId))
       ).rejects.toMatchObject({
         code: "Deploy.00011303"
       });
 
       await expect(
-        client.getExecutionParams({
-          task_id: taskId,
-          record_id: recordId
-        })
+        client.getExecutionParams(createTaskRecordInput(taskId, recordId))
       ).rejects.toMatchObject({
         code: "Deploy.00011303"
       });
@@ -310,10 +417,7 @@ if (hasLiveEnv(process.env)) {
 
     it("reaches the write endpoints safely without triggering a real deploy execution", async () => {
       const environmentHosts = await client.listEnvironmentHosts({
-        application_id: applicationId,
-        environment_id: environmentId,
-        page: 1,
-        page_size: 20
+        ...createEnvironmentPageInput(applicationId, environmentId)
       });
 
       expect(Array.isArray(environmentHosts.hosts)).toBe(true);
@@ -325,20 +429,14 @@ if (hasLiveEnv(process.env)) {
       ).rejects.toSatisfy(expectPipelineControlledDeployError);
 
       await expect(
-        client.stopApp({
-          task_id: taskId,
-          record_id: recordId
-        })
+        client.stopApp(createTaskRecordInput(taskId, recordId))
       ).rejects.toMatchObject({
         code: "Deploy.00011303",
         status: 404
       });
 
       await expect(
-        client.rollbackApp({
-          task_id: taskId,
-          record_id: recordId
-        })
+        client.rollbackApp(createTaskRecordInput(taskId, recordId))
       ).rejects.toSatisfy(expectPipelineControlledDeployError);
     }, 30000);
   });

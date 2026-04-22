@@ -12,7 +12,8 @@ describe("project bootstrap", () => {
   it("defines MCP development scripts", () => {
     const pkg = JSON.parse(readFileSync("package.json", "utf8"));
     expect(pkg.scripts.dev).toBe("tsx src/server/index.ts");
-    expect(pkg.scripts.test).toBe("vitest run");
+    expect(pkg.scripts.test).toBe("vitest run --no-isolate");
+    expect(pkg.scripts["test:isolate"]).toBe("vitest run");
     expect(pkg.type).toBe("module");
   });
 

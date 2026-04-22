@@ -3,6 +3,10 @@ import {
   mapRetryRunResult,
   previewRetryRun
 } from "../../../../src/products/pipeline/tools/retry-run.js";
+import {
+  expectDryRunPreview,
+  expectMappedItem
+} from "./tool-test-helpers.js";
 
 describe("previewRetryRun", () => {
   it("returns a dry-run summary for retrying a pipeline run", () => {
@@ -13,8 +17,7 @@ describe("previewRetryRun", () => {
       dry_run: true
     });
 
-    expect(result.summary).toContain("Dry run");
-    expect(result.item).toEqual({
+    expectDryRunPreview(result, {
       projectId: "project-1",
       pipelineId: "pipe-1",
       pipelineRunId: "run-1",
@@ -32,7 +35,7 @@ describe("mapRetryRunResult", () => {
       pipeline_run_id: "run-2"
     });
 
-    expect(result.item).toEqual({
+    expectMappedItem(result, {
       projectId: "project-1",
       pipelineId: "pipe-1",
       sourceRunId: "run-1",

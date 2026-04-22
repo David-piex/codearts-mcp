@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { mapPipelineRunExecutionDetail } from "../../../../src/products/pipeline/tools/get-run-detail.js";
+import { expectMappedItem } from "./tool-test-helpers.js";
 
 describe("mapPipelineRunExecutionDetail", () => {
   it("returns normalized pipeline execution detail data", () => {
@@ -15,7 +16,7 @@ describe("mapPipelineRunExecutionDetail", () => {
       stages: [{ id: "stage-1" }, { id: "stage-2" }]
     });
 
-    expect(result.item).toEqual({
+    expectMappedItem(result, {
       id: "run-1",
       pipelineId: "pipe-1",
       name: "release-pipeline",

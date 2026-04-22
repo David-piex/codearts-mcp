@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { mapPipelineTemplates } from "../../../../src/products/pipeline/tools/list-templates.js";
+import { expectMappedPage } from "./tool-test-helpers.js";
 
 describe("mapPipelineTemplates", () => {
   it("returns normalized pipeline templates with pagination", () => {
@@ -21,22 +22,24 @@ describe("mapPipelineTemplates", () => {
       12
     );
 
-    expect(result.items).toEqual([
-      {
-        id: "tpl-1",
-        name: "Java CI",
-        icon: "java",
-        manifestVersion: "3.0",
-        language: "java",
-        description: "Java build template",
-        isSystem: true,
-        region: "cn-north-4"
+    expectMappedPage(result, {
+      items: [
+        {
+          id: "tpl-1",
+          name: "Java CI",
+          icon: "java",
+          manifestVersion: "3.0",
+          language: "java",
+          description: "Java build template",
+          isSystem: true,
+          region: "cn-north-4"
+        }
+      ],
+      pageInfo: {
+        page: 2,
+        pageSize: 10,
+        total: 12
       }
-    ]);
-    expect(result.page_info).toEqual({
-      page: 2,
-      pageSize: 10,
-      total: 12
     });
   });
 });

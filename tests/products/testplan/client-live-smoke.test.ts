@@ -42,6 +42,44 @@ function readPlanId(source: NodeJS.ProcessEnv) {
   return source.HUAWEICLOUD_TESTPLAN_LIVE_PLAN_ID?.trim() || "vd040000umltrdd2";
 }
 
+function createProjectPageInput<T extends Record<string, unknown>>(
+  projectId: string,
+  overrides?: T
+): {
+  project_id: string;
+  page: number;
+  page_size: number;
+} & T {
+  return {
+    project_id: projectId,
+    page: 1,
+    page_size: 20,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    page: number;
+    page_size: number;
+  } & T;
+}
+
+function createProjectPlanInput<T extends Record<string, unknown>>(
+  projectId: string,
+  planId: string,
+  overrides?: T
+): {
+  project_id: string;
+  plan_id: string;
+} & T {
+  return {
+    project_id: projectId,
+    plan_id: planId,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    plan_id: string;
+  } & T;
+}
+
 if (hasLiveEnv(process.env)) {
   describe("createTestPlanClient live smoke", () => {
     const config = loadEnvConfig(process.env);
@@ -58,11 +96,7 @@ if (hasLiveEnv(process.env)) {
       const results = await Promise.all(
         projectIds.map(async (project_id) => {
           try {
-            const result = await client.listPlans({
-              project_id,
-              page: 1,
-              page_size: 20
-            });
+            const result = await client.listPlans(createProjectPageInput(project_id));
 
             return { project_id, ok: true as const, result };
           } catch (error: any) {
@@ -88,31 +122,26 @@ if (hasLiveEnv(process.env)) {
     }, 30000);
 
     it("lists issues for the known live plan", async () => {
-      const result = await client.listIssues({
-        project_id: supportedProjectId,
-        plan_id: planId
-      });
+      const result = await client.listIssues(
+        createProjectPlanInput(supportedProjectId, planId)
+      );
 
       expect(Array.isArray(result.issues)).toBe(true);
     }, 30000);
 
     it("lists cases for the known live plan", async () => {
-      const result = await client.listCases({
-        project_id: supportedProjectId,
-        plan_id: planId,
-        page: 1,
-        page_size: 20
-      });
+      const result = await client.listCases(
+        createProjectPageInput(supportedProjectId, {
+          plan_id: planId
+        })
+      );
 
       expect(Array.isArray(result.cases)).toBe(true);
     }, 30000);
 
     it("shows unpublished detail routes for getPlan/getCase/listRuns", async () => {
       await expect(
-        client.getPlan({
-          project_id: supportedProjectId,
-          plan_id: planId
-        })
+        client.getPlan(createProjectPlanInput(supportedProjectId, planId))
       ).rejects.toMatchObject({
         code: "APIGW.0101",
         status: 404
@@ -129,12 +158,11 @@ if (hasLiveEnv(process.env)) {
       });
 
       await expect(
-        client.listRuns({
-          project_id: supportedProjectId,
-          plan_id: planId,
-          page: 1,
-          page_size: 20
-        })
+        client.listRuns(
+          createProjectPageInput(supportedProjectId, {
+            plan_id: planId
+          })
+        )
       ).rejects.toMatchObject({
         code: "APIGW.0101",
         status: 404

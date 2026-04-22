@@ -3,6 +3,7 @@ import {
   createPipelineListRunsHandler,
   mapPipelineRuns
 } from "../../../../src/products/pipeline/tools/list-runs.js";
+import { expectMappedPage } from "./tool-test-helpers.js";
 
 describe("mapPipelineRuns", () => {
   it("returns normalized pipeline runs with pagination", () => {
@@ -13,17 +14,19 @@ describe("mapPipelineRuns", () => {
       12
     );
 
-    expect(result.items).toEqual([
-      {
-        id: "run-1",
-        status: "success",
-        executorName: "Bob"
+    expectMappedPage(result, {
+      items: [
+        {
+          id: "run-1",
+          status: "success",
+          executorName: "Bob"
+        }
+      ],
+      pageInfo: {
+        page: 2,
+        pageSize: 10,
+        total: 12
       }
-    ]);
-    expect(result.page_info).toEqual({
-      page: 2,
-      pageSize: 10,
-      total: 12
     });
   });
 

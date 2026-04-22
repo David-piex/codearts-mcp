@@ -4,33 +4,89 @@ import {
   buildClientsFromCredentialConfig,
   configureHttpAuthRuntimeConfig
 } from "../../src/server/auth-session-runtime.js";
-import { encryptSecretValue } from "../../src/server/auth-crypto.js";
-import { createSessionCredentialStore } from "../../src/server/session-store.js";
+import {
+  createAuthRepositoryStub,
+  createBoundSessionStore,
+  createRuntimeAuthRecord,
+  masterKey
+} from "./http-test-helpers.js";
 
-const masterKey = "0123456789abcdef0123456789abcdef";
+const sessionId = "session-a";
 
-function createRecord(updatedAt: string, overrides: Partial<{
-  auth_id: string;
-  req_base_url: string;
-}> = {}) {
+function createCredentialConfig(
+  overrides: Partial<Parameters<typeof buildClientsFromCredentialConfig>[0]> = {}
+) {
   return {
-    auth_id: overrides.auth_id ?? "auth-1",
-    token_hash: "hash-1",
-    encrypted_access_key: encryptSecretValue("ak-1", masterKey),
-    encrypted_secret_key: encryptSecretValue("sk-1", masterKey),
-    region: "cn-north-4",
-    req_base_url:
-      overrides.req_base_url ?? "https://projectman-ext.cn-north-4.myhuaweicloud.com",
-    repo_base_url: "https://codehub-ext.cn-north-4.myhuaweicloud.com",
-    pipeline_base_url: "https://cloudpipeline-ext.cn-north-4.myhuaweicloud.com",
-    check_base_url: "https://codecheck-ext.cn-north-4.myhuaweicloud.com",
-    testplan_base_url: "https://cloudtest-ext.cn-north-4.myhuaweicloud.com",
-    deploy_base_url: "https://codearts-deploy.cn-north-4.myhuaweicloud.com",
-    build_base_url: "https://cloudbuild-ext.cn-north-4.myhuaweicloud.com",
-    artifact_base_url: "https://artifact.cn-north-4.myhuaweicloud.cn",
-    created_at: "2026-04-20T08:00:00.000Z",
-    updated_at: updatedAt,
-    last_used_at: updatedAt
+    accessKey: "ak-1",
+    secretKey: "sk-1",
+    reqBaseUrl: "https://projectman-ext.cn-north-4.myhuaweicloud.com",
+    repoBaseUrl: "https://codehub-ext.cn-north-4.myhuaweicloud.com",
+    pipelineBaseUrl: "https://cloudpipeline-ext.cn-north-4.myhuaweicloud.com",
+    checkBaseUrl: "https://codecheck-ext.cn-north-4.myhuaweicloud.com",
+    testPlanBaseUrl: "https://cloudtest-ext.cn-north-4.myhuaweicloud.com",
+    deployBaseUrl: "https://codearts-deploy.cn-north-4.myhuaweicloud.com",
+    buildBaseUrl: "https://cloudbuild-ext.cn-north-4.myhuaweicloud.com",
+    artifactBaseUrl: "https://artifact.cn-north-4.myhuaweicloud.cn",
+    ...overrides
+  };
+}
+
+function configureRuntimeSession(options?: {
+  clientCacheTtlMs?: number;
+  initialNow?: number;
+  initialRecord?: ReturnType<typeof createRuntimeAuthRecord>;
+}) {
+  const store = createBoundSessionStore();
+  let now = options?.initialNow ?? 1_000;
+  let record =
+    options?.initialRecord ?? createRuntimeAuthRecord("2026-04-20T08:00:00.000Z");
+  const findActiveByAuthId = vi.fn((authId: string) =>
+    authId === "auth-1" ? record : undefined
+  );
+
+  configureHttpAuthRuntimeConfig({
+    repository: createAuthRepositoryStub({
+      findActiveByAuthId
+    }),
+    masterKey,
+    clientCacheTtlMs: options?.clientCacheTtlMs,
+    now: () => now
+  } as never);
+
+  return {
+    store,
+    findActiveByAuthId,
+    setRecord(nextRecord: ReturnType<typeof createRuntimeAuthRecord>) {
+      record = nextRecord;
+    },
+    advanceTime(ms: number) {
+      now += ms;
+    }
+  };
+}
+
+function buildSessionClients(store: ReturnType<typeof createBoundSessionStore>) {
+  return buildClientsForSession(store, { sessionId });
+}
+
+function buildSessionClientsTwice(options: {
+  runtimeOptions?: Parameters<typeof configureRuntimeSession>[0];
+  advanceMs: number;
+  nextRecord?: ReturnType<typeof createRuntimeAuthRecord>;
+}) {
+  const runtime = configureRuntimeSession(options.runtimeOptions);
+  const first = buildSessionClients(runtime.store);
+
+  if (options.nextRecord) {
+    runtime.setRecord(options.nextRecord);
+  }
+
+  runtime.advanceTime(options.advanceMs);
+
+  return {
+    ...runtime,
+    first,
+    second: buildSessionClients(runtime.store)
   };
 }
 
@@ -40,22 +96,10 @@ describe("auth session runtime", () => {
   });
 
   it("reuses built product clients while the persisted auth config is unchanged", () => {
-    const store = createSessionCredentialStore();
-    store.bind("session-a", "auth-1");
-    const record = createRecord("2026-04-20T08:00:00.000Z");
+    const { store } = configureRuntimeSession();
 
-    configureHttpAuthRuntimeConfig({
-      repository: {
-        upsert: () => undefined,
-        findByTokenHash: () => undefined,
-        findActiveByAuthId: (authId: string) => (authId === "auth-1" ? record : undefined),
-        revoke: () => undefined
-      },
-      masterKey
-    });
-
-    const first = buildClientsForSession(store, { sessionId: "session-a" });
-    const second = buildClientsForSession(store, { sessionId: "session-a" });
+    const first = buildSessionClients(store);
+    const second = buildSessionClients(store);
 
     expect(second).toBe(first);
     expect(second.reqClient).toBe(first.reqClient);
@@ -63,31 +107,16 @@ describe("auth session runtime", () => {
   });
 
   it("refreshes built product clients when the persisted auth config changes", () => {
-    const store = createSessionCredentialStore();
-    store.bind("session-a", "auth-1");
-    let now = 10_000;
-    let record = createRecord("2026-04-20T08:00:00.000Z");
-
-    configureHttpAuthRuntimeConfig({
-      repository: {
-        upsert: () => undefined,
-        findByTokenHash: () => undefined,
-        findActiveByAuthId: (authId: string) => (authId === "auth-1" ? record : undefined),
-        revoke: () => undefined
+    const { first, second } = buildSessionClientsTwice({
+      runtimeOptions: {
+        clientCacheTtlMs: 0,
+        initialNow: 10_000
       },
-      masterKey,
-      clientCacheTtlMs: 0,
-      now: () => now
-    } as never);
-
-    const first = buildClientsForSession(store, { sessionId: "session-a" });
-
-    record = createRecord("2026-04-20T08:05:00.000Z", {
-      req_base_url: "https://projectman-ext.cn-east-3.myhuaweicloud.com"
+      advanceMs: 1,
+      nextRecord: createRuntimeAuthRecord("2026-04-20T08:05:00.000Z", {
+        req_base_url: "https://projectman-ext.cn-east-3.myhuaweicloud.com"
+      })
     });
-    now += 1;
-
-    const second = buildClientsForSession(store, { sessionId: "session-a" });
 
     expect(second).not.toBe(first);
     expect(second.reqClient).not.toBe(first.reqClient);
@@ -96,18 +125,7 @@ describe("auth session runtime", () => {
   it("lazily creates only the accessed product client from credential config", () => {
     const created: string[] = [];
     const clients = buildClientsFromCredentialConfig(
-      {
-        accessKey: "ak-1",
-        secretKey: "sk-1",
-        reqBaseUrl: "https://projectman-ext.cn-north-4.myhuaweicloud.com",
-        repoBaseUrl: "https://codehub-ext.cn-north-4.myhuaweicloud.com",
-        pipelineBaseUrl: "https://cloudpipeline-ext.cn-north-4.myhuaweicloud.com",
-        checkBaseUrl: "https://codecheck-ext.cn-north-4.myhuaweicloud.com",
-        testPlanBaseUrl: "https://cloudtest-ext.cn-north-4.myhuaweicloud.com",
-        deployBaseUrl: "https://codearts-deploy.cn-north-4.myhuaweicloud.com",
-        buildBaseUrl: "https://cloudbuild-ext.cn-north-4.myhuaweicloud.com",
-        artifactBaseUrl: "https://artifact.cn-north-4.myhuaweicloud.cn"
-      },
+      createCredentialConfig(),
       {
         createHttpClient: (options: { baseUrl: string }) => options.baseUrl,
         createArtifactClient: (baseUrl: string) => {
@@ -159,24 +177,14 @@ describe("auth session runtime", () => {
     const capturedOptions: Record<string, unknown> = {};
 
     const clients = buildClientsFromCredentialConfig(
-      {
-        accessKey: "ak-1",
-        secretKey: "sk-1",
-        reqBaseUrl: "https://projectman-ext.cn-north-4.myhuaweicloud.com",
-        repoBaseUrl: "https://codehub-ext.cn-north-4.myhuaweicloud.com",
-        pipelineBaseUrl: "https://cloudpipeline-ext.cn-north-4.myhuaweicloud.com",
-        checkBaseUrl: "https://codecheck-ext.cn-north-4.myhuaweicloud.com",
-        testPlanBaseUrl: "https://cloudtest-ext.cn-north-4.myhuaweicloud.com",
-        deployBaseUrl: "https://codearts-deploy.cn-north-4.myhuaweicloud.com",
-        buildBaseUrl: "https://cloudbuild-ext.cn-north-4.myhuaweicloud.com",
-        artifactBaseUrl: "https://artifact.cn-north-4.myhuaweicloud.cn",
+      createCredentialConfig({
         readCacheTtls: {
           reqListProjectsMs: 60_000,
           repoListRepositoriesMs: 55_000,
           pipelineListPipelinesMs: 5_000,
           buildListJobsMs: 4_000
         }
-      },
+      }),
       {
         createHttpClient: (options: { baseUrl: string }) => options.baseUrl,
         createArtifactClient: () => ({ kind: "artifact" }),
@@ -216,115 +224,44 @@ describe("auth session runtime", () => {
   });
 
   it("reuses cached clients without re-reading the repository inside the revalidation window", () => {
-    const store = createSessionCredentialStore();
-    store.bind("session-a", "auth-1");
-    let now = 1_000;
-    const record = createRecord("2026-04-20T08:00:00.000Z");
-    const findActiveByAuthId = vi.fn((authId: string) =>
-      authId === "auth-1" ? record : undefined
-    );
-
-    configureHttpAuthRuntimeConfig({
-      repository: {
-        upsert: () => undefined,
-        findByTokenHash: () => undefined,
-        findActiveByAuthId,
-        revoke: () => undefined
+    const { first, second, findActiveByAuthId } = buildSessionClientsTwice({
+      runtimeOptions: {
+        clientCacheTtlMs: 5_000
       },
-      masterKey,
-      clientCacheTtlMs: 5_000,
-      now: () => now
-    } as never);
-
-    const first = buildClientsForSession(store, { sessionId: "session-a" });
-    now += 100;
-    const second = buildClientsForSession(store, { sessionId: "session-a" });
+      advanceMs: 100
+    });
 
     expect(second).toBe(first);
     expect(findActiveByAuthId).toHaveBeenCalledTimes(1);
   });
 
   it("uses a longer default revalidation window to avoid repeated repository reads", () => {
-    const store = createSessionCredentialStore();
-    store.bind("session-a", "auth-1");
-    let now = 1_000;
-    const record = createRecord("2026-04-20T08:00:00.000Z");
-    const findActiveByAuthId = vi.fn((authId: string) =>
-      authId === "auth-1" ? record : undefined
-    );
-
-    configureHttpAuthRuntimeConfig({
-      repository: {
-        upsert: () => undefined,
-        findByTokenHash: () => undefined,
-        findActiveByAuthId,
-        revoke: () => undefined
-      },
-      masterKey,
-      now: () => now
-    } as never);
-
-    const first = buildClientsForSession(store, { sessionId: "session-a" });
-    now += 4_000;
-    const second = buildClientsForSession(store, { sessionId: "session-a" });
+    const { first, second, findActiveByAuthId } = buildSessionClientsTwice({
+      advanceMs: 4_000
+    });
 
     expect(second).toBe(first);
     expect(findActiveByAuthId).toHaveBeenCalledTimes(1);
   });
 
   it("keeps the default revalidation window warm for longer bursts", () => {
-    const store = createSessionCredentialStore();
-    store.bind("session-a", "auth-1");
-    let now = 1_000;
-    const record = createRecord("2026-04-20T08:00:00.000Z");
-    const findActiveByAuthId = vi.fn((authId: string) =>
-      authId === "auth-1" ? record : undefined
-    );
-
-    configureHttpAuthRuntimeConfig({
-      repository: {
-        upsert: () => undefined,
-        findByTokenHash: () => undefined,
-        findActiveByAuthId,
-        revoke: () => undefined
-      },
-      masterKey,
-      now: () => now
-    } as never);
-
-    const first = buildClientsForSession(store, { sessionId: "session-a" });
-    now += 30_000;
-    const second = buildClientsForSession(store, { sessionId: "session-a" });
+    const { first, second, findActiveByAuthId } = buildSessionClientsTwice({
+      advanceMs: 30_000
+    });
 
     expect(second).toBe(first);
     expect(findActiveByAuthId).toHaveBeenCalledTimes(1);
   });
 
   it("revalidates cached clients after the revalidation window expires", () => {
-    const store = createSessionCredentialStore();
-    store.bind("session-a", "auth-1");
-    let now = 10_000;
-    let record = createRecord("2026-04-20T08:00:00.000Z");
-    const findActiveByAuthId = vi.fn((authId: string) =>
-      authId === "auth-1" ? record : undefined
-    );
-
-    configureHttpAuthRuntimeConfig({
-      repository: {
-        upsert: () => undefined,
-        findByTokenHash: () => undefined,
-        findActiveByAuthId,
-        revoke: () => undefined
+    const { first, second, findActiveByAuthId } = buildSessionClientsTwice({
+      runtimeOptions: {
+        clientCacheTtlMs: 5_000,
+        initialNow: 10_000
       },
-      masterKey,
-      clientCacheTtlMs: 5_000,
-      now: () => now
-    } as never);
-
-    const first = buildClientsForSession(store, { sessionId: "session-a" });
-    record = createRecord("2026-04-20T08:05:00.000Z");
-    now += 5_001;
-    const second = buildClientsForSession(store, { sessionId: "session-a" });
+      advanceMs: 5_001,
+      nextRecord: createRuntimeAuthRecord("2026-04-20T08:05:00.000Z")
+    });
 
     expect(second).not.toBe(first);
     expect(findActiveByAuthId).toHaveBeenCalledTimes(2);

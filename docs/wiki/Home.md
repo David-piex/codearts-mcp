@@ -34,6 +34,7 @@
 
 ## 如果你想快速建立项目深度理解
 
+- [Official PDF MCP Coverage Summary](./Official-PDF-MCP-Coverage-Summary.md)
 - [Architecture Deep Dive](./Architecture-Deep-Dive.md)
 - [Capability Matrix](./Capability-Matrix.md)
 - [Module Live Readiness](./Module-Live-Readiness.md)
@@ -52,12 +53,12 @@
 
 - Req
 - Repo
-- Pipeline
 - Check
 - Build
 
 已实现且可用，但仍受真实租户样本或区域发布限制：
 
+- Pipeline
 - TestPlan
 - Deploy
 - Artifact

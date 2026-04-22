@@ -100,25 +100,89 @@ import { createDeployRollbackV4DeployRecordHandler } from "../products/deploy/to
 import { createDeployStartAppHandler } from "../products/deploy/tools/start-app.js";
 import { createDeployStopAppHandler } from "../products/deploy/tools/stop-app.js";
 import { createPipelineApproveRunHandler } from "../products/pipeline/tools/approve-run.js";
+import { createPipelineBindVariableGroupsToPipelineHandler } from "../products/pipeline/tools/bind-variable-groups-to-pipeline.js";
+import { createPipelineCreateExtensionEndpointHandler } from "../products/pipeline/tools/create-extension-endpoint.js";
+import { createPipelineCreateGroupHandler } from "../products/pipeline/tools/create-group.js";
+import { createPipelineCreateProjectStrategyHandler } from "../products/pipeline/tools/create-project-strategy.js";
+import { createPipelineCreateRuleHandler } from "../products/pipeline/tools/create-rule.js";
+import { createPipelineCreateStrategyHandler } from "../products/pipeline/tools/create-strategy.js";
+import { createPipelineCreateTagHandler } from "../products/pipeline/tools/create-tag.js";
+import { createPipelineCreateVariableGroupHandler } from "../products/pipeline/tools/create-variable-group.js";
+import { createPipelineDeleteExtensionEndpointHandler } from "../products/pipeline/tools/delete-extension-endpoint.js";
+import { createPipelineDeleteGroupHandler } from "../products/pipeline/tools/delete-group.js";
+import { createPipelineDeletePipelineHandler } from "../products/pipeline/tools/delete-pipeline.js";
+import { createPipelineDeleteProjectStrategyHandler } from "../products/pipeline/tools/delete-project-strategy.js";
+import { createPipelineDeleteRuleHandler } from "../products/pipeline/tools/delete-rule.js";
+import { createPipelineDeleteStrategyHandler } from "../products/pipeline/tools/delete-strategy.js";
+import { createPipelineDeleteTagHandler } from "../products/pipeline/tools/delete-tag.js";
+import { createPipelineDeleteVariableGroupHandler } from "../products/pipeline/tools/delete-variable-group.js";
+import { createPipelineDisablePipelineHandler } from "../products/pipeline/tools/disable-pipeline.js";
+import { createPipelineEnablePipelineHandler } from "../products/pipeline/tools/enable-pipeline.js";
+import { createPipelineGetExtensionEndpointHandler } from "../products/pipeline/tools/get-extension-endpoint.js";
+import { createPipelineGetExtensionModuleHandler } from "../products/pipeline/tools/get-extension-module.js";
+import { createPipelineGetPluginInputsHandler } from "../products/pipeline/tools/get-plugin-inputs.js";
+import { createPipelineGetPluginOutputsHandler } from "../products/pipeline/tools/get-plugin-outputs.js";
+import { createPipelineGetPluginVersionHandler } from "../products/pipeline/tools/get-plugin-version.js";
 import { createPipelineGetManualReviewContextHandler } from "../products/pipeline/tools/get-manual-review-context.js";
 import { createPipelineGetPipelineHandler } from "../products/pipeline/tools/get-pipeline.js";
+import { createPipelineGetProjectStrategyDetailHandler } from "../products/pipeline/tools/get-project-strategy-detail.js";
+import { createPipelineGetProjectStrategyHandler } from "../products/pipeline/tools/get-project-strategy.js";
+import { createPipelineGetProjectStrategyRelatedInfoHandler } from "../products/pipeline/tools/get-project-strategy-related-info.js";
+import { createPipelineGetRuleHandler } from "../products/pipeline/tools/get-rule.js";
+import { createPipelineGetRuleRelatedInfoHandler } from "../products/pipeline/tools/get-rule-related-info.js";
 import { createPipelineGetRunDetailHandler } from "../products/pipeline/tools/get-run-detail.js";
 import { createPipelineGetRunLogHandler } from "../products/pipeline/tools/get-run-log.js";
 import { createPipelineGetRunParametersHandler } from "../products/pipeline/tools/get-run-parameters.js";
 import { createPipelineGetRunHandler } from "../products/pipeline/tools/get-run.js";
+import { createPipelineGetStrategyHandler } from "../products/pipeline/tools/get-strategy.js";
+import { createPipelineGetStrategyRelatedInfoHandler } from "../products/pipeline/tools/get-strategy-related-info.js";
 import { createPipelineGetStepOutputsHandler } from "../products/pipeline/tools/get-step-outputs.js";
+import { createPipelineGetVariableGroupHandler } from "../products/pipeline/tools/get-variable-group.js";
+import { createPipelineInheritProjectStrategyHandler } from "../products/pipeline/tools/inherit-project-strategy.js";
 import { createPipelineListArtifactsHandler } from "../products/pipeline/tools/list-artifacts.js";
+import { createPipelineListAvailablePublishersHandler } from "../products/pipeline/tools/list-available-publishers.js";
+import { createPipelineListBasePluginsHandler } from "../products/pipeline/tools/list-base-plugins.js";
+import { createPipelineListBasePluginsPagedHandler } from "../products/pipeline/tools/list-base-plugins-paged.js";
+import { createPipelineListExtensionEndpointsHandler } from "../products/pipeline/tools/list-extension-endpoints.js";
+import { createPipelineListExtensionModulesHandler } from "../products/pipeline/tools/list-extension-modules.js";
+import { createPipelineListGroupsHandler } from "../products/pipeline/tools/list-groups.js";
+import { createPipelineListPluginVersionsHandler } from "../products/pipeline/tools/list-plugin-versions.js";
+import { createPipelineListPluginsHandler } from "../products/pipeline/tools/list-plugins.js";
 import { createPipelineListPipelinesHandler } from "../products/pipeline/tools/list-pipelines.js";
+import { createPipelineListProjectStrategiesHandler } from "../products/pipeline/tools/list-project-strategies.js";
+import { createPipelineListPublishersHandler } from "../products/pipeline/tools/list-publishers.js";
+import { createPipelineListRuleTypesHandler } from "../products/pipeline/tools/list-rule-types.js";
+import { createPipelineListRulesHandler } from "../products/pipeline/tools/list-rules.js";
 import { createPipelineListRunsHandler } from "../products/pipeline/tools/list-runs.js";
+import { createPipelineListStagePluginsHandler } from "../products/pipeline/tools/list-stage-plugins.js";
+import { createPipelineListStrategiesHandler } from "../products/pipeline/tools/list-strategies.js";
+import { createPipelineListStrategyChildrenHandler } from "../products/pipeline/tools/list-strategy-children.js";
+import { createPipelineListTagsHandler } from "../products/pipeline/tools/list-tags.js";
 import { createPipelineListTemplatesHandler } from "../products/pipeline/tools/list-templates.js";
+import {
+  createPipelineListPipelineVariableGroupsHandler,
+  createPipelineListVariableGroupsHandler
+} from "../products/pipeline/tools/list-variable-groups.js";
+import { createPipelineMovePipelinesToGroupHandler } from "../products/pipeline/tools/move-pipelines-to-group.js";
 import { createPipelineRejectRunHandler } from "../products/pipeline/tools/reject-run.js";
 import { createPipelineRetryRunHandler } from "../products/pipeline/tools/retry-run.js";
 import { createPipelineRunPipelineHandler } from "../products/pipeline/tools/run-pipeline.js";
+import { createPipelineSetTagsForPipelinesHandler } from "../products/pipeline/tools/set-tags-for-pipelines.js";
 import { createPipelineStopRunHandler } from "../products/pipeline/tools/stop-run.js";
+import { createPipelineSwitchProjectStrategyHandler } from "../products/pipeline/tools/switch-project-strategy.js";
+import { createPipelineSwitchStrategyHandler } from "../products/pipeline/tools/switch-strategy.js";
+import { createPipelineUpdateExtensionEndpointHandler } from "../products/pipeline/tools/update-extension-endpoint.js";
+import { createPipelineUpdateGroupHandler } from "../products/pipeline/tools/update-group.js";
+import { createPipelineUpdateProjectStrategyHandler } from "../products/pipeline/tools/update-project-strategy.js";
+import { createPipelineUpdateRuleHandler } from "../products/pipeline/tools/update-rule.js";
+import { createPipelineUpdateStrategyHandler } from "../products/pipeline/tools/update-strategy.js";
+import { createPipelineUpdateTagHandler } from "../products/pipeline/tools/update-tag.js";
+import { createPipelineUpdateVariableGroupHandler } from "../products/pipeline/tools/update-variable-group.js";
 import { createRepoCloseMergeRequestHandler } from "../products/repo/tools/close-merge-request.js";
 import { createRepoCompareRefsHandler } from "../products/repo/tools/compare-refs.js";
 import { createRepoCreateMergeRequestDiscussionHandler } from "../products/repo/tools/create-merge-request-discussion.js";
 import { createRepoCreateMergeRequestHandler } from "../products/repo/tools/create-merge-request.js";
+import { createRepoCreateRepositoryHandler } from "../products/repo/tools/create-repository.js";
 import { createRepoCreateTagHandler } from "../products/repo/tools/create-tag.js";
 import { createRepoDeleteTagHandler } from "../products/repo/tools/delete-tag.js";
 import { createRepoGetBranchHandler } from "../products/repo/tools/get-branch.js";
@@ -157,19 +221,21 @@ import { createTestPlanRunCasesHandler } from "../products/testplan/tools/run-ca
 import { createSessionAwareProductToolHandler } from "./session-aware-handler.js";
 import type { SessionCredentialStore } from "./session-store.js";
 
+type SessionAwareToolHandler = (input: unknown, extra: unknown) => Promise<unknown>;
+
 function createSessionAwareReqToolHandler<
   THandler extends (client: any) => (input: any) => any
 >(
   store: SessionCredentialStore,
   injectedClient: Parameters<THandler>[0] | undefined,
   createProductHandler: THandler
-) {
+) : SessionAwareToolHandler {
   return createSessionAwareProductToolHandler({
     store,
     injectedClient,
     selectClient: (clients) => clients.reqClient as Parameters<THandler>[0],
     createProductHandler
-  });
+  }) as SessionAwareToolHandler;
 }
 
 function createSessionAwareCheckToolHandler<
@@ -178,13 +244,13 @@ function createSessionAwareCheckToolHandler<
   store: SessionCredentialStore,
   injectedClient: Parameters<THandler>[0] | undefined,
   createProductHandler: THandler
-) {
+) : SessionAwareToolHandler {
   return createSessionAwareProductToolHandler({
     store,
     injectedClient,
     selectClient: (clients) => clients.checkClient as Parameters<THandler>[0],
     createProductHandler
-  });
+  }) as SessionAwareToolHandler;
 }
 
 function createSessionAwareDeployToolHandler<
@@ -193,13 +259,13 @@ function createSessionAwareDeployToolHandler<
   store: SessionCredentialStore,
   injectedClient: Parameters<THandler>[0] | undefined,
   createProductHandler: THandler
-) {
+) : SessionAwareToolHandler {
   return createSessionAwareProductToolHandler({
     store,
     injectedClient,
     selectClient: (clients) => clients.deployClient as Parameters<THandler>[0],
     createProductHandler
-  });
+  }) as SessionAwareToolHandler;
 }
 
 function createSessionAwareBuildToolHandler<
@@ -208,13 +274,13 @@ function createSessionAwareBuildToolHandler<
   store: SessionCredentialStore,
   injectedClient: Parameters<THandler>[0] | undefined,
   createProductHandler: THandler
-) {
+) : SessionAwareToolHandler {
   return createSessionAwareProductToolHandler({
     store,
     injectedClient,
     selectClient: (clients) => clients.buildClient as Parameters<THandler>[0],
     createProductHandler
-  });
+  }) as SessionAwareToolHandler;
 }
 
 function createSessionAwareArtifactToolHandler<
@@ -223,13 +289,13 @@ function createSessionAwareArtifactToolHandler<
   store: SessionCredentialStore,
   injectedClient: Parameters<THandler>[0] | undefined,
   createProductHandler: THandler
-) {
+) : SessionAwareToolHandler {
   return createSessionAwareProductToolHandler({
     store,
     injectedClient,
     selectClient: (clients) => clients.artifactClient as Parameters<THandler>[0],
     createProductHandler
-  });
+  }) as SessionAwareToolHandler;
 }
 
 function createSessionAwareRepoToolHandler<
@@ -238,13 +304,13 @@ function createSessionAwareRepoToolHandler<
   store: SessionCredentialStore,
   injectedClient: Parameters<THandler>[0] | undefined,
   createProductHandler: THandler
-) {
+) : SessionAwareToolHandler {
   return createSessionAwareProductToolHandler({
     store,
     injectedClient,
     selectClient: (clients) => clients.repoClient as Parameters<THandler>[0],
     createProductHandler
-  });
+  }) as SessionAwareToolHandler;
 }
 
 function createSessionAwarePipelineToolHandler<
@@ -253,13 +319,13 @@ function createSessionAwarePipelineToolHandler<
   store: SessionCredentialStore,
   injectedClient: Parameters<THandler>[0] | undefined,
   createProductHandler: THandler
-) {
+) : SessionAwareToolHandler {
   return createSessionAwareProductToolHandler({
     store,
     injectedClient,
     selectClient: (clients) => clients.pipelineClient as Parameters<THandler>[0],
     createProductHandler
-  });
+  }) as SessionAwareToolHandler;
 }
 
 function createSessionAwareTestPlanToolHandler<
@@ -268,13 +334,13 @@ function createSessionAwareTestPlanToolHandler<
   store: SessionCredentialStore,
   injectedClient: Parameters<THandler>[0] | undefined,
   createProductHandler: THandler
-) {
+) : SessionAwareToolHandler {
   return createSessionAwareProductToolHandler({
     store,
     injectedClient,
     selectClient: (clients) => clients.testPlanClient as Parameters<THandler>[0],
     createProductHandler
-  });
+  }) as SessionAwareToolHandler;
 }
 
 export function createSessionAwareReqProjectsHandler(
@@ -1430,6 +1496,17 @@ export function createSessionAwareRepoCreateMergeRequestHandler(
   );
 }
 
+export function createSessionAwareRepoCreateRepositoryHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createRepoCreateRepositoryHandler>[0]
+) {
+  return createSessionAwareRepoToolHandler(
+    store,
+    injectedClient,
+    createRepoCreateRepositoryHandler
+  );
+}
+
 export function createSessionAwareRepoCloseMergeRequestHandler(
   store: SessionCredentialStore,
   injectedClient?: Parameters<typeof createRepoCloseMergeRequestHandler>[0]
@@ -1607,6 +1684,13 @@ export function createSessionAwarePipelineRunsHandler(
   );
 }
 
+export function createSessionAwarePipelineListRunsHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineListRunsHandler>[0]
+) {
+  return createSessionAwarePipelineRunsHandler(store, injectedClient);
+}
+
 export function createSessionAwarePipelineListHandler(
   store: SessionCredentialStore,
   injectedClient?: Parameters<typeof createPipelineListPipelinesHandler>[0]
@@ -1616,6 +1700,13 @@ export function createSessionAwarePipelineListHandler(
     injectedClient,
     createPipelineListPipelinesHandler
   );
+}
+
+export function createSessionAwarePipelineListPipelinesHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineListPipelinesHandler>[0]
+) {
+  return createSessionAwarePipelineListHandler(store, injectedClient);
 }
 
 export function createSessionAwarePipelineGetRunHandler(
@@ -1758,6 +1849,677 @@ export function createSessionAwarePipelineListArtifactsHandler(
     store,
     injectedClient,
     createPipelineListArtifactsHandler
+  );
+}
+
+export function createSessionAwarePipelineListExtensionModulesHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineListExtensionModulesHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineListExtensionModulesHandler
+  );
+}
+
+export function createSessionAwarePipelineGetExtensionModuleHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineGetExtensionModuleHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineGetExtensionModuleHandler
+  );
+}
+
+export function createSessionAwarePipelineListExtensionEndpointsHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineListExtensionEndpointsHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineListExtensionEndpointsHandler
+  );
+}
+
+export function createSessionAwarePipelineCreateExtensionEndpointHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineCreateExtensionEndpointHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineCreateExtensionEndpointHandler
+  );
+}
+
+export function createSessionAwarePipelineUpdateExtensionEndpointHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineUpdateExtensionEndpointHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineUpdateExtensionEndpointHandler
+  );
+}
+
+export function createSessionAwarePipelineGetExtensionEndpointHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineGetExtensionEndpointHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineGetExtensionEndpointHandler
+  );
+}
+
+export function createSessionAwarePipelineDeleteExtensionEndpointHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineDeleteExtensionEndpointHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineDeleteExtensionEndpointHandler
+  );
+}
+
+export function createSessionAwarePipelineListGroupsHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineListGroupsHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineListGroupsHandler
+  );
+}
+
+export function createSessionAwarePipelineCreateGroupHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineCreateGroupHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineCreateGroupHandler
+  );
+}
+
+export function createSessionAwarePipelineUpdateGroupHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineUpdateGroupHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineUpdateGroupHandler
+  );
+}
+
+export function createSessionAwarePipelineDeleteGroupHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineDeleteGroupHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineDeleteGroupHandler
+  );
+}
+
+export function createSessionAwarePipelineMovePipelinesToGroupHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineMovePipelinesToGroupHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineMovePipelinesToGroupHandler
+  );
+}
+
+export function createSessionAwarePipelineListTagsHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineListTagsHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineListTagsHandler
+  );
+}
+
+export function createSessionAwarePipelineCreateTagHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineCreateTagHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineCreateTagHandler
+  );
+}
+
+export function createSessionAwarePipelineUpdateTagHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineUpdateTagHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineUpdateTagHandler
+  );
+}
+
+export function createSessionAwarePipelineDeleteTagHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineDeleteTagHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineDeleteTagHandler
+  );
+}
+
+export function createSessionAwarePipelineSetTagsForPipelinesHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineSetTagsForPipelinesHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineSetTagsForPipelinesHandler
+  );
+}
+
+export function createSessionAwarePipelineDeletePipelineHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineDeletePipelineHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineDeletePipelineHandler
+  );
+}
+
+export function createSessionAwarePipelineDisablePipelineHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineDisablePipelineHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineDisablePipelineHandler
+  );
+}
+
+export function createSessionAwarePipelineEnablePipelineHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineEnablePipelineHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineEnablePipelineHandler
+  );
+}
+
+export function createSessionAwarePipelineCreateVariableGroupHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineCreateVariableGroupHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineCreateVariableGroupHandler
+  );
+}
+
+export function createSessionAwarePipelineUpdateVariableGroupHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineUpdateVariableGroupHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineUpdateVariableGroupHandler
+  );
+}
+
+export function createSessionAwarePipelineDeleteVariableGroupHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineDeleteVariableGroupHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineDeleteVariableGroupHandler
+  );
+}
+
+export function createSessionAwarePipelineBindVariableGroupsToPipelineHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineBindVariableGroupsToPipelineHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineBindVariableGroupsToPipelineHandler
+  );
+}
+
+export function createSessionAwarePipelineGetVariableGroupHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineGetVariableGroupHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineGetVariableGroupHandler
+  );
+}
+
+export function createSessionAwarePipelineListPipelineVariableGroupsHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineListPipelineVariableGroupsHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineListPipelineVariableGroupsHandler
+  );
+}
+
+export function createSessionAwarePipelineListVariableGroupsHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineListVariableGroupsHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineListVariableGroupsHandler
+  );
+}
+
+export function createSessionAwarePipelineGetRuleHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineGetRuleHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineGetRuleHandler
+  );
+}
+
+export function createSessionAwarePipelineListRulesHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineListRulesHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineListRulesHandler
+  );
+}
+
+export function createSessionAwarePipelineCreateRuleHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineCreateRuleHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineCreateRuleHandler
+  );
+}
+
+export function createSessionAwarePipelineUpdateRuleHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineUpdateRuleHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineUpdateRuleHandler
+  );
+}
+
+export function createSessionAwarePipelineDeleteRuleHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineDeleteRuleHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineDeleteRuleHandler
+  );
+}
+
+export function createSessionAwarePipelineGetRuleRelatedInfoHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineGetRuleRelatedInfoHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineGetRuleRelatedInfoHandler
+  );
+}
+
+export function createSessionAwarePipelineListRuleTypesHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineListRuleTypesHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineListRuleTypesHandler
+  );
+}
+
+export function createSessionAwarePipelineGetStrategyHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineGetStrategyHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineGetStrategyHandler
+  );
+}
+
+export function createSessionAwarePipelineListStrategiesHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineListStrategiesHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineListStrategiesHandler
+  );
+}
+
+export function createSessionAwarePipelineCreateStrategyHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineCreateStrategyHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineCreateStrategyHandler
+  );
+}
+
+export function createSessionAwarePipelineUpdateStrategyHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineUpdateStrategyHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineUpdateStrategyHandler
+  );
+}
+
+export function createSessionAwarePipelineDeleteStrategyHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineDeleteStrategyHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineDeleteStrategyHandler
+  );
+}
+
+export function createSessionAwarePipelineSwitchStrategyHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineSwitchStrategyHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineSwitchStrategyHandler
+  );
+}
+
+export function createSessionAwarePipelineGetStrategyRelatedInfoHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineGetStrategyRelatedInfoHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineGetStrategyRelatedInfoHandler
+  );
+}
+
+export function createSessionAwarePipelineListStrategyChildrenHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineListStrategyChildrenHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineListStrategyChildrenHandler
+  );
+}
+
+export function createSessionAwarePipelineListProjectStrategiesHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineListProjectStrategiesHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineListProjectStrategiesHandler
+  );
+}
+
+export function createSessionAwarePipelineGetProjectStrategyHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineGetProjectStrategyHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineGetProjectStrategyHandler
+  );
+}
+
+export function createSessionAwarePipelineGetProjectStrategyRelatedInfoHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineGetProjectStrategyRelatedInfoHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineGetProjectStrategyRelatedInfoHandler
+  );
+}
+
+export function createSessionAwarePipelineInheritProjectStrategyHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineInheritProjectStrategyHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineInheritProjectStrategyHandler
+  );
+}
+
+export function createSessionAwarePipelineSwitchProjectStrategyHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineSwitchProjectStrategyHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineSwitchProjectStrategyHandler
+  );
+}
+
+export function createSessionAwarePipelineDeleteProjectStrategyHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineDeleteProjectStrategyHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineDeleteProjectStrategyHandler
+  );
+}
+
+export function createSessionAwarePipelineGetProjectStrategyDetailHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineGetProjectStrategyDetailHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineGetProjectStrategyDetailHandler
+  );
+}
+
+export function createSessionAwarePipelineUpdateProjectStrategyHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineUpdateProjectStrategyHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineUpdateProjectStrategyHandler
+  );
+}
+
+export function createSessionAwarePipelineCreateProjectStrategyHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineCreateProjectStrategyHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineCreateProjectStrategyHandler
+  );
+}
+
+export function createSessionAwarePipelineListPublishersHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineListPublishersHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineListPublishersHandler
+  );
+}
+
+export function createSessionAwarePipelineListAvailablePublishersHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineListAvailablePublishersHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineListAvailablePublishersHandler
+  );
+}
+
+export function createSessionAwarePipelineListStagePluginsHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineListStagePluginsHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineListStagePluginsHandler
+  );
+}
+
+export function createSessionAwarePipelineListBasePluginsHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineListBasePluginsHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineListBasePluginsHandler
+  );
+}
+
+export function createSessionAwarePipelineListBasePluginsPagedHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineListBasePluginsPagedHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineListBasePluginsPagedHandler
+  );
+}
+
+export function createSessionAwarePipelineListPluginsHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineListPluginsHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineListPluginsHandler
+  );
+}
+
+export function createSessionAwarePipelineGetPluginInputsHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineGetPluginInputsHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineGetPluginInputsHandler
+  );
+}
+
+export function createSessionAwarePipelineGetPluginOutputsHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineGetPluginOutputsHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineGetPluginOutputsHandler
+  );
+}
+
+export function createSessionAwarePipelineListPluginVersionsHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineListPluginVersionsHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineListPluginVersionsHandler
+  );
+}
+
+export function createSessionAwarePipelineGetPluginVersionHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineGetPluginVersionHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineGetPluginVersionHandler
   );
 }
 

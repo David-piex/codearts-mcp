@@ -1,5 +1,6 @@
 import { createReadThroughCache } from "../../core/cache/read-through-cache.js";
 import { DEFAULT_READ_CACHE_TTLS } from "../../core/cache/read-cache-ttl.js";
+import { normalizeProviderError } from "../../core/errors/app-error.js";
 import { recordRequestCacheHit } from "../../server/request-context.js";
 import type { ReturnTypeCreateHttpClient } from "../types.js";
 
@@ -100,6 +101,22 @@ export type RepoClient = {
     tag_name: string;
     ref?: string;
     message?: string;
+  }>;
+  createRepository: (input: {
+    project_uuid: string;
+    name: string;
+    import_members?: number;
+    template_id?: string;
+    visibility_level?: number;
+    import_url?: string;
+    description?: string;
+    gitignore_id?: string;
+    license_id?: number;
+    enable_readme?: boolean | number;
+    caller?: string;
+  }) => Promise<{
+    repository_uuid: string;
+    project_uuid?: string;
   }>;
   listRepositoryLabels: (input: {
     repository_id: string;
@@ -320,7 +337,56 @@ function unwrapRepoPayload<T>(input: T): T {
     }
   }
 
+  if (
+    input &&
+    typeof input === "object" &&
+    "error_msg" in input &&
+    typeof (input as { error_msg?: unknown }).error_msg === "string"
+  ) {
+    throw normalizeProviderError({
+      status: 400,
+      message: String((input as { error_msg: string }).error_msg),
+      code:
+        "error_code" in input && typeof (input as { error_code?: unknown }).error_code === "string"
+          ? String((input as { error_code: string }).error_code)
+          : undefined
+    });
+  }
+
+  if (
+    input &&
+    typeof input === "object" &&
+    "error" in input &&
+    (input as { error?: unknown }).error &&
+    typeof (input as { error?: unknown }).error === "object"
+  ) {
+    const error = (input as { error: { code?: unknown; message?: unknown; reason?: unknown } }).error;
+    const message =
+      typeof error.message === "string"
+        ? error.message
+        : typeof error.reason === "string"
+          ? error.reason
+          : undefined;
+    const code = typeof error.code === "string" ? error.code : undefined;
+
+    if (message || code) {
+      throw normalizeProviderError({
+        status: 400,
+        message: message ?? "Provider request failed",
+        code
+      });
+    }
+  }
+
   return input;
+}
+
+function omitUndefinedFields(
+  input: Record<string, unknown>
+): Record<string, unknown> {
+  return Object.fromEntries(
+    Object.entries(input).filter(([, value]) => value !== undefined)
+  );
 }
 
 type RepoClientOptions = {
@@ -567,6 +633,66 @@ export function createRepoClient(
         tag_name: response.tag_name ?? response.name ?? input.tag_name,
         ref: response.ref ?? response.target ?? input.ref,
         message: response.message ?? input.message
+      };
+    },
+    async createRepository(input) {
+      const normalizedEnableReadme =
+        typeof input.enable_readme === "boolean"
+          ? input.enable_readme
+            ? 1
+            : 0
+          : input.enable_readme;
+      const rawResponse = (await _http.post(
+        `/v1/repositories`,
+        omitUndefinedFields({
+          project_uuid: input.project_uuid,
+          name: input.name,
+          import_members: input.import_members,
+          template_id: input.template_id,
+          visibility_level: input.visibility_level,
+          import_url: input.import_url,
+          description: input.description,
+          gitignore_id: input.gitignore_id,
+          license_id: input.license_id,
+          enable_readme: normalizedEnableReadme,
+          caller: input.caller
+        })
+      )) as
+        | {
+          repository_uuid?: string;
+          project_uuid?: string;
+        }
+        | {
+          result?: {
+            repository_uuid?: string;
+            project_uuid?: string;
+          };
+        };
+      const response = unwrapRepoPayload(rawResponse);
+      let result: {
+        repository_uuid?: string;
+        project_uuid?: string;
+      };
+
+      if ("result" in response && response.result) {
+        result = response.result;
+      } else {
+        result = response as {
+          repository_uuid?: string;
+          project_uuid?: string;
+        };
+      }
+
+      if (!result.repository_uuid) {
+        throw normalizeProviderError({
+          status: 400,
+          message: "CreateRepository response did not include repository_uuid"
+        });
+      }
+
+      return {
+        repository_uuid: result.repository_uuid,
+        project_uuid: result.project_uuid ?? input.project_uuid
       };
     },
     async listRepositoryLabels(input) {

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { mapPipelineArtifacts } from "../../../../src/products/pipeline/tools/list-artifacts.js";
+import { expectMappedItems } from "./tool-test-helpers.js";
 
 describe("mapPipelineArtifacts", () => {
   it("returns normalized pipeline artifacts", () => {
@@ -17,7 +18,7 @@ describe("mapPipelineArtifacts", () => {
       }
     ]);
 
-    expect(result.items).toEqual([
+    expectMappedItems(result, [
       {
         id: "artifact://demo-image:1.0.0",
         name: "demo-image",

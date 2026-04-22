@@ -19,8 +19,8 @@
 | Module | Read | Write | Live | Key Gaps |
 | --- | --- | --- | --- | --- |
 | Req | 6 | 2 | Validated | Project and work-item read/write paths are now fully live-validated |
-| Repo | 17 | 7 | Validated | No material gap in the currently exposed surface |
-| Pipeline | 11 | 5 | Validated | More non-empty samples would help, but no structural gap remains |
+| Repo | 17 | 8 | Validated | All 25 Repo tools, including `repo_create_repository`, now have real AK/SK validation on the writable sampled project |
+| Pipeline | 42 | 35 | Partial | The original execution surface is live-validated, but the 51 newly added extension-endpoint/group/variable-group/rule-management/tag-management/tenant-strategy/project-strategy tools still need real AK/SK validation |
 | Check | 5 | 3 | Validated | Tool-level live closure is complete |
 | TestPlan | 6 | 1 | Partial | `get_plan / list_runs / get_case / run_cases` are unpublished in Beijing 4 |
 | Deploy | 44 | 15 | Partial | Expanded Deploy v4 environment/record/variable surface is implemented; the detailed live split is maintained in `docs/wiki/Deploy-Live-Validated.md` |

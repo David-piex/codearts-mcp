@@ -3,6 +3,7 @@ import {
   createPipelineListPipelinesHandler,
   mapPipelineList
 } from "../../../../src/products/pipeline/tools/list-pipelines.js";
+import { expectMappedPage } from "./tool-test-helpers.js";
 
 describe("mapPipelineList", () => {
   it("returns normalized pipelines with pagination", () => {
@@ -28,24 +29,26 @@ describe("mapPipelineList", () => {
       12
     );
 
-    expect(result.items).toEqual([
-      {
-        id: "pipe-1",
-        name: "release-pipeline",
-        creatorName: "Bob",
-        projectId: "project-1",
-        projectName: "housekeeper",
-        manifestVersion: "3.0",
-        latestRunId: "run-1",
-        latestRunStatus: "COMPLETED",
-        latestRunNumber: 8,
-        latestRunTriggerType: "Manual"
+    expectMappedPage(result, {
+      items: [
+        {
+          id: "pipe-1",
+          name: "release-pipeline",
+          creatorName: "Bob",
+          projectId: "project-1",
+          projectName: "housekeeper",
+          manifestVersion: "3.0",
+          latestRunId: "run-1",
+          latestRunStatus: "COMPLETED",
+          latestRunNumber: 8,
+          latestRunTriggerType: "Manual"
+        }
+      ],
+      pageInfo: {
+        page: 2,
+        pageSize: 10,
+        total: 12
       }
-    ]);
-    expect(result.page_info).toEqual({
-      page: 2,
-      pageSize: 10,
-      total: 12
     });
   });
 

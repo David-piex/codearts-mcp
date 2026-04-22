@@ -40,10 +40,10 @@
 - 已完成模块级 live 闭环：
   - Req
   - Repo
-  - Pipeline
   - Check
   - Build
 - 已实现且可用，但仍受样本或区域限制：
+  - Pipeline
   - TestPlan
   - Deploy
   - Artifact
@@ -89,7 +89,7 @@
 
 - `initialize`
 - `tools/list`
-  - 返回 `158` 个工具
+  - 返回 `220` 个工具
 - `auth_configure_session`
 - cookie 重连
 - `auth_token` 重连

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { previewRunPipeline } from "../../../../src/products/pipeline/tools/run-pipeline.js";
+import { expectDryRunPreviewMatch } from "./tool-test-helpers.js";
 
 describe("previewRunPipeline", () => {
   it("supports dry-run pipeline triggers", () => {
@@ -10,7 +11,8 @@ describe("previewRunPipeline", () => {
       dry_run: true
     });
 
-    expect(result.summary).toContain("Dry run");
-    expect(result.item?.executed).toBe(false);
+    expectDryRunPreviewMatch(result, {
+      executed: false
+    });
   });
 });

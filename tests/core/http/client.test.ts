@@ -5,20 +5,33 @@ import {
   runWithRequestDiagnostics
 } from "../../../src/server/request-context.js";
 
+const baseUrl = "https://example.com";
+const signedAuthHeader = "SDK-HMAC-SHA256 signed";
+
+function createClient(
+  fetcher: ReturnType<typeof vi.fn>,
+  overrides?: Partial<Parameters<typeof createHttpClient>[0]>
+) {
+  return createHttpClient({
+    baseUrl,
+    authHeaders: async () => ({ Authorization: signedAuthHeader }),
+    fetcher: fetcher as never,
+    ...(overrides ?? {})
+  });
+}
+
+function createJsonResponse(body: unknown, init?: ResponseInit) {
+  return new Response(JSON.stringify(body), {
+    status: 200,
+    headers: { "content-type": "application/json" },
+    ...(init ?? {})
+  });
+}
+
 describe("createHttpClient", () => {
   it("attaches auth headers and parses json", async () => {
-    const fetcher = vi.fn().mockResolvedValue(
-      new Response(JSON.stringify({ id: "p-1" }), {
-        status: 200,
-        headers: { "content-type": "application/json" }
-      })
-    );
-
-    const client = createHttpClient({
-      baseUrl: "https://example.com",
-      authHeaders: async () => ({ Authorization: "SDK-HMAC-SHA256 signed" }),
-      fetcher
-    });
+    const fetcher = vi.fn().mockResolvedValue(createJsonResponse({ id: "p-1" }));
+    const client = createClient(fetcher);
 
     const result = await client.get("/v1/projects");
 
@@ -27,18 +40,8 @@ describe("createHttpClient", () => {
   });
 
   it("supports put requests", async () => {
-    const fetcher = vi.fn().mockResolvedValue(
-      new Response(JSON.stringify({ ok: true }), {
-        status: 200,
-        headers: { "content-type": "application/json" }
-      })
-    );
-
-    const client = createHttpClient({
-      baseUrl: "https://example.com",
-      authHeaders: async () => ({ Authorization: "SDK-HMAC-SHA256 signed" }),
-      fetcher
-    });
+    const fetcher = vi.fn().mockResolvedValue(createJsonResponse({ ok: true }));
+    const client = createClient(fetcher);
 
     const result = await client.put("/v1/projects/p-1", { name: "demo" });
 
@@ -47,24 +50,14 @@ describe("createHttpClient", () => {
   });
 
   it("supports delete requests with a json body", async () => {
-    const fetcher = vi.fn().mockResolvedValue(
-      new Response(JSON.stringify({ ok: true }), {
-        status: 200,
-        headers: { "content-type": "application/json" }
-      })
-    );
-
-    const client = createHttpClient({
-      baseUrl: "https://example.com",
-      authHeaders: async () => ({ Authorization: "SDK-HMAC-SHA256 signed" }),
-      fetcher
-    });
+    const fetcher = vi.fn().mockResolvedValue(createJsonResponse({ ok: true }));
+    const client = createClient(fetcher);
 
     const result = await client.delete("/v1/projects/p-1/hosts", ["host-1"]);
 
     expect(result).toEqual({ ok: true });
     expect(fetcher).toHaveBeenCalledWith(
-      "https://example.com/v1/projects/p-1/hosts",
+      `${baseUrl}/v1/projects/p-1/hosts`,
       expect.objectContaining({
         method: "DELETE",
         body: JSON.stringify(["host-1"])
@@ -80,11 +73,7 @@ describe("createHttpClient", () => {
       })
     );
 
-    const client = createHttpClient({
-      baseUrl: "https://example.com",
-      authHeaders: async () => ({ Authorization: "SDK-HMAC-SHA256 signed" }),
-      fetcher
-    });
+    const client = createClient(fetcher);
 
     const result = await client.post("/v1/tasks/task-1/stop", {});
 
@@ -94,21 +83,13 @@ describe("createHttpClient", () => {
   it("supports multipart form uploads", async () => {
     let signedBody: string | Uint8Array | undefined;
     let signedHeaders: Record<string, string> | undefined;
-    const fetcher = vi.fn().mockResolvedValue(
-      new Response(JSON.stringify({ ok: true }), {
-        status: 200,
-        headers: { "content-type": "application/json" }
-      })
-    );
-
-    const client = createHttpClient({
-      baseUrl: "https://example.com",
+    const fetcher = vi.fn().mockResolvedValue(createJsonResponse({ ok: true }));
+    const client = createClient(fetcher, {
       authHeaders: async ({ body, headers }) => {
         signedBody = body;
         signedHeaders = headers;
-        return { Authorization: "SDK-HMAC-SHA256 signed", ...headers };
+        return { Authorization: signedAuthHeader, ...headers };
       },
-      fetcher
     });
 
     const form = new FormData();
@@ -122,12 +103,12 @@ describe("createHttpClient", () => {
     expect(signedBody).toBeInstanceOf(Uint8Array);
     expect(signedHeaders?.["content-type"]).toContain("multipart/form-data; boundary=");
     expect(fetcher).toHaveBeenCalledWith(
-      "https://example.com/v1/upload",
+      `${baseUrl}/v1/upload`,
       expect.objectContaining({
         method: "POST",
         body: expect.any(Uint8Array),
         headers: expect.objectContaining({
-          Authorization: "SDK-HMAC-SHA256 signed"
+          Authorization: signedAuthHeader
         })
       })
     );
@@ -150,11 +131,7 @@ describe("createHttpClient", () => {
       )
     );
 
-    const client = createHttpClient({
-      baseUrl: "https://example.com",
-      authHeaders: async () => ({ Authorization: "SDK-HMAC-SHA256 signed" }),
-      fetcher
-    });
+    const client = createClient(fetcher);
 
     await expect(client.post("/v1/upload", { ok: false })).rejects.toMatchObject({
       category: "provider_error",
@@ -182,11 +159,7 @@ describe("createHttpClient", () => {
       )
     );
 
-    const client = createHttpClient({
-      baseUrl: "https://example.com",
-      authHeaders: async () => ({ Authorization: "SDK-HMAC-SHA256 signed" }),
-      fetcher
-    });
+    const client = createClient(fetcher);
 
     await expect(client.post("/v1/upload", { ok: false })).rejects.toMatchObject({
       category: "provider_error",
@@ -208,11 +181,7 @@ describe("createHttpClient", () => {
       })
     );
 
-    const client = createHttpClient({
-      baseUrl: "https://example.com",
-      authHeaders: async () => ({ Authorization: "SDK-HMAC-SHA256 signed" }),
-      fetcher
-    });
+    const client = createClient(fetcher);
 
     const result = await client.getBinary("/v1/report");
 
@@ -240,11 +209,7 @@ describe("createHttpClient", () => {
       )
     );
 
-    const client = createHttpClient({
-      baseUrl: "https://example.com",
-      authHeaders: async () => ({ Authorization: "SDK-HMAC-SHA256 signed" }),
-      fetcher
-    });
+    const client = createClient(fetcher);
 
     await expect(client.get("/v2/tasks/task-1/state?record_id=record-1")).rejects.toMatchObject({
       category: "provider_error",
@@ -258,18 +223,9 @@ describe("createHttpClient", () => {
     const fetcher = vi
       .fn()
       .mockRejectedValueOnce(new Error("socket hang up"))
-      .mockResolvedValueOnce(
-        new Response(JSON.stringify({ ok: true }), {
-          status: 200,
-          headers: { "content-type": "application/json" }
-        })
-      );
+      .mockResolvedValueOnce(createJsonResponse({ ok: true }));
 
-    const client = createHttpClient({
-      baseUrl: "https://example.com",
-      authHeaders: async () => ({ Authorization: "SDK-HMAC-SHA256 signed" }),
-      fetcher
-    });
+    const client = createClient(fetcher);
 
     const diagnostics = await runWithRequestDiagnostics(async () => {
       await expect(client.get("/health")).resolves.toEqual({ ok: true });
@@ -285,11 +241,7 @@ describe("createHttpClient", () => {
 
   it("does not retry write requests", async () => {
     const fetcher = vi.fn().mockRejectedValue(new Error("socket hang up"));
-    const client = createHttpClient({
-      baseUrl: "https://example.com",
-      authHeaders: async () => ({ Authorization: "SDK-HMAC-SHA256 signed" }),
-      fetcher
-    });
+    const client = createClient(fetcher);
 
     await expect(client.post("/projects", { name: "demo" })).rejects.toThrow("socket hang up");
     expect(fetcher).toHaveBeenCalledTimes(1);

@@ -19,8 +19,8 @@
 | Module | Tools | Real-Live Summary | Current Conclusion |
 | --- | --- | --- | --- |
 | Req | 8 | `8 Full` | Project and work-item read/write paths are fully live-validated. |
-| Repo | 24 | `24 Full` | Module-level closure is complete. |
-| Pipeline | 16 | `16 Full` | Module-level closure is complete. |
+| Repo | 25 | `25 Full / 0 Reachable / 0 Unpublished / 0 Code` | `repo_create_repository` has joined the previously validated Repo surface, so the full 25-tool module is now AK/SK Full. |
+| Pipeline | 77 | `16 Full / 0 Reachable / 0 Unpublished / 51 Code` | Core execution closure remains complete, but the new extension-endpoint/tag/group/variable-group/rule-management/tenant-strategy/project-strategy tools still need live AK/SK validation. |
 | Check | 8 | `8 Full` | Tool-level closure is complete. |
 | TestPlan | 7 | `1 Full / 2 Reachable / 4 Unpublished / 0 Code` | Real plan samples now exist on two projects, but detail/run routes are still unpublished in Beijing 4. |
 | Deploy | 59 | Expanded surface; see `docs/wiki/Deploy-Live-Validated.md` | The Deploy MCP surface now includes v4 application/environment/cluster/record/variable tools. The detailed live split is maintained in the dedicated Deploy page. |
@@ -39,11 +39,27 @@
 
 - Req
 - Repo
-- Pipeline
 - Check
 - Build
 
 ## 部分闭环模块
+
+### Pipeline
+
+- `AK/SK Full`
+  - 原有 16 个执行链工具
+- `Code`
+  - `pipeline_delete_pipeline`
+  - `pipeline_disable_pipeline`
+  - `pipeline_enable_pipeline`
+  - `pipeline_list_groups`
+  - `pipeline_create_group`
+  - `pipeline_update_group`
+  - `pipeline_delete_group`
+  - `pipeline_move_pipelines_to_group`
+  - note:
+    - 这一批工具已经完成单元回归与注册层回归
+    - 真实 AK/SK live 写路径联调还未补完
 
 ### TestPlan
 

@@ -70,6 +70,90 @@ function readProbeRecordId(source: NodeJS.ProcessEnv) {
   return source.HUAWEICLOUD_BUILD_LIVE_PROBE_RECORD_ID?.trim() || "00000000-0000-0000-0000-000000000000";
 }
 
+function createPageInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  page: number;
+  page_size: number;
+} & T {
+  return {
+    page: 1,
+    page_size: 20,
+    ...(overrides ?? {})
+  } as {
+    page: number;
+    page_size: number;
+  } & T;
+}
+
+function createProjectPageInput<T extends Record<string, unknown>>(
+  projectId: string,
+  overrides?: T
+): {
+  project_id: string;
+  page: number;
+  page_size: number;
+} & T {
+  return {
+    project_id: projectId,
+    ...createPageInput(overrides)
+  } as {
+    project_id: string;
+    page: number;
+    page_size: number;
+  } & T;
+}
+
+function createJobPageInput<T extends Record<string, unknown>>(
+  jobId: string,
+  overrides?: T
+): {
+  job_id: string;
+  page: number;
+  page_size: number;
+} & T {
+  return {
+    job_id: jobId,
+    ...createPageInput(overrides)
+  } as {
+    job_id: string;
+    page: number;
+    page_size: number;
+  } & T;
+}
+
+function createRecordInput<T extends Record<string, unknown>>(
+  recordId: string,
+  overrides?: T
+): {
+  record_id: string;
+} & T {
+  return {
+    record_id: recordId,
+    ...(overrides ?? {})
+  } as {
+    record_id: string;
+  } & T;
+}
+
+function createJobBuildInput<T extends Record<string, unknown>>(
+  jobId: string,
+  buildNo: number,
+  overrides?: T
+): {
+  job_id: string;
+  build_no: number;
+} & T {
+  return {
+    job_id: jobId,
+    build_no: buildNo,
+    ...(overrides ?? {})
+  } as {
+    job_id: string;
+    build_no: number;
+  } & T;
+}
+
 if (hasLiveEnv(process.env)) {
   describe("createBuildClient live smoke", () => {
     const config = loadEnvConfig(process.env);
@@ -92,11 +176,7 @@ if (hasLiveEnv(process.env)) {
       const [jobLists, job] = await Promise.all([
         Promise.all(
           projectIds.map((candidateProjectId) =>
-            client.listJobs({
-              project_id: candidateProjectId,
-              page: 1,
-              page_size: 20
-            })
+            client.listJobs(createProjectPageInput(candidateProjectId))
           )
         ),
         client.getJob({
@@ -111,17 +191,12 @@ if (hasLiveEnv(process.env)) {
 
     it("lists job records and project-level records/statistics", async () => {
       const [records, projectRecords, statistics] = await Promise.all([
-        client.listRecords({
-          job_id: jobId,
-          page: 1,
-          page_size: 20
-        }),
-        client.listProjectRecords({
-          project_id: projectId,
-          build_project_id: buildProjectId,
-          page: 1,
-          page_size: 20
-        }),
+        client.listRecords(createJobPageInput(jobId)),
+        client.listProjectRecords(
+          createProjectPageInput(projectId, {
+            build_project_id: buildProjectId
+          })
+        ),
         client.getProjectRecordStatistics({
           project_id: projectId,
           build_project_id: buildProjectId
@@ -137,20 +212,14 @@ if (hasLiveEnv(process.env)) {
 
     it("gets record detail, script, parameters, and full stages", async () => {
       const [record, script, parameters, stages] = await Promise.all([
-        client.getRecord({
-          record_id: recordId
-        }),
-        client.getRecordScript({
-          record_id: recordId
-        }),
-        client.listBuildParameters({
-          job_id: jobId,
-          build_no: infoBuildNo
-        }),
-        client.getFullStages({
-          record_id: recordId,
-          cascade: true
-        })
+        client.getRecord(createRecordInput(recordId)),
+        client.getRecordScript(createRecordInput(recordId)),
+        client.listBuildParameters(createJobBuildInput(jobId, infoBuildNo)),
+        client.getFullStages(
+          createRecordInput(recordId, {
+            cascade: true
+          })
+        )
       ]);
 
       expect(record.record_id).toBe(recordId);
@@ -161,25 +230,19 @@ if (hasLiveEnv(process.env)) {
 
     it("gets info, history details, real-time log, and error log for known builds", async () => {
       const [info, history, realTimeLog, errorLog] = await Promise.all([
-        client.getInfoRecord({
-          job_id: jobId,
-          build_no: infoBuildNo
-        }),
+        client.getInfoRecord(createJobBuildInput(jobId, infoBuildNo)),
         client.getHistoryDetails({
           job_id: jobId,
           build_number: historyBuildNo
         }),
-        client.getRealTimeLog({
-          job_id: jobId,
-          build_no: historyBuildNo,
-          offset: 0
-        }),
-        client.getErrorLog({
-          job_id: jobId,
-          build_no: historyBuildNo,
-          page: 1,
-          page_size: 20
-        })
+        client.getRealTimeLog(
+          createJobBuildInput(jobId, historyBuildNo, {
+            offset: 0
+          })
+        ),
+        client.getErrorLog(
+          createJobBuildInput(jobId, historyBuildNo, createPageInput())
+        )
       ]);
 
       expect(info.number === undefined || typeof info.number === "number").toBe(true);
@@ -189,18 +252,14 @@ if (hasLiveEnv(process.env)) {
     }, 30000);
 
     it("gets flow graph for the known live record and still rejects a non-existent probe id", async () => {
-      const flowGraph = await client.getRecordFlowGraph({
-        record_id: recordId
-      });
+      const flowGraph = await client.getRecordFlowGraph(createRecordInput(recordId));
 
       expect(flowGraph.record_id).toBe(recordId);
       expect(Array.isArray(flowGraph.nodes)).toBe(true);
       expect(Array.isArray(flowGraph.edges)).toBe(true);
 
       await expect(
-        client.getRecordFlowGraph({
-          record_id: probeRecordId
-        })
+        client.getRecordFlowGraph(createRecordInput(probeRecordId))
       ).rejects.toMatchObject({
         code: "DEVCB.00031006",
         status: 422
@@ -210,8 +269,7 @@ if (hasLiveEnv(process.env)) {
     it("reaches stop on the known live build sample", async () => {
       try {
         const result = await client.stopJob({
-          job_id: jobId,
-          build_no: stopBuildNo
+          ...createJobBuildInput(jobId, stopBuildNo)
         });
 
         expect(result.job_id).toBe(jobId);

@@ -29,6 +29,24 @@ export const repoCreateTagInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const repoCreateRepositoryInput = z.object({
+  project_uuid: idSchema,
+  name: z
+    .string()
+    .min(1)
+    .regex(/^[A-Za-z][A-Za-z0-9_-]*$/, "Repository name must start with a letter and use letters, numbers, hyphens, or underscores"),
+  import_members: z.number().int().min(0).max(1).optional(),
+  template_id: z.string().min(1).optional(),
+  visibility_level: z.union([z.literal(0), z.literal(20)]).optional(),
+  import_url: z.string().min(1).optional(),
+  description: z.string().optional(),
+  gitignore_id: z.string().min(1).optional(),
+  license_id: z.number().int().positive().optional(),
+  enable_readme: z.union([z.boolean(), z.number().int().min(0).max(1)]).optional(),
+  caller: z.string().min(1).optional(),
+  dry_run: z.boolean().default(true)
+});
+
 export const repoDeleteTagInput = z.object({
   repository_id: idSchema,
   tag_name: z.string().min(1),

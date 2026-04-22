@@ -52,6 +52,58 @@ function readWritableProjectId(source: NodeJS.ProcessEnv, projectIds: string[]) 
   return source.HUAWEICLOUD_REQ_LIVE_WRITE_PROJECT_ID?.trim() || projectIds[0];
 }
 
+function createPageInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  page: number;
+  page_size: number;
+} & T {
+  return {
+    page: 1,
+    page_size: 20,
+    ...(overrides ?? {})
+  } as {
+    page: number;
+    page_size: number;
+  } & T;
+}
+
+function createProjectPageInput<T extends Record<string, unknown>>(
+  projectId: string,
+  overrides?: T
+): {
+  project_id: string;
+  page: number;
+  page_size: number;
+} & T {
+  return {
+    project_id: projectId,
+    ...createPageInput(overrides)
+  } as {
+    project_id: string;
+    page: number;
+    page_size: number;
+  } & T;
+}
+
+function createProjectWorkItemInput<T extends Record<string, unknown>>(
+  projectId: string,
+  workItemId: string,
+  overrides?: T
+): {
+  project_id: string;
+  work_item_id: string;
+} & T {
+  return {
+    project_id: projectId,
+    work_item_id: workItemId,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    work_item_id: string;
+  } & T;
+}
+
 if (hasLiveEnv(process.env)) {
   describe("createReqClient live smoke", () => {
     const config = loadEnvConfig(process.env);
@@ -65,18 +117,13 @@ if (hasLiveEnv(process.env)) {
     const writableProjectId = readWritableProjectId(process.env, configuredProjectIds);
 
     it("lists projects and gets a real project", async () => {
-      const result = await client.listProjects({
-        page: 1,
-        page_size: 20
-      });
+      const result = await client.listProjects(createPageInput());
 
       expect(Array.isArray(result.projects)).toBe(true);
       expect(result.projects.length).toBeGreaterThan(0);
 
       const projectId = writableProjectId ?? result.projects[0]!.project_id;
-      const project = await client.getProject({
-        project_id: projectId
-      });
+      const project = await client.getProject({ project_id: projectId });
 
       expect(project.project_id).toBe(projectId);
       expect(typeof project.name).toBe("string");
@@ -86,16 +133,8 @@ if (hasLiveEnv(process.env)) {
       const projectId = writableProjectId!;
 
       const [iterations, members] = await Promise.all([
-        client.listIterations({
-          project_id: projectId,
-          page: 1,
-          page_size: 20
-        }),
-        client.listProjectMembers({
-          project_id: projectId,
-          page: 1,
-          page_size: 20
-        })
+        client.listIterations(createProjectPageInput(projectId)),
+        client.listProjectMembers(createProjectPageInput(projectId))
       ]);
 
       expect(Array.isArray(iterations.iterations)).toBe(true);
@@ -105,10 +144,9 @@ if (hasLiveEnv(process.env)) {
 
     it("creates, gets, updates, and lists a real work item on the writable project", async () => {
       if (liveWorkItem) {
-        const workItem = await client.getWorkItem({
-          project_id: liveWorkItem.projectId,
-          work_item_id: liveWorkItem.workItemId
-        });
+        const workItem = await client.getWorkItem(
+          createProjectWorkItemInput(liveWorkItem.projectId, liveWorkItem.workItemId)
+        );
 
         expect(String(workItem.id)).toBe(liveWorkItem.workItemId);
         expect(typeof workItem.subject).toBe("string");
@@ -126,18 +164,16 @@ if (hasLiveEnv(process.env)) {
       expect(created.name).toBe(title);
 
       const workItemId = String(created.id);
-      const got = await client.getWorkItem({
-        project_id: writableProjectId!,
-        work_item_id: workItemId
-      });
+      const got = await client.getWorkItem(
+        createProjectWorkItemInput(writableProjectId!, workItemId)
+      );
 
       expect(String(got.id)).toBe(workItemId);
       expect(got.subject).toBe(title);
 
       const updatedTitle = `${title}-updated`;
       const updated = await client.updateWorkItem({
-        project_id: writableProjectId!,
-        work_item_id: workItemId,
+        ...createProjectWorkItemInput(writableProjectId!, workItemId),
         title: updatedTitle
       });
 

@@ -51,6 +51,90 @@ function readRunBranch(source: NodeJS.ProcessEnv) {
   return source.HUAWEICLOUD_PIPELINE_LIVE_BRANCH?.trim();
 }
 
+function createProjectPageInput<T extends Record<string, unknown>>(
+  projectId: string,
+  overrides?: T
+): {
+  project_id: string;
+  page: number;
+  page_size: number;
+} & T {
+  return {
+    project_id: projectId,
+    page: 1,
+    page_size: 20,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    page: number;
+    page_size: number;
+  } & T;
+}
+
+function createProjectPipelineInput<T extends Record<string, unknown>>(
+  projectId: string,
+  pipelineId: string,
+  overrides?: T
+): {
+  project_id: string;
+  pipeline_id: string;
+} & T {
+  return {
+    project_id: projectId,
+    pipeline_id: pipelineId,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    pipeline_id: string;
+  } & T;
+}
+
+function createProjectPipelinePageInput<T extends Record<string, unknown>>(
+  projectId: string,
+  pipelineId: string,
+  overrides?: T
+): {
+  project_id: string;
+  pipeline_id: string;
+  page: number;
+  page_size: number;
+} & T {
+  return {
+    project_id: projectId,
+    pipeline_id: pipelineId,
+    page: 1,
+    page_size: 10,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    pipeline_id: string;
+    page: number;
+    page_size: number;
+  } & T;
+}
+
+function createProjectPipelineRunInput<T extends Record<string, unknown>>(
+  projectId: string,
+  pipelineId: string,
+  runId: string,
+  overrides?: T
+): {
+  project_id: string;
+  pipeline_id: string;
+  run_id: string;
+} & T {
+  return {
+    project_id: projectId,
+    pipeline_id: pipelineId,
+    run_id: runId,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    pipeline_id: string;
+    run_id: string;
+  } & T;
+}
+
 async function findLivePipeline(
   client: ReturnType<typeof createPipelineClient>,
   source: NodeJS.ProcessEnv
@@ -62,11 +146,7 @@ async function findLivePipeline(
   }
 
   for (const projectId of readProjectIds(source)) {
-    const pipelines = await client.listPipelines({
-      project_id: projectId,
-      page: 1,
-      page_size: 20
-    });
+    const pipelines = await client.listPipelines(createProjectPageInput(projectId));
 
     const first = pipelines.records[0];
 
@@ -90,12 +170,9 @@ async function waitForListedRun(
   }
 ) {
   for (let attempt = 0; attempt < 5; attempt += 1) {
-    const listed = await client.listRuns({
-      project_id: input.projectId,
-      pipeline_id: input.pipelineId,
-      page: 1,
-      page_size: 10
-    });
+    const listed = await client.listRuns(
+      createProjectPipelinePageInput(input.projectId, input.pipelineId)
+    );
 
     const found = listed.records.find((record) => record.pipeline_run_id === input.runId);
 
@@ -123,10 +200,9 @@ if (hasLiveEnv(process.env)) {
 
     it("lists pipelines across configured projects and gets a real pipeline", async () => {
       const target = await findLivePipeline(client, process.env);
-      const pipeline = await client.getPipeline({
-        project_id: target.projectId,
-        pipeline_id: target.pipelineId
-      });
+      const pipeline = await client.getPipeline(
+        createProjectPipelineInput(target.projectId, target.pipelineId)
+      );
 
       expect(pipeline.id).toBe(target.pipelineId);
       expect(typeof pipeline.name).toBe("string");
@@ -135,28 +211,21 @@ if (hasLiveEnv(process.env)) {
 
     it("lists runs for a real pipeline and gets the latest run detail", async () => {
       const target = await findLivePipeline(client, process.env);
-      const runs = await client.listRuns({
-        project_id: target.projectId,
-        pipeline_id: target.pipelineId,
-        page: 1,
-        page_size: 10
-      });
+      const runs = await client.listRuns(
+        createProjectPipelinePageInput(target.projectId, target.pipelineId)
+      );
 
       expect(Array.isArray(runs.records)).toBe(true);
       expect(runs.records.length).toBeGreaterThan(0);
 
       const latestRunId = runs.records[0]!.pipeline_run_id;
       const [run, detail] = await Promise.all([
-        client.getRun({
-          project_id: target.projectId,
-          pipeline_id: target.pipelineId,
-          run_id: latestRunId
-        }),
-        client.getRunDetail({
-          project_id: target.projectId,
-          pipeline_id: target.pipelineId,
-          run_id: latestRunId
-        })
+        client.getRun(
+          createProjectPipelineRunInput(target.projectId, target.pipelineId, latestRunId)
+        ),
+        client.getRunDetail(
+          createProjectPipelineRunInput(target.projectId, target.pipelineId, latestRunId)
+        )
       ]);
 
       expect(run.pipeline_run_id).toBe(latestRunId);
@@ -166,39 +235,32 @@ if (hasLiveEnv(process.env)) {
 
     it("triggers a real pipeline run and observes it through read APIs", async () => {
       const target = await findLivePipeline(client, process.env);
-      const existingRuns = await client.listRuns({
-        project_id: target.projectId,
-        pipeline_id: target.pipelineId,
-        page: 1,
-        page_size: 10
-      });
+      const existingRuns = await client.listRuns(
+        createProjectPipelinePageInput(target.projectId, target.pipelineId)
+      );
       const latestBranch =
         ((existingRuns.records[0] as { build_params?: { target_branch?: string } } | undefined)
           ?.build_params?.target_branch ??
           readRunBranch(process.env) ??
           "master");
 
-      const started = await client.runPipeline({
-        project_id: target.projectId,
-        pipeline_id: target.pipelineId,
-        branch: latestBranch,
-        description: `codex-live-${Date.now()}`
-      });
+      const started = await client.runPipeline(
+        createProjectPipelineInput(target.projectId, target.pipelineId, {
+          branch: latestBranch,
+          description: `codex-live-${Date.now()}`
+        })
+      );
 
       expect(started.pipeline_run_id).toMatch(/^[0-9a-f]{32}$/);
 
       const runId = started.pipeline_run_id!;
       const [run, detail, listed] = await Promise.all([
-        client.getRun({
-          project_id: target.projectId,
-          pipeline_id: target.pipelineId,
-          run_id: runId
-        }),
-        client.getRunDetail({
-          project_id: target.projectId,
-          pipeline_id: target.pipelineId,
-          run_id: runId
-        }),
+        client.getRun(
+          createProjectPipelineRunInput(target.projectId, target.pipelineId, runId)
+        ),
+        client.getRunDetail(
+          createProjectPipelineRunInput(target.projectId, target.pipelineId, runId)
+        ),
         waitForListedRun(client, {
           projectId: target.projectId,
           pipelineId: target.pipelineId,

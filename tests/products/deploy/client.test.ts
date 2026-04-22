@@ -1,11 +1,329 @@
-import { describe, expect, it } from "vitest";
+﻿import { describe, expect, it } from "vitest";
 import { AppError } from "../../../src/core/errors/app-error.js";
 import { createDeployClient } from "../../../src/products/deploy/client.js";
+
+function createClient(transport: Record<string, unknown>) {
+  return createDeployClient(transport as never);
+}
+
+function createProjectInput<T extends Record<string, unknown>>(overrides?: T): {
+  project_id: string;
+} & T {
+  return {
+    project_id: "project-1",
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+  } & T;
+}
+
+function createProjectPageInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  page: number;
+  page_size: number;
+} & T {
+  return {
+    project_id: "project-1",
+    page: 1,
+    page_size: 20,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    page: number;
+    page_size: number;
+  } & T;
+}
+
+function createApplicationInput<T extends Record<string, unknown>>(overrides?: T): {
+  application_id: string;
+} & T {
+  return {
+    application_id: "app-1",
+    ...(overrides ?? {})
+  } as {
+    application_id: string;
+  } & T;
+}
+
+function createApplicationProjectInput<T extends Record<string, unknown>>(overrides?: T): {
+  application_id: string;
+  project_id: string;
+} & T {
+  return {
+    application_id: "app-1",
+    project_id: "project-1",
+    ...(overrides ?? {})
+  } as {
+    application_id: string;
+    project_id: string;
+  } & T;
+}
+
+function createApplicationProjectPageInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  application_id: string;
+  project_id: string;
+  page: number;
+  page_size: number;
+} & T {
+  return {
+    application_id: "app-1",
+    project_id: "project-1",
+    page: 1,
+    page_size: 20,
+    ...(overrides ?? {})
+  } as {
+    application_id: string;
+    project_id: string;
+    page: number;
+    page_size: number;
+  } & T;
+}
+
+function createGroupPageInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  group_id: string;
+  page: number;
+  page_size: number;
+} & T {
+  return {
+    group_id: "group-1",
+    page: 1,
+    page_size: 20,
+    ...(overrides ?? {})
+  } as {
+    group_id: string;
+    page: number;
+    page_size: number;
+  } & T;
+}
+
+function createGroupInput<T extends Record<string, unknown>>(overrides?: T): {
+  group_id: string;
+} & T {
+  return {
+    group_id: "group-1",
+    ...(overrides ?? {})
+  } as {
+    group_id: string;
+  } & T;
+}
+
+function createEnvironmentPageInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  application_id: string;
+  environment_id: string;
+  page: number;
+  page_size: number;
+} & T {
+  return {
+    application_id: "app-1",
+    environment_id: "env-1",
+    page: 1,
+    page_size: 20,
+    ...(overrides ?? {})
+  } as {
+    application_id: string;
+    environment_id: string;
+    page: number;
+    page_size: number;
+  } & T;
+}
+
+function createProjectAppInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  app_id: string;
+} & T {
+  return {
+    project_id: "project-1",
+    app_id: "app-1",
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    app_id: string;
+  } & T;
+}
+
+function createProjectLimitOffsetInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  limit: number;
+  offset: number;
+} & T {
+  return {
+    project_id: "project-1",
+    limit: 20,
+    offset: 0,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    limit: number;
+    offset: number;
+  } & T;
+}
+
+function createProjectAppLimitOffsetInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  app_id: string;
+  limit: number;
+  offset: number;
+} & T {
+  return {
+    project_id: "project-1",
+    app_id: "app-1",
+    limit: 20,
+    offset: 0,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    app_id: string;
+    limit: number;
+    offset: number;
+  } & T;
+}
+
+function createProjectEnvironmentLimitOffsetInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  environment_id: string;
+  limit: number;
+  offset: number;
+} & T {
+  return {
+    project_id: "project-1",
+    environment_id: "env-1",
+    limit: 20,
+    offset: 0,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    environment_id: string;
+    limit: number;
+    offset: number;
+  } & T;
+}
+
+function createProjectRecordInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  record_id: string;
+} & T {
+  return {
+    project_id: "project-1",
+    record_id: "rec-1",
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    record_id: string;
+  } & T;
+}
+
+function createProjectEnvironmentInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  environment_id: string;
+} & T {
+  return {
+    project_id: "project-1",
+    environment_id: "env-1",
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    environment_id: string;
+  } & T;
+}
+
+function createProjectClusterInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  cluster_id: string;
+} & T {
+  return {
+    project_id: "project-1",
+    cluster_id: "cluster-1",
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    cluster_id: string;
+  } & T;
+}
+
+function createProjectClusterHostInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  cluster_id: string;
+  host_id: string;
+} & T {
+  return {
+    project_id: "project-1",
+    cluster_id: "cluster-1",
+    host_id: "host-1",
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    cluster_id: string;
+    host_id: string;
+  } & T;
+}
+
+function createApplicationRecordInput<T extends Record<string, unknown>>(overrides?: T): {
+  application_id: string;
+  record_id: string;
+} & T {
+  return {
+    application_id: "app-1",
+    record_id: "record-1",
+    ...(overrides ?? {})
+  } as {
+    application_id: string;
+    record_id: string;
+  } & T;
+}
+
+function createTaskInput<T extends Record<string, unknown>>(overrides?: T): {
+  task_id: string;
+} & T {
+  return {
+    task_id: "task-1",
+    ...(overrides ?? {})
+  } as {
+    task_id: string;
+  } & T;
+}
+
+function createTaskRecordInput<T extends Record<string, unknown>>(overrides?: T): {
+  task_id: string;
+  record_id: string;
+} & T {
+  return {
+    task_id: "task-1",
+    record_id: "record-1",
+    ...(overrides ?? {})
+  } as {
+    task_id: string;
+    record_id: string;
+  } & T;
+}
 
 describe("createDeployClient", () => {
   it("lists host groups available to an application", async () => {
     let requestedPath = "";
-    const client = createDeployClient({
+    const client = createClient({
       get: async (path: string) => {
         requestedPath = path;
         return {
@@ -13,14 +331,9 @@ describe("createDeployClient", () => {
           total: 1
         };
       }
-    } as never);
-
-    const result = await client.listAppHostGroups({
-      application_id: "app-1",
-      project_id: "project-1",
-      page: 1,
-      page_size: 20
     });
+
+    const result = await client.listAppHostGroups(createApplicationProjectPageInput());
 
     expect(requestedPath).toContain(
       "/v1/applications/app-1/host-groups/base/infos?project_uuid=project-1&page_index=1&page_size=20"
@@ -38,7 +351,7 @@ describe("createDeployClient", () => {
 
   it("lists deploy host groups from the host group resource endpoint", async () => {
     let requestedPath = "";
-    const client = createDeployClient({
+    const client = createClient({
       get: async (path: string) => {
         requestedPath = path;
         return {
@@ -57,13 +370,9 @@ describe("createDeployClient", () => {
           total: 1
         };
       }
-    } as never);
-
-    const result = await client.listHostGroups({
-      project_id: "project-1",
-      page: 1,
-      page_size: 20
     });
+
+    const result = await client.listHostGroups(createProjectPageInput());
 
     expect(requestedPath).toContain(
       "/v1/resources/host-groups?project_id=project-1&page_index=1&page_size=20"
@@ -87,7 +396,7 @@ describe("createDeployClient", () => {
   });
 
   it("gets deploy host group detail from the resource endpoint", async () => {
-    const client = createDeployClient({
+    const client = createClient({
       get: async () => ({
         result: {
           id: "group-1",
@@ -100,9 +409,9 @@ describe("createDeployClient", () => {
           updated_time: "2026-04-17 17:21:35"
         }
       })
-    } as never);
+    });
 
-    const result = await client.getHostGroup({ group_id: "group-1" });
+    const result = await client.getHostGroup(createGroupInput());
 
     expect(result).toEqual({
       group_id: "group-1",
@@ -118,7 +427,7 @@ describe("createDeployClient", () => {
 
   it("lists hosts inside a deploy host group", async () => {
     let requestedPath = "";
-    const client = createDeployClient({
+    const client = createClient({
       get: async (path: string) => {
         requestedPath = path;
         return {
@@ -139,7 +448,7 @@ describe("createDeployClient", () => {
           total: 1
         };
       }
-    } as never);
+    });
 
     const result = await client.listHostGroupHosts({
       group_id: "group-1",
@@ -164,7 +473,7 @@ describe("createDeployClient", () => {
 
   it("lists environments linked to a deploy host group", async () => {
     let requestedPath = "";
-    const client = createDeployClient({
+    const client = createClient({
       get: async (path: string) => {
         requestedPath = path;
         return {
@@ -181,13 +490,9 @@ describe("createDeployClient", () => {
           total: 1
         };
       }
-    } as never);
-
-    const result = await client.listHostGroupEnvironments({
-      group_id: "group-1",
-      page: 1,
-      page_size: 20
     });
+
+    const result = await client.listHostGroupEnvironments(createGroupPageInput());
 
     expect(requestedPath).toContain(
       "/v1/resources/host-groups/group-1/environments/infos?page_index=1&page_size=20"
@@ -207,22 +512,20 @@ describe("createDeployClient", () => {
   it("creates a deploy environment from the application environments endpoint", async () => {
     let requestedPath = "";
     let requestedBody: unknown;
-    const client = createDeployClient({
+    const client = createClient({
       post: async (path: string, body?: unknown) => {
         requestedPath = path;
         requestedBody = body;
         return { id: "env-1" };
       }
-    } as never);
+    });
 
-    const result = await client.createEnvironment({
-      application_id: "app-1",
-      project_id: "project-1",
+    const result = await client.createEnvironment(createApplicationProjectInput({
       name: "temp-env",
       os: "linux",
       deploy_type: 0,
       description: "test"
-    });
+    }));
 
     expect(requestedPath).toBe("/v1/applications/app-1/environments");
     expect(requestedBody).toEqual({
@@ -237,7 +540,7 @@ describe("createDeployClient", () => {
 
   it("lists hosts inside a deploy environment", async () => {
     let requestedPath = "";
-    const client = createDeployClient({
+    const client = createClient({
       get: async (path: string) => {
         requestedPath = path;
         return {
@@ -255,14 +558,9 @@ describe("createDeployClient", () => {
           total: 1
         };
       }
-    } as never);
-
-    const result = await client.listEnvironmentHosts({
-      application_id: "app-1",
-      environment_id: "env-1",
-      page: 1,
-      page_size: 20
     });
+
+    const result = await client.listEnvironmentHosts(createEnvironmentPageInput());
 
     expect(requestedPath).toContain("/v1/applications/app-1/environments/env-1/hosts?page_index=1&page_size=20");
     expect(result.hosts[0]).toEqual({
@@ -279,13 +577,13 @@ describe("createDeployClient", () => {
   it("imports hosts into a deploy environment", async () => {
     let requestedPath = "";
     let requestedBody: unknown;
-    const client = createDeployClient({
+    const client = createClient({
       post: async (path: string, body?: unknown) => {
         requestedPath = path;
         requestedBody = body;
         return { status: "success" };
       }
-    } as never);
+    });
 
     const result = await client.importHostsToEnvironment({
       application_id: "app-1",
@@ -310,7 +608,7 @@ describe("createDeployClient", () => {
 
   it("lists deploy environments from the application environments endpoint", async () => {
     let requestedPath = "";
-    const client = createDeployClient({
+    const client = createClient({
       get: async (path: string) => {
         requestedPath = path;
         return {
@@ -327,14 +625,13 @@ describe("createDeployClient", () => {
           total: 1
         };
       }
-    } as never);
-
-    const result = await client.listEnvironments({
-      application_id: "app-1",
-      project_id: "project-1",
-      page: 2,
-      page_size: 20
     });
+
+    const result = await client.listEnvironments(
+      createApplicationProjectPageInput({
+        page: 2
+      })
+    );
 
     expect(requestedPath).toContain(
       "/v1/applications/app-1/environments?project_id=project-1&page_index=2&page_size=20"
@@ -354,11 +651,11 @@ describe("createDeployClient", () => {
   });
 
   it("maps execution params list responses", async () => {
-    const client = createDeployClient({
+    const client = createClient({
       get: async () => [{ name: "service_port", type: "text", value: "8080" }]
-    } as never);
+    });
 
-    const result = await client.getExecutionParams({ task_id: "task-1", record_id: "record-1" });
+    const result = await client.getExecutionParams(createTaskRecordInput());
 
     expect(result).toEqual({
       task_id: "task-1",
@@ -369,7 +666,7 @@ describe("createDeployClient", () => {
 
   it("maps app log responses with nested result", async () => {
     let requestedPath = "";
-    const client = createDeployClient({
+    const client = createClient({
       get: async (path: string) => {
         requestedPath = path;
         return {
@@ -382,14 +679,12 @@ describe("createDeployClient", () => {
           status: "success"
         };
       }
-    } as never);
+    });
 
-    const result = await client.getAppLog({
-      application_id: "app-1",
-      record_id: "record-1",
+    const result = await client.getAppLog(createApplicationRecordInput({
       offset: "0",
       end_offset: "0"
-    });
+    }));
 
     expect(result).toEqual({
       application_id: "app-1",
@@ -405,27 +700,25 @@ describe("createDeployClient", () => {
 
   it("passes optional step_id when loading app log", async () => {
     let requestedPath = "";
-    const client = createDeployClient({
+    const client = createClient({
       get: async (path: string) => {
         requestedPath = path;
         return { status: "success" };
       }
-    } as never);
+    });
 
-    await client.getAppLog({
-      application_id: "app-1",
-      record_id: "record-1",
+    await client.getAppLog(createApplicationRecordInput({
       step_id: "step-1",
       offset: "0",
       end_offset: "100"
-    });
+    }));
 
     expect(requestedPath).toContain("step_id=step-1");
   });
 
   it("uses page and size when listing deploy applications", async () => {
     let requestedBody: unknown;
-    const client = createDeployClient({
+    const client = createClient({
       post: async (_path: string, body: unknown) => {
         requestedBody = body;
         return {
@@ -433,9 +726,13 @@ describe("createDeployClient", () => {
           total_num: 1
         };
       }
-    } as never);
+    });
 
-    const result = await client.listApps({ project_id: "project-1", page: 2, page_size: 20 });
+    const result = await client.listApps(
+      createProjectPageInput({
+        page: 2
+      })
+    );
 
     expect(requestedBody).toEqual({
       project_id: "project-1",
@@ -447,7 +744,7 @@ describe("createDeployClient", () => {
 
   it("ignores keyword when listing deploy applications because the live API rejects name filtering", async () => {
     let requestedBody: unknown;
-    const client = createDeployClient({
+    const client = createClient({
       post: async (_path: string, body: unknown) => {
         requestedBody = body;
         return {
@@ -455,14 +752,13 @@ describe("createDeployClient", () => {
           total_num: 1
         };
       }
-    } as never);
-
-    const result = await client.listApps({
-      project_id: "project-1",
-      page: 1,
-      page_size: 20,
-      keyword: "gateway"
     });
+
+    const result = await client.listApps(
+      createProjectPageInput({
+        keyword: "gateway"
+      })
+    );
 
     expect(requestedBody).toEqual({
       project_id: "project-1",
@@ -473,7 +769,7 @@ describe("createDeployClient", () => {
   });
 
   it("maps deploy applications with disable and execution-state fields from the documented shape", async () => {
-    const client = createDeployClient({
+    const client = createClient({
       post: async () => ({
         result: [
           {
@@ -495,13 +791,9 @@ describe("createDeployClient", () => {
         ],
         total_num: 1
       })
-    } as never);
-
-    const result = await client.listApps({
-      project_id: "project-1",
-      page: 1,
-      page_size: 20
     });
+
+    const result = await client.listApps(createProjectPageInput());
 
     expect(result).toEqual({
       applications: [
@@ -528,7 +820,7 @@ describe("createDeployClient", () => {
 
   it("uses page and size when listing deploy tasks", async () => {
     let requestedPath = "";
-    const client = createDeployClient({
+    const client = createClient({
       get: async (path: string) => {
         requestedPath = path;
         return {
@@ -536,16 +828,20 @@ describe("createDeployClient", () => {
           total_count: 1
         };
       }
-    } as never);
+    });
 
-    const result = await client.listTasks({ project_id: "project-1", page: 2, page_size: 20 });
+    const result = await client.listTasks(
+      createProjectPageInput({
+        page: 2
+      })
+    );
 
     expect(requestedPath).toContain("/v2/project-1/tasks/list?page=2&size=20");
     expect(result.total).toBe(1);
   });
 
   it("maps deploy task list from the documented name/state shape", async () => {
-    const client = createDeployClient({
+    const client = createClient({
       get: async () => ({
         result: [
           {
@@ -559,13 +855,9 @@ describe("createDeployClient", () => {
         ],
         total_num: 1
       })
-    } as never);
-
-    const result = await client.listTasks({
-      project_id: "project-1",
-      page: 1,
-      page_size: 20
     });
+
+    const result = await client.listTasks(createProjectPageInput());
 
     expect(result).toEqual({
       tasks: [
@@ -583,7 +875,7 @@ describe("createDeployClient", () => {
   });
 
   it("maps deploy task permissions and execution state from the documented shape", async () => {
-    const client = createDeployClient({
+    const client = createClient({
       get: async () => ({
         result: [
           {
@@ -605,13 +897,9 @@ describe("createDeployClient", () => {
         ],
         total_num: 1
       })
-    } as never);
-
-    const result = await client.listTasks({
-      project_id: "project-1",
-      page: 1,
-      page_size: 20
     });
+
+    const result = await client.listTasks(createProjectPageInput());
 
     expect(result).toEqual({
       tasks: [
@@ -638,7 +926,7 @@ describe("createDeployClient", () => {
 
   it("maps deploy application detail including can_disable", async () => {
     let requestedPath = "";
-    const client = createDeployClient({
+    const client = createClient({
       get: async (path: string) => {
         requestedPath = path;
         return {
@@ -663,9 +951,9 @@ describe("createDeployClient", () => {
           }
         };
       }
-    } as never);
+    });
 
-    const result = await client.getApp({ application_id: "app-1" });
+    const result = await client.getApp(createApplicationInput());
 
     expect(requestedPath).toBe("/v1/applications/app-1/info");
     expect(result).toEqual({
@@ -691,7 +979,7 @@ describe("createDeployClient", () => {
 
   it("prefers new execution params endpoint and falls back compatibly", async () => {
     const seen: string[] = [];
-    const client = createDeployClient({
+    const client = createClient({
       get: async (path: string) => {
         seen.push(path);
         if (path.includes("/v2/history/tasks/")) {
@@ -700,9 +988,9 @@ describe("createDeployClient", () => {
 
         throw new Error("unexpected fallback");
       }
-    } as never);
+    });
 
-    const result = await client.getExecutionParams({ task_id: "task-1", record_id: "record-1" });
+    const result = await client.getExecutionParams(createTaskRecordInput());
 
     expect(seen[0]).toContain("/v2/history/tasks/task-1/params?record_id=record-1");
     expect(result.params).toEqual([{ name: "service_port", type: "text", value: "8080" }]);
@@ -712,10 +1000,10 @@ describe("createDeployClient", () => {
     const seen: string[] = [];
     const providerError = new AppError(
       "provider_error",
-      "无执行记录",
+      "No execution record",
       "Deploy.00011303"
     );
-    const client = createDeployClient({
+    const client = createClient({
       get: async (path: string) => {
         seen.push(path);
         if (path.includes("/v2/history/tasks/")) {
@@ -724,17 +1012,17 @@ describe("createDeployClient", () => {
 
         throw new Error("unexpected fallback");
       }
-    } as never);
+    });
 
     await expect(
-      client.getExecutionParams({ task_id: "task-1", record_id: "record-1" })
+      client.getExecutionParams(createTaskRecordInput())
     ).rejects.toBe(providerError);
     expect(seen).toEqual(["/v2/history/tasks/task-1/params?record_id=record-1"]);
   });
 
   it("maps runtime variables responses", async () => {
     let requestedPath = "";
-    const client = createDeployClient({
+    const client = createClient({
       get: async (path: string) => {
         requestedPath = path;
         return {
@@ -749,11 +1037,9 @@ describe("createDeployClient", () => {
           ]
         };
       }
-    } as never);
-
-    const result = await client.getRuntimeVariables({
-      project_id: "project-1"
     });
+
+    const result = await client.getRuntimeVariables(createProjectInput());
 
     expect(requestedPath).toBe("/v4/projects/project-1/runtime-variables");
     expect(result).toEqual({
@@ -784,12 +1070,12 @@ describe("createDeployClient", () => {
 
   it("passes app_id when reading runtime variables", async () => {
     let requestedPath = "";
-    const client = createDeployClient({
+    const client = createClient({
       get: async (path: string) => {
         requestedPath = path;
         return { variables: [] };
       }
-    } as never);
+    });
 
     await client.getRuntimeVariables({
       project_id: "project-1",
@@ -800,7 +1086,7 @@ describe("createDeployClient", () => {
   });
 
   it("maps runtime variables when provider wraps items under result", async () => {
-    const client = createDeployClient({
+    const client = createClient({
       get: async () => ({
         result: [
           {
@@ -812,7 +1098,7 @@ describe("createDeployClient", () => {
           }
         ]
       })
-    } as never);
+    });
 
     const result = await client.getRuntimeVariables({
       project_id: "project-1",
@@ -847,7 +1133,7 @@ describe("createDeployClient", () => {
 
   it("maps query variables responses", async () => {
     let requestedPath = "";
-    const client = createDeployClient({
+    const client = createClient({
       get: async (path: string) => {
         requestedPath = path;
         return {
@@ -862,7 +1148,7 @@ describe("createDeployClient", () => {
           ]
         };
       }
-    } as never);
+    });
 
     const result = await client.queryVariables({
       project_id: "project-1",
@@ -899,7 +1185,7 @@ describe("createDeployClient", () => {
   });
 
   it("maps query variables when provider wraps items under result", async () => {
-    const client = createDeployClient({
+    const client = createClient({
       get: async () => ({
         result: [
           {
@@ -911,7 +1197,7 @@ describe("createDeployClient", () => {
           }
         ]
       })
-    } as never);
+    });
 
     const result = await client.queryVariables({
       project_id: "project-1",
@@ -949,7 +1235,7 @@ describe("createDeployClient", () => {
 
   it("maps variables list responses", async () => {
     let requestedPath = "";
-    const client = createDeployClient({
+    const client = createClient({
       get: async (path: string) => {
         requestedPath = path;
         return {
@@ -964,7 +1250,7 @@ describe("createDeployClient", () => {
           ]
         };
       }
-    } as never);
+    });
 
     const result = await client.listVariables({
       project_id: "project-1",
@@ -1004,7 +1290,7 @@ describe("createDeployClient", () => {
 
   it("maps variable history responses", async () => {
     let requestedPath = "";
-    const client = createDeployClient({
+    const client = createClient({
       get: async (path: string) => {
         requestedPath = path;
         return {
@@ -1021,7 +1307,7 @@ describe("createDeployClient", () => {
           ]
         };
       }
-    } as never);
+    });
 
     const result = await client.listVariableHistory({
       project_id: "project-1",
@@ -1065,7 +1351,7 @@ describe("createDeployClient", () => {
 
   it("maps deploy source detail responses", async () => {
     let requestedPath = "";
-    const client = createDeployClient({
+    const client = createClient({
       get: async (path: string) => {
         requestedPath = path;
         return {
@@ -1074,7 +1360,7 @@ describe("createDeployClient", () => {
           artifact_type: "generic"
         };
       }
-    } as never);
+    });
 
     const result = await client.getDeploySourceDetail({ task_id: "task-1" });
 
@@ -1089,7 +1375,7 @@ describe("createDeployClient", () => {
 
   it("maps v4 applications list responses", async () => {
     let requestedBody: unknown;
-    const client = createDeployClient({
+    const client = createClient({
       post: async (path: string, body: unknown) => {
         expect(path).toBe("/v4/applications/list");
         requestedBody = body;
@@ -1105,14 +1391,13 @@ describe("createDeployClient", () => {
           ]
         };
       }
-    } as never);
-
-    const result = await client.listV4Applications({
-      project_id: "project-1",
-      limit: 20,
-      offset: 0,
-      keyword: "codex"
     });
+
+    const result = await client.listV4Applications(
+      createProjectLimitOffsetInput({
+        keyword: "codex"
+      })
+    );
 
     expect(requestedBody).toEqual({
       project_id: "project-1",
@@ -1147,7 +1432,7 @@ describe("createDeployClient", () => {
 
   it("maps v4 environments list responses", async () => {
     let requestedBody: unknown;
-    const client = createDeployClient({
+    const client = createClient({
       post: async (path: string, body: unknown) => {
         expect(path).toBe("/v4/projects/project-1/environments/list");
         requestedBody = body;
@@ -1164,13 +1449,9 @@ describe("createDeployClient", () => {
           ]
         };
       }
-    } as never);
-
-    const result = await client.listV4Environments({
-      project_id: "project-1",
-      limit: 20,
-      offset: 0
     });
+
+    const result = await client.listV4Environments(createProjectLimitOffsetInput());
 
     expect(requestedBody).toEqual({
       limit: 20,
@@ -1205,7 +1486,7 @@ describe("createDeployClient", () => {
 
   it("maps v4 environment applications responses", async () => {
     let requestedBody: unknown;
-    const client = createDeployClient({
+    const client = createClient({
       post: async (path: string, body: unknown) => {
         expect(path).toBe(
           "/v4/projects/project-1/environments/env-1/applications-list"
@@ -1223,14 +1504,11 @@ describe("createDeployClient", () => {
           ]
         };
       }
-    } as never);
-
-    const result = await client.listV4EnvironmentApplications({
-      project_id: "project-1",
-      environment_id: "env-1",
-      limit: 20,
-      offset: 0
     });
+
+    const result = await client.listV4EnvironmentApplications(
+      createProjectEnvironmentLimitOffsetInput()
+    );
 
     expect(requestedBody).toEqual({
       limit: 20,
@@ -1264,7 +1542,7 @@ describe("createDeployClient", () => {
 
   it("maps deployment units responses", async () => {
     let requestedPath = "";
-    const client = createDeployClient({
+    const client = createClient({
       get: async (path: string) => {
         requestedPath = path;
         return [
@@ -1278,12 +1556,9 @@ describe("createDeployClient", () => {
           }
         ];
       }
-    } as never);
-
-    const result = await client.listDeploymentUnits({
-      project_id: "project-1",
-      app_id: "app-1"
     });
+
+    const result = await client.listDeploymentUnits(createProjectAppInput());
 
     expect(requestedPath).toBe("/v4/projects/project-1/applications/app-1/deployment-units");
     expect(result).toEqual({
@@ -1314,7 +1589,7 @@ describe("createDeployClient", () => {
 
   it("maps v4 orchestrations responses", async () => {
     let requestedBody: unknown;
-    const client = createDeployClient({
+    const client = createClient({
       post: async (path: string, body: unknown) => {
         expect(path).toBe("/v4/projects/project-1/orchestrations/list");
         requestedBody = body;
@@ -1323,14 +1598,9 @@ describe("createDeployClient", () => {
           resources: [{ id: "orch-1", name: "demo", state: "Available", description: "x" }]
         };
       }
-    } as never);
-
-    const result = await client.listV4Orchestrations({
-      project_id: "project-1",
-      app_id: "app-1",
-      limit: 20,
-      offset: 0
     });
+
+    const result = await client.listV4Orchestrations(createProjectAppLimitOffsetInput());
 
     expect(requestedBody).toEqual({ app_id: "app-1", limit: 20, offset: 0 });
     expect(result.orchestrations).toEqual([
@@ -1340,7 +1610,7 @@ describe("createDeployClient", () => {
 
   it("maps v4 deploy records responses", async () => {
     let requestedBody: unknown;
-    const client = createDeployClient({
+    const client = createClient({
       post: async (path: string, body: unknown) => {
         expect(path).toBe("/v4/projects/project-1/deploy-records");
         requestedBody = body;
@@ -1351,13 +1621,9 @@ describe("createDeployClient", () => {
           ]
         };
       }
-    } as never);
-
-    const result = await client.listV4DeployRecords({
-      project_id: "project-1",
-      limit: 20,
-      offset: 0
     });
+
+    const result = await client.listV4DeployRecords(createProjectLimitOffsetInput());
 
     expect(requestedBody).toEqual({ limit: 20, offset: 0 });
     expect(result.records).toEqual([
@@ -1366,19 +1632,15 @@ describe("createDeployClient", () => {
   });
 
   it("treats null v4 deploy records responses as empty", async () => {
-    const client = createDeployClient({
+    const client = createClient({
       post: async (path: string, body: unknown) => {
         expect(path).toBe("/v4/projects/project-1/deploy-records");
         expect(body).toEqual({ limit: 20, offset: 0 });
         return null;
       }
-    } as never);
-
-    const result = await client.listV4DeployRecords({
-      project_id: "project-1",
-      limit: 20,
-      offset: 0
     });
+
+    const result = await client.listV4DeployRecords(createProjectLimitOffsetInput());
 
     expect(result).toEqual({
       project_id: "project-1",
@@ -1390,12 +1652,12 @@ describe("createDeployClient", () => {
 
   it("maps last record detail responses", async () => {
     let requestedPath = "";
-    const client = createDeployClient({
+    const client = createClient({
       get: async (path: string) => {
         requestedPath = path;
         return {};
       }
-    } as never);
+    });
 
     const result = await client.getLastRecordDetail({
       project_id: "project-1",
@@ -1412,18 +1674,18 @@ describe("createDeployClient", () => {
 
   it("maps v4 deploy record detail responses", async () => {
     let requestedPath = "";
-    const client = createDeployClient({
+    const client = createClient({
       get: async (path: string) => {
         requestedPath = path;
         return {};
       }
-    } as never);
-
-    const result = await client.getV4DeployRecord({
-      project_id: "project-1",
-      record_id: "rec-1",
-      step_id: "step-1"
     });
+
+    const result = await client.getV4DeployRecord(
+      createProjectRecordInput({
+        step_id: "step-1"
+      })
+    );
 
     expect(requestedPath).toBe("/v4/projects/project-1/deploy-records/rec-1?step_id=step-1");
     expect(result).toEqual({
@@ -1436,17 +1698,14 @@ describe("createDeployClient", () => {
 
   it("maps v4 deploy record step detail responses", async () => {
     let requestedPath = "";
-    const client = createDeployClient({
+    const client = createClient({
       get: async (path: string) => {
         requestedPath = path;
         return {};
       }
-    } as never);
-
-    const result = await client.getV4DeployRecordStepDetail({
-      project_id: "project-1",
-      record_id: "rec-1"
     });
+
+    const result = await client.getV4DeployRecordStepDetail(createProjectRecordInput());
 
     expect(requestedPath).toBe("/v4/projects/project-1/deploy-records/rec-1/step-detail");
     expect(result).toEqual({
@@ -1459,20 +1718,20 @@ describe("createDeployClient", () => {
   it("maps v4 deploy record step logs responses", async () => {
     let requestedPath = "";
     let requestedBody: unknown;
-    const client = createDeployClient({
+    const client = createClient({
       post: async (path: string, body: unknown) => {
         requestedPath = path;
         requestedBody = body;
         return {};
       }
-    } as never);
-
-    const result = await client.getV4DeployRecordStepLogs({
-      project_id: "project-1",
-      record_id: "rec-1",
-      step_id: "11111111111111111111111111111111",
-      body: { offset: 0 }
     });
+
+    const result = await client.getV4DeployRecordStepLogs(
+      createProjectRecordInput({
+        step_id: "11111111111111111111111111111111",
+        body: { offset: 0 }
+      })
+    );
 
     expect(requestedPath).toBe(
       "/v4/projects/project-1/deploy-records/rec-1/step/11111111111111111111111111111111/logs"
@@ -1489,7 +1748,7 @@ describe("createDeployClient", () => {
   it("maps v4 clusters responses", async () => {
     let requestedPath = "";
     let requestedBody: unknown;
-    const client = createDeployClient({
+    const client = createClient({
       post: async (path: string, body: unknown) => {
         requestedPath = path;
         requestedBody = body;
@@ -1505,7 +1764,7 @@ describe("createDeployClient", () => {
           ]
         };
       }
-    } as never);
+    });
 
     const result = await client.listV4Clusters({
       project_id: "project-1",
@@ -1545,7 +1804,7 @@ describe("createDeployClient", () => {
 
   it("maps v4 cluster detail responses", async () => {
     let requestedPath = "";
-    const client = createDeployClient({
+    const client = createClient({
       get: async (path: string) => {
         requestedPath = path;
         return {
@@ -1555,13 +1814,13 @@ describe("createDeployClient", () => {
           description: "demo"
         };
       }
-    } as never);
-
-    const result = await client.getV4Cluster({
-      project_id: "project-1",
-      cluster_id: "cluster-1",
-      cluster_type: "host"
     });
+
+    const result = await client.getV4Cluster(
+      createProjectClusterInput({
+        cluster_type: "host"
+      })
+    );
 
     expect(requestedPath).toBe("/v4/projects/project-1/clusters/cluster-1?cluster_type=host");
     expect(result).toEqual({
@@ -1586,7 +1845,7 @@ describe("createDeployClient", () => {
   it("maps v4 cluster hosts responses", async () => {
     let requestedPath = "";
     let requestedBody: unknown;
-    const client = createDeployClient({
+    const client = createClient({
       post: async (path: string, body: unknown) => {
         requestedPath = path;
         requestedBody = body;
@@ -1603,13 +1862,13 @@ describe("createDeployClient", () => {
           ]
         };
       }
-    } as never);
-
-    const result = await client.listV4ClusterHosts({
-      project_id: "project-1",
-      cluster_id: "cluster-1",
-      body: {}
     });
+
+    const result = await client.listV4ClusterHosts(
+      createProjectClusterInput({
+        body: {}
+      })
+    );
 
     expect(requestedPath).toBe("/v4/projects/project-1/clusters/cluster-1/hosts/list");
     expect(requestedBody).toEqual({});
@@ -1643,7 +1902,7 @@ describe("createDeployClient", () => {
 
   it("maps v4 cluster host detail responses", async () => {
     let requestedPath = "";
-    const client = createDeployClient({
+    const client = createClient({
       get: async (path: string) => {
         requestedPath = path;
         return {
@@ -1654,13 +1913,9 @@ describe("createDeployClient", () => {
           connection_status: "online"
         };
       }
-    } as never);
-
-    const result = await client.getV4ClusterHost({
-      project_id: "project-1",
-      cluster_id: "cluster-1",
-      host_id: "host-1"
     });
+
+    const result = await client.getV4ClusterHost(createProjectClusterHostInput());
 
     expect(requestedPath).toBe("/v4/projects/project-1/clusters/cluster-1/hosts/host-1");
     expect(result).toEqual({
@@ -1686,7 +1941,7 @@ describe("createDeployClient", () => {
 
   it("maps v4 environment hosts responses", async () => {
     let requestedPath = "";
-    const client = createDeployClient({
+    const client = createClient({
       get: async (path: string) => {
         requestedPath = path;
         return {
@@ -1702,16 +1957,16 @@ describe("createDeployClient", () => {
           ]
         };
       }
-    } as never);
-
-    const result = await client.listV4EnvironmentHosts({
-      project_id: "project-1",
-      environment_id: "env-1",
-      query: {
-        offset: 0,
-        limit: 20
-      }
     });
+
+    const result = await client.listV4EnvironmentHosts(
+      createProjectEnvironmentInput({
+        query: {
+          offset: 0,
+          limit: 20
+        }
+      })
+    );
 
     expect(requestedPath).toBe("/v4/projects/project-1/environments/env-1/hosts?offset=0&limit=20");
     expect(result).toEqual({
@@ -1744,7 +1999,7 @@ describe("createDeployClient", () => {
 
   it("maps v4 cluster count responses", async () => {
     let requestedPath = "";
-    const client = createDeployClient({
+    const client = createClient({
       get: async (path: string) => {
         requestedPath = path;
         return {
@@ -1752,7 +2007,7 @@ describe("createDeployClient", () => {
           third_party: 1
         };
       }
-    } as never);
+    });
 
     const result = await client.getV4ClusterCount({
       project_id: "project-1",
@@ -1776,7 +2031,7 @@ describe("createDeployClient", () => {
 
   it("maps v4 environment detail responses", async () => {
     let requestedPath = "";
-    const client = createDeployClient({
+    const client = createClient({
       get: async (path: string) => {
         requestedPath = path;
         return {
@@ -1785,12 +2040,9 @@ describe("createDeployClient", () => {
           description: "demo"
         };
       }
-    } as never);
-
-    const result = await client.getV4Environment({
-      project_id: "project-1",
-      environment_id: "env-1"
     });
+
+    const result = await client.getV4Environment(createProjectEnvironmentInput());
 
     expect(requestedPath).toBe("/v4/projects/project-1/environments/env-1");
     expect(result).toEqual({
@@ -1811,7 +2063,7 @@ describe("createDeployClient", () => {
 
   it("maps v4 environment resource detail responses", async () => {
     let requestedPath = "";
-    const client = createDeployClient({
+    const client = createClient({
       get: async (path: string) => {
         requestedPath = path;
         return {
@@ -1819,12 +2071,9 @@ describe("createDeployClient", () => {
           cluster_num: 1
         };
       }
-    } as never);
-
-    const result = await client.getV4EnvironmentResourceDetail({
-      project_id: "project-1",
-      environment_id: "env-1"
     });
+
+    const result = await client.getV4EnvironmentResourceDetail(createProjectEnvironmentInput());
 
     expect(requestedPath).toBe("/v4/projects/project-1/environments/env-1/resource-detail");
     expect(result).toEqual({
@@ -1840,20 +2089,20 @@ describe("createDeployClient", () => {
   it("maps add environment hosts responses", async () => {
     let requestedPath = "";
     let requestedBody: unknown;
-    const client = createDeployClient({
+    const client = createClient({
       post: async (path: string, body: unknown) => {
         requestedPath = path;
         requestedBody = body;
         return { status: "success" };
       }
-    } as never);
-
-    const result = await client.addV4EnvironmentHosts({
-      project_id: "project-1",
-      environment_id: "env-1",
-      cluster_id: "cluster-1",
-      host_ids: ["host-1"]
     });
+
+    const result = await client.addV4EnvironmentHosts(
+      createProjectEnvironmentInput({
+        cluster_id: "cluster-1",
+        host_ids: ["host-1"]
+      })
+    );
 
     expect(requestedPath).toBe("/v4/projects/project-1/environments/env-1/hosts");
     expect(requestedBody).toEqual({
@@ -1873,19 +2122,19 @@ describe("createDeployClient", () => {
   it("maps delete environment hosts responses", async () => {
     let requestedPath = "";
     let requestedBody: unknown;
-    const client = createDeployClient({
+    const client = createClient({
       delete: async (path: string, body?: unknown) => {
         requestedPath = path;
         requestedBody = body;
         return { status: "success" };
       }
-    } as never);
-
-    const result = await client.deleteV4EnvironmentHosts({
-      project_id: "project-1",
-      environment_id: "env-1",
-      host_ids: ["host-1"]
     });
+
+    const result = await client.deleteV4EnvironmentHosts(
+      createProjectEnvironmentInput({
+        host_ids: ["host-1"]
+      })
+    );
 
     expect(requestedPath).toBe("/v4/projects/project-1/environments/env-1/hosts");
     expect(requestedBody).toEqual(["host-1"]);
@@ -1901,19 +2150,19 @@ describe("createDeployClient", () => {
   it("maps delete v4 cluster hosts responses", async () => {
     let requestedPath = "";
     let requestedBody: unknown;
-    const client = createDeployClient({
+    const client = createClient({
       delete: async (path: string, body?: unknown) => {
         requestedPath = path;
         requestedBody = body;
         return { status: "success" };
       }
-    } as never);
-
-    const result = await client.deleteV4ClusterHosts({
-      project_id: "project-1",
-      cluster_id: "cluster-1",
-      host_ids: ["host-1"]
     });
+
+    const result = await client.deleteV4ClusterHosts(
+      createProjectClusterInput({
+        host_ids: ["host-1"]
+      })
+    );
 
     expect(requestedPath).toBe("/v4/projects/project-1/clusters/cluster-1/hosts/batch-delete");
     expect(requestedBody).toEqual(["host-1"]);
@@ -1929,19 +2178,19 @@ describe("createDeployClient", () => {
   it("maps cancel v4 deploy record responses", async () => {
     let requestedPath = "";
     let requestedBody: unknown;
-    const client = createDeployClient({
+    const client = createClient({
       post: async (path: string, body: unknown) => {
         requestedPath = path;
         requestedBody = body;
         return { status: "canceled" };
       }
-    } as never);
-
-    const result = await client.cancelV4DeployRecord({
-      project_id: "project-1",
-      record_id: "rec-1",
-      body: {}
     });
+
+    const result = await client.cancelV4DeployRecord(
+      createProjectRecordInput({
+        body: {}
+      })
+    );
 
     expect(requestedPath).toBe("/v4/projects/project-1/deploy-records/rec-1/cancel");
     expect(requestedBody).toEqual({});
@@ -1955,18 +2204,18 @@ describe("createDeployClient", () => {
 
   it("maps rerun v4 deploy record responses", async () => {
     let requestedPath = "";
-    const client = createDeployClient({
+    const client = createClient({
       post: async (path: string) => {
         requestedPath = path;
         return { status: "rerun" };
       }
-    } as never);
-
-    const result = await client.rerunV4DeployRecord({
-      project_id: "project-1",
-      record_id: "rec-1",
-      body: {}
     });
+
+    const result = await client.rerunV4DeployRecord(
+      createProjectRecordInput({
+        body: {}
+      })
+    );
 
     expect(requestedPath).toBe("/v4/projects/project-1/deploy-records/rec-1/rerun");
     expect(result.status).toBe("rerun");
@@ -1974,18 +2223,18 @@ describe("createDeployClient", () => {
 
   it("maps retry v4 deploy record responses", async () => {
     let requestedPath = "";
-    const client = createDeployClient({
+    const client = createClient({
       post: async (path: string) => {
         requestedPath = path;
         return { status: "retry" };
       }
-    } as never);
-
-    const result = await client.retryV4DeployRecord({
-      project_id: "project-1",
-      record_id: "rec-1",
-      body: {}
     });
+
+    const result = await client.retryV4DeployRecord(
+      createProjectRecordInput({
+        body: {}
+      })
+    );
 
     expect(requestedPath).toBe("/v4/projects/project-1/deploy-records/rec-1/retry");
     expect(result.status).toBe("retry");
@@ -1993,18 +2242,18 @@ describe("createDeployClient", () => {
 
   it("maps rollback v4 deploy record responses", async () => {
     let requestedPath = "";
-    const client = createDeployClient({
+    const client = createClient({
       post: async (path: string) => {
         requestedPath = path;
         return { status: "rollback" };
       }
-    } as never);
-
-    const result = await client.rollbackV4DeployRecord({
-      project_id: "project-1",
-      record_id: "rec-1",
-      body: {}
     });
+
+    const result = await client.rollbackV4DeployRecord(
+      createProjectRecordInput({
+        body: {}
+      })
+    );
 
     expect(requestedPath).toBe("/v4/projects/project-1/deploy-records/rec-1/rollback");
     expect(result.status).toBe("rollback");
@@ -2012,18 +2261,18 @@ describe("createDeployClient", () => {
 
   it("maps pass manual check responses", async () => {
     let requestedPath = "";
-    const client = createDeployClient({
+    const client = createClient({
       post: async (path: string) => {
         requestedPath = path;
         return { status: "passed" };
       }
-    } as never);
-
-    const result = await client.passV4ManualCheck({
-      project_id: "project-1",
-      record_id: "rec-1",
-      step_id: "11111111111111111111111111111111"
     });
+
+    const result = await client.passV4ManualCheck(
+      createProjectRecordInput({
+        step_id: "11111111111111111111111111111111"
+      })
+    );
 
     expect(requestedPath).toBe(
       "/v4/projects/project-1/deploy-records/rec-1/step/11111111111111111111111111111111/pass"
@@ -2033,18 +2282,18 @@ describe("createDeployClient", () => {
 
   it("maps refuse manual check responses", async () => {
     let requestedPath = "";
-    const client = createDeployClient({
+    const client = createClient({
       post: async (path: string) => {
         requestedPath = path;
         return { status: "refused" };
       }
-    } as never);
-
-    const result = await client.refuseV4ManualCheck({
-      project_id: "project-1",
-      record_id: "rec-1",
-      step_id: "11111111111111111111111111111111"
     });
+
+    const result = await client.refuseV4ManualCheck(
+      createProjectRecordInput({
+        step_id: "11111111111111111111111111111111"
+      })
+    );
 
     expect(requestedPath).toBe(
       "/v4/projects/project-1/deploy-records/rec-1/step/11111111111111111111111111111111/refuse"
@@ -2054,7 +2303,7 @@ describe("createDeployClient", () => {
 
   it("prefers new histories endpoint when date filters are provided", async () => {
     const seen: string[] = [];
-    const client = createDeployClient({
+    const client = createClient({
       get: async (path: string) => {
         seen.push(path);
         return {
@@ -2069,7 +2318,7 @@ describe("createDeployClient", () => {
           total_num: 1
         };
       }
-    } as never);
+    });
 
     const result = await client.listHistories({
       project_id: "project-1",
@@ -2095,11 +2344,11 @@ describe("createDeployClient", () => {
   });
 
   it("requires start_date and end_date when listing histories", async () => {
-    const client = createDeployClient({
+    const client = createClient({
       get: async (path: string) => {
         throw new Error(`unexpected request: ${path}`);
       }
-    } as never);
+    });
 
     await expect(
       client.listHistories({
@@ -2118,12 +2367,12 @@ describe("createDeployClient", () => {
 
   it("passes optional date filters when listing histories", async () => {
     let requestedPath = "";
-    const client = createDeployClient({
+    const client = createClient({
       get: async (path: string) => {
         requestedPath = path;
         return { result: [], total_num: 0 };
       }
-    } as never);
+    });
 
     await client.listHistories({
       project_id: "project-1",
@@ -2140,7 +2389,7 @@ describe("createDeployClient", () => {
 
   it("passes record_id when loading deploy status", async () => {
     let requestedPath = "";
-    const client = createDeployClient({
+    const client = createClient({
       get: async (path: string) => {
         requestedPath = path;
         return {
@@ -2151,9 +2400,9 @@ describe("createDeployClient", () => {
           }
         };
       }
-    } as never);
+    });
 
-    const result = await client.getStatus({ task_id: "task-1", record_id: "record-1" });
+    const result = await client.getStatus(createTaskRecordInput());
 
     expect(requestedPath).toContain("/v2/tasks/task-1/state?record_id=record-1");
     expect(result.state).toBe("RUNNING");
@@ -2162,14 +2411,14 @@ describe("createDeployClient", () => {
   });
 
   it("preserves richer live step-state fields when loading deploy status", async () => {
-    const client = createDeployClient({
+    const client = createClient({
       get: async () => ({
         task_id: "task-1",
         status: "initial",
         elapsed_time: 0,
         step_state: [
           {
-            name: "安装Node.js",
+            name: "瀹夎Node.js",
             region: "cn-north-4",
             id: 0,
             offset: 0,
@@ -2180,9 +2429,9 @@ describe("createDeployClient", () => {
           }
         ]
       })
-    } as never);
+    });
 
-    const result = await client.getStatus({ task_id: "task-1" });
+    const result = await client.getStatus(createTaskInput());
 
     expect(result).toEqual({
       task_id: "task-1",
@@ -2191,7 +2440,7 @@ describe("createDeployClient", () => {
       elapsed_time: 0,
       step_states: [
         {
-          name: "安装Node.js",
+          name: "瀹夎Node.js",
           region: "cn-north-4",
           id: 0,
           offset: 0,
@@ -2205,7 +2454,7 @@ describe("createDeployClient", () => {
   });
 
   it("accepts the documented step_states field when loading deploy status", async () => {
-    const client = createDeployClient({
+    const client = createClient({
       get: async () => ({
         result: {
           task_id: "task-1",
@@ -2221,9 +2470,9 @@ describe("createDeployClient", () => {
           ]
         }
       })
-    } as never);
+    });
 
-    const result = await client.getStatus({ task_id: "task-1" });
+    const result = await client.getStatus(createTaskInput());
 
     expect(result).toEqual({
       task_id: "task-1",
@@ -2241,7 +2490,7 @@ describe("createDeployClient", () => {
   });
 
   it("maps history detail from the documented state response shape", async () => {
-    const client = createDeployClient({
+    const client = createClient({
       get: async () => ({
         status: "success",
         result: {
@@ -2256,7 +2505,7 @@ describe("createDeployClient", () => {
           task_name: "demo-task",
           step_state: [
             {
-              name: "安装Node.js",
+              name: "瀹夎Node.js",
               region: "cn-north-4",
               elapsed_time: 1200,
               enable: true
@@ -2264,12 +2513,9 @@ describe("createDeployClient", () => {
           ]
         }
       })
-    } as never);
-
-    const result = await client.getHistoryDetail({
-      task_id: "task-1",
-      record_id: "record-1"
     });
+
+    const result = await client.getHistoryDetail(createTaskRecordInput());
 
     expect(result).toEqual({
       task_id: "task-1",
@@ -2281,7 +2527,7 @@ describe("createDeployClient", () => {
       end_time: "2025-07-09 11:36:43",
       step_states: [
         {
-          name: "安装Node.js",
+          name: "瀹夎Node.js",
           region: "cn-north-4",
           elapsed_time: 1200,
           enable: true
@@ -2293,7 +2539,7 @@ describe("createDeployClient", () => {
   it("sends an empty object body when starting a deploy task", async () => {
     let requestedPath = "";
     let requestedBody: unknown;
-    const client = createDeployClient({
+    const client = createClient({
       post: async (path: string, body?: unknown) => {
         requestedPath = path;
         requestedBody = body;
@@ -2305,9 +2551,9 @@ describe("createDeployClient", () => {
           }
         };
       }
-    } as never);
+    });
 
-    const result = await client.startApp({ task_id: "task-1" });
+    const result = await client.startApp(createTaskInput());
 
     expect(requestedPath).toBe("/v2/tasks/task-1/start");
     expect(requestedBody).toEqual({});
@@ -2323,7 +2569,7 @@ describe("createDeployClient", () => {
   it("passes params and trigger_source when starting a deploy task", async () => {
     let requestedPath = "";
     let requestedBody: unknown;
-    const client = createDeployClient({
+    const client = createClient({
       post: async (path: string, body?: unknown) => {
         requestedPath = path;
         requestedBody = body;
@@ -2335,10 +2581,9 @@ describe("createDeployClient", () => {
           status: "RUNNING"
         };
       }
-    } as never);
+    });
 
-    const result = await client.startApp({
-      task_id: "task-1",
+    const result = await client.startApp(createTaskInput({
       trigger_source: 1,
       params: [
         {
@@ -2347,7 +2592,7 @@ describe("createDeployClient", () => {
           value: "codearts-mcp.tar.gz"
         }
       ]
-    });
+    }));
 
     expect(requestedPath).toBe("/v2/tasks/task-1/start");
     expect(requestedBody).toEqual({
@@ -2370,7 +2615,7 @@ describe("createDeployClient", () => {
   });
 
   it("maps record_id when the start response uses record_id instead of id", async () => {
-    const client = createDeployClient({
+    const client = createClient({
       post: async () => ({
         result: {
           task_id: "task-1",
@@ -2380,12 +2625,11 @@ describe("createDeployClient", () => {
           app_component_list: []
         }
       })
-    } as never);
-
-    const result = await client.startApp({
-      task_id: "task-1",
-      trigger_source: "1"
     });
+
+    const result = await client.startApp(createTaskInput({
+      trigger_source: "1"
+    }));
 
     expect(result).toEqual({
       task_id: "task-1",
@@ -2399,7 +2643,7 @@ describe("createDeployClient", () => {
   it("creates a deploy task from a template", async () => {
     let requestedPath = "";
     let requestedBody: unknown;
-    const client = createDeployClient({
+    const client = createClient({
       post: async (path: string, body?: unknown) => {
         requestedPath = path;
         requestedBody = body;
@@ -2408,7 +2652,7 @@ describe("createDeployClient", () => {
           task_id: "140ca97e701d4c4c93c59ffd5bdb32ec"
         };
       }
-    } as never);
+    });
 
     const result = await client.createTaskByTemplate({
       project_id: "6039d4480efc4dddb178abff98719913",
@@ -2462,21 +2706,21 @@ describe("createDeployClient", () => {
 
   it("lists deploy system configs from the v3 endpoint", async () => {
     let requestedPath = "";
-    const client = createDeployClient({
+    const client = createClient({
       get: async (path: string) => {
         requestedPath = path;
         return [
           {
             name: "CODEARTS_ARTIFACT_FILE",
             type: "text",
-            description: "部署来源软件发布库中的首层目录",
+            description: "Top-level directory in the deployment source release repository",
             static_status: false,
             pipeline_source: "Artifact",
             pipeline_source_type: "generic"
           }
         ];
       }
-    } as never);
+    });
 
     const result = await client.listSystemConfigs();
 
@@ -2486,7 +2730,7 @@ describe("createDeployClient", () => {
         {
           name: "CODEARTS_ARTIFACT_FILE",
           type: "text",
-          description: "部署来源软件发布库中的首层目录",
+          description: "Top-level directory in the deployment source release repository",
           static_status: false,
           pipeline_source: "Artifact",
           pipeline_source_type: "generic"
@@ -2498,7 +2742,7 @@ describe("createDeployClient", () => {
   it("uses the start endpoint with record_id body when rolling back a deploy task", async () => {
     let requestedPath = "";
     let requestedBody: unknown;
-    const client = createDeployClient({
+    const client = createClient({
       post: async (path: string, body?: unknown) => {
         requestedPath = path;
         requestedBody = body;
@@ -2510,12 +2754,9 @@ describe("createDeployClient", () => {
           }
         };
       }
-    } as never);
-
-    const result = await client.rollbackApp({
-      task_id: "task-1",
-      record_id: "record-1"
     });
+
+    const result = await client.rollbackApp(createTaskRecordInput());
 
     expect(requestedPath).toBe("/v2/tasks/task-1/start");
     expect(requestedBody).toEqual({
@@ -2529,7 +2770,7 @@ describe("createDeployClient", () => {
   });
 
   it("maps rollback record id when the rollback response uses id instead of record_id", async () => {
-    const client = createDeployClient({
+    const client = createClient({
       post: async () => ({
         result: {
           task_id: "task-1",
@@ -2537,12 +2778,9 @@ describe("createDeployClient", () => {
           status: "RUNNING"
         }
       })
-    } as never);
-
-    const result = await client.rollbackApp({
-      task_id: "task-1",
-      record_id: "record-1"
     });
+
+    const result = await client.rollbackApp(createTaskRecordInput());
 
     expect(result).toEqual({
       task_id: "task-1",
@@ -2552,7 +2790,7 @@ describe("createDeployClient", () => {
   });
 
   it("maps stop record id when the stop response uses id instead of record_id", async () => {
-    const client = createDeployClient({
+    const client = createClient({
       put: async () => ({
         result: {
           task_id: "task-1",
@@ -2560,12 +2798,9 @@ describe("createDeployClient", () => {
           status: "STOPPED"
         }
       })
-    } as never);
-
-    const result = await client.stopApp({
-      task_id: "task-1",
-      record_id: "record-1"
     });
+
+    const result = await client.stopApp(createTaskRecordInput());
 
     expect(result).toEqual({
       task_id: "task-1",
@@ -2574,3 +2809,5 @@ describe("createDeployClient", () => {
     });
   });
 });
+
+

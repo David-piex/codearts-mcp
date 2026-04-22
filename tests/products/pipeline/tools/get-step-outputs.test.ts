@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { mapPipelineStepOutputs } from "../../../../src/products/pipeline/tools/get-step-outputs.js";
+import { expectMappedItems } from "./tool-test-helpers.js";
 
 describe("mapPipelineStepOutputs", () => {
   it("returns normalized pipeline step outputs", () => {
@@ -13,7 +14,7 @@ describe("mapPipelineStepOutputs", () => {
       }
     ]);
 
-    expect(result.items).toEqual([
+    expectMappedItems(result, [
       {
         id: "step-1",
         stepRunId: "step-1",

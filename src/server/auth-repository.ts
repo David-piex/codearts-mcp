@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import * as fs from "node:fs";
 import { dirname } from "node:path";
 
 export type PersistedEncryptedValue = {
@@ -50,27 +50,27 @@ type FileAuthRepositoryOptions = {
 };
 
 function loadFile(path: string): AuthRepositoryFile {
-  if (!existsSync(path)) {
+  if (!fs.existsSync(path)) {
     return {
       version: 1,
       records: []
     };
   }
 
-  return JSON.parse(readFileSync(path, "utf8")) as AuthRepositoryFile;
+  return JSON.parse(fs.readFileSync(path, "utf8")) as AuthRepositoryFile;
 }
 
 function saveFile(path: string, data: AuthRepositoryFile) {
-  mkdirSync(dirname(path), { recursive: true });
-  writeFileSync(path, JSON.stringify(data, null, 2));
+  fs.mkdirSync(dirname(path), { recursive: true });
+  fs.writeFileSync(path, JSON.stringify(data, null, 2));
 }
 
 function getFileSignature(path: string): FileSignature | undefined {
-  if (!existsSync(path)) {
+  if (!fs.existsSync(path)) {
     return undefined;
   }
 
-  const stats = statSync(path);
+  const stats = fs.statSync(path);
 
   return {
     mtimeMs: stats.mtimeMs,

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { mapPipelineDetail } from "../../../../src/products/pipeline/tools/get-pipeline.js";
+import { expectMappedItem } from "./tool-test-helpers.js";
 
 describe("mapPipelineDetail", () => {
   it("returns normalized pipeline detail data", () => {
@@ -16,7 +17,7 @@ describe("mapPipelineDetail", () => {
       modify_url: "https://example.com/modify"
     });
 
-    expect(result.item).toEqual({
+    expectMappedItem(result, {
       id: "pipe-1",
       name: "release-pipeline",
       description: "Release flow",

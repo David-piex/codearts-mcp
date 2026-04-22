@@ -1,11 +1,59 @@
 import { describe, expect, it } from "vitest";
 import { createCheckClient } from "../../../src/products/check/client.js";
 
+function createClient(transport: Record<string, unknown>) {
+  return createCheckClient(transport as never);
+}
+
+function createTaskInput<T extends Record<string, unknown>>(overrides?: T) {
+  return {
+    project_id: "project-1",
+    task_name: "scan-demo",
+    git_url: "https://example.com/demo.git",
+    git_branch: "main",
+    language: "java",
+    ...(overrides ?? {})
+  };
+}
+
+function createProjectPageInput<T extends Record<string, unknown>>(overrides?: T) {
+  return {
+    project_id: "project-1",
+    page: 1,
+    page_size: 20,
+    ...(overrides ?? {})
+  };
+}
+
+function createTaskRefInput<T extends Record<string, unknown>>(overrides?: T) {
+  return {
+    task_id: "task-1",
+    ...(overrides ?? {})
+  };
+}
+
+function createTaskPageInput<T extends Record<string, unknown>>(overrides?: T) {
+  return {
+    task_id: "task-1",
+    page: 1,
+    page_size: 20,
+    ...(overrides ?? {})
+  };
+}
+
+function createProjectTaskInput<T extends Record<string, unknown>>(overrides?: T) {
+  return {
+    project_id: "project-1",
+    task_id: "task-1",
+    ...(overrides ?? {})
+  };
+}
+
 describe("createCheckClient", () => {
   it("uses the documented create-task payload with rule_sets", async () => {
     let requestedPath = "";
     let requestedBody: unknown;
-    const client = createCheckClient({
+    const client = createClient({
       post: async (path: string, body?: unknown) => {
         requestedPath = path;
         requestedBody = body;
@@ -14,17 +62,12 @@ describe("createCheckClient", () => {
           task_name: "scan-demo"
         };
       }
-    } as never);
+    });
 
-    await client.createTask({
-      project_id: "project-1",
-      task_name: "scan-demo",
-      git_url: "https://example.com/demo.git",
-      git_branch: "main",
-      language: "java",
+    await client.createTask(createTaskInput({
       rule_set_id: "ruleset-1",
       task_type: "full"
-    });
+    }));
 
     expect(requestedPath).toBe("/v2/project-1/task");
     expect(requestedBody).toEqual({
@@ -43,23 +86,18 @@ describe("createCheckClient", () => {
 
   it("maps incremental task type to the documented inc value", async () => {
     let requestedBody: unknown;
-    const client = createCheckClient({
+    const client = createClient({
       post: async (_path: string, body?: unknown) => {
         requestedBody = body;
         return {
           task_id: "task-1"
         };
       }
-    } as never);
-
-    await client.createTask({
-      project_id: "project-1",
-      task_name: "scan-demo",
-      git_url: "https://example.com/demo.git",
-      git_branch: "main",
-      language: "java",
-      task_type: "incremental"
     });
+
+    await client.createTask(createTaskInput({
+      task_type: "incremental"
+    }));
 
     expect(requestedBody).toEqual({
       git_url: "https://example.com/demo.git",
@@ -72,7 +110,7 @@ describe("createCheckClient", () => {
 
   it("uses the project-scoped metrics endpoint when project_id is provided", async () => {
     let requestedPath = "";
-    const client = createCheckClient({
+    const client = createClient({
       get: async (path: string) => {
         requestedPath = path;
         return {
@@ -83,54 +121,51 @@ describe("createCheckClient", () => {
           }
         };
       }
-    } as never);
-
-    await client.getMetrics({
-      project_id: "project-1",
-      task_id: "task-1"
     });
+
+    await client.getMetrics(createProjectTaskInput());
 
     expect(requestedPath).toBe("/v2/project-1/tasks/task-1/metrics-summary");
   });
 
   it("sends an empty json object when running a task", async () => {
     let requestedBody: unknown;
-    const client = createCheckClient({
+    const client = createClient({
       post: async (_path: string, body?: unknown) => {
         requestedBody = body;
         return {
           task_id: "task-1"
         };
       }
-    } as never);
+    });
 
-    await client.runTask({ task_id: "task-1" });
+    await client.runTask(createTaskRefInput());
 
     expect(requestedBody).toEqual({});
   });
 
   it("sends an empty json object when stopping a task", async () => {
     let requestedBody: unknown;
-    const client = createCheckClient({
+    const client = createClient({
       post: async (_path: string, body?: unknown) => {
         requestedBody = body;
         return {
           task_id: "task-1"
         };
       }
-    } as never);
+    });
 
-    await client.stopTask({ task_id: "task-1" });
+    await client.stopTask(createTaskRefInput());
 
     expect(requestedBody).toEqual({});
   });
 
   it("falls back to the requested task id when stop returns an empty success body", async () => {
-    const client = createCheckClient({
+    const client = createClient({
       post: async () => null
-    } as never);
+    });
 
-    const result = await client.stopTask({ task_id: "task-1" });
+    const result = await client.stopTask(createTaskRefInput());
 
     expect(result).toEqual({
       task_id: "task-1",
@@ -140,7 +175,7 @@ describe("createCheckClient", () => {
 
   it("uses the real project-scoped tasks endpoint when project_id is provided", async () => {
     let requestedPath = "";
-    const client = createCheckClient({
+    const client = createClient({
       get: async (path: string) => {
         requestedPath = path;
         return {
@@ -155,13 +190,9 @@ describe("createCheckClient", () => {
           total: 1
         };
       }
-    } as never);
-
-    const result = await client.listTasks({
-      page: 1,
-      page_size: 20,
-      project_id: "project-1"
     });
+
+    const result = await client.listTasks(createProjectPageInput());
 
     expect(requestedPath).toContain("/v2/project-1/tasks?offset=0&limit=20");
     expect(result.tasks[0]).toEqual({
@@ -177,7 +208,7 @@ describe("createCheckClient", () => {
 
   it("maps project-scoped ruleset responses from the real info payload", async () => {
     let requestedPath = "";
-    const client = createCheckClient({
+    const client = createClient({
       get: async (path: string) => {
         requestedPath = path;
         return {
@@ -191,13 +222,9 @@ describe("createCheckClient", () => {
           ]
         };
       }
-    } as never);
-
-    const result = await client.listRulesets({
-      project_id: "project-1",
-      page: 1,
-      page_size: 20
     });
+
+    const result = await client.listRulesets(createProjectPageInput());
 
     expect(requestedPath).toContain("/v2/project-1/rulesets?offset=0&limit=20");
     expect(result).toEqual({
@@ -215,7 +242,7 @@ describe("createCheckClient", () => {
 
   it("uses the documented defects-detail endpoint for task issues", async () => {
     let requestedPath = "";
-    const client = createCheckClient({
+    const client = createClient({
       get: async (path: string) => {
         requestedPath = path;
         return {
@@ -223,19 +250,20 @@ describe("createCheckClient", () => {
           total: 0
         };
       }
-    } as never);
-
-    await client.listTaskIssues({
-      task_id: "task-1",
-      page: 2,
-      page_size: 50
     });
+
+    await client.listTaskIssues(
+      createTaskPageInput({
+        page: 2,
+        page_size: 50
+      })
+    );
 
     expect(requestedPath).toBe("/v2/tasks/task-1/defects-detail?offset=50&limit=50");
   });
 
   it("maps documented defects-detail fields into MCP issue items", async () => {
-    const client = createCheckClient({
+    const client = createClient({
       get: async () => ({
         defects: [
           {
@@ -248,13 +276,9 @@ describe("createCheckClient", () => {
         ],
         total: 1
       })
-    } as never);
-
-    const result = await client.listTaskIssues({
-      task_id: "task-1",
-      page: 1,
-      page_size: 20
     });
+
+    const result = await client.listTaskIssues(createTaskPageInput());
 
     expect(result).toEqual({
       issues: [
@@ -271,7 +295,7 @@ describe("createCheckClient", () => {
   });
 
   it("maps top-level defects summary fields for task detail", async () => {
-    const client = createCheckClient({
+    const client = createClient({
       get: async () => ({
         task_id: "task-1",
         task_name: "sample",
@@ -280,9 +304,9 @@ describe("createCheckClient", () => {
         review_result: "success",
         last_check_time: "2026-04-17T00:57:38Z"
       })
-    } as never);
+    });
 
-    const result = await client.getTask({ task_id: "task-1" });
+    const result = await client.getTask(createTaskRefInput());
 
     expect(result).toEqual({
       task_id: "task-1",
@@ -297,19 +321,16 @@ describe("createCheckClient", () => {
   });
 
   it("maps top-level metric_info fields for metrics summary", async () => {
-    const client = createCheckClient({
+    const client = createClient({
       get: async () => ({
         metric_info: {
           code_size: "5",
           code_duplication_total: "2"
         }
       })
-    } as never);
-
-    const result = await client.getMetrics({
-      project_id: "project-1",
-      task_id: "task-1"
     });
+
+    const result = await client.getMetrics(createProjectTaskInput());
 
     expect(result).toEqual({
       task_id: "task-1",

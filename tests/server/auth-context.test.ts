@@ -1,74 +1,56 @@
 import { describe, expect, it, vi } from "vitest";
-import { createAuthContextResolver } from "../../src/server/auth-context.js";
+import { createResolveInput, createResolver } from "./auth-context-test-helpers.js";
 
 describe("auth context resolver", () => {
   it("prefers Authorization bearer tokens over cookies", async () => {
-    const resolver = createAuthContextResolver({
-      authCookieName: "codearts_mcp_auth",
+    const resolver = createResolver({
       repository: {
         findByTokenHash: async (hash: string) =>
           hash === "bearer-hash" ? { auth_id: "auth-bearer" } : undefined
-      },
-      sessionStore: {
-        getAuthId: () => undefined,
-        bind: () => undefined,
-        clear: () => undefined
       },
       hashToken: (raw: string) => (raw === "token-a" ? "bearer-hash" : "cookie-hash")
     });
 
     const result = await resolver.resolve({
-      headers: {
-        authorization: "Bearer token-a",
-        cookie: "codearts_mcp_auth=token-b"
-      }
+      ...createResolveInput({
+        bearerToken: "token-a",
+        cookieToken: "token-b"
+      })
     });
 
     expect(result?.authId).toBe("auth-bearer");
   });
 
   it("falls back to cookie tokens when bearer tokens are absent", async () => {
-    const resolver = createAuthContextResolver({
-      authCookieName: "codearts_mcp_auth",
+    const resolver = createResolver({
       repository: {
         findByTokenHash: async (hash: string) =>
           hash === "cookie-hash" ? { auth_id: "auth-cookie" } : undefined
-      },
-      sessionStore: {
-        getAuthId: () => undefined,
-        bind: () => undefined,
-        clear: () => undefined
-      },
-      hashToken: () => "cookie-hash"
+      }
     });
 
     const result = await resolver.resolve({
-      headers: {
-        cookie: "codearts_mcp_auth=token-b"
-      }
+      ...createResolveInput({
+        cookieToken: "token-b"
+      })
     });
 
     expect(result?.authId).toBe("auth-cookie");
   });
 
   it("falls back to query tokens when bearer and cookie tokens are absent", async () => {
-    const resolver = createAuthContextResolver({
-      authCookieName: "codearts_mcp_auth",
+    const resolver = createResolver({
       repository: {
         findByTokenHash: async (hash: string) =>
           hash === "query-hash" ? { auth_id: "auth-query" } : undefined
-      },
-      sessionStore: {
-        getAuthId: () => undefined,
-        bind: () => undefined,
-        clear: () => undefined
       },
       hashToken: () => "query-hash"
     });
 
     const result = await resolver.resolve({
-      headers: {},
-      queryToken: "token-q"
+      ...createResolveInput({
+        queryToken: "token-q"
+      })
     });
 
     expect(result?.authId).toBe("auth-query");
@@ -76,25 +58,21 @@ describe("auth context resolver", () => {
 
   it("reuses a session-bound auth identity before re-reading cookie tokens", async () => {
     const findByTokenHash = vi.fn(async () => ({ auth_id: "auth-cookie" }));
-    const resolver = createAuthContextResolver({
-      authCookieName: "codearts_mcp_auth",
+    const resolver = createResolver({
       repository: {
         findByTokenHash
       },
       sessionStore: {
         getAuthId: (sessionId: string) =>
-          sessionId === "session-bound" ? "auth-session" : undefined,
-        bind: () => undefined,
-        clear: () => undefined
+          sessionId === "session-bound" ? "auth-session" : undefined
       },
-      hashToken: () => "cookie-hash"
     });
 
     const result = await resolver.resolve({
-      sessionId: "session-bound",
-      headers: {
-        cookie: "codearts_mcp_auth=token-b"
-      }
+      ...createResolveInput({
+        sessionId: "session-bound",
+        cookieToken: "token-b"
+      })
     });
 
     expect(result).toEqual({
@@ -106,26 +84,19 @@ describe("auth context resolver", () => {
   it("reuses cached token lookups within the resolver cache window", async () => {
     let now = 1_000;
     const findByTokenHash = vi.fn(async () => ({ auth_id: "auth-cookie" }));
-    const resolver = createAuthContextResolver({
-      authCookieName: "codearts_mcp_auth",
+    const resolver = createResolver({
       repository: {
         findByTokenHash
       },
-      sessionStore: {
-        getAuthId: () => undefined,
-        bind: () => undefined,
-        clear: () => undefined
-      },
-      hashToken: () => "cookie-hash",
       cacheTtlMs: 5_000,
       now: () => now
     });
 
     await expect(
       resolver.resolve({
-        headers: {
-          cookie: "codearts_mcp_auth=token-b"
-        }
+        ...createResolveInput({
+          cookieToken: "token-b"
+        })
       })
     ).resolves.toEqual({
       authId: "auth-cookie",
@@ -136,9 +107,9 @@ describe("auth context resolver", () => {
 
     await expect(
       resolver.resolve({
-        headers: {
-          cookie: "codearts_mcp_auth=token-b"
-        }
+        ...createResolveInput({
+          cookieToken: "token-b"
+        })
       })
     ).resolves.toEqual({
       authId: "auth-cookie",
@@ -154,26 +125,19 @@ describe("auth context resolver", () => {
       .fn(async () => ({ auth_id: "auth-cookie-1" }))
       .mockResolvedValueOnce({ auth_id: "auth-cookie-1" })
       .mockResolvedValueOnce({ auth_id: "auth-cookie-2" });
-    const resolver = createAuthContextResolver({
-      authCookieName: "codearts_mcp_auth",
+    const resolver = createResolver({
       repository: {
         findByTokenHash
       },
-      sessionStore: {
-        getAuthId: () => undefined,
-        bind: () => undefined,
-        clear: () => undefined
-      },
-      hashToken: () => "cookie-hash",
       cacheTtlMs: 5_000,
       now: () => now
     });
 
     await expect(
       resolver.resolve({
-        headers: {
-          cookie: "codearts_mcp_auth=token-b"
-        }
+        ...createResolveInput({
+          cookieToken: "token-b"
+        })
       })
     ).resolves.toEqual({
       authId: "auth-cookie-1",
@@ -184,9 +148,9 @@ describe("auth context resolver", () => {
 
     await expect(
       resolver.resolve({
-        headers: {
-          cookie: "codearts_mcp_auth=token-b"
-        }
+        ...createResolveInput({
+          cookieToken: "token-b"
+        })
       })
     ).resolves.toEqual({
       authId: "auth-cookie-2",
@@ -198,8 +162,7 @@ describe("auth context resolver", () => {
 
   it("rejects expired tokens returned from persistence", async () => {
     const touchByTokenHash = vi.fn();
-    const resolver = createAuthContextResolver({
-      authCookieName: "codearts_mcp_auth",
+    const resolver = createResolver({
       repository: {
         findByTokenHash: async () => ({
           auth_id: "auth-expired",
@@ -207,20 +170,15 @@ describe("auth context resolver", () => {
         }),
         touchByTokenHash
       },
-      sessionStore: {
-        getAuthId: () => undefined,
-        bind: () => undefined,
-        clear: () => undefined
-      },
       hashToken: () => "expired-hash",
       now: () => Date.parse("2026-04-21T00:00:00.000Z")
     });
 
     await expect(
       resolver.resolve({
-        headers: {
-          cookie: "codearts_mcp_auth=token-expired"
-        }
+        ...createResolveInput({
+          cookieToken: "token-expired"
+        })
       })
     ).resolves.toBeUndefined();
 
@@ -229,8 +187,7 @@ describe("auth context resolver", () => {
 
   it("renews cookie tokens that are inside the renewal window", async () => {
     const touchByTokenHash = vi.fn();
-    const resolver = createAuthContextResolver({
-      authCookieName: "codearts_mcp_auth",
+    const resolver = createResolver({
       repository: {
         findByTokenHash: async () => ({
           auth_id: "auth-cookie",
@@ -238,12 +195,6 @@ describe("auth context resolver", () => {
         }),
         touchByTokenHash
       },
-      sessionStore: {
-        getAuthId: () => undefined,
-        bind: () => undefined,
-        clear: () => undefined
-      },
-      hashToken: () => "cookie-hash",
       now: () => Date.parse("2026-04-21T00:00:00.000Z"),
       authTokenTtlMs: 60_000,
       renewalWindowMs: 10_000
@@ -251,9 +202,9 @@ describe("auth context resolver", () => {
 
     await expect(
       resolver.resolve({
-        headers: {
-          cookie: "codearts_mcp_auth=token-cookie"
-        }
+        ...createResolveInput({
+          cookieToken: "token-cookie"
+        })
       })
     ).resolves.toEqual({
       authId: "auth-cookie",
@@ -269,19 +220,13 @@ describe("auth context resolver", () => {
 
   it("renews bearer tokens that are inside the renewal window", async () => {
     const touchByTokenHash = vi.fn();
-    const resolver = createAuthContextResolver({
-      authCookieName: "codearts_mcp_auth",
+    const resolver = createResolver({
       repository: {
         findByTokenHash: async () => ({
           auth_id: "auth-bearer",
           expires_at: "2026-04-21T00:00:02.000Z"
         }),
         touchByTokenHash
-      },
-      sessionStore: {
-        getAuthId: () => undefined,
-        bind: () => undefined,
-        clear: () => undefined
       },
       hashToken: () => "bearer-hash",
       now: () => Date.parse("2026-04-21T00:00:00.000Z"),
@@ -291,10 +236,10 @@ describe("auth context resolver", () => {
 
     await expect(
       resolver.resolve({
-        headers: {
-          authorization: "Bearer token-bearer",
-          cookie: "codearts_mcp_auth=token-cookie"
-        }
+        ...createResolveInput({
+          bearerToken: "token-bearer",
+          cookieToken: "token-cookie"
+        })
       })
     ).resolves.toEqual({
       authId: "auth-bearer",
@@ -310,29 +255,25 @@ describe("auth context resolver", () => {
 
   it("does not write persistence state when resolving a session-bound auth identity", async () => {
     const touchByTokenHash = vi.fn();
-    const resolver = createAuthContextResolver({
-      authCookieName: "codearts_mcp_auth",
+    const resolver = createResolver({
       repository: {
         findByTokenHash: async () => ({ auth_id: "auth-cookie" }),
         touchByTokenHash
       },
       sessionStore: {
         getAuthId: (sessionId: string) =>
-          sessionId === "session-bound" ? "auth-session" : undefined,
-        bind: () => undefined,
-        clear: () => undefined
+          sessionId === "session-bound" ? "auth-session" : undefined
       },
-      hashToken: () => "cookie-hash",
       authTokenTtlMs: 60_000,
       renewalWindowMs: 5_000
     });
 
     await expect(
       resolver.resolve({
-        sessionId: "session-bound",
-        headers: {
-          cookie: "codearts_mcp_auth=token-cookie"
-        }
+        ...createResolveInput({
+          sessionId: "session-bound",
+          cookieToken: "token-cookie"
+        })
       })
     ).resolves.toEqual({
       authId: "auth-session"

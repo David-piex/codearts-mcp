@@ -13,8 +13,8 @@
 | Module | Tools Implemented | Read | Write | Real-Live Status | Notes |
 | --- | --- | --- | --- | --- | --- |
 | Req | 8 | 6 | 2 | Validated | Project and work-item read/write loops now have real AK/SK validation on a writable sampled project. |
-| Repo | 24 | 17 | 7 | Validated | Full module-level live loop completed. |
-| Pipeline | 16 | 11 | 5 | Validated | Full module-level live loop completed. |
+| Repo | 25 | 17 | 8 | Validated | All 25 Repo tools are now live-validated. `repo_create_repository` has real AK/SK coverage through the HTTP MCP session on the writable sampled project. |
+| Pipeline | 77 | 42 | 35 | Partial | The original 16-tool execution surface remains live-validated. The newly added delete/enable/disable, extension-endpoint, tag-management, group-management, variable-group, rule-management, tenant-strategy, and project-strategy tools currently have unit regression coverage, but real AK/SK validation is still pending. |
 | Check | 8 | 5 | 3 | Validated | Full tool-level live loop completed. |
 | TestPlan | 7 | 6 | 1 | Partial | Two scanned projects now return real plan samples; 4 routes are re-confirmed as unpublished in Beijing 4. |
 | Deploy | 59 | 44 | 15 | Partial | The detailed Deploy page is the source of truth for the expanded v4 surface. `deploy_create_application`, `deploy_modify_application`, `deploy_start_app`, `deploy_get_execution_params`, `deploy_get_history_detail`, `deploy_get_app_log`, `deploy_stop_app`, and `deploy_rollback_app` now all have real AK/SK validation on at least one healthy path. The remaining practical blocker is the outdated Node.js template runtime (`Node v10.9.0` + `forever`). |
@@ -26,9 +26,9 @@
 
 <!-- GENERATED:implementation-status-totals:start -->
 - Product modules implemented: `8`
-- Product tools implemented: `156`
+- Product tools implemented: `218`
 - Auth/session tools implemented: `2`
-- Total MCP tools exposed: `158`
+- Total MCP tools exposed: `220`
 <!-- GENERATED:implementation-status-totals:end -->
 
 ## 当前项目状态的简明结论
@@ -37,12 +37,12 @@
 
 - Req
 - Repo
-- Pipeline
 - Check
 - Build
 
 仍处于 `Partial` 的模块，主要不是“没实现”，而是受以下现实边界影响：
 
+- Pipeline 新增的管理/分组工具还没有补完真实 AK/SK 联调
 - 当前租户样本不足
 - 北京四存在未发布路由
 - Deploy 的历史模板 runtime 仍偏旧
@@ -59,7 +59,7 @@
 
 最近一轮部署后真实联调已确认：
 
-- `tools/list` 返回 `158` 个工具
+- `tools/list` 返回 `220` 个工具
 - `auth_configure_session` 可稳定建立用户会话
 - `req_create_work_item` 可真实写入
 - `pipeline_run_pipeline` 可真实触发
@@ -88,6 +88,7 @@
 
 ## 推荐配套页面
 
+- `docs/wiki/Official-PDF-MCP-Coverage-Summary.md`
 - `docs/wiki/Testing-and-Live-Ops.md`
 - `docs/wiki/Capability-Matrix.md`
 - `docs/wiki/Module-Live-Readiness.md`

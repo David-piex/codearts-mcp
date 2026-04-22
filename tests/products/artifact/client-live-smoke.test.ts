@@ -22,6 +22,130 @@ const fallbackRepoNames = [
 ];
 
 const FILE_TREE_SWEEP_DELAY_MS = 150;
+const probeRepoName = "libs-release";
+const probeArtifactPath = "/mcp-live-probe.txt";
+
+function createProjectPageInput<T extends Record<string, unknown>>(
+  projectId: string,
+  overrides?: T
+): {
+  project_id: string;
+  page: number;
+  page_size: number;
+} & T {
+  return {
+    project_id: projectId,
+    page: 1,
+    page_size: 20,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    page: number;
+    page_size: number;
+  } & T;
+}
+
+function createTenantProjectPageInput<T extends Record<string, unknown>>(
+  tenantId: string,
+  projectId: string,
+  overrides?: T
+): {
+  tenant_id: string;
+  project_id: string;
+  page: number;
+  page_size: number;
+} & T {
+  return {
+    tenant_id: tenantId,
+    project_id: projectId,
+    page: 1,
+    page_size: 20,
+    ...(overrides ?? {})
+  } as {
+    tenant_id: string;
+    project_id: string;
+    page: number;
+    page_size: number;
+  } & T;
+}
+
+function createTenantProjectRepoInput<T extends Record<string, unknown>>(
+  tenantId: string,
+  projectId: string,
+  overrides?: T
+): {
+  tenant_id: string;
+  project_id: string;
+  repo_name: string;
+} & T {
+  return {
+    tenant_id: tenantId,
+    project_id: projectId,
+    repo_name: probeRepoName,
+    ...(overrides ?? {})
+  } as {
+    tenant_id: string;
+    project_id: string;
+    repo_name: string;
+  } & T;
+}
+
+function createTenantProjectRepoFileInput<T extends Record<string, unknown>>(
+  tenantId: string,
+  projectId: string,
+  overrides?: T
+): {
+  tenant_id: string;
+  project_id: string;
+  repo_name: string;
+  path: string;
+  format: string;
+} & T {
+  return {
+    tenant_id: tenantId,
+    project_id: projectId,
+    repo_name: probeRepoName,
+    path: probeArtifactPath,
+    format: "generic",
+    ...(overrides ?? {})
+  } as {
+    tenant_id: string;
+    project_id: string;
+    repo_name: string;
+    path: string;
+    format: string;
+  } & T;
+}
+
+function createTenantProjectAuditPageInput<T extends Record<string, unknown>>(
+  tenantId: string,
+  projectId: string,
+  overrides?: T
+): {
+  tenant_id: string;
+  project_id: string;
+  repo: string;
+  module: string;
+  page: number;
+  page_size: number;
+} & T {
+  return {
+    tenant_id: tenantId,
+    project_id: projectId,
+    repo: probeRepoName,
+    module: "file",
+    page: 1,
+    page_size: 20,
+    ...(overrides ?? {})
+  } as {
+    tenant_id: string;
+    project_id: string;
+    repo: string;
+    module: string;
+    page: number;
+    page_size: number;
+  } & T;
+}
 
 function hasLiveEnv(source: NodeJS.ProcessEnv) {
   return Boolean(
@@ -90,11 +214,7 @@ if (hasLiveEnv(process.env)) {
       const results = await Promise.all(
         projectIds.map(async (project_id) => ({
           project_id,
-          result: await client.listVersions({
-            project_id,
-            page: 1,
-            page_size: 20
-          })
+          result: await client.listVersions(createProjectPageInput(project_id))
         }))
       );
 
@@ -110,11 +230,7 @@ if (hasLiveEnv(process.env)) {
       const results = await Promise.all(
         projectIds.map(async (project_id) => ({
           project_id,
-          result: await client.listLatestVersionFiles({
-            project_id,
-            page: 1,
-            page_size: 20
-          })
+          result: await client.listLatestVersionFiles(createProjectPageInput(project_id))
         }))
       );
 
@@ -134,12 +250,9 @@ if (hasLiveEnv(process.env)) {
       const results = await Promise.all(
         projectIds.map(async (project_id) => ({
           project_id,
-          result: await client.listRepositories({
-            tenant_id: tenantId,
-            project_id,
-            page: 1,
-            page_size: 20
-          })
+          result: await client.listRepositories(
+            createTenantProjectPageInput(tenantId, project_id)
+          )
         }))
       );
 
@@ -168,11 +281,11 @@ if (hasLiveEnv(process.env)) {
         async ({ project_id, repo_name }) => ({
           project_id,
           repo_name,
-          result: await client.getFileTree({
-            tenant_id: tenantId,
-            project_id,
-            repo_name
-          })
+          result: await client.getFileTree(
+            createTenantProjectRepoInput(tenantId, project_id, {
+              repo_name
+            })
+          )
         }),
         { delayMs: FILE_TREE_SWEEP_DELAY_MS }
       );
@@ -207,60 +320,34 @@ if (hasLiveEnv(process.env)) {
       await expect(
         client.searchArtifacts({
           artifact_name: "mcp-live-probe",
-          project_id: projectIds[0]!,
-          page: 1,
-          page_size: 10
+          ...createProjectPageInput(projectIds[0]!, {
+            page_size: 10
+          })
         })
       ).rejects.toMatchObject({ code: "APIGW.0101", status: 404 });
 
       await expect(
-        client.listFiles({
-          project_id: projectIds[0]!,
-          repo_name: "libs-release",
-          page: 1,
-          page_size: 20
-        })
+        client.listFiles(
+          createProjectPageInput(projectIds[0]!, {
+            repo_name: probeRepoName
+          })
+        )
       ).rejects.toMatchObject({ code: "APIGW.0101", status: 404 });
 
       await expect(
-        client.getFile({
-          tenant_id: tenantId,
-          project_id: projectIds[0]!,
-          repo_name: "libs-release",
-          path: "/mcp-live-probe.txt",
-          format: "generic"
-        })
+        client.getFile(createTenantProjectRepoFileInput(tenantId, projectIds[0]!))
       ).rejects.toMatchObject({ code: "APIGW.0101", status: 404 });
 
       await expect(
-        client.getDownloadUrl({
-          tenant_id: tenantId,
-          project_id: projectIds[0]!,
-          repo_name: "libs-release",
-          path: "/mcp-live-probe.txt",
-          format: "generic"
-        })
+        client.getDownloadUrl(createTenantProjectRepoFileInput(tenantId, projectIds[0]!))
       ).rejects.toMatchObject({ code: "APIGW.0101", status: 404 });
 
       await expect(
-        client.showAudit({
-          tenant_id: tenantId,
-          project_id: projectIds[0]!,
-          module: "file",
-          repo: "libs-release",
-          page: 1,
-          page_size: 20
-        })
+        client.showAudit(createTenantProjectAuditPageInput(tenantId, projectIds[0]!))
       ).rejects.toMatchObject({ code: "APIGW.0101", status: 404 });
 
       await expect(
-        client.deleteFile({
-          tenant_id: tenantId,
-          project_id: projectIds[0]!,
-          repo_name: "libs-release",
-          path: "/mcp-live-probe.txt",
-          format: "generic"
-        })
+        client.deleteFile(createTenantProjectRepoFileInput(tenantId, projectIds[0]!))
       ).rejects.toMatchObject({ code: "APIGW.0101", status: 404 });
     }, 30000);
   });

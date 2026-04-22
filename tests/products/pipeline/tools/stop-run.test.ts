@@ -3,6 +3,10 @@ import {
   mapStopRunResult,
   previewStopRun
 } from "../../../../src/products/pipeline/tools/stop-run.js";
+import {
+  expectDryRunPreview,
+  expectMappedItem
+} from "./tool-test-helpers.js";
 
 describe("previewStopRun", () => {
   it("returns a dry-run summary for stopping a pipeline run", () => {
@@ -12,8 +16,7 @@ describe("previewStopRun", () => {
       dry_run: true
     });
 
-    expect(result.summary).toContain("Dry run");
-    expect(result.item).toEqual({
+    expectDryRunPreview(result, {
       pipelineId: "pipe-1",
       pipelineRunId: "run-1",
       executed: false
@@ -29,7 +32,7 @@ describe("mapStopRunResult", () => {
       run_id: "run-1"
     });
 
-    expect(result.item).toEqual({
+    expectMappedItem(result, {
       pipelineId: "pipe-1",
       pipelineName: "release-pipeline",
       pipelineRunId: "run-1",

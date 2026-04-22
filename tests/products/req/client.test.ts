@@ -1,6 +1,38 @@
 import { describe, expect, it, vi } from "vitest";
 import { createReqClient } from "../../../src/products/req/client.js";
 
+function createPageInput<T extends Record<string, unknown>>(overrides?: T) {
+  return {
+    page: 1,
+    page_size: 20,
+    ...(overrides ?? {})
+  };
+}
+
+function createProjectInput<T extends Record<string, unknown>>(overrides?: T) {
+  return {
+    project_id: "p-1",
+    ...(overrides ?? {})
+  };
+}
+
+function createProjectPageInput<T extends Record<string, unknown>>(overrides?: T) {
+  return {
+    project_id: "p-1",
+    page: 1,
+    page_size: 20,
+    ...(overrides ?? {})
+  };
+}
+
+function createProjectWorkItemInput<T extends Record<string, unknown>>(overrides?: T) {
+  return {
+    project_id: "p-1",
+    work_item_id: "70779173",
+    ...(overrides ?? {})
+  };
+}
+
 describe("createReqClient", () => {
   it("normalizes project_name into name when listing projects", async () => {
     const client = createReqClient({
@@ -10,7 +42,7 @@ describe("createReqClient", () => {
       })
     } as never);
 
-    const result = await client.listProjects({ page: 1, page_size: 20 });
+    const result = await client.listProjects(createPageInput());
 
     expect(result.projects).toEqual([{ project_id: "p-1", name: "Demo", project_num_id: 7 }]);
   });
@@ -31,9 +63,9 @@ describe("createReqClient", () => {
       }
     );
 
-    const first = await client.listProjects({ page: 1, page_size: 20 });
+    const first = await client.listProjects(createPageInput());
     now += 1_000;
-    const second = await client.listProjects({ page: 1, page_size: 20 });
+    const second = await client.listProjects(createPageInput());
 
     expect(second).toEqual(first);
     expect(get).toHaveBeenCalledTimes(1);
@@ -61,9 +93,9 @@ describe("createReqClient", () => {
       }
     );
 
-    const first = await client.listProjects({ page: 1, page_size: 20 });
+    const first = await client.listProjects(createPageInput());
     now += 30_001;
-    const second = await client.listProjects({ page: 1, page_size: 20 });
+    const second = await client.listProjects(createPageInput());
 
     expect(first.projects[0]?.project_id).toBe("p-1");
     expect(second.projects[0]?.project_id).toBe("p-2");
@@ -86,8 +118,8 @@ describe("createReqClient", () => {
     );
 
     const [left, right] = await Promise.all([
-      client.listProjects({ page: 1, page_size: 20 }),
-      client.listProjects({ page: 1, page_size: 20 })
+      client.listProjects(createPageInput()),
+      client.listProjects(createPageInput())
     ]);
 
     expect(left.total).toBe(1);
@@ -110,9 +142,9 @@ describe("createReqClient", () => {
       }
     );
 
-    await client.listProjects({ page: 1, page_size: 20 });
+    await client.listProjects(createPageInput());
     now += 20_000;
-    await client.listProjects({ page: 1, page_size: 20 });
+    await client.listProjects(createPageInput());
 
     expect(get).toHaveBeenCalledTimes(1);
   });
@@ -129,7 +161,7 @@ describe("createReqClient", () => {
       })
     } as never);
 
-    const result = await client.getProject({ project_id: "p-2" });
+    const result = await client.getProject(createProjectInput({ project_id: "p-2" }));
 
     expect(result).toEqual({
       project_id: "p-2",
@@ -155,7 +187,7 @@ describe("createReqClient", () => {
     } as never);
 
     const result = await client.createWorkItem({
-      project_id: "p-1",
+      ...createProjectInput(),
       title: "Add login",
       work_item_type: "task"
     });
@@ -202,14 +234,9 @@ describe("createReqClient", () => {
 
     const [list, detail] = await Promise.all([
       client.listWorkItems({
-        project_id: "p-1",
-        page: 1,
-        page_size: 20
+        ...createProjectPageInput()
       }),
-      client.getWorkItem({
-        project_id: "p-1",
-        work_item_id: "70779173"
-      })
+      client.getWorkItem(createProjectWorkItemInput())
     ]);
 
     expect(requestedPaths).toContain("/v4/projects/p-1/issues?offset=0&limit=20");
@@ -250,11 +277,7 @@ describe("createReqClient", () => {
         })
     } as never);
 
-    const result = await client.listWorkItems({
-      project_id: "p-1",
-      page: 1,
-      page_size: 20
-    });
+    const result = await client.listWorkItems(createProjectPageInput());
 
     expect(result).toEqual({
       work_items: [

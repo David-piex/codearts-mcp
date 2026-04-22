@@ -45,11 +45,13 @@ const readWriteMatrixMeta: Record<ModuleName, ReadWriteMatrixMeta> = {
   },
   Repo: {
     live: "Validated",
-    keyGaps: "No material gap in the currently exposed surface"
+    keyGaps:
+      "All 25 Repo tools, including `repo_create_repository`, now have real AK/SK validation on the writable sampled project"
   },
   Pipeline: {
-    live: "Validated",
-    keyGaps: "More non-empty samples would help, but no structural gap remains"
+    live: "Partial",
+    keyGaps:
+      "The original execution surface is live-validated, but the 51 newly added extension-endpoint/group/variable-group/rule-management/tag-management/tenant-strategy/project-strategy tools still need real AK/SK validation"
   },
   Check: {
     live: "Validated",
@@ -84,11 +86,13 @@ const implementationStatusMeta: Record<ModuleName, ImplementationStatusMeta> = {
   },
   Repo: {
     live: "Validated",
-    notes: "Full module-level live loop completed."
+    notes:
+      "All 25 Repo tools are now live-validated. `repo_create_repository` has real AK/SK coverage through the HTTP MCP session on the writable sampled project."
   },
   Pipeline: {
-    live: "Validated",
-    notes: "Full module-level live loop completed."
+    live: "Partial",
+    notes:
+      "The original 16-tool execution surface remains live-validated. The newly added delete/enable/disable, extension-endpoint, tag-management, group-management, variable-group, rule-management, tenant-strategy, and project-strategy tools currently have unit regression coverage, but real AK/SK validation is still pending."
   },
   Check: {
     live: "Validated",
@@ -122,12 +126,14 @@ const toolStatusSummaryMeta: Record<ModuleName, ToolStatusSummaryMeta> = {
     conclusion: "Project and work-item read/write paths are fully live-validated."
   },
   Repo: {
-    summary: "`24 Full`",
-    conclusion: "Module-level closure is complete."
+    summary: "`25 Full / 0 Reachable / 0 Unpublished / 0 Code`",
+    conclusion:
+      "`repo_create_repository` has joined the previously validated Repo surface, so the full 25-tool module is now AK/SK Full."
   },
   Pipeline: {
-    summary: "`16 Full`",
-    conclusion: "Module-level closure is complete."
+    summary: "`16 Full / 0 Reachable / 0 Unpublished / 51 Code`",
+    conclusion:
+      "Core execution closure remains complete, but the new extension-endpoint/tag/group/variable-group/rule-management/tenant-strategy/project-strategy tools still need live AK/SK validation."
   },
   Check: {
     summary: "`8 Full`",
@@ -162,11 +168,11 @@ const readmeModuleNumbersMeta: Record<ModuleName, ReadmeModuleNumbersMeta> = {
   },
   Repo: {
     liveStatus: "Validated",
-    breakdown: "`24 Full`"
+    breakdown: "`25 Full / 0 Reachable / 0 Unpublished / 0 Code`"
   },
   Pipeline: {
-    liveStatus: "Validated",
-    breakdown: "`16 Full`"
+    liveStatus: "Partial",
+    breakdown: "`16 Full / 0 Reachable / 0 Unpublished / 51 Code`"
   },
   Check: {
     liveStatus: "Validated",

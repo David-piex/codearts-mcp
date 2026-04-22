@@ -21,6 +21,59 @@ function createSuccessSample(
   };
 }
 
+function createFailedInitializeSample(
+  overrides: Partial<ProbeSample> = {}
+): ProbeSample {
+  return {
+    step: "initialize",
+    startedAt: "2026-04-20T23:11:00.000Z",
+    durationMs: 120,
+    ok: false,
+    errorType: "http_error",
+    statusCode: 502,
+    errorMessage: "Bad Gateway",
+    ...overrides
+  } as ProbeSample;
+}
+
+function createProbeReport(
+  overrides: Partial<{
+    options: {
+      url: string;
+      region: string;
+      iterations: number;
+      timeoutMs: number;
+      sleepMs: number;
+    };
+    iterations: Array<ReturnType<typeof summarizeProbeIteration>>;
+    samples: ProbeSample[];
+    findings: string[];
+  }> = {}
+) {
+  const samples =
+    overrides.samples ??
+    [createSuccessSample("health", 10), createSuccessSample("initialize", 15)];
+
+  return {
+    options: {
+      url: "http://127.0.0.1/mcp",
+      region: "cn-north-4",
+      iterations: 1,
+      timeoutMs: 30_000,
+      sleepMs: 0,
+      ...(overrides.options ?? {})
+    },
+    iterations:
+      overrides.iterations ??
+      [summarizeProbeIteration(1, [createSuccessSample("health", 10), createSuccessSample("initialize", 15)])],
+    samples,
+    summary: summarizeProbeRun(samples),
+    findings:
+      overrides.findings ??
+      ["No obvious ingress-vs-application split was detected from the current sample set."]
+  } as const;
+}
+
 describe("edge probe summary", () => {
   it("summarizes per-step latency percentiles and success counts", () => {
     const summary = summarizeProbeRun([
@@ -62,23 +115,14 @@ describe("edge probe summary", () => {
     const samples: ProbeSample[] = [
       createSuccessSample("health", 10),
       createSuccessSample("health", 11),
-      {
-        step: "initialize",
-        startedAt: "2026-04-20T23:11:00.000Z",
-        durationMs: 120,
-        ok: false,
-        errorType: "http_error",
-        statusCode: 502,
-        errorMessage: "Bad Gateway"
-      },
-      {
-        step: "initialize",
+      createFailedInitializeSample(),
+      createFailedInitializeSample({
         startedAt: "2026-04-20T23:11:10.000Z",
         durationMs: 90,
-        ok: false,
         errorType: "network_error",
+        statusCode: undefined,
         errorMessage: "socket hang up"
-      },
+      }),
       createSuccessSample("auth_configure_session", 12)
     ];
 
@@ -121,21 +165,7 @@ describe("edge probe summary", () => {
   });
 
   it("formats ndjson output with iteration and summary records", () => {
-    const report = {
-      options: {
-        url: "http://127.0.0.1/mcp",
-        region: "cn-north-4",
-        iterations: 1,
-        timeoutMs: 30_000,
-        sleepMs: 0
-      },
-      iterations: [
-        summarizeProbeIteration(1, [createSuccessSample("health", 10), createSuccessSample("initialize", 15)])
-      ],
-      samples: [createSuccessSample("health", 10), createSuccessSample("initialize", 15)],
-      summary: summarizeProbeRun([createSuccessSample("health", 10), createSuccessSample("initialize", 15)]),
-      findings: ["No obvious ingress-vs-application split was detected from the current sample set."]
-    } as const;
+    const report = createProbeReport();
 
     const lines = formatProbeReport(report, "ndjson").trim().split("\n");
 
@@ -156,61 +186,35 @@ describe("edge probe summary", () => {
   });
 
   it("formats summary output with totals and likely-origin counts", () => {
-    const report = {
+    const report = createProbeReport({
       options: {
+        iterations: 2,
+        sleepMs: 500,
         url: "http://127.0.0.1/mcp",
         region: "cn-north-4",
-        iterations: 2,
-        timeoutMs: 30_000,
-        sleepMs: 500
+        timeoutMs: 30_000
       },
       iterations: [
         summarizeProbeIteration(1, [createSuccessSample("health", 10), createSuccessSample("initialize", 15)]),
         summarizeProbeIteration(2, [
           createSuccessSample("health", 11),
-          {
-            step: "initialize",
-            startedAt: "2026-04-20T23:13:00.000Z",
-            durationMs: 120,
-            ok: false,
-            errorType: "http_error",
-            statusCode: 502,
-            errorMessage: "Bad Gateway"
-          }
+          createFailedInitializeSample({
+            startedAt: "2026-04-20T23:13:00.000Z"
+          })
         ])
       ],
       samples: [
         createSuccessSample("health", 10),
         createSuccessSample("initialize", 15),
         createSuccessSample("health", 11),
-        {
-          step: "initialize",
-          startedAt: "2026-04-20T23:13:00.000Z",
-          durationMs: 120,
-          ok: false,
-          errorType: "http_error",
-          statusCode: 502,
-          errorMessage: "Bad Gateway"
-        }
+        createFailedInitializeSample({
+          startedAt: "2026-04-20T23:13:00.000Z"
+        })
       ],
-      summary: summarizeProbeRun([
-        createSuccessSample("health", 10),
-        createSuccessSample("initialize", 15),
-        createSuccessSample("health", 11),
-        {
-          step: "initialize",
-          startedAt: "2026-04-20T23:13:00.000Z",
-          durationMs: 120,
-          ok: false,
-          errorType: "http_error",
-          statusCode: 502,
-          errorMessage: "Bad Gateway"
-        }
-      ]),
       findings: [
         "Health probes are succeeding while initialize is seeing 502/network failures, which points to ingress or edge instability before MCP request handling completes."
       ]
-    } as const;
+    });
 
     const output = formatProbeReport(report, "summary");
 

@@ -1,6 +1,11 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { McpServer, type RegisteredTool as McpRegisteredTool } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { toJsonSchemaCompat } from "@modelcontextprotocol/sdk/server/zod-json-schema-compat.js";
-import { normalizeObjectSchema, objectFromShape } from "@modelcontextprotocol/sdk/server/zod-compat.js";
+import {
+  type AnySchema,
+  type ZodRawShapeCompat,
+  normalizeObjectSchema,
+  objectFromShape
+} from "@modelcontextprotocol/sdk/server/zod-compat.js";
 import { ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import type { AppConfig, ServerMetadataConfig } from "../core/config/env.js";
 import { configureHttpAuthRuntimeConfig } from "./auth-session-runtime.js";
@@ -31,29 +36,36 @@ export {
 const PRODUCT_WRITE_RATE_LIMIT_MAX_REQUESTS = 5;
 const PRODUCT_WRITE_RATE_LIMIT_WINDOW_MS = 60_000;
 
-type RegisterableServer = Pick<McpServer, "registerTool">;
+type RegisterToolMethod = McpServer["registerTool"];
+type ToolSchema = AnySchema | ZodRawShapeCompat;
+type ToolHandler = Parameters<RegisterToolMethod>[2];
+type ToolConfig = {
+  title?: string;
+  description?: string;
+  inputSchema?: ToolSchema;
+  outputSchema?: ToolSchema;
+  annotations?: McpRegisteredTool["annotations"];
+  _meta?: Record<string, unknown>;
+};
+
+type RegisterableServer = {
+  registerTool: RegisterToolMethod;
+};
 type RegisteredToolPlan = {
   name: string;
-  config: {
-    title?: string;
-    description?: string;
-    inputSchema?: unknown;
-    outputSchema?: unknown;
-    annotations?: unknown;
-    _meta?: unknown;
-  };
-  handler: (...args: unknown[]) => unknown;
+  config: ToolConfig;
+  handler: ToolHandler;
 };
 
 type InternalRegisteredTool = {
   title?: string;
   description?: string;
-  inputSchema?: unknown;
-  outputSchema?: unknown;
-  annotations?: unknown;
-  execution?: unknown;
-  _meta?: unknown;
-  handler: (...args: unknown[]) => unknown;
+  inputSchema?: ToolSchema;
+  outputSchema?: ToolSchema;
+  annotations?: McpRegisteredTool["annotations"];
+  execution?: McpRegisteredTool["execution"];
+  _meta?: Record<string, unknown>;
+  handler: ToolHandler;
   enabled: boolean;
   disable: () => void;
   enable: () => void;
@@ -62,19 +74,27 @@ type InternalRegisteredTool = {
     name?: string | null;
     title?: string;
     description?: string;
-    paramsSchema?: Record<string, unknown>;
-    outputSchema?: Record<string, unknown>;
-    callback?: (...args: unknown[]) => unknown;
-    annotations?: unknown;
-    _meta?: unknown;
+    paramsSchema?: ZodRawShapeCompat;
+    outputSchema?: ZodRawShapeCompat;
+    callback?: ToolHandler;
+    annotations?: McpRegisteredTool["annotations"];
+    _meta?: Record<string, unknown>;
     enabled?: boolean;
   }) => void;
 };
 
-type InternalToolRegistryServer = McpServer & {
+type InternalToolRequestHandlerHost = {
+  setRequestHandler?: (
+    schema: typeof ListToolsRequestSchema,
+    handler: () => ReturnType<typeof buildCachedToolsListResult>
+  ) => void;
+};
+
+type InternalToolRegistryServer = {
   _registeredTools?: Record<string, InternalRegisteredTool>;
   _toolHandlersInitialized?: boolean;
   setToolRequestHandlers?: () => void;
+  server?: InternalToolRequestHandlerHost;
   sendToolListChanged?: () => void;
 };
 
@@ -117,21 +137,45 @@ function buildHttpRuntimeConfig(options: CreateServerOptions) {
     : {};
 }
 
-function isInternalToolRegistryServer(candidate: unknown): candidate is InternalToolRegistryServer {
+function getInternalToolRegistryServer(candidate: unknown): InternalToolRegistryServer | undefined {
   if (!candidate || typeof candidate !== "object") {
-    return false;
+    return undefined;
   }
 
-  const server = candidate as {
-    _registeredTools?: unknown;
-    setToolRequestHandlers?: unknown;
-  };
+  const server = candidate as InternalToolRegistryServer;
 
-  return (
+  if (
     server._registeredTools !== undefined &&
     typeof server._registeredTools === "object" &&
     typeof server.setToolRequestHandlers === "function"
-  );
+  ) {
+    return server;
+  }
+
+  return undefined;
+}
+
+function createCapturedRegisteredTool(config: ToolConfig, handler: ToolHandler): McpRegisteredTool {
+  return {
+    title: config.title,
+    description: config.description,
+    inputSchema: normalizeObjectSchema(config.inputSchema),
+    outputSchema: normalizeObjectSchema(config.outputSchema),
+    annotations: config.annotations,
+    _meta: config._meta,
+    handler: handler as McpRegisteredTool["handler"],
+    enabled: true,
+    enable() {
+      return undefined;
+    },
+    disable() {
+      return undefined;
+    },
+    update: (() => undefined) as McpRegisteredTool["update"],
+    remove() {
+      return undefined;
+    }
+  };
 }
 
 function cloneRegisteredTool(
@@ -246,15 +290,13 @@ function buildCachedToolsListResult(registeredTools: Record<string, InternalRegi
 }
 
 function installCachedListToolsHandler(server: McpServer, options?: { invalidateOnUpdate?: boolean }) {
-  if (!isInternalToolRegistryServer(server)) {
+  const internalServer = getInternalToolRegistryServer(server);
+
+  if (!internalServer) {
     return;
   }
 
-  if (
-    !("server" in server) ||
-    !server.server ||
-    typeof server.server.setRequestHandler !== "function"
-  ) {
+  if (!internalServer.server || typeof internalServer.server.setRequestHandler !== "function") {
     return;
   }
 
@@ -264,16 +306,16 @@ function installCachedListToolsHandler(server: McpServer, options?: { invalidate
   };
 
   if (options?.invalidateOnUpdate) {
-    for (const [name, tool] of Object.entries(server._registeredTools ?? {})) {
-      server._registeredTools![name] = cloneRegisteredTool(server, name, tool, {
+    for (const [name, tool] of Object.entries(internalServer._registeredTools ?? {})) {
+      internalServer._registeredTools![name] = cloneRegisteredTool(internalServer, name, tool, {
         invalidateToolsListCache
       });
     }
   }
 
-  server.server.setRequestHandler(ListToolsRequestSchema, () => {
+  internalServer.server.setRequestHandler(ListToolsRequestSchema, () => {
     if (!cachedResult) {
-      cachedResult = buildCachedToolsListResult(server._registeredTools ?? {});
+      cachedResult = buildCachedToolsListResult(internalServer._registeredTools ?? {});
     }
 
     return cachedResult;
@@ -284,20 +326,23 @@ function hydrateRegisteredToolsFromTemplate(
   templateServer: McpServer,
   server: McpServer
 ) {
-  if (!isInternalToolRegistryServer(templateServer) || !isInternalToolRegistryServer(server)) {
+  const templateRegistryServer = getInternalToolRegistryServer(templateServer);
+  const targetRegistryServer = getInternalToolRegistryServer(server);
+
+  if (!templateRegistryServer || !targetRegistryServer) {
     return false;
   }
 
   const hydratedTools = Object.fromEntries(
-    Object.entries(templateServer._registeredTools ?? {}).map(([name, tool]) => [
+    Object.entries(templateRegistryServer._registeredTools ?? {}).map(([name, tool]) => [
       name,
-      cloneRegisteredTool(server, name, tool)
+      cloneRegisteredTool(targetRegistryServer, name, tool)
     ])
   );
 
-  server._registeredTools = hydratedTools;
-  server._toolHandlersInitialized = false;
-  server.setToolRequestHandlers?.();
+  targetRegistryServer._registeredTools = hydratedTools;
+  targetRegistryServer._toolHandlersInitialized = false;
+  targetRegistryServer.setToolRequestHandlers?.();
   installCachedListToolsHandler(server, { invalidateOnUpdate: true });
 
   return true;
@@ -311,13 +356,15 @@ function captureRegisteredTools(
 ) {
   const registeredTools: RegisteredToolPlan[] = [];
   const capturingServer: RegisterableServer = {
-    registerTool(name, config, handler) {
+    registerTool: ((name: string, config: ToolConfig, handler: ToolHandler) => {
       registeredTools.push({
         name,
         config,
         handler
       });
-    }
+
+      return createCapturedRegisteredTool(config, handler);
+    }) as RegisterToolMethod
   };
 
   dependencies.registerAuthTools({

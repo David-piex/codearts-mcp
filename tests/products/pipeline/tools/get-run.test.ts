@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { mapPipelineRunDetail } from "../../../../src/products/pipeline/tools/get-run.js";
+import { expectMappedItem } from "./tool-test-helpers.js";
 
 describe("mapPipelineRunDetail", () => {
   it("returns normalized pipeline run detail data", () => {
@@ -10,7 +11,7 @@ describe("mapPipelineRunDetail", () => {
       trigger_type: "manual"
     });
 
-    expect(result.item).toEqual({
+    expectMappedItem(result, {
       id: "run-1",
       status: "running",
       executorName: "Bob",

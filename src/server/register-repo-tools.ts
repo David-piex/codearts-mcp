@@ -5,6 +5,7 @@ import {
   repoCloseMergeRequestInput,
   repoCreateMergeRequestDiscussionInput,
   repoCreateMergeRequestInput,
+  repoCreateRepositoryInput,
   repoGetBranchInput,
   repoGetCommitInput,
   repoGetFileInput,
@@ -30,6 +31,7 @@ import { createRepoCloseMergeRequestHandler } from "../products/repo/tools/close
 import { createRepoCompareRefsHandler } from "../products/repo/tools/compare-refs.js";
 import { createRepoCreateMergeRequestDiscussionHandler } from "../products/repo/tools/create-merge-request-discussion.js";
 import { createRepoCreateMergeRequestHandler } from "../products/repo/tools/create-merge-request.js";
+import { createRepoCreateRepositoryHandler } from "../products/repo/tools/create-repository.js";
 import { createRepoGetBranchHandler } from "../products/repo/tools/get-branch.js";
 import { createRepoGetCommitHandler } from "../products/repo/tools/get-commit.js";
 import { createRepoGetFileHandler } from "../products/repo/tools/get-file.js";
@@ -60,6 +62,7 @@ type RepoStdioClient = ReturnType<typeof createRepoClient>;
 const repoToolDefinitions = {
   "repo_list_repositories": defineProductTool({ description: "List CodeArts Repo repositories", inputSchema: repoListRepositoriesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoriesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoriesHandler }),
   "repo_get_repository": defineProductTool({ description: "Get CodeArts Repo repository detail", inputSchema: repoGetRepositoryInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoGetRepositoryHandler>[0] }) => clients.repoClient, createProductHandler: createRepoGetRepositoryHandler }),
+  "repo_create_repository": defineProductTool({ description: "Create CodeArts Repo repository", inputSchema: repoCreateRepositoryInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCreateRepositoryHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCreateRepositoryHandler }),
   "repo_create_merge_request": defineProductTool({ description: "Create CodeArts Repo merge request", inputSchema: repoCreateMergeRequestInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCreateMergeRequestHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCreateMergeRequestHandler }),
   "repo_create_merge_request_discussion": defineProductTool({ description: "Create CodeArts Repo merge request discussion", inputSchema: repoCreateMergeRequestDiscussionInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCreateMergeRequestDiscussionHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCreateMergeRequestDiscussionHandler }),
   "repo_close_merge_request": defineProductTool({ description: "Close CodeArts Repo merge request", inputSchema: repoCloseMergeRequestInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCloseMergeRequestHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCloseMergeRequestHandler }),

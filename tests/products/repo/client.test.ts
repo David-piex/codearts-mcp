@@ -159,4 +159,120 @@ describe("createRepoClient", () => {
       total: 1
     });
   });
+
+  it("uses the official create repository path and normalizes the response", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createRepoClient({
+      post: async (path: string, body: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+        return {
+          result: {
+            repository_uuid: "repo-uuid-1",
+            project_uuid: "project-uuid-1"
+          }
+        };
+      }
+    } as never);
+
+    const result = await client.createRepository({
+      project_uuid: "project-uuid-1",
+      name: "demo-repo",
+      import_members: 1,
+      template_id: "template-1",
+      visibility_level: 20,
+      enable_readme: true,
+      description: "demo repository"
+    });
+
+    expect(requestedPath).toBe("/v1/repositories");
+    expect(requestedBody).toEqual({
+      project_uuid: "project-uuid-1",
+      name: "demo-repo",
+      import_members: 1,
+      template_id: "template-1",
+      visibility_level: 20,
+      enable_readme: 1,
+      description: "demo repository"
+    });
+    expect(result).toEqual({
+      repository_uuid: "repo-uuid-1",
+      project_uuid: "project-uuid-1"
+    });
+  });
+
+  it("omits undefined optional fields when creating a repository", async () => {
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createRepoClient({
+      post: async (_path: string, body: Record<string, unknown>) => {
+        requestedBody = body;
+        return {
+          repository_uuid: "repo-uuid-2",
+          project_uuid: "project-uuid-2"
+        };
+      }
+    } as never);
+
+    await client.createRepository({
+      project_uuid: "project-uuid-2",
+      name: "minimal-repo"
+    });
+
+    expect(requestedBody).toStrictEqual({
+      project_uuid: "project-uuid-2",
+      name: "minimal-repo"
+    });
+  });
+
+  it("normalizes boolean enable_readme values to provider integers", async () => {
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createRepoClient({
+      post: async (_path: string, body: Record<string, unknown>) => {
+        requestedBody = body;
+        return {
+          result: {
+            repository_uuid: "repo-uuid-3"
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    await client.createRepository({
+      project_uuid: "project-uuid-3",
+      name: "bool-readme-repo",
+      enable_readme: true
+    });
+
+    expect(requestedBody).toStrictEqual({
+      project_uuid: "project-uuid-3",
+      name: "bool-readme-repo",
+      enable_readme: 1
+    });
+  });
+
+  it("throws when the provider returns a failed create repository envelope", async () => {
+    const client = createRepoClient({
+      post: async () => ({
+        error: {
+          code: "CH.000001",
+          message: "JSON parse error"
+        },
+        status: "failed"
+      })
+    } as never);
+
+    await expect(
+      client.createRepository({
+        project_uuid: "project-uuid-4",
+        name: "failed-repo",
+        enable_readme: true
+      })
+    ).rejects.toMatchObject({
+      name: "AppError",
+      message: "JSON parse error",
+      code: "CH.000001"
+    });
+  });
 });

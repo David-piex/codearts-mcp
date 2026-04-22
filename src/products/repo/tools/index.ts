@@ -2,6 +2,7 @@ export const repoToolNames = [
   "repo_compare_refs",
   "repo_close_merge_request",
   "repo_delete_tag",
+  "repo_create_repository",
   "repo_create_tag",
   "repo_create_merge_request_discussion",
   "repo_create_merge_request",
