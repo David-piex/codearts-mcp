@@ -1,43 +1,31 @@
 # CodeArts MCP
 
-`codearts-mcp` 是一个面向华为云 CodeArts 中国站的 MCP Server，目标是把 Req、Repo、Pipeline、Check、TestPlan、Deploy、Build、Artifact 这些分散的产品接口，收口成一套可本地使用、也可团队共享部署的统一 MCP 工具层。
+> 面向华为云 CodeArts 中国站的统一 MCP Server，把 Req、Repo、Pipeline、Check、TestPlan、Deploy、Build、Artifact 这 8 个产品模块收敛成一套可本地接入、也可团队共享部署的 MCP 工具层。
 
-当前暴露的是围绕真实联调、运维排障和受控写路径整理出来的精选能力面，不是把官方 PDF 中所有 CodeArts API 全量 1:1 镜像成 MCP 工具。
+## 项目定位
 
-它支持两种接入方式：
+这个项目解决的是两个实际问题：
 
-- `stdio`
-  - 适合个人本地接入 MCP 客户端
-- `http + session`
-  - 适合团队共享一个 MCP 服务入口，但每个用户仍使用自己的 `AK/SK`
+- 把 CodeArts 多产品、多域名、多鉴权上下文的调用方式，统一成一套稳定的 MCP 工具接口
+- 让团队可以共享一个 `http` 入口，但每个成员仍然使用自己的 `AK/SK` 独立操作
 
-当前仓库已经收敛到 `8` 个核心产品模块，并暴露：
+它不是“把官方所有 PDF API 原样 1:1 镜像”。
 
-<!-- GENERATED:readme-exposure-summary:start -->
-- `8` product modules
-- `218` product tools
-- `2` session/auth tools for shared `http` mode
-- `220` total MCP tools in shared `http` mode
-<!-- GENERATED:readme-exposure-summary:end -->
+当前实现重点是：
 
-如果你想直接看“8 个官方 PDF 里哪些已经 MCP 化、哪些还没做、哪些只是代码里有但 live 仍受区域限制”，先看：
+- 高频读路径可用、稳定、可缓存
+- 关键写路径可控、可限流、可做真实联调
+- 明确区分“已实现”“已 live 验证”“区域未发布 / 样本受限”
 
-- `docs/wiki/Official-PDF-MCP-Coverage-Summary.md`
-- `docs/wiki/Official-Category-Coverage-Matrix.md`
+## 3 分钟开始
 
-## 3 分钟部署使用
+### 方式 A：团队共享 `http`
 
-如果你是第一次接触这个项目，直接走这条主路径就行：
-
-### 第 1 步：服务器管理员启动共享服务
-
-先复制环境变量模板：
+1. 复制环境变量模板并填写最小配置
 
 ```bash
 cp .env.example .env
 ```
-
-把 `.env` 至少改成下面这样：
 
 ```env
 MCP_TRANSPORT=http
@@ -48,25 +36,13 @@ MCP_AUTH_MASTER_KEY=replace-with-a-long-random-secret
 MCP_AUTH_DATA_PATH=.codearts-mcp/auth-store.json
 ```
 
-然后二选一启动：
-
-方式 A，直接用 Docker Compose：
+2. 启动服务
 
 ```bash
 docker compose up -d --build
 ```
 
-方式 B，宿主机直接跑：
-
-```bash
-npm install
-npm run build
-node dist/src/server/index.js
-```
-
-### 第 2 步：团队成员在客户端里添加 MCP 服务
-
-客户端配置最小示例：
+3. 在 MCP 客户端中添加共享入口
 
 ```json
 {
@@ -79,7 +55,24 @@ node dist/src/server/index.js
 }
 ```
 
-如果客户端不会保留 cookie，可以在第一次鉴权成功后，把返回的 `auth_token` 固定到 URL：
+4. 首次连接后调用 `auth_configure_session`
+
+```json
+{
+  "access_key": "your-ak",
+  "secret_key": "your-sk",
+  "region": "cn-north-4"
+}
+```
+
+5. 用下面 4 个低风险读工具做首轮验证
+
+- `req_list_projects`
+- `repo_list_repositories`
+- `pipeline_list_pipelines`
+- `build_list_jobs`
+
+如果客户端不保留 Cookie，可以把首次鉴权返回的 `auth_token` 固定到 URL：
 
 ```json
 {
@@ -92,116 +85,7 @@ node dist/src/server/index.js
 }
 ```
 
-### 第 3 步：第一次连接后先调用 `auth_configure_session`
-
-首次调用参数：
-
-```json
-{
-  "access_key": "your-ak",
-  "secret_key": "your-sk",
-  "region": "cn-north-4"
-}
-```
-
-标准区域通常只需要这三个字段；只有确实使用非标准路由时，才需要额外传入各产品的 `*_base_url`。
-
-### 第 4 步：看到这些就算接通成功
-
-服务端：
-
-- `GET /health` 可访问
-- `POST /mcp` 可访问
-
-客户端：
-
-- `tools/list` 能列出工具
-- `auth_configure_session` 成功返回
-- 下面四个读工具至少能正常调用：
-  - `req_list_projects`
-  - `repo_list_repositories`
-  - `pipeline_list_pipelines`
-  - `build_list_jobs`
-
-如果四个读工具通了，通常说明共享链路已经是健康的，后面就可以继续进入具体模块和写路径。
-
-## 详细部署与使用
-
-### 1. 团队共享部署
-
-这是当前最推荐的使用方式。
-
-#### 服务器管理员需要做什么
-
-最小环境变量：
-
-```env
-MCP_TRANSPORT=http
-MCP_HTTP_PORT=3000
-MCP_SERVER_NAME=codearts-mcp
-MCP_SERVER_VERSION=0.1.0
-MCP_AUTH_MASTER_KEY=replace-with-a-long-random-secret
-MCP_AUTH_DATA_PATH=.codearts-mcp/auth-store.json
-```
-
-如果你对外暴露的是 HTTPS，建议再加：
-
-```env
-MCP_AUTH_COOKIE_SECURE=true
-```
-
-推荐启动方式：
-
-- 标准容器部署：
-
-```bash
-docker compose up -d --build
-```
-
-- 宿主机直跑：
-
-```bash
-npm install
-npm run build
-node dist/src/server/index.js
-```
-
-#### 团队成员需要做什么
-
-1. 在客户端里添加共享 MCP 服务地址
-2. 连上后先调用 `auth_configure_session`
-3. 先跑四个低风险读工具：
-   - `req_list_projects`
-   - `repo_list_repositories`
-   - `pipeline_list_pipelines`
-   - `build_list_jobs`
-
-共享的是同一个 MCP 服务入口，不是共享同一套业务凭证。每个用户后续调用的产品工具都会使用他自己的 `AK/SK`。
-
-#### 标准区域为什么通常不需要手填 `*_base_url`
-
-标准情况下，服务端会根据 `region` 自动推导产品地址。北京四 `cn-north-4` 默认对应：
-
-- Req: `https://projectman-ext.cn-north-4.myhuaweicloud.com`
-- Repo: `https://codehub-ext.cn-north-4.myhuaweicloud.com`
-- Pipeline: `https://cloudpipeline-ext.cn-north-4.myhuaweicloud.com`
-- Check: `https://codecheck-ext.cn-north-4.myhuaweicloud.com`
-- TestPlan: `https://cloudtest-ext.cn-north-4.myhuaweicloud.com`
-- Deploy: `https://codearts-deploy.cn-north-4.myhuaweicloud.com`
-- Build: `https://cloudbuild-ext.cn-north-4.myhuaweicloud.com`
-- Artifact: `https://artifact.cn-north-4.myhuaweicloud.cn`
-
-所以大多数成员只需要自己的：
-
-- `AK`
-- `SK`
-- `region`
-
-### 2. 本地个人使用
-
-如果你只是自己在本机接入 MCP 客户端，可以走 `stdio`。
-
-最小环境变量：
+### 方式 B：本地 `stdio`
 
 ```env
 MCP_TRANSPORT=stdio
@@ -212,81 +96,30 @@ MCP_SERVER_NAME=codearts-mcp
 MCP_SERVER_VERSION=0.1.0
 ```
 
-启动：
-
 ```bash
 npm install
 npm run build
 node dist/src/server/index.js
 ```
 
-成功标志：
+## 部署方式对比
 
-- 客户端能正常拉起 `node dist/src/server/index.js`
-- `req_list_projects`
-- `repo_list_repositories`
-- `pipeline_list_pipelines`
-- `build_list_jobs`
+| 模式 | 适用场景 | 优点 | 注意点 |
+| --- | --- | --- | --- |
+| Docker Compose | 团队共享，推荐 | 启动快、隔离简单、便于交付 | 需要 Docker 环境 |
+| PM2 + Nginx | 团队共享，无 Docker | 方便接现有主机运维体系 | 需要自己管进程和反代 |
+| 本地 stdio | 个人调试、本机接入 | 最直接 | 不适合多人共享 |
 
-这四个读工具能通，通常说明本地接入已经正常。
+## 当前能力概览
 
-## 推荐的最小验证顺序
+<!-- GENERATED:readme-exposure-summary:start -->
+- `8` product modules
+- `218` product tools
+- `2` session/auth tools for shared `http` mode
+- `220` total MCP tools in shared `http` mode
+<!-- GENERATED:readme-exposure-summary:end -->
 
-### 共享 `http`
-
-1. `initialize`
-2. `auth_configure_session`
-3. `req_list_projects`
-4. `repo_list_repositories`
-5. `pipeline_list_pipelines`
-6. `build_list_jobs`
-
-### 本地 `stdio`
-
-1. `req_list_projects`
-2. `repo_list_repositories`
-3. `pipeline_list_pipelines`
-4. `build_list_jobs`
-
-## 这个项目现在做到哪里了
-
-截至 `2026-04-21`，北京四 `cn-north-4` 的最近一轮真实联调已经确认：
-
-- 共享 `http` 模式可稳定完成：
-  - `initialize`
-  - `tools/list`
-  - `auth_configure_session`
-  - cookie / `auth_token` 重连
-- 读路径已完成真实验证：
-  - `req_list_projects`
-  - `repo_list_repositories`
-  - `pipeline_list_pipelines`
-  - `build_list_jobs`
-- 写路径已完成受控联调：
-  - `req_create_work_item`
-  - `pipeline_run_pipeline`
-  - `deploy_start_app`
-    - 当前样本返回的是“该应用需走流水线发布”的受控业务错误，这说明写链路已真正到达上游服务
-- 高频读工具已补共享缓存与 in-flight dedupe，缓存命中后服务内很多调用已下降到毫秒级
-
-已完成模块级 live 闭环：
-
-- Req
-- Repo
-- Check
-- Build
-
-已实现且可用，但仍受真实租户样本或区域发布限制：
-
-- Pipeline
-- TestPlan
-- Deploy
-- Artifact
-
-- Repo 新增的 `repo_create_repository` 已完成真实 AK/SK live 联调，当前 25 个 Repo 工具都已进入 live 闭环。
-- Pipeline 新增的管理/分组工具已实现并通过回归测试，但还没有补完真实 AK/SK live 联调。
-
-## 模块现状总表
+工具读写分布：读操作 `145`，写操作 `73`。
 
 <!-- GENERATED:readme-module-numbers:start -->
 | Module | Tools | Live status | Current breakdown |
@@ -296,88 +129,122 @@ node dist/src/server/index.js
 | Pipeline | 77 | Partial | `16 Full / 0 Reachable / 0 Unpublished / 51 Code` |
 | Check | 8 | Validated | `8 Full` |
 | TestPlan | 7 | Partial | `1 Full / 2 Reachable / 4 Unpublished / 0 Code` |
-| Deploy | 59 | Partial | Expanded surface; see `docs/wiki/Deploy-Live-Validated.md` for the current live split |
+| Deploy | 59 | Partial | Expanded v4 surface with partial live closure; see `docs/wiki/Module-Live-Readiness.md` |
 | Build | 22 | Validated | `22 Full / 0 Reachable / 0 Unpublished / 0 Code` |
 | Artifact | 12 | Partial | `5 Full / 0 Reachable / 7 Unpublished / 0 Code` |
 <!-- GENERATED:readme-module-numbers:end -->
 
-## 当前已验证的一台共享联调实例
+Live 状态说明：
 
-截至 `2026-04-20`，我们已经在下列公网实例上完成了一轮真实部署与深度联调：
+- `Validated`：当前模块工具已经完成真实 AK/SK 联调闭环
+- `Partial`：代码已实现，但仍存在区域未发布、租户样本不足或 execute-class 资源前置条件
 
-- 地址：`http://123.249.85.184`
-- 健康检查：`http://123.249.85.184/health`
-- MCP 入口：`http://123.249.85.184/mcp`
-- 部署形态：
-  - `systemd + nginx`
-  - Node 运行时位于 `/opt/node22`
-  - 应用目录位于 `/root/codearts-mcp`
+## 环境变量参考
 
-这轮验证证明：
+### 共享 `http` 最小变量
 
-- 仓库不仅能在本地 `stdio` 模式工作
-- 也已经能以共享 `http` 形态对外服务，并完成真实会话恢复、读路径与受控写路径联调
+| 变量 | 说明 |
+| --- | --- |
+| `MCP_TRANSPORT` | 设为 `http` |
+| `MCP_HTTP_PORT` | HTTP 监听端口，默认 `3000` |
+| `MCP_SERVER_NAME` | 服务名 |
+| `MCP_SERVER_VERSION` | 服务版本 |
+| `MCP_AUTH_MASTER_KEY` | 会话加密主密钥 |
+| `MCP_AUTH_DATA_PATH` | 会话持久化文件路径，默认 `.codearts-mcp/auth-store.json` |
 
-## 维护命令
+### 本地 `stdio` 最小变量
 
-- `npm run build`
-  - 构建 TypeScript
-- `npm test`
-  - 运行测试
-- `npm run lint`
-  - 执行 lint
-- `npm run probe:edge`
-  - 对共享 HTTP 入口做多轮连通性与延迟采样
-- `npm run stats:modules`
-  - 输出模块统计
-- `npm run stats:check-docs`
-  - 检查 README / Wiki 统计块是否漂移
-- `npm run stats:sync-docs`
-  - 同步自动统计区块
+| 变量 | 说明 |
+| --- | --- |
+| `MCP_TRANSPORT` | 设为 `stdio` |
+| `HUAWEICLOUD_AK` | 华为云 AK |
+| `HUAWEICLOUD_SK` | 华为云 SK |
+| `HUAWEICLOUD_REGION` | 区域，例如 `cn-north-4` |
+| `MCP_SERVER_NAME` | 服务名 |
+| `MCP_SERVER_VERSION` | 服务版本 |
 
-## Shared HTTP 持久化鉴权
+### 共享会话与安全相关变量
 
-共享 `http` 模式支持持久化鉴权：
+| 变量 | 说明 | 默认值 |
+| --- | --- | --- |
+| `MCP_AUTH_COOKIE_NAME` | 鉴权 Cookie 名称 | `codearts_mcp_auth` |
+| `MCP_AUTH_COOKIE_SECURE` | HTTPS 下是否设置 Secure | `false` |
+| `MCP_AUTH_TOKEN_TTL_SECONDS` | `auth_token` 过期时间 | `2592000` |
 
-- 用户第一次调用 `auth_configure_session` 后，服务端会加密保存该用户凭证
-- 客户端保留 cookie 时，后续正常重连不需要再次填写 `AK/SK`
-- 客户端不保留 cookie 时，也可以把返回的 `auth_token` 固定写到 `/mcp?auth_token=...`
-- 若需撤销当前用户已保存的凭证，调用 `auth_clear_session`
+### 读缓存 TTL 变量
 
-运维侧需要稳定保存两项：
+| 变量 | 说明 |
+| --- | --- |
+| `MCP_REQ_LIST_PROJECTS_CACHE_TTL_MS` | Req 项目列表缓存 TTL |
+| `MCP_REPO_LIST_REPOSITORIES_CACHE_TTL_MS` | Repo 仓库列表缓存 TTL |
+| `MCP_PIPELINE_LIST_PIPELINES_CACHE_TTL_MS` | Pipeline 流水线列表缓存 TTL |
+| `MCP_BUILD_LIST_JOBS_CACHE_TTL_MS` | Build 任务列表缓存 TTL |
 
-- `MCP_AUTH_MASTER_KEY`
-- `MCP_AUTH_DATA_PATH`
+### 产品地址覆盖变量
 
-否则服务重启后将无法恢复已有会话。
+标准区域下通常不需要手填产品地址；服务会根据 `region` 自动推导。只有走非标准路由时，才需要覆盖：
 
-## 进阶文档入口
+- `HUAWEICLOUD_BASE_URL`
+- `HUAWEICLOUD_REQ_BASE_URL`
+- `HUAWEICLOUD_REPO_BASE_URL`
+- `HUAWEICLOUD_PIPELINE_BASE_URL`
+- `HUAWEICLOUD_CHECK_BASE_URL`
+- `HUAWEICLOUD_TESTPLAN_BASE_URL`
+- `HUAWEICLOUD_DEPLOY_BASE_URL`
+- `HUAWEICLOUD_BUILD_BASE_URL`
+- `HUAWEICLOUD_ARTIFACT_BASE_URL`
 
-如果你已经完成部署，后面按这个顺序继续看最省时间：
+## 常用命令
+
+| 命令 | 说明 |
+| --- | --- |
+| `npm run dev` | 本地 `stdio` 开发启动 |
+| `npm run dev:http` | 本地 `http` 开发启动 |
+| `npm run build` | TypeScript 编译 |
+| `npm test` | 全量测试 |
+| `npm run test:fast` | 无隔离模式测试 |
+| `npm run test:isolate` | 隔离模式测试 |
+| `npm run lint` | 代码规范检查 |
+| `npm run stats:modules` | 输出模块统计 |
+| `npm run stats:check-docs` | 检查 README / Wiki 统计块是否漂移 |
+| `npm run stats:sync-docs` | 同步统计块到文档 |
+| `npm run probe:edge` | 对共享 `http` 入口做连通性与延迟采样 |
+
+## 项目结构
+
+```text
+codearts-mcp/
+├── src/
+│   ├── core/              # 通用配置、鉴权、缓存、HTTP、错误处理
+│   ├── products/          # 8 个产品模块的 client / schema / tool 实现
+│   ├── server/            # stdio/http 入口、会话、工具注册、限流、统计
+│   └── contracts/         # 共享类型与 schema
+├── deploy/                # Docker / Nginx / PM2 部署脚本
+├── tests/                 # 单测、集成、live smoke、HTTP 联调测试
+├── Dockerfile
+├── docker-compose.yml
+├── docker-compose.ssl.yml
+└── ecosystem.config.cjs
+```
+
+## 文档入口
+
+如果你想快速建立项目理解，按这个顺序看最省时间：
 
 1. `docs/wiki/Home.md`
 2. `docs/wiki/Getting-Started.md`
-3. `docs/wiki/Team-Deployment.md`
-4. `docs/wiki/Testing-and-Live-Ops.md`
-5. `docs/wiki/Troubleshooting.md`
+3. `docs/wiki/Role-Based-Entry-Paths.md`
+4. `docs/wiki/Typical-Workflow-Playbooks.md`
+5. `docs/wiki/Module-Functions-Overview.md`
+6. `docs/wiki/Architecture-Deep-Dive.md`
+7. `docs/wiki/Capability-Matrix.md`
+8. `docs/wiki/Module-Live-Readiness.md`
+9. `docs/wiki/Testing-and-Live-Ops.md`
+10. `docs/wiki/Official-API-Alignment.md`
+11. `docs/wiki/Troubleshooting.md`
 
-如果你想快速建立项目深度理解，继续看：
+## 当前文档维护策略
 
-- `docs/product-overview.md`
-- `docs/service-profile.md`
-- `docs/wiki/Architecture-Deep-Dive.md`
-- `docs/wiki/Capability-Matrix.md`
-- `docs/wiki/Module-Live-Readiness.md`
-- `docs/wiki/Official-API-Alignment.md`
-- `docs/wiki/Official-Category-Coverage-Matrix.md`
-- `docs/wiki/Official-Endpoint-Mapping-Req-Repo-Pipeline.md`
-- `docs/wiki/Official-Endpoint-Mapping-Check-Build-Deploy-Artifact-TestPlan.md`
-
-如果你想看模块级真实验证细节，继续看：
-
-- `docs/wiki/Req-Live-Validated.md`
-- `docs/wiki/Check-Live-Validated.md`
-- `docs/wiki/Build-Live-Validated.md`
-- `docs/wiki/Deploy-Live-Validated.md`
-- `docs/wiki/Artifact-Live-Validated.md`
-- `docs/wiki/TestPlan-Live-Validated.md`
+- `README` 只保留部署、接入、能力边界和文档导航
+- 自动统计只同步到 `README`、`docs/wiki/Capability-Matrix.md`、`docs/wiki/Module-Live-Readiness.md`
+- 更细的 live 结果、联调策略和 API 对齐信息统一放在 wiki，避免 README 继续膨胀

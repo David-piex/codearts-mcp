@@ -68,16 +68,13 @@ describe("syncModuleStatsDocuments", () => {
       "docs/wiki/Capability-Matrix.md": createDocWithGeneratedBlocks("# Capability Matrix", [
         ["capability-matrix", "old"]
       ]),
-      "docs/wiki/Current-Implementation-Status-2026-04-17.md": createDocWithGeneratedBlocks(
-        "# Current Status",
+      "docs/wiki/Module-Live-Readiness.md": createDocWithGeneratedBlocks(
+        "# Module Live Readiness",
         [
-          ["implementation-status-table", "old"],
-          ["implementation-status-totals", "old"]
+          ["module-live-readiness-table", "old"],
+          ["module-live-readiness-totals", "old"],
+          ["module-live-readiness-summary", "old"]
         ]
-      ),
-      "docs/wiki/Tool-Status-Matrix.md": createDocWithGeneratedBlocks(
-        "# Tool Status Matrix",
-        [["tool-status-module-summary", "old"]]
       )
     };
 
@@ -89,13 +86,13 @@ describe("syncModuleStatsDocuments", () => {
     expect(synced["docs/wiki/Capability-Matrix.md"]).toContain(
       "| Pipeline | 42 | 35 | Partial |"
     );
-    expect(synced["docs/wiki/Current-Implementation-Status-2026-04-17.md"]).toContain(
+    expect(synced["docs/wiki/Module-Live-Readiness.md"]).toContain(
       "| Repo | 25 | 17 | 8 | Validated |"
     );
-    expect(synced["docs/wiki/Current-Implementation-Status-2026-04-17.md"]).toContain(
+    expect(synced["docs/wiki/Module-Live-Readiness.md"]).toContain(
       "- Total MCP tools exposed: `220`"
     );
-    expect(synced["docs/wiki/Tool-Status-Matrix.md"]).toContain("| Deploy | 59 |");
+    expect(synced["docs/wiki/Module-Live-Readiness.md"]).toContain("| Deploy | 59 |");
   });
 });
 
@@ -122,8 +119,7 @@ describe("tracked module stats docs", () => {
     expect(Object.keys(docs)).toEqual([
       "README.md",
       "docs/wiki/Capability-Matrix.md",
-      "docs/wiki/Current-Implementation-Status-2026-04-17.md",
-      "docs/wiki/Tool-Status-Matrix.md"
+      "docs/wiki/Module-Live-Readiness.md"
     ]);
     expect(findDriftedModuleStatsDocuments(docs)).toEqual(expect.any(Array));
   });

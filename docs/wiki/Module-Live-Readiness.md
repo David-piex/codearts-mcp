@@ -1,94 +1,68 @@
-# 模块真实可用性
+# Module Live Readiness
 
-这页用来回答“如果今天直接接入，这些模块分别能不能用、应该先从哪个工具试”的问题。结论基于截至 `2026-04-19` 的北京四 `cn-north-4` 真实租户验证。
+这页聚焦“真实 AK/SK 联调”这一层，不讨论单纯的代码存在与否。
 
-| Module | Recommended First Tool | `project_id` Type | Current Live State | Non-empty Prerequisite |
-| --- | --- | --- | --- | --- |
-| Req | `req_list_projects` | none | Validated | Existing CodeArts projects; one writable project for full work-item closure |
-| Repo | `repo_list_repositories` | CodeArts project UUID | Validated | Existing repositories |
-| Pipeline | `pipeline_list_pipelines` | CodeArts project UUID | Validated | Existing pipelines |
-| Check | `check_list_tasks` / `check_list_rulesets` | CodeArts project UUID | Validated | Existing check tasks or rulesets |
-| TestPlan | `testplan_list_plans` | CodeArts project UUID | Partial | TestPlan is now confirmed on 2 of 4 scanned projects; richer plan/case/run data is still needed for non-empty validation |
-| Deploy | `deploy_list_apps` | CodeArts project UUID | Partial | Existing deploy apps/tasks/histories |
-| Build | `build_list_jobs` | CodeArts project UUID | Validated | Existing build jobs/records |
-| Artifact | `artifact_list_repositories` | CodeArts project UUID + account `tenant_id` | Partial | Existing artifact repositories/versions/files |
+## 模块级联调状态
 
-## 已有非空真实验证的模块
+<!-- GENERATED:module-live-readiness-table:start -->
+| Module | Tools Implemented | Read | Write | Real-Live Status | Notes |
+| --- | --- | --- | --- | --- | --- |
+| Req | 8 | 6 | 2 | Validated | Project and work-item read/write loops now have real AK/SK validation on a writable sampled project. |
+| Repo | 25 | 17 | 8 | Validated | All 25 Repo tools are now live-validated. `repo_create_repository` has real AK/SK coverage through the HTTP MCP session on the writable sampled project. |
+| Pipeline | 77 | 42 | 35 | Partial | The original 16-tool execution surface remains live-validated. The newly added delete/enable/disable, extension-endpoint, tag-management, group-management, variable-group, rule-management, tenant-strategy, and project-strategy tools currently have unit regression coverage, but real AK/SK validation is still pending. |
+| Check | 8 | 5 | 3 | Validated | Full tool-level live loop completed. |
+| TestPlan | 7 | 6 | 1 | Partial | Two scanned projects now return real plan samples; 4 routes are re-confirmed as unpublished in Beijing 4. |
+| Deploy | 59 | 44 | 15 | Partial | `deploy_create_application`, `deploy_modify_application`, `deploy_start_app`, `deploy_get_execution_params`, `deploy_get_history_detail`, `deploy_get_app_log`, `deploy_stop_app`, and `deploy_rollback_app` already have real AK/SK coverage on at least one healthy path. The remaining practical blocker is the outdated Node.js template runtime (`Node v10.9.0` + `forever`) and the need for dedicated execute-class samples. |
+| Build | 22 | 14 | 8 | Validated | All 22 tools are now AK/SK Full on the current surface, including the 3 helper/configuration tools through real dry-run previews on the live job config. |
+| Artifact | 12 | 11 | 1 | Partial | Five tools are AK/SK Full; the remaining seven are re-confirmed as unpublished in Beijing 4. |
+<!-- GENERATED:module-live-readiness-table:end -->
 
-- Repo
-- Pipeline
-- Check
-- Build
-- Req
+## 当前总量
 
-## 当前仍为 `Partial` 的模块
+<!-- GENERATED:module-live-readiness-totals:start -->
+- Product modules implemented: `8`
+- Product tools implemented: `218`
+- Auth/session tools implemented: `2`
+- Total MCP tools exposed: `220`
+<!-- GENERATED:module-live-readiness-totals:end -->
 
-- Deploy
-- TestPlan
-- Artifact
+## 模块摘要
 
-## 关键细节结论
+<!-- GENERATED:module-live-readiness-summary:start -->
+| Module | Tools | Real-Live Summary | Current Conclusion |
+| --- | --- | --- | --- |
+| Req | 8 | `8 Full` | Project and work-item read/write paths are fully live-validated. |
+| Repo | 25 | `25 Full / 0 Reachable / 0 Unpublished / 0 Code` | `repo_create_repository` has joined the previously validated Repo surface, so the full 25-tool module is now AK/SK Full. |
+| Pipeline | 77 | `16 Full / 0 Reachable / 0 Unpublished / 51 Code` | Core execution closure remains complete, but the new extension-endpoint/tag/group/variable-group/rule-management/tenant-strategy/project-strategy tools still need live AK/SK validation. |
+| Check | 8 | `8 Full` | Tool-level closure is complete. |
+| TestPlan | 7 | `1 Full / 2 Reachable / 4 Unpublished / 0 Code` | Real plan samples now exist on two projects, but detail/run routes are still unpublished in Beijing 4. |
+| Deploy | 59 | Expanded v4 surface with partial live closure | The Deploy MCP surface now includes v4 application/environment/cluster/record/variable tools. Read paths and selected write paths are live-validated, while full execute-class coverage still depends on dedicated runtime samples. |
+| Build | 22 | `22 Full / 0 Reachable / 0 Unpublished / 0 Code` | The remote Build surface is now fully live-validated, including the 3 helper/configuration tools via real dry-run previews on the live job config. |
+| Artifact | 12 | `5 Full / 0 Reachable / 7 Unpublished / 0 Code` | Five tools are fully validated; seven routes are unpublished in Beijing 4. The current tenant now exposes a real published file sample at `/codearts-mcp/1.0.0/codearts-mcp.tgz`. |
+<!-- GENERATED:module-live-readiness-summary:end -->
 
-### Req
+## 当前最现实的剩余阻塞
 
-- `req_list_projects`、`req_get_project`、`req_list_iterations`、`req_list_project_members`
-  - 都已经有真实租户验证
-- `req_list_work_items` 和 `req_get_work_item`
-  - 已确认在已发布的 `/issues` 路由族上真实可用
-- `req_create_work_item` 和 `req_update_work_item`
-  - 已在可写项目 `7bd39587c14048aebdadd0f9c22b1402` 上取得真实成功样本
+### 1. Pipeline 新增管理面还缺 live 样本
 
-### Artifact
+Pipeline 当前不是“没做”，而是“代码和回归测试已经有了，但新加的管理类写路径还没全部完成真实 AK/SK 联调”。
 
-- `artifact_get_file_tree`
-- `artifact_get_repository`
+### 2. Deploy execute-class 场景仍依赖专门资源
 
-这些路由当前真实可用。
+当前剩下的跳过项主要是：
 
-- 最新 MCP 输出规范化：
-  - repository outputs 现在也暴露 `repositoryId`
-  - version outputs 现在也暴露 `versionId`
-  - build archive outputs 现在也暴露 `archiveId`
-  - file outputs 现在也暴露 `fileId`
+- 真启动执行
+- 真停止执行
+- 真回滚执行
 
-- `artifact_delete_file`
-- `artifact_list_build_archives`
-- `artifact_list_files`
-- `artifact_get_file`
-- `artifact_get_download_url`
-- `artifact_search_artifacts`
-- `artifact_show_audit`
+这些场景需要显式提供专用 `task_id / record_id / host_group / package_url / service_port`。
 
-这些在北京四当前仍返回 `APIGW.0101`，应视为 `Region Unpublished`。
+### 3. TestPlan 和 Artifact 的一部分缺口来自上游未发布
 
-### TestPlan
+这类问题的关键不是补代码，而是识别北京四上游路由是否真的已经开放。
 
-- `testplan_list_plans`
-  - 在两个扫描项目上能返回真实样本
-- `testplan_list_issues` 和 `testplan_list_cases`
-  - 路由真实可达，但当前已知计划上返回空结果
-- `testplan_get_plan`、`testplan_list_runs`、`testplan_get_case`
-  - 当前在北京四返回 `APIGW.0101`
+## 推荐落地方向
 
-### Build
-
-- `build_list_jobs`、`build_get_job`、`build_list_records`
-  - 都已有真实非空样本
-- `build_run_job` 和 `build_stop_job`
-  - 在当前租户都已有真实执行样本
-- `build_get_info_record`、`build_get_record`、`build_get_record_script`、`build_get_history_details`、`build_get_real_time_log`、`build_get_error_log`、`build_list_project_records`、`build_get_project_record_statistics`、`build_get_record_flow_graph`
-  - 都已取得真实成功样本
-- `build_list_build_parameters`、`build_get_full_stages`、`build_get_record_flow_graph`
-  - 当前真实可达，但在采样构建上可能返回空业务结果
-
-### Deploy
-
-- 当前健康 Node.js 模板路径已经对下列 record 绑定能力取得真实成功验证：
-  - `deploy_start_app`
-  - `deploy_get_execution_params`
-  - `deploy_get_status`
-  - `deploy_get_history_detail`
-  - `deploy_get_app_log`
-  - `deploy_stop_app`
-  - `deploy_rollback_app`
-- 当前剩余的实际阻塞已经是模板 runtime 老旧，而不是基础 app/environment/host 资源缺失
+- 要补 live 闭环优先级：`Pipeline -> Deploy execute-class`
+- 要做稳定生产使用优先级：`Req / Repo / Check / Build`
+- 要继续补齐官方 API 对齐：参考 [Official-API-Alignment](./Official-API-Alignment.md)

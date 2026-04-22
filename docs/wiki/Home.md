@@ -1,111 +1,77 @@
-# CodeArts MCP Wiki
+# Wiki Home
 
-这页是项目文档总入口。  
-如果你想快速判断这个仓库是什么、现在做到哪里、怎么部署、怎么测试，从这里开始即可。
+`codearts-mcp` 是一个把华为云 CodeArts 多产品能力封装成统一 MCP 工具层的服务端项目，目标不是机械镜像官方 API，而是围绕真实使用场景把“高频读路径、受控写路径、共享会话、测试联调”做成可落地的工程化能力。
 
-## 当前文档整理原则
+## 先知道这 4 件事
 
-截至 `2026-04-21`，文档已经按下面四条主线重新收口：
+1. 项目当前收敛到 `8` 个产品模块：Req、Repo、Pipeline、Check、TestPlan、Deploy、Build、Artifact。
+2. 运行模式分两种：个人本地用 `stdio`，团队共享用 `http + session`。
+3. 共享模式不是共享凭证，而是共享入口。每个用户仍然使用自己的 `AK/SK`。
+4. 文档里会明确区分“代码已实现”“真实 live 已验证”“区域未发布 / 租户样本不足”。
 
-- 入口总览
-  - `README.md`
-  - `docs/wiki/Home.md`
-- 接入与部署
-  - `docs/wiki/Getting-Started.md`
-  - `docs/wiki/Team-Deployment.md`
-- 测试、联调与排障
-  - `docs/wiki/Testing-and-Live-Ops.md`
-  - `docs/wiki/Troubleshooting.md`
-- 当前实现与模块级真实状态
-  - `docs/wiki/Current-Implementation-Status-2026-04-17.md`
-  - `docs/wiki/*-Live-Validated.md`
+## 推荐阅读路径
 
-说明：
+### 如果你是第一次部署
 
-- `Current-Implementation-Status-2026-04-17.md` 这个文件名保留历史日期，是为了保持统计脚本和外部引用稳定
-- 文件内部内容与自动统计区块会随当前仓库状态持续刷新，不代表内容停留在 `2026-04-17`
-
-## 第一次接触这个项目先看什么
-
-1. [Getting Started](./Getting-Started.md)
-2. [Team Deployment](./Team-Deployment.md)
-3. [Testing and Live Ops](./Testing-and-Live-Ops.md)
-4. [Current Implementation Status](./Current-Implementation-Status-2026-04-17.md)
-
-## 如果你想快速建立项目深度理解
-
-- [Official PDF MCP Coverage Summary](./Official-PDF-MCP-Coverage-Summary.md)
-- [Architecture Deep Dive](./Architecture-Deep-Dive.md)
-- [Capability Matrix](./Capability-Matrix.md)
-- [Module Live Readiness](./Module-Live-Readiness.md)
-- [Official API Alignment](./Official-API-Alignment.md)
-- [Official Category Coverage Matrix](./Official-Category-Coverage-Matrix.md)
-- [Official Endpoint Mapping: Req / Repo / Pipeline](./Official-Endpoint-Mapping-Req-Repo-Pipeline.md)
-- [Official Endpoint Mapping: Check / Build / Deploy / Artifact / TestPlan](./Official-Endpoint-Mapping-Check-Build-Deploy-Artifact-TestPlan.md)
-- [Tool Status Matrix](./Tool-Status-Matrix.md)
-- [Optimization Roadmap](./Optimization-Roadmap.md)
-- `docs/product-overview.md`
-- `docs/service-profile.md`
-
-## 如果你想看当前真实可用度
-
-已完成模块级 live 闭环：
-
-- Req
-- Repo
-- Check
-- Build
-
-已实现且可用，但仍受真实租户样本或区域发布限制：
-
-- Pipeline
-- TestPlan
-- Deploy
-- Artifact
-
-对应明细页：
-
-- [Req Live Validated](./Req-Live-Validated.md)
-- [Check Live Validated](./Check-Live-Validated.md)
-- [Build Live Validated](./Build-Live-Validated.md)
-- [Deploy Live Validated](./Deploy-Live-Validated.md)
-- [Artifact Live Validated](./Artifact-Live-Validated.md)
-- [TestPlan Live Validated](./TestPlan-Live-Validated.md)
-
-## 如果你想部署团队共享服务
-
-先看：
-
-1. [Team Deployment](./Team-Deployment.md)
-2. [Testing and Live Ops](./Testing-and-Live-Ops.md)
+1. [Getting-Started](./Getting-Started.md)
+2. [Testing-and-Live-Ops](./Testing-and-Live-Ops.md)
 3. [Troubleshooting](./Troubleshooting.md)
 
-目前已经验证过一台公网共享实例：
+### 如果你要理解实现架构
 
-- `http://123.249.85.184/health`
-- `http://123.249.85.184/mcp`
+1. [Architecture-Deep-Dive](./Architecture-Deep-Dive.md)
+2. [Module-Functions-Overview](./Module-Functions-Overview.md)
+3. [Capability-Matrix](./Capability-Matrix.md)
+4. [Module-Live-Readiness](./Module-Live-Readiness.md)
 
-这轮验证覆盖了：
+### 如果你想按角色快速上手
 
-- `initialize`
-- `tools/list`
-- `auth_configure_session`
-- cookie / `auth_token` 重连
-- 读路径抽样
-- Req / Pipeline / Deploy 的受控写路径联调
+1. [Role-Based-Entry-Paths](./Role-Based-Entry-Paths.md)
+2. [Getting-Started](./Getting-Started.md)
+3. [Module-Functions-Overview](./Module-Functions-Overview.md)
 
-## 当前最重要的维护结论
+### 如果你想直接照着剧本调用
 
-- 共享 `http` 模式已经具备持久化鉴权、会话恢复、写路径联调与回归测试
-- 高频列表工具已补共享缓存和 in-flight dedupe
-- 服务内缓存命中后，很多高频调用已经下降到毫秒级
-- 外部偶发慢调用或 `502`，更可能来自入口网络层，而不是 Node 进程内部处理
-- 当前文档不再把“模块实现状态”“接入示例”“历史 live 检查碎片”分散到多个重复页面里
+1. [Typical-Workflow-Playbooks](./Typical-Workflow-Playbooks.md)
+2. [Role-Based-Entry-Paths](./Role-Based-Entry-Paths.md)
+3. [Testing-and-Live-Ops](./Testing-and-Live-Ops.md)
 
-## 建议保留关注的根文档
+### 如果你要核对官方 API 对齐情况
 
-- `README.md`
-- `docs/product-overview.md`
-- `docs/service-profile.md`
-- `docs/faq.md`
-- `docs/release-checklist.md`
+1. [Official-API-Alignment](./Official-API-Alignment.md)
+2. [Capability-Matrix](./Capability-Matrix.md)
+3. [Module-Live-Readiness](./Module-Live-Readiness.md)
+
+## 当前 wiki 结构
+
+| 页面 | 用途 |
+| --- | --- |
+| [Getting-Started](./Getting-Started.md) | 从 0 到可调用的最短路径 |
+| [Role-Based-Entry-Paths](./Role-Based-Entry-Paths.md) | 按开发、测试、运维、交付、管理、维护者视角给出模块与阅读路径 |
+| [Typical-Workflow-Playbooks](./Typical-Workflow-Playbooks.md) | 按开发排障、测试联动、发布部署、运维排障、制品追踪给出可直接照着跑的工具剧本 |
+| [Module-Functions-Overview](./Module-Functions-Overview.md) | 用中文讲清 8 个模块分别能干什么、适合什么场景 |
+| [Architecture-Deep-Dive](./Architecture-Deep-Dive.md) | 入口、会话、注册、限流、缓存、持久化的真实实现结构 |
+| [Capability-Matrix](./Capability-Matrix.md) | 各模块读写规模、live 状态和关键缺口 |
+| [Module-Live-Readiness](./Module-Live-Readiness.md) | 模块级真实联调就绪度、总量和剩余阻塞 |
+| [Testing-and-Live-Ops](./Testing-and-Live-Ops.md) | 测试分层、AK/SK live 联调、线上排查和执行型变量 |
+| [Official-API-Alignment](./Official-API-Alignment.md) | 8 个官方 PDF 维度下的 MCP 化现状 |
+| [Troubleshooting](./Troubleshooting.md) | 常见问题、排查顺序和修复建议 |
+
+## 关键实现文件
+
+如果你要直接从代码入口开始读，优先看这些文件：
+
+- `src/server/index.ts`
+- `src/server/http-app.ts`
+- `src/server/create-server.ts`
+- `src/server/product-tool-registry.ts`
+- `src/server/session-aware-product-handlers.ts`
+- `src/server/auth-repository.ts`
+- `src/server/module-stats.ts`
+
+## 当前文档原则
+
+- 少页数，不堆重复表格
+- README 只做入口，不再塞进全部背景材料
+- 统计数字尽量来自自动生成块，而不是手工维护
+- 对“没做完”的部分写清楚，不做模糊表达

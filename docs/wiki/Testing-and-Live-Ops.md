@@ -1,200 +1,144 @@
 # Testing and Live Ops
 
-这页把项目当前的测试层次、真实联调路径、部署观察点和性能结论放在一起，方便研发、测试和运维快速对齐。
+这页讲的是“怎么验证这个项目是真的可用”，不是只看 unit test。
 
-## 当前测试层次
+## 测试分层
 
-仓库里的测试可以按四层理解：
+项目当前至少有 4 层验证：
 
-### 1. 单元与回归测试
+### 1. 单元测试
 
-- `tests/products/*`
-  - 产品 client 映射、错误归一化、缓存行为
-- `tests/server/*`
-  - auth、session、http app、工具注册、写路径集成
+目标：
 
-### 2. 共享 HTTP 模式测试
+- 验证 schema、tool handler、格式转换、错误包装
+- 保证新增工具不会把基础行为弄坏
 
-- `tests/server/http-app.test.ts`
-  - HTTP app 行为、请求日志、会话恢复
-- `tests/server/http.test.ts`
-  - HTTP 入口 keep-alive 与服务参数
-- `tests/server/http-live-smoke.test.ts`
-  - `initialize -> auth -> tools/call` 的真实共享链路
-
-### 3. 写路径集成测试
-
-- `tests/server/write-path-integration.test.ts`
-  - Req / Deploy / Pipeline 写路径
-  - 验证 session-aware runtime client 是否真正带上了当前用户身份
-
-### 4. 模块级 live smoke
-
-- `tests/products/*/client-live-smoke.test.ts`
-  - 使用真实 `AK/SK`、真实区域和真实 endpoint 对模块能力做抽样验证
-
-## 当前 live 结论
-
-截至 `2026-04-21`：
-
-- 已完成模块级 live 闭环：
-  - Req
-  - Repo
-  - Check
-  - Build
-- 已实现且可用，但仍受样本或区域限制：
-  - Pipeline
-  - TestPlan
-  - Deploy
-  - Artifact
-
-这里的 `Partial` 主要不是“代码没写完”，而是：
-
-- 当前租户缺稳定正样本
-- 北京四仍有未发布路由
-- Deploy 仍受到老旧模板 runtime 的现实约束
-
-## 当前共享 HTTP 模式最小验证路径
-
-推荐按固定顺序验证：
-
-1. `initialize`
-2. `auth_configure_session`
-3. `req_list_projects`
-4. `repo_list_repositories`
-5. `pipeline_list_pipelines`
-6. `build_list_jobs`
-
-如果这条链路通了，通常说明：
-
-- session 建立正常
-- cookie / `auth_token` 恢复正常
-- 标准区域默认地址正常
-- 基础签名链路正常
-
-## 最近一轮已完成的公网部署联调
-
-截至 `2026-04-20`，已在这台实例上完成真实部署与联调：
-
-- 主机：`123.249.85.184`
-- 健康检查：`http://123.249.85.184/health`
-- MCP 入口：`http://123.249.85.184/mcp`
-- 实际部署方式：
-  - `systemd + nginx`
-  - Node 运行时：`/opt/node22`
-  - 应用目录：`/root/codearts-mcp`
-  - 服务名：`codearts-mcp.service`
-
-这轮对部署后服务的真实验证已覆盖：
-
-- `initialize`
-- `tools/list`
-  - 返回 `220` 个工具
-- `auth_configure_session`
-- cookie 重连
-- `auth_token` 重连
-- 读路径：
-  - `req_list_projects`
-  - `repo_list_repositories`
-  - `pipeline_list_pipelines`
-  - `build_list_jobs`
-- 写路径：
-  - `req_create_work_item`
-  - `pipeline_run_pipeline`
-  - `deploy_start_app`
-
-其中 `deploy_start_app` 当前返回的是“该应用需通过流水线触发发布”的受控业务错误，这恰恰说明共享写链路已经真正打到了上游 Deploy 服务，而不是只停留在本地参数校验层。
-
-## 当前性能结论
-
-最近一轮加固后，已落地的性能优化包括：
-
-- 用户级产品 client 缓存
-- auth 仓库文件检查节流
-- 高频列表工具短 TTL 缓存
-- shared read-through cache + in-flight dedupe
-- HTTP request log 扩展
-- `GET` 请求受控超时与单次重试
-- HTTP keep-alive
-
-最近联调采样得到的关键结论：
-
-- 服务内调用：
-  - `req_list_projects` 约 `108ms -> 2.1ms`
-  - `pipeline_list_pipelines` 约 `175.8ms -> 2.3ms`
-  - `build_list_jobs` 约 `568.5ms -> 2.1ms`
-- 公网入口：
-  - `req_list_projects` 约 `187.8ms -> 58.2ms`
-
-这说明两件事：
-
-- 应用层内部性能已经明显改善
-- 如果外部仍出现 `0.5s-2s` 或偶发 `502`，优先怀疑入口网络层、代理层或客户端到服务器的链路，而不是先怀疑产品 handler 本身
-
-## 现在怎么看请求日志
-
-共享 HTTP 请求日志已经扩展为可直接辅助排障：
-
-- `cacheHits`
-- `upstreamRequestCount`
-- `upstreamDurationMs`
-- `upstreamStatusCodes`
-- `durationMs`
-
-最实用的读法：
-
-- `cacheHits` 有值且 `upstreamRequestCount = 0`
-  - 说明这次完全命中进程内缓存
-- `durationMs` 明显高于 `upstreamDurationMs`
-  - 更像入口代理或网络抖动
-- `upstreamStatusCodes` 里反复出现 `5xx`
-  - 先查上游服务状态，再决定是否需要修改 MCP 逻辑
-
-## 当前最值得继续回归的方向
-
-### 1. 可操作提示回归
-
-重点关注：
-
-- 权限不足时是否给出产品级 hint
-- 列表空结果时是否补出 `project_id` / 服务开通 / 可见性提示
-
-### 2. 入口链路稳定性
-
-当前已经提供 `probe:edge` 脚本做连续采样：
+常用命令：
 
 ```bash
-npm run probe:edge -- --url http://123.249.85.184/mcp --access-key "$HUAWEICLOUD_AK" --secret-key "$HUAWEICLOUD_SK" --region cn-north-4 --iterations 20 --sleep-ms 1000 --output summary
+npm test
 ```
 
-它会连续执行：
+### 2. 服务层集成测试
 
-- `GET /health`
-- `POST /mcp` `initialize`
-- `POST /mcp` `auth_configure_session`
+目标：
 
-并输出成功率、延迟分位数以及 `502` / network error / timeout 的入口层归因提示。
+- 验证 `stdio / http` 入口
+- 验证 auth/session、工具注册、限流、写路径封装
+- 覆盖 `create-server.ts`、`http-app.ts`、`session-aware-product-handlers.ts` 这些关键桥接层
 
-### 3. 写路径回归
+### 3. Live smoke
 
-继续优先覆盖共享 `http` 模式下的：
+目标：
 
-- Req 写路径
-- Pipeline 写路径
-- Deploy 写路径
+- 用真实 AK/SK 验证核心读路径和受控写路径
+- 确认不是“本地模拟可过”，而是真能碰到上游 CodeArts 服务
 
-### 4. 区域与样本边界
+### 4. 高风险 execute-class live
 
-持续观察：
+目标：
 
-- TestPlan 未发布路由是否有变化
-- Artifact 未发布路由是否有变化
-- Deploy 是否出现新的健康模板样本
+- 真正执行 Deploy 启动、停止、回滚等高风险动作
+- 这类用例默认需要显式环境变量，不会在普通 live smoke 下直接跑
 
-## 配套页面
+## 常用命令
 
-- `docs/wiki/Architecture-Deep-Dive.md`
-- `docs/wiki/Team-Deployment.md`
-- `docs/wiki/Troubleshooting.md`
-- `docs/wiki/Capability-Matrix.md`
-- `docs/wiki/Tool-Status-Matrix.md`
+```bash
+npm test
+npm run build
+npm run stats:check-docs
+npm run probe:edge
+```
+
+## Live 联调最小环境变量
+
+通用变量：
+
+```env
+HUAWEICLOUD_AK=...
+HUAWEICLOUD_SK=...
+HUAWEICLOUD_REGION=cn-north-4
+HUAWEICLOUD_BASE_URL=https://codearts.cn-north-4.myhuaweicloud.com
+HUAWEICLOUD_REQ_BASE_URL=https://projectman-ext.cn-north-4.myhuaweicloud.com
+HUAWEICLOUD_REPO_BASE_URL=https://codehub-ext.cn-north-4.myhuaweicloud.com
+HUAWEICLOUD_PIPELINE_BASE_URL=https://cloudpipeline-ext.cn-north-4.myhuaweicloud.com
+HUAWEICLOUD_CHECK_BASE_URL=https://codecheck-ext.cn-north-4.myhuaweicloud.com
+HUAWEICLOUD_TESTPLAN_BASE_URL=https://cloudtest-ext.cn-north-4.myhuaweicloud.com
+HUAWEICLOUD_DEPLOY_BASE_URL=https://codearts-deploy.cn-north-4.myhuaweicloud.com
+HUAWEICLOUD_BUILD_BASE_URL=https://cloudbuild-ext.cn-north-4.myhuaweicloud.com
+HUAWEICLOUD_ARTIFACT_BASE_URL=https://artifact.cn-north-4.myhuaweicloud.cn
+MCP_SERVER_NAME=codearts-mcp
+MCP_SERVER_VERSION=0.1.0
+```
+
+## 最近一轮真实结论
+
+按 `2026-04-22` 在北京四租户上做的全量 `*live*.test.ts` 扫描结果：
+
+- `126` 个 live 相关测试文件中，`122 passed / 4 skipped / 0 failed`
+- 核心共享 `http` 会话链路通过
+- `repo_create_repository` 真创建通过
+- `req_create_work_item` 真写入通过
+- `pipeline_run_pipeline` 真触发通过
+- Deploy 读路径和部分受控写路径通过
+
+## 为什么还有 4 个 skipped
+
+这 4 个不是代码失败，而是默认缺少专门的执行型环境变量：
+
+- `HUAWEICLOUD_DEPLOY_LIVE_ROLLBACK_TASK_ID`
+- `HUAWEICLOUD_DEPLOY_LIVE_ROLLBACK_RECORD_ID`
+- `HUAWEICLOUD_DEPLOY_LIVE_START_EXECUTE_TASK_ID`
+- `HUAWEICLOUD_DEPLOY_LIVE_START_EXECUTE_HOST_GROUP`
+- `HUAWEICLOUD_DEPLOY_LIVE_START_EXECUTE_PACKAGE_URL`
+- `HUAWEICLOUD_DEPLOY_LIVE_START_EXECUTE_SERVICE_PORT`
+- `HUAWEICLOUD_DEPLOY_LIVE_STOP_EXECUTE_TASK_ID`
+- `HUAWEICLOUD_DEPLOY_LIVE_STOP_EXECUTE_HOST_GROUP`
+- `HUAWEICLOUD_DEPLOY_LIVE_STOP_EXECUTE_PACKAGE_URL`
+- `HUAWEICLOUD_DEPLOY_LIVE_STOP_EXECUTE_SERVICE_PORT`
+
+这些变量对应的是“真启动 / 真停止 / 真回滚”所需的显式样本，不适合默认在所有 live 扫描里盲目执行。
+
+## 线上运维建议
+
+### 共享 `http` 模式
+
+优先检查：
+
+1. `/health`
+2. `/mcp`
+3. `auth_configure_session`
+4. `req_list_projects`
+5. `repo_list_repositories`
+
+### 排查慢调用
+
+优先看：
+
+- 是否命中高频读缓存
+- 是否重复建立会话
+- 是否在共享 `http` 模式下频繁触发上游请求
+- 是否被写路径限流
+
+### 排查写路径失败
+
+优先区分：
+
+- 凭证问题
+- 区域未发布
+- 样本资源不存在
+- 执行型参数不完整
+- 上游业务规则拒绝
+
+## 推荐验证顺序
+
+如果你刚部署完服务，建议按这个顺序做：
+
+1. `npm run build`
+2. `npm test`
+3. `GET /health`
+4. `auth_configure_session`
+5. 4 个低风险读工具
+6. `req_create_work_item`
+7. `pipeline_run_pipeline`
+8. Deploy 受控写路径

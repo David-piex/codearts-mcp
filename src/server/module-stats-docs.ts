@@ -4,8 +4,7 @@ import { collectModuleStats, collectProductToolStats } from "./module-stats.js";
 export const trackedModuleStatsDocumentPaths = [
   "README.md",
   "docs/wiki/Capability-Matrix.md",
-  "docs/wiki/Current-Implementation-Status-2026-04-17.md",
-  "docs/wiki/Tool-Status-Matrix.md"
+  "docs/wiki/Module-Live-Readiness.md"
 ] as const;
 
 type ModuleName =
@@ -64,7 +63,7 @@ const readWriteMatrixMeta: Record<ModuleName, ReadWriteMatrixMeta> = {
   Deploy: {
     live: "Partial",
     keyGaps:
-      "Expanded Deploy v4 environment/record/variable surface is implemented; the detailed live split is maintained in `docs/wiki/Deploy-Live-Validated.md`"
+      "Expanded Deploy v4 environment/record/variable surface is implemented, but execute-class write paths still require dedicated runtime samples"
   },
   Build: {
     live: "Validated",
@@ -106,7 +105,7 @@ const implementationStatusMeta: Record<ModuleName, ImplementationStatusMeta> = {
   Deploy: {
     live: "Partial",
     notes:
-      "The detailed Deploy page is the source of truth for the expanded v4 surface. `deploy_create_application`, `deploy_modify_application`, `deploy_start_app`, `deploy_get_execution_params`, `deploy_get_history_detail`, `deploy_get_app_log`, `deploy_stop_app`, and `deploy_rollback_app` now all have real AK/SK validation on at least one healthy path. The remaining practical blocker is the outdated Node.js template runtime (`Node v10.9.0` + `forever`)."
+      "`deploy_create_application`, `deploy_modify_application`, `deploy_start_app`, `deploy_get_execution_params`, `deploy_get_history_detail`, `deploy_get_app_log`, `deploy_stop_app`, and `deploy_rollback_app` already have real AK/SK coverage on at least one healthy path. The remaining practical blocker is the outdated Node.js template runtime (`Node v10.9.0` + `forever`) and the need for dedicated execute-class samples."
   },
   Build: {
     live: "Validated",
@@ -145,9 +144,9 @@ const toolStatusSummaryMeta: Record<ModuleName, ToolStatusSummaryMeta> = {
       "Real plan samples now exist on two projects, but detail/run routes are still unpublished in Beijing 4."
   },
   Deploy: {
-    summary: "Expanded surface; see `docs/wiki/Deploy-Live-Validated.md`",
+    summary: "Expanded v4 surface with partial live closure",
     conclusion:
-      "The Deploy MCP surface now includes v4 application/environment/cluster/record/variable tools. The detailed live split is maintained in the dedicated Deploy page."
+      "The Deploy MCP surface now includes v4 application/environment/cluster/record/variable tools. Read paths and selected write paths are live-validated, while full execute-class coverage still depends on dedicated runtime samples."
   },
   Build: {
     summary: "`22 Full / 0 Reachable / 0 Unpublished / 0 Code`",
@@ -184,7 +183,7 @@ const readmeModuleNumbersMeta: Record<ModuleName, ReadmeModuleNumbersMeta> = {
   },
   Deploy: {
     liveStatus: "Partial",
-    breakdown: "Expanded surface; see `docs/wiki/Deploy-Live-Validated.md` for the current live split"
+    breakdown: "Expanded v4 surface with partial live closure; see `docs/wiki/Module-Live-Readiness.md`"
   },
   Build: {
     liveStatus: "Validated",
@@ -308,24 +307,21 @@ export function syncModuleStatsDocuments(documents: Record<string, string>): Rec
     );
   }
 
-  if (nextDocuments["docs/wiki/Current-Implementation-Status-2026-04-17.md"]) {
-    nextDocuments["docs/wiki/Current-Implementation-Status-2026-04-17.md"] = replaceGeneratedSection(
-      nextDocuments["docs/wiki/Current-Implementation-Status-2026-04-17.md"],
-      "implementation-status-table",
+  if (nextDocuments["docs/wiki/Module-Live-Readiness.md"]) {
+    nextDocuments["docs/wiki/Module-Live-Readiness.md"] = replaceGeneratedSection(
+      nextDocuments["docs/wiki/Module-Live-Readiness.md"],
+      "module-live-readiness-table",
       renderImplementationStatusTableMarkdown()
     );
-    nextDocuments["docs/wiki/Current-Implementation-Status-2026-04-17.md"] =
+    nextDocuments["docs/wiki/Module-Live-Readiness.md"] =
       replaceGeneratedSection(
-        nextDocuments["docs/wiki/Current-Implementation-Status-2026-04-17.md"],
-        "implementation-status-totals",
+        nextDocuments["docs/wiki/Module-Live-Readiness.md"],
+        "module-live-readiness-totals",
         renderImplementationStatusTotalsMarkdown()
       );
-  }
-
-  if (nextDocuments["docs/wiki/Tool-Status-Matrix.md"]) {
-    nextDocuments["docs/wiki/Tool-Status-Matrix.md"] = replaceGeneratedSection(
-      nextDocuments["docs/wiki/Tool-Status-Matrix.md"],
-      "tool-status-module-summary",
+    nextDocuments["docs/wiki/Module-Live-Readiness.md"] = replaceGeneratedSection(
+      nextDocuments["docs/wiki/Module-Live-Readiness.md"],
+      "module-live-readiness-summary",
       renderToolStatusModuleSummaryMarkdown()
     );
   }
