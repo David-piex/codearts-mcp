@@ -948,6 +948,48 @@ describe("registerReqTool", () => {
     );
   });
 
+  it("registers the update cache data tool with rate-limited metadata", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_update_cache_data",
+      server: { registerTool },
+      mode: "stdio",
+      stdioClient: {} as never
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_update_cache_data",
+      expect.objectContaining({
+        title: "req_update_cache_data",
+        description: "Update CodeArts Req cache data"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the list iteration work items tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_list_iteration_work_items",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_list_iteration_work_items",
+      expect.objectContaining({
+        title: "req_list_iteration_work_items",
+        description: "List CodeArts Req work items in an iteration"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("registers the validate module name tool in http mode", () => {
     const registerTool = vi.fn();
 

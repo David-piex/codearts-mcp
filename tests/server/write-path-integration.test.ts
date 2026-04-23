@@ -247,6 +247,48 @@ function createReqBatchDeleteWorkItemsInput<T extends Record<string, unknown>>(
   } & T;
 }
 
+function createReqUpdateCacheDataInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  type: string;
+  region: string;
+  visible_fields: string[];
+  fields: Array<{
+    field: string;
+    visible: boolean;
+    order: number;
+  }>;
+  dry_run: boolean;
+} & T {
+  return {
+    project_id: "project-1",
+    type: "backlog",
+    region: "cn-north-4",
+    visible_fields: ["subject", "status"],
+    fields: [
+      {
+        field: "subject",
+        visible: true,
+        order: 1
+      }
+    ],
+    dry_run: false,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    type: string;
+    region: string;
+    visible_fields: string[];
+    fields: Array<{
+      field: string;
+      visible: boolean;
+      order: number;
+    }>;
+    dry_run: boolean;
+  } & T;
+}
+
 function createReqAddWorkItemCommentInput<T extends Record<string, unknown>>(
   overrides?: T
 ): {
@@ -1507,6 +1549,57 @@ const writePathCases: WritePathCase[] = [
     }
   },
   {
+    name: "executes req_update_cache_data through the registered session-aware runtime client",
+    createHandler: (store: SessionStore) =>
+      readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_update_cache_data"),
+    input: createReqUpdateCacheDataInput(),
+    responsePayload: {
+      result: {
+        cache_id: 1111,
+        updated_count: 2,
+        fields: [
+          {
+            id: "subject",
+            field: "subject",
+            header: "Subject",
+            type: "text",
+            visible: true,
+            order: 1
+          }
+        ]
+      },
+      status: "success"
+    },
+    expectedItem: {
+      projectId: "project-1",
+      type: "backlog",
+      region: "cn-north-4",
+      cacheId: 1111,
+      updatedCount: 2,
+      fields: [
+        {
+          id: "subject",
+          field: "subject",
+          header: "Subject",
+          type: "text",
+          visible: true,
+          order: 1
+        }
+      ],
+      executed: true
+    },
+    expectedRequest: {
+      path: "/v3/job-cache/update-cache",
+      bodyIncludes: [
+        "\"projectUUId\":\"project-1\"",
+        "\"type\":\"backlog\"",
+        "\"region\":\"cn-north-4\"",
+        "\"visibleFields\":[\"subject\",\"status\"]",
+        "\"field\":\"subject\""
+      ]
+    }
+  },
+  {
     name: "executes req_add_work_item_comment through the registered session-aware runtime client",
     createHandler: (store: SessionStore) =>
       readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_add_work_item_comment"),
@@ -2037,6 +2130,29 @@ const dryRunCases: DryRunCase[] = [
       id: "70779173",
       projectId: "project-1",
       deleted: false,
+      executed: false
+    }
+  },
+  {
+    name: "short-circuits req_update_cache_data dry runs without HTTP or rate-limit consumption",
+    toolName: "req_update_cache_data",
+    input: createReqUpdateCacheDataInput({
+      dry_run: true
+    }),
+    expectedItem: {
+      projectId: "project-1",
+      type: "backlog",
+      region: "cn-north-4",
+      cacheId: undefined,
+      visibleFieldIds: ["subject", "status"],
+      fields: [
+        {
+          field: "subject",
+          visible: true,
+          order: 1
+        }
+      ],
+      updatedCount: 0,
       executed: false
     }
   },

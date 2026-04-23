@@ -1,6 +1,14 @@
 import { z } from "zod";
 import { pagingSchema, idSchema } from "../../../contracts/common-schemas.js";
 
+const scrumTrackerIdSchema = z.union([
+  z.literal(2),
+  z.literal(3),
+  z.literal(5),
+  z.literal(6),
+  z.literal(7)
+]);
+
 export const reqListIterationsInput = pagingSchema.extend({
   project_id: idSchema
 });
@@ -81,6 +89,13 @@ export const reqUpdateIterationStateInput = z.object({
 export const reqQueryIterationImmovableIssuesInput = z.object({
   project_id: idSchema,
   version_id: idSchema
+});
+
+export const reqListIterationWorkItemsInput = pagingSchema.extend({
+  project_id: idSchema,
+  iteration_id: idSchema,
+  tracker_id: scrumTrackerIdSchema.optional(),
+  status_id: z.number().int().positive().optional()
 });
 
 export const reqListIterationStatusStatisticsInput = z.object({

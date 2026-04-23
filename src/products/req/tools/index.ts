@@ -65,11 +65,13 @@ export const reqToolNames = [
   "req_update_work_item",
   "req_list_work_item_records",
   "req_list_iterations",
+  "req_list_iteration_work_items",
   "req_list_iteration_status_statistics",
   "req_update_iteration_state",
   "req_query_iteration_immovable_issues",
   "req_list_project_members",
   "req_update_project_member_role",
   "req_update_plan_image",
+  "req_update_cache_data",
   "req_validate_module_name"
 ];

@@ -237,6 +237,38 @@ export const reqListCacheDataInput = z.object({
   type: z.string().min(1).default("backlog")
 });
 
+export const reqUpdateCacheDataInput = z
+  .object({
+    project_id: idSchema,
+    type: z.string().min(1).default("backlog"),
+    region: z.string().min(1).optional(),
+    cache_id: z.number().int().positive().optional(),
+    visible_fields: z.array(z.string().min(1)).optional(),
+    fields: z
+      .array(
+        z.object({
+          id: z.string().min(1).optional(),
+          field: z.string().min(1).optional(),
+          header: z.string().min(1).optional(),
+          type: z.string().min(1).optional(),
+          visible: z.boolean().optional(),
+          order: z.number().int().nonnegative().optional()
+        })
+      )
+      .min(1)
+      .optional(),
+    dry_run: z.boolean().default(true)
+  })
+  .refine(
+    (input) =>
+      (input.visible_fields?.length ?? 0) > 0 ||
+      (input.fields?.length ?? 0) > 0,
+    {
+      message: "visible_fields or fields is required",
+      path: ["fields"]
+    }
+  );
+
 export const reqUpdateWorkItemFlowInput = z.object({
   project_id: idSchema,
   work_item_id: idSchema,

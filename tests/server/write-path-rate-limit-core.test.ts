@@ -314,6 +314,65 @@ describe("write path rate limits", () => {
       }
     },
     {
+      toolName: "req_update_cache_data",
+      dryRunInput: {
+        project_id: "project-1",
+        type: "backlog",
+        region: "cn-north-4",
+        visible_fields: ["subject", "status"],
+        fields: [
+          {
+            field: "subject",
+            visible: true,
+            order: 1
+          }
+        ],
+        dry_run: true
+      },
+      liveInput: (index: number) => ({
+        project_id: "project-1",
+        type: "backlog",
+        region: "cn-north-4",
+        visible_fields: [`subject-${index}`, `status-${index}`],
+        fields: [
+          {
+            field: `subject-${index}`,
+            visible: true,
+            order: index
+          }
+        ],
+        dry_run: false
+      }),
+      blockedInput: {
+        project_id: "project-1",
+        type: "backlog",
+        region: "cn-north-4",
+        visible_fields: ["blocked"],
+        fields: [
+          {
+            field: "blocked",
+            visible: true,
+            order: 999
+          }
+        ],
+        dry_run: false
+      },
+      responsePayload: {
+        result: {
+          cache_id: 1111,
+          updated_count: 1,
+          fields: [
+            {
+              field: "subject",
+              visible: true,
+              order: 1
+            }
+          ]
+        },
+        status: "success"
+      }
+    },
+    {
       toolName: "req_update_plan",
       dryRunInput: {
         project_id: "project-1",

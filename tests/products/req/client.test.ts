@@ -2437,6 +2437,81 @@ describe("createReqClient", () => {
     });
   });
 
+  it("maps cache data updates to the documented update-cache endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return {
+          result: {
+            cache_id: 1111,
+            updated_count: 2,
+            fields: [
+              {
+                id: "subject",
+                field: "subject",
+                header: "Subject",
+                type: "text",
+                visible: true,
+                order: 1
+              }
+            ]
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.updateCacheData({
+      project_id: "p-1",
+      type: "backlog",
+      region: "cn-north-4",
+      visible_fields: ["subject", "status"],
+      fields: [
+        {
+          field: "subject",
+          visible: true,
+          order: 1
+        }
+      ]
+    });
+
+    expect(requestedPath).toBe("/v3/job-cache/update-cache");
+    expect(requestedBody).toEqual({
+      projectUUId: "p-1",
+      type: "backlog",
+      region: "cn-north-4",
+      visibleFields: ["subject", "status"],
+      fields: [
+        {
+          field: "subject",
+          visible: true,
+          order: 1
+        }
+      ]
+    });
+    expect(result).toEqual({
+      project_id: "p-1",
+      type: "backlog",
+      region: "cn-north-4",
+      cache_id: 1111,
+      updated_count: 2,
+      fields: [
+        {
+          id: "subject",
+          field: "subject",
+          header: "Subject",
+          type: "text",
+          visible: true,
+          order: 1
+        }
+      ]
+    });
+  });
+
   it("falls back to the related_user endpoint when the documented related-user path returns not_found", async () => {
     const get = vi
       .fn()
@@ -2741,6 +2816,64 @@ describe("createReqClient", () => {
       milestone_cur_count: 1,
       issue_cur_count: 1,
       issues_count: 3
+    });
+  });
+
+  it("maps iteration work item queries to the documented iteration issues endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          total: 1,
+          issues: [
+            {
+              id: 102,
+              subject: "Iteration item",
+              tracker: {
+                id: 7,
+                name: "Story"
+              },
+              status: {
+                id: 3,
+                name: "Doing"
+              }
+            }
+          ]
+        };
+      }
+    } as never);
+
+    const result = await client.listIterationWorkItems({
+      project_id: "p-1",
+      iteration_id: "301",
+      page: 1,
+      page_size: 20,
+      keyword: "login",
+      tracker_id: 7,
+      status_id: 3
+    });
+
+    expect(requestedPath).toBe(
+      "/v4/projects/p-1/iterations/301/issues?offset=0&limit=20&search=login&tracker_id=7&status_id=3"
+    );
+    expect(result).toEqual({
+      work_items: [
+        {
+          id: 102,
+          subject: "Iteration item",
+          tracker: {
+            id: 7,
+            name: "Story"
+          },
+          status: {
+            id: 3,
+            name: "Doing"
+          }
+        }
+      ],
+      total: 1
     });
   });
 

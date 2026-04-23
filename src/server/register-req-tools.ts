@@ -33,6 +33,7 @@ import {
   reqGetPlanInput,
   reqGetProjectInput,
   reqListJobCacheBoardsInput,
+  reqListIterationWorkItemsInput,
   reqListIterationStatusStatisticsInput,
   reqListOptionalWorkItemStatusConfigsInput,
   reqListPlanAddableWorkItemsInput,
@@ -67,6 +68,7 @@ import {
   reqUpdatePlanImageInput,
   reqUpdateIterationInput,
   reqUpdateIterationStateInput,
+  reqUpdateCacheDataInput,
   reqUpdateProjectModuleInput,
   reqUpdateProjectMemberRoleInput,
   reqUpdateProjectInput,
@@ -112,6 +114,7 @@ import { createReqListBoardWorkItemWorkflowConfigHandler } from "../products/req
 import { createReqListBoardWorkItemsHandler } from "../products/req/tools/list-board-work-items.js";
 import { createReqListCacheDataHandler } from "../products/req/tools/list-cache-data.js";
 import { createReqListIterationsHandler } from "../products/req/tools/list-iterations.js";
+import { createReqListIterationWorkItemsHandler } from "../products/req/tools/list-iteration-work-items.js";
 import { createReqListIterationStatusStatisticsHandler } from "../products/req/tools/list-iteration-status-statistics.js";
 import { createReqListJobCacheBoardsHandler } from "../products/req/tools/list-job-cache-boards.js";
 import { createReqListOptionalWorkItemStatusConfigsHandler } from "../products/req/tools/list-optional-work-item-status-configs.js";
@@ -141,6 +144,7 @@ import { createReqUpdatePlanHandler } from "../products/req/tools/update-plan.js
 import { createReqUpdatePlanImageHandler } from "../products/req/tools/update-plan-image.js";
 import { createReqUpdateIterationHandler } from "../products/req/tools/update-iteration.js";
 import { createReqUpdateIterationStateHandler } from "../products/req/tools/update-iteration-state.js";
+import { createReqUpdateCacheDataHandler } from "../products/req/tools/update-cache-data.js";
 import { createReqUpdateProjectModuleHandler } from "../products/req/tools/update-project-module.js";
 import { createReqUpdateProjectMemberRoleHandler } from "../products/req/tools/update-project-member-role.js";
 import { createReqUpdateProjectHandler } from "../products/req/tools/update-project.js";
@@ -421,6 +425,14 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqListCacheDataHandler
   }),
+  "req_update_cache_data": defineProductTool({
+    description: "Update CodeArts Req cache data",
+    inputSchema: reqUpdateCacheDataInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUpdateCacheDataHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqUpdateCacheDataHandler,
+    rateLimitAction: "req_update_cache_data"
+  }),
   "req_create_work_item": defineProductTool({
     description: "Create CodeArts Req work item",
     inputSchema: reqCreateWorkItemInput,
@@ -588,6 +600,14 @@ const reqToolDefinitions = {
     inputSchema: reqListIterationsInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIterationsHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqListIterationsHandler
+  }),
+  "req_list_iteration_work_items": defineProductTool({
+    description: "List CodeArts Req work items in an iteration",
+    inputSchema: reqListIterationWorkItemsInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqListIterationWorkItemsHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqListIterationWorkItemsHandler
   }),
   "req_list_iteration_status_statistics": defineProductTool({
     description: "List CodeArts Req iteration status statistics",

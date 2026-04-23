@@ -259,6 +259,18 @@ export type ReqClient = {
     }>;
     total?: number;
   }>;
+  listIterationWorkItems: (input: {
+    project_id: string;
+    iteration_id: string;
+    page: number;
+    page_size: number;
+    keyword?: string;
+    tracker_id?: 2 | 3 | 5 | 6 | 7;
+    status_id?: number;
+  }) => Promise<{
+    work_items: Array<ReqDetailedIssueListItem>;
+    total?: number;
+  }>;
   getIteration: (input: { iteration_id: string }) => Promise<{
     iteration_id: number | string;
     name: string;
@@ -1162,6 +1174,21 @@ export type ReqClient = {
       }>;
     }>;
   }>;
+  updateCacheData: (input: {
+    project_id: string;
+    type?: string;
+    region?: string;
+    cache_id?: number;
+    visible_fields?: string[];
+    fields?: ReqCacheUpdateField[];
+  }) => Promise<{
+    project_id: string;
+    type?: string;
+    region?: string;
+    cache_id?: number;
+    updated_count?: number;
+    fields: ReqCacheUpdateField[];
+  }>;
   addWorkItemComment: (input: {
     project_id: string;
     work_item_id: string;
@@ -1278,6 +1305,33 @@ type ReqIssueListItem = {
   status?: { name?: string };
   tracker?: { name?: string };
   tracker_name?: string;
+};
+
+type ReqDetailedIssueListItem = {
+  id: number | string;
+  subject?: string;
+  name?: string;
+  tracker?: {
+    id?: number | string;
+    name?: string;
+  };
+  tracker_id?: number | string;
+  tracker_name?: string;
+  status?: {
+    id?: number | string;
+    name?: string;
+  };
+  status_id?: number | string;
+  status_name?: string;
+};
+
+type ReqCacheUpdateField = {
+  id?: string;
+  field?: string;
+  header?: string;
+  type?: string;
+  visible?: boolean;
+  order?: number;
 };
 
 type ReqClientOptions = {
@@ -1663,6 +1717,48 @@ export function createReqClient(
       return {
         iterations: response.iterations ?? [],
         total: response.total ?? response.total_count
+      };
+    },
+    async listIterationWorkItems(input) {
+      const offset = (input.page - 1) * input.page_size;
+      const query = new URLSearchParams({
+        offset: String(offset),
+        limit: String(input.page_size)
+      });
+
+      if (input.keyword) {
+        query.set("search", input.keyword);
+      }
+
+      if (typeof input.tracker_id !== "undefined") {
+        query.set("tracker_id", String(input.tracker_id));
+      }
+
+      if (typeof input.status_id !== "undefined") {
+        query.set("status_id", String(input.status_id));
+      }
+
+      const response = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/iterations/${encodeURIComponent(input.iteration_id)}/issues?${query.toString()}`
+      )) as {
+        result?: {
+          issues?: ReqDetailedIssueListItem[];
+          work_items?: ReqDetailedIssueListItem[];
+          total?: number;
+          total_count?: number;
+        };
+        issues?: ReqDetailedIssueListItem[];
+        work_items?: ReqDetailedIssueListItem[];
+        total?: number;
+        total_count?: number;
+      };
+      const payload = unwrapReqPayload(response);
+      const result = payload.result ?? payload;
+      const items: ReqDetailedIssueListItem[] = result.issues ?? result.work_items ?? [];
+
+      return {
+        work_items: items,
+        total: result.total ?? result.total_count
       };
     },
     async getIteration(input) {
@@ -3524,6 +3620,38 @@ export function createReqClient(
         type: input.type ?? "backlog",
         fields: payload.fields ?? [],
         visible_fields: payload.visibleFields ?? []
+      };
+    },
+    async updateCacheData(input) {
+      const response = (await _http.post("/v3/job-cache/update-cache", {
+        projectUUId: input.project_id,
+        type: input.type ?? "backlog",
+        ...(input.region ? { region: input.region } : {}),
+        ...(typeof input.cache_id !== "undefined" ? { cacheId: input.cache_id } : {}),
+        ...(input.visible_fields ? { visibleFields: input.visible_fields } : {}),
+        ...(input.fields ? { fields: input.fields } : {})
+      })) as {
+        result?: {
+          cache_id?: number;
+          id?: number;
+          updated_count?: number;
+          fields?: ReqCacheUpdateField[];
+        };
+        cache_id?: number;
+        id?: number;
+        updated_count?: number;
+        fields?: ReqCacheUpdateField[];
+      };
+      const payload = unwrapReqPayload(response);
+      const result = payload.result ?? payload;
+
+      return {
+        project_id: input.project_id,
+        type: input.type ?? "backlog",
+        region: input.region,
+        cache_id: result.cache_id ?? result.id ?? input.cache_id,
+        updated_count: result.updated_count,
+        fields: result.fields ?? []
       };
     },
     async addWorkItemComment(input) {
