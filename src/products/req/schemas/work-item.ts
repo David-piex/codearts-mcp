@@ -53,10 +53,31 @@ export const reqListWorkItemsInput = pagingSchema.extend({
   project_id: idSchema
 });
 
+export const reqListBoardWorkItemsInput = pagingSchema
+  .extend({
+    project_id: idSchema,
+    created_time_interval: z.string().optional()
+  })
+  .omit({
+    keyword: true,
+    sort_by: true,
+    sort_order: true
+  });
+
 export const reqGetWorkItemInput = z.object({
   project_id: idSchema,
   work_item_id: idSchema
 });
+
+export const reqListBoardWorkItemStatusRecordsInput = pagingSchema
+  .extend({
+    project_id: idSchema
+  })
+  .omit({
+    keyword: true,
+    sort_by: true,
+    sort_order: true
+  });
 
 export const reqListWorkItemRecordsInput = pagingSchema
   .extend({
@@ -115,6 +136,11 @@ export const reqListWorkItemStatusesInput = z.object({
 export const reqListWorkItemWorkflowConfigInput = z.object({
   project_id: idSchema,
   tracker_id: scrumTrackerIdSchema
+});
+
+export const reqListBoardWorkItemWorkflowConfigInput = z.object({
+  project_id: idSchema,
+  board_id: idSchema
 });
 
 export const reqListWorkItemTemplatesInput = z.object({

@@ -7,7 +7,7 @@
 <!-- GENERATED:module-live-readiness-table:start -->
 | Module | Tools Implemented | Read | Write | Real-Live Status | Notes |
 | --- | --- | --- | --- | --- | --- |
-| Req | 47 | 24 | 23 | Partial | Req now covers Scrum project, module, member, iteration, work-item, comment, association, related-user, status, workflow-config, template, template-config, custom-field, status-rule-flag, tracker-handler, and flow-transition tools. Core project/work-item paths have live coverage; member, batch-operation, and newly added config-read live depth is still being expanded. |
+| Req | 50 | 27 | 23 | Partial | Req now covers Scrum project, module, member, iteration, work-item, comment, association, related-user, status, workflow-config, template, template-config, custom-field, status-rule-flag, tracker-handler, board work-item reads, and flow-transition tools. Core project/work-item paths have live coverage; member, batch-operation, new config-read paths, and board reads still need deeper live coverage. |
 | Repo | 25 | 17 | 8 | Validated | All 25 Repo tools are now live-validated. `repo_create_repository` has real AK/SK coverage through the HTTP MCP session on the writable sampled project. |
 | Pipeline | 77 | 42 | 35 | Partial | The original 16-tool execution surface remains live-validated. The newly added delete/enable/disable, extension-endpoint, tag-management, group-management, variable-group, rule-management, tenant-strategy, and project-strategy tools currently have unit regression coverage, but real AK/SK validation is still pending. |
 | Check | 8 | 5 | 3 | Validated | Full tool-level live loop completed. |
@@ -21,9 +21,9 @@
 
 <!-- GENERATED:module-live-readiness-totals:start -->
 - Product modules implemented: `8`
-- Product tools implemented: `257`
+- Product tools implemented: `260`
 - Auth/session tools implemented: `2`
-- Total MCP tools exposed: `259`
+- Total MCP tools exposed: `262`
 <!-- GENERATED:module-live-readiness-totals:end -->
 
 ## 模块摘要
@@ -31,7 +31,7 @@
 <!-- GENERATED:module-live-readiness-summary:start -->
 | Module | Tools | Real-Live Summary | Current Conclusion |
 | --- | --- | --- | --- |
-| Req | 47 | Expanded Scrum surface with configuration read support | The Req MCP surface has grown from the original 8-tool core to project/module/member/iteration/work-item collaboration plus status/workflow/template/template-config/custom-field/status-rule-flag/tracker-handler configuration reads; core live loops are validated while deeper member, batch, and config-read samples remain pending. |
+| Req | 50 | Expanded Scrum surface with configuration read support | The Req MCP surface has grown from the original 8-tool core to project/module/member/iteration/work-item collaboration plus status/workflow/template/template-config/custom-field/status-rule-flag/tracker-handler configuration reads and initial board work-item read coverage; core live loops are validated while deeper member, batch, config-read, and board samples remain pending. |
 | Repo | 25 | `25 Full / 0 Reachable / 0 Unpublished / 0 Code` | `repo_create_repository` has joined the previously validated Repo surface, so the full 25-tool module is now AK/SK Full. |
 | Pipeline | 77 | `16 Full / 0 Reachable / 0 Unpublished / 51 Code` | Core execution closure remains complete, but the new extension-endpoint/tag/group/variable-group/rule-management/tenant-strategy/project-strategy tools still need live AK/SK validation. |
 | Check | 8 | `8 Full` | Tool-level closure is complete. |

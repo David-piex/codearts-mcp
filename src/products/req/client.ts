@@ -340,6 +340,75 @@ export type ReqClient = {
     }>;
     total?: number;
   }>;
+  listBoardWorkItems: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    created_time_interval?: string;
+  }) => Promise<{
+    work_items: Array<{
+      id: number | string;
+      subject?: string;
+      sequence?: string;
+      priority?: string;
+      important?: string;
+      severity?: string;
+      status?: {
+        id?: string;
+        name?: string;
+      };
+    }>;
+    total?: number;
+  }>;
+  listBoardWorkItemStatusRecords: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    records: Array<{
+      work_item_record_id?: string;
+      work_item_id?: string;
+      project_id?: string;
+      work_item_statuses?: Array<{
+        id?: string;
+        status?: {
+          id?: string;
+          name?: string;
+          type?: string;
+          description?: string;
+          parent_status_id?: string;
+        };
+      }>;
+    }>;
+    total?: number;
+  }>;
+  listBoardWorkItemWorkflowConfig: (input: {
+    project_id: string;
+    board_id: string;
+  }) => Promise<{
+    workflows: Array<{
+      parent_name?: string;
+      parent_type?: string;
+      status_id?: string;
+      name?: string;
+      status_type?: string;
+      direct_to?: Array<{
+        parent_name?: string;
+        parent_type?: string;
+        status_id?: string;
+        name?: string;
+        status_type?: string;
+        enabled?: boolean;
+        parent_id?: string;
+      }>;
+      assign_to?: string;
+      comment?: string;
+      required_assign?: boolean;
+      required_notes?: boolean;
+      field_type?: boolean;
+      parent_id?: string;
+    }>;
+  }>;
   getWorkItem: (input: { project_id: string; work_item_id: string }) => Promise<{
     id: number | string;
     subject: string;
@@ -1397,6 +1466,107 @@ export function createReqClient(
           tracker_name: item.tracker_name ?? item.tracker?.name
         })),
         total: payload.total
+      };
+    },
+    async listBoardWorkItems(input) {
+      const offset = (input.page - 1) * input.page_size;
+      const query = new URLSearchParams({
+        offset: String(offset),
+        limit: String(input.page_size)
+      });
+
+      if (input.created_time_interval) {
+        query.set("created_time_interval", input.created_time_interval);
+      }
+
+      const response = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/work-items?${query.toString()}`
+      )) as {
+        work_items?: Array<{
+          id: number | string;
+          subject?: string;
+          sequence?: string;
+          priority?: string;
+          important?: string;
+          severity?: string;
+          status?: {
+            id?: string;
+            name?: string;
+          };
+        }>;
+        total?: number;
+      };
+
+      return {
+        work_items: response.work_items ?? [],
+        total: response.total
+      };
+    },
+    async listBoardWorkItemStatusRecords(input) {
+      const offset = (input.page - 1) * input.page_size;
+      const query = new URLSearchParams({
+        offset: String(offset),
+        limit: String(input.page_size)
+      });
+      const response = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/work-items/status-records?${query.toString()}`
+      )) as {
+        records?: Array<{
+          work_item_record_id?: string;
+          work_item_id?: string;
+          project_id?: string;
+          work_item_statuses?: Array<{
+            id?: string;
+            status?: {
+              id?: string;
+              name?: string;
+              type?: string;
+              description?: string;
+              parent_status_id?: string;
+            };
+          }>;
+        }>;
+        total?: number;
+      };
+
+      return {
+        records: response.records ?? [],
+        total: response.total
+      };
+    },
+    async listBoardWorkItemWorkflowConfig(input) {
+      const query = new URLSearchParams({
+        board_id: input.board_id
+      });
+      const response = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/work-items/workflow/config?${query.toString()}`
+      )) as {
+        workflows?: Array<{
+          parent_name?: string;
+          parent_type?: string;
+          status_id?: string;
+          name?: string;
+          status_type?: string;
+          direct_to?: Array<{
+            parent_name?: string;
+            parent_type?: string;
+            status_id?: string;
+            name?: string;
+            status_type?: string;
+            enabled?: boolean;
+            parent_id?: string;
+          }>;
+          assign_to?: string;
+          comment?: string;
+          required_assign?: boolean;
+          required_notes?: boolean;
+          field_type?: boolean;
+          parent_id?: string;
+        }>;
+      };
+
+      return {
+        workflows: response.workflows ?? []
       };
     },
     async getWorkItem(input) {

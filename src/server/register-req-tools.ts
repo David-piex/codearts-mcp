@@ -16,6 +16,9 @@ import {
   reqDeleteWorkItemInput,
   reqCreateWorkItemInput,
   reqBatchUpdateWorkItemsInput,
+  reqListBoardWorkItemStatusRecordsInput,
+  reqListBoardWorkItemWorkflowConfigInput,
+  reqListBoardWorkItemsInput,
   reqGetIterationInput,
   reqGetProjectInput,
   reqQueryIterationImmovableIssuesInput,
@@ -71,6 +74,9 @@ import { createReqLeaveProjectHandler } from "../products/req/tools/leave-projec
 import { createReqListAssociatedCommitsHandler } from "../products/req/tools/list-associated-commits.js";
 import { createReqListAssociatedIssuesHandler } from "../products/req/tools/list-associated-issues.js";
 import { createReqListAssociatedTestCasesHandler } from "../products/req/tools/list-associated-test-cases.js";
+import { createReqListBoardWorkItemStatusRecordsHandler } from "../products/req/tools/list-board-work-item-status-records.js";
+import { createReqListBoardWorkItemWorkflowConfigHandler } from "../products/req/tools/list-board-work-item-workflow-config.js";
+import { createReqListBoardWorkItemsHandler } from "../products/req/tools/list-board-work-items.js";
 import { createReqListIterationsHandler } from "../products/req/tools/list-iterations.js";
 import { createReqListNotAddedProjectsHandler } from "../products/req/tools/list-not-added-projects.js";
 import { createReqListProjectModulesHandler } from "../products/req/tools/list-project-modules.js";
@@ -241,6 +247,29 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqLeaveProjectHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqLeaveProjectHandler,
     rateLimitAction: "req_leave_project"
+  }),
+  "req_list_board_work_items": defineProductTool({
+    description: "List CodeArts Req board work items",
+    inputSchema: reqListBoardWorkItemsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListBoardWorkItemsHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListBoardWorkItemsHandler
+  }),
+  "req_list_board_work_item_status_records": defineProductTool({
+    description: "List CodeArts Req board work item status records",
+    inputSchema: reqListBoardWorkItemStatusRecordsInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqListBoardWorkItemStatusRecordsHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqListBoardWorkItemStatusRecordsHandler
+  }),
+  "req_list_board_work_item_workflow_config": defineProductTool({
+    description: "List CodeArts Req board work item workflow config",
+    inputSchema: reqListBoardWorkItemWorkflowConfigInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqListBoardWorkItemWorkflowConfigHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqListBoardWorkItemWorkflowConfigHandler
   }),
   "req_create_work_item": defineProductTool({
     description: "Create CodeArts Req work item",

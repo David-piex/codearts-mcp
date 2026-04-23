@@ -1800,6 +1800,193 @@ describe("createReqClient", () => {
     });
   });
 
+  it("maps board work item queries to the documented board work-items endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          work_items: [
+            {
+              id: "4633454879781163008",
+              subject: "看板卡片示例",
+              sequence: "5500756",
+              priority: "低",
+              important: "提示",
+              severity: "一般",
+              status: {
+                id: "status-1",
+                name: "新建"
+              }
+            }
+          ],
+          total: 1
+        };
+      }
+    } as never);
+
+    const result = await client.listBoardWorkItems({
+      project_id: "p-1",
+      page: 2,
+      page_size: 10
+    });
+
+    expect(requestedPath).toBe("/v4/projects/p-1/work-items?offset=10&limit=10");
+    expect(result).toEqual({
+      work_items: [
+        {
+          id: "4633454879781163008",
+          subject: "看板卡片示例",
+          sequence: "5500756",
+          priority: "低",
+          important: "提示",
+          severity: "一般",
+          status: {
+            id: "status-1",
+            name: "新建"
+          }
+        }
+      ],
+      total: 1
+    });
+  });
+
+  it("maps board work item status record queries to the documented status-records endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          records: [
+            {
+              work_item_record_id: "record-1",
+              work_item_id: "wi-1",
+              project_id: "p-1",
+              work_item_statuses: [
+                {
+                  id: "status-record-1",
+                  status: {
+                    id: "status-1",
+                    name: "研发",
+                    type: "IN_PROGRESS",
+                    description: "demo",
+                    parent_status_id: "parent-1"
+                  }
+                }
+              ]
+            }
+          ],
+          total: 1
+        };
+      }
+    } as never);
+
+    const result = await client.listBoardWorkItemStatusRecords({
+      project_id: "p-1",
+      page: 2,
+      page_size: 10
+    });
+
+    expect(requestedPath).toBe("/v4/projects/p-1/work-items/status-records?offset=10&limit=10");
+    expect(result).toEqual({
+      records: [
+        {
+          work_item_record_id: "record-1",
+          work_item_id: "wi-1",
+          project_id: "p-1",
+          work_item_statuses: [
+            {
+              id: "status-record-1",
+              status: {
+                id: "status-1",
+                name: "研发",
+                type: "IN_PROGRESS",
+                description: "demo",
+                parent_status_id: "parent-1"
+              }
+            }
+          ]
+        }
+      ],
+      total: 1
+    });
+  });
+
+  it("maps board work item workflow config queries to the documented board workflow config endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          workflows: [
+            {
+              parent_name: "进行中",
+              parent_type: "IN_PROGRESS",
+              status_id: "status-1",
+              name: "研发",
+              status_type: "IN_PROGRESS",
+              direct_to: [
+                {
+                  parent_name: "已完成",
+                  parent_type: "COMPLETE",
+                  status_id: "status-2",
+                  name: "测试",
+                  status_type: "COMPLETE",
+                  enabled: true,
+                  parent_id: "parent-2"
+                }
+              ],
+              assign_to: "user-1",
+              comment: "A transfer to B",
+              required_assign: false,
+              required_notes: true,
+              field_type: false,
+              parent_id: "parent-1"
+            }
+          ]
+        };
+      }
+    } as never);
+
+    const result = await client.listBoardWorkItemWorkflowConfig({
+      project_id: "p-1",
+      board_id: "board-1"
+    });
+
+    expect(requestedPath).toBe("/v4/projects/p-1/work-items/workflow/config?board_id=board-1");
+    expect(result).toEqual({
+      workflows: [
+        {
+          parent_name: "进行中",
+          parent_type: "IN_PROGRESS",
+          status_id: "status-1",
+          name: "研发",
+          status_type: "IN_PROGRESS",
+          direct_to: [
+            {
+              parent_name: "已完成",
+              parent_type: "COMPLETE",
+              status_id: "status-2",
+              name: "测试",
+              status_type: "COMPLETE",
+              enabled: true,
+              parent_id: "parent-2"
+            }
+          ],
+          assign_to: "user-1",
+          comment: "A transfer to B",
+          required_assign: false,
+          required_notes: true,
+          field_type: false,
+          parent_id: "parent-1"
+        }
+      ]
+    });
+  });
+
   it("falls back to the related_user endpoint when the documented related-user path returns not_found", async () => {
     const get = vi
       .fn()
