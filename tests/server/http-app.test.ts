@@ -96,6 +96,18 @@ describe("http app", () => {
     expect(body.status).toBe("ok");
   });
 
+  it("rejects GET /mcp because this deployment only supports JSON-over-POST MCP requests", async () => {
+    const { port } = await servers.start();
+    const response = await fetch(`http://127.0.0.1:${port}/mcp`);
+    const body = (await response.json()) as {
+      error?: string;
+    };
+
+    expect(response.status).toBe(405);
+    expect(response.headers.get("allow")).toBe("POST, DELETE");
+    expect(body.error).toContain("GET /mcp SSE is not supported");
+  });
+
   it("emits a structured request log after the response completes", async () => {
     const { logs, requestLogger } = createRequestLogCapture();
     const { port } = await servers.start(undefined, { requestLogger });

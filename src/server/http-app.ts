@@ -367,6 +367,14 @@ export function createHttpApp(
         return;
       }
 
+      if (req.method === "GET") {
+        res.setHeader("allow", "POST, DELETE");
+        writeJson(res, 405, {
+          error: "GET /mcp SSE is not supported by this deployment. Use POST /mcp for MCP requests."
+        });
+        return;
+      }
+
       const authResolveStartedAt = Date.now();
       const authContext = authResolver
         ? await authResolver.resolve({
@@ -453,16 +461,6 @@ export function createHttpApp(
           }
 
           await transport.handleRequest(req, res, parsedBody);
-          return;
-        }
-
-        if (req.method === "GET") {
-          if (!sessionId || !transports[sessionId]) {
-            writeJson(res, 400, { error: "Invalid or missing session ID." });
-            return;
-          }
-
-          await transports[sessionId].handleRequest(req, res);
           return;
         }
 
