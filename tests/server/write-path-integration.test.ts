@@ -15,6 +15,9 @@ import {
   readRegisteredHandler,
   stubJsonFetch
 } from "./http-test-helpers.js";
+import { createSessionCredentialStore } from "../../src/server/session-store.js";
+
+type SessionStore = ReturnType<typeof createSessionCredentialStore>;
 
 type WritePathCase = {
   name: string;
@@ -26,7 +29,7 @@ type WritePathCase = {
     | typeof createSessionAwarePipelineRetryRunHandler
     | typeof createSessionAwarePipelineApproveRunHandler
     | typeof createSessionAwarePipelineRejectRunHandler
-    | ((store: Parameters<typeof createSessionAwareReqCreateWorkItemHandler>[0]) => (
+    | ((store: SessionStore) => (
         input: unknown,
         extra: unknown
       ) => Promise<unknown>);
@@ -35,6 +38,7 @@ type WritePathCase = {
   expectedItem: Record<string, unknown>;
   expectedRequest: {
     path: string;
+    method?: string;
     bodyIncludes?: string[];
   };
 };
@@ -207,7 +211,7 @@ function createProjectPipelineReviewInput<T extends Record<string, unknown>>(
 const writePathCases: WritePathCase[] = [
   {
     name: "executes req_create_project through the registered session-aware runtime client",
-    createHandler: (store) =>
+    createHandler: (store: SessionStore) =>
       readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_create_project"),
     input: createReqCreateProjectInput(),
     responsePayload: {
@@ -232,7 +236,7 @@ const writePathCases: WritePathCase[] = [
   },
   {
     name: "executes req_update_project through the registered session-aware runtime client",
-    createHandler: (store) =>
+    createHandler: (store: SessionStore) =>
       readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_update_project"),
     input: createReqUpdateProjectInput(),
     responsePayload: {},
@@ -250,7 +254,7 @@ const writePathCases: WritePathCase[] = [
   },
   {
     name: "executes req_delete_project through the registered session-aware runtime client",
-    createHandler: (store) =>
+    createHandler: (store: SessionStore) =>
       readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_delete_project"),
     input: createReqDeleteProjectInput(),
     responsePayload: {},

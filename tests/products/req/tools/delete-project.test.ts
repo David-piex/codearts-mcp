@@ -85,7 +85,7 @@ describe("createReqDeleteProjectHandler", () => {
     const client = {
       deleteProject: vi.fn(async () => ({
         project_id: "project-1",
-        deleted: true
+        deleted: true as const
       }))
     };
     const handler = createReqDeleteProjectHandler(client);
