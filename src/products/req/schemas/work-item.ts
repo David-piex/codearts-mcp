@@ -133,6 +133,29 @@ export const reqListWorkItemStatusesInput = z.object({
   project_id: idSchema
 });
 
+export const reqListWorkItemStatusAttributesInput = z.object({
+  project_id: idSchema
+});
+
+export const reqListWorkItemStatusDetailsInput = z.object({
+  project_id: idSchema,
+  tracker_id: scrumTrackerIdSchema
+});
+
+export const reqListWorkItemStatusConfigsInput = z.object({
+  project_id: idSchema,
+  tracker_id: scrumTrackerIdSchema
+});
+
+export const reqListOptionalWorkItemStatusConfigsInput = z.object({
+  project_id: idSchema,
+  tracker_id: scrumTrackerIdSchema
+});
+
+export const reqGetProjectPublicConfigInput = z.object({
+  project_id: idSchema
+});
+
 export const reqListWorkItemWorkflowConfigInput = z.object({
   project_id: idSchema,
   tracker_id: scrumTrackerIdSchema

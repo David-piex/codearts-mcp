@@ -402,6 +402,111 @@ describe("registerReqTool", () => {
     );
   });
 
+  it("registers the list work item status attributes tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_list_work_item_status_attributes",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_list_work_item_status_attributes",
+      expect.objectContaining({
+        title: "req_list_work_item_status_attributes",
+        description: "List CodeArts Req work item status attributes"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the list work item status details tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_list_work_item_status_details",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_list_work_item_status_details",
+      expect.objectContaining({
+        title: "req_list_work_item_status_details",
+        description: "List CodeArts Req work item status details"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the list work item status configs tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_list_work_item_status_configs",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_list_work_item_status_configs",
+      expect.objectContaining({
+        title: "req_list_work_item_status_configs",
+        description: "List CodeArts Req work item status configs"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the list optional work item status configs tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_list_optional_work_item_status_configs",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_list_optional_work_item_status_configs",
+      expect.objectContaining({
+        title: "req_list_optional_work_item_status_configs",
+        description: "List CodeArts Req optional work item status configs"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the get project public config tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_get_project_public_config",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_get_project_public_config",
+      expect.objectContaining({
+        title: "req_get_project_public_config",
+        description: "Get CodeArts Req project public config"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("registers the get work item template config tool in http mode", () => {
     const registerTool = vi.fn();
 

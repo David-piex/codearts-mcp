@@ -1523,6 +1523,229 @@ describe("createReqClient", () => {
     });
   });
 
+  it("maps work item status attribute and detail queries to the documented endpoints", async () => {
+    const requestedPaths: string[] = [];
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPaths.push(path);
+
+        if (path.startsWith("/v2/p-1/issue-status-attributes")) {
+          return {
+            issue_status_attributes: [
+              {
+                name: "开始态",
+                type: "START",
+                project_id: "p-1"
+              }
+            ],
+            total: 1
+          };
+        }
+
+        return {
+          result: {
+            issue_statuses: [
+              {
+                id: 1,
+                status_id: "status-1",
+                name: "新建",
+                is_closed: 0,
+                is_initial: 1,
+                issue_field_configs: [
+                  {
+                    field: "subject",
+                    name: "标题",
+                    field_type: "text"
+                  }
+                ],
+                issue_status_attribute: {
+                  project_id: "p-1",
+                  name: "开始态",
+                  type: "START"
+                }
+              }
+            ],
+            initial: [
+              {
+                id: 1,
+                status_id: "status-1",
+                name: "新建",
+                is_closed: 0
+              }
+            ]
+          }
+        };
+      }
+    } as never);
+
+    const [attributes, details] = await Promise.all([
+      client.listWorkItemStatusAttributes({
+        project_id: "p-1"
+      }),
+      client.listWorkItemStatusDetails({
+        project_id: "p-1",
+        tracker_id: 7
+      })
+    ]);
+
+    expect(requestedPaths).toEqual([
+      "/v2/p-1/issue-status-attributes",
+      "/v2/issue-status/all?project_id=p-1&tracker_id=7"
+    ]);
+    expect(attributes).toEqual({
+      issue_status_attributes: [
+        {
+          name: "开始态",
+          type: "START",
+          project_id: "p-1"
+        }
+      ],
+      total: 1
+    });
+    expect(details).toEqual({
+      project_id: "p-1",
+      tracker_id: 7,
+      grouped_statuses: {
+        initial: [
+          {
+            id: 1,
+            status_id: "status-1",
+            name: "新建",
+            is_closed: 0
+          }
+        ]
+      },
+      issue_statuses: [
+        {
+          id: 1,
+          status_id: "status-1",
+          name: "新建",
+          is_closed: 0,
+          is_initial: 1,
+          issue_field_configs: [
+            {
+              field: "subject",
+              name: "标题",
+              field_type: "text"
+            }
+          ],
+          issue_status_attribute: {
+            project_id: "p-1",
+            name: "开始态",
+            type: "START"
+          }
+        }
+      ]
+    });
+  });
+
+  it("maps work item status config and project public config queries to the documented endpoints", async () => {
+    const requestedPaths: string[] = [];
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPaths.push(path);
+
+        if (path.startsWith("/v3/issue-status/issue-status-config")) {
+          return {
+            result: {
+              issueStatus: [
+                {
+                  trackerList: [7],
+                  id: "status-1",
+                  statusId: 1,
+                  definedName: "新建",
+                  is_initial: true,
+                  issueStatusAttribute: {
+                    id: 1,
+                    name: "开始态",
+                    type: "START"
+                  }
+                }
+              ],
+              workitem_readonly_mode: true
+            }
+          };
+        }
+
+        if (path.startsWith("/v2/issue-status/optional-status-config")) {
+          return {
+            result: {
+              issueStatus: [
+                {
+                  trackerList: [7],
+                  id: "status-2",
+                  statusId: 2,
+                  definedName: "处理中",
+                  is_closed: false
+                }
+              ]
+            }
+          };
+        }
+
+        return {
+          closed_workitem_readonly_mode: true
+        };
+      }
+    } as never);
+
+    const [configs, optionalConfigs, publicConfig] = await Promise.all([
+      client.listWorkItemStatusConfigs({
+        project_id: "p-1",
+        tracker_id: 7
+      }),
+      client.listOptionalWorkItemStatusConfigs({
+        project_id: "p-1",
+        tracker_id: 7
+      }),
+      client.getProjectPublicConfig({
+        project_id: "p-1"
+      })
+    ]);
+
+    expect(requestedPaths).toEqual([
+      "/v3/issue-status/issue-status-config?projectUUId=p-1&trackerId=7",
+      "/v2/issue-status/optional-status-config?projectUUId=p-1&trackerId=7",
+      "/v4/project/p-1/public-configs"
+    ]);
+    expect(configs).toEqual({
+      project_id: "p-1",
+      tracker_id: 7,
+      issue_statuses: [
+        {
+          trackerList: [7],
+          id: "status-1",
+          statusId: 1,
+          definedName: "新建",
+          is_initial: true,
+          issueStatusAttribute: {
+            id: 1,
+            name: "开始态",
+            type: "START"
+          }
+        }
+      ],
+      workitem_readonly_mode: true
+    });
+    expect(optionalConfigs).toEqual({
+      project_id: "p-1",
+      tracker_id: 7,
+      issue_statuses: [
+        {
+          trackerList: [7],
+          id: "status-2",
+          statusId: 2,
+          definedName: "处理中",
+          is_closed: false
+        }
+      ]
+    });
+    expect(publicConfig).toEqual({
+      project_id: "p-1",
+      closed_workitem_readonly_mode: true
+    });
+  });
+
   it("maps work item workflow config queries to the documented workflow config endpoint", async () => {
     let requestedPath = "";
     const client = createReqClient({

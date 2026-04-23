@@ -20,9 +20,11 @@ import {
   reqListBoardWorkItemWorkflowConfigInput,
   reqListBoardWorkItemsInput,
   reqListCacheDataInput,
+  reqGetProjectPublicConfigInput,
   reqGetIterationInput,
   reqGetProjectInput,
   reqListJobCacheBoardsInput,
+  reqListOptionalWorkItemStatusConfigsInput,
   reqQueryIterationImmovableIssuesInput,
   reqGetWorkItemInput,
   reqLeaveProjectInput,
@@ -37,6 +39,9 @@ import {
   reqListRelatedUsersInput,
   reqListWorkItemCustomFieldsInput,
   reqListWorkItemCommentsInput,
+  reqListWorkItemStatusAttributesInput,
+  reqListWorkItemStatusConfigsInput,
+  reqListWorkItemStatusDetailsInput,
   reqGetWorkItemStatusRuleFlagInput,
   reqListWorkItemStatusesInput,
   reqGetWorkItemTemplateConfigInput,
@@ -70,6 +75,7 @@ import { createReqCreateWorkItemHandler } from "../products/req/tools/create-wor
 import { createReqDeleteWorkItemHandler } from "../products/req/tools/delete-work-item.js";
 import { createReqBatchUpdateWorkItemsHandler } from "../products/req/tools/batch-update-work-items.js";
 import { createReqGetIterationHandler } from "../products/req/tools/get-iteration.js";
+import { createReqGetProjectPublicConfigHandler } from "../products/req/tools/get-project-public-config.js";
 import { createReqGetProjectHandler } from "../products/req/tools/get-project.js";
 import { createReqGetWorkItemHandler } from "../products/req/tools/get-work-item.js";
 import { createReqLeaveProjectHandler } from "../products/req/tools/leave-project.js";
@@ -82,6 +88,7 @@ import { createReqListBoardWorkItemsHandler } from "../products/req/tools/list-b
 import { createReqListCacheDataHandler } from "../products/req/tools/list-cache-data.js";
 import { createReqListIterationsHandler } from "../products/req/tools/list-iterations.js";
 import { createReqListJobCacheBoardsHandler } from "../products/req/tools/list-job-cache-boards.js";
+import { createReqListOptionalWorkItemStatusConfigsHandler } from "../products/req/tools/list-optional-work-item-status-configs.js";
 import { createReqListNotAddedProjectsHandler } from "../products/req/tools/list-not-added-projects.js";
 import { createReqListProjectModulesHandler } from "../products/req/tools/list-project-modules.js";
 import { createReqListProjectMembersHandler } from "../products/req/tools/list-project-members.js";
@@ -89,6 +96,9 @@ import { createReqListProjectsHandler } from "../products/req/tools/list-project
 import { createReqListRelatedUsersHandler } from "../products/req/tools/list-related-users.js";
 import { createReqListWorkItemCustomFieldsHandler } from "../products/req/tools/list-work-item-custom-fields.js";
 import { createReqListWorkItemCommentsHandler } from "../products/req/tools/list-work-item-comments.js";
+import { createReqListWorkItemStatusAttributesHandler } from "../products/req/tools/list-work-item-status-attributes.js";
+import { createReqListWorkItemStatusConfigsHandler } from "../products/req/tools/list-work-item-status-configs.js";
+import { createReqListWorkItemStatusDetailsHandler } from "../products/req/tools/list-work-item-status-details.js";
 import { createReqGetWorkItemStatusRuleFlagHandler } from "../products/req/tools/get-work-item-status-rule-flag.js";
 import { createReqListWorkItemStatusesHandler } from "../products/req/tools/list-work-item-statuses.js";
 import { createReqGetWorkItemTemplateConfigHandler } from "../products/req/tools/get-work-item-template-config.js";
@@ -232,6 +242,13 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGetProjectHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqGetProjectHandler
   }),
+  "req_get_project_public_config": defineProductTool({
+    description: "Get CodeArts Req project public config",
+    inputSchema: reqGetProjectPublicConfigInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGetProjectPublicConfigHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqGetProjectPublicConfigHandler
+  }),
   "req_get_iteration": defineProductTool({
     description: "Get CodeArts Req iteration detail",
     inputSchema: reqGetIterationInput,
@@ -357,6 +374,38 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemStatusesHandler>[0] }) =>
       clients.reqClient,
     createProductHandler: createReqListWorkItemStatusesHandler
+  }),
+  "req_list_work_item_status_attributes": defineProductTool({
+    description: "List CodeArts Req work item status attributes",
+    inputSchema: reqListWorkItemStatusAttributesInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqListWorkItemStatusAttributesHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqListWorkItemStatusAttributesHandler
+  }),
+  "req_list_work_item_status_details": defineProductTool({
+    description: "List CodeArts Req work item status details",
+    inputSchema: reqListWorkItemStatusDetailsInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqListWorkItemStatusDetailsHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqListWorkItemStatusDetailsHandler
+  }),
+  "req_list_work_item_status_configs": defineProductTool({
+    description: "List CodeArts Req work item status configs",
+    inputSchema: reqListWorkItemStatusConfigsInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqListWorkItemStatusConfigsHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqListWorkItemStatusConfigsHandler
+  }),
+  "req_list_optional_work_item_status_configs": defineProductTool({
+    description: "List CodeArts Req optional work item status configs",
+    inputSchema: reqListOptionalWorkItemStatusConfigsInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqListOptionalWorkItemStatusConfigsHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqListOptionalWorkItemStatusConfigsHandler
   }),
   "req_get_work_item_status_rule_flag": defineProductTool({
     description: "Get CodeArts Req work item status rule flag",

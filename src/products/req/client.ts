@@ -586,6 +586,14 @@ export type ReqClient = {
         nick_name_py?: string;
       }>;
     }>;
+  listWorkItemStatusAttributes: (input: { project_id: string }) => Promise<{
+    issue_status_attributes: Array<{
+      name?: string;
+      type?: string;
+      project_id?: string;
+    }>;
+    total?: number;
+  }>;
   listWorkItemStatuses: (input: { project_id: string }) => Promise<{
     issue_statuses: Array<{
       id?: string;
@@ -598,6 +606,141 @@ export type ReqClient = {
       };
     }>;
     total?: number;
+  }>;
+  listWorkItemStatusDetails: (input: {
+    project_id: string;
+    tracker_id: 2 | 3 | 5 | 6 | 7;
+  }) => Promise<{
+    project_id: string;
+    tracker_id: 2 | 3 | 5 | 6 | 7;
+    grouped_statuses: Record<
+      string,
+      Array<{
+        id?: number;
+        status_id?: string;
+        name?: string;
+        is_closed?: number;
+        position?: number;
+        default_done_ratio?: number;
+        is_initial?: number;
+        issue_field_configs?: Array<{
+          custom?: boolean;
+          default_option?: Array<{ id?: string; name?: string }>;
+          default_options?: Array<{ id?: string; name?: string }>;
+          default_value?: string;
+          field?: string;
+          field_type?: string;
+          is_required?: number;
+          is_visible?: boolean;
+          last?: boolean;
+          name?: string;
+          option?: Array<{ id?: string; name?: string }>;
+          options?: string;
+          position?: number;
+          project_id?: string;
+          tracker_list?: number[];
+          type_options?: string;
+        }>;
+        flag?: number;
+        status_attribute?: number;
+        issue_status_attribute?: {
+          project_id?: string;
+          name?: string;
+          type?: string;
+        };
+      }>
+    >;
+    issue_statuses: Array<{
+      id?: number;
+      status_id?: string;
+      name?: string;
+      is_closed?: number;
+      position?: number;
+      default_done_ratio?: number;
+      is_initial?: number;
+      issue_field_configs?: Array<{
+        custom?: boolean;
+        default_option?: Array<{ id?: string; name?: string }>;
+        default_options?: Array<{ id?: string; name?: string }>;
+        default_value?: string;
+        field?: string;
+        field_type?: string;
+        is_required?: number;
+        is_visible?: boolean;
+        last?: boolean;
+        name?: string;
+        option?: Array<{ id?: string; name?: string }>;
+        options?: string;
+        position?: number;
+        project_id?: string;
+        tracker_list?: number[];
+        type_options?: string;
+      }>;
+      flag?: number;
+      status_attribute?: number;
+      issue_status_attribute?: {
+        project_id?: string;
+        name?: string;
+        type?: string;
+      };
+    }>;
+  }>;
+  listWorkItemStatusConfigs: (input: {
+    project_id: string;
+    tracker_id: 2 | 3 | 5 | 6 | 7;
+  }) => Promise<{
+    project_id: string;
+    tracker_id: 2 | 3 | 5 | 6 | 7;
+    issue_statuses: Array<{
+      trackerList?: number[];
+      id?: string;
+      statusId?: number;
+      definedName?: string;
+      description?: string;
+      position?: number;
+      flag?: number;
+      is_closed?: boolean;
+      is_initial?: boolean;
+      statusAttribute?: number;
+      statusAttributeName?: string;
+      issueStatusAttribute?: {
+        id?: number | string;
+        name?: string;
+        type?: string;
+      };
+      trackerId?: number;
+    }>;
+    workitem_readonly_mode?: boolean;
+  }>;
+  listOptionalWorkItemStatusConfigs: (input: {
+    project_id: string;
+    tracker_id: 2 | 3 | 5 | 6 | 7;
+  }) => Promise<{
+    project_id: string;
+    tracker_id: 2 | 3 | 5 | 6 | 7;
+    issue_statuses: Array<{
+      trackerList?: number[];
+      id?: string;
+      statusId?: number;
+      definedName?: string;
+      description?: string;
+      position?: number;
+      flag?: number;
+      is_closed?: boolean;
+      is_initial?: boolean;
+      statusAttribute?: number;
+      statusAttributeName?: string;
+      issueStatusAttribute?: {
+        id?: number | string;
+        name?: string;
+        type?: string;
+      };
+      trackerId?: number;
+    }>;
+  }>;
+  getProjectPublicConfig: (input: { project_id: string }) => Promise<{
+    project_id: string;
+    closed_workitem_readonly_mode?: boolean;
   }>;
   listWorkItemWorkflowConfig: (input: {
     project_id: string;
@@ -1955,6 +2098,23 @@ export function createReqClient(
         related_developer_list: payload.related_developer_list ?? []
       };
     },
+    async listWorkItemStatusAttributes(input) {
+      const response = (await _http.get(
+        `/v2/${encodeURIComponent(input.project_id)}/issue-status-attributes`
+      )) as {
+        issue_status_attributes?: Array<{
+          name?: string;
+          type?: string;
+          project_id?: string;
+        }>;
+        total?: number;
+      };
+
+      return {
+        issue_status_attributes: response.issue_status_attributes ?? [],
+        total: response.total
+      };
+    },
     async listWorkItemStatuses(input) {
       const response = (await _http.get(
         `/v4/projects/${encodeURIComponent(input.project_id)}/statuses`
@@ -1975,6 +2135,223 @@ export function createReqClient(
       return {
         issue_statuses: response.issue_statuses ?? [],
         total: response.total
+      };
+    },
+    async listWorkItemStatusDetails(input) {
+      const query = new URLSearchParams({
+        project_id: input.project_id,
+        tracker_id: String(input.tracker_id)
+      });
+      const response = (await _http.get(`/v2/issue-status/all?${query.toString()}`)) as {
+        result?: {
+          issue_statuses?: Array<{
+            id?: number;
+            status_id?: string;
+            name?: string;
+            is_closed?: number;
+            position?: number;
+            default_done_ratio?: number;
+            is_initial?: number;
+            issue_field_configs?: Array<{
+              custom?: boolean;
+              default_option?: Array<{ id?: string; name?: string }>;
+              default_options?: Array<{ id?: string; name?: string }>;
+              default_value?: string;
+              field?: string;
+              field_type?: string;
+              is_required?: number;
+              is_visible?: boolean;
+              last?: boolean;
+              name?: string;
+              option?: Array<{ id?: string; name?: string }>;
+              options?: string;
+              position?: number;
+              project_id?: string;
+              tracker_list?: number[];
+              type_options?: string;
+            }>;
+            flag?: number;
+            status_attribute?: number;
+            issue_status_attribute?: {
+              project_id?: string;
+              name?: string;
+              type?: string;
+            };
+          }>;
+          [key: string]:
+            | Array<{
+                id?: number;
+                status_id?: string;
+                name?: string;
+                is_closed?: number;
+                position?: number;
+                default_done_ratio?: number;
+                is_initial?: number;
+                issue_field_configs?: Array<{
+                  custom?: boolean;
+                  default_option?: Array<{ id?: string; name?: string }>;
+                  default_options?: Array<{ id?: string; name?: string }>;
+                  default_value?: string;
+                  field?: string;
+                  field_type?: string;
+                  is_required?: number;
+                  is_visible?: boolean;
+                  last?: boolean;
+                  name?: string;
+                  option?: Array<{ id?: string; name?: string }>;
+                  options?: string;
+                  position?: number;
+                  project_id?: string;
+                  tracker_list?: number[];
+                  type_options?: string;
+                }>;
+                flag?: number;
+                status_attribute?: number;
+                issue_status_attribute?: {
+                  project_id?: string;
+                  name?: string;
+                  type?: string;
+                };
+              }>
+            | undefined;
+        };
+      };
+      const payload = response.result ?? {};
+      const groupedStatuses = Object.fromEntries(
+        Object.entries(payload).filter(([key, value]) => key !== "issue_statuses" && Array.isArray(value))
+      ) as Record<
+        string,
+        Array<{
+          id?: number;
+          status_id?: string;
+          name?: string;
+          is_closed?: number;
+          position?: number;
+          default_done_ratio?: number;
+          is_initial?: number;
+          issue_field_configs?: Array<{
+            custom?: boolean;
+            default_option?: Array<{ id?: string; name?: string }>;
+            default_options?: Array<{ id?: string; name?: string }>;
+            default_value?: string;
+            field?: string;
+            field_type?: string;
+            is_required?: number;
+            is_visible?: boolean;
+            last?: boolean;
+            name?: string;
+            option?: Array<{ id?: string; name?: string }>;
+            options?: string;
+            position?: number;
+            project_id?: string;
+            tracker_list?: number[];
+            type_options?: string;
+          }>;
+          flag?: number;
+          status_attribute?: number;
+          issue_status_attribute?: {
+            project_id?: string;
+            name?: string;
+            type?: string;
+          };
+        }>
+      >;
+
+      return {
+        project_id: input.project_id,
+        tracker_id: input.tracker_id,
+        grouped_statuses: groupedStatuses,
+        issue_statuses: payload.issue_statuses ?? []
+      };
+    },
+    async listWorkItemStatusConfigs(input) {
+      const query = new URLSearchParams({
+        projectUUId: input.project_id,
+        trackerId: String(input.tracker_id)
+      });
+      const response = (await _http.get(
+        `/v3/issue-status/issue-status-config?${query.toString()}`
+      )) as {
+        result?: {
+          issueStatus?: Array<{
+            trackerList?: number[];
+            id?: string;
+            statusId?: number;
+            definedName?: string;
+            description?: string;
+            position?: number;
+            flag?: number;
+            is_closed?: boolean;
+            is_initial?: boolean;
+            statusAttribute?: number;
+            statusAttributeName?: string;
+            issueStatusAttribute?: {
+              id?: number | string;
+              name?: string;
+              type?: string;
+            };
+            trackerId?: number;
+          }>;
+          workitem_readonly_mode?: boolean;
+        };
+      };
+      const payload = response.result ?? {};
+
+      return {
+        project_id: input.project_id,
+        tracker_id: input.tracker_id,
+        issue_statuses: payload.issueStatus ?? [],
+        workitem_readonly_mode: payload.workitem_readonly_mode
+      };
+    },
+    async listOptionalWorkItemStatusConfigs(input) {
+      const query = new URLSearchParams({
+        projectUUId: input.project_id,
+        trackerId: String(input.tracker_id)
+      });
+      const response = (await _http.get(
+        `/v2/issue-status/optional-status-config?${query.toString()}`
+      )) as {
+        result?: {
+          issueStatus?: Array<{
+            trackerList?: number[];
+            id?: string;
+            statusId?: number;
+            definedName?: string;
+            description?: string;
+            position?: number;
+            flag?: number;
+            is_closed?: boolean;
+            is_initial?: boolean;
+            statusAttribute?: number;
+            statusAttributeName?: string;
+            issueStatusAttribute?: {
+              id?: number | string;
+              name?: string;
+              type?: string;
+            };
+            trackerId?: number;
+          }>;
+        };
+      };
+      const payload = response.result ?? {};
+
+      return {
+        project_id: input.project_id,
+        tracker_id: input.tracker_id,
+        issue_statuses: payload.issueStatus ?? []
+      };
+    },
+    async getProjectPublicConfig(input) {
+      const response = (await _http.get(
+        `/v4/project/${encodeURIComponent(input.project_id)}/public-configs`
+      )) as {
+        closed_workitem_readonly_mode?: boolean;
+      };
+
+      return {
+        project_id: input.project_id,
+        closed_workitem_readonly_mode: response.closed_workitem_readonly_mode
       };
     },
     async listWorkItemWorkflowConfig(input) {

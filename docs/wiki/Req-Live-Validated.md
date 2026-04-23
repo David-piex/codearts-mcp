@@ -2,7 +2,7 @@
 
 这一页只说明 Req 模块的真实 AK/SK 联调边界，不把“工具已经实现”直接等同于“已经真实 live 跑过”。
 
-当前 Req 已导出 `52` 个工具，功能面覆盖：
+当前 Req 已导出 `57` 个工具，功能面覆盖：
 
 - `project`：项目查询、创建、更新、删除、名称校验、域内未添加项目查询
 - `module`：项目模块列表、创建、更新、删除
@@ -10,8 +10,8 @@
 - `iteration`：迭代列表、详情、创建、更新、删除、批量删除、状态更新、不可移动问题查询
 - `work-item core`：工作项列表、详情、创建、更新、删除、批量更新、变更记录
 - `collaboration`：评论列表/新增/更新、关联缺陷、关联提交、关联测试用例、相关用户、流转更新
-- `config-read`：工作项状态列表、工作项流转配置、工作项模板、模板字段配置、自定义字段、自动流转开关、流转默认处理人范围
-- `board-read`：看板项目工作项列表、看板工作项状态历史记录、看板工作项流转配置
+- `config-read`：工作项状态列表、状态属性、状态详情、状态配置、可选状态配置、项目公共配置、工作项工作流配置、工作项模板、模板字段配置、自定义字段、自动流转开关、流转默认处理人范围
+- `board-read`：看板工作项列表、看板工作项状态历史、看板工作项工作流配置
 - `cache-read`：卡片模式字段缓存、通用字段缓存查询
 
 ## 当前 Live 依据
@@ -20,44 +20,43 @@
 
 - `tests/products/req/client-live-smoke.test.ts`
 
-这份 smoke 会在配置好 `HUAWEICLOUD_AK`、`HUAWEICLOUD_SK`、`HUAWEICLOUD_REQ_BASE_URL` 等环境变量后，对真实 Req 样本做读写探测。文件名包含 `*-live.test.ts` 但内容仍是 handler 映射单测的用例，不计入真实 AK/SK 联调证据。
+这份 smoke 会在配置好 `HUAWEICLOUD_AK`、`HUAWEICLOUD_SK`、`HUAWEICLOUD_REQ_BASE_URL` 等环境变量后，对真实 Req 样本做读写探测。文件名包含 `*-live.test.ts` 但内容仍是 handler 映射单测的，不计入真实 AK/SK 联调证据。
 
 ## 已纳入真实 AK/SK Smoke 的路径
 
-| 路径                 | 对应工具                                                                                | 当前说明                                                                                                                                                                  |
-| -------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 项目读取             | `req_list_projects` `req_get_project`                                                   | smoke 会列出真实项目，并读取一个项目详情                                                                                                                                  |
-| 项目辅助读取         | `req_check_project_name` `req_list_not_added_projects`                                  | smoke 会在真实环境下校验候选项目名，并读取未添加项目列表                                                                                                                  |
-| 项目写闭环           | `req_create_project` `req_update_project` `req_delete_project`                          | 仅在显式开启 `HUAWEICLOUD_REQ_LIVE_ENABLE_PROJECT_MUTATIONS` 时执行，避免普通 live 环境误创建或删除项目                                                                   |
-| 项目上下文读取       | `req_list_project_members` `req_list_iterations` `req_get_iteration`                    | smoke 会读取真实项目成员、迭代列表，并在存在迭代样本时读取迭代详情                                                                                                        |
-| 迭代写闭环           | `req_create_iteration` `req_update_iteration` `req_delete_iteration`                    | 仅在同时配置 `HUAWEICLOUD_REQ_LIVE_WRITE_PROJECT_ID` 和 `HUAWEICLOUD_REQ_LIVE_ENABLE_ITERATION_MUTATIONS` 时执行                                                          |
-| 工作项 core 读写     | `req_create_work_item` `req_get_work_item` `req_update_work_item` `req_list_work_items` | 仅在显式配置 `HUAWEICLOUD_REQ_LIVE_WRITE_PROJECT_ID` 时跑 `create -> get -> update -> list`；如果显式注入现有 `HUAWEICLOUD_REQ_LIVE_WORK_ITEM_*`，则退化为只读 `get` 检查 |
-| 工作项记录与评论读取 | `req_list_work_item_records` `req_list_work_item_comments`                              | smoke 会对真实或临时工作项读取记录与评论列表                                                                                                                              |
-| 工作项配置读取       | `req_list_work_item_statuses` `req_list_work_item_workflow_config` `req_list_work_item_templates` `req_get_work_item_template_config` `req_list_work_item_custom_fields` `req_get_work_item_status_rule_flag` `req_list_work_item_tracker_handlers` | 工具已实现；当前仍待补真实项目样本下的状态/流转/模板/模板字段配置/自定义字段/自动流转开关/默认处理人范围读取 smoke                                                                                               |
-| 看板工作项读取       | `req_list_board_work_items` `req_list_board_work_item_status_records` `req_list_board_work_item_workflow_config` | 工具已实现；当前仍待补真实看板项目样本下的列表/状态历史/流转配置读取 smoke                                                                                               |
-| 字段缓存读取         | `req_list_job_cache_boards` `req_list_cache_data`                                                                 | 工具已实现；当前仍待补真实项目样本下的卡片字段缓存与 backlog 缓存读取 smoke                                                                                               |
-| 评论写闭环           | `req_add_work_item_comment` `req_update_work_item_comment`                              | 仅在同时配置 `HUAWEICLOUD_REQ_LIVE_WRITE_PROJECT_ID` 和 `HUAWEICLOUD_REQ_LIVE_ENABLE_COMMENT_MUTATIONS` 时，对临时工作项执行新增和更新评论                                |
-| 临时工作项清理       | `req_delete_work_item`                                                                  | 仅用于显式开启评论写 smoke 时清理临时工作项                                                                                                                               |
+| 路径 | 对应工具 | 当前说明 |
+| --- | --- | --- |
+| 项目读取 | `req_list_projects` `req_get_project` | smoke 会列出真实项目，并读取一个项目详情 |
+| 项目辅助读取 | `req_check_project_name` `req_list_not_added_projects` | smoke 会在真实环境下校验候选项目名，并读取未添加项目列表 |
+| 项目写闭环 | `req_create_project` `req_update_project` `req_delete_project` | 仅在显式开启 `HUAWEICLOUD_REQ_LIVE_ENABLE_PROJECT_MUTATIONS` 时执行，避免默认 live 环境误创建或删除项目 |
+| 项目上下文读取 | `req_list_project_members` `req_list_iterations` `req_get_iteration` | smoke 会读取真实项目成员、迭代列表，并在存在迭代样本时读取迭代详情 |
+| 迭代写闭环 | `req_create_iteration` `req_update_iteration` `req_delete_iteration` | 仅在同时配置 `HUAWEICLOUD_REQ_LIVE_WRITE_PROJECT_ID` 和 `HUAWEICLOUD_REQ_LIVE_ENABLE_ITERATION_MUTATIONS` 时执行 |
+| 工作项 core 读写 | `req_create_work_item` `req_get_work_item` `req_update_work_item` `req_list_work_items` | 仅在显式配置 `HUAWEICLOUD_REQ_LIVE_WRITE_PROJECT_ID` 时跑 `create -> get -> update -> list`；如显式注入现有 `HUAWEICLOUD_REQ_LIVE_WORK_ITEM_*`，则退化为只读 `get` 检查 |
+| 工作项记录与评论读取 | `req_list_work_item_records` `req_list_work_item_comments` | smoke 会对真实或临时工作项读取记录与评论列表 |
+| 评论写闭环 | `req_add_work_item_comment` `req_update_work_item_comment` | 仅在同时配置 `HUAWEICLOUD_REQ_LIVE_WRITE_PROJECT_ID` 和 `HUAWEICLOUD_REQ_LIVE_ENABLE_COMMENT_MUTATIONS` 时，对临时工作项执行新增和更新评论 |
+| 临时工作项清理 | `req_delete_work_item` | 仅用于显式开启评论写 smoke 时清理临时工作项 |
 
 如果只问“当前仓库里哪段 Req 路径最接近真实闭环”，答案是：`project read + project helper read + member read + iteration read + work-item core read/write on explicit writable samples + gated comment read/write`。
 
 ## 已实现但仍需更深 Live 覆盖的范围
 
-| 范围               | 工具                                                                                                                                             | 当前状态                                                                           |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
-| member 管理写路径  | `req_add_project_member` `req_batch_add_project_members` `req_batch_delete_project_members` `req_update_project_member_role` `req_leave_project` | 已实现、默认 dry-run 优先；仍依赖更稳定的租户权限和可回收样本                      |
-| 迭代状态与批量操作 | `req_update_iteration_state` `req_batch_delete_iterations` `req_query_iteration_immovable_issues`                                                | 已实现；当前 smoke 先覆盖迭代 create/get/update/delete，状态和批量路径仍待专门样本 |
-| 工作项批量管理     | `req_batch_update_work_items`                                                                                                                    | 已实现；仍需要安全的批量样本矩阵                                                   |
-| 关联与相关用户查询 | `req_list_associated_issues` `req_list_associated_commits` `req_list_associated_test_cases` `req_list_related_users`                             | 已实现；还需要真实非空样本验证返回形状与字段稳定性                                 |
-| 工作项流转         | `req_update_work_item_flow`                                                                                                                      | 已实现；当前没有稳定、安全的 live `status_id` 来源，所以暂未放入真实 smoke 闭环    |
+| 范围 | 工具 | 当前状态 |
+| --- | --- | --- |
+| member 管理写路径 | `req_add_project_member` `req_batch_add_project_members` `req_batch_delete_project_members` `req_update_project_member_role` `req_leave_project` | 已实现、默认 dry-run 优先；仍依赖更稳定的租户权限和可回收样本 |
+| 迭代状态与批量操作 | `req_update_iteration_state` `req_batch_delete_iterations` `req_query_iteration_immovable_issues` | 已实现；当前 smoke 先覆盖迭代 create/get/update/delete，状态和批量路径仍待专门样本 |
+| 工作项批量管理 | `req_batch_update_work_items` | 已实现；仍需要安全的批量样本矩阵 |
+| 协作与相关用户查询 | `req_list_associated_issues` `req_list_associated_commits` `req_list_associated_test_cases` `req_list_related_users` | 已实现；还需要真实非空样本验证返回形状与字段稳定性 |
+| 工作项流转 | `req_update_work_item_flow` | 已实现；当前没有稳定、安全的 live `status_id` 来源，所以暂未放进真实 smoke 闭环 |
+| 工作项配置读取 | `req_list_work_item_statuses` `req_list_work_item_status_attributes` `req_list_work_item_status_details` `req_list_work_item_status_configs` `req_list_optional_work_item_status_configs` `req_get_project_public_config` `req_list_work_item_workflow_config` `req_list_work_item_templates` `req_get_work_item_template_config` `req_list_work_item_custom_fields` `req_get_work_item_status_rule_flag` `req_list_work_item_tracker_handlers` | 工具已实现；当前仍待补真实项目样本下的状态、状态属性、状态详情、状态配置、可选状态配置、公共配置、工作流、模板、模板字段配置、自定义字段、自动流转开关、默认处理人范围读取 smoke |
+| 看板工作项读取 | `req_list_board_work_items` `req_list_board_work_item_status_records` `req_list_board_work_item_workflow_config` | 工具已实现；当前仍待补真实看板项目样本下的列表、状态历史、流转配置读取 smoke |
+| 字段缓存读取 | `req_list_job_cache_boards` `req_list_cache_data` | 工具已实现；当前仍待补真实项目样本下的卡片字段缓存与 backlog 缓存读取 smoke |
 
 ## 覆盖边界
 
 - Req 写工具默认遵循 `dry_run=true` 预演策略，只有显式传 `dry_run=false` 或 client live smoke 进入专门可写分支时才执行真实写入。
-- `HUAWEICLOUD_REQ_LIVE_WRITE_PROJECT_ID` 只表示存在可写样本项目；iteration/comment/project 这类新增真实写 smoke 还需要各自的 `HUAWEICLOUD_REQ_LIVE_ENABLE_*_MUTATIONS` 门禁。
-- 当前真实 smoke 主要验证“可达、可读、核心写路径可走通”，还没有覆盖完整租户权限矩阵、批量操作矩阵和高风险回滚场景。
+- `HUAWEICLOUD_REQ_LIVE_WRITE_PROJECT_ID` 只表示存在可写样本项目；iteration/comment/project 这类真实写 smoke 还需要各自的 `HUAWEICLOUD_REQ_LIVE_ENABLE_*_MUTATIONS` 门禁。
+- 当前真实 smoke 主要验证“可达、可读、核心写路径可控”，还没有覆盖完整租户权限矩阵、批量操作矩阵和高风险回滚场景。
 - 删除类操作只用于显式可写样本下的临时资源清理；常规 MCP 写工具仍应优先保留 dry-run-first 使用方式。
-- 关联缺陷、关联提交、关联测试用例、相关用户等协作查询虽然已经实现，但仍需要真实非空样本来验证返回形状与字段稳定性。
 
 ## 待补项
 
