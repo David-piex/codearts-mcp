@@ -8,6 +8,7 @@ describe("reverse proxy deployment assets", () => {
     const content = readFileSync("deploy/nginx/codearts-mcp.conf", "utf8");
     expect(content).toContain("location /mcp");
     expect(content).toContain("location /health");
+    expect(content).toContain("location /diagnostics/session-reuse");
     expect(content).toContain("proxy_pass http://codearts_mcp_upstream");
   });
 

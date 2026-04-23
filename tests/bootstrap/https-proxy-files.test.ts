@@ -10,6 +10,7 @@ describe("https reverse proxy assets", () => {
     expect(content).toContain("ssl_certificate");
     expect(content).toContain("location /mcp");
     expect(content).toContain("location /health");
+    expect(content).toContain("location /diagnostics/session-reuse");
   });
 
   it("contains an ssl deployment note", () => {

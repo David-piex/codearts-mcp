@@ -64,6 +64,70 @@ describe("http app", () => {
     expect(body.checks.auth_persistence).toBe("ok");
   });
 
+  it("serves session reuse diagnostics for recent MCP initialize/auth/tool traffic", async () => {
+    const { port } = await startConfiguredServer();
+    const {
+      sessionId: firstSessionId,
+      cookie
+    } = await initializeConfiguredSession(port);
+
+    const reconnectInit = await initializeSession(port, {
+      cookie: cookie ?? undefined
+    });
+    const reconnectSessionId = reconnectInit.sessionId;
+    const cleared = await clearSessionTool(port, {
+      sessionId: reconnectSessionId ?? undefined,
+      cookie: cookie ?? undefined
+    });
+
+    expect(cleared.response.status).toBe(200);
+
+    const { response, body } = await fetchJsonFromTestServer<{
+      status: string;
+      diagnostics: {
+        totals: {
+          initialize: number;
+          toolCalls: number;
+          authConfigureSession: number;
+        };
+        ratios: {
+          authConfigureSessionToToolCall: number | null;
+        };
+        sessions: {
+          withToolCalls: number;
+          withAuthConfigureSession: number;
+          reusedForNonAuthToolCalls: number;
+        };
+        topSessions: Array<{
+          sessionId: string;
+          authConfigureSessionCalls: number;
+        }>;
+      };
+    }>(port, "/diagnostics/session-reuse");
+
+    expect(response.status).toBe(200);
+    expect(body.status).toBe("ok");
+    expect(body.diagnostics.totals).toMatchObject({
+      initialize: 2,
+      toolCalls: 2,
+      authConfigureSession: 1
+    });
+    expect(body.diagnostics.ratios.authConfigureSessionToToolCall).toBe(0.5);
+    expect(body.diagnostics.sessions).toMatchObject({
+      withToolCalls: 2,
+      withAuthConfigureSession: 1,
+      reusedForNonAuthToolCalls: 0
+    });
+    expect(body.diagnostics.topSessions).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          sessionId: firstSessionId,
+          authConfigureSessionCalls: 1
+        })
+      ])
+    );
+  });
+
   it("returns not ready when the auth persistence parent is invalid", async () => {
     const tempDir = mkdtempSync(join(tmpdir(), "codearts-mcp-ready-"));
     const parentFile = join(tempDir, "not-a-directory");
@@ -159,6 +223,7 @@ describe("http app", () => {
       expect.objectContaining({
         method: "POST",
         path: "/mcp",
+        sessionId: initialized.sessionId,
         mcpMethod: "initialize",
         phaseTimings: expect.arrayContaining([
           expect.objectContaining({ name: "request_body_read", durationMs: expect.any(Number) }),

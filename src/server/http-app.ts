@@ -14,6 +14,7 @@ import {
   recordRequestPhase,
   runWithRequestDiagnostics
 } from "./request-context.js";
+import { createSessionReuseDiagnosticsStore } from "./session-reuse-diagnostics.js";
 import { createSessionCredentialStore } from "./session-store.js";
 
 type SessionTransportMap = Record<string, StreamableHTTPServerTransport>;
@@ -162,9 +163,12 @@ function installRequestLogging(
   res: ServerResponse,
   pathname: string,
   details: HttpRequestLogEntry,
-  requestLogger?: (entry: HttpRequestLogEntry) => void
+  options?: {
+    requestLogger?: (entry: HttpRequestLogEntry) => void;
+    onRequestCompleted?: (entry: HttpRequestLogEntry) => void;
+  }
 ) {
-  if (!requestLogger) {
+  if (!options?.requestLogger && !options?.onRequestCompleted) {
     return;
   }
 
@@ -177,20 +181,26 @@ function installRequestLogging(
       }
 
       const diagnostics = getCurrentRequestDiagnostics();
-
-      logged = true;
-      requestLogger({
+      const responseSessionId = normalizeHeaderValue(
+        res.getHeader("mcp-session-id") as string | string[] | undefined
+      );
+      const entry = {
         ...details,
         method: req.method ?? "UNKNOWN",
         path: pathname,
         statusCode: res.statusCode,
         durationMs: Date.now() - startedAt,
+        sessionId: details.sessionId ?? responseSessionId,
         cacheHits: diagnostics?.cacheHits ?? [],
         phaseTimings: diagnostics?.phaseTimings ?? [],
         upstreamRequestCount: diagnostics?.upstreamRequestCount ?? 0,
         upstreamDurationMs: diagnostics?.upstreamDurationMs ?? 0,
         upstreamStatusCodes: diagnostics?.upstreamStatusCodes ?? []
-      });
+      };
+
+      logged = true;
+      options.onRequestCompleted?.(entry);
+      options.requestLogger?.(entry);
     };
 
   res.once("finish", logRequest);
@@ -315,6 +325,7 @@ export function createHttpApp(
         fileCheckIntervalMs: 1_000
       })
     : undefined;
+  const sessionReuseDiagnostics = createSessionReuseDiagnosticsStore();
   const createMcpServer = createServerFactory({
     mode: "http",
     config,
@@ -349,7 +360,20 @@ export function createHttpApp(
         durationMs: 0,
         sessionId
       };
-      installRequestLogging(req, res, url.pathname, requestLogDetails, options.requestLogger);
+      installRequestLogging(req, res, url.pathname, requestLogDetails, {
+        requestLogger: options.requestLogger,
+        onRequestCompleted: (entry) => {
+          sessionReuseDiagnostics.record({
+            recordedAt: new Date().toISOString(),
+            method: entry.method,
+            path: entry.path,
+            statusCode: entry.statusCode,
+            sessionId: entry.sessionId,
+            mcpMethod: entry.mcpMethod,
+            toolName: entry.toolName
+          });
+        }
+      });
 
       if (req.method === "GET" && (url.pathname === "/" || url.pathname === "/health")) {
         writeJson(res, 200, { status: "ok" });
@@ -359,6 +383,14 @@ export function createHttpApp(
       if (req.method === "GET" && url.pathname === "/health/ready") {
         const readiness = resolvePersistenceReadiness(authConfig);
         writeJson(res, readiness.statusCode, readiness.body);
+        return;
+      }
+
+      if (req.method === "GET" && url.pathname === "/diagnostics/session-reuse") {
+        writeJson(res, 200, {
+          status: "ok",
+          diagnostics: sessionReuseDiagnostics.snapshot()
+        });
         return;
       }
 
@@ -442,6 +474,7 @@ export function createHttpApp(
               enableJsonResponse: true,
               sessionIdGenerator: () => randomUUID(),
               onsessioninitialized: (newSessionId) => {
+                requestLogDetails.sessionId = newSessionId;
                 transports[newSessionId] = transport!;
                 if (authContext?.authId) {
                   sessionStore.bind(newSessionId, authContext.authId);
