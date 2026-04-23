@@ -108,6 +108,48 @@ describe("registerReqTool", () => {
     );
   });
 
+  it("registers the add plan work items tool with rate-limited metadata", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_add_plan_work_items",
+      server: { registerTool },
+      mode: "stdio",
+      stdioClient: {} as never
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_add_plan_work_items",
+      expect.objectContaining({
+        title: "req_add_plan_work_items",
+        description: "Add work items to a CodeArts Req plan"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the clear plan work items tool with rate-limited metadata", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_clear_plan_work_items",
+      server: { registerTool },
+      mode: "stdio",
+      stdioClient: {} as never
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_clear_plan_work_items",
+      expect.objectContaining({
+        title: "req_clear_plan_work_items",
+        description: "Clear work items from a CodeArts Req plan"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("registers the update plan tool with rate-limited metadata", () => {
     const registerTool = vi.fn();
 

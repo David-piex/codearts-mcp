@@ -361,6 +361,24 @@ export type ReqClient = {
     plan_id: string;
     deleted: true;
   }>;
+  addPlanWorkItems: (input: {
+    project_id: string;
+    plan_id: string;
+    work_item_ids: string[];
+  }) => Promise<{
+    project_id: string;
+    plan_id: string;
+    work_item_ids: string[];
+    addedCount: number;
+  }>;
+  clearPlanWorkItems: (input: {
+    project_id: string;
+    plan_id: string;
+  }) => Promise<{
+    project_id: string;
+    plan_id: string;
+    cleared: true;
+  }>;
   createIteration: (input: {
     project_id: string;
     name: string;
@@ -1843,6 +1861,28 @@ export function createReqClient(
         project_id: input.project_id,
         plan_id: input.plan_id,
         deleted: true as const
+      };
+    },
+    async addPlanWorkItems(input) {
+      await _http.post(
+        `/v3/plan/${encodeURIComponent(input.project_id)}/${encodeURIComponent(input.plan_id)}/issue`,
+        input.work_item_ids
+      );
+
+      return {
+        project_id: input.project_id,
+        plan_id: input.plan_id,
+        work_item_ids: input.work_item_ids,
+        addedCount: input.work_item_ids.length
+      };
+    },
+    async clearPlanWorkItems(input) {
+      await _http.delete(`/v3/plan/${encodeURIComponent(input.project_id)}/${encodeURIComponent(input.plan_id)}/issue`);
+
+      return {
+        project_id: input.project_id,
+        plan_id: input.plan_id,
+        cleared: true as const
       };
     },
     async createIteration(input) {

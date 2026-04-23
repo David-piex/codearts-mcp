@@ -1,8 +1,10 @@
 export const reqToolNames = [
+  "req_add_plan_work_items",
   "req_add_project_member",
   "req_batch_add_project_members",
   "req_batch_delete_project_members",
   "req_batch_delete_iterations",
+  "req_clear_plan_work_items",
   "req_create_project",
   "req_create_plan",
   "req_create_iteration",

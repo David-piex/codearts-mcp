@@ -2791,4 +2791,70 @@ describe("createReqClient", () => {
       deleted: true
     });
   });
+
+  it("maps plan work item write endpoints to the documented request shapes", async () => {
+    const requests: Array<{
+      method: string;
+      path: string;
+      body?: Record<string, unknown> | string[];
+    }> = [];
+    const client = createReqClient({
+      post: async (path: string, body: string[]) => {
+        requests.push({
+          method: "POST",
+          path,
+          body
+        });
+
+        return {
+          status: "success"
+        };
+      },
+      delete: async (path: string) => {
+        requests.push({
+          method: "DELETE",
+          path
+        });
+
+        return {
+          status: "success"
+        };
+      }
+    } as never);
+
+    const [added, cleared] = await Promise.all([
+      client.addPlanWorkItems({
+        project_id: "p-1",
+        plan_id: "plan-1",
+        work_item_ids: ["70779173", "70779174"]
+      }),
+      client.clearPlanWorkItems({
+        project_id: "p-1",
+        plan_id: "plan-1"
+      })
+    ]);
+
+    expect(requests).toEqual([
+      {
+        method: "POST",
+        path: "/v3/plan/p-1/plan-1/issue",
+        body: ["70779173", "70779174"]
+      },
+      {
+        method: "DELETE",
+        path: "/v3/plan/p-1/plan-1/issue"
+      }
+    ]);
+    expect(added).toEqual({
+      project_id: "p-1",
+      plan_id: "plan-1",
+      work_item_ids: ["70779173", "70779174"],
+      addedCount: 2
+    });
+    expect(cleared).toEqual({
+      project_id: "p-1",
+      plan_id: "plan-1",
+      cleared: true
+    });
+  });
 });

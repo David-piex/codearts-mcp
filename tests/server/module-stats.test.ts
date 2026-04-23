@@ -27,7 +27,7 @@ describe("classifyToolAccess", () => {
 describe("collectModuleStats", () => {
   it("returns the current per-module tool totals and read/write split", () => {
     expect(collectModuleStats()).toEqual([
-      { module: "Req", total: 64, read: 38, write: 26 },
+      { module: "Req", total: 66, read: 38, write: 28 },
       { module: "Repo", total: 25, read: 17, write: 8 },
       { module: "Pipeline", total: 77, read: 42, write: 35 },
       { module: "Check", total: 8, read: 5, write: 3 },
@@ -41,9 +41,9 @@ describe("collectModuleStats", () => {
   it("returns the current aggregate product tool totals", () => {
     expect(collectProductToolStats()).toEqual({
       modules: 8,
-      total: 274,
+      total: 276,
       read: 177,
-      write: 97
+      write: 99
     });
   });
 
@@ -51,14 +51,14 @@ describe("collectModuleStats", () => {
     expect(renderModuleStatsMarkdown()).toContain("| Module | Total | Read | Write |");
     expect(renderModuleStatsMarkdown()).toContain("| Deploy | 59 | 44 | 15 |");
     expect(renderModuleStatsMarkdown()).toContain("- Product modules: `8`");
-    expect(renderModuleStatsMarkdown()).toContain("- Product tools: `274`");
-    expect(renderModuleStatsMarkdown()).toContain("- Shared HTTP total with auth tools: `276`");
+    expect(renderModuleStatsMarkdown()).toContain("- Product tools: `276`");
+    expect(renderModuleStatsMarkdown()).toContain("- Shared HTTP total with auth tools: `278`");
   });
 
   it("renders a json report from the current stats", () => {
     expect(JSON.parse(renderModuleStatsReportJson())).toEqual({
       modules: [
-        { module: "Req", total: 64, read: 38, write: 26 },
+        { module: "Req", total: 66, read: 38, write: 28 },
         { module: "Repo", total: 25, read: 17, write: 8 },
         { module: "Pipeline", total: 77, read: 42, write: 35 },
         { module: "Check", total: 8, read: 5, write: 3 },
@@ -69,10 +69,10 @@ describe("collectModuleStats", () => {
       ],
       totals: {
         modules: 8,
-        total: 274,
+        total: 276,
         read: 177,
-        write: 97,
-        httpTotalWithAuth: 276
+        write: 99,
+        httpTotalWithAuth: 278
       }
     });
   });

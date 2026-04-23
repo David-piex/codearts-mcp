@@ -140,6 +140,51 @@ describe("write path rate limits", () => {
 
   it.each([
     {
+      toolName: "req_add_plan_work_items",
+      dryRunInput: {
+        project_id: "project-1",
+        plan_id: "plan-1",
+        work_item_ids: ["70779173", "70779174"],
+        dry_run: true
+      },
+      liveInput: (index: number) => ({
+        project_id: "project-1",
+        plan_id: "plan-1",
+        work_item_ids: [`${index}`, `${index + 100}`],
+        dry_run: false
+      }),
+      blockedInput: {
+        project_id: "project-1",
+        plan_id: "plan-1",
+        work_item_ids: ["blocked"],
+        dry_run: false
+      },
+      responsePayload: {
+        status: "success"
+      }
+    },
+    {
+      toolName: "req_clear_plan_work_items",
+      dryRunInput: {
+        project_id: "project-1",
+        plan_id: "plan-1",
+        dry_run: true
+      },
+      liveInput: () => ({
+        project_id: "project-1",
+        plan_id: "plan-1",
+        dry_run: false
+      }),
+      blockedInput: {
+        project_id: "project-1",
+        plan_id: "plan-1",
+        dry_run: false
+      },
+      responsePayload: {
+        status: "success"
+      }
+    },
+    {
       toolName: "req_create_plan",
       dryRunInput: {
         project_id: "project-1",

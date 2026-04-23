@@ -36,6 +36,19 @@ export const reqDeletePlanInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const reqAddPlanWorkItemsInput = z.object({
+  project_id: idSchema,
+  plan_id: idSchema,
+  work_item_ids: z.array(idSchema).min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const reqClearPlanWorkItemsInput = z.object({
+  project_id: idSchema,
+  plan_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
 export const reqListPlansInput = pagingSchema
   .extend({
     project_id: idSchema,

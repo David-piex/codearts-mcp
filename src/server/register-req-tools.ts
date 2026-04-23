@@ -1,12 +1,14 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createReqClient } from "../products/req/client.js";
 import {
+  reqAddPlanWorkItemsInput,
   reqAddWorkItemCommentInput,
   reqAddProjectMemberInput,
   reqBatchAddProjectMembersInput,
   reqBatchDeleteProjectMembersInput,
   reqBatchDeleteIterationsInput,
   reqCheckProjectNameInput,
+  reqClearPlanWorkItemsInput,
   reqCreatePlanInput,
   reqCreateIterationInput,
   reqCreateProjectInput,
@@ -66,12 +68,14 @@ import {
   reqUpdateWorkItemFlowInput,
   reqUpdateWorkItemInput
 } from "../products/req/schemas.js";
+import { createReqAddPlanWorkItemsHandler } from "../products/req/tools/add-plan-work-items.js";
 import { createReqAddWorkItemCommentHandler } from "../products/req/tools/add-work-item-comment.js";
 import { createReqAddProjectMemberHandler } from "../products/req/tools/add-project-member.js";
 import { createReqBatchAddProjectMembersHandler } from "../products/req/tools/batch-add-project-members.js";
 import { createReqBatchDeleteProjectMembersHandler } from "../products/req/tools/batch-delete-project-members.js";
 import { createReqBatchDeleteIterationsHandler } from "../products/req/tools/batch-delete-iterations.js";
 import { createReqCheckProjectNameHandler } from "../products/req/tools/check-project-name.js";
+import { createReqClearPlanWorkItemsHandler } from "../products/req/tools/clear-plan-work-items.js";
 import { createReqCreatePlanHandler } from "../products/req/tools/create-plan.js";
 import { createReqCreateIterationHandler } from "../products/req/tools/create-iteration.js";
 import { createReqCreateProjectHandler } from "../products/req/tools/create-project.js";
@@ -138,6 +142,14 @@ type RegisterableServer = Pick<McpServer, "registerTool">;
 type ReqStdioClient = ReturnType<typeof createReqClient>;
 
 const reqToolDefinitions = {
+  "req_add_plan_work_items": defineProductTool({
+    description: "Add work items to a CodeArts Req plan",
+    inputSchema: reqAddPlanWorkItemsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqAddPlanWorkItemsHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqAddPlanWorkItemsHandler,
+    rateLimitAction: "req_add_plan_work_items"
+  }),
   "req_add_project_member": defineProductTool({
     description: "Add member to a CodeArts Req project",
     inputSchema: reqAddProjectMemberInput,
@@ -258,6 +270,14 @@ const reqToolDefinitions = {
     inputSchema: reqCheckProjectNameInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqCheckProjectNameHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqCheckProjectNameHandler
+  }),
+  "req_clear_plan_work_items": defineProductTool({
+    description: "Clear work items from a CodeArts Req plan",
+    inputSchema: reqClearPlanWorkItemsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqClearPlanWorkItemsHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqClearPlanWorkItemsHandler,
+    rateLimitAction: "req_clear_plan_work_items"
   }),
   "req_list_not_added_projects": defineProductTool({
     description: "List CodeArts Req projects not yet added to the current domain",

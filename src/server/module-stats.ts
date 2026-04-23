@@ -13,6 +13,7 @@ const WRITE_ACTIONS = new Set([
   "approve",
   "batch",
   "bind",
+  "clear",
   "close",
   "configure",
   "create",

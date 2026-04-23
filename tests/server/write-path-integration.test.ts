@@ -287,6 +287,28 @@ function createReqCreatePlanInput<T extends Record<string, unknown>>(
   } & T;
 }
 
+function createReqAddPlanWorkItemsInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  plan_id: string;
+  work_item_ids: string[];
+  dry_run: boolean;
+} & T {
+  return {
+    project_id: "project-1",
+    plan_id: "plan-1",
+    work_item_ids: ["70779173", "70779174"],
+    dry_run: false,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    plan_id: string;
+    work_item_ids: string[];
+    dry_run: boolean;
+  } & T;
+}
+
 function createReqUpdateIterationInput<T extends Record<string, unknown>>(
   overrides?: T
 ): {
@@ -342,6 +364,25 @@ function createReqUpdatePlanInput<T extends Record<string, unknown>>(
     project_id: string;
     plan_id: string;
     name: string;
+    dry_run: boolean;
+  } & T;
+}
+
+function createReqClearPlanWorkItemsInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  plan_id: string;
+  dry_run: boolean;
+} & T {
+  return {
+    project_id: "project-1",
+    plan_id: "plan-1",
+    dry_run: false,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    plan_id: string;
     dry_run: boolean;
   } & T;
 }
@@ -701,6 +742,26 @@ const writePathCases: WritePathCase[] = [
     }
   },
   {
+    name: "executes req_add_plan_work_items through the registered session-aware runtime client",
+    createHandler: (store: SessionStore) =>
+      readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_add_plan_work_items"),
+    input: createReqAddPlanWorkItemsInput(),
+    responsePayload: {
+      status: "success"
+    },
+    expectedItem: {
+      projectId: "project-1",
+      planId: "plan-1",
+      workItemIds: ["70779173", "70779174"],
+      addedCount: 2,
+      executed: true
+    },
+    expectedRequest: {
+      path: "/v3/plan/project-1/plan-1/issue",
+      bodyIncludes: ["[\"70779173\",\"70779174\"]"]
+    }
+  },
+  {
     name: "executes req_create_plan through the registered session-aware runtime client",
     createHandler: (store: SessionStore) =>
       readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_create_plan"),
@@ -828,6 +889,25 @@ const writePathCases: WritePathCase[] = [
       path: "/v4/projects/project-1/iterations/301",
       method: "PUT",
       bodyIncludes: ["\"name\":\"Sprint 4 Updated\"", "\"status\":\"2\"", "\"over_type\":\"auto\""]
+    }
+  },
+  {
+    name: "executes req_clear_plan_work_items through the registered session-aware runtime client",
+    createHandler: (store: SessionStore) =>
+      readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_clear_plan_work_items"),
+    input: createReqClearPlanWorkItemsInput(),
+    responsePayload: {
+      status: "success"
+    },
+    expectedItem: {
+      projectId: "project-1",
+      planId: "plan-1",
+      cleared: true,
+      executed: true
+    },
+    expectedRequest: {
+      path: "/v3/plan/project-1/plan-1/issue",
+      method: "DELETE"
     }
   },
   {
@@ -1291,6 +1371,20 @@ const dryRunCases: DryRunCase[] = [
     }
   },
   {
+    name: "short-circuits req_add_plan_work_items dry runs without HTTP or rate-limit consumption",
+    toolName: "req_add_plan_work_items",
+    input: createReqAddPlanWorkItemsInput({
+      dry_run: true
+    }),
+    expectedItem: {
+      projectId: "project-1",
+      planId: "plan-1",
+      workItemIds: ["70779173", "70779174"],
+      addedCount: 0,
+      executed: false
+    }
+  },
+  {
     name: "short-circuits req_create_plan dry runs without HTTP or rate-limit consumption",
     toolName: "req_create_plan",
     input: createReqCreatePlanInput({
@@ -1346,6 +1440,19 @@ const dryRunCases: DryRunCase[] = [
       description: "Updated backlog",
       status: "2",
       overType: "auto",
+      executed: false
+    }
+  },
+  {
+    name: "short-circuits req_clear_plan_work_items dry runs without HTTP or rate-limit consumption",
+    toolName: "req_clear_plan_work_items",
+    input: createReqClearPlanWorkItemsInput({
+      dry_run: true
+    }),
+    expectedItem: {
+      projectId: "project-1",
+      planId: "plan-1",
+      cleared: false,
       executed: false
     }
   },
