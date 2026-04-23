@@ -50,11 +50,13 @@ export type ReqClient = {
     project_id: string;
     user_id: string;
     domain_id: string;
+    domain_name?: string;
     role_id?: number;
   }) => Promise<{
     project_id: string;
     user_id: string;
     domain_id: string;
+    domain_name?: string;
     role_id?: number;
     added: true;
   }>;
@@ -338,6 +340,7 @@ export function createReqClient(
       await _http.post(`/v4/projects/${encodeURIComponent(input.project_id)}/member`, {
         user_id: input.user_id,
         domain_id: input.domain_id,
+        domain_name: input.domain_name,
         role_id: input.role_id
       });
 
@@ -345,6 +348,7 @@ export function createReqClient(
         project_id: input.project_id,
         user_id: input.user_id,
         domain_id: input.domain_id,
+        domain_name: input.domain_name,
         role_id: input.role_id,
         added: true as const
       };

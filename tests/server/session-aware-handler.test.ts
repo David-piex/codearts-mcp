@@ -113,7 +113,7 @@ describe("session aware handler factory", () => {
     const handler = createSessionAwareHandler({
       getClient,
       createProductHandler,
-      beforeHandle: (extra) => {
+      beforeHandle: (_input, extra) => {
         limiter.check(`demo_write:${extra.sessionId}`, "demo_write");
       }
     });

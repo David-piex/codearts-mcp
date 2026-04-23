@@ -1,5 +1,12 @@
-import { afterEach, describe, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { expectWritePathRateLimit } from "./http-test-helpers.js";
+import {
+  createConfiguredServer,
+  createSessionAuthContext,
+  expectRateLimitResult,
+  readRegisteredHandler,
+  stubJsonFetch
+} from "./http-test-helpers.js";
 
 describe("write path rate limits", () => {
   afterEach(() => {
@@ -85,5 +92,49 @@ describe("write path rate limits", () => {
         dry_run: false
       }
     });
+  });
+
+  it("does not let req_add_project_member dry runs consume write quota", async () => {
+    const { server } = createConfiguredServer();
+    const handler = readRegisteredHandler(server, "req_add_project_member");
+    const fetchMock = stubJsonFetch({}, { status: 204 });
+    const context = createSessionAuthContext("session-rate-limit", "auth-1");
+
+    for (let index = 0; index < 5; index += 1) {
+      await handler(
+        {
+          project_id: "project-1",
+          user_id: `dry-user-${index}`,
+          domain_id: "domain-1",
+          dry_run: true
+        },
+        context
+      );
+    }
+
+    for (let index = 0; index < 5; index += 1) {
+      await handler(
+        {
+          project_id: "project-1",
+          user_id: `live-user-${index}`,
+          domain_id: "domain-1",
+          dry_run: false
+        },
+        context
+      );
+    }
+
+    const blocked = await handler(
+      {
+        project_id: "project-1",
+        user_id: "blocked-user",
+        domain_id: "domain-1",
+        dry_run: false
+      },
+      context
+    );
+
+    expect(fetchMock).toHaveBeenCalledTimes(5);
+    expectRateLimitResult(blocked, "req_add_project_member");
   });
 });

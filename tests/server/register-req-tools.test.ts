@@ -110,6 +110,19 @@ describe("registerReqTool", () => {
         project_id: "project-1",
         user_id: "user-1",
         domain_id: "domain-1",
+        dry_run: true
+      },
+      {
+        sessionId: "session-1",
+        authId: "auth-1"
+      }
+    );
+
+    await handler?.(
+      {
+        project_id: "project-1",
+        user_id: "user-1",
+        domain_id: "domain-1",
         dry_run: false
       },
       {
@@ -122,6 +135,7 @@ describe("registerReqTool", () => {
       "req_add_project_member:session-1",
       "req_add_project_member"
     );
+    expect(rateLimiter.check).toHaveBeenCalledTimes(1);
   });
 
   it("enforces rate limiting before handling create project in http mode", async () => {

@@ -7,7 +7,10 @@ export function createSessionAwareHandler<
 >(options: {
   injectedClient?: Parameters<THandler>[0];
   getClient: (extra: SessionToolExtra) => Parameters<THandler>[0];
-  beforeHandle?: (extra: SessionToolExtra) => void | Promise<void>;
+  beforeHandle?: (
+    input: Parameters<ReturnType<THandler>>[0],
+    extra: SessionToolExtra
+  ) => void | Promise<void>;
   createProductHandler: THandler;
 }) {
   const objectHandlers = new WeakMap<object, ReturnType<THandler>>();
@@ -44,7 +47,7 @@ export function createSessionAwareHandler<
     input: Parameters<ReturnType<THandler>>[0],
     extra: SessionToolExtra
   ): Promise<Awaited<ReturnType<ReturnType<THandler>>>> => {
-    await options.beforeHandle?.(extra);
+    await options.beforeHandle?.(input, extra);
     const client = options.injectedClient ?? options.getClient(extra);
     return await getOrCreateHandler(client)(input);
   };
@@ -57,7 +60,10 @@ export function createSessionAwareProductToolHandler<
   store: SessionCredentialStore;
   injectedClient?: Parameters<THandler>[0];
   selectClient: (clients: TClients) => Parameters<THandler>[0];
-  beforeHandle?: (extra: SessionToolExtra) => void | Promise<void>;
+  beforeHandle?: (
+    input: Parameters<ReturnType<THandler>>[0],
+    extra: SessionToolExtra
+  ) => void | Promise<void>;
   createProductHandler: THandler;
 }) {
   return createSessionAwareHandler({

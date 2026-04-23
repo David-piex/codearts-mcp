@@ -58,7 +58,7 @@ describe("reqBatchAddProjectMembersInput exports", () => {
   it("keeps the barrel export compatible with the member schema module", () => {
     const input = {
       project_id: "project-1",
-      members: [{ user_id: "user-1" }]
+      members: [{ user_id: "user-1", role_id: -1 }]
     };
 
     expect(reqBatchAddProjectMembersInput.parse(input)).toEqual({
@@ -67,6 +67,19 @@ describe("reqBatchAddProjectMembersInput exports", () => {
     });
     expect(reqBatchAddProjectMembersInputFromBarrel.parse(input)).toEqual({
       ...input,
+      dry_run: true
+    });
+  });
+
+  it("accepts the documented role_id enum including -1", () => {
+    expect(
+      reqBatchAddProjectMembersInput.parse({
+        project_id: "project-1",
+        members: [{ user_id: "user-1", role_id: -1 }]
+      })
+    ).toEqual({
+      project_id: "project-1",
+      members: [{ user_id: "user-1", role_id: -1 }],
       dry_run: true
     });
   });

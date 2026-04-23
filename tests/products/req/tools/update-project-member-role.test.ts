@@ -50,7 +50,7 @@ describe("reqUpdateProjectMemberRoleInput exports", () => {
     const input = {
       project_id: "project-1",
       user_id: "user-1",
-      role_id: 5
+      role_id: -1
     };
 
     expect(reqUpdateProjectMemberRoleInput.parse(input)).toEqual({
@@ -59,6 +59,21 @@ describe("reqUpdateProjectMemberRoleInput exports", () => {
     });
     expect(reqUpdateProjectMemberRoleInputFromBarrel.parse(input)).toEqual({
       ...input,
+      dry_run: true
+    });
+  });
+
+  it("accepts the documented role_id enum including -1", () => {
+    expect(
+      reqUpdateProjectMemberRoleInput.parse({
+        project_id: "project-1",
+        user_id: "user-1",
+        role_id: -1
+      })
+    ).toEqual({
+      project_id: "project-1",
+      user_id: "user-1",
+      role_id: -1,
       dry_run: true
     });
   });

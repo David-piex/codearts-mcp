@@ -5,6 +5,7 @@ export function previewAddProjectMember(input: {
   project_id: string;
   user_id: string;
   domain_id: string;
+  domain_name?: string;
   role_id?: number;
   dry_run: boolean;
 }) {
@@ -12,6 +13,7 @@ export function previewAddProjectMember(input: {
     projectId: input.project_id,
     userId: input.user_id,
     domainId: input.domain_id,
+    domainName: input.domain_name,
     roleId: input.role_id,
     added: false,
     executed: false
@@ -22,12 +24,14 @@ export function mapAddedProjectMember(input: {
   project_id: string;
   user_id: string;
   domain_id: string;
+  domain_name?: string;
   role_id?: number;
 }) {
   return asItemResult(`Added member ${input.user_id} to project ${input.project_id}`, {
     projectId: input.project_id,
     userId: input.user_id,
     domainId: input.domain_id,
+    domainName: input.domain_name,
     roleId: input.role_id,
     added: true,
     executed: true
@@ -39,11 +43,13 @@ type ReqAddProjectMemberClient = {
     project_id: string;
     user_id: string;
     domain_id: string;
+    domain_name?: string;
     role_id?: number;
   }) => Promise<{
     project_id: string;
     user_id: string;
     domain_id: string;
+    domain_name?: string;
     role_id?: number;
     added: true;
   }>;

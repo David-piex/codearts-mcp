@@ -276,20 +276,23 @@ describe("createReqClient", () => {
       project_id: "project-1",
       user_id: "user-1",
       domain_id: "domain-1",
-      role_id: 3
+      domain_name: "tenant-a",
+      role_id: -1
     });
 
     expect(requestedPath).toBe("/v4/projects/project-1/member");
     expect(requestedBody).toEqual({
       user_id: "user-1",
       domain_id: "domain-1",
-      role_id: 3
+      domain_name: "tenant-a",
+      role_id: -1
     });
     expect(result).toEqual({
       project_id: "project-1",
       user_id: "user-1",
       domain_id: "domain-1",
-      role_id: 3,
+      domain_name: "tenant-a",
+      role_id: -1,
       added: true
     });
   });

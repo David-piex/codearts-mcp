@@ -67,7 +67,16 @@ export function defineProductTool<
         return createSessionAwareProductToolHandler({
           store: resolveOptions.sessionStore!,
           beforeHandle: rateLimitAction
-            ? (extra: SessionToolExtra) => {
+            ? (input: unknown, extra: SessionToolExtra) => {
+                if (
+                  input &&
+                  typeof input === "object" &&
+                  "dry_run" in input &&
+                  (input as { dry_run?: unknown }).dry_run === true
+                ) {
+                  return;
+                }
+
                 const requestAuthInfo = readHttpAuthRequestInfo(extra);
                 const identity =
                   extra.sessionId ?? extra.authId ?? requestAuthInfo?.authId;

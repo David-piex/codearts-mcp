@@ -35,6 +35,13 @@ type WritePathCase = {
   };
 };
 
+type DryRunCase = {
+  name: string;
+  toolName: string;
+  input: Record<string, unknown>;
+  expectedItem: Record<string, unknown>;
+};
+
 function createReqCreateWorkItemInput<T extends Record<string, unknown>>(
   overrides?: T
 ): {
@@ -209,21 +216,28 @@ const writePathCases: WritePathCase[] = [
       project_id: "project-1",
       user_id: "user-1",
       domain_id: "domain-1",
-      role_id: 3,
+      domain_name: "tenant-a",
+      role_id: -1,
       dry_run: false
     },
-    responsePayload: {},
+    responsePayload: null,
     expectedItem: {
       projectId: "project-1",
       userId: "user-1",
       domainId: "domain-1",
-      roleId: 3,
+      domainName: "tenant-a",
+      roleId: -1,
       added: true,
       executed: true
     },
     expectedRequest: {
       path: "/v4/projects/project-1/member",
-      bodyIncludes: ["\"user_id\":\"user-1\"", "\"domain_id\":\"domain-1\"", "\"role_id\":3"]
+      bodyIncludes: [
+        "\"user_id\":\"user-1\"",
+        "\"domain_id\":\"domain-1\"",
+        "\"domain_name\":\"tenant-a\"",
+        "\"role_id\":-1"
+      ]
     }
   },
   {
@@ -238,7 +252,7 @@ const writePathCases: WritePathCase[] = [
       ],
       dry_run: false
     },
-    responsePayload: {},
+    responsePayload: null,
     expectedItem: {
       projectId: "project-1",
       members: [
@@ -262,7 +276,7 @@ const writePathCases: WritePathCase[] = [
       user_ids: ["user-1", "user-2"],
       dry_run: false
     },
-    responsePayload: {},
+    responsePayload: null,
     expectedItem: {
       projectId: "project-1",
       userIds: ["user-1", "user-2"],
@@ -285,7 +299,7 @@ const writePathCases: WritePathCase[] = [
       role_id: 5,
       dry_run: false
     },
-    responsePayload: {},
+    responsePayload: null,
     expectedItem: {
       projectId: "project-1",
       userId: "user-1",
@@ -306,7 +320,7 @@ const writePathCases: WritePathCase[] = [
       project_id: "project-1",
       dry_run: false
     },
-    responsePayload: {},
+    responsePayload: null,
     expectedItem: {
       projectId: "project-1",
       left: true,
@@ -528,6 +542,90 @@ const writePathCases: WritePathCase[] = [
   }
 ];
 
+const dryRunCases: DryRunCase[] = [
+  {
+    name: "short-circuits req_add_project_member dry runs without HTTP or rate-limit consumption",
+    toolName: "req_add_project_member",
+    input: {
+      project_id: "project-1",
+      user_id: "user-1",
+      domain_id: "domain-1",
+      domain_name: "tenant-a",
+      role_id: -1,
+      dry_run: true
+    },
+    expectedItem: {
+      projectId: "project-1",
+      userId: "user-1",
+      domainId: "domain-1",
+      domainName: "tenant-a",
+      roleId: -1,
+      added: false,
+      executed: false
+    }
+  },
+  {
+    name: "short-circuits req_batch_add_project_members dry runs without HTTP or rate-limit consumption",
+    toolName: "req_batch_add_project_members",
+    input: {
+      project_id: "project-1",
+      members: [{ user_id: "user-1", role_id: -1 }],
+      dry_run: true
+    },
+    expectedItem: {
+      projectId: "project-1",
+      members: [{ userId: "user-1", roleId: -1 }],
+      addedCount: 0,
+      executed: false
+    }
+  },
+  {
+    name: "short-circuits req_batch_delete_project_members dry runs without HTTP or rate-limit consumption",
+    toolName: "req_batch_delete_project_members",
+    input: {
+      project_id: "project-1",
+      user_ids: ["user-1"],
+      dry_run: true
+    },
+    expectedItem: {
+      projectId: "project-1",
+      userIds: ["user-1"],
+      removedCount: 0,
+      executed: false
+    }
+  },
+  {
+    name: "short-circuits req_update_project_member_role dry runs without HTTP or rate-limit consumption",
+    toolName: "req_update_project_member_role",
+    input: {
+      project_id: "project-1",
+      user_id: "user-1",
+      role_id: -1,
+      dry_run: true
+    },
+    expectedItem: {
+      projectId: "project-1",
+      userId: "user-1",
+      roleId: -1,
+      updated: false,
+      executed: false
+    }
+  },
+  {
+    name: "short-circuits req_leave_project dry runs without HTTP or rate-limit consumption",
+    toolName: "req_leave_project",
+    input: {
+      project_id: "project-1",
+      dry_run: true
+    },
+    expectedItem: {
+      projectId: "project-1",
+      left: false,
+      executed: false
+    }
+  }
+];
+
 describe("write path integration", () => {
   afterEach(() => {
     vi.restoreAllMocks();
@@ -539,8 +637,24 @@ describe("write path integration", () => {
       createHandler,
       input,
       responsePayload,
+      responseInit: responsePayload === null ? { status: 204 } : undefined,
       expectedItem,
       expectedRequest
+    });
+  });
+
+  it.each(dryRunCases)("$name", async ({ toolName, input, expectedItem }) => {
+    const { server } = bootstrapHttpRuntime();
+    const fetchMock = stubJsonFetch({}, { status: 204 });
+    const handler = readRegisteredHandler(server, toolName);
+
+    const result = await handler(input, createSessionAuthContext("session-write", "auth-1"));
+
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(result).toMatchObject({
+      structuredContent: {
+        item: expectedItem
+      }
     });
   });
 

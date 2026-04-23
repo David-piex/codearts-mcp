@@ -144,13 +144,15 @@ export function jsonResponse(payload: unknown) {
 
 export function stubJsonFetch(payload: unknown, init?: ResponseInit) {
   const headers = new Headers(init?.headers);
-  if (!headers.has("content-type")) {
+  const status = init?.status ?? 200;
+
+  if (!headers.has("content-type") && status !== 204) {
     headers.set("content-type", "application/json");
   }
 
   const fetchMock = vi.fn(async () => {
-    return new Response(JSON.stringify(payload), {
-      status: init?.status ?? 200,
+    return new Response(status === 204 ? null : JSON.stringify(payload), {
+      status,
       ...init,
       headers
     });

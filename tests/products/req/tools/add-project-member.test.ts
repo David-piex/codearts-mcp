@@ -13,6 +13,7 @@ describe("previewAddProjectMember", () => {
       project_id: "project-1",
       user_id: "user-1",
       domain_id: "domain-1",
+      domain_name: "tenant-a",
       role_id: 3,
       dry_run: true
     });
@@ -22,6 +23,7 @@ describe("previewAddProjectMember", () => {
       projectId: "project-1",
       userId: "user-1",
       domainId: "domain-1",
+      domainName: "tenant-a",
       roleId: 3,
       added: false,
       executed: false
@@ -35,6 +37,7 @@ describe("mapAddedProjectMember", () => {
       project_id: "project-1",
       user_id: "user-1",
       domain_id: "domain-1",
+      domain_name: "tenant-a",
       role_id: 3
     });
 
@@ -42,6 +45,7 @@ describe("mapAddedProjectMember", () => {
       projectId: "project-1",
       userId: "user-1",
       domainId: "domain-1",
+      domainName: "tenant-a",
       roleId: 3,
       added: true,
       executed: true
@@ -54,7 +58,8 @@ describe("reqAddProjectMemberInput exports", () => {
     const input = {
       project_id: "project-1",
       user_id: "user-1",
-      domain_id: "domain-1"
+      domain_id: "domain-1",
+      role_id: -1
     };
 
     expect(reqAddProjectMemberInput.parse(input)).toEqual({
@@ -63,6 +68,23 @@ describe("reqAddProjectMemberInput exports", () => {
     });
     expect(reqAddProjectMemberInputFromBarrel.parse(input)).toEqual({
       ...input,
+      dry_run: true
+    });
+  });
+
+  it("accepts the optional domain_name", () => {
+    expect(
+      reqAddProjectMemberInput.parse({
+        project_id: "project-1",
+        user_id: "user-1",
+        domain_id: "domain-1",
+        domain_name: "tenant-a"
+      })
+    ).toEqual({
+      project_id: "project-1",
+      user_id: "user-1",
+      domain_id: "domain-1",
+      domain_name: "tenant-a",
       dry_run: true
     });
   });
@@ -79,6 +101,7 @@ describe("createReqAddProjectMemberHandler", () => {
       project_id: "project-1",
       user_id: "user-1",
       domain_id: "domain-1",
+      domain_name: "tenant-a",
       dry_run: true
     });
 
@@ -91,6 +114,7 @@ describe("createReqAddProjectMemberHandler", () => {
           projectId: "project-1",
           userId: "user-1",
           domainId: "domain-1",
+          domainName: "tenant-a",
           roleId: undefined,
           added: false,
           executed: false
@@ -106,7 +130,8 @@ describe("createReqAddProjectMemberHandler", () => {
         project_id: "project-1",
         user_id: "user-1",
         domain_id: "domain-1",
-        role_id: 3,
+        domain_name: "tenant-a",
+        role_id: -1,
         added: true as const
       }))
     };
@@ -116,7 +141,8 @@ describe("createReqAddProjectMemberHandler", () => {
       project_id: "project-1",
       user_id: "user-1",
       domain_id: "domain-1",
-      role_id: 3,
+      domain_name: "tenant-a",
+      role_id: -1,
       dry_run: false
     });
 
@@ -124,7 +150,8 @@ describe("createReqAddProjectMemberHandler", () => {
       project_id: "project-1",
       user_id: "user-1",
       domain_id: "domain-1",
-      role_id: 3,
+      domain_name: "tenant-a",
+      role_id: -1,
       dry_run: false
     });
     expect(result).toEqual({
@@ -135,7 +162,8 @@ describe("createReqAddProjectMemberHandler", () => {
           projectId: "project-1",
           userId: "user-1",
           domainId: "domain-1",
-          roleId: 3,
+          domainName: "tenant-a",
+          roleId: -1,
           added: true,
           executed: true
         },
