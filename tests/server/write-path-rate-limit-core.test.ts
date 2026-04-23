@@ -297,6 +297,65 @@ describe("write path rate limits", () => {
         result: "",
         status: "success"
       }
+    },
+    {
+      toolName: "req_add_work_item_comment",
+      dryRunInput: {
+        project_id: "project-1",
+        work_item_id: "70779173",
+        content: "First comment",
+        dry_run: true
+      },
+      liveInput: (index: number) => ({
+        project_id: "project-1",
+        work_item_id: `${index}`,
+        content: `Comment ${index}`,
+        dry_run: false
+      }),
+      blockedInput: {
+        project_id: "project-1",
+        work_item_id: "blocked",
+        content: "Blocked comment",
+        dry_run: false
+      },
+      responsePayload: {
+        result: {
+          issue: {
+            id: 70779173
+          }
+        },
+        status: "success"
+      }
+    },
+    {
+      toolName: "req_update_work_item_comment",
+      dryRunInput: {
+        project_id: "project-1",
+        work_item_id: "70779173",
+        comment_id: "comment-1",
+        content: "Updated comment",
+        dry_run: true
+      },
+      liveInput: (index: number) => ({
+        project_id: "project-1",
+        work_item_id: `${index}`,
+        comment_id: `comment-${index}`,
+        content: `Updated ${index}`,
+        dry_run: false
+      }),
+      blockedInput: {
+        project_id: "project-1",
+        work_item_id: "blocked",
+        comment_id: "comment-blocked",
+        content: "Blocked update",
+        dry_run: false
+      },
+      responsePayload: {
+        result: {
+          status: "success"
+        },
+        status: "success"
+      }
     }
   ])("does not let $toolName dry runs consume write quota", async ({
     toolName,

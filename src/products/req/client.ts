@@ -300,6 +300,44 @@ export type ReqClient = {
     }>;
     total?: number;
   }>;
+  listWorkItemComments: (input: {
+    project_id: string;
+    work_item_id: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    comments: Array<{
+      id: number | string;
+      comment?: string;
+      created_time?: string;
+      timestamp?: number;
+      user?: {
+        nick_name?: string;
+        user_name?: string;
+        user_num_id?: number;
+      };
+    }>;
+    total?: number;
+  }>;
+  addWorkItemComment: (input: {
+    project_id: string;
+    work_item_id: string;
+    content: string;
+  }) => Promise<{
+    work_item_id: string;
+    content: string;
+  }>;
+  updateWorkItemComment: (input: {
+    project_id: string;
+    work_item_id: string;
+    comment_id: string;
+    content: string;
+  }) => Promise<{
+    work_item_id: string;
+    comment_id: string;
+    content: string;
+    status?: string;
+  }>;
 };
 
 function toTrackerId(workItemType?: string): number | undefined {
@@ -326,6 +364,14 @@ function toTrackerId(workItemType?: string): number | undefined {
 
 function toPriorityId(priorityId?: number): number {
   return priorityId ?? 2;
+}
+
+function assertReqMutationSucceeded(action: string, status?: string) {
+  if (status?.toLowerCase() === "success") {
+    return;
+  }
+
+  throw new Error(`${action} did not report success`);
 }
 
 function unwrapReqPayload<T>(input: T): T {
@@ -969,6 +1015,73 @@ export function createReqClient(
       return {
         records: response.records ?? [],
         total: response.total
+      };
+    },
+    async listWorkItemComments(input) {
+      const offset = (input.page - 1) * input.page_size;
+      const query = new URLSearchParams({
+        offset: String(offset),
+        limit: String(input.page_size)
+      });
+      const response = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/issues/${encodeURIComponent(input.work_item_id)}/comments?${query.toString()}`
+      )) as {
+        comments?: Array<{
+          id: number | string;
+          comment?: string;
+          created_time?: string;
+          timestamp?: number;
+          user?: {
+            nick_name?: string;
+            user_name?: string;
+            user_num_id?: number;
+          };
+        }>;
+        total?: number;
+      };
+
+      return {
+        comments: response.comments ?? [],
+        total: response.total
+      };
+    },
+    async addWorkItemComment(input) {
+      const response = (await _http.post("/v2/issues/update-issue-notes", {
+        id: input.work_item_id,
+        notes: input.content,
+        project_uuid: input.project_id,
+        type: "scrum"
+      })) as {
+        status?: string;
+      };
+
+      assertReqMutationSucceeded("add work item comment", response.status);
+
+      return {
+        work_item_id: input.work_item_id,
+        content: input.content
+      };
+    },
+    async updateWorkItemComment(input) {
+      const response = (await _http.post("/v2/workitem/issue-note", {
+        id: input.work_item_id,
+        noteId: input.comment_id,
+        notes: input.content,
+        projectUUId: input.project_id,
+        type: "scrum"
+      })) as {
+        result?: { status?: string };
+        status?: string;
+      };
+      const status = response.result?.status ?? response.status;
+
+      assertReqMutationSucceeded("update work item comment", status);
+
+      return {
+        work_item_id: input.work_item_id,
+        comment_id: input.comment_id,
+        content: input.content,
+        status
       };
     }
   };

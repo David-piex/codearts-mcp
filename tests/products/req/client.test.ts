@@ -957,4 +957,173 @@ describe("createReqClient", () => {
       total: 1
     });
   });
+
+  it("maps listWorkItemComments to the v4 comments endpoint and normalizes payloads", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          comments: [
+            {
+              id: 88,
+              comment: "Looks good",
+              created_time: "2026-04-20T10:00:00Z",
+              timestamp: 1_745_145_600_000,
+              user: {
+                nick_name: "Alice",
+                user_name: "alice",
+                user_num_id: 1001
+              }
+            }
+          ],
+          total: 1
+        };
+      }
+    } as never);
+
+    const result = await client.listWorkItemComments({
+      project_id: "p-1",
+      work_item_id: "70779173",
+      page: 2,
+      page_size: 10
+    });
+
+    expect(requestedPath).toBe("/v4/projects/p-1/issues/70779173/comments?offset=10&limit=10");
+    expect(result).toEqual({
+      comments: [
+        {
+          id: 88,
+          comment: "Looks good",
+          created_time: "2026-04-20T10:00:00Z",
+          timestamp: 1_745_145_600_000,
+          user: {
+            nick_name: "Alice",
+            user_name: "alice",
+            user_num_id: 1001
+          }
+        }
+      ],
+      total: 1
+    });
+  });
+
+  it("maps addWorkItemComment to the legacy notes endpoint and synthesizes a stable response", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return {
+          result: {
+            issue: {
+              id: 70779173
+            }
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.addWorkItemComment({
+      project_id: "p-1",
+      work_item_id: "70779173",
+      content: "First comment"
+    });
+
+    expect(requestedPath).toBe("/v2/issues/update-issue-notes");
+    expect(requestedBody).toEqual({
+      id: "70779173",
+      notes: "First comment",
+      project_uuid: "p-1",
+      type: "scrum"
+    });
+    expect(result).toEqual({
+      work_item_id: "70779173",
+      content: "First comment"
+    });
+  });
+
+  it("rejects addWorkItemComment when the legacy notes endpoint does not report success", async () => {
+    const client = createReqClient({
+      post: async () => ({
+        result: {
+          issue: {
+            id: 70779173
+          }
+        }
+      })
+    } as never);
+
+    await expect(
+      client.addWorkItemComment({
+        project_id: "p-1",
+        work_item_id: "70779173",
+        content: "First comment"
+      })
+    ).rejects.toThrow(/did not report success/i);
+  });
+
+  it("maps updateWorkItemComment to the issue-note endpoint and preserves stable fields", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return {
+          result: {
+            status: "success"
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.updateWorkItemComment({
+      project_id: "p-1",
+      work_item_id: "70779173",
+      comment_id: "88",
+      content: "Updated comment"
+    });
+
+    expect(requestedPath).toBe("/v2/workitem/issue-note");
+    expect(requestedBody).toEqual({
+      id: "70779173",
+      noteId: "88",
+      notes: "Updated comment",
+      projectUUId: "p-1",
+      type: "scrum"
+    });
+    expect(result).toEqual({
+      work_item_id: "70779173",
+      comment_id: "88",
+      content: "Updated comment",
+      status: "success"
+    });
+  });
+
+  it("rejects updateWorkItemComment when the issue-note endpoint returns a non-success status", async () => {
+    const client = createReqClient({
+      post: async () => ({
+        result: {
+          status: "error"
+        },
+        status: "error"
+      })
+    } as never);
+
+    await expect(
+      client.updateWorkItemComment({
+        project_id: "p-1",
+        work_item_id: "70779173",
+        comment_id: "88",
+        content: "Updated comment"
+      })
+    ).rejects.toThrow(/did not report success/i);
+  });
 });

@@ -130,6 +130,53 @@ function createReqBatchUpdateWorkItemsInput<T extends Record<string, unknown>>(
   } & T;
 }
 
+function createReqAddWorkItemCommentInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  work_item_id: string;
+  content: string;
+  dry_run: boolean;
+} & T {
+  return {
+    project_id: "project-1",
+    work_item_id: "70779173",
+    content: "First comment",
+    dry_run: false,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    work_item_id: string;
+    content: string;
+    dry_run: boolean;
+  } & T;
+}
+
+function createReqUpdateWorkItemCommentInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  work_item_id: string;
+  comment_id: string;
+  content: string;
+  dry_run: boolean;
+} & T {
+  return {
+    project_id: "project-1",
+    work_item_id: "70779173",
+    comment_id: "comment-1",
+    content: "Updated comment",
+    dry_run: false,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    work_item_id: string;
+    comment_id: string;
+    content: string;
+    dry_run: boolean;
+  } & T;
+}
+
 function createReqUpdateProjectInput<T extends Record<string, unknown>>(
   overrides?: T
 ): {
@@ -747,6 +794,63 @@ const writePathCases: WritePathCase[] = [
     }
   },
   {
+    name: "executes req_add_work_item_comment through the registered session-aware runtime client",
+    createHandler: (store: SessionStore) =>
+      readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_add_work_item_comment"),
+    input: createReqAddWorkItemCommentInput(),
+    responsePayload: {
+      result: {
+        issue: {
+          id: 70779173
+        }
+      },
+      status: "success"
+    },
+    expectedItem: {
+      workItemId: "70779173",
+      content: "First comment",
+      executed: true
+    },
+    expectedRequest: {
+      path: "/v2/issues/update-issue-notes",
+      bodyIncludes: [
+        "\"id\":\"70779173\"",
+        "\"notes\":\"First comment\"",
+        "\"project_uuid\":\"project-1\"",
+        "\"type\":\"scrum\""
+      ]
+    }
+  },
+  {
+    name: "executes req_update_work_item_comment through the registered session-aware runtime client",
+    createHandler: (store: SessionStore) =>
+      readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_update_work_item_comment"),
+    input: createReqUpdateWorkItemCommentInput(),
+    responsePayload: {
+      result: {
+        status: "success"
+      },
+      status: "success"
+    },
+    expectedItem: {
+      workItemId: "70779173",
+      commentId: "comment-1",
+      content: "Updated comment",
+      status: "success",
+      executed: true
+    },
+    expectedRequest: {
+      path: "/v2/workitem/issue-note",
+      bodyIncludes: [
+        "\"id\":\"70779173\"",
+        "\"noteId\":\"comment-1\"",
+        "\"notes\":\"Updated comment\"",
+        "\"projectUUId\":\"project-1\"",
+        "\"type\":\"scrum\""
+      ]
+    }
+  },
+  {
     name: "executes deploy_create_application through the session-aware runtime client",
     createHandler: createSessionAwareDeployCreateApplicationHandler,
     input: createDeployCreateApplicationInput(),
@@ -1057,6 +1161,33 @@ const dryRunCases: DryRunCase[] = [
       statusId: 3,
       priorityId: 2,
       updatedCount: 0,
+      executed: false
+    }
+  },
+  {
+    name: "short-circuits req_add_work_item_comment dry runs without HTTP or rate-limit consumption",
+    toolName: "req_add_work_item_comment",
+    input: createReqAddWorkItemCommentInput({
+      dry_run: true
+    }),
+    expectedItem: {
+      projectId: "project-1",
+      workItemId: "70779173",
+      content: "First comment",
+      executed: false
+    }
+  },
+  {
+    name: "short-circuits req_update_work_item_comment dry runs without HTTP or rate-limit consumption",
+    toolName: "req_update_work_item_comment",
+    input: createReqUpdateWorkItemCommentInput({
+      dry_run: true
+    }),
+    expectedItem: {
+      projectId: "project-1",
+      workItemId: "70779173",
+      commentId: "comment-1",
+      content: "Updated comment",
       executed: false
     }
   }

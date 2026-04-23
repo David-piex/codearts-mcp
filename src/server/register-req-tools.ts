@@ -1,6 +1,7 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createReqClient } from "../products/req/client.js";
 import {
+  reqAddWorkItemCommentInput,
   reqAddProjectMemberInput,
   reqBatchAddProjectMembersInput,
   reqBatchDeleteProjectMembersInput,
@@ -22,14 +23,17 @@ import {
   reqListNotAddedProjectsInput,
   reqListProjectMembersInput,
   reqListProjectsInput,
+  reqListWorkItemCommentsInput,
   reqListWorkItemRecordsInput,
   reqListWorkItemsInput,
   reqUpdateIterationInput,
   reqUpdateIterationStateInput,
   reqUpdateProjectMemberRoleInput,
   reqUpdateProjectInput,
+  reqUpdateWorkItemCommentInput,
   reqUpdateWorkItemInput
 } from "../products/req/schemas.js";
+import { createReqAddWorkItemCommentHandler } from "../products/req/tools/add-work-item-comment.js";
 import { createReqAddProjectMemberHandler } from "../products/req/tools/add-project-member.js";
 import { createReqBatchAddProjectMembersHandler } from "../products/req/tools/batch-add-project-members.js";
 import { createReqBatchDeleteProjectMembersHandler } from "../products/req/tools/batch-delete-project-members.js";
@@ -50,6 +54,7 @@ import { createReqListIterationsHandler } from "../products/req/tools/list-itera
 import { createReqListNotAddedProjectsHandler } from "../products/req/tools/list-not-added-projects.js";
 import { createReqListProjectMembersHandler } from "../products/req/tools/list-project-members.js";
 import { createReqListProjectsHandler } from "../products/req/tools/list-projects.js";
+import { createReqListWorkItemCommentsHandler } from "../products/req/tools/list-work-item-comments.js";
 import { createReqListWorkItemRecordsHandler } from "../products/req/tools/list-work-item-records.js";
 import { createReqListWorkItemsHandler } from "../products/req/tools/list-work-items.js";
 import { createReqQueryIterationImmovableIssuesHandler } from "../products/req/tools/query-iteration-immovable-issues.js";
@@ -57,6 +62,7 @@ import { createReqUpdateIterationHandler } from "../products/req/tools/update-it
 import { createReqUpdateIterationStateHandler } from "../products/req/tools/update-iteration-state.js";
 import { createReqUpdateProjectMemberRoleHandler } from "../products/req/tools/update-project-member-role.js";
 import { createReqUpdateProjectHandler } from "../products/req/tools/update-project.js";
+import { createReqUpdateWorkItemCommentHandler } from "../products/req/tools/update-work-item-comment.js";
 import { createReqUpdateWorkItemHandler } from "../products/req/tools/update-work-item.js";
 import { defineProductTool, registerDefinedTool } from "./product-tool-registry.js";
 import type { RateLimiter } from "./rate-limiter.js";
@@ -180,6 +186,14 @@ const reqToolDefinitions = {
     createProductHandler: createReqCreateWorkItemHandler,
     rateLimitAction: "req_create_work_item"
   }),
+  "req_add_work_item_comment": defineProductTool({
+    description: "Add comment to a CodeArts Req work item",
+    inputSchema: reqAddWorkItemCommentInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqAddWorkItemCommentHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqAddWorkItemCommentHandler,
+    rateLimitAction: "req_add_work_item_comment"
+  }),
   "req_delete_work_item": defineProductTool({
     description: "Delete CodeArts Req work item",
     inputSchema: reqDeleteWorkItemInput,
@@ -205,6 +219,13 @@ const reqToolDefinitions = {
     inputSchema: reqGetWorkItemInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGetWorkItemHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqGetWorkItemHandler
+  }),
+  "req_list_work_item_comments": defineProductTool({
+    description: "List CodeArts Req work item comments",
+    inputSchema: reqListWorkItemCommentsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemCommentsHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListWorkItemCommentsHandler
   }),
   "req_list_work_item_records": defineProductTool({
     description: "List CodeArts Req work item records",
@@ -237,6 +258,14 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUpdateWorkItemHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqUpdateWorkItemHandler,
     rateLimitAction: "req_update_work_item"
+  }),
+  "req_update_work_item_comment": defineProductTool({
+    description: "Update a CodeArts Req work item comment",
+    inputSchema: reqUpdateWorkItemCommentInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUpdateWorkItemCommentHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqUpdateWorkItemCommentHandler,
+    rateLimitAction: "req_update_work_item_comment"
   }),
   "req_update_project_member_role": defineProductTool({
     description: "Update a CodeArts Req project member role",

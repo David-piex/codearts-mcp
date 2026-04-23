@@ -171,6 +171,69 @@ describe("registerReqTool", () => {
     );
   });
 
+  it("registers the list work item comments tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_list_work_item_comments",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_list_work_item_comments",
+      expect.objectContaining({
+        title: "req_list_work_item_comments",
+        description: "List CodeArts Req work item comments"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the add work item comment tool with rate-limited metadata", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_add_work_item_comment",
+      server: { registerTool },
+      mode: "stdio",
+      stdioClient: {} as never
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_add_work_item_comment",
+      expect.objectContaining({
+        title: "req_add_work_item_comment",
+        description: "Add comment to a CodeArts Req work item"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the update work item comment tool with rate-limited metadata", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_update_work_item_comment",
+      server: { registerTool },
+      mode: "stdio",
+      stdioClient: {} as never
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_update_work_item_comment",
+      expect.objectContaining({
+        title: "req_update_work_item_comment",
+        description: "Update a CodeArts Req work item comment"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("registers the add project member tool with the expected metadata", () => {
     const registerTool = vi.fn();
 
@@ -375,6 +438,23 @@ describe("registerReqTool", () => {
         work_item_ids: ["wi-9", "wi-10"],
         status_id: 3
       }
+    },
+    {
+      toolName: "req_add_work_item_comment",
+      input: {
+        project_id: "project-1",
+        work_item_id: "wi-9",
+        content: "First comment"
+      }
+    },
+    {
+      toolName: "req_update_work_item_comment",
+      input: {
+        project_id: "project-1",
+        work_item_id: "wi-9",
+        comment_id: "comment-1",
+        content: "Updated comment"
+      }
     }
   ])(
     "does not consume rate limit when $toolName omits dry_run and falls back to default dry-run behavior",
@@ -404,6 +484,110 @@ describe("registerReqTool", () => {
       expect(rateLimiter.check).not.toHaveBeenCalled();
     }
   );
+
+  it("enforces rate limiting before handling add work item comment in http mode", async () => {
+    const registerTool = vi.fn();
+    const rateLimiter = { check: vi.fn() };
+
+    registerReqTool({
+      toolName: "req_add_work_item_comment",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore(),
+      rateLimiter: rateLimiter as never
+    });
+
+    const handler = registerTool.mock.calls[0]?.[2] as
+      | ((input: unknown, extra: { sessionId?: string; authId?: string }) => Promise<unknown>)
+      | undefined;
+
+    expect(handler).toBeTypeOf("function");
+
+    await handler?.(
+      {
+        project_id: "project-1",
+        work_item_id: "wi-9",
+        content: "First comment",
+        dry_run: true
+      },
+      {
+        sessionId: "session-1",
+        authId: "auth-1"
+      }
+    );
+
+    await handler?.(
+      {
+        project_id: "project-1",
+        work_item_id: "wi-9",
+        content: "First comment",
+        dry_run: false
+      },
+      {
+        sessionId: "session-1",
+        authId: "auth-1"
+      }
+    );
+
+    expect(rateLimiter.check).toHaveBeenCalledWith(
+      "req_add_work_item_comment:session-1",
+      "req_add_work_item_comment"
+    );
+    expect(rateLimiter.check).toHaveBeenCalledTimes(1);
+  });
+
+  it("enforces rate limiting before handling update work item comment in http mode", async () => {
+    const registerTool = vi.fn();
+    const rateLimiter = { check: vi.fn() };
+
+    registerReqTool({
+      toolName: "req_update_work_item_comment",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore(),
+      rateLimiter: rateLimiter as never
+    });
+
+    const handler = registerTool.mock.calls[0]?.[2] as
+      | ((input: unknown, extra: { sessionId?: string; authId?: string }) => Promise<unknown>)
+      | undefined;
+
+    expect(handler).toBeTypeOf("function");
+
+    await handler?.(
+      {
+        project_id: "project-1",
+        work_item_id: "wi-9",
+        comment_id: "comment-1",
+        content: "Updated comment",
+        dry_run: true
+      },
+      {
+        sessionId: "session-1",
+        authId: "auth-1"
+      }
+    );
+
+    await handler?.(
+      {
+        project_id: "project-1",
+        work_item_id: "wi-9",
+        comment_id: "comment-1",
+        content: "Updated comment",
+        dry_run: false
+      },
+      {
+        sessionId: "session-1",
+        authId: "auth-1"
+      }
+    );
+
+    expect(rateLimiter.check).toHaveBeenCalledWith(
+      "req_update_work_item_comment:session-1",
+      "req_update_work_item_comment"
+    );
+    expect(rateLimiter.check).toHaveBeenCalledTimes(1);
+  });
 
   it("returns false for non-req tools", () => {
     const registerTool = vi.fn();
