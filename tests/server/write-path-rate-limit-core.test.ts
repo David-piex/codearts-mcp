@@ -140,6 +140,81 @@ describe("write path rate limits", () => {
 
   it.each([
     {
+      toolName: "req_create_plan",
+      dryRunInput: {
+        project_id: "project-1",
+        name: "2026 Q3",
+        type: "mind",
+        dry_run: true
+      },
+      liveInput: (index: number) => ({
+        project_id: "project-1",
+        name: `Plan ${index}`,
+        type: "mind",
+        dry_run: false
+      }),
+      blockedInput: {
+        project_id: "project-1",
+        name: "Plan blocked",
+        type: "mind",
+        dry_run: false
+      },
+      responsePayload: {
+        status: "success",
+        result: {
+          id: "plan-1"
+        }
+      }
+    },
+    {
+      toolName: "req_update_plan",
+      dryRunInput: {
+        project_id: "project-1",
+        plan_id: "plan-1",
+        name: "2026 Q3 Updated",
+        dry_run: true
+      },
+      liveInput: (index: number) => ({
+        project_id: "project-1",
+        plan_id: `${index}`,
+        name: `Plan ${index}`,
+        dry_run: false
+      }),
+      blockedInput: {
+        project_id: "project-1",
+        plan_id: "blocked",
+        name: "Plan blocked",
+        dry_run: false
+      },
+      responsePayload: {
+        status: "success",
+        result: {
+          id: "plan-1"
+        }
+      }
+    },
+    {
+      toolName: "req_delete_plan",
+      dryRunInput: {
+        project_id: "project-1",
+        plan_id: "plan-1",
+        dry_run: true
+      },
+      liveInput: (index: number) => ({
+        project_id: "project-1",
+        plan_id: `${index}`,
+        dry_run: false
+      }),
+      blockedInput: {
+        project_id: "project-1",
+        plan_id: "blocked",
+        dry_run: false
+      },
+      responsePayload: {
+        status: "success"
+      }
+    },
+    {
       toolName: "req_create_iteration",
       dryRunInput: {
         project_id: "project-1",

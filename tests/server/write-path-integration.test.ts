@@ -265,6 +265,28 @@ function createReqCreateIterationInput<T extends Record<string, unknown>>(
   } & T;
 }
 
+function createReqCreatePlanInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  name: string;
+  type: "gantt" | "mind";
+  dry_run: boolean;
+} & T {
+  return {
+    project_id: "project-1",
+    name: "2026 Q3",
+    type: "mind",
+    dry_run: false,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    name: string;
+    type: "gantt" | "mind";
+    dry_run: boolean;
+  } & T;
+}
+
 function createReqUpdateIterationInput<T extends Record<string, unknown>>(
   overrides?: T
 ): {
@@ -302,6 +324,28 @@ function createReqUpdateIterationInput<T extends Record<string, unknown>>(
   } & T;
 }
 
+function createReqUpdatePlanInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  plan_id: string;
+  name: string;
+  dry_run: boolean;
+} & T {
+  return {
+    project_id: "project-1",
+    plan_id: "plan-1",
+    name: "2026 Q3 Updated",
+    dry_run: false,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    plan_id: string;
+    name: string;
+    dry_run: boolean;
+  } & T;
+}
+
 function createReqDeleteIterationInput<T extends Record<string, unknown>>(
   overrides?: T
 ): {
@@ -317,6 +361,25 @@ function createReqDeleteIterationInput<T extends Record<string, unknown>>(
   } as {
     project_id: string;
     iteration_id: string;
+    dry_run: boolean;
+  } & T;
+}
+
+function createReqDeletePlanInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  plan_id: string;
+  dry_run: boolean;
+} & T {
+  return {
+    project_id: "project-1",
+    plan_id: "plan-1",
+    dry_run: false,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    plan_id: string;
     dry_run: boolean;
   } & T;
 }
@@ -638,6 +701,46 @@ const writePathCases: WritePathCase[] = [
     }
   },
   {
+    name: "executes req_create_plan through the registered session-aware runtime client",
+    createHandler: (store: SessionStore) =>
+      readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_create_plan"),
+    input: createReqCreatePlanInput(),
+    responsePayload: {
+      status: "success",
+      result: {
+        id: "plan-1",
+        name: "2026 Q3",
+        type: "mind",
+        project_id: "project-1",
+        img_url: "https://example.com/plan.png",
+        creator: {
+          user_id: "user-1",
+          domain_id: "domain-1",
+          nick_name: "Alice",
+          first_name: "Alice"
+        }
+      }
+    },
+    expectedItem: {
+      id: "plan-1",
+      projectId: "project-1",
+      name: "2026 Q3",
+      type: "mind",
+      imageUrl: "https://example.com/plan.png",
+      creator: {
+        user_id: "user-1",
+        domain_id: "domain-1",
+        nick_name: "Alice",
+        first_name: "Alice"
+      },
+      executed: true
+    },
+    expectedRequest: {
+      path: "/v3/plan/project-1/management",
+      bodyIncludes: ["\"name\":\"2026 Q3\"", "\"type\":\"mind\""]
+    }
+  },
+  {
     name: "executes req_create_iteration through the registered session-aware runtime client",
     createHandler: (store: SessionStore) =>
       readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_create_iteration"),
@@ -664,6 +767,47 @@ const writePathCases: WritePathCase[] = [
     }
   },
   {
+    name: "executes req_update_plan through the registered session-aware runtime client",
+    createHandler: (store: SessionStore) =>
+      readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_update_plan"),
+    input: createReqUpdatePlanInput(),
+    responsePayload: {
+      status: "success",
+      result: {
+        id: "plan-1",
+        name: "2026 Q3 Updated",
+        type: "mind",
+        project_id: "project-1",
+        img_url: "https://example.com/plan.png",
+        creator: {
+          user_id: "user-1",
+          domain_id: "domain-1",
+          nick_name: "Alice",
+          first_name: "Alice"
+        }
+      }
+    },
+    expectedItem: {
+      id: "plan-1",
+      projectId: "project-1",
+      name: "2026 Q3 Updated",
+      type: "mind",
+      imageUrl: "https://example.com/plan.png",
+      creator: {
+        user_id: "user-1",
+        domain_id: "domain-1",
+        nick_name: "Alice",
+        first_name: "Alice"
+      },
+      executed: true
+    },
+    expectedRequest: {
+      path: "/v3/plan/project-1/management/plan-1",
+      method: "PUT",
+      bodyIncludes: ["\"name\":\"2026 Q3 Updated\""]
+    }
+  },
+  {
     name: "executes req_update_iteration through the registered session-aware runtime client",
     createHandler: (store: SessionStore) =>
       readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_update_iteration"),
@@ -684,6 +828,26 @@ const writePathCases: WritePathCase[] = [
       path: "/v4/projects/project-1/iterations/301",
       method: "PUT",
       bodyIncludes: ["\"name\":\"Sprint 4 Updated\"", "\"status\":\"2\"", "\"over_type\":\"auto\""]
+    }
+  },
+  {
+    name: "executes req_delete_plan through the registered session-aware runtime client",
+    createHandler: (store: SessionStore) =>
+      readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_delete_plan"),
+    input: createReqDeletePlanInput(),
+    responsePayload: {
+      status: "success"
+    },
+    expectedItem: {
+      id: "plan-1",
+      projectId: "project-1",
+      deleted: true,
+      executed: true
+    },
+    expectedRequest: {
+      path: "/v3/plan/project-1/management",
+      method: "DELETE",
+      bodyIncludes: ["[\"plan-1\"]"]
     }
   },
   {
@@ -1127,6 +1291,19 @@ const dryRunCases: DryRunCase[] = [
     }
   },
   {
+    name: "short-circuits req_create_plan dry runs without HTTP or rate-limit consumption",
+    toolName: "req_create_plan",
+    input: createReqCreatePlanInput({
+      dry_run: true
+    }),
+    expectedItem: {
+      projectId: "project-1",
+      name: "2026 Q3",
+      type: "mind",
+      executed: false
+    }
+  },
+  {
     name: "short-circuits req_create_iteration dry runs without HTTP or rate-limit consumption",
     toolName: "req_create_iteration",
     input: createReqCreateIterationInput({
@@ -1138,6 +1315,19 @@ const dryRunCases: DryRunCase[] = [
       beginTime: "2026-04-15",
       endTime: "2026-04-28",
       description: "Close backlog",
+      executed: false
+    }
+  },
+  {
+    name: "short-circuits req_update_plan dry runs without HTTP or rate-limit consumption",
+    toolName: "req_update_plan",
+    input: createReqUpdatePlanInput({
+      dry_run: true
+    }),
+    expectedItem: {
+      id: "plan-1",
+      projectId: "project-1",
+      name: "2026 Q3 Updated",
       executed: false
     }
   },
@@ -1156,6 +1346,19 @@ const dryRunCases: DryRunCase[] = [
       description: "Updated backlog",
       status: "2",
       overType: "auto",
+      executed: false
+    }
+  },
+  {
+    name: "short-circuits req_delete_plan dry runs without HTTP or rate-limit consumption",
+    toolName: "req_delete_plan",
+    input: createReqDeletePlanInput({
+      dry_run: true
+    }),
+    expectedItem: {
+      id: "plan-1",
+      projectId: "project-1",
+      deleted: false,
       executed: false
     }
   },

@@ -322,6 +322,45 @@ export type ReqClient = {
     issue_cur_count?: number;
     issues_count?: number;
   }>;
+  createPlan: (input: {
+    project_id: string;
+    name: string;
+    type: "gantt" | "mind";
+  }) => Promise<{
+    id: number | string;
+    name: string;
+    type?: string;
+    project_id?: string;
+    img_url?: string;
+    creator?: {
+      user_id?: string;
+      domain_id?: string;
+      nick_name?: string;
+      first_name?: string;
+    };
+  }>;
+  updatePlan: (input: {
+    project_id: string;
+    plan_id: string;
+    name: string;
+  }) => Promise<{
+    id: number | string;
+    name: string;
+    type?: string;
+    project_id?: string;
+    img_url?: string;
+    creator?: {
+      user_id?: string;
+      domain_id?: string;
+      nick_name?: string;
+      first_name?: string;
+    };
+  }>;
+  deletePlan: (input: { project_id: string; plan_id: string }) => Promise<{
+    project_id: string;
+    plan_id: string;
+    deleted: true;
+  }>;
   createIteration: (input: {
     project_id: string;
     name: string;
@@ -1708,6 +1747,102 @@ export function createReqClient(
         milestone_cur_count: result.milestone_cur_count,
         issue_cur_count: result.issue_cur_count,
         issues_count: result.issues_count
+      };
+    },
+    async createPlan(input) {
+      const response = (await _http.post(
+        `/v3/plan/${encodeURIComponent(input.project_id)}/management`,
+        {
+          name: input.name,
+          type: input.type
+        }
+      )) as {
+        result?: {
+          id?: number | string;
+          name?: string;
+          type?: string;
+          project_id?: string;
+          img_url?: string;
+          creator?: {
+            user_id?: string;
+            domain_id?: string;
+            nick_name?: string;
+            first_name?: string;
+          };
+        };
+        id?: number | string;
+        name?: string;
+        type?: string;
+        project_id?: string;
+        img_url?: string;
+        creator?: {
+          user_id?: string;
+          domain_id?: string;
+          nick_name?: string;
+          first_name?: string;
+        };
+      };
+      const result = response.result ?? response;
+
+      return {
+        id: result.id ?? "",
+        name: result.name ?? input.name,
+        type: result.type ?? input.type,
+        project_id: result.project_id ?? input.project_id,
+        img_url: result.img_url,
+        creator: result.creator
+      };
+    },
+    async updatePlan(input) {
+      const response = (await _http.put(
+        `/v3/plan/${encodeURIComponent(input.project_id)}/management/${encodeURIComponent(input.plan_id)}`,
+        {
+          name: input.name
+        }
+      )) as {
+        result?: {
+          id?: number | string;
+          name?: string;
+          type?: string;
+          project_id?: string;
+          img_url?: string;
+          creator?: {
+            user_id?: string;
+            domain_id?: string;
+            nick_name?: string;
+            first_name?: string;
+          };
+        };
+        id?: number | string;
+        name?: string;
+        type?: string;
+        project_id?: string;
+        img_url?: string;
+        creator?: {
+          user_id?: string;
+          domain_id?: string;
+          nick_name?: string;
+          first_name?: string;
+        };
+      };
+      const result = response.result ?? response;
+
+      return {
+        id: result.id ?? input.plan_id,
+        name: result.name ?? input.name,
+        type: result.type,
+        project_id: result.project_id ?? input.project_id,
+        img_url: result.img_url,
+        creator: result.creator
+      };
+    },
+    async deletePlan(input) {
+      await _http.delete(`/v3/plan/${encodeURIComponent(input.project_id)}/management`, [input.plan_id]);
+
+      return {
+        project_id: input.project_id,
+        plan_id: input.plan_id,
+        deleted: true as const
       };
     },
     async createIteration(input) {

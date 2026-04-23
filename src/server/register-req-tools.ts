@@ -7,9 +7,11 @@ import {
   reqBatchDeleteProjectMembersInput,
   reqBatchDeleteIterationsInput,
   reqCheckProjectNameInput,
+  reqCreatePlanInput,
   reqCreateIterationInput,
   reqCreateProjectInput,
   reqCreateProjectModuleInput,
+  reqDeletePlanInput,
   reqDeleteProjectInput,
   reqDeleteIterationInput,
   reqDeleteProjectModuleInput,
@@ -54,6 +56,7 @@ import {
   reqListWorkItemWorkflowConfigInput,
   reqListWorkItemRecordsInput,
   reqListWorkItemsInput,
+  reqUpdatePlanInput,
   reqUpdateIterationInput,
   reqUpdateIterationStateInput,
   reqUpdateProjectModuleInput,
@@ -69,9 +72,11 @@ import { createReqBatchAddProjectMembersHandler } from "../products/req/tools/ba
 import { createReqBatchDeleteProjectMembersHandler } from "../products/req/tools/batch-delete-project-members.js";
 import { createReqBatchDeleteIterationsHandler } from "../products/req/tools/batch-delete-iterations.js";
 import { createReqCheckProjectNameHandler } from "../products/req/tools/check-project-name.js";
+import { createReqCreatePlanHandler } from "../products/req/tools/create-plan.js";
 import { createReqCreateIterationHandler } from "../products/req/tools/create-iteration.js";
 import { createReqCreateProjectHandler } from "../products/req/tools/create-project.js";
 import { createReqCreateProjectModuleHandler } from "../products/req/tools/create-project-module.js";
+import { createReqDeletePlanHandler } from "../products/req/tools/delete-plan.js";
 import { createReqDeleteProjectHandler } from "../products/req/tools/delete-project.js";
 import { createReqDeleteIterationHandler } from "../products/req/tools/delete-iteration.js";
 import { createReqDeleteProjectModuleHandler } from "../products/req/tools/delete-project-module.js";
@@ -116,6 +121,7 @@ import { createReqListWorkItemWorkflowConfigHandler } from "../products/req/tool
 import { createReqListWorkItemRecordsHandler } from "../products/req/tools/list-work-item-records.js";
 import { createReqListWorkItemsHandler } from "../products/req/tools/list-work-items.js";
 import { createReqQueryIterationImmovableIssuesHandler } from "../products/req/tools/query-iteration-immovable-issues.js";
+import { createReqUpdatePlanHandler } from "../products/req/tools/update-plan.js";
 import { createReqUpdateIterationHandler } from "../products/req/tools/update-iteration.js";
 import { createReqUpdateIterationStateHandler } from "../products/req/tools/update-iteration-state.js";
 import { createReqUpdateProjectModuleHandler } from "../products/req/tools/update-project-module.js";
@@ -167,6 +173,13 @@ const reqToolDefinitions = {
     createProductHandler: createReqCreateProjectHandler,
     rateLimitAction: "req_create_project"
   }),
+  "req_create_plan": defineProductTool({
+    description: "Create CodeArts Req plan",
+    inputSchema: reqCreatePlanInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqCreatePlanHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqCreatePlanHandler,
+    rateLimitAction: "req_create_plan"
+  }),
   "req_create_iteration": defineProductTool({
     description: "Create CodeArts Req iteration",
     inputSchema: reqCreateIterationInput,
@@ -189,6 +202,13 @@ const reqToolDefinitions = {
     createProductHandler: createReqUpdateProjectHandler,
     rateLimitAction: "req_update_project"
   }),
+  "req_update_plan": defineProductTool({
+    description: "Update CodeArts Req plan",
+    inputSchema: reqUpdatePlanInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUpdatePlanHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqUpdatePlanHandler,
+    rateLimitAction: "req_update_plan"
+  }),
   "req_update_iteration": defineProductTool({
     description: "Update CodeArts Req iteration",
     inputSchema: reqUpdateIterationInput,
@@ -210,6 +230,13 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqDeleteProjectHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqDeleteProjectHandler,
     rateLimitAction: "req_delete_project"
+  }),
+  "req_delete_plan": defineProductTool({
+    description: "Delete CodeArts Req plan",
+    inputSchema: reqDeletePlanInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqDeletePlanHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqDeletePlanHandler,
+    rateLimitAction: "req_delete_plan"
   }),
   "req_delete_iteration": defineProductTool({
     description: "Delete CodeArts Req iteration",

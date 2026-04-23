@@ -9,9 +9,31 @@ const scrumPlanTrackerIdSchema = z.union([
   z.literal(7)
 ]);
 
+const scrumPlanTypeSchema = z.union([z.literal("gantt"), z.literal("mind")]);
+
 export const reqGetPlanInput = z.object({
   project_id: idSchema,
   plan_id: idSchema
+});
+
+export const reqCreatePlanInput = z.object({
+  project_id: idSchema,
+  name: z.string().min(1),
+  type: scrumPlanTypeSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const reqUpdatePlanInput = z.object({
+  project_id: idSchema,
+  plan_id: idSchema,
+  name: z.string().min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const reqDeletePlanInput = z.object({
+  project_id: idSchema,
+  plan_id: idSchema,
+  dry_run: z.boolean().default(true)
 });
 
 export const reqListPlansInput = pagingSchema

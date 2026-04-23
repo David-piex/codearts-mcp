@@ -2651,4 +2651,144 @@ describe("createReqClient", () => {
       issues_count: 3
     });
   });
+
+  it("maps plan write endpoints to the documented request shapes", async () => {
+    const requests: Array<{
+      method: string;
+      path: string;
+      body?: Record<string, unknown> | string[];
+    }> = [];
+    const client = createReqClient({
+      post: async (path: string, body: Record<string, unknown>) => {
+        requests.push({
+          method: "POST",
+          path,
+          body
+        });
+
+        return {
+          status: "success",
+          result: {
+            id: "plan-1",
+            name: "2026 Q3",
+            type: "mind",
+            project_id: "p-1",
+            img_url: "https://example.com/plan.png",
+            creator: {
+              user_id: "user-1",
+              domain_id: "domain-1",
+              nick_name: "Alice",
+              first_name: "Alice"
+            }
+          }
+        };
+      },
+      put: async (path: string, body: Record<string, unknown>) => {
+        requests.push({
+          method: "PUT",
+          path,
+          body
+        });
+
+        return {
+          status: "success",
+          result: {
+            id: "plan-1",
+            name: "2026 Q3 Updated",
+            type: "mind",
+            project_id: "p-1",
+            img_url: "https://example.com/plan.png",
+            creator: {
+              user_id: "user-1",
+              domain_id: "domain-1",
+              nick_name: "Alice",
+              first_name: "Alice"
+            }
+          }
+        };
+      },
+      delete: async (path: string, body?: string[]) => {
+        requests.push({
+          method: "DELETE",
+          path,
+          body
+        });
+
+        return {
+          status: "success"
+        };
+      }
+    } as never);
+
+    const [created, updated, deleted] = await Promise.all([
+      client.createPlan({
+        project_id: "p-1",
+        name: "2026 Q3",
+        type: "mind"
+      }),
+      client.updatePlan({
+        project_id: "p-1",
+        plan_id: "plan-1",
+        name: "2026 Q3 Updated"
+      }),
+      client.deletePlan({
+        project_id: "p-1",
+        plan_id: "plan-1"
+      })
+    ]);
+
+    expect(requests).toEqual([
+      {
+        method: "POST",
+        path: "/v3/plan/p-1/management",
+        body: {
+          name: "2026 Q3",
+          type: "mind"
+        }
+      },
+      {
+        method: "PUT",
+        path: "/v3/plan/p-1/management/plan-1",
+        body: {
+          name: "2026 Q3 Updated"
+        }
+      },
+      {
+        method: "DELETE",
+        path: "/v3/plan/p-1/management",
+        body: ["plan-1"]
+      }
+    ]);
+    expect(created).toEqual({
+      id: "plan-1",
+      name: "2026 Q3",
+      type: "mind",
+      project_id: "p-1",
+      img_url: "https://example.com/plan.png",
+      creator: {
+        user_id: "user-1",
+        domain_id: "domain-1",
+        nick_name: "Alice",
+        first_name: "Alice"
+      }
+    });
+    expect(updated).toEqual({
+      id: "plan-1",
+      name: "2026 Q3 Updated",
+      type: "mind",
+      project_id: "p-1",
+      img_url: "https://example.com/plan.png",
+      creator: {
+        user_id: "user-1",
+        domain_id: "domain-1",
+        nick_name: "Alice",
+        first_name: "Alice"
+      }
+    });
+    expect(deleted).toEqual({
+      project_id: "p-1",
+      plan_id: "plan-1",
+      deleted: true
+    });
+  });
 });

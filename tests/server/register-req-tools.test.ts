@@ -87,6 +87,69 @@ describe("registerReqTool", () => {
     );
   });
 
+  it("registers the create plan tool with the expected metadata", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_create_plan",
+      server: { registerTool },
+      mode: "stdio",
+      stdioClient: {} as never
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_create_plan",
+      expect.objectContaining({
+        title: "req_create_plan",
+        description: "Create CodeArts Req plan"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the update plan tool with rate-limited metadata", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_update_plan",
+      server: { registerTool },
+      mode: "stdio",
+      stdioClient: {} as never
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_update_plan",
+      expect.objectContaining({
+        title: "req_update_plan",
+        description: "Update CodeArts Req plan"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the delete plan tool with rate-limited metadata", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_delete_plan",
+      server: { registerTool },
+      mode: "stdio",
+      stdioClient: {} as never
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_delete_plan",
+      expect.objectContaining({
+        title: "req_delete_plan",
+        description: "Delete CodeArts Req plan"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("registers the delete work item tool with rate-limited metadata", () => {
     const registerTool = vi.fn();
 

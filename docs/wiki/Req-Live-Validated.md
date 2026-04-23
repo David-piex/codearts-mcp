@@ -2,13 +2,13 @@
 
 这一页只说明 Req 模块的真实 AK/SK 联调边界，不把“工具已经实现”直接等同于“已经真实 live 跑过”。
 
-当前 Req 已导出 `61` 个工具，功能面覆盖：
+当前 Req 已导出 `64` 个工具，功能面覆盖：
 
 - `project`：项目查询、创建、更新、删除、名称校验、域内未添加项目查询
 - `module`：项目模块列表、创建、更新、删除
 - `member`：项目成员列表、添加、批量添加、批量移除、角色调整、主动退出
 - `iteration`：迭代列表、详情、创建、更新、删除、批量删除、状态更新、不可移动问题查询
-- `plan-read`：规划列表、规划详情、规划内工作项列表、当前规划可添加工作项列表
+- `plan`：规划列表、规划详情、创建、更新、删除、规划内工作项列表、当前规划可添加工作项列表
 - `work-item core`：工作项列表、详情、创建、更新、删除、批量更新、变更记录
 - `collaboration`：评论列表/新增/更新、关联缺陷、关联提交、关联测试用例、相关用户、流转更新
 - `config-read`：工作项状态列表、状态属性、状态详情、状态配置、可选状态配置、项目公共配置、工作项工作流配置、工作项模板、模板字段配置、自定义字段、自动流转开关、流转默认处理人范围
@@ -31,7 +31,7 @@
 | 项目辅助读取 | `req_check_project_name` `req_list_not_added_projects` | smoke 会在真实环境下校验候选项目名，并读取未添加项目列表 |
 | 项目写闭环 | `req_create_project` `req_update_project` `req_delete_project` | 仅在显式开启 `HUAWEICLOUD_REQ_LIVE_ENABLE_PROJECT_MUTATIONS` 时执行，避免默认 live 环境误创建或删除项目 |
 | 项目上下文读取 | `req_list_project_members` `req_list_iterations` `req_get_iteration` | smoke 会读取真实项目成员、迭代列表，并在存在迭代样本时读取迭代详情 |
-| 规划读取 | `req_list_plans` `req_get_plan` `req_list_plan_addable_work_items` `req_list_plan_work_items` | smoke 会先读取规划列表；若项目下存在规划样本，则继续读取规划详情、规划候选工作项和规划内工作项 |
+| 规划面读取 | `req_list_plans` `req_get_plan` `req_list_plan_addable_work_items` `req_list_plan_work_items` | smoke 会先读取规划列表；若项目下存在规划样本，则继续读取规划详情、规划候选工作项和规划内工作项 |
 | 看板与缓存读取 | `req_list_board_work_items` `req_list_board_work_item_status_records` `req_list_job_cache_boards` `req_list_cache_data` | smoke 会对真实项目读取看板工作项、状态记录、job cache board 和 backlog/cache 字段缓存 |
 | 状态/公共配置读取 | `req_list_work_item_statuses` `req_list_work_item_status_attributes` `req_list_work_item_status_details` `req_list_work_item_status_configs` `req_list_optional_work_item_status_configs` `req_get_project_public_config` `req_list_work_item_workflow_config` `req_list_work_item_templates` `req_get_work_item_template_config` `req_list_work_item_custom_fields` `req_get_work_item_status_rule_flag` `req_list_work_item_tracker_handlers` | smoke 会以 Scrum `tracker_id=7` 对真实项目做一轮状态、公共配置、工作流、模板、自定义字段、状态规则开关和默认处理人范围的只读探测 |
 | 迭代写闭环 | `req_create_iteration` `req_update_iteration` `req_delete_iteration` | 仅在同时配置 `HUAWEICLOUD_REQ_LIVE_WRITE_PROJECT_ID` 和 `HUAWEICLOUD_REQ_LIVE_ENABLE_ITERATION_MUTATIONS` 时执行 |
@@ -47,6 +47,7 @@
 | 范围 | 工具 | 当前状态 |
 | --- | --- | --- |
 | member 管理写路径 | `req_add_project_member` `req_batch_add_project_members` `req_batch_delete_project_members` `req_update_project_member_role` `req_leave_project` | 已实现、默认 dry-run 优先；仍依赖更稳定的租户权限和可回收样本 |
+| 规划写路径 | `req_create_plan` `req_update_plan` `req_delete_plan` | 已实现；当前真实 smoke 仍停留在规划面读取，规划写路径还需要可回收样本与显式门禁后再进入 live 闭环 |
 | 迭代状态与批量操作 | `req_update_iteration_state` `req_batch_delete_iterations` `req_query_iteration_immovable_issues` | 已实现；当前 smoke 先覆盖迭代 create/get/update/delete，状态和批量路径仍待专门样本 |
 | 工作项批量管理 | `req_batch_update_work_items` | 已实现；仍需要安全的批量样本矩阵 |
 | 协作与相关用户查询 | `req_list_associated_issues` `req_list_associated_commits` `req_list_associated_test_cases` `req_list_related_users` | 已实现；还需要真实非空样本验证返回形状与字段稳定性 |
@@ -69,7 +70,7 @@
 3. 给 `req_update_work_item_flow` 提供稳定的目标 `status_id` 来源，再进入真实 smoke。
 4. 给关联缺陷、关联提交、关联测试用例、相关用户准备非空样本。
 5. 如果后续继续新增真实写 smoke，先为对应资源补独立门禁，避免普通 live 环境静默扩大写入范围。
-6. 给规划读取补更多真实非空样本，避免长期只有“列表可达但当前项目无规划”的弱验证。
+6. 给规划面补更多真实非空样本，并为规划写路径准备可回收样本，避免长期只有“列表可达但当前项目无规划”的弱验证。
 
 ## 配合阅读
 
