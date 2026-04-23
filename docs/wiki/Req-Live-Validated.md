@@ -2,12 +2,13 @@
 
 这一页只说明 Req 模块的真实 AK/SK 联调边界，不把“工具已经实现”直接等同于“已经真实 live 跑过”。
 
-当前 Req 已导出 `57` 个工具，功能面覆盖：
+当前 Req 已导出 `61` 个工具，功能面覆盖：
 
 - `project`：项目查询、创建、更新、删除、名称校验、域内未添加项目查询
 - `module`：项目模块列表、创建、更新、删除
 - `member`：项目成员列表、添加、批量添加、批量移除、角色调整、主动退出
 - `iteration`：迭代列表、详情、创建、更新、删除、批量删除、状态更新、不可移动问题查询
+- `plan-read`：规划列表、规划详情、规划内工作项列表、当前规划可添加工作项列表
 - `work-item core`：工作项列表、详情、创建、更新、删除、批量更新、变更记录
 - `collaboration`：评论列表/新增/更新、关联缺陷、关联提交、关联测试用例、相关用户、流转更新
 - `config-read`：工作项状态列表、状态属性、状态详情、状态配置、可选状态配置、项目公共配置、工作项工作流配置、工作项模板、模板字段配置、自定义字段、自动流转开关、流转默认处理人范围
@@ -44,6 +45,7 @@
 | --- | --- | --- |
 | member 管理写路径 | `req_add_project_member` `req_batch_add_project_members` `req_batch_delete_project_members` `req_update_project_member_role` `req_leave_project` | 已实现、默认 dry-run 优先；仍依赖更稳定的租户权限和可回收样本 |
 | 迭代状态与批量操作 | `req_update_iteration_state` `req_batch_delete_iterations` `req_query_iteration_immovable_issues` | 已实现；当前 smoke 先覆盖迭代 create/get/update/delete，状态和批量路径仍待专门样本 |
+| 规划读取 | `req_list_plans` `req_get_plan` `req_list_plan_addable_work_items` `req_list_plan_work_items` | 工具已实现；当前仍待补真实项目样本下的规划详情、规划列表、规划候选工作项和规划内工作项读取 smoke |
 | 工作项批量管理 | `req_batch_update_work_items` | 已实现；仍需要安全的批量样本矩阵 |
 | 协作与相关用户查询 | `req_list_associated_issues` `req_list_associated_commits` `req_list_associated_test_cases` `req_list_related_users` | 已实现；还需要真实非空样本验证返回形状与字段稳定性 |
 | 工作项流转 | `req_update_work_item_flow` | 已实现；当前没有稳定、安全的 live `status_id` 来源，所以暂未放进真实 smoke 闭环 |

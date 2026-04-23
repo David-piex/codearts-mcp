@@ -238,6 +238,90 @@ export type ReqClient = {
     created_time?: number;
     updated_time?: number;
   }>;
+  listPlans: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    status_id?: number;
+    plan_id?: string;
+  }) => Promise<{
+    plans: Array<{
+      id: number | string;
+      name: string;
+      type?: string;
+      project_id?: string;
+      creator?: string;
+      updater?: string;
+      created_on?: string;
+      updated_on?: string;
+    }>;
+    total?: number;
+  }>;
+  getPlan: (input: { project_id: string; plan_id: string }) => Promise<{
+    id: number | string;
+    name: string;
+    type?: string;
+    project_id?: string;
+    creator?: string;
+    updater?: string;
+    created_on?: string;
+    updated_on?: string;
+  }>;
+  listPlanAddableWorkItems: (input: {
+    project_id: string;
+    plan_id: string;
+    page: number;
+    page_size: number;
+    subject?: string;
+  }) => Promise<{
+    work_items: Array<{
+      id: number | string;
+      subject?: string;
+      tracker?: {
+        id?: number | string;
+        name?: string;
+      };
+      tracker_id?: number | string;
+      tracker_name?: string;
+      status?: {
+        id?: number | string;
+        name?: string;
+      };
+      status_id?: number | string;
+      status_name?: string;
+    }>;
+    total?: number;
+  }>;
+  listPlanWorkItems: (input: {
+    project_id: string;
+    plan_id: string;
+    page: number;
+    page_size: number;
+    subject?: string;
+    show_type?: "list" | "tree";
+    tracker_id?: 2 | 3 | 5 | 6 | 7;
+  }) => Promise<{
+    work_items: Array<{
+      id: number | string;
+      subject?: string;
+      tracker?: {
+        id?: number | string;
+        name?: string;
+      };
+      tracker_id?: number | string;
+      tracker_name?: string;
+      status?: {
+        id?: number | string;
+        name?: string;
+      };
+      status_id?: number | string;
+      status_name?: string;
+    }>;
+    total?: number;
+    milestone_cur_count?: number;
+    issue_cur_count?: number;
+    issues_count?: number;
+  }>;
   createIteration: (input: {
     project_id: string;
     name: string;
@@ -1408,6 +1492,222 @@ export function createReqClient(
         charts: response.charts,
         created_time: response.created_time,
         updated_time: response.updated_time
+      };
+    },
+    async listPlans(input) {
+      const query = new URLSearchParams({
+        project_id: input.project_id,
+        page_no: String(input.page),
+        page_size: String(input.page_size)
+      });
+
+      if (typeof input.status_id !== "undefined") {
+        query.set("status_id", String(input.status_id));
+      }
+
+      if (input.plan_id) {
+        query.set("plan_id", input.plan_id);
+      }
+
+      const response = (await _http.get(`/v2/workitem/plan?${query.toString()}`)) as {
+        result?: {
+          total?: number;
+          total_count?: number;
+          issues?: Array<{
+            id: number | string;
+            name?: string;
+            type?: string;
+            project_id?: string;
+            creator?: string;
+            updater?: string;
+            created_on?: string;
+            updated_on?: string;
+          }>;
+        };
+        total?: number;
+        total_count?: number;
+        issues?: Array<{
+          id: number | string;
+          name?: string;
+          type?: string;
+          project_id?: string;
+          creator?: string;
+          updater?: string;
+          created_on?: string;
+          updated_on?: string;
+        }>;
+      };
+      const result = response.result ?? response;
+
+      return {
+        plans: (result.issues ?? []).map((item) => ({
+          id: item.id,
+          name: item.name ?? "",
+          type: item.type,
+          project_id: item.project_id,
+          creator: item.creator,
+          updater: item.updater,
+          created_on: item.created_on,
+          updated_on: item.updated_on
+        })),
+        total: result.total ?? result.total_count
+      };
+    },
+    async getPlan(input) {
+      const response = (await _http.get(
+        `/v3/plan/${encodeURIComponent(input.project_id)}/${encodeURIComponent(input.plan_id)}/info`
+      )) as {
+        result?: {
+          id?: number | string;
+          name?: string;
+          type?: string;
+          project_id?: string;
+          creator?: string;
+          updater?: string;
+          created_on?: string;
+          updated_on?: string;
+        };
+        id?: number | string;
+        name?: string;
+        type?: string;
+        project_id?: string;
+        creator?: string;
+        updater?: string;
+        created_on?: string;
+        updated_on?: string;
+      };
+      const result = response.result ?? response;
+
+      return {
+        id: result.id ?? input.plan_id,
+        name: result.name ?? "",
+        type: result.type,
+        project_id: result.project_id ?? input.project_id,
+        creator: result.creator,
+        updater: result.updater,
+        created_on: result.created_on,
+        updated_on: result.updated_on
+      };
+    },
+    async listPlanAddableWorkItems(input) {
+      const response = (await _http.post(
+        `/v3/plan/${encodeURIComponent(input.project_id)}/${encodeURIComponent(input.plan_id)}/addable-issues`,
+        {
+          ...(input.subject ? { subject: input.subject } : {}),
+          page_no: input.page,
+          page_size: input.page_size
+        }
+      )) as {
+        result?: {
+          total?: number;
+          total_count?: number;
+          issues?: Array<{
+            id: number | string;
+            subject?: string;
+            tracker?: {
+              id?: number | string;
+              name?: string;
+            };
+            tracker_id?: number | string;
+            tracker_name?: string;
+            status?: {
+              id?: number | string;
+              name?: string;
+            };
+            status_id?: number | string;
+            status_name?: string;
+          }>;
+        };
+        total?: number;
+        total_count?: number;
+        issues?: Array<{
+          id: number | string;
+          subject?: string;
+          tracker?: {
+            id?: number | string;
+            name?: string;
+          };
+          tracker_id?: number | string;
+          tracker_name?: string;
+          status?: {
+            id?: number | string;
+            name?: string;
+          };
+          status_id?: number | string;
+          status_name?: string;
+        }>;
+      };
+      const result = response.result ?? response;
+
+      return {
+        work_items: result.issues ?? [],
+        total: result.total ?? result.total_count
+      };
+    },
+    async listPlanWorkItems(input) {
+      const response = (await _http.post(
+        `/v3/plan/${encodeURIComponent(input.project_id)}/${encodeURIComponent(input.plan_id)}/issues`,
+        {
+          show_type: input.show_type ?? "list",
+          ...(input.subject ? { subject: input.subject } : {}),
+          pageNo: input.page,
+          pageSize: input.page_size,
+          ...(typeof input.tracker_id !== "undefined" ? { tracker_id: input.tracker_id } : {})
+        }
+      )) as {
+        result?: {
+          milestone_cur_count?: number;
+          issue_cur_count?: number;
+          issues_count?: number;
+          total?: number;
+          total_count?: number;
+          issues?: Array<{
+            id: number | string;
+            subject?: string;
+            tracker?: {
+              id?: number | string;
+              name?: string;
+            };
+            tracker_id?: number | string;
+            tracker_name?: string;
+            status?: {
+              id?: number | string;
+              name?: string;
+            };
+            status_id?: number | string;
+            status_name?: string;
+          }>;
+        };
+        milestone_cur_count?: number;
+        issue_cur_count?: number;
+        issues_count?: number;
+        total?: number;
+        total_count?: number;
+        issues?: Array<{
+          id: number | string;
+          subject?: string;
+          tracker?: {
+            id?: number | string;
+            name?: string;
+          };
+          tracker_id?: number | string;
+          tracker_name?: string;
+          status?: {
+            id?: number | string;
+            name?: string;
+          };
+          status_id?: number | string;
+          status_name?: string;
+        }>;
+      };
+      const result = response.result ?? response;
+
+      return {
+        work_items: result.issues ?? [],
+        total: result.issues_count ?? result.total ?? result.total_count,
+        milestone_cur_count: result.milestone_cur_count,
+        issue_cur_count: result.issue_cur_count,
+        issues_count: result.issues_count
       };
     },
     async createIteration(input) {

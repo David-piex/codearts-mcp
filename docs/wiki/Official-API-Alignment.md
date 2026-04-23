@@ -15,7 +15,7 @@
 
 | 模块 | 当前 MCP 工具数 | 对齐结论 | 当前重点缺口 |
 | --- | --- | --- | --- |
-| Req | 57 | 已对齐到 Scrum 高频实用层，并补入工作项状态/公共配置读面 | IPD / 需求池 / 看板更深写面 / 更深字段配置 / 附件等仍未进入 MCP；新增工具的 live 仍需继续补 |
+| Req | 61 | 已对齐到 Scrum 高频实用层，并补入规划与工作项状态/公共配置读面 | IPD / 需求池 / 看板更深写面 / 更深字段配置 / 附件等仍未进入 MCP；新增工具的 live 仍需继续补 |
 | Repo | 25 | 已形成完整实用面 | 无明显阻塞，含创建仓库 |
 | Pipeline | 77 | 覆盖面大，但 live 深度不均 | 新增管理类工具仍需 AK/SK 实测 |
 | Check | 8 | 当前工具面已稳定 | 无明显阻塞 |
@@ -28,12 +28,13 @@
 
 ### Req
 
-- 当前对齐到官方 Req API 的“Scrum 高频实用层”，并已经补入工作项状态属性、状态详情、状态配置、可选状态配置和项目公共配置读取能力。
-- 功能面已经覆盖 `project / module / member / iteration / work-item / collaboration / config-read / board-read / cache-read` 九个资源面，共 `57` 个工具。
+- 当前对齐到官方 Req API 的“Scrum 高频实用层”，并已经补入规划、工作项状态属性、状态详情、状态配置、可选状态配置和项目公共配置读取能力。
+- 功能面已经覆盖 `project / module / member / iteration / plan-read / work-item / collaboration / config-read / board-read / cache-read` 十个资源面，共 `61` 个工具。
+- `plan-read` 面现在已经可读取规划详情、规划列表、规划内工作项以及当前规划可添加的工作项，方便 agent 在迭代与工作项之间补足“规划”这一层上下文。
 - `config-read` 面现在已经不只是模板、字段和状态规则，还补齐了更靠近真实流转配置的状态配置读面，方便 agent 在执行前理解项目当前状态体系。
 - `board-read` 和 `cache-read` 面已经可用，能够读取看板工作项、状态记录、工作流配置以及字段缓存。
 - 这不等于已经做完官方 Req API 的全量对齐。当前更准确的判断是“Scrum 常用操作已成面”，而不是“Req 全家桶都进了 MCP”。
-- 当前仓库里能明确看到的真实 AK/SK smoke 仍主要集中在项目读取、成员读取、迭代读取和 work-item core 的 create/get/update/list；新增状态/公共配置读面仍需继续补 live。
+- 当前仓库里能明确看到的真实 AK/SK smoke 仍主要集中在项目读取、成员读取、迭代读取和 work-item core 的 create/get/update/list；新增规划/状态/公共配置读面仍需继续补 live。
 - 还没进入当前对齐范围的方向包括：IPD、需求池、项目空间/看板更深写面、更深字段配置写面、工时、附件传输等。
 
 ### Repo
@@ -82,7 +83,7 @@
 
 ## 下一步最值得补的点
 
-1. Req 新扩展的状态/公共配置读面和 member/batch 写面的真实 AK/SK smoke。
+1. Req 新扩展的规划/状态/公共配置读面和 member/batch 写面的真实 AK/SK smoke。
 2. Pipeline 管理类工具的真实 AK/SK 验证。
 3. Deploy execute-class 场景的真实样本和回归。
 4. 对区域未发布路径继续维持显式状态说明，避免文档与现实脱节。

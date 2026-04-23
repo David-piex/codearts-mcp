@@ -2470,4 +2470,185 @@ describe("createReqClient", () => {
       })
     ).rejects.toThrow(/did not report success/i);
   });
+
+  it("maps plan read endpoints to the documented request shapes", async () => {
+    const get = vi
+      .fn()
+      .mockResolvedValueOnce({
+        result: {
+          total: 12,
+          total_count: 12,
+          issues: [
+            {
+              id: "plan-1",
+              name: "2026 Q2",
+              type: "release",
+              project_id: "p-1"
+            }
+          ]
+        }
+      })
+      .mockResolvedValueOnce({
+        result: {
+          id: "plan-1",
+          name: "2026 Q2",
+          type: "release",
+          project_id: "p-1",
+          creator: "alice",
+          updater: "bob",
+          created_on: "2026-04-01T00:00:00Z",
+          updated_on: "2026-04-20T00:00:00Z"
+        }
+      });
+    const post = vi
+      .fn()
+      .mockResolvedValueOnce({
+        result: {
+          total: 2,
+          total_count: 2,
+          issues: [
+            {
+              id: 101,
+              subject: "Plan candidate",
+              tracker: {
+                id: 7,
+                name: "Story"
+              },
+              status: {
+                id: 1,
+                name: "New"
+              }
+            }
+          ]
+        }
+      })
+      .mockResolvedValueOnce({
+        result: {
+          milestone_cur_count: 1,
+          issue_cur_count: 1,
+          issues_count: 3,
+          issues: [
+            {
+              id: 102,
+              subject: "Planned work item",
+              tracker: {
+                id: 6,
+                name: "Epic"
+              },
+              status: {
+                id: 2,
+                name: "Doing"
+              }
+            }
+          ]
+        }
+      });
+    const client = createReqClient({
+      get,
+      post
+    } as never);
+
+    const plans = await client.listPlans({
+      project_id: "p-1",
+      page: 2,
+      page_size: 10,
+      status_id: 1
+    });
+    const plan = await client.getPlan({
+      project_id: "p-1",
+      plan_id: "plan-1"
+    });
+    const addable = await client.listPlanAddableWorkItems({
+      project_id: "p-1",
+      plan_id: "plan-1",
+      page: 3,
+      page_size: 5,
+      subject: "candidate"
+    });
+    const planWorkItems = await client.listPlanWorkItems({
+      project_id: "p-1",
+      plan_id: "plan-1",
+      page: 4,
+      page_size: 6,
+      subject: "delivery",
+      show_type: "tree",
+      tracker_id: 7
+    });
+
+    expect(get).toHaveBeenNthCalledWith(
+      1,
+      "/v2/workitem/plan?project_id=p-1&page_no=2&page_size=10&status_id=1"
+    );
+    expect(get).toHaveBeenNthCalledWith(2, "/v3/plan/p-1/plan-1/info");
+    expect(post).toHaveBeenNthCalledWith(1, "/v3/plan/p-1/plan-1/addable-issues", {
+      subject: "candidate",
+      page_no: 3,
+      page_size: 5
+    });
+    expect(post).toHaveBeenNthCalledWith(2, "/v3/plan/p-1/plan-1/issues", {
+      show_type: "tree",
+      subject: "delivery",
+      pageNo: 4,
+      pageSize: 6,
+      tracker_id: 7
+    });
+    expect(plans).toEqual({
+      plans: [
+        {
+          id: "plan-1",
+          name: "2026 Q2",
+          type: "release",
+          project_id: "p-1"
+        }
+      ],
+      total: 12
+    });
+    expect(plan).toEqual({
+      id: "plan-1",
+      name: "2026 Q2",
+      type: "release",
+      project_id: "p-1",
+      creator: "alice",
+      updater: "bob",
+      created_on: "2026-04-01T00:00:00Z",
+      updated_on: "2026-04-20T00:00:00Z"
+    });
+    expect(addable).toEqual({
+      work_items: [
+        {
+          id: 101,
+          subject: "Plan candidate",
+          tracker: {
+            id: 7,
+            name: "Story"
+          },
+          status: {
+            id: 1,
+            name: "New"
+          }
+        }
+      ],
+      total: 2
+    });
+    expect(planWorkItems).toEqual({
+      work_items: [
+        {
+          id: 102,
+          subject: "Planned work item",
+          tracker: {
+            id: 6,
+            name: "Epic"
+          },
+          status: {
+            id: 2,
+            name: "Doing"
+          }
+        }
+      ],
+      total: 3,
+      milestone_cur_count: 1,
+      issue_cur_count: 1,
+      issues_count: 3
+    });
+  });
 });

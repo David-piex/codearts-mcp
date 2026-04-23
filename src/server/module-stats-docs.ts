@@ -41,7 +41,7 @@ const readWriteMatrixMeta: Record<ModuleName, ReadWriteMatrixMeta> = {
   Req: {
     live: "Partial",
     keyGaps:
-      "Scrum project, module, member, iteration, work-item, comment, association, status/status-attribute/status-detail/workflow-config/template/template-config/custom-field/status-rule-flag/status-config/optional-status-config/tracker-handler/project-public-config reads, board work-item reads, and field/cache reads are implemented; deeper live coverage is still expanding for member, batch, new status/public-config read paths, cache reads, and board samples"
+      "Scrum project, module, member, iteration, plan, work-item, comment, association, status/status-attribute/status-detail/workflow-config/template/template-config/custom-field/status-rule-flag/status-config/optional-status-config/tracker-handler/project-public-config reads, board work-item reads, and field/cache reads are implemented; deeper live coverage is still expanding for member, batch, plan-read, new status/public-config read paths, cache reads, and board samples"
   },
   Repo: {
     live: "Validated",
@@ -82,7 +82,7 @@ const implementationStatusMeta: Record<ModuleName, ImplementationStatusMeta> = {
   Req: {
     live: "Partial",
     notes:
-      "Req now covers Scrum project, module, member, iteration, work-item, comment, association, related-user, status/status-attribute/status-detail/workflow-config/template/template-config/custom-field/status-rule-flag/status-config/optional-status-config/tracker-handler/project-public-config reads, board work-item reads, field/cache reads, and flow-transition tools. Core project/work-item paths have live coverage; member, batch-operation, new status/public-config read paths, cache reads, and board reads still need deeper live coverage."
+      "Req now covers Scrum project, module, member, iteration, plan, work-item, comment, association, related-user, status/status-attribute/status-detail/workflow-config/template/template-config/custom-field/status-rule-flag/status-config/optional-status-config/tracker-handler/project-public-config reads, board work-item reads, field/cache reads, and flow-transition tools. Core project/work-item paths have live coverage; member, batch-operation, plan-read, new status/public-config read paths, cache reads, and board reads still need deeper live coverage."
   },
   Repo: {
     live: "Validated",
@@ -122,9 +122,9 @@ const implementationStatusMeta: Record<ModuleName, ImplementationStatusMeta> = {
 
 const toolStatusSummaryMeta: Record<ModuleName, ToolStatusSummaryMeta> = {
   Req: {
-    summary: "Expanded Scrum surface with status/public-config/cache read support",
+    summary: "Expanded Scrum surface with plan/status/public-config/cache read support",
     conclusion:
-      "The Req MCP surface has grown from the original 8-tool core to project/module/member/iteration/work-item collaboration plus status/status-attribute/status-detail/workflow-config/template/template-config/custom-field/status-rule-flag/status-config/optional-status-config/tracker-handler and project-public-config reads, field/cache reads, and initial board work-item read coverage; core live loops are validated while deeper member, batch, status/public-config-read, cache-read, and board samples remain pending."
+      "The Req MCP surface has grown from the original 8-tool core to project/module/member/iteration/plan/work-item collaboration plus status/status-attribute/status-detail/workflow-config/template/template-config/custom-field/status-rule-flag/status-config/optional-status-config/tracker-handler and project-public-config reads, field/cache reads, and initial board work-item read coverage; core live loops are validated while deeper member, batch, plan-read, status/public-config-read, cache-read, and board samples remain pending."
   },
   Repo: {
     summary: "`25 Full / 0 Reachable / 0 Unpublished / 0 Code`",
@@ -166,7 +166,7 @@ const readmeModuleNumbersMeta: Record<ModuleName, ReadmeModuleNumbersMeta> = {
   Req: {
     liveStatus: "Partial",
     breakdown:
-      "Expanded Scrum surface with status/status-attribute/status-detail/workflow-config/template/template-config/custom-field/status-rule-flag/status-config/optional-status-config/tracker-handler and project-public-config reads plus field/cache reads and board work-item reads; see `docs/wiki/Req-Live-Validated.md` for validated paths and remaining live-depth gaps"
+      "Expanded Scrum surface with plan/status/status-attribute/status-detail/workflow-config/template/template-config/custom-field/status-rule-flag/status-config/optional-status-config/tracker-handler and project-public-config reads plus field/cache reads and board work-item reads; see `docs/wiki/Req-Live-Validated.md` for validated paths and remaining live-depth gaps"
   },
   Repo: {
     liveStatus: "Validated",

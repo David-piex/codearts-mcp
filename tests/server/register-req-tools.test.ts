@@ -171,6 +171,48 @@ describe("registerReqTool", () => {
     );
   });
 
+  it("registers the list plans tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_list_plans",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_list_plans",
+      expect.objectContaining({
+        title: "req_list_plans",
+        description: "List CodeArts Req plans"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the get plan tool in stdio mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_get_plan",
+      server: { registerTool },
+      mode: "stdio",
+      stdioClient: {} as never
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_get_plan",
+      expect.objectContaining({
+        title: "req_get_plan",
+        description: "Get CodeArts Req plan detail"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("registers the list work item comments tool in http mode", () => {
     const registerTool = vi.fn();
 

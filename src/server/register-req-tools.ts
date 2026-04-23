@@ -22,9 +22,13 @@ import {
   reqListCacheDataInput,
   reqGetProjectPublicConfigInput,
   reqGetIterationInput,
+  reqGetPlanInput,
   reqGetProjectInput,
   reqListJobCacheBoardsInput,
   reqListOptionalWorkItemStatusConfigsInput,
+  reqListPlanAddableWorkItemsInput,
+  reqListPlanWorkItemsInput,
+  reqListPlansInput,
   reqQueryIterationImmovableIssuesInput,
   reqGetWorkItemInput,
   reqLeaveProjectInput,
@@ -75,6 +79,7 @@ import { createReqCreateWorkItemHandler } from "../products/req/tools/create-wor
 import { createReqDeleteWorkItemHandler } from "../products/req/tools/delete-work-item.js";
 import { createReqBatchUpdateWorkItemsHandler } from "../products/req/tools/batch-update-work-items.js";
 import { createReqGetIterationHandler } from "../products/req/tools/get-iteration.js";
+import { createReqGetPlanHandler } from "../products/req/tools/get-plan.js";
 import { createReqGetProjectPublicConfigHandler } from "../products/req/tools/get-project-public-config.js";
 import { createReqGetProjectHandler } from "../products/req/tools/get-project.js";
 import { createReqGetWorkItemHandler } from "../products/req/tools/get-work-item.js";
@@ -89,6 +94,9 @@ import { createReqListCacheDataHandler } from "../products/req/tools/list-cache-
 import { createReqListIterationsHandler } from "../products/req/tools/list-iterations.js";
 import { createReqListJobCacheBoardsHandler } from "../products/req/tools/list-job-cache-boards.js";
 import { createReqListOptionalWorkItemStatusConfigsHandler } from "../products/req/tools/list-optional-work-item-status-configs.js";
+import { createReqListPlanAddableWorkItemsHandler } from "../products/req/tools/list-plan-addable-work-items.js";
+import { createReqListPlanWorkItemsHandler } from "../products/req/tools/list-plan-work-items.js";
+import { createReqListPlansHandler } from "../products/req/tools/list-plans.js";
 import { createReqListNotAddedProjectsHandler } from "../products/req/tools/list-not-added-projects.js";
 import { createReqListProjectModulesHandler } from "../products/req/tools/list-project-modules.js";
 import { createReqListProjectMembersHandler } from "../products/req/tools/list-project-members.js";
@@ -254,6 +262,12 @@ const reqToolDefinitions = {
     inputSchema: reqGetIterationInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGetIterationHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqGetIterationHandler
+  }),
+  "req_get_plan": defineProductTool({
+    description: "Get CodeArts Req plan detail",
+    inputSchema: reqGetPlanInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGetPlanHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqGetPlanHandler
   }),
   "req_list_project_modules": defineProductTool({
     description: "List CodeArts Req project modules",
@@ -473,6 +487,26 @@ const reqToolDefinitions = {
     inputSchema: reqListIterationsInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIterationsHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqListIterationsHandler
+  }),
+  "req_list_plans": defineProductTool({
+    description: "List CodeArts Req plans",
+    inputSchema: reqListPlansInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListPlansHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqListPlansHandler
+  }),
+  "req_list_plan_addable_work_items": defineProductTool({
+    description: "List addable work items for a CodeArts Req plan",
+    inputSchema: reqListPlanAddableWorkItemsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListPlanAddableWorkItemsHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListPlanAddableWorkItemsHandler
+  }),
+  "req_list_plan_work_items": defineProductTool({
+    description: "List CodeArts Req work items in a plan",
+    inputSchema: reqListPlanWorkItemsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListPlanWorkItemsHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListPlanWorkItemsHandler
   }),
   "req_update_iteration_state": defineProductTool({
     description: "Update CodeArts Req iteration state",
