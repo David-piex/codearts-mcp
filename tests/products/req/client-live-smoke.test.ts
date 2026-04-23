@@ -371,6 +371,175 @@ if (hasLiveEnv(process.env)) {
       }
     }, 30000);
 
+    it("covers plan reads for a configured project when plan samples exist", async () => {
+      const projectId = readableProjectId ?? explicitWritableProjectId;
+
+      if (!projectId) {
+        return;
+      }
+
+      const plans = await client.listPlans(
+        createProjectPageInput(projectId, {
+          page_size: 20,
+        }),
+      );
+
+      expect(Array.isArray(plans.plans)).toBe(true);
+
+      if (!plans.plans[0]) {
+        return;
+      }
+
+      const planId = String(plans.plans[0].id);
+      const [detail, addableWorkItems, planWorkItems] = await Promise.all([
+        client.getPlan({
+          project_id: projectId,
+          plan_id: planId,
+        }),
+        client.listPlanAddableWorkItems({
+          project_id: projectId,
+          plan_id: planId,
+          page: 1,
+          page_size: 20,
+        }),
+        client.listPlanWorkItems({
+          project_id: projectId,
+          plan_id: planId,
+          page: 1,
+          page_size: 20,
+          show_type: "list",
+        }),
+      ]);
+
+      expect(String(detail.id)).toBe(planId);
+      expect(typeof detail.name).toBe("string");
+      expect(Array.isArray(addableWorkItems.work_items)).toBe(true);
+      expect(Array.isArray(planWorkItems.work_items)).toBe(true);
+    }, 30000);
+
+    it("covers board and cache reads for a configured project", async () => {
+      const projectId = readableProjectId ?? explicitWritableProjectId;
+
+      if (!projectId) {
+        return;
+      }
+
+      const [boardWorkItems, boardStatusRecords, jobCacheBoard, cacheData] =
+        await Promise.all([
+          client.listBoardWorkItems(
+            createProjectPageInput(projectId, {
+              page_size: 20,
+            }),
+          ),
+          client.listBoardWorkItemStatusRecords(
+            createProjectPageInput(projectId, {
+              page_size: 20,
+            }),
+          ),
+          client.listJobCacheBoards({
+            project_id: projectId,
+          }),
+          client.listCacheData({
+            project_id: projectId,
+            type: "backlog",
+          }),
+        ]);
+
+      expect(Array.isArray(boardWorkItems.work_items)).toBe(true);
+      expect(Array.isArray(boardStatusRecords.records)).toBe(true);
+      expect(Array.isArray(jobCacheBoard.fields)).toBe(true);
+      expect(Array.isArray(cacheData.fields)).toBe(true);
+    }, 30000);
+
+    it("covers status, workflow, template, and public-config reads for a configured project", async () => {
+      const projectId = readableProjectId ?? explicitWritableProjectId;
+
+      if (!projectId) {
+        return;
+      }
+
+      const statuses = await client.listWorkItemStatuses({
+        project_id: projectId,
+      });
+      const supportedTrackerIds = new Set([2, 3, 5, 6, 7] as const);
+      const trackerId =
+        (statuses.issue_statuses
+          .flatMap((item) => item.tracker_ids ?? [])
+          .find((value): value is 2 | 3 | 5 | 6 | 7 =>
+            supportedTrackerIds.has(value as 2 | 3 | 5 | 6 | 7),
+          ) ??
+          7) as 2 | 3 | 5 | 6 | 7;
+      const [
+        statusAttributes,
+        statusDetails,
+        statusConfigs,
+        optionalStatusConfigs,
+        publicConfig,
+        workflowConfig,
+        templates,
+        templateConfig,
+        customFields,
+        statusRuleFlag,
+        trackerHandlers,
+      ] = await Promise.all([
+        client.listWorkItemStatusAttributes({
+          project_id: projectId,
+        }),
+        client.listWorkItemStatusDetails({
+          project_id: projectId,
+          tracker_id: trackerId,
+        }),
+        client.listWorkItemStatusConfigs({
+          project_id: projectId,
+          tracker_id: trackerId,
+        }),
+        client.listOptionalWorkItemStatusConfigs({
+          project_id: projectId,
+          tracker_id: trackerId,
+        }),
+        client.getProjectPublicConfig({
+          project_id: projectId,
+        }),
+        client.listWorkItemWorkflowConfig({
+          project_id: projectId,
+          tracker_id: trackerId,
+        }),
+        client.listWorkItemTemplates({
+          project_id: projectId,
+          tracker_id: trackerId,
+        }),
+        client.getWorkItemTemplateConfig({
+          project_id: projectId,
+          tracker_id: trackerId,
+        }),
+        client.listWorkItemCustomFields({
+          project_id: projectId,
+          tracker_id: trackerId,
+        }),
+        client.getWorkItemStatusRuleFlag({
+          project_id: projectId,
+          tracker_id: trackerId,
+        }),
+        client.listWorkItemTrackerHandlers({
+          project_id: projectId,
+          tracker_id: trackerId,
+        }),
+      ]);
+
+      expect(Array.isArray(statuses.issue_statuses)).toBe(true);
+      expect(Array.isArray(statusAttributes.issue_status_attributes)).toBe(true);
+      expect(typeof statusDetails.grouped_statuses).toBe("object");
+      expect(Array.isArray(statusConfigs.issue_statuses)).toBe(true);
+      expect(Array.isArray(optionalStatusConfigs.issue_statuses)).toBe(true);
+      expect(publicConfig.project_id).toBe(projectId);
+      expect(Array.isArray(workflowConfig.workflows)).toBe(true);
+      expect(Array.isArray(templates.templates)).toBe(true);
+      expect(Array.isArray(templateConfig.templates)).toBe(true);
+      expect(Array.isArray(customFields.custom_field)).toBe(true);
+      expect(statusRuleFlag.project_id).toBe(projectId);
+      expect(Array.isArray(trackerHandlers.tracker_handlers)).toBe(true);
+    }, 60000);
+
     it("creates, updates, and deletes a live iteration when an explicit writable project is configured", async () => {
       if (!explicitWritableProjectId || !iterationMutationsEnabled) {
         return;
