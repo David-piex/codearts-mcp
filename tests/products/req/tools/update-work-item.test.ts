@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { reqUpdateWorkItemInput as reqUpdateWorkItemInputFromBarrel } from "../../../../src/products/req/schemas.js";
+import { reqUpdateWorkItemInput } from "../../../../src/products/req/schemas/work-item.js";
 import {
   mapUpdatedWorkItem,
   previewUpdateWorkItem
@@ -42,6 +44,25 @@ describe("mapUpdatedWorkItem", () => {
       type: "Story",
       typeId: 7,
       executed: true
+    });
+  });
+});
+
+describe("reqUpdateWorkItemInput exports", () => {
+  it("keeps the barrel export compatible with the work-item schema module", () => {
+    const input = {
+      project_id: "p-1",
+      work_item_id: "wi-9",
+      title: "Refine login flow"
+    };
+
+    expect(reqUpdateWorkItemInput.parse(input)).toEqual({
+      ...input,
+      dry_run: true
+    });
+    expect(reqUpdateWorkItemInputFromBarrel.parse(input)).toEqual({
+      ...input,
+      dry_run: true
     });
   });
 });
