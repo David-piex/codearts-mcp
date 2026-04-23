@@ -494,14 +494,43 @@ export type ReqClient = {
       domain_id?: string;
       domain_name?: string;
       nick_name_py?: string;
+      }>;
+      related_developer_list: Array<{
+        user_name?: string;
+        user_num_id?: number;
+        user_id?: string;
+        domain_id?: string;
+        domain_name?: string;
+        nick_name_py?: string;
+      }>;
     }>;
-    related_developer_list: Array<{
-      user_name?: string;
-      user_num_id?: number;
-      user_id?: string;
-      domain_id?: string;
-      domain_name?: string;
-      nick_name_py?: string;
+  listWorkItemStatuses: (input: { project_id: string }) => Promise<{
+    issue_statuses: Array<{
+      id?: string;
+      status_id?: number;
+      name?: string;
+      tracker_ids?: number[];
+      status_attribute?: {
+        id?: number;
+        name?: string;
+      };
+    }>;
+    total?: number;
+  }>;
+  listWorkItemWorkflowConfig: (input: {
+    project_id: string;
+    tracker_id: 2 | 3 | 5 | 6 | 7;
+  }) => Promise<{
+    workflows: Array<{
+      id?: string;
+      name?: string;
+      status_id?: number;
+      direct_to?: Array<{
+        enabled?: boolean;
+        id?: string;
+        name?: string;
+        status_id?: number;
+      }>;
     }>;
   }>;
   addWorkItemComment: (input: {
@@ -1564,6 +1593,52 @@ export function createReqClient(
         related_author_list: payload.related_author_list ?? [],
         related_assignee_list: payload.related_assignee_list ?? [],
         related_developer_list: payload.related_developer_list ?? []
+      };
+    },
+    async listWorkItemStatuses(input) {
+      const response = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/statuses`
+      )) as {
+        issue_statuses?: Array<{
+          id?: string;
+          status_id?: number;
+          name?: string;
+          tracker_ids?: number[];
+          status_attribute?: {
+            id?: number;
+            name?: string;
+          };
+        }>;
+        total?: number;
+      };
+
+      return {
+        issue_statuses: response.issue_statuses ?? [],
+        total: response.total
+      };
+    },
+    async listWorkItemWorkflowConfig(input) {
+      const query = new URLSearchParams({
+        tracker_id: String(input.tracker_id)
+      });
+      const response = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/issues/workflow/config?${query.toString()}`
+      )) as {
+        workflows?: Array<{
+          id?: string;
+          name?: string;
+          status_id?: number;
+          direct_to?: Array<{
+            enabled?: boolean;
+            id?: string;
+            name?: string;
+            status_id?: number;
+          }>;
+        }>;
+      };
+
+      return {
+        workflows: response.workflows ?? []
       };
     },
     async addWorkItemComment(input) {

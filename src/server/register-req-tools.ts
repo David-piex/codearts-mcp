@@ -31,6 +31,8 @@ import {
   reqListProjectsInput,
   reqListRelatedUsersInput,
   reqListWorkItemCommentsInput,
+  reqListWorkItemStatusesInput,
+  reqListWorkItemWorkflowConfigInput,
   reqListWorkItemRecordsInput,
   reqListWorkItemsInput,
   reqUpdateIterationInput,
@@ -71,6 +73,8 @@ import { createReqListProjectMembersHandler } from "../products/req/tools/list-p
 import { createReqListProjectsHandler } from "../products/req/tools/list-projects.js";
 import { createReqListRelatedUsersHandler } from "../products/req/tools/list-related-users.js";
 import { createReqListWorkItemCommentsHandler } from "../products/req/tools/list-work-item-comments.js";
+import { createReqListWorkItemStatusesHandler } from "../products/req/tools/list-work-item-statuses.js";
+import { createReqListWorkItemWorkflowConfigHandler } from "../products/req/tools/list-work-item-workflow-config.js";
 import { createReqListWorkItemRecordsHandler } from "../products/req/tools/list-work-item-records.js";
 import { createReqListWorkItemsHandler } from "../products/req/tools/list-work-items.js";
 import { createReqQueryIterationImmovableIssuesHandler } from "../products/req/tools/query-iteration-immovable-issues.js";
@@ -289,6 +293,20 @@ const reqToolDefinitions = {
     inputSchema: reqListRelatedUsersInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListRelatedUsersHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqListRelatedUsersHandler
+  }),
+  "req_list_work_item_statuses": defineProductTool({
+    description: "List CodeArts Req work item statuses",
+    inputSchema: reqListWorkItemStatusesInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemStatusesHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListWorkItemStatusesHandler
+  }),
+  "req_list_work_item_workflow_config": defineProductTool({
+    description: "List CodeArts Req work item workflow config",
+    inputSchema: reqListWorkItemWorkflowConfigInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemWorkflowConfigHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListWorkItemWorkflowConfigHandler
   }),
   "req_get_work_item": defineProductTool({
     description: "Get CodeArts Req work item detail",

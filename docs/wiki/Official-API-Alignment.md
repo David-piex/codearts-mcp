@@ -28,11 +28,11 @@
 
 ### Req
 
-- 当前对齐到官方 Req API 的 `Scrum 高频实用层`，不再只是旧文档里的 8 个核心工具，而是已经覆盖 `project / member / iteration / work-item / collaboration` 五个资源面，共 `36` 个工具
+- 当前对齐到官方 Req API 的 `Scrum 高频实用层`，不再只是旧文档里的 8 个核心工具，而是已经覆盖 `project / module / member / iteration / work-item / collaboration / config-read` 七个资源面，共 `42` 个工具
 - phase-1 collaboration 已进入 MCP，包括 `req_list_associated_issues`、`req_list_associated_commits`、`req_list_associated_test_cases`、`req_list_related_users`、`req_update_work_item_flow`
 - 这不等于已经做完官方 Req API 的全量对齐。当前更像是“Scrum 常用操作已成面”，而不是“Req 全家桶都已进 MCP”
 - 当前仓库里能明确看到的真实 AK/SK smoke 仍主要集中在项目读取、成员读取、迭代读取，以及 work-item core 的 create/get/update/list；新增协作读工具和多数管理类写工具还需要继续补 live
-- 明确还没进入当前对齐范围的方向包括：IPD、需求池、项目空间/看板、字段配置、模块配置、状态配置、域级管理、工时、附件传输
+- 明确还没进入当前对齐范围的方向包括：IPD、需求池、项目空间/看板、更深的字段配置与域级管理、工时、附件传输
 
 ### Repo
 

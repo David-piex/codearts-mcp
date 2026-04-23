@@ -1,6 +1,14 @@
 import { z } from "zod";
 import { idSchema, pagingSchema } from "../../../contracts/common-schemas.js";
 
+const scrumTrackerIdSchema = z.union([
+  z.literal(2),
+  z.literal(3),
+  z.literal(5),
+  z.literal(6),
+  z.literal(7)
+]);
+
 export const reqCreateWorkItemInput = z.object({
   project_id: idSchema,
   title: z.string().min(1),
@@ -98,6 +106,15 @@ export const reqListAssociatedTestCasesInput = pagingSchema
 
 export const reqListRelatedUsersInput = z.object({
   project_id: idSchema
+});
+
+export const reqListWorkItemStatusesInput = z.object({
+  project_id: idSchema
+});
+
+export const reqListWorkItemWorkflowConfigInput = z.object({
+  project_id: idSchema,
+  tracker_id: scrumTrackerIdSchema
 });
 
 export const reqUpdateWorkItemFlowInput = z.object({

@@ -31,7 +31,7 @@
 
 Req 是最典型的“把项目管理动作做成 MCP 工具”的模块，而且现在已经不只是旧文档里的 8 个核心工具。
 
-当前 Req 已经扩到 `40` 个工具，基本可以按 6 个资源面来理解：
+当前 Req 已经扩到 `42` 个工具，基本可以按 7 个资源面来理解：
 
 - `project`：`req_list_projects` `req_get_project` `req_create_project` `req_update_project` `req_delete_project` `req_check_project_name` `req_list_not_added_projects`
 - `module`：`req_list_project_modules` `req_create_project_module` `req_update_project_module` `req_delete_project_module`
@@ -39,6 +39,7 @@ Req 是最典型的“把项目管理动作做成 MCP 工具”的模块，而�
 - `iteration`：`req_list_iterations` `req_get_iteration` `req_create_iteration` `req_update_iteration` `req_delete_iteration` `req_batch_delete_iterations` `req_update_iteration_state` `req_query_iteration_immovable_issues`
 - `work-item core`：`req_list_work_items` `req_get_work_item` `req_create_work_item` `req_update_work_item` `req_delete_work_item` `req_batch_update_work_items` `req_list_work_item_records`
 - `collaboration`：`req_list_work_item_comments` `req_add_work_item_comment` `req_update_work_item_comment` `req_list_associated_issues` `req_list_associated_commits` `req_list_associated_test_cases` `req_list_related_users` `req_update_work_item_flow`
+- `config-read`：`req_list_work_item_statuses` `req_list_work_item_workflow_config`
 
 适合场景：
 
@@ -47,7 +48,7 @@ Req 是最典型的“把项目管理动作做成 MCP 工具”的模块，而�
 - 做基础的追踪辅助，比如看关联缺陷、关联提交、关联测试用例，以及项目相关用户
 - 用 `dry_run=true` 先预演高风险写操作，再决定是否真正执行
 
-它的优势还是模型容易理解、输入输出稳定，但现在更准确的说法是：功能面已经覆盖到 Scrum 常用协作层，真实 AK/SK 验证目前仍主要集中在项目/成员/迭代读取和 work-item core 读写，新增协作面不要默认按“全部已 live”理解。
+它的优势还是模型容易理解、输入输出稳定，但现在更准确的说法是：功能面已经覆盖到 Scrum 常用协作层，并补到了工作项状态/流转配置读面；真实 AK/SK 验证目前仍主要集中在项目/成员/迭代读取和 work-item core 读写，新增协作与配置读面不要默认按“全部已 live”理解。
 
 想单独看 Req 当前哪些路径已经做过真实 AK/SK 联调，直接看 [Req-Live-Validated](./Req-Live-Validated.md)。
 

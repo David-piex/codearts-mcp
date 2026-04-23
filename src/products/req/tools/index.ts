@@ -24,6 +24,8 @@ export const reqToolNames = [
   "req_list_associated_issues",
   "req_list_associated_test_cases",
   "req_list_related_users",
+  "req_list_work_item_statuses",
+  "req_list_work_item_workflow_config",
   "req_list_work_items",
   "req_get_work_item",
   "req_list_work_item_comments",

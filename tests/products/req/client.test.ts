@@ -1477,6 +1477,103 @@ describe("createReqClient", () => {
     });
   });
 
+  it("maps work item statuses queries to the documented statuses endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          total: 1,
+          issue_statuses: [
+            {
+              id: "status-1",
+              status_id: 1,
+              name: "新建",
+              tracker_ids: [2, 7],
+              status_attribute: {
+                id: 1,
+                name: "开始态"
+              }
+            }
+          ]
+        };
+      }
+    } as never);
+
+    const result = await client.listWorkItemStatuses({
+      project_id: "p-1"
+    });
+
+    expect(requestedPath).toBe("/v4/projects/p-1/statuses");
+    expect(result).toEqual({
+      issue_statuses: [
+        {
+          id: "status-1",
+          status_id: 1,
+          name: "新建",
+          tracker_ids: [2, 7],
+          status_attribute: {
+            id: 1,
+            name: "开始态"
+          }
+        }
+      ],
+      total: 1
+    });
+  });
+
+  it("maps work item workflow config queries to the documented workflow config endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          workflows: [
+            {
+              id: "flow-1",
+              name: "新建",
+              status_id: 1,
+              direct_to: [
+                {
+                  id: "flow-2",
+                  name: "进行中",
+                  status_id: 2,
+                  enabled: true
+                }
+              ]
+            }
+          ]
+        };
+      }
+    } as never);
+
+    const result = await client.listWorkItemWorkflowConfig({
+      project_id: "p-1",
+      tracker_id: 7
+    });
+
+    expect(requestedPath).toBe("/v4/projects/p-1/issues/workflow/config?tracker_id=7");
+    expect(result).toEqual({
+      workflows: [
+        {
+          id: "flow-1",
+          name: "新建",
+          status_id: 1,
+          direct_to: [
+            {
+              id: "flow-2",
+              name: "进行中",
+              status_id: 2,
+              enabled: true
+            }
+          ]
+        }
+      ]
+    });
+  });
+
   it("falls back to the related_user endpoint when the documented related-user path returns not_found", async () => {
     const get = vi
       .fn()

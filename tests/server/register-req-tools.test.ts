@@ -318,6 +318,48 @@ describe("registerReqTool", () => {
     );
   });
 
+  it("registers the list work item statuses tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_list_work_item_statuses",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_list_work_item_statuses",
+      expect.objectContaining({
+        title: "req_list_work_item_statuses",
+        description: "List CodeArts Req work item statuses"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the list work item workflow config tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_list_work_item_workflow_config",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_list_work_item_workflow_config",
+      expect.objectContaining({
+        title: "req_list_work_item_workflow_config",
+        description: "List CodeArts Req work item workflow config"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("registers the update work item flow tool with rate-limited metadata", () => {
     const registerTool = vi.fn();
 
