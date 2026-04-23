@@ -9,3 +9,4 @@ coverage/
 tmp-*
 tmp-*.log
 tmp-govern-*
+.qoder/
