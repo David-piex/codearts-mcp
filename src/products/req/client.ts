@@ -143,6 +143,9 @@ export type ReqClient = {
     }>;
     total?: number;
   }>;
+  validateModuleName: (input: { project_id: string; module_name: string }) => Promise<{
+    exist: boolean;
+  }>;
   createProjectModule: (input: {
     project_id: string;
     module_name: string;
@@ -212,6 +215,14 @@ export type ReqClient = {
     project_id: string;
     work_item_id: string;
     deleted: true;
+  }>;
+  batchDeleteWorkItems: (input: {
+    project_id: string;
+    work_item_ids: string[];
+  }) => Promise<{
+    project_id: string;
+    work_item_ids: string[];
+    deletedCount: number;
   }>;
   batchUpdateWorkItems: (input: {
     project_id: string;
@@ -536,6 +547,25 @@ export type ReqClient = {
       id: number | string;
       status_id?: number;
       status_name?: string;
+    }>;
+  }>;
+  listIterationStatusStatistics: (input: {
+    project_id: string;
+    iteration_id: string;
+    tracker_id?: number;
+    status_id?: number;
+  }) => Promise<{
+    statistics: Array<{
+      user?: {
+        id?: number;
+        name?: string;
+        nick_name?: string;
+        user_id?: string;
+        user_num_id?: number;
+        first_name?: string;
+      };
+      item_count?: number;
+      data?: Record<string, number>;
     }>;
   }>;
   listProjectMembers: (input: { project_id: string; page: number; page_size: number }) => Promise<{
@@ -1524,6 +1554,24 @@ export function createReqClient(
         total: response.total
       };
     },
+    async validateModuleName(input) {
+      const query = new URLSearchParams({
+        project_id: input.project_id,
+        module_name: input.module_name
+      });
+      const response = (await _http.get(
+        `/v2/module/module-name-validation?${query.toString()}`
+      )) as {
+        result?: {
+          exist?: boolean;
+        };
+        exist?: boolean;
+      };
+
+      return {
+        exist: response.result?.exist ?? response.exist ?? false
+      };
+    },
     async createProjectModule(input) {
       const response = (await _http.post(
         `/v4/projects/${encodeURIComponent(input.project_id)}/module`,
@@ -2273,6 +2321,38 @@ export function createReqClient(
           : []
       };
     },
+    async listIterationStatusStatistics(input) {
+      const query = new URLSearchParams({
+        iteration_id: input.iteration_id
+      });
+
+      if (typeof input.tracker_id !== "undefined") {
+        query.set("tracker_id", String(input.tracker_id));
+      }
+
+      if (typeof input.status_id !== "undefined") {
+        query.set("status_id", String(input.status_id));
+      }
+
+      const response = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/status-statistic?${query.toString()}`
+      )) as Array<{
+        user?: {
+          id?: number;
+          name?: string;
+          nick_name?: string;
+          user_id?: string;
+          user_num_id?: number;
+          first_name?: string;
+        };
+        item_count?: number;
+        data?: Record<string, number>;
+      }>;
+
+      return {
+        statistics: response ?? []
+      };
+    },
     async updateWorkItem(input) {
       const response = (await _http.put(
         `/v4/projects/${encodeURIComponent(input.project_id)}/issues/${encodeURIComponent(input.work_item_id)}`,
@@ -2318,6 +2398,17 @@ export function createReqClient(
         project_id: input.project_id,
         work_item_id: input.work_item_id,
         deleted: true as const
+      };
+    },
+    async batchDeleteWorkItems(input) {
+      await _http.delete(`/v4/projects/${encodeURIComponent(input.project_id)}/issues`, {
+        issue_ids: input.work_item_ids
+      });
+
+      return {
+        project_id: input.project_id,
+        work_item_ids: input.work_item_ids,
+        deletedCount: input.work_item_ids.length
       };
     },
     async batchUpdateWorkItems(input) {

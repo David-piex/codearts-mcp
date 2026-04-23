@@ -51,6 +51,12 @@ export const reqDeleteWorkItemInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const reqBatchDeleteWorkItemsInput = z.object({
+  project_id: idSchema,
+  work_item_ids: z.array(idSchema).min(1).max(100),
+  dry_run: z.boolean().default(true)
+});
+
 export const reqBatchUpdateWorkItemsInput = z.object({
   project_id: idSchema,
   work_item_ids: z.array(idSchema).min(1),

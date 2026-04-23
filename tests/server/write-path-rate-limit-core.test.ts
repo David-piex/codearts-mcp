@@ -140,6 +140,26 @@ describe("write path rate limits", () => {
 
   it.each([
     {
+      toolName: "req_batch_delete_work_items",
+      dryRunInput: {
+        project_id: "project-1",
+        work_item_ids: ["70779173", "70779174"],
+        dry_run: true
+      },
+      liveInput: (index: number) => ({
+        project_id: "project-1",
+        work_item_ids: [`${index}`, `${index + 100}`],
+        dry_run: false
+      }),
+      blockedInput: {
+        project_id: "project-1",
+        work_item_ids: ["blocked"],
+        dry_run: false
+      },
+      responsePayload: {},
+      responseInit: { status: 204 }
+    },
+    {
       toolName: "req_add_iteration_work_items",
       dryRunInput: {
         project_id: "project-1",

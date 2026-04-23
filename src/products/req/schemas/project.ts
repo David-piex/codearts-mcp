@@ -73,3 +73,8 @@ export const reqDeleteProjectModuleInput = z.object({
   module_id: idSchema,
   dry_run: z.boolean().default(true)
 });
+
+export const reqValidateModuleNameInput = z.object({
+  project_id: idSchema,
+  module_name: z.string().min(1).max(30)
+});

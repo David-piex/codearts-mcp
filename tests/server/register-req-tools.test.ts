@@ -150,6 +150,27 @@ describe("registerReqTool", () => {
     );
   });
 
+  it("registers the batch delete work items tool with rate-limited metadata", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_batch_delete_work_items",
+      server: { registerTool },
+      mode: "stdio",
+      stdioClient: {} as never
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_batch_delete_work_items",
+      expect.objectContaining({
+        title: "req_batch_delete_work_items",
+        description: "Delete multiple CodeArts Req work items"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("registers the clear plan work items tool with rate-limited metadata", () => {
     const registerTool = vi.fn();
 
@@ -313,6 +334,27 @@ describe("registerReqTool", () => {
       expect.objectContaining({
         title: "req_query_iteration_immovable_issues",
         description: "Query CodeArts Req iteration immovable issues"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the list iteration status statistics tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_list_iteration_status_statistics",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_list_iteration_status_statistics",
+      expect.objectContaining({
+        title: "req_list_iteration_status_statistics",
+        description: "List CodeArts Req iteration status statistics"
       }),
       expect.any(Function)
     );
@@ -906,6 +948,27 @@ describe("registerReqTool", () => {
     );
   });
 
+  it("registers the validate module name tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_validate_module_name",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_validate_module_name",
+      expect.objectContaining({
+        title: "req_validate_module_name",
+        description: "Validate whether a CodeArts Req module name already exists"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("registers the update work item flow tool with rate-limited metadata", () => {
     const registerTool = vi.fn();
 
@@ -1117,6 +1180,13 @@ describe("registerReqTool", () => {
   });
 
   it.each([
+    {
+      toolName: "req_batch_delete_work_items",
+      input: {
+        project_id: "project-1",
+        work_item_ids: ["wi-9", "wi-10"]
+      }
+    },
     {
       toolName: "req_add_iteration_work_items",
       input: {

@@ -8,6 +8,7 @@ import {
   reqBatchAddProjectMembersInput,
   reqBatchDeleteProjectMembersInput,
   reqBatchDeleteIterationsInput,
+  reqBatchDeleteWorkItemsInput,
   reqCheckProjectNameInput,
   reqClearPlanWorkItemsInput,
   reqCreateIterationWorkItemInput,
@@ -32,6 +33,7 @@ import {
   reqGetPlanInput,
   reqGetProjectInput,
   reqListJobCacheBoardsInput,
+  reqListIterationStatusStatisticsInput,
   reqListOptionalWorkItemStatusConfigsInput,
   reqListPlanAddableWorkItemsInput,
   reqListPlanWorkItemsInput,
@@ -70,7 +72,8 @@ import {
   reqUpdateProjectInput,
   reqUpdateWorkItemCommentInput,
   reqUpdateWorkItemFlowInput,
-  reqUpdateWorkItemInput
+  reqUpdateWorkItemInput,
+  reqValidateModuleNameInput
 } from "../products/req/schemas.js";
 import { createReqAddIterationWorkItemsHandler } from "../products/req/tools/add-iteration-work-items.js";
 import { createReqAddPlanWorkItemsHandler } from "../products/req/tools/add-plan-work-items.js";
@@ -79,6 +82,7 @@ import { createReqAddProjectMemberHandler } from "../products/req/tools/add-proj
 import { createReqBatchAddProjectMembersHandler } from "../products/req/tools/batch-add-project-members.js";
 import { createReqBatchDeleteProjectMembersHandler } from "../products/req/tools/batch-delete-project-members.js";
 import { createReqBatchDeleteIterationsHandler } from "../products/req/tools/batch-delete-iterations.js";
+import { createReqBatchDeleteWorkItemsHandler } from "../products/req/tools/batch-delete-work-items.js";
 import { createReqCheckProjectNameHandler } from "../products/req/tools/check-project-name.js";
 import { createReqClearPlanWorkItemsHandler } from "../products/req/tools/clear-plan-work-items.js";
 import { createReqCreatePlanHandler } from "../products/req/tools/create-plan.js";
@@ -108,6 +112,7 @@ import { createReqListBoardWorkItemWorkflowConfigHandler } from "../products/req
 import { createReqListBoardWorkItemsHandler } from "../products/req/tools/list-board-work-items.js";
 import { createReqListCacheDataHandler } from "../products/req/tools/list-cache-data.js";
 import { createReqListIterationsHandler } from "../products/req/tools/list-iterations.js";
+import { createReqListIterationStatusStatisticsHandler } from "../products/req/tools/list-iteration-status-statistics.js";
 import { createReqListJobCacheBoardsHandler } from "../products/req/tools/list-job-cache-boards.js";
 import { createReqListOptionalWorkItemStatusConfigsHandler } from "../products/req/tools/list-optional-work-item-status-configs.js";
 import { createReqListPlanAddableWorkItemsHandler } from "../products/req/tools/list-plan-addable-work-items.js";
@@ -142,6 +147,7 @@ import { createReqUpdateProjectHandler } from "../products/req/tools/update-proj
 import { createReqUpdateWorkItemCommentHandler } from "../products/req/tools/update-work-item-comment.js";
 import { createReqUpdateWorkItemFlowHandler } from "../products/req/tools/update-work-item-flow.js";
 import { createReqUpdateWorkItemHandler } from "../products/req/tools/update-work-item.js";
+import { createReqValidateModuleNameHandler } from "../products/req/tools/validate-module-name.js";
 import { defineProductTool, registerDefinedTool } from "./product-tool-registry.js";
 import type { RateLimiter } from "./rate-limiter.js";
 import type { SessionCredentialStore } from "./session-store.js";
@@ -193,6 +199,14 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqBatchDeleteIterationsHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqBatchDeleteIterationsHandler,
     rateLimitAction: "req_batch_delete_iterations"
+  }),
+  "req_batch_delete_work_items": defineProductTool({
+    description: "Delete multiple CodeArts Req work items",
+    inputSchema: reqBatchDeleteWorkItemsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqBatchDeleteWorkItemsHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqBatchDeleteWorkItemsHandler,
+    rateLimitAction: "req_batch_delete_work_items"
   }),
   "req_create_project": defineProductTool({
     description: "Create CodeArts Req project",
@@ -575,6 +589,14 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIterationsHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqListIterationsHandler
   }),
+  "req_list_iteration_status_statistics": defineProductTool({
+    description: "List CodeArts Req iteration status statistics",
+    inputSchema: reqListIterationStatusStatisticsInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqListIterationStatusStatisticsHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqListIterationStatusStatisticsHandler
+  }),
   "req_list_plans": defineProductTool({
     description: "List CodeArts Req plans",
     inputSchema: reqListPlansInput,
@@ -643,6 +665,13 @@ const reqToolDefinitions = {
     inputSchema: reqListProjectMembersInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListProjectMembersHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqListProjectMembersHandler
+  }),
+  "req_validate_module_name": defineProductTool({
+    description: "Validate whether a CodeArts Req module name already exists",
+    inputSchema: reqValidateModuleNameInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqValidateModuleNameHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqValidateModuleNameHandler
   })
 } as const;
 

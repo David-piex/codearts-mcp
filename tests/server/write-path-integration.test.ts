@@ -27,6 +27,7 @@ type WritePathCase = {
   ) => Promise<unknown>;
   input: Record<string, unknown>;
   responsePayload: unknown;
+  responseInit?: ResponseInit;
   expectedItem: Record<string, unknown>;
   expectedRequest: {
     path: string;
@@ -223,6 +224,25 @@ function createReqBatchUpdateWorkItemsInput<T extends Record<string, unknown>>(
     done_ratio: number;
     iteration_id: string;
     module_id: string;
+    dry_run: boolean;
+  } & T;
+}
+
+function createReqBatchDeleteWorkItemsInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  work_item_ids: string[];
+  dry_run: boolean;
+} & T {
+  return {
+    project_id: "project-1",
+    work_item_ids: ["70779173", "70779174"],
+    dry_run: false,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    work_item_ids: string[];
     dry_run: boolean;
   } & T;
 }
@@ -1468,6 +1488,25 @@ const writePathCases: WritePathCase[] = [
     }
   },
   {
+    name: "executes req_batch_delete_work_items through the registered session-aware runtime client",
+    createHandler: (store: SessionStore) =>
+      readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_batch_delete_work_items"),
+    input: createReqBatchDeleteWorkItemsInput(),
+    responsePayload: {},
+    responseInit: { status: 204 },
+    expectedItem: {
+      projectId: "project-1",
+      workItemIds: ["70779173", "70779174"],
+      deletedCount: 2,
+      executed: true
+    },
+    expectedRequest: {
+      path: "/v4/projects/project-1/issues",
+      method: "DELETE",
+      bodyIncludes: ["\"issue_ids\":[\"70779173\",\"70779174\"]"]
+    }
+  },
+  {
     name: "executes req_add_work_item_comment through the registered session-aware runtime client",
     createHandler: (store: SessionStore) =>
       readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_add_work_item_comment"),
@@ -1775,6 +1814,19 @@ const dryRunCases: DryRunCase[] = [
     expectedItem: {
       projectId: "project-1",
       left: false,
+      executed: false
+    }
+  },
+  {
+    name: "short-circuits req_batch_delete_work_items dry runs without HTTP or rate-limit consumption",
+    toolName: "req_batch_delete_work_items",
+    input: createReqBatchDeleteWorkItemsInput({
+      dry_run: true
+    }),
+    expectedItem: {
+      projectId: "project-1",
+      workItemIds: ["70779173", "70779174"],
+      deletedCount: 0,
       executed: false
     }
   },
