@@ -21,18 +21,10 @@ type SessionStore = ReturnType<typeof createSessionCredentialStore>;
 
 type WritePathCase = {
   name: string;
-  createHandler:
-    | typeof createSessionAwareReqCreateWorkItemHandler
-    | typeof createSessionAwareDeployCreateApplicationHandler
-    | typeof createSessionAwarePipelineRunPipelineHandler
-    | typeof createSessionAwarePipelineStopRunHandler
-    | typeof createSessionAwarePipelineRetryRunHandler
-    | typeof createSessionAwarePipelineApproveRunHandler
-    | typeof createSessionAwarePipelineRejectRunHandler
-    | ((store: SessionStore) => (
-        input: unknown,
-        extra: unknown
-      ) => Promise<unknown>);
+  createHandler: (store: SessionStore) => (
+    input: unknown,
+    extra: unknown
+  ) => Promise<unknown>;
   input: Record<string, unknown>;
   responsePayload: unknown;
   expectedItem: Record<string, unknown>;
@@ -209,6 +201,122 @@ function createProjectPipelineReviewInput<T extends Record<string, unknown>>(
 }
 
 const writePathCases: WritePathCase[] = [
+  {
+    name: "executes req_add_project_member through the registered session-aware runtime client",
+    createHandler: (store: SessionStore) =>
+      readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_add_project_member"),
+    input: {
+      project_id: "project-1",
+      user_id: "user-1",
+      domain_id: "domain-1",
+      role_id: 3,
+      dry_run: false
+    },
+    responsePayload: {},
+    expectedItem: {
+      projectId: "project-1",
+      userId: "user-1",
+      domainId: "domain-1",
+      roleId: 3,
+      added: true,
+      executed: true
+    },
+    expectedRequest: {
+      path: "/v4/projects/project-1/member",
+      bodyIncludes: ["\"user_id\":\"user-1\"", "\"domain_id\":\"domain-1\"", "\"role_id\":3"]
+    }
+  },
+  {
+    name: "executes req_batch_add_project_members through the registered session-aware runtime client",
+    createHandler: (store: SessionStore) =>
+      readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_batch_add_project_members"),
+    input: {
+      project_id: "project-1",
+      members: [
+        { user_id: "user-1", role_id: 3 },
+        { user_id: "user-2" }
+      ],
+      dry_run: false
+    },
+    responsePayload: {},
+    expectedItem: {
+      projectId: "project-1",
+      members: [
+        { userId: "user-1", roleId: 3 },
+        { userId: "user-2", roleId: undefined }
+      ],
+      addedCount: 2,
+      executed: true
+    },
+    expectedRequest: {
+      path: "/v4/projects/project-1/members",
+      bodyIncludes: ["\"users\":[", "\"user_id\":\"user-1\"", "\"user_id\":\"user-2\""]
+    }
+  },
+  {
+    name: "executes req_batch_delete_project_members through the registered session-aware runtime client",
+    createHandler: (store: SessionStore) =>
+      readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_batch_delete_project_members"),
+    input: {
+      project_id: "project-1",
+      user_ids: ["user-1", "user-2"],
+      dry_run: false
+    },
+    responsePayload: {},
+    expectedItem: {
+      projectId: "project-1",
+      userIds: ["user-1", "user-2"],
+      removedCount: 2,
+      executed: true
+    },
+    expectedRequest: {
+      path: "/v4/projects/project-1/members",
+      method: "DELETE",
+      bodyIncludes: ["\"user_ids\":[\"user-1\",\"user-2\"]"]
+    }
+  },
+  {
+    name: "executes req_update_project_member_role through the registered session-aware runtime client",
+    createHandler: (store: SessionStore) =>
+      readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_update_project_member_role"),
+    input: {
+      project_id: "project-1",
+      user_id: "user-1",
+      role_id: 5,
+      dry_run: false
+    },
+    responsePayload: {},
+    expectedItem: {
+      projectId: "project-1",
+      userId: "user-1",
+      roleId: 5,
+      updated: true,
+      executed: true
+    },
+    expectedRequest: {
+      path: "/v4/projects/project-1/members/role",
+      bodyIncludes: ["\"role_id\":5", "\"user_ids\":[\"user-1\"]"]
+    }
+  },
+  {
+    name: "executes req_leave_project through the registered session-aware runtime client",
+    createHandler: (store: SessionStore) =>
+      readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_leave_project"),
+    input: {
+      project_id: "project-1",
+      dry_run: false
+    },
+    responsePayload: {},
+    expectedItem: {
+      projectId: "project-1",
+      left: true,
+      executed: true
+    },
+    expectedRequest: {
+      path: "/v4/projects/project-1/quit",
+      method: "DELETE"
+    }
+  },
   {
     name: "executes req_create_project through the registered session-aware runtime client",
     createHandler: (store: SessionStore) =>

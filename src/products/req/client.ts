@@ -46,6 +46,48 @@ export type ReqClient = {
     project_id: string;
     deleted: true;
   }>;
+  addProjectMember: (input: {
+    project_id: string;
+    user_id: string;
+    domain_id: string;
+    role_id?: number;
+  }) => Promise<{
+    project_id: string;
+    user_id: string;
+    domain_id: string;
+    role_id?: number;
+    added: true;
+  }>;
+  batchAddProjectMembers: (input: {
+    project_id: string;
+    members: Array<{ user_id: string; role_id?: number }>;
+  }) => Promise<{
+    project_id: string;
+    members: Array<{ user_id: string; role_id?: number }>;
+    addedCount: number;
+  }>;
+  batchDeleteProjectMembers: (input: {
+    project_id: string;
+    user_ids: string[];
+  }) => Promise<{
+    project_id: string;
+    user_ids: string[];
+    removedCount: number;
+  }>;
+  updateProjectMemberRole: (input: {
+    project_id: string;
+    user_id: string;
+    role_id: number;
+  }) => Promise<{
+    project_id: string;
+    user_id: string;
+    role_id: number;
+    updated: true;
+  }>;
+  leaveProject: (input: { project_id: string }) => Promise<{
+    project_id: string;
+    left: true;
+  }>;
   checkProjectName: (input: { name: string }) => Promise<{
     exist: boolean;
   }>;
@@ -290,6 +332,64 @@ export function createReqClient(
       return {
         project_id: input.project_id,
         deleted: true as const
+      };
+    },
+    async addProjectMember(input) {
+      await _http.post(`/v4/projects/${encodeURIComponent(input.project_id)}/member`, {
+        user_id: input.user_id,
+        domain_id: input.domain_id,
+        role_id: input.role_id
+      });
+
+      return {
+        project_id: input.project_id,
+        user_id: input.user_id,
+        domain_id: input.domain_id,
+        role_id: input.role_id,
+        added: true as const
+      };
+    },
+    async batchAddProjectMembers(input) {
+      await _http.post(`/v4/projects/${encodeURIComponent(input.project_id)}/members`, {
+        users: input.members
+      });
+
+      return {
+        project_id: input.project_id,
+        members: input.members,
+        addedCount: input.members.length
+      };
+    },
+    async batchDeleteProjectMembers(input) {
+      await _http.delete(`/v4/projects/${encodeURIComponent(input.project_id)}/members`, {
+        user_ids: input.user_ids
+      });
+
+      return {
+        project_id: input.project_id,
+        user_ids: input.user_ids,
+        removedCount: input.user_ids.length
+      };
+    },
+    async updateProjectMemberRole(input) {
+      await _http.post(`/v4/projects/${encodeURIComponent(input.project_id)}/members/role`, {
+        role_id: input.role_id,
+        user_ids: [input.user_id]
+      });
+
+      return {
+        project_id: input.project_id,
+        user_id: input.user_id,
+        role_id: input.role_id,
+        updated: true as const
+      };
+    },
+    async leaveProject(input) {
+      await _http.delete(`/v4/projects/${encodeURIComponent(input.project_id)}/quit`);
+
+      return {
+        project_id: input.project_id,
+        left: true as const
       };
     },
     async checkProjectName(input) {

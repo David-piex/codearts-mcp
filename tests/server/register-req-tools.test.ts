@@ -66,6 +66,64 @@ describe("registerReqTool", () => {
     );
   });
 
+  it("registers the add project member tool with the expected metadata", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_add_project_member",
+      server: { registerTool },
+      mode: "stdio",
+      stdioClient: {} as never
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_add_project_member",
+      expect.objectContaining({
+        title: "req_add_project_member",
+        description: "Add member to a CodeArts Req project"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("enforces rate limiting before handling add project member in http mode", async () => {
+    const registerTool = vi.fn();
+    const rateLimiter = { check: vi.fn() };
+
+    registerReqTool({
+      toolName: "req_add_project_member",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore(),
+      rateLimiter: rateLimiter as never
+    });
+
+    const handler = registerTool.mock.calls[0]?.[2] as
+      | ((input: unknown, extra: { sessionId?: string; authId?: string }) => Promise<unknown>)
+      | undefined;
+
+    expect(handler).toBeTypeOf("function");
+
+    await handler?.(
+      {
+        project_id: "project-1",
+        user_id: "user-1",
+        domain_id: "domain-1",
+        dry_run: false
+      },
+      {
+        sessionId: "session-1",
+        authId: "auth-1"
+      }
+    );
+
+    expect(rateLimiter.check).toHaveBeenCalledWith(
+      "req_add_project_member:session-1",
+      "req_add_project_member"
+    );
+  });
+
   it("enforces rate limiting before handling create project in http mode", async () => {
     const registerTool = vi.fn();
     const rateLimiter = { check: vi.fn() };

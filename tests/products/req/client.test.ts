@@ -260,6 +260,157 @@ describe("createReqClient", () => {
     });
   });
 
+  it("maps addProjectMember to the member add endpoint and synthesized response", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return undefined;
+      }
+    } as never);
+
+    const result = await client.addProjectMember({
+      project_id: "project-1",
+      user_id: "user-1",
+      domain_id: "domain-1",
+      role_id: 3
+    });
+
+    expect(requestedPath).toBe("/v4/projects/project-1/member");
+    expect(requestedBody).toEqual({
+      user_id: "user-1",
+      domain_id: "domain-1",
+      role_id: 3
+    });
+    expect(result).toEqual({
+      project_id: "project-1",
+      user_id: "user-1",
+      domain_id: "domain-1",
+      role_id: 3,
+      added: true
+    });
+  });
+
+  it("maps batchAddProjectMembers to the members add endpoint and synthesized response", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return undefined;
+      }
+    } as never);
+
+    const result = await client.batchAddProjectMembers({
+      project_id: "project-1",
+      members: [
+        { user_id: "user-1", role_id: 3 },
+        { user_id: "user-2" }
+      ]
+    });
+
+    expect(requestedPath).toBe("/v4/projects/project-1/members");
+    expect(requestedBody).toEqual({
+      users: [
+        { user_id: "user-1", role_id: 3 },
+        { user_id: "user-2" }
+      ]
+    });
+    expect(result).toEqual({
+      project_id: "project-1",
+      members: [
+        { user_id: "user-1", role_id: 3 },
+        { user_id: "user-2" }
+      ],
+      addedCount: 2
+    });
+  });
+
+  it("maps batchDeleteProjectMembers to the members delete endpoint and synthesized response", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      delete: async (path: string, body?: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return undefined;
+      }
+    } as never);
+
+    const result = await client.batchDeleteProjectMembers({
+      project_id: "project-1",
+      user_ids: ["user-1", "user-2"]
+    });
+
+    expect(requestedPath).toBe("/v4/projects/project-1/members");
+    expect(requestedBody).toEqual({
+      user_ids: ["user-1", "user-2"]
+    });
+    expect(result).toEqual({
+      project_id: "project-1",
+      user_ids: ["user-1", "user-2"],
+      removedCount: 2
+    });
+  });
+
+  it("maps updateProjectMemberRole to the member role endpoint and wraps user_ids", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return undefined;
+      }
+    } as never);
+
+    const result = await client.updateProjectMemberRole({
+      project_id: "project-1",
+      user_id: "user-1",
+      role_id: 5
+    });
+
+    expect(requestedPath).toBe("/v4/projects/project-1/members/role");
+    expect(requestedBody).toEqual({
+      role_id: 5,
+      user_ids: ["user-1"]
+    });
+    expect(result).toEqual({
+      project_id: "project-1",
+      user_id: "user-1",
+      role_id: 5,
+      updated: true
+    });
+  });
+
+  it("maps leaveProject to the quit endpoint and synthesized response", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      delete: async (path: string) => {
+        requestedPath = path;
+
+        return undefined;
+      }
+    } as never);
+
+    const result = await client.leaveProject({
+      project_id: "project-1"
+    });
+
+    expect(requestedPath).toBe("/v4/projects/project-1/quit");
+    expect(result).toEqual({
+      project_id: "project-1",
+      left: true
+    });
+  });
+
   it("maps checkProjectName to the name check endpoint", async () => {
     let requestedPath = "";
     let requestedBody: Record<string, unknown> | undefined;

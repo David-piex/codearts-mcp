@@ -1,4 +1,7 @@
 export const reqToolNames = [
+  "req_add_project_member",
+  "req_batch_add_project_members",
+  "req_batch_delete_project_members",
   "req_create_project",
   "req_update_project",
   "req_delete_project",
@@ -6,10 +9,12 @@ export const reqToolNames = [
   "req_list_not_added_projects",
   "req_list_projects",
   "req_get_project",
+  "req_leave_project",
   "req_list_work_items",
   "req_get_work_item",
   "req_create_work_item",
   "req_update_work_item",
   "req_list_iterations",
-  "req_list_project_members"
+  "req_list_project_members",
+  "req_update_project_member_role"
 ];
