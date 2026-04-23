@@ -8,7 +8,13 @@ import {
   createSessionAwarePipelineStopRunHandler,
   createSessionAwareReqCreateWorkItemHandler
 } from "../../src/server/create-server.js";
-import { expectSessionAwareWriteExecution } from "./http-test-helpers.js";
+import {
+  bootstrapHttpRuntime,
+  createSessionAuthContext,
+  expectSessionAwareWriteExecution,
+  readRegisteredHandler,
+  stubJsonFetch
+} from "./http-test-helpers.js";
 
 type WritePathCase = {
   name: string;
@@ -19,7 +25,11 @@ type WritePathCase = {
     | typeof createSessionAwarePipelineStopRunHandler
     | typeof createSessionAwarePipelineRetryRunHandler
     | typeof createSessionAwarePipelineApproveRunHandler
-    | typeof createSessionAwarePipelineRejectRunHandler;
+    | typeof createSessionAwarePipelineRejectRunHandler
+    | ((store: Parameters<typeof createSessionAwareReqCreateWorkItemHandler>[0]) => (
+        input: unknown,
+        extra: unknown
+      ) => Promise<unknown>);
   input: Record<string, unknown>;
   responsePayload: unknown;
   expectedItem: Record<string, unknown>;
@@ -50,6 +60,63 @@ function createReqCreateWorkItemInput<T extends Record<string, unknown>>(
     title: string;
     work_item_type: string;
     description: string;
+    dry_run: boolean;
+  } & T;
+}
+
+function createReqCreateProjectInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  name: string;
+  description: string;
+  dry_run: boolean;
+} & T {
+  return {
+    name: "Alpha",
+    description: "Demo project",
+    dry_run: false,
+    ...(overrides ?? {})
+  } as {
+    name: string;
+    description: string;
+    dry_run: boolean;
+  } & T;
+}
+
+function createReqUpdateProjectInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  name: string;
+  description: string;
+  dry_run: boolean;
+} & T {
+  return {
+    project_id: "project-1",
+    name: "Alpha 2",
+    description: "Updated project",
+    dry_run: false,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    name: string;
+    description: string;
+    dry_run: boolean;
+  } & T;
+}
+
+function createReqDeleteProjectInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  dry_run: boolean;
+} & T {
+  return {
+    project_id: "project-1",
+    dry_run: false,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
     dry_run: boolean;
   } & T;
 }
@@ -138,6 +205,65 @@ function createProjectPipelineReviewInput<T extends Record<string, unknown>>(
 }
 
 const writePathCases: WritePathCase[] = [
+  {
+    name: "executes req_create_project through the registered session-aware runtime client",
+    createHandler: (store) =>
+      readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_create_project"),
+    input: createReqCreateProjectInput(),
+    responsePayload: {
+      project_id: "project-1",
+      project_name: "Alpha",
+      description: "Demo project",
+      project_num_id: 101,
+      project_type: "scrum"
+    },
+    expectedItem: {
+      id: "project-1",
+      name: "Alpha",
+      description: "Demo project",
+      numberId: 101,
+      type: "scrum",
+      executed: true
+    },
+    expectedRequest: {
+      path: "/v4/project",
+      bodyIncludes: ["\"project_name\":\"Alpha\"", "\"project_type\":\"scrum\""]
+    }
+  },
+  {
+    name: "executes req_update_project through the registered session-aware runtime client",
+    createHandler: (store) =>
+      readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_update_project"),
+    input: createReqUpdateProjectInput(),
+    responsePayload: {},
+    expectedItem: {
+      id: "project-1",
+      name: "Alpha 2",
+      description: "Updated project",
+      executed: true
+    },
+    expectedRequest: {
+      path: "/v4/projects/project-1",
+      method: "PUT",
+      bodyIncludes: ["\"project_name\":\"Alpha 2\""]
+    }
+  },
+  {
+    name: "executes req_delete_project through the registered session-aware runtime client",
+    createHandler: (store) =>
+      readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_delete_project"),
+    input: createReqDeleteProjectInput(),
+    responsePayload: {},
+    expectedItem: {
+      id: "project-1",
+      deleted: true,
+      executed: true
+    },
+    expectedRequest: {
+      path: "/v4/projects/project-1",
+      method: "DELETE"
+    }
+  },
   {
     name: "executes req_create_work_item through the session-aware runtime client",
     createHandler: createSessionAwareReqCreateWorkItemHandler,
@@ -303,6 +429,31 @@ describe("write path integration", () => {
       responsePayload,
       expectedItem,
       expectedRequest
+    });
+  });
+
+  it("short-circuits req_create_project dry runs before issuing an HTTP request", async () => {
+    const { server } = bootstrapHttpRuntime();
+    const fetchMock = stubJsonFetch({
+      project_id: "project-1"
+    });
+    const handler = readRegisteredHandler(server, "req_create_project");
+
+    const result = await handler(
+      createReqCreateProjectInput({
+        dry_run: true
+      }),
+      createSessionAuthContext("session-write", "auth-1")
+    );
+
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(result).toMatchObject({
+      structuredContent: {
+        item: {
+          name: "Alpha",
+          executed: false
+        }
+      }
     });
   });
 });

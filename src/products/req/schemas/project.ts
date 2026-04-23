@@ -28,7 +28,9 @@ export const reqListNotAddedProjectsInput = pagingSchema
     page: true,
     page_size: true
   })
-  .extend({});
+  .extend({
+    page_size: z.number().int().positive().max(100).default(20)
+  });
 
 export const reqListProjectsInput = pagingSchema.extend({
   organization_id: idSchema.optional()
