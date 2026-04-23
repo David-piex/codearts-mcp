@@ -129,6 +129,27 @@ describe("registerReqTool", () => {
     );
   });
 
+  it("registers the add iteration work items tool with rate-limited metadata", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_add_iteration_work_items",
+      server: { registerTool },
+      mode: "stdio",
+      stdioClient: {} as never
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_add_iteration_work_items",
+      expect.objectContaining({
+        title: "req_add_iteration_work_items",
+        description: "Add work items to a CodeArts Req iteration"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("registers the clear plan work items tool with rate-limited metadata", () => {
     const registerTool = vi.fn();
 
@@ -397,6 +418,27 @@ describe("registerReqTool", () => {
       expect.objectContaining({
         title: "req_create_plan_work_item",
         description: "Create CodeArts Req plan work item"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the create iteration work item tool with rate-limited metadata", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_create_iteration_work_item",
+      server: { registerTool },
+      mode: "stdio",
+      stdioClient: {} as never
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_create_iteration_work_item",
+      expect.objectContaining({
+        title: "req_create_iteration_work_item",
+        description: "Create CodeArts Req iteration work item"
       }),
       expect.any(Function)
     );
@@ -1076,6 +1118,14 @@ describe("registerReqTool", () => {
 
   it.each([
     {
+      toolName: "req_add_iteration_work_items",
+      input: {
+        project_id: "project-1",
+        iteration_id: "iteration-1",
+        work_item_ids: ["wi-9", "wi-10"]
+      }
+    },
+    {
       toolName: "req_delete_work_item",
       input: {
         project_id: "project-1",
@@ -1121,6 +1171,15 @@ describe("registerReqTool", () => {
         project_id: "project-1",
         plan_id: "plan-1",
         img_url: "/v1/upload/demo/202604/abc123.png"
+      }
+    },
+    {
+      toolName: "req_create_iteration_work_item",
+      input: {
+        project_id: "project-1",
+        iteration_id: "iteration-1",
+        title: "Story A",
+        work_item_type: "Story"
       }
     },
     {

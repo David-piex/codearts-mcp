@@ -140,6 +140,28 @@ describe("write path rate limits", () => {
 
   it.each([
     {
+      toolName: "req_add_iteration_work_items",
+      dryRunInput: {
+        project_id: "project-1",
+        iteration_id: "iteration-1",
+        work_item_ids: ["70779173", "70779174"],
+        dry_run: true
+      },
+      liveInput: (index: number) => ({
+        project_id: "project-1",
+        iteration_id: `iteration-${index}`,
+        work_item_ids: [`${index}`, `${index + 100}`],
+        dry_run: false
+      }),
+      blockedInput: {
+        project_id: "project-1",
+        iteration_id: "iteration-blocked",
+        work_item_ids: ["blocked"],
+        dry_run: false
+      },
+      responsePayload: {}
+    },
+    {
       toolName: "req_add_plan_work_items",
       dryRunInput: {
         project_id: "project-1",
@@ -209,6 +231,34 @@ describe("write path rate limits", () => {
         result: {
           id: "plan-1"
         }
+      }
+    },
+    {
+      toolName: "req_create_iteration_work_item",
+      dryRunInput: {
+        project_id: "project-1",
+        iteration_id: "iteration-1",
+        title: "Story A",
+        work_item_type: "Story",
+        dry_run: true
+      },
+      liveInput: (index: number) => ({
+        project_id: "project-1",
+        iteration_id: `iteration-${index}`,
+        title: `Story ${index}`,
+        work_item_type: "Story",
+        dry_run: false
+      }),
+      blockedInput: {
+        project_id: "project-1",
+        iteration_id: "iteration-blocked",
+        title: "Story blocked",
+        work_item_type: "Story",
+        dry_run: false
+      },
+      responsePayload: {
+        id: 101,
+        name: "Story A"
       }
     },
     {

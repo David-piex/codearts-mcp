@@ -431,6 +431,77 @@ function createReqCreatePlanWorkItemInput<T extends Record<string, unknown>>(
   } & T;
 }
 
+function createReqCreateIterationWorkItemInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  iteration_id: string;
+  title: string;
+  work_item_type: string;
+  description: string;
+  module_id: string;
+  severity_id: number;
+  assigned_id: string;
+  done_ratio: number;
+  expected_work_hours: number;
+  start_date: number;
+  due_date: number;
+  dry_run: boolean;
+} & T {
+  return {
+    project_id: "project-1",
+    iteration_id: "iteration-1",
+    title: "Story A",
+    work_item_type: "Story",
+    description: "Iteration scoped story",
+    module_id: "module-1",
+    severity_id: 11,
+    assigned_id: "user-2",
+    done_ratio: 20,
+    expected_work_hours: 8,
+    start_date: 1839340800000,
+    due_date: 1839945600000,
+    dry_run: false,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    iteration_id: string;
+    title: string;
+    work_item_type: string;
+    description: string;
+    module_id: string;
+    severity_id: number;
+    assigned_id: string;
+    done_ratio: number;
+    expected_work_hours: number;
+    start_date: number;
+    due_date: number;
+    dry_run: boolean;
+  } & T;
+}
+
+function createReqAddIterationWorkItemsInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  iteration_id: string;
+  work_item_ids: string[];
+  dry_run: boolean;
+} & T {
+  return {
+    project_id: "project-1",
+    iteration_id: "iteration-1",
+    work_item_ids: ["70779173", "70779174"],
+    dry_run: false,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    iteration_id: string;
+    work_item_ids: string[];
+    dry_run: boolean;
+  } & T;
+}
+
 function createReqUpdateIterationInput<T extends Record<string, unknown>>(
   overrides?: T
 ): {
@@ -906,6 +977,29 @@ const writePathCases: WritePathCase[] = [
     }
   },
   {
+    name: "executes req_add_iteration_work_items through the registered session-aware runtime client",
+    createHandler: (store: SessionStore) =>
+      readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_add_iteration_work_items"),
+    input: createReqAddIterationWorkItemsInput(),
+    responsePayload: {},
+    expectedItem: {
+      projectId: "project-1",
+      iterationId: "iteration-1",
+      workItemIds: ["70779173", "70779174"],
+      addedCount: 2,
+      executed: true
+    },
+    expectedRequest: {
+      path: "/v2/projects/project-1/issues/batch-update",
+      method: "PUT",
+      bodyIncludes: [
+        "\"id\":[\"70779173\",\"70779174\"]",
+        "\"attribute\":{",
+        "\"iteration_id\":\"iteration-1\""
+      ]
+    }
+  },
+  {
     name: "executes req_create_plan through the registered session-aware runtime client",
     createHandler: (store: SessionStore) =>
       readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_create_plan"),
@@ -1204,6 +1298,45 @@ const writePathCases: WritePathCase[] = [
         "\"project_id\":\"project-1\"",
         "\"id\":\"301\"",
         "\"status\":\"2\""
+      ]
+    }
+  },
+  {
+    name: "executes req_create_iteration_work_item through the registered session-aware runtime client",
+    createHandler: (store: SessionStore) =>
+      readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_create_iteration_work_item"),
+    input: createReqCreateIterationWorkItemInput(),
+    responsePayload: {
+      id: 102,
+      name: "Story A",
+      description: "Iteration scoped story",
+      status: { id: 7, name: "New" },
+      tracker: { id: 5, name: "Story" }
+    },
+    expectedItem: {
+      id: "102",
+      title: "Story A",
+      description: "Iteration scoped story",
+      status: "New",
+      statusId: 7,
+      type: "Story",
+      typeId: 5,
+      projectId: "project-1",
+      iterationId: "iteration-1",
+      executed: true
+    },
+    expectedRequest: {
+      path: "/v4/projects/project-1/issue",
+      bodyIncludes: [
+        "\"name\":\"Story A\"",
+        "\"iteration_id\":\"iteration-1\"",
+        "\"module_id\":\"module-1\"",
+        "\"severity_id\":11",
+        "\"assigned_id\":\"user-2\"",
+        "\"done_ratio\":20",
+        "\"expected_work_hours\":8",
+        "\"start_date\":1839340800000",
+        "\"due_date\":1839945600000"
       ]
     }
   },
@@ -1646,6 +1779,20 @@ const dryRunCases: DryRunCase[] = [
     }
   },
   {
+    name: "short-circuits req_add_iteration_work_items dry runs without HTTP or rate-limit consumption",
+    toolName: "req_add_iteration_work_items",
+    input: createReqAddIterationWorkItemsInput({
+      dry_run: true
+    }),
+    expectedItem: {
+      projectId: "project-1",
+      iterationId: "iteration-1",
+      workItemIds: ["70779173", "70779174"],
+      addedCount: 0,
+      executed: false
+    }
+  },
+  {
     name: "short-circuits req_add_plan_work_items dry runs without HTTP or rate-limit consumption",
     toolName: "req_add_plan_work_items",
     input: createReqAddPlanWorkItemsInput({
@@ -1683,6 +1830,20 @@ const dryRunCases: DryRunCase[] = [
       planId: "plan-1",
       title: "Epic A",
       workItemType: "Epic",
+      executed: false
+    }
+  },
+  {
+    name: "short-circuits req_create_iteration_work_item dry runs without HTTP or rate-limit consumption",
+    toolName: "req_create_iteration_work_item",
+    input: createReqCreateIterationWorkItemInput({
+      dry_run: true
+    }),
+    expectedItem: {
+      projectId: "project-1",
+      iterationId: "iteration-1",
+      title: "Story A",
+      workItemType: "Story",
       executed: false
     }
   },

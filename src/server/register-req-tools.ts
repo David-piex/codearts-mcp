@@ -1,6 +1,7 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createReqClient } from "../products/req/client.js";
 import {
+  reqAddIterationWorkItemsInput,
   reqAddPlanWorkItemsInput,
   reqAddWorkItemCommentInput,
   reqAddProjectMemberInput,
@@ -9,6 +10,7 @@ import {
   reqBatchDeleteIterationsInput,
   reqCheckProjectNameInput,
   reqClearPlanWorkItemsInput,
+  reqCreateIterationWorkItemInput,
   reqCreatePlanWorkItemInput,
   reqCreatePlanInput,
   reqCreateIterationInput,
@@ -70,6 +72,7 @@ import {
   reqUpdateWorkItemFlowInput,
   reqUpdateWorkItemInput
 } from "../products/req/schemas.js";
+import { createReqAddIterationWorkItemsHandler } from "../products/req/tools/add-iteration-work-items.js";
 import { createReqAddPlanWorkItemsHandler } from "../products/req/tools/add-plan-work-items.js";
 import { createReqAddWorkItemCommentHandler } from "../products/req/tools/add-work-item-comment.js";
 import { createReqAddProjectMemberHandler } from "../products/req/tools/add-project-member.js";
@@ -81,6 +84,7 @@ import { createReqClearPlanWorkItemsHandler } from "../products/req/tools/clear-
 import { createReqCreatePlanHandler } from "../products/req/tools/create-plan.js";
 import { createReqCreatePlanWorkItemHandler } from "../products/req/tools/create-plan-work-item.js";
 import { createReqCreateIterationHandler } from "../products/req/tools/create-iteration.js";
+import { createReqCreateIterationWorkItemHandler } from "../products/req/tools/create-iteration-work-item.js";
 import { createReqCreateProjectHandler } from "../products/req/tools/create-project.js";
 import { createReqCreateProjectModuleHandler } from "../products/req/tools/create-project-module.js";
 import { createReqDeletePlanHandler } from "../products/req/tools/delete-plan.js";
@@ -146,6 +150,14 @@ type RegisterableServer = Pick<McpServer, "registerTool">;
 type ReqStdioClient = ReturnType<typeof createReqClient>;
 
 const reqToolDefinitions = {
+  "req_add_iteration_work_items": defineProductTool({
+    description: "Add work items to a CodeArts Req iteration",
+    inputSchema: reqAddIterationWorkItemsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqAddIterationWorkItemsHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqAddIterationWorkItemsHandler,
+    rateLimitAction: "req_add_iteration_work_items"
+  }),
   "req_add_plan_work_items": defineProductTool({
     description: "Add work items to a CodeArts Req plan",
     inputSchema: reqAddPlanWorkItemsInput,
@@ -210,6 +222,14 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqCreateIterationHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqCreateIterationHandler,
     rateLimitAction: "req_create_iteration"
+  }),
+  "req_create_iteration_work_item": defineProductTool({
+    description: "Create CodeArts Req iteration work item",
+    inputSchema: reqCreateIterationWorkItemInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqCreateIterationWorkItemHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqCreateIterationWorkItemHandler,
+    rateLimitAction: "req_create_iteration_work_item"
   }),
   "req_create_project_module": defineProductTool({
     description: "Create CodeArts Req project module",
