@@ -19,8 +19,10 @@ import {
   reqListBoardWorkItemStatusRecordsInput,
   reqListBoardWorkItemWorkflowConfigInput,
   reqListBoardWorkItemsInput,
+  reqListCacheDataInput,
   reqGetIterationInput,
   reqGetProjectInput,
+  reqListJobCacheBoardsInput,
   reqQueryIterationImmovableIssuesInput,
   reqGetWorkItemInput,
   reqLeaveProjectInput,
@@ -77,7 +79,9 @@ import { createReqListAssociatedTestCasesHandler } from "../products/req/tools/l
 import { createReqListBoardWorkItemStatusRecordsHandler } from "../products/req/tools/list-board-work-item-status-records.js";
 import { createReqListBoardWorkItemWorkflowConfigHandler } from "../products/req/tools/list-board-work-item-workflow-config.js";
 import { createReqListBoardWorkItemsHandler } from "../products/req/tools/list-board-work-items.js";
+import { createReqListCacheDataHandler } from "../products/req/tools/list-cache-data.js";
 import { createReqListIterationsHandler } from "../products/req/tools/list-iterations.js";
+import { createReqListJobCacheBoardsHandler } from "../products/req/tools/list-job-cache-boards.js";
 import { createReqListNotAddedProjectsHandler } from "../products/req/tools/list-not-added-projects.js";
 import { createReqListProjectModulesHandler } from "../products/req/tools/list-project-modules.js";
 import { createReqListProjectMembersHandler } from "../products/req/tools/list-project-members.js";
@@ -270,6 +274,20 @@ const reqToolDefinitions = {
       reqClient: Parameters<typeof createReqListBoardWorkItemWorkflowConfigHandler>[0];
     }) => clients.reqClient,
     createProductHandler: createReqListBoardWorkItemWorkflowConfigHandler
+  }),
+  "req_list_job_cache_boards": defineProductTool({
+    description: "List CodeArts Req board cache fields",
+    inputSchema: reqListJobCacheBoardsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListJobCacheBoardsHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListJobCacheBoardsHandler
+  }),
+  "req_list_cache_data": defineProductTool({
+    description: "List CodeArts Req cache data",
+    inputSchema: reqListCacheDataInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListCacheDataHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListCacheDataHandler
   }),
   "req_create_work_item": defineProductTool({
     description: "Create CodeArts Req work item",

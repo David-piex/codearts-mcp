@@ -143,6 +143,12 @@ export const reqListBoardWorkItemWorkflowConfigInput = z.object({
   board_id: idSchema
 });
 
+export const reqListJobCacheBoardsInput = z.object({
+  project_id: idSchema,
+  type: z.string().min(1).default("board"),
+  region: z.string().min(1).optional()
+});
+
 export const reqListWorkItemTemplatesInput = z.object({
   project_id: idSchema,
   tracker_id: scrumTrackerIdSchema.optional()
@@ -166,6 +172,11 @@ export const reqGetWorkItemStatusRuleFlagInput = z.object({
 export const reqListWorkItemTrackerHandlersInput = z.object({
   project_id: idSchema,
   tracker_id: scrumTrackerIdSchema
+});
+
+export const reqListCacheDataInput = z.object({
+  project_id: idSchema.optional(),
+  type: z.string().min(1).default("backlog")
 });
 
 export const reqUpdateWorkItemFlowInput = z.object({

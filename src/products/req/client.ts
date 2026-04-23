@@ -409,6 +409,19 @@ export type ReqClient = {
       parent_id?: string;
     }>;
   }>;
+  listJobCacheBoards: (input: {
+    project_id: string;
+    type?: string;
+    region?: string;
+  }) => Promise<{
+    cache_id?: number;
+    fields: Array<{
+      id?: string;
+      header?: string;
+      type?: string;
+      show?: string | boolean;
+    }>;
+  }>;
   getWorkItem: (input: { project_id: string; work_item_id: string }) => Promise<{
     id: number | string;
     subject: string;
@@ -679,6 +692,75 @@ export type ReqClient = {
     tracker_handlers: Array<{
       handler_id?: number;
       handler_name?: string;
+    }>;
+  }>;
+  listCacheData: (input: {
+    project_id?: string;
+    type?: string;
+  }) => Promise<{
+    project_id?: string;
+    type?: string;
+    fields: Array<{
+      trackerList?: number[];
+      name?: string;
+      field?: string;
+      isCustom?: boolean;
+      option?: Array<{
+        id?: string;
+        name?: string;
+      }>;
+      option_source?: string;
+      type?: string;
+      required?: boolean | number;
+      fieldGroup?: string;
+      sortable?: boolean;
+      priorityOption?: Array<{
+        id?: string;
+        name?: string;
+      }>;
+      severityOption?: Array<{
+        id?: string;
+        name?: string;
+      }>;
+      trackerOption?: Array<{
+        id?: string;
+        name?: string;
+      }>;
+      doneRatioOption?: Array<{
+        id?: string;
+        name?: string;
+      }>;
+    }>;
+    visible_fields: Array<{
+      trackerList?: number[];
+      name?: string;
+      field?: string;
+      isCustom?: boolean;
+      option?: Array<{
+        id?: string;
+        name?: string;
+      }>;
+      option_source?: string;
+      type?: string;
+      required?: boolean | number;
+      fieldGroup?: string;
+      sortable?: boolean;
+      priorityOption?: Array<{
+        id?: string;
+        name?: string;
+      }>;
+      severityOption?: Array<{
+        id?: string;
+        name?: string;
+      }>;
+      trackerOption?: Array<{
+        id?: string;
+        name?: string;
+      }>;
+      doneRatioOption?: Array<{
+        id?: string;
+        name?: string;
+      }>;
     }>;
   }>;
   addWorkItemComment: (input: {
@@ -1569,6 +1651,35 @@ export function createReqClient(
         workflows: response.workflows ?? []
       };
     },
+    async listJobCacheBoards(input) {
+      const query = new URLSearchParams({
+        type: input.type ?? "board"
+      });
+
+      if (input.region) {
+        query.set("region", input.region);
+      }
+
+      const response = (await _http.get(
+        `/v3/projects/${encodeURIComponent(input.project_id)}/jobcache/board?${query.toString()}`
+      )) as {
+        result?: {
+          id?: number;
+          fields?: Array<{
+            id?: string;
+            header?: string;
+            type?: string;
+            show?: string | boolean;
+          }>;
+        };
+      };
+      const payload = response.result ?? {};
+
+      return {
+        cache_id: payload.id,
+        fields: payload.fields ?? []
+      };
+    },
     async getWorkItem(input) {
       const response = (await _http.get(
         `/v4/projects/${encodeURIComponent(input.project_id)}/issues/${encodeURIComponent(input.work_item_id)}`
@@ -2082,6 +2193,85 @@ export function createReqClient(
 
       return {
         tracker_handlers: response.tracker_handlers ?? []
+      };
+    },
+    async listCacheData(input) {
+      const response = (await _http.post("/v3/job-cache/list-cache", {
+        ...(input.project_id ? { projectUUId: input.project_id } : {}),
+        type: input.type ?? "backlog"
+      })) as {
+        result?: {
+          fields?: Array<{
+            trackerList?: number[];
+            name?: string;
+            field?: string;
+            isCustom?: boolean;
+            option?: Array<{
+              id?: string;
+              name?: string;
+            }>;
+            option_source?: string;
+            type?: string;
+            required?: boolean | number;
+            fieldGroup?: string;
+            sortable?: boolean;
+            priorityOption?: Array<{
+              id?: string;
+              name?: string;
+            }>;
+            severityOption?: Array<{
+              id?: string;
+              name?: string;
+            }>;
+            trackerOption?: Array<{
+              id?: string;
+              name?: string;
+            }>;
+            doneRatioOption?: Array<{
+              id?: string;
+              name?: string;
+            }>;
+          }>;
+          visibleFields?: Array<{
+            trackerList?: number[];
+            name?: string;
+            field?: string;
+            isCustom?: boolean;
+            option?: Array<{
+              id?: string;
+              name?: string;
+            }>;
+            option_source?: string;
+            type?: string;
+            required?: boolean | number;
+            fieldGroup?: string;
+            sortable?: boolean;
+            priorityOption?: Array<{
+              id?: string;
+              name?: string;
+            }>;
+            severityOption?: Array<{
+              id?: string;
+              name?: string;
+            }>;
+            trackerOption?: Array<{
+              id?: string;
+              name?: string;
+            }>;
+            doneRatioOption?: Array<{
+              id?: string;
+              name?: string;
+            }>;
+          }>;
+        };
+      };
+      const payload = response.result ?? {};
+
+      return {
+        project_id: input.project_id,
+        type: input.type ?? "backlog",
+        fields: payload.fields ?? [],
+        visible_fields: payload.visibleFields ?? []
       };
     },
     async addWorkItemComment(input) {

@@ -2,7 +2,7 @@
 
 这一页只说明 Req 模块的真实 AK/SK 联调边界，不把“工具已经实现”直接等同于“已经真实 live 跑过”。
 
-当前 Req 已导出 `50` 个工具，功能面覆盖：
+当前 Req 已导出 `52` 个工具，功能面覆盖：
 
 - `project`：项目查询、创建、更新、删除、名称校验、域内未添加项目查询
 - `module`：项目模块列表、创建、更新、删除
@@ -12,6 +12,7 @@
 - `collaboration`：评论列表/新增/更新、关联缺陷、关联提交、关联测试用例、相关用户、流转更新
 - `config-read`：工作项状态列表、工作项流转配置、工作项模板、模板字段配置、自定义字段、自动流转开关、流转默认处理人范围
 - `board-read`：看板项目工作项列表、看板工作项状态历史记录、看板工作项流转配置
+- `cache-read`：卡片模式字段缓存、通用字段缓存查询
 
 ## 当前 Live 依据
 
@@ -34,6 +35,7 @@
 | 工作项记录与评论读取 | `req_list_work_item_records` `req_list_work_item_comments`                              | smoke 会对真实或临时工作项读取记录与评论列表                                                                                                                              |
 | 工作项配置读取       | `req_list_work_item_statuses` `req_list_work_item_workflow_config` `req_list_work_item_templates` `req_get_work_item_template_config` `req_list_work_item_custom_fields` `req_get_work_item_status_rule_flag` `req_list_work_item_tracker_handlers` | 工具已实现；当前仍待补真实项目样本下的状态/流转/模板/模板字段配置/自定义字段/自动流转开关/默认处理人范围读取 smoke                                                                                               |
 | 看板工作项读取       | `req_list_board_work_items` `req_list_board_work_item_status_records` `req_list_board_work_item_workflow_config` | 工具已实现；当前仍待补真实看板项目样本下的列表/状态历史/流转配置读取 smoke                                                                                               |
+| 字段缓存读取         | `req_list_job_cache_boards` `req_list_cache_data`                                                                 | 工具已实现；当前仍待补真实项目样本下的卡片字段缓存与 backlog 缓存读取 smoke                                                                                               |
 | 评论写闭环           | `req_add_work_item_comment` `req_update_work_item_comment`                              | 仅在同时配置 `HUAWEICLOUD_REQ_LIVE_WRITE_PROJECT_ID` 和 `HUAWEICLOUD_REQ_LIVE_ENABLE_COMMENT_MUTATIONS` 时，对临时工作项执行新增和更新评论                                |
 | 临时工作项清理       | `req_delete_work_item`                                                                  | 仅用于显式开启评论写 smoke 时清理临时工作项                                                                                                                               |
 

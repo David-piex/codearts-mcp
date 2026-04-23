@@ -528,6 +528,48 @@ describe("registerReqTool", () => {
     );
   });
 
+  it("registers the list job cache boards tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_list_job_cache_boards",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_list_job_cache_boards",
+      expect.objectContaining({
+        title: "req_list_job_cache_boards",
+        description: "List CodeArts Req board cache fields"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the list cache data tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_list_cache_data",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_list_cache_data",
+      expect.objectContaining({
+        title: "req_list_cache_data",
+        description: "List CodeArts Req cache data"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("registers the update work item flow tool with rate-limited metadata", () => {
     const registerTool = vi.fn();
 

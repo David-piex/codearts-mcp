@@ -10,7 +10,7 @@
 <!-- GENERATED:capability-matrix:start -->
 | Module | Read | Write | Live | Key Gaps |
 | --- | --- | --- | --- | --- |
-| Req | 27 | 23 | Partial | Scrum project, module, member, iteration, work-item, comment, association, status, workflow-config, template, template-config, custom-field, status-rule-flag, tracker-handler, and board work-item read tools are implemented; deeper live coverage is still expanding for member, batch, new config-read paths, and board samples |
+| Req | 29 | 23 | Partial | Scrum project, module, member, iteration, work-item, comment, association, status, workflow-config, template, template-config, custom-field, status-rule-flag, tracker-handler, board work-item reads, and field/cache reads are implemented; deeper live coverage is still expanding for member, batch, new config-read paths, cache reads, and board samples |
 | Repo | 17 | 8 | Validated | All 25 Repo tools, including `repo_create_repository`, now have real AK/SK validation on the writable sampled project |
 | Pipeline | 42 | 35 | Partial | The original execution surface is live-validated, but the 51 newly added extension-endpoint/group/variable-group/rule-management/tag-management/tenant-strategy/project-strategy tools still need real AK/SK validation |
 | Check | 5 | 3 | Validated | Tool-level live closure is complete |

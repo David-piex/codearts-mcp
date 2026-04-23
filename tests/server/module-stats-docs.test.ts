@@ -43,9 +43,9 @@ describe("replaceGeneratedSection", () => {
 
 describe("module stats doc rendering", () => {
   it("renders the README exposure summary from current tool totals", () => {
-    expect(renderReadmeExposureSummaryMarkdown()).toContain("- `260` product tools");
+    expect(renderReadmeExposureSummaryMarkdown()).toContain("- `262` product tools");
     expect(renderReadmeExposureSummaryMarkdown()).toContain(
-      "- `262` total MCP tools in shared `http` mode"
+      "- `264` total MCP tools in shared `http` mode"
     );
   });
 
@@ -80,17 +80,17 @@ describe("syncModuleStatsDocuments", () => {
 
     const synced = syncModuleStatsDocuments(docs);
 
-    expect(synced["README.md"]).toContain("- `260` product tools");
+    expect(synced["README.md"]).toContain("- `262` product tools");
     expect(synced["README.md"]).toContain("| Pipeline | 77 | Partial |");
-    expect(synced["README.md"]).toContain("| Req | 50 | Partial |");
+    expect(synced["README.md"]).toContain("| Req | 52 | Partial |");
     expect(synced["docs/wiki/Capability-Matrix.md"]).toContain(
-      "| Req | 27 | 23 | Partial |"
+      "| Req | 29 | 23 | Partial |"
     );
     expect(synced["docs/wiki/Module-Live-Readiness.md"]).toContain(
-      "| Req | 50 | 27 | 23 | Partial |"
+      "| Req | 52 | 29 | 23 | Partial |"
     );
     expect(synced["docs/wiki/Module-Live-Readiness.md"]).toContain(
-      "- Total MCP tools exposed: `262`"
+      "- Total MCP tools exposed: `264`"
     );
     expect(synced["docs/wiki/Module-Live-Readiness.md"]).toContain("| Deploy | 59 |");
   });

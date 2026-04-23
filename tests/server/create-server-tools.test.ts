@@ -88,23 +88,23 @@ async function invokeInternalListToolsHandler(server: unknown) {
 }
 
 describe("createServer tool registration", () => {
-  it("registers only the 260 product tools in stdio mode", () => {
+  it("registers only the 262 product tools in stdio mode", () => {
     const server = createStdioServer();
 
     const toolNames = readRegisteredToolNames(server);
 
     expect(toolNames).toEqual(collectToolNames());
-    expect(toolNames).toHaveLength(260);
+    expect(toolNames).toHaveLength(262);
     expect(toolNames).not.toContain("auth_configure_session");
     expect(toolNames).not.toContain("auth_clear_session");
   });
 
-  it("registers 262 tools including auth tools in http mode", () => {
+  it("registers 264 tools including auth tools in http mode", () => {
     const server = createHttpServer();
 
     const toolNames = readRegisteredToolNames(server);
 
-    expect(toolNames).toHaveLength(262);
+    expect(toolNames).toHaveLength(264);
     expect(toolNames).toEqual(
       [...collectToolNames(), "auth_clear_session", "auth_configure_session"].sort()
     );
@@ -134,7 +134,7 @@ describe("createServer tool registration", () => {
     const secondResult = await invokeInternalListToolsHandler(server);
 
     expect(firstResult).toBe(secondResult);
-    expect((firstResult as { tools?: unknown[] }).tools).toHaveLength(262);
+    expect((firstResult as { tools?: unknown[] }).tools).toHaveLength(264);
   });
 
   it("captures tool registrations once and hydrates later server instances from a template", () => {

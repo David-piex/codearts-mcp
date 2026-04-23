@@ -16,7 +16,7 @@
 
 | 模块 | 中文定位 | 你可以用它做什么 | 典型工具 | 当前建议 |
 | --- | --- | --- | --- | --- |
-| Req | 需求、项目协作与工作项管理 | 已覆盖 project/module/member/iteration/work-item/collaboration/config-read/board-read 8 个层面，可做项目管理、成员协作、迭代治理、工作项流转与关联追踪，并开始支持看板项目工作项读取 | `req_list_projects` `req_create_project` `req_list_project_modules` `req_list_project_members` `req_create_iteration` `req_create_work_item` `req_update_work_item_flow` | 核心链路可直接用，扩展协作面与看板读面先看 live 边界 |
+| Req | 需求、项目协作与工作项管理 | 已覆盖 project/module/member/iteration/work-item/collaboration/config-read/board-read/cache-read 9 个层面，可做项目管理、成员协作、迭代治理、工作项流转与关联追踪，并开始支持看板项目与字段缓存读取 | `req_list_projects` `req_create_project` `req_list_project_modules` `req_list_project_members` `req_create_iteration` `req_create_work_item` `req_update_work_item_flow` | 核心链路可直接用，扩展协作面、缓存读面与看板读面先看 live 边界 |
 | Repo | 代码仓库协作 | 查仓库、查分支、查提交、查文件、查 MR、创建仓库、发起/评审/合并 MR、打标签 | `repo_list_repositories` `repo_create_repository` `repo_create_merge_request` | 适合直接使用 |
 | Pipeline | 流水线执行与治理 | 查流水线、查运行、触发运行、审批/拒绝/重试/停止运行，还能管分组、标签、变量组、规则、策略和扩展点 | `pipeline_list_pipelines` `pipeline_run_pipeline` `pipeline_create_group` | 适合进阶自动化 |
 | Check | 代码检查 | 查规则集、查检查任务、看问题、看指标、创建/执行/停止检查任务 | `check_list_rulesets` `check_list_task_issues` `check_run_task` | 适合和 Repo / Build 配套 |
@@ -31,7 +31,7 @@
 
 Req 是最典型的“把项目管理动作做成 MCP 工具”的模块，而且现在已经不只是旧文档里的 8 个核心工具。
 
-当前 Req 已经扩到 `50` 个工具，基本可以按 8 个资源面来理解：
+当前 Req 已经扩到 `52` 个工具，基本可以按 9 个资源面来理解：
 
 - `project`：`req_list_projects` `req_get_project` `req_create_project` `req_update_project` `req_delete_project` `req_check_project_name` `req_list_not_added_projects`
 - `module`：`req_list_project_modules` `req_create_project_module` `req_update_project_module` `req_delete_project_module`
@@ -41,6 +41,7 @@ Req 是最典型的“把项目管理动作做成 MCP 工具”的模块，而�
 - `collaboration`：`req_list_work_item_comments` `req_add_work_item_comment` `req_update_work_item_comment` `req_list_associated_issues` `req_list_associated_commits` `req_list_associated_test_cases` `req_list_related_users` `req_update_work_item_flow`
 - `config-read`：`req_list_work_item_statuses` `req_list_work_item_workflow_config` `req_list_work_item_templates` `req_get_work_item_template_config` `req_list_work_item_custom_fields` `req_get_work_item_status_rule_flag` `req_list_work_item_tracker_handlers`
 - `board-read`：`req_list_board_work_items` `req_list_board_work_item_status_records` `req_list_board_work_item_workflow_config`
+- `cache-read`：`req_list_job_cache_boards` `req_list_cache_data`
 
 适合场景：
 

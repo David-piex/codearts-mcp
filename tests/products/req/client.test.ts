@@ -1987,6 +1987,141 @@ describe("createReqClient", () => {
     });
   });
 
+  it("maps board cache field queries to the documented jobcache board endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          result: {
+            id: 1111,
+            fields: [
+              {
+                id: "subject",
+                header: "标题",
+                type: "text",
+                show: true
+              }
+            ]
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.listJobCacheBoards({
+      project_id: "p-1",
+      type: "board",
+      region: "cn-north-4"
+    });
+
+    expect(requestedPath).toBe("/v3/projects/p-1/jobcache/board?type=board&region=cn-north-4");
+    expect(result).toEqual({
+      cache_id: 1111,
+      fields: [
+        {
+          id: "subject",
+          header: "标题",
+          type: "text",
+          show: true
+        }
+      ]
+    });
+  });
+
+  it("maps cache data queries to the documented list-cache endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return {
+          result: {
+            fields: [
+              {
+                trackerList: [2, 7],
+                name: "标题",
+                field: "subject",
+                isCustom: false,
+                type: "text",
+                required: true,
+                fieldGroup: "basic",
+                sortable: true,
+                priorityOption: [
+                  {
+                    id: "1",
+                    name: "低"
+                  }
+                ]
+              }
+            ],
+            visibleFields: [
+              {
+                trackerList: [7],
+                name: "状态",
+                field: "status",
+                isCustom: false,
+                type: "select",
+                required: false,
+                fieldGroup: "basic",
+                sortable: true
+              }
+            ]
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.listCacheData({
+      project_id: "p-1",
+      type: "backlog"
+    });
+
+    expect(requestedPath).toBe("/v3/job-cache/list-cache");
+    expect(requestedBody).toEqual({
+      projectUUId: "p-1",
+      type: "backlog"
+    });
+    expect(result).toEqual({
+      project_id: "p-1",
+      type: "backlog",
+      fields: [
+        {
+          trackerList: [2, 7],
+          name: "标题",
+          field: "subject",
+          isCustom: false,
+          type: "text",
+          required: true,
+          fieldGroup: "basic",
+          sortable: true,
+          priorityOption: [
+            {
+              id: "1",
+              name: "低"
+            }
+          ]
+        }
+      ],
+      visible_fields: [
+        {
+          trackerList: [7],
+          name: "状态",
+          field: "status",
+          isCustom: false,
+          type: "select",
+          required: false,
+          fieldGroup: "basic",
+          sortable: true
+        }
+      ]
+    });
+  });
+
   it("falls back to the related_user endpoint when the documented related-user path returns not_found", async () => {
     const get = vi
       .fn()
