@@ -16,6 +16,8 @@ describe("previewUpdateIteration", () => {
       begin_time: "2026-04-02",
       end_time: "2026-04-15",
       description: "Updated scope",
+      status: "1",
+      over_type: "custom",
       dry_run: true
     });
 
@@ -27,6 +29,8 @@ describe("previewUpdateIteration", () => {
       beginTime: "2026-04-02",
       endTime: "2026-04-15",
       description: "Updated scope",
+      status: "1",
+      overType: "custom",
       executed: false
     });
   });
@@ -40,7 +44,9 @@ describe("mapUpdatedIteration", () => {
       name: "Sprint 3 Updated",
       begin_time: "2026-04-02",
       end_time: "2026-04-15",
-      description: "Updated scope"
+      description: "Updated scope",
+      status: "2",
+      over_type: "auto"
     });
 
     expect(result.item).toEqual({
@@ -50,6 +56,8 @@ describe("mapUpdatedIteration", () => {
       beginTime: "2026-04-02",
       endTime: "2026-04-15",
       description: "Updated scope",
+      status: "2",
+      overType: "auto",
       executed: true
     });
   });
@@ -60,7 +68,9 @@ describe("reqUpdateIterationInput exports", () => {
     const input = {
       project_id: "project-1",
       iteration_id: "301",
-      name: "Sprint 3 Updated"
+      name: "Sprint 3 Updated",
+      status: "1",
+      over_type: "custom"
     };
 
     expect(reqUpdateIterationInput.parse(input)).toEqual({
@@ -86,6 +96,8 @@ describe("createReqUpdateIterationHandler", () => {
       iteration_id: "301",
       name: "Sprint 3 Updated",
       description: "Updated scope",
+      status: "1",
+      over_type: "custom",
       dry_run: true
     });
 
@@ -101,6 +113,8 @@ describe("createReqUpdateIterationHandler", () => {
           beginTime: undefined,
           endTime: undefined,
           description: "Updated scope",
+          status: "1",
+          overType: "custom",
           executed: false
         },
         raw: undefined
@@ -116,7 +130,9 @@ describe("createReqUpdateIterationHandler", () => {
         name: "Sprint 3 Updated",
         begin_time: "2026-04-02",
         end_time: "2026-04-15",
-        description: "Updated scope"
+        description: "Updated scope",
+        status: "2",
+        over_type: "auto"
       }))
     };
     const handler = createReqUpdateIterationHandler(client);
@@ -128,6 +144,8 @@ describe("createReqUpdateIterationHandler", () => {
       begin_time: "2026-04-02",
       end_time: "2026-04-15",
       description: "Updated scope",
+      status: "2",
+      over_type: "auto",
       dry_run: false
     });
 
@@ -138,6 +156,8 @@ describe("createReqUpdateIterationHandler", () => {
       begin_time: "2026-04-02",
       end_time: "2026-04-15",
       description: "Updated scope",
+      status: "2",
+      over_type: "auto",
       dry_run: false
     });
     expect(result).toEqual({
@@ -151,6 +171,8 @@ describe("createReqUpdateIterationHandler", () => {
           beginTime: "2026-04-02",
           endTime: "2026-04-15",
           description: "Updated scope",
+          status: "2",
+          overType: "auto",
           executed: true
         },
         raw: undefined

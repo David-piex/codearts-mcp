@@ -168,6 +168,8 @@ export type ReqClient = {
     begin_time?: string;
     end_time?: string;
     description?: string;
+    status?: string;
+    over_type?: string;
   }) => Promise<{
     project_id: string;
     iteration_id: string;
@@ -175,6 +177,8 @@ export type ReqClient = {
     begin_time?: string;
     end_time?: string;
     description?: string;
+    status?: string;
+    over_type?: string;
   }>;
   deleteIteration: (input: { project_id: string; iteration_id: string }) => Promise<{
     project_id: string;
@@ -612,7 +616,9 @@ export function createReqClient(
           name: input.name,
           begin_time: input.begin_time,
           end_time: input.end_time,
-          description: input.description
+          description: input.description,
+          status: input.status,
+          over_type: input.over_type
         }
       );
 
@@ -622,7 +628,9 @@ export function createReqClient(
         name: input.name,
         begin_time: input.begin_time,
         end_time: input.end_time,
-        description: input.description
+        description: input.description,
+        status: input.status,
+        over_type: input.over_type
       };
     },
     async deleteIteration(input) {
@@ -638,7 +646,7 @@ export function createReqClient(
     },
     async batchDeleteIterations(input) {
       await _http.delete(`/v4/projects/${encodeURIComponent(input.project_id)}/iterations`, {
-        iteration_ids: input.iteration_ids.map((id) => Number(id))
+        iteration_ids: input.iteration_ids
       });
 
       return {

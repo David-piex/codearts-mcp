@@ -161,6 +161,8 @@ function createReqUpdateIterationInput<T extends Record<string, unknown>>(
   begin_time: string;
   end_time: string;
   description: string;
+  status: string;
+  over_type: string;
   dry_run: boolean;
 } & T {
   return {
@@ -170,6 +172,8 @@ function createReqUpdateIterationInput<T extends Record<string, unknown>>(
     begin_time: "2026-04-16",
     end_time: "2026-04-29",
     description: "Updated backlog",
+    status: "2",
+    over_type: "auto",
     dry_run: false,
     ...(overrides ?? {})
   } as {
@@ -179,6 +183,8 @@ function createReqUpdateIterationInput<T extends Record<string, unknown>>(
     begin_time: string;
     end_time: string;
     description: string;
+    status: string;
+    over_type: string;
     dry_run: boolean;
   } & T;
 }
@@ -557,12 +563,14 @@ const writePathCases: WritePathCase[] = [
       beginTime: "2026-04-16",
       endTime: "2026-04-29",
       description: "Updated backlog",
+      status: "2",
+      overType: "auto",
       executed: true
     },
     expectedRequest: {
       path: "/v4/projects/project-1/iterations/301",
       method: "PUT",
-      bodyIncludes: ["\"name\":\"Sprint 4 Updated\""]
+      bodyIncludes: ["\"name\":\"Sprint 4 Updated\"", "\"status\":\"2\"", "\"over_type\":\"auto\""]
     }
   },
   {
@@ -597,7 +605,7 @@ const writePathCases: WritePathCase[] = [
     expectedRequest: {
       path: "/v4/projects/project-1/iterations",
       method: "DELETE",
-      bodyIncludes: ["\"iteration_ids\":[301,302]"]
+      bodyIncludes: ["\"iteration_ids\":[\"301\",\"302\"]"]
     }
   },
   {
@@ -891,6 +899,8 @@ const dryRunCases: DryRunCase[] = [
       beginTime: "2026-04-16",
       endTime: "2026-04-29",
       description: "Updated backlog",
+      status: "2",
+      overType: "auto",
       executed: false
     }
   },

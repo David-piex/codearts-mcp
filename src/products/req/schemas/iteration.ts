@@ -27,6 +27,8 @@ export const reqUpdateIterationInput = z.object({
   begin_time: z.string().min(1).optional(),
   end_time: z.string().min(1).optional(),
   description: z.string().optional(),
+  status: iterationStatusSchema.optional(),
+  over_type: z.string().min(1).optional(),
   dry_run: z.boolean().default(true)
 });
 

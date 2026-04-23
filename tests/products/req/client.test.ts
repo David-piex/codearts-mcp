@@ -537,7 +537,9 @@ describe("createReqClient", () => {
         name: "Sprint 3 Updated",
         begin_time: "2026-04-02",
         end_time: "2026-04-15",
-        description: "Updated scope"
+        description: "Updated scope",
+        status: "2",
+        over_type: "auto"
       }),
       client.deleteIteration(createProjectIterationInput())
     ]);
@@ -564,7 +566,9 @@ describe("createReqClient", () => {
           name: "Sprint 3 Updated",
           begin_time: "2026-04-02",
           end_time: "2026-04-15",
-          description: "Updated scope"
+          description: "Updated scope",
+          status: "2",
+          over_type: "auto"
         }
       },
       {
@@ -595,7 +599,9 @@ describe("createReqClient", () => {
       name: "Sprint 3 Updated",
       begin_time: "2026-04-02",
       end_time: "2026-04-15",
-      description: "Updated scope"
+      description: "Updated scope",
+      status: "2",
+      over_type: "auto"
     });
     expect(deleted).toEqual({
       project_id: "p-1",
@@ -635,7 +641,7 @@ describe("createReqClient", () => {
     const [batchDeleted, stateUpdated, issues] = await Promise.all([
       client.batchDeleteIterations({
         project_id: "p-1",
-        iteration_ids: ["301", "302"]
+        iteration_ids: ["iter-alpha", "iter-beta"]
       }),
       client.updateIterationState({
         project_id: "p-1",
@@ -656,7 +662,7 @@ describe("createReqClient", () => {
         method: "DELETE",
         path: "/v4/projects/p-1/iterations",
         body: {
-          iteration_ids: [301, 302]
+          iteration_ids: ["iter-alpha", "iter-beta"]
         }
       },
       {
@@ -678,7 +684,7 @@ describe("createReqClient", () => {
     ]);
     expect(batchDeleted).toEqual({
       project_id: "p-1",
-      iteration_ids: ["301", "302"],
+      iteration_ids: ["iter-alpha", "iter-beta"],
       deletedCount: 2
     });
     expect(stateUpdated).toEqual({
