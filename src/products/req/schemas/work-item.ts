@@ -33,7 +33,13 @@ export const reqBatchUpdateWorkItemsInput = z.object({
   status_id: z.number().int().positive().optional(),
   priority_id: z.number().int().positive().optional(),
   dry_run: z.boolean().default(true)
-});
+}).refine(
+  (input) => typeof input.status_id !== "undefined" || typeof input.priority_id !== "undefined",
+  {
+    message: "At least one of status_id or priority_id is required",
+    path: ["status_id"]
+  }
+);
 
 export const reqListWorkItemsInput = pagingSchema.extend({
   project_id: idSchema

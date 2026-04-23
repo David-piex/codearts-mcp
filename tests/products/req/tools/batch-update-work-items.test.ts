@@ -67,6 +67,20 @@ describe("reqBatchUpdateWorkItemsInput exports", () => {
       dry_run: true
     });
   });
+
+  it("rejects empty batch updates when no mutable fields are provided", () => {
+    const input = {
+      project_id: "project-1",
+      work_item_ids: ["wi-9", "wi-10"]
+    };
+
+    expect(() => reqBatchUpdateWorkItemsInput.parse(input)).toThrow(
+      /status_id|priority_id/i
+    );
+    expect(() => reqBatchUpdateWorkItemsInputFromBarrel.parse(input)).toThrow(
+      /status_id|priority_id/i
+    );
+  });
 });
 
 describe("createReqBatchUpdateWorkItemsHandler", () => {

@@ -46,6 +46,20 @@ function wrapToolHandler<THandler extends (...args: any[]) => any>(
   }) as THandler;
 }
 
+function isDryRunInput(input: unknown, inputSchema: { safeParse?: (value: unknown) => { success: boolean; data: unknown } }) {
+  if (input && typeof input === "object" && (input as { dry_run?: unknown }).dry_run === true) {
+    return true;
+  }
+
+  const parsed = inputSchema.safeParse?.(input);
+
+  if (!parsed?.success || !parsed.data || typeof parsed.data !== "object") {
+    return false;
+  }
+
+  return (parsed.data as { dry_run?: unknown }).dry_run === true;
+}
+
 export function defineProductTool<
   THttpClients,
   TClient,
@@ -68,12 +82,7 @@ export function defineProductTool<
           store: resolveOptions.sessionStore!,
           beforeHandle: rateLimitAction
             ? (input: unknown, extra: SessionToolExtra) => {
-                if (
-                  input &&
-                  typeof input === "object" &&
-                  "dry_run" in input &&
-                  (input as { dry_run?: unknown }).dry_run === true
-                ) {
+                if (isDryRunInput(input, options.inputSchema)) {
                   return;
                 }
 

@@ -360,6 +360,51 @@ describe("registerReqTool", () => {
     expect(rateLimiter.check).toHaveBeenCalledTimes(1);
   });
 
+  it.each([
+    {
+      toolName: "req_delete_work_item",
+      input: {
+        project_id: "project-1",
+        work_item_id: "wi-9"
+      }
+    },
+    {
+      toolName: "req_batch_update_work_items",
+      input: {
+        project_id: "project-1",
+        work_item_ids: ["wi-9", "wi-10"],
+        status_id: 3
+      }
+    }
+  ])(
+    "does not consume rate limit when $toolName omits dry_run and falls back to default dry-run behavior",
+    async ({ toolName, input }) => {
+      const registerTool = vi.fn();
+      const rateLimiter = { check: vi.fn() };
+
+      registerReqTool({
+        toolName,
+        server: { registerTool },
+        mode: "http",
+        sessionStore: createSessionCredentialStore(),
+        rateLimiter: rateLimiter as never
+      });
+
+      const handler = registerTool.mock.calls[0]?.[2] as
+        | ((input: unknown, extra: { sessionId?: string; authId?: string }) => Promise<unknown>)
+        | undefined;
+
+      expect(handler).toBeTypeOf("function");
+
+      await handler?.(input, {
+        sessionId: "session-1",
+        authId: "auth-1"
+      });
+
+      expect(rateLimiter.check).not.toHaveBeenCalled();
+    }
+  );
+
   it("returns false for non-req tools", () => {
     const registerTool = vi.fn();
 
