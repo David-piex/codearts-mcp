@@ -533,6 +533,38 @@ export type ReqClient = {
       }>;
     }>;
   }>;
+  listWorkItemTemplates: (input: {
+    project_id: string;
+    tracker_id?: 2 | 3 | 5 | 6 | 7;
+  }) => Promise<{
+    templates: Array<{
+      id?: number | string;
+      project_id?: number | string;
+      tracker_id?: number;
+      description?: string;
+      issue_field_config?: string;
+    }>;
+  }>;
+  listWorkItemCustomFields: (input: {
+    project_id: string;
+    tracker_id?: 2 | 3 | 5 | 6 | 7;
+  }) => Promise<{
+    custom_field: Array<{
+      tracker_list?: string[];
+      region?: string;
+      id?: number | string;
+      project_id?: number | string;
+      tracker_id?: number;
+      custom_field?: string;
+      type?: string;
+      name?: string;
+      sort?: number;
+      memo?: string;
+      created?: string;
+      modified?: string;
+      is_delete?: boolean;
+    }>;
+  }>;
   addWorkItemComment: (input: {
     project_id: string;
     work_item_id: string;
@@ -1639,6 +1671,81 @@ export function createReqClient(
 
       return {
         workflows: response.workflows ?? []
+      };
+    },
+    async listWorkItemTemplates(input) {
+      const query = new URLSearchParams();
+
+      if (typeof input.tracker_id !== "undefined") {
+        query.set("tracker_id", String(input.tracker_id));
+      }
+
+      const suffix = query.size ? `?${query.toString()}` : "";
+      const response = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/templates${suffix}`
+      )) as {
+        templates?: Array<{
+          id?: number | string;
+          project_id?: number | string;
+          tracker_id?: number;
+          description?: string;
+          issue_field_config?: string;
+        }>;
+      };
+
+      return {
+        templates: response.templates ?? []
+      };
+    },
+    async listWorkItemCustomFields(input) {
+      const query = new URLSearchParams({
+        project_id: input.project_id
+      });
+
+      if (typeof input.tracker_id !== "undefined") {
+        query.set("tracker_id", String(input.tracker_id));
+      }
+
+      const response = (await _http.get(
+        `/v2/custom-field/query-custom-field?${query.toString()}`
+      )) as {
+        result?: {
+          custom_field?: Array<{
+            tracker_list?: string[];
+            region?: string;
+            id?: number | string;
+            project_id?: number | string;
+            tracker_id?: number;
+            custom_field?: string;
+            type?: string;
+            name?: string;
+            sort?: number;
+            memo?: string;
+            created?: string;
+            modified?: string;
+            is_delete?: boolean;
+          }>;
+        };
+        custom_field?: Array<{
+          tracker_list?: string[];
+          region?: string;
+          id?: number | string;
+          project_id?: number | string;
+          tracker_id?: number;
+          custom_field?: string;
+          type?: string;
+          name?: string;
+          sort?: number;
+          memo?: string;
+          created?: string;
+          modified?: string;
+          is_delete?: boolean;
+        }>;
+      };
+      const payload = response.result ?? response;
+
+      return {
+        custom_field: payload.custom_field ?? []
       };
     },
     async addWorkItemComment(input) {

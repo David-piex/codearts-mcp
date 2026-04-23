@@ -360,6 +360,48 @@ describe("registerReqTool", () => {
     );
   });
 
+  it("registers the list work item templates tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_list_work_item_templates",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_list_work_item_templates",
+      expect.objectContaining({
+        title: "req_list_work_item_templates",
+        description: "List CodeArts Req work item templates"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the list work item custom fields tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_list_work_item_custom_fields",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_list_work_item_custom_fields",
+      expect.objectContaining({
+        title: "req_list_work_item_custom_fields",
+        description: "List CodeArts Req work item custom fields"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("registers the update work item flow tool with rate-limited metadata", () => {
     const registerTool = vi.fn();
 

@@ -2,7 +2,7 @@
 
 这一页只说明 Req 模块的真实 AK/SK 联调边界，不把“工具已经实现”直接等同于“已经真实 live 跑过”。
 
-当前 Req 已导出 `42` 个工具，功能面覆盖：
+当前 Req 已导出 `44` 个工具，功能面覆盖：
 
 - `project`：项目查询、创建、更新、删除、名称校验、域内未添加项目查询
 - `module`：项目模块列表、创建、更新、删除
@@ -10,7 +10,7 @@
 - `iteration`：迭代列表、详情、创建、更新、删除、批量删除、状态更新、不可移动问题查询
 - `work-item core`：工作项列表、详情、创建、更新、删除、批量更新、变更记录
 - `collaboration`：评论列表/新增/更新、关联缺陷、关联提交、关联测试用例、相关用户、流转更新
-- `config-read`：工作项状态列表、工作项流转配置
+- `config-read`：工作项状态列表、工作项流转配置、工作项模板、自定义字段
 
 ## 当前 Live 依据
 
@@ -31,7 +31,7 @@
 | 迭代写闭环           | `req_create_iteration` `req_update_iteration` `req_delete_iteration`                    | 仅在同时配置 `HUAWEICLOUD_REQ_LIVE_WRITE_PROJECT_ID` 和 `HUAWEICLOUD_REQ_LIVE_ENABLE_ITERATION_MUTATIONS` 时执行                                                          |
 | 工作项 core 读写     | `req_create_work_item` `req_get_work_item` `req_update_work_item` `req_list_work_items` | 仅在显式配置 `HUAWEICLOUD_REQ_LIVE_WRITE_PROJECT_ID` 时跑 `create -> get -> update -> list`；如果显式注入现有 `HUAWEICLOUD_REQ_LIVE_WORK_ITEM_*`，则退化为只读 `get` 检查 |
 | 工作项记录与评论读取 | `req_list_work_item_records` `req_list_work_item_comments`                              | smoke 会对真实或临时工作项读取记录与评论列表                                                                                                                              |
-| 工作项配置读取       | `req_list_work_item_statuses` `req_list_work_item_workflow_config`                      | 工具已实现；当前仍待补真实项目样本下的状态/流转配置读取 smoke                                                                                                            |
+| 工作项配置读取       | `req_list_work_item_statuses` `req_list_work_item_workflow_config` `req_list_work_item_templates` `req_list_work_item_custom_fields` | 工具已实现；当前仍待补真实项目样本下的状态/流转/模板/自定义字段读取 smoke                                                                                               |
 | 评论写闭环           | `req_add_work_item_comment` `req_update_work_item_comment`                              | 仅在同时配置 `HUAWEICLOUD_REQ_LIVE_WRITE_PROJECT_ID` 和 `HUAWEICLOUD_REQ_LIVE_ENABLE_COMMENT_MUTATIONS` 时，对临时工作项执行新增和更新评论                                |
 | 临时工作项清理       | `req_delete_work_item`                                                                  | 仅用于显式开启评论写 smoke 时清理临时工作项                                                                                                                               |
 

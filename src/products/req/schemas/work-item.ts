@@ -117,6 +117,16 @@ export const reqListWorkItemWorkflowConfigInput = z.object({
   tracker_id: scrumTrackerIdSchema
 });
 
+export const reqListWorkItemTemplatesInput = z.object({
+  project_id: idSchema,
+  tracker_id: scrumTrackerIdSchema.optional()
+});
+
+export const reqListWorkItemCustomFieldsInput = z.object({
+  project_id: idSchema,
+  tracker_id: scrumTrackerIdSchema.optional()
+});
+
 export const reqUpdateWorkItemFlowInput = z.object({
   project_id: idSchema,
   work_item_id: idSchema,

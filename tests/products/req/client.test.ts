@@ -1574,6 +1574,103 @@ describe("createReqClient", () => {
     });
   });
 
+  it("maps work item templates queries to the documented templates endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          templates: [
+            {
+              id: 1793674,
+              project_id: 30384422,
+              tracker_id: 2,
+              description: "",
+              issue_field_config: "{\"fields\":[]}"
+            }
+          ]
+        };
+      }
+    } as never);
+
+    const result = await client.listWorkItemTemplates({
+      project_id: "p-1",
+      tracker_id: 2
+    });
+
+    expect(requestedPath).toBe("/v4/projects/p-1/templates?tracker_id=2");
+    expect(result).toEqual({
+      templates: [
+        {
+          id: 1793674,
+          project_id: 30384422,
+          tracker_id: 2,
+          description: "",
+          issue_field_config: "{\"fields\":[]}"
+        }
+      ]
+    });
+  });
+
+  it("maps work item custom field queries to the documented custom-field endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          result: {
+            custom_field: [
+              {
+                tracker_list: ["2", "7"],
+                region: "example",
+                id: 492316,
+                project_id: 34883337,
+                tracker_id: -2,
+                custom_field: "custom_field16",
+                type: "text",
+                name: "测试必填",
+                sort: 1,
+                memo: "",
+                created: "2025-06-28 10:00:30",
+                modified: "2025-06-28 10:00:30",
+                is_delete: false
+              }
+            ]
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.listWorkItemCustomFields({
+      project_id: "p-1",
+      tracker_id: 3
+    });
+
+    expect(requestedPath).toBe("/v2/custom-field/query-custom-field?project_id=p-1&tracker_id=3");
+    expect(result).toEqual({
+      custom_field: [
+        {
+          tracker_list: ["2", "7"],
+          region: "example",
+          id: 492316,
+          project_id: 34883337,
+          tracker_id: -2,
+          custom_field: "custom_field16",
+          type: "text",
+          name: "测试必填",
+          sort: 1,
+          memo: "",
+          created: "2025-06-28 10:00:30",
+          modified: "2025-06-28 10:00:30",
+          is_delete: false
+        }
+      ]
+    });
+  });
+
   it("falls back to the related_user endpoint when the documented related-user path returns not_found", async () => {
     const get = vi
       .fn()
