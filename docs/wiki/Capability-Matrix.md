@@ -10,7 +10,7 @@
 <!-- GENERATED:capability-matrix:start -->
 | Module | Read | Write | Live | Key Gaps |
 | --- | --- | --- | --- | --- |
-| Req | 16 | 20 | Partial | Scrum project, member, iteration, work-item, comment, association, and flow tools are implemented; deeper live coverage is still expanding for member and batch operations |
+| Req | 17 | 23 | Partial | Scrum project, module, member, iteration, work-item, comment, association, and flow tools are implemented; deeper live coverage is still expanding for member and batch operations |
 | Repo | 17 | 8 | Validated | All 25 Repo tools, including `repo_create_repository`, now have real AK/SK validation on the writable sampled project |
 | Pipeline | 42 | 35 | Partial | The original execution surface is live-validated, but the 51 newly added extension-endpoint/group/variable-group/rule-management/tag-management/tenant-strategy/project-strategy tools still need real AK/SK validation |
 | Check | 5 | 3 | Validated | Tool-level live closure is complete |

@@ -41,7 +41,7 @@ const readWriteMatrixMeta: Record<ModuleName, ReadWriteMatrixMeta> = {
   Req: {
     live: "Partial",
     keyGaps:
-      "Scrum project, member, iteration, work-item, comment, association, and flow tools are implemented; deeper live coverage is still expanding for member and batch operations"
+      "Scrum project, module, member, iteration, work-item, comment, association, and flow tools are implemented; deeper live coverage is still expanding for member and batch operations"
   },
   Repo: {
     live: "Validated",
@@ -82,7 +82,7 @@ const implementationStatusMeta: Record<ModuleName, ImplementationStatusMeta> = {
   Req: {
     live: "Partial",
     notes:
-      "Req now covers Scrum project, member, iteration, work-item, comment, association, related-user, and flow-transition tools. Core project/work-item paths have live coverage; member and batch-operation live depth is still being expanded."
+      "Req now covers Scrum project, module, member, iteration, work-item, comment, association, related-user, and flow-transition tools. Core project/work-item paths have live coverage; member and batch-operation live depth is still being expanded."
   },
   Repo: {
     live: "Validated",
@@ -124,7 +124,7 @@ const toolStatusSummaryMeta: Record<ModuleName, ToolStatusSummaryMeta> = {
   Req: {
     summary: "Expanded Scrum surface with core live closure",
     conclusion:
-      "The Req MCP surface has grown from the original 8-tool core to project/member/iteration/work-item collaboration coverage; core live loops are validated while deeper member and batch samples remain pending."
+      "The Req MCP surface has grown from the original 8-tool core to project/module/member/iteration/work-item collaboration coverage; core live loops are validated while deeper member and batch samples remain pending."
   },
   Repo: {
     summary: "`25 Full / 0 Reachable / 0 Unpublished / 0 Code`",

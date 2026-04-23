@@ -487,6 +487,132 @@ describe("createReqClient", () => {
     });
   });
 
+  it("uses project module list, create, update and delete endpoints", async () => {
+    const requests: Array<{ method: string; path: string; body?: Record<string, unknown> }> = [];
+    const client = createReqClient({
+      get: async (path: string) => {
+        requests.push({ method: "GET", path });
+
+        return {
+          modules: [
+            {
+              module_id: 7,
+              module_name: "Backend",
+              description: "API module"
+            }
+          ],
+          total: 1
+        };
+      },
+      post: async (path: string, body: Record<string, unknown>) => {
+        requests.push({ method: "POST", path, body });
+
+        return {
+          module_id: 8,
+          module_name: "Frontend",
+          description: "UI module"
+        };
+      },
+      put: async (path: string, body: Record<string, unknown>) => {
+        requests.push({ method: "PUT", path, body });
+
+        return {
+          module_id: 7,
+          module_name: "Backend API",
+          description: "Updated API module"
+        };
+      },
+      delete: async (path: string) => {
+        requests.push({ method: "DELETE", path });
+
+        return undefined;
+      }
+    } as never);
+
+    const [listed, created, updated, deleted] = await Promise.all([
+      client.listProjectModules(createProjectPageInput()),
+      client.createProjectModule({
+        project_id: "p-1",
+        module_name: "Frontend",
+        owner_user_id: "user-1",
+        parent_module_id: 1,
+        description: "UI module"
+      }),
+      client.updateProjectModule({
+        project_id: "p-1",
+        module_id: "7",
+        module_name: "Backend API",
+        owner_user_id: "user-1",
+        description: "Updated API module"
+      }),
+      client.deleteProjectModule({
+        project_id: "p-1",
+        module_id: "7"
+      })
+    ]);
+
+    expect(requests).toEqual([
+      {
+        method: "GET",
+        path: "/v4/projects/p-1/modules?offset=0&limit=20"
+      },
+      {
+        method: "POST",
+        path: "/v4/projects/p-1/module",
+        body: {
+          module_name: "Frontend",
+          description: "UI module",
+          parent_module_id: 1,
+          owner: {
+            user_id: "user-1"
+          }
+        }
+      },
+      {
+        method: "PUT",
+        path: "/v4/projects/p-1/modules/7",
+        body: {
+          module_name: "Backend API",
+          description: "Updated API module",
+          owner: {
+            user_id: "user-1"
+          }
+        }
+      },
+      {
+        method: "DELETE",
+        path: "/v4/projects/p-1/modules/7"
+      }
+    ]);
+    expect(listed).toEqual({
+      modules: [
+        {
+          module_id: 7,
+          module_name: "Backend",
+          description: "API module"
+        }
+      ],
+      total: 1
+    });
+    expect(created).toEqual({
+      module_id: 8,
+      module_name: "Frontend",
+      description: "UI module",
+      owner: undefined
+    });
+    expect(updated).toEqual({
+      module_id: 7,
+      module_name: "Backend API",
+      description: "Updated API module",
+      owner: undefined
+    });
+    expect(deleted).toEqual({
+      project_id: "p-1",
+      module_id: "7",
+      deleted: true
+    });
+  });
+
   it("uses iteration detail, create, update and delete endpoints", async () => {
     const requests: Array<{ method: string; path: string; body?: Record<string, unknown> }> = [];
     const client = createReqClient({

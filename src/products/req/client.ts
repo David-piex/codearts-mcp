@@ -104,6 +104,79 @@ export type ReqClient = {
     }>;
     total?: number;
   }>;
+  listProjectModules: (input: { project_id: string; page: number; page_size: number }) => Promise<{
+    modules: Array<{
+      module_id: number | string;
+      module_name: string;
+      description?: string;
+      deepth?: number;
+      is_parent?: boolean;
+      parent_module_id?: number;
+      owner?: {
+        user_id?: string;
+        user_name?: string;
+        nick_name?: string;
+        user_num_id?: number;
+      };
+      children?: Array<{
+        module_id: number | string;
+        module_name: string;
+        description?: string;
+        deepth?: number;
+        is_parent?: boolean;
+        parent_module_id?: number;
+        owner?: {
+          user_id?: string;
+          user_name?: string;
+          nick_name?: string;
+          user_num_id?: number;
+        };
+      }>;
+    }>;
+    total?: number;
+  }>;
+  createProjectModule: (input: {
+    project_id: string;
+    module_name: string;
+    owner_user_id: string;
+    parent_module_id?: number;
+    description?: string;
+  }) => Promise<{
+    module_id: number | string;
+    module_name: string;
+    description?: string;
+    owner?: {
+      user_id?: string;
+      user_name?: string;
+      nick_name?: string;
+      user_num_id?: number;
+    };
+  }>;
+  updateProjectModule: (input: {
+    project_id: string;
+    module_id: string;
+    module_name: string;
+    owner_user_id: string;
+    description?: string;
+  }) => Promise<{
+    module_id: number | string;
+    module_name: string;
+    description?: string;
+    owner?: {
+      user_id?: string;
+      user_name?: string;
+      nick_name?: string;
+      user_num_id?: number;
+    };
+  }>;
+  deleteProjectModule: (input: {
+    project_id: string;
+    module_id: string;
+  }) => Promise<{
+    project_id: string;
+    module_id: string;
+    deleted: true;
+  }>;
   updateWorkItem: (input: {
     project_id: string;
     work_item_id: string;
@@ -757,6 +830,122 @@ export function createReqClient(
           project_type: project.project_type
         })),
         total: response.total
+      };
+    },
+    async listProjectModules(input) {
+      const offset = (input.page - 1) * input.page_size;
+      const query = new URLSearchParams({
+        offset: String(offset),
+        limit: String(input.page_size)
+      });
+
+      const response = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/modules?${query.toString()}`
+      )) as {
+        modules?: Array<{
+          module_id: number | string;
+          module_name: string;
+          description?: string;
+          deepth?: number;
+          is_parent?: boolean;
+          parent_module_id?: number;
+          owner?: {
+            user_id?: string;
+            user_name?: string;
+            nick_name?: string;
+            user_num_id?: number;
+          };
+          children?: Array<{
+            module_id: number | string;
+            module_name: string;
+            description?: string;
+            deepth?: number;
+            is_parent?: boolean;
+            parent_module_id?: number;
+            owner?: {
+              user_id?: string;
+              user_name?: string;
+              nick_name?: string;
+              user_num_id?: number;
+            };
+          }>;
+        }>;
+        total?: number;
+      };
+
+      return {
+        modules: response.modules ?? [],
+        total: response.total
+      };
+    },
+    async createProjectModule(input) {
+      const response = (await _http.post(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/module`,
+        {
+          module_name: input.module_name,
+          description: input.description,
+          parent_module_id: input.parent_module_id,
+          owner: {
+            user_id: input.owner_user_id
+          }
+        }
+      )) as {
+        module_id?: number | string;
+        module_name?: string;
+        description?: string;
+        owner?: {
+          user_id?: string;
+          user_name?: string;
+          nick_name?: string;
+          user_num_id?: number;
+        };
+      };
+
+      return {
+        module_id: response.module_id ?? "",
+        module_name: response.module_name ?? input.module_name,
+        description: response.description,
+        owner: response.owner
+      };
+    },
+    async updateProjectModule(input) {
+      const response = (await _http.put(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/modules/${encodeURIComponent(input.module_id)}`,
+        {
+          module_name: input.module_name,
+          description: input.description,
+          owner: {
+            user_id: input.owner_user_id
+          }
+        }
+      )) as {
+        module_id?: number | string;
+        module_name?: string;
+        description?: string;
+        owner?: {
+          user_id?: string;
+          user_name?: string;
+          nick_name?: string;
+          user_num_id?: number;
+        };
+      };
+
+      return {
+        module_id: response.module_id ?? input.module_id,
+        module_name: response.module_name ?? input.module_name,
+        description: response.description,
+        owner: response.owner
+      };
+    },
+    async deleteProjectModule(input) {
+      await _http.delete(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/modules/${encodeURIComponent(input.module_id)}`
+      );
+
+      return {
+        project_id: input.project_id,
+        module_id: input.module_id,
+        deleted: true as const
       };
     },
     async listIterations(input) {
