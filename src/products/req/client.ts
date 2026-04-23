@@ -118,6 +118,23 @@ export type ReqClient = {
     status?: { id?: number; name?: string };
     tracker?: { id?: number; name?: string };
   }>;
+  deleteWorkItem: (input: { project_id: string; work_item_id: string }) => Promise<{
+    project_id: string;
+    work_item_id: string;
+    deleted: true;
+  }>;
+  batchUpdateWorkItems: (input: {
+    project_id: string;
+    work_item_ids: string[];
+    status_id?: number;
+    priority_id?: number;
+  }) => Promise<{
+    project_id: string;
+    work_item_ids: string[];
+    status_id?: number;
+    priority_id?: number;
+    updatedCount: number;
+  }>;
   listIterations: (input: { project_id: string; page: number; page_size: number }) => Promise<{
     iterations: Array<{
       id: number | string;
@@ -255,6 +272,33 @@ export type ReqClient = {
     status?: { name?: string };
     tracker_name?: string;
     description?: string;
+  }>;
+  listWorkItemRecords: (input: {
+    project_id: string;
+    work_item_id: string;
+    page: number;
+    page_size: number;
+    journalized_type?: string;
+  }) => Promise<{
+    records: Array<{
+      id: number | string;
+      created_time?: string;
+      user?: {
+        user_id?: string;
+        user_name?: string;
+        user_num_id?: number;
+        nick_name?: string;
+      };
+      details?: Array<{
+        id: number | string;
+        name?: string;
+        new_value?: string;
+        old_value?: string;
+        operation?: string;
+        property?: string;
+      }>;
+    }>;
+    total?: number;
   }>;
 };
 
@@ -732,6 +776,44 @@ export function createReqClient(
         tracker: response.tracker
       };
     },
+    async deleteWorkItem(input) {
+      await _http.delete(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/issues/${encodeURIComponent(input.work_item_id)}`
+      );
+
+      return {
+        project_id: input.project_id,
+        work_item_id: input.work_item_id,
+        deleted: true as const
+      };
+    },
+    async batchUpdateWorkItems(input) {
+      const attribute: {
+        status_id?: number;
+        priority_id?: number;
+      } = {};
+
+      if (typeof input.status_id !== "undefined") {
+        attribute.status_id = input.status_id;
+      }
+
+      if (typeof input.priority_id !== "undefined") {
+        attribute.priority_id = input.priority_id;
+      }
+
+      await _http.put(`/v2/projects/${encodeURIComponent(input.project_id)}/issues/batch-update`, {
+        id: input.work_item_ids,
+        attribute
+      });
+
+      return {
+        project_id: input.project_id,
+        work_item_ids: input.work_item_ids,
+        status_id: input.status_id,
+        priority_id: input.priority_id,
+        updatedCount: input.work_item_ids.length
+      };
+    },
     async listProjects(input) {
       const cacheKey = buildListProjectsCacheKey(input);
       const cached = await listProjectsCache.getOrLoad(cacheKey, async () => {
@@ -851,6 +933,42 @@ export function createReqClient(
         status: response.status,
         tracker_name: response.tracker_name ?? response.tracker?.name,
         description: response.description
+      };
+    },
+    async listWorkItemRecords(input) {
+      const offset = (input.page - 1) * input.page_size;
+      const query = new URLSearchParams({
+        offset: String(offset),
+        limit: String(input.page_size),
+        journalizedType: input.journalized_type ?? "Issue"
+      });
+      const response = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/issue/${encodeURIComponent(input.work_item_id)}/records?${query.toString()}`
+      )) as {
+        records?: Array<{
+          id: number | string;
+          created_time?: string;
+          user?: {
+            user_id?: string;
+            user_name?: string;
+            user_num_id?: number;
+            nick_name?: string;
+          };
+          details?: Array<{
+            id: number | string;
+            name?: string;
+            new_value?: string;
+            old_value?: string;
+            operation?: string;
+            property?: string;
+          }>;
+        }>;
+        total?: number;
+      };
+
+      return {
+        records: response.records ?? [],
+        total: response.total
       };
     }
   };

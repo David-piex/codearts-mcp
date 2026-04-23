@@ -226,6 +226,51 @@ describe("write path rate limits", () => {
       responseInit: { status: 204 }
     },
     {
+      toolName: "req_delete_work_item",
+      dryRunInput: {
+        project_id: "project-1",
+        work_item_id: "70779173",
+        dry_run: true
+      },
+      liveInput: (index: number) => ({
+        project_id: "project-1",
+        work_item_id: `${index}`,
+        dry_run: false
+      }),
+      blockedInput: {
+        project_id: "project-1",
+        work_item_id: "blocked",
+        dry_run: false
+      },
+      responsePayload: {},
+      responseInit: { status: 204 }
+    },
+    {
+      toolName: "req_batch_update_work_items",
+      dryRunInput: {
+        project_id: "project-1",
+        work_item_ids: ["70779173", "70779174"],
+        status_id: 3,
+        priority_id: 2,
+        dry_run: true
+      },
+      liveInput: (index: number) => ({
+        project_id: "project-1",
+        work_item_ids: [`${index}`, `${index + 100}`],
+        status_id: 3,
+        priority_id: 2,
+        dry_run: false
+      }),
+      blockedInput: {
+        project_id: "project-1",
+        work_item_ids: ["blocked"],
+        status_id: 3,
+        priority_id: 2,
+        dry_run: false
+      },
+      responsePayload: {}
+    },
+    {
       toolName: "req_update_iteration_state",
       dryRunInput: {
         project_id: "project-1",

@@ -86,6 +86,50 @@ function createReqCreateProjectInput<T extends Record<string, unknown>>(
   } & T;
 }
 
+function createReqDeleteWorkItemInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  work_item_id: string;
+  dry_run: boolean;
+} & T {
+  return {
+    project_id: "project-1",
+    work_item_id: "70779173",
+    dry_run: false,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    work_item_id: string;
+    dry_run: boolean;
+  } & T;
+}
+
+function createReqBatchUpdateWorkItemsInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  work_item_ids: string[];
+  status_id: number;
+  priority_id: number;
+  dry_run: boolean;
+} & T {
+  return {
+    project_id: "project-1",
+    work_item_ids: ["70779173", "70779174"],
+    status_id: 3,
+    priority_id: 2,
+    dry_run: false,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    work_item_ids: string[];
+    status_id: number;
+    priority_id: number;
+    dry_run: boolean;
+  } & T;
+}
+
 function createReqUpdateProjectInput<T extends Record<string, unknown>>(
   overrides?: T
 ): {
@@ -661,6 +705,48 @@ const writePathCases: WritePathCase[] = [
     }
   },
   {
+    name: "executes req_delete_work_item through the registered session-aware runtime client",
+    createHandler: (store: SessionStore) =>
+      readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_delete_work_item"),
+    input: createReqDeleteWorkItemInput(),
+    responsePayload: null,
+    expectedItem: {
+      id: "70779173",
+      projectId: "project-1",
+      deleted: true,
+      executed: true
+    },
+    expectedRequest: {
+      path: "/v4/projects/project-1/issues/70779173",
+      method: "DELETE"
+    }
+  },
+  {
+    name: "executes req_batch_update_work_items through the registered session-aware runtime client",
+    createHandler: (store: SessionStore) =>
+      readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_batch_update_work_items"),
+    input: createReqBatchUpdateWorkItemsInput(),
+    responsePayload: {},
+    expectedItem: {
+      projectId: "project-1",
+      workItemIds: ["70779173", "70779174"],
+      statusId: 3,
+      priorityId: 2,
+      updatedCount: 2,
+      executed: true
+    },
+    expectedRequest: {
+      path: "/v2/projects/project-1/issues/batch-update",
+      method: "PUT",
+      bodyIncludes: [
+        "\"id\":[\"70779173\",\"70779174\"]",
+        "\"attribute\":{",
+        "\"status_id\":3",
+        "\"priority_id\":2"
+      ]
+    }
+  },
+  {
     name: "executes deploy_create_application through the session-aware runtime client",
     createHandler: createSessionAwareDeployCreateApplicationHandler,
     input: createDeployCreateApplicationInput(),
@@ -943,6 +1029,34 @@ const dryRunCases: DryRunCase[] = [
       status: "2",
       startDate: "2026-04-15",
       dueDate: "2026-04-28",
+      executed: false
+    }
+  },
+  {
+    name: "short-circuits req_delete_work_item dry runs without HTTP or rate-limit consumption",
+    toolName: "req_delete_work_item",
+    input: createReqDeleteWorkItemInput({
+      dry_run: true
+    }),
+    expectedItem: {
+      id: "70779173",
+      projectId: "project-1",
+      deleted: false,
+      executed: false
+    }
+  },
+  {
+    name: "short-circuits req_batch_update_work_items dry runs without HTTP or rate-limit consumption",
+    toolName: "req_batch_update_work_items",
+    input: createReqBatchUpdateWorkItemsInput({
+      dry_run: true
+    }),
+    expectedItem: {
+      projectId: "project-1",
+      workItemIds: ["70779173", "70779174"],
+      statusId: 3,
+      priorityId: 2,
+      updatedCount: 0,
       executed: false
     }
   }

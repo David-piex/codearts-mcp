@@ -829,4 +829,132 @@ describe("createReqClient", () => {
       total: 1
     });
   });
+
+  it("maps deleteWorkItem to the issue delete endpoint and synthesized response", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      delete: async (path: string) => {
+        requestedPath = path;
+
+        return undefined;
+      }
+    } as never);
+
+    const result = await client.deleteWorkItem(createProjectWorkItemInput());
+
+    expect(requestedPath).toBe("/v4/projects/p-1/issues/70779173");
+    expect(result).toEqual({
+      project_id: "p-1",
+      work_item_id: "70779173",
+      deleted: true
+    });
+  });
+
+  it("maps batchUpdateWorkItems to the batch-update endpoint with id and attribute keys", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      put: async (path: string, body: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return undefined;
+      }
+    } as never);
+
+    const result = await client.batchUpdateWorkItems({
+      project_id: "p-1",
+      work_item_ids: ["70779173", "70779174"],
+      status_id: 3,
+      priority_id: 2
+    });
+
+    expect(requestedPath).toBe("/v2/projects/p-1/issues/batch-update");
+    expect(requestedBody).toEqual({
+      id: ["70779173", "70779174"],
+      attribute: {
+        status_id: 3,
+        priority_id: 2
+      }
+    });
+    expect(result).toEqual({
+      project_id: "p-1",
+      work_item_ids: ["70779173", "70779174"],
+      status_id: 3,
+      priority_id: 2,
+      updatedCount: 2
+    });
+  });
+
+  it("maps listWorkItemRecords to the singular issue records endpoint and normalizes payloads", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          records: [
+            {
+              id: 11,
+              created_time: "2026-02-11T10:00:00Z",
+              user: {
+                user_id: "user-1",
+                user_name: "alice",
+                user_num_id: 101,
+                nick_name: "Alice"
+              },
+              details: [
+                {
+                  id: 91,
+                  name: "status",
+                  old_value: "New",
+                  new_value: "Doing",
+                  operation: "update",
+                  property: "status_id"
+                }
+              ]
+            }
+          ],
+          total: 1
+        };
+      }
+    } as never);
+
+    const result = await client.listWorkItemRecords({
+      project_id: "p-1",
+      work_item_id: "70779173",
+      page: 2,
+      page_size: 10,
+      journalized_type: "Issue"
+    });
+
+    expect(requestedPath).toBe(
+      "/v4/projects/p-1/issue/70779173/records?offset=10&limit=10&journalizedType=Issue"
+    );
+    expect(result).toEqual({
+      records: [
+        {
+          id: 11,
+          created_time: "2026-02-11T10:00:00Z",
+          user: {
+            user_id: "user-1",
+            user_name: "alice",
+            user_num_id: 101,
+            nick_name: "Alice"
+          },
+          details: [
+            {
+              id: 91,
+              name: "status",
+              old_value: "New",
+              new_value: "Doing",
+              operation: "update",
+              property: "status_id"
+            }
+          ]
+        }
+      ],
+      total: 1
+    });
+  });
 });

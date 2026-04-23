@@ -10,7 +10,9 @@ import {
   reqCreateProjectInput,
   reqDeleteProjectInput,
   reqDeleteIterationInput,
+  reqDeleteWorkItemInput,
   reqCreateWorkItemInput,
+  reqBatchUpdateWorkItemsInput,
   reqGetIterationInput,
   reqGetProjectInput,
   reqQueryIterationImmovableIssuesInput,
@@ -20,6 +22,7 @@ import {
   reqListNotAddedProjectsInput,
   reqListProjectMembersInput,
   reqListProjectsInput,
+  reqListWorkItemRecordsInput,
   reqListWorkItemsInput,
   reqUpdateIterationInput,
   reqUpdateIterationStateInput,
@@ -37,6 +40,8 @@ import { createReqCreateProjectHandler } from "../products/req/tools/create-proj
 import { createReqDeleteProjectHandler } from "../products/req/tools/delete-project.js";
 import { createReqDeleteIterationHandler } from "../products/req/tools/delete-iteration.js";
 import { createReqCreateWorkItemHandler } from "../products/req/tools/create-work-item.js";
+import { createReqDeleteWorkItemHandler } from "../products/req/tools/delete-work-item.js";
+import { createReqBatchUpdateWorkItemsHandler } from "../products/req/tools/batch-update-work-items.js";
 import { createReqGetIterationHandler } from "../products/req/tools/get-iteration.js";
 import { createReqGetProjectHandler } from "../products/req/tools/get-project.js";
 import { createReqGetWorkItemHandler } from "../products/req/tools/get-work-item.js";
@@ -45,6 +50,7 @@ import { createReqListIterationsHandler } from "../products/req/tools/list-itera
 import { createReqListNotAddedProjectsHandler } from "../products/req/tools/list-not-added-projects.js";
 import { createReqListProjectMembersHandler } from "../products/req/tools/list-project-members.js";
 import { createReqListProjectsHandler } from "../products/req/tools/list-projects.js";
+import { createReqListWorkItemRecordsHandler } from "../products/req/tools/list-work-item-records.js";
 import { createReqListWorkItemsHandler } from "../products/req/tools/list-work-items.js";
 import { createReqQueryIterationImmovableIssuesHandler } from "../products/req/tools/query-iteration-immovable-issues.js";
 import { createReqUpdateIterationHandler } from "../products/req/tools/update-iteration.js";
@@ -174,6 +180,20 @@ const reqToolDefinitions = {
     createProductHandler: createReqCreateWorkItemHandler,
     rateLimitAction: "req_create_work_item"
   }),
+  "req_delete_work_item": defineProductTool({
+    description: "Delete CodeArts Req work item",
+    inputSchema: reqDeleteWorkItemInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqDeleteWorkItemHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqDeleteWorkItemHandler,
+    rateLimitAction: "req_delete_work_item"
+  }),
+  "req_batch_update_work_items": defineProductTool({
+    description: "Batch update CodeArts Req work items",
+    inputSchema: reqBatchUpdateWorkItemsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqBatchUpdateWorkItemsHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqBatchUpdateWorkItemsHandler,
+    rateLimitAction: "req_batch_update_work_items"
+  }),
   "req_list_work_items": defineProductTool({
     description: "List CodeArts Req work items",
     inputSchema: reqListWorkItemsInput,
@@ -185,6 +205,12 @@ const reqToolDefinitions = {
     inputSchema: reqGetWorkItemInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGetWorkItemHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqGetWorkItemHandler
+  }),
+  "req_list_work_item_records": defineProductTool({
+    description: "List CodeArts Req work item records",
+    inputSchema: reqListWorkItemRecordsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemRecordsHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqListWorkItemRecordsHandler
   }),
   "req_list_iterations": defineProductTool({
     description: "List CodeArts Req iterations",

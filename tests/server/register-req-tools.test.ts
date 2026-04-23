@@ -87,6 +87,69 @@ describe("registerReqTool", () => {
     );
   });
 
+  it("registers the delete work item tool with rate-limited metadata", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_delete_work_item",
+      server: { registerTool },
+      mode: "stdio",
+      stdioClient: {} as never
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_delete_work_item",
+      expect.objectContaining({
+        title: "req_delete_work_item",
+        description: "Delete CodeArts Req work item"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the batch update work items tool with rate-limited metadata", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_batch_update_work_items",
+      server: { registerTool },
+      mode: "stdio",
+      stdioClient: {} as never
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_batch_update_work_items",
+      expect.objectContaining({
+        title: "req_batch_update_work_items",
+        description: "Batch update CodeArts Req work items"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the list work item records tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_list_work_item_records",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_list_work_item_records",
+      expect.objectContaining({
+        title: "req_list_work_item_records",
+        description: "List CodeArts Req work item records"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("registers the query iteration immovable issues tool in http mode", () => {
     const registerTool = vi.fn();
 
@@ -246,6 +309,55 @@ describe("registerReqTool", () => {
       "req_create_iteration:session-1",
       "req_create_iteration"
     );
+  });
+
+  it("enforces rate limiting before handling delete work item in http mode", async () => {
+    const registerTool = vi.fn();
+    const rateLimiter = { check: vi.fn() };
+
+    registerReqTool({
+      toolName: "req_delete_work_item",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore(),
+      rateLimiter: rateLimiter as never
+    });
+
+    const handler = registerTool.mock.calls[0]?.[2] as
+      | ((input: unknown, extra: { sessionId?: string; authId?: string }) => Promise<unknown>)
+      | undefined;
+
+    expect(handler).toBeTypeOf("function");
+
+    await handler?.(
+      {
+        project_id: "project-1",
+        work_item_id: "wi-9",
+        dry_run: true
+      },
+      {
+        sessionId: "session-1",
+        authId: "auth-1"
+      }
+    );
+
+    await handler?.(
+      {
+        project_id: "project-1",
+        work_item_id: "wi-9",
+        dry_run: false
+      },
+      {
+        sessionId: "session-1",
+        authId: "auth-1"
+      }
+    );
+
+    expect(rateLimiter.check).toHaveBeenCalledWith(
+      "req_delete_work_item:session-1",
+      "req_delete_work_item"
+    );
+    expect(rateLimiter.check).toHaveBeenCalledTimes(1);
   });
 
   it("returns false for non-req tools", () => {

@@ -21,6 +21,20 @@ export const reqUpdateWorkItemInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const reqDeleteWorkItemInput = z.object({
+  project_id: idSchema,
+  work_item_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const reqBatchUpdateWorkItemsInput = z.object({
+  project_id: idSchema,
+  work_item_ids: z.array(idSchema).min(1),
+  status_id: z.number().int().positive().optional(),
+  priority_id: z.number().int().positive().optional(),
+  dry_run: z.boolean().default(true)
+});
+
 export const reqListWorkItemsInput = pagingSchema.extend({
   project_id: idSchema
 });
@@ -29,3 +43,15 @@ export const reqGetWorkItemInput = z.object({
   project_id: idSchema,
   work_item_id: idSchema
 });
+
+export const reqListWorkItemRecordsInput = pagingSchema
+  .extend({
+    project_id: idSchema,
+    work_item_id: idSchema,
+    journalized_type: z.string().min(1).default("Issue")
+  })
+  .omit({
+    keyword: true,
+    sort_by: true,
+    sort_order: true
+  });
