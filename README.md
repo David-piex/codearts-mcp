@@ -210,17 +210,17 @@ node dist/src/server/index.js
 
 <!-- GENERATED:readme-exposure-summary:start -->
 - `8` product modules
-- `276` product tools
+- `278` product tools
 - `2` session/auth tools for shared `http` mode
-- `278` total MCP tools in shared `http` mode
+- `280` total MCP tools in shared `http` mode
 <!-- GENERATED:readme-exposure-summary:end -->
 
-工具读写分布：读操作 177 (64.1%) / 写操作 99 (35.9%)
+工具读写分布：读操作 177 (63.7%) / 写操作 101 (36.3%)
 
 <!-- GENERATED:readme-module-numbers:start -->
 | Module | Tools | Live status | Current breakdown |
 | --- | --- | --- | --- |
-| Req | 66 | Partial | Expanded Scrum surface with plan work-item management, status/status-attribute/status-detail/workflow-config/template/template-config/custom-field/status-rule-flag/status-config/optional-status-config/tracker-handler and project-public-config reads plus field/cache reads and board work-item reads; see `docs/wiki/Req-Live-Validated.md` for validated paths and remaining live-depth gaps |
+| Req | 68 | Partial | Expanded Scrum surface with plan work-item management, plan image update, plan-context work item creation, status/status-attribute/status-detail/workflow-config/template/template-config/custom-field/status-rule-flag/status-config/optional-status-config/tracker-handler and project-public-config reads plus field/cache reads and board work-item reads; see `docs/wiki/Req-Live-Validated.md` for validated paths and remaining live-depth gaps |
 | Repo | 25 | Validated | `25 Full / 0 Reachable / 0 Unpublished / 0 Code` |
 | Pipeline | 77 | Partial | `16 Full / 0 Reachable / 0 Unpublished / 51 Code` |
 | Check | 8 | Validated | `8 Full` |

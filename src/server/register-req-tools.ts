@@ -9,6 +9,7 @@ import {
   reqBatchDeleteIterationsInput,
   reqCheckProjectNameInput,
   reqClearPlanWorkItemsInput,
+  reqCreatePlanWorkItemInput,
   reqCreatePlanInput,
   reqCreateIterationInput,
   reqCreateProjectInput,
@@ -59,6 +60,7 @@ import {
   reqListWorkItemRecordsInput,
   reqListWorkItemsInput,
   reqUpdatePlanInput,
+  reqUpdatePlanImageInput,
   reqUpdateIterationInput,
   reqUpdateIterationStateInput,
   reqUpdateProjectModuleInput,
@@ -77,6 +79,7 @@ import { createReqBatchDeleteIterationsHandler } from "../products/req/tools/bat
 import { createReqCheckProjectNameHandler } from "../products/req/tools/check-project-name.js";
 import { createReqClearPlanWorkItemsHandler } from "../products/req/tools/clear-plan-work-items.js";
 import { createReqCreatePlanHandler } from "../products/req/tools/create-plan.js";
+import { createReqCreatePlanWorkItemHandler } from "../products/req/tools/create-plan-work-item.js";
 import { createReqCreateIterationHandler } from "../products/req/tools/create-iteration.js";
 import { createReqCreateProjectHandler } from "../products/req/tools/create-project.js";
 import { createReqCreateProjectModuleHandler } from "../products/req/tools/create-project-module.js";
@@ -126,6 +129,7 @@ import { createReqListWorkItemRecordsHandler } from "../products/req/tools/list-
 import { createReqListWorkItemsHandler } from "../products/req/tools/list-work-items.js";
 import { createReqQueryIterationImmovableIssuesHandler } from "../products/req/tools/query-iteration-immovable-issues.js";
 import { createReqUpdatePlanHandler } from "../products/req/tools/update-plan.js";
+import { createReqUpdatePlanImageHandler } from "../products/req/tools/update-plan-image.js";
 import { createReqUpdateIterationHandler } from "../products/req/tools/update-iteration.js";
 import { createReqUpdateIterationStateHandler } from "../products/req/tools/update-iteration-state.js";
 import { createReqUpdateProjectModuleHandler } from "../products/req/tools/update-project-module.js";
@@ -192,6 +196,14 @@ const reqToolDefinitions = {
     createProductHandler: createReqCreatePlanHandler,
     rateLimitAction: "req_create_plan"
   }),
+  "req_create_plan_work_item": defineProductTool({
+    description: "Create CodeArts Req plan work item",
+    inputSchema: reqCreatePlanWorkItemInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqCreatePlanWorkItemHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqCreatePlanWorkItemHandler,
+    rateLimitAction: "req_create_plan_work_item"
+  }),
   "req_create_iteration": defineProductTool({
     description: "Create CodeArts Req iteration",
     inputSchema: reqCreateIterationInput,
@@ -220,6 +232,14 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUpdatePlanHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqUpdatePlanHandler,
     rateLimitAction: "req_update_plan"
+  }),
+  "req_update_plan_image": defineProductTool({
+    description: "Update image for a CodeArts Req plan",
+    inputSchema: reqUpdatePlanImageInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUpdatePlanImageHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqUpdatePlanImageHandler,
+    rateLimitAction: "req_update_plan_image"
   }),
   "req_update_iteration": defineProductTool({
     description: "Update CodeArts Req iteration",

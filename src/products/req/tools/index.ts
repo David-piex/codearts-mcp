@@ -5,6 +5,7 @@ export const reqToolNames = [
   "req_batch_delete_project_members",
   "req_batch_delete_iterations",
   "req_clear_plan_work_items",
+  "req_create_plan_work_item",
   "req_create_project",
   "req_create_plan",
   "req_create_iteration",
@@ -64,5 +65,6 @@ export const reqToolNames = [
   "req_update_iteration_state",
   "req_query_iteration_immovable_issues",
   "req_list_project_members",
-  "req_update_project_member_role"
+  "req_update_project_member_role",
+  "req_update_plan_image"
 ];

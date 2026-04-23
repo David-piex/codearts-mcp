@@ -212,6 +212,38 @@ describe("write path rate limits", () => {
       }
     },
     {
+      toolName: "req_create_plan_work_item",
+      dryRunInput: {
+        project_id: "project-1",
+        plan_id: "plan-1",
+        title: "Epic A",
+        work_item_type: "Epic",
+        dry_run: true
+      },
+      liveInput: (index: number) => ({
+        project_id: "project-1",
+        plan_id: "plan-1",
+        title: `Epic ${index}`,
+        work_item_type: "Epic",
+        dry_run: false
+      }),
+      blockedInput: {
+        project_id: "project-1",
+        plan_id: "plan-1",
+        title: "Epic blocked",
+        work_item_type: "Epic",
+        dry_run: false
+      },
+      responsePayload: {
+        status: "success",
+        result: {
+          issue: {
+            id: 101
+          }
+        }
+      }
+    },
+    {
       toolName: "req_update_plan",
       dryRunInput: {
         project_id: "project-1",
@@ -229,6 +261,33 @@ describe("write path rate limits", () => {
         project_id: "project-1",
         plan_id: "blocked",
         name: "Plan blocked",
+        dry_run: false
+      },
+      responsePayload: {
+        status: "success",
+        result: {
+          id: "plan-1"
+        }
+      }
+    },
+    {
+      toolName: "req_update_plan_image",
+      dryRunInput: {
+        project_id: "project-1",
+        plan_id: "plan-1",
+        img_url: "/v1/upload/demo/202604/abc123.png",
+        dry_run: true
+      },
+      liveInput: (index: number) => ({
+        project_id: "project-1",
+        plan_id: "plan-1",
+        img_url: `/v1/upload/demo/202604/img${index}.png`,
+        dry_run: false
+      }),
+      blockedInput: {
+        project_id: "project-1",
+        plan_id: "plan-1",
+        img_url: "/v1/upload/demo/202604/blocked.png",
         dry_run: false
       },
       responsePayload: {

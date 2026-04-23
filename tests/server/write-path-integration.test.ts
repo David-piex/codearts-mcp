@@ -309,6 +309,31 @@ function createReqAddPlanWorkItemsInput<T extends Record<string, unknown>>(
   } & T;
 }
 
+function createReqCreatePlanWorkItemInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  plan_id: string;
+  title: string;
+  work_item_type: string;
+  dry_run: boolean;
+} & T {
+  return {
+    project_id: "project-1",
+    plan_id: "plan-1",
+    title: "Epic A",
+    work_item_type: "Epic",
+    dry_run: false,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    plan_id: string;
+    title: string;
+    work_item_type: string;
+    dry_run: boolean;
+  } & T;
+}
+
 function createReqUpdateIterationInput<T extends Record<string, unknown>>(
   overrides?: T
 ): {
@@ -364,6 +389,28 @@ function createReqUpdatePlanInput<T extends Record<string, unknown>>(
     project_id: string;
     plan_id: string;
     name: string;
+    dry_run: boolean;
+  } & T;
+}
+
+function createReqUpdatePlanImageInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  plan_id: string;
+  img_url: string;
+  dry_run: boolean;
+} & T {
+  return {
+    project_id: "project-1",
+    plan_id: "plan-1",
+    img_url: "/v1/upload/demo/202604/abc123.png",
+    dry_run: false,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    plan_id: string;
+    img_url: string;
     dry_run: boolean;
   } & T;
 }
@@ -802,6 +849,45 @@ const writePathCases: WritePathCase[] = [
     }
   },
   {
+    name: "executes req_create_plan_work_item through the registered session-aware runtime client",
+    createHandler: (store: SessionStore) =>
+      readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_create_plan_work_item"),
+    input: createReqCreatePlanWorkItemInput(),
+    responsePayload: {
+      status: "success",
+      result: {
+        issue: {
+          id: 101,
+          subject: "Epic A",
+          description: "Plan item",
+          status: { id: 1, name: "New" },
+          tracker: { id: 5, name: "Epic" },
+          project: { identifier: "project-1" }
+        }
+      }
+    },
+    expectedItem: {
+      id: "101",
+      title: "Epic A",
+      description: "Plan item",
+      status: "New",
+      statusId: 1,
+      type: "Epic",
+      typeId: 5,
+      projectId: "project-1",
+      planId: "plan-1",
+      executed: true
+    },
+    expectedRequest: {
+      path: "/v2/issues/create",
+      bodyIncludes: [
+        "\"projectUUId\":\"project-1\"",
+        "\"subject\":\"Epic A\"",
+        "\"plan_id\":\"plan-1\""
+      ]
+    }
+  },
+  {
     name: "executes req_create_iteration through the registered session-aware runtime client",
     createHandler: (store: SessionStore) =>
       readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_create_iteration"),
@@ -866,6 +952,36 @@ const writePathCases: WritePathCase[] = [
       path: "/v3/plan/project-1/management/plan-1",
       method: "PUT",
       bodyIncludes: ["\"name\":\"2026 Q3 Updated\""]
+    }
+  },
+  {
+    name: "executes req_update_plan_image through the registered session-aware runtime client",
+    createHandler: (store: SessionStore) =>
+      readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_update_plan_image"),
+    input: createReqUpdatePlanImageInput(),
+    responsePayload: {
+      status: "success",
+      result: {
+        id: "plan-1",
+        name: "2026 Q3 Updated",
+        type: "mind",
+        project_id: "project-1",
+        img_url: "/v1/upload/demo/202604/abc123.png"
+      }
+    },
+    expectedItem: {
+      id: "plan-1",
+      projectId: "project-1",
+      name: "2026 Q3 Updated",
+      type: "mind",
+      imageUrl: "/v1/upload/demo/202604/abc123.png",
+      updated: true,
+      executed: true
+    },
+    expectedRequest: {
+      path: "/v3/plan/project-1/management/plan-1/img",
+      method: "PUT",
+      bodyIncludes: ["\"img_url\":\"/v1/upload/demo/202604/abc123.png\""]
     }
   },
   {
@@ -1398,6 +1514,20 @@ const dryRunCases: DryRunCase[] = [
     }
   },
   {
+    name: "short-circuits req_create_plan_work_item dry runs without HTTP or rate-limit consumption",
+    toolName: "req_create_plan_work_item",
+    input: createReqCreatePlanWorkItemInput({
+      dry_run: true
+    }),
+    expectedItem: {
+      projectId: "project-1",
+      planId: "plan-1",
+      title: "Epic A",
+      workItemType: "Epic",
+      executed: false
+    }
+  },
+  {
     name: "short-circuits req_create_iteration dry runs without HTTP or rate-limit consumption",
     toolName: "req_create_iteration",
     input: createReqCreateIterationInput({
@@ -1422,6 +1552,20 @@ const dryRunCases: DryRunCase[] = [
       id: "plan-1",
       projectId: "project-1",
       name: "2026 Q3 Updated",
+      executed: false
+    }
+  },
+  {
+    name: "short-circuits req_update_plan_image dry runs without HTTP or rate-limit consumption",
+    toolName: "req_update_plan_image",
+    input: createReqUpdatePlanImageInput({
+      dry_run: true
+    }),
+    expectedItem: {
+      projectId: "project-1",
+      planId: "plan-1",
+      imageUrl: "/v1/upload/demo/202604/abc123.png",
+      updated: false,
       executed: false
     }
   },

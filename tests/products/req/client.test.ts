@@ -2857,4 +2857,258 @@ describe("createReqClient", () => {
       cleared: true
     });
   });
+
+  it("maps plan image update and filtered plan listing to the documented request shapes", async () => {
+    const requests: Array<{
+      method: string;
+      path: string;
+      body?: Record<string, unknown>;
+    }> = [];
+    const client = createReqClient({
+      put: async (path: string, body: Record<string, unknown>) => {
+        requests.push({
+          method: "PUT",
+          path,
+          body
+        });
+
+        return {
+          status: "success",
+          result: {
+            id: "plan-1",
+            name: "2026 Q3",
+            type: "mind",
+            project_id: "p-1",
+            img_url: "/v1/upload/demo/202604/abc123.png"
+          }
+        };
+      },
+      post: async (path: string, body: Record<string, unknown>) => {
+        requests.push({
+          method: "POST",
+          path,
+          body
+        });
+
+        return {
+          plans: [
+            {
+              result: {
+                id: "plan-1",
+                name: "2026 Q3",
+                type: "gantt",
+                project_id: "p-1",
+                img_url: "/v1/upload/demo/202604/abc123.png",
+                creator: {
+                  user_id: "user-1"
+                }
+              },
+              status: "success"
+            }
+          ],
+          total: 1,
+          minds: 0,
+          gantts: 1
+        };
+      }
+    } as never);
+
+    const [updated, searched] = await Promise.all([
+      client.updatePlanImage({
+        project_id: "p-1",
+        plan_id: "plan-1",
+        img_url: "/v1/upload/demo/202604/abc123.png"
+      }),
+      client.listPlans({
+        project_id: "p-1",
+        search: "Q3",
+        user_ids: ["user-1"],
+        sort: "name",
+        type: "gantt",
+        page: 1,
+        page_size: 15
+      })
+    ]);
+
+    expect(requests).toEqual([
+      {
+        method: "PUT",
+        path: "/v3/plan/p-1/management/plan-1/img",
+        body: {
+          img_url: "/v1/upload/demo/202604/abc123.png"
+        }
+      },
+      {
+        method: "POST",
+        path: "/v3/plan/p-1/managements",
+        body: {
+          search: "Q3",
+          user_ids: ["user-1"],
+          sort: "name",
+          type: "gantt",
+          page_no: 1,
+          page_size: 15
+        }
+      }
+    ]);
+    expect(updated).toEqual({
+      id: "plan-1",
+      name: "2026 Q3",
+      type: "mind",
+      project_id: "p-1",
+      img_url: "/v1/upload/demo/202604/abc123.png",
+      updated: true
+    });
+    expect(searched).toEqual({
+      plans: [
+        {
+          id: "plan-1",
+          name: "2026 Q3",
+          type: "gantt",
+          project_id: "p-1",
+          img_url: "/v1/upload/demo/202604/abc123.png",
+          creator: {
+            user_id: "user-1"
+          }
+        }
+      ],
+      total: 1,
+      minds: 0,
+      gantts: 1
+    });
+  });
+
+  it("preserves legacy plan filters when enhanced plan listing uses the managements endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return {
+          plans: [],
+          total: 0,
+          minds: 0,
+          gantts: 0
+        };
+      }
+    } as never);
+
+    const result = await client.listPlans({
+      project_id: "p-1",
+      plan_id: "plan-1",
+      status_id: 2,
+      search: "Q3",
+      user_ids: ["user-1"],
+      sort: "updated_on",
+      type: "gantt",
+      page: 2,
+      page_size: 10
+    });
+
+    expect(requestedPath).toBe("/v3/plan/p-1/managements");
+    expect(requestedBody).toEqual({
+      plan_id: "plan-1",
+      status_id: 2,
+      search: "Q3",
+      user_ids: ["user-1"],
+      sort: "updated_on",
+      type: "gantt",
+      page_no: 2,
+      page_size: 10
+    });
+    expect(result).toEqual({
+      plans: [],
+      total: 0,
+      minds: 0,
+      gantts: 0
+    });
+  });
+
+  it("rejects plan image updates when the endpoint does not report success", async () => {
+    const client = createReqClient({
+      put: async () => ({
+        status: "error",
+        result: {
+          id: "plan-1"
+        }
+      })
+    } as never);
+
+    await expect(
+      client.updatePlanImage({
+        project_id: "p-1",
+        plan_id: "plan-1",
+        img_url: "/v1/upload/demo/202604/abc123.png"
+      })
+    ).rejects.toThrow(/did not report success/i);
+  });
+
+  it("maps plan work item create to the documented request shape", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return {
+          result: {
+            issue: {
+              id: 101,
+              subject: "Epic A",
+              description: "Plan item",
+              status: { id: 1, name: "New" },
+              tracker: { id: 5, name: "Epic" },
+              project: { identifier: "p-1" }
+            }
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.createPlanWorkItem({
+      project_id: "p-1",
+      title: "Epic A",
+      work_item_type: "Epic",
+      description: "Plan item",
+      plan_id: "plan-1",
+      parent_work_item_id: "88",
+      priority_id: 3,
+      severity_id: 11,
+      start_date: 1839340800000,
+      due_date: 1839945600000,
+      status_id: 1,
+      done_ratio: 10,
+      expected_work_hours: 8
+    });
+
+    expect(requestedPath).toBe("/v2/issues/create");
+    expect(requestedBody).toEqual({
+      projectUUId: "p-1",
+      tracker_id: 5,
+      priority_id: 3,
+      subject: "Epic A",
+      parent_issue_id: 88,
+      description: "Plan item",
+      due_date: 1839945600000,
+      start_date: 1839340800000,
+      severity_id: 11,
+      done_ratio: 10,
+      status_id: 1,
+      expected_work_hours: 8,
+      plan_id: "plan-1"
+    });
+    expect(result).toEqual({
+      id: 101,
+      name: "Epic A",
+      description: "Plan item",
+      status: { id: 1, name: "New" },
+      tracker: { id: 5, name: "Epic" },
+      project_id: "p-1",
+      plan_id: "plan-1"
+    });
+  });
 });

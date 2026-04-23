@@ -10,14 +10,26 @@ export function mapReqPlans(
     name: string;
     type?: string;
     project_id?: string;
-    creator?: string;
+    img_url?: string;
+    creator?:
+      | string
+      | {
+          user_id?: string;
+          domain_id?: string;
+          nick_name?: string;
+          first_name?: string;
+        };
     updater?: string;
     created_on?: string;
     updated_on?: string;
   }>,
   page: number,
   pageSize: number,
-  total?: number
+  total?: number,
+  counts?: {
+    minds?: number;
+    gantts?: number;
+  }
 ) {
   const summary =
     total !== undefined ? `${items.length} plans found in this page (total: ${total})` : `${items.length} plans found`;
@@ -28,12 +40,14 @@ export function mapReqPlans(
       name: item.name,
       type: item.type,
       projectId: item.project_id,
-      creator: item.creator,
-      updater: item.updater,
-      createdOn: item.created_on,
-      updatedOn: item.updated_on
+      ...(typeof item.img_url !== "undefined" ? { imageUrl: item.img_url } : {}),
+      ...(typeof item.creator !== "undefined" ? { creator: item.creator } : {}),
+      ...(typeof item.updater !== "undefined" ? { updater: item.updater } : {}),
+      ...(typeof item.created_on !== "undefined" ? { createdOn: item.created_on } : {}),
+      ...(typeof item.updated_on !== "undefined" ? { updatedOn: item.updated_on } : {})
     })),
-    toPageInfo(page, pageSize, total)
+    toPageInfo(page, pageSize, total),
+    counts
   );
 }
 
@@ -44,18 +58,32 @@ type ReqListPlansClient = {
     page_size: number;
     status_id?: number;
     plan_id?: string;
+    search?: string;
+    user_ids?: string[];
+    sort?: string;
+    type?: "gantt" | "mind";
   }) => Promise<{
     plans: Array<{
       id: number | string;
       name: string;
       type?: string;
       project_id?: string;
-      creator?: string;
+      img_url?: string;
+      creator?:
+        | string
+        | {
+            user_id?: string;
+            domain_id?: string;
+            nick_name?: string;
+            first_name?: string;
+          };
       updater?: string;
       created_on?: string;
       updated_on?: string;
     }>;
     total?: number;
+    minds?: number;
+    gantts?: number;
   }>;
 };
 
@@ -63,7 +91,10 @@ export function createReqListPlansHandler(client: ReqListPlansClient) {
   return async (input: unknown) => {
     const parsed = reqListPlansInput.parse(input);
     const response = await client.listPlans(parsed);
-    const result = mapReqPlans(response.plans, parsed.page, parsed.page_size, response.total);
+    const result = mapReqPlans(response.plans, parsed.page, parsed.page_size, response.total, {
+      minds: response.minds,
+      gantts: response.gantts
+    });
     const text = result.items?.length
       ? formatListToolText(result, {
           fields: [

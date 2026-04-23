@@ -150,6 +150,27 @@ describe("registerReqTool", () => {
     );
   });
 
+  it("registers the update plan image tool with rate-limited metadata", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_update_plan_image",
+      server: { registerTool },
+      mode: "stdio",
+      stdioClient: {} as never
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_update_plan_image",
+      expect.objectContaining({
+        title: "req_update_plan_image",
+        description: "Update image for a CodeArts Req plan"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("registers the update plan tool with rate-limited metadata", () => {
     const registerTool = vi.fn();
 
@@ -355,6 +376,27 @@ describe("registerReqTool", () => {
       expect.objectContaining({
         title: "req_add_work_item_comment",
         description: "Add comment to a CodeArts Req work item"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the create plan work item tool with rate-limited metadata", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_create_plan_work_item",
+      server: { registerTool },
+      mode: "stdio",
+      stdioClient: {} as never
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_create_plan_work_item",
+      expect.objectContaining({
+        title: "req_create_plan_work_item",
+        description: "Create CodeArts Req plan work item"
       }),
       expect.any(Function)
     );
@@ -1071,6 +1113,23 @@ describe("registerReqTool", () => {
         project_id: "project-1",
         work_item_id: "wi-9",
         status_id: 3
+      }
+    },
+    {
+      toolName: "req_update_plan_image",
+      input: {
+        project_id: "project-1",
+        plan_id: "plan-1",
+        img_url: "/v1/upload/demo/202604/abc123.png"
+      }
+    },
+    {
+      toolName: "req_create_plan_work_item",
+      input: {
+        project_id: "project-1",
+        plan_id: "plan-1",
+        title: "Epic A",
+        work_item_type: "Epic"
       }
     }
   ])(

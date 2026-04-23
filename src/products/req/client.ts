@@ -244,18 +244,32 @@ export type ReqClient = {
     page_size: number;
     status_id?: number;
     plan_id?: string;
+    search?: string;
+    user_ids?: string[];
+    sort?: string;
+    type?: "gantt" | "mind";
   }) => Promise<{
     plans: Array<{
       id: number | string;
       name: string;
       type?: string;
       project_id?: string;
-      creator?: string;
+      img_url?: string;
+      creator?:
+        | string
+        | {
+            user_id?: string;
+            domain_id?: string;
+            nick_name?: string;
+            first_name?: string;
+          };
       updater?: string;
       created_on?: string;
       updated_on?: string;
     }>;
     total?: number;
+    minds?: number;
+    gantts?: number;
   }>;
   getPlan: (input: { project_id: string; plan_id: string }) => Promise<{
     id: number | string;
@@ -356,6 +370,24 @@ export type ReqClient = {
       first_name?: string;
     };
   }>;
+  updatePlanImage: (input: {
+    project_id: string;
+    plan_id: string;
+    img_url: string;
+  }) => Promise<{
+    id: number | string;
+    name?: string;
+    type?: string;
+    project_id?: string;
+    img_url?: string;
+    creator?: {
+      user_id?: string;
+      domain_id?: string;
+      nick_name?: string;
+      first_name?: string;
+    };
+    updated: true;
+  }>;
   deletePlan: (input: { project_id: string; plan_id: string }) => Promise<{
     project_id: string;
     plan_id: string;
@@ -378,6 +410,33 @@ export type ReqClient = {
     project_id: string;
     plan_id: string;
     cleared: true;
+  }>;
+  createPlanWorkItem: (input: {
+    project_id: string;
+    plan_id: string;
+    title: string;
+    work_item_type: string;
+    parent_work_item_id?: string;
+    description?: string;
+    iteration_id?: string;
+    module_id?: string;
+    priority_id?: number;
+    severity_id?: number;
+    status_id?: number;
+    assigned_id?: string;
+    done_ratio?: number;
+    expected_work_hours?: number;
+    start_date?: number;
+    due_date?: number;
+  }) => Promise<{
+    id: number | string;
+    name: string;
+    number?: number | string;
+    description?: string;
+    status?: { id?: number | string; name?: string };
+    tracker?: { id?: number | string; name?: string };
+    project_id?: string;
+    plan_id: string;
   }>;
   createIteration: (input: {
     project_id: string;
@@ -1107,6 +1166,14 @@ function toPriorityId(priorityId?: number): number {
   return priorityId ?? 2;
 }
 
+function toOptionalNumericId(value?: string): number | string | undefined {
+  if (typeof value === "undefined") {
+    return undefined;
+  }
+
+  return /^\d+$/.test(value) ? Number(value) : value;
+}
+
 function assertReqMutationSucceeded(action: string, status?: string) {
   if (status?.toLowerCase() === "success") {
     return;
@@ -1552,6 +1619,76 @@ export function createReqClient(
       };
     },
     async listPlans(input) {
+      if (
+        input.search ||
+        (input.user_ids && input.user_ids.length > 0) ||
+        input.sort ||
+        input.type
+      ) {
+        const response = (await _http.post(
+          `/v3/plan/${encodeURIComponent(input.project_id)}/managements`,
+          {
+            ...(typeof input.status_id !== "undefined" ? { status_id: input.status_id } : {}),
+            ...(input.plan_id ? { plan_id: input.plan_id } : {}),
+            ...(input.search ? { search: input.search } : {}),
+            ...(input.user_ids && input.user_ids.length > 0 ? { user_ids: input.user_ids } : {}),
+            ...(input.sort ? { sort: input.sort } : {}),
+            ...(input.type ? { type: input.type } : {}),
+            page_no: input.page,
+            page_size: input.page_size
+          }
+        )) as {
+          plans?: Array<{
+            result?: {
+              id?: number | string;
+              name?: string;
+              type?: string;
+              project_id?: string;
+              img_url?: string;
+              creator?: {
+                user_id?: string;
+                domain_id?: string;
+                nick_name?: string;
+                first_name?: string;
+              };
+            };
+            status?: string;
+            id?: number | string;
+            name?: string;
+            type?: string;
+            project_id?: string;
+            img_url?: string;
+            creator?: {
+              user_id?: string;
+              domain_id?: string;
+              nick_name?: string;
+              first_name?: string;
+            };
+          }>;
+          total?: number;
+          minds?: number;
+          gantts?: number;
+        };
+
+        return {
+          plans: (response.plans ?? []).map((item) => {
+            const plan = item.result ?? item;
+
+            return {
+              id: plan.id ?? "",
+              name: plan.name ?? "",
+              type: plan.type,
+              project_id: plan.project_id ?? input.project_id,
+              img_url: plan.img_url,
+              creator: plan.creator
+            };
+          }),
+          total: response.total,
+          minds: response.minds,
+          gantts: response.gantts
+        };
+      }
+
       const query = new URLSearchParams({
         project_id: input.project_id,
         page_no: String(input.page),
@@ -1854,6 +1991,52 @@ export function createReqClient(
         creator: result.creator
       };
     },
+    async updatePlanImage(input) {
+      const response = (await _http.put(
+        `/v3/plan/${encodeURIComponent(input.project_id)}/management/${encodeURIComponent(input.plan_id)}/img`,
+        {
+          img_url: input.img_url
+        }
+      )) as {
+        status?: string;
+        result?: {
+          id?: number | string;
+          name?: string;
+          type?: string;
+          project_id?: string;
+          img_url?: string;
+          creator?: {
+            user_id?: string;
+            domain_id?: string;
+            nick_name?: string;
+            first_name?: string;
+          };
+        };
+        id?: number | string;
+        name?: string;
+        type?: string;
+        project_id?: string;
+        img_url?: string;
+        creator?: {
+          user_id?: string;
+          domain_id?: string;
+          nick_name?: string;
+          first_name?: string;
+        };
+      };
+      assertReqMutationSucceeded("update plan image", response.status);
+      const result = response.result ?? response;
+
+      return {
+        id: result.id ?? input.plan_id,
+        name: result.name,
+        type: result.type,
+        project_id: result.project_id ?? input.project_id,
+        img_url: result.img_url ?? input.img_url,
+        creator: result.creator,
+        updated: true as const
+      };
+    },
     async deletePlan(input) {
       await _http.delete(`/v3/plan/${encodeURIComponent(input.project_id)}/management`, [input.plan_id]);
 
@@ -1883,6 +2066,56 @@ export function createReqClient(
         project_id: input.project_id,
         plan_id: input.plan_id,
         cleared: true as const
+      };
+    },
+    async createPlanWorkItem(input) {
+      const response = (await _http.post("/v2/issues/create", {
+        projectUUId: input.project_id,
+        tracker_id: toTrackerId(input.work_item_type),
+        priority_id: input.priority_id,
+        subject: input.title,
+        ...(input.parent_work_item_id
+          ? { parent_issue_id: toOptionalNumericId(input.parent_work_item_id) }
+          : {}),
+        ...(input.description ? { description: input.description } : {}),
+        ...(typeof input.due_date !== "undefined" ? { due_date: input.due_date } : {}),
+        ...(typeof input.start_date !== "undefined" ? { start_date: input.start_date } : {}),
+        ...(typeof input.severity_id !== "undefined" ? { severity_id: input.severity_id } : {}),
+        ...(typeof input.done_ratio !== "undefined" ? { done_ratio: input.done_ratio } : {}),
+        ...(typeof input.status_id !== "undefined" ? { status_id: input.status_id } : {}),
+        ...(typeof input.expected_work_hours !== "undefined"
+          ? { expected_work_hours: input.expected_work_hours }
+          : {}),
+        ...(input.plan_id ? { plan_id: input.plan_id } : {}),
+        ...(input.iteration_id ? { iteration_id: input.iteration_id } : {}),
+        ...(input.module_id ? { module_id: input.module_id } : {}),
+        ...(input.assigned_id ? { assigned_id: input.assigned_id } : {})
+      })) as {
+        status?: string;
+        result?: {
+          issue?: {
+            id?: number | string;
+            issue_num?: number | string;
+            subject?: string;
+            description?: string;
+            status?: { id?: number | string; name?: string };
+            tracker?: { id?: number | string; name?: string };
+            project?: { identifier?: string };
+          };
+        };
+      };
+      assertReqMutationSucceeded("create plan work item", response.status);
+      const issue = response.result?.issue ?? {};
+
+      return {
+        id: issue.id ?? "",
+        name: issue.subject ?? input.title,
+        number: issue.issue_num,
+        description: issue.description ?? input.description,
+        status: issue.status,
+        tracker: issue.tracker,
+        project_id: issue.project?.identifier ?? input.project_id,
+        plan_id: input.plan_id
       };
     },
     async createIteration(input) {
