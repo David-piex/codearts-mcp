@@ -6,6 +6,11 @@ export function previewBatchUpdateWorkItems(input: {
   work_item_ids: string[];
   status_id?: number;
   priority_id?: number;
+  severity_id?: number;
+  assigned_id?: string;
+  done_ratio?: number;
+  iteration_id?: string;
+  module_id?: string;
   dry_run: boolean;
 }) {
   return asItemResult(`Dry run: batch update ${input.work_item_ids.length} work items`, {
@@ -13,6 +18,11 @@ export function previewBatchUpdateWorkItems(input: {
     workItemIds: input.work_item_ids,
     statusId: input.status_id,
     priorityId: input.priority_id,
+    severityId: input.severity_id,
+    assignedId: input.assigned_id,
+    doneRatio: input.done_ratio,
+    iterationId: input.iteration_id,
+    moduleId: input.module_id,
     updatedCount: 0,
     executed: false
   });
@@ -23,6 +33,11 @@ export function mapBatchUpdatedWorkItems(input: {
   work_item_ids: string[];
   status_id?: number;
   priority_id?: number;
+  severity_id?: number;
+  assigned_id?: string;
+  done_ratio?: number;
+  iteration_id?: string;
+  module_id?: string;
   updatedCount: number;
 }) {
   return asItemResult(`Updated ${input.updatedCount} work items`, {
@@ -30,6 +45,11 @@ export function mapBatchUpdatedWorkItems(input: {
     workItemIds: input.work_item_ids,
     statusId: input.status_id,
     priorityId: input.priority_id,
+    severityId: input.severity_id,
+    assignedId: input.assigned_id,
+    doneRatio: input.done_ratio,
+    iterationId: input.iteration_id,
+    moduleId: input.module_id,
     updatedCount: input.updatedCount,
     executed: true
   });
@@ -41,11 +61,21 @@ type ReqBatchUpdateWorkItemsClient = {
     work_item_ids: string[];
     status_id?: number;
     priority_id?: number;
+    severity_id?: number;
+    assigned_id?: string;
+    done_ratio?: number;
+    iteration_id?: string;
+    module_id?: string;
   }) => Promise<{
     project_id: string;
     work_item_ids: string[];
     status_id?: number;
     priority_id?: number;
+    severity_id?: number;
+    assigned_id?: string;
+    done_ratio?: number;
+    iteration_id?: string;
+    module_id?: string;
     updatedCount: number;
   }>;
 };

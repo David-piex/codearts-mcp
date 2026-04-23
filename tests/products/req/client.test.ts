@@ -853,7 +853,15 @@ describe("createReqClient", () => {
     const result = await client.createWorkItem({
       ...createProjectInput(),
       title: "Add login",
-      work_item_type: "task"
+      work_item_type: "task",
+      iteration_id: "iteration-1",
+      module_id: "module-1",
+      severity_id: 11,
+      assigned_id: "user-2",
+      done_ratio: 20,
+      expected_work_hours: 8,
+      start_date: 1839340800000,
+      due_date: 1839945600000
     });
 
     expect(requestedPath).toBe("/v4/projects/p-1/issue");
@@ -861,9 +869,78 @@ describe("createReqClient", () => {
       name: "Add login",
       description: undefined,
       tracker_id: 2,
-      priority_id: 2
+      priority_id: 2,
+      iteration_id: "iteration-1",
+      module_id: "module-1",
+      severity_id: 11,
+      assigned_id: "user-2",
+      done_ratio: 20,
+      expected_work_hours: 8,
+      start_date: 1839340800000,
+      due_date: 1839945600000
     });
     expect(result.id).toBe(101);
+  });
+
+  it("maps updateWorkItem to the issue detail endpoint with extended mutable fields", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      put: async (path: string, body: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return {
+          id: 70779173,
+          name: "Refine login flow",
+          description: "Clarify edge cases",
+          status: { id: 3, name: "Doing" },
+          tracker: { id: 7, name: "Story" }
+        };
+      }
+    } as never);
+
+    const result = await client.updateWorkItem({
+      project_id: "p-1",
+      work_item_id: "70779173",
+      title: "Refine login flow",
+      description: "Clarify edge cases",
+      status_id: 3,
+      work_item_type: "Story",
+      priority_id: 1,
+      iteration_id: "iteration-1",
+      module_id: "module-1",
+      severity_id: 11,
+      assigned_id: "user-2",
+      done_ratio: 60,
+      expected_work_hours: 13,
+      start_date: 1839340800000,
+      due_date: 1839945600000
+    });
+
+    expect(requestedPath).toBe("/v4/projects/p-1/issues/70779173");
+    expect(requestedBody).toEqual({
+      name: "Refine login flow",
+      description: "Clarify edge cases",
+      status_id: 3,
+      tracker_id: 7,
+      priority_id: 1,
+      iteration_id: "iteration-1",
+      module_id: "module-1",
+      severity_id: 11,
+      assigned_id: "user-2",
+      done_ratio: 60,
+      expected_work_hours: 13,
+      start_date: 1839340800000,
+      due_date: 1839945600000
+    });
+    expect(result).toEqual({
+      id: 70779173,
+      name: "Refine login flow",
+      description: "Clarify edge cases",
+      status: { id: 3, name: "Doing" },
+      tracker: { id: 7, name: "Story" }
+    });
   });
 
   it("uses issues endpoints when listing and getting work items", async () => {
@@ -992,7 +1069,12 @@ describe("createReqClient", () => {
       project_id: "p-1",
       work_item_ids: ["70779173", "70779174"],
       status_id: 3,
-      priority_id: 2
+      priority_id: 2,
+      severity_id: 11,
+      assigned_id: "user-2",
+      done_ratio: 40,
+      iteration_id: "iteration-1",
+      module_id: "module-1"
     });
 
     expect(requestedPath).toBe("/v2/projects/p-1/issues/batch-update");
@@ -1000,7 +1082,12 @@ describe("createReqClient", () => {
       id: ["70779173", "70779174"],
       attribute: {
         status_id: 3,
-        priority_id: 2
+        priority_id: 2,
+        severity_id: 11,
+        assigned_id: "user-2",
+        done_ratio: 40,
+        iteration_id: "iteration-1",
+        module_id: "module-1"
       }
     });
     expect(result).toEqual({
@@ -1008,6 +1095,11 @@ describe("createReqClient", () => {
       work_item_ids: ["70779173", "70779174"],
       status_id: 3,
       priority_id: 2,
+      severity_id: 11,
+      assigned_id: "user-2",
+      done_ratio: 40,
+      iteration_id: "iteration-1",
+      module_id: "module-1",
       updatedCount: 2
     });
   });

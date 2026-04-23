@@ -14,6 +14,11 @@ describe("previewBatchUpdateWorkItems", () => {
       work_item_ids: ["wi-9", "wi-10"],
       status_id: 3,
       priority_id: 2,
+      severity_id: 11,
+      assigned_id: "user-2",
+      done_ratio: 40,
+      iteration_id: "iteration-1",
+      module_id: "module-1",
       dry_run: true
     });
 
@@ -23,6 +28,11 @@ describe("previewBatchUpdateWorkItems", () => {
       workItemIds: ["wi-9", "wi-10"],
       statusId: 3,
       priorityId: 2,
+      severityId: 11,
+      assignedId: "user-2",
+      doneRatio: 40,
+      iterationId: "iteration-1",
+      moduleId: "module-1",
       updatedCount: 0,
       executed: false
     });
@@ -36,6 +46,11 @@ describe("mapBatchUpdatedWorkItems", () => {
       work_item_ids: ["wi-9", "wi-10"],
       status_id: 3,
       priority_id: 2,
+      severity_id: 11,
+      assigned_id: "user-2",
+      done_ratio: 40,
+      iteration_id: "iteration-1",
+      module_id: "module-1",
       updatedCount: 2
     });
 
@@ -44,6 +59,11 @@ describe("mapBatchUpdatedWorkItems", () => {
       workItemIds: ["wi-9", "wi-10"],
       statusId: 3,
       priorityId: 2,
+      severityId: 11,
+      assignedId: "user-2",
+      doneRatio: 40,
+      iterationId: "iteration-1",
+      moduleId: "module-1",
       updatedCount: 2,
       executed: true
     });
@@ -75,10 +95,10 @@ describe("reqBatchUpdateWorkItemsInput exports", () => {
     };
 
     expect(() => reqBatchUpdateWorkItemsInput.parse(input)).toThrow(
-      /status_id|priority_id/i
+      /status_id|priority_id|severity_id|assigned_id|done_ratio|iteration_id|module_id/i
     );
     expect(() => reqBatchUpdateWorkItemsInputFromBarrel.parse(input)).toThrow(
-      /status_id|priority_id/i
+      /status_id|priority_id|severity_id|assigned_id|done_ratio|iteration_id|module_id/i
     );
   });
 });
@@ -95,6 +115,11 @@ describe("createReqBatchUpdateWorkItemsHandler", () => {
       work_item_ids: ["wi-9", "wi-10"],
       status_id: 3,
       priority_id: 2,
+      severity_id: 11,
+      assigned_id: "user-2",
+      done_ratio: 40,
+      iteration_id: "iteration-1",
+      module_id: "module-1",
       dry_run: true
     });
 
@@ -108,6 +133,11 @@ describe("createReqBatchUpdateWorkItemsHandler", () => {
           workItemIds: ["wi-9", "wi-10"],
           statusId: 3,
           priorityId: 2,
+          severityId: 11,
+          assignedId: "user-2",
+          doneRatio: 40,
+          iterationId: "iteration-1",
+          moduleId: "module-1",
           updatedCount: 0,
           executed: false
         },
@@ -123,6 +153,11 @@ describe("createReqBatchUpdateWorkItemsHandler", () => {
         work_item_ids: ["wi-9", "wi-10"],
         status_id: 3,
         priority_id: 2,
+        severity_id: 11,
+        assigned_id: "user-2",
+        done_ratio: 40,
+        iteration_id: "iteration-1",
+        module_id: "module-1",
         updatedCount: 2
       }))
     };
@@ -133,6 +168,11 @@ describe("createReqBatchUpdateWorkItemsHandler", () => {
       work_item_ids: ["wi-9", "wi-10"],
       status_id: 3,
       priority_id: 2,
+      severity_id: 11,
+      assigned_id: "user-2",
+      done_ratio: 40,
+      iteration_id: "iteration-1",
+      module_id: "module-1",
       dry_run: false
     });
 
@@ -141,6 +181,11 @@ describe("createReqBatchUpdateWorkItemsHandler", () => {
       work_item_ids: ["wi-9", "wi-10"],
       status_id: 3,
       priority_id: 2,
+      severity_id: 11,
+      assigned_id: "user-2",
+      done_ratio: 40,
+      iteration_id: "iteration-1",
+      module_id: "module-1",
       dry_run: false
     });
     expect(result).toEqual({
@@ -152,6 +197,11 @@ describe("createReqBatchUpdateWorkItemsHandler", () => {
           workItemIds: ["wi-9", "wi-10"],
           statusId: 3,
           priorityId: 2,
+          severityId: 11,
+          assignedId: "user-2",
+          doneRatio: 40,
+          iterationId: "iteration-1",
+          moduleId: "module-1",
           updatedCount: 2,
           executed: true
         },

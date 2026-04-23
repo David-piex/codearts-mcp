@@ -15,6 +15,14 @@ export const reqCreateWorkItemInput = z.object({
   work_item_type: z.string().min(1),
   description: z.string().optional(),
   priority_id: z.number().int().positive().optional(),
+  iteration_id: idSchema.optional(),
+  module_id: idSchema.optional(),
+  severity_id: z.number().int().positive().optional(),
+  assigned_id: idSchema.optional(),
+  done_ratio: z.number().int().nonnegative().optional(),
+  expected_work_hours: z.number().int().nonnegative().optional(),
+  start_date: z.number().int().positive().optional(),
+  due_date: z.number().int().positive().optional(),
   dry_run: z.boolean().default(true)
 });
 
@@ -26,6 +34,14 @@ export const reqUpdateWorkItemInput = z.object({
   description: z.string().optional(),
   status_id: z.number().int().positive().optional(),
   priority_id: z.number().int().positive().optional(),
+  iteration_id: idSchema.optional(),
+  module_id: idSchema.optional(),
+  severity_id: z.number().int().positive().optional(),
+  assigned_id: idSchema.optional(),
+  done_ratio: z.number().int().nonnegative().optional(),
+  expected_work_hours: z.number().int().nonnegative().optional(),
+  start_date: z.number().int().positive().optional(),
+  due_date: z.number().int().positive().optional(),
   dry_run: z.boolean().default(true)
 });
 
@@ -40,11 +56,24 @@ export const reqBatchUpdateWorkItemsInput = z.object({
   work_item_ids: z.array(idSchema).min(1),
   status_id: z.number().int().positive().optional(),
   priority_id: z.number().int().positive().optional(),
+  severity_id: z.number().int().positive().optional(),
+  assigned_id: idSchema.optional(),
+  done_ratio: z.number().int().nonnegative().optional(),
+  iteration_id: idSchema.optional(),
+  module_id: idSchema.optional(),
   dry_run: z.boolean().default(true)
 }).refine(
-  (input) => typeof input.status_id !== "undefined" || typeof input.priority_id !== "undefined",
+  (input) =>
+    typeof input.status_id !== "undefined" ||
+    typeof input.priority_id !== "undefined" ||
+    typeof input.severity_id !== "undefined" ||
+    typeof input.assigned_id !== "undefined" ||
+    typeof input.done_ratio !== "undefined" ||
+    typeof input.iteration_id !== "undefined" ||
+    typeof input.module_id !== "undefined",
   {
-    message: "At least one of status_id or priority_id is required",
+    message:
+      "At least one of status_id, priority_id, severity_id, assigned_id, done_ratio, iteration_id, or module_id is required",
     path: ["status_id"]
   }
 );

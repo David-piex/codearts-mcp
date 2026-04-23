@@ -49,6 +49,14 @@ function createReqCreateWorkItemInput<T extends Record<string, unknown>>(
   title: string;
   work_item_type: string;
   description: string;
+  iteration_id: string;
+  module_id: string;
+  severity_id: number;
+  assigned_id: string;
+  done_ratio: number;
+  expected_work_hours: number;
+  start_date: number;
+  due_date: number;
   dry_run: boolean;
 } & T {
   return {
@@ -56,6 +64,14 @@ function createReqCreateWorkItemInput<T extends Record<string, unknown>>(
     title: "Add login",
     work_item_type: "Story",
     description: "Implement login flow",
+    iteration_id: "iteration-1",
+    module_id: "module-1",
+    severity_id: 11,
+    assigned_id: "user-2",
+    done_ratio: 20,
+    expected_work_hours: 8,
+    start_date: 1839340800000,
+    due_date: 1839945600000,
     dry_run: false,
     ...(overrides ?? {})
   } as {
@@ -63,6 +79,14 @@ function createReqCreateWorkItemInput<T extends Record<string, unknown>>(
     title: string;
     work_item_type: string;
     description: string;
+    iteration_id: string;
+    module_id: string;
+    severity_id: number;
+    assigned_id: string;
+    done_ratio: number;
+    expected_work_hours: number;
+    start_date: number;
+    due_date: number;
     dry_run: boolean;
   } & T;
 }
@@ -105,6 +129,64 @@ function createReqDeleteWorkItemInput<T extends Record<string, unknown>>(
   } & T;
 }
 
+function createReqUpdateWorkItemInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  work_item_id: string;
+  title: string;
+  work_item_type: string;
+  description: string;
+  status_id: number;
+  priority_id: number;
+  iteration_id: string;
+  module_id: string;
+  severity_id: number;
+  assigned_id: string;
+  done_ratio: number;
+  expected_work_hours: number;
+  start_date: number;
+  due_date: number;
+  dry_run: boolean;
+} & T {
+  return {
+    project_id: "project-1",
+    work_item_id: "70779173",
+    title: "Refine login flow",
+    work_item_type: "Story",
+    description: "Clarify edge cases",
+    status_id: 3,
+    priority_id: 1,
+    iteration_id: "iteration-1",
+    module_id: "module-1",
+    severity_id: 11,
+    assigned_id: "user-2",
+    done_ratio: 60,
+    expected_work_hours: 13,
+    start_date: 1839340800000,
+    due_date: 1839945600000,
+    dry_run: false,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    work_item_id: string;
+    title: string;
+    work_item_type: string;
+    description: string;
+    status_id: number;
+    priority_id: number;
+    iteration_id: string;
+    module_id: string;
+    severity_id: number;
+    assigned_id: string;
+    done_ratio: number;
+    expected_work_hours: number;
+    start_date: number;
+    due_date: number;
+    dry_run: boolean;
+  } & T;
+}
+
 function createReqBatchUpdateWorkItemsInput<T extends Record<string, unknown>>(
   overrides?: T
 ): {
@@ -112,6 +194,11 @@ function createReqBatchUpdateWorkItemsInput<T extends Record<string, unknown>>(
   work_item_ids: string[];
   status_id: number;
   priority_id: number;
+  severity_id: number;
+  assigned_id: string;
+  done_ratio: number;
+  iteration_id: string;
+  module_id: string;
   dry_run: boolean;
 } & T {
   return {
@@ -119,6 +206,11 @@ function createReqBatchUpdateWorkItemsInput<T extends Record<string, unknown>>(
     work_item_ids: ["70779173", "70779174"],
     status_id: 3,
     priority_id: 2,
+    severity_id: 11,
+    assigned_id: "user-2",
+    done_ratio: 40,
+    iteration_id: "iteration-1",
+    module_id: "module-1",
     dry_run: false,
     ...(overrides ?? {})
   } as {
@@ -126,6 +218,11 @@ function createReqBatchUpdateWorkItemsInput<T extends Record<string, unknown>>(
     work_item_ids: string[];
     status_id: number;
     priority_id: number;
+    severity_id: number;
+    assigned_id: string;
+    done_ratio: number;
+    iteration_id: string;
+    module_id: string;
     dry_run: boolean;
   } & T;
 }
@@ -1130,7 +1227,17 @@ const writePathCases: WritePathCase[] = [
     },
     expectedRequest: {
       path: "/v4/projects/project-1/issue",
-      bodyIncludes: ["\"name\":\"Add login\""]
+      bodyIncludes: [
+        "\"name\":\"Add login\"",
+        "\"iteration_id\":\"iteration-1\"",
+        "\"module_id\":\"module-1\"",
+        "\"severity_id\":11",
+        "\"assigned_id\":\"user-2\"",
+        "\"done_ratio\":20",
+        "\"expected_work_hours\":8",
+        "\"start_date\":1839340800000",
+        "\"due_date\":1839945600000"
+      ]
     }
   },
   {
@@ -1151,6 +1258,48 @@ const writePathCases: WritePathCase[] = [
     }
   },
   {
+    name: "executes req_update_work_item through the registered session-aware runtime client",
+    createHandler: (store: SessionStore) =>
+      readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_update_work_item"),
+    input: createReqUpdateWorkItemInput(),
+    responsePayload: {
+      id: 70779173,
+      name: "Refine login flow",
+      description: "Clarify edge cases",
+      status: { id: 3, name: "Doing" },
+      tracker: { id: 7, name: "Story" }
+    },
+    expectedItem: {
+      id: "70779173",
+      title: "Refine login flow",
+      description: "Clarify edge cases",
+      status: "Doing",
+      statusId: 3,
+      type: "Story",
+      typeId: 7,
+      executed: true
+    },
+    expectedRequest: {
+      path: "/v4/projects/project-1/issues/70779173",
+      method: "PUT",
+      bodyIncludes: [
+        "\"name\":\"Refine login flow\"",
+        "\"description\":\"Clarify edge cases\"",
+        "\"status_id\":3",
+        "\"tracker_id\":7",
+        "\"priority_id\":1",
+        "\"iteration_id\":\"iteration-1\"",
+        "\"module_id\":\"module-1\"",
+        "\"severity_id\":11",
+        "\"assigned_id\":\"user-2\"",
+        "\"done_ratio\":60",
+        "\"expected_work_hours\":13",
+        "\"start_date\":1839340800000",
+        "\"due_date\":1839945600000"
+      ]
+    }
+  },
+  {
     name: "executes req_batch_update_work_items through the registered session-aware runtime client",
     createHandler: (store: SessionStore) =>
       readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_batch_update_work_items"),
@@ -1161,6 +1310,11 @@ const writePathCases: WritePathCase[] = [
       workItemIds: ["70779173", "70779174"],
       statusId: 3,
       priorityId: 2,
+      severityId: 11,
+      assignedId: "user-2",
+      doneRatio: 40,
+      iterationId: "iteration-1",
+      moduleId: "module-1",
       updatedCount: 2,
       executed: true
     },
@@ -1171,7 +1325,12 @@ const writePathCases: WritePathCase[] = [
         "\"id\":[\"70779173\",\"70779174\"]",
         "\"attribute\":{",
         "\"status_id\":3",
-        "\"priority_id\":2"
+        "\"priority_id\":2",
+        "\"severity_id\":11",
+        "\"assigned_id\":\"user-2\"",
+        "\"done_ratio\":40",
+        "\"iteration_id\":\"iteration-1\"",
+        "\"module_id\":\"module-1\""
       ]
     }
   },
@@ -1669,6 +1828,27 @@ const dryRunCases: DryRunCase[] = [
     }
   },
   {
+    name: "short-circuits req_update_work_item dry runs without HTTP or rate-limit consumption",
+    toolName: "req_update_work_item",
+    input: createReqUpdateWorkItemInput({
+      dry_run: true
+    }),
+    expectedItem: {
+      id: "70779173",
+      projectId: "project-1",
+      title: "Refine login flow",
+      iterationId: "iteration-1",
+      moduleId: "module-1",
+      severityId: 11,
+      assignedId: "user-2",
+      doneRatio: 60,
+      expectedWorkHours: 13,
+      startDate: 1839340800000,
+      dueDate: 1839945600000,
+      executed: false
+    }
+  },
+  {
     name: "short-circuits req_batch_update_work_items dry runs without HTTP or rate-limit consumption",
     toolName: "req_batch_update_work_items",
     input: createReqBatchUpdateWorkItemsInput({
@@ -1679,6 +1859,11 @@ const dryRunCases: DryRunCase[] = [
       workItemIds: ["70779173", "70779174"],
       statusId: 3,
       priorityId: 2,
+      severityId: 11,
+      assignedId: "user-2",
+      doneRatio: 40,
+      iterationId: "iteration-1",
+      moduleId: "module-1",
       updatedCount: 0,
       executed: false
     }

@@ -21,6 +21,14 @@ export type ReqClient = {
     work_item_type: string;
     description?: string;
     priority_id?: number;
+    iteration_id?: string;
+    module_id?: string;
+    severity_id?: number;
+    assigned_id?: string;
+    done_ratio?: number;
+    expected_work_hours?: number;
+    start_date?: number;
+    due_date?: number;
   }) => Promise<{
     id: number | string;
     name: string;
@@ -185,6 +193,14 @@ export type ReqClient = {
     description?: string;
     status_id?: number;
     priority_id?: number;
+    iteration_id?: string;
+    module_id?: string;
+    severity_id?: number;
+    assigned_id?: string;
+    done_ratio?: number;
+    expected_work_hours?: number;
+    start_date?: number;
+    due_date?: number;
   }) => Promise<{
     id: number | string;
     name: string;
@@ -202,11 +218,21 @@ export type ReqClient = {
     work_item_ids: string[];
     status_id?: number;
     priority_id?: number;
+    severity_id?: number;
+    assigned_id?: string;
+    done_ratio?: number;
+    iteration_id?: string;
+    module_id?: string;
   }) => Promise<{
     project_id: string;
     work_item_ids: string[];
     status_id?: number;
     priority_id?: number;
+    severity_id?: number;
+    assigned_id?: string;
+    done_ratio?: number;
+    iteration_id?: string;
+    module_id?: string;
     updatedCount: number;
   }>;
   listIterations: (input: { project_id: string; page: number; page_size: number }) => Promise<{
@@ -1282,7 +1308,17 @@ export function createReqClient(
         name: input.title,
         description: input.description,
         tracker_id: toTrackerId(input.work_item_type),
-        priority_id: toPriorityId(input.priority_id)
+        priority_id: toPriorityId(input.priority_id),
+        ...(input.iteration_id ? { iteration_id: input.iteration_id } : {}),
+        ...(input.module_id ? { module_id: input.module_id } : {}),
+        ...(typeof input.severity_id !== "undefined" ? { severity_id: input.severity_id } : {}),
+        ...(input.assigned_id ? { assigned_id: input.assigned_id } : {}),
+        ...(typeof input.done_ratio !== "undefined" ? { done_ratio: input.done_ratio } : {}),
+        ...(typeof input.expected_work_hours !== "undefined"
+          ? { expected_work_hours: input.expected_work_hours }
+          : {}),
+        ...(typeof input.start_date !== "undefined" ? { start_date: input.start_date } : {}),
+        ...(typeof input.due_date !== "undefined" ? { due_date: input.due_date } : {})
       })) as {
         id?: number | string;
         name?: string;
@@ -2245,7 +2281,17 @@ export function createReqClient(
           description: input.description,
           status_id: input.status_id,
           tracker_id: toTrackerId(input.work_item_type),
-          priority_id: toPriorityId(input.priority_id)
+          priority_id: toPriorityId(input.priority_id),
+          ...(input.iteration_id ? { iteration_id: input.iteration_id } : {}),
+          ...(input.module_id ? { module_id: input.module_id } : {}),
+          ...(typeof input.severity_id !== "undefined" ? { severity_id: input.severity_id } : {}),
+          ...(input.assigned_id ? { assigned_id: input.assigned_id } : {}),
+          ...(typeof input.done_ratio !== "undefined" ? { done_ratio: input.done_ratio } : {}),
+          ...(typeof input.expected_work_hours !== "undefined"
+            ? { expected_work_hours: input.expected_work_hours }
+            : {}),
+          ...(typeof input.start_date !== "undefined" ? { start_date: input.start_date } : {}),
+          ...(typeof input.due_date !== "undefined" ? { due_date: input.due_date } : {})
         }
       )) as {
         id?: number | string;
@@ -2278,6 +2324,11 @@ export function createReqClient(
       const attribute: {
         status_id?: number;
         priority_id?: number;
+        severity_id?: number;
+        assigned_id?: string;
+        done_ratio?: number;
+        iteration_id?: string;
+        module_id?: string;
       } = {};
 
       if (typeof input.status_id !== "undefined") {
@@ -2286,6 +2337,26 @@ export function createReqClient(
 
       if (typeof input.priority_id !== "undefined") {
         attribute.priority_id = input.priority_id;
+      }
+
+      if (typeof input.severity_id !== "undefined") {
+        attribute.severity_id = input.severity_id;
+      }
+
+      if (typeof input.assigned_id !== "undefined") {
+        attribute.assigned_id = input.assigned_id;
+      }
+
+      if (typeof input.done_ratio !== "undefined") {
+        attribute.done_ratio = input.done_ratio;
+      }
+
+      if (typeof input.iteration_id !== "undefined") {
+        attribute.iteration_id = input.iteration_id;
+      }
+
+      if (typeof input.module_id !== "undefined") {
+        attribute.module_id = input.module_id;
       }
 
       await _http.put(`/v2/projects/${encodeURIComponent(input.project_id)}/issues/batch-update`, {
@@ -2298,6 +2369,11 @@ export function createReqClient(
         work_item_ids: input.work_item_ids,
         status_id: input.status_id,
         priority_id: input.priority_id,
+        severity_id: input.severity_id,
+        assigned_id: input.assigned_id,
+        done_ratio: input.done_ratio,
+        iteration_id: input.iteration_id,
+        module_id: input.module_id,
         updatedCount: input.work_item_ids.length
       };
     },
