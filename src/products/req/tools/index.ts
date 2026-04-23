@@ -1,4 +1,9 @@
 export const reqToolNames = [
+  "req_create_project",
+  "req_update_project",
+  "req_delete_project",
+  "req_check_project_name",
+  "req_list_not_added_projects",
   "req_list_projects",
   "req_get_project",
   "req_list_work_items",

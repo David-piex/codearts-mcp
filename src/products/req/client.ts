@@ -4,6 +4,16 @@ import { recordRequestCacheHit } from "../../server/request-context.js";
 import type { ReturnTypeCreateHttpClient } from "../types.js";
 
 export type ReqClient = {
+  createProject: (input: {
+    name: string;
+    description?: string;
+  }) => Promise<{
+    project_id: string;
+    project_name: string;
+    description?: string;
+    project_num_id?: number;
+    project_type?: string;
+  }>;
   createWorkItem: (input: {
     project_id: string;
     title: string;
@@ -22,6 +32,32 @@ export type ReqClient = {
     name: string;
     project_num_id?: number;
     description?: string;
+  }>;
+  updateProject: (input: {
+    project_id: string;
+    name: string;
+    description?: string;
+  }) => Promise<{
+    project_id: string;
+    project_name: string;
+    description?: string;
+  }>;
+  deleteProject: (input: { project_id: string }) => Promise<{
+    project_id: string;
+    deleted: true;
+  }>;
+  checkProjectName: (input: { name: string }) => Promise<{
+    exist: boolean;
+  }>;
+  listNotAddedProjects: (input: { page: number; page_size: number }) => Promise<{
+    projects: Array<{
+      project_id: string;
+      project_name: string;
+      project_num_id?: number;
+      description?: string;
+      project_type?: string;
+    }>;
+    total?: number;
   }>;
   updateWorkItem: (input: {
     project_id: string;
@@ -171,6 +207,27 @@ export function createReqClient(
   }
 
   return {
+    async createProject(input) {
+      const response = (await _http.post("/v4/project", {
+        project_name: input.name,
+        description: input.description,
+        project_type: "scrum"
+      })) as {
+        project_id?: string;
+        project_name?: string;
+        description?: string;
+        project_num_id?: number;
+        project_type?: string;
+      };
+
+      return {
+        project_id: response.project_id ?? "",
+        project_name: response.project_name ?? input.name,
+        description: response.description ?? input.description,
+        project_num_id: response.project_num_id,
+        project_type: response.project_type ?? "scrum"
+      };
+    },
     async createWorkItem(input) {
       const response = (await _http.post(`/v4/projects/${encodeURIComponent(input.project_id)}/issue`, {
         name: input.title,
@@ -213,6 +270,67 @@ export function createReqClient(
         name: project.name ?? "",
         project_num_id: project.project_num_id,
         description: project.description
+      };
+    },
+    async updateProject(input) {
+      await _http.put(`/v4/projects/${encodeURIComponent(input.project_id)}`, {
+        project_name: input.name,
+        description: input.description
+      });
+
+      return {
+        project_id: input.project_id,
+        project_name: input.name,
+        description: input.description
+      };
+    },
+    async deleteProject(input) {
+      await _http.delete(`/v4/projects/${encodeURIComponent(input.project_id)}`);
+
+      return {
+        project_id: input.project_id,
+        deleted: true as const
+      };
+    },
+    async checkProjectName(input) {
+      const response = (await _http.post("/v4/projects/check-name", {
+        project_name: input.name
+      })) as {
+        exist?: boolean;
+      };
+
+      return {
+        exist: response.exist ?? false
+      };
+    },
+    async listNotAddedProjects(input) {
+      const offset = (input.page - 1) * input.page_size;
+      const query = new URLSearchParams({
+        offset: String(offset),
+        limit: String(input.page_size)
+      });
+
+      const response = (await _http.get(`/v4/projects/domain/not-added?${query.toString()}`)) as {
+        projects?: Array<{
+          project_id: string;
+          project_name?: string;
+          name?: string;
+          project_num_id?: number;
+          description?: string;
+          project_type?: string;
+        }>;
+        total?: number;
+      };
+
+      return {
+        projects: (response.projects ?? []).map((project) => ({
+          project_id: project.project_id,
+          project_name: project.project_name ?? project.name ?? "",
+          project_num_id: project.project_num_id,
+          description: project.description,
+          project_type: project.project_type
+        })),
+        total: response.total
       };
     },
     async listIterations(input) {

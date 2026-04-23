@@ -171,6 +171,160 @@ describe("createReqClient", () => {
     });
   });
 
+  it("maps createProject to the scrum project endpoint and response fields", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return {
+          project_id: "project-1",
+          project_name: "Alpha",
+          description: "Demo project",
+          project_num_id: 101,
+          project_type: "scrum"
+        };
+      }
+    } as never);
+
+    const result = await client.createProject({
+      name: "Alpha",
+      description: "Demo project"
+    });
+
+    expect(requestedPath).toBe("/v4/project");
+    expect(requestedBody).toEqual({
+      project_name: "Alpha",
+      description: "Demo project",
+      project_type: "scrum"
+    });
+    expect(result).toEqual({
+      project_id: "project-1",
+      project_name: "Alpha",
+      description: "Demo project",
+      project_num_id: 101,
+      project_type: "scrum"
+    });
+  });
+
+  it("maps updateProject to the project update endpoint and synthesized response", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      put: async (path: string, body: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return undefined;
+      }
+    } as never);
+
+    const result = await client.updateProject({
+      project_id: "project-1",
+      name: "Alpha 2",
+      description: "Updated project"
+    });
+
+    expect(requestedPath).toBe("/v4/projects/project-1");
+    expect(requestedBody).toEqual({
+      project_name: "Alpha 2",
+      description: "Updated project"
+    });
+    expect(result).toEqual({
+      project_id: "project-1",
+      project_name: "Alpha 2",
+      description: "Updated project"
+    });
+  });
+
+  it("maps deleteProject to the project delete endpoint and synthesized response", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      delete: async (path: string) => {
+        requestedPath = path;
+
+        return undefined;
+      }
+    } as never);
+
+    const result = await client.deleteProject({
+      project_id: "project-1"
+    });
+
+    expect(requestedPath).toBe("/v4/projects/project-1");
+    expect(result).toEqual({
+      project_id: "project-1",
+      deleted: true
+    });
+  });
+
+  it("maps checkProjectName to the name check endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return {
+          exist: false
+        };
+      }
+    } as never);
+
+    const result = await client.checkProjectName({
+      name: "Alpha"
+    });
+
+    expect(requestedPath).toBe("/v4/projects/check-name");
+    expect(requestedBody).toEqual({
+      project_name: "Alpha"
+    });
+    expect(result).toEqual({
+      exist: false
+    });
+  });
+
+  it("maps listNotAddedProjects to the domain not-added endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          projects: [
+            {
+              project_id: "project-1",
+              project_name: "Alpha",
+              project_num_id: 101,
+              description: "Demo project",
+              project_type: "scrum"
+            }
+          ],
+          total: 1
+        };
+      }
+    } as never);
+
+    const result = await client.listNotAddedProjects(createPageInput());
+
+    expect(requestedPath).toBe("/v4/projects/domain/not-added?offset=0&limit=20");
+    expect(result).toEqual({
+      projects: [
+        {
+          project_id: "project-1",
+          project_name: "Alpha",
+          project_num_id: 101,
+          description: "Demo project",
+          project_type: "scrum"
+        }
+      ],
+      total: 1
+    });
+  });
+
   it("sends a default priority when creating a work item", async () => {
     let requestedPath = "";
     let requestedBody: Record<string, unknown> | undefined;
