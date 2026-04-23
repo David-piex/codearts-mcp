@@ -19,10 +19,14 @@ import {
   reqQueryIterationImmovableIssuesInput,
   reqGetWorkItemInput,
   reqLeaveProjectInput,
+  reqListAssociatedCommitsInput,
+  reqListAssociatedIssuesInput,
+  reqListAssociatedTestCasesInput,
   reqListIterationsInput,
   reqListNotAddedProjectsInput,
   reqListProjectMembersInput,
   reqListProjectsInput,
+  reqListRelatedUsersInput,
   reqListWorkItemCommentsInput,
   reqListWorkItemRecordsInput,
   reqListWorkItemsInput,
@@ -31,6 +35,7 @@ import {
   reqUpdateProjectMemberRoleInput,
   reqUpdateProjectInput,
   reqUpdateWorkItemCommentInput,
+  reqUpdateWorkItemFlowInput,
   reqUpdateWorkItemInput
 } from "../products/req/schemas.js";
 import { createReqAddWorkItemCommentHandler } from "../products/req/tools/add-work-item-comment.js";
@@ -50,10 +55,14 @@ import { createReqGetIterationHandler } from "../products/req/tools/get-iteratio
 import { createReqGetProjectHandler } from "../products/req/tools/get-project.js";
 import { createReqGetWorkItemHandler } from "../products/req/tools/get-work-item.js";
 import { createReqLeaveProjectHandler } from "../products/req/tools/leave-project.js";
+import { createReqListAssociatedCommitsHandler } from "../products/req/tools/list-associated-commits.js";
+import { createReqListAssociatedIssuesHandler } from "../products/req/tools/list-associated-issues.js";
+import { createReqListAssociatedTestCasesHandler } from "../products/req/tools/list-associated-test-cases.js";
 import { createReqListIterationsHandler } from "../products/req/tools/list-iterations.js";
 import { createReqListNotAddedProjectsHandler } from "../products/req/tools/list-not-added-projects.js";
 import { createReqListProjectMembersHandler } from "../products/req/tools/list-project-members.js";
 import { createReqListProjectsHandler } from "../products/req/tools/list-projects.js";
+import { createReqListRelatedUsersHandler } from "../products/req/tools/list-related-users.js";
 import { createReqListWorkItemCommentsHandler } from "../products/req/tools/list-work-item-comments.js";
 import { createReqListWorkItemRecordsHandler } from "../products/req/tools/list-work-item-records.js";
 import { createReqListWorkItemsHandler } from "../products/req/tools/list-work-items.js";
@@ -63,6 +72,7 @@ import { createReqUpdateIterationStateHandler } from "../products/req/tools/upda
 import { createReqUpdateProjectMemberRoleHandler } from "../products/req/tools/update-project-member-role.js";
 import { createReqUpdateProjectHandler } from "../products/req/tools/update-project.js";
 import { createReqUpdateWorkItemCommentHandler } from "../products/req/tools/update-work-item-comment.js";
+import { createReqUpdateWorkItemFlowHandler } from "../products/req/tools/update-work-item-flow.js";
 import { createReqUpdateWorkItemHandler } from "../products/req/tools/update-work-item.js";
 import { defineProductTool, registerDefinedTool } from "./product-tool-registry.js";
 import type { RateLimiter } from "./rate-limiter.js";
@@ -214,6 +224,33 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemsHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqListWorkItemsHandler
   }),
+  "req_list_associated_issues": defineProductTool({
+    description: "List CodeArts Req associated issues",
+    inputSchema: reqListAssociatedIssuesInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListAssociatedIssuesHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListAssociatedIssuesHandler
+  }),
+  "req_list_associated_commits": defineProductTool({
+    description: "List CodeArts Req associated commits",
+    inputSchema: reqListAssociatedCommitsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListAssociatedCommitsHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListAssociatedCommitsHandler
+  }),
+  "req_list_associated_test_cases": defineProductTool({
+    description: "List CodeArts Req associated test cases",
+    inputSchema: reqListAssociatedTestCasesInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListAssociatedTestCasesHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListAssociatedTestCasesHandler
+  }),
+  "req_list_related_users": defineProductTool({
+    description: "List CodeArts Req related users",
+    inputSchema: reqListRelatedUsersInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListRelatedUsersHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqListRelatedUsersHandler
+  }),
   "req_get_work_item": defineProductTool({
     description: "Get CodeArts Req work item detail",
     inputSchema: reqGetWorkItemInput,
@@ -266,6 +303,14 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqUpdateWorkItemCommentHandler,
     rateLimitAction: "req_update_work_item_comment"
+  }),
+  "req_update_work_item_flow": defineProductTool({
+    description: "Update CodeArts Req work item flow",
+    inputSchema: reqUpdateWorkItemFlowInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUpdateWorkItemFlowHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqUpdateWorkItemFlowHandler,
+    rateLimitAction: "req_update_work_item_flow"
   }),
   "req_update_project_member_role": defineProductTool({
     description: "Update a CodeArts Req project member role",

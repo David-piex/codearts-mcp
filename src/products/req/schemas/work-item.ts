@@ -61,3 +61,48 @@ export const reqListWorkItemRecordsInput = pagingSchema
     sort_by: true,
     sort_order: true
   });
+
+export const reqListAssociatedIssuesInput = pagingSchema
+  .extend({
+    project_id: idSchema,
+    work_item_id: idSchema
+  })
+  .omit({
+    keyword: true,
+    sort_by: true,
+    sort_order: true
+  });
+
+export const reqListAssociatedCommitsInput = pagingSchema
+  .extend({
+    project_id: idSchema,
+    work_item_id: idSchema,
+    type: z.enum(["commit", "branch"]).default("commit")
+  })
+  .omit({
+    keyword: true,
+    sort_by: true,
+    sort_order: true
+  });
+
+export const reqListAssociatedTestCasesInput = pagingSchema
+  .extend({
+    project_id: idSchema,
+    work_item_id: idSchema
+  })
+  .omit({
+    keyword: true,
+    sort_by: true,
+    sort_order: true
+  });
+
+export const reqListRelatedUsersInput = z.object({
+  project_id: idSchema
+});
+
+export const reqUpdateWorkItemFlowInput = z.object({
+  project_id: idSchema,
+  work_item_id: idSchema,
+  status_id: z.number().int().positive(),
+  dry_run: z.boolean().default(true)
+});

@@ -1126,4 +1126,354 @@ describe("createReqClient", () => {
       })
     ).rejects.toThrow(/did not report success/i);
   });
+
+  it("maps associated issue queries to the legacy associate endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          result: {
+            associateIssues: {
+              issues: [
+                {
+                  id: 9132318,
+                  subject: "Align acceptance criteria",
+                  status_id: 3,
+                  status_name: "Resolved",
+                  new_status_name: "Resolved",
+                  status_attribute_name: "Done",
+                  project_name: "Payments",
+                  identifier: "REQ-88",
+                  assigned_to: {
+                    assigned_user_id: "user-1",
+                    assigned_user_num_id: 101,
+                    assigned_nick_name: "Alice",
+                    name: "alice"
+                  }
+                }
+              ],
+              total_count: 1
+            }
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.listAssociatedIssues({
+      project_id: "p-1",
+      work_item_id: "70779173",
+      page: 2,
+      page_size: 10
+    });
+
+    expect(requestedPath).toBe(
+      "/v2/issues/inquire-associate?project_id=p-1&issue_id=70779173&page_no=2&page_size=10"
+    );
+    expect(result).toEqual({
+      issues: [
+        {
+          id: 9132318,
+          subject: "Align acceptance criteria",
+          status_id: 3,
+          status_name: "Resolved",
+          new_status_name: "Resolved",
+          status_attribute_name: "Done",
+          project_name: "Payments",
+          identifier: "REQ-88",
+          assigned_to: {
+            assigned_user_id: "user-1",
+            assigned_user_num_id: 101,
+            assigned_nick_name: "Alice",
+            name: "alice"
+          }
+        }
+      ],
+      total: 1
+    });
+  });
+
+  it("maps associated commit queries to the v4 associated-commits endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          commits: [
+            {
+              branch_name: "feature/login",
+              commit_id: "abc123def456",
+              commit_msg: "feat: add login flow",
+              commit_short_id: "abc123d",
+              commit_url: "https://example.com/commit/abc123def456",
+              create_date: "2026-04-23T10:00:00Z",
+              repository_id: "repo-1",
+              type: "commit",
+              update_date: "2026-04-23T10:05:00Z",
+              user: {
+                nick_name: "Alice",
+                user_id: "user-1"
+              }
+            }
+          ],
+          total: 1
+        };
+      }
+    } as never);
+
+    const result = await client.listAssociatedCommits({
+      project_id: "p-1",
+      work_item_id: "70779173",
+      page: 2,
+      page_size: 10,
+      type: "branch"
+    });
+
+    expect(requestedPath).toBe(
+      "/v4/projects/p-1/issues/70779173/associated-commits?type=branch&offset=10&limit=10"
+    );
+    expect(result).toEqual({
+      commits: [
+        {
+          branch_name: "feature/login",
+          commit_id: "abc123def456",
+          commit_msg: "feat: add login flow",
+          commit_short_id: "abc123d",
+          commit_url: "https://example.com/commit/abc123def456",
+          create_date: "2026-04-23T10:00:00Z",
+          repository_id: "repo-1",
+          type: "commit",
+          update_date: "2026-04-23T10:05:00Z",
+          user: {
+            nick_name: "Alice",
+            user_id: "user-1"
+          }
+        }
+      ],
+      total: 1
+    });
+  });
+
+  it("maps associated test case queries to the v4 associate-test-cases endpoint with local pagination", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          test_cases: [
+            {
+              case_id: "case-1",
+              case_level: "P1",
+              case_name: "Login succeeds",
+              case_num: "TC-101",
+              created_time: 1_745_392_000_000
+            },
+            {
+              case_id: "case-2",
+              case_level: "P2",
+              case_name: "Login fails",
+              case_num: "TC-102",
+              created_time: 1_745_392_100_000
+            }
+          ],
+          total: 2
+        };
+      }
+    } as never);
+
+    const result = await client.listAssociatedTestCases({
+      project_id: "p-1",
+      work_item_id: "70779173",
+      page: 2,
+      page_size: 1
+    });
+
+    expect(requestedPath).toBe("/v4/projects/p-1/issues/70779173/associate-test-cases");
+    expect(result).toEqual({
+      test_cases: [
+        {
+          case_id: "case-2",
+          case_level: "P2",
+          case_name: "Login fails",
+          case_num: "TC-102",
+          created_time: 1_745_392_100_000
+        }
+      ],
+      total: 2
+    });
+  });
+
+  it("maps related users queries to the documented related-user endpoint", async () => {
+    const get = vi.fn(async () => ({
+      result: {
+        related_author_list: [
+          {
+            user_name: "alice",
+            user_num_id: 101,
+            user_id: "user-1",
+            domain_id: "domain-1",
+            domain_name: "tenant-a",
+            nick_name_py: "alice"
+          }
+        ],
+        related_assignee_list: [],
+        related_developer_list: []
+      },
+      status: "success"
+    }));
+    const client = createReqClient({
+      get
+    } as never);
+
+    const result = await client.listRelatedUsers({
+      project_id: "p-1"
+    });
+
+    expect(get).toHaveBeenCalledWith("/v1/related-user/p-1/all");
+    expect(result).toEqual({
+      project_id: "p-1",
+      related_author_list: [
+        {
+          user_name: "alice",
+          user_num_id: 101,
+          user_id: "user-1",
+          domain_id: "domain-1",
+          domain_name: "tenant-a",
+          nick_name_py: "alice"
+        }
+      ],
+      related_assignee_list: [],
+      related_developer_list: []
+    });
+  });
+
+  it("falls back to the related_user endpoint when the documented related-user path returns not_found", async () => {
+    const get = vi
+      .fn()
+      .mockRejectedValueOnce({
+        name: "AppError",
+        category: "not_found",
+        status: 404
+      })
+      .mockResolvedValueOnce({
+        result: {
+          related_author_list: [],
+          related_assignee_list: [
+            {
+              user_name: "bob",
+              user_num_id: 102,
+              user_id: "user-2",
+              domain_id: "domain-1",
+              domain_name: "tenant-a",
+              nick_name_py: "bob"
+            }
+          ],
+          related_developer_list: []
+        },
+        status: "success"
+      });
+    const client = createReqClient({
+      get
+    } as never);
+
+    const result = await client.listRelatedUsers({
+      project_id: "p-1"
+    });
+
+    expect(get).toHaveBeenNthCalledWith(1, "/v1/related-user/p-1/all");
+    expect(get).toHaveBeenNthCalledWith(2, "/v1/related_user/p-1/all");
+    expect(result).toEqual({
+      project_id: "p-1",
+      related_author_list: [],
+      related_assignee_list: [
+        {
+          user_name: "bob",
+          user_num_id: 102,
+          user_id: "user-2",
+          domain_id: "domain-1",
+          domain_name: "tenant-a",
+          nick_name_py: "bob"
+        }
+      ],
+      related_developer_list: []
+    });
+  });
+
+  it("maps updateWorkItemFlow to the issue-flowage endpoint and preserves normalized fields", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return {
+          result: {
+            issue: {
+              id: 70779173,
+              subject: "Align acceptance criteria",
+              updated_on: "2026-04-23T10:00:00Z",
+              tracker: {
+                id: 7,
+                name: "Story"
+              },
+              status: {
+                id: 3,
+                name: "Resolved"
+              }
+            }
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.updateWorkItemFlow({
+      project_id: "p-1",
+      work_item_id: "70779173",
+      status_id: 3
+    });
+
+    expect(requestedPath).toBe("/v2/workitem/issue-flowage");
+    expect(requestedBody).toEqual({
+      status_id: 3,
+      projectUUId: "p-1",
+      id: "70779173",
+      type: "scrum"
+    });
+    expect(result).toEqual({
+      work_item_id: "70779173",
+      title: "Align acceptance criteria",
+      status_id: 3,
+      status_name: "Resolved",
+      type_id: 7,
+      type_name: "Story",
+      updated_on: "2026-04-23T10:00:00Z"
+    });
+  });
+
+  it("rejects updateWorkItemFlow when the issue-flowage endpoint does not report success", async () => {
+    const client = createReqClient({
+      post: async () => ({
+        result: {
+          issue: {
+            id: 70779173
+          }
+        },
+        status: "error"
+      })
+    } as never);
+
+    await expect(
+      client.updateWorkItemFlow({
+        project_id: "p-1",
+        work_item_id: "70779173",
+        status_id: 3
+      })
+    ).rejects.toThrow(/did not report success/i);
+  });
 });

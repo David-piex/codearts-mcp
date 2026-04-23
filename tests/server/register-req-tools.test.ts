@@ -234,6 +234,111 @@ describe("registerReqTool", () => {
     );
   });
 
+  it("registers the list associated issues tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_list_associated_issues",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_list_associated_issues",
+      expect.objectContaining({
+        title: "req_list_associated_issues",
+        description: "List CodeArts Req associated issues"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the list associated commits tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_list_associated_commits",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_list_associated_commits",
+      expect.objectContaining({
+        title: "req_list_associated_commits",
+        description: "List CodeArts Req associated commits"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the list associated test cases tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_list_associated_test_cases",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_list_associated_test_cases",
+      expect.objectContaining({
+        title: "req_list_associated_test_cases",
+        description: "List CodeArts Req associated test cases"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the list related users tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_list_related_users",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_list_related_users",
+      expect.objectContaining({
+        title: "req_list_related_users",
+        description: "List CodeArts Req related users"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the update work item flow tool with rate-limited metadata", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_update_work_item_flow",
+      server: { registerTool },
+      mode: "stdio",
+      stdioClient: {} as never
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_update_work_item_flow",
+      expect.objectContaining({
+        title: "req_update_work_item_flow",
+        description: "Update CodeArts Req work item flow"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("registers the add project member tool with the expected metadata", () => {
     const registerTool = vi.fn();
 
@@ -455,6 +560,14 @@ describe("registerReqTool", () => {
         comment_id: "comment-1",
         content: "Updated comment"
       }
+    },
+    {
+      toolName: "req_update_work_item_flow",
+      input: {
+        project_id: "project-1",
+        work_item_id: "wi-9",
+        status_id: 3
+      }
     }
   ])(
     "does not consume rate limit when $toolName omits dry_run and falls back to default dry-run behavior",
@@ -585,6 +698,57 @@ describe("registerReqTool", () => {
     expect(rateLimiter.check).toHaveBeenCalledWith(
       "req_update_work_item_comment:session-1",
       "req_update_work_item_comment"
+    );
+    expect(rateLimiter.check).toHaveBeenCalledTimes(1);
+  });
+
+  it("enforces rate limiting before handling update work item flow in http mode", async () => {
+    const registerTool = vi.fn();
+    const rateLimiter = { check: vi.fn() };
+
+    registerReqTool({
+      toolName: "req_update_work_item_flow",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore(),
+      rateLimiter: rateLimiter as never
+    });
+
+    const handler = registerTool.mock.calls[0]?.[2] as
+      | ((input: unknown, extra: { sessionId?: string; authId?: string }) => Promise<unknown>)
+      | undefined;
+
+    expect(handler).toBeTypeOf("function");
+
+    await handler?.(
+      {
+        project_id: "project-1",
+        work_item_id: "wi-9",
+        status_id: 3,
+        dry_run: true
+      },
+      {
+        sessionId: "session-1",
+        authId: "auth-1"
+      }
+    );
+
+    await handler?.(
+      {
+        project_id: "project-1",
+        work_item_id: "wi-9",
+        status_id: 3,
+        dry_run: false
+      },
+      {
+        sessionId: "session-1",
+        authId: "auth-1"
+      }
+    );
+
+    expect(rateLimiter.check).toHaveBeenCalledWith(
+      "req_update_work_item_flow:session-1",
+      "req_update_work_item_flow"
     );
     expect(rateLimiter.check).toHaveBeenCalledTimes(1);
   });

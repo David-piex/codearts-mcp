@@ -356,6 +356,40 @@ describe("write path rate limits", () => {
         },
         status: "success"
       }
+    },
+    {
+      toolName: "req_update_work_item_flow",
+      dryRunInput: {
+        project_id: "project-1",
+        work_item_id: "70779173",
+        status_id: 3,
+        dry_run: true
+      },
+      liveInput: (index: number) => ({
+        project_id: "project-1",
+        work_item_id: `${index}`,
+        status_id: 3,
+        dry_run: false
+      }),
+      blockedInput: {
+        project_id: "project-1",
+        work_item_id: "blocked",
+        status_id: 3,
+        dry_run: false
+      },
+      responsePayload: {
+        result: {
+          issue: {
+            id: 70779173,
+            subject: "Align acceptance criteria",
+            status: {
+              id: 3,
+              name: "Resolved"
+            }
+          }
+        },
+        status: "success"
+      }
     }
   ])("does not let $toolName dry runs consume write quota", async ({
     toolName,

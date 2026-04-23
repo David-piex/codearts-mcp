@@ -1,5 +1,6 @@
 import { createReadThroughCache } from "../../core/cache/read-through-cache.js";
 import { DEFAULT_READ_CACHE_TTLS } from "../../core/cache/read-cache-ttl.js";
+import { AppError } from "../../core/errors/app-error.js";
 import { recordRequestCacheHit } from "../../server/request-context.js";
 import type { ReturnTypeCreateHttpClient } from "../types.js";
 
@@ -319,6 +320,117 @@ export type ReqClient = {
     }>;
     total?: number;
   }>;
+  listAssociatedIssues: (input: {
+    project_id: string;
+    work_item_id: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    issues: Array<{
+      id: number | string;
+      subject?: string;
+      status_id?: number;
+      status_name?: string;
+      new_status_name?: string;
+      status_attribute_name?: string;
+      project_name?: string;
+      identifier?: string;
+      assigned_to?: {
+        assigned_user_id?: string;
+        assigned_user_num_id?: number;
+        assigned_nick_name?: string;
+        name?: string;
+      };
+    }>;
+    total?: number;
+  }>;
+  listAssociatedCommits: (input: {
+    project_id: string;
+    work_item_id: string;
+    page: number;
+    page_size: number;
+    type?: "commit" | "branch";
+  }) => Promise<{
+    commits: Array<{
+      branch_name?: string;
+      commit_id?: string;
+      commit_msg?: string;
+      commit_short_id?: string;
+      commit_url?: string;
+      create_date?: string;
+      repository_id?: string;
+      type?: string;
+      update_date?: string;
+      user?: {
+        nick_name?: string;
+        user_id?: string;
+      };
+    }>;
+    total?: number;
+  }>;
+  listAssociatedTestCases: (input: {
+    project_id: string;
+    work_item_id: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    test_cases: Array<{
+      case_id: number | string;
+      case_level?: string;
+      case_name?: string;
+      case_num?: string;
+      created_time?: number;
+      creator?: {
+        nick_name?: string;
+        user_id?: string;
+        user_name?: string;
+        user_num_id?: number;
+      };
+      owner?: {
+        nick_name?: string;
+        user_id?: string;
+        user_name?: string;
+        user_num_id?: number;
+      };
+      project?: {
+        project_id?: string;
+        project_name?: string;
+      };
+      status?: {
+        id?: string;
+        name?: string;
+      };
+      type?: string;
+    }>;
+    total?: number;
+  }>;
+  listRelatedUsers: (input: { project_id: string }) => Promise<{
+    project_id: string;
+    related_author_list: Array<{
+      user_name?: string;
+      user_num_id?: number;
+      user_id?: string;
+      domain_id?: string;
+      domain_name?: string;
+      nick_name_py?: string;
+    }>;
+    related_assignee_list: Array<{
+      user_name?: string;
+      user_num_id?: number;
+      user_id?: string;
+      domain_id?: string;
+      domain_name?: string;
+      nick_name_py?: string;
+    }>;
+    related_developer_list: Array<{
+      user_name?: string;
+      user_num_id?: number;
+      user_id?: string;
+      domain_id?: string;
+      domain_name?: string;
+      nick_name_py?: string;
+    }>;
+  }>;
   addWorkItemComment: (input: {
     project_id: string;
     work_item_id: string;
@@ -337,6 +449,19 @@ export type ReqClient = {
     comment_id: string;
     content: string;
     status?: string;
+  }>;
+  updateWorkItemFlow: (input: {
+    project_id: string;
+    work_item_id: string;
+    status_id: number;
+  }) => Promise<{
+    work_item_id: string;
+    title?: string;
+    status_id: number;
+    status_name?: string;
+    type_id?: number;
+    type_name?: string;
+    updated_on?: string;
   }>;
 };
 
@@ -372,6 +497,23 @@ function assertReqMutationSucceeded(action: string, status?: string) {
   }
 
   throw new Error(`${action} did not report success`);
+}
+
+function isNotFoundError(error: unknown) {
+  if (error instanceof AppError) {
+    return error.category === "not_found" || error.status === 404;
+  }
+
+  if (!error || typeof error !== "object") {
+    return false;
+  }
+
+  const candidate = error as {
+    category?: unknown;
+    status?: unknown;
+  };
+
+  return candidate.category === "not_found" || candidate.status === 404;
 }
 
 function unwrapReqPayload<T>(input: T): T {
@@ -1045,6 +1187,196 @@ export function createReqClient(
         total: response.total
       };
     },
+    async listAssociatedIssues(input) {
+      const query = new URLSearchParams({
+        project_id: input.project_id,
+        issue_id: input.work_item_id,
+        page_no: String(input.page),
+        page_size: String(input.page_size)
+      });
+      const response = (await _http.get(`/v2/issues/inquire-associate?${query.toString()}`)) as {
+        result?: {
+          associateIssues?: {
+            issues?: Array<{
+              id: number | string;
+              subject?: string;
+              status_id?: number;
+              status_name?: string;
+              new_status_name?: string;
+              status_attribute_name?: string;
+              project_name?: string;
+              identifier?: string;
+              assigned_to?: {
+                assigned_user_id?: string;
+                assigned_user_num_id?: number;
+                assigned_nick_name?: string;
+                name?: string;
+              };
+            }>;
+            total_count?: number;
+          };
+        };
+      };
+      const associatedIssues = response.result?.associateIssues;
+
+      return {
+        issues: associatedIssues?.issues ?? [],
+        total: associatedIssues?.total_count
+      };
+    },
+    async listAssociatedCommits(input) {
+      const offset = (input.page - 1) * input.page_size;
+      const query = new URLSearchParams({
+        type: input.type ?? "commit",
+        offset: String(offset),
+        limit: String(input.page_size)
+      });
+      const response = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/issues/${encodeURIComponent(input.work_item_id)}/associated-commits?${query.toString()}`
+      )) as {
+        commits?: Array<{
+          branch_name?: string;
+          commit_id?: string;
+          commit_msg?: string;
+          commit_short_id?: string;
+          commit_url?: string;
+          create_date?: string;
+          repository_id?: string;
+          type?: string;
+          update_date?: string;
+          user?: {
+            nick_name?: string;
+            user_id?: string;
+          };
+        }>;
+        total?: number;
+      };
+
+      return {
+        commits: response.commits ?? [],
+        total: response.total
+      };
+    },
+    async listAssociatedTestCases(input) {
+      const response = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/issues/${encodeURIComponent(input.work_item_id)}/associate-test-cases`
+      )) as {
+        test_cases?: Array<{
+          case_id: number | string;
+          case_level?: string;
+          case_name?: string;
+          case_num?: string;
+          created_time?: number;
+          creator?: {
+            nick_name?: string;
+            user_id?: string;
+            user_name?: string;
+            user_num_id?: number;
+          };
+          owner?: {
+            nick_name?: string;
+            user_id?: string;
+            user_name?: string;
+            user_num_id?: number;
+          };
+          project?: {
+            project_id?: string;
+            project_name?: string;
+          };
+          status?: {
+            id?: string;
+            name?: string;
+          };
+          type?: string;
+        }>;
+        total?: number;
+      };
+      const items = response.test_cases ?? [];
+      const total = response.total ?? items.length;
+      const offset = (input.page - 1) * input.page_size;
+
+      return {
+        test_cases: items.slice(offset, offset + input.page_size),
+        total
+      };
+    },
+    async listRelatedUsers(input) {
+      const primaryPath = `/v1/related-user/${encodeURIComponent(input.project_id)}/all`;
+      const fallbackPath = `/v1/related_user/${encodeURIComponent(input.project_id)}/all`;
+      let response:
+        | {
+            result?: {
+              related_author_list?: Array<{
+                user_name?: string;
+                user_num_id?: number;
+                user_id?: string;
+                domain_id?: string;
+                domain_name?: string;
+                nick_name_py?: string;
+              }>;
+              related_assignee_list?: Array<{
+                user_name?: string;
+                user_num_id?: number;
+                user_id?: string;
+                domain_id?: string;
+                domain_name?: string;
+                nick_name_py?: string;
+              }>;
+              related_developer_list?: Array<{
+                user_name?: string;
+                user_num_id?: number;
+                user_id?: string;
+                domain_id?: string;
+                domain_name?: string;
+                nick_name_py?: string;
+              }>;
+            };
+            related_author_list?: Array<{
+              user_name?: string;
+              user_num_id?: number;
+              user_id?: string;
+              domain_id?: string;
+              domain_name?: string;
+              nick_name_py?: string;
+            }>;
+            related_assignee_list?: Array<{
+              user_name?: string;
+              user_num_id?: number;
+              user_id?: string;
+              domain_id?: string;
+              domain_name?: string;
+              nick_name_py?: string;
+            }>;
+            related_developer_list?: Array<{
+              user_name?: string;
+              user_num_id?: number;
+              user_id?: string;
+              domain_id?: string;
+              domain_name?: string;
+              nick_name_py?: string;
+            }>;
+          }
+        | undefined;
+
+      try {
+        response = (await _http.get(primaryPath)) as typeof response;
+      } catch (error) {
+        if (!isNotFoundError(error)) {
+          throw error;
+        }
+
+        response = (await _http.get(fallbackPath)) as typeof response;
+      }
+
+      const payload = response?.result ?? response ?? {};
+
+      return {
+        project_id: input.project_id,
+        related_author_list: payload.related_author_list ?? [],
+        related_assignee_list: payload.related_assignee_list ?? [],
+        related_developer_list: payload.related_developer_list ?? []
+      };
+    },
     async addWorkItemComment(input) {
       const response = (await _http.post("/v2/issues/update-issue-notes", {
         id: input.work_item_id,
@@ -1082,6 +1414,45 @@ export function createReqClient(
         comment_id: input.comment_id,
         content: input.content,
         status
+      };
+    },
+    async updateWorkItemFlow(input) {
+      const response = (await _http.post("/v2/workitem/issue-flowage", {
+        status_id: input.status_id,
+        projectUUId: input.project_id,
+        id: input.work_item_id,
+        type: "scrum"
+      })) as {
+        result?: {
+          issue?: {
+            id?: number | string;
+            subject?: string;
+            updated_on?: string;
+            tracker?: {
+              id?: number;
+              name?: string;
+            };
+            status?: {
+              id?: number;
+              name?: string;
+            };
+          };
+        };
+        status?: string;
+      };
+
+      assertReqMutationSucceeded("update work item flow", response.status);
+
+      const issue = response.result?.issue;
+
+      return {
+        work_item_id: String(issue?.id ?? input.work_item_id),
+        title: issue?.subject,
+        status_id: issue?.status?.id ?? input.status_id,
+        status_name: issue?.status?.name,
+        type_id: issue?.tracker?.id,
+        type_name: issue?.tracker?.name,
+        updated_on: issue?.updated_on
       };
     }
   };

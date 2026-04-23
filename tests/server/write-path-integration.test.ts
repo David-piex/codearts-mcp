@@ -177,6 +177,28 @@ function createReqUpdateWorkItemCommentInput<T extends Record<string, unknown>>(
   } & T;
 }
 
+function createReqUpdateWorkItemFlowInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  work_item_id: string;
+  status_id: number;
+  dry_run: boolean;
+} & T {
+  return {
+    project_id: "project-1",
+    work_item_id: "70779173",
+    status_id: 3,
+    dry_run: false,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    work_item_id: string;
+    status_id: number;
+    dry_run: boolean;
+  } & T;
+}
+
 function createReqUpdateProjectInput<T extends Record<string, unknown>>(
   overrides?: T
 ): {
@@ -851,6 +873,49 @@ const writePathCases: WritePathCase[] = [
     }
   },
   {
+    name: "executes req_update_work_item_flow through the registered session-aware runtime client",
+    createHandler: (store: SessionStore) =>
+      readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_update_work_item_flow"),
+    input: createReqUpdateWorkItemFlowInput(),
+    responsePayload: {
+      result: {
+        issue: {
+          id: 70779173,
+          subject: "Align acceptance criteria",
+          updated_on: "2026-04-23T10:00:00Z",
+          tracker: {
+            id: 7,
+            name: "Story"
+          },
+          status: {
+            id: 3,
+            name: "Resolved"
+          }
+        }
+      },
+      status: "success"
+    },
+    expectedItem: {
+      workItemId: "70779173",
+      title: "Align acceptance criteria",
+      statusId: 3,
+      status: "Resolved",
+      typeId: 7,
+      type: "Story",
+      updatedOn: "2026-04-23T10:00:00Z",
+      executed: true
+    },
+    expectedRequest: {
+      path: "/v2/workitem/issue-flowage",
+      bodyIncludes: [
+        "\"status_id\":3",
+        "\"projectUUId\":\"project-1\"",
+        "\"id\":\"70779173\"",
+        "\"type\":\"scrum\""
+      ]
+    }
+  },
+  {
     name: "executes deploy_create_application through the session-aware runtime client",
     createHandler: createSessionAwareDeployCreateApplicationHandler,
     input: createDeployCreateApplicationInput(),
@@ -1188,6 +1253,19 @@ const dryRunCases: DryRunCase[] = [
       workItemId: "70779173",
       commentId: "comment-1",
       content: "Updated comment",
+      executed: false
+    }
+  },
+  {
+    name: "short-circuits req_update_work_item_flow dry runs without HTTP or rate-limit consumption",
+    toolName: "req_update_work_item_flow",
+    input: createReqUpdateWorkItemFlowInput({
+      dry_run: true
+    }),
+    expectedItem: {
+      projectId: "project-1",
+      workItemId: "70779173",
+      statusId: 3,
       executed: false
     }
   }
