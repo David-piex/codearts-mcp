@@ -137,4 +137,146 @@ describe("write path rate limits", () => {
     expect(fetchMock).toHaveBeenCalledTimes(5);
     expectRateLimitResult(blocked, "req_add_project_member");
   });
+
+  it.each([
+    {
+      toolName: "req_create_iteration",
+      dryRunInput: {
+        project_id: "project-1",
+        name: "Sprint 4",
+        begin_time: "2026-04-15",
+        end_time: "2026-04-28",
+        dry_run: true
+      },
+      liveInput: (index: number) => ({
+        project_id: "project-1",
+        name: `Sprint ${index}`,
+        begin_time: "2026-04-15",
+        end_time: "2026-04-28",
+        dry_run: false
+      }),
+      blockedInput: {
+        project_id: "project-1",
+        name: "Sprint blocked",
+        begin_time: "2026-04-15",
+        end_time: "2026-04-28",
+        dry_run: false
+      },
+      responsePayload: { id: 301 }
+    },
+    {
+      toolName: "req_update_iteration",
+      dryRunInput: {
+        project_id: "project-1",
+        iteration_id: "301",
+        name: "Sprint 4",
+        dry_run: true
+      },
+      liveInput: (index: number) => ({
+        project_id: "project-1",
+        iteration_id: `${index}`,
+        name: `Sprint ${index}`,
+        dry_run: false
+      }),
+      blockedInput: {
+        project_id: "project-1",
+        iteration_id: "blocked",
+        name: "Sprint blocked",
+        dry_run: false
+      },
+      responsePayload: {}
+    },
+    {
+      toolName: "req_delete_iteration",
+      dryRunInput: {
+        project_id: "project-1",
+        iteration_id: "301",
+        dry_run: true
+      },
+      liveInput: (index: number) => ({
+        project_id: "project-1",
+        iteration_id: `${index}`,
+        dry_run: false
+      }),
+      blockedInput: {
+        project_id: "project-1",
+        iteration_id: "blocked",
+        dry_run: false
+      },
+      responsePayload: {}
+    },
+    {
+      toolName: "req_batch_delete_iterations",
+      dryRunInput: {
+        project_id: "project-1",
+        iteration_ids: ["301", "302"],
+        dry_run: true
+      },
+      liveInput: (index: number) => ({
+        project_id: "project-1",
+        iteration_ids: [`${index}`, `${index + 100}`],
+        dry_run: false
+      }),
+      blockedInput: {
+        project_id: "project-1",
+        iteration_ids: ["blocked"],
+        dry_run: false
+      },
+      responsePayload: {},
+      responseInit: { status: 204 }
+    },
+    {
+      toolName: "req_update_iteration_state",
+      dryRunInput: {
+        project_id: "project-1",
+        iteration_id: "301",
+        name: "Sprint 4",
+        status: "2",
+        dry_run: true
+      },
+      liveInput: (index: number) => ({
+        project_id: "project-1",
+        iteration_id: `${index}`,
+        name: `Sprint ${index}`,
+        status: "2",
+        dry_run: false
+      }),
+      blockedInput: {
+        project_id: "project-1",
+        iteration_id: "blocked",
+        name: "Sprint blocked",
+        status: "2",
+        dry_run: false
+      },
+      responsePayload: {
+        result: "",
+        status: "success"
+      }
+    }
+  ])("does not let $toolName dry runs consume write quota", async ({
+    toolName,
+    dryRunInput,
+    liveInput,
+    blockedInput,
+    responsePayload,
+    responseInit
+  }) => {
+    const { server } = createConfiguredServer();
+    const handler = readRegisteredHandler(server, toolName);
+    const fetchMock = stubJsonFetch(responsePayload, responseInit);
+    const context = createSessionAuthContext("session-rate-limit", "auth-1");
+
+    for (let index = 0; index < 5; index += 1) {
+      await handler(dryRunInput, context);
+    }
+
+    for (let index = 0; index < 5; index += 1) {
+      await handler(liveInput(index), context);
+    }
+
+    const blocked = await handler(blockedInput, context);
+
+    expect(fetchMock).toHaveBeenCalledTimes(5);
+    expectRateLimitResult(blocked, toolName);
+  });
 });

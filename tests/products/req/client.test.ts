@@ -33,6 +33,14 @@ function createProjectWorkItemInput<T extends Record<string, unknown>>(overrides
   };
 }
 
+function createProjectIterationInput<T extends Record<string, unknown>>(overrides?: T) {
+  return {
+    project_id: "p-1",
+    iteration_id: "301",
+    ...(overrides ?? {})
+  };
+}
+
 describe("createReqClient", () => {
   it("normalizes project_name into name when listing projects", async () => {
     const client = createReqClient({
@@ -476,6 +484,222 @@ describe("createReqClient", () => {
         }
       ],
       total: 1
+    });
+  });
+
+  it("uses iteration detail, create, update and delete endpoints", async () => {
+    const requests: Array<{ method: string; path: string; body?: Record<string, unknown> }> = [];
+    const client = createReqClient({
+      get: async (path: string) => {
+        requests.push({ method: "GET", path });
+
+        return {
+          iteration_id: 301,
+          name: "Sprint 3",
+          begin_time: "2026-04-01",
+          end_time: "2026-04-14",
+          description: "Ship Task 4",
+          status: "1",
+          progress: "68"
+        };
+      },
+      post: async (path: string, body: Record<string, unknown>) => {
+        requests.push({ method: "POST", path, body });
+
+        return {
+          id: 302
+        };
+      },
+      put: async (path: string, body: Record<string, unknown>) => {
+        requests.push({ method: "PUT", path, body });
+
+        return undefined;
+      },
+      delete: async (path: string) => {
+        requests.push({ method: "DELETE", path });
+
+        return undefined;
+      }
+    } as never);
+
+    const [detail, created, updated, deleted] = await Promise.all([
+      client.getIteration(createProjectIterationInput()),
+      client.createIteration({
+        project_id: "p-1",
+        name: "Sprint 4",
+        begin_time: "2026-04-15",
+        end_time: "2026-04-28",
+        description: "Close backlog"
+      }),
+      client.updateIteration({
+        project_id: "p-1",
+        iteration_id: "301",
+        name: "Sprint 3 Updated",
+        begin_time: "2026-04-02",
+        end_time: "2026-04-15",
+        description: "Updated scope"
+      }),
+      client.deleteIteration(createProjectIterationInput())
+    ]);
+
+    expect(requests).toEqual([
+      {
+        method: "GET",
+        path: "/v4/iterations/301"
+      },
+      {
+        method: "POST",
+        path: "/v4/projects/p-1/iteration",
+        body: {
+          name: "Sprint 4",
+          begin_time: "2026-04-15",
+          end_time: "2026-04-28",
+          description: "Close backlog"
+        }
+      },
+      {
+        method: "PUT",
+        path: "/v4/projects/p-1/iterations/301",
+        body: {
+          name: "Sprint 3 Updated",
+          begin_time: "2026-04-02",
+          end_time: "2026-04-15",
+          description: "Updated scope"
+        }
+      },
+      {
+        method: "DELETE",
+        path: "/v4/projects/p-1/iterations/301"
+      }
+    ]);
+    expect(detail).toEqual({
+      iteration_id: 301,
+      name: "Sprint 3",
+      begin_time: "2026-04-01",
+      end_time: "2026-04-14",
+      description: "Ship Task 4",
+      status: "1",
+      progress: "68"
+    });
+    expect(created).toEqual({
+      id: 302,
+      project_id: "p-1",
+      name: "Sprint 4",
+      begin_time: "2026-04-15",
+      end_time: "2026-04-28",
+      description: "Close backlog"
+    });
+    expect(updated).toEqual({
+      project_id: "p-1",
+      iteration_id: "301",
+      name: "Sprint 3 Updated",
+      begin_time: "2026-04-02",
+      end_time: "2026-04-15",
+      description: "Updated scope"
+    });
+    expect(deleted).toEqual({
+      project_id: "p-1",
+      iteration_id: "301",
+      deleted: true
+    });
+  });
+
+  it("uses batch delete, state update and immovable-issues iteration endpoints", async () => {
+    const requests: Array<{ method: string; path: string; body?: Record<string, unknown> }> = [];
+    const client = createReqClient({
+      get: async (path: string) => {
+        requests.push({ method: "GET", path });
+
+        return {
+          number: "REQ-12",
+          id: 991,
+          status_id: 7,
+          status_name: "Blocked"
+        };
+      },
+      post: async (path: string, body: Record<string, unknown>) => {
+        requests.push({ method: "POST", path, body });
+
+        return {
+          result: "",
+          status: "success"
+        };
+      },
+      delete: async (path: string, body?: Record<string, unknown>) => {
+        requests.push({ method: "DELETE", path, body });
+
+        return undefined;
+      }
+    } as never);
+
+    const [batchDeleted, stateUpdated, issues] = await Promise.all([
+      client.batchDeleteIterations({
+        project_id: "p-1",
+        iteration_ids: ["301", "302"]
+      }),
+      client.updateIterationState({
+        project_id: "p-1",
+        iteration_id: "301",
+        name: "Sprint 3",
+        status: "2",
+        start_date: "2026-04-01",
+        due_date: "2026-04-14"
+      }),
+      client.queryIterationImmovableIssues({
+        project_id: "p-1",
+        version_id: "301"
+      })
+    ]);
+
+    expect(requests).toEqual([
+      {
+        method: "DELETE",
+        path: "/v4/projects/p-1/iterations",
+        body: {
+          iteration_ids: [301, 302]
+        }
+      },
+      {
+        method: "POST",
+        path: "/v2/version/state/update",
+        body: {
+          project_id: "p-1",
+          id: "301",
+          name: "Sprint 3",
+          status: "2",
+          start_date: "2026-04-01",
+          due_date: "2026-04-14"
+        }
+      },
+      {
+        method: "GET",
+        path: "/v2/version/query-immovable-issues?project_id=p-1&version_id=301"
+      }
+    ]);
+    expect(batchDeleted).toEqual({
+      project_id: "p-1",
+      iteration_ids: ["301", "302"],
+      deletedCount: 2
+    });
+    expect(stateUpdated).toEqual({
+      project_id: "p-1",
+      iteration_id: "301",
+      name: "Sprint 3",
+      status: "2",
+      start_date: "2026-04-01",
+      due_date: "2026-04-14",
+      result: "",
+      update_status: "success"
+    });
+    expect(issues).toEqual({
+      items: [
+        {
+          number: "REQ-12",
+          id: 991,
+          status_id: 7,
+          status_name: "Blocked"
+        }
+      ]
     });
   });
 

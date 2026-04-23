@@ -131,6 +131,92 @@ export type ReqClient = {
     }>;
     total?: number;
   }>;
+  getIteration: (input: { iteration_id: string }) => Promise<{
+    iteration_id: number | string;
+    name: string;
+    status?: string;
+    begin_time?: string;
+    end_time?: string;
+    description?: string;
+    progress?: string;
+    total?: number;
+    opened_total?: number;
+    closed_total?: number;
+    have_task?: boolean;
+    charts?: Record<string, unknown>;
+    created_time?: number;
+    updated_time?: number;
+  }>;
+  createIteration: (input: {
+    project_id: string;
+    name: string;
+    begin_time: string;
+    end_time: string;
+    description?: string;
+  }) => Promise<{
+    id: number | string;
+    project_id: string;
+    name: string;
+    begin_time: string;
+    end_time: string;
+    description?: string;
+  }>;
+  updateIteration: (input: {
+    project_id: string;
+    iteration_id: string;
+    name: string;
+    begin_time?: string;
+    end_time?: string;
+    description?: string;
+  }) => Promise<{
+    project_id: string;
+    iteration_id: string;
+    name: string;
+    begin_time?: string;
+    end_time?: string;
+    description?: string;
+  }>;
+  deleteIteration: (input: { project_id: string; iteration_id: string }) => Promise<{
+    project_id: string;
+    iteration_id: string;
+    deleted: true;
+  }>;
+  batchDeleteIterations: (input: {
+    project_id: string;
+    iteration_ids: string[];
+  }) => Promise<{
+    project_id: string;
+    iteration_ids: string[];
+    deletedCount: number;
+  }>;
+  updateIterationState: (input: {
+    project_id: string;
+    iteration_id: string;
+    name: string;
+    status: string;
+    due_date?: string;
+    start_date?: string;
+  }) => Promise<{
+    project_id: string;
+    iteration_id: string;
+    name: string;
+    status: string;
+    due_date?: string;
+    start_date?: string;
+    result?: string;
+    update_status?: string;
+  }>;
+  queryIterationImmovableIssues: (input: {
+    project_id: string;
+    version_id: string;
+  }) => Promise<{
+    items: Array<{
+      number?: string;
+      id: number | string;
+      status_id?: number;
+      status_name?: string;
+    }>;
+  }>;
   listProjectMembers: (input: { project_id: string; page: number; page_size: number }) => Promise<{
     members: Array<{
       domain_id?: string;
@@ -458,6 +544,158 @@ export function createReqClient(
       return {
         iterations: response.iterations ?? [],
         total: response.total ?? response.total_count
+      };
+    },
+    async getIteration(input) {
+      const response = (await _http.get(
+        `/v4/iterations/${encodeURIComponent(input.iteration_id)}`
+      )) as {
+        iteration_id?: number | string;
+        name?: string;
+        status?: string;
+        begin_time?: string;
+        end_time?: string;
+        description?: string;
+        progress?: string;
+        total?: number;
+        opened_total?: number;
+        closed_total?: number;
+        have_task?: boolean;
+        charts?: Record<string, unknown>;
+        created_time?: number;
+        updated_time?: number;
+      };
+
+      return {
+        iteration_id: response.iteration_id ?? input.iteration_id,
+        name: response.name ?? "",
+        status: response.status,
+        begin_time: response.begin_time,
+        end_time: response.end_time,
+        description: response.description,
+        progress: response.progress,
+        total: response.total,
+        opened_total: response.opened_total,
+        closed_total: response.closed_total,
+        have_task: response.have_task,
+        charts: response.charts,
+        created_time: response.created_time,
+        updated_time: response.updated_time
+      };
+    },
+    async createIteration(input) {
+      const response = (await _http.post(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/iteration`,
+        {
+          name: input.name,
+          begin_time: input.begin_time,
+          end_time: input.end_time,
+          description: input.description
+        }
+      )) as {
+        id?: number | string;
+      };
+
+      return {
+        id: response.id ?? "",
+        project_id: input.project_id,
+        name: input.name,
+        begin_time: input.begin_time,
+        end_time: input.end_time,
+        description: input.description
+      };
+    },
+    async updateIteration(input) {
+      await _http.put(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/iterations/${encodeURIComponent(input.iteration_id)}`,
+        {
+          name: input.name,
+          begin_time: input.begin_time,
+          end_time: input.end_time,
+          description: input.description
+        }
+      );
+
+      return {
+        project_id: input.project_id,
+        iteration_id: input.iteration_id,
+        name: input.name,
+        begin_time: input.begin_time,
+        end_time: input.end_time,
+        description: input.description
+      };
+    },
+    async deleteIteration(input) {
+      await _http.delete(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/iterations/${encodeURIComponent(input.iteration_id)}`
+      );
+
+      return {
+        project_id: input.project_id,
+        iteration_id: input.iteration_id,
+        deleted: true as const
+      };
+    },
+    async batchDeleteIterations(input) {
+      await _http.delete(`/v4/projects/${encodeURIComponent(input.project_id)}/iterations`, {
+        iteration_ids: input.iteration_ids.map((id) => Number(id))
+      });
+
+      return {
+        project_id: input.project_id,
+        iteration_ids: input.iteration_ids,
+        deletedCount: input.iteration_ids.length
+      };
+    },
+    async updateIterationState(input) {
+      const response = (await _http.post("/v2/version/state/update", {
+        project_id: input.project_id,
+        id: input.iteration_id,
+        name: input.name,
+        status: input.status,
+        due_date: input.due_date,
+        start_date: input.start_date
+      })) as {
+        result?: string;
+        status?: string;
+      };
+
+      return {
+        project_id: input.project_id,
+        iteration_id: input.iteration_id,
+        name: input.name,
+        status: input.status,
+        due_date: input.due_date,
+        start_date: input.start_date,
+        result: response.result,
+        update_status: response.status
+      };
+    },
+    async queryIterationImmovableIssues(input) {
+      const query = new URLSearchParams({
+        project_id: input.project_id,
+        version_id: input.version_id
+      });
+      const response = (await _http.get(
+        `/v2/version/query-immovable-issues?${query.toString()}`
+      )) as {
+        number?: string;
+        id?: number | string;
+        status_id?: number;
+        status_name?: string;
+      };
+
+      return {
+        items: response.id
+          ? [
+              {
+                number: response.number,
+                id: response.id,
+                status_id: response.status_id,
+                status_name: response.status_name
+              }
+            ]
+          : []
       };
     },
     async updateWorkItem(input) {

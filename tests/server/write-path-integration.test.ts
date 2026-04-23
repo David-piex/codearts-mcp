@@ -124,6 +124,134 @@ function createReqDeleteProjectInput<T extends Record<string, unknown>>(
   } & T;
 }
 
+function createReqCreateIterationInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  name: string;
+  begin_time: string;
+  end_time: string;
+  description: string;
+  dry_run: boolean;
+} & T {
+  return {
+    project_id: "project-1",
+    name: "Sprint 4",
+    begin_time: "2026-04-15",
+    end_time: "2026-04-28",
+    description: "Close backlog",
+    dry_run: false,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    name: string;
+    begin_time: string;
+    end_time: string;
+    description: string;
+    dry_run: boolean;
+  } & T;
+}
+
+function createReqUpdateIterationInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  iteration_id: string;
+  name: string;
+  begin_time: string;
+  end_time: string;
+  description: string;
+  dry_run: boolean;
+} & T {
+  return {
+    project_id: "project-1",
+    iteration_id: "301",
+    name: "Sprint 4 Updated",
+    begin_time: "2026-04-16",
+    end_time: "2026-04-29",
+    description: "Updated backlog",
+    dry_run: false,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    iteration_id: string;
+    name: string;
+    begin_time: string;
+    end_time: string;
+    description: string;
+    dry_run: boolean;
+  } & T;
+}
+
+function createReqDeleteIterationInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  iteration_id: string;
+  dry_run: boolean;
+} & T {
+  return {
+    project_id: "project-1",
+    iteration_id: "301",
+    dry_run: false,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    iteration_id: string;
+    dry_run: boolean;
+  } & T;
+}
+
+function createReqBatchDeleteIterationsInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  iteration_ids: string[];
+  dry_run: boolean;
+} & T {
+  return {
+    project_id: "project-1",
+    iteration_ids: ["301", "302"],
+    dry_run: false,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    iteration_ids: string[];
+    dry_run: boolean;
+  } & T;
+}
+
+function createReqUpdateIterationStateInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  iteration_id: string;
+  name: string;
+  status: string;
+  start_date: string;
+  due_date: string;
+  dry_run: boolean;
+} & T {
+  return {
+    project_id: "project-1",
+    iteration_id: "301",
+    name: "Sprint 4",
+    status: "2",
+    start_date: "2026-04-15",
+    due_date: "2026-04-28",
+    dry_run: false,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    iteration_id: string;
+    name: string;
+    status: string;
+    start_date: string;
+    due_date: string;
+    dry_run: boolean;
+  } & T;
+}
+
 function createDeployCreateApplicationInput<T extends Record<string, unknown>>(
   overrides?: T
 ): {
@@ -391,6 +519,117 @@ const writePathCases: WritePathCase[] = [
     }
   },
   {
+    name: "executes req_create_iteration through the registered session-aware runtime client",
+    createHandler: (store: SessionStore) =>
+      readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_create_iteration"),
+    input: createReqCreateIterationInput(),
+    responsePayload: {
+      id: 302
+    },
+    expectedItem: {
+      id: "302",
+      projectId: "project-1",
+      name: "Sprint 4",
+      beginTime: "2026-04-15",
+      endTime: "2026-04-28",
+      description: "Close backlog",
+      executed: true
+    },
+    expectedRequest: {
+      path: "/v4/projects/project-1/iteration",
+      bodyIncludes: [
+        "\"name\":\"Sprint 4\"",
+        "\"begin_time\":\"2026-04-15\"",
+        "\"end_time\":\"2026-04-28\""
+      ]
+    }
+  },
+  {
+    name: "executes req_update_iteration through the registered session-aware runtime client",
+    createHandler: (store: SessionStore) =>
+      readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_update_iteration"),
+    input: createReqUpdateIterationInput(),
+    responsePayload: {},
+    expectedItem: {
+      id: "301",
+      projectId: "project-1",
+      name: "Sprint 4 Updated",
+      beginTime: "2026-04-16",
+      endTime: "2026-04-29",
+      description: "Updated backlog",
+      executed: true
+    },
+    expectedRequest: {
+      path: "/v4/projects/project-1/iterations/301",
+      method: "PUT",
+      bodyIncludes: ["\"name\":\"Sprint 4 Updated\""]
+    }
+  },
+  {
+    name: "executes req_delete_iteration through the registered session-aware runtime client",
+    createHandler: (store: SessionStore) =>
+      readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_delete_iteration"),
+    input: createReqDeleteIterationInput(),
+    responsePayload: {},
+    expectedItem: {
+      id: "301",
+      projectId: "project-1",
+      deleted: true,
+      executed: true
+    },
+    expectedRequest: {
+      path: "/v4/projects/project-1/iterations/301",
+      method: "DELETE"
+    }
+  },
+  {
+    name: "executes req_batch_delete_iterations through the registered session-aware runtime client",
+    createHandler: (store: SessionStore) =>
+      readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_batch_delete_iterations"),
+    input: createReqBatchDeleteIterationsInput(),
+    responsePayload: null,
+    expectedItem: {
+      projectId: "project-1",
+      iterationIds: ["301", "302"],
+      deletedCount: 2,
+      executed: true
+    },
+    expectedRequest: {
+      path: "/v4/projects/project-1/iterations",
+      method: "DELETE",
+      bodyIncludes: ["\"iteration_ids\":[301,302]"]
+    }
+  },
+  {
+    name: "executes req_update_iteration_state through the registered session-aware runtime client",
+    createHandler: (store: SessionStore) =>
+      readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_update_iteration_state"),
+    input: createReqUpdateIterationStateInput(),
+    responsePayload: {
+      result: "",
+      status: "success"
+    },
+    expectedItem: {
+      projectId: "project-1",
+      iterationId: "301",
+      name: "Sprint 4",
+      status: "2",
+      startDate: "2026-04-15",
+      dueDate: "2026-04-28",
+      result: "",
+      updateStatus: "success",
+      executed: true
+    },
+    expectedRequest: {
+      path: "/v2/version/state/update",
+      bodyIncludes: [
+        "\"project_id\":\"project-1\"",
+        "\"id\":\"301\"",
+        "\"status\":\"2\""
+      ]
+    }
+  },
+  {
     name: "executes req_create_work_item through the session-aware runtime client",
     createHandler: createSessionAwareReqCreateWorkItemHandler,
     input: createReqCreateWorkItemInput(),
@@ -621,6 +860,79 @@ const dryRunCases: DryRunCase[] = [
     expectedItem: {
       projectId: "project-1",
       left: false,
+      executed: false
+    }
+  },
+  {
+    name: "short-circuits req_create_iteration dry runs without HTTP or rate-limit consumption",
+    toolName: "req_create_iteration",
+    input: createReqCreateIterationInput({
+      dry_run: true
+    }),
+    expectedItem: {
+      projectId: "project-1",
+      name: "Sprint 4",
+      beginTime: "2026-04-15",
+      endTime: "2026-04-28",
+      description: "Close backlog",
+      executed: false
+    }
+  },
+  {
+    name: "short-circuits req_update_iteration dry runs without HTTP or rate-limit consumption",
+    toolName: "req_update_iteration",
+    input: createReqUpdateIterationInput({
+      dry_run: true
+    }),
+    expectedItem: {
+      id: "301",
+      projectId: "project-1",
+      name: "Sprint 4 Updated",
+      beginTime: "2026-04-16",
+      endTime: "2026-04-29",
+      description: "Updated backlog",
+      executed: false
+    }
+  },
+  {
+    name: "short-circuits req_delete_iteration dry runs without HTTP or rate-limit consumption",
+    toolName: "req_delete_iteration",
+    input: createReqDeleteIterationInput({
+      dry_run: true
+    }),
+    expectedItem: {
+      id: "301",
+      projectId: "project-1",
+      deleted: false,
+      executed: false
+    }
+  },
+  {
+    name: "short-circuits req_batch_delete_iterations dry runs without HTTP or rate-limit consumption",
+    toolName: "req_batch_delete_iterations",
+    input: createReqBatchDeleteIterationsInput({
+      dry_run: true
+    }),
+    expectedItem: {
+      projectId: "project-1",
+      iterationIds: ["301", "302"],
+      deletedCount: 0,
+      executed: false
+    }
+  },
+  {
+    name: "short-circuits req_update_iteration_state dry runs without HTTP or rate-limit consumption",
+    toolName: "req_update_iteration_state",
+    input: createReqUpdateIterationStateInput({
+      dry_run: true
+    }),
+    expectedItem: {
+      projectId: "project-1",
+      iterationId: "301",
+      name: "Sprint 4",
+      status: "2",
+      startDate: "2026-04-15",
+      dueDate: "2026-04-28",
       executed: false
     }
   }
