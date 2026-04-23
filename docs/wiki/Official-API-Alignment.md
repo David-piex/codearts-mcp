@@ -15,7 +15,7 @@
 
 | 模块 | 当前 MCP 工具数 | 对齐结论 | 当前重点缺口 |
 | --- | --- | --- | --- |
-| Req | 44 | 已对齐到 Scrum 高频实用层 | IPD / 需求池 / 看板 / 更深字段配置 / 附件等仍未进入 MCP；新增工具的 live 仍需继续补 |
+| Req | 47 | 已对齐到 Scrum 高频实用层 | IPD / 需求池 / 看板 / 更深字段配置 / 附件等仍未进入 MCP；新增工具的 live 仍需继续补 |
 | Repo | 25 | 已形成完整实用面 | 无明显阻塞，含创建仓库 |
 | Pipeline | 77 | 覆盖面大，但 live 深度不均 | 新增管理类工具仍需 AK/SK 实测 |
 | Check | 8 | 当前工具面已稳定 | 无明显阻塞 |
@@ -28,7 +28,8 @@
 
 ### Req
 
-- 当前对齐到官方 Req API 的 `Scrum 高频实用层`，不再只是旧文档里的 8 个核心工具，而是已经覆盖 `project / module / member / iteration / work-item / collaboration / config-read` 七个资源面，共 `44` 个工具
+- 当前对齐到官方 Req API 的 `Scrum 高频实用层`，不再只是旧文档里的 8 个核心工具，而是已经覆盖 `project / module / member / iteration / work-item / collaboration / config-read` 七个资源面，共 `47` 个工具
+- `config-read` 面已经继续补到 `req_get_work_item_template_config`、`req_get_work_item_status_rule_flag`、`req_list_work_item_tracker_handlers`，能直接读取模板字段配置、自动流转开关和流转默认处理人范围
 - phase-1 collaboration 已进入 MCP，包括 `req_list_associated_issues`、`req_list_associated_commits`、`req_list_associated_test_cases`、`req_list_related_users`、`req_update_work_item_flow`
 - 这不等于已经做完官方 Req API 的全量对齐。当前更像是“Scrum 常用操作已成面”，而不是“Req 全家桶都已进 MCP”
 - 当前仓库里能明确看到的真实 AK/SK smoke 仍主要集中在项目读取、成员读取、迭代读取，以及 work-item core 的 create/get/update/list；新增协作读工具和多数管理类写工具还需要继续补 live

@@ -210,17 +210,17 @@ node dist/src/server/index.js
 
 <!-- GENERATED:readme-exposure-summary:start -->
 - `8` product modules
-- `254` product tools
+- `257` product tools
 - `2` session/auth tools for shared `http` mode
-- `256` total MCP tools in shared `http` mode
+- `259` total MCP tools in shared `http` mode
 <!-- GENERATED:readme-exposure-summary:end -->
 
-工具读写分布：读操作 156 (62.4%) / 写操作 94 (37.6%)
+工具读写分布：读操作 163 (63.4%) / 写操作 94 (36.6%)
 
 <!-- GENERATED:readme-module-numbers:start -->
 | Module | Tools | Live status | Current breakdown |
 | --- | --- | --- | --- |
-| Req | 44 | Partial | Expanded Scrum surface with status/workflow/template/custom-field config reads; see `docs/wiki/Req-Live-Validated.md` for validated paths and remaining live-depth gaps |
+| Req | 47 | Partial | Expanded Scrum surface with status/workflow/template/template-config/custom-field/status-rule-flag/tracker-handler config reads; see `docs/wiki/Req-Live-Validated.md` for validated paths and remaining live-depth gaps |
 | Repo | 25 | Validated | `25 Full / 0 Reachable / 0 Unpublished / 0 Code` |
 | Pipeline | 77 | Partial | `16 Full / 0 Reachable / 0 Unpublished / 51 Code` |
 | Check | 8 | Validated | `8 Full` |

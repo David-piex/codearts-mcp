@@ -402,6 +402,69 @@ describe("registerReqTool", () => {
     );
   });
 
+  it("registers the get work item template config tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_get_work_item_template_config",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_get_work_item_template_config",
+      expect.objectContaining({
+        title: "req_get_work_item_template_config",
+        description: "Get CodeArts Req work item template config"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the get work item status rule flag tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_get_work_item_status_rule_flag",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_get_work_item_status_rule_flag",
+      expect.objectContaining({
+        title: "req_get_work_item_status_rule_flag",
+        description: "Get CodeArts Req work item status rule flag"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the list work item tracker handlers tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_list_work_item_tracker_handlers",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_list_work_item_tracker_handlers",
+      expect.objectContaining({
+        title: "req_list_work_item_tracker_handlers",
+        description: "List CodeArts Req work item tracker handlers"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("registers the update work item flow tool with rate-limited metadata", () => {
     const registerTool = vi.fn();
 

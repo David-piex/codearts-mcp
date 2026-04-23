@@ -41,7 +41,7 @@ const readWriteMatrixMeta: Record<ModuleName, ReadWriteMatrixMeta> = {
   Req: {
     live: "Partial",
     keyGaps:
-      "Scrum project, module, member, iteration, work-item, comment, association, status, workflow-config, template, and custom-field tools are implemented; deeper live coverage is still expanding for member, batch, and new config-read paths"
+      "Scrum project, module, member, iteration, work-item, comment, association, status, workflow-config, template, template-config, custom-field, status-rule-flag, and tracker-handler tools are implemented; deeper live coverage is still expanding for member, batch, and new config-read paths"
   },
   Repo: {
     live: "Validated",
@@ -82,7 +82,7 @@ const implementationStatusMeta: Record<ModuleName, ImplementationStatusMeta> = {
   Req: {
     live: "Partial",
     notes:
-      "Req now covers Scrum project, module, member, iteration, work-item, comment, association, related-user, status, workflow-config, template, custom-field, and flow-transition tools. Core project/work-item paths have live coverage; member, batch-operation, and newly added config-read live depth is still being expanded."
+      "Req now covers Scrum project, module, member, iteration, work-item, comment, association, related-user, status, workflow-config, template, template-config, custom-field, status-rule-flag, tracker-handler, and flow-transition tools. Core project/work-item paths have live coverage; member, batch-operation, and newly added config-read live depth is still being expanded."
   },
   Repo: {
     live: "Validated",
@@ -124,7 +124,7 @@ const toolStatusSummaryMeta: Record<ModuleName, ToolStatusSummaryMeta> = {
   Req: {
     summary: "Expanded Scrum surface with configuration read support",
     conclusion:
-      "The Req MCP surface has grown from the original 8-tool core to project/module/member/iteration/work-item collaboration plus status/workflow/template/custom-field configuration reads; core live loops are validated while deeper member, batch, and config-read samples remain pending."
+      "The Req MCP surface has grown from the original 8-tool core to project/module/member/iteration/work-item collaboration plus status/workflow/template/template-config/custom-field/status-rule-flag/tracker-handler configuration reads; core live loops are validated while deeper member, batch, and config-read samples remain pending."
   },
   Repo: {
     summary: "`25 Full / 0 Reachable / 0 Unpublished / 0 Code`",
@@ -166,7 +166,7 @@ const readmeModuleNumbersMeta: Record<ModuleName, ReadmeModuleNumbersMeta> = {
   Req: {
     liveStatus: "Partial",
     breakdown:
-      "Expanded Scrum surface with status/workflow/template/custom-field config reads; see `docs/wiki/Req-Live-Validated.md` for validated paths and remaining live-depth gaps"
+      "Expanded Scrum surface with status/workflow/template/template-config/custom-field/status-rule-flag/tracker-handler config reads; see `docs/wiki/Req-Live-Validated.md` for validated paths and remaining live-depth gaps"
   },
   Repo: {
     liveStatus: "Validated",

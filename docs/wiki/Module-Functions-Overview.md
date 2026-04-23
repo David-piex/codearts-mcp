@@ -31,7 +31,7 @@
 
 Req 是最典型的“把项目管理动作做成 MCP 工具”的模块，而且现在已经不只是旧文档里的 8 个核心工具。
 
-当前 Req 已经扩到 `44` 个工具，基本可以按 7 个资源面来理解：
+当前 Req 已经扩到 `47` 个工具，基本可以按 7 个资源面来理解：
 
 - `project`：`req_list_projects` `req_get_project` `req_create_project` `req_update_project` `req_delete_project` `req_check_project_name` `req_list_not_added_projects`
 - `module`：`req_list_project_modules` `req_create_project_module` `req_update_project_module` `req_delete_project_module`
@@ -39,7 +39,7 @@ Req 是最典型的“把项目管理动作做成 MCP 工具”的模块，而�
 - `iteration`：`req_list_iterations` `req_get_iteration` `req_create_iteration` `req_update_iteration` `req_delete_iteration` `req_batch_delete_iterations` `req_update_iteration_state` `req_query_iteration_immovable_issues`
 - `work-item core`：`req_list_work_items` `req_get_work_item` `req_create_work_item` `req_update_work_item` `req_delete_work_item` `req_batch_update_work_items` `req_list_work_item_records`
 - `collaboration`：`req_list_work_item_comments` `req_add_work_item_comment` `req_update_work_item_comment` `req_list_associated_issues` `req_list_associated_commits` `req_list_associated_test_cases` `req_list_related_users` `req_update_work_item_flow`
-- `config-read`：`req_list_work_item_statuses` `req_list_work_item_workflow_config` `req_list_work_item_templates` `req_list_work_item_custom_fields`
+- `config-read`：`req_list_work_item_statuses` `req_list_work_item_workflow_config` `req_list_work_item_templates` `req_get_work_item_template_config` `req_list_work_item_custom_fields` `req_get_work_item_status_rule_flag` `req_list_work_item_tracker_handlers`
 
 适合场景：
 

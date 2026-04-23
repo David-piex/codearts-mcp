@@ -32,7 +32,10 @@ import {
   reqListRelatedUsersInput,
   reqListWorkItemCustomFieldsInput,
   reqListWorkItemCommentsInput,
+  reqGetWorkItemStatusRuleFlagInput,
   reqListWorkItemStatusesInput,
+  reqGetWorkItemTemplateConfigInput,
+  reqListWorkItemTrackerHandlersInput,
   reqListWorkItemTemplatesInput,
   reqListWorkItemWorkflowConfigInput,
   reqListWorkItemRecordsInput,
@@ -76,7 +79,10 @@ import { createReqListProjectsHandler } from "../products/req/tools/list-project
 import { createReqListRelatedUsersHandler } from "../products/req/tools/list-related-users.js";
 import { createReqListWorkItemCustomFieldsHandler } from "../products/req/tools/list-work-item-custom-fields.js";
 import { createReqListWorkItemCommentsHandler } from "../products/req/tools/list-work-item-comments.js";
+import { createReqGetWorkItemStatusRuleFlagHandler } from "../products/req/tools/get-work-item-status-rule-flag.js";
 import { createReqListWorkItemStatusesHandler } from "../products/req/tools/list-work-item-statuses.js";
+import { createReqGetWorkItemTemplateConfigHandler } from "../products/req/tools/get-work-item-template-config.js";
+import { createReqListWorkItemTrackerHandlersHandler } from "../products/req/tools/list-work-item-tracker-handlers.js";
 import { createReqListWorkItemTemplatesHandler } from "../products/req/tools/list-work-item-templates.js";
 import { createReqListWorkItemWorkflowConfigHandler } from "../products/req/tools/list-work-item-workflow-config.js";
 import { createReqListWorkItemRecordsHandler } from "../products/req/tools/list-work-item-records.js";
@@ -305,6 +311,13 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqListWorkItemStatusesHandler
   }),
+  "req_get_work_item_status_rule_flag": defineProductTool({
+    description: "Get CodeArts Req work item status rule flag",
+    inputSchema: reqGetWorkItemStatusRuleFlagInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGetWorkItemStatusRuleFlagHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqGetWorkItemStatusRuleFlagHandler
+  }),
   "req_list_work_item_workflow_config": defineProductTool({
     description: "List CodeArts Req work item workflow config",
     inputSchema: reqListWorkItemWorkflowConfigInput,
@@ -319,12 +332,26 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqListWorkItemTemplatesHandler
   }),
+  "req_get_work_item_template_config": defineProductTool({
+    description: "Get CodeArts Req work item template config",
+    inputSchema: reqGetWorkItemTemplateConfigInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGetWorkItemTemplateConfigHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqGetWorkItemTemplateConfigHandler
+  }),
   "req_list_work_item_custom_fields": defineProductTool({
     description: "List CodeArts Req work item custom fields",
     inputSchema: reqListWorkItemCustomFieldsInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemCustomFieldsHandler>[0] }) =>
       clients.reqClient,
     createProductHandler: createReqListWorkItemCustomFieldsHandler
+  }),
+  "req_list_work_item_tracker_handlers": defineProductTool({
+    description: "List CodeArts Req work item tracker handlers",
+    inputSchema: reqListWorkItemTrackerHandlersInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemTrackerHandlersHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListWorkItemTrackerHandlersHandler
   }),
   "req_get_work_item": defineProductTool({
     description: "Get CodeArts Req work item detail",

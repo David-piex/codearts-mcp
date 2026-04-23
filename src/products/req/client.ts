@@ -545,6 +545,32 @@ export type ReqClient = {
       issue_field_config?: string;
     }>;
   }>;
+  getWorkItemTemplateConfig: (input: {
+    project_id: string;
+    tracker_id: 2 | 3 | 5 | 6 | 7;
+  }) => Promise<{
+    project_id: string;
+    tracker_id: 2 | 3 | 5 | 6 | 7;
+    templates: Array<{
+      id?: number | string;
+      name?: string;
+      description?: string;
+      issue_field_configs?: Array<{
+        field?: string;
+        name?: string;
+        field_type?: string;
+        type_options?: unknown;
+        default_value?: unknown;
+        is_visible?: boolean;
+        is_required?: boolean;
+        position?: number;
+        tracker_list?: number[];
+        option?: unknown;
+        default_option?: unknown;
+        default_options?: unknown[];
+      }>;
+    }>;
+  }>;
   listWorkItemCustomFields: (input: {
     project_id: string;
     tracker_id?: 2 | 3 | 5 | 6 | 7;
@@ -563,6 +589,27 @@ export type ReqClient = {
       created?: string;
       modified?: string;
       is_delete?: boolean;
+    }>;
+  }>;
+  getWorkItemStatusRuleFlag: (input: {
+    project_id: string;
+    tracker_id: 2 | 3 | 5 | 6 | 7;
+  }) => Promise<{
+    project_id: string;
+    tracker_id: 2 | 3 | 5 | 6 | 7;
+    status_rule_flag: {
+      tracker_config_id?: string | number;
+      issue_field_config?: boolean;
+      code_commit?: boolean;
+    };
+  }>;
+  listWorkItemTrackerHandlers: (input: {
+    project_id: string;
+    tracker_id: 2 | 3 | 5 | 6 | 7;
+  }) => Promise<{
+    tracker_handlers: Array<{
+      handler_id?: number;
+      handler_name?: string;
     }>;
   }>;
   addWorkItemComment: (input: {
@@ -1697,6 +1744,61 @@ export function createReqClient(
         templates: response.templates ?? []
       };
     },
+    async getWorkItemTemplateConfig(input) {
+      const query = new URLSearchParams({
+        projectUUId: input.project_id,
+        trackerId: String(input.tracker_id)
+      });
+      const response = (await _http.get(`/v2/template/config?${query.toString()}`)) as {
+        result?: {
+          templates?: Array<{
+            id?: number | string;
+            name?: string;
+            description?: string;
+            issue_field_configs?: Array<{
+              field?: string;
+              name?: string;
+              field_type?: string;
+              type_options?: unknown;
+              default_value?: unknown;
+              is_visible?: boolean;
+              is_required?: boolean;
+              position?: number;
+              tracker_list?: number[];
+              option?: unknown;
+              default_option?: unknown;
+              default_options?: unknown[];
+            }>;
+          }>;
+        };
+        templates?: Array<{
+          id?: number | string;
+          name?: string;
+          description?: string;
+          issue_field_configs?: Array<{
+            field?: string;
+            name?: string;
+            field_type?: string;
+            type_options?: unknown;
+            default_value?: unknown;
+            is_visible?: boolean;
+            is_required?: boolean;
+            position?: number;
+            tracker_list?: number[];
+            option?: unknown;
+            default_option?: unknown;
+            default_options?: unknown[];
+          }>;
+        }>;
+      };
+      const payload = response.result ?? response;
+
+      return {
+        project_id: input.project_id,
+        tracker_id: input.tracker_id,
+        templates: payload.templates ?? []
+      };
+    },
     async listWorkItemCustomFields(input) {
       const query = new URLSearchParams({
         project_id: input.project_id
@@ -1746,6 +1848,70 @@ export function createReqClient(
 
       return {
         custom_field: payload.custom_field ?? []
+      };
+    },
+    async getWorkItemStatusRuleFlag(input) {
+      const query = new URLSearchParams({
+        project_id: input.project_id,
+        tracker_id: String(input.tracker_id)
+      });
+      const response = (await _http.get(
+        `/v2/issue-status/status-rule-flag?${query.toString()}`
+      )) as {
+        result?: {
+          statusRuleFlag?: {
+            tracker_config_id?: string | number;
+            trackerConfigId?: string | number;
+            issue_field_config?: boolean;
+            issueFieldConfig?: boolean;
+            code_commit?: boolean;
+            codeCommit?: boolean;
+          };
+        };
+        status_rule_flag?: {
+          tracker_config_id?: string | number;
+          trackerConfigId?: string | number;
+          issue_field_config?: boolean;
+          issueFieldConfig?: boolean;
+          code_commit?: boolean;
+          codeCommit?: boolean;
+        };
+      };
+      const rawFlag: {
+        tracker_config_id?: string | number;
+        trackerConfigId?: string | number;
+        issue_field_config?: boolean;
+        issueFieldConfig?: boolean;
+        code_commit?: boolean;
+        codeCommit?: boolean;
+      } = response.result?.statusRuleFlag ?? response.status_rule_flag ?? {};
+
+      return {
+        project_id: input.project_id,
+        tracker_id: input.tracker_id,
+        status_rule_flag: {
+          tracker_config_id: rawFlag.tracker_config_id ?? rawFlag.trackerConfigId,
+          issue_field_config: rawFlag.issue_field_config ?? rawFlag.issueFieldConfig,
+          code_commit: rawFlag.code_commit ?? rawFlag.codeCommit
+        }
+      };
+    },
+    async listWorkItemTrackerHandlers(input) {
+      const query = new URLSearchParams({
+        project_id: input.project_id,
+        tracker_id: String(input.tracker_id)
+      });
+      const response = (await _http.get(
+        `/v4/issue-status/tracker-handler-config?${query.toString()}`
+      )) as {
+        tracker_handlers?: Array<{
+          handler_id?: number;
+          handler_name?: string;
+        }>;
+      };
+
+      return {
+        tracker_handlers: response.tracker_handlers ?? []
       };
     },
     async addWorkItemComment(input) {

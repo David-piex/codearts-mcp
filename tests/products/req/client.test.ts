@@ -1671,6 +1671,135 @@ describe("createReqClient", () => {
     });
   });
 
+  it("maps work item template config queries to the documented template config endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          result: {
+            templates: [
+              {
+                id: "tpl-1",
+                name: "默认模板",
+                issue_field_configs: [
+                  {
+                    field: "subject",
+                    name: "标题",
+                    field_type: "text",
+                    default_value: "",
+                    is_visible: true,
+                    is_required: true,
+                    position: 1,
+                    tracker_list: [7]
+                  }
+                ]
+              }
+            ]
+          }
+        };
+      }
+    } as never);
+
+    const result = await client.getWorkItemTemplateConfig({
+      project_id: "p-1",
+      tracker_id: 7
+    });
+
+    expect(requestedPath).toBe("/v2/template/config?projectUUId=p-1&trackerId=7");
+    expect(result).toEqual({
+      project_id: "p-1",
+      tracker_id: 7,
+      templates: [
+        {
+          id: "tpl-1",
+          name: "默认模板",
+          issue_field_configs: [
+            {
+              field: "subject",
+              name: "标题",
+              field_type: "text",
+              default_value: "",
+              is_visible: true,
+              is_required: true,
+              position: 1,
+              tracker_list: [7]
+            }
+          ]
+        }
+      ]
+    });
+  });
+
+  it("maps work item status rule flag queries to the documented status-rule-flag endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          result: {
+            statusRuleFlag: {
+              tracker_config_id: "tracker-config-1",
+              issue_field_config: true,
+              code_commit: false
+            }
+          }
+        };
+      }
+    } as never);
+
+    const result = await client.getWorkItemStatusRuleFlag({
+      project_id: "p-1",
+      tracker_id: 7
+    });
+
+    expect(requestedPath).toBe("/v2/issue-status/status-rule-flag?project_id=p-1&tracker_id=7");
+    expect(result).toEqual({
+      project_id: "p-1",
+      tracker_id: 7,
+      status_rule_flag: {
+        tracker_config_id: "tracker-config-1",
+        issue_field_config: true,
+        code_commit: false
+      }
+    });
+  });
+
+  it("maps work item tracker handler queries to the documented tracker-handler-config endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          tracker_handlers: [
+            {
+              handler_id: -1,
+              handler_name: "处理人"
+            }
+          ]
+        };
+      }
+    } as never);
+
+    const result = await client.listWorkItemTrackerHandlers({
+      project_id: "p-1",
+      tracker_id: 7
+    });
+
+    expect(requestedPath).toBe("/v4/issue-status/tracker-handler-config?project_id=p-1&tracker_id=7");
+    expect(result).toEqual({
+      tracker_handlers: [
+        {
+          handler_id: -1,
+          handler_name: "处理人"
+        }
+      ]
+    });
+  });
+
   it("falls back to the related_user endpoint when the documented related-user path returns not_found", async () => {
     const get = vi
       .fn()
