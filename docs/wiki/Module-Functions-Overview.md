@@ -8,7 +8,7 @@
 
 如果从“实际拿来用”来分，当前 8 个模块大致可以这样理解：
 
-- `Req / Repo / Check / Build`：现在最适合直接接入到真实日常流程里
+- `Req / Repo / Check / Build`：核心链路已经很适合直接接入到真实日常流程里，其中 Req 的新增协作面建议连同 live 状态一起判断
 - `Pipeline / Deploy`：能力很强，适合联调和自动化，但要先确认具体租户样本和 live 状态
 - `TestPlan / Artifact`：有实用查询面，但部分上游路由在北京四仍受发布限制
 
@@ -16,7 +16,7 @@
 
 | 模块 | 中文定位 | 你可以用它做什么 | 典型工具 | 当前建议 |
 | --- | --- | --- | --- | --- |
-| Req | 需求与工作项管理 | 查项目、查成员、查迭代、查工单、创建工单、更新工单 | `req_list_projects` `req_list_work_items` `req_create_work_item` | 适合直接使用 |
+| Req | 需求、项目协作与工作项管理 | 已覆盖 project/member/iteration/work-item/collaboration 5 个层面，可做项目管理、成员协作、迭代治理、工作项流转与关联追踪 | `req_list_projects` `req_create_project` `req_list_project_members` `req_create_iteration` `req_create_work_item` `req_update_work_item_flow` | 核心链路可直接用，扩展协作面先看 live 边界 |
 | Repo | 代码仓库协作 | 查仓库、查分支、查提交、查文件、查 MR、创建仓库、发起/评审/合并 MR、打标签 | `repo_list_repositories` `repo_create_repository` `repo_create_merge_request` | 适合直接使用 |
 | Pipeline | 流水线执行与治理 | 查流水线、查运行、触发运行、审批/拒绝/重试/停止运行，还能管分组、标签、变量组、规则、策略和扩展点 | `pipeline_list_pipelines` `pipeline_run_pipeline` `pipeline_create_group` | 适合进阶自动化 |
 | Check | 代码检查 | 查规则集、查检查任务、看问题、看指标、创建/执行/停止检查任务 | `check_list_rulesets` `check_list_task_issues` `check_run_task` | 适合和 Repo / Build 配套 |
@@ -29,15 +29,26 @@
 
 ### Req
 
-Req 是最典型的“把项目管理动作做成 MCP 工具”的模块。
+Req 是最典型的“把项目管理动作做成 MCP 工具”的模块，而且现在已经不只是旧文档里的 8 个核心工具。
+
+当前 Req 已经扩到 `36` 个工具，基本可以按 5 个资源面来理解：
+
+- `project`：`req_list_projects` `req_get_project` `req_create_project` `req_update_project` `req_delete_project` `req_check_project_name` `req_list_not_added_projects`
+- `member`：`req_list_project_members` `req_add_project_member` `req_batch_add_project_members` `req_batch_delete_project_members` `req_update_project_member_role` `req_leave_project`
+- `iteration`：`req_list_iterations` `req_get_iteration` `req_create_iteration` `req_update_iteration` `req_delete_iteration` `req_batch_delete_iterations` `req_update_iteration_state` `req_query_iteration_immovable_issues`
+- `work-item core`：`req_list_work_items` `req_get_work_item` `req_create_work_item` `req_update_work_item` `req_delete_work_item` `req_batch_update_work_items` `req_list_work_item_records`
+- `collaboration`：`req_list_work_item_comments` `req_add_work_item_comment` `req_update_work_item_comment` `req_list_associated_issues` `req_list_associated_commits` `req_list_associated_test_cases` `req_list_related_users` `req_update_work_item_flow`
 
 适合场景：
 
-- 让 AI 先列项目，再定位某个项目下的需求或缺陷
-- 自动创建工单，或把处理结果回写到已有工单
-- 联动成员和迭代信息，做简单的项目管理辅助
+- 让 AI 先列项目，再进入成员、迭代、工作项上下文继续操作
+- 在一个 Scrum 项目里做“查项目 -> 查工单 -> 改状态/改标题 -> 回写评论/看记录”的连续协作
+- 做基础的追踪辅助，比如看关联缺陷、关联提交、关联测试用例，以及项目相关用户
+- 用 `dry_run=true` 先预演高风险写操作，再决定是否真正执行
 
-它的优势是模型容易理解、输入输出也比较稳定，真实写路径已经比较成熟。
+它的优势还是模型容易理解、输入输出稳定，但现在更准确的说法是：功能面已经覆盖到 Scrum 常用协作层，真实 AK/SK 验证目前仍主要集中在项目/成员/迭代读取和 work-item core 读写，新增协作面不要默认按“全部已 live”理解。
+
+想单独看 Req 当前哪些路径已经做过真实 AK/SK 联调，直接看 [Req-Live-Validated](./Req-Live-Validated.md)。
 
 ### Repo
 
@@ -152,6 +163,7 @@ Artifact 更偏向“制品可见性”和“下载/追踪能力”。
 ## 下一步看什么
 
 - 想按角色选模块和阅读路径：看 [Role-Based-Entry-Paths](./Role-Based-Entry-Paths.md)
+- 想看 Req 当前真实 AK/SK 边界：看 [Req-Live-Validated](./Req-Live-Validated.md)
 - 想看模块规模和 live 缺口：看 [Capability-Matrix](./Capability-Matrix.md)
 - 想看真实 AK/SK 联调状态：看 [Module-Live-Readiness](./Module-Live-Readiness.md)
 - 想看测试和部署联调策略：看 [Testing-and-Live-Ops](./Testing-and-Live-Ops.md)

@@ -39,8 +39,9 @@ type ReadmeModuleNumbersMeta = {
 
 const readWriteMatrixMeta: Record<ModuleName, ReadWriteMatrixMeta> = {
   Req: {
-    live: "Validated",
-    keyGaps: "Project and work-item read/write paths are now fully live-validated"
+    live: "Partial",
+    keyGaps:
+      "Scrum project, member, iteration, work-item, comment, association, and flow tools are implemented; deeper live coverage is still expanding for member and batch operations"
   },
   Repo: {
     live: "Validated",
@@ -79,9 +80,9 @@ const readWriteMatrixMeta: Record<ModuleName, ReadWriteMatrixMeta> = {
 
 const implementationStatusMeta: Record<ModuleName, ImplementationStatusMeta> = {
   Req: {
-    live: "Validated",
+    live: "Partial",
     notes:
-      "Project and work-item read/write loops now have real AK/SK validation on a writable sampled project."
+      "Req now covers Scrum project, member, iteration, work-item, comment, association, related-user, and flow-transition tools. Core project/work-item paths have live coverage; member and batch-operation live depth is still being expanded."
   },
   Repo: {
     live: "Validated",
@@ -121,8 +122,9 @@ const implementationStatusMeta: Record<ModuleName, ImplementationStatusMeta> = {
 
 const toolStatusSummaryMeta: Record<ModuleName, ToolStatusSummaryMeta> = {
   Req: {
-    summary: "`8 Full`",
-    conclusion: "Project and work-item read/write paths are fully live-validated."
+    summary: "Expanded Scrum surface with core live closure",
+    conclusion:
+      "The Req MCP surface has grown from the original 8-tool core to project/member/iteration/work-item collaboration coverage; core live loops are validated while deeper member and batch samples remain pending."
   },
   Repo: {
     summary: "`25 Full / 0 Reachable / 0 Unpublished / 0 Code`",
@@ -162,8 +164,9 @@ const toolStatusSummaryMeta: Record<ModuleName, ToolStatusSummaryMeta> = {
 
 const readmeModuleNumbersMeta: Record<ModuleName, ReadmeModuleNumbersMeta> = {
   Req: {
-    liveStatus: "Validated",
-    breakdown: "`8 Full / 0 Reachable / 0 Unpublished / 0 Code`"
+    liveStatus: "Partial",
+    breakdown:
+      "Expanded Scrum surface; see `docs/wiki/Req-Live-Validated.md` for validated paths and remaining live-depth gaps"
   },
   Repo: {
     liveStatus: "Validated",

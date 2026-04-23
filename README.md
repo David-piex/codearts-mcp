@@ -210,22 +210,22 @@ node dist/src/server/index.js
 
 <!-- GENERATED:readme-exposure-summary:start -->
 - `8` product modules
-- `218` product tools
+- `246` product tools
 - `2` session/auth tools for shared `http` mode
-- `220` total MCP tools in shared `http` mode
+- `248` total MCP tools in shared `http` mode
 <!-- GENERATED:readme-exposure-summary:end -->
 
-工具读写分布：读操作 145 (66.5%) / 写操作 73 (33.5%)
+工具读写分布：读操作 155 (63.0%) / 写操作 91 (37.0%)
 
 <!-- GENERATED:readme-module-numbers:start -->
 | Module | Tools | Live status | Current breakdown |
 | --- | --- | --- | --- |
-| Req | 8 | Validated | `8 Full / 0 Reachable / 0 Unpublished / 0 Code` |
+| Req | 36 | Partial | Expanded Scrum surface; see `docs/wiki/Req-Live-Validated.md` for validated paths and remaining live-depth gaps |
 | Repo | 25 | Validated | `25 Full / 0 Reachable / 0 Unpublished / 0 Code` |
 | Pipeline | 77 | Partial | `16 Full / 0 Reachable / 0 Unpublished / 51 Code` |
 | Check | 8 | Validated | `8 Full` |
 | TestPlan | 7 | Partial | `1 Full / 2 Reachable / 4 Unpublished / 0 Code` |
-| Deploy | 59 | Partial | Expanded surface; see `docs/wiki/Deploy-Live-Validated.md` for the current live split |
+| Deploy | 59 | Partial | Expanded v4 surface with partial live closure; see `docs/wiki/Module-Live-Readiness.md` |
 | Build | 22 | Validated | `22 Full / 0 Reachable / 0 Unpublished / 0 Code` |
 | Artifact | 12 | Partial | `5 Full / 0 Reachable / 7 Unpublished / 0 Code` |
 <!-- GENERATED:readme-module-numbers:end -->

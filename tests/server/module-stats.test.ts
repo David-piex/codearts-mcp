@@ -19,13 +19,15 @@ describe("classifyToolAccess", () => {
     expect(classifyToolAccess("pipeline_approve_run")).toBe("write");
     expect(classifyToolAccess("pipeline_switch_strategy")).toBe("write");
     expect(classifyToolAccess("pipeline_inherit_project_strategy")).toBe("write");
+    expect(classifyToolAccess("req_batch_update_work_items")).toBe("write");
+    expect(classifyToolAccess("req_leave_project")).toBe("write");
   });
 });
 
 describe("collectModuleStats", () => {
   it("returns the current per-module tool totals and read/write split", () => {
     expect(collectModuleStats()).toEqual([
-      { module: "Req", total: 8, read: 6, write: 2 },
+      { module: "Req", total: 36, read: 16, write: 20 },
       { module: "Repo", total: 25, read: 17, write: 8 },
       { module: "Pipeline", total: 77, read: 42, write: 35 },
       { module: "Check", total: 8, read: 5, write: 3 },
@@ -39,9 +41,9 @@ describe("collectModuleStats", () => {
   it("returns the current aggregate product tool totals", () => {
     expect(collectProductToolStats()).toEqual({
       modules: 8,
-      total: 218,
-      read: 145,
-      write: 73
+      total: 246,
+      read: 155,
+      write: 91
     });
   });
 
@@ -49,14 +51,14 @@ describe("collectModuleStats", () => {
     expect(renderModuleStatsMarkdown()).toContain("| Module | Total | Read | Write |");
     expect(renderModuleStatsMarkdown()).toContain("| Deploy | 59 | 44 | 15 |");
     expect(renderModuleStatsMarkdown()).toContain("- Product modules: `8`");
-    expect(renderModuleStatsMarkdown()).toContain("- Product tools: `218`");
-    expect(renderModuleStatsMarkdown()).toContain("- Shared HTTP total with auth tools: `220`");
+    expect(renderModuleStatsMarkdown()).toContain("- Product tools: `246`");
+    expect(renderModuleStatsMarkdown()).toContain("- Shared HTTP total with auth tools: `248`");
   });
 
   it("renders a json report from the current stats", () => {
     expect(JSON.parse(renderModuleStatsReportJson())).toEqual({
       modules: [
-        { module: "Req", total: 8, read: 6, write: 2 },
+        { module: "Req", total: 36, read: 16, write: 20 },
         { module: "Repo", total: 25, read: 17, write: 8 },
         { module: "Pipeline", total: 77, read: 42, write: 35 },
         { module: "Check", total: 8, read: 5, write: 3 },
@@ -67,10 +69,10 @@ describe("collectModuleStats", () => {
       ],
       totals: {
         modules: 8,
-        total: 218,
-        read: 145,
-        write: 73,
-        httpTotalWithAuth: 220
+        total: 246,
+        read: 155,
+        write: 91,
+        httpTotalWithAuth: 248
       }
     });
   });
