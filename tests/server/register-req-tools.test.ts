@@ -717,6 +717,27 @@ describe("registerReqTool", () => {
     );
   });
 
+  it("registers the download attachment tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_download_attachment",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_download_attachment",
+      expect.objectContaining({
+        title: "req_download_attachment",
+        description: "Download a CodeArts Req work item attachment"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("registers the list work item work hours tool in http mode", () => {
     const registerTool = vi.fn();
 
@@ -733,6 +754,27 @@ describe("registerReqTool", () => {
       expect.objectContaining({
         title: "req_list_work_item_work_hours",
         description: "List CodeArts Req work hour records for a work item"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the upload attachment tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_upload_attachment",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_upload_attachment",
+      expect.objectContaining({
+        title: "req_upload_attachment",
+        description: "Upload a CodeArts Req work item attachment"
       }),
       expect.any(Function)
     );

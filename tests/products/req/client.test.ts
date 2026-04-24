@@ -1355,6 +1355,88 @@ describe("createReqClient", () => {
     });
   });
 
+  it("maps work item attachment uploads to the documented multipart endpoint", async () => {
+    let requestedPath = "";
+    let uploadedFileName = "";
+    let uploadedFileText = "";
+    let uploadedContentType = "";
+    const client = createReqClient({
+      postMultipart: async (path: string, body: FormData) => {
+        requestedPath = path;
+        const file = body.get("attachment");
+
+        if (!(file instanceof File)) {
+          throw new Error("expected multipart attachment");
+        }
+
+        uploadedFileName = file.name;
+        uploadedFileText = await file.text();
+        uploadedContentType = file.type;
+
+        return {
+          disk_filename: "disk-demo",
+          file_name: "demo.txt",
+          id: 72372,
+          issue_id: 70779173,
+          project_id: "p-1",
+          size: "4"
+        };
+      }
+    } as never);
+
+    const result = await client.uploadAttachment({
+      project_id: "p-1",
+      work_item_id: "70779173",
+      file_name: "demo.txt",
+      file_content: new Uint8Array([102, 97, 107, 101]),
+      content_type: "text/plain"
+    });
+
+    expect(requestedPath).toBe("/v4/projects/p-1/issues/70779173/attachments/upload");
+    expect(uploadedFileName).toBe("demo.txt");
+    expect(uploadedFileText).toBe("fake");
+    expect(uploadedContentType).toBe("text/plain");
+    expect(result).toEqual({
+      project_id: "p-1",
+      work_item_id: "70779173",
+      attachment_id: "72372",
+      disk_filename: "disk-demo",
+      file_name: "demo.txt",
+      size: "4"
+    });
+  });
+
+  it("maps work item attachment downloads to the documented binary endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      getBinary: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          body: new Uint8Array([1, 2, 3, 4]),
+          contentType: "text/plain",
+          fileName: "demo.txt"
+        };
+      }
+    } as never);
+
+    const result = await client.downloadAttachment({
+      project_id: "p-1",
+      work_item_id: "70779173",
+      attachment_id: "72372"
+    });
+
+    expect(requestedPath).toBe("/v4/projects/p-1/issues/70779173/attachments/72372");
+    expect(result).toEqual({
+      project_id: "p-1",
+      work_item_id: "70779173",
+      attachment_id: "72372",
+      body: new Uint8Array([1, 2, 3, 4]),
+      content_type: "text/plain",
+      file_name: "demo.txt"
+    });
+  });
+
   it("maps add work item work hour to the v3 work-hours endpoint", async () => {
     let requestedPath = "";
     let requestedBody: Record<string, unknown> | undefined;

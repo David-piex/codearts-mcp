@@ -214,6 +214,19 @@ export const reqDownloadImageFileInput = z.object({
   image_uri: z.string().min(1)
 });
 
+export const reqUploadAttachmentInput = z.object({
+  project_id: idSchema,
+  work_item_id: idSchema,
+  file_path: z.string().min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const reqDownloadAttachmentInput = z.object({
+  project_id: idSchema,
+  work_item_id: idSchema,
+  attachment_id: idSchema
+});
+
 const reqWorkHourTimestampSchema = z.union([z.string().min(1), z.number().int().positive()]);
 
 export const reqAddWorkItemWorkHourInput = z

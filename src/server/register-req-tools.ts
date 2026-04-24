@@ -34,6 +34,7 @@ import {
   reqListBoardWorkItemsInput,
   reqListCacheDataInput,
   reqDeleteAttachmentInput,
+  reqDownloadAttachmentInput,
   reqDownloadImageFileInput,
   reqGetProjectPublicConfigInput,
   reqGetProjectSummaryInput,
@@ -94,6 +95,7 @@ import {
   reqUpdateWorkItemCommentInput,
   reqUpdateWorkItemFlowInput,
   reqUpdateWorkItemInput,
+  reqUploadAttachmentInput,
   reqUploadWorkItemImageInput,
   reqValidateModuleNameInput
 } from "../products/req/schemas.js";
@@ -121,6 +123,7 @@ import { createReqDeleteIterationHandler } from "../products/req/tools/delete-it
 import { createReqDeleteProjectModuleHandler } from "../products/req/tools/delete-project-module.js";
 import { createReqCreateWorkItemHandler } from "../products/req/tools/create-work-item.js";
 import { createReqDeleteWorkItemHandler } from "../products/req/tools/delete-work-item.js";
+import { createReqDownloadAttachmentHandler } from "../products/req/tools/download-attachment.js";
 import { createReqDownloadImageFileHandler } from "../products/req/tools/download-image-file.js";
 import { createReqBatchUpdateWorkItemsHandler } from "../products/req/tools/batch-update-work-items.js";
 import { createReqCountWorkItemTreeHandler } from "../products/req/tools/count-work-item-tree.js";
@@ -190,6 +193,7 @@ import { createReqUpdateProjectHandler } from "../products/req/tools/update-proj
 import { createReqUpdateWorkItemCommentHandler } from "../products/req/tools/update-work-item-comment.js";
 import { createReqUpdateWorkItemFlowHandler } from "../products/req/tools/update-work-item-flow.js";
 import { createReqUpdateWorkItemHandler } from "../products/req/tools/update-work-item.js";
+import { createReqUploadAttachmentHandler } from "../products/req/tools/upload-attachment.js";
 import { createReqUploadWorkItemImageHandler } from "../products/req/tools/upload-work-item-image.js";
 import { createReqValidateModuleNameHandler } from "../products/req/tools/validate-module-name.js";
 import { defineProductTool, registerDefinedTool } from "./product-tool-registry.js";
@@ -259,6 +263,13 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqDeleteAttachmentHandler,
     rateLimitAction: "req_delete_attachment"
+  }),
+  "req_download_attachment": defineProductTool({
+    description: "Download a CodeArts Req work item attachment",
+    inputSchema: reqDownloadAttachmentInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqDownloadAttachmentHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqDownloadAttachmentHandler
   }),
   "req_create_project": defineProductTool({
     description: "Create CodeArts Req project",
@@ -558,6 +569,14 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqUploadWorkItemImageHandler,
     rateLimitAction: "req_upload_work_item_image"
+  }),
+  "req_upload_attachment": defineProductTool({
+    description: "Upload a CodeArts Req work item attachment",
+    inputSchema: reqUploadAttachmentInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUploadAttachmentHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqUploadAttachmentHandler,
+    rateLimitAction: "req_upload_attachment"
   }),
   "req_create_work_item": defineProductTool({
     description: "Create CodeArts Req work item",

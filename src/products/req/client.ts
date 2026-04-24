@@ -866,6 +866,18 @@ export type ReqClient = {
     content_type?: string;
     file_name?: string;
   }>;
+  downloadAttachment: (input: {
+    project_id: string;
+    work_item_id: string;
+    attachment_id: string;
+  }) => Promise<{
+    project_id: string;
+    work_item_id: string;
+    attachment_id: string;
+    body: Uint8Array;
+    content_type?: string;
+    file_name?: string;
+  }>;
   listWorkItemWorkHours: (input: {
     project_id: string;
     work_item_id: string;
@@ -1371,6 +1383,20 @@ export type ReqClient = {
     file_name: string;
     img_id?: string | number;
     img_url?: string;
+  }>;
+  uploadAttachment: (input: {
+    project_id: string;
+    work_item_id: string;
+    file_name: string;
+    file_content: Uint8Array;
+    content_type?: string;
+  }) => Promise<{
+    project_id: string;
+    work_item_id: string;
+    attachment_id: string;
+    disk_filename?: string;
+    file_name?: string;
+    size?: string;
   }>;
   addWorkItemWorkHour: (input: {
     project_id: string;
@@ -3522,6 +3548,20 @@ export function createReqClient(
         file_name: response.fileName
       };
     },
+    async downloadAttachment(input) {
+      const response = await _http.getBinary(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/issues/${encodeURIComponent(input.work_item_id)}/attachments/${encodeURIComponent(input.attachment_id)}`
+      );
+
+      return {
+        project_id: input.project_id,
+        work_item_id: input.work_item_id,
+        attachment_id: input.attachment_id,
+        body: response.body,
+        content_type: response.contentType,
+        file_name: response.fileName
+      };
+    },
     async listWorkItemWorkHours(input) {
       const response = (await _http.get(
         `/v3/projects/${encodeURIComponent(input.project_id)}/issues/${encodeURIComponent(input.work_item_id)}/work-hours`
@@ -4423,6 +4463,36 @@ export function createReqClient(
         file_name: input.file_name,
         img_id: response.img_id,
         img_url: response.img_url
+      };
+    },
+    async uploadAttachment(input) {
+      const form = new FormData();
+      form.append(
+        "attachment",
+        new Blob([Buffer.from(input.file_content)], {
+          type: input.content_type ?? "application/octet-stream"
+        }),
+        input.file_name
+      );
+      const response = (await _http.postMultipart(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/issues/${encodeURIComponent(input.work_item_id)}/attachments/upload`,
+        form
+      )) as {
+        disk_filename?: string;
+        file_name?: string;
+        id?: string | number;
+        issue_id?: string | number;
+        project_id?: string;
+        size?: string;
+      };
+
+      return {
+        project_id: response.project_id ?? input.project_id,
+        work_item_id: String(response.issue_id ?? input.work_item_id),
+        attachment_id: String(response.id ?? ""),
+        disk_filename: response.disk_filename,
+        file_name: response.file_name ?? input.file_name,
+        size: response.size
       };
     },
     async addWorkItemWorkHour(input) {

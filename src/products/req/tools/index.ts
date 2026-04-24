@@ -4,6 +4,7 @@ export const reqToolNames = [
   "req_add_work_item_work_hour",
   "req_add_project_member",
   "req_delete_attachment",
+  "req_download_attachment",
   "req_batch_add_project_members",
   "req_batch_delete_project_members",
   "req_batch_delete_iterations",
@@ -92,6 +93,7 @@ export const reqToolNames = [
   "req_update_project_member_role",
   "req_update_plan_image",
   "req_update_cache_data",
+  "req_upload_attachment",
   "req_upload_work_item_image",
   "req_validate_module_name"
 ];
