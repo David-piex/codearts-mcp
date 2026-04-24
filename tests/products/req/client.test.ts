@@ -1628,6 +1628,99 @@ describe("createReqClient", () => {
     });
   });
 
+  it("maps bugs per developer queries to the documented metric endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return {
+          project_id: "p-1",
+          project_name: "Payments",
+          metric_value: "2.0",
+          metric_name: "bugs_per_developer",
+          dividend_value: "2",
+          divisor_value: "1"
+        };
+      }
+    } as never);
+
+    const result = await client.getProjectBugsPerDeveloper({
+      project_id: "p-1"
+    });
+
+    expect(requestedPath).toBe("/v1/p-1/bugs-per-developer/query");
+    expect(requestedBody).toEqual({});
+    expect(result).toEqual({
+      project_id: "p-1",
+      project_name: "Payments",
+      metric_value: "2.0",
+      metric_name: "bugs_per_developer",
+      dividend_value: "2",
+      divisor_value: "1"
+    });
+  });
+
+  it("maps project completion rate queries to the documented metric endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return {
+          project_id: "p-1",
+          project_name: "Payments",
+          metric_value: 0.8945,
+          metric_name: "completion_rate",
+          dividend_value: 15,
+          divisor_value: 20
+        };
+      }
+    } as never);
+
+    const result = await client.getProjectCompletionRate({
+      project_id: "p-1",
+      date_range: "1598457600000,1598544000000",
+      sprint_id: "8883443",
+      metric_type: "on-time_completion_rate",
+      dividend: {
+        on_time: "ontime",
+        custom_field16: "自定义字段值"
+      },
+      divisor: {
+        on_time: "ontime",
+        custom_field16: "自定义字段值"
+      }
+    });
+
+    expect(requestedPath).toBe("/v1/p-1/completion-rate/query");
+    expect(requestedBody).toEqual({
+      date_range: "1598457600000,1598544000000",
+      sprint_id: "8883443",
+      metric_type: "on-time_completion_rate",
+      dividend: {
+        on_time: "ontime",
+        custom_field16: "自定义字段值"
+      },
+      divisor: {
+        on_time: "ontime",
+        custom_field16: "自定义字段值"
+      }
+    });
+    expect(result).toEqual({
+      project_id: "p-1",
+      project_name: "Payments",
+      metric_value: 0.8945,
+      metric_name: "completion_rate",
+      dividend_value: 15,
+      divisor_value: 20
+    });
+  });
+
   it("maps project work hour queries to the v4 project work-hours endpoint", async () => {
     let requestedPath = "";
     let requestedBody: Record<string, unknown> | undefined;

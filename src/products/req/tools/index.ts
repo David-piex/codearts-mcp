@@ -32,6 +32,8 @@ export const reqToolNames = [
   "req_list_not_added_projects",
   "req_list_projects",
   "req_get_project",
+  "req_get_project_bugs_per_developer",
+  "req_get_project_completion_rate",
   "req_get_project_due_days_after",
   "req_list_project_demand_statistics",
   "req_get_project_summary",

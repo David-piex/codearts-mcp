@@ -28,6 +28,8 @@ import {
   reqCountWorkItemTreeInput,
   reqGetCurrentUserInfoInput,
   reqGetCurrentUserRoleInput,
+  reqGetProjectBugsPerDeveloperInput,
+  reqGetProjectCompletionRateInput,
   reqGetProjectDueDaysAfterInput,
   reqListBoardWorkItemStatusRecordsInput,
   reqListBoardWorkItemWorkflowConfigInput,
@@ -133,6 +135,8 @@ import { createReqGetCurrentUserInfoHandler } from "../products/req/tools/get-cu
 import { createReqGetCurrentUserRoleHandler } from "../products/req/tools/get-current-user-role.js";
 import { createReqGetIterationHandler } from "../products/req/tools/get-iteration.js";
 import { createReqGetPlanHandler } from "../products/req/tools/get-plan.js";
+import { createReqGetProjectBugsPerDeveloperHandler } from "../products/req/tools/get-project-bugs-per-developer.js";
+import { createReqGetProjectCompletionRateHandler } from "../products/req/tools/get-project-completion-rate.js";
 import { createReqGetProjectDueDaysAfterHandler } from "../products/req/tools/get-project-due-days-after.js";
 import { createReqGetProjectPublicConfigHandler } from "../products/req/tools/get-project-public-config.js";
 import { createReqGetProjectHandler } from "../products/req/tools/get-project.js";
@@ -440,6 +444,22 @@ const reqToolDefinitions = {
     inputSchema: reqGetProjectInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGetProjectHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqGetProjectHandler
+  }),
+  "req_get_project_bugs_per_developer": defineProductTool({
+    description: "Get CodeArts Req project bugs per developer metric",
+    inputSchema: reqGetProjectBugsPerDeveloperInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqGetProjectBugsPerDeveloperHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqGetProjectBugsPerDeveloperHandler
+  }),
+  "req_get_project_completion_rate": defineProductTool({
+    description: "Get CodeArts Req project completion rate metric",
+    inputSchema: reqGetProjectCompletionRateInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqGetProjectCompletionRateHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqGetProjectCompletionRateHandler
   }),
   "req_get_project_due_days_after": defineProductTool({
     description: "Get CodeArts Req project due-days-after config",

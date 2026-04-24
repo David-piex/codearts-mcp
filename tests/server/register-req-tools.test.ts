@@ -633,6 +633,48 @@ describe("registerReqTool", () => {
     );
   });
 
+  it("registers the get project bugs per developer tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_get_project_bugs_per_developer",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_get_project_bugs_per_developer",
+      expect.objectContaining({
+        title: "req_get_project_bugs_per_developer",
+        description: "Get CodeArts Req project bugs per developer metric"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the get project completion rate tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_get_project_completion_rate",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_get_project_completion_rate",
+      expect.objectContaining({
+        title: "req_get_project_completion_rate",
+        description: "Get CodeArts Req project completion rate metric"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("registers the get current user info tool in http mode", () => {
     const registerTool = vi.fn();
 

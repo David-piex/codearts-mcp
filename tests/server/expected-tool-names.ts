@@ -235,6 +235,8 @@ export const expectedToolNames = [
   "req_get_iteration",
   "req_get_plan",
   "req_get_project",
+  "req_get_project_bugs_per_developer",
+  "req_get_project_completion_rate",
   "req_get_project_due_days_after",
   "req_get_project_public_config",
   "req_get_project_summary",

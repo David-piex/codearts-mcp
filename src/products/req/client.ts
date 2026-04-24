@@ -68,6 +68,29 @@ export type ReqClient = {
     demand_statistics: ReqDemandStatistic[];
     issue_completion_rates: ReqIssueCompletionRate[];
   }>;
+  getProjectBugsPerDeveloper: (input: { project_id: string }) => Promise<{
+    project_id: string;
+    project_name?: string;
+    metric_value?: string | number;
+    metric_name?: string;
+    dividend_value?: string | number;
+    divisor_value?: string | number;
+  }>;
+  getProjectCompletionRate: (input: {
+    project_id: string;
+    date_range?: string;
+    metric_type?: string;
+    sprint_id?: string;
+    dividend?: Record<string, string>;
+    divisor?: Record<string, string>;
+  }) => Promise<{
+    project_id: string;
+    project_name?: string;
+    metric_value?: string | number;
+    metric_name?: string;
+    dividend_value?: string | number;
+    divisor_value?: string | number;
+  }>;
   listProjectBugStatistics: (input: { project_id: string }) => Promise<{
     project_id: string;
     bug_statistics: ReqBugStatistic[];
@@ -1625,6 +1648,15 @@ type ReqBugStatistic = {
   defect_index?: number;
 };
 
+type ReqProjectMetric = {
+  project_id?: string;
+  project_name?: string;
+  metric_value?: string | number;
+  metric_name?: string;
+  dividend_value?: string | number;
+  divisor_value?: string | number;
+};
+
 type ReqProjectIssueRecord = {
   field_key?: string;
   field_name?: string;
@@ -1891,6 +1923,42 @@ export function createReqClient(
         bug_statistics: response.bug_statistics ?? [],
         demand_statistics: response.demand_statistics ?? [],
         issue_completion_rates: response.issue_completion_rates ?? []
+      };
+    },
+    async getProjectBugsPerDeveloper(input) {
+      const response = (await _http.post(
+        `/v1/${encodeURIComponent(input.project_id)}/bugs-per-developer/query`,
+        {}
+      )) as ReqProjectMetric;
+
+      return {
+        project_id: response.project_id ?? input.project_id,
+        project_name: response.project_name,
+        metric_value: response.metric_value,
+        metric_name: response.metric_name,
+        dividend_value: response.dividend_value,
+        divisor_value: response.divisor_value
+      };
+    },
+    async getProjectCompletionRate(input) {
+      const response = (await _http.post(
+        `/v1/${encodeURIComponent(input.project_id)}/completion-rate/query`,
+        {
+          ...(input.date_range ? { date_range: input.date_range } : {}),
+          ...(input.metric_type ? { metric_type: input.metric_type } : {}),
+          ...(input.sprint_id ? { sprint_id: input.sprint_id } : {}),
+          ...(input.dividend ? { dividend: input.dividend } : {}),
+          ...(input.divisor ? { divisor: input.divisor } : {})
+        }
+      )) as ReqProjectMetric;
+
+      return {
+        project_id: response.project_id ?? input.project_id,
+        project_name: response.project_name,
+        metric_value: response.metric_value,
+        metric_name: response.metric_name,
+        dividend_value: response.dividend_value,
+        divisor_value: response.divisor_value
       };
     },
     async listProjectBugStatistics(input) {

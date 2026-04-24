@@ -48,6 +48,19 @@ export const reqGetProjectSummaryInput = z.object({
   project_id: idSchema
 });
 
+export const reqGetProjectBugsPerDeveloperInput = z.object({
+  project_id: idSchema
+});
+
+export const reqGetProjectCompletionRateInput = z.object({
+  project_id: idSchema,
+  date_range: z.string().min(1).optional(),
+  metric_type: z.string().min(1).optional(),
+  sprint_id: idSchema.optional(),
+  dividend: z.record(z.string(), z.string()).optional(),
+  divisor: z.record(z.string(), z.string()).optional()
+});
+
 export const reqListProjectModulesInput = pagingSchema
   .pick({
     page: true,
