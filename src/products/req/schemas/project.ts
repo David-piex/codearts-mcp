@@ -58,6 +58,16 @@ export const reqListProjectModulesInput = pagingSchema
     page_size: z.number().int().positive().max(1000).default(20)
   });
 
+export const reqListProjectDomainsInput = pagingSchema
+  .pick({
+    page: true,
+    page_size: true
+  })
+  .extend({
+    project_id: idSchema,
+    page_size: z.number().int().positive().max(100).default(20)
+  });
+
 export const reqCreateProjectModuleInput = z.object({
   project_id: idSchema,
   module_name: z.string().min(1).max(30),

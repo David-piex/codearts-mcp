@@ -54,6 +54,7 @@ import {
   reqListPlansInput,
   reqListProjectBugStatisticsInput,
   reqListProjectDemandStatisticsInput,
+  reqListProjectDomainsInput,
   reqListProjectWorkHoursInput,
   reqListProjectWorkItemRecordsInput,
   reqQueryIterationImmovableIssuesInput,
@@ -160,6 +161,7 @@ import { createReqListPlanWorkItemsHandler } from "../products/req/tools/list-pl
 import { createReqListPlansHandler } from "../products/req/tools/list-plans.js";
 import { createReqListProjectBugStatisticsHandler } from "../products/req/tools/list-project-bug-statistics.js";
 import { createReqListProjectDemandStatisticsHandler } from "../products/req/tools/list-project-demand-statistics.js";
+import { createReqListProjectDomainsHandler } from "../products/req/tools/list-project-domains.js";
 import { createReqListProjectWorkHoursHandler } from "../products/req/tools/list-project-work-hours.js";
 import { createReqListProjectWorkItemRecordsHandler } from "../products/req/tools/list-project-work-item-records.js";
 import { createReqListNotAddedProjectsHandler } from "../products/req/tools/list-not-added-projects.js";
@@ -454,6 +456,13 @@ const reqToolDefinitions = {
       reqClient: Parameters<typeof createReqListProjectDemandStatisticsHandler>[0];
     }) => clients.reqClient,
     createProductHandler: createReqListProjectDemandStatisticsHandler
+  }),
+  "req_list_project_domains": defineProductTool({
+    description: "List CodeArts Req project domains",
+    inputSchema: reqListProjectDomainsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListProjectDomainsHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListProjectDomainsHandler
   }),
   "req_list_project_bug_statistics": defineProductTool({
     description: "List CodeArts Req project bug statistics",

@@ -265,6 +265,7 @@ export const expectedToolNames = [
   "req_list_plans",
   "req_list_project_bug_statistics",
   "req_list_project_demand_statistics",
+  "req_list_project_domains",
   "req_list_project_members",
   "req_list_project_modules",
   "req_list_project_work_hours",

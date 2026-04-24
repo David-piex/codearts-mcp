@@ -1584,6 +1584,50 @@ describe("createReqClient", () => {
     });
   });
 
+  it("maps project domain queries to the documented domain endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          total: 2,
+          domains: [
+            {
+              domain_id: "domain-1",
+              domain_name: "性能"
+            },
+            {
+              domain_id: "domain-2",
+              domain_name: "功能"
+            }
+          ]
+        };
+      }
+    } as never);
+
+    const result = await client.listProjectDomains({
+      project_id: "p-1",
+      page: 2,
+      page_size: 20
+    });
+
+    expect(requestedPath).toBe("/v4/projects/p-1/domains?offset=20&limit=20");
+    expect(result).toEqual({
+      total: 2,
+      domains: [
+        {
+          domain_id: "domain-1",
+          domain_name: "性能"
+        },
+        {
+          domain_id: "domain-2",
+          domain_name: "功能"
+        }
+      ]
+    });
+  });
+
   it("maps project work hour queries to the v4 project work-hours endpoint", async () => {
     let requestedPath = "";
     let requestedBody: Record<string, unknown> | undefined;

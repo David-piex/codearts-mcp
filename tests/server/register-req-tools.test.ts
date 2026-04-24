@@ -696,6 +696,27 @@ describe("registerReqTool", () => {
     );
   });
 
+  it("registers the list project domains tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_list_project_domains",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_list_project_domains",
+      expect.objectContaining({
+        title: "req_list_project_domains",
+        description: "List CodeArts Req project domains"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("registers the list associated wikis tool in http mode", () => {
     const registerTool = vi.fn();
 

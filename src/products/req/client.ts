@@ -625,6 +625,13 @@ export type ReqClient = {
     }>;
     total?: number;
   }>;
+  listProjectDomains: (input: { project_id: string; page: number; page_size: number }) => Promise<{
+    domains: Array<{
+      domain_id?: string;
+      domain_name?: string;
+    }>;
+    total?: number;
+  }>;
   listProjects: (input: { page: number; page_size: number; keyword?: string }) => Promise<{
     projects: Array<{ project_id: string; name: string; project_num_id?: number }>;
     total?: number;
@@ -3087,6 +3094,28 @@ export function createReqClient(
 
       return {
         members: response.members ?? [],
+        total: response.total
+      };
+    },
+    async listProjectDomains(input) {
+      const offset = (input.page - 1) * input.page_size;
+      const query = new URLSearchParams({
+        offset: String(offset),
+        limit: String(input.page_size)
+      });
+
+      const response = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/domains?${query.toString()}`
+      )) as {
+        domains?: Array<{
+          domain_id?: string;
+          domain_name?: string;
+        }>;
+        total?: number;
+      };
+
+      return {
+        domains: response.domains ?? [],
         total: response.total
       };
     },
