@@ -528,6 +528,111 @@ describe("registerReqTool", () => {
     );
   });
 
+  it("registers the list work item tree tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_list_work_item_tree",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_list_work_item_tree",
+      expect.objectContaining({
+        title: "req_list_work_item_tree",
+        description: "List CodeArts Req work items in tree mode"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the list work item tags tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_list_work_item_tags",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_list_work_item_tags",
+      expect.objectContaining({
+        title: "req_list_work_item_tags",
+        description: "List CodeArts Req work item tags"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the get work item index counts tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_get_work_item_index_counts",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_get_work_item_index_counts",
+      expect.objectContaining({
+        title: "req_get_work_item_index_counts",
+        description: "Get CodeArts Req work item index counts"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the get project due-days-after tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_get_project_due_days_after",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_get_project_due_days_after",
+      expect.objectContaining({
+        title: "req_get_project_due_days_after",
+        description: "Get CodeArts Req project due-days-after config"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the get project workhour config tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_get_project_workhour_config",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_get_project_workhour_config",
+      expect.objectContaining({
+        title: "req_get_project_workhour_config",
+        description: "Get CodeArts Req project workhour config"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("registers the list work item comments tool in http mode", () => {
     const registerTool = vi.fn();
 

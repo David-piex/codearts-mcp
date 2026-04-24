@@ -630,6 +630,19 @@ export type ReqClient = {
     page: number;
     page_size: number;
   }>;
+  listWorkItemTree: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    tracker_ids?: number[];
+  }) => Promise<{
+    project_id: string;
+    page: number;
+    page_size: number;
+    tracker_ids?: number[];
+    work_items: ReqChildWorkItem[];
+    total?: number;
+  }>;
   listBoardWorkItems: (input: {
     project_id: string;
     page: number;
@@ -719,10 +732,44 @@ export type ReqClient = {
     tracker_name?: string;
     description?: string;
   }>;
+  getWorkItemIndexCounts: (input: { project_id: string; work_item_id: string }) => Promise<{
+    project_id: string;
+    work_item_id: string;
+    related_issue_count?: number;
+    related_wiki_count?: number;
+    related_test_case_count?: number;
+    related_test_plan_count?: number;
+    code_commit_count?: number;
+    code_branch_count?: number;
+    code_mergerequest_count?: number;
+  }>;
   getWorkItemCompletionRate: (input: { project_id: string }) => Promise<{
     project_id: string;
     total?: number;
     issue_completion_rates: ReqIssueCompletionRate[];
+  }>;
+  getProjectDueDaysAfter: (input: { project_id: string }) => Promise<{
+    project_id: string;
+    date_after?: number;
+  }>;
+  getProjectWorkhourConfig: (input: { project_id: string }) => Promise<{
+    project_id: string;
+    workhour_type_required?: boolean;
+    workhour_readonly_mode?: boolean;
+  }>;
+  listWorkItemTags: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    name?: string;
+  }) => Promise<{
+    tags: Array<{
+      id?: number | string;
+      name?: string;
+      encode_name?: string;
+      tag_count?: number;
+    }>;
+    total?: number;
   }>;
   listChildWorkItems: (input: {
     project_id: string;
@@ -1518,6 +1565,13 @@ type ReqProjectIssueRecord = {
     user_num_id?: number;
     first_name?: string;
   };
+};
+
+type ReqIssueTag = {
+  id?: number | string;
+  name?: string;
+  encode_name?: string;
+  tag_count?: number;
 };
 
 type ReqChildWorkItem = ReqDetailedIssueListItem & {
@@ -2963,6 +3017,35 @@ export function createReqClient(
         page_size: input.page_size
       };
     },
+    async listWorkItemTree(input) {
+      const response = (await _http.post("/v5/scrum/issue-tree", {
+        pageNo: input.page,
+        pageSize: input.page_size,
+        projectUUId: input.project_id,
+        ...(input.tracker_ids?.length ? { tracker_id: input.tracker_ids.join(",") } : {})
+      })) as {
+        result?: {
+          total_count?: number;
+          issues?: ReqChildWorkItem[];
+          work_items?: ReqChildWorkItem[];
+        };
+        total_count?: number;
+        issues?: ReqChildWorkItem[];
+        work_items?: ReqChildWorkItem[];
+        status?: string;
+      };
+      const payload = unwrapReqPayload(response);
+      const result = payload.result ?? payload;
+
+      return {
+        project_id: input.project_id,
+        page: input.page,
+        page_size: input.page_size,
+        tracker_ids: input.tracker_ids,
+        work_items: result.issues ?? result.work_items ?? [],
+        total: result.total_count
+      };
+    },
     async listBoardWorkItems(input) {
       const offset = (input.page - 1) * input.page_size;
       const query = new URLSearchParams({
@@ -3114,6 +3197,48 @@ export function createReqClient(
         description: response.description
       };
     },
+    async getWorkItemIndexCounts(input) {
+      const query = new URLSearchParams({
+        issue_id: input.work_item_id,
+        project_uuid: input.project_id
+      });
+      const response = (await _http.get(
+        `/v3/workitem/scrum/index-count?${query.toString()}`
+      )) as {
+        result?: {
+          related_issue_count?: number;
+          related_wiki_count?: number;
+          related_test_case_count?: number;
+          related_test_plan_count?: number;
+          code_commit_count?: number;
+          code_branch_count?: number;
+          code_mergerequest_count?: number;
+        };
+        status?: string;
+      };
+      const payload = unwrapReqPayload(response);
+      const result = (payload.result ?? payload) as {
+        related_issue_count?: number;
+        related_wiki_count?: number;
+        related_test_case_count?: number;
+        related_test_plan_count?: number;
+        code_commit_count?: number;
+        code_branch_count?: number;
+        code_mergerequest_count?: number;
+      };
+
+      return {
+        project_id: input.project_id,
+        work_item_id: input.work_item_id,
+        related_issue_count: result.related_issue_count,
+        related_wiki_count: result.related_wiki_count,
+        related_test_case_count: result.related_test_case_count,
+        related_test_plan_count: result.related_test_plan_count,
+        code_commit_count: result.code_commit_count,
+        code_branch_count: result.code_branch_count,
+        code_mergerequest_count: result.code_mergerequest_count
+      };
+    },
     async getWorkItemCompletionRate(input) {
       const response = (await _http.get(
         `/v4/projects/${encodeURIComponent(input.project_id)}/issue-completion-rate`
@@ -3126,6 +3251,66 @@ export function createReqClient(
         project_id: input.project_id,
         total: response.total,
         issue_completion_rates: response.issue_completion_rates ?? []
+      };
+    },
+    async getProjectDueDaysAfter(input) {
+      const query = new URLSearchParams({
+        project_id: input.project_id
+      });
+      const response = (await _http.get(
+        `/v4/project/project-configs/after?${query.toString()}`
+      )) as {
+        date_after?: number;
+      };
+
+      return {
+        project_id: input.project_id,
+        date_after: response.date_after
+      };
+    },
+    async getProjectWorkhourConfig(input) {
+      const query = new URLSearchParams({
+        project_id: input.project_id
+      });
+      const response = (await _http.get(
+        `/v4/project/project-configs/workhour-config?${query.toString()}`
+      )) as {
+        workhour_type_required?: boolean;
+        workhour_readonly_mode?: boolean;
+      };
+
+      return {
+        project_id: input.project_id,
+        workhour_type_required: response.workhour_type_required,
+        workhour_readonly_mode: response.workhour_readonly_mode
+      };
+    },
+    async listWorkItemTags(input) {
+      const offset = (input.page - 1) * input.page_size;
+      const query = new URLSearchParams({
+        offset: String(offset),
+        limit: String(input.page_size),
+        project_uuid: input.project_id
+      });
+
+      if (input.name) {
+        query.set("name", input.name);
+      }
+
+      const response = (await _http.get(`/v2/issues/query-tags?${query.toString()}`)) as {
+        result?: {
+          tags?: ReqIssueTag[];
+        };
+        tags?: ReqIssueTag[];
+        status?: string;
+      };
+      const payload = unwrapReqPayload(response);
+      const result = payload.result ?? payload;
+      const tags = result.tags ?? [];
+
+      return {
+        tags,
+        total: tags.length
       };
     },
     async listChildWorkItems(input) {

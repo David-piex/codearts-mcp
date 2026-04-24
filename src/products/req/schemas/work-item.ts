@@ -98,6 +98,26 @@ export const reqCountWorkItemTreeInput = pagingSchema
     tracker_ids: z.array(scrumTrackerIdSchema).min(1).optional()
   });
 
+export const reqListWorkItemTreeInput = pagingSchema
+  .pick({
+    page: true,
+    page_size: true
+  })
+  .extend({
+    project_id: idSchema,
+    tracker_ids: z.array(scrumTrackerIdSchema).min(1).optional()
+  });
+
+export const reqListWorkItemTagsInput = pagingSchema
+  .pick({
+    page: true,
+    page_size: true
+  })
+  .extend({
+    project_id: idSchema,
+    name: z.string().min(1).optional()
+  });
+
 export const reqListBoardWorkItemsInput = pagingSchema
   .extend({
     project_id: idSchema,
@@ -114,7 +134,20 @@ export const reqGetWorkItemInput = z.object({
   work_item_id: idSchema
 });
 
+export const reqGetWorkItemIndexCountsInput = z.object({
+  project_id: idSchema,
+  work_item_id: idSchema
+});
+
 export const reqGetWorkItemCompletionRateInput = z.object({
+  project_id: idSchema
+});
+
+export const reqGetProjectDueDaysAfterInput = z.object({
+  project_id: idSchema
+});
+
+export const reqGetProjectWorkhourConfigInput = z.object({
   project_id: idSchema
 });
 

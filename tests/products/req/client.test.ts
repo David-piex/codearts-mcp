@@ -3964,4 +3964,251 @@ describe("createReqClient", () => {
       page_size: 15
     });
   });
+
+  it("maps work item tree list queries to the documented scrum issue tree endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return {
+          result: {
+            total_count: 2,
+            issues: [
+              {
+                id: 101,
+                subject: "Parent story",
+                status: {
+                  id: "1",
+                  name: "新建"
+                },
+                tracker: {
+                  id: 7,
+                  name: "Story"
+                },
+                assigned_to: {
+                  id: "user-1",
+                  name: "alice"
+                },
+                isParent: true
+              },
+              {
+                id: 102,
+                subject: "Child task",
+                status: {
+                  id: "2",
+                  name: "处理中"
+                },
+                tracker: {
+                  id: 2,
+                  name: "Task"
+                },
+                assigned_to: {
+                  id: "user-2",
+                  name: "bob"
+                },
+                isParent: false
+              }
+            ]
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.listWorkItemTree({
+      project_id: "p-1",
+      page: 2,
+      page_size: 20,
+      tracker_ids: [7, 2]
+    });
+
+    expect(requestedPath).toBe("/v5/scrum/issue-tree");
+    expect(requestedBody).toEqual({
+      pageNo: 2,
+      pageSize: 20,
+      projectUUId: "p-1",
+      tracker_id: "7,2"
+    });
+    expect(result).toEqual({
+      project_id: "p-1",
+      page: 2,
+      page_size: 20,
+      tracker_ids: [7, 2],
+      work_items: [
+        {
+          id: 101,
+          subject: "Parent story",
+          status: {
+            id: "1",
+            name: "新建"
+          },
+          tracker: {
+            id: 7,
+            name: "Story"
+          },
+          assigned_to: {
+            id: "user-1",
+            name: "alice"
+          },
+          isParent: true
+        },
+        {
+          id: 102,
+          subject: "Child task",
+          status: {
+            id: "2",
+            name: "处理中"
+          },
+          tracker: {
+            id: 2,
+            name: "Task"
+          },
+          assigned_to: {
+            id: "user-2",
+            name: "bob"
+          },
+          isParent: false
+        }
+      ],
+      total: 2
+    });
+  });
+
+  it("maps work item tag queries to the documented query-tags endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          result: {
+            tags: [
+              {
+                id: 88486,
+                name: "backend",
+                encode_name: "backend",
+                tag_count: 3
+              }
+            ]
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.listWorkItemTags({
+      project_id: "p-1",
+      page: 2,
+      page_size: 10,
+      name: "back"
+    });
+
+    expect(requestedPath).toBe(
+      "/v2/issues/query-tags?offset=10&limit=10&project_uuid=p-1&name=back"
+    );
+    expect(result).toEqual({
+      tags: [
+        {
+          id: 88486,
+          name: "backend",
+          encode_name: "backend",
+          tag_count: 3
+        }
+      ],
+      total: 1
+    });
+  });
+
+  it("maps work item index count queries to the documented scrum index-count endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          result: {
+            related_issue_count: 1,
+            related_wiki_count: 2,
+            related_test_case_count: 3,
+            related_test_plan_count: 4,
+            code_commit_count: 5,
+            code_branch_count: 6,
+            code_mergerequest_count: 7
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.getWorkItemIndexCounts({
+      project_id: "p-1",
+      work_item_id: "70779173"
+    });
+
+    expect(requestedPath).toBe(
+      "/v3/workitem/scrum/index-count?issue_id=70779173&project_uuid=p-1"
+    );
+    expect(result).toEqual({
+      project_id: "p-1",
+      work_item_id: "70779173",
+      related_issue_count: 1,
+      related_wiki_count: 2,
+      related_test_case_count: 3,
+      related_test_plan_count: 4,
+      code_commit_count: 5,
+      code_branch_count: 6,
+      code_mergerequest_count: 7
+    });
+  });
+
+  it("maps due-days-after queries to the documented project-config endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          date_after: 7
+        };
+      }
+    } as never);
+
+    const result = await client.getProjectDueDaysAfter({
+      project_id: "p-1"
+    });
+
+    expect(requestedPath).toBe("/v4/project/project-configs/after?project_id=p-1");
+    expect(result).toEqual({
+      project_id: "p-1",
+      date_after: 7
+    });
+  });
+
+  it("maps workhour config queries to the documented project-config endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          workhour_type_required: false,
+          workhour_readonly_mode: true
+        };
+      }
+    } as never);
+
+    const result = await client.getProjectWorkhourConfig({
+      project_id: "p-1"
+    });
+
+    expect(requestedPath).toBe("/v4/project/project-configs/workhour-config?project_id=p-1");
+    expect(result).toEqual({
+      project_id: "p-1",
+      workhour_type_required: false,
+      workhour_readonly_mode: true
+    });
+  });
 });
