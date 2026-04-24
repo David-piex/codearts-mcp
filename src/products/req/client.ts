@@ -68,6 +68,20 @@ export type ReqClient = {
     demand_statistics: ReqDemandStatistic[];
     issue_completion_rates: ReqIssueCompletionRate[];
   }>;
+  getProjectBugDensity: (input: {
+    project_id: string;
+    date_range?: string;
+    metric_type?: string;
+    dividend?: ReqMetricCustomFieldFilter;
+    divisor?: ReqMetricCustomFieldFilter;
+  }) => Promise<{
+    project_id: string;
+    project_name?: string;
+    metric_value?: string | number;
+    metric_name?: string;
+    dividend_value?: string | number;
+    divisor_value?: string | number;
+  }>;
   getProjectBugsPerDeveloper: (input: { project_id: string }) => Promise<{
     project_id: string;
     project_name?: string;
@@ -807,6 +821,19 @@ export type ReqClient = {
     workhour_type_required?: boolean;
     workhour_readonly_mode?: boolean;
   }>;
+  listProjectWorkHourTypes: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    status?: 1 | 2;
+  }) => Promise<{
+    total?: number;
+    work_hours_types: Array<{
+      id?: number;
+      name?: string;
+      status?: number;
+    }>;
+  }>;
   listWorkItemTags: (input: {
     project_id: string;
     page: number;
@@ -1105,6 +1132,12 @@ export type ReqClient = {
       };
     }>;
     total?: number;
+  }>;
+  checkWorkItemStatusName: (input: {
+    project_id: string;
+    status_name: string;
+  }) => Promise<{
+    exist: boolean;
   }>;
   listWorkItemStatusDetails: (input: {
     project_id: string;
@@ -1657,6 +1690,13 @@ type ReqProjectMetric = {
   divisor_value?: string | number;
 };
 
+type ReqMetricCustomFieldFilter = {
+  custom_fields?: Array<{
+    name?: string;
+    options?: string;
+  }>;
+};
+
 type ReqProjectIssueRecord = {
   field_key?: string;
   field_name?: string;
@@ -1923,6 +1963,26 @@ export function createReqClient(
         bug_statistics: response.bug_statistics ?? [],
         demand_statistics: response.demand_statistics ?? [],
         issue_completion_rates: response.issue_completion_rates ?? []
+      };
+    },
+    async getProjectBugDensity(input) {
+      const response = (await _http.post(
+        `/v2/${encodeURIComponent(input.project_id)}/bug-density/query`,
+        {
+          ...(input.date_range ? { date_range: input.date_range } : {}),
+          ...(input.metric_type ? { metric_type: input.metric_type } : {}),
+          ...(input.dividend ? { dividend: input.dividend } : {}),
+          ...(input.divisor ? { divisor: input.divisor } : {})
+        }
+      )) as ReqProjectMetric;
+
+      return {
+        project_id: response.project_id ?? input.project_id,
+        project_name: response.project_name,
+        metric_value: response.metric_value,
+        metric_name: response.metric_name,
+        dividend_value: response.dividend_value,
+        divisor_value: response.divisor_value
       };
     },
     async getProjectBugsPerDeveloper(input) {
@@ -3513,6 +3573,33 @@ export function createReqClient(
         workhour_readonly_mode: response.workhour_readonly_mode
       };
     },
+    async listProjectWorkHourTypes(input) {
+      const offset = (input.page - 1) * input.page_size;
+      const query = new URLSearchParams({
+        limit: String(input.page_size),
+        offset: String(offset)
+      });
+
+      if (typeof input.status !== "undefined") {
+        query.set("status", String(input.status));
+      }
+
+      const response = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/work-hours-type?${query.toString()}`
+      )) as {
+        total?: number;
+        work_hours_types?: Array<{
+          id?: number;
+          name?: string;
+          status?: number;
+        }>;
+      };
+
+      return {
+        total: response.total,
+        work_hours_types: response.work_hours_types ?? []
+      };
+    },
     async listWorkItemTags(input) {
       const offset = (input.page - 1) * input.page_size;
       const query = new URLSearchParams({
@@ -4031,6 +4118,21 @@ export function createReqClient(
       return {
         issue_statuses: response.issue_statuses ?? [],
         total: response.total
+      };
+    },
+    async checkWorkItemStatusName(input) {
+      const response = (await _http.post("/v2/issue-status/check-name", {
+        projectUUId: input.project_id,
+        definedName: input.status_name
+      })) as {
+        result?: {
+          exist?: boolean;
+        };
+        exist?: boolean;
+      };
+
+      return {
+        exist: response.result?.exist ?? response.exist ?? false
       };
     },
     async listWorkItemStatusDetails(input) {

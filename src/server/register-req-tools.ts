@@ -11,6 +11,7 @@ import {
   reqBatchDeleteIterationsInput,
   reqBatchDeleteWorkItemsInput,
   reqCheckProjectNameInput,
+  reqCheckWorkItemStatusNameInput,
   reqClearPlanWorkItemsInput,
   reqCreateIterationWorkItemInput,
   reqCreatePlanWorkItemInput,
@@ -28,6 +29,7 @@ import {
   reqCountWorkItemTreeInput,
   reqGetCurrentUserInfoInput,
   reqGetCurrentUserRoleInput,
+  reqGetProjectBugDensityInput,
   reqGetProjectBugsPerDeveloperInput,
   reqGetProjectCompletionRateInput,
   reqGetProjectDueDaysAfterInput,
@@ -57,6 +59,7 @@ import {
   reqListProjectBugStatisticsInput,
   reqListProjectDemandStatisticsInput,
   reqListProjectDomainsInput,
+  reqListProjectWorkHourTypesInput,
   reqListProjectWorkHoursInput,
   reqListProjectWorkItemRecordsInput,
   reqQueryIterationImmovableIssuesInput,
@@ -113,6 +116,7 @@ import { createReqBatchDeleteProjectMembersHandler } from "../products/req/tools
 import { createReqBatchDeleteIterationsHandler } from "../products/req/tools/batch-delete-iterations.js";
 import { createReqBatchDeleteWorkItemsHandler } from "../products/req/tools/batch-delete-work-items.js";
 import { createReqCheckProjectNameHandler } from "../products/req/tools/check-project-name.js";
+import { createReqCheckWorkItemStatusNameHandler } from "../products/req/tools/check-work-item-status-name.js";
 import { createReqClearPlanWorkItemsHandler } from "../products/req/tools/clear-plan-work-items.js";
 import { createReqCreatePlanHandler } from "../products/req/tools/create-plan.js";
 import { createReqCreatePlanWorkItemHandler } from "../products/req/tools/create-plan-work-item.js";
@@ -135,6 +139,7 @@ import { createReqGetCurrentUserInfoHandler } from "../products/req/tools/get-cu
 import { createReqGetCurrentUserRoleHandler } from "../products/req/tools/get-current-user-role.js";
 import { createReqGetIterationHandler } from "../products/req/tools/get-iteration.js";
 import { createReqGetPlanHandler } from "../products/req/tools/get-plan.js";
+import { createReqGetProjectBugDensityHandler } from "../products/req/tools/get-project-bug-density.js";
 import { createReqGetProjectBugsPerDeveloperHandler } from "../products/req/tools/get-project-bugs-per-developer.js";
 import { createReqGetProjectCompletionRateHandler } from "../products/req/tools/get-project-completion-rate.js";
 import { createReqGetProjectDueDaysAfterHandler } from "../products/req/tools/get-project-due-days-after.js";
@@ -166,6 +171,7 @@ import { createReqListPlansHandler } from "../products/req/tools/list-plans.js";
 import { createReqListProjectBugStatisticsHandler } from "../products/req/tools/list-project-bug-statistics.js";
 import { createReqListProjectDemandStatisticsHandler } from "../products/req/tools/list-project-demand-statistics.js";
 import { createReqListProjectDomainsHandler } from "../products/req/tools/list-project-domains.js";
+import { createReqListProjectWorkHourTypesHandler } from "../products/req/tools/list-project-work-hour-types.js";
 import { createReqListProjectWorkHoursHandler } from "../products/req/tools/list-project-work-hours.js";
 import { createReqListProjectWorkItemRecordsHandler } from "../products/req/tools/list-project-work-item-records.js";
 import { createReqListNotAddedProjectsHandler } from "../products/req/tools/list-not-added-projects.js";
@@ -263,6 +269,14 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqBatchDeleteWorkItemsHandler,
     rateLimitAction: "req_batch_delete_work_items"
+  }),
+  "req_check_work_item_status_name": defineProductTool({
+    description: "Check whether a CodeArts Req work item status name already exists",
+    inputSchema: reqCheckWorkItemStatusNameInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqCheckWorkItemStatusNameHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqCheckWorkItemStatusNameHandler
   }),
   "req_delete_attachment": defineProductTool({
     description: "Delete a CodeArts Req work item attachment",
@@ -444,6 +458,14 @@ const reqToolDefinitions = {
     inputSchema: reqGetProjectInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGetProjectHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqGetProjectHandler
+  }),
+  "req_get_project_bug_density": defineProductTool({
+    description: "Get CodeArts Req project bug density metric",
+    inputSchema: reqGetProjectBugDensityInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqGetProjectBugDensityHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqGetProjectBugDensityHandler
   }),
   "req_get_project_bugs_per_developer": defineProductTool({
     description: "Get CodeArts Req project bugs per developer metric",
@@ -865,6 +887,14 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListProjectWorkHoursHandler>[0] }) =>
       clients.reqClient,
     createProductHandler: createReqListProjectWorkHoursHandler
+  }),
+  "req_list_project_work_hour_types": defineProductTool({
+    description: "List CodeArts Req project work hour types",
+    inputSchema: reqListProjectWorkHourTypesInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqListProjectWorkHourTypesHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqListProjectWorkHourTypesHandler
   }),
   "req_list_project_work_item_records": defineProductTool({
     description: "List CodeArts Req project work item records",

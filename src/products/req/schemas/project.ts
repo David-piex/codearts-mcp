@@ -61,6 +61,27 @@ export const reqGetProjectCompletionRateInput = z.object({
   divisor: z.record(z.string(), z.string()).optional()
 });
 
+const reqMetricCustomFieldFilterSchema = z.object({
+  name: z.string().min(1).optional(),
+  options: z.string().min(1).optional()
+});
+
+export const reqGetProjectBugDensityInput = z.object({
+  project_id: idSchema,
+  date_range: z.string().min(1).optional(),
+  metric_type: z.string().min(1).optional(),
+  dividend: z
+    .object({
+      custom_fields: z.array(reqMetricCustomFieldFilterSchema).min(1).optional()
+    })
+    .optional(),
+  divisor: z
+    .object({
+      custom_fields: z.array(reqMetricCustomFieldFilterSchema).min(1).optional()
+    })
+    .optional()
+});
+
 export const reqListProjectModulesInput = pagingSchema
   .pick({
     page: true,

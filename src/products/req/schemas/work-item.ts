@@ -151,6 +151,16 @@ export const reqGetProjectWorkhourConfigInput = z.object({
   project_id: idSchema
 });
 
+export const reqListProjectWorkHourTypesInput = pagingSchema
+  .pick({
+    page: true,
+    page_size: true
+  })
+  .extend({
+    project_id: idSchema,
+    status: z.union([z.literal(1), z.literal(2)]).optional()
+  });
+
 const reqChildWorkItemQueryTypeSchema = z.enum(["basic", "custom", "query"]);
 
 export const reqListChildWorkItemsInput = pagingSchema
@@ -326,6 +336,11 @@ export const reqListRelatedUsersInput = z.object({
 
 export const reqListWorkItemStatusesInput = z.object({
   project_id: idSchema
+});
+
+export const reqCheckWorkItemStatusNameInput = z.object({
+  project_id: idSchema,
+  status_name: z.string().min(1).max(15)
 });
 
 export const reqListWorkItemStatusAttributesInput = z.object({

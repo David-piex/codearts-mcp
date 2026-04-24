@@ -633,6 +633,27 @@ describe("registerReqTool", () => {
     );
   });
 
+  it("registers the get project bug density tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_get_project_bug_density",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_get_project_bug_density",
+      expect.objectContaining({
+        title: "req_get_project_bug_density",
+        description: "Get CodeArts Req project bug density metric"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("registers the get project bugs per developer tool in http mode", () => {
     const registerTool = vi.fn();
 
@@ -880,6 +901,27 @@ describe("registerReqTool", () => {
       expect.objectContaining({
         title: "req_list_project_work_hours",
         description: "List CodeArts Req project work hour records"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the list project work hour types tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_list_project_work_hour_types",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_list_project_work_hour_types",
+      expect.objectContaining({
+        title: "req_list_project_work_hour_types",
+        description: "List CodeArts Req project work hour types"
       }),
       expect.any(Function)
     );
@@ -1153,6 +1195,27 @@ describe("registerReqTool", () => {
       expect.objectContaining({
         title: "req_list_work_item_statuses",
         description: "List CodeArts Req work item statuses"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the check work item status name tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_check_work_item_status_name",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_check_work_item_status_name",
+      expect.objectContaining({
+        title: "req_check_work_item_status_name",
+        description: "Check whether a CodeArts Req work item status name already exists"
       }),
       expect.any(Function)
     );

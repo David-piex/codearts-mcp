@@ -4597,4 +4597,157 @@ describe("createReqClient", () => {
       ]
     });
   });
+
+  it("maps project bug density queries to the documented metric endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body?: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return {
+          project_id: "p-1",
+          project_name: "Payments",
+          metric_value: "0.45",
+          metric_name: "bug_density",
+          dividend_value: "9",
+          divisor_value: "20"
+        };
+      }
+    } as never);
+
+    const result = await client.getProjectBugDensity({
+      project_id: "p-1",
+      date_range: "1598457600000,1598544000000",
+      metric_type: "bug_density",
+      dividend: {
+        custom_fields: [
+          {
+            name: "severity",
+            options: "high,medium"
+          }
+        ]
+      },
+      divisor: {
+        custom_fields: [
+          {
+            name: "module",
+            options: "billing"
+          }
+        ]
+      }
+    });
+
+    expect(requestedPath).toBe("/v2/p-1/bug-density/query");
+    expect(requestedBody).toEqual({
+      date_range: "1598457600000,1598544000000",
+      metric_type: "bug_density",
+      dividend: {
+        custom_fields: [
+          {
+            name: "severity",
+            options: "high,medium"
+          }
+        ]
+      },
+      divisor: {
+        custom_fields: [
+          {
+            name: "module",
+            options: "billing"
+          }
+        ]
+      }
+    });
+    expect(result).toEqual({
+      project_id: "p-1",
+      project_name: "Payments",
+      metric_value: "0.45",
+      metric_name: "bug_density",
+      dividend_value: "9",
+      divisor_value: "20"
+    });
+  });
+
+  it("maps project work hour type queries to the documented work-hours-type endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          total: 2,
+          work_hours_types: [
+            {
+              id: 21,
+              name: "研发设计",
+              status: 1
+            },
+            {
+              id: 22,
+              name: "后端开发",
+              status: 1
+            }
+          ]
+        };
+      }
+    } as never);
+
+    const result = await client.listProjectWorkHourTypes({
+      project_id: "p-1",
+      page: 2,
+      page_size: 10,
+      status: 1
+    });
+
+    expect(requestedPath).toBe("/v4/projects/p-1/work-hours-type?limit=10&offset=10&status=1");
+    expect(result).toEqual({
+      total: 2,
+      work_hours_types: [
+        {
+          id: 21,
+          name: "研发设计",
+          status: 1
+        },
+        {
+          id: 22,
+          name: "后端开发",
+          status: 1
+        }
+      ]
+    });
+  });
+
+  it("maps work item status name checks to the documented check-name endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body?: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return {
+          result: {
+            exist: false
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.checkWorkItemStatusName({
+      project_id: "p-1",
+      status_name: "In Review"
+    });
+
+    expect(requestedPath).toBe("/v2/issue-status/check-name");
+    expect(requestedBody).toEqual({
+      projectUUId: "p-1",
+      definedName: "In Review"
+    });
+    expect(result).toEqual({
+      exist: false
+    });
+  });
 });
