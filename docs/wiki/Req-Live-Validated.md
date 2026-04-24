@@ -2,7 +2,7 @@
 
 这一页只说明 Req 模块的真实 AK/SK 联调边界，不把“工具已经实现”直接等同于“已经真实 live 跑过”。
 
-当前 Req 已导出 `68` 个工具，功能面覆盖：
+当前 Req 已导出 `174` 个工具，功能面覆盖：
 
 - `project`：项目查询、创建、更新、删除、名称校验、域内未添加项目查询
 - `module`：项目模块列表、创建、更新、删除
@@ -10,10 +10,17 @@
 - `iteration`：迭代列表、详情、创建、更新、删除、批量删除、状态更新、不可移动问题查询
 - `plan`：规划列表、规划详情、创建、更新、删除、规划图片更新、计划上下文创建工作项、规划内工作项列表、当前规划可添加工作项列表、规划内工作项加入、规划内工作项清空
 - `work-item core`：工作项列表、详情、创建、更新、删除、批量更新、变更记录
+- `work-item detail`：V2 深度详情读取、附件/自定义字段/最近评论等详情页补充信息
 - `collaboration`：评论列表/新增/更新、关联缺陷、关联提交、关联测试用例、相关用户、流转更新
 - `config-read`：工作项状态列表、状态属性、状态详情、状态配置、可选状态配置、项目公共配置、工作项工作流配置、工作项模板、模板字段配置、自定义字段、自动流转开关、流转默认处理人范围
 - `board-read`：看板工作项列表、看板工作项状态历史、看板工作项工作流配置
 - `cache-read`：卡片模式字段缓存、通用字段缓存查询
+- `program / requirement-pool read`：项目空间列表、IR/RR 字段、IR 详情、IR 子节点、IR/RR 历史、RR 列表、RR 状态、严重程度列表
+- `ipd-read`：IPD 项目、项目用户、工作项详情/列表/树、关联 Wiki、工作项分组、租户工作项列表、统计仪表盘、模块树、状态、关联配置、标签、字段、工作流配置、特性集快照、特性集树、快照特性、E2E 追溯、分类状态和工作项流程详情
+- `ipd-config-write`：IPD 模块、标签、特性集的创建、更新、删除
+- `ipd-work-item-write`：IPD 工作项创建、批量创建、批量更新、批量删除、单工作项流程流转、批量流程流转、附件上传/列表/下载，以及描述图片上传/删除/下载
+- `ipd-work-hour`：IPD 工时查询、工时类别查询、创建工时、更新工时、删除工时
+- `ipd-field-config`：IPD 租户字段列表、字段使用情况、字段选项使用情况、租户字段更新、项目字段更新
 
 ## 当前 Live 依据
 
@@ -37,6 +44,12 @@
 | 迭代写闭环 | `req_create_iteration` `req_update_iteration` `req_delete_iteration` | 仅在同时配置 `HUAWEICLOUD_REQ_LIVE_WRITE_PROJECT_ID` 和 `HUAWEICLOUD_REQ_LIVE_ENABLE_ITERATION_MUTATIONS` 时执行 |
 | 工作项 core 读写 | `req_create_work_item` `req_get_work_item` `req_update_work_item` `req_list_work_items` | 仅在显式配置 `HUAWEICLOUD_REQ_LIVE_WRITE_PROJECT_ID` 时跑 `create -> get -> update -> list`；如显式注入现有 `HUAWEICLOUD_REQ_LIVE_WORK_ITEM_*`，则退化为只读 `get` 检查 |
 | 工作项记录与评论读取 | `req_list_work_item_records` `req_list_work_item_comments` | smoke 会对真实或临时工作项读取记录与评论列表 |
+| 需求池与项目空间读取 | `req_list_programs` `req_list_program_fields` `req_get_ir` `req_list_ir_children` `req_list_ir_histories` `req_list_rrs` `req_list_rr_statuses` `req_list_rr_histories` `req_list_issue_severities` | 已纳入真实 AK/SK smoke；当前北京四样本中 `req_list_issue_severities` 可达，`req_list_programs` 对当前 AK 返回 `403 PM.00000014`，因此 program/IR/RR 非空样本仍待有权限租户继续验证 |
+| IPD 读取基础面 | `req_list_ipd_projects` `req_list_ipd_project_users` `req_get_ipd_issue` `req_list_ipd_issues` `req_list_ipd_issue_tree` `req_list_ipd_attached_wikis` `req_group_ipd_issues` `req_list_ipd_tenant_issues` `req_get_ipd_statistic_dashboard` `req_list_ipd_modules` `req_list_ipd_statuses` `req_list_ipd_issue_relation_config` `req_list_ipd_labels` `req_list_ipd_project_fields` `req_list_ipd_issue_fields` `req_list_ipd_workflow_templates` `req_list_ipd_workflow_fields` `req_list_ipd_snapshot_versions` `req_list_ipd_feature_sets` `req_list_ipd_snapshot_features` `req_get_ipd_e2e_graph` `req_list_ipd_category_statuses` `req_get_ipd_work_item_flow_detail` | 已纳入真实 AK/SK smoke；当前北京四样本中 `req_list_ipd_projects`、`req_list_ipd_tenant_issues`、`req_list_ipd_tenant_fields`、`req_get_ipd_tenant_field_option_used` 可达，系统字段的 `req_get_ipd_tenant_field_used` 会返回 `PM.02175301` 边界；当前 AK 下 IPD 项目列表为空，因此项目级 IPD 非空样本仍待补 |
+| IPD 配置写面 | `req_create_ipd_module` `req_update_ipd_module` `req_delete_ipd_module` `req_create_ipd_label` `req_update_ipd_label` `req_delete_ipd_label` `req_create_ipd_feature_set` `req_update_ipd_feature_set` `req_delete_ipd_feature_set` | 已按 PDF 接入 MCP，默认 dry-run 优先；live smoke 已有显式门禁脚手架，需配置 `HUAWEICLOUD_REQ_LIVE_ENABLE_IPD_CONFIG_MUTATIONS` 和可回收样本才执行 |
+| IPD 工作项写面 | `req_create_ipd_issue` `req_batch_create_ipd_issues` `req_batch_update_ipd_issues` `req_batch_delete_ipd_issues` `req_transfer_ipd_work_item_flow` `req_batch_transfer_ipd_work_item_flow` `req_upload_ipd_issue_attachment` `req_list_ipd_issue_attachments` `req_download_ipd_issue_attachment` `req_upload_ipd_issue_image` `req_delete_ipd_issue_image` `req_download_ipd_issue_image` | 已按 PDF 接入 MCP，默认 dry-run 优先；live smoke 已有工作项创建/更新/删除、附件/图片和流程流转的显式门禁脚手架，需配置 IPD 项目/工作项样本和对应 `ENABLE_IPD_*` 变量才执行 |
+| IPD 工时管理 | `req_list_ipd_work_hours` `req_list_ipd_work_hour_categories` `req_create_ipd_work_hour` `req_update_ipd_work_hour` `req_delete_ipd_work_hour` | 已按 PDF 接入 MCP，默认 dry-run 优先；live smoke 已有显式门禁脚手架，需配置 `HUAWEICLOUD_REQ_LIVE_ENABLE_IPD_WORK_HOUR_MUTATIONS` 和可回收工时样本才执行 |
+| IPD 字段配置 | `req_list_ipd_tenant_fields` `req_get_ipd_tenant_field_used` `req_get_ipd_tenant_field_option_used` `req_get_ipd_project_field_option_used` `req_update_ipd_tenant_field` `req_update_ipd_project_field` | 已按 PDF 接入 MCP，默认 dry-run 优先；live smoke 已有显式门禁脚手架，需配置 `HUAWEICLOUD_REQ_LIVE_ENABLE_IPD_FIELD_CONFIG_MUTATIONS` 和可回滚字段样本才执行 |
 | 评论写闭环 | `req_add_work_item_comment` `req_update_work_item_comment` | 仅在同时配置 `HUAWEICLOUD_REQ_LIVE_WRITE_PROJECT_ID` 和 `HUAWEICLOUD_REQ_LIVE_ENABLE_COMMENT_MUTATIONS` 时，对临时工作项执行新增和更新评论 |
 | 临时工作项清理 | `req_delete_work_item` | 仅用于显式开启评论写 smoke 时清理临时工作项 |
 
@@ -55,12 +68,18 @@
 | 工作项配置读取的更深样本 | `req_list_work_item_statuses` `req_list_work_item_status_attributes` `req_list_work_item_status_details` `req_list_work_item_status_configs` `req_list_optional_work_item_status_configs` `req_get_project_public_config` `req_list_work_item_workflow_config` `req_list_work_item_templates` `req_get_work_item_template_config` `req_list_work_item_custom_fields` `req_get_work_item_status_rule_flag` `req_list_work_item_tracker_handlers` | 已纳入基础只读 smoke；当前仍待补非空样本质量、更多 tracker 维度，以及配置结果与真实流转场景的一致性验证 |
 | 看板工作项读取的更深样本 | `req_list_board_work_items` `req_list_board_work_item_status_records` `req_list_board_work_item_workflow_config` | 已纳入看板列表与状态历史读取 smoke；board workflow config 仍待补稳定 board 样本 |
 | 字段缓存读取的更深样本 | `req_list_job_cache_boards` `req_list_cache_data` | 已纳入基础读取 smoke；当前仍待补字段命中质量与更多缓存类型样本 |
+| 需求池/项目空间读取 | `req_list_programs` `req_list_program_fields` `req_get_ir` `req_list_ir_children` `req_list_ir_histories` `req_list_rrs` `req_list_rr_statuses` `req_list_rr_histories` `req_list_issue_severities` | 已按 PDF 接入 MCP 并纳入 smoke；仍待有项目空间权限的真实 program/IR/RR 非空样本 |
+| IPD 读取基础面 | `req_list_ipd_projects` `req_list_ipd_project_users` `req_get_ipd_issue` `req_list_ipd_issues` `req_list_ipd_issue_tree` `req_list_ipd_attached_wikis` `req_group_ipd_issues` `req_list_ipd_tenant_issues` `req_get_ipd_statistic_dashboard` `req_list_ipd_modules` `req_list_ipd_statuses` `req_list_ipd_issue_relation_config` `req_list_ipd_labels` `req_list_ipd_project_fields` `req_list_ipd_issue_fields` `req_list_ipd_workflow_templates` `req_list_ipd_workflow_fields` `req_list_ipd_snapshot_versions` `req_list_ipd_feature_sets` `req_list_ipd_snapshot_features` `req_get_ipd_e2e_graph` `req_list_ipd_category_statuses` `req_get_ipd_work_item_flow_detail` | 已按 PDF 接入 MCP 并纳入 smoke；当前 smoke 覆盖租户级可达性，仍待真实 IPD 项目、工作项、树、Wiki、分组、统计仪表盘、字段、工作流、特性集和追溯非空样本 |
+| IPD 配置写面 | `req_create_ipd_module` `req_update_ipd_module` `req_delete_ipd_module` `req_create_ipd_label` `req_update_ipd_label` `req_delete_ipd_label` `req_create_ipd_feature_set` `req_update_ipd_feature_set` `req_delete_ipd_feature_set` | 已按 PDF 接入 MCP，并已有显式 live 门禁脚手架；仍待可回收模块/标签/特性集样本后执行真实写闭环 |
+| IPD 工时管理 | `req_list_ipd_work_hours` `req_list_ipd_work_hour_categories` `req_create_ipd_work_hour` `req_update_ipd_work_hour` `req_delete_ipd_work_hour` | 已按 PDF 接入 MCP，并已有显式 live 门禁脚手架；仍待真实 IPD 工作项、工时类别和可回收工时样本后执行真实写闭环 |
+| IPD 字段配置 | `req_list_ipd_tenant_fields` `req_get_ipd_tenant_field_used` `req_get_ipd_tenant_field_option_used` `req_get_ipd_project_field_option_used` `req_update_ipd_tenant_field` `req_update_ipd_project_field` | 已按 PDF 接入 MCP，并已有显式 live 门禁脚手架；仍待真实租户字段、项目字段、选项使用情况和可回滚字段配置样本后执行真实写闭环 |
 
 ## 覆盖边界
 
 - Req 写工具默认遵循 `dry_run=true` 预演策略，只有显式传 `dry_run=false` 或 client live smoke 进入专门可写分支时才执行真实写入。
 - `HUAWEICLOUD_REQ_LIVE_WRITE_PROJECT_ID` 只表示存在可写样本项目；iteration/comment/project 这类真实写 smoke 还需要各自的 `HUAWEICLOUD_REQ_LIVE_ENABLE_*_MUTATIONS` 门禁。
 - `req_update_plan_image` 与 `req_create_plan_work_item` 虽已进入文档口径，但当前还没有纳入真实 smoke 写闭环；`/v3/plan/{project_id}/managements` 也应理解为 `req_list_plans` 的增强过滤，而不是一个已经单独 live 验证的新工具。
+- IPD 读取基础面、配置写面、工作项写面、工时管理和字段配置已进入 MCP；当前真实 AK/SK smoke 已覆盖租户级 IPD 可达性和无样本边界，并补齐写面显式门禁脚手架。项目级深度与写闭环仍需要准备 IPD 项目、非空工作项、树、Wiki、分组、租户视图、统计仪表盘、可回收工作项、可上传附件/图片、可回收工时、可回滚字段配置、特性集/追溯数据、可流转状态以及可回收模块/标签/特性集样本后再执行。
 - 当前真实 smoke 主要验证“可达、可读、核心写路径可控”，还没有覆盖完整租户权限矩阵、批量操作矩阵和高风险回滚场景。
 - 删除类操作只用于显式可写样本下的临时资源清理；常规 MCP 写工具仍应优先保留 dry-run-first 使用方式。
 
@@ -72,6 +91,34 @@
 4. 给关联缺陷、关联提交、关联测试用例、相关用户准备非空样本。
 5. 如果后续继续新增真实写 smoke，先为对应资源补独立门禁，避免普通 live 环境静默扩大写入范围。
 6. 给规划面补更多真实非空样本，并为 `req_create_plan` `req_update_plan` `req_delete_plan` `req_update_plan_image` `req_create_plan_work_item` `req_add_plan_work_items` `req_clear_plan_work_items` 准备可回收样本，避免长期只有“列表可达但当前项目无规划”的弱验证。
+7. 给需求池/项目空间准备有权限的真实非空 IR/RR 样本，继续加深 `req_list_programs`、`req_get_ir`、`req_list_rrs` 等只读 live smoke。
+8. 给 IPD 准备真实项目、用户、工作项、树、关联 Wiki、分组、租户视图、统计仪表盘、模块、字段、工作流、特性集和 E2E 追溯样本，继续加深 `req_list_ipd_projects`、`req_get_ipd_issue`、`req_list_ipd_issues`、`req_list_ipd_issue_tree`、`req_list_ipd_attached_wikis`、`req_group_ipd_issues`、`req_list_ipd_tenant_issues`、`req_get_ipd_statistic_dashboard`、`req_get_ipd_work_item_flow_detail`、`req_list_ipd_feature_sets`、`req_get_ipd_e2e_graph` 等只读 live smoke。
+9. 给 IPD 配置写面准备可回收样本，打开 `HUAWEICLOUD_REQ_LIVE_ENABLE_IPD_CONFIG_MUTATIONS` 后执行模块/标签/特性集真实写闭环。
+10. 给 IPD 工作项写面准备可回收工作项、批量操作矩阵、附件/图片样本和流程流转样本，打开对应 `HUAWEICLOUD_REQ_LIVE_ENABLE_IPD_*` 门禁后执行真实写闭环。
+11. 给 IPD 工时管理准备真实工作项、工时类别和可回收工时样本，打开 `HUAWEICLOUD_REQ_LIVE_ENABLE_IPD_WORK_HOUR_MUTATIONS` 后执行真实写闭环。
+12. 给 IPD 字段配置准备真实租户字段、项目字段、选项使用情况和可回滚字段样本，打开 `HUAWEICLOUD_REQ_LIVE_ENABLE_IPD_FIELD_CONFIG_MUTATIONS` 后执行真实写闭环。
+
+## IPD 写面 Smoke 门禁变量
+
+这些变量只用于 `tests/products/req/client-live-smoke.test.ts`，默认不设置时不会执行真实 IPD 写入：
+
+- `HUAWEICLOUD_REQ_LIVE_IPD_PROJECT_ID`：IPD 项目 ID。
+- `HUAWEICLOUD_REQ_LIVE_IPD_ISSUE_ID`：可回收/可测试的 IPD 工作项 ID。
+- `HUAWEICLOUD_REQ_LIVE_IPD_ISSUE_CATEGORY`：工作项类型，默认 `Bug`。
+- `HUAWEICLOUD_REQ_LIVE_IPD_ASSIGNEE`、`HUAWEICLOUD_REQ_LIVE_IPD_STATUS`：创建 IPD 工作项所需的处理人和状态。
+- `HUAWEICLOUD_REQ_LIVE_IPD_MODULE_PARENT_ID`：配置写 smoke 创建模块时的父模块 ID。
+- `HUAWEICLOUD_REQ_LIVE_IPD_FEATURE_SET_PARENT_ID`：配置写 smoke 创建特性集时的父特性集 ID。
+- `HUAWEICLOUD_REQ_LIVE_IPD_LABEL_TYPE`：标签类型，默认 `requirement`。
+- `HUAWEICLOUD_REQ_LIVE_IPD_WORK_HOUR_CATEGORY`、`HUAWEICLOUD_REQ_LIVE_IPD_WORK_HOUR_TYPE`：工时类别和工时类型。
+- `HUAWEICLOUD_REQ_LIVE_IPD_FLOW_CODE`：流程流转目标 code。
+- `HUAWEICLOUD_REQ_LIVE_IPD_TENANT_FIELD_ID`、`HUAWEICLOUD_REQ_LIVE_IPD_TENANT_FIELD_DISPLAY_NAME`：租户字段配置写 smoke 样本。
+- `HUAWEICLOUD_REQ_LIVE_IPD_PROJECT_FIELD_ID`、`HUAWEICLOUD_REQ_LIVE_IPD_PROJECT_FIELD_DISPLAY_NAME`：项目字段配置写 smoke 样本。
+- `HUAWEICLOUD_REQ_LIVE_ENABLE_IPD_CONFIG_MUTATIONS`：开启模块/标签/特性集写闭环。
+- `HUAWEICLOUD_REQ_LIVE_ENABLE_IPD_ISSUE_MUTATIONS`：开启 IPD 工作项创建/更新/删除闭环。
+- `HUAWEICLOUD_REQ_LIVE_ENABLE_IPD_ATTACHMENT_MUTATIONS`：开启附件和图片上传/删除闭环。
+- `HUAWEICLOUD_REQ_LIVE_ENABLE_IPD_WORK_HOUR_MUTATIONS`：开启工时创建/更新/删除闭环。
+- `HUAWEICLOUD_REQ_LIVE_ENABLE_IPD_FLOW_MUTATIONS`：开启流程流转。
+- `HUAWEICLOUD_REQ_LIVE_ENABLE_IPD_FIELD_CONFIG_MUTATIONS`：开启租户/项目字段配置更新。
 
 ## 配合阅读
 

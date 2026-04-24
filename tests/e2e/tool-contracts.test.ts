@@ -3,6 +3,6 @@ import { collectToolNames } from "../../src/server/register-tools.js";
 
 describe("phase 1 contract", () => {
   it("keeps the planned phase 1 tool count stable", () => {
-    expect(collectToolNames()).toHaveLength(218);
+    expect(collectToolNames()).toHaveLength(384);
   });
 });

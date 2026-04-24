@@ -5336,4 +5336,875 @@ describe("createReqClient", () => {
       type: null
     });
   });
+
+  it("maps program and requirement-pool read requests to documented endpoints", async () => {
+    const requested: Array<{ method: string; path: string; body?: unknown }> = [];
+    const client = createReqClient({
+      get: async (path: string) => {
+        requested.push({ method: "GET", path });
+
+        if (path.startsWith("/v4/programs?")) {
+          return { programs: [{ program_id: "program-1", name: "Space" }], total: 1 };
+        }
+        if (path.includes("/fields?")) {
+          return { fields: [{ id: "field-1", name: "subject" }] };
+        }
+        if (path.includes("/irs/ir-1/children?")) {
+          return { irs: [{ ir_id: "ir-child-1", subject: "Child" }], total: 1 };
+        }
+        if (path.includes("/irs/ir-1/histories?")) {
+          return { histories: [{ ir_id: "ir-1" }], total: 1 };
+        }
+        if (path.includes("/rrs/rr-1/histories?")) {
+          return { histories: [{ rr_id: "rr-1" }], total: 1 };
+        }
+        if (path.includes("/rrs?")) {
+          return { rrs: [{ id: "rr-1" }], total: 1 };
+        }
+        if (path === "/v2/issue-severity/all") {
+          return { result: { severities: [{ id: 10, name: "关键" }] } };
+        }
+
+        return { ir_id: "ir-1", subject: "IR" };
+      },
+      post: async (path: string, body?: unknown) => {
+        requested.push({ method: "POST", path, body });
+        return { rr_status_list: [{ rr_id: "rr-1", status: { id: "22", label: "进行中" } }] };
+      }
+    } as never);
+
+    await client.listPrograms({ page: 2, page_size: 10, search: "space", sort_key: "name", sort_dir: "desc" });
+    await client.listProgramFields({ program_id: "program-1", field_type: "RR" });
+    await client.getIr({ program_id: "program-1", ir_id: "ir-1" });
+    await client.listIrChildren({ program_id: "program-1", ir_id: "ir-1", query_type: "RR", page: 1, page_size: 20 });
+    await client.listIrHistories({ ir_id: "ir-1", page: 1, page_size: 20 });
+    await client.listRrs({ program_id: "program-1", query_type: "ALL", page: 1, page_size: 20 });
+    await client.listRrStatuses({ program_id: "program-1", rr_ids: ["rr-1"] });
+    await client.listRrHistories({ rr_id: "rr-1", page: 1, page_size: 20 });
+    await client.listIssueSeverities({});
+
+    expect(requested).toEqual([
+      { method: "GET", path: "/v4/programs?offset=10&limit=10&search=space&sort_key=name&sort_dir=DESC" },
+      { method: "GET", path: "/v4/programs/program-1/fields?field_type=RR" },
+      { method: "GET", path: "/v4/programs/program-1/irs/ir-1" },
+      { method: "GET", path: "/v4/programs/program-1/irs/ir-1/children?query_type=RR&offset=0&limit=20" },
+      { method: "GET", path: "/v4/irs/ir-1/histories?offset=0&limit=20" },
+      { method: "GET", path: "/v4/programs/program-1/rrs?query_type=ALL&offset=0&limit=20" },
+      { method: "POST", path: "/v4/programs/program-1/rr-status", body: { rr_ids: ["rr-1"] } },
+      { method: "GET", path: "/v4/rrs/rr-1/histories?offset=0&limit=20" },
+      { method: "GET", path: "/v2/issue-severity/all" }
+    ]);
+  });
+
+  it("maps IPD config write requests to documented endpoints", async () => {
+    const requests: Array<{ method: string; path: string; body?: unknown }> = [];
+    const client = createReqClient({
+      post: async (path: string, body?: unknown) => {
+        requests.push({ method: "POST", path, body });
+
+        if (path.endsWith("/modules")) {
+          return { status: "success", result: { id: "m-1", display_value: "Module A" } };
+        }
+        if (path.endsWith("/feature-sets")) {
+          return { status: "success", result: { id: "fs-1", title: "Feature Set A", parent_id: "root" } };
+        }
+
+        return { status: "success", result: { id: "label-1", title: "urgent", color: "#86CAFF" } };
+      },
+      put: async (path: string, body?: unknown) => {
+        requests.push({ method: "PUT", path, body });
+
+        if (path.includes("/modules/")) {
+          return { status: "success", result: { id: "m-1", display_value: "Module B" } };
+        }
+        if (path.includes("/feature-sets/")) {
+          return { status: "success", result: { id: "fs-1", title: "Feature Set B", parent_id: "root", position_float: 1 } };
+        }
+
+        return { status: "success", result: { id: "label-1", title: "normal", color: "#6DDEBB" } };
+      },
+      delete: async (path: string) => {
+        requests.push({ method: "DELETE", path });
+
+        if (path.includes("/modules/")) {
+          return { status: "success", result: { id: "m-1", display_value: "Module B" } };
+        }
+        if (path.includes("/feature-sets/")) {
+          return { status: "success" };
+        }
+
+        return { status: "success", result: { id: "label-1", title: "normal" } };
+      }
+    } as never);
+
+    const [
+      createdModule,
+      updatedModule,
+      deletedModule,
+      createdLabel,
+      updatedLabel,
+      deletedLabel,
+      createdFeatureSet,
+      updatedFeatureSet,
+      deletedFeatureSet
+    ] = await Promise.all([
+      client.createIpdModule({
+        project_id: "ipd-1",
+        display_value: "Module A",
+        parent_id: "root",
+        description: "module desc",
+        assignee: "user-1"
+      }),
+      client.updateIpdModule({
+        project_id: "ipd-1",
+        module_id: "m-1",
+        display_value: "Module B",
+        parent_id: "root"
+      }),
+      client.deleteIpdModule({
+        project_id: "ipd-1",
+        module_id: "m-1"
+      }),
+      client.createIpdLabel({
+        project_id: "ipd-1",
+        label_type: "requirement",
+        color: "#86CAFF",
+        title: "urgent"
+      }),
+      client.updateIpdLabel({
+        project_id: "ipd-1",
+        label_id: "label-1",
+        label_type: "requirement",
+        title: "normal"
+      }),
+      client.deleteIpdLabel({
+        project_id: "ipd-1",
+        label_id: "label-1"
+      }),
+      client.createIpdFeatureSet({
+        project_id: "ipd-1",
+        title: "Feature Set A",
+        parent_id: "root"
+      }),
+      client.updateIpdFeatureSet({
+        project_id: "ipd-1",
+        feature_set_id: "fs-1",
+        title: "Feature Set B",
+        parent_id: "root",
+        position_float: 1
+      }),
+      client.deleteIpdFeatureSet({
+        project_id: "ipd-1",
+        feature_set_id: "fs-1"
+      })
+    ]);
+
+    expect(requests).toEqual([
+      {
+        method: "POST",
+        path: "/v1/ipdprojectservice/projects/ipd-1/modules",
+        body: {
+          display_value: "Module A",
+          parent_id: "root",
+          description: "module desc",
+          assignee: "user-1"
+        }
+      },
+      {
+        method: "PUT",
+        path: "/v1/ipdprojectservice/projects/ipd-1/modules/m-1",
+        body: {
+          display_value: "Module B",
+          parent_id: "root"
+        }
+      },
+      {
+        method: "DELETE",
+        path: "/v1/ipdprojectservice/projects/ipd-1/modules/m-1"
+      },
+      {
+        method: "POST",
+        path: "/v1/ipdprojectservice/projects/ipd-1/tags",
+        body: {
+          label_type: "requirement",
+          color: "#86CAFF",
+          title: "urgent"
+        }
+      },
+      {
+        method: "PUT",
+        path: "/v1/ipdprojectservice/projects/ipd-1/tags/label-1",
+        body: {
+          label_type: "requirement",
+          title: "normal"
+        }
+      },
+      {
+        method: "DELETE",
+        path: "/v1/ipdprojectservice/projects/ipd-1/tags/label-1"
+      },
+      {
+        method: "POST",
+        path: "/v1/ipdprojectservice/projects/ipd-1/feature-sets",
+        body: {
+          title: "Feature Set A",
+          parent_id: "root"
+        }
+      },
+      {
+        method: "PUT",
+        path: "/v1/ipdprojectservice/projects/ipd-1/feature-sets/fs-1",
+        body: {
+          parent_id: "root",
+          title: "Feature Set B",
+          position_float: 1
+        }
+      },
+      {
+        method: "DELETE",
+        path: "/v1/ipdprojectservice/projects/ipd-1/feature-sets/fs-1"
+      }
+    ]);
+    expect(createdModule).toEqual(expect.objectContaining({ id: "m-1", display_value: "Module A" }));
+    expect(updatedModule).toEqual(expect.objectContaining({ id: "m-1", display_value: "Module B" }));
+    expect(deletedModule).toEqual(expect.objectContaining({ id: "m-1", display_value: "Module B" }));
+    expect(createdLabel).toEqual(expect.objectContaining({ id: "label-1", title: "urgent" }));
+    expect(updatedLabel).toEqual(expect.objectContaining({ id: "label-1", title: "normal" }));
+    expect(deletedLabel).toEqual(expect.objectContaining({ id: "label-1", title: "normal" }));
+    expect(createdFeatureSet).toEqual(expect.objectContaining({ id: "fs-1", title: "Feature Set A", parent_id: "root" }));
+    expect(updatedFeatureSet).toEqual(expect.objectContaining({ id: "fs-1", title: "Feature Set B", position_float: 1 }));
+    expect(deletedFeatureSet).toEqual(expect.objectContaining({ id: "fs-1" }));
+  });
+
+  it("maps IPD issue mutations to documented endpoints", async () => {
+    const requests: Array<{ method: string; path: string; body?: unknown }> = [];
+    const client = createReqClient({
+      post: async (path: string, body: unknown) => {
+        requests.push({ method: "POST", path, body });
+        return { status: "success", result: [{ id: "issue-1", title: "IPD task", category: "Task" }] };
+      },
+      put: async (path: string, body: unknown) => {
+        requests.push({ method: "PUT", path, body });
+        return { status: "success", result: [{ success: [{ id: "issue-1" }], failed: [] }] };
+      },
+      delete: async (path: string, body?: unknown) => {
+        requests.push({ method: "DELETE", path, body });
+        return { status: "success", result: [{ success: [{ id: "issue-1" }], failed: [] }] };
+      }
+    } as never);
+
+    const [created, batchCreated, updated, deleted] = await Promise.all([
+      client.createIpdIssue({
+        project_id: "ipd-1",
+        title: "IPD task",
+        description: "desc",
+        category: "Task",
+        assignee: "user-1",
+        status: "Start",
+        extra_fields: { business_domain: "software" }
+      }),
+      client.batchCreateIpdIssues({
+        project_id: "ipd-1",
+        issues: [
+          {
+            title: "Bug A",
+            description: "desc",
+            category: "Bug",
+            status: "Start",
+            assignee: { id: "user-1" },
+            extra_fields: { priority: "high" }
+          }
+        ]
+      }),
+      client.batchUpdateIpdIssues({
+        project_id: "ipd-1",
+        issue_ids: ["issue-1"],
+        attribute: {
+          category: "Task",
+          priority: "high",
+          extra_fields: { business_domain: "software" }
+        }
+      }),
+      client.batchDeleteIpdIssues({
+        project_id: "ipd-1",
+        issue_ids: ["issue-1"],
+        is_permanent_delete: false,
+        src_project_id: "src-1"
+      })
+    ]);
+
+    expect(requests).toEqual([
+      {
+        method: "POST",
+        path: "/v1/ipdprojectservice/projects/ipd-1/issues",
+        body: {
+          title: "IPD task",
+          description: "desc",
+          category: "Task",
+          assignee: "user-1",
+          status: "Start",
+          business_domain: "software"
+        }
+      },
+      {
+        method: "POST",
+        path: "/v2/ipdprojectservice/projects/ipd-1/issues/batch",
+        body: [
+          {
+            title: "Bug A",
+            description: "desc",
+            category: "Bug",
+            status: "Start",
+            assignee: { id: "user-1" },
+            priority: "high"
+          }
+        ]
+      },
+      {
+        method: "PUT",
+        path: "/v1/ipdprojectservice/projects/ipd-1/issues/batch",
+        body: {
+          id: ["issue-1"],
+          attribute: {
+            category: "Task",
+            priority: "high",
+            business_domain: "software"
+          }
+        }
+      },
+      {
+        method: "DELETE",
+        path: "/v1/ipdprojectservice/projects/ipd-1/issues/batch?is_permanent_delete=false&src_project_id=src-1",
+        body: ["issue-1"]
+      }
+    ]);
+    expect(created).toEqual([expect.objectContaining({ id: "issue-1" })]);
+    expect(batchCreated).toEqual([expect.objectContaining({ id: "issue-1" })]);
+    expect(updated).toEqual([{ success: [{ id: "issue-1" }], failed: [] }]);
+    expect(deleted).toEqual([{ success: [{ id: "issue-1" }], failed: [] }]);
+  });
+
+  it("maps IPD attachment and image requests to documented endpoints", async () => {
+    const requests: Array<{ method: string; path: string; body?: unknown }> = [];
+    const client = createReqClient({
+      get: async (path: string) => {
+        requests.push({ method: "GET", path });
+        return { status: "success", result: [{ id: "att-1", issue_id: "issue-1", file_name: "demo.txt" }] };
+      },
+      getBinary: async (path: string) => {
+        requests.push({ method: "GET_BINARY", path });
+        return { body: new Uint8Array([1, 2, 3]), contentType: "application/octet-stream", fileName: "demo.bin" };
+      },
+      postMultipart: async (path: string, body: unknown) => {
+        requests.push({ method: "POST_MULTIPART", path, body });
+        if (path.includes("/images")) {
+          return { status: "success", result: { id: "issue-1", title: "Task" } };
+        }
+        return { status: "success", result: [{ id: "att-1", issue_id: "issue-1", file_name: "demo.txt" }] };
+      },
+      delete: async (path: string) => {
+        requests.push({ method: "DELETE", path });
+        return { status: "success", result: { id: "issue-1", title: "Task" } };
+      }
+    } as never);
+
+    const [uploadedAttachment, attachments, downloadedAttachment, uploadedImage, deletedImage, downloadedImage] =
+      await Promise.all([
+        client.uploadIpdIssueAttachment({
+          project_id: "ipd-1",
+          issue_id: "issue-1",
+          file_name: "demo.txt",
+          file_content: new Uint8Array([1])
+        }),
+        client.listIpdIssueAttachments({ project_id: "ipd-1", issue_id: "issue-1", source_project_id: "src-1" }),
+        client.downloadIpdIssueAttachment({ project_id: "ipd-1", attachment_id: "att-1" }),
+        client.uploadIpdIssueImage({
+          project_id: "ipd-1",
+          issue_id: "issue-1",
+          file_name: "demo.png",
+          file_content: new Uint8Array([1])
+        }),
+        client.deleteIpdIssueImage({ project_id: "ipd-1", issue_id: "issue-1", file_name: "demo.png" }),
+        client.downloadIpdIssueImage({
+          project_id: "ipd-1",
+          issue_id: "issue-1",
+          file_name: "demo.png",
+          field_code: "description"
+        })
+      ]);
+
+    expect(requests.map(({ method, path }) => ({ method, path }))).toEqual([
+      {
+        method: "POST_MULTIPART",
+        path: "/v1/ipdprojectservice/projects/ipd-1/issues/issue-1/attachments/upload"
+      },
+      {
+        method: "GET",
+        path: "/v1/ipdprojectservice/projects/ipd-1/attachments?issue_id=issue-1&source_project_id=src-1"
+      },
+      {
+        method: "GET_BINARY",
+        path: "/v1/ipdprojectservice/projects/ipd-1/attachments/download/att-1"
+      },
+      {
+        method: "POST_MULTIPART",
+        path: "/v2/ipdprojectservice/projects/ipd-1/images?issue_id=issue-1"
+      },
+      {
+        method: "DELETE",
+        path: "/v2/ipdprojectservice/projects/ipd-1/images?issue_id=issue-1&file_name=demo.png"
+      },
+      {
+        method: "GET_BINARY",
+        path: "/v2/ipdprojectservice/projects/ipd-1/images?issue_id=issue-1&file_name=demo.png&field_code=description"
+      }
+    ]);
+    expect(uploadedAttachment).toEqual([expect.objectContaining({ id: "att-1" })]);
+    expect(attachments.attachments).toEqual([expect.objectContaining({ id: "att-1" })]);
+    expect(downloadedAttachment.body).toEqual(new Uint8Array([1, 2, 3]));
+    expect(uploadedImage).toEqual(expect.objectContaining({ id: "issue-1" }));
+    expect(deletedImage).toEqual(expect.objectContaining({ id: "issue-1" }));
+    expect(downloadedImage.body).toEqual(new Uint8Array([1, 2, 3]));
+  });
+
+  it("maps IPD work hour requests to documented endpoints", async () => {
+    const requests: Array<{ method: string; path: string; body?: unknown }> = [];
+    const workHourResult = {
+      status: "success",
+      result: {
+        data: [{ id: "wh-1", workitem_id: "issue-1", work_hours: "2" }],
+        work_hours_total: "2"
+      }
+    };
+    const client = createReqClient({
+      get: async (path: string) => {
+        requests.push({ method: "GET", path });
+        return {
+          status: "success",
+          result: [{ id: "cat-1", value: "dev", display_value: "Development" }]
+        };
+      },
+      post: async (path: string, body: unknown) => {
+        requests.push({ method: "POST", path, body });
+        if (path.endsWith("/work-hour/query")) {
+          return {
+            status: "success",
+            result: [
+              {
+                workitem: { id: "issue-1" },
+                work_date: "1706803200000",
+                work_hour_category: "dev",
+                work_hours: 6
+              }
+            ],
+            page: { count: 1 }
+          };
+        }
+
+        return workHourResult;
+      },
+      put: async (path: string, body: unknown) => {
+        requests.push({ method: "PUT", path, body });
+        return workHourResult;
+      },
+      delete: async (path: string) => {
+        requests.push({ method: "DELETE", path });
+        return workHourResult;
+      }
+    } as never);
+
+    const [workHours, categories, created, updated, deleted] = await Promise.all([
+      client.listIpdWorkHours({
+        project_id: "ipd-1",
+        plan_pi: ["pi-1"],
+        plan_iteration: ["iter-1"],
+        workitem_id: ["issue-1"],
+        created_by: ["user-1"],
+        page: 2,
+        page_size: 10
+      }),
+      client.listIpdWorkHourCategories({ project_id: "ipd-1", display_value: "dev" }),
+      client.createIpdWorkHour({
+        project_id: "ipd-1",
+        issue_id: "issue-1",
+        work_date_begin: "2025-07-25",
+        work_date_end: "2025-07-25",
+        work_hours: 2,
+        work_hour_type: 1,
+        include_weekend: false,
+        work_hour_category: "dev",
+        description: "done"
+      }),
+      client.updateIpdWorkHour({
+        project_id: "ipd-1",
+        issue_id: "issue-1",
+        workhour_id: "wh-1",
+        work_hours: 3,
+        work_hour_category: "test",
+        description: "fix"
+      }),
+      client.deleteIpdWorkHour({ project_id: "ipd-1", issue_id: "issue-1", workhour_id: "wh-1" })
+    ]);
+
+    expect(requests).toEqual([
+      {
+        method: "POST",
+        path: "/v1/ipdprojectservice/projects/ipd-1/work-hour/query",
+        body: {
+          params: {
+            plan_pi: ["pi-1"],
+            plan_iteration: ["iter-1"],
+            workitem_id: ["issue-1"],
+            created_by: ["user-1"]
+          },
+          page_info: { offset: 10, limit: 10 }
+        }
+      },
+      {
+        method: "GET",
+        path: "/v1/ipdprojectservice/projects/ipd-1/work-hour/options?display_value=dev"
+      },
+      {
+        method: "POST",
+        path: "/v1/ipdprojectservice/projects/ipd-1/work-items/issue-1/work-hour",
+        body: {
+          work_hour_category: "dev",
+          work_date_begin: "2025-07-25",
+          work_date_end: "2025-07-25",
+          work_hours: 2,
+          work_hour_type: 1,
+          include_weekend: false,
+          description: "done"
+        }
+      },
+      {
+        method: "PUT",
+        path: "/v1/projects/ipd-1/work-items/issue-1/work-hour/wh-1",
+        body: {
+          work_hours: 3,
+          work_hour_category: "test",
+          description: "fix"
+        }
+      },
+      {
+        method: "DELETE",
+        path: "/v1/projects/ipd-1/work-items/issue-1/work-hour/wh-1"
+      }
+    ]);
+    expect(workHours).toEqual({ work_hours: [expect.objectContaining({ work_hours: 6 })], total: 1 });
+    expect(categories.categories).toEqual([expect.objectContaining({ id: "cat-1", value: "dev" })]);
+    expect(created).toEqual({ data: [expect.objectContaining({ id: "wh-1" })], work_hours_total: "2" });
+    expect(updated).toEqual({ data: [expect.objectContaining({ id: "wh-1" })], work_hours_total: "2" });
+    expect(deleted).toEqual({ data: [expect.objectContaining({ id: "wh-1" })], work_hours_total: "2" });
+  });
+
+  it("maps IPD field config requests to documented endpoints", async () => {
+    const requests: Array<{ method: string; path: string; body?: unknown }> = [];
+    const client = createReqClient({
+      get: async (path: string) => {
+        requests.push({ method: "GET", path });
+        if (path.includes("/options-used")) {
+          return { "opt-1": "2" };
+        }
+
+        return [
+          {
+            project_id: "ipd-1",
+            project_name: "IPD Project",
+            model_id: "10003",
+            category_codes: "RR,Bug"
+          }
+        ];
+      },
+      post: async (path: string, body: unknown) => {
+        requests.push({ method: "POST", path, body });
+        if (path.includes("/fields/query")) {
+          return {
+            page: { count: 1 },
+            result: [{ id: "field-1", field_id: "field-1", code: "c_field", display_name: "Priority" }]
+          };
+        }
+
+        return {
+          id: path.includes("/meta/fields/") ? "field-2" : "field-1",
+          code: path.includes("/meta/fields/") ? "c_project_field" : "c_field",
+          display_name: "Priority",
+          field_type_id: "10001"
+        };
+      }
+    } as never);
+
+    const [tenantFields, tenantUsed, tenantOptionUsed, projectOptionUsed, updatedTenant, updatedProject] =
+      await Promise.all([
+        client.listIpdTenantFields({
+          page: 1,
+          page_size: 10,
+          search: "Priority",
+          sort_info: { field: "display_name", asc: true }
+        }),
+        client.getIpdTenantFieldUsed({ field_id: "field-1" }),
+        client.getIpdTenantFieldOptionUsed({ code: "c_field" }),
+        client.getIpdProjectFieldOptionUsed({ project_id: "ipd-1", code: "c_project_field" }),
+        client.updateIpdTenantField({
+          field_id: "field-1",
+          field_type_id: "10001",
+          display_name: "Priority",
+          option: [{ id: "opt-1", display_value: "High", value: "opt-1" }],
+          extra_fields: { definition_type: "4" }
+        }),
+        client.updateIpdProjectField({
+          project_id: "ipd-1",
+          field_id: "field-2",
+          field_type_id: "10001",
+          display_name: "Priority",
+          extra_fields: { definition_type: "5" }
+        })
+      ]);
+
+    expect(requests).toEqual([
+      {
+        method: "POST",
+        path: "/v1/ipdprojectservice/tenant/fields/query?page=1&size=10",
+        body: {
+          search: "Priority",
+          sort_info: { field: "display_name", asc: true }
+        }
+      },
+      {
+        method: "GET",
+        path: "/v1/ipdprojectservice/tenant/fields/field-1/used"
+      },
+      {
+        method: "GET",
+        path: "/v1/ipdprojectservice/tenant/field/options-used?code=c_field"
+      },
+      {
+        method: "GET",
+        path: "/v1/ipdprojectservice/projects/ipd-1/field/options-used?code=c_project_field"
+      },
+      {
+        method: "POST",
+        path: "/v1/ipdprojectservice/tenant/fields/field-1",
+        body: {
+          field_type_id: "10001",
+          display_name: "Priority",
+          option: [{ id: "opt-1", display_value: "High", value: "opt-1" }],
+          definition_type: "4"
+        }
+      },
+      {
+        method: "POST",
+        path: "/v1/ipdprojectservice/projects/ipd-1/meta/fields/field-2",
+        body: {
+          field_type_id: "10001",
+          display_name: "Priority",
+          definition_type: "5"
+        }
+      }
+    ]);
+    expect(tenantFields).toEqual({ fields: [expect.objectContaining({ id: "field-1" })], total: 1 });
+    expect(tenantUsed.usage).toEqual([expect.objectContaining({ project_id: "ipd-1" })]);
+    expect(tenantOptionUsed).toEqual({ "opt-1": "2" });
+    expect(projectOptionUsed).toEqual({ "opt-1": "2" });
+    expect(updatedTenant).toEqual(expect.objectContaining({ id: "field-1", code: "c_field" }));
+    expect(updatedProject).toEqual(expect.objectContaining({ id: "field-2", code: "c_project_field" }));
+  });
+
+  it("maps IPD extra read requests to documented endpoints", async () => {
+    const requests: Array<{ method: string; path: string; body?: unknown }> = [];
+    const client = createReqClient({
+      get: async (path: string) => {
+        requests.push({ method: "GET", path });
+
+        return {
+          total: 1,
+          data: [
+            {
+              wiki_id: "wiki-1",
+              title: "Wiki A",
+              issue_id: "issue-1",
+              project: { project_id: "ipd-1", name: "IPD" },
+              author: { id: "u-1", name: "Alice" }
+            }
+          ]
+        };
+      },
+      post: async (path: string, body: unknown) => {
+        requests.push({ method: "POST", path, body });
+
+        if (path.includes("/issues/tree")) {
+          return {
+            status: "success",
+            result: { issues: [{ id: "issue-1", title: "IR A", category: "IR", children: [] }], total: 1 }
+          };
+        }
+        if (path.includes("/issues/group")) {
+          return {
+            status: "success",
+            result: {
+              field_info: { id: "field-1", display_name: "Status" },
+              data: [{ id: "g-1", display_value: "Open", total: 2 }]
+            }
+          };
+        }
+        if (path.includes("/tenant/query")) {
+          return { status: "success", result: { issues: [{ id: "issue-2", title: "Bug A", category: "Bug" }], total: 1 } };
+        }
+
+        return {
+          status: "success",
+          result: [{ category: "IR", category_name: "IR", total: 3, processing: 1, completed: 2, expired: 0 }]
+        };
+      }
+    } as never);
+
+    const [tree, wikis, grouped, tenantIssues, dashboard] = await Promise.all([
+      client.listIpdIssueTree({
+        project_id: "ipd-1",
+        category: "IR,US",
+        keyword: "login",
+        number: ["IR-1"],
+        plan: [{ plan_pi: "pi-1", plan_iteration: ["iter-1"] }],
+        modified_date: { start_date: "2025-01-01", end_date: "2025-01-31" },
+        page: 2,
+        page_size: 10
+      }),
+      client.listIpdAttachedWikis({ project_id: "ipd-1", issue_id: "issue-1", category: "IR" }),
+      client.groupIpdIssues({
+        project_id: "ipd-1",
+        issue_type: "IR",
+        group_field_id: "field-1",
+        is_project_group: true,
+        group_sort: "desc",
+        filter: [{ status: { values: ["open"], operator: "in" } }],
+        sort: [{ field: "modified_date", asc: false }],
+        filter_mode: "AND_OR",
+        page: 1,
+        page_size: 20
+      }),
+      client.listIpdTenantIssues({
+        project_id: ["ipd-1", "ipd-2"],
+        issue_type: "Bug",
+        filter_mode: "AND_OR",
+        page: 1,
+        page_size: 20
+      }),
+      client.getIpdStatisticDashboard({
+        project_id: "ipd-1",
+        classification: "requirement",
+        plan: { plan_pi: "pi-1", plan_iteration: "iter-1" },
+        created_date: { start_date: "2025-01-01", end_date: "2025-01-31" }
+      })
+    ]);
+
+    expect(requests).toEqual([
+      {
+        method: "POST",
+        path: "/v1/ipdprojectservice/projects/ipd-1/issues/tree?category=IR%2CUS",
+        body: {
+          keyword: "login",
+          number: ["IR-1"],
+          plan: [{ plan_pi: "pi-1", plan_iteration: ["iter-1"] }],
+          modified_date: { start_date: "2025-01-01", end_date: "2025-01-31" },
+          offset: 10,
+          limit: 10
+        }
+      },
+      {
+        method: "GET",
+        path: "/v1/ipdprojectservice/projects/ipd-1/issue/get-attached-wikis?issue_id=issue-1&category=IR"
+      },
+      {
+        method: "POST",
+        path: "/v1/ipdprojectservice/projects/ipd-1/issues/group?issue_type=IR&group_field_id=field-1&is_project_group=true&group_sort=desc",
+        body: {
+          filter: [{ status: { values: ["open"], operator: "in" } }],
+          filter_mode: "AND_OR",
+          page: { page_no: 1, page_size: 20 },
+          sort: [{ field: "modified_date", asc: false }]
+        }
+      },
+      {
+        method: "POST",
+        path: "/v1/ipdprojectservice/projects/tenant/query?issue_type=Bug&project_id=ipd-1%2Cipd-2",
+        body: {
+          filter_mode: "AND_OR",
+          page: { page_no: 1, page_size: 20 }
+        }
+      },
+      {
+        method: "POST",
+        path: "/v1/ipdprojectservice/projects/ipd-1/statistic/dashboard?classification=requirement",
+        body: {
+          plan: { plan_pi: "pi-1", plan_iteration: "iter-1" },
+          created_date: { start_date: "2025-01-01", end_date: "2025-01-31" }
+        }
+      }
+    ]);
+    expect(tree).toEqual({ issues: [expect.objectContaining({ id: "issue-1" })], total: 1 });
+    expect(wikis).toEqual({ wikis: [expect.objectContaining({ wiki_id: "wiki-1" })], total: 1 });
+    expect(grouped.data).toEqual([expect.objectContaining({ id: "g-1" })]);
+    expect(tenantIssues).toEqual({ issues: [expect.objectContaining({ id: "issue-2" })], total: 1 });
+    expect(dashboard.items).toEqual([expect.objectContaining({ category: "IR", total: 3 })]);
+  });
+
+  it("maps IPD feature set and trace read requests to documented endpoints", async () => {
+    const requests: Array<{ method: string; path: string }> = [];
+    const client = createReqClient({
+      get: async (path: string) => {
+        requests.push({ method: "GET", path });
+
+        if (path.endsWith("/snapshots/version")) {
+          return { status: "success", result: [{ id: "snap-1", title: "Baseline" }] };
+        }
+        if (path.includes("/feature-set/query")) {
+          return { status: "success", result: [{ id: "fs-1", title: "Feature Set", parent_id: "root" }] };
+        }
+        if (path.includes("/snapshots-feature/query")) {
+          return { status: "success", result: { issues: [{ id: "issue-1", title: "Feature" }], total: 1 } };
+        }
+        if (path.includes("/e2e/graphs")) {
+          return { id: "issue-1", title: "Feature", status: "Open" };
+        }
+        if (path.includes("/flow/detail")) {
+          return { status: "success", result: { next_flow: [{ code: "to_done", name: "Done" }] } };
+        }
+
+        return { status: "success", total: 1, result: [{ name: "分析", belonging: "IN_PROGRESS" }] };
+      }
+    } as never);
+
+    const [snapshots, featureSets, features, graph, statuses, flowDetail] = await Promise.all([
+      client.listIpdSnapshotVersions({ project_id: "ipd-1" }),
+      client.listIpdFeatureSets({ project_id: "ipd-1", snapshot_version_id: "snap-1" }),
+      client.listIpdSnapshotFeatures({
+        project_id: "ipd-1",
+        snapshot_version_id: "snap-1",
+        feature_set_id: "fs-1",
+        page: 2,
+        page_size: 10
+      }),
+      client.getIpdE2EGraph({ project_id: "ipd-1", issue_id: "issue-1", category: "SF", is_src: true }),
+      client.listIpdCategoryStatuses({ project_id: "ipd-1", category_id: "10065" }),
+      client.getIpdWorkItemFlowDetail({ project_id: "ipd-1", issue_id: "issue-1", issue_category: "Bug" })
+    ]);
+
+    expect(requests).toEqual([
+      { method: "GET", path: "/v1/ipdprojectservice/projects/ipd-1/snapshots/version" },
+      { method: "GET", path: "/v1/ipdprojectservice/projects/ipd-1/feature-set/query?snapshot_version_id=snap-1" },
+      {
+        method: "GET",
+        path: "/v1/ipdprojectservice/projects/ipd-1/snapshots-feature/query?snapshot_version_id=snap-1&feature_set_id=fs-1&offset=10&limit=10"
+      },
+      { method: "GET", path: "/v1/ipdprojectservice/projects/ipd-1/e2e/graphs?issue_id=issue-1&category=SF&is_src=true" },
+      { method: "GET", path: "/v1/ipdprojectservice/projects/ipd-1/category/10065/statuses" },
+      { method: "GET", path: "/v1/ipdprojectservice/projects/ipd-1/work-item/issue-1/flow/detail?issue_category=Bug" }
+    ]);
+    expect(snapshots.snapshots).toEqual([expect.objectContaining({ id: "snap-1" })]);
+    expect(featureSets.feature_sets).toEqual([expect.objectContaining({ id: "fs-1" })]);
+    expect(features).toEqual({ issues: [expect.objectContaining({ id: "issue-1" })], total: 1 });
+    expect(graph).toEqual(expect.objectContaining({ id: "issue-1", title: "Feature" }));
+    expect(flowDetail.next_flow).toEqual([expect.objectContaining({ code: "to_done", name: "Done" })]);
+    expect(statuses).toEqual({ statuses: [expect.objectContaining({ name: "分析" })], total: 1 });
+  });
 });

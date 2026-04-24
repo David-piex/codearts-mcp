@@ -877,6 +877,11 @@ export type ReqClient = {
     tracker_name?: string;
     description?: string;
   }>;
+  getWorkItemIssueDetails: (input: {
+    project_id: string;
+    work_item_id: string;
+    include: string;
+  }) => Promise<ReqWorkItemIssueDetails>;
   getWorkItemIndexCounts: (input: { project_id: string; work_item_id: string }) => Promise<{
     project_id: string;
     work_item_id: string;
@@ -1583,6 +1588,353 @@ export type ReqClient = {
     updated_count?: number;
     fields: ReqCacheUpdateField[];
   }>;
+  listPrograms: (input: {
+    page: number;
+    page_size: number;
+    search?: string;
+    sort_key?: "name" | "created_time";
+    sort_dir?: string;
+    is_watched?: boolean;
+  }) => Promise<{
+    programs: ReqProgramItem[];
+    total?: number;
+  }>;
+  listProgramFields: (input: { program_id: string; field_type: "IR" | "RR" }) => Promise<{
+    fields: ReqProgramField[];
+  }>;
+  getIr: (input: { program_id: string; ir_id: string }) => Promise<ReqRequirementPoolItem>;
+  listIrChildren: (input: {
+    program_id: string;
+    ir_id: string;
+    query_type: "RR" | "ITEMS";
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    items: ReqRequirementPoolItem[];
+    total?: number;
+  }>;
+  listIrHistories: (input: { ir_id: string; page: number; page_size: number }) => Promise<{
+    histories: ReqRequirementHistory[];
+    total?: number;
+  }>;
+  listRrStatuses: (input: { program_id: string; rr_ids: string[] }) => Promise<{
+    rr_status_list: ReqRrStatusItem[];
+  }>;
+  listRrs: (input: {
+    program_id: string;
+    query_type: "ALL" | "DST" | "SRC";
+    include_deleted?: boolean;
+    updated_time_interval?: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    rrs: ReqRequirementPoolItem[];
+    total?: number;
+  }>;
+  listRrHistories: (input: { rr_id: string; page: number; page_size: number }) => Promise<{
+    histories: ReqRequirementHistory[];
+    total?: number;
+  }>;
+  listIssueSeverities: (input: {}) => Promise<{
+    severities: ReqIssueSeverity[];
+  }>;
+  listIpdProjects: (input: { search?: string; model?: "10001" | "10002" | "10003" }) => Promise<{
+    projects: ReqIpdProject[];
+  }>;
+  listIpdProjectUsers: (input: { project_id: string }) => Promise<{
+    users: ReqIpdUser[];
+  }>;
+  getIpdIssue: (input: { project_id: string; issue_id: string; version: "v1" | "v2" }) => Promise<ReqIpdIssue>;
+  listIpdIssues: (input: {
+    project_id: string;
+    issue_type: string;
+    page: number;
+    page_size: number;
+    filter?: Array<Record<string, unknown>>;
+    filter_mode: "OR_AND" | "AND_OR";
+  }) => Promise<{
+    issues: ReqIpdIssue[];
+    total?: number;
+  }>;
+  listIpdIssueTree: (input: {
+    project_id: string;
+    category: string;
+    page: number;
+    page_size: number;
+    keyword?: string;
+    number?: string[];
+    plan?: Array<Record<string, unknown>>;
+    modified_date?: Record<string, unknown>;
+  }) => Promise<{ issues: ReqIpdIssue[]; total?: number }>;
+  listIpdAttachedWikis: (input: { project_id: string; issue_id: string; category?: string }) => Promise<{
+    wikis: ReqIpdWiki[];
+    total?: number;
+  }>;
+  groupIpdIssues: (input: {
+    project_id: string;
+    issue_type: string;
+    group_field_id: string;
+    page: number;
+    page_size: number;
+    is_project_group?: boolean;
+    group_sort?: "asc" | "desc";
+    filter?: Array<Record<string, unknown>>;
+    filter_mode: "OR_AND" | "AND_OR";
+    sort?: Array<Record<string, unknown>>;
+  }) => Promise<{ field_info?: ReqIpdNamedItem; data: ReqIpdNamedItem[]; raw?: unknown }>;
+  listIpdTenantIssues: (input: {
+    project_id?: string | string[];
+    issue_type: string;
+    page: number;
+    page_size: number;
+    filter?: Array<Record<string, unknown>>;
+    filter_mode: "OR_AND" | "AND_OR";
+    sort?: Array<Record<string, unknown>>;
+  }) => Promise<{ issues: ReqIpdIssue[]; total?: number }>;
+  listIpdModules: (input: { project_id: string; page: number; page_size: number }) => Promise<{
+    modules: ReqIpdNamedItem[];
+    total?: number;
+  }>;
+  listIpdStatuses: (input: { project_id: string; category_id?: string }) => Promise<{
+    statuses: ReqIpdNamedItem[];
+  }>;
+  listIpdIssueRelationConfig: (input: { project_id: string }) => Promise<{
+    relations: ReqIpdNamedItem[];
+    raw?: unknown;
+  }>;
+  listIpdLabels: (input: { project_id: string; page: number; page_size: number }) => Promise<{
+    labels: ReqIpdNamedItem[];
+    total?: number;
+  }>;
+  listIpdProjectFields: (input: { project_id: string; page: number; page_size: number }) => Promise<{
+    fields: ReqIpdNamedItem[];
+    total?: number;
+  }>;
+  listIpdIssueFields: (input: { project_id: string; category_id: string }) => Promise<{
+    fields: ReqIpdNamedItem[];
+  }>;
+  listIpdTenantFields: (input: {
+    page: number;
+    page_size: number;
+    search?: string;
+    sort_info?: { field?: string; asc?: boolean };
+  }) => Promise<{
+    fields: ReqIpdNamedItem[];
+    total?: number;
+  }>;
+  getIpdTenantFieldUsed: (input: { field_id: string }) => Promise<{ usage: ReqIpdFieldUsage[] }>;
+  getIpdTenantFieldOptionUsed: (input: { code: string }) => Promise<Record<string, string | number>>;
+  getIpdProjectFieldOptionUsed: (input: { project_id: string; code: string }) => Promise<Record<string, string | number>>;
+  listIpdWorkflowTemplates: (input: { project_id: string; category_id?: string }) => Promise<{
+    workflows: ReqIpdNamedItem[];
+    raw?: unknown;
+  }>;
+  listIpdWorkflowFields: (input: { project_id: string; category_id: string }) => Promise<{
+    fields: ReqIpdNamedItem[];
+  }>;
+  listIpdSnapshotVersions: (input: { project_id: string }) => Promise<{
+    snapshots: ReqIpdNamedItem[];
+  }>;
+  listIpdFeatureSets: (input: { project_id: string; snapshot_version_id?: string }) => Promise<{
+    feature_sets: ReqIpdNamedItem[];
+  }>;
+  listIpdSnapshotFeatures: (input: {
+    project_id: string;
+    snapshot_version_id: string;
+    feature_set_id: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    issues: ReqIpdIssue[];
+    total?: number;
+  }>;
+  getIpdE2EGraph: (input: {
+    project_id: string;
+    issue_id: string;
+    category: string;
+    is_src?: boolean;
+  }) => Promise<ReqIpdIssue>;
+  listIpdCategoryStatuses: (input: { project_id: string; category_id: string }) => Promise<{
+    statuses: ReqIpdNamedItem[];
+    total?: number;
+  }>;
+  getIpdStatisticDashboard: (input: {
+    project_id: string;
+    classification: "requirement" | "bug";
+    plan?: { plan_pi?: string; plan_iteration?: string };
+    created_date?: Record<string, unknown>;
+  }) => Promise<{ items: ReqIpdDashboardItem[] }>;
+  getIpdWorkItemFlowDetail: (input: { project_id: string; issue_id: string; issue_category: string }) => Promise<{
+    process_instance?: unknown;
+    next_flow?: ReqIpdNamedItem[];
+    raw?: unknown;
+  }>;
+  transferIpdWorkItemFlow: (input: {
+    project_id: string;
+    issue_id: string;
+    issue_category: string;
+    flow_code: string;
+    process_context?: Record<string, unknown>;
+  }) => Promise<unknown>;
+  batchTransferIpdWorkItemFlow: (input: {
+    project_id: string;
+    issue_ids: string[];
+    issue_category: string;
+    flow_code: string;
+    is_recover: boolean;
+    process_context?: Record<string, unknown>;
+  }) => Promise<unknown>;
+  createIpdIssue: (input: {
+    project_id: string;
+    title: string;
+    description: string;
+    category: string;
+    assignee: string;
+    status?: string;
+    src_domain?: string;
+    submitted_by?: string;
+    domain_id?: string;
+    recipient?: string[];
+    expect_delivery_time?: number;
+    priority?: string;
+    assigned_cc?: string[];
+    plan_pi?: string;
+    plan_iteration?: string;
+    plan_start_date?: number;
+    plan_end_date?: number;
+    workload_man_day?: number;
+    business_domain?: string;
+    need_break?: string;
+    extra_fields?: Record<string, unknown>;
+  }) => Promise<ReqIpdIssue[]>;
+  batchCreateIpdIssues: (input: { project_id: string; issues: Array<Record<string, unknown>> }) => Promise<ReqIpdIssue[]>;
+  batchUpdateIpdIssues: (input: {
+    project_id: string;
+    issue_ids: string[];
+    attribute: Record<string, unknown>;
+  }) => Promise<unknown>;
+  batchDeleteIpdIssues: (input: {
+    project_id: string;
+    issue_ids: string[];
+    is_permanent_delete?: boolean;
+    src_project_id?: string;
+  }) => Promise<unknown>;
+  uploadIpdIssueAttachment: (input: {
+    project_id: string;
+    issue_id: string;
+    file_name: string;
+    file_content: Uint8Array;
+    content_type?: string;
+  }) => Promise<ReqIpdAttachment[]>;
+  listIpdIssueAttachments: (input: {
+    project_id: string;
+    issue_id: string;
+    source_project_id?: string;
+  }) => Promise<{ attachments: ReqIpdAttachment[] }>;
+  downloadIpdIssueAttachment: (input: { project_id: string; attachment_id: string }) => Promise<{
+    project_id: string;
+    attachment_id: string;
+    body: Uint8Array;
+    content_type?: string;
+    file_name?: string;
+  }>;
+  uploadIpdIssueImage: (input: {
+    project_id: string;
+    issue_id: string;
+    file_name: string;
+    file_content: Uint8Array;
+    content_type?: string;
+  }) => Promise<ReqIpdIssue>;
+  deleteIpdIssueImage: (input: { project_id: string; issue_id: string; file_name: string }) => Promise<ReqIpdIssue>;
+  downloadIpdIssueImage: (input: {
+    project_id: string;
+    issue_id: string;
+    file_name: string;
+    field_code?: string;
+  }) => Promise<{
+    project_id: string;
+    issue_id: string;
+    file_name: string;
+    body: Uint8Array;
+    content_type?: string;
+  }>;
+  listIpdWorkHours: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    plan_pi?: string[];
+    plan_iteration?: string[];
+    workitem_id?: string[];
+    created_by?: string[];
+  }) => Promise<{ work_hours: ReqIpdWorkHour[]; total?: number }>;
+  listIpdWorkHourCategories: (input: { project_id: string; display_value?: string }) => Promise<{
+    categories: ReqIpdNamedItem[];
+  }>;
+  createIpdWorkHour: (input: {
+    project_id: string;
+    issue_id: string;
+    work_date_begin: string;
+    work_date_end: string;
+    work_hours: string | number;
+    work_hour_type: 1 | 2 | string;
+    include_weekend: boolean;
+    work_hour_category?: string;
+    description?: string;
+  }) => Promise<{ data: ReqIpdWorkHour[]; work_hours_total?: string | number }>;
+  updateIpdWorkHour: (input: {
+    project_id: string;
+    issue_id: string;
+    workhour_id: string;
+    work_hours?: string | number;
+    work_hour_category?: string;
+    description?: string;
+  }) => Promise<{ data: ReqIpdWorkHour[]; work_hours_total?: string | number }>;
+  deleteIpdWorkHour: (input: {
+    project_id: string;
+    issue_id: string;
+    workhour_id: string;
+  }) => Promise<{ data: ReqIpdWorkHour[]; work_hours_total?: string | number }>;
+  updateIpdTenantField: (input: Record<string, unknown> & { field_id: string }) => Promise<ReqIpdNamedItem>;
+  updateIpdProjectField: (input: Record<string, unknown> & { project_id: string; field_id: string }) => Promise<ReqIpdNamedItem>;
+  createIpdModule: (input: {
+    project_id: string;
+    display_value: string;
+    parent_id: string;
+    description?: string;
+    assignee?: string;
+  }) => Promise<ReqIpdNamedItem>;
+  updateIpdModule: (input: {
+    project_id: string;
+    module_id: string;
+    display_value: string;
+    parent_id: string;
+    description?: string;
+    assignee?: string;
+  }) => Promise<ReqIpdNamedItem>;
+  deleteIpdModule: (input: { project_id: string; module_id: string }) => Promise<ReqIpdNamedItem>;
+  createIpdLabel: (input: {
+    project_id: string;
+    label_type: string;
+    color: string;
+    title: string;
+  }) => Promise<ReqIpdNamedItem>;
+  updateIpdLabel: (input: {
+    project_id: string;
+    label_id: string;
+    label_type: string;
+    color?: string;
+    title?: string;
+  }) => Promise<ReqIpdNamedItem>;
+  deleteIpdLabel: (input: { project_id: string; label_id: string }) => Promise<ReqIpdNamedItem>;
+  createIpdFeatureSet: (input: { project_id: string; title: string; parent_id: string }) => Promise<ReqIpdNamedItem>;
+  updateIpdFeatureSet: (input: {
+    project_id: string;
+    feature_set_id: string;
+    parent_id: string;
+    title?: string;
+    position_float?: number;
+  }) => Promise<ReqIpdNamedItem>;
+  deleteIpdFeatureSet: (input: { project_id: string; feature_set_id: string }) => Promise<ReqIpdNamedItem>;
   addWorkItemComment: (input: {
     project_id: string;
     work_item_id: string;
@@ -1822,6 +2174,32 @@ type ReqDetailedIssueListItem = {
   status_name?: string;
 };
 
+type ReqWorkItemIssueDetails = ReqDetailedIssueListItem & {
+  description?: string;
+  created_on?: string;
+  updated_on?: string;
+  start_date?: string;
+  done_ratio?: number;
+  expected_work_hours?: number;
+  release_dev?: string;
+  find_release_dev?: string;
+  inner_text?: string;
+  project?: Record<string, unknown>;
+  priority?: Record<string, unknown>;
+  severity?: Record<string, unknown>;
+  module?: Record<string, unknown>;
+  domain?: Record<string, unknown>;
+  story_point?: Record<string, unknown>;
+  parent_issue?: Record<string, unknown>;
+  author?: Record<string, unknown>;
+  assigned_to?: Record<string, unknown>;
+  developer?: Record<string, unknown>;
+  assigned_cc_user?: unknown[];
+  custom_fields?: Array<Record<string, unknown>>;
+  custom_value_new?: Record<string, unknown>;
+  accessories_list?: Array<Record<string, unknown>>;
+};
+
 type ReqIssueStatusSummary = {
   new_num?: number;
   process_num?: number;
@@ -1956,6 +2334,291 @@ type ReqCacheUpdateField = {
   visible?: boolean;
   order?: number;
 };
+
+type ReqProgramUser = {
+  user_id?: string;
+  user_name?: string;
+  nick_name?: string;
+  domain_id?: string;
+  domain_name?: string;
+};
+
+type ReqProgramItem = {
+  program_id?: string;
+  name?: string;
+  description?: string;
+  created_time?: number;
+  updated_time?: number;
+  is_archived?: boolean;
+  is_watched?: boolean;
+  project_count?: number;
+  owner?: ReqProgramUser;
+  creator?: ReqProgramUser;
+};
+
+type ReqProgramField = {
+  id?: string;
+  name?: string;
+  label?: string;
+  icon?: string;
+  field_type?: string;
+  option_source?: string;
+  default_value_can_update?: boolean;
+  options?: Array<{
+    id?: string;
+    name?: string;
+    label?: string;
+  }>;
+  config?: {
+    default_value?: unknown[];
+    field_id?: string;
+  };
+};
+
+type ReqRequirementPoolItem = {
+  id?: string;
+  ir_id?: string;
+  rr_id?: string;
+  status?:
+    | string
+    | {
+        id?: string;
+        label?: string;
+        name?: string;
+        value?: unknown;
+      };
+  accept_status?: string;
+  created_time?: number;
+  updated_time?: number;
+  created_on?: string;
+  updated_on?: string;
+  subject?: string;
+  custom_fields?: Array<{
+    field_id?: string;
+    label?: string;
+    name?: string;
+    value?: unknown;
+  }>;
+  fields_map?: Record<
+    string,
+    {
+      field_id?: string;
+      label?: string;
+      name?: string;
+      value?: unknown;
+    }
+  >;
+  src_program?: ReqProgramItem;
+  dst_program?: ReqProgramItem;
+  tags?: Array<{ tag_id?: string; name?: string }>;
+  tag?: {
+    field_id?: string;
+    label?: string;
+    name?: string;
+    value?: unknown;
+  };
+  tracker_id?: number;
+};
+
+type ReqRequirementHistory = {
+  id?: string | number;
+  ir_id?: string;
+  rr_id?: string;
+  created_time?: number;
+  field?: {
+    field_id?: string;
+    field_label?: string;
+    old_value?: string;
+    new_value?: string;
+  };
+  creator?: ReqProgramUser;
+  operator?: ReqProgramUser;
+};
+
+type ReqRrStatusItem = {
+  rr_id?: string;
+  status?: {
+    id?: string;
+    label?: string;
+    name?: string;
+  };
+};
+
+type ReqIssueSeverity = {
+  id?: number;
+  name?: string;
+  position?: number;
+  isDefault?: boolean;
+  type?: string;
+  active?: boolean;
+};
+
+type ReqIpdProject = {
+  id?: string;
+  name?: string;
+  project_type?: string;
+  domain_id?: string;
+  model_id?: string;
+};
+
+type ReqIpdUser = {
+  user_id?: string;
+  id?: string | number;
+  user_name?: string;
+  name?: string;
+  nick_name?: string;
+  domain_id?: string;
+  domain_name?: string;
+};
+
+type ReqIpdIssue = {
+  id?: string | number;
+  number?: string;
+  subject?: string;
+  name?: string;
+  title?: string;
+  status?: string | { id?: string | number; name?: string; label?: string };
+  category?: string | { id?: string | number; name?: string; label?: string };
+  owner?: ReqIpdUser;
+  assigned_to?: ReqIpdUser;
+  assignee?: ReqIpdUser;
+  created_time?: number | string;
+  created_date?: number | string;
+  updated_time?: number | string;
+  modified_time?: number | string;
+  modified_date?: number | string;
+  children?: ReqIpdIssue[];
+};
+
+type ReqIpdNamedItem = {
+  id?: string | number;
+  field_id?: string | number;
+  code?: string;
+  name?: string;
+  number?: string;
+  label?: string;
+  title?: string;
+  description?: string;
+  display_name?: string;
+  display_value?: string;
+  value?: string;
+  default_value?: string;
+  field_type?: string;
+  field_type_id?: string;
+  field_type_name?: string;
+  definition_type?: string;
+  show?: boolean;
+  show_on_card?: boolean;
+  optional?: boolean;
+  user_visibility?: boolean;
+  has_update_privilege?: boolean;
+  has_same_display_name?: boolean;
+  color?: string;
+  label_type?: string;
+  parent_id?: string | number;
+  position_float?: number;
+  belonging?: string;
+  created_date?: string;
+  modified_date?: string;
+  option?: ReqIpdNamedItem[];
+  all_options?: ReqIpdNamedItem[];
+  child_fs?: ReqIpdNamedItem[];
+  children?: ReqIpdNamedItem[];
+};
+
+type ReqIpdFieldUsage = {
+  domain_id?: string;
+  project_name?: string;
+  project_id?: string;
+  model_id?: string;
+  create_by?: string;
+  category_codes?: string;
+  categories?: ReqIpdNamedItem[];
+};
+
+type ReqIpdWiki = {
+  wiki_id?: string;
+  title?: string;
+  issue_id?: string;
+  type?: string;
+  created_date?: string;
+  region?: string;
+  reigon?: string;
+  identifier?: string;
+  code?: string;
+  sm_level_sequence?: string;
+  project?: { project_id?: string; name?: string; project_type?: string };
+  author?: { id?: string; name?: string };
+};
+
+type ReqIpdDashboardItem = {
+  category?: string;
+  category_name?: string;
+  total?: number;
+  processing?: number;
+  completed?: number;
+  expired?: number;
+  remain_di?: number;
+};
+
+type ReqIpdAttachment = {
+  id?: string | number;
+  issue_id?: string | number;
+  workitem_id?: string | number;
+  file_name?: string;
+  title?: string;
+  store_filename?: string;
+  file_size?: number | string;
+  filesize?: number | string;
+  attachment_type?: string;
+  created_date?: string;
+  status?: string;
+};
+
+type ReqIpdWorkHour = {
+  id?: string | number;
+  title?: string;
+  operation_id?: string | number;
+  description?: string | null;
+  workitem_id?: string | number;
+  workitem?: {
+    id?: string | number;
+    plan_pi?: string | null;
+    plan_iteration?: string | null;
+    sum_workload_man_day?: string | number | null;
+    workload_man_day?: string | number | null;
+    convolution_plan_hours?: string | number | null;
+    convolution_actual_hours?: string | number | null;
+  };
+  work_date?: string | number;
+  created_by?: ReqIpdUser | string;
+  modified_by?: ReqIpdUser | string;
+  work_hour_category?: string | ReqIpdNamedItem;
+  work_hours?: string | number;
+};
+
+function withIpdExtraFields<T extends Record<string, unknown>>(body: T & { extra_fields?: Record<string, unknown> }) {
+  const { extra_fields, ...rest } = body;
+  return {
+    ...rest,
+    ...(extra_fields ?? {})
+  };
+}
+
+function normalizeIpdWorkHourTotal(response: { result?: { data?: ReqIpdWorkHour[]; work_hours_total?: string | number } }) {
+  return {
+    data: response.result?.data ?? [],
+    work_hours_total: response.result?.work_hours_total
+  };
+}
+
+function toIpdFieldMutationBody(input: Record<string, unknown>) {
+  const { project_id, field_id, dry_run, extra_fields, ...rest } = input;
+  return {
+    ...rest,
+    ...(extra_fields && typeof extra_fields === "object" && !Array.isArray(extra_fields) ? extra_fields : {})
+  };
+}
 
 type ReqClientOptions = {
   listCacheTtlMs?: number;
@@ -2692,7 +3355,20 @@ export function createReqClient(
           updated_on?: string;
         }>;
       };
-      const result = response.result ?? response;
+      const result = (response.result ?? response) as {
+        total?: number;
+        total_count?: number;
+        issues?: Array<{
+          id: number | string;
+          name?: string;
+          type?: string;
+          project_id?: string;
+          creator?: string;
+          updater?: string;
+          created_on?: string;
+          updated_on?: string;
+        }>;
+      };
 
       return {
         plans: (result.issues ?? []).map((item) => ({
@@ -2731,7 +3407,16 @@ export function createReqClient(
         created_on?: string;
         updated_on?: string;
       };
-      const result = response.result ?? response;
+      const result = (response.result ?? response) as {
+        id?: number | string;
+        name?: string;
+        type?: string;
+        project_id?: string;
+        creator?: string;
+        updater?: string;
+        created_on?: string;
+        updated_on?: string;
+      };
 
       return {
         id: result.id ?? input.plan_id,
@@ -2792,7 +3477,26 @@ export function createReqClient(
           status_name?: string;
         }>;
       };
-      const result = response.result ?? response;
+      const result = (response.result ?? response) as {
+        total?: number;
+        total_count?: number;
+        issues?: Array<{
+          id: number | string;
+          subject?: string;
+          tracker?: {
+            id?: number | string;
+            name?: string;
+          };
+          tracker_id?: number | string;
+          tracker_name?: string;
+          status?: {
+            id?: number | string;
+            name?: string;
+          };
+          status_id?: number | string;
+          status_name?: string;
+        }>;
+      };
 
       return {
         work_items: result.issues ?? [],
@@ -2855,7 +3559,29 @@ export function createReqClient(
           status_name?: string;
         }>;
       };
-      const result = response.result ?? response;
+      const result = (response.result ?? response) as {
+        milestone_cur_count?: number;
+        issue_cur_count?: number;
+        issues_count?: number;
+        total?: number;
+        total_count?: number;
+        issues?: Array<{
+          id: number | string;
+          subject?: string;
+          tracker?: {
+            id?: number | string;
+            name?: string;
+          };
+          tracker_id?: number | string;
+          tracker_name?: string;
+          status?: {
+            id?: number | string;
+            name?: string;
+          };
+          status_id?: number | string;
+          status_name?: string;
+        }>;
+      };
 
       return {
         work_items: result.issues ?? [],
@@ -2898,7 +3624,19 @@ export function createReqClient(
           first_name?: string;
         };
       };
-      const result = response.result ?? response;
+      const result = (response.result ?? response) as {
+        id?: number | string;
+        name?: string;
+        type?: string;
+        project_id?: string;
+        img_url?: string;
+        creator?: {
+          user_id?: string;
+          domain_id?: string;
+          nick_name?: string;
+          first_name?: string;
+        };
+      };
 
       return {
         id: result.id ?? "",
@@ -2941,7 +3679,19 @@ export function createReqClient(
           first_name?: string;
         };
       };
-      const result = response.result ?? response;
+      const result = (response.result ?? response) as {
+        id?: number | string;
+        name?: string;
+        type?: string;
+        project_id?: string;
+        img_url?: string;
+        creator?: {
+          user_id?: string;
+          domain_id?: string;
+          nick_name?: string;
+          first_name?: string;
+        };
+      };
 
       return {
         id: result.id ?? input.plan_id,
@@ -2986,7 +3736,19 @@ export function createReqClient(
         };
       };
       assertReqMutationSucceeded("update plan image", response.status);
-      const result = response.result ?? response;
+      const result = (response.result ?? response) as {
+        id?: number | string;
+        name?: string;
+        type?: string;
+        project_id?: string;
+        img_url?: string;
+        creator?: {
+          user_id?: string;
+          domain_id?: string;
+          nick_name?: string;
+          first_name?: string;
+        };
+      };
 
       return {
         id: result.id ?? input.plan_id,
@@ -3704,6 +4466,26 @@ export function createReqClient(
         description: response.description
       };
     },
+    async getWorkItemIssueDetails(input) {
+      const query = new URLSearchParams({
+        issue_id: input.work_item_id,
+        project_uuid: input.project_id,
+        include: input.include
+      });
+      const response = (await _http.get(`/v2/issues/show?${query.toString()}`)) as {
+        result?: {
+          issue?: ReqWorkItemIssueDetails;
+        };
+        issue?: ReqWorkItemIssueDetails;
+      };
+      const issue = response.result?.issue ?? response.issue;
+      const { developer: _developer, ...issueWithoutTransientDeveloper } = issue ?? {};
+
+      return {
+        ...issueWithoutTransientDeveloper,
+        id: String(issue?.id ?? input.work_item_id)
+      };
+    },
     async getWorkItemIndexCounts(input) {
       const query = new URLSearchParams({
         issue_id: input.work_item_id,
@@ -4023,7 +4805,21 @@ export function createReqClient(
           region?: string;
         }>;
       };
-      const result = response.result ?? response;
+      const result = (response.result ?? response) as {
+        data?: Array<{
+          id: number | string;
+          issue_id?: number | string;
+          user_id?: string;
+          user_num_id?: number;
+          user_name?: string;
+          nick_name?: string;
+          work_date?: string;
+          work_date_timestamp?: string | number;
+          work_hours?: string | number;
+          region?: string;
+        }>;
+        total?: number;
+      };
 
       return {
         work_hours: result.data ?? [],
@@ -4070,7 +4866,21 @@ export function createReqClient(
           summary?: string;
         }>;
       };
-      const result = response.result ?? response;
+      const result = (response.result ?? response) as {
+        work_hours?: Array<{
+          issue_id?: number | string;
+          issue_type?: string;
+          subject?: string;
+          project_name?: string;
+          user_id?: string;
+          user_name?: string;
+          nick_name?: string;
+          work_date?: string;
+          work_hours_num?: string | number;
+          summary?: string;
+        }>;
+        total?: number;
+      };
 
       return {
         work_hours: result.work_hours ?? [],
@@ -4968,6 +5778,1129 @@ export function createReqClient(
         updated_count: result.updated_count,
         fields: result.fields ?? []
       };
+    },
+    async listPrograms(input) {
+      const query = new URLSearchParams({
+        offset: String((input.page - 1) * input.page_size),
+        limit: String(input.page_size)
+      });
+
+      if (input.search) {
+        query.set("search", input.search);
+      }
+      if (input.sort_key) {
+        query.set("sort_key", input.sort_key);
+      }
+      if (input.sort_dir) {
+        query.set("sort_dir", input.sort_dir.toUpperCase());
+      }
+      if (typeof input.is_watched !== "undefined") {
+        query.set("is_watched", String(input.is_watched));
+      }
+
+      const response = (await _http.get(`/v4/programs?${query.toString()}`)) as {
+        programs?: ReqProgramItem[];
+        total?: number;
+      };
+
+      return {
+        programs: response.programs ?? [],
+        total: response.total
+      };
+    },
+    async listProgramFields(input) {
+      const query = new URLSearchParams({
+        field_type: input.field_type
+      });
+      const response = (await _http.get(
+        `/v4/programs/${encodeURIComponent(input.program_id)}/fields?${query.toString()}`
+      )) as {
+        fields?: ReqProgramField[];
+      };
+
+      return {
+        fields: response.fields ?? []
+      };
+    },
+    async getIr(input) {
+      return (await _http.get(
+        `/v4/programs/${encodeURIComponent(input.program_id)}/irs/${encodeURIComponent(input.ir_id)}`
+      )) as ReqRequirementPoolItem;
+    },
+    async listIrChildren(input) {
+      const query = new URLSearchParams({
+        query_type: input.query_type,
+        offset: String((input.page - 1) * input.page_size),
+        limit: String(input.page_size)
+      });
+      const response = (await _http.get(
+        `/v4/programs/${encodeURIComponent(input.program_id)}/irs/${encodeURIComponent(input.ir_id)}/children?${query.toString()}`
+      )) as {
+        irs?: ReqRequirementPoolItem[];
+        items?: ReqRequirementPoolItem[];
+        total?: number;
+      };
+
+      return {
+        items: response.irs ?? response.items ?? [],
+        total: response.total
+      };
+    },
+    async listIrHistories(input) {
+      const query = new URLSearchParams({
+        offset: String((input.page - 1) * input.page_size),
+        limit: String(input.page_size)
+      });
+      const response = (await _http.get(
+        `/v4/irs/${encodeURIComponent(input.ir_id)}/histories?${query.toString()}`
+      )) as {
+        histories?: ReqRequirementHistory[];
+        total?: number;
+      };
+
+      return {
+        histories: response.histories ?? [],
+        total: response.total
+      };
+    },
+    async listRrStatuses(input) {
+      const response = (await _http.post(
+        `/v4/programs/${encodeURIComponent(input.program_id)}/rr-status`,
+        {
+          rr_ids: input.rr_ids
+        }
+      )) as {
+        rr_status_list?: ReqRrStatusItem[];
+      };
+
+      return {
+        rr_status_list: response.rr_status_list ?? []
+      };
+    },
+    async listRrs(input) {
+      const query = new URLSearchParams({
+        query_type: input.query_type,
+        offset: String((input.page - 1) * input.page_size),
+        limit: String(input.page_size)
+      });
+
+      if (typeof input.include_deleted !== "undefined") {
+        query.set("include_deleted", String(input.include_deleted));
+      }
+      if (input.updated_time_interval) {
+        query.set("updated_time_interval", input.updated_time_interval);
+      }
+
+      const response = (await _http.get(
+        `/v4/programs/${encodeURIComponent(input.program_id)}/rrs?${query.toString()}`
+      )) as {
+        rrs?: ReqRequirementPoolItem[];
+        total?: number;
+      };
+
+      return {
+        rrs: response.rrs ?? [],
+        total: response.total
+      };
+    },
+    async listRrHistories(input) {
+      const query = new URLSearchParams({
+        offset: String((input.page - 1) * input.page_size),
+        limit: String(input.page_size)
+      });
+      const response = (await _http.get(
+        `/v4/rrs/${encodeURIComponent(input.rr_id)}/histories?${query.toString()}`
+      )) as {
+        histories?: ReqRequirementHistory[];
+        total?: number;
+      };
+
+      return {
+        histories: response.histories ?? [],
+        total: response.total
+      };
+    },
+    async listIssueSeverities() {
+      const response = (await _http.get("/v2/issue-severity/all")) as {
+        result?: {
+          severities?: ReqIssueSeverity[];
+        };
+        severities?: ReqIssueSeverity[];
+      };
+
+      return {
+        severities: response.result?.severities ?? response.severities ?? []
+      };
+    },
+    async listIpdProjects(input) {
+      const query = new URLSearchParams();
+      if (typeof input.search !== "undefined") {
+        query.set("search", input.search);
+      }
+      if (input.model) {
+        query.set("model", input.model);
+      }
+      const suffix = query.toString() ? `?${query.toString()}` : "";
+      const response = (await _http.get(`/v1/ipdprojectservice/projects/ipd${suffix}`)) as {
+        result?: ReqIpdProject[];
+      };
+
+      return {
+        projects: response.result ?? []
+      };
+    },
+    async listIpdProjectUsers(input) {
+      const response = (await _http.get(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/users`
+      )) as {
+        result?: ReqIpdUser[];
+        users?: ReqIpdUser[];
+      };
+
+      return {
+        users: response.result ?? response.users ?? []
+      };
+    },
+    async getIpdIssue(input) {
+      const version = input.version === "v1" ? "v1" : "v2";
+      const response = (await _http.get(
+        `/${version}/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/issues/${encodeURIComponent(input.issue_id)}`
+      )) as {
+        result?: ReqIpdIssue;
+      } & ReqIpdIssue;
+
+      return response.result ?? response;
+    },
+    async listIpdIssues(input) {
+      const query = new URLSearchParams({
+        issue_type: input.issue_type
+      });
+      const response = (await _http.post(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/issues/query?${query.toString()}`,
+        {
+          ...(input.filter ? { filter: input.filter } : {}),
+          filter_mode: input.filter_mode,
+          page: {
+            page_num: input.page,
+            page_size: input.page_size
+          }
+        }
+      )) as {
+        result?: {
+          data?: ReqIpdIssue[];
+          issues?: ReqIpdIssue[];
+          total?: number;
+        };
+        data?: ReqIpdIssue[];
+        issues?: ReqIpdIssue[];
+        total?: number;
+      };
+      const result = (response.result ?? response) as {
+        data?: ReqIpdIssue[];
+        issues?: ReqIpdIssue[];
+        total?: number;
+      };
+
+      return {
+        issues: result.issues ?? result.data ?? [],
+        total: result.total
+      };
+    },
+    async listIpdIssueTree(input) {
+      const query = new URLSearchParams({ category: input.category });
+      const response = (await _http.post(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/issues/tree?${query.toString()}`,
+        {
+          ...(input.keyword ? { keyword: input.keyword } : {}),
+          ...(input.number ? { number: input.number } : {}),
+          ...(input.plan ? { plan: input.plan } : {}),
+          ...(input.modified_date ? { modified_date: input.modified_date } : {}),
+          offset: (input.page - 1) * input.page_size,
+          limit: input.page_size
+        }
+      )) as {
+        result?: { issues?: ReqIpdIssue[]; total?: number };
+      };
+
+      return {
+        issues: response.result?.issues ?? [],
+        total: response.result?.total
+      };
+    },
+    async listIpdAttachedWikis(input) {
+      const query = new URLSearchParams({ issue_id: input.issue_id });
+      if (input.category) {
+        query.set("category", input.category);
+      }
+      const response = (await _http.get(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/issue/get-attached-wikis?${query.toString()}`
+      )) as {
+        data?: ReqIpdWiki[];
+        total?: number;
+      };
+
+      return {
+        wikis: response.data ?? [],
+        total: response.total
+      };
+    },
+    async groupIpdIssues(input) {
+      const query = new URLSearchParams({
+        issue_type: input.issue_type,
+        group_field_id: input.group_field_id
+      });
+      if (typeof input.is_project_group !== "undefined") {
+        query.set("is_project_group", String(input.is_project_group));
+      }
+      if (input.group_sort) {
+        query.set("group_sort", input.group_sort);
+      }
+      const response = (await _http.post(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/issues/group?${query.toString()}`,
+        {
+          ...(input.filter ? { filter: input.filter } : {}),
+          filter_mode: input.filter_mode,
+          page: { page_no: input.page, page_size: input.page_size },
+          ...(input.sort ? { sort: input.sort } : {})
+        }
+      )) as {
+        result?: { field_info?: ReqIpdNamedItem; data?: ReqIpdNamedItem[] };
+      };
+
+      return {
+        field_info: response.result?.field_info,
+        data: response.result?.data ?? [],
+        raw: response
+      };
+    },
+    async listIpdTenantIssues(input) {
+      const query = new URLSearchParams({ issue_type: input.issue_type });
+      if (input.project_id) {
+        query.set("project_id", Array.isArray(input.project_id) ? input.project_id.join(",") : input.project_id);
+      }
+      const response = (await _http.post(`/v1/ipdprojectservice/projects/tenant/query?${query.toString()}`, {
+        ...(input.filter ? { filter: input.filter } : {}),
+        filter_mode: input.filter_mode,
+        page: { page_no: input.page, page_size: input.page_size },
+        ...(input.sort ? { sort: input.sort } : {})
+      })) as {
+        result?: { issues?: ReqIpdIssue[]; total?: number };
+      };
+
+      return {
+        issues: response.result?.issues ?? [],
+        total: response.result?.total
+      };
+    },
+    async listIpdModules(input) {
+      const query = new URLSearchParams({
+        offset: String((input.page - 1) * input.page_size),
+        limit: String(input.page_size)
+      });
+      const response = (await _http.get(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/modules/tree?${query.toString()}`
+      )) as {
+        result?: {
+          data?: ReqIpdNamedItem[];
+          modules?: ReqIpdNamedItem[];
+          total?: number;
+        };
+        modules?: ReqIpdNamedItem[];
+        total?: number;
+      };
+      const result = (response.result ?? response) as {
+        modules?: ReqIpdNamedItem[];
+        data?: ReqIpdNamedItem[];
+        total?: number;
+      };
+
+      return {
+        modules: result.modules ?? result.data ?? [],
+        total: result.total
+      };
+    },
+    async listIpdStatuses(input) {
+      const query = new URLSearchParams();
+      if (input.category_id) {
+        query.set("category_id", input.category_id);
+      }
+      const suffix = query.toString() ? `?${query.toString()}` : "";
+      const response = (await _http.get(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/status${suffix}`
+      )) as {
+        result?: ReqIpdNamedItem[] | { statuses?: ReqIpdNamedItem[] };
+        statuses?: ReqIpdNamedItem[];
+      };
+
+      return {
+        statuses: Array.isArray(response.result) ? response.result : response.result?.statuses ?? response.statuses ?? []
+      };
+    },
+    async listIpdIssueRelationConfig(input) {
+      const response = (await _http.get(
+        `/v2/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/issue-relation-config`
+      )) as {
+        result?: {
+          relations?: ReqIpdNamedItem[];
+          relation_config?: ReqIpdNamedItem[];
+        };
+        relations?: ReqIpdNamedItem[];
+      };
+      const result = (response.result ?? response) as {
+        relations?: ReqIpdNamedItem[];
+        relation_config?: ReqIpdNamedItem[];
+      };
+
+      return {
+        relations: result.relations ?? result.relation_config ?? [],
+        raw: response
+      };
+    },
+    async listIpdLabels(input) {
+      const query = new URLSearchParams({
+        offset: String((input.page - 1) * input.page_size),
+        limit: String(input.page_size)
+      });
+      const response = (await _http.get(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/tags?${query.toString()}`
+      )) as {
+        result?: {
+          labels?: ReqIpdNamedItem[];
+          data?: ReqIpdNamedItem[];
+          total?: number;
+        };
+        labels?: ReqIpdNamedItem[];
+        total?: number;
+      };
+      const result = (response.result ?? response) as {
+        labels?: ReqIpdNamedItem[];
+        data?: ReqIpdNamedItem[];
+        total?: number;
+      };
+
+      return {
+        labels: result.labels ?? result.data ?? [],
+        total: result.total
+      };
+    },
+    async listIpdProjectFields(input) {
+      const query = new URLSearchParams({
+        offset: String((input.page - 1) * input.page_size),
+        limit: String(input.page_size)
+      });
+      const response = (await _http.get(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/fields?${query.toString()}`
+      )) as {
+        result?: {
+          fields?: ReqIpdNamedItem[];
+          data?: ReqIpdNamedItem[];
+          total?: number;
+        };
+        fields?: ReqIpdNamedItem[];
+        total?: number;
+      };
+      const result = (response.result ?? response) as {
+        fields?: ReqIpdNamedItem[];
+        data?: ReqIpdNamedItem[];
+        total?: number;
+      };
+
+      return {
+        fields: result.fields ?? result.data ?? [],
+        total: result.total
+      };
+    },
+    async listIpdIssueFields(input) {
+      const response = (await _http.get(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/categories/${encodeURIComponent(input.category_id)}/field/`
+      )) as {
+        result?: ReqIpdNamedItem[] | { fields?: ReqIpdNamedItem[] };
+        fields?: ReqIpdNamedItem[];
+      };
+
+      return {
+        fields: Array.isArray(response.result) ? response.result : response.result?.fields ?? response.fields ?? []
+      };
+    },
+    async listIpdTenantFields(input) {
+      const query = new URLSearchParams({
+        page: String(input.page),
+        size: String(input.page_size)
+      });
+      const response = (await _http.post(
+        `/v1/ipdprojectservice/tenant/fields/query?${query.toString()}`,
+        {
+          ...(typeof input.search !== "undefined" ? { search: input.search } : {}),
+          ...(input.sort_info ? { sort_info: input.sort_info } : {})
+        }
+      )) as {
+        result?: ReqIpdNamedItem[];
+        page?: { count?: string | number };
+      };
+
+      return {
+        fields: response.result ?? [],
+        total: typeof response.page?.count === "undefined" ? undefined : Number(response.page.count)
+      };
+    },
+    async getIpdTenantFieldUsed(input) {
+      const response = (await _http.get(
+        `/v1/ipdprojectservice/tenant/fields/${encodeURIComponent(input.field_id)}/used`
+      )) as ReqIpdFieldUsage[] | { result?: ReqIpdFieldUsage[] };
+
+      return {
+        usage: Array.isArray(response) ? response : response.result ?? []
+      };
+    },
+    async getIpdTenantFieldOptionUsed(input) {
+      return (await _http.get(
+        `/v1/ipdprojectservice/tenant/field/options-used?code=${encodeURIComponent(input.code)}`
+      )) as Record<string, string | number>;
+    },
+    async getIpdProjectFieldOptionUsed(input) {
+      return (await _http.get(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/field/options-used?code=${encodeURIComponent(input.code)}`
+      )) as Record<string, string | number>;
+    },
+    async listIpdWorkflowTemplates(input) {
+      const query = new URLSearchParams();
+      if (input.category_id) {
+        query.set("category_id", input.category_id);
+      }
+      const suffix = query.toString() ? `?${query.toString()}` : "";
+      const response = (await _http.get(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/workflow-template${suffix}`
+      )) as {
+        result?: {
+          workflows?: ReqIpdNamedItem[];
+          workflow_templates?: ReqIpdNamedItem[];
+        };
+        workflows?: ReqIpdNamedItem[];
+      };
+      const result = (response.result ?? response) as {
+        workflows?: ReqIpdNamedItem[];
+        workflow_templates?: ReqIpdNamedItem[];
+      };
+
+      return {
+        workflows: result.workflows ?? result.workflow_templates ?? [],
+        raw: response
+      };
+    },
+    async listIpdWorkflowFields(input) {
+      const query = new URLSearchParams({
+        category_id: input.category_id
+      });
+      const response = (await _http.get(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/workflow-template/issue/fields?${query.toString()}`
+      )) as {
+        result?: ReqIpdNamedItem[] | { fields?: ReqIpdNamedItem[] };
+        fields?: ReqIpdNamedItem[];
+      };
+
+      return {
+        fields: Array.isArray(response.result) ? response.result : response.result?.fields ?? response.fields ?? []
+      };
+    },
+    async listIpdSnapshotVersions(input) {
+      const response = (await _http.get(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/snapshots/version`
+      )) as {
+        result?: ReqIpdNamedItem[];
+        snapshots?: ReqIpdNamedItem[];
+      };
+
+      return {
+        snapshots: response.result ?? response.snapshots ?? []
+      };
+    },
+    async listIpdFeatureSets(input) {
+      const query = new URLSearchParams();
+      if (input.snapshot_version_id) {
+        query.set("snapshot_version_id", input.snapshot_version_id);
+      }
+      const suffix = query.toString() ? `?${query.toString()}` : "";
+      const response = (await _http.get(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/feature-set/query${suffix}`
+      )) as {
+        result?: ReqIpdNamedItem[];
+        feature_sets?: ReqIpdNamedItem[];
+      };
+
+      return {
+        feature_sets: response.result ?? response.feature_sets ?? []
+      };
+    },
+    async listIpdSnapshotFeatures(input) {
+      const query = new URLSearchParams({
+        snapshot_version_id: input.snapshot_version_id,
+        feature_set_id: input.feature_set_id,
+        offset: String((input.page - 1) * input.page_size),
+        limit: String(input.page_size)
+      });
+      const response = (await _http.get(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/snapshots-feature/query?${query.toString()}`
+      )) as {
+        result?: {
+          issues?: ReqIpdIssue[];
+          total?: number;
+        };
+        issues?: ReqIpdIssue[];
+        total?: number;
+      };
+      const result = response.result ?? response;
+
+      return {
+        issues: result.issues ?? [],
+        total: result.total
+      };
+    },
+    async getIpdE2EGraph(input) {
+      const query = new URLSearchParams({
+        issue_id: input.issue_id,
+        category: input.category
+      });
+      if (typeof input.is_src !== "undefined") {
+        query.set("is_src", String(input.is_src));
+      }
+      const response = (await _http.get(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/e2e/graphs?${query.toString()}`
+      )) as {
+        result?: ReqIpdIssue;
+      } & ReqIpdIssue;
+
+      return response.result ?? response;
+    },
+    async listIpdCategoryStatuses(input) {
+      const response = (await _http.get(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/category/${encodeURIComponent(input.category_id)}/statuses`
+      )) as {
+        result?: ReqIpdNamedItem[];
+        statuses?: ReqIpdNamedItem[];
+        total?: number;
+      };
+
+      return {
+        statuses: response.result ?? response.statuses ?? [],
+        total: response.total
+      };
+    },
+    async getIpdStatisticDashboard(input) {
+      const query = new URLSearchParams({ classification: input.classification });
+      const response = (await _http.post(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/statistic/dashboard?${query.toString()}`,
+        {
+          ...(input.plan ? { plan: input.plan } : {}),
+          ...(input.created_date ? { created_date: input.created_date } : {})
+        }
+      )) as {
+        result?: ReqIpdDashboardItem[];
+      };
+
+      return {
+        items: response.result ?? []
+      };
+    },
+    async getIpdWorkItemFlowDetail(input) {
+      const query = new URLSearchParams({
+        issue_category: input.issue_category
+      });
+      const response = (await _http.get(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/work-item/${encodeURIComponent(input.issue_id)}/flow/detail?${query.toString()}`
+      )) as {
+        result?: {
+          process_instance?: unknown;
+          next_flow?: ReqIpdNamedItem[];
+        };
+        process_instance?: unknown;
+        next_flow?: ReqIpdNamedItem[];
+      };
+      const result = response.result ?? response;
+
+      return {
+        process_instance: result.process_instance,
+        next_flow: result.next_flow ?? [],
+        raw: response
+      };
+    },
+    async transferIpdWorkItemFlow(input) {
+      const response = (await _http.post(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/work-item/flow/transfer`,
+        {
+          id: input.issue_id,
+          issue_category: input.issue_category,
+          flow_code: input.flow_code,
+          ...(input.process_context ? { process_context: input.process_context } : {})
+        }
+      )) as {
+        status?: string;
+        result?: unknown;
+      };
+
+      assertReqMutationSucceeded("transfer IPD work item flow", response.status);
+
+      return response.result ?? response;
+    },
+    async batchTransferIpdWorkItemFlow(input) {
+      const query = new URLSearchParams({
+        is_recover: String(input.is_recover)
+      });
+      const response = (await _http.put(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/work-item/processes/transfer-batch?${query.toString()}`,
+        {
+          issue_ids: input.issue_ids,
+          issue_category: input.issue_category,
+          flow_code: input.flow_code,
+          ...(input.process_context ? { process_context: input.process_context } : {})
+        }
+      )) as {
+        status?: string;
+        result?: unknown;
+      };
+
+      assertReqMutationSucceeded("batch transfer IPD work item flow", response.status);
+
+      return response.result ?? response;
+    },
+    async createIpdIssue(input) {
+      const response = (await _http.post(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/issues`,
+        withIpdExtraFields({
+          title: input.title,
+          description: input.description,
+          category: input.category,
+          assignee: input.assignee,
+          ...(input.status ? { status: input.status } : {}),
+          ...(input.src_domain ? { src_domain: input.src_domain } : {}),
+          ...(input.submitted_by ? { submitted_by: input.submitted_by } : {}),
+          ...(input.domain_id ? { domain_id: input.domain_id } : {}),
+          ...(input.recipient ? { recipient: input.recipient } : {}),
+          ...(typeof input.expect_delivery_time !== "undefined" ? { expect_delivery_time: input.expect_delivery_time } : {}),
+          ...(input.priority ? { priority: input.priority } : {}),
+          ...(input.assigned_cc ? { assigned_cc: input.assigned_cc } : {}),
+          ...(input.plan_pi ? { plan_pi: input.plan_pi } : {}),
+          ...(input.plan_iteration ? { plan_iteration: input.plan_iteration } : {}),
+          ...(typeof input.plan_start_date !== "undefined" ? { plan_start_date: input.plan_start_date } : {}),
+          ...(typeof input.plan_end_date !== "undefined" ? { plan_end_date: input.plan_end_date } : {}),
+          ...(typeof input.workload_man_day !== "undefined" ? { workload_man_day: input.workload_man_day } : {}),
+          ...(input.business_domain ? { business_domain: input.business_domain } : {}),
+          ...(input.need_break ? { need_break: input.need_break } : {}),
+          ...(input.extra_fields ? { extra_fields: input.extra_fields } : {})
+        })
+      )) as {
+        status?: string;
+        result?: ReqIpdIssue[];
+      };
+
+      assertReqMutationSucceeded("create IPD issue", response.status);
+
+      return response.result ?? [];
+    },
+    async batchCreateIpdIssues(input) {
+      const response = (await _http.post(
+        `/v2/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/issues/batch`,
+        input.issues.map((issue) => withIpdExtraFields(issue))
+      )) as {
+        status?: string;
+        result?: ReqIpdIssue[];
+      };
+
+      assertReqMutationSucceeded("batch create IPD issues", response.status);
+
+      return response.result ?? [];
+    },
+    async batchUpdateIpdIssues(input) {
+      const response = (await _http.put(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/issues/batch`,
+        {
+          id: input.issue_ids,
+          attribute: withIpdExtraFields(input.attribute)
+        }
+      )) as {
+        status?: string;
+        result?: unknown;
+      };
+
+      assertReqMutationSucceeded("batch update IPD issues", response.status);
+
+      return response.result ?? response;
+    },
+    async batchDeleteIpdIssues(input) {
+      const query = new URLSearchParams();
+      if (typeof input.is_permanent_delete !== "undefined") {
+        query.set("is_permanent_delete", String(input.is_permanent_delete));
+      }
+      if (input.src_project_id) {
+        query.set("src_project_id", input.src_project_id);
+      }
+      const suffix = query.size > 0 ? `?${query.toString()}` : "";
+      const response = (await _http.delete(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/issues/batch${suffix}`,
+        input.issue_ids
+      )) as {
+        status?: string;
+        result?: unknown;
+      };
+
+      assertReqMutationSucceeded("batch delete IPD issues", response.status);
+
+      return response.result ?? response;
+    },
+    async uploadIpdIssueAttachment(input) {
+      const form = new FormData();
+      form.append(
+        "attachment",
+        new Blob([Buffer.from(input.file_content)], {
+          type: input.content_type ?? "application/octet-stream"
+        }),
+        input.file_name
+      );
+      const response = (await _http.postMultipart(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/issues/${encodeURIComponent(input.issue_id)}/attachments/upload`,
+        form
+      )) as {
+        status?: string;
+        result?: ReqIpdAttachment[];
+      };
+
+      assertReqMutationSucceeded("upload IPD issue attachment", response.status);
+
+      return response.result ?? [];
+    },
+    async listIpdIssueAttachments(input) {
+      const query = new URLSearchParams({
+        issue_id: input.issue_id
+      });
+      if (input.source_project_id) {
+        query.set("source_project_id", input.source_project_id);
+      }
+      const response = (await _http.get(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/attachments?${query.toString()}`
+      )) as {
+        result?: ReqIpdAttachment[];
+        attachments?: ReqIpdAttachment[];
+      };
+
+      return {
+        attachments: response.result ?? response.attachments ?? []
+      };
+    },
+    async downloadIpdIssueAttachment(input) {
+      const response = await _http.getBinary(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/attachments/download/${encodeURIComponent(input.attachment_id)}`
+      );
+
+      return {
+        project_id: input.project_id,
+        attachment_id: input.attachment_id,
+        body: response.body,
+        content_type: response.contentType,
+        file_name: response.fileName
+      };
+    },
+    async uploadIpdIssueImage(input) {
+      const query = new URLSearchParams({
+        issue_id: input.issue_id
+      });
+      const form = new FormData();
+      form.append(
+        "file",
+        new Blob([Buffer.from(input.file_content)], {
+          type: input.content_type ?? "application/octet-stream"
+        }),
+        input.file_name
+      );
+      const response = (await _http.postMultipart(
+        `/v2/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/images?${query.toString()}`,
+        form
+      )) as {
+        status?: string;
+        result?: ReqIpdIssue;
+      } & ReqIpdIssue;
+
+      assertReqMutationSucceeded("upload IPD issue image", response.status);
+
+      return response.result ?? response;
+    },
+    async deleteIpdIssueImage(input) {
+      const query = new URLSearchParams({
+        issue_id: input.issue_id,
+        file_name: input.file_name
+      });
+      const response = (await _http.delete(
+        `/v2/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/images?${query.toString()}`
+      )) as {
+        status?: string;
+        result?: ReqIpdIssue;
+      } & ReqIpdIssue;
+
+      assertReqMutationSucceeded("delete IPD issue image", response.status);
+
+      return response.result ?? response;
+    },
+    async downloadIpdIssueImage(input) {
+      const query = new URLSearchParams({
+        issue_id: input.issue_id,
+        file_name: input.file_name
+      });
+      if (input.field_code) {
+        query.set("field_code", input.field_code);
+      }
+      const response = await _http.getBinary(
+        `/v2/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/images?${query.toString()}`
+      );
+
+      return {
+        project_id: input.project_id,
+        issue_id: input.issue_id,
+        file_name: input.file_name,
+        body: response.body,
+        content_type: response.contentType
+      };
+    },
+    async listIpdWorkHours(input) {
+      const offset = (input.page - 1) * input.page_size;
+      const response = (await _http.post(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/work-hour/query`,
+        {
+          params: {
+            plan_pi: input.plan_pi ?? [],
+            plan_iteration: input.plan_iteration ?? [],
+            workitem_id: input.workitem_id ?? [],
+            created_by: input.created_by ?? []
+          },
+          page_info: {
+            offset,
+            limit: input.page_size
+          }
+        }
+      )) as {
+        result?: ReqIpdWorkHour[];
+        page?: { count?: string | number };
+      };
+
+      return {
+        work_hours: response.result ?? [],
+        total: typeof response.page?.count === "undefined" ? undefined : Number(response.page.count)
+      };
+    },
+    async listIpdWorkHourCategories(input) {
+      const query = new URLSearchParams();
+      if (input.display_value) {
+        query.set("display_value", input.display_value);
+      }
+      const suffix = query.size > 0 ? `?${query.toString()}` : "";
+      const response = (await _http.get(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/work-hour/options${suffix}`
+      )) as {
+        result?: ReqIpdNamedItem[];
+        categories?: ReqIpdNamedItem[];
+      };
+
+      return {
+        categories: response.result ?? response.categories ?? []
+      };
+    },
+    async createIpdWorkHour(input) {
+      const response = (await _http.post(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/work-items/${encodeURIComponent(input.issue_id)}/work-hour`,
+        {
+          ...(input.work_hour_category ? { work_hour_category: input.work_hour_category } : {}),
+          work_date_begin: input.work_date_begin,
+          work_date_end: input.work_date_end,
+          work_hours: input.work_hours,
+          work_hour_type: input.work_hour_type,
+          include_weekend: input.include_weekend,
+          ...(input.description ? { description: input.description } : {})
+        }
+      )) as {
+        status?: string;
+        result?: { data?: ReqIpdWorkHour[]; work_hours_total?: string | number };
+      };
+
+      assertReqMutationSucceeded("create IPD work hour", response.status);
+
+      return normalizeIpdWorkHourTotal(response);
+    },
+    async updateIpdWorkHour(input) {
+      const response = (await _http.put(
+        `/v1/projects/${encodeURIComponent(input.project_id)}/work-items/${encodeURIComponent(input.issue_id)}/work-hour/${encodeURIComponent(input.workhour_id)}`,
+        {
+          ...(typeof input.work_hours !== "undefined" ? { work_hours: input.work_hours } : {}),
+          ...(input.work_hour_category ? { work_hour_category: input.work_hour_category } : {}),
+          ...(typeof input.description !== "undefined" ? { description: input.description } : {})
+        }
+      )) as {
+        status?: string;
+        result?: { data?: ReqIpdWorkHour[]; work_hours_total?: string | number };
+      };
+
+      assertReqMutationSucceeded("update IPD work hour", response.status);
+
+      return normalizeIpdWorkHourTotal(response);
+    },
+    async deleteIpdWorkHour(input) {
+      const response = (await _http.delete(
+        `/v1/projects/${encodeURIComponent(input.project_id)}/work-items/${encodeURIComponent(input.issue_id)}/work-hour/${encodeURIComponent(input.workhour_id)}`
+      )) as {
+        status?: string;
+        result?: { data?: ReqIpdWorkHour[]; work_hours_total?: string | number };
+      };
+
+      assertReqMutationSucceeded("delete IPD work hour", response.status);
+
+      return normalizeIpdWorkHourTotal(response);
+    },
+    async updateIpdTenantField(input) {
+      return (await _http.post(
+        `/v1/ipdprojectservice/tenant/fields/${encodeURIComponent(input.field_id)}`,
+        toIpdFieldMutationBody(input)
+      )) as ReqIpdNamedItem;
+    },
+    async updateIpdProjectField(input) {
+      return (await _http.post(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/meta/fields/${encodeURIComponent(input.field_id)}`,
+        toIpdFieldMutationBody(input)
+      )) as ReqIpdNamedItem;
+    },
+    async createIpdModule(input) {
+      const response = (await _http.post(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/modules`,
+        {
+          display_value: input.display_value,
+          parent_id: input.parent_id,
+          ...(input.description ? { description: input.description } : {}),
+          ...(input.assignee ? { assignee: input.assignee } : {})
+        }
+      )) as {
+        status?: string;
+        result?: ReqIpdNamedItem;
+      } & ReqIpdNamedItem;
+
+      assertReqMutationSucceeded("create IPD module", response.status);
+
+      return response.result ?? response;
+    },
+    async updateIpdModule(input) {
+      const response = (await _http.put(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/modules/${encodeURIComponent(input.module_id)}`,
+        {
+          display_value: input.display_value,
+          parent_id: input.parent_id,
+          ...(input.description ? { description: input.description } : {}),
+          ...(input.assignee ? { assignee: input.assignee } : {})
+        }
+      )) as {
+        status?: string;
+        result?: ReqIpdNamedItem;
+      } & ReqIpdNamedItem;
+
+      assertReqMutationSucceeded("update IPD module", response.status);
+
+      return response.result ?? response;
+    },
+    async deleteIpdModule(input) {
+      const response = (await _http.delete(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/modules/${encodeURIComponent(input.module_id)}`
+      )) as {
+        status?: string;
+        result?: ReqIpdNamedItem;
+      } & ReqIpdNamedItem;
+
+      assertReqMutationSucceeded("delete IPD module", response.status);
+
+      return response.result ?? response;
+    },
+    async createIpdLabel(input) {
+      const response = (await _http.post(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/tags`,
+        {
+          label_type: input.label_type,
+          color: input.color,
+          title: input.title
+        }
+      )) as {
+        status?: string;
+        result?: ReqIpdNamedItem;
+      } & ReqIpdNamedItem;
+
+      assertReqMutationSucceeded("create IPD label", response.status);
+
+      return response.result ?? response;
+    },
+    async updateIpdLabel(input) {
+      const response = (await _http.put(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/tags/${encodeURIComponent(input.label_id)}`,
+        {
+          label_type: input.label_type,
+          ...(input.color ? { color: input.color } : {}),
+          ...(input.title ? { title: input.title } : {})
+        }
+      )) as {
+        status?: string;
+        result?: ReqIpdNamedItem;
+      } & ReqIpdNamedItem;
+
+      assertReqMutationSucceeded("update IPD label", response.status);
+
+      return response.result ?? response;
+    },
+    async deleteIpdLabel(input) {
+      const response = (await _http.delete(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/tags/${encodeURIComponent(input.label_id)}`
+      )) as {
+        status?: string;
+        result?: ReqIpdNamedItem;
+      } & ReqIpdNamedItem;
+
+      assertReqMutationSucceeded("delete IPD label", response.status);
+
+      return response.result ?? response;
+    },
+    async createIpdFeatureSet(input) {
+      const response = (await _http.post(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/feature-sets`,
+        {
+          title: input.title,
+          parent_id: input.parent_id
+        }
+      )) as {
+        status?: string;
+        result?: ReqIpdNamedItem;
+      } & ReqIpdNamedItem;
+
+      assertReqMutationSucceeded("create IPD feature set", response.status);
+
+      return response.result ?? response;
+    },
+    async updateIpdFeatureSet(input) {
+      const response = (await _http.put(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/feature-sets/${encodeURIComponent(input.feature_set_id)}`,
+        {
+          parent_id: input.parent_id,
+          ...(input.title ? { title: input.title } : {}),
+          ...(typeof input.position_float !== "undefined" ? { position_float: input.position_float } : {})
+        }
+      )) as {
+        status?: string;
+        result?: ReqIpdNamedItem;
+      } & ReqIpdNamedItem;
+
+      assertReqMutationSucceeded("update IPD feature set", response.status);
+
+      return response.result ?? response;
+    },
+    async deleteIpdFeatureSet(input) {
+      const response = (await _http.delete(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/feature-sets/${encodeURIComponent(input.feature_set_id)}`
+      )) as {
+        status?: string;
+        result?: ReqIpdNamedItem;
+      } & ReqIpdNamedItem;
+
+      assertReqMutationSucceeded("delete IPD feature set", response.status);
+
+      return response.result ?? { id: input.feature_set_id };
     },
     async addWorkItemComment(input) {
       const response = (await _http.post("/v2/issues/update-issue-notes", {

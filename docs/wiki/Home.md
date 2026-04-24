@@ -69,6 +69,10 @@
 - `src/server/auth-repository.ts`
 - `src/server/module-stats.ts`
 
+## Req API Reference
+
+- [Req-API-Reference](./Req-API-Reference.md): Req MCP API 工具、写入 gate、真实 smoke 和剩余样本缺口。
+
 ## 当前文档原则
 
 - 少页数，不堆重复表格

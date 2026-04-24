@@ -14,7 +14,7 @@
 
 | 模块 | 中文定位 | 现在能做什么 | 典型工具 | 当前建议 |
 | --- | --- | --- | --- | --- |
-| Req | 需求、项目协作与工作项治理 | 已覆盖 `project / module / member / iteration / plan / work-item / collaboration / config-read / board-read / cache-read` 10 个资源面，可做项目管理、成员协作、迭代治理、规划本身、规划内工作项管理、规划图片更新、计划上下文创建工作项、工作项协作、状态配置读取、看板读取和字段缓存读取 | `req_list_projects` `req_create_project` `req_list_project_members` `req_create_iteration` `req_create_plan` `req_create_work_item` | 核心链路可直接用，规划写面、规划图片更新、计划上下文创建工作项与状态/公共配置读面先结合 live 边界使用 |
+| Req | 需求、项目协作与工作项治理 | 已覆盖 `project / module / member / iteration / plan / work-item / collaboration / config-read / board-read / cache-read / program-read / requirement-pool-read / ipd-read / ipd-config-write / ipd-work-item-write / ipd-work-hour / ipd-field-config` 17 个资源面，可做项目管理、成员协作、迭代治理、规划本身、规划内工作项管理、需求池/项目空间读取、IPD 基础读取、IPD 树/关联 Wiki/分组/租户列表/统计仪表盘读取、IPD 特性集/追溯/状态读取、IPD 模块/标签/特性集维护、IPD 工作项创建/批量变更/流程流转/附件/图片、IPD 工时管理、IPD 字段配置维护、工作项协作、状态配置读取、看板读取和字段缓存读取 | `req_list_projects` `req_create_project` `req_list_project_members` `req_create_iteration` `req_create_plan` `req_create_work_item` | 核心链路可直接用，规划写面、需求池/项目空间读取、IPD 读取基础面、IPD 写面与状态/公共配置读面先结合 live 边界使用 |
 | Repo | 代码仓库协作 | 查仓库、分支、提交、文件、MR，创建仓库，发起/评审/合并 MR | `repo_list_repositories` `repo_create_repository` `repo_create_merge_request` | 适合直接使用 |
 | Pipeline | 流水线执行与治理 | 查流水线、运行记录、手动审批、重试/停止，也能管理分组、标签、变量组、规则、策略和扩展点 | `pipeline_list_pipelines` `pipeline_run_pipeline` `pipeline_create_group` | 适合进阶自动化 |
 | Check | 代码检查 | 查规则集、查检查任务、看问题、看指标、创建/执行/停止检查任务 | `check_list_rulesets` `check_list_task_issues` `check_run_task` | 适合和 Repo / Build 搭配 |
@@ -27,18 +27,25 @@
 
 Req 是当前最像“把项目协作动作做成 MCP 工具”的模块，而且已经不只是最初那 8 个核心工具。
 
-当前 Req 已扩展到 `68` 个工具，基本可以按 10 个资源面理解：
+当前 Req 已扩展到 `174` 个工具，基本可以按 17 个资源面理解：
 
 - `project`：`req_list_projects` `req_get_project` `req_create_project` `req_update_project` `req_delete_project` `req_check_project_name` `req_list_not_added_projects`
 - `module`：`req_list_project_modules` `req_create_project_module` `req_update_project_module` `req_delete_project_module`
 - `member`：`req_list_project_members` `req_add_project_member` `req_batch_add_project_members` `req_batch_delete_project_members` `req_update_project_member_role` `req_leave_project`
 - `iteration`：`req_list_iterations` `req_get_iteration` `req_create_iteration` `req_update_iteration` `req_delete_iteration` `req_batch_delete_iterations` `req_update_iteration_state` `req_query_iteration_immovable_issues`
 - `plan`：`req_list_plans` `req_get_plan` `req_create_plan` `req_update_plan` `req_delete_plan` `req_update_plan_image` `req_create_plan_work_item` `req_list_plan_addable_work_items` `req_list_plan_work_items` `req_add_plan_work_items` `req_clear_plan_work_items`
-- `work-item core`：`req_list_work_items` `req_get_work_item` `req_create_work_item` `req_update_work_item` `req_delete_work_item` `req_batch_update_work_items` `req_list_work_item_records`
+- `work-item core`：`req_list_work_items` `req_get_work_item` `req_get_work_item_issue_details` `req_create_work_item` `req_update_work_item` `req_delete_work_item` `req_batch_update_work_items` `req_list_work_item_records`
 - `collaboration`：`req_list_work_item_comments` `req_add_work_item_comment` `req_update_work_item_comment` `req_list_associated_issues` `req_list_associated_commits` `req_list_associated_test_cases` `req_list_related_users` `req_update_work_item_flow`
 - `config-read`：`req_list_work_item_statuses` `req_list_work_item_status_attributes` `req_list_work_item_status_details` `req_list_work_item_status_configs` `req_list_optional_work_item_status_configs` `req_get_project_public_config` `req_list_work_item_workflow_config` `req_list_work_item_templates` `req_get_work_item_template_config` `req_list_work_item_custom_fields` `req_get_work_item_status_rule_flag` `req_list_work_item_tracker_handlers`
 - `board-read`：`req_list_board_work_items` `req_list_board_work_item_status_records` `req_list_board_work_item_workflow_config`
 - `cache-read`：`req_list_job_cache_boards` `req_list_cache_data`
+- `program-read`：`req_list_programs` `req_list_program_fields`
+- `requirement-pool-read`：`req_get_ir` `req_list_ir_children` `req_list_ir_histories` `req_list_rrs` `req_list_rr_statuses` `req_list_rr_histories` `req_list_issue_severities`
+- `ipd-read`：`req_list_ipd_projects` `req_list_ipd_project_users` `req_get_ipd_issue` `req_list_ipd_issues` `req_list_ipd_issue_tree` `req_list_ipd_attached_wikis` `req_group_ipd_issues` `req_list_ipd_tenant_issues` `req_get_ipd_statistic_dashboard` `req_list_ipd_modules` `req_list_ipd_statuses` `req_list_ipd_issue_relation_config` `req_list_ipd_labels` `req_list_ipd_project_fields` `req_list_ipd_issue_fields` `req_list_ipd_workflow_templates` `req_list_ipd_workflow_fields` `req_list_ipd_snapshot_versions` `req_list_ipd_feature_sets` `req_list_ipd_snapshot_features` `req_get_ipd_e2e_graph` `req_list_ipd_category_statuses` `req_get_ipd_work_item_flow_detail`
+- `ipd-config-write`：`req_create_ipd_module` `req_update_ipd_module` `req_delete_ipd_module` `req_create_ipd_label` `req_update_ipd_label` `req_delete_ipd_label` `req_create_ipd_feature_set` `req_update_ipd_feature_set` `req_delete_ipd_feature_set`
+- `ipd-work-item-write`：`req_create_ipd_issue` `req_batch_create_ipd_issues` `req_batch_update_ipd_issues` `req_batch_delete_ipd_issues` `req_transfer_ipd_work_item_flow` `req_batch_transfer_ipd_work_item_flow` `req_upload_ipd_issue_attachment` `req_list_ipd_issue_attachments` `req_download_ipd_issue_attachment` `req_upload_ipd_issue_image` `req_delete_ipd_issue_image` `req_download_ipd_issue_image`
+- `ipd-work-hour`：`req_list_ipd_work_hours` `req_list_ipd_work_hour_categories` `req_create_ipd_work_hour` `req_update_ipd_work_hour` `req_delete_ipd_work_hour`
+- `ipd-field-config`：`req_list_ipd_tenant_fields` `req_get_ipd_tenant_field_used` `req_get_ipd_tenant_field_option_used` `req_get_ipd_project_field_option_used` `req_update_ipd_tenant_field` `req_update_ipd_project_field`
 
 它现在适合的场景：
 
@@ -48,7 +55,7 @@ Req 是当前最像“把项目协作动作做成 MCP 工具”的模块，而�
 - 读取工作项状态属性、状态详情、状态配置、可选状态配置和项目公共配置，帮助 agent 理解项目当前的状态流转规则。
 - 用 `dry_run=true` 先预演高风险写操作，再决定是否真正执行。
 
-更准确地说，Req 的“功能面”已经覆盖到 Scrum 常用协作层，并补到了规划本身 + 规划内工作项管理 + 规划图片更新 + 计划上下文创建工作项，以及状态/模板/字段/缓存/看板读面；其中 `/v3/plan/{project_id}/managements` 没有新增独立 MCP 工具，而是并入 `req_list_plans` 的增强过滤能力。但真实 AK/SK live 验证目前仍主要集中在项目、成员、迭代读取和 work-item core 读写，新增规划写面、规划内工作项管理写面、规划图片更新、计划上下文创建工作项与配置读面都不要默认按“全部已 live”理解。
+更准确地说，Req 的“功能面”已经覆盖到 Scrum 常用协作层，并补到了规划本身 + 规划内工作项管理 + 规划图片更新 + 计划上下文创建工作项、需求池/项目空间只读面、IPD 读取基础面、IPD 树/关联 Wiki/分组/租户列表/统计仪表盘读取、IPD 特性集/追溯/状态读取、IPD 模块/标签/特性集写面、IPD 工作项写面、IPD 附件/图片与工时管理、IPD 字段配置写面，以及状态/模板/字段/缓存/看板读面；其中 `/v3/plan/{project_id}/managements` 没有新增独立 MCP 工具，而是并入 `req_list_plans` 的增强过滤能力。但真实 AK/SK live 验证目前仍主要集中在项目、成员、迭代读取和 work-item core 读写，新增规划写面、规划内工作项管理写面、规划图片更新、计划上下文创建工作项、需求池/项目空间只读面、IPD 读取基础面、IPD 配置写面与配置读面都不要默认按“全部已 live”理解。
 
 看 Req 当前哪些路径已经做过真实联调，直接看 [Req-Live-Validated](./Req-Live-Validated.md)。
 

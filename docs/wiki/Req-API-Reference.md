@@ -1,0 +1,382 @@
+# Req MCP API Reference
+
+这份文档面向调用方和后续维护者，说明当前 `Req` 模块已经暴露的 MCP 工具、调用边界、写入安全策略和真实 AK/SK smoke 验证状态。
+
+当前规模：
+
+| Scope | Count |
+| --- | ---: |
+| Req MCP tools | 174 |
+| Read tools | 110 |
+| Write tools | 64 |
+| Product tools total | 384 |
+| Shared HTTP tools with auth | 386 |
+
+## 设计边界
+
+`Req` MCP 工具不是对官方 PDF 的机械 1:1 镜像，而是把高频项目协作路径整理成适合 agent 调用的工具面。
+
+当前重点覆盖：
+
+- Scrum 项目、成员、模块、迭代、规划、工作项和协作路径。
+- 工作项状态、模板、字段、公共配置、看板和缓存读取。
+- 需求池 / 项目空间只读路径，包括 Program、IR、RR 和严重程度。
+- IPD 项目、工作项、模块、标签、特性集、流程、附件、图片、工时和字段配置。
+- 高风险写操作默认 dry-run 或显式 gate，避免普通 live smoke 误写真实租户数据。
+
+## 接入方式
+
+### stdio
+
+适合本地个人使用。凭据从环境变量读取。
+
+```env
+MCP_TRANSPORT=stdio
+MCP_SERVER_NAME=codearts-mcp
+MCP_SERVER_VERSION=0.1.0
+HUAWEICLOUD_REGION=cn-north-4
+HUAWEICLOUD_AK=your-ak
+HUAWEICLOUD_SK=your-sk
+HUAWEICLOUD_BASE_URL=https://codearts.cn-north-4.myhuaweicloud.com
+HUAWEICLOUD_REQ_BASE_URL=https://projectman-ext.cn-north-4.myhuaweicloud.com
+```
+
+### shared HTTP
+
+适合团队共享入口。用户先调用 `auth_configure_session` 写入自己的 AK/SK，后续产品工具按会话隔离调用。
+
+```json
+{
+  "access_key": "your-ak",
+  "secret_key": "your-sk",
+  "region": "cn-north-4"
+}
+```
+
+## 写入安全策略
+
+Req 写工具遵循两个层面的安全策略：
+
+| Layer | Behavior |
+| --- | --- |
+| Tool input | 多数写工具支持 `dry_run`，默认优先预演，不直接写真实资源 |
+| Live smoke | 写入用例必须显式打开 `HUAWEICLOUD_REQ_LIVE_ENABLE_*_MUTATIONS` gate，并且部分路径还要求提供可回收样本 ID |
+
+不要把 `HUAWEICLOUD_REQ_LIVE_ENABLE_*_MUTATIONS=true` 放进长期共享环境。它们只应在一次性验证命令或临时 CI job 中启用。
+
+## Scrum API Surface
+
+### Project
+
+| Tool | Type | Purpose |
+| --- | --- | --- |
+| `req_list_projects` | read | 查询当前用户可见 Scrum 项目 |
+| `req_get_project` | read | 获取项目详情 |
+| `req_check_project_name` | read | 检查项目名是否存在 |
+| `req_list_not_added_projects` | read | 查询域内未添加项目 |
+| `req_create_project` | write | 创建 Scrum 项目 |
+| `req_update_project` | write | 更新 Scrum 项目 |
+| `req_delete_project` | write | 删除 Scrum 项目 |
+
+真实 smoke 状态：项目读取已验证；打开 `HUAWEICLOUD_REQ_LIVE_ENABLE_PROJECT_MUTATIONS=true` 后，项目创建、更新、删除闭环已通过。真实 `getProject` 详情响应可能省略 `description` 字段，因此测试只在返回该字段时校验。
+
+示例：
+
+```json
+{
+  "tool": "req_create_project",
+  "arguments": {
+    "name": "mcp-live-project",
+    "description": "created by codearts-mcp",
+    "dry_run": true
+  }
+}
+```
+
+### Member
+
+| Tool | Type | Purpose |
+| --- | --- | --- |
+| `req_list_project_members` | read | 查询项目成员 |
+| `req_add_project_member` | write | 添加项目成员 |
+| `req_batch_add_project_members` | write | 批量添加成员 |
+| `req_batch_delete_project_members` | write | 批量移除成员 |
+| `req_update_project_member_role` | write | 修改成员角色 |
+| `req_leave_project` | write | 当前用户离开项目 |
+
+真实 smoke 状态：成员列表读取已验证；成员写路径仍需要可回收成员样本，暂不建议在普通 live smoke 中开启。
+
+### Iteration
+
+| Tool | Type | Purpose |
+| --- | --- | --- |
+| `req_list_iterations` | read | 获取指定项目迭代列表 |
+| `req_get_iteration` | read | 查看迭代详情 |
+| `req_list_iteration_work_items` | read | 查询迭代工作项 |
+| `req_list_iteration_status_statistics` | read | 查询迭代状态统计 |
+| `req_query_iteration_immovable_issues` | read | 查询不可移动工作项 |
+| `req_create_iteration` | write | 创建 Scrum 项目迭代 |
+| `req_update_iteration` | write | 更新 Scrum 项目迭代 |
+| `req_update_iteration_state` | write | 更新迭代状态 |
+| `req_delete_iteration` | write | 删除迭代 |
+| `req_batch_delete_iterations` | write | 批量删除迭代 |
+
+真实 smoke 状态：迭代列表、详情读取已验证。写闭环需要同时配置 `HUAWEICLOUD_REQ_LIVE_WRITE_PROJECT_ID` 和 `HUAWEICLOUD_REQ_LIVE_ENABLE_ITERATION_MUTATIONS=true`。
+
+### Plan
+
+| Tool | Type | Purpose |
+| --- | --- | --- |
+| `req_list_plans` | read | 查询规划列表，包含 `/v3/plan/{project_id}/managements` 的过滤能力 |
+| `req_get_plan` | read | 获取规划详情 |
+| `req_list_plan_addable_work_items` | read | 查询当前规划可添加工作项 |
+| `req_list_plan_work_items` | read | 查询规划内工作项 |
+| `req_create_plan` | write | 创建规划 |
+| `req_update_plan` | write | 更新规划 |
+| `req_delete_plan` | write | 删除规划 |
+| `req_update_plan_image` | write | 更新规划图片 |
+| `req_create_plan_work_item` | write | 在规划上下文创建工作项 |
+| `req_add_plan_work_items` | write | 向规划加入工作项 |
+| `req_clear_plan_work_items` | write | 清空规划内工作项 |
+
+真实 smoke 状态：规划读取已进入 live smoke；规划写路径仍等待可回收规划样本。
+
+### Work Item
+
+| Tool | Type | Purpose |
+| --- | --- | --- |
+| `req_list_work_items` | read | 查询工作项列表 |
+| `req_get_work_item` | read | 获取工作项详情 |
+| `req_get_work_item_issue_details` | read | 获取 V2 深度详情 |
+| `req_count_work_item_tree` | read | 统计工作项树 |
+| `req_list_work_item_tree` | read | 查询工作项树 |
+| `req_list_child_work_items` | read | 查询子工作项 |
+| `req_list_work_item_records` | read | 查询工作项变更记录 |
+| `req_list_project_work_item_records` | read | 查询项目级工作项记录 |
+| `req_create_work_item` | write | 创建工作项 |
+| `req_update_work_item` | write | 更新工作项 |
+| `req_delete_work_item` | write | 删除工作项 |
+| `req_batch_update_work_items` | write | 批量更新工作项 |
+| `req_copy_work_items` | write | 复制工作项 |
+| `req_update_work_item_flow` | write | 修改工作项状态并联动责任人 |
+
+真实 smoke 状态：基础读路径已验证；工作项写闭环需要 `HUAWEICLOUD_REQ_LIVE_WRITE_PROJECT_ID`。状态流转还需要稳定的目标 `status_id` 样本。
+
+### Collaboration And Attachments
+
+| Tool | Type | Purpose |
+| --- | --- | --- |
+| `req_list_work_item_comments` | read | 查询评论 |
+| `req_add_work_item_comment` | write | 新增评论 |
+| `req_update_work_item_comment` | write | 更新评论 |
+| `req_list_associated_issues` | read | 查询关联缺陷 |
+| `req_list_associated_commits` | read | 查询关联提交 |
+| `req_list_associated_test_cases` | read | 查询关联测试用例 |
+| `req_list_associated_wikis` | read | 查询关联 Wiki |
+| `req_list_related_users` | read | 查询相关用户 |
+| `req_upload_attachment` | write | 上传工作项附件 |
+| `req_download_attachment` | read | 下载附件 |
+| `req_delete_attachment` | write | 删除附件 |
+| `req_upload_work_item_image` | write | 上传工作项图片 |
+| `req_download_image_file` | read | 下载图片 |
+
+真实 smoke 状态：评论读已覆盖；评论写需要 `HUAWEICLOUD_REQ_LIVE_WRITE_PROJECT_ID` 和 `HUAWEICLOUD_REQ_LIVE_ENABLE_COMMENT_MUTATIONS=true`。
+
+## Config And Board API Surface
+
+| Tool group | Tools |
+| --- | --- |
+| Status/config reads | `req_list_work_item_statuses`, `req_list_work_item_status_attributes`, `req_list_work_item_status_details`, `req_list_work_item_status_configs`, `req_list_optional_work_item_status_configs`, `req_check_work_item_status_name` |
+| Template/field reads | `req_list_work_item_templates`, `req_get_work_item_template_config`, `req_list_work_item_custom_fields`, `req_create_work_item_template` |
+| Workflow/public config | `req_list_work_item_workflow_config`, `req_get_work_item_status_rule_flag`, `req_list_work_item_tracker_handlers`, `req_get_project_public_config` |
+| Board reads | `req_list_board_work_items`, `req_list_board_work_item_status_records`, `req_list_board_work_item_workflow_config` |
+| Cache reads/writes | `req_list_job_cache_boards`, `req_list_cache_data`, `req_update_cache_data` |
+| Work-hour reads/writes | `req_list_project_work_hour_types`, `req_list_project_work_hours`, `req_list_work_item_work_hours`, `req_add_work_item_work_hour` |
+
+真实 smoke 状态：状态、模板、工作流、公共配置、看板和缓存读路径已通过基础 live smoke；非空样本质量仍需要继续补。
+
+## Program And Requirement Pool API Surface
+
+| Tool | Type | Purpose |
+| --- | --- | --- |
+| `req_list_programs` | read | 查询项目空间 |
+| `req_list_program_fields` | read | 查询项目空间字段 |
+| `req_get_ir` | read | 获取 IR 详情 |
+| `req_list_ir_children` | read | 查询 IR 子节点 |
+| `req_list_ir_histories` | read | 查询 IR 历史 |
+| `req_list_rrs` | read | 查询 RR 列表 |
+| `req_list_rr_statuses` | read | 查询 RR 状态 |
+| `req_list_rr_histories` | read | 查询 RR 历史 |
+| `req_list_issue_severities` | read | 查询严重程度 |
+
+PDF 复核结论：当前 PDF 中没有明确搜到需求池 IR/RR 的官方创建、更新、删除接口；需求池写面后续需要继续从文档细节或真实接口行为确认。
+
+真实 smoke 状态：已纳入 live smoke。当前北京四样本中 `req_list_issue_severities` 可达，`req_list_programs` 对当前 AK 返回权限边界 `403 PM.00000014`，因此 Program/IR/RR 非空样本仍待有权限租户验证。
+
+## IPD API Surface
+
+### IPD Read
+
+| Group | Tools |
+| --- | --- |
+| Project/user | `req_list_ipd_projects`, `req_list_ipd_project_users` |
+| Issue reads | `req_get_ipd_issue`, `req_list_ipd_issues`, `req_list_ipd_issue_tree`, `req_group_ipd_issues`, `req_list_ipd_tenant_issues` |
+| Wiki/statistics | `req_list_ipd_attached_wikis`, `req_get_ipd_statistic_dashboard` |
+| Config reads | `req_list_ipd_modules`, `req_list_ipd_statuses`, `req_list_ipd_issue_relation_config`, `req_list_ipd_labels`, `req_list_ipd_project_fields`, `req_list_ipd_issue_fields` |
+| Workflow reads | `req_list_ipd_workflow_templates`, `req_list_ipd_workflow_fields`, `req_get_ipd_work_item_flow_detail`, `req_list_ipd_category_statuses` |
+| Feature/e2e | `req_list_ipd_snapshot_versions`, `req_list_ipd_feature_sets`, `req_list_ipd_snapshot_features`, `req_get_ipd_e2e_graph` |
+| Tenant fields | `req_list_ipd_tenant_fields`, `req_get_ipd_tenant_field_used`, `req_get_ipd_tenant_field_option_used`, `req_get_ipd_project_field_option_used` |
+
+真实 smoke 状态：租户级 IPD 可达性已验证；当前 AK 的 IPD 项目列表为空，所以项目级 IPD 非空样本仍待补。
+
+### IPD Config Write
+
+| Tool | Purpose |
+| --- | --- |
+| `req_create_ipd_module` | 创建 IPD 模块 |
+| `req_update_ipd_module` | 更新 IPD 模块 |
+| `req_delete_ipd_module` | 删除 IPD 模块 |
+| `req_create_ipd_label` | 创建 IPD 标签 |
+| `req_update_ipd_label` | 更新 IPD 标签 |
+| `req_delete_ipd_label` | 删除 IPD 标签 |
+| `req_create_ipd_feature_set` | 创建特性集 |
+| `req_update_ipd_feature_set` | 更新特性集 |
+| `req_delete_ipd_feature_set` | 删除特性集 |
+
+需要的 live smoke 样本：
+
+- `HUAWEICLOUD_REQ_LIVE_IPD_PROJECT_ID`
+- `HUAWEICLOUD_REQ_LIVE_IPD_MODULE_PARENT_ID`
+- `HUAWEICLOUD_REQ_LIVE_IPD_FEATURE_SET_PARENT_ID`
+- `HUAWEICLOUD_REQ_LIVE_ENABLE_IPD_CONFIG_MUTATIONS=true`
+
+### IPD Work Item Write
+
+| Tool | Purpose |
+| --- | --- |
+| `req_create_ipd_issue` | 创建 IPD 工作项 |
+| `req_batch_create_ipd_issues` | 批量创建 IPD 工作项 |
+| `req_batch_update_ipd_issues` | 批量更新 IPD 工作项 |
+| `req_batch_delete_ipd_issues` | 批量删除 IPD 工作项 |
+| `req_transfer_ipd_work_item_flow` | 单工作项流程流转 |
+| `req_batch_transfer_ipd_work_item_flow` | 批量流程流转 |
+
+需要的 live smoke 样本：
+
+- `HUAWEICLOUD_REQ_LIVE_IPD_PROJECT_ID`
+- `HUAWEICLOUD_REQ_LIVE_IPD_ASSIGNEE`
+- `HUAWEICLOUD_REQ_LIVE_IPD_STATUS`
+- `HUAWEICLOUD_REQ_LIVE_IPD_ISSUE_CATEGORY`
+- `HUAWEICLOUD_REQ_LIVE_IPD_FLOW_CODE`
+- `HUAWEICLOUD_REQ_LIVE_ENABLE_IPD_ISSUE_MUTATIONS=true`
+- `HUAWEICLOUD_REQ_LIVE_ENABLE_IPD_FLOW_MUTATIONS=true`
+
+### IPD Attachment And Image
+
+| Tool | Purpose |
+| --- | --- |
+| `req_upload_ipd_issue_attachment` | 上传 IPD 工作项附件 |
+| `req_list_ipd_issue_attachments` | 查询附件 |
+| `req_download_ipd_issue_attachment` | 下载附件 |
+| `req_upload_ipd_issue_image` | 上传图片 |
+| `req_download_ipd_issue_image` | 下载图片 |
+| `req_delete_ipd_issue_image` | 删除图片 |
+
+需要的 live smoke 样本：
+
+- `HUAWEICLOUD_REQ_LIVE_IPD_PROJECT_ID`
+- `HUAWEICLOUD_REQ_LIVE_IPD_ISSUE_ID`
+- `HUAWEICLOUD_REQ_LIVE_ENABLE_IPD_ATTACHMENT_MUTATIONS=true`
+
+### IPD Work Hour
+
+| Tool | Purpose |
+| --- | --- |
+| `req_list_ipd_work_hours` | 查询 IPD 工时 |
+| `req_list_ipd_work_hour_categories` | 查询工时类别 |
+| `req_create_ipd_work_hour` | 创建工时 |
+| `req_update_ipd_work_hour` | 更新工时 |
+| `req_delete_ipd_work_hour` | 删除工时 |
+
+需要的 live smoke 样本：
+
+- `HUAWEICLOUD_REQ_LIVE_IPD_PROJECT_ID`
+- `HUAWEICLOUD_REQ_LIVE_IPD_ISSUE_ID`
+- `HUAWEICLOUD_REQ_LIVE_IPD_WORK_HOUR_TYPE`
+- `HUAWEICLOUD_REQ_LIVE_IPD_WORK_HOUR_CATEGORY`
+- `HUAWEICLOUD_REQ_LIVE_ENABLE_IPD_WORK_HOUR_MUTATIONS=true`
+
+### IPD Field Config
+
+| Tool | Purpose |
+| --- | --- |
+| `req_update_ipd_tenant_field` | 更新租户字段配置 |
+| `req_update_ipd_project_field` | 更新项目字段配置 |
+
+需要的 live smoke 样本：
+
+- `HUAWEICLOUD_REQ_LIVE_IPD_TENANT_FIELD_ID`
+- `HUAWEICLOUD_REQ_LIVE_IPD_TENANT_FIELD_DISPLAY_NAME`
+- `HUAWEICLOUD_REQ_LIVE_IPD_PROJECT_ID`
+- `HUAWEICLOUD_REQ_LIVE_IPD_PROJECT_FIELD_ID`
+- `HUAWEICLOUD_REQ_LIVE_IPD_PROJECT_FIELD_DISPLAY_NAME`
+- `HUAWEICLOUD_REQ_LIVE_ENABLE_IPD_FIELD_CONFIG_MUTATIONS=true`
+
+## Live Smoke
+
+默认读向 smoke：
+
+```powershell
+$env:HUAWEICLOUD_AK="your-ak"
+$env:HUAWEICLOUD_SK="your-sk"
+$env:HUAWEICLOUD_REGION="cn-north-4"
+$env:HUAWEICLOUD_BASE_URL="https://codearts.cn-north-4.myhuaweicloud.com"
+$env:HUAWEICLOUD_REQ_BASE_URL="https://projectman-ext.cn-north-4.myhuaweicloud.com"
+$env:MCP_SERVER_NAME="codearts-mcp"
+$env:MCP_SERVER_VERSION="0.1.0"
+npx vitest run tests\products\req\client-live-smoke.test.ts --reporter=verbose
+```
+
+打开写入 gate 的一次性命令示例：
+
+```powershell
+$env:HUAWEICLOUD_REQ_LIVE_ENABLE_PROJECT_MUTATIONS="true"
+$env:HUAWEICLOUD_REQ_LIVE_ENABLE_ITERATION_MUTATIONS="true"
+$env:HUAWEICLOUD_REQ_LIVE_ENABLE_COMMENT_MUTATIONS="true"
+$env:HUAWEICLOUD_REQ_LIVE_ENABLE_IPD_CONFIG_MUTATIONS="true"
+$env:HUAWEICLOUD_REQ_LIVE_ENABLE_IPD_ISSUE_MUTATIONS="true"
+$env:HUAWEICLOUD_REQ_LIVE_ENABLE_IPD_ATTACHMENT_MUTATIONS="true"
+$env:HUAWEICLOUD_REQ_LIVE_ENABLE_IPD_WORK_HOUR_MUTATIONS="true"
+$env:HUAWEICLOUD_REQ_LIVE_ENABLE_IPD_FLOW_MUTATIONS="true"
+$env:HUAWEICLOUD_REQ_LIVE_ENABLE_IPD_FIELD_CONFIG_MUTATIONS="true"
+npx vitest run tests\products\req\client-live-smoke.test.ts --reporter=verbose
+```
+
+最近一次验证结果：
+
+| Test | Result |
+| --- | --- |
+| Default Req live smoke | 17 passed |
+| Req live smoke with write gates | 17 passed |
+| Actual write closure | Project create/update/delete passed |
+| Gated but sample-missing closures | Iteration, Scrum work item, comment, IPD config, IPD issue, IPD attachment/image, IPD work hour, IPD flow, IPD field config |
+
+## Current Gaps
+
+| Gap | Needed Next |
+| --- | --- |
+| Scrum iteration/work-item/comment write smoke | Provide `HUAWEICLOUD_REQ_LIVE_WRITE_PROJECT_ID` pointing to a disposable project |
+| Program/IR/RR non-empty reads | Provide a tenant with Program permission and sample `PROGRAM_ID`, `IR_ID`, `RR_ID` |
+| IPD project-level reads | Provide a tenant with at least one IPD project and non-empty issue/tree/wiki/statistic samples |
+| IPD config write | Provide disposable module, label and feature-set parent samples |
+| IPD issue write and flow | Provide disposable IPD project, assignee, status, category and flow code |
+| IPD attachments/images | Provide disposable IPD issue ID |
+| IPD work hour | Provide disposable IPD issue and work-hour type/category |
+| IPD field config | Provide rollback-safe tenant/project field samples |
+
+## Related Docs
+
+- [Req-Live-Validated](./Req-Live-Validated.md)
+- [Module-Functions-Overview](./Module-Functions-Overview.md)
+- [Official-API-Alignment](./Official-API-Alignment.md)
+- [Testing-and-Live-Ops](./Testing-and-Live-Ops.md)

@@ -7,13 +7,22 @@ import {
   reqAddWorkItemWorkHourInput,
   reqAddProjectMemberInput,
   reqBatchAddProjectMembersInput,
+  reqBatchCreateIpdIssuesInput,
+  reqBatchDeleteIpdIssuesInput,
   reqBatchDeleteProjectMembersInput,
   reqBatchDeleteIterationsInput,
   reqBatchDeleteWorkItemsInput,
+  reqBatchTransferIpdWorkItemFlowInput,
+  reqBatchUpdateIpdIssuesInput,
   reqCopyWorkItemsInput,
   reqCheckProjectNameInput,
   reqCheckWorkItemStatusNameInput,
   reqClearPlanWorkItemsInput,
+  reqCreateIpdIssueInput,
+  reqCreateIpdFeatureSetInput,
+  reqCreateIpdLabelInput,
+  reqCreateIpdModuleInput,
+  reqCreateIpdWorkHourInput,
   reqCreateIterationWorkItemInput,
   reqCreatePlanWorkItemInput,
   reqCreatePlanInput,
@@ -21,6 +30,11 @@ import {
   reqCreateProjectInput,
   reqCreateProjectModuleInput,
   reqDeletePlanInput,
+  reqDeleteIpdFeatureSetInput,
+  reqDeleteIpdIssueImageInput,
+  reqDeleteIpdLabelInput,
+  reqDeleteIpdModuleInput,
+  reqDeleteIpdWorkHourInput,
   reqDeleteProjectInput,
   reqDeleteIterationInput,
   reqDeleteProjectModuleInput,
@@ -30,8 +44,15 @@ import {
   reqBatchUpdateWorkItemsInput,
   reqCountWorkItemTreeInput,
   reqCreateWorkItemTemplateInput,
+  reqGetIpdIssueInput,
+  reqGetIpdProjectFieldOptionUsedInput,
+  reqGetIpdStatisticDashboardInput,
+  reqGetIpdTenantFieldOptionUsedInput,
+  reqGetIpdTenantFieldUsedInput,
+  reqGetIpdWorkItemFlowDetailInput,
   reqGetCurrentUserInfoInput,
   reqGetCurrentUserRoleInput,
+  reqGetIrInput,
   reqGetProjectBugDensityInput,
   reqGetProjectBugsPerDeveloperInput,
   reqGetProjectCompletionRateInput,
@@ -43,6 +64,8 @@ import {
   reqDeleteAttachmentInput,
   reqDownloadAttachmentInput,
   reqDownloadImageFileInput,
+  reqDownloadIpdIssueAttachmentInput,
+  reqDownloadIpdIssueImageInput,
   reqGetProjectPublicConfigInput,
   reqGetProjectSummaryInput,
   reqGetProjectWorkhourConfigInput,
@@ -50,15 +73,45 @@ import {
   reqGetPlanInput,
   reqGetProjectInput,
   reqGetWorkItemCompletionRateInput,
+  reqGetWorkItemIssueDetailsInput,
   reqGetWorkItemIndexCountsInput,
   reqListJobCacheBoardsInput,
   reqListChildWorkItemsInput,
   reqListIterationWorkItemsInput,
   reqListIterationStatusStatisticsInput,
+  reqGetIpdE2EGraphInput,
+  reqListIpdCategoryStatusesInput,
+  reqListIpdAttachedWikisInput,
+  reqListIpdIssueAttachmentsInput,
+  reqListIpdIssueTreeInput,
+  reqListIpdWorkHourCategoriesInput,
+  reqListIpdWorkHoursInput,
+  reqListIpdFeatureSetsInput,
+  reqListIpdIssueFieldsInput,
+  reqListIpdIssueRelationConfigInput,
+  reqListIpdIssuesInput,
+  reqListIpdLabelsInput,
+  reqListIpdModulesInput,
+  reqListIpdProjectFieldsInput,
+  reqListIpdProjectUsersInput,
+  reqListIpdProjectsInput,
+  reqListIpdSnapshotFeaturesInput,
+  reqListIpdSnapshotVersionsInput,
+  reqListIpdStatusesInput,
+  reqListIpdTenantFieldsInput,
+  reqListIpdTenantIssuesInput,
+  reqListIpdWorkflowFieldsInput,
+  reqListIpdWorkflowTemplatesInput,
+  reqGroupIpdIssuesInput,
+  reqListIrChildrenInput,
+  reqListIrHistoriesInput,
+  reqListIssueSeveritiesInput,
   reqListOptionalWorkItemStatusConfigsInput,
   reqListPlanAddableWorkItemsInput,
   reqListPlanWorkItemsInput,
   reqListPlansInput,
+  reqListProgramFieldsInput,
+  reqListProgramsInput,
   reqListProjectBugStatisticsInput,
   reqListProjectDemandStatisticsInput,
   reqListProjectDomainsInput,
@@ -95,7 +148,16 @@ import {
   reqListWorkItemWorkflowConfigInput,
   reqListWorkItemRecordsInput,
   reqListWorkItemsInput,
+  reqListRrHistoriesInput,
+  reqListRrsInput,
+  reqListRrStatusesInput,
   reqUpdatePlanInput,
+  reqUpdateIpdFeatureSetInput,
+  reqUpdateIpdLabelInput,
+  reqUpdateIpdModuleInput,
+  reqUpdateIpdProjectFieldInput,
+  reqUpdateIpdTenantFieldInput,
+  reqUpdateIpdWorkHourInput,
   reqUpdatePlanImageInput,
   reqUpdateIterationInput,
   reqUpdateIterationStateInput,
@@ -104,10 +166,13 @@ import {
   reqUpdateProjectTemplateInput,
   reqUpdateProjectMemberRoleInput,
   reqUpdateProjectInput,
+  reqTransferIpdWorkItemFlowInput,
   reqUpdateWorkItemCommentInput,
   reqUpdateWorkItemFlowInput,
   reqUpdateWorkItemInput,
   reqUploadAttachmentInput,
+  reqUploadIpdIssueAttachmentInput,
+  reqUploadIpdIssueImageInput,
   reqUploadWorkItemImageInput,
   reqValidateModuleNameInput
 } from "../products/req/schemas.js";
@@ -145,6 +210,7 @@ import { createReqCountWorkItemTreeHandler } from "../products/req/tools/count-w
 import { createReqCreateWorkItemTemplateHandler } from "../products/req/tools/create-work-item-template.js";
 import { createReqGetCurrentUserInfoHandler } from "../products/req/tools/get-current-user-info.js";
 import { createReqGetCurrentUserRoleHandler } from "../products/req/tools/get-current-user-role.js";
+import { createReqGetIrHandler } from "../products/req/tools/get-ir.js";
 import { createReqGetIterationHandler } from "../products/req/tools/get-iteration.js";
 import { createReqGetPlanHandler } from "../products/req/tools/get-plan.js";
 import { createReqGetProjectBugDensityHandler } from "../products/req/tools/get-project-bug-density.js";
@@ -157,6 +223,7 @@ import { createReqGetProjectSummaryHandler } from "../products/req/tools/get-pro
 import { createReqGetProjectWorkhourConfigHandler } from "../products/req/tools/get-project-workhour-config.js";
 import { createReqGetWorkItemHandler } from "../products/req/tools/get-work-item.js";
 import { createReqGetWorkItemCompletionRateHandler } from "../products/req/tools/get-work-item-completion-rate.js";
+import { createReqGetWorkItemIssueDetailsHandler } from "../products/req/tools/get-work-item-issue-details.js";
 import { createReqGetWorkItemIndexCountsHandler } from "../products/req/tools/get-work-item-index-counts.js";
 import { createReqLeaveProjectHandler } from "../products/req/tools/leave-project.js";
 import { createReqListAssociatedCommitsHandler } from "../products/req/tools/list-associated-commits.js";
@@ -171,11 +238,16 @@ import { createReqListChildWorkItemsHandler } from "../products/req/tools/list-c
 import { createReqListIterationsHandler } from "../products/req/tools/list-iterations.js";
 import { createReqListIterationWorkItemsHandler } from "../products/req/tools/list-iteration-work-items.js";
 import { createReqListIterationStatusStatisticsHandler } from "../products/req/tools/list-iteration-status-statistics.js";
+import { createReqListIrChildrenHandler } from "../products/req/tools/list-ir-children.js";
+import { createReqListIrHistoriesHandler } from "../products/req/tools/list-ir-histories.js";
+import { createReqListIssueSeveritiesHandler } from "../products/req/tools/list-issue-severities.js";
 import { createReqListJobCacheBoardsHandler } from "../products/req/tools/list-job-cache-boards.js";
 import { createReqListOptionalWorkItemStatusConfigsHandler } from "../products/req/tools/list-optional-work-item-status-configs.js";
 import { createReqListPlanAddableWorkItemsHandler } from "../products/req/tools/list-plan-addable-work-items.js";
 import { createReqListPlanWorkItemsHandler } from "../products/req/tools/list-plan-work-items.js";
 import { createReqListPlansHandler } from "../products/req/tools/list-plans.js";
+import { createReqListProgramFieldsHandler } from "../products/req/tools/list-program-fields.js";
+import { createReqListProgramsHandler } from "../products/req/tools/list-programs.js";
 import { createReqListProjectBugStatisticsHandler } from "../products/req/tools/list-project-bug-statistics.js";
 import { createReqListProjectDemandStatisticsHandler } from "../products/req/tools/list-project-demand-statistics.js";
 import { createReqListProjectDomainsHandler } from "../products/req/tools/list-project-domains.js";
@@ -204,6 +276,9 @@ import { createReqListWorkItemWorkflowConfigHandler } from "../products/req/tool
 import { createReqListWorkItemRecordsHandler } from "../products/req/tools/list-work-item-records.js";
 import { createReqListWorkItemWorkHoursHandler } from "../products/req/tools/list-work-item-work-hours.js";
 import { createReqListWorkItemsHandler } from "../products/req/tools/list-work-items.js";
+import { createReqListRrHistoriesHandler } from "../products/req/tools/list-rr-histories.js";
+import { createReqListRrStatusesHandler } from "../products/req/tools/list-rr-statuses.js";
+import { createReqListRrsHandler } from "../products/req/tools/list-rrs.js";
 import { createReqQueryIterationImmovableIssuesHandler } from "../products/req/tools/query-iteration-immovable-issues.js";
 import { createReqUpdatePlanHandler } from "../products/req/tools/update-plan.js";
 import { createReqUpdatePlanImageHandler } from "../products/req/tools/update-plan-image.js";
@@ -220,6 +295,65 @@ import { createReqUpdateWorkItemHandler } from "../products/req/tools/update-wor
 import { createReqUploadAttachmentHandler } from "../products/req/tools/upload-attachment.js";
 import { createReqUploadWorkItemImageHandler } from "../products/req/tools/upload-work-item-image.js";
 import { createReqValidateModuleNameHandler } from "../products/req/tools/validate-module-name.js";
+import {
+  createReqDownloadIpdIssueAttachmentHandler,
+  createReqDownloadIpdIssueImageHandler,
+  createReqGetIpdE2EGraphHandler,
+  createReqGetIpdIssueHandler,
+  createReqGetIpdProjectFieldOptionUsedHandler,
+  createReqGetIpdStatisticDashboardHandler,
+  createReqGetIpdTenantFieldOptionUsedHandler,
+  createReqGetIpdTenantFieldUsedHandler,
+  createReqGetIpdWorkItemFlowDetailHandler,
+  createReqGroupIpdIssuesHandler,
+  createReqListIpdAttachedWikisHandler,
+  createReqListIpdCategoryStatusesHandler,
+  createReqListIpdFeatureSetsHandler,
+  createReqListIpdIssueAttachmentsHandler,
+  createReqListIpdIssueTreeHandler,
+  createReqListIpdWorkHourCategoriesHandler,
+  createReqListIpdWorkHoursHandler,
+  createReqListIpdIssueFieldsHandler,
+  createReqListIpdIssueRelationConfigHandler,
+  createReqListIpdIssuesHandler,
+  createReqListIpdLabelsHandler,
+  createReqListIpdModulesHandler,
+  createReqListIpdProjectFieldsHandler,
+  createReqListIpdProjectUsersHandler,
+  createReqListIpdProjectsHandler,
+  createReqListIpdSnapshotFeaturesHandler,
+  createReqListIpdSnapshotVersionsHandler,
+  createReqListIpdStatusesHandler,
+  createReqListIpdTenantFieldsHandler,
+  createReqListIpdTenantIssuesHandler,
+  createReqListIpdWorkflowFieldsHandler,
+  createReqListIpdWorkflowTemplatesHandler
+} from "../products/req/tools/ipd-read-tools.js";
+import {
+  createReqBatchCreateIpdIssuesHandler,
+  createReqBatchDeleteIpdIssuesHandler,
+  createReqBatchTransferIpdWorkItemFlowHandler,
+  createReqBatchUpdateIpdIssuesHandler,
+  createReqCreateIpdIssueHandler,
+  createReqCreateIpdFeatureSetHandler,
+  createReqCreateIpdLabelHandler,
+  createReqCreateIpdModuleHandler,
+  createReqCreateIpdWorkHourHandler,
+  createReqDeleteIpdFeatureSetHandler,
+  createReqDeleteIpdIssueImageHandler,
+  createReqDeleteIpdLabelHandler,
+  createReqDeleteIpdModuleHandler,
+  createReqDeleteIpdWorkHourHandler,
+  createReqTransferIpdWorkItemFlowHandler,
+  createReqUpdateIpdFeatureSetHandler,
+  createReqUpdateIpdLabelHandler,
+  createReqUpdateIpdModuleHandler,
+  createReqUpdateIpdProjectFieldHandler,
+  createReqUpdateIpdTenantFieldHandler,
+  createReqUpdateIpdWorkHourHandler,
+  createReqUploadIpdIssueAttachmentHandler,
+  createReqUploadIpdIssueImageHandler
+} from "../products/req/tools/ipd-write-tools.js";
 import { defineProductTool, registerDefinedTool } from "./product-tool-registry.js";
 import type { RateLimiter } from "./rate-limiter.js";
 import type { SessionCredentialStore } from "./session-store.js";
@@ -279,6 +413,30 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqBatchDeleteWorkItemsHandler,
     rateLimitAction: "req_batch_delete_work_items"
+  }),
+  "req_batch_create_ipd_issues": defineProductTool({
+    description: "Batch create CodeArts Req IPD issues",
+    inputSchema: reqBatchCreateIpdIssuesInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqBatchCreateIpdIssuesHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqBatchCreateIpdIssuesHandler,
+    rateLimitAction: "req_batch_create_ipd_issues"
+  }),
+  "req_batch_update_ipd_issues": defineProductTool({
+    description: "Batch update CodeArts Req IPD issues",
+    inputSchema: reqBatchUpdateIpdIssuesInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqBatchUpdateIpdIssuesHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqBatchUpdateIpdIssuesHandler,
+    rateLimitAction: "req_batch_update_ipd_issues"
+  }),
+  "req_batch_delete_ipd_issues": defineProductTool({
+    description: "Batch delete CodeArts Req IPD issues",
+    inputSchema: reqBatchDeleteIpdIssuesInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqBatchDeleteIpdIssuesHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqBatchDeleteIpdIssuesHandler,
+    rateLimitAction: "req_batch_delete_ipd_issues"
   }),
   "req_check_work_item_status_name": defineProductTool({
     description: "Check whether a CodeArts Req work item status name already exists",
@@ -496,6 +654,19 @@ const reqToolDefinitions = {
     }) => clients.reqClient,
     createProductHandler: createReqGetCurrentUserRoleHandler
   }),
+  "req_get_ir": defineProductTool({
+    description: "Get a CodeArts Req requirement pool IR detail",
+    inputSchema: reqGetIrInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGetIrHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqGetIrHandler
+  }),
+  "req_get_ipd_issue": defineProductTool({
+    description: "Get CodeArts Req IPD issue detail",
+    inputSchema: reqGetIpdIssueInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGetIpdIssueHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqGetIpdIssueHandler
+  }),
   "req_get_project": defineProductTool({
     description: "Get CodeArts Req project detail",
     inputSchema: reqGetProjectInput,
@@ -548,6 +719,404 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListProjectDomainsHandler>[0] }) =>
       clients.reqClient,
     createProductHandler: createReqListProjectDomainsHandler
+  }),
+  "req_list_programs": defineProductTool({
+    description: "List CodeArts Req project spaces / programs",
+    inputSchema: reqListProgramsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListProgramsHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListProgramsHandler
+  }),
+  "req_list_program_fields": defineProductTool({
+    description: "List CodeArts Req program IR or RR fields",
+    inputSchema: reqListProgramFieldsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListProgramFieldsHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListProgramFieldsHandler
+  }),
+  "req_list_issue_severities": defineProductTool({
+    description: "List CodeArts Req issue severities",
+    inputSchema: reqListIssueSeveritiesInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIssueSeveritiesHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListIssueSeveritiesHandler
+  }),
+  "req_list_ipd_projects": defineProductTool({
+    description: "List CodeArts Req IPD projects",
+    inputSchema: reqListIpdProjectsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIpdProjectsHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListIpdProjectsHandler
+  }),
+  "req_list_ipd_project_users": defineProductTool({
+    description: "List CodeArts Req IPD project users",
+    inputSchema: reqListIpdProjectUsersInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIpdProjectUsersHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListIpdProjectUsersHandler
+  }),
+  "req_list_ipd_issues": defineProductTool({
+    description: "List CodeArts Req IPD issues",
+    inputSchema: reqListIpdIssuesInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIpdIssuesHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListIpdIssuesHandler
+  }),
+  "req_list_ipd_issue_tree": defineProductTool({
+    description: "List CodeArts Req IPD issue tree",
+    inputSchema: reqListIpdIssueTreeInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIpdIssueTreeHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListIpdIssueTreeHandler
+  }),
+  "req_list_ipd_attached_wikis": defineProductTool({
+    description: "List CodeArts Req IPD issue attached wikis",
+    inputSchema: reqListIpdAttachedWikisInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIpdAttachedWikisHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListIpdAttachedWikisHandler
+  }),
+  "req_group_ipd_issues": defineProductTool({
+    description: "Group CodeArts Req IPD issues",
+    inputSchema: reqGroupIpdIssuesInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGroupIpdIssuesHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqGroupIpdIssuesHandler
+  }),
+  "req_list_ipd_tenant_issues": defineProductTool({
+    description: "List CodeArts Req IPD tenant issues",
+    inputSchema: reqListIpdTenantIssuesInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIpdTenantIssuesHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListIpdTenantIssuesHandler
+  }),
+  "req_list_ipd_modules": defineProductTool({
+    description: "List CodeArts Req IPD modules",
+    inputSchema: reqListIpdModulesInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIpdModulesHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListIpdModulesHandler
+  }),
+  "req_list_ipd_statuses": defineProductTool({
+    description: "List CodeArts Req IPD statuses",
+    inputSchema: reqListIpdStatusesInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIpdStatusesHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListIpdStatusesHandler
+  }),
+  "req_list_ipd_issue_relation_config": defineProductTool({
+    description: "List CodeArts Req IPD issue relation config",
+    inputSchema: reqListIpdIssueRelationConfigInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIpdIssueRelationConfigHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListIpdIssueRelationConfigHandler
+  }),
+  "req_list_ipd_labels": defineProductTool({
+    description: "List CodeArts Req IPD labels",
+    inputSchema: reqListIpdLabelsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIpdLabelsHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListIpdLabelsHandler
+  }),
+  "req_list_ipd_project_fields": defineProductTool({
+    description: "List CodeArts Req IPD project fields",
+    inputSchema: reqListIpdProjectFieldsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIpdProjectFieldsHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListIpdProjectFieldsHandler
+  }),
+  "req_list_ipd_issue_fields": defineProductTool({
+    description: "List CodeArts Req IPD issue fields",
+    inputSchema: reqListIpdIssueFieldsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIpdIssueFieldsHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListIpdIssueFieldsHandler
+  }),
+  "req_list_ipd_tenant_fields": defineProductTool({
+    description: "List CodeArts Req IPD tenant fields",
+    inputSchema: reqListIpdTenantFieldsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIpdTenantFieldsHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListIpdTenantFieldsHandler
+  }),
+  "req_get_ipd_tenant_field_used": defineProductTool({
+    description: "Get CodeArts Req IPD tenant field usage",
+    inputSchema: reqGetIpdTenantFieldUsedInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGetIpdTenantFieldUsedHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqGetIpdTenantFieldUsedHandler
+  }),
+  "req_get_ipd_tenant_field_option_used": defineProductTool({
+    description: "Get CodeArts Req IPD tenant field option usage",
+    inputSchema: reqGetIpdTenantFieldOptionUsedInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGetIpdTenantFieldOptionUsedHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqGetIpdTenantFieldOptionUsedHandler
+  }),
+  "req_get_ipd_project_field_option_used": defineProductTool({
+    description: "Get CodeArts Req IPD project field option usage",
+    inputSchema: reqGetIpdProjectFieldOptionUsedInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGetIpdProjectFieldOptionUsedHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqGetIpdProjectFieldOptionUsedHandler
+  }),
+  "req_list_ipd_workflow_templates": defineProductTool({
+    description: "List CodeArts Req IPD workflow templates",
+    inputSchema: reqListIpdWorkflowTemplatesInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIpdWorkflowTemplatesHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListIpdWorkflowTemplatesHandler
+  }),
+  "req_list_ipd_workflow_fields": defineProductTool({
+    description: "List CodeArts Req IPD workflow fields",
+    inputSchema: reqListIpdWorkflowFieldsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIpdWorkflowFieldsHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListIpdWorkflowFieldsHandler
+  }),
+  "req_list_ipd_snapshot_versions": defineProductTool({
+    description: "List CodeArts Req IPD feature set snapshot versions",
+    inputSchema: reqListIpdSnapshotVersionsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIpdSnapshotVersionsHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListIpdSnapshotVersionsHandler
+  }),
+  "req_list_ipd_feature_sets": defineProductTool({
+    description: "List CodeArts Req IPD feature sets",
+    inputSchema: reqListIpdFeatureSetsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIpdFeatureSetsHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListIpdFeatureSetsHandler
+  }),
+  "req_list_ipd_snapshot_features": defineProductTool({
+    description: "List CodeArts Req IPD snapshot features",
+    inputSchema: reqListIpdSnapshotFeaturesInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIpdSnapshotFeaturesHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListIpdSnapshotFeaturesHandler
+  }),
+  "req_get_ipd_e2e_graph": defineProductTool({
+    description: "Get CodeArts Req IPD E2E trace graph",
+    inputSchema: reqGetIpdE2EGraphInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGetIpdE2EGraphHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqGetIpdE2EGraphHandler
+  }),
+  "req_list_ipd_category_statuses": defineProductTool({
+    description: "List CodeArts Req IPD category statuses",
+    inputSchema: reqListIpdCategoryStatusesInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIpdCategoryStatusesHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListIpdCategoryStatusesHandler
+  }),
+  "req_get_ipd_statistic_dashboard": defineProductTool({
+    description: "Get CodeArts Req IPD statistic dashboard",
+    inputSchema: reqGetIpdStatisticDashboardInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGetIpdStatisticDashboardHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqGetIpdStatisticDashboardHandler
+  }),
+  "req_get_ipd_work_item_flow_detail": defineProductTool({
+    description: "Get CodeArts Req IPD work item flow detail",
+    inputSchema: reqGetIpdWorkItemFlowDetailInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGetIpdWorkItemFlowDetailHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqGetIpdWorkItemFlowDetailHandler
+  }),
+  "req_transfer_ipd_work_item_flow": defineProductTool({
+    description: "Transfer CodeArts Req IPD work item flow",
+    inputSchema: reqTransferIpdWorkItemFlowInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqTransferIpdWorkItemFlowHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqTransferIpdWorkItemFlowHandler,
+    rateLimitAction: "req_transfer_ipd_work_item_flow"
+  }),
+  "req_batch_transfer_ipd_work_item_flow": defineProductTool({
+    description: "Batch transfer CodeArts Req IPD work item flow",
+    inputSchema: reqBatchTransferIpdWorkItemFlowInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqBatchTransferIpdWorkItemFlowHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqBatchTransferIpdWorkItemFlowHandler,
+    rateLimitAction: "req_batch_transfer_ipd_work_item_flow"
+  }),
+  "req_create_ipd_issue": defineProductTool({
+    description: "Create CodeArts Req IPD issue",
+    inputSchema: reqCreateIpdIssueInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqCreateIpdIssueHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqCreateIpdIssueHandler,
+    rateLimitAction: "req_create_ipd_issue"
+  }),
+  "req_upload_ipd_issue_attachment": defineProductTool({
+    description: "Upload attachment to CodeArts Req IPD issue",
+    inputSchema: reqUploadIpdIssueAttachmentInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUploadIpdIssueAttachmentHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqUploadIpdIssueAttachmentHandler,
+    rateLimitAction: "req_upload_ipd_issue_attachment"
+  }),
+  "req_list_ipd_issue_attachments": defineProductTool({
+    description: "List CodeArts Req IPD issue attachments",
+    inputSchema: reqListIpdIssueAttachmentsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIpdIssueAttachmentsHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListIpdIssueAttachmentsHandler
+  }),
+  "req_download_ipd_issue_attachment": defineProductTool({
+    description: "Download CodeArts Req IPD issue attachment",
+    inputSchema: reqDownloadIpdIssueAttachmentInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqDownloadIpdIssueAttachmentHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqDownloadIpdIssueAttachmentHandler
+  }),
+  "req_upload_ipd_issue_image": defineProductTool({
+    description: "Upload image to CodeArts Req IPD issue description",
+    inputSchema: reqUploadIpdIssueImageInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUploadIpdIssueImageHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqUploadIpdIssueImageHandler,
+    rateLimitAction: "req_upload_ipd_issue_image"
+  }),
+  "req_delete_ipd_issue_image": defineProductTool({
+    description: "Delete image from CodeArts Req IPD issue description",
+    inputSchema: reqDeleteIpdIssueImageInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqDeleteIpdIssueImageHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqDeleteIpdIssueImageHandler,
+    rateLimitAction: "req_delete_ipd_issue_image"
+  }),
+  "req_download_ipd_issue_image": defineProductTool({
+    description: "Download image from CodeArts Req IPD issue description",
+    inputSchema: reqDownloadIpdIssueImageInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqDownloadIpdIssueImageHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqDownloadIpdIssueImageHandler
+  }),
+  "req_list_ipd_work_hours": defineProductTool({
+    description: "List CodeArts Req IPD work hour records",
+    inputSchema: reqListIpdWorkHoursInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIpdWorkHoursHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListIpdWorkHoursHandler
+  }),
+  "req_list_ipd_work_hour_categories": defineProductTool({
+    description: "List CodeArts Req IPD work hour categories",
+    inputSchema: reqListIpdWorkHourCategoriesInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIpdWorkHourCategoriesHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListIpdWorkHourCategoriesHandler
+  }),
+  "req_create_ipd_work_hour": defineProductTool({
+    description: "Create CodeArts Req IPD work hour record",
+    inputSchema: reqCreateIpdWorkHourInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqCreateIpdWorkHourHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqCreateIpdWorkHourHandler,
+    rateLimitAction: "req_create_ipd_work_hour"
+  }),
+  "req_update_ipd_work_hour": defineProductTool({
+    description: "Update CodeArts Req IPD work hour record",
+    inputSchema: reqUpdateIpdWorkHourInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUpdateIpdWorkHourHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqUpdateIpdWorkHourHandler,
+    rateLimitAction: "req_update_ipd_work_hour"
+  }),
+  "req_delete_ipd_work_hour": defineProductTool({
+    description: "Delete CodeArts Req IPD work hour record",
+    inputSchema: reqDeleteIpdWorkHourInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqDeleteIpdWorkHourHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqDeleteIpdWorkHourHandler,
+    rateLimitAction: "req_delete_ipd_work_hour"
+  }),
+  "req_update_ipd_tenant_field": defineProductTool({
+    description: "Update CodeArts Req IPD tenant field",
+    inputSchema: reqUpdateIpdTenantFieldInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUpdateIpdTenantFieldHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqUpdateIpdTenantFieldHandler,
+    rateLimitAction: "req_update_ipd_tenant_field"
+  }),
+  "req_update_ipd_project_field": defineProductTool({
+    description: "Update CodeArts Req IPD project field",
+    inputSchema: reqUpdateIpdProjectFieldInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUpdateIpdProjectFieldHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqUpdateIpdProjectFieldHandler,
+    rateLimitAction: "req_update_ipd_project_field"
+  }),
+  "req_create_ipd_module": defineProductTool({
+    description: "Create CodeArts Req IPD module",
+    inputSchema: reqCreateIpdModuleInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqCreateIpdModuleHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqCreateIpdModuleHandler,
+    rateLimitAction: "req_create_ipd_module"
+  }),
+  "req_update_ipd_module": defineProductTool({
+    description: "Update CodeArts Req IPD module",
+    inputSchema: reqUpdateIpdModuleInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUpdateIpdModuleHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqUpdateIpdModuleHandler,
+    rateLimitAction: "req_update_ipd_module"
+  }),
+  "req_delete_ipd_module": defineProductTool({
+    description: "Delete CodeArts Req IPD module",
+    inputSchema: reqDeleteIpdModuleInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqDeleteIpdModuleHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqDeleteIpdModuleHandler,
+    rateLimitAction: "req_delete_ipd_module"
+  }),
+  "req_create_ipd_label": defineProductTool({
+    description: "Create CodeArts Req IPD label",
+    inputSchema: reqCreateIpdLabelInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqCreateIpdLabelHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqCreateIpdLabelHandler,
+    rateLimitAction: "req_create_ipd_label"
+  }),
+  "req_update_ipd_label": defineProductTool({
+    description: "Update CodeArts Req IPD label",
+    inputSchema: reqUpdateIpdLabelInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUpdateIpdLabelHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqUpdateIpdLabelHandler,
+    rateLimitAction: "req_update_ipd_label"
+  }),
+  "req_delete_ipd_label": defineProductTool({
+    description: "Delete CodeArts Req IPD label",
+    inputSchema: reqDeleteIpdLabelInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqDeleteIpdLabelHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqDeleteIpdLabelHandler,
+    rateLimitAction: "req_delete_ipd_label"
+  }),
+  "req_create_ipd_feature_set": defineProductTool({
+    description: "Create CodeArts Req IPD feature set",
+    inputSchema: reqCreateIpdFeatureSetInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqCreateIpdFeatureSetHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqCreateIpdFeatureSetHandler,
+    rateLimitAction: "req_create_ipd_feature_set"
+  }),
+  "req_update_ipd_feature_set": defineProductTool({
+    description: "Update CodeArts Req IPD feature set",
+    inputSchema: reqUpdateIpdFeatureSetInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUpdateIpdFeatureSetHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqUpdateIpdFeatureSetHandler,
+    rateLimitAction: "req_update_ipd_feature_set"
+  }),
+  "req_delete_ipd_feature_set": defineProductTool({
+    description: "Delete CodeArts Req IPD feature set",
+    inputSchema: reqDeleteIpdFeatureSetInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqDeleteIpdFeatureSetHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqDeleteIpdFeatureSetHandler,
+    rateLimitAction: "req_delete_ipd_feature_set"
   }),
   "req_list_user_features": defineProductTool({
     description: "List CodeArts Req user features",
@@ -853,6 +1422,13 @@ const reqToolDefinitions = {
     }) => clients.reqClient,
     createProductHandler: createReqGetWorkItemCompletionRateHandler
   }),
+  "req_get_work_item_issue_details": defineProductTool({
+    description: "Get CodeArts Req work item issue details from the V2 detail endpoint",
+    inputSchema: reqGetWorkItemIssueDetailsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGetWorkItemIssueDetailsHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqGetWorkItemIssueDetailsHandler
+  }),
   "req_get_work_item_index_counts": defineProductTool({
     description: "Get CodeArts Req work item index counts",
     inputSchema: reqGetWorkItemIndexCountsInput,
@@ -924,6 +1500,40 @@ const reqToolDefinitions = {
       reqClient: Parameters<typeof createReqListIterationStatusStatisticsHandler>[0];
     }) => clients.reqClient,
     createProductHandler: createReqListIterationStatusStatisticsHandler
+  }),
+  "req_list_ir_children": defineProductTool({
+    description: "List CodeArts Req requirement pool IR children",
+    inputSchema: reqListIrChildrenInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIrChildrenHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListIrChildrenHandler
+  }),
+  "req_list_ir_histories": defineProductTool({
+    description: "List CodeArts Req requirement pool IR history records",
+    inputSchema: reqListIrHistoriesInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIrHistoriesHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListIrHistoriesHandler
+  }),
+  "req_list_rrs": defineProductTool({
+    description: "List CodeArts Req requirement pool RRs",
+    inputSchema: reqListRrsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListRrsHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqListRrsHandler
+  }),
+  "req_list_rr_statuses": defineProductTool({
+    description: "List CodeArts Req requirement pool RR statuses",
+    inputSchema: reqListRrStatusesInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListRrStatusesHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListRrStatusesHandler
+  }),
+  "req_list_rr_histories": defineProductTool({
+    description: "List CodeArts Req requirement pool RR history records",
+    inputSchema: reqListRrHistoriesInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListRrHistoriesHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListRrHistoriesHandler
   }),
   "req_list_plans": defineProductTool({
     description: "List CodeArts Req plans",

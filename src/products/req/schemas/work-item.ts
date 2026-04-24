@@ -143,6 +143,12 @@ export const reqGetWorkItemInput = z.object({
   work_item_id: idSchema
 });
 
+export const reqGetWorkItemIssueDetailsInput = z.object({
+  project_id: idSchema,
+  work_item_id: idSchema,
+  include: z.string().min(1).default("children,parent")
+});
+
 export const reqGetWorkItemIndexCountsInput = z.object({
   project_id: idSchema,
   work_item_id: idSchema
