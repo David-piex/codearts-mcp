@@ -1227,6 +1227,187 @@ describe("createReqClient", () => {
     });
   });
 
+  it("maps work item work hour queries to the v3 work-hours endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          result: {
+            total: 1,
+            data: [
+              {
+                id: "wh-1",
+                issue_id: 70779173,
+                user_id: "user-1",
+                user_num_id: 1001,
+                user_name: "alice",
+                nick_name: "Alice",
+                work_date: "2025/07/25",
+                work_date_timestamp: "1753372800000",
+                work_hours: "1.0",
+                region: "example"
+              }
+            ]
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.listWorkItemWorkHours({
+      project_id: "p-1",
+      work_item_id: "70779173"
+    });
+
+    expect(requestedPath).toBe("/v3/projects/p-1/issues/70779173/work-hours");
+    expect(result).toEqual({
+      work_hours: [
+        {
+          id: "wh-1",
+          issue_id: 70779173,
+          user_id: "user-1",
+          user_num_id: 1001,
+          user_name: "alice",
+          nick_name: "Alice",
+          work_date: "2025/07/25",
+          work_date_timestamp: "1753372800000",
+          work_hours: "1.0",
+          region: "example"
+        }
+      ],
+      total: 1
+    });
+  });
+
+  it("maps add work item work hour to the v3 work-hours endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return {
+          result: {
+            data: [
+              {
+                id: "wh-1",
+                issue_id: 70779173,
+                user_id: "user-1",
+                user_num_id: 1001,
+                user_name: "alice",
+                nick_name: "Alice",
+                work_date: "2025/07/25",
+                work_date_timestamp: "1753372800000",
+                work_hours: "1.0",
+                region: "example"
+              }
+            ]
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.addWorkItemWorkHour({
+      project_id: "p-1",
+      work_item_id: "70779173",
+      work_hours: 1,
+      start_date: "2025-07-25",
+      due_date: "2025-07-25",
+      region: "example"
+    });
+
+    expect(requestedPath).toBe("/v3/projects/p-1/issues/70779173/work-hours");
+    expect(requestedBody).toEqual({
+      work_hours: 1,
+      start_date: "2025-07-25",
+      due_date: "2025-07-25",
+      region: "example"
+    });
+    expect(result).toEqual({
+      id: "wh-1",
+      work_item_id: "70779173",
+      user_id: "user-1",
+      user_num_id: 1001,
+      user_name: "alice",
+      nick_name: "Alice",
+      work_date: "2025/07/25",
+      work_date_timestamp: "1753372800000",
+      work_hours: "1.0",
+      region: "example"
+    });
+  });
+
+  it("maps project work hour queries to the v4 project work-hours endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return {
+          total: 1,
+          work_hours: [
+            {
+              issue_id: 69813204,
+              issue_type: "Story",
+              subject: "Align acceptance criteria",
+              project_name: "Payments",
+              user_id: "user-1",
+              user_name: "alice",
+              nick_name: "Alice",
+              work_date: "2020-02-19",
+              work_hours_num: "1.0",
+              summary: "Backend development"
+            }
+          ]
+        };
+      }
+    } as never);
+
+    const result = await client.listProjectWorkHours({
+      page: 2,
+      page_size: 10,
+      project_ids: ["p-1", "p-2"],
+      begin_time: "2025-07-01",
+      end_time: "2025-07-31",
+      work_hours_dates: "2025-07-02,2025-07-03",
+      work_hours_types: "21,22"
+    });
+
+    expect(requestedPath).toBe("/v4/projects/work-hours");
+    expect(requestedBody).toEqual({
+      offset: 10,
+      limit: 10,
+      project_ids: ["p-1", "p-2"],
+      begin_time: "2025-07-01",
+      end_time: "2025-07-31",
+      work_hours_dates: "2025-07-02,2025-07-03",
+      work_hours_types: "21,22"
+    });
+    expect(result).toEqual({
+      work_hours: [
+        {
+          issue_id: 69813204,
+          issue_type: "Story",
+          subject: "Align acceptance criteria",
+          project_name: "Payments",
+          user_id: "user-1",
+          user_name: "alice",
+          nick_name: "Alice",
+          work_date: "2020-02-19",
+          work_hours_num: "1.0",
+          summary: "Backend development"
+        }
+      ],
+      total: 1
+    });
+  });
+
   it("maps addWorkItemComment to the legacy notes endpoint and synthesizes a stable response", async () => {
     let requestedPath = "";
     let requestedBody: Record<string, unknown> | undefined;

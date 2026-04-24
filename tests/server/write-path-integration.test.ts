@@ -311,6 +311,37 @@ function createReqAddWorkItemCommentInput<T extends Record<string, unknown>>(
   } & T;
 }
 
+function createReqAddWorkItemWorkHourInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  work_item_id: string;
+  work_hours: number;
+  start_date: string;
+  due_date: string;
+  region: string;
+  dry_run: boolean;
+} & T {
+  return {
+    project_id: "project-1",
+    work_item_id: "70779173",
+    work_hours: 1,
+    start_date: "2025-07-25",
+    due_date: "2025-07-25",
+    region: "example",
+    dry_run: false,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    work_item_id: string;
+    work_hours: number;
+    start_date: string;
+    due_date: string;
+    region: string;
+    dry_run: boolean;
+  } & T;
+}
+
 function createReqUpdateWorkItemCommentInput<T extends Record<string, unknown>>(
   overrides?: T
 ): {
@@ -1628,6 +1659,55 @@ const writePathCases: WritePathCase[] = [
     }
   },
   {
+    name: "executes req_add_work_item_work_hour through the registered session-aware runtime client",
+    createHandler: (store: SessionStore) =>
+      readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_add_work_item_work_hour"),
+    input: createReqAddWorkItemWorkHourInput(),
+    responsePayload: {
+      result: {
+        data: [
+          {
+            id: "wh-1",
+            issue_id: 70779173,
+            user_id: "user-1",
+            user_num_id: 1001,
+            user_name: "alice",
+            nick_name: "Alice",
+            work_date: "2025/07/25",
+            work_date_timestamp: "1753372800000",
+            work_hours: "1.0",
+            region: "example"
+          }
+        ]
+      },
+      status: "success"
+    },
+    expectedItem: {
+      id: "wh-1",
+      workItemId: "70779173",
+      workDate: "2025/07/25",
+      workDateTimestamp: "1753372800000",
+      workHours: "1.0",
+      region: "example",
+      author: {
+        userId: "user-1",
+        userNumId: 1001,
+        userName: "alice",
+        nickName: "Alice"
+      },
+      executed: true
+    },
+    expectedRequest: {
+      path: "/v3/projects/project-1/issues/70779173/work-hours",
+      bodyIncludes: [
+        "\"work_hours\":1",
+        "\"start_date\":\"2025-07-25\"",
+        "\"due_date\":\"2025-07-25\"",
+        "\"region\":\"example\""
+      ]
+    }
+  },
+  {
     name: "executes req_update_work_item_comment through the registered session-aware runtime client",
     createHandler: (store: SessionStore) =>
       readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_update_work_item_comment"),
@@ -2207,6 +2287,24 @@ const dryRunCases: DryRunCase[] = [
       projectId: "project-1",
       workItemId: "70779173",
       content: "First comment",
+      executed: false
+    }
+  },
+  {
+    name: "short-circuits req_add_work_item_work_hour dry runs without HTTP or rate-limit consumption",
+    toolName: "req_add_work_item_work_hour",
+    input: createReqAddWorkItemWorkHourInput({
+      dry_run: true
+    }),
+    expectedItem: {
+      projectId: "project-1",
+      workItemId: "70779173",
+      workHours: 1,
+      startDate: "2025-07-25",
+      dueDate: "2025-07-25",
+      startDateTimestamp: undefined,
+      dueDateTimestamp: undefined,
+      region: "example",
       executed: false
     }
   },

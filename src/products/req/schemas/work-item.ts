@@ -126,6 +126,52 @@ export const reqListWorkItemRecordsInput = pagingSchema
     sort_order: true
   });
 
+export const reqListWorkItemWorkHoursInput = z.object({
+  project_id: idSchema,
+  work_item_id: idSchema
+});
+
+const reqWorkHourTimestampSchema = z.union([z.string().min(1), z.number().int().positive()]);
+
+export const reqAddWorkItemWorkHourInput = z
+  .object({
+    project_id: idSchema,
+    work_item_id: idSchema,
+    work_hours: z.number().positive(),
+    start_date: z.string().min(1).optional(),
+    due_date: z.string().min(1).optional(),
+    start_date_timestamp: reqWorkHourTimestampSchema.optional(),
+    due_date_timestamp: reqWorkHourTimestampSchema.optional(),
+    use_timestamp: z.boolean().optional(),
+    region: z.string().min(1).optional(),
+    dry_run: z.boolean().default(true)
+  })
+  .refine(
+    (input) =>
+      (typeof input.start_date !== "undefined" && typeof input.due_date !== "undefined") ||
+      (typeof input.start_date_timestamp !== "undefined" &&
+        typeof input.due_date_timestamp !== "undefined"),
+    {
+      message:
+        "Provide either start_date and due_date, or start_date_timestamp and due_date_timestamp",
+      path: ["start_date"]
+    }
+  );
+
+export const reqListProjectWorkHoursInput = pagingSchema
+  .extend({
+    project_ids: z.array(idSchema).min(1),
+    begin_time: z.string().min(1).optional(),
+    end_time: z.string().min(1).optional(),
+    work_hours_dates: z.string().min(1).optional(),
+    work_hours_types: z.string().min(1).optional()
+  })
+  .omit({
+    keyword: true,
+    sort_by: true,
+    sort_order: true
+  });
+
 export const reqListAssociatedIssuesInput = pagingSchema
   .extend({
     project_id: idSchema,

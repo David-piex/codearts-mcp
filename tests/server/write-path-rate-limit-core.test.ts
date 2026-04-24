@@ -606,11 +606,11 @@ describe("write path rate limits", () => {
         status: "success"
       }
     },
-    {
-      toolName: "req_add_work_item_comment",
-      dryRunInput: {
-        project_id: "project-1",
-        work_item_id: "70779173",
+      {
+        toolName: "req_add_work_item_comment",
+        dryRunInput: {
+          project_id: "project-1",
+          work_item_id: "70779173",
         content: "First comment",
         dry_run: true
       },
@@ -626,20 +626,69 @@ describe("write path rate limits", () => {
         content: "Blocked comment",
         dry_run: false
       },
-      responsePayload: {
-        result: {
-          issue: {
-            id: 70779173
-          }
+        responsePayload: {
+          result: {
+            issue: {
+              id: 70779173
+            }
+          },
+          status: "success"
+        }
+      },
+      {
+        toolName: "req_add_work_item_work_hour",
+        dryRunInput: {
+          project_id: "project-1",
+          work_item_id: "70779173",
+          work_hours: 1,
+          start_date: "2025-07-25",
+          due_date: "2025-07-25",
+          region: "example",
+          dry_run: true
         },
-        status: "success"
-      }
-    },
-    {
-      toolName: "req_update_work_item_comment",
-      dryRunInput: {
-        project_id: "project-1",
-        work_item_id: "70779173",
+        liveInput: (index: number) => ({
+          project_id: "project-1",
+          work_item_id: `${index}`,
+          work_hours: 1,
+          start_date: `2025-07-${String((index % 9) + 21).padStart(2, "0")}`,
+          due_date: `2025-07-${String((index % 9) + 21).padStart(2, "0")}`,
+          region: "example",
+          dry_run: false
+        }),
+        blockedInput: {
+          project_id: "project-1",
+          work_item_id: "blocked",
+          work_hours: 1,
+          start_date: "2025-07-31",
+          due_date: "2025-07-31",
+          region: "example",
+          dry_run: false
+        },
+        responsePayload: {
+          result: {
+            data: [
+              {
+                id: "wh-1",
+                issue_id: 70779173,
+                user_id: "user-1",
+                user_num_id: 1001,
+                user_name: "alice",
+                nick_name: "Alice",
+                work_date: "2025/07/25",
+                work_date_timestamp: "1753372800000",
+                work_hours: "1.0",
+                region: "example"
+              }
+            ]
+          },
+          status: "success"
+        }
+      },
+      {
+        toolName: "req_update_work_item_comment",
+        dryRunInput: {
+          project_id: "project-1",
+          work_item_id: "70779173",
         comment_id: "comment-1",
         content: "Updated comment",
         dry_run: true

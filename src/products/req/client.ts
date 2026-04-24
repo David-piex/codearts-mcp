@@ -743,6 +743,47 @@ export type ReqClient = {
     }>;
     total?: number;
   }>;
+  listWorkItemWorkHours: (input: {
+    project_id: string;
+    work_item_id: string;
+  }) => Promise<{
+    work_hours: Array<{
+      id: number | string;
+      issue_id?: number | string;
+      user_id?: string;
+      user_num_id?: number;
+      user_name?: string;
+      nick_name?: string;
+      work_date?: string;
+      work_date_timestamp?: string | number;
+      work_hours?: string | number;
+      region?: string;
+    }>;
+    total?: number;
+  }>;
+  listProjectWorkHours: (input: {
+    page: number;
+    page_size: number;
+    project_ids: string[];
+    begin_time?: string;
+    end_time?: string;
+    work_hours_dates?: string;
+    work_hours_types?: string;
+  }) => Promise<{
+    work_hours: Array<{
+      issue_id?: number | string;
+      issue_type?: string;
+      subject?: string;
+      project_name?: string;
+      user_id?: string;
+      user_name?: string;
+      nick_name?: string;
+      work_date?: string;
+      work_hours_num?: string | number;
+      summary?: string;
+    }>;
+    total?: number;
+  }>;
   listAssociatedIssues: (input: {
     project_id: string;
     work_item_id: string;
@@ -1196,6 +1237,28 @@ export type ReqClient = {
   }) => Promise<{
     work_item_id: string;
     content: string;
+  }>;
+  addWorkItemWorkHour: (input: {
+    project_id: string;
+    work_item_id: string;
+    work_hours: number;
+    start_date?: string;
+    due_date?: string;
+    start_date_timestamp?: string | number;
+    due_date_timestamp?: string | number;
+    use_timestamp?: boolean;
+    region?: string;
+  }) => Promise<{
+    id: number | string;
+    work_item_id: string;
+    user_id?: string;
+    user_num_id?: number;
+    user_name?: string;
+    nick_name?: string;
+    work_date?: string;
+    work_date_timestamp?: string | number;
+    work_hours?: string | number;
+    region?: string;
   }>;
   updateWorkItemComment: (input: {
     project_id: string;
@@ -2879,6 +2942,93 @@ export function createReqClient(
         total: response.total
       };
     },
+    async listWorkItemWorkHours(input) {
+      const response = (await _http.get(
+        `/v3/projects/${encodeURIComponent(input.project_id)}/issues/${encodeURIComponent(input.work_item_id)}/work-hours`
+      )) as {
+        result?: {
+          total?: number;
+          data?: Array<{
+            id: number | string;
+            issue_id?: number | string;
+            user_id?: string;
+            user_num_id?: number;
+            user_name?: string;
+            nick_name?: string;
+            work_date?: string;
+            work_date_timestamp?: string | number;
+            work_hours?: string | number;
+            region?: string;
+          }>;
+        };
+        total?: number;
+        data?: Array<{
+          id: number | string;
+          issue_id?: number | string;
+          user_id?: string;
+          user_num_id?: number;
+          user_name?: string;
+          nick_name?: string;
+          work_date?: string;
+          work_date_timestamp?: string | number;
+          work_hours?: string | number;
+          region?: string;
+        }>;
+      };
+      const result = response.result ?? response;
+
+      return {
+        work_hours: result.data ?? [],
+        total: result.total
+      };
+    },
+    async listProjectWorkHours(input) {
+      const offset = (input.page - 1) * input.page_size;
+      const response = (await _http.post("/v4/projects/work-hours", {
+        offset,
+        limit: input.page_size,
+        project_ids: input.project_ids,
+        ...(input.begin_time ? { begin_time: input.begin_time } : {}),
+        ...(input.end_time ? { end_time: input.end_time } : {}),
+        ...(input.work_hours_dates ? { work_hours_dates: input.work_hours_dates } : {}),
+        ...(input.work_hours_types ? { work_hours_types: input.work_hours_types } : {})
+      })) as {
+        result?: {
+          total?: number;
+          work_hours?: Array<{
+            issue_id?: number | string;
+            issue_type?: string;
+            subject?: string;
+            project_name?: string;
+            user_id?: string;
+            user_name?: string;
+            nick_name?: string;
+            work_date?: string;
+            work_hours_num?: string | number;
+            summary?: string;
+          }>;
+        };
+        total?: number;
+        work_hours?: Array<{
+          issue_id?: number | string;
+          issue_type?: string;
+          subject?: string;
+          project_name?: string;
+          user_id?: string;
+          user_name?: string;
+          nick_name?: string;
+          work_date?: string;
+          work_hours_num?: string | number;
+          summary?: string;
+        }>;
+      };
+      const result = response.result ?? response;
+
+      return {
+        work_hours: result.work_hours ?? [],
+        total: result.total
+      };
+    },
     async listAssociatedIssues(input) {
       const query = new URLSearchParams({
         project_id: input.project_id,
@@ -3669,6 +3819,87 @@ export function createReqClient(
       return {
         work_item_id: input.work_item_id,
         content: input.content
+      };
+    },
+    async addWorkItemWorkHour(input) {
+      const response = (await _http.post(
+        `/v3/projects/${encodeURIComponent(input.project_id)}/issues/${encodeURIComponent(input.work_item_id)}/work-hours`,
+        {
+          work_hours: input.work_hours,
+          ...(typeof input.start_date !== "undefined" ? { start_date: input.start_date } : {}),
+          ...(typeof input.due_date !== "undefined" ? { due_date: input.due_date } : {}),
+          ...(typeof input.start_date_timestamp !== "undefined"
+            ? { start_date_timestamp: input.start_date_timestamp }
+            : {}),
+          ...(typeof input.due_date_timestamp !== "undefined"
+            ? { due_date_timestamp: input.due_date_timestamp }
+            : {}),
+          ...(typeof input.use_timestamp !== "undefined"
+            ? { use_timestamp: input.use_timestamp }
+            : {}),
+          ...(input.region ? { region: input.region } : {})
+        }
+      )) as {
+        result?: {
+          data?: Array<{
+            id: number | string;
+            issue_id?: number | string;
+            user_id?: string;
+            user_num_id?: number;
+            user_name?: string;
+            nick_name?: string;
+            work_date?: string;
+            work_date_timestamp?: string | number;
+            work_hours?: string | number;
+            region?: string;
+          }>;
+          status?: string;
+        };
+        data?: Array<{
+          id: number | string;
+          issue_id?: number | string;
+          user_id?: string;
+          user_num_id?: number;
+          user_name?: string;
+          nick_name?: string;
+          work_date?: string;
+          work_date_timestamp?: string | number;
+          work_hours?: string | number;
+          region?: string;
+        }>;
+        status?: string;
+      };
+      const result = response.result ?? response;
+      const status = response.result?.status ?? response.status;
+
+      assertReqMutationSucceeded("add work item work hour", status);
+
+      const record:
+        | {
+            id?: number | string;
+            issue_id?: number | string;
+            user_id?: string;
+            user_num_id?: number;
+            user_name?: string;
+            nick_name?: string;
+            work_date?: string;
+            work_date_timestamp?: string | number;
+            work_hours?: string | number;
+            region?: string;
+          }
+        | undefined = result.data?.[0];
+
+      return {
+        id: record?.id ?? `${input.work_item_id}-work-hour`,
+        work_item_id: String(record?.issue_id ?? input.work_item_id),
+        user_id: record?.user_id,
+        user_num_id: record?.user_num_id,
+        user_name: record?.user_name,
+        nick_name: record?.nick_name,
+        work_date: record?.work_date,
+        work_date_timestamp: record?.work_date_timestamp,
+        work_hours: record?.work_hours,
+        region: record?.region
       };
     },
     async updateWorkItemComment(input) {

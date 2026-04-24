@@ -1,6 +1,7 @@
 export const reqToolNames = [
   "req_add_iteration_work_items",
   "req_add_plan_work_items",
+  "req_add_work_item_work_hour",
   "req_add_project_member",
   "req_batch_add_project_members",
   "req_batch_delete_project_members",
@@ -43,6 +44,7 @@ export const reqToolNames = [
   "req_list_associated_commits",
   "req_list_associated_issues",
   "req_list_associated_test_cases",
+  "req_list_project_work_hours",
   "req_list_related_users",
   "req_list_work_item_custom_fields",
   "req_list_work_item_status_attributes",
@@ -51,6 +53,7 @@ export const reqToolNames = [
   "req_list_work_item_statuses",
   "req_list_work_item_tracker_handlers",
   "req_list_work_item_templates",
+  "req_list_work_item_work_hours",
   "req_list_work_item_workflow_config",
   "req_list_optional_work_item_status_configs",
   "req_list_work_items",

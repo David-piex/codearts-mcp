@@ -423,6 +423,48 @@ describe("registerReqTool", () => {
     );
   });
 
+  it("registers the list work item work hours tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_list_work_item_work_hours",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_list_work_item_work_hours",
+      expect.objectContaining({
+        title: "req_list_work_item_work_hours",
+        description: "List CodeArts Req work hour records for a work item"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the list project work hours tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_list_project_work_hours",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_list_project_work_hours",
+      expect.objectContaining({
+        title: "req_list_project_work_hours",
+        description: "List CodeArts Req project work hour records"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("registers the add work item comment tool with rate-limited metadata", () => {
     const registerTool = vi.fn();
 
@@ -439,6 +481,27 @@ describe("registerReqTool", () => {
       expect.objectContaining({
         title: "req_add_work_item_comment",
         description: "Add comment to a CodeArts Req work item"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the add work item work hour tool with rate-limited metadata", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_add_work_item_work_hour",
+      server: { registerTool },
+      mode: "stdio",
+      stdioClient: {} as never
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_add_work_item_work_hour",
+      expect.objectContaining({
+        title: "req_add_work_item_work_hour",
+        description: "Add a work hour record to a CodeArts Req work item"
       }),
       expect.any(Function)
     );
