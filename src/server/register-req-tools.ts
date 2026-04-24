@@ -26,6 +26,8 @@ import {
   reqCreateWorkItemInput,
   reqBatchUpdateWorkItemsInput,
   reqCountWorkItemTreeInput,
+  reqGetCurrentUserInfoInput,
+  reqGetCurrentUserRoleInput,
   reqGetProjectDueDaysAfterInput,
   reqListBoardWorkItemStatusRecordsInput,
   reqListBoardWorkItemWorkflowConfigInput,
@@ -49,6 +51,7 @@ import {
   reqListPlanAddableWorkItemsInput,
   reqListPlanWorkItemsInput,
   reqListPlansInput,
+  reqListProjectBugStatisticsInput,
   reqListProjectDemandStatisticsInput,
   reqListProjectWorkHoursInput,
   reqListProjectWorkItemRecordsInput,
@@ -121,6 +124,8 @@ import { createReqDeleteWorkItemHandler } from "../products/req/tools/delete-wor
 import { createReqDownloadImageFileHandler } from "../products/req/tools/download-image-file.js";
 import { createReqBatchUpdateWorkItemsHandler } from "../products/req/tools/batch-update-work-items.js";
 import { createReqCountWorkItemTreeHandler } from "../products/req/tools/count-work-item-tree.js";
+import { createReqGetCurrentUserInfoHandler } from "../products/req/tools/get-current-user-info.js";
+import { createReqGetCurrentUserRoleHandler } from "../products/req/tools/get-current-user-role.js";
 import { createReqGetIterationHandler } from "../products/req/tools/get-iteration.js";
 import { createReqGetPlanHandler } from "../products/req/tools/get-plan.js";
 import { createReqGetProjectDueDaysAfterHandler } from "../products/req/tools/get-project-due-days-after.js";
@@ -148,6 +153,7 @@ import { createReqListOptionalWorkItemStatusConfigsHandler } from "../products/r
 import { createReqListPlanAddableWorkItemsHandler } from "../products/req/tools/list-plan-addable-work-items.js";
 import { createReqListPlanWorkItemsHandler } from "../products/req/tools/list-plan-work-items.js";
 import { createReqListPlansHandler } from "../products/req/tools/list-plans.js";
+import { createReqListProjectBugStatisticsHandler } from "../products/req/tools/list-project-bug-statistics.js";
 import { createReqListProjectDemandStatisticsHandler } from "../products/req/tools/list-project-demand-statistics.js";
 import { createReqListProjectWorkHoursHandler } from "../products/req/tools/list-project-work-hours.js";
 import { createReqListProjectWorkItemRecordsHandler } from "../products/req/tools/list-project-work-item-records.js";
@@ -398,6 +404,22 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListProjectsHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqListProjectsHandler
   }),
+  "req_get_current_user_info": defineProductTool({
+    description: "Get current CodeArts Req user info",
+    inputSchema: reqGetCurrentUserInfoInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqGetCurrentUserInfoHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqGetCurrentUserInfoHandler
+  }),
+  "req_get_current_user_role": defineProductTool({
+    description: "Get current CodeArts Req user role in a project",
+    inputSchema: reqGetCurrentUserRoleInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqGetCurrentUserRoleHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqGetCurrentUserRoleHandler
+  }),
   "req_get_project": defineProductTool({
     description: "Get CodeArts Req project detail",
     inputSchema: reqGetProjectInput,
@@ -419,6 +441,14 @@ const reqToolDefinitions = {
       reqClient: Parameters<typeof createReqListProjectDemandStatisticsHandler>[0];
     }) => clients.reqClient,
     createProductHandler: createReqListProjectDemandStatisticsHandler
+  }),
+  "req_list_project_bug_statistics": defineProductTool({
+    description: "List CodeArts Req project bug statistics",
+    inputSchema: reqListProjectBugStatisticsInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqListProjectBugStatisticsHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqListProjectBugStatisticsHandler
   }),
   "req_get_project_summary": defineProductTool({
     description: "Get CodeArts Req project summary",

@@ -4211,4 +4211,108 @@ describe("createReqClient", () => {
       workhour_readonly_mode: true
     });
   });
+
+  it("maps current user info queries to the documented user endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          domain_id: "domain-1",
+          domain_name: "tenant-a",
+          user_num_id: 4060,
+          user_id: "user-1",
+          user_name: "demo_user_name",
+          nick_name: "Tom",
+          created_time: 1562318865000,
+          updated_time: 1598074854000,
+          gender: "male",
+          user_type: "User"
+        };
+      }
+    } as never);
+
+    const result = await client.getCurrentUserInfo({});
+
+    expect(requestedPath).toBe("/v4/user");
+    expect(result).toEqual({
+      domain_id: "domain-1",
+      domain_name: "tenant-a",
+      user_num_id: 4060,
+      user_id: "user-1",
+      user_name: "demo_user_name",
+      nick_name: "Tom",
+      created_time: 1562318865000,
+      updated_time: 1598074854000,
+      gender: "male",
+      user_type: "User"
+    });
+  });
+
+  it("maps current user role queries to the documented user-role endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          user_role: 3
+        };
+      }
+    } as never);
+
+    const result = await client.getCurrentUserRole({
+      project_id: "p-1"
+    });
+
+    expect(requestedPath).toBe("/v4/projects/p-1/user-role");
+    expect(result).toEqual({
+      project_id: "p-1",
+      user_role: 3
+    });
+  });
+
+  it("maps project bug statistic queries to the documented bug-statistic endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          bug_statistics: [
+            {
+              critical_num: 0,
+              defect_index: 1,
+              module: "统计分数",
+              normal_num: 1,
+              serious_num: 0,
+              tip_num: 0,
+              total: 1
+            }
+          ]
+        };
+      }
+    } as never);
+
+    const result = await client.listProjectBugStatistics({
+      project_id: "p-1"
+    });
+
+    expect(requestedPath).toBe("/v4/projects/p-1/bug-statistic");
+    expect(result).toEqual({
+      project_id: "p-1",
+      bug_statistics: [
+        {
+          critical_num: 0,
+          defect_index: 1,
+          module: "统计分数",
+          normal_num: 1,
+          serious_num: 0,
+          tip_num: 0,
+          total: 1
+        }
+      ]
+    });
+  });
 });

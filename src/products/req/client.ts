@@ -5,6 +5,22 @@ import { recordRequestCacheHit } from "../../server/request-context.js";
 import type { ReturnTypeCreateHttpClient } from "../types.js";
 
 export type ReqClient = {
+  getCurrentUserInfo: (input: {}) => Promise<{
+    domain_id?: string;
+    domain_name?: string;
+    user_num_id?: number;
+    user_id?: string;
+    user_name?: string;
+    nick_name?: string;
+    created_time?: number;
+    updated_time?: number;
+    gender?: string;
+    user_type?: string;
+  }>;
+  getCurrentUserRole: (input: { project_id: string }) => Promise<{
+    project_id: string;
+    user_role?: number;
+  }>;
   createProject: (input: {
     name: string;
     description?: string;
@@ -51,6 +67,10 @@ export type ReqClient = {
     bug_statistics: ReqBugStatistic[];
     demand_statistics: ReqDemandStatistic[];
     issue_completion_rates: ReqIssueCompletionRate[];
+  }>;
+  listProjectBugStatistics: (input: { project_id: string }) => Promise<{
+    project_id: string;
+    bug_statistics: ReqBugStatistic[];
   }>;
   updateProject: (input: {
     project_id: string;
@@ -1663,6 +1683,54 @@ export function createReqClient(
   }
 
   return {
+    async getCurrentUserInfo() {
+      const response = (await _http.get("/v4/user")) as {
+        domain_id?: string;
+        domain_name?: string;
+        user_num_id?: number | string;
+        user_id?: string;
+        user_name?: string;
+        nick_name?: string;
+        created_time?: number | string;
+        updated_time?: number | string;
+        gender?: string;
+        user_type?: string;
+      };
+
+      return {
+        domain_id: response.domain_id,
+        domain_name: response.domain_name,
+        user_num_id:
+          typeof response.user_num_id === "string"
+            ? Number(response.user_num_id)
+            : response.user_num_id,
+        user_id: response.user_id,
+        user_name: response.user_name,
+        nick_name: response.nick_name,
+        created_time:
+          typeof response.created_time === "string"
+            ? Number(response.created_time)
+            : response.created_time,
+        updated_time:
+          typeof response.updated_time === "string"
+            ? Number(response.updated_time)
+            : response.updated_time,
+        gender: response.gender,
+        user_type: response.user_type
+      };
+    },
+    async getCurrentUserRole(input) {
+      const response = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/user-role`
+      )) as {
+        user_role?: number;
+      };
+
+      return {
+        project_id: input.project_id,
+        user_role: response.user_role
+      };
+    },
     async createProject(input) {
       const response = (await _http.post("/v4/project", {
         project_name: input.name,
@@ -1765,6 +1833,18 @@ export function createReqClient(
         bug_statistics: response.bug_statistics ?? [],
         demand_statistics: response.demand_statistics ?? [],
         issue_completion_rates: response.issue_completion_rates ?? []
+      };
+    },
+    async listProjectBugStatistics(input) {
+      const response = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/bug-statistic`
+      )) as {
+        bug_statistics?: ReqBugStatistic[];
+      };
+
+      return {
+        project_id: input.project_id,
+        bug_statistics: response.bug_statistics ?? []
       };
     },
     async updateProject(input) {

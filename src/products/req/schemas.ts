@@ -4,3 +4,4 @@ export * from "./schemas/iteration.js";
 export * from "./schemas/plan.js";
 export * from "./schemas/work-item.js";
 export * from "./schemas/comment.js";
+export * from "./schemas/user.js";

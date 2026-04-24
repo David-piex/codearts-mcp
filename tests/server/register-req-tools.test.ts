@@ -633,6 +633,69 @@ describe("registerReqTool", () => {
     );
   });
 
+  it("registers the get current user info tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_get_current_user_info",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_get_current_user_info",
+      expect.objectContaining({
+        title: "req_get_current_user_info",
+        description: "Get current CodeArts Req user info"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the get current user role tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_get_current_user_role",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_get_current_user_role",
+      expect.objectContaining({
+        title: "req_get_current_user_role",
+        description: "Get current CodeArts Req user role in a project"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the list project bug statistics tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_list_project_bug_statistics",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_list_project_bug_statistics",
+      expect.objectContaining({
+        title: "req_list_project_bug_statistics",
+        description: "List CodeArts Req project bug statistics"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("registers the list work item comments tool in http mode", () => {
     const registerTool = vi.fn();
 
