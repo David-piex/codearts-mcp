@@ -40,6 +40,10 @@ export const reqGetProjectInput = z.object({
   project_id: idSchema
 });
 
+export const reqListUserFeaturesInput = z.object({
+  project_id: idSchema
+});
+
 export const reqListProjectDemandStatisticsInput = z.object({
   project_id: idSchema
 });
@@ -130,3 +134,19 @@ export const reqValidateModuleNameInput = z.object({
   project_id: idSchema,
   module_name: z.string().min(1).max(30)
 });
+
+export const reqDeleteProjectTemplateInput = z.object({
+  template_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const reqUpdateProjectTemplateInput = z
+  .object({
+    template_id: idSchema,
+    name: z.string().min(1).optional(),
+    description: z.string().optional(),
+    dry_run: z.boolean().default(true)
+  })
+  .refine((value) => typeof value.name !== "undefined" || typeof value.description !== "undefined", {
+    message: "At least one of name or description is required"
+  });

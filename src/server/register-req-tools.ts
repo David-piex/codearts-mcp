@@ -23,6 +23,7 @@ import {
   reqDeleteProjectInput,
   reqDeleteIterationInput,
   reqDeleteProjectModuleInput,
+  reqDeleteProjectTemplateInput,
   reqDeleteWorkItemInput,
   reqCreateWorkItemInput,
   reqBatchUpdateWorkItemsInput,
@@ -59,6 +60,7 @@ import {
   reqListProjectBugStatisticsInput,
   reqListProjectDemandStatisticsInput,
   reqListProjectDomainsInput,
+  reqListUserFeaturesInput,
   reqListProjectWorkHourTypesInput,
   reqListProjectWorkHoursInput,
   reqListProjectWorkItemRecordsInput,
@@ -97,6 +99,7 @@ import {
   reqUpdateIterationStateInput,
   reqUpdateCacheDataInput,
   reqUpdateProjectModuleInput,
+  reqUpdateProjectTemplateInput,
   reqUpdateProjectMemberRoleInput,
   reqUpdateProjectInput,
   reqUpdateWorkItemCommentInput,
@@ -129,6 +132,7 @@ import { createReqDeletePlanHandler } from "../products/req/tools/delete-plan.js
 import { createReqDeleteProjectHandler } from "../products/req/tools/delete-project.js";
 import { createReqDeleteIterationHandler } from "../products/req/tools/delete-iteration.js";
 import { createReqDeleteProjectModuleHandler } from "../products/req/tools/delete-project-module.js";
+import { createReqDeleteProjectTemplateHandler } from "../products/req/tools/delete-project-template.js";
 import { createReqCreateWorkItemHandler } from "../products/req/tools/create-work-item.js";
 import { createReqDeleteWorkItemHandler } from "../products/req/tools/delete-work-item.js";
 import { createReqDownloadAttachmentHandler } from "../products/req/tools/download-attachment.js";
@@ -171,6 +175,7 @@ import { createReqListPlansHandler } from "../products/req/tools/list-plans.js";
 import { createReqListProjectBugStatisticsHandler } from "../products/req/tools/list-project-bug-statistics.js";
 import { createReqListProjectDemandStatisticsHandler } from "../products/req/tools/list-project-demand-statistics.js";
 import { createReqListProjectDomainsHandler } from "../products/req/tools/list-project-domains.js";
+import { createReqListUserFeaturesHandler } from "../products/req/tools/list-user-features.js";
 import { createReqListProjectWorkHourTypesHandler } from "../products/req/tools/list-project-work-hour-types.js";
 import { createReqListProjectWorkHoursHandler } from "../products/req/tools/list-project-work-hours.js";
 import { createReqListProjectWorkItemRecordsHandler } from "../products/req/tools/list-project-work-item-records.js";
@@ -202,6 +207,7 @@ import { createReqUpdateIterationHandler } from "../products/req/tools/update-it
 import { createReqUpdateIterationStateHandler } from "../products/req/tools/update-iteration-state.js";
 import { createReqUpdateCacheDataHandler } from "../products/req/tools/update-cache-data.js";
 import { createReqUpdateProjectModuleHandler } from "../products/req/tools/update-project-module.js";
+import { createReqUpdateProjectTemplateHandler } from "../products/req/tools/update-project-template.js";
 import { createReqUpdateProjectMemberRoleHandler } from "../products/req/tools/update-project-member-role.js";
 import { createReqUpdateProjectHandler } from "../products/req/tools/update-project.js";
 import { createReqUpdateWorkItemCommentHandler } from "../products/req/tools/update-work-item-comment.js";
@@ -375,6 +381,14 @@ const reqToolDefinitions = {
     createProductHandler: createReqUpdateProjectModuleHandler,
     rateLimitAction: "req_update_project_module"
   }),
+  "req_update_project_template": defineProductTool({
+    description: "Update a CodeArts Req project template",
+    inputSchema: reqUpdateProjectTemplateInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUpdateProjectTemplateHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqUpdateProjectTemplateHandler,
+    rateLimitAction: "req_update_project_template"
+  }),
   "req_delete_project": defineProductTool({
     description: "Delete CodeArts Req project",
     inputSchema: reqDeleteProjectInput,
@@ -403,6 +417,14 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqDeleteProjectModuleHandler,
     rateLimitAction: "req_delete_project_module"
+  }),
+  "req_delete_project_template": defineProductTool({
+    description: "Delete a CodeArts Req project template",
+    inputSchema: reqDeleteProjectTemplateInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqDeleteProjectTemplateHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqDeleteProjectTemplateHandler,
+    rateLimitAction: "req_delete_project_template"
   }),
   "req_check_project_name": defineProductTool({
     description: "Check whether a CodeArts Req project name exists",
@@ -505,6 +527,13 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListProjectDomainsHandler>[0] }) =>
       clients.reqClient,
     createProductHandler: createReqListProjectDomainsHandler
+  }),
+  "req_list_user_features": defineProductTool({
+    description: "List CodeArts Req user features",
+    inputSchema: reqListUserFeaturesInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListUserFeaturesHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListUserFeaturesHandler
   }),
   "req_list_project_bug_statistics": defineProductTool({
     description: "List CodeArts Req project bug statistics",

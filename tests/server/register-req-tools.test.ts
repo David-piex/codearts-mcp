@@ -465,6 +465,27 @@ describe("registerReqTool", () => {
     );
   });
 
+  it("registers the list user features tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_list_user_features",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_list_user_features",
+      expect.objectContaining({
+        title: "req_list_user_features",
+        description: "List CodeArts Req user features"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("registers the get work item completion rate tool in http mode", () => {
     const registerTool = vi.fn();
 
@@ -1620,6 +1641,48 @@ describe("registerReqTool", () => {
     );
   });
 
+  it("registers the delete project template tool with rate-limited metadata", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_delete_project_template",
+      server: { registerTool },
+      mode: "stdio",
+      stdioClient: {} as never
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_delete_project_template",
+      expect.objectContaining({
+        title: "req_delete_project_template",
+        description: "Delete a CodeArts Req project template"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the update project template tool with rate-limited metadata", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_update_project_template",
+      server: { registerTool },
+      mode: "stdio",
+      stdioClient: {} as never
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_update_project_template",
+      expect.objectContaining({
+        title: "req_update_project_template",
+        description: "Update a CodeArts Req project template"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("registers the update work item flow tool with rate-limited metadata", () => {
     const registerTool = vi.fn();
 
@@ -1911,6 +1974,19 @@ describe("registerReqTool", () => {
         title: "Epic A",
         work_item_type: "Epic"
       }
+    },
+    {
+      toolName: "req_delete_project_template",
+      input: {
+        template_id: "template-1"
+      }
+    },
+    {
+      toolName: "req_update_project_template",
+      input: {
+        template_id: "template-1",
+        name: "Template A"
+      }
     }
   ])(
     "does not consume rate limit when $toolName omits dry_run and falls back to default dry-run behavior",
@@ -2092,6 +2168,102 @@ describe("registerReqTool", () => {
     expect(rateLimiter.check).toHaveBeenCalledWith(
       "req_update_work_item_flow:session-1",
       "req_update_work_item_flow"
+    );
+    expect(rateLimiter.check).toHaveBeenCalledTimes(1);
+  });
+
+  it("enforces rate limiting before handling delete project template in http mode", async () => {
+    const registerTool = vi.fn();
+    const rateLimiter = { check: vi.fn() };
+
+    registerReqTool({
+      toolName: "req_delete_project_template",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore(),
+      rateLimiter: rateLimiter as never
+    });
+
+    const handler = registerTool.mock.calls[0]?.[2] as
+      | ((input: unknown, extra: { sessionId?: string; authId?: string }) => Promise<unknown>)
+      | undefined;
+
+    expect(handler).toBeTypeOf("function");
+
+    await handler?.(
+      {
+        template_id: "template-1",
+        dry_run: true
+      },
+      {
+        sessionId: "session-1",
+        authId: "auth-1"
+      }
+    );
+
+    await handler?.(
+      {
+        template_id: "template-1",
+        dry_run: false
+      },
+      {
+        sessionId: "session-1",
+        authId: "auth-1"
+      }
+    );
+
+    expect(rateLimiter.check).toHaveBeenCalledWith(
+      "req_delete_project_template:session-1",
+      "req_delete_project_template"
+    );
+    expect(rateLimiter.check).toHaveBeenCalledTimes(1);
+  });
+
+  it("enforces rate limiting before handling update project template in http mode", async () => {
+    const registerTool = vi.fn();
+    const rateLimiter = { check: vi.fn() };
+
+    registerReqTool({
+      toolName: "req_update_project_template",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore(),
+      rateLimiter: rateLimiter as never
+    });
+
+    const handler = registerTool.mock.calls[0]?.[2] as
+      | ((input: unknown, extra: { sessionId?: string; authId?: string }) => Promise<unknown>)
+      | undefined;
+
+    expect(handler).toBeTypeOf("function");
+
+    await handler?.(
+      {
+        template_id: "template-1",
+        name: "Template A",
+        dry_run: true
+      },
+      {
+        sessionId: "session-1",
+        authId: "auth-1"
+      }
+    );
+
+    await handler?.(
+      {
+        template_id: "template-1",
+        name: "Template A",
+        dry_run: false
+      },
+      {
+        sessionId: "session-1",
+        authId: "auth-1"
+      }
+    );
+
+    expect(rateLimiter.check).toHaveBeenCalledWith(
+      "req_update_project_template:session-1",
+      "req_update_project_template"
     );
     expect(rateLimiter.check).toHaveBeenCalledTimes(1);
   });

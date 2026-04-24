@@ -4750,4 +4750,119 @@ describe("createReqClient", () => {
       exist: false
     });
   });
+
+  it("maps user feature queries to the documented user-features endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return [
+          {
+            key: "issue.associate-wiki",
+            control: "show"
+          },
+          {
+            key: "issue.automation",
+            control: "show"
+          }
+        ];
+      }
+    } as never);
+
+    const result = await client.listUserFeatures({
+      project_id: "p-1"
+    });
+
+    expect(requestedPath).toBe("/v1/projects/p-1/user/features");
+    expect(result).toEqual({
+      project_id: "p-1",
+      features: [
+        {
+          key: "issue.associate-wiki",
+          control: "show"
+        },
+        {
+          key: "issue.automation",
+          control: "show"
+        }
+      ]
+    });
+  });
+
+  it("maps project template delete requests to the documented template endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      delete: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          id: 1518,
+          name: "1233",
+          sourceId: "381fcca9c056482d92da3e8b9da71db5",
+          sourceName: "DevOps全流程示例项目xxxx",
+          description: null,
+          identifier: "08f7a8eeaf874a3fbb360fab28014ed0",
+          authorId: 233087,
+          domainId: "073a9e220f000f620fb8c010f47a3f80",
+          type: "scrum",
+          isPublic: 1
+        };
+      }
+    } as never);
+
+    const result = await client.deleteProjectTemplate({
+      template_id: "1518"
+    });
+
+    expect(requestedPath).toBe("/v4/projects/templates/1518");
+    expect(result).toEqual({
+      id: 1518,
+      name: "1233",
+      sourceId: "381fcca9c056482d92da3e8b9da71db5",
+      sourceName: "DevOps全流程示例项目xxxx",
+      description: null,
+      identifier: "08f7a8eeaf874a3fbb360fab28014ed0",
+      authorId: 233087,
+      domainId: "073a9e220f000f620fb8c010f47a3f80",
+      type: "scrum",
+      isPublic: 1
+    });
+  });
+
+  it("maps project template update requests to the documented template endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      put: async (path: string, body?: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return {
+          project_template: {
+            id: 1538,
+            name: "12344",
+            type: null
+          }
+        };
+      }
+    } as never);
+
+    const result = await client.updateProjectTemplate({
+      template_id: "1538",
+      name: "12344",
+      description: ""
+    });
+
+    expect(requestedPath).toBe("/v4/projects/templates/1538");
+    expect(requestedBody).toEqual({
+      name: "12344",
+      description: ""
+    });
+    expect(result).toEqual({
+      id: 1538,
+      name: "12344",
+      type: null
+    });
+  });
 });

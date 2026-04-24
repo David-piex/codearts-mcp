@@ -21,6 +21,13 @@ export type ReqClient = {
     project_id: string;
     user_role?: number;
   }>;
+  listUserFeatures: (input: { project_id: string }) => Promise<{
+    project_id: string;
+    features: Array<{
+      key?: string;
+      control?: string;
+    }>;
+  }>;
   createProject: (input: {
     name: string;
     description?: string;
@@ -1302,6 +1309,31 @@ export type ReqClient = {
       issue_field_config?: string;
     }>;
   }>;
+  deleteProjectTemplate: (input: {
+    template_id: string;
+    dry_run?: boolean;
+  }) => Promise<{
+    id?: number | string;
+    name?: string;
+    sourceId?: string;
+    sourceName?: string;
+    description?: string | null;
+    identifier?: string;
+    authorId?: number;
+    domainId?: string;
+    type?: string | null;
+    isPublic?: number;
+  }>;
+  updateProjectTemplate: (input: {
+    template_id: string;
+    name?: string;
+    description?: string;
+    dry_run?: boolean;
+  }) => Promise<{
+    id: number | string;
+    name?: string;
+    type?: string | null;
+  }>;
   getWorkItemTemplateConfig: (input: {
     project_id: string;
     tracker_id: 2 | 3 | 5 | 6 | 7;
@@ -1859,6 +1891,19 @@ export function createReqClient(
       return {
         project_id: input.project_id,
         user_role: response.user_role
+      };
+    },
+    async listUserFeatures(input) {
+      const response = (await _http.get(
+        `/v1/projects/${encodeURIComponent(input.project_id)}/user/features`
+      )) as Array<{
+        key?: string;
+        control?: string;
+      }>;
+
+      return {
+        project_id: input.project_id,
+        features: response ?? []
       };
     },
     async createProject(input) {
@@ -4398,6 +4443,54 @@ export function createReqClient(
 
       return {
         templates: response.templates ?? []
+      };
+    },
+    async deleteProjectTemplate(input) {
+      return (await _http.delete(
+        `/v4/projects/templates/${encodeURIComponent(input.template_id)}`
+      )) as {
+        id?: number | string;
+        name?: string;
+        sourceId?: string;
+        sourceName?: string;
+        description?: string | null;
+        identifier?: string;
+        authorId?: number;
+        domainId?: string;
+        type?: string | null;
+        isPublic?: number;
+      };
+    },
+    async updateProjectTemplate(input) {
+      const body: {
+        name?: string;
+        description?: string;
+      } = {};
+
+      if (typeof input.name !== "undefined") {
+        body.name = input.name;
+      }
+
+      if (typeof input.description !== "undefined") {
+        body.description = input.description;
+      }
+
+      const response = (await _http.put(
+        `/v4/projects/templates/${encodeURIComponent(input.template_id)}`,
+        body
+      )) as {
+        project_template?: {
+          id?: number | string;
+          name?: string;
+          type?: string | null;
+        };
+      };
+      const projectTemplate = response.project_template ?? {};
+
+      return {
+        id: projectTemplate.id ?? input.template_id,
+        name: projectTemplate.name,
+        type: projectTemplate.type
       };
     },
     async getWorkItemTemplateConfig(input) {

@@ -28,6 +28,7 @@ export const reqToolNames = [
   "req_delete_plan",
   "req_delete_iteration",
   "req_delete_project_module",
+  "req_delete_project_template",
   "req_delete_work_item",
   "req_check_project_name",
   "req_list_not_added_projects",
@@ -61,6 +62,7 @@ export const reqToolNames = [
   "req_list_associated_wikis",
   "req_list_project_bug_statistics",
   "req_list_project_domains",
+  "req_list_user_features",
   "req_list_project_work_hour_types",
   "req_list_project_work_hours",
   "req_list_related_users",
@@ -100,6 +102,7 @@ export const reqToolNames = [
   "req_update_project_member_role",
   "req_update_plan_image",
   "req_update_cache_data",
+  "req_update_project_template",
   "req_upload_attachment",
   "req_upload_work_item_image",
   "req_validate_module_name"
