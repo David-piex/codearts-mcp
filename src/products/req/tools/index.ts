@@ -15,6 +15,7 @@ export const reqToolNames = [
   "req_create_iteration_work_item",
   "req_create_plan_work_item",
   "req_create_project",
+  "req_create_work_item_template",
   "req_create_plan",
   "req_create_iteration",
   "req_create_project_module",

@@ -1309,6 +1309,30 @@ export type ReqClient = {
       issue_field_config?: string;
     }>;
   }>;
+  createWorkItemTemplate: (input: {
+    project_id: string;
+    tracker_id: 2 | 3 | 5 | 6 | 7;
+    description?: string;
+    issue_field_configs?: Array<{
+      field?: string;
+      is_required?: number;
+      default_value?: string;
+      position?: number;
+      is_visible?: boolean;
+    }>;
+  }) => Promise<{
+    project_id: string;
+    tracker_id: 2 | 3 | 5 | 6 | 7;
+    description?: string;
+    issue_field_configs?: Array<{
+      field?: string;
+      is_required?: number;
+      default_value?: string;
+      position?: number;
+      is_visible?: boolean;
+    }>;
+    status?: string;
+  }>;
   deleteProjectTemplate: (input: {
     template_id: string;
     dry_run?: boolean;
@@ -4443,6 +4467,27 @@ export function createReqClient(
 
       return {
         templates: response.templates ?? []
+      };
+    },
+    async createWorkItemTemplate(input) {
+      const response = (await _http.post("/v2/project/templates", {
+        projectUUId: input.project_id,
+        trackerId: input.tracker_id,
+        ...(typeof input.description !== "undefined" ? { description: input.description } : {}),
+        ...(input.issue_field_configs ? { issueFieldConfigs: input.issue_field_configs } : {})
+      })) as {
+        result?: Record<string, unknown>;
+        status?: string;
+      };
+
+      assertReqMutationSucceeded("create work item template", response.status);
+
+      return {
+        project_id: input.project_id,
+        tracker_id: input.tracker_id,
+        description: input.description,
+        issue_field_configs: input.issue_field_configs ?? [],
+        status: response.status
       };
     },
     async deleteProjectTemplate(input) {

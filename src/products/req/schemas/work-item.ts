@@ -387,6 +387,32 @@ export const reqListWorkItemTemplatesInput = z.object({
   tracker_id: scrumTrackerIdSchema.optional()
 });
 
+const reqCreateWorkItemTemplateFieldConfigInput = z.object({
+  field: z.string().min(1).optional(),
+  is_required: z.number().int().nonnegative().optional(),
+  default_value: z.string().optional(),
+  position: z.number().int().nonnegative().optional(),
+  is_visible: z.boolean().optional()
+});
+
+export const reqCreateWorkItemTemplateInput = z
+  .object({
+    project_id: idSchema,
+    tracker_id: scrumTrackerIdSchema,
+    description: z.string().optional(),
+    issue_field_configs: z.array(reqCreateWorkItemTemplateFieldConfigInput).min(1).optional(),
+    dry_run: z.boolean().default(true)
+  })
+  .refine(
+    (input) =>
+      typeof input.description !== "undefined" ||
+      (input.issue_field_configs?.length ?? 0) > 0,
+    {
+      message: "description or issue_field_configs is required",
+      path: ["description"]
+    }
+  );
+
 export const reqGetWorkItemTemplateConfigInput = z.object({
   project_id: idSchema,
   tracker_id: scrumTrackerIdSchema

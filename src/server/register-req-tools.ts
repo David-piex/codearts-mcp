@@ -28,6 +28,7 @@ import {
   reqCreateWorkItemInput,
   reqBatchUpdateWorkItemsInput,
   reqCountWorkItemTreeInput,
+  reqCreateWorkItemTemplateInput,
   reqGetCurrentUserInfoInput,
   reqGetCurrentUserRoleInput,
   reqGetProjectBugDensityInput,
@@ -139,6 +140,7 @@ import { createReqDownloadAttachmentHandler } from "../products/req/tools/downlo
 import { createReqDownloadImageFileHandler } from "../products/req/tools/download-image-file.js";
 import { createReqBatchUpdateWorkItemsHandler } from "../products/req/tools/batch-update-work-items.js";
 import { createReqCountWorkItemTreeHandler } from "../products/req/tools/count-work-item-tree.js";
+import { createReqCreateWorkItemTemplateHandler } from "../products/req/tools/create-work-item-template.js";
 import { createReqGetCurrentUserInfoHandler } from "../products/req/tools/get-current-user-info.js";
 import { createReqGetCurrentUserRoleHandler } from "../products/req/tools/get-current-user-role.js";
 import { createReqGetIterationHandler } from "../products/req/tools/get-iteration.js";
@@ -446,6 +448,15 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqCountWorkItemTreeHandler>[0] }) =>
       clients.reqClient,
     createProductHandler: createReqCountWorkItemTreeHandler
+  }),
+  "req_create_work_item_template": defineProductTool({
+    description: "Create or update a CodeArts Req work item template",
+    inputSchema: reqCreateWorkItemTemplateInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqCreateWorkItemTemplateHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqCreateWorkItemTemplateHandler,
+    rateLimitAction: "req_create_work_item_template"
   }),
   "req_list_not_added_projects": defineProductTool({
     description: "List CodeArts Req projects not yet added to the current domain",

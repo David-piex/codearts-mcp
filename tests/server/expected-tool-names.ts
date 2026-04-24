@@ -216,6 +216,7 @@ export const expectedToolNames = [
   "req_check_work_item_status_name",
   "req_clear_plan_work_items",
   "req_count_work_item_tree",
+  "req_create_work_item_template",
   "req_create_iteration",
   "req_create_iteration_work_item",
   "req_create_plan",

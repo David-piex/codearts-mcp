@@ -317,6 +317,55 @@ describe("write path rate limits", () => {
       }
     },
     {
+      toolName: "req_create_work_item_template",
+      dryRunInput: {
+        project_id: "project-1",
+        tracker_id: 7,
+        description: "<p>story template</p>",
+        issue_field_configs: [
+          {
+            field: "status_id",
+            is_required: 1,
+            default_value: "新建",
+            position: 1
+          }
+        ],
+        dry_run: true
+      },
+      liveInput: (index: number) => ({
+        project_id: "project-1",
+        tracker_id: 7,
+        description: `<p>story template ${index}</p>`,
+        issue_field_configs: [
+          {
+            field: "status_id",
+            is_required: 1,
+            default_value: `新建-${index}`,
+            position: 1
+          }
+        ],
+        dry_run: false
+      }),
+      blockedInput: {
+        project_id: "project-1",
+        tracker_id: 7,
+        description: "<p>blocked template</p>",
+        issue_field_configs: [
+          {
+            field: "status_id",
+            is_required: 1,
+            default_value: "blocked",
+            position: 1
+          }
+        ],
+        dry_run: false
+      },
+      responsePayload: {
+        result: {},
+        status: "success"
+      }
+    },
+    {
       toolName: "req_update_cache_data",
       dryRunInput: {
         project_id: "project-1",

@@ -1284,6 +1284,27 @@ describe("registerReqTool", () => {
     );
   });
 
+  it("registers the create work item template tool with rate-limited metadata", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_create_work_item_template",
+      server: { registerTool },
+      mode: "stdio",
+      stdioClient: {} as never
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_create_work_item_template",
+      expect.objectContaining({
+        title: "req_create_work_item_template",
+        description: "Create or update a CodeArts Req work item template"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("registers the list work item custom fields tool in http mode", () => {
     const registerTool = vi.fn();
 
@@ -1844,6 +1865,57 @@ describe("registerReqTool", () => {
     );
   });
 
+  it("enforces rate limiting before handling create work item template in http mode", async () => {
+    const registerTool = vi.fn();
+    const rateLimiter = { check: vi.fn() };
+
+    registerReqTool({
+      toolName: "req_create_work_item_template",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore(),
+      rateLimiter: rateLimiter as never
+    });
+
+    const handler = registerTool.mock.calls[0]?.[2] as
+      | ((input: unknown, extra: { sessionId?: string; authId?: string }) => Promise<unknown>)
+      | undefined;
+
+    expect(handler).toBeTypeOf("function");
+
+    await handler?.(
+      {
+        project_id: "project-1",
+        tracker_id: 7,
+        description: "<p>story template</p>",
+        dry_run: true
+      },
+      {
+        sessionId: "session-1",
+        authId: "auth-1"
+      }
+    );
+
+    await handler?.(
+      {
+        project_id: "project-1",
+        tracker_id: 7,
+        description: "<p>story template</p>",
+        dry_run: false
+      },
+      {
+        sessionId: "session-1",
+        authId: "auth-1"
+      }
+    );
+
+    expect(rateLimiter.check).toHaveBeenCalledWith(
+      "req_create_work_item_template:session-1",
+      "req_create_work_item_template"
+    );
+    expect(rateLimiter.check).toHaveBeenCalledTimes(1);
+  });
+
   it("enforces rate limiting before handling delete work item in http mode", async () => {
     const registerTool = vi.fn();
     const rateLimiter = { check: vi.fn() };
@@ -1907,6 +1979,14 @@ describe("registerReqTool", () => {
         project_id: "project-1",
         iteration_id: "iteration-1",
         work_item_ids: ["wi-9", "wi-10"]
+      }
+    },
+    {
+      toolName: "req_create_work_item_template",
+      input: {
+        project_id: "project-1",
+        tracker_id: 7,
+        description: "<p>story template</p>"
       }
     },
     {

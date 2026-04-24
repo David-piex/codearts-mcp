@@ -568,6 +568,48 @@ function createReqCreatePlanWorkItemInput<T extends Record<string, unknown>>(
   } & T;
 }
 
+function createReqCreateWorkItemTemplateInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  tracker_id: 2 | 3 | 5 | 6 | 7;
+  description: string;
+  issue_field_configs: Array<{
+    field: string;
+    is_required: number;
+    default_value: string;
+    position: number;
+  }>;
+  dry_run: boolean;
+} & T {
+  return {
+    project_id: "project-1",
+    tracker_id: 7,
+    description: "<p>story template</p>",
+    issue_field_configs: [
+      {
+        field: "status_id",
+        is_required: 1,
+        default_value: "新建",
+        position: 1
+      }
+    ],
+    dry_run: false,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    tracker_id: 2 | 3 | 5 | 6 | 7;
+    description: string;
+    issue_field_configs: Array<{
+      field: string;
+      is_required: number;
+      default_value: string;
+      position: number;
+    }>;
+    dry_run: boolean;
+  } & T;
+}
+
 function createReqCreateIterationWorkItemInput<T extends Record<string, unknown>>(
   overrides?: T
 ): {
@@ -1212,6 +1254,40 @@ const writePathCases: WritePathCase[] = [
         "\"projectUUId\":\"project-1\"",
         "\"subject\":\"Epic A\"",
         "\"plan_id\":\"plan-1\""
+      ]
+    }
+  },
+  {
+    name: "executes req_create_work_item_template through the registered session-aware runtime client",
+    createHandler: (store: SessionStore) =>
+      readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_create_work_item_template"),
+    input: createReqCreateWorkItemTemplateInput(),
+    responsePayload: {
+      result: {},
+      status: "success"
+    },
+    expectedItem: {
+      projectId: "project-1",
+      trackerId: 7,
+      description: "<p>story template</p>",
+      issueFieldConfigs: [
+        {
+          field: "status_id",
+          is_required: 1,
+          default_value: "新建",
+          position: 1
+        }
+      ],
+      status: "success",
+      executed: true
+    },
+    expectedRequest: {
+      path: "/v2/project/templates",
+      bodyIncludes: [
+        "\"projectUUId\":\"project-1\"",
+        "\"trackerId\":7",
+        "\"description\":\"<p>story template</p>\"",
+        "\"issueFieldConfigs\":[{\"field\":\"status_id\",\"is_required\":1,\"default_value\":\"新建\",\"position\":1}]"
       ]
     }
   },
@@ -2138,6 +2214,27 @@ const dryRunCases: DryRunCase[] = [
       planId: "plan-1",
       title: "Epic A",
       workItemType: "Epic",
+      executed: false
+    }
+  },
+  {
+    name: "short-circuits req_create_work_item_template dry runs without HTTP or rate-limit consumption",
+    toolName: "req_create_work_item_template",
+    input: createReqCreateWorkItemTemplateInput({
+      dry_run: true
+    }),
+    expectedItem: {
+      projectId: "project-1",
+      trackerId: 7,
+      description: "<p>story template</p>",
+      issueFieldConfigs: [
+        {
+          field: "status_id",
+          is_required: 1,
+          default_value: "新建",
+          position: 1
+        }
+      ],
       executed: false
     }
   },

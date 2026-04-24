@@ -2608,6 +2608,65 @@ describe("createReqClient", () => {
     });
   });
 
+  it("maps work item template create-or-update requests to the documented project template endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body?: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return {
+          result: {},
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.createWorkItemTemplate({
+      project_id: "p-1",
+      tracker_id: 7,
+      description: "<p>story template</p>",
+      issue_field_configs: [
+        {
+          field: "status_id",
+          is_required: 1,
+          default_value: "新建",
+          position: 1
+        }
+      ]
+    });
+
+    expect(requestedPath).toBe("/v2/project/templates");
+    expect(requestedBody).toEqual({
+      projectUUId: "p-1",
+      trackerId: 7,
+      description: "<p>story template</p>",
+      issueFieldConfigs: [
+        {
+          field: "status_id",
+          is_required: 1,
+          default_value: "新建",
+          position: 1
+        }
+      ]
+    });
+    expect(result).toEqual({
+      project_id: "p-1",
+      tracker_id: 7,
+      description: "<p>story template</p>",
+      issue_field_configs: [
+        {
+          field: "status_id",
+          is_required: 1,
+          default_value: "新建",
+          position: 1
+        }
+      ],
+      status: "success"
+    });
+  });
+
   it("maps work item status rule flag queries to the documented status-rule-flag endpoint", async () => {
     let requestedPath = "";
     const client = createReqClient({
