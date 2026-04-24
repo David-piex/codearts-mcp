@@ -16,6 +16,7 @@ const WRITE_ACTIONS = new Set([
   "clear",
   "close",
   "configure",
+  "copy",
   "create",
   "delete",
   "disable",

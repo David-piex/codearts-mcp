@@ -2667,6 +2667,200 @@ describe("createReqClient", () => {
     });
   });
 
+  it("maps copyWorkItems to the documented duplication endpoint and normalizes grouped results", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body?: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return {
+          result: {
+            successIssues: [
+              {
+                id: 69901043,
+                tracker_id: 7,
+                project_id: 13281266,
+                projectUUId: "src-project",
+                subject: "Story A",
+                status_id: 1,
+                assigned_to_id: 1274137,
+                priority_id: 2,
+                author: 1274137,
+                created_on: "2025-08-18 23:36:51",
+                updated_on: "1755531417000",
+                description: "TEST",
+                severity_id: 12,
+                expected_work_hours: 0,
+                actual_work_hours: 0,
+                story_point_id: 3,
+                closed_flag: 0,
+                is_archived: false
+              }
+            ],
+            createIssues: [
+              {
+                id: 69913248,
+                tracker_id: 7,
+                project_id: 13290000,
+                projectUUId: "target-project",
+                subject: "Story A",
+                status_id: 1,
+                assigned_to_id: 1274137,
+                priority_id: 2,
+                author: 1274137,
+                created_on: "2025-08-18 23:36:51",
+                updated_on: "1755531417000",
+                description: "TEST",
+                severity_id: 12,
+                expected_work_hours: 0,
+                actual_work_hours: 0,
+                story_point_id: 3,
+                closed_flag: 0,
+                is_archived: false
+              }
+            ],
+            errorIssues: [
+              {
+                id: 69901044,
+                tracker_id: 3,
+                project_id: 13281266,
+                projectUUId: "src-project",
+                subject: "Bug B",
+                status_id: 6,
+                assigned_to_id: 1274999,
+                priority_id: 3,
+                author: 1274137,
+                created_on: "2025-08-18 23:37:10",
+                updated_on: "1755531420000",
+                description: "FAILED",
+                severity_id: 10,
+                expected_work_hours: 1,
+                actual_work_hours: 0.5,
+                story_point_id: 0,
+                closed_flag: 1,
+                is_archived: false
+              }
+            ]
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.copyWorkItems({
+      from_project_id: "src-project",
+      to_project_id: "target-project",
+      work_item_ids: ["69901043", "69901044"],
+      copy_comments: true,
+      copy_work_hours: false
+    });
+
+    expect(requestedPath).toBe("/v2/workitem/duplication");
+    expect(requestedBody).toEqual({
+      fromProjectUUId: "src-project",
+      toProjectUUId: "target-project",
+      issueIds: "69901043,69901044",
+      copyComments: true,
+      copyWorkHours: false
+    });
+    expect(result).toEqual({
+      from_project_id: "src-project",
+      to_project_id: "target-project",
+      work_item_ids: ["69901043", "69901044"],
+      copy_comments: true,
+      copy_work_hours: false,
+      status: "success",
+      success_work_items: [
+        {
+          id: "69901043",
+          tracker_id: 7,
+          project_id: "13281266",
+          project_uuid: "src-project",
+          subject: "Story A",
+          status_id: 1,
+          assigned_to_id: 1274137,
+          priority_id: 2,
+          author: 1274137,
+          created_on: "2025-08-18 23:36:51",
+          updated_on: "1755531417000",
+          description: "TEST",
+          severity_id: 12,
+          expected_work_hours: 0,
+          actual_work_hours: 0,
+          story_point_id: 3,
+          closed_flag: 0,
+          is_archived: false
+        }
+      ],
+      created_work_items: [
+        {
+          id: "69913248",
+          tracker_id: 7,
+          project_id: "13290000",
+          project_uuid: "target-project",
+          subject: "Story A",
+          status_id: 1,
+          assigned_to_id: 1274137,
+          priority_id: 2,
+          author: 1274137,
+          created_on: "2025-08-18 23:36:51",
+          updated_on: "1755531417000",
+          description: "TEST",
+          severity_id: 12,
+          expected_work_hours: 0,
+          actual_work_hours: 0,
+          story_point_id: 3,
+          closed_flag: 0,
+          is_archived: false
+        }
+      ],
+      error_work_items: [
+        {
+          id: "69901044",
+          tracker_id: 3,
+          project_id: "13281266",
+          project_uuid: "src-project",
+          subject: "Bug B",
+          status_id: 6,
+          assigned_to_id: 1274999,
+          priority_id: 3,
+          author: 1274137,
+          created_on: "2025-08-18 23:37:10",
+          updated_on: "1755531420000",
+          description: "FAILED",
+          severity_id: 10,
+          expected_work_hours: 1,
+          actual_work_hours: 0.5,
+          story_point_id: 0,
+          closed_flag: 1,
+          is_archived: false
+        }
+      ]
+    });
+  });
+
+  it("rejects copyWorkItems when the duplication endpoint does not report success", async () => {
+    const client = createReqClient({
+      post: async () => ({
+        result: {
+          successIssues: []
+        }
+      })
+    } as never);
+
+    await expect(
+      client.copyWorkItems({
+        from_project_id: "src-project",
+        to_project_id: "target-project",
+        work_item_ids: ["69901043"],
+        copy_comments: false,
+        copy_work_hours: false
+      })
+    ).rejects.toThrow(/did not report success/i);
+  });
+
   it("maps work item status rule flag queries to the documented status-rule-flag endpoint", async () => {
     let requestedPath = "";
     const client = createReqClient({

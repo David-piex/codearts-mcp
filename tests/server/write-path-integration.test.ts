@@ -610,6 +610,34 @@ function createReqCreateWorkItemTemplateInput<T extends Record<string, unknown>>
   } & T;
 }
 
+function createReqCopyWorkItemsInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  from_project_id: string;
+  to_project_id: string;
+  work_item_ids: string[];
+  copy_comments: boolean;
+  copy_work_hours: boolean;
+  dry_run: boolean;
+} & T {
+  return {
+    from_project_id: "project-source",
+    to_project_id: "project-target",
+    work_item_ids: ["70779173", "70779174"],
+    copy_comments: true,
+    copy_work_hours: false,
+    dry_run: false,
+    ...(overrides ?? {})
+  } as {
+    from_project_id: string;
+    to_project_id: string;
+    work_item_ids: string[];
+    copy_comments: boolean;
+    copy_work_hours: boolean;
+    dry_run: boolean;
+  } & T;
+}
+
 function createReqCreateIterationWorkItemInput<T extends Record<string, unknown>>(
   overrides?: T
 ): {
@@ -1288,6 +1316,78 @@ const writePathCases: WritePathCase[] = [
         "\"trackerId\":7",
         "\"description\":\"<p>story template</p>\"",
         "\"issueFieldConfigs\":[{\"field\":\"status_id\",\"is_required\":1,\"default_value\":\"新建\",\"position\":1}]"
+      ]
+    }
+  },
+  {
+    name: "executes req_copy_work_items through the registered session-aware runtime client",
+    createHandler: (store: SessionStore) =>
+      readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_copy_work_items"),
+    input: createReqCopyWorkItemsInput(),
+    responsePayload: {
+      result: {
+        successIssues: [
+          {
+            id: 70779173,
+            tracker_id: 7,
+            project_id: 13281266,
+            projectUUId: "project-source",
+            subject: "Story A",
+            status_id: 1
+          }
+        ],
+        createIssues: [
+          {
+            id: 80880001,
+            tracker_id: 7,
+            project_id: 13290000,
+            projectUUId: "project-target",
+            subject: "Story A",
+            status_id: 1
+          }
+        ],
+        errorIssues: []
+      },
+      status: "success"
+    },
+    expectedItem: {
+      fromProjectId: "project-source",
+      toProjectId: "project-target",
+      workItemIds: ["70779173", "70779174"],
+      copyComments: true,
+      copyWorkHours: false,
+      status: "success",
+      successWorkItems: [
+        {
+          id: "70779173",
+          tracker_id: 7,
+          project_id: "13281266",
+          project_uuid: "project-source",
+          subject: "Story A",
+          status_id: 1
+        }
+      ],
+      createdWorkItems: [
+        {
+          id: "80880001",
+          tracker_id: 7,
+          project_id: "13290000",
+          project_uuid: "project-target",
+          subject: "Story A",
+          status_id: 1
+        }
+      ],
+      errorWorkItems: [],
+      executed: true
+    },
+    expectedRequest: {
+      path: "/v2/workitem/duplication",
+      bodyIncludes: [
+        "\"fromProjectUUId\":\"project-source\"",
+        "\"toProjectUUId\":\"project-target\"",
+        "\"issueIds\":\"70779173,70779174\"",
+        "\"copyComments\":true",
+        "\"copyWorkHours\":false"
       ]
     }
   },
@@ -2235,6 +2335,24 @@ const dryRunCases: DryRunCase[] = [
           position: 1
         }
       ],
+      executed: false
+    }
+  },
+  {
+    name: "short-circuits req_copy_work_items dry runs without HTTP or rate-limit consumption",
+    toolName: "req_copy_work_items",
+    input: createReqCopyWorkItemsInput({
+      dry_run: true
+    }),
+    expectedItem: {
+      fromProjectId: "project-source",
+      toProjectId: "project-target",
+      workItemIds: ["70779173", "70779174"],
+      copyComments: true,
+      copyWorkHours: false,
+      successWorkItems: [],
+      createdWorkItems: [],
+      errorWorkItems: [],
       executed: false
     }
   },

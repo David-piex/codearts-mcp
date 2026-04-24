@@ -10,6 +10,7 @@ import {
   reqBatchDeleteProjectMembersInput,
   reqBatchDeleteIterationsInput,
   reqBatchDeleteWorkItemsInput,
+  reqCopyWorkItemsInput,
   reqCheckProjectNameInput,
   reqCheckWorkItemStatusNameInput,
   reqClearPlanWorkItemsInput,
@@ -119,6 +120,7 @@ import { createReqBatchAddProjectMembersHandler } from "../products/req/tools/ba
 import { createReqBatchDeleteProjectMembersHandler } from "../products/req/tools/batch-delete-project-members.js";
 import { createReqBatchDeleteIterationsHandler } from "../products/req/tools/batch-delete-iterations.js";
 import { createReqBatchDeleteWorkItemsHandler } from "../products/req/tools/batch-delete-work-items.js";
+import { createReqCopyWorkItemsHandler } from "../products/req/tools/copy-work-items.js";
 import { createReqCheckProjectNameHandler } from "../products/req/tools/check-project-name.js";
 import { createReqCheckWorkItemStatusNameHandler } from "../products/req/tools/check-work-item-status-name.js";
 import { createReqClearPlanWorkItemsHandler } from "../products/req/tools/clear-plan-work-items.js";
@@ -448,6 +450,14 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqCountWorkItemTreeHandler>[0] }) =>
       clients.reqClient,
     createProductHandler: createReqCountWorkItemTreeHandler
+  }),
+  "req_copy_work_items": defineProductTool({
+    description: "Copy CodeArts Req work items between projects",
+    inputSchema: reqCopyWorkItemsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqCopyWorkItemsHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqCopyWorkItemsHandler,
+    rateLimitAction: "req_copy_work_items"
   }),
   "req_create_work_item_template": defineProductTool({
     description: "Create or update a CodeArts Req work item template",

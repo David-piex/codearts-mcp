@@ -57,6 +57,15 @@ export const reqBatchDeleteWorkItemsInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const reqCopyWorkItemsInput = z.object({
+  from_project_id: idSchema,
+  to_project_id: idSchema,
+  work_item_ids: z.array(idSchema).min(1),
+  copy_comments: z.boolean().default(false),
+  copy_work_hours: z.boolean().default(false),
+  dry_run: z.boolean().default(true)
+});
+
 export const reqBatchUpdateWorkItemsInput = z.object({
   project_id: idSchema,
   work_item_ids: z.array(idSchema).min(1),

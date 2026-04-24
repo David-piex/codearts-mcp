@@ -1305,6 +1305,27 @@ describe("registerReqTool", () => {
     );
   });
 
+  it("registers the copy work items tool with rate-limited metadata", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_copy_work_items",
+      server: { registerTool },
+      mode: "stdio",
+      stdioClient: {} as never
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_copy_work_items",
+      expect.objectContaining({
+        title: "req_copy_work_items",
+        description: "Copy CodeArts Req work items between projects"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("registers the list work item custom fields tool in http mode", () => {
     const registerTool = vi.fn();
 
@@ -1916,6 +1937,57 @@ describe("registerReqTool", () => {
     expect(rateLimiter.check).toHaveBeenCalledTimes(1);
   });
 
+  it("enforces rate limiting before handling copy work items in http mode", async () => {
+    const registerTool = vi.fn();
+    const rateLimiter = { check: vi.fn() };
+
+    registerReqTool({
+      toolName: "req_copy_work_items",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore(),
+      rateLimiter: rateLimiter as never
+    });
+
+    const handler = registerTool.mock.calls[0]?.[2] as
+      | ((input: unknown, extra: { sessionId?: string; authId?: string }) => Promise<unknown>)
+      | undefined;
+
+    expect(handler).toBeTypeOf("function");
+
+    await handler?.(
+      {
+        from_project_id: "project-source",
+        to_project_id: "project-target",
+        work_item_ids: ["70779173", "70779174"],
+        dry_run: true
+      },
+      {
+        sessionId: "session-1",
+        authId: "auth-1"
+      }
+    );
+
+    await handler?.(
+      {
+        from_project_id: "project-source",
+        to_project_id: "project-target",
+        work_item_ids: ["70779173", "70779174"],
+        dry_run: false
+      },
+      {
+        sessionId: "session-1",
+        authId: "auth-1"
+      }
+    );
+
+    expect(rateLimiter.check).toHaveBeenCalledWith(
+      "req_copy_work_items:session-1",
+      "req_copy_work_items"
+    );
+    expect(rateLimiter.check).toHaveBeenCalledTimes(1);
+  });
+
   it("enforces rate limiting before handling delete work item in http mode", async () => {
     const registerTool = vi.fn();
     const rateLimiter = { check: vi.fn() };
@@ -1987,6 +2059,14 @@ describe("registerReqTool", () => {
         project_id: "project-1",
         tracker_id: 7,
         description: "<p>story template</p>"
+      }
+    },
+    {
+      toolName: "req_copy_work_items",
+      input: {
+        from_project_id: "project-source",
+        to_project_id: "project-target",
+        work_item_ids: ["wi-9", "wi-10"]
       }
     },
     {

@@ -366,6 +366,41 @@ describe("write path rate limits", () => {
       }
     },
     {
+      toolName: "req_copy_work_items",
+      dryRunInput: {
+        from_project_id: "project-source",
+        to_project_id: "project-target",
+        work_item_ids: ["70779173", "70779174"],
+        copy_comments: true,
+        copy_work_hours: false,
+        dry_run: true
+      },
+      liveInput: (index: number) => ({
+        from_project_id: `project-source-${index}`,
+        to_project_id: `project-target-${index}`,
+        work_item_ids: [`${index}`, `${index + 100}`],
+        copy_comments: true,
+        copy_work_hours: false,
+        dry_run: false
+      }),
+      blockedInput: {
+        from_project_id: "project-source-blocked",
+        to_project_id: "project-target-blocked",
+        work_item_ids: ["blocked"],
+        copy_comments: false,
+        copy_work_hours: false,
+        dry_run: false
+      },
+      responsePayload: {
+        result: {
+          successIssues: [],
+          createIssues: [],
+          errorIssues: []
+        },
+        status: "success"
+      }
+    },
+    {
       toolName: "req_update_cache_data",
       dryRunInput: {
         project_id: "project-1",

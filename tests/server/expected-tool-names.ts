@@ -211,6 +211,7 @@ export const expectedToolNames = [
   "req_batch_delete_iterations",
   "req_batch_delete_project_members",
   "req_batch_delete_work_items",
+  "req_copy_work_items",
   "req_batch_update_work_items",
   "req_check_project_name",
   "req_check_work_item_status_name",

@@ -298,6 +298,80 @@ export type ReqClient = {
     work_item_ids: string[];
     deletedCount: number;
   }>;
+  copyWorkItems: (input: {
+    from_project_id: string;
+    to_project_id: string;
+    work_item_ids: string[];
+    copy_comments?: boolean;
+    copy_work_hours?: boolean;
+  }) => Promise<{
+    from_project_id: string;
+    to_project_id: string;
+    work_item_ids: string[];
+    copy_comments?: boolean;
+    copy_work_hours?: boolean;
+    status?: string;
+    success_work_items: Array<{
+      id: string;
+      tracker_id?: number;
+      project_id?: string;
+      project_uuid?: string;
+      subject?: string;
+      status_id?: number;
+      assigned_to_id?: number;
+      priority_id?: number;
+      author?: number;
+      created_on?: string;
+      updated_on?: string;
+      description?: string;
+      severity_id?: number;
+      expected_work_hours?: number;
+      actual_work_hours?: number;
+      story_point_id?: number;
+      closed_flag?: number;
+      is_archived?: boolean;
+    }>;
+    created_work_items: Array<{
+      id: string;
+      tracker_id?: number;
+      project_id?: string;
+      project_uuid?: string;
+      subject?: string;
+      status_id?: number;
+      assigned_to_id?: number;
+      priority_id?: number;
+      author?: number;
+      created_on?: string;
+      updated_on?: string;
+      description?: string;
+      severity_id?: number;
+      expected_work_hours?: number;
+      actual_work_hours?: number;
+      story_point_id?: number;
+      closed_flag?: number;
+      is_archived?: boolean;
+    }>;
+    error_work_items: Array<{
+      id: string;
+      tracker_id?: number;
+      project_id?: string;
+      project_uuid?: string;
+      subject?: string;
+      status_id?: number;
+      assigned_to_id?: number;
+      priority_id?: number;
+      author?: number;
+      created_on?: string;
+      updated_on?: string;
+      description?: string;
+      severity_id?: number;
+      expected_work_hours?: number;
+      actual_work_hours?: number;
+      story_point_id?: number;
+      closed_flag?: number;
+      is_archived?: boolean;
+    }>;
+  }>;
   batchUpdateWorkItems: (input: {
     project_id: string;
     work_item_ids: string[];
@@ -1675,6 +1749,31 @@ function unwrapReqPayload<T>(input: T): T {
   return input;
 }
 
+function mapReqCopyIssue(item: ReqCopyIssueResponse) {
+  return {
+    id: String(item.id ?? ""),
+    tracker_id: item.tracker_id,
+    project_id:
+      typeof item.project_id === "undefined" ? undefined : String(item.project_id),
+    project_uuid: item.projectUUId,
+    subject: item.subject,
+    status_id: item.status_id,
+    assigned_to_id: item.assigned_to_id,
+    priority_id: item.priority_id,
+    author: item.author,
+    created_on: item.created_on,
+    updated_on:
+      typeof item.updated_on === "undefined" ? undefined : String(item.updated_on),
+    description: item.description,
+    severity_id: item.severity_id,
+    expected_work_hours: item.expected_work_hours,
+    actual_work_hours: item.actual_work_hours,
+    story_point_id: item.story_point_id,
+    closed_flag: item.closed_flag,
+    is_archived: item.is_archived
+  };
+}
+
 type ReqIssueListItem = {
   id: number | string;
   subject?: string;
@@ -1682,6 +1781,27 @@ type ReqIssueListItem = {
   status?: { name?: string };
   tracker?: { name?: string };
   tracker_name?: string;
+};
+
+type ReqCopyIssueResponse = {
+  id?: number | string;
+  tracker_id?: number;
+  project_id?: number | string;
+  projectUUId?: string;
+  subject?: string;
+  status_id?: number;
+  assigned_to_id?: number;
+  priority_id?: number;
+  author?: number;
+  created_on?: string;
+  updated_on?: string | number;
+  description?: string;
+  severity_id?: number;
+  expected_work_hours?: number;
+  actual_work_hours?: number;
+  story_point_id?: number;
+  closed_flag?: number;
+  is_archived?: boolean;
 };
 
 type ReqDetailedIssueListItem = {
@@ -3166,6 +3286,36 @@ export function createReqClient(
         project_id: input.project_id,
         work_item_ids: input.work_item_ids,
         deletedCount: input.work_item_ids.length
+      };
+    },
+    async copyWorkItems(input) {
+      const response = (await _http.post("/v2/workitem/duplication", {
+        fromProjectUUId: input.from_project_id,
+        toProjectUUId: input.to_project_id,
+        issueIds: input.work_item_ids.join(","),
+        copyComments: input.copy_comments ?? false,
+        copyWorkHours: input.copy_work_hours ?? false
+      })) as {
+        result?: {
+          successIssues?: ReqCopyIssueResponse[];
+          createIssues?: ReqCopyIssueResponse[];
+          errorIssues?: ReqCopyIssueResponse[];
+        };
+        status?: string;
+      };
+
+      assertReqMutationSucceeded("copy work items", response.status);
+
+      return {
+        from_project_id: input.from_project_id,
+        to_project_id: input.to_project_id,
+        work_item_ids: input.work_item_ids,
+        copy_comments: input.copy_comments ?? false,
+        copy_work_hours: input.copy_work_hours ?? false,
+        status: response.status,
+        success_work_items: (response.result?.successIssues ?? []).map(mapReqCopyIssue),
+        created_work_items: (response.result?.createIssues ?? []).map(mapReqCopyIssue),
+        error_work_items: (response.result?.errorIssues ?? []).map(mapReqCopyIssue)
       };
     },
     async batchUpdateWorkItems(input) {
