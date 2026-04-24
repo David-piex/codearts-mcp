@@ -2667,6 +2667,224 @@ describe("createReqClient", () => {
     });
   });
 
+  it("maps getWorkItemIssueDetails to the documented issue-details endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          result: {
+            issue: {
+              id: 2884248,
+              subject: "33333",
+              author: {
+                first_name: "alice",
+                last_name: "wang",
+                identifier: "user-uuid-1",
+                name: "tenant/alice",
+                id: 15533,
+                assigned_nick_name: "Alice"
+              },
+              created_on: "1754307805000",
+              updated_on: "1754378971000",
+              start_date: "1754323200000",
+              done_ratio: 0,
+              description: "<p>story desc</p>",
+              expected_work_hours: 0,
+              release_dev: "",
+              project: {
+                identifier: "p-1",
+                name: "Project A",
+                project_type: "scrum",
+                id: 6349386
+              },
+              tracker: {
+                name: "Story",
+                id: 7
+              },
+              status: {
+                name: "新建",
+                id: 1
+              },
+              priority: {
+                name: "中",
+                id: 2
+              },
+              assigned_to: {
+                first_name: "bob",
+                last_name: "li",
+                identifier: "user-uuid-2",
+                name: "tenant/bob",
+                id: 16666,
+                assigned_nick_name: "Bob"
+              },
+              developer: {},
+              severity: {
+                name: "一般",
+                id: 12
+              },
+              domain: {
+                id: 14,
+                name: "性能"
+              },
+              module: {
+                id: 8,
+                name: "网关"
+              },
+              story_point: {
+                id: 3,
+                name: "1"
+              },
+              parent_issue: {
+                id: 200,
+                name: "Parent story"
+              },
+              find_release_dev: "",
+              assigned_cc_user: [],
+              accessories_list: [
+                {
+                  attachment_id: 26262,
+                  issue_id: 2884248,
+                  container_type: "Issue",
+                  file_name: "demo.json",
+                  disk_file_name: "demo-disk.json",
+                  digest: "1",
+                  creator_num_id: 15533,
+                  created_date: "2025-08-04 19:43:46",
+                  disk_directory: "/projectMan/demo.json",
+                  creator_id: "user-uuid-1"
+                }
+              ],
+              custom_value_new: {
+                custom_field: "custom_field16",
+                field_name: "业务域",
+                value: "支付",
+                field_type: "text",
+                description: "业务归属"
+              },
+              custom_fields: [
+                {
+                  name: "业务域",
+                  value: "支付",
+                  new_name: "业务条线"
+                }
+              ],
+              inner_text: "latest comment"
+            }
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.getWorkItemIssueDetails({
+      project_id: "p-1",
+      work_item_id: "2884248",
+      include: "children,parent"
+    });
+
+    expect(requestedPath).toBe(
+      "/v2/issues/show?issue_id=2884248&project_uuid=p-1&include=children%2Cparent"
+    );
+    expect(result).toEqual({
+      id: "2884248",
+      subject: "33333",
+      created_on: "1754307805000",
+      updated_on: "1754378971000",
+      start_date: "1754323200000",
+      done_ratio: 0,
+      description: "<p>story desc</p>",
+      expected_work_hours: 0,
+      release_dev: "",
+      find_release_dev: "",
+      inner_text: "latest comment",
+      project: {
+        identifier: "p-1",
+        name: "Project A",
+        project_type: "scrum",
+        id: 6349386
+      },
+      tracker: {
+        name: "Story",
+        id: 7
+      },
+      status: {
+        name: "新建",
+        id: 1
+      },
+      priority: {
+        name: "中",
+        id: 2
+      },
+      severity: {
+        name: "一般",
+        id: 12
+      },
+      module: {
+        id: 8,
+        name: "网关"
+      },
+      domain: {
+        id: 14,
+        name: "性能"
+      },
+      story_point: {
+        id: 3,
+        name: "1"
+      },
+      parent_issue: {
+        id: 200,
+        name: "Parent story"
+      },
+      author: {
+        first_name: "alice",
+        last_name: "wang",
+        identifier: "user-uuid-1",
+        name: "tenant/alice",
+        id: 15533,
+        assigned_nick_name: "Alice"
+      },
+      assigned_to: {
+        first_name: "bob",
+        last_name: "li",
+        identifier: "user-uuid-2",
+        name: "tenant/bob",
+        id: 16666,
+        assigned_nick_name: "Bob"
+      },
+      assigned_cc_user: [],
+      custom_fields: [
+        {
+          name: "业务域",
+          value: "支付",
+          new_name: "业务条线"
+        }
+      ],
+      custom_value_new: {
+        custom_field: "custom_field16",
+        field_name: "业务域",
+        value: "支付",
+        field_type: "text",
+        description: "业务归属"
+      },
+      accessories_list: [
+        {
+          attachment_id: 26262,
+          issue_id: 2884248,
+          container_type: "Issue",
+          file_name: "demo.json",
+          disk_file_name: "demo-disk.json",
+          digest: "1",
+          creator_num_id: 15533,
+          created_date: "2025-08-04 19:43:46",
+          disk_directory: "/projectMan/demo.json",
+          creator_id: "user-uuid-1"
+        }
+      ]
+    });
+  });
+
   it("maps copyWorkItems to the documented duplication endpoint and normalizes grouped results", async () => {
     let requestedPath = "";
     let requestedBody: Record<string, unknown> | undefined;
