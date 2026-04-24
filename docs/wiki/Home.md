@@ -42,6 +42,12 @@
 2. [Capability-Matrix](./Capability-Matrix.md)
 3. [Module-Live-Readiness](./Module-Live-Readiness.md)
 
+### 如果你要直接查 MCP API
+
+1. [API-Reference](./API-Reference.md)
+2. [Req-API-Reference](./Req-API-Reference.md)
+3. [Module-Functions-Overview](./Module-Functions-Overview.md)
+
 ## 当前 wiki 结构
 
 | 页面 | 用途 |
@@ -55,6 +61,8 @@
 | [Module-Live-Readiness](./Module-Live-Readiness.md) | 模块级真实联调就绪度、总量和剩余阻塞 |
 | [Testing-and-Live-Ops](./Testing-and-Live-Ops.md) | 测试分层、AK/SK live 联调、线上排查和执行型变量 |
 | [Official-API-Alignment](./Official-API-Alignment.md) | 8 个官方 PDF 维度下的 MCP 化现状 |
+| [API-Reference](./API-Reference.md) | 8 个 CodeArts 服务的 MCP API 总览、基础 URL、工具清单和 live 边界 |
+| [Req-API-Reference](./Req-API-Reference.md) | Req MCP API 工具、写入 gate、真实 smoke 和剩余样本缺口 |
 | [Troubleshooting](./Troubleshooting.md) | 常见问题、排查顺序和修复建议 |
 
 ## 关键实现文件
@@ -68,14 +76,6 @@
 - `src/server/session-aware-product-handlers.ts`
 - `src/server/auth-repository.ts`
 - `src/server/module-stats.ts`
-
-## Req API Reference
-
-- [Req-API-Reference](./Req-API-Reference.md): Req MCP API 工具、写入 gate、真实 smoke 和剩余样本缺口。
-
-## Global API Reference
-
-- [API-Reference](./API-Reference.md): 8 个 CodeArts 服务的 MCP API 总览、基础 URL、工具清单和 live 边界。
 
 ## 当前文档原则
 

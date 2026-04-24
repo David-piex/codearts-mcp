@@ -206,6 +206,15 @@ MCP_SERVER_VERSION=0.1.0
 node dist/src/server/index.js
 ```
 
+## API 文档入口
+
+| 文档 | 用途 |
+| --- | --- |
+| [CodeArts MCP API Reference](docs/wiki/API-Reference.md) | 8 个 CodeArts 服务的 MCP API 总览、基础 URL、工具清单和 live 边界 |
+| [Req MCP API Reference](docs/wiki/Req-API-Reference.md) | Req 深度 API 文档，包含 Scrum、需求池、IPD、写入 gate 和 smoke 样本缺口 |
+| [Module Functions Overview](docs/wiki/Module-Functions-Overview.md) | 按模块解释每个服务能做什么、适合什么场景 |
+| [Capability Matrix](docs/wiki/Capability-Matrix.md) | 各模块读写规模、live 状态和关键缺口 |
+
 ## 模块现状总表
 
 <!-- GENERATED:readme-exposure-summary:start -->
