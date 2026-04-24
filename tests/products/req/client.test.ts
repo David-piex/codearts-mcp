@@ -1281,6 +1281,80 @@ describe("createReqClient", () => {
     });
   });
 
+  it("maps work item image uploads to the documented multipart endpoint", async () => {
+    let requestedPath = "";
+    let uploadedFileName = "";
+    let uploadedFileText = "";
+    let uploadedContentType = "";
+    const client = createReqClient({
+      postMultipart: async (path: string, body: FormData) => {
+        requestedPath = path;
+        const file = body.get("file");
+
+        if (!(file instanceof File)) {
+          throw new Error("expected multipart file");
+        }
+
+        uploadedFileName = file.name;
+        uploadedFileText = await file.text();
+        uploadedContentType = file.type;
+
+        return {
+          img_id: "1",
+          img_url: "/v1/upload/demo/202604/demo.png"
+        };
+      }
+    } as never);
+
+    const result = await client.uploadIssueImage({
+      project_id: "p-1",
+      file_name: "demo.png",
+      file_content: new Uint8Array([102, 97, 107, 101]),
+      content_type: "image/png"
+    });
+
+    expect(requestedPath).toBe("/v2/p-1/img");
+    expect(uploadedFileName).toBe("demo.png");
+    expect(uploadedFileText).toBe("fake");
+    expect(uploadedContentType).toBe("image/png");
+    expect(result).toEqual({
+      project_id: "p-1",
+      file_name: "demo.png",
+      img_id: "1",
+      img_url: "/v1/upload/demo/202604/demo.png"
+    });
+  });
+
+  it("maps image file downloads to the documented binary endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      getBinary: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          body: new Uint8Array([1, 2, 3]),
+          contentType: "image/png",
+          fileName: "demo.png"
+        };
+      }
+    } as never);
+
+    const result = await client.downloadImageFile({
+      project_id: "p-1",
+      image_uri: "/v1/upload/demo/202604/demo.png"
+    });
+
+    expect(requestedPath).toBe(
+      "/v4/projects/p-1/image-file?image_uri=%2Fv1%2Fupload%2Fdemo%2F202604%2Fdemo.png"
+    );
+    expect(result).toEqual({
+      image_uri: "/v1/upload/demo/202604/demo.png",
+      body: new Uint8Array([1, 2, 3]),
+      content_type: "image/png",
+      file_name: "demo.png"
+    });
+  });
+
   it("maps add work item work hour to the v3 work-hours endpoint", async () => {
     let requestedPath = "";
     let requestedBody: Record<string, unknown> | undefined;
@@ -1338,6 +1412,30 @@ describe("createReqClient", () => {
       work_date_timestamp: "1753372800000",
       work_hours: "1.0",
       region: "example"
+    });
+  });
+
+  it("maps attachment deletion to the documented attachment endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      delete: async (path: string) => {
+        requestedPath = path;
+        return null;
+      }
+    } as never);
+
+    const result = await client.deleteAttachment({
+      project_id: "p-1",
+      work_item_id: "70779173",
+      attachment_id: "72372"
+    });
+
+    expect(requestedPath).toBe("/v4/projects/p-1/issues/70779173/attachments/72372");
+    expect(result).toEqual({
+      project_id: "p-1",
+      work_item_id: "70779173",
+      attachment_id: "72372",
+      deleted: true
     });
   });
 

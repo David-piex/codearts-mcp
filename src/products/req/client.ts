@@ -743,6 +743,15 @@ export type ReqClient = {
     }>;
     total?: number;
   }>;
+  downloadImageFile: (input: {
+    project_id: string;
+    image_uri: string;
+  }) => Promise<{
+    image_uri: string;
+    body: Uint8Array;
+    content_type?: string;
+    file_name?: string;
+  }>;
   listWorkItemWorkHours: (input: {
     project_id: string;
     work_item_id: string;
@@ -1238,6 +1247,17 @@ export type ReqClient = {
     work_item_id: string;
     content: string;
   }>;
+  uploadIssueImage: (input: {
+    project_id: string;
+    file_name: string;
+    file_content: Uint8Array;
+    content_type?: string;
+  }) => Promise<{
+    project_id: string;
+    file_name: string;
+    img_id?: string | number;
+    img_url?: string;
+  }>;
   addWorkItemWorkHour: (input: {
     project_id: string;
     work_item_id: string;
@@ -1259,6 +1279,16 @@ export type ReqClient = {
     work_date_timestamp?: string | number;
     work_hours?: string | number;
     region?: string;
+  }>;
+  deleteAttachment: (input: {
+    project_id: string;
+    work_item_id: string;
+    attachment_id: string;
+  }) => Promise<{
+    project_id: string;
+    work_item_id: string;
+    attachment_id: string;
+    deleted: true;
   }>;
   updateWorkItemComment: (input: {
     project_id: string;
@@ -2942,6 +2972,21 @@ export function createReqClient(
         total: response.total
       };
     },
+    async downloadImageFile(input) {
+      const query = new URLSearchParams({
+        image_uri: input.image_uri
+      });
+      const response = await _http.getBinary(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/image-file?${query.toString()}`
+      );
+
+      return {
+        image_uri: input.image_uri,
+        body: response.body,
+        content_type: response.contentType,
+        file_name: response.fileName
+      };
+    },
     async listWorkItemWorkHours(input) {
       const response = (await _http.get(
         `/v3/projects/${encodeURIComponent(input.project_id)}/issues/${encodeURIComponent(input.work_item_id)}/work-hours`
@@ -3821,6 +3866,30 @@ export function createReqClient(
         content: input.content
       };
     },
+    async uploadIssueImage(input) {
+      const form = new FormData();
+      form.append(
+        "file",
+        new Blob([Buffer.from(input.file_content)], {
+          type: input.content_type ?? "application/octet-stream"
+        }),
+        input.file_name
+      );
+      const response = (await _http.postMultipart(
+        `/v2/${encodeURIComponent(input.project_id)}/img`,
+        form
+      )) as {
+        img_id?: string | number;
+        img_url?: string;
+      };
+
+      return {
+        project_id: input.project_id,
+        file_name: input.file_name,
+        img_id: response.img_id,
+        img_url: response.img_url
+      };
+    },
     async addWorkItemWorkHour(input) {
       const response = (await _http.post(
         `/v3/projects/${encodeURIComponent(input.project_id)}/issues/${encodeURIComponent(input.work_item_id)}/work-hours`,
@@ -3900,6 +3969,18 @@ export function createReqClient(
         work_date_timestamp: record?.work_date_timestamp,
         work_hours: record?.work_hours,
         region: record?.region
+      };
+    },
+    async deleteAttachment(input) {
+      await _http.delete(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/issues/${encodeURIComponent(input.work_item_id)}/attachments/${encodeURIComponent(input.attachment_id)}`
+      );
+
+      return {
+        project_id: input.project_id,
+        work_item_id: input.work_item_id,
+        attachment_id: input.attachment_id,
+        deleted: true as const
       };
     },
     async updateWorkItemComment(input) {

@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { resolve } from "node:path";
 import {
   createSessionAwarePipelineApproveRunHandler,
   createSessionAwareDeployCreateApplicationHandler,
@@ -42,6 +43,8 @@ type DryRunCase = {
   input: Record<string, unknown>;
   expectedItem: Record<string, unknown>;
 };
+
+const reqUploadImageFixturePath = resolve(process.cwd(), "tests/fixtures/req-upload-image.png");
 
 function createReqCreateWorkItemInput<T extends Record<string, unknown>>(
   overrides?: T
@@ -311,6 +314,25 @@ function createReqAddWorkItemCommentInput<T extends Record<string, unknown>>(
   } & T;
 }
 
+function createReqUploadWorkItemImageInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  file_path: string;
+  dry_run: boolean;
+} & T {
+  return {
+    project_id: "project-1",
+    file_path: reqUploadImageFixturePath,
+    dry_run: false,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    file_path: string;
+    dry_run: boolean;
+  } & T;
+}
+
 function createReqAddWorkItemWorkHourInput<T extends Record<string, unknown>>(
   overrides?: T
 ): {
@@ -338,6 +360,28 @@ function createReqAddWorkItemWorkHourInput<T extends Record<string, unknown>>(
     start_date: string;
     due_date: string;
     region: string;
+    dry_run: boolean;
+  } & T;
+}
+
+function createReqDeleteAttachmentInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  work_item_id: string;
+  attachment_id: string;
+  dry_run: boolean;
+} & T {
+  return {
+    project_id: "project-1",
+    work_item_id: "70779173",
+    attachment_id: "72372",
+    dry_run: false,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    work_item_id: string;
+    attachment_id: string;
     dry_run: boolean;
   } & T;
 }
@@ -1659,6 +1703,26 @@ const writePathCases: WritePathCase[] = [
     }
   },
   {
+    name: "executes req_upload_work_item_image through the registered session-aware runtime client",
+    createHandler: (store: SessionStore) =>
+      readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_upload_work_item_image"),
+    input: createReqUploadWorkItemImageInput(),
+    responsePayload: {
+      img_id: "1",
+      img_url: "/v1/upload/demo/202604/demo.png"
+    },
+    expectedItem: {
+      projectId: "project-1",
+      fileName: "req-upload-image.png",
+      imageId: "1",
+      imageUrl: "/v1/upload/demo/202604/demo.png",
+      executed: true
+    },
+    expectedRequest: {
+      path: "/v2/project-1/img"
+    }
+  },
+  {
     name: "executes req_add_work_item_work_hour through the registered session-aware runtime client",
     createHandler: (store: SessionStore) =>
       readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_add_work_item_work_hour"),
@@ -1705,6 +1769,25 @@ const writePathCases: WritePathCase[] = [
         "\"due_date\":\"2025-07-25\"",
         "\"region\":\"example\""
       ]
+    }
+  },
+  {
+    name: "executes req_delete_attachment through the registered session-aware runtime client",
+    createHandler: (store: SessionStore) =>
+      readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_delete_attachment"),
+    input: createReqDeleteAttachmentInput(),
+    responsePayload: null,
+    responseInit: { status: 204 },
+    expectedItem: {
+      projectId: "project-1",
+      workItemId: "70779173",
+      attachmentId: "72372",
+      deleted: true,
+      executed: true
+    },
+    expectedRequest: {
+      path: "/v4/projects/project-1/issues/70779173/attachments/72372",
+      method: "DELETE"
     }
   },
   {
@@ -2291,6 +2374,19 @@ const dryRunCases: DryRunCase[] = [
     }
   },
   {
+    name: "short-circuits req_upload_work_item_image dry runs without HTTP or rate-limit consumption",
+    toolName: "req_upload_work_item_image",
+    input: createReqUploadWorkItemImageInput({
+      dry_run: true
+    }),
+    expectedItem: {
+      projectId: "project-1",
+      filePath: reqUploadImageFixturePath,
+      fileName: "req-upload-image.png",
+      executed: false
+    }
+  },
+  {
     name: "short-circuits req_add_work_item_work_hour dry runs without HTTP or rate-limit consumption",
     toolName: "req_add_work_item_work_hour",
     input: createReqAddWorkItemWorkHourInput({
@@ -2305,6 +2401,20 @@ const dryRunCases: DryRunCase[] = [
       startDateTimestamp: undefined,
       dueDateTimestamp: undefined,
       region: "example",
+      executed: false
+    }
+  },
+  {
+    name: "short-circuits req_delete_attachment dry runs without HTTP or rate-limit consumption",
+    toolName: "req_delete_attachment",
+    input: createReqDeleteAttachmentInput({
+      dry_run: true
+    }),
+    expectedItem: {
+      projectId: "project-1",
+      workItemId: "70779173",
+      attachmentId: "72372",
+      deleted: false,
       executed: false
     }
   },

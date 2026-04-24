@@ -29,6 +29,8 @@ import {
   reqListBoardWorkItemWorkflowConfigInput,
   reqListBoardWorkItemsInput,
   reqListCacheDataInput,
+  reqDeleteAttachmentInput,
+  reqDownloadImageFileInput,
   reqGetProjectPublicConfigInput,
   reqGetIterationInput,
   reqGetPlanInput,
@@ -78,6 +80,7 @@ import {
   reqUpdateWorkItemCommentInput,
   reqUpdateWorkItemFlowInput,
   reqUpdateWorkItemInput,
+  reqUploadWorkItemImageInput,
   reqValidateModuleNameInput
 } from "../products/req/schemas.js";
 import { createReqAddIterationWorkItemsHandler } from "../products/req/tools/add-iteration-work-items.js";
@@ -97,12 +100,14 @@ import { createReqCreateIterationHandler } from "../products/req/tools/create-it
 import { createReqCreateIterationWorkItemHandler } from "../products/req/tools/create-iteration-work-item.js";
 import { createReqCreateProjectHandler } from "../products/req/tools/create-project.js";
 import { createReqCreateProjectModuleHandler } from "../products/req/tools/create-project-module.js";
+import { createReqDeleteAttachmentHandler } from "../products/req/tools/delete-attachment.js";
 import { createReqDeletePlanHandler } from "../products/req/tools/delete-plan.js";
 import { createReqDeleteProjectHandler } from "../products/req/tools/delete-project.js";
 import { createReqDeleteIterationHandler } from "../products/req/tools/delete-iteration.js";
 import { createReqDeleteProjectModuleHandler } from "../products/req/tools/delete-project-module.js";
 import { createReqCreateWorkItemHandler } from "../products/req/tools/create-work-item.js";
 import { createReqDeleteWorkItemHandler } from "../products/req/tools/delete-work-item.js";
+import { createReqDownloadImageFileHandler } from "../products/req/tools/download-image-file.js";
 import { createReqBatchUpdateWorkItemsHandler } from "../products/req/tools/batch-update-work-items.js";
 import { createReqGetIterationHandler } from "../products/req/tools/get-iteration.js";
 import { createReqGetPlanHandler } from "../products/req/tools/get-plan.js";
@@ -157,6 +162,7 @@ import { createReqUpdateProjectHandler } from "../products/req/tools/update-proj
 import { createReqUpdateWorkItemCommentHandler } from "../products/req/tools/update-work-item-comment.js";
 import { createReqUpdateWorkItemFlowHandler } from "../products/req/tools/update-work-item-flow.js";
 import { createReqUpdateWorkItemHandler } from "../products/req/tools/update-work-item.js";
+import { createReqUploadWorkItemImageHandler } from "../products/req/tools/upload-work-item-image.js";
 import { createReqValidateModuleNameHandler } from "../products/req/tools/validate-module-name.js";
 import { defineProductTool, registerDefinedTool } from "./product-tool-registry.js";
 import type { RateLimiter } from "./rate-limiter.js";
@@ -217,6 +223,14 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqBatchDeleteWorkItemsHandler,
     rateLimitAction: "req_batch_delete_work_items"
+  }),
+  "req_delete_attachment": defineProductTool({
+    description: "Delete a CodeArts Req work item attachment",
+    inputSchema: reqDeleteAttachmentInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqDeleteAttachmentHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqDeleteAttachmentHandler,
+    rateLimitAction: "req_delete_attachment"
   }),
   "req_create_project": defineProductTool({
     description: "Create CodeArts Req project",
@@ -368,6 +382,13 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqGetProjectPublicConfigHandler
   }),
+  "req_download_image_file": defineProductTool({
+    description: "Download a CodeArts Req image file",
+    inputSchema: reqDownloadImageFileInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqDownloadImageFileHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqDownloadImageFileHandler
+  }),
   "req_get_iteration": defineProductTool({
     description: "Get CodeArts Req iteration detail",
     inputSchema: reqGetIterationInput,
@@ -438,6 +459,14 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqUpdateCacheDataHandler,
     rateLimitAction: "req_update_cache_data"
+  }),
+  "req_upload_work_item_image": defineProductTool({
+    description: "Upload an image for CodeArts Req work items",
+    inputSchema: reqUploadWorkItemImageInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUploadWorkItemImageHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqUploadWorkItemImageHandler,
+    rateLimitAction: "req_upload_work_item_image"
   }),
   "req_create_work_item": defineProductTool({
     description: "Create CodeArts Req work item",

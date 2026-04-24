@@ -465,6 +465,27 @@ describe("registerReqTool", () => {
     );
   });
 
+  it("registers the download image file tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_download_image_file",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_download_image_file",
+      expect.objectContaining({
+        title: "req_download_image_file",
+        description: "Download a CodeArts Req image file"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("registers the add work item comment tool with rate-limited metadata", () => {
     const registerTool = vi.fn();
 
@@ -502,6 +523,48 @@ describe("registerReqTool", () => {
       expect.objectContaining({
         title: "req_add_work_item_work_hour",
         description: "Add a work hour record to a CodeArts Req work item"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the upload work item image tool with rate-limited metadata", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_upload_work_item_image",
+      server: { registerTool },
+      mode: "stdio",
+      stdioClient: {} as never
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_upload_work_item_image",
+      expect.objectContaining({
+        title: "req_upload_work_item_image",
+        description: "Upload an image for CodeArts Req work items"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the delete attachment tool with rate-limited metadata", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_delete_attachment",
+      server: { registerTool },
+      mode: "stdio",
+      stdioClient: {} as never
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_delete_attachment",
+      expect.objectContaining({
+        title: "req_delete_attachment",
+        description: "Delete a CodeArts Req work item attachment"
       }),
       expect.any(Function)
     );

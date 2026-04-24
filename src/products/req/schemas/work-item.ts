@@ -131,6 +131,17 @@ export const reqListWorkItemWorkHoursInput = z.object({
   work_item_id: idSchema
 });
 
+export const reqUploadWorkItemImageInput = z.object({
+  project_id: idSchema,
+  file_path: z.string().min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const reqDownloadImageFileInput = z.object({
+  project_id: idSchema,
+  image_uri: z.string().min(1)
+});
+
 const reqWorkHourTimestampSchema = z.union([z.string().min(1), z.number().int().positive()]);
 
 export const reqAddWorkItemWorkHourInput = z
@@ -171,6 +182,13 @@ export const reqListProjectWorkHoursInput = pagingSchema
     sort_by: true,
     sort_order: true
   });
+
+export const reqDeleteAttachmentInput = z.object({
+  project_id: idSchema,
+  work_item_id: idSchema,
+  attachment_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
 
 export const reqListAssociatedIssuesInput = pagingSchema
   .extend({

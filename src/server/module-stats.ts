@@ -38,6 +38,7 @@ const WRITE_ACTIONS = new Set([
   "start",
   "stop",
   "switch",
+  "upload",
   "update"
 ]);
 

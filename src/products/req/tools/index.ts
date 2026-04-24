@@ -3,6 +3,7 @@ export const reqToolNames = [
   "req_add_plan_work_items",
   "req_add_work_item_work_hour",
   "req_add_project_member",
+  "req_delete_attachment",
   "req_batch_add_project_members",
   "req_batch_delete_project_members",
   "req_batch_delete_iterations",
@@ -59,6 +60,7 @@ export const reqToolNames = [
   "req_list_work_items",
   "req_get_work_item",
   "req_get_project_public_config",
+  "req_download_image_file",
   "req_list_work_item_comments",
   "req_create_work_item",
   "req_add_work_item_comment",
@@ -76,5 +78,6 @@ export const reqToolNames = [
   "req_update_project_member_role",
   "req_update_plan_image",
   "req_update_cache_data",
+  "req_upload_work_item_image",
   "req_validate_module_name"
 ];

@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { resolve } from "node:path";
 import { expectWritePathRateLimit } from "./http-test-helpers.js";
 import {
   createConfiguredServer,
@@ -7,6 +8,8 @@ import {
   readRegisteredHandler,
   stubJsonFetch
 } from "./http-test-helpers.js";
+
+const reqUploadImageFixturePath = resolve(process.cwd(), "tests/fixtures/req-upload-image.png");
 
 describe("write path rate limits", () => {
   afterEach(() => {
@@ -607,6 +610,28 @@ describe("write path rate limits", () => {
       }
     },
       {
+        toolName: "req_upload_work_item_image",
+        dryRunInput: {
+          project_id: "project-1",
+          file_path: reqUploadImageFixturePath,
+          dry_run: true
+        },
+        liveInput: () => ({
+          project_id: "project-1",
+          file_path: reqUploadImageFixturePath,
+          dry_run: false
+        }),
+        blockedInput: {
+          project_id: "project-1",
+          file_path: reqUploadImageFixturePath,
+          dry_run: false
+        },
+        responsePayload: {
+          img_id: "1",
+          img_url: "/v1/upload/demo/202604/demo.png"
+        }
+      },
+      {
         toolName: "req_add_work_item_comment",
         dryRunInput: {
           project_id: "project-1",
@@ -683,6 +708,29 @@ describe("write path rate limits", () => {
           },
           status: "success"
         }
+      },
+      {
+        toolName: "req_delete_attachment",
+        dryRunInput: {
+          project_id: "project-1",
+          work_item_id: "70779173",
+          attachment_id: "72372",
+          dry_run: true
+        },
+        liveInput: (index: number) => ({
+          project_id: "project-1",
+          work_item_id: `${index}`,
+          attachment_id: `${index + 70000}`,
+          dry_run: false
+        }),
+        blockedInput: {
+          project_id: "project-1",
+          work_item_id: "blocked",
+          attachment_id: "79999",
+          dry_run: false
+        },
+        responsePayload: null,
+        responseInit: { status: 204 }
       },
       {
         toolName: "req_update_work_item_comment",
