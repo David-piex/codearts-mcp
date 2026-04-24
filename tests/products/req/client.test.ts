@@ -1521,6 +1521,69 @@ describe("createReqClient", () => {
     });
   });
 
+  it("maps associated wiki queries to the documented wiki endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          total: 1,
+          wikis: [
+            {
+              issue_id: 70779173,
+              wiki_title: "Design Notes",
+              wiki_author: {
+                user_num_id: 4091,
+                user_id: "user-1",
+                user_name: "alice",
+                nick_name: "Alice"
+              },
+              project: {
+                project_name: "Payments",
+                project_id: "p-1"
+              },
+              created_date: "2021-11-18 19:47:34",
+              wiki_id: "1839097",
+              region: "region01"
+            }
+          ]
+        };
+      }
+    } as never);
+
+    const result = await client.listAssociatedWikis({
+      project_id: "p-1",
+      work_item_id: "70779173",
+      page: 2,
+      page_size: 20
+    });
+
+    expect(requestedPath).toBe("/v4/projects/p-1/issues/70779173/associated-wikis?limit=20&offset=20");
+    expect(result).toEqual({
+      total: 1,
+      wikis: [
+        {
+          issue_id: 70779173,
+          wiki_title: "Design Notes",
+          wiki_author: {
+            user_num_id: 4091,
+            user_id: "user-1",
+            user_name: "alice",
+            nick_name: "Alice"
+          },
+          project: {
+            project_name: "Payments",
+            project_id: "p-1"
+          },
+          created_date: "2021-11-18 19:47:34",
+          wiki_id: "1839097",
+          region: "region01"
+        }
+      ]
+    });
+  });
+
   it("maps project work hour queries to the v4 project work-hours endpoint", async () => {
     let requestedPath = "";
     let requestedBody: Record<string, unknown> | undefined;

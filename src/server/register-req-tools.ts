@@ -62,6 +62,7 @@ import {
   reqListAssociatedCommitsInput,
   reqListAssociatedIssuesInput,
   reqListAssociatedTestCasesInput,
+  reqListAssociatedWikisInput,
   reqListIterationsInput,
   reqListNotAddedProjectsInput,
   reqListProjectModulesInput,
@@ -143,6 +144,7 @@ import { createReqLeaveProjectHandler } from "../products/req/tools/leave-projec
 import { createReqListAssociatedCommitsHandler } from "../products/req/tools/list-associated-commits.js";
 import { createReqListAssociatedIssuesHandler } from "../products/req/tools/list-associated-issues.js";
 import { createReqListAssociatedTestCasesHandler } from "../products/req/tools/list-associated-test-cases.js";
+import { createReqListAssociatedWikisHandler } from "../products/req/tools/list-associated-wikis.js";
 import { createReqListBoardWorkItemStatusRecordsHandler } from "../products/req/tools/list-board-work-item-status-records.js";
 import { createReqListBoardWorkItemWorkflowConfigHandler } from "../products/req/tools/list-board-work-item-workflow-config.js";
 import { createReqListBoardWorkItemsHandler } from "../products/req/tools/list-board-work-items.js";
@@ -641,6 +643,13 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListAssociatedTestCasesHandler>[0] }) =>
       clients.reqClient,
     createProductHandler: createReqListAssociatedTestCasesHandler
+  }),
+  "req_list_associated_wikis": defineProductTool({
+    description: "List CodeArts Req associated wikis",
+    inputSchema: reqListAssociatedWikisInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListAssociatedWikisHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListAssociatedWikisHandler
   }),
   "req_list_related_users": defineProductTool({
     description: "List CodeArts Req related users",

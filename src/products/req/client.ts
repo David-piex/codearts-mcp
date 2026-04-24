@@ -1003,6 +1003,31 @@ export type ReqClient = {
     }>;
     total?: number;
   }>;
+  listAssociatedWikis: (input: {
+    project_id: string;
+    work_item_id: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    wikis: Array<{
+      issue_id?: number | string;
+      wiki_title?: string;
+      wiki_author?: {
+        user_num_id?: number;
+        user_id?: string;
+        user_name?: string;
+        nick_name?: string;
+      };
+      project?: {
+        project_id?: string;
+        project_name?: string;
+      };
+      created_date?: string;
+      wiki_id?: string;
+      region?: string;
+    }>;
+    total?: number;
+  }>;
   listRelatedUsers: (input: { project_id: string }) => Promise<{
     project_id: string;
     related_author_list: Array<{
@@ -3760,6 +3785,39 @@ export function createReqClient(
       return {
         test_cases: items.slice(offset, offset + input.page_size),
         total
+      };
+    },
+    async listAssociatedWikis(input) {
+      const query = new URLSearchParams({
+        limit: String(input.page_size),
+        offset: String((input.page - 1) * input.page_size)
+      });
+      const response = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/issues/${encodeURIComponent(input.work_item_id)}/associated-wikis?${query.toString()}`
+      )) as {
+        wikis?: Array<{
+          issue_id?: number | string;
+          wiki_title?: string;
+          wiki_author?: {
+            user_num_id?: number;
+            user_id?: string;
+            user_name?: string;
+            nick_name?: string;
+          };
+          project?: {
+            project_id?: string;
+            project_name?: string;
+          };
+          created_date?: string;
+          wiki_id?: string;
+          region?: string;
+        }>;
+        total?: number | string;
+      };
+
+      return {
+        wikis: response.wikis ?? [],
+        total: typeof response.total === "number" ? response.total : response.wikis?.length
       };
     },
     async listRelatedUsers(input) {

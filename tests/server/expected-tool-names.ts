@@ -248,6 +248,7 @@ export const expectedToolNames = [
   "req_list_associated_commits",
   "req_list_associated_issues",
   "req_list_associated_test_cases",
+  "req_list_associated_wikis",
   "req_list_board_work_item_status_records",
   "req_list_board_work_item_workflow_config",
   "req_list_board_work_items",

@@ -54,6 +54,7 @@ export const reqToolNames = [
   "req_list_associated_commits",
   "req_list_associated_issues",
   "req_list_associated_test_cases",
+  "req_list_associated_wikis",
   "req_list_project_bug_statistics",
   "req_list_project_work_hours",
   "req_list_related_users",

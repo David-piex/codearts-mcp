@@ -309,6 +309,17 @@ export const reqListAssociatedTestCasesInput = pagingSchema
     sort_order: true
   });
 
+export const reqListAssociatedWikisInput = pagingSchema
+  .extend({
+    project_id: idSchema,
+    work_item_id: idSchema
+  })
+  .omit({
+    keyword: true,
+    sort_by: true,
+    sort_order: true
+  });
+
 export const reqListRelatedUsersInput = z.object({
   project_id: idSchema
 });

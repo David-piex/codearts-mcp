@@ -696,6 +696,27 @@ describe("registerReqTool", () => {
     );
   });
 
+  it("registers the list associated wikis tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_list_associated_wikis",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_list_associated_wikis",
+      expect.objectContaining({
+        title: "req_list_associated_wikis",
+        description: "List CodeArts Req associated wikis"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("registers the list work item comments tool in http mode", () => {
     const registerTool = vi.fn();
 
