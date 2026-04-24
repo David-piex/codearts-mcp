@@ -1,6 +1,6 @@
 # Req MCP API Reference
 
-这份文档面向调用方和后续维护者，说明当前 `Req` 模块已经暴露的 MCP 工具、调用边界、写入安全策略和真实 AK/SK smoke 验证状态。
+这份文档面向调用方和后续维护者，说明当前 `Req` 模块已经暴露的 MCP 工具、调用边界、写入安全策略和真实 AK/SK smoke 验证状态。其他 CodeArts 服务的 API 总览见 [API-Reference](./API-Reference.md)。
 
 当前规模：
 
@@ -376,6 +376,7 @@ npx vitest run tests\products\req\client-live-smoke.test.ts --reporter=verbose
 
 ## Related Docs
 
+- [API-Reference](./API-Reference.md)
 - [Req-Live-Validated](./Req-Live-Validated.md)
 - [Module-Functions-Overview](./Module-Functions-Overview.md)
 - [Official-API-Alignment](./Official-API-Alignment.md)

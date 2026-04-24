@@ -73,6 +73,10 @@
 
 - [Req-API-Reference](./Req-API-Reference.md): Req MCP API 工具、写入 gate、真实 smoke 和剩余样本缺口。
 
+## Global API Reference
+
+- [API-Reference](./API-Reference.md): 8 个 CodeArts 服务的 MCP API 总览、基础 URL、工具清单和 live 边界。
+
 ## 当前文档原则
 
 - 少页数，不堆重复表格
