@@ -3615,4 +3615,250 @@ describe("createReqClient", () => {
       plan_id: "plan-1"
     });
   });
+
+  it("maps project statistics read endpoints to the documented request shapes", async () => {
+    const get = vi
+      .fn()
+      .mockResolvedValueOnce({
+        demand_statistics: [
+          {
+            module: "计费",
+            total: 6,
+            new_num: 1,
+            process_num: 2,
+            solved_num: 1,
+            test_num: 1,
+            closed_num: 1,
+            rejected_num: 0
+          }
+        ]
+      })
+      .mockResolvedValueOnce({
+        project_id: "p-1",
+        bug_statistics: [
+          {
+            module: "计费",
+            total: 2,
+            critical_num: 0,
+            serious_num: 1,
+            normal_num: 1,
+            tip_num: 0,
+            defect_index: 1.5
+          }
+        ],
+        demand_statistics: [
+          {
+            module: "计费",
+            total: 6,
+            new_num: 1,
+            process_num: 2,
+            solved_num: 1,
+            test_num: 1,
+            closed_num: 1,
+            rejected_num: 0
+          }
+        ],
+        issue_completion_rates: [
+          {
+            tracker_id: 7,
+            issue_status: {
+              new_num: 1,
+              process_num: 2,
+              solved_num: 1,
+              test_num: 0,
+              closed_num: 3,
+              rejected_num: 0
+            }
+          }
+        ]
+      })
+      .mockResolvedValueOnce({
+        issue_completion_rates: [
+          {
+            tracker_id: 7,
+            issue_status: {
+              new_num: 1,
+              process_num: 2,
+              solved_num: 1,
+              test_num: 0,
+              closed_num: 3,
+              rejected_num: 0
+            }
+          }
+        ],
+        total: 1
+      });
+    const client = createReqClient({
+      get
+    } as never);
+
+    const demandStatistics = await client.listProjectDemandStatistics({
+      project_id: "p-1"
+    });
+    const projectSummary = await client.getProjectSummary({
+      project_id: "p-1"
+    });
+    const completionRate = await client.getWorkItemCompletionRate({
+      project_id: "p-1"
+    });
+
+    expect(get).toHaveBeenNthCalledWith(1, "/v4/projects/p-1/demand-statistic");
+    expect(get).toHaveBeenNthCalledWith(2, "/v4/projects/p-1/summary");
+    expect(get).toHaveBeenNthCalledWith(3, "/v4/projects/p-1/issue-completion-rate");
+    expect(demandStatistics).toEqual({
+      project_id: "p-1",
+      demand_statistics: [
+        {
+          module: "计费",
+          total: 6,
+          new_num: 1,
+          process_num: 2,
+          solved_num: 1,
+          test_num: 1,
+          closed_num: 1,
+          rejected_num: 0
+        }
+      ]
+    });
+    expect(projectSummary).toEqual({
+      project_id: "p-1",
+      bug_statistics: [
+        {
+          module: "计费",
+          total: 2,
+          critical_num: 0,
+          serious_num: 1,
+          normal_num: 1,
+          tip_num: 0,
+          defect_index: 1.5
+        }
+      ],
+      demand_statistics: [
+        {
+          module: "计费",
+          total: 6,
+          new_num: 1,
+          process_num: 2,
+          solved_num: 1,
+          test_num: 1,
+          closed_num: 1,
+          rejected_num: 0
+        }
+      ],
+      issue_completion_rates: [
+        {
+          tracker_id: 7,
+          issue_status: {
+            new_num: 1,
+            process_num: 2,
+            solved_num: 1,
+            test_num: 0,
+            closed_num: 3,
+            rejected_num: 0
+          }
+        }
+      ]
+    });
+    expect(completionRate).toEqual({
+      project_id: "p-1",
+      total: 1,
+      issue_completion_rates: [
+        {
+          tracker_id: 7,
+          issue_status: {
+            new_num: 1,
+            process_num: 2,
+            solved_num: 1,
+            test_num: 0,
+            closed_num: 3,
+            rejected_num: 0
+          }
+        }
+      ]
+    });
+  });
+
+  it("maps child work item queries to the documented child issue list endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return {
+          result: {
+            total_count: 1,
+            issues: [
+              {
+                id: 9184453,
+                subject: "task-标签过滤01",
+                parent_issue: {
+                  id: 9184452,
+                  subject: "story-标签过滤01"
+                },
+                project: {
+                  identifier: "p-1",
+                  name: "Demo"
+                },
+                tracker: {
+                  id: 2,
+                  name: "Task"
+                },
+                status: {
+                  id: 1,
+                  name: "新建"
+                }
+              }
+            ]
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.listChildWorkItems({
+      project_id: "p-1",
+      parent_id: "9184452",
+      page: 1,
+      page_size: 10,
+      subject: "task",
+      query_type: "basic"
+    });
+
+    expect(requestedPath).toBe("/v2/issues/child-issue-list");
+    expect(requestedBody).toEqual({
+      parent_id: 9184452,
+      project_uuid: "p-1",
+      subject: "task",
+      query_type: "basic",
+      page_no: 1,
+      page_size: 10
+    });
+    expect(result).toEqual({
+      work_items: [
+        {
+          id: 9184453,
+          subject: "task-标签过滤01",
+          parent_issue: {
+            id: 9184452,
+            subject: "story-标签过滤01"
+          },
+          project: {
+            identifier: "p-1",
+            name: "Demo"
+          },
+          tracker: {
+            id: 2,
+            name: "Task"
+          },
+          status: {
+            id: 1,
+            name: "新建"
+          }
+        }
+      ],
+      total: 1
+    });
+  });
 });

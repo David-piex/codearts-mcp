@@ -402,6 +402,90 @@ describe("registerReqTool", () => {
     );
   });
 
+  it("registers the list project demand statistics tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_list_project_demand_statistics",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_list_project_demand_statistics",
+      expect.objectContaining({
+        title: "req_list_project_demand_statistics",
+        description: "List CodeArts Req project demand statistics"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the get project summary tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_get_project_summary",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_get_project_summary",
+      expect.objectContaining({
+        title: "req_get_project_summary",
+        description: "Get CodeArts Req project summary"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the get work item completion rate tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_get_work_item_completion_rate",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_get_work_item_completion_rate",
+      expect.objectContaining({
+        title: "req_get_work_item_completion_rate",
+        description: "Get CodeArts Req work item completion rates"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the list child work items tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_list_child_work_items",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_list_child_work_items",
+      expect.objectContaining({
+        title: "req_list_child_work_items",
+        description: "List CodeArts Req child work items"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("registers the list work item comments tool in http mode", () => {
     const registerTool = vi.fn();
 

@@ -42,6 +42,16 @@ export type ReqClient = {
     project_num_id?: number;
     description?: string;
   }>;
+  listProjectDemandStatistics: (input: { project_id: string }) => Promise<{
+    project_id: string;
+    demand_statistics: ReqDemandStatistic[];
+  }>;
+  getProjectSummary: (input: { project_id: string }) => Promise<{
+    project_id: string;
+    bug_statistics: ReqBugStatistic[];
+    demand_statistics: ReqDemandStatistic[];
+    issue_completion_rates: ReqIssueCompletionRate[];
+  }>;
   updateProject: (input: {
     project_id: string;
     name: string;
@@ -696,6 +706,22 @@ export type ReqClient = {
     status?: { name?: string };
     tracker_name?: string;
     description?: string;
+  }>;
+  getWorkItemCompletionRate: (input: { project_id: string }) => Promise<{
+    project_id: string;
+    total?: number;
+    issue_completion_rates: ReqIssueCompletionRate[];
+  }>;
+  listChildWorkItems: (input: {
+    project_id: string;
+    parent_id: string;
+    page: number;
+    page_size: number;
+    subject?: string;
+    query_type: "basic" | "custom" | "query";
+  }) => Promise<{
+    work_items: ReqChildWorkItem[];
+    total?: number;
   }>;
   listWorkItemRecords: (input: {
     project_id: string;
@@ -1418,6 +1444,89 @@ type ReqDetailedIssueListItem = {
   status_name?: string;
 };
 
+type ReqIssueStatusSummary = {
+  new_num?: number;
+  process_num?: number;
+  solved_num?: number;
+  test_num?: number;
+  closed_num?: number;
+  rejected_num?: number;
+};
+
+type ReqIssueCompletionRate = {
+  tracker_id?: number;
+  issue_status?: ReqIssueStatusSummary;
+};
+
+type ReqDemandStatistic = {
+  module?: string;
+  total?: number;
+  new_num?: number;
+  process_num?: number;
+  solved_num?: number;
+  test_num?: number;
+  closed_num?: number;
+  rejected_num?: number;
+};
+
+type ReqBugStatistic = {
+  module?: string;
+  total?: number;
+  critical_num?: number;
+  serious_num?: number;
+  normal_num?: number;
+  tip_num?: number;
+  defect_index?: number;
+};
+
+type ReqChildWorkItem = ReqDetailedIssueListItem & {
+  parent_issue?: {
+    id?: number | string;
+    subject?: string;
+  };
+  project?: {
+    identifier?: string;
+    name?: string;
+    id?: number | string;
+    type?: string;
+  };
+  done_ratio?: number;
+  status_attribute?: {
+    id?: number | string;
+    name?: string;
+  };
+  severity?: {
+    id?: number | string;
+    name?: string;
+  };
+  assigned_to?: {
+    id?: number | string;
+    name?: string;
+    assigned_nick_name?: string;
+    assignedNickName?: string;
+    first_name?: string;
+    firstName?: string;
+  };
+  is_parent?: boolean;
+  isParent?: boolean;
+  author?: {
+    id?: number | string;
+    name?: string;
+  };
+  module?: Record<string, unknown>;
+  expected_work_hours?: number;
+  priority?: {
+    id?: number | string;
+    name?: string;
+  };
+  actual_work_hours?: number;
+  deleted?: boolean;
+  created_on?: string;
+  updated_on?: string;
+  developer?: Record<string, unknown>;
+  parent_issue_id?: number | string;
+};
+
 type ReqCacheUpdateField = {
   id?: string;
   field?: string;
@@ -1532,6 +1641,35 @@ export function createReqClient(
         name: project.name ?? "",
         project_num_id: project.project_num_id,
         description: project.description
+      };
+    },
+    async listProjectDemandStatistics(input) {
+      const response = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/demand-statistic`
+      )) as {
+        demand_statistics?: ReqDemandStatistic[];
+      };
+
+      return {
+        project_id: input.project_id,
+        demand_statistics: response.demand_statistics ?? []
+      };
+    },
+    async getProjectSummary(input) {
+      const response = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/summary`
+      )) as {
+        project_id?: string;
+        bug_statistics?: ReqBugStatistic[];
+        demand_statistics?: ReqDemandStatistic[];
+        issue_completion_rates?: ReqIssueCompletionRate[];
+      };
+
+      return {
+        project_id: response.project_id ?? input.project_id,
+        bug_statistics: response.bug_statistics ?? [],
+        demand_statistics: response.demand_statistics ?? [],
+        issue_completion_rates: response.issue_completion_rates ?? []
       };
     },
     async updateProject(input) {
@@ -2906,6 +3044,47 @@ export function createReqClient(
         status: response.status,
         tracker_name: response.tracker_name ?? response.tracker?.name,
         description: response.description
+      };
+    },
+    async getWorkItemCompletionRate(input) {
+      const response = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/issue-completion-rate`
+      )) as {
+        issue_completion_rates?: ReqIssueCompletionRate[];
+        total?: number;
+      };
+
+      return {
+        project_id: input.project_id,
+        total: response.total,
+        issue_completion_rates: response.issue_completion_rates ?? []
+      };
+    },
+    async listChildWorkItems(input) {
+      const response = (await _http.post("/v2/issues/child-issue-list", {
+        parent_id: toOptionalNumericId(input.parent_id),
+        project_uuid: input.project_id,
+        ...(typeof input.subject !== "undefined" ? { subject: input.subject } : {}),
+        query_type: input.query_type,
+        page_no: input.page,
+        page_size: input.page_size
+      })) as {
+        result?: {
+          total_count?: number;
+          issues?: ReqChildWorkItem[];
+          work_items?: ReqChildWorkItem[];
+        };
+        total_count?: number;
+        issues?: ReqChildWorkItem[];
+        work_items?: ReqChildWorkItem[];
+        status?: string;
+      };
+      const payload = unwrapReqPayload(response);
+      const result = payload.result ?? payload;
+
+      return {
+        work_items: result.issues ?? result.work_items ?? [],
+        total: result.total_count
       };
     },
     async listWorkItemRecords(input) {

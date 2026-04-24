@@ -104,6 +104,24 @@ export const reqGetWorkItemInput = z.object({
   work_item_id: idSchema
 });
 
+export const reqGetWorkItemCompletionRateInput = z.object({
+  project_id: idSchema
+});
+
+const reqChildWorkItemQueryTypeSchema = z.enum(["basic", "custom", "query"]);
+
+export const reqListChildWorkItemsInput = pagingSchema
+  .pick({
+    page: true,
+    page_size: true
+  })
+  .extend({
+    project_id: idSchema,
+    parent_id: idSchema,
+    subject: z.string().optional(),
+    query_type: reqChildWorkItemQueryTypeSchema.default("basic")
+  });
+
 export const reqListBoardWorkItemStatusRecordsInput = pagingSchema
   .extend({
     project_id: idSchema

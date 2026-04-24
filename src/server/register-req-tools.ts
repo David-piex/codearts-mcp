@@ -32,16 +32,20 @@ import {
   reqDeleteAttachmentInput,
   reqDownloadImageFileInput,
   reqGetProjectPublicConfigInput,
+  reqGetProjectSummaryInput,
   reqGetIterationInput,
   reqGetPlanInput,
   reqGetProjectInput,
+  reqGetWorkItemCompletionRateInput,
   reqListJobCacheBoardsInput,
+  reqListChildWorkItemsInput,
   reqListIterationWorkItemsInput,
   reqListIterationStatusStatisticsInput,
   reqListOptionalWorkItemStatusConfigsInput,
   reqListPlanAddableWorkItemsInput,
   reqListPlanWorkItemsInput,
   reqListPlansInput,
+  reqListProjectDemandStatisticsInput,
   reqListProjectWorkHoursInput,
   reqQueryIterationImmovableIssuesInput,
   reqGetWorkItemInput,
@@ -113,7 +117,9 @@ import { createReqGetIterationHandler } from "../products/req/tools/get-iteratio
 import { createReqGetPlanHandler } from "../products/req/tools/get-plan.js";
 import { createReqGetProjectPublicConfigHandler } from "../products/req/tools/get-project-public-config.js";
 import { createReqGetProjectHandler } from "../products/req/tools/get-project.js";
+import { createReqGetProjectSummaryHandler } from "../products/req/tools/get-project-summary.js";
 import { createReqGetWorkItemHandler } from "../products/req/tools/get-work-item.js";
+import { createReqGetWorkItemCompletionRateHandler } from "../products/req/tools/get-work-item-completion-rate.js";
 import { createReqLeaveProjectHandler } from "../products/req/tools/leave-project.js";
 import { createReqListAssociatedCommitsHandler } from "../products/req/tools/list-associated-commits.js";
 import { createReqListAssociatedIssuesHandler } from "../products/req/tools/list-associated-issues.js";
@@ -122,6 +128,7 @@ import { createReqListBoardWorkItemStatusRecordsHandler } from "../products/req/
 import { createReqListBoardWorkItemWorkflowConfigHandler } from "../products/req/tools/list-board-work-item-workflow-config.js";
 import { createReqListBoardWorkItemsHandler } from "../products/req/tools/list-board-work-items.js";
 import { createReqListCacheDataHandler } from "../products/req/tools/list-cache-data.js";
+import { createReqListChildWorkItemsHandler } from "../products/req/tools/list-child-work-items.js";
 import { createReqListIterationsHandler } from "../products/req/tools/list-iterations.js";
 import { createReqListIterationWorkItemsHandler } from "../products/req/tools/list-iteration-work-items.js";
 import { createReqListIterationStatusStatisticsHandler } from "../products/req/tools/list-iteration-status-statistics.js";
@@ -130,6 +137,7 @@ import { createReqListOptionalWorkItemStatusConfigsHandler } from "../products/r
 import { createReqListPlanAddableWorkItemsHandler } from "../products/req/tools/list-plan-addable-work-items.js";
 import { createReqListPlanWorkItemsHandler } from "../products/req/tools/list-plan-work-items.js";
 import { createReqListPlansHandler } from "../products/req/tools/list-plans.js";
+import { createReqListProjectDemandStatisticsHandler } from "../products/req/tools/list-project-demand-statistics.js";
 import { createReqListProjectWorkHoursHandler } from "../products/req/tools/list-project-work-hours.js";
 import { createReqListNotAddedProjectsHandler } from "../products/req/tools/list-not-added-projects.js";
 import { createReqListProjectModulesHandler } from "../products/req/tools/list-project-modules.js";
@@ -374,6 +382,22 @@ const reqToolDefinitions = {
     inputSchema: reqGetProjectInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGetProjectHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqGetProjectHandler
+  }),
+  "req_list_project_demand_statistics": defineProductTool({
+    description: "List CodeArts Req project demand statistics",
+    inputSchema: reqListProjectDemandStatisticsInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqListProjectDemandStatisticsHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqListProjectDemandStatisticsHandler
+  }),
+  "req_get_project_summary": defineProductTool({
+    description: "Get CodeArts Req project summary",
+    inputSchema: reqGetProjectSummaryInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqGetProjectSummaryHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqGetProjectSummaryHandler
   }),
   "req_get_project_public_config": defineProductTool({
     description: "Get CodeArts Req project public config",
@@ -625,12 +649,28 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGetWorkItemHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqGetWorkItemHandler
   }),
+  "req_get_work_item_completion_rate": defineProductTool({
+    description: "Get CodeArts Req work item completion rates",
+    inputSchema: reqGetWorkItemCompletionRateInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqGetWorkItemCompletionRateHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqGetWorkItemCompletionRateHandler
+  }),
   "req_list_work_item_comments": defineProductTool({
     description: "List CodeArts Req work item comments",
     inputSchema: reqListWorkItemCommentsInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemCommentsHandler>[0] }) =>
       clients.reqClient,
     createProductHandler: createReqListWorkItemCommentsHandler
+  }),
+  "req_list_child_work_items": defineProductTool({
+    description: "List CodeArts Req child work items",
+    inputSchema: reqListChildWorkItemsInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqListChildWorkItemsHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqListChildWorkItemsHandler
   }),
   "req_list_work_item_work_hours": defineProductTool({
     description: "List CodeArts Req work hour records for a work item",

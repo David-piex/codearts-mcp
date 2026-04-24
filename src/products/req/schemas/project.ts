@@ -40,6 +40,14 @@ export const reqGetProjectInput = z.object({
   project_id: idSchema
 });
 
+export const reqListProjectDemandStatisticsInput = z.object({
+  project_id: idSchema
+});
+
+export const reqGetProjectSummaryInput = z.object({
+  project_id: idSchema
+});
+
 export const reqListProjectModulesInput = pagingSchema
   .pick({
     page: true,
