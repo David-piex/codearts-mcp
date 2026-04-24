@@ -618,6 +618,18 @@ export type ReqClient = {
     }>;
     total?: number;
   }>;
+  countWorkItemTree: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    tracker_ids?: number[];
+  }) => Promise<{
+    project_id: string;
+    total_count: number;
+    tracker_ids?: number[];
+    page: number;
+    page_size: number;
+  }>;
   listBoardWorkItems: (input: {
     project_id: string;
     page: number;
@@ -748,6 +760,15 @@ export type ReqClient = {
         property?: string;
       }>;
     }>;
+    total?: number;
+  }>;
+  listProjectWorkItemRecords: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    operated_time_interval?: string;
+  }) => Promise<{
+    records: ReqProjectIssueRecord[];
     total?: number;
   }>;
   listWorkItemComments: (input: {
@@ -1477,6 +1498,26 @@ type ReqBugStatistic = {
   normal_num?: number;
   tip_num?: number;
   defect_index?: number;
+};
+
+type ReqProjectIssueRecord = {
+  field_key?: string;
+  field_name?: string;
+  id: number | string;
+  issue_id?: number | string;
+  new_value?: string;
+  old_value?: string;
+  operated_time?: number;
+  operation?: string;
+  property?: string;
+  operator?: {
+    id?: number;
+    name?: string;
+    nick_name?: string;
+    user_id?: string;
+    user_num_id?: number;
+    first_name?: string;
+  };
 };
 
 type ReqChildWorkItem = ReqDetailedIssueListItem & {
@@ -2895,6 +2936,33 @@ export function createReqClient(
         total: payload.total
       };
     },
+    async countWorkItemTree(input) {
+      const response = (await _http.post(
+        `/v4/${encodeURIComponent(input.project_id)}/scrum-issue-tree-count`,
+        {
+          page_no: input.page,
+          page_size: input.page_size,
+          project_uuid: input.project_id,
+          ...(input.tracker_ids?.length ? { tracker_id: input.tracker_ids.join(",") } : {})
+        }
+      )) as {
+        result?: {
+          total_count?: number;
+        };
+        total_count?: number;
+        status?: string;
+      };
+      const payload = unwrapReqPayload(response);
+      const result = payload.result ?? payload;
+
+      return {
+        project_id: input.project_id,
+        total_count: result.total_count ?? 0,
+        tracker_ids: input.tracker_ids,
+        page: input.page,
+        page_size: input.page_size
+      };
+    },
     async listBoardWorkItems(input) {
       const offset = (input.page - 1) * input.page_size;
       const query = new URLSearchParams({
@@ -3115,6 +3183,29 @@ export function createReqClient(
             property?: string;
           }>;
         }>;
+        total?: number;
+      };
+
+      return {
+        records: response.records ?? [],
+        total: response.total
+      };
+    },
+    async listProjectWorkItemRecords(input) {
+      const offset = (input.page - 1) * input.page_size;
+      const query = new URLSearchParams({
+        offset: String(offset),
+        limit: String(input.page_size)
+      });
+
+      if (input.operated_time_interval) {
+        query.set("operated_time_interval", input.operated_time_interval);
+      }
+
+      const response = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/issues/records?${query.toString()}`
+      )) as {
+        records?: ReqProjectIssueRecord[];
         total?: number;
       };
 

@@ -3861,4 +3861,107 @@ describe("createReqClient", () => {
       total: 1
     });
   });
+
+  it("maps project work item record queries to the documented project records endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          records: [
+            {
+              id: 789,
+              issue_id: 123,
+              field_key: "status",
+              field_name: "状态",
+              new_value: "{\"id\":\"2\",\"name\":\"开发中\"}",
+              old_value: "{\"id\":\"1\",\"name\":\"创建\"}",
+              operated_time: 1601175640000,
+              operation: "修改",
+              property: "attr",
+              operator: {
+                id: 4091,
+                name: "demo_user_name",
+                nick_name: "张三"
+              }
+            }
+          ],
+          total: 1
+        };
+      }
+    } as never);
+
+    const result = await client.listProjectWorkItemRecords({
+      project_id: "p-1",
+      page: 2,
+      page_size: 10,
+      operated_time_interval: "1601175600000,1601262000000"
+    });
+
+    expect(requestedPath).toBe(
+      "/v4/projects/p-1/issues/records?offset=10&limit=10&operated_time_interval=1601175600000%2C1601262000000"
+    );
+    expect(result).toEqual({
+      records: [
+        {
+          id: 789,
+          issue_id: 123,
+          field_key: "status",
+          field_name: "状态",
+          new_value: "{\"id\":\"2\",\"name\":\"开发中\"}",
+          old_value: "{\"id\":\"1\",\"name\":\"创建\"}",
+          operated_time: 1601175640000,
+          operation: "修改",
+          property: "attr",
+          operator: {
+            id: 4091,
+            name: "demo_user_name",
+            nick_name: "张三"
+          }
+        }
+      ],
+      total: 1
+    });
+  });
+
+  it("maps work item tree count queries to the documented scrum issue tree count endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return {
+          result: {
+            total_count: 25
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.countWorkItemTree({
+      project_id: "p-1",
+      page: 1,
+      page_size: 15,
+      tracker_ids: [7, 2, 3]
+    });
+
+    expect(requestedPath).toBe("/v4/p-1/scrum-issue-tree-count");
+    expect(requestedBody).toEqual({
+      page_no: 1,
+      page_size: 15,
+      project_uuid: "p-1",
+      tracker_id: "7,2,3"
+    });
+    expect(result).toEqual({
+      project_id: "p-1",
+      total_count: 25,
+      tracker_ids: [7, 2, 3],
+      page: 1,
+      page_size: 15
+    });
+  });
 });

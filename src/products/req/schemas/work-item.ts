@@ -88,6 +88,16 @@ export const reqListWorkItemsInput = pagingSchema.extend({
   project_id: idSchema
 });
 
+export const reqCountWorkItemTreeInput = pagingSchema
+  .pick({
+    page: true,
+    page_size: true
+  })
+  .extend({
+    project_id: idSchema,
+    tracker_ids: z.array(scrumTrackerIdSchema).min(1).optional()
+  });
+
 export const reqListBoardWorkItemsInput = pagingSchema
   .extend({
     project_id: idSchema,
@@ -137,6 +147,17 @@ export const reqListWorkItemRecordsInput = pagingSchema
     project_id: idSchema,
     work_item_id: idSchema,
     journalized_type: z.string().min(1).default("Issue")
+  })
+  .omit({
+    keyword: true,
+    sort_by: true,
+    sort_order: true
+  });
+
+export const reqListProjectWorkItemRecordsInput = pagingSchema
+  .extend({
+    project_id: idSchema,
+    operated_time_interval: z.string().min(1).optional()
   })
   .omit({
     keyword: true,

@@ -25,6 +25,7 @@ import {
   reqDeleteWorkItemInput,
   reqCreateWorkItemInput,
   reqBatchUpdateWorkItemsInput,
+  reqCountWorkItemTreeInput,
   reqListBoardWorkItemStatusRecordsInput,
   reqListBoardWorkItemWorkflowConfigInput,
   reqListBoardWorkItemsInput,
@@ -47,6 +48,7 @@ import {
   reqListPlansInput,
   reqListProjectDemandStatisticsInput,
   reqListProjectWorkHoursInput,
+  reqListProjectWorkItemRecordsInput,
   reqQueryIterationImmovableIssuesInput,
   reqGetWorkItemInput,
   reqLeaveProjectInput,
@@ -113,6 +115,7 @@ import { createReqCreateWorkItemHandler } from "../products/req/tools/create-wor
 import { createReqDeleteWorkItemHandler } from "../products/req/tools/delete-work-item.js";
 import { createReqDownloadImageFileHandler } from "../products/req/tools/download-image-file.js";
 import { createReqBatchUpdateWorkItemsHandler } from "../products/req/tools/batch-update-work-items.js";
+import { createReqCountWorkItemTreeHandler } from "../products/req/tools/count-work-item-tree.js";
 import { createReqGetIterationHandler } from "../products/req/tools/get-iteration.js";
 import { createReqGetPlanHandler } from "../products/req/tools/get-plan.js";
 import { createReqGetProjectPublicConfigHandler } from "../products/req/tools/get-project-public-config.js";
@@ -139,6 +142,7 @@ import { createReqListPlanWorkItemsHandler } from "../products/req/tools/list-pl
 import { createReqListPlansHandler } from "../products/req/tools/list-plans.js";
 import { createReqListProjectDemandStatisticsHandler } from "../products/req/tools/list-project-demand-statistics.js";
 import { createReqListProjectWorkHoursHandler } from "../products/req/tools/list-project-work-hours.js";
+import { createReqListProjectWorkItemRecordsHandler } from "../products/req/tools/list-project-work-item-records.js";
 import { createReqListNotAddedProjectsHandler } from "../products/req/tools/list-not-added-projects.js";
 import { createReqListProjectModulesHandler } from "../products/req/tools/list-project-modules.js";
 import { createReqListProjectMembersHandler } from "../products/req/tools/list-project-members.js";
@@ -364,6 +368,13 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqClearPlanWorkItemsHandler,
     rateLimitAction: "req_clear_plan_work_items"
+  }),
+  "req_count_work_item_tree": defineProductTool({
+    description: "Count CodeArts Req work items in tree mode",
+    inputSchema: reqCountWorkItemTreeInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqCountWorkItemTreeHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqCountWorkItemTreeHandler
   }),
   "req_list_not_added_projects": defineProductTool({
     description: "List CodeArts Req projects not yet added to the current domain",
@@ -719,6 +730,14 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListProjectWorkHoursHandler>[0] }) =>
       clients.reqClient,
     createProductHandler: createReqListProjectWorkHoursHandler
+  }),
+  "req_list_project_work_item_records": defineProductTool({
+    description: "List CodeArts Req project work item records",
+    inputSchema: reqListProjectWorkItemRecordsInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqListProjectWorkItemRecordsHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqListProjectWorkItemRecordsHandler
   }),
   "req_list_plan_addable_work_items": defineProductTool({
     description: "List addable work items for a CodeArts Req plan",
