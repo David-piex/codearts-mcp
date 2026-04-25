@@ -7,6 +7,7 @@ export function previewCreatePlanWorkItem(input: {
   title: string;
   work_item_type: string;
   parent_work_item_id?: string;
+  developer_id?: string;
   dry_run: boolean;
 }) {
   return asItemResult(`Dry run: create plan work item ${input.title}`, {
@@ -15,6 +16,7 @@ export function previewCreatePlanWorkItem(input: {
     title: input.title,
     workItemType: input.work_item_type,
     parentWorkItemId: input.parent_work_item_id,
+    developerId: input.developer_id,
     executed: false
   });
 }
@@ -58,6 +60,7 @@ type ReqCreatePlanWorkItemClient = {
     severity_id?: number;
     status_id?: number;
     assigned_id?: string;
+    developer_id?: string;
     done_ratio?: number;
     expected_work_hours?: number;
     start_date?: number;

@@ -9,6 +9,7 @@ export function previewUpdateWorkItem(input: {
   module_id?: string;
   severity_id?: number;
   assigned_id?: string;
+  developer_id?: string;
   done_ratio?: number;
   expected_work_hours?: number;
   start_date?: number;
@@ -25,6 +26,7 @@ export function previewUpdateWorkItem(input: {
     moduleId: input.module_id,
     severityId: input.severity_id,
     assignedId: input.assigned_id,
+    developerId: input.developer_id,
     doneRatio: input.done_ratio,
     expectedWorkHours: input.expected_work_hours,
     startDate: input.start_date,
@@ -65,6 +67,7 @@ type ReqUpdateWorkItemClient = {
     module_id?: string;
     severity_id?: number;
     assigned_id?: string;
+    developer_id?: string;
     done_ratio?: number;
     expected_work_hours?: number;
     start_date?: number;

@@ -8,6 +8,7 @@ export function previewBatchUpdateWorkItems(input: {
   priority_id?: number;
   severity_id?: number;
   assigned_id?: string;
+  developer_id?: string;
   done_ratio?: number;
   iteration_id?: string;
   module_id?: string;
@@ -20,6 +21,7 @@ export function previewBatchUpdateWorkItems(input: {
     priorityId: input.priority_id,
     severityId: input.severity_id,
     assignedId: input.assigned_id,
+    developerId: input.developer_id,
     doneRatio: input.done_ratio,
     iterationId: input.iteration_id,
     moduleId: input.module_id,
@@ -35,6 +37,7 @@ export function mapBatchUpdatedWorkItems(input: {
   priority_id?: number;
   severity_id?: number;
   assigned_id?: string;
+  developer_id?: string;
   done_ratio?: number;
   iteration_id?: string;
   module_id?: string;
@@ -47,6 +50,7 @@ export function mapBatchUpdatedWorkItems(input: {
     priorityId: input.priority_id,
     severityId: input.severity_id,
     assignedId: input.assigned_id,
+    developerId: input.developer_id,
     doneRatio: input.done_ratio,
     iterationId: input.iteration_id,
     moduleId: input.module_id,
@@ -63,6 +67,7 @@ type ReqBatchUpdateWorkItemsClient = {
     priority_id?: number;
     severity_id?: number;
     assigned_id?: string;
+    developer_id?: string;
     done_ratio?: number;
     iteration_id?: string;
     module_id?: string;
@@ -73,6 +78,7 @@ type ReqBatchUpdateWorkItemsClient = {
     priority_id?: number;
     severity_id?: number;
     assigned_id?: string;
+    developer_id?: string;
     done_ratio?: number;
     iteration_id?: string;
     module_id?: string;

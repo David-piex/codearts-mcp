@@ -85,6 +85,7 @@ export const reqCreatePlanWorkItemInput = z.object({
   severity_id: z.number().int().positive().optional(),
   status_id: z.number().int().positive().optional(),
   assigned_id: idSchema.optional(),
+  developer_id: idSchema.optional(),
   done_ratio: z.number().int().nonnegative().optional(),
   expected_work_hours: z.number().int().nonnegative().optional(),
   start_date: z.number().int().positive().optional(),

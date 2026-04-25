@@ -52,11 +52,13 @@ function createReqCreateWorkItemInput<T extends Record<string, unknown>>(
   project_id: string;
   title: string;
   work_item_type: string;
+  parent_work_item_id: string;
   description: string;
   iteration_id: string;
   module_id: string;
   severity_id: number;
   assigned_id: string;
+  developer_id: string;
   done_ratio: number;
   expected_work_hours: number;
   start_date: number;
@@ -67,11 +69,13 @@ function createReqCreateWorkItemInput<T extends Record<string, unknown>>(
     project_id: "project-1",
     title: "Add login",
     work_item_type: "Story",
+    parent_work_item_id: "9001",
     description: "Implement login flow",
     iteration_id: "iteration-1",
     module_id: "module-1",
     severity_id: 11,
     assigned_id: "user-2",
+    developer_id: "4091",
     done_ratio: 20,
     expected_work_hours: 8,
     start_date: 1839340800000,
@@ -82,11 +86,13 @@ function createReqCreateWorkItemInput<T extends Record<string, unknown>>(
     project_id: string;
     title: string;
     work_item_type: string;
+    parent_work_item_id: string;
     description: string;
     iteration_id: string;
     module_id: string;
     severity_id: number;
     assigned_id: string;
+    developer_id: string;
     done_ratio: number;
     expected_work_hours: number;
     start_date: number;
@@ -147,6 +153,7 @@ function createReqUpdateWorkItemInput<T extends Record<string, unknown>>(
   module_id: string;
   severity_id: number;
   assigned_id: string;
+  developer_id: string;
   done_ratio: number;
   expected_work_hours: number;
   start_date: number;
@@ -176,6 +183,7 @@ function createReqUpdateWorkItemInput<T extends Record<string, unknown>>(
     work_item_id: string;
     title: string;
     work_item_type: string;
+    parent_work_item_id: string;
     description: string;
     status_id: number;
     priority_id: number;
@@ -183,6 +191,7 @@ function createReqUpdateWorkItemInput<T extends Record<string, unknown>>(
     module_id: string;
     severity_id: number;
     assigned_id: string;
+    developer_id: string;
     done_ratio: number;
     expected_work_hours: number;
     start_date: number;
@@ -200,6 +209,7 @@ function createReqBatchUpdateWorkItemsInput<T extends Record<string, unknown>>(
   priority_id: number;
   severity_id: number;
   assigned_id: string;
+  developer_id: string;
   done_ratio: number;
   iteration_id: string;
   module_id: string;
@@ -212,6 +222,7 @@ function createReqBatchUpdateWorkItemsInput<T extends Record<string, unknown>>(
     priority_id: 2,
     severity_id: 11,
     assigned_id: "user-2",
+    developer_id: "4091",
     done_ratio: 40,
     iteration_id: "iteration-1",
     module_id: "module-1",
@@ -224,6 +235,7 @@ function createReqBatchUpdateWorkItemsInput<T extends Record<string, unknown>>(
     priority_id: number;
     severity_id: number;
     assigned_id: string;
+    developer_id: string;
     done_ratio: number;
     iteration_id: string;
     module_id: string;
@@ -645,10 +657,12 @@ function createReqCreateIterationWorkItemInput<T extends Record<string, unknown>
   iteration_id: string;
   title: string;
   work_item_type: string;
+  parent_work_item_id: string;
   description: string;
   module_id: string;
   severity_id: number;
   assigned_id: string;
+  developer_id: string;
   done_ratio: number;
   expected_work_hours: number;
   start_date: number;
@@ -660,10 +674,12 @@ function createReqCreateIterationWorkItemInput<T extends Record<string, unknown>
     iteration_id: "iteration-1",
     title: "Story A",
     work_item_type: "Story",
+    parent_work_item_id: "9001",
     description: "Iteration scoped story",
     module_id: "module-1",
     severity_id: 11,
     assigned_id: "user-2",
+    developer_id: "4091",
     done_ratio: 20,
     expected_work_hours: 8,
     start_date: 1839340800000,
@@ -675,10 +691,12 @@ function createReqCreateIterationWorkItemInput<T extends Record<string, unknown>
     iteration_id: string;
     title: string;
     work_item_type: string;
+    parent_work_item_id: string;
     description: string;
     module_id: string;
     severity_id: number;
     assigned_id: string;
+    developer_id: string;
     done_ratio: number;
     expected_work_hours: number;
     start_date: number;
@@ -1646,6 +1664,8 @@ const writePathCases: WritePathCase[] = [
         "\"module_id\":\"module-1\"",
         "\"severity_id\":11",
         "\"assigned_id\":\"user-2\"",
+        "\"developer_id\":4091",
+        "\"parent_issue_id\":9001",
         "\"done_ratio\":20",
         "\"expected_work_hours\":8",
         "\"start_date\":1839340800000",
@@ -1774,6 +1794,7 @@ const writePathCases: WritePathCase[] = [
         "\"priority_id\":2",
         "\"severity_id\":11",
         "\"assigned_id\":\"user-2\"",
+        "\"developer_id\":4091",
         "\"done_ratio\":40",
         "\"iteration_id\":\"iteration-1\"",
         "\"module_id\":\"module-1\""

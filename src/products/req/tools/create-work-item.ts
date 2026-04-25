@@ -5,10 +5,12 @@ export function previewCreateWorkItem(input: {
   project_id: string;
   title: string;
   work_item_type: string;
+  parent_work_item_id?: string;
   iteration_id?: string;
   module_id?: string;
   severity_id?: number;
   assigned_id?: string;
+  developer_id?: string;
   done_ratio?: number;
   expected_work_hours?: number;
   start_date?: number;
@@ -21,10 +23,12 @@ export function previewCreateWorkItem(input: {
     projectId: input.project_id,
     title: input.title,
     workItemType: input.work_item_type,
+    parentWorkItemId: input.parent_work_item_id,
     iterationId: input.iteration_id,
     moduleId: input.module_id,
     severityId: input.severity_id,
     assignedId: input.assigned_id,
+    developerId: input.developer_id,
     doneRatio: input.done_ratio,
     expectedWorkHours: input.expected_work_hours,
     startDate: input.start_date,
@@ -57,11 +61,13 @@ type ReqCreateWorkItemClient = {
     project_id: string;
     title: string;
     work_item_type: string;
+    parent_work_item_id?: string;
     description?: string;
     iteration_id?: string;
     module_id?: string;
     severity_id?: number;
     assigned_id?: string;
+    developer_id?: string;
     done_ratio?: number;
     expected_work_hours?: number;
     start_date?: number;

@@ -2825,11 +2825,13 @@ authorization: Bearer <auth-token>
 | `iteration_id` | 是 | `unknown` |  | 迭代唯一标识。 |
 | `title` | 是 | `string` |  | 标题。用于工作项、需求、合并请求、标签等资源的展示名称。 |
 | `work_item_type` | 是 | `string` |  | 工作项类型，会映射为 Scrum tracker_id：task/"2"=Task/任务，bug/"3"=Bug/缺陷，epic/"5"=Epic，feature/"6"=Feature，story/"7"=Story。 |
+| `parent_work_item_id` | 否 | `unknown` |  | 父工作项 ID。创建子工作项时传入该字段，MCP 会映射为官方请求体字段 parent_issue_id。 |
 | `description` | 否 | `string` |  | 对象的详细描述或备注信息。 |
 | `priority_id` | 否 | `integer` |  | 工作项优先级 ID。创建工作项未传时默认使用 2；具体优先级名称和可选值以项目字段配置/优先级选项接口返回为准。 |
 | `module_id` | 否 | `unknown` |  | 模块 ID。用于把工作项、IPD 对象或项目模块归属到指定模块。 |
 | `severity_id` | 否 | `integer` |  | 严重程度 ID。通常用于缺陷或问题等级；可通过 `req_list_issue_severities` 查询当前可用严重程度。 |
 | `assigned_id` | 否 | `unknown` |  | 关联责任人用户 ID。创建或更新工作项时传入该字段即可指定责任人；可先调用 `req_list_project_members` 获取项目成员用户 ID。 |
+| `developer_id` | 否 | `unknown` |  | 开发人员用户数字 ID。创建或更新工作项时传入该字段即可指定开发人员；可通过项目成员列表获取用户信息，官方字段为 developer_id。 |
 | `done_ratio` | 否 | `integer` |  | 完成度百分比，用于表示工作项当前完成进度。 |
 | `expected_work_hours` | 否 | `integer` |  | 预计工时，用于记录计划投入的工作小时数。 |
 | `start_date` | 否 | `integer` |  | 开始日期。用于时间范围查询；在工作项接口中表示计划开始时间。 |
@@ -2880,6 +2882,10 @@ authorization: Bearer <auth-token>
       "minLength": 1,
       "description": "工作项类型，会映射为 Scrum tracker_id：task/\"2\"=Task/任务，bug/\"3\"=Bug/缺陷，epic/\"5\"=Epic，feature/\"6\"=Feature，story/\"7\"=Story。"2\"、\"3\"、\"5\"、\"6\"、\"7\"。"
     },
+    "parent_work_item_id": {
+      "$ref": "#/properties/project_id",
+      "description": "父工作项 ID。创建子工作项时传入该字段，MCP 会映射为官方请求体字段 parent_issue_id。"
+    },
     "description": {
       "type": "string",
       "description": "对象的详细描述或备注信息。"
@@ -2901,6 +2907,10 @@ authorization: Bearer <auth-token>
     "assigned_id": {
       "$ref": "#/properties/project_id",
       "description": "关联责任人用户 ID。创建或更新工作项时传入该字段即可指定责任人；可先调用 `req_list_project_members` 获取项目成员用户 ID。"
+    },
+    "developer_id": {
+      "$ref": "#/properties/project_id",
+      "description": "开发人员用户数字 ID。创建或更新工作项时传入该字段即可指定开发人员；可通过项目成员列表获取用户信息，官方字段为 developer_id。"
     },
     "done_ratio": {
       "type": "integer",
@@ -3048,6 +3058,7 @@ authorization: Bearer <auth-token>
 | `severity_id` | 否 | `integer` |  | 严重程度 ID。通常用于缺陷或问题等级；可通过 `req_list_issue_severities` 查询当前可用严重程度。 |
 | `status_id` | 否 | `integer` |  | 工作项状态 ID：1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝。用于更新工作项状态或按状态过滤；状态 ID 也可通过状态配置/工作流接口查询。 |
 | `assigned_id` | 否 | `unknown` |  | 关联责任人用户 ID。创建或更新工作项时传入该字段即可指定责任人；可先调用 `req_list_project_members` 获取项目成员用户 ID。 |
+| `developer_id` | 否 | `unknown` |  | 开发人员用户数字 ID。创建或更新工作项时传入该字段即可指定开发人员；可通过项目成员列表获取用户信息，官方字段为 developer_id。 |
 | `done_ratio` | 否 | `integer` |  | 完成度百分比，用于表示工作项当前完成进度。 |
 | `expected_work_hours` | 否 | `integer` |  | 预计工时，用于记录计划投入的工作小时数。 |
 | `start_date` | 否 | `integer` |  | 开始日期。用于时间范围查询；在工作项接口中表示计划开始时间。 |
@@ -3132,6 +3143,10 @@ authorization: Bearer <auth-token>
     "assigned_id": {
       "$ref": "#/properties/project_id",
       "description": "关联责任人用户 ID。创建或更新工作项时传入该字段即可指定责任人；可先调用 `req_list_project_members` 获取项目成员用户 ID。"
+    },
+    "developer_id": {
+      "$ref": "#/properties/project_id",
+      "description": "开发人员用户数字 ID。创建或更新工作项时传入该字段即可指定开发人员；可通过项目成员列表获取用户信息，官方字段为 developer_id。"
     },
     "done_ratio": {
       "type": "integer",
@@ -3345,12 +3360,14 @@ authorization: Bearer <auth-token>
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `title` | 是 | `string` |  | 标题。用于工作项、需求、合并请求、标签等资源的展示名称。 |
 | `work_item_type` | 是 | `string` |  | 工作项类型，会映射为 Scrum tracker_id：task/"2"=Task/任务，bug/"3"=Bug/缺陷，epic/"5"=Epic，feature/"6"=Feature，story/"7"=Story。 |
+| `parent_work_item_id` | 否 | `unknown` |  | 父工作项 ID。创建子工作项时传入该字段，MCP 会映射为官方请求体字段 parent_issue_id。 |
 | `description` | 否 | `string` |  | 对象的详细描述或备注信息。 |
 | `priority_id` | 否 | `integer` |  | 工作项优先级 ID。创建工作项未传时默认使用 2；具体优先级名称和可选值以项目字段配置/优先级选项接口返回为准。 |
 | `iteration_id` | 否 | `unknown` |  | 迭代唯一标识。 |
 | `module_id` | 否 | `unknown` |  | 模块 ID。用于把工作项、IPD 对象或项目模块归属到指定模块。 |
 | `severity_id` | 否 | `integer` |  | 严重程度 ID。通常用于缺陷或问题等级；可通过 `req_list_issue_severities` 查询当前可用严重程度。 |
 | `assigned_id` | 否 | `unknown` |  | 关联责任人用户 ID。创建或更新工作项时传入该字段即可指定责任人；可先调用 `req_list_project_members` 获取项目成员用户 ID。 |
+| `developer_id` | 否 | `unknown` |  | 开发人员用户数字 ID。创建或更新工作项时传入该字段即可指定开发人员；可通过项目成员列表获取用户信息，官方字段为 developer_id。 |
 | `done_ratio` | 否 | `integer` |  | 完成度百分比，用于表示工作项当前完成进度。 |
 | `expected_work_hours` | 否 | `integer` |  | 预计工时，用于记录计划投入的工作小时数。 |
 | `start_date` | 否 | `integer` |  | 开始日期。用于时间范围查询；在工作项接口中表示计划开始时间。 |
@@ -3396,6 +3413,10 @@ authorization: Bearer <auth-token>
       "minLength": 1,
       "description": "工作项类型，会映射为 Scrum tracker_id：task/\"2\"=Task/任务，bug/\"3\"=Bug/缺陷，epic/\"5\"=Epic，feature/\"6\"=Feature，story/\"7\"=Story。"2\"、\"3\"、\"5\"、\"6\"、\"7\"。"
     },
+    "parent_work_item_id": {
+      "$ref": "#/properties/project_id",
+      "description": "父工作项 ID。创建子工作项时传入该字段，MCP 会映射为官方请求体字段 parent_issue_id。"
+    },
     "description": {
       "type": "string",
       "description": "对象的详细描述或备注信息。"
@@ -3421,6 +3442,10 @@ authorization: Bearer <auth-token>
     "assigned_id": {
       "$ref": "#/properties/project_id",
       "description": "关联责任人用户 ID。创建或更新工作项时传入该字段即可指定责任人；可先调用 `req_list_project_members` 获取项目成员用户 ID。"
+    },
+    "developer_id": {
+      "$ref": "#/properties/project_id",
+      "description": "开发人员用户数字 ID。创建或更新工作项时传入该字段即可指定开发人员；可通过项目成员列表获取用户信息，官方字段为 developer_id。"
     },
     "done_ratio": {
       "type": "integer",
@@ -13130,6 +13155,7 @@ authorization: Bearer <auth-token>
 | `module_id` | 否 | `unknown` |  | 模块 ID。用于把工作项、IPD 对象或项目模块归属到指定模块。 |
 | `severity_id` | 否 | `integer` |  | 严重程度 ID。通常用于缺陷或问题等级；可通过 `req_list_issue_severities` 查询当前可用严重程度。 |
 | `assigned_id` | 否 | `unknown` |  | 关联责任人用户 ID。创建或更新工作项时传入该字段即可指定责任人；可先调用 `req_list_project_members` 获取项目成员用户 ID。 |
+| `developer_id` | 否 | `unknown` |  | 开发人员用户数字 ID。创建或更新工作项时传入该字段即可指定开发人员；可通过项目成员列表获取用户信息，官方字段为 developer_id。 |
 | `done_ratio` | 否 | `integer` |  | 完成度百分比，用于表示工作项当前完成进度。 |
 | `expected_work_hours` | 否 | `integer` |  | 预计工时，用于记录计划投入的工作小时数。 |
 | `start_date` | 否 | `integer` |  | 开始日期。用于时间范围查询；在工作项接口中表示计划开始时间。 |
@@ -13208,6 +13234,10 @@ authorization: Bearer <auth-token>
     "assigned_id": {
       "$ref": "#/properties/project_id",
       "description": "关联责任人用户 ID。创建或更新工作项时传入该字段即可指定责任人；可先调用 `req_list_project_members` 获取项目成员用户 ID。"
+    },
+    "developer_id": {
+      "$ref": "#/properties/project_id",
+      "description": "开发人员用户数字 ID。创建或更新工作项时传入该字段即可指定开发人员；可通过项目成员列表获取用户信息，官方字段为 developer_id。"
     },
     "done_ratio": {
       "type": "integer",

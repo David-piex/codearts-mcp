@@ -5,6 +5,8 @@ export function previewCreateIterationWorkItem(input: {
   project_id: string;
   title: string;
   work_item_type: string;
+  parent_work_item_id?: string;
+  developer_id?: string;
   iteration_id: string;
   dry_run: boolean;
 }) {
@@ -12,7 +14,9 @@ export function previewCreateIterationWorkItem(input: {
     projectId: input.project_id,
     title: input.title,
     workItemType: input.work_item_type,
+    parentWorkItemId: input.parent_work_item_id,
     iterationId: input.iteration_id,
+    developerId: input.developer_id,
     executed: false
   });
 }
@@ -47,12 +51,14 @@ type ReqCreateIterationWorkItemClient = {
     project_id: string;
     title: string;
     work_item_type: string;
+    parent_work_item_id?: string;
     description?: string;
     iteration_id: string;
     priority_id?: number;
     module_id?: string;
     severity_id?: number;
     assigned_id?: string;
+    developer_id?: string;
     done_ratio?: number;
     expected_work_hours?: number;
     start_date?: number;

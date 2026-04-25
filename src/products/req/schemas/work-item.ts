@@ -13,12 +13,14 @@ export const reqCreateWorkItemInput = z.object({
   project_id: idSchema,
   title: z.string().min(1),
   work_item_type: z.string().min(1),
+  parent_work_item_id: idSchema.optional(),
   description: z.string().optional(),
   priority_id: z.number().int().positive().optional(),
   iteration_id: idSchema.optional(),
   module_id: idSchema.optional(),
   severity_id: z.number().int().positive().optional(),
   assigned_id: idSchema.optional(),
+  developer_id: idSchema.optional(),
   done_ratio: z.number().int().nonnegative().optional(),
   expected_work_hours: z.number().int().nonnegative().optional(),
   start_date: z.number().int().positive().optional(),
@@ -38,6 +40,7 @@ export const reqUpdateWorkItemInput = z.object({
   module_id: idSchema.optional(),
   severity_id: z.number().int().positive().optional(),
   assigned_id: idSchema.optional(),
+  developer_id: idSchema.optional(),
   done_ratio: z.number().int().nonnegative().optional(),
   expected_work_hours: z.number().int().nonnegative().optional(),
   start_date: z.number().int().positive().optional(),
@@ -73,6 +76,7 @@ export const reqBatchUpdateWorkItemsInput = z.object({
   priority_id: z.number().int().positive().optional(),
   severity_id: z.number().int().positive().optional(),
   assigned_id: idSchema.optional(),
+  developer_id: idSchema.optional(),
   done_ratio: z.number().int().nonnegative().optional(),
   iteration_id: idSchema.optional(),
   module_id: idSchema.optional(),
@@ -83,12 +87,13 @@ export const reqBatchUpdateWorkItemsInput = z.object({
     typeof input.priority_id !== "undefined" ||
     typeof input.severity_id !== "undefined" ||
     typeof input.assigned_id !== "undefined" ||
+    typeof input.developer_id !== "undefined" ||
     typeof input.done_ratio !== "undefined" ||
     typeof input.iteration_id !== "undefined" ||
     typeof input.module_id !== "undefined",
   {
     message:
-      "At least one of status_id, priority_id, severity_id, assigned_id, done_ratio, iteration_id, or module_id is required",
+      "At least one of status_id, priority_id, severity_id, assigned_id, developer_id, done_ratio, iteration_id, or module_id is required",
     path: ["status_id"]
   }
 );

@@ -166,6 +166,8 @@ Req 写工具遵循两个层面的安全策略：
 
 责任人说明：创建或更新工作项时可以传 `assigned_id` 关联责任人；该值是项目成员用户 ID，可先调用 `req_list_project_members` 获取。
 
+开发人员和父工作项说明：创建、更新或批量更新工作项时可以传 `developer_id` 指定开发人员。创建普通工作项、迭代工作项或计划工作项时可以传 `parent_work_item_id` 创建子工作项；MCP 会把它映射为官方字段 `parent_issue_id`。
+
 
 常用枚举映射：
 

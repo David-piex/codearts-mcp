@@ -42,12 +42,14 @@ export type ReqClient = {
     project_id: string;
     title: string;
     work_item_type: string;
+    parent_work_item_id?: string;
     description?: string;
     priority_id?: number;
     iteration_id?: string;
     module_id?: string;
     severity_id?: number;
     assigned_id?: string;
+    developer_id?: string;
     done_ratio?: number;
     expected_work_hours?: number;
     start_date?: number;
@@ -274,6 +276,7 @@ export type ReqClient = {
     module_id?: string;
     severity_id?: number;
     assigned_id?: string;
+    developer_id?: string;
     done_ratio?: number;
     expected_work_hours?: number;
     start_date?: number;
@@ -379,6 +382,7 @@ export type ReqClient = {
     priority_id?: number;
     severity_id?: number;
     assigned_id?: string;
+    developer_id?: string;
     done_ratio?: number;
     iteration_id?: string;
     module_id?: string;
@@ -389,6 +393,7 @@ export type ReqClient = {
     priority_id?: number;
     severity_id?: number;
     assigned_id?: string;
+    developer_id?: string;
     done_ratio?: number;
     iteration_id?: string;
     module_id?: string;
@@ -621,6 +626,7 @@ export type ReqClient = {
     severity_id?: number;
     status_id?: number;
     assigned_id?: string;
+    developer_id?: string;
     done_ratio?: number;
     expected_work_hours?: number;
     start_date?: number;
@@ -2740,10 +2746,12 @@ export function createReqClient(
         description: input.description,
         tracker_id: toTrackerId(input.work_item_type),
         priority_id: toPriorityId(input.priority_id),
+        ...(input.parent_work_item_id ? { parent_issue_id: toOptionalNumericId(input.parent_work_item_id) } : {}),
         ...(input.iteration_id ? { iteration_id: input.iteration_id } : {}),
         ...(input.module_id ? { module_id: input.module_id } : {}),
         ...(typeof input.severity_id !== "undefined" ? { severity_id: input.severity_id } : {}),
         ...(input.assigned_id ? { assigned_id: input.assigned_id } : {}),
+        ...(input.developer_id ? { developer_id: toOptionalNumericId(input.developer_id) } : {}),
         ...(typeof input.done_ratio !== "undefined" ? { done_ratio: input.done_ratio } : {}),
         ...(typeof input.expected_work_hours !== "undefined"
           ? { expected_work_hours: input.expected_work_hours }
@@ -3812,7 +3820,8 @@ export function createReqClient(
         ...(input.plan_id ? { plan_id: input.plan_id } : {}),
         ...(input.iteration_id ? { iteration_id: input.iteration_id } : {}),
         ...(input.module_id ? { module_id: input.module_id } : {}),
-        ...(input.assigned_id ? { assigned_id: input.assigned_id } : {})
+        ...(input.assigned_id ? { assigned_id: input.assigned_id } : {}),
+        ...(input.developer_id ? { developer_id: toOptionalNumericId(input.developer_id) } : {})
       })) as {
         status?: string;
         result?: {
@@ -4005,6 +4014,7 @@ export function createReqClient(
           ...(input.module_id ? { module_id: input.module_id } : {}),
           ...(typeof input.severity_id !== "undefined" ? { severity_id: input.severity_id } : {}),
           ...(input.assigned_id ? { assigned_id: input.assigned_id } : {}),
+          ...(input.developer_id ? { developer_id: toOptionalNumericId(input.developer_id) } : {}),
           ...(typeof input.done_ratio !== "undefined" ? { done_ratio: input.done_ratio } : {}),
           ...(typeof input.expected_work_hours !== "undefined"
             ? { expected_work_hours: input.expected_work_hours }
@@ -4086,6 +4096,7 @@ export function createReqClient(
         priority_id?: number;
         severity_id?: number;
         assigned_id?: string;
+        developer_id?: number | string;
         done_ratio?: number;
         iteration_id?: string;
         module_id?: string;
@@ -4105,6 +4116,10 @@ export function createReqClient(
 
       if (typeof input.assigned_id !== "undefined") {
         attribute.assigned_id = input.assigned_id;
+      }
+
+      if (typeof input.developer_id !== "undefined") {
+        attribute.developer_id = toOptionalNumericId(input.developer_id);
       }
 
       if (typeof input.done_ratio !== "undefined") {
@@ -4131,6 +4146,7 @@ export function createReqClient(
         priority_id: input.priority_id,
         severity_id: input.severity_id,
         assigned_id: input.assigned_id,
+        developer_id: input.developer_id,
         done_ratio: input.done_ratio,
         iteration_id: input.iteration_id,
         module_id: input.module_id,
