@@ -282,7 +282,7 @@ export async function expectWritePathRateLimit(options: {
   const handler = readRegisteredHandler(server, options.toolName);
   const fetchMock = stubJsonFetch(options.responsePayload, options.responseInit);
   const context = createSessionAuthContext(options.sessionId, options.authId);
-  const allowedCount = options.allowedCount ?? 30;
+  const allowedCount = options.allowedCount ?? 300;
 
   for (let index = 0; index < allowedCount; index += 1) {
     await expect(handler(options.allowedInput(index), context)).resolves.toBeTruthy();

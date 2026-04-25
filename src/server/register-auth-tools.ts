@@ -9,7 +9,7 @@ import { readHttpAuthRuntimeConfig } from "./auth-session-runtime.js";
 import type { SessionCredentialStore } from "./session-store.js";
 
 type RegisterableServer = Pick<McpServer, "registerTool">;
-const AUTH_WRITE_RATE_LIMIT_MAX_REQUESTS = 30;
+const AUTH_WRITE_RATE_LIMIT_MAX_REQUESTS = 300;
 const AUTH_WRITE_RATE_LIMIT_WINDOW_MS = 60_000;
 
 export function createConfigureSessionHandler(
