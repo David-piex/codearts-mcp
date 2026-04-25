@@ -342,6 +342,9 @@ export type DeployClient = {
     environment_id: string;
     page: number;
     page_size: number;
+    keyword?: string;
+    key_field?: string;
+    as_proxy?: boolean;
   }) => Promise<{
     hosts: Array<{
       host_id: string;
@@ -1405,6 +1408,13 @@ export function createDeployClient(_http: ReturnTypeCreateHttpClient): DeployCli
         page_index: String(input.page),
         page_size: String(input.page_size)
       });
+      const keyField = input.key_field ?? input.keyword;
+      if (keyField) {
+        query.set("key_field", keyField);
+      }
+      if (typeof input.as_proxy !== "undefined") {
+        query.set("as_proxy", String(input.as_proxy));
+      }
 
       const response = (await _http.get(
         `/v1/applications/${encodeURIComponent(input.application_id)}/environments/${encodeURIComponent(input.environment_id)}/hosts?${query.toString()}`

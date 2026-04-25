@@ -25826,7 +25826,9 @@ authorization: Bearer <auth-token>
 | `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
 | `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
 | `application_id` | 是 | `string` |  | 部署应用 ID。用于定位 Deploy 应用、环境、主机组和部署记录。 |
-| `environment_id` | 是 | `unknown` |  | 部署环境 ID。用于定位环境、环境主机或环境下的应用。 |
+| `environment_id` | 是 | `string` |  | 部署环境 ID。用于定位环境、环境主机或环境下的应用。 |
+| `key_field` | 否 | `string` |  | 官方 Query 参数：按主机名或 IP 关键字模糊搜索。 |
+| `as_proxy` | 否 | `boolean` |  | 官方 Query 参数：是否只查询代理机，true 表示代理机。 |
 
 调用示例：
 
@@ -25888,6 +25890,15 @@ authorization: Bearer <auth-token>
     "environment_id": {
       "$ref": "#/properties/application_id",
       "description": "部署环境 ID。用于定位环境、环境主机或环境下的应用。"
+    },
+    "key_field": {
+      "type": "string",
+      "minLength": 1,
+      "description": "官方 Query 参数：按主机名或 IP 关键字模糊搜索。"
+    },
+    "as_proxy": {
+      "type": "boolean",
+      "description": "官方 Query 参数：是否只查询代理机，true 表示代理机。"
     }
   },
   "required": [
@@ -29987,6 +29998,7 @@ authorization: Bearer <auth-token>
 | `tenant_id` | 是 | `string` |  | 租户 ID。用于定位制品仓、流水线模板等租户范围资源。 |
 | `project_id` | 是 | `unknown` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `repo_name` | 是 | `string` |  | 仓库名称。用于定位制品仓或代码仓中的具体仓库。 |
+| `path` | 否 | `string` | "/" | 官方 Query 参数：要查询的目录路径，默认查询仓库根目录 `/`。 |
 
 调用示例：
 
@@ -30025,6 +30037,12 @@ authorization: Bearer <auth-token>
       "type": "string",
       "minLength": 1,
       "description": "仓库名称。用于定位制品仓或代码仓中的具体仓库。"
+    },
+    "path": {
+      "type": "string",
+      "minLength": 1,
+      "default": "/",
+      "description": "官方 Query 参数：要查询的目录路径，默认查询仓库根目录 /。"
     }
   },
   "required": [
@@ -30379,7 +30397,12 @@ authorization: Bearer <auth-token>
 | `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
 | `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
 | `tenant_id` | 是 | `string` |  | 租户 ID。用于定位制品仓、流水线模板等租户范围资源。 |
-| `project_id` | 是 | `unknown` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `qname` | 否 | `string` |  | 官方 Query 参数：仓库名称关键字；未传时可使用 `keyword` 作为兼容别名。 |
+| `type` | 否 | `string` |  | 官方 Query 参数：仓库类型，例如 hosted、proxy、group 等，以 Artifact 返回为准。 |
+| `format` | 否 | `string` |  | 官方 Query 参数：仓库格式，例如 maven2、npm、generic、docker 等。 |
+| `format_list` | 否 | `array` |  | 官方 Query 参数：按多个仓库格式过滤，MCP 会以逗号拼接传给服务端。 |
+| `is_recycle_bin` | 否 | `boolean` |  | 官方 Query 参数：是否查询回收站仓库。 |
 
 调用示例：
 
@@ -30441,6 +30464,30 @@ authorization: Bearer <auth-token>
     "project_id": {
       "$ref": "#/properties/tenant_id",
       "description": "CodeArts 项目的唯一标识，用于确定本次操作所属项目。"
+    },
+    "qname": {
+      "type": "string",
+      "minLength": 1,
+      "description": "官方 Query 参数：仓库名称关键字；未传时可使用 keyword 作为兼容别名。"
+    },
+    "type": {
+      "type": "string",
+      "minLength": 1,
+      "description": "官方 Query 参数：仓库类型，例如 hosted、proxy、group 等，以 Artifact 返回为准。"
+    },
+    "format": {
+      "type": "string",
+      "minLength": 1,
+      "description": "官方 Query 参数：仓库格式，例如 maven2、npm、generic、docker 等。"
+    },
+    "format_list": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "description": "官方 Query 参数：按多个仓库格式过滤，MCP 会以逗号拼接传给服务端。"
+    },
+    "is_recycle_bin": {
+      "type": "boolean",
+      "description": "官方 Query 参数：是否查询回收站仓库。"
     }
   },
   "required": [

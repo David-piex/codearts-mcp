@@ -342,7 +342,9 @@ export const deployCreateTaskByTemplateInput = z.object({
 
 export const deployListEnvironmentHostsInput = pagingSchema.extend({
   application_id: idSchema,
-  environment_id: idSchema
+  environment_id: idSchema,
+  key_field: z.string().min(1).optional(),
+  as_proxy: z.boolean().optional()
 });
 
 export const deployImportHostsToEnvironmentInput = z.object({

@@ -225,9 +225,9 @@ describe("createArtifactClient", () => {
       }
     });
 
-    const result = await client.listRepositories(createTenantProjectPageInput());
+    const result = await client.listRepositories(createTenantProjectPageInput({ qname: "libs", type: "hosted", format: "maven2", format_list: ["maven2", "npm"], is_recycle_bin: false }));
 
-    expect(requestedPath).toContain("/cloudartifact/v5/tenant-1/project-1/repositories?page_no=1&page_size=20");
+    expect(requestedPath).toContain("/cloudartifact/v5/tenant-1/project-1/repositories?page_no=1&page_size=20&qname=libs&type=hosted&format=maven2&format_list=maven2%2Cnpm&is_recycle_bin=false");
     expect(result.repositories).toEqual([
       {
         id: "repo-1",
@@ -285,10 +285,10 @@ describe("createArtifactClient", () => {
       }
     });
 
-    const result = await client.getFileTree(createTenantProjectRepoInput());
+    const result = await client.getFileTree(createTenantProjectRepoInput({ path: "/com/example" }));
 
     expect(requestedPath).toBe(
-      "/cloudartifact/v5/tenant-1/project-1/libs-release/file-tree?path=%2F"
+      "/cloudartifact/v5/tenant-1/project-1/libs-release/file-tree?path=%2Fcom%2Fexample"
     );
     expect(result).toEqual({
       root_path: "/",

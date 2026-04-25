@@ -3,7 +3,12 @@ import { idSchema, pagingSchema } from "../../contracts/common-schemas.js";
 
 export const artifactListRepositoriesInput = pagingSchema.extend({
   tenant_id: idSchema,
-  project_id: idSchema
+  project_id: idSchema,
+  qname: z.string().min(1).optional(),
+  type: z.string().min(1).optional(),
+  format: z.string().min(1).optional(),
+  format_list: z.array(z.string().min(1)).optional(),
+  is_recycle_bin: z.boolean().optional()
 });
 
 export const artifactGetRepositoryInput = z.object({
@@ -49,7 +54,8 @@ export const artifactListVersionsInput = pagingSchema.extend({
 export const artifactGetFileTreeInput = z.object({
   tenant_id: idSchema,
   project_id: idSchema,
-  repo_name: z.string().min(1)
+  repo_name: z.string().min(1),
+  path: z.string().min(1).default("/")
 });
 
 export const artifactListLatestVersionFilesInput = pagingSchema.extend({

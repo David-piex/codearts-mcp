@@ -23,6 +23,7 @@ export type ArtifactClient = {
     tenant_id: string;
     project_id: string;
     repo_name: string;
+    path?: string;
   }) => Promise<{
     root_path: string;
     nodes: Array<{
@@ -113,6 +114,11 @@ export type ArtifactClient = {
     page: number;
     page_size: number;
     keyword?: string;
+    qname?: string;
+    type?: string;
+    format?: string;
+    format_list?: string[];
+    is_recycle_bin?: boolean;
   }) => Promise<{
     repositories: Array<{
       id: string;
@@ -258,7 +264,7 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
     },
     async getFileTree(input) {
       const query = new URLSearchParams({
-        path: "/"
+        path: input.path ?? "/"
       });
 
       const response = unwrapArtifactPayload((await _http.get(
@@ -470,8 +476,21 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
         page_size: String(input.page_size)
       });
 
-      if (input.keyword) {
-        query.set("search", input.keyword);
+      const qname = input.qname ?? input.keyword;
+      if (qname) {
+        query.set("qname", qname);
+      }
+      if (input.type) {
+        query.set("type", input.type);
+      }
+      if (input.format) {
+        query.set("format", input.format);
+      }
+      if (input.format_list?.length) {
+        query.set("format_list", input.format_list.join(","));
+      }
+      if (typeof input.is_recycle_bin !== "undefined") {
+        query.set("is_recycle_bin", String(input.is_recycle_bin));
       }
 
       const response = unwrapArtifactPayload((await _http.get(

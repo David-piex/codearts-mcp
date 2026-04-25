@@ -41,6 +41,9 @@ type DeployListEnvironmentHostsClient = {
     environment_id: string;
     page: number;
     page_size: number;
+    keyword?: string;
+    key_field?: string;
+    as_proxy?: boolean;
   }) => Promise<{
     hosts: Array<{
       host_id: string;

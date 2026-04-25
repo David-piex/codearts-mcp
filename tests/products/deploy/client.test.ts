@@ -560,9 +560,9 @@ describe("createDeployClient", () => {
       }
     });
 
-    const result = await client.listEnvironmentHosts(createEnvironmentPageInput());
+    const result = await client.listEnvironmentHosts(createEnvironmentPageInput({ key_field: "ecs", as_proxy: false }));
 
-    expect(requestedPath).toContain("/v1/applications/app-1/environments/env-1/hosts?page_index=1&page_size=20");
+    expect(requestedPath).toContain("/v1/applications/app-1/environments/env-1/hosts?page_index=1&page_size=20&key_field=ecs&as_proxy=false");
     expect(result.hosts[0]).toEqual({
       host_id: "host-1",
       host_name: "ecs-1",

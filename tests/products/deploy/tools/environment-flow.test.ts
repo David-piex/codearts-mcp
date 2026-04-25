@@ -96,7 +96,9 @@ describe("deploy environment flow handlers", () => {
 
   it("maps environment hosts into MCP output", async () => {
     const handler = createDeployListEnvironmentHostsHandler({
-      listEnvironmentHosts: async () => ({
+      listEnvironmentHosts: async (input) => {
+        expect(input).toMatchObject({ key_field: "ecs", as_proxy: false });
+        return {
         hosts: [
           {
             host_id: "host-1",
@@ -109,14 +111,17 @@ describe("deploy environment flow handlers", () => {
           }
         ],
         total: 1
-      })
+      };
+      }
     });
 
     const result = await handler({
       application_id: "app-1",
       environment_id: "env-1",
       page: 1,
-      page_size: 20
+      page_size: 20,
+      key_field: "ecs",
+      as_proxy: false
     });
 
     expect(result.structuredContent.items).toEqual([

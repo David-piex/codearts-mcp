@@ -32,6 +32,7 @@ type ArtifactGetFileTreeClient = {
     tenant_id: string;
     project_id: string;
     repo_name: string;
+    path?: string;
   }) => Promise<{
     root_path: string;
     nodes: Array<{
