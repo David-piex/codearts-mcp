@@ -14,9 +14,20 @@ type DeployStepState = {
   faq_url?: string;
 };
 
+type DeployV2OperationInput = Record<string, unknown> & {
+  id?: string;
+  name?: string;
+  description?: string;
+  code?: string;
+  params?: string;
+  entrance?: string;
+  version?: string;
+  module_id?: string;
+};
+
 type DeployApplicationArrangeInfoInput = Record<string, unknown> & {
   template_id: string;
-  operation_list: unknown[];
+  operation_list: DeployV2OperationInput[];
   id?: string;
   deploy_system?: string;
 };

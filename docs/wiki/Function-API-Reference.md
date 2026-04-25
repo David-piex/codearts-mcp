@@ -23609,6 +23609,16 @@ authorization: Bearer <auth-token>
 | `group_id` | 否 | `string` |  | 分组 ID。用于流水线分组、部署主机组或资源分组。 |
 | `agency_urn` | 否 | `string` |  | 委托 URN。 |
 | `arrange_infos` | 是 | `array` |  | 部署编排信息列表，用于描述模板和操作组合。 |
+| `arrange_infos[].template_id` | 是 | `string` |  | 部署模板 ID，官方 TaskV2RequestBody.template_id。 |
+| `arrange_infos[].operation_list` | 否 | `array` | [] | 部署步骤编排列表，官方 DeployV2OperationsDO 数组；未定制模板步骤时可为空数组。 |
+| `arrange_infos[].operation_list[].id` | 否 | `string` |  | 步骤 ID；更新应用时可传已有步骤 ID，新建应用通常省略。 |
+| `arrange_infos[].operation_list[].name` | 否 | `string` |  | 步骤名称，长度 1-128，支持中文、字母、数字、空格及 -_,;:./()（）等符号。 |
+| `arrange_infos[].operation_list[].description` | 否 | `string` |  | 步骤描述，最长 1024 字符。 |
+| `arrange_infos[].operation_list[].code` | 否 | `string` |  | 步骤下载地址或步骤代码地址，最长 102400 字符。 |
+| `arrange_infos[].operation_list[].params` | 否 | `string` |  | 步骤详细定义，通常为模板参数 JSON 字符串，最长 204800 字符。 |
+| `arrange_infos[].operation_list[].entrance` | 否 | `string` |  | 步骤入口函数，最长 1024 字符。 |
+| `arrange_infos[].operation_list[].version` | 否 | `string` |  | 步骤版本，最长 1024 字符。 |
+| `arrange_infos[].operation_list[].module_id` | 否 | `string` |  | 步骤模块 ID，最长 1024 字符。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -23723,9 +23733,22 @@ authorization: Bearer <auth-token>
           },
           "operation_list": {
             "type": "array",
-            "items": {},
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string", "minLength": 1, "description": "步骤 ID。更新应用时可传已有部署步骤 ID；新建应用时通常由模板生成，可省略。" },
+                "name": { "type": "string", "description": "步骤名称，官方 DeployV2OperationsDO.name；长度 1-128，支持中文、字母、数字、空格及 -_,;:./()（）等符号。" },
+                "description": { "type": "string", "description": "步骤描述，官方 DeployV2OperationsDO.description；最长 1024 字符。" },
+                "code": { "type": "string", "description": "步骤下载地址或步骤代码地址，官方 DeployV2OperationsDO.code；最长 102400 字符。" },
+                "params": { "type": "string", "description": "步骤详细定义，官方 DeployV2OperationsDO.params；通常是模板参数 JSON 字符串，最长 204800 字符。" },
+                "entrance": { "type": "string", "description": "步骤入口函数，官方 DeployV2OperationsDO.entrance；最长 1024 字符。" },
+                "version": { "type": "string", "description": "步骤版本，官方 DeployV2OperationsDO.version；最长 1024 字符。" },
+                "module_id": { "type": "string", "description": "步骤模块 ID，官方 DeployV2OperationsDO.module_id；最长 1024 字符。" }
+              },
+              "additionalProperties": true
+            },
             "default": [],
-            "description": "部署编排信息列表，用于描述模板和操作组合。"
+            "description": "部署步骤编排列表，官方字段为 DeployV2OperationsDO；MCP 会保留模板扩展字段。"
           }
         },
         "required": [
@@ -27161,6 +27184,16 @@ authorization: Bearer <auth-token>
 | `group_id` | 否 | `string` |  | 分组 ID。用于流水线分组、部署主机组或资源分组。 |
 | `agency_urn` | 否 | `string` |  | 委托 URN。 |
 | `arrange_infos` | 是 | `array` |  | 部署编排信息列表，用于描述模板和操作组合。 |
+| `arrange_infos[].template_id` | 是 | `string` |  | 部署模板 ID，官方 TaskV2RequestBody.template_id。 |
+| `arrange_infos[].operation_list` | 否 | `array` | [] | 部署步骤编排列表，官方 DeployV2OperationsDO 数组；未定制模板步骤时可为空数组。 |
+| `arrange_infos[].operation_list[].id` | 否 | `string` |  | 步骤 ID；更新应用时可传已有步骤 ID，新建应用通常省略。 |
+| `arrange_infos[].operation_list[].name` | 否 | `string` |  | 步骤名称，长度 1-128，支持中文、字母、数字、空格及 -_,;:./()（）等符号。 |
+| `arrange_infos[].operation_list[].description` | 否 | `string` |  | 步骤描述，最长 1024 字符。 |
+| `arrange_infos[].operation_list[].code` | 否 | `string` |  | 步骤下载地址或步骤代码地址，最长 102400 字符。 |
+| `arrange_infos[].operation_list[].params` | 否 | `string` |  | 步骤详细定义，通常为模板参数 JSON 字符串，最长 204800 字符。 |
+| `arrange_infos[].operation_list[].entrance` | 否 | `string` |  | 步骤入口函数，最长 1024 字符。 |
+| `arrange_infos[].operation_list[].version` | 否 | `string` |  | 步骤版本，最长 1024 字符。 |
+| `arrange_infos[].operation_list[].module_id` | 否 | `string` |  | 步骤模块 ID，最长 1024 字符。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -27288,9 +27321,22 @@ authorization: Bearer <auth-token>
           },
           "operation_list": {
             "type": "array",
-            "items": {},
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string", "minLength": 1, "description": "步骤 ID。更新应用时可传已有部署步骤 ID；新建应用时通常由模板生成，可省略。" },
+                "name": { "type": "string", "description": "步骤名称，官方 DeployV2OperationsDO.name；长度 1-128，支持中文、字母、数字、空格及 -_,;:./()（）等符号。" },
+                "description": { "type": "string", "description": "步骤描述，官方 DeployV2OperationsDO.description；最长 1024 字符。" },
+                "code": { "type": "string", "description": "步骤下载地址或步骤代码地址，官方 DeployV2OperationsDO.code；最长 102400 字符。" },
+                "params": { "type": "string", "description": "步骤详细定义，官方 DeployV2OperationsDO.params；通常是模板参数 JSON 字符串，最长 204800 字符。" },
+                "entrance": { "type": "string", "description": "步骤入口函数，官方 DeployV2OperationsDO.entrance；最长 1024 字符。" },
+                "version": { "type": "string", "description": "步骤版本，官方 DeployV2OperationsDO.version；最长 1024 字符。" },
+                "module_id": { "type": "string", "description": "步骤模块 ID，官方 DeployV2OperationsDO.module_id；最长 1024 字符。" }
+              },
+              "additionalProperties": true
+            },
             "default": [],
-            "description": "部署编排信息列表，用于描述模板和操作组合。"
+            "description": "部署步骤编排列表，官方字段为 DeployV2OperationsDO；MCP 会保留模板扩展字段。"
           }
         },
         "required": [

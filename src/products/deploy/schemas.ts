@@ -225,10 +225,23 @@ export const deployCreateEnvironmentInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+const deployV2OperationInput = z
+  .object({
+    id: idSchema.optional(),
+    name: z.string().optional(),
+    description: z.string().optional(),
+    code: z.string().optional(),
+    params: z.string().optional(),
+    entrance: z.string().optional(),
+    version: z.string().optional(),
+    module_id: z.string().optional()
+  })
+  .passthrough();
+
 const deployCreateApplicationArrangeInfoInput = z
   .object({
     template_id: idSchema,
-    operation_list: z.array(z.unknown()).default([])
+    operation_list: z.array(deployV2OperationInput).default([])
   })
   .passthrough();
 
@@ -266,7 +279,7 @@ const deployModifyApplicationArrangeInfoInput = z
     id: idSchema.optional(),
     deploy_system: z.string().optional(),
     template_id: idSchema,
-    operation_list: z.array(z.unknown()).default([])
+    operation_list: z.array(deployV2OperationInput).default([])
   })
   .passthrough();
 
