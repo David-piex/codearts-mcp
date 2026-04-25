@@ -2829,7 +2829,7 @@ authorization: Bearer <auth-token>
 | `priority_id` | 否 | `integer` |  | 优先级 ID，用于设置或过滤优先级。 |
 | `module_id` | 否 | `unknown` |  | 模块唯一标识。 |
 | `severity_id` | 否 | `integer` |  | 严重级别 ID，通常用于缺陷或问题等级。 |
-| `assigned_id` | 否 | `unknown` |  | assigned id 的唯一标识。 |
+| `assigned_id` | 否 | `unknown` |  | 关联责任人用户 ID。创建或更新工作项时传入该字段即可指定责任人；可先调用 `req_list_project_members` 获取项目成员用户 ID。 |
 | `done_ratio` | 否 | `integer` |  | 完成度百分比，用于表示工作项当前完成进度。 |
 | `expected_work_hours` | 否 | `integer` |  | 预计工时，用于记录计划投入的工作小时数。 |
 | `start_date` | 否 | `integer` |  | 计划开始日期，使用接口要求的时间戳或日期值。 |
@@ -2900,7 +2900,7 @@ authorization: Bearer <auth-token>
     },
     "assigned_id": {
       "$ref": "#/properties/project_id",
-      "description": "assigned id 的唯一标识。"
+      "description": "关联责任人用户 ID。创建或更新工作项时传入该字段即可指定责任人；可先调用 `req_list_project_members` 获取项目成员用户 ID。"
     },
     "done_ratio": {
       "type": "integer",
@@ -3047,7 +3047,7 @@ authorization: Bearer <auth-token>
 | `priority_id` | 否 | `integer` |  | 优先级 ID，用于设置或过滤优先级。 |
 | `severity_id` | 否 | `integer` |  | 严重级别 ID，通常用于缺陷或问题等级。 |
 | `status_id` | 否 | `integer` |  | status的唯一标识。 |
-| `assigned_id` | 否 | `unknown` |  | assigned id 的唯一标识。 |
+| `assigned_id` | 否 | `unknown` |  | 关联责任人用户 ID。创建或更新工作项时传入该字段即可指定责任人；可先调用 `req_list_project_members` 获取项目成员用户 ID。 |
 | `done_ratio` | 否 | `integer` |  | 完成度百分比，用于表示工作项当前完成进度。 |
 | `expected_work_hours` | 否 | `integer` |  | 预计工时，用于记录计划投入的工作小时数。 |
 | `start_date` | 否 | `integer` |  | 计划开始日期，使用接口要求的时间戳或日期值。 |
@@ -3131,7 +3131,7 @@ authorization: Bearer <auth-token>
     },
     "assigned_id": {
       "$ref": "#/properties/project_id",
-      "description": "assigned id 的唯一标识。"
+      "description": "关联责任人用户 ID。创建或更新工作项时传入该字段即可指定责任人；可先调用 `req_list_project_members` 获取项目成员用户 ID。"
     },
     "done_ratio": {
       "type": "integer",
@@ -3350,7 +3350,7 @@ authorization: Bearer <auth-token>
 | `iteration_id` | 否 | `unknown` |  | 迭代唯一标识。 |
 | `module_id` | 否 | `unknown` |  | 模块唯一标识。 |
 | `severity_id` | 否 | `integer` |  | 严重级别 ID，通常用于缺陷或问题等级。 |
-| `assigned_id` | 否 | `unknown` |  | assigned id 的唯一标识。 |
+| `assigned_id` | 否 | `unknown` |  | 关联责任人用户 ID。创建或更新工作项时传入该字段即可指定责任人；可先调用 `req_list_project_members` 获取项目成员用户 ID。 |
 | `done_ratio` | 否 | `integer` |  | 完成度百分比，用于表示工作项当前完成进度。 |
 | `expected_work_hours` | 否 | `integer` |  | 预计工时，用于记录计划投入的工作小时数。 |
 | `start_date` | 否 | `integer` |  | 计划开始日期，使用接口要求的时间戳或日期值。 |
@@ -3420,7 +3420,7 @@ authorization: Bearer <auth-token>
     },
     "assigned_id": {
       "$ref": "#/properties/project_id",
-      "description": "assigned id 的唯一标识。"
+      "description": "关联责任人用户 ID。创建或更新工作项时传入该字段即可指定责任人；可先调用 `req_list_project_members` 获取项目成员用户 ID。"
     },
     "done_ratio": {
       "type": "integer",
@@ -13129,7 +13129,7 @@ authorization: Bearer <auth-token>
 | `iteration_id` | 否 | `unknown` |  | 迭代唯一标识。 |
 | `module_id` | 否 | `unknown` |  | 模块唯一标识。 |
 | `severity_id` | 否 | `integer` |  | 严重级别 ID，通常用于缺陷或问题等级。 |
-| `assigned_id` | 否 | `unknown` |  | assigned id 的唯一标识。 |
+| `assigned_id` | 否 | `unknown` |  | 关联责任人用户 ID。创建或更新工作项时传入该字段即可指定责任人；可先调用 `req_list_project_members` 获取项目成员用户 ID。 |
 | `done_ratio` | 否 | `integer` |  | 完成度百分比，用于表示工作项当前完成进度。 |
 | `expected_work_hours` | 否 | `integer` |  | 预计工时，用于记录计划投入的工作小时数。 |
 | `start_date` | 否 | `integer` |  | 计划开始日期，使用接口要求的时间戳或日期值。 |
@@ -13207,7 +13207,7 @@ authorization: Bearer <auth-token>
     },
     "assigned_id": {
       "$ref": "#/properties/project_id",
-      "description": "assigned id 的唯一标识。"
+      "description": "关联责任人用户 ID。创建或更新工作项时传入该字段即可指定责任人；可先调用 `req_list_project_members` 获取项目成员用户 ID。"
     },
     "done_ratio": {
       "type": "integer",
