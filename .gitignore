@@ -10,3 +10,4 @@ tmp-*
 tmp-*.log
 tmp-govern-*
 .qoder/
+docs/superpowers/
