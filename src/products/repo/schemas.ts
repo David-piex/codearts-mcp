@@ -118,7 +118,11 @@ export const repoGetTagInput = z.object({
 
 export const repoListCommitsInput = pagingSchema.extend({
   repository_id: idSchema,
-  ref_name: z.string().optional()
+  ref_name: z.string().optional(),
+  since: z.string().optional(),
+  until: z.string().optional(),
+  order_by_date: z.boolean().optional(),
+  with_stats: z.boolean().optional()
 });
 
 export const repoGetCommitInput = z.object({

@@ -290,6 +290,10 @@ export type RepoClient = {
     page_size: number;
     keyword?: string;
     ref_name?: string;
+    since?: string;
+    until?: string;
+    order_by_date?: boolean;
+    with_stats?: boolean;
   }) => Promise<{
     commits: Array<{ id: string; short_id?: string; title?: string; author_name?: string }>;
     total?: number;
@@ -1051,6 +1055,18 @@ export function createRepoClient(
 
       if (input.ref_name) {
         query.set("ref_name", input.ref_name);
+      }
+      if (input.since) {
+        query.set("since", input.since);
+      }
+      if (input.until) {
+        query.set("until", input.until);
+      }
+      if (typeof input.order_by_date !== "undefined") {
+        query.set("order_by_date", String(input.order_by_date));
+      }
+      if (typeof input.with_stats !== "undefined") {
+        query.set("with_stats", String(input.with_stats));
       }
 
       const response = (await _http.get(

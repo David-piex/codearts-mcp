@@ -28,6 +28,10 @@ type RepoListCommitsClient = {
     page_size: number;
     keyword?: string;
     ref_name?: string;
+    since?: string;
+    until?: string;
+    order_by_date?: boolean;
+    with_stats?: boolean;
   }) => Promise<{
     commits: Array<{ id: string; short_id?: string; title?: string; author_name?: string }>;
     total?: number;

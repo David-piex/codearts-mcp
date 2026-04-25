@@ -14934,7 +14934,11 @@ authorization: Bearer <auth-token>
 | `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
 | `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
 | `repository_id` | 是 | `string` |  | 代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。 |
-| `ref_name` | 否 | `string` |  | ref name 名称。 |
+| `ref_name` | 否 | `string` |  | 官方 Query 参数：分支、标签或其他 ref 名称。 |
+| `since` | 否 | `string` |  | 官方 Query 参数：只返回该时间之后的提交，建议 ISO 8601 时间字符串。 |
+| `until` | 否 | `string` |  | 官方 Query 参数：只返回该时间之前的提交，建议 ISO 8601 时间字符串。 |
+| `order_by_date` | 否 | `boolean` |  | 官方 Query 参数：是否按提交日期排序。 |
+| `with_stats` | 否 | `boolean` |  | 官方 Query 参数：是否返回提交统计信息。 |
 
 调用示例：
 
@@ -14994,7 +14998,23 @@ authorization: Bearer <auth-token>
     },
     "ref_name": {
       "type": "string",
-      "description": "ref name 名称。"
+      "description": "官方 Query 参数：分支、标签或其他 ref 名称。"
+    },
+    "since": {
+      "type": "string",
+      "description": "官方 Query 参数：只返回该时间之后的提交，建议 ISO 8601 时间字符串。"
+    },
+    "until": {
+      "type": "string",
+      "description": "官方 Query 参数：只返回该时间之前的提交，建议 ISO 8601 时间字符串。"
+    },
+    "order_by_date": {
+      "type": "boolean",
+      "description": "官方 Query 参数：是否按提交日期排序。"
+    },
+    "with_stats": {
+      "type": "boolean",
+      "description": "官方 Query 参数：是否返回提交统计信息。"
     }
   },
   "required": [
