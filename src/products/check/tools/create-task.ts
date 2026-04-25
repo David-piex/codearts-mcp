@@ -7,6 +7,10 @@ export function previewCreateTask(input: {
   git_url: string;
   git_branch: string;
   language: string;
+  resource_pool_id?: string;
+  resource_pool_type?: string;
+  include_paths?: string;
+  exclude_dir?: string;
   dry_run: boolean;
 }) {
   const mode = input.dry_run ? "Dry run" : "Executed";
@@ -17,6 +21,10 @@ export function previewCreateTask(input: {
     repositoryUrl: input.git_url,
     branchName: input.git_branch,
     language: input.language,
+    resourcePoolId: input.resource_pool_id,
+    resourcePoolType: input.resource_pool_type,
+    includePaths: input.include_paths,
+    excludeDir: input.exclude_dir,
     executed: !input.dry_run
   });
 }
@@ -50,6 +58,10 @@ type CheckCreateTaskClient = {
     git_branch: string;
     language: string;
     rule_set_id?: string;
+    resource_pool_id?: string;
+    resource_pool_type?: "default" | "custom";
+    include_paths?: string;
+    exclude_dir?: string;
     task_type?: string;
   }) => Promise<{
     task_id: string;

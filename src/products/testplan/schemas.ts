@@ -37,7 +37,7 @@ export const testPlanGetCaseInput = z.object({
   case_id: idSchema
 });
 
-export const testPlanListIssuesInput = z.object({
+export const testPlanListIssuesInput = pagingSchema.extend({
   project_id: idSchema,
   plan_id: idSchema
 });
@@ -45,9 +45,22 @@ export const testPlanListIssuesInput = z.object({
 export const testPlanRunCasesInput = z.object({
   project_id: idSchema,
   execute_list: z.array(
-    z.object({
-      case_id: idSchema
-    })
+    z
+      .object({
+        case_id: idSchema.optional(),
+        testcase_id: idSchema.optional(),
+        executor_id: idSchema.optional(),
+        execute_id: idSchema.optional(),
+        result_id: z.string().min(1).optional(),
+        start_time: z.string().min(1).optional(),
+        end_time: z.string().min(1).optional(),
+        duration: z.number().int().nonnegative().optional(),
+        description: z.string().min(1).optional(),
+        remark: z.string().min(1).optional()
+      })
+      .refine((item) => Boolean(item.case_id ?? item.testcase_id), {
+        message: "case_id or testcase_id is required"
+      })
   ).min(1),
   dry_run: z.boolean().default(true)
 });

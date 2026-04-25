@@ -3,6 +3,7 @@ import { checkRunTaskInput } from "../schemas.js";
 
 export function previewRunTask(input: {
   task_id: string;
+  ref?: string;
   task_name?: string;
   project_name?: string;
   repository_name?: string;
@@ -15,6 +16,7 @@ export function previewRunTask(input: {
 
   return asItemResult(`${mode}: run check task ${input.task_id}`, {
     id: input.task_id,
+    ref: input.ref,
     taskName: input.task_name,
     projectName: input.project_name,
     repositoryName: input.repository_name,
@@ -25,10 +27,16 @@ export function previewRunTask(input: {
   });
 }
 
-export function mapRunTaskResult(input: { task_id: string; job_id?: string; status?: string }) {
+export function mapRunTaskResult(input: {
+  task_id: string;
+  job_id?: string;
+  exec_id?: string;
+  status?: string;
+}) {
   return asItemResult(`Executed check task ${input.task_id}`, {
     id: input.task_id,
-    jobId: input.job_id,
+    jobId: input.job_id ?? input.exec_id,
+    execId: input.exec_id,
     status: input.status,
     executed: true
   });
@@ -44,9 +52,10 @@ type CheckRunTaskClient = {
     language?: string;
     status?: string;
   }>;
-  runTask: (input: { task_id: string }) => Promise<{
+  runTask: (input: { task_id: string; ref?: string }) => Promise<{
     task_id: string;
     job_id?: string;
+    exec_id?: string;
     status?: string;
   }>;
 };

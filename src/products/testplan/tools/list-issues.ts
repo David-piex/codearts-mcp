@@ -7,6 +7,15 @@ export function mapIssues(
     subject?: string;
     tracker_name?: string;
     parent_issue_id?: string;
+    owner_name?: string;
+    status?: string;
+    severity?: string;
+    module?: string;
+    iteration?: string;
+    start_date?: string;
+    end_date?: string;
+    workitem_id?: string;
+    region_id?: string;
   }>
 ) {
   return asListResult(
@@ -15,18 +24,41 @@ export function mapIssues(
       id: item.issue_id,
       title: item.subject,
       type: item.tracker_name,
-      parentId: item.parent_issue_id
+      parentId: item.parent_issue_id,
+      ownerName: item.owner_name,
+      status: item.status,
+      severity: item.severity,
+      module: item.module,
+      iteration: item.iteration,
+      startDate: item.start_date,
+      endDate: item.end_date,
+      workItemId: item.workitem_id,
+      regionId: item.region_id
     }))
   );
 }
 
 type TestPlanListIssuesClient = {
-  listIssues: (input: { project_id: string; plan_id: string }) => Promise<{
+  listIssues: (input: {
+    project_id: string;
+    plan_id: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
     issues: Array<{
       issue_id: string;
       subject?: string;
       tracker_name?: string;
       parent_issue_id?: string;
+      owner_name?: string;
+      status?: string;
+      severity?: string;
+      module?: string;
+      iteration?: string;
+      start_date?: string;
+      end_date?: string;
+      workitem_id?: string;
+      region_id?: string;
     }>;
   }>;
 };

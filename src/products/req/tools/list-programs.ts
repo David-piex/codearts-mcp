@@ -9,7 +9,7 @@ type ReqListProgramsClient = {
     page: number;
     page_size: number;
     search?: string;
-    sort_key?: "name" | "created_time";
+    sort_key?: string;
     sort_dir?: string;
     is_watched?: boolean;
   }) => Promise<{

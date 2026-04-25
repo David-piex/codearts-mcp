@@ -3,7 +3,18 @@ import { testPlanRunCasesInput } from "../schemas.js";
 
 export function previewRunCases(input: {
   project_id: string;
-  execute_list: Array<{ case_id: string }>;
+  execute_list: Array<{
+    case_id?: string;
+    testcase_id?: string;
+    executor_id?: string;
+    execute_id?: string;
+    result_id?: string;
+    start_time?: string;
+    end_time?: string;
+    duration?: number;
+    description?: string;
+    remark?: string;
+  }>;
   dry_run: boolean;
 }) {
   const mode = input.dry_run ? "Dry run" : "Executed";
@@ -31,7 +42,18 @@ export function mapRunCasesResult(input: {
 type TestPlanRunCasesClient = {
   runCases: (input: {
     project_id: string;
-    execute_list: Array<{ case_id: string }>;
+    execute_list: Array<{
+      case_id?: string;
+      testcase_id?: string;
+      executor_id?: string;
+      execute_id?: string;
+      result_id?: string;
+      start_time?: string;
+      end_time?: string;
+      duration?: number;
+      description?: string;
+      remark?: string;
+    }>;
   }) => Promise<{
     run_id?: string;
     accepted_count?: number;

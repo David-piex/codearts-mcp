@@ -20,7 +20,7 @@ export function mapReqWorkItemTrackerHandlers(
 type ReqListWorkItemTrackerHandlersClient = {
   listWorkItemTrackerHandlers: (input: {
     project_id: string;
-    tracker_id: 2 | 3 | 5 | 6 | 7;
+    tracker_id: number;
   }) => Promise<{
     tracker_handlers: Array<{
       handler_id?: number;

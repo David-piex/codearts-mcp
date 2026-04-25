@@ -3,7 +3,7 @@ import { reqGetWorkItemStatusRuleFlagInput } from "../schemas.js";
 
 type ReqWorkItemStatusRuleFlag = {
   project_id: string;
-  tracker_id: 2 | 3 | 5 | 6 | 7;
+  tracker_id: number;
   status_rule_flag: {
     tracker_config_id?: string | number;
     issue_field_config?: boolean;
@@ -26,7 +26,7 @@ export function mapReqWorkItemStatusRuleFlag(input: ReqWorkItemStatusRuleFlag) {
 type ReqGetWorkItemStatusRuleFlagClient = {
   getWorkItemStatusRuleFlag: (input: {
     project_id: string;
-    tracker_id: 2 | 3 | 5 | 6 | 7;
+    tracker_id: number;
   }) => Promise<ReqWorkItemStatusRuleFlag>;
 };
 

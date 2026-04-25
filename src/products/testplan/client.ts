@@ -4,13 +4,25 @@ export type TestPlanClient = {
   listIssues: (input: {
     project_id: string;
     plan_id: string;
+    page: number;
+    page_size: number;
   }) => Promise<{
     issues: Array<{
       issue_id: string;
       subject?: string;
       tracker_name?: string;
       parent_issue_id?: string;
+      owner_name?: string;
+      status?: string;
+      severity?: string;
+      module?: string;
+      iteration?: string;
+      start_date?: string;
+      end_date?: string;
+      workitem_id?: string;
+      region_id?: string;
     }>;
+    total?: number;
   }>;
   listPlans: (input: {
     project_id: string;
@@ -73,7 +85,18 @@ export type TestPlanClient = {
   }>;
   runCases: (input: {
     project_id: string;
-    execute_list: Array<{ case_id: string }>;
+    execute_list: Array<{
+      case_id?: string;
+      testcase_id?: string;
+      executor_id?: string;
+      execute_id?: string;
+      result_id?: string;
+      start_time?: string;
+      end_time?: string;
+      duration?: number;
+      description?: string;
+      remark?: string;
+    }>;
   }) => Promise<{
     run_id?: string;
     accepted_count?: number;
@@ -91,9 +114,10 @@ export type TestPlanClient = {
 export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPlanClient {
   return {
     async listIssues(input) {
+      const offset = (input.page - 1) * input.page_size;
       const query = new URLSearchParams({
-        offset: "0",
-        limit: "100"
+        offset: String(offset),
+        limit: String(input.page_size)
       });
 
       const response = (await _http.get(
@@ -107,6 +131,18 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
             tracker?: string;
             parent_issue_id?: string | number;
             parent_id?: string | number;
+            owner_name?: string;
+            owner?: string;
+            severity?: string;
+            priority?: string;
+            status?: string;
+            module?: string;
+            module_name?: string;
+            iteration?: string;
+            start_date?: string;
+            end_date?: string;
+            workitem_id?: string | number;
+            region_id?: string | number;
           }>
         | {
             issues?: Array<{
@@ -117,7 +153,20 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
               tracker?: string;
               parent_issue_id?: string | number;
               parent_id?: string | number;
+              owner_name?: string;
+              owner?: string;
+              severity?: string;
+              priority?: string;
+              status?: string;
+              module?: string;
+              module_name?: string;
+              iteration?: string;
+              start_date?: string;
+              end_date?: string;
+              workitem_id?: string | number;
+              region_id?: string | number;
             }>;
+            total?: number;
           };
 
       const issues = Array.isArray(response) ? response : response.issues ?? [];
@@ -130,8 +179,19 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
           parent_issue_id:
             item.parent_issue_id === undefined && item.parent_id === undefined
               ? undefined
-              : String(item.parent_issue_id ?? item.parent_id)
-        }))
+              : String(item.parent_issue_id ?? item.parent_id),
+          owner_name: item.owner_name ?? item.owner,
+          status: item.status,
+          severity: item.severity ?? item.priority,
+          module: item.module ?? item.module_name,
+          iteration: item.iteration,
+          start_date: item.start_date,
+          end_date: item.end_date,
+          workitem_id:
+            item.workitem_id === undefined ? undefined : String(item.workitem_id),
+          region_id: item.region_id === undefined ? undefined : String(item.region_id)
+        })),
+        total: Array.isArray(response) ? response.length : response.total
       };
     },
     async listPlans(input) {
@@ -294,7 +354,15 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       const response = (await _http.post(
         `/GT3KServer/v4/${encodeURIComponent(input.project_id)}/testcases/execute`,
         {
-          execute_list: input.execute_list
+          execute_list: input.execute_list.map((item) => ({
+            testcase_id: item.testcase_id ?? item.case_id ?? "",
+            execute_id: item.execute_id ?? item.executor_id,
+            result_id: item.result_id,
+            start_time: item.start_time,
+            end_time: item.end_time,
+            duration: item.duration,
+            description: item.description ?? item.remark
+          }))
         }
       )) as {
         run_id?: string;

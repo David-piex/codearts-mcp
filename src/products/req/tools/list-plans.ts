@@ -61,7 +61,7 @@ type ReqListPlansClient = {
     search?: string;
     user_ids?: string[];
     sort?: string;
-    type?: "gantt" | "mind";
+    type?: string;
   }) => Promise<{
     plans: Array<{
       id: number | string;

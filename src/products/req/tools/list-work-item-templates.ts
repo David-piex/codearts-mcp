@@ -26,7 +26,7 @@ export function mapReqWorkItemTemplates(
 type ReqListWorkItemTemplatesClient = {
   listWorkItemTemplates: (input: {
     project_id: string;
-    tracker_id?: 2 | 3 | 5 | 6 | 7;
+    tracker_id?: number;
   }) => Promise<{
     templates: Array<{
       id?: number | string;

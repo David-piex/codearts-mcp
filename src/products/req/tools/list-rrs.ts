@@ -7,7 +7,7 @@ import { mapRequirementPoolItem, type ReqRequirementPoolItem } from "./program-m
 type ReqListRrsClient = {
   listRrs: (input: {
     program_id: string;
-    query_type: "ALL" | "DST" | "SRC";
+    query_type: string;
     include_deleted?: boolean;
     updated_time_interval?: string;
     page: number;

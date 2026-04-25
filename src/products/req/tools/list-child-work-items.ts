@@ -102,7 +102,7 @@ type ReqListChildWorkItemsClient = {
     page: number;
     page_size: number;
     subject?: string;
-    query_type: "basic" | "custom" | "query";
+    query_type: string;
   }) => Promise<{
     work_items: ReqChildWorkItem[];
     total?: number;

@@ -13,14 +13,70 @@ describe("createTestPlanClient", () => {
 
     const result = await client.listIssues({
       project_id: "project-1",
-      plan_id: "plan-1"
+      plan_id: "plan-1",
+      page: 2,
+      page_size: 50
     });
 
     expect(requestedPath).toBe(
-      "/v1/projects/project-1/plans/plan-1/issues?offset=0&limit=100"
+      "/v1/projects/project-1/plans/plan-1/issues?offset=50&limit=50"
     );
     expect(result).toEqual({
-      issues: []
+      issues: [],
+      total: 0
+    });
+  });
+
+  it("maps richer plan issue fields", async () => {
+    const client = createTestPlanClient({
+      get: async () => ({
+        issues: [
+          {
+            issue_id: "issue-1",
+            subject: "login broken",
+            tracker_name: "Bug",
+            parent_issue_id: "parent-1",
+            owner_name: "alice",
+            status: "open",
+            severity: "critical",
+            module_name: "auth",
+            iteration: "Sprint 1",
+            start_date: "2026-04-01",
+            end_date: "2026-04-10",
+            workitem_id: 101,
+            region_id: 7
+          }
+        ],
+        total: 1
+      })
+    } as never);
+
+    const result = await client.listIssues({
+      project_id: "project-1",
+      plan_id: "plan-1",
+      page: 1,
+      page_size: 20
+    });
+
+    expect(result).toEqual({
+      issues: [
+        {
+          issue_id: "issue-1",
+          subject: "login broken",
+          tracker_name: "Bug",
+          parent_issue_id: "parent-1",
+          owner_name: "alice",
+          status: "open",
+          severity: "critical",
+          module: "auth",
+          iteration: "Sprint 1",
+          start_date: "2026-04-01",
+          end_date: "2026-04-10",
+          workitem_id: "101",
+          region_id: "7"
+        }
+      ],
+      total: 1
     });
   });
 
@@ -77,6 +133,57 @@ describe("createTestPlanClient", () => {
     expect(result).toEqual({
       cases: [],
       total: 0
+    });
+  });
+
+  it("maps run case aliases to the execute payload", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requestedPath = path;
+        requestedBody = body as Record<string, unknown>;
+        return {
+          run_id: "run-1",
+          accepted_count: 1,
+          status: "queued"
+        };
+      }
+    } as never);
+
+    const result = await client.runCases({
+      project_id: "project-1",
+      execute_list: [
+        {
+          case_id: "case-1",
+          executor_id: "user-1",
+          result_id: "0",
+          start_time: "2020-06-22 18:11:54",
+          end_time: "2020-06-23 18:11:54",
+          duration: 120,
+          remark: "batch smoke"
+        }
+      ]
+    });
+
+    expect(requestedPath).toBe("/GT3KServer/v4/project-1/testcases/execute");
+    expect(requestedBody).toEqual({
+      execute_list: [
+        {
+          testcase_id: "case-1",
+          execute_id: "user-1",
+          result_id: "0",
+          start_time: "2020-06-22 18:11:54",
+          end_time: "2020-06-23 18:11:54",
+          duration: 120,
+          description: "batch smoke"
+        }
+      ]
+    });
+    expect(result).toEqual({
+      run_id: "run-1",
+      accepted_count: 1,
+      status: "queued"
     });
   });
 });

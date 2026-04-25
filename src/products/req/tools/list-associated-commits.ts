@@ -53,7 +53,7 @@ type ReqListAssociatedCommitsClient = {
     work_item_id: string;
     page: number;
     page_size: number;
-    type?: "commit" | "branch";
+    type?: string;
   }) => Promise<{
     commits: Array<{
       branch_name?: string;

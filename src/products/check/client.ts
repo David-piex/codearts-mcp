@@ -8,6 +8,10 @@ export type CheckClient = {
     git_branch: string;
     language: string;
     rule_set_id?: string;
+    resource_pool_id?: string;
+    resource_pool_type?: "default" | "custom";
+    include_paths?: string;
+    exclude_dir?: string;
     task_type?: string;
   }) => Promise<{
     task_id: string;
@@ -18,9 +22,10 @@ export type CheckClient = {
     language?: string;
     status?: string;
   }>;
-  runTask: (input: { task_id: string }) => Promise<{
+  runTask: (input: { task_id: string; ref?: string }) => Promise<{
     task_id: string;
     job_id?: string;
+    exec_id?: string;
     status?: string;
   }>;
   stopTask: (input: { task_id: string }) => Promise<{
@@ -103,25 +108,30 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
   return {
     async createTask(input) {
       const taskType = input.task_type === "incremental" ? "inc" : input.task_type;
+      const payloadBase = {
+        task_name: input.task_name,
+        git_url: input.git_url,
+        git_branch: input.git_branch,
+        check_type: ["source"],
+        task_type: taskType,
+        resource_pool_id: input.resource_pool_id,
+        resource_pool_type: input.resource_pool_type,
+        include_paths: input.include_paths,
+        exclude_dir: input.exclude_dir
+      };
       const payload = input.rule_set_id
         ? {
-            git_url: input.git_url,
-            git_branch: input.git_branch,
-            check_type: ["source"],
+            ...payloadBase,
             rule_sets: [
               {
                 language: input.language,
                 ruleset_id: input.rule_set_id
               }
-            ],
-            task_type: taskType
+            ]
           }
         : {
-            git_url: input.git_url,
-            git_branch: input.git_branch,
-            check_type: ["source"],
-            language: [input.language],
-            task_type: taskType
+            ...payloadBase,
+            language: [input.language]
           };
       const response = (await _http.post(
         `/v2/${encodeURIComponent(input.project_id)}/task`,
@@ -160,14 +170,16 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
     async runTask(input) {
       const response = (await _http.post(
         `/v2/tasks/${encodeURIComponent(input.task_id)}/run`,
-        {}
+        input.ref ? { ref: input.ref } : {}
       )) as {
         task_id?: string;
         job_id?: string;
+        exec_id?: string;
         status?: string | number;
         result?: {
           task_id?: string;
           job_id?: string;
+          exec_id?: string;
           status?: string | number;
         };
       };
@@ -176,7 +188,8 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
 
       return {
         task_id: item.task_id ?? input.task_id,
-        job_id: item.job_id,
+        job_id: item.job_id ?? item.exec_id,
+        exec_id: item.exec_id,
         status: item.status === undefined ? undefined : String(item.status)
       };
     },

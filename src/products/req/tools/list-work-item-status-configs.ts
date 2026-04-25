@@ -23,7 +23,7 @@ type ReqStatusConfig = {
 
 type ReqWorkItemStatusConfigs = {
   project_id: string;
-  tracker_id: 2 | 3 | 5 | 6 | 7;
+  tracker_id: number;
   issue_statuses: ReqStatusConfig[];
   workitem_readonly_mode?: boolean;
 };
@@ -64,7 +64,7 @@ export function mapReqWorkItemStatusConfigs(input: ReqWorkItemStatusConfigs) {
 type ReqListWorkItemStatusConfigsClient = {
   listWorkItemStatusConfigs: (input: {
     project_id: string;
-    tracker_id: 2 | 3 | 5 | 6 | 7;
+    tracker_id: number;
   }) => Promise<ReqWorkItemStatusConfigs>;
 };
 

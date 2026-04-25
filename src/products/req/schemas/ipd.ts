@@ -19,7 +19,11 @@ const ipdPagingSchema = pagingSchema
 
 export const reqListIpdProjectsInput = z.object({
   search: z.string().optional(),
-  model: z.enum(["10001", "10002", "10003"]).optional()
+  model: z.string().min(1).optional(),
+  model_id: z.string().min(1).optional()
+}).refine((input) => !(input.model && input.model_id), {
+  message: "model and model_id cannot both be set",
+  path: ["model_id"]
 });
 
 export const reqListIpdProjectUsersInput = z.object({
@@ -192,7 +196,7 @@ export const reqListIpdCategoryStatusesInput = z.object({
 
 export const reqGetIpdStatisticDashboardInput = z.object({
   project_id: idSchema,
-  classification: z.enum(["requirement", "bug"]),
+  classification: z.string().min(1),
   plan: z
     .object({
       plan_pi: z.string().optional(),
@@ -399,7 +403,7 @@ export const reqCreateIpdWorkHourInput = z.object({
   work_date_begin: z.string().min(1),
   work_date_end: z.string().min(1),
   work_hours: z.union([z.string(), z.number()]),
-  work_hour_type: z.union([z.literal(1), z.literal(2), z.string().min(1)]),
+    work_hour_type: z.union([z.number().int().positive(), z.string().min(1)]),
   include_weekend: z.boolean(),
   work_hour_category: z.string().optional(),
   description: z.string().optional(),

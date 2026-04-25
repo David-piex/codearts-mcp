@@ -34,7 +34,7 @@ export function mapReqWorkItemWorkflowConfig(
 type ReqListWorkItemWorkflowConfigClient = {
   listWorkItemWorkflowConfig: (input: {
     project_id: string;
-    tracker_id: 2 | 3 | 5 | 6 | 7;
+    tracker_id: number;
   }) => Promise<{
     workflows: Array<{
       id?: string;

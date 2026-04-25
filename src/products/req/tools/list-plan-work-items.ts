@@ -63,7 +63,7 @@ type ReqListPlanWorkItemsClient = {
     page_size: number;
     subject?: string;
     show_type?: "list" | "tree";
-    tracker_id?: 2 | 3 | 5 | 6 | 7;
+    tracker_id?: number;
   }) => Promise<{
     work_items: Array<{
       id: number | string;

@@ -8102,7 +8102,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `search` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `model` | 否 | `string` |  | IPD 项目模型：10001、10002、10003，分别对应租户启用的不同 IPD 项目模型；具体名称以租户配置为准。 |
+| `model` | 否 | `string` |  | IPD 项目模型编码；支持 `10001`、`10002`、`10003` 等官方常见值，也支持租户自定义模型值。 |
+| `model_id` | 否 | `string` |  | `model` 的别名；便于按返回里的 `model_id` 原样回传筛选。`model` 与 `model_id` 二选一。 |
 
 调用示例：
 
@@ -8113,7 +8114,9 @@ authorization: Bearer <auth-token>
   "method": "tools/call",
   "params": {
     "name": "req_list_ipd_projects",
-    "arguments": {}
+    "arguments": {
+      "model": "20001"
+    }
   }
 }
 ```
@@ -8130,12 +8133,13 @@ authorization: Bearer <auth-token>
     },
     "model": {
       "type": "string",
-      "enum": [
-        "10001",
-        "10002",
-        "10003"
-      ],
-      "description": "IPD 项目模型：10001、10002、10003，分别对应租户启用的不同 IPD 项目模型；具体名称以租户配置为准。"
+      "minLength": 1,
+      "description": "IPD 项目模型编码；支持官方常见值和租户自定义模型值。"
+    },
+    "model_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "model 的别名；便于按返回里的 model_id 原样回传筛选。"
     }
   },
   "additionalProperties": false,
@@ -22263,6 +22267,10 @@ authorization: Bearer <auth-token>
 | `git_branch` | 是 | `string` |  | Git 分支。 |
 | `language` | 是 | `string` |  | 语言类型。 |
 | `rule_set_id` | 否 | `unknown` |  | 规则集 ID。用于定位代码检查或流水线策略规则集。 |
+| `resource_pool_id` | 否 | `string` |  | 资源池 ID，对应官方 `resource_pool_id`。 |
+| `resource_pool_type` | 否 | `string` |  | 资源池类型；当前支持 `default`、`custom`。 |
+| `include_paths` | 否 | `string` |  | 包含路径配置，用于限制扫描目录。 |
+| `exclude_dir` | 否 | `string` |  | 排除目录配置，用于忽略不需要扫描的目录。 |
 | `task_type` | 否 | `string` |  | 检查任务类型：full=全量检查，incremental=增量检查。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -22277,13 +22285,17 @@ authorization: Bearer <auth-token>
     "name": "check_create_task",
     "arguments": {
       "project_id": "<project_id>",
-      "task_name": "<task_name>",
-      "git_url": "<git_url>",
-      "git_branch": "<git_branch>",
-      "language": "<language>"
+        "task_name": "<task_name>",
+        "git_url": "<git_url>",
+        "git_branch": "<git_branch>",
+        "language": "<language>",
+        "resource_pool_id": "<resource_pool_id>",
+        "resource_pool_type": "custom",
+        "include_paths": "src,lib",
+        "exclude_dir": "dist"
+      }
     }
   }
-}
 ```
 
 参数 JSON Schema：
@@ -22320,6 +22332,28 @@ authorization: Bearer <auth-token>
     "rule_set_id": {
       "$ref": "#/properties/project_id",
       "description": "规则集 ID。用于定位代码检查或流水线策略规则集。"
+    },
+    "resource_pool_id": {
+      "$ref": "#/properties/project_id",
+      "description": "资源池 ID。"
+    },
+    "resource_pool_type": {
+      "type": "string",
+      "enum": [
+        "default",
+        "custom"
+      ],
+      "description": "资源池类型。"
+    },
+    "include_paths": {
+      "type": "string",
+      "minLength": 1,
+      "description": "包含路径配置。"
+    },
+    "exclude_dir": {
+      "type": "string",
+      "minLength": 1,
+      "description": "排除目录配置。"
     },
     "task_type": {
       "type": "string",
@@ -22789,6 +22823,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `task_id` | 是 | `string` |  | 任务 ID。用于定位构建、部署、检查或测试计划任务。 |
+| `ref` | 否 | `string` |  | 运行时引用分支或 MR ref，对应官方 RunTaskV2 的 `ref`。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -22799,12 +22834,13 @@ authorization: Bearer <auth-token>
   "id": 1,
   "method": "tools/call",
   "params": {
-    "name": "check_run_task",
-    "arguments": {
-      "task_id": "<task_id>"
+      "name": "check_run_task",
+      "arguments": {
+        "task_id": "<task_id>",
+        "ref": "refs/merge-requests/12/head"
+      }
     }
   }
-}
 ```
 
 参数 JSON Schema：
@@ -22817,6 +22853,11 @@ authorization: Bearer <auth-token>
       "type": "string",
       "minLength": 1,
       "description": "任务 ID。用于定位构建、部署、检查或测试计划任务。"
+    },
+    "ref": {
+      "type": "string",
+      "minLength": 1,
+      "description": "运行时引用分支或 MR ref。"
     },
     "dry_run": {
       "type": "boolean",
@@ -22984,8 +23025,13 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量；会映射为官方 `offset/limit`。 |
+| `keyword` | 否 | `string` |  | 当前未下发到官方接口，仅保留通用分页输入兼容。 |
+| `sort_by` | 否 | `string` |  | 当前未下发到官方接口，仅保留通用分页输入兼容。 |
+| `sort_order` | 否 | `string` |  | 当前未下发到官方接口，仅保留通用分页输入兼容。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `plan_id` | 是 | `unknown` |  | 规划/计划 ID。用于定位 CodeArts Req 中的计划资源。 |
+| `plan_id` | 是 | `string` |  | TestPlan 计划/版本 URI，用于定位测试计划下的关联工作项。 |
 
 调用示例：
 
@@ -23213,13 +23259,15 @@ authorization: Bearer <auth-token>
   "id": 1,
   "method": "tools/call",
   "params": {
-    "name": "testplan_list_issues",
-    "arguments": {
-      "project_id": "<project_id>",
-      "plan_id": "<plan_id>"
+      "name": "testplan_list_issues",
+      "arguments": {
+        "project_id": "<project_id>",
+        "plan_id": "<plan_id>",
+        "page": 1,
+        "page_size": 50
+      }
     }
   }
-}
 ```
 
 参数 JSON Schema：
@@ -23228,6 +23276,35 @@ authorization: Bearer <auth-token>
 {
   "type": "object",
   "properties": {
+    "page": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "default": 1,
+      "description": "页码。"
+    },
+    "page_size": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 200,
+      "default": 20,
+      "description": "每页数量。"
+    },
+    "keyword": {
+      "type": "string",
+      "description": "当前未下发到官方接口，仅保留通用分页输入兼容。"
+    },
+    "sort_by": {
+      "type": "string",
+      "description": "当前未下发到官方接口，仅保留通用分页输入兼容。"
+    },
+    "sort_order": {
+      "type": "string",
+      "enum": [
+        "asc",
+        "desc"
+      ],
+      "description": "当前未下发到官方接口，仅保留通用分页输入兼容。"
+    },
     "project_id": {
       "type": "string",
       "minLength": 1,
@@ -23235,7 +23312,7 @@ authorization: Bearer <auth-token>
     },
     "plan_id": {
       "$ref": "#/properties/project_id",
-      "description": "规划/计划 ID。用于定位 CodeArts Req 中的计划资源。"
+      "description": "TestPlan 计划/版本 URI。"
     }
   },
   "required": [
@@ -23450,7 +23527,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `execute_list` | 是 | `array` |  | 执行用例列表。运行测试用例时传入待执行的 case_id 集合。 |
+| `execute_list` | 是 | `array` |  | 执行用例列表；当前兼容 `case_id`/`testcase_id`、`executor_id`/`execute_id`、`result_id`、开始结束时间、耗时、备注。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -23461,13 +23538,23 @@ authorization: Bearer <auth-token>
   "id": 1,
   "method": "tools/call",
   "params": {
-    "name": "testplan_run_cases",
-    "arguments": {
-      "project_id": "<project_id>",
-      "execute_list": []
+      "name": "testplan_run_cases",
+      "arguments": {
+        "project_id": "<project_id>",
+        "execute_list": [
+          {
+            "case_id": "<case_id>",
+            "executor_id": "<executor_id>",
+            "result_id": "0",
+            "start_time": "2020-06-22 18:11:54",
+            "end_time": "2020-06-23 18:11:54",
+            "duration": 120,
+            "remark": "batch smoke"
+          }
+        ]
+      }
     }
   }
-}
 ```
 
 参数 JSON Schema：
@@ -23483,19 +23570,58 @@ authorization: Bearer <auth-token>
     },
     "execute_list": {
       "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "case_id": {
-            "$ref": "#/properties/project_id",
-            "description": "执行用例列表。运行测试用例时传入待执行的 case_id 集合。"
-          }
+        "items": {
+          "type": "object",
+          "properties": {
+            "case_id": {
+              "$ref": "#/properties/project_id",
+              "description": "执行用例列表。运行测试用例时传入待执行的 case_id 集合。"
+            },
+            "testcase_id": {
+              "$ref": "#/properties/project_id",
+              "description": "官方字段名兼容写法；与 case_id 二选一。"
+            },
+            "executor_id": {
+              "$ref": "#/properties/project_id",
+              "description": "执行人 ID；会映射到官方 execute_id。"
+            },
+            "execute_id": {
+              "$ref": "#/properties/project_id",
+              "description": "官方执行人字段名。"
+            },
+            "result_id": {
+              "type": "string",
+              "minLength": 1,
+              "description": "结果 ID。"
+            },
+            "start_time": {
+              "type": "string",
+              "minLength": 1,
+              "description": "开始时间。"
+            },
+            "end_time": {
+              "type": "string",
+              "minLength": 1,
+              "description": "结束时间。"
+            },
+            "duration": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "执行耗时。"
+            },
+            "description": {
+              "type": "string",
+              "minLength": 1,
+              "description": "备注描述。"
+            },
+            "remark": {
+              "type": "string",
+              "minLength": 1,
+              "description": "备注别名，会映射到官方 description。"
+            }
+          },
+          "additionalProperties": false
         },
-        "required": [
-          "case_id"
-        ],
-        "additionalProperties": false
-      },
       "minItems": 1,
       "description": "execute list 参数，按对应 CodeArts API 要求传入。"
     },

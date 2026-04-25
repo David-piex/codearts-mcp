@@ -8,7 +8,7 @@ type ReqListIrChildrenClient = {
   listIrChildren: (input: {
     program_id: string;
     ir_id: string;
-    query_type: "RR" | "ITEMS";
+    query_type: string;
     page: number;
     page_size: number;
   }) => Promise<{

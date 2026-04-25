@@ -123,7 +123,9 @@ if (hasLiveEnv(process.env)) {
 
     it("lists issues for the known live plan", async () => {
       const result = await client.listIssues(
-        createProjectPlanInput(supportedProjectId, planId)
+        createProjectPageInput(supportedProjectId, {
+          plan_id: planId
+        })
       );
 
       expect(Array.isArray(result.issues)).toBe(true);

@@ -95,7 +95,7 @@ function normalizeStatus(item: ReqStatusDetail) {
 
 type ReqWorkItemStatusDetails = {
   project_id: string;
-  tracker_id: 2 | 3 | 5 | 6 | 7;
+  tracker_id: number;
   grouped_statuses: Record<string, ReqStatusDetail[]>;
   issue_statuses: ReqStatusDetail[];
 };
@@ -115,7 +115,7 @@ export function mapReqWorkItemStatusDetails(input: ReqWorkItemStatusDetails) {
 type ReqListWorkItemStatusDetailsClient = {
   listWorkItemStatusDetails: (input: {
     project_id: string;
-    tracker_id: 2 | 3 | 5 | 6 | 7;
+    tracker_id: number;
   }) => Promise<ReqWorkItemStatusDetails>;
 };
 

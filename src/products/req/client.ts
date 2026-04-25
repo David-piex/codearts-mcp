@@ -418,7 +418,7 @@ export type ReqClient = {
     page: number;
     page_size: number;
     keyword?: string;
-    tracker_id?: 2 | 3 | 5 | 6 | 7;
+    tracker_id?: number;
     status_id?: number;
   }) => Promise<{
     work_items: Array<ReqDetailedIssueListItem>;
@@ -449,7 +449,7 @@ export type ReqClient = {
     search?: string;
     user_ids?: string[];
     sort?: string;
-    type?: "gantt" | "mind";
+    type?: string;
   }) => Promise<{
     plans: Array<{
       id: number | string;
@@ -515,7 +515,7 @@ export type ReqClient = {
     page_size: number;
     subject?: string;
     show_type?: "list" | "tree";
-    tracker_id?: 2 | 3 | 5 | 6 | 7;
+    tracker_id?: number;
   }) => Promise<{
     work_items: Array<{
       id: number | string;
@@ -541,7 +541,7 @@ export type ReqClient = {
   createPlan: (input: {
     project_id: string;
     name: string;
-    type: "gantt" | "mind";
+    type: string;
   }) => Promise<{
     id: number | string;
     name: string;
@@ -917,7 +917,7 @@ export type ReqClient = {
     project_id: string;
     page: number;
     page_size: number;
-    status?: 1 | 2;
+    status?: number;
   }) => Promise<{
     total?: number;
     work_hours_types: Array<{
@@ -946,7 +946,7 @@ export type ReqClient = {
     page: number;
     page_size: number;
     subject?: string;
-    query_type: "basic" | "custom" | "query";
+    query_type: string;
   }) => Promise<{
     work_items: ReqChildWorkItem[];
     total?: number;
@@ -1097,7 +1097,7 @@ export type ReqClient = {
     work_item_id: string;
     page: number;
     page_size: number;
-    type?: "commit" | "branch";
+    type?: string;
   }) => Promise<{
     commits: Array<{
       branch_name?: string;
@@ -1233,10 +1233,10 @@ export type ReqClient = {
   }>;
   listWorkItemStatusDetails: (input: {
     project_id: string;
-    tracker_id: 2 | 3 | 5 | 6 | 7;
+    tracker_id: number;
   }) => Promise<{
     project_id: string;
-    tracker_id: 2 | 3 | 5 | 6 | 7;
+    tracker_id: number;
     grouped_statuses: Record<
       string,
       Array<{
@@ -1311,10 +1311,10 @@ export type ReqClient = {
   }>;
   listWorkItemStatusConfigs: (input: {
     project_id: string;
-    tracker_id: 2 | 3 | 5 | 6 | 7;
+    tracker_id: number;
   }) => Promise<{
     project_id: string;
-    tracker_id: 2 | 3 | 5 | 6 | 7;
+    tracker_id: number;
     issue_statuses: Array<{
       trackerList?: number[];
       id?: string;
@@ -1338,10 +1338,10 @@ export type ReqClient = {
   }>;
   listOptionalWorkItemStatusConfigs: (input: {
     project_id: string;
-    tracker_id: 2 | 3 | 5 | 6 | 7;
+    tracker_id: number;
   }) => Promise<{
     project_id: string;
-    tracker_id: 2 | 3 | 5 | 6 | 7;
+    tracker_id: number;
     issue_statuses: Array<{
       trackerList?: number[];
       id?: string;
@@ -1368,7 +1368,7 @@ export type ReqClient = {
   }>;
   listWorkItemWorkflowConfig: (input: {
     project_id: string;
-    tracker_id: 2 | 3 | 5 | 6 | 7;
+    tracker_id: number;
   }) => Promise<{
     workflows: Array<{
       id?: string;
@@ -1384,7 +1384,7 @@ export type ReqClient = {
   }>;
   listWorkItemTemplates: (input: {
     project_id: string;
-    tracker_id?: 2 | 3 | 5 | 6 | 7;
+    tracker_id?: number;
   }) => Promise<{
     templates: Array<{
       id?: number | string;
@@ -1396,7 +1396,7 @@ export type ReqClient = {
   }>;
   createWorkItemTemplate: (input: {
     project_id: string;
-    tracker_id: 2 | 3 | 5 | 6 | 7;
+    tracker_id: number;
     description?: string;
     issue_field_configs?: Array<{
       field?: string;
@@ -1407,7 +1407,7 @@ export type ReqClient = {
     }>;
   }) => Promise<{
     project_id: string;
-    tracker_id: 2 | 3 | 5 | 6 | 7;
+    tracker_id: number;
     description?: string;
     issue_field_configs?: Array<{
       field?: string;
@@ -1445,10 +1445,10 @@ export type ReqClient = {
   }>;
   getWorkItemTemplateConfig: (input: {
     project_id: string;
-    tracker_id: 2 | 3 | 5 | 6 | 7;
+    tracker_id: number;
   }) => Promise<{
     project_id: string;
-    tracker_id: 2 | 3 | 5 | 6 | 7;
+    tracker_id: number;
     templates: Array<{
       id?: number | string;
       name?: string;
@@ -1471,7 +1471,7 @@ export type ReqClient = {
   }>;
   listWorkItemCustomFields: (input: {
     project_id: string;
-    tracker_id?: 2 | 3 | 5 | 6 | 7;
+    tracker_id?: number;
   }) => Promise<{
     custom_field: Array<{
       tracker_list?: string[];
@@ -1491,10 +1491,10 @@ export type ReqClient = {
   }>;
   getWorkItemStatusRuleFlag: (input: {
     project_id: string;
-    tracker_id: 2 | 3 | 5 | 6 | 7;
+    tracker_id: number;
   }) => Promise<{
     project_id: string;
-    tracker_id: 2 | 3 | 5 | 6 | 7;
+    tracker_id: number;
     status_rule_flag: {
       tracker_config_id?: string | number;
       issue_field_config?: boolean;
@@ -1503,7 +1503,7 @@ export type ReqClient = {
   }>;
   listWorkItemTrackerHandlers: (input: {
     project_id: string;
-    tracker_id: 2 | 3 | 5 | 6 | 7;
+    tracker_id: number;
   }) => Promise<{
     tracker_handlers: Array<{
       handler_id?: number;
@@ -1598,21 +1598,21 @@ export type ReqClient = {
     page: number;
     page_size: number;
     search?: string;
-    sort_key?: "name" | "created_time";
+    sort_key?: string;
     sort_dir?: string;
     is_watched?: boolean;
   }) => Promise<{
     programs: ReqProgramItem[];
     total?: number;
   }>;
-  listProgramFields: (input: { program_id: string; field_type: "IR" | "RR" }) => Promise<{
+  listProgramFields: (input: { program_id: string; field_type: string }) => Promise<{
     fields: ReqProgramField[];
   }>;
   getIr: (input: { program_id: string; ir_id: string }) => Promise<ReqRequirementPoolItem>;
   listIrChildren: (input: {
     program_id: string;
     ir_id: string;
-    query_type: "RR" | "ITEMS";
+    query_type: string;
     page: number;
     page_size: number;
   }) => Promise<{
@@ -1628,7 +1628,7 @@ export type ReqClient = {
   }>;
   listRrs: (input: {
     program_id: string;
-    query_type: "ALL" | "DST" | "SRC";
+    query_type: string;
     include_deleted?: boolean;
     updated_time_interval?: string;
     page: number;
@@ -1644,7 +1644,7 @@ export type ReqClient = {
   listIssueSeverities: (input: {}) => Promise<{
     severities: ReqIssueSeverity[];
   }>;
-  listIpdProjects: (input: { search?: string; model?: "10001" | "10002" | "10003" }) => Promise<{
+  listIpdProjects: (input: { search?: string; model?: string; model_id?: string }) => Promise<{
     projects: ReqIpdProject[];
   }>;
   listIpdProjectUsers: (input: { project_id: string }) => Promise<{
@@ -1766,7 +1766,7 @@ export type ReqClient = {
   }>;
   getIpdStatisticDashboard: (input: {
     project_id: string;
-    classification: "requirement" | "bug";
+    classification: string;
     plan?: { plan_pi?: string; plan_iteration?: string };
     created_date?: Record<string, unknown>;
   }) => Promise<{ items: ReqIpdDashboardItem[] }>;
@@ -1882,7 +1882,7 @@ export type ReqClient = {
     work_date_begin: string;
     work_date_end: string;
     work_hours: string | number;
-    work_hour_type: 1 | 2 | string;
+    work_hour_type: number | string;
     include_weekend: boolean;
     work_hour_category?: string;
     description?: string;
@@ -5953,8 +5953,9 @@ export function createReqClient(
       if (typeof input.search !== "undefined") {
         query.set("search", input.search);
       }
-      if (input.model) {
-        query.set("model", input.model);
+      const model = input.model ?? input.model_id;
+      if (model) {
+        query.set("model", model);
       }
       const suffix = query.toString() ? `?${query.toString()}` : "";
       const response = (await _http.get(`/v1/ipdprojectservice/projects/ipd${suffix}`)) as {

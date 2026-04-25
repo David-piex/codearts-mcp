@@ -17,7 +17,7 @@ type ReqProgramField = {
 };
 
 type ReqListProgramFieldsClient = {
-  listProgramFields: (input: { program_id: string; field_type: "IR" | "RR" }) => Promise<{
+  listProgramFields: (input: { program_id: string; field_type: string }) => Promise<{
     fields: ReqProgramField[];
   }>;
 };

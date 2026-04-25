@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { testPlanListCasesInput } from "../../../src/products/testplan/schemas.js";
+import {
+  testPlanListCasesInput,
+  testPlanListIssuesInput,
+  testPlanRunCasesInput
+} from "../../../src/products/testplan/schemas.js";
 
 describe("testplan schemas", () => {
   it("accepts list case filter fields and query overrides", () => {
@@ -35,6 +39,55 @@ describe("testplan schemas", () => {
       },
       page: 1,
       page_size: 20
+    });
+  });
+
+  it("accepts list issue paging fields", () => {
+    const parsed = testPlanListIssuesInput.parse({
+      project_id: "project-1",
+      plan_id: "plan-1",
+      page: 2,
+      page_size: 50
+    });
+
+    expect(parsed).toMatchObject({
+      project_id: "project-1",
+      plan_id: "plan-1",
+      page: 2,
+      page_size: 50
+    });
+  });
+
+  it("accepts run case execution metadata and aliases", () => {
+    const parsed = testPlanRunCasesInput.parse({
+      project_id: "project-1",
+      execute_list: [
+        {
+          testcase_id: "case-1",
+          execute_id: "user-1",
+          result_id: "0",
+          start_time: "2020-06-22 18:11:54",
+          end_time: "2020-06-23 18:11:54",
+          duration: 120,
+          description: "batch smoke"
+        }
+      ]
+    });
+
+    expect(parsed).toMatchObject({
+      project_id: "project-1",
+      execute_list: [
+        {
+          testcase_id: "case-1",
+          execute_id: "user-1",
+          result_id: "0",
+          start_time: "2020-06-22 18:11:54",
+          end_time: "2020-06-23 18:11:54",
+          duration: 120,
+          description: "batch smoke"
+        }
+      ],
+      dry_run: true
     });
   });
 });

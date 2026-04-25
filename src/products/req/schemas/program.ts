@@ -21,14 +21,14 @@ const largeProgramPagingSchema = pagingSchema
 
 export const reqListProgramsInput = programPagingSchema.extend({
   search: z.string().min(1).optional(),
-  sort_key: z.enum(["name", "created_time"]).optional(),
+  sort_key: z.string().min(1).optional(),
   sort_dir: z.enum(["ASC", "DESC", "asc", "desc"]).optional(),
   is_watched: z.boolean().optional()
 });
 
 export const reqListProgramFieldsInput = z.object({
   program_id: idSchema,
-  field_type: z.enum(["IR", "RR"])
+  field_type: z.string().min(1)
 });
 
 export const reqGetIrInput = z.object({
@@ -39,7 +39,7 @@ export const reqGetIrInput = z.object({
 export const reqListIrChildrenInput = largeProgramPagingSchema.extend({
   program_id: idSchema,
   ir_id: idSchema,
-  query_type: z.enum(["RR", "ITEMS"])
+  query_type: z.string().min(1)
 });
 
 export const reqListIrHistoriesInput = largeProgramPagingSchema.extend({
@@ -53,7 +53,7 @@ export const reqListRrStatusesInput = z.object({
 
 export const reqListRrsInput = largeProgramPagingSchema.extend({
   program_id: idSchema,
-  query_type: z.enum(["ALL", "DST", "SRC"]).default("ALL"),
+  query_type: z.string().min(1).default("ALL"),
   include_deleted: z.boolean().optional(),
   updated_time_interval: z.string().min(1).optional()
 });

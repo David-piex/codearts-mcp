@@ -58,7 +58,7 @@ import {
 } from "./ipd-mappers.js";
 
 type ReqIpdReadClient = {
-  listIpdProjects: (input: { search?: string; model?: "10001" | "10002" | "10003" }) => Promise<{ projects: ReqIpdProject[] }>;
+  listIpdProjects: (input: { search?: string; model?: string; model_id?: string }) => Promise<{ projects: ReqIpdProject[] }>;
   listIpdProjectUsers: (input: { project_id: string }) => Promise<{ users: ReqIpdUser[] }>;
   getIpdIssue: (input: { project_id: string; issue_id: string; version: "v1" | "v2" }) => Promise<ReqIpdIssue>;
   listIpdIssues: (input: {
@@ -135,7 +135,7 @@ type ReqIpdReadClient = {
   listIpdCategoryStatuses: (input: { project_id: string; category_id: string }) => Promise<{ statuses: ReqIpdNamedItem[]; total?: number }>;
   getIpdStatisticDashboard: (input: {
     project_id: string;
-    classification: "requirement" | "bug";
+    classification: string;
     plan?: { plan_pi?: string; plan_iteration?: string };
     created_date?: Record<string, unknown>;
   }) => Promise<{ items: ReqIpdDashboardItem[] }>;

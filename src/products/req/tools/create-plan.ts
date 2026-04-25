@@ -4,7 +4,7 @@ import { reqCreatePlanInput } from "../schemas.js";
 export function previewCreatePlan(input: {
   project_id: string;
   name: string;
-  type: "gantt" | "mind";
+  type: string;
   dry_run: boolean;
 }) {
   return asItemResult(`Dry run: create plan ${input.name}`, {
@@ -43,7 +43,7 @@ type ReqCreatePlanClient = {
   createPlan: (input: {
     project_id: string;
     name: string;
-    type: "gantt" | "mind";
+    type: string;
   }) => Promise<{
     id: number | string;
     name: string;

@@ -29,7 +29,7 @@ type ReqListProjectWorkHourTypesClient = {
     project_id: string;
     page: number;
     page_size: number;
-    status?: 1 | 2;
+    status?: number;
   }) => Promise<{
     total?: number;
     work_hours_types: Array<{

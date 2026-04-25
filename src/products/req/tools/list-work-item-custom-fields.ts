@@ -42,7 +42,7 @@ export function mapReqWorkItemCustomFields(
 type ReqListWorkItemCustomFieldsClient = {
   listWorkItemCustomFields: (input: {
     project_id: string;
-    tracker_id?: 2 | 3 | 5 | 6 | 7;
+    tracker_id?: number;
   }) => Promise<{
     custom_field: Array<{
       tracker_list?: string[];

@@ -6216,4 +6216,44 @@ describe("createReqClient", () => {
     expect(flowDetail.next_flow).toEqual([expect.objectContaining({ code: "to_done", name: "Done" })]);
     expect(statuses).toEqual({ statuses: [expect.objectContaining({ name: "分析" })], total: 1 });
   });
+  it("allows custom IPD project model selection and model_id alias", async () => {
+    const requests: Array<{ method: string; path: string }> = [];
+    const client = createReqClient({
+      get: async (path: string) => {
+        requests.push({ method: "GET", path });
+        return {
+          result: [
+            {
+              project_id: "ipd-1",
+              project_name: "IPD Project",
+              model_id: "20001"
+            }
+          ]
+        };
+      }
+    } as never);
+
+    const [customModel, aliasModel] = await Promise.all([
+      client.listIpdProjects({
+        search: "demo",
+        model: "20001"
+      }),
+      client.listIpdProjects({
+        model_id: "custom-model-x"
+      })
+    ]);
+
+    expect(requests).toEqual([
+      {
+        method: "GET",
+        path: "/v1/ipdprojectservice/projects/ipd?search=demo&model=20001"
+      },
+      {
+        method: "GET",
+        path: "/v1/ipdprojectservice/projects/ipd?model=custom-model-x"
+      }
+    ]);
+    expect(customModel.projects).toEqual([expect.objectContaining({ project_id: "ipd-1", model_id: "20001" })]);
+    expect(aliasModel.projects).toEqual([expect.objectContaining({ project_id: "ipd-1", model_id: "20001" })]);
+  });
 });

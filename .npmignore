@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.env
+.env.local
+.codearts-mcp/
+coverage/
+.playwright-cli/
+.deploy-upload*.tgz
+tmp/
+tmp-*
+tmp-*.log
+tmp-govern-*
+.qoder/
+docs/superpowers/

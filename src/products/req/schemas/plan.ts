@@ -1,15 +1,9 @@
 import { z } from "zod";
 import { idSchema, pagingSchema } from "../../../contracts/common-schemas.js";
 
-const scrumPlanTrackerIdSchema = z.union([
-  z.literal(2),
-  z.literal(3),
-  z.literal(5),
-  z.literal(6),
-  z.literal(7)
-]);
+const reqPlanTrackerIdSchema = z.number().int().positive();
 
-const scrumPlanTypeSchema = z.union([z.literal("gantt"), z.literal("mind")]);
+const reqPlanTypeSchema = z.string().min(1);
 
 export const reqGetPlanInput = z.object({
   project_id: idSchema,
@@ -19,7 +13,7 @@ export const reqGetPlanInput = z.object({
 export const reqCreatePlanInput = z.object({
   project_id: idSchema,
   name: z.string().min(1),
-  type: scrumPlanTypeSchema,
+  type: reqPlanTypeSchema,
   dry_run: z.boolean().default(true)
 });
 
@@ -64,7 +58,7 @@ export const reqListPlansInput = pagingSchema
     search: z.string().optional(),
     user_ids: z.array(idSchema).optional(),
     sort: z.string().optional(),
-    type: scrumPlanTypeSchema.optional()
+    type: reqPlanTypeSchema.optional()
   })
   .omit({
     keyword: true,
@@ -111,7 +105,7 @@ export const reqListPlanWorkItemsInput = pagingSchema
     plan_id: idSchema,
     subject: z.string().optional(),
     show_type: z.enum(["list", "tree"]).default("list"),
-    tracker_id: scrumPlanTrackerIdSchema.optional()
+    tracker_id: reqPlanTrackerIdSchema.optional()
   })
   .omit({
     keyword: true,

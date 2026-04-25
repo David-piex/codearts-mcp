@@ -51,7 +51,7 @@ type ReqListIterationWorkItemsClient = {
     page: number;
     page_size: number;
     keyword?: string;
-    tracker_id?: 2 | 3 | 5 | 6 | 7;
+    tracker_id?: number;
     status_id?: number;
   }) => Promise<{
     work_items: Array<{

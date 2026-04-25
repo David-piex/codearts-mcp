@@ -16,12 +16,17 @@ export const checkCreateTaskInput = z.object({
   git_branch: z.string().min(1),
   language: z.string().min(1),
   rule_set_id: idSchema.optional(),
+  resource_pool_id: idSchema.optional(),
+  resource_pool_type: z.enum(["default", "custom"]).optional(),
+  include_paths: z.string().min(1).optional(),
+  exclude_dir: z.string().min(1).optional(),
   task_type: z.enum(["full", "incremental"]).optional(),
   dry_run: z.boolean().default(true)
 });
 
 export const checkRunTaskInput = z.object({
   task_id: idSchema,
+  ref: z.string().min(1).optional(),
   dry_run: z.boolean().default(true)
 });
 

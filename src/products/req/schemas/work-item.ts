@@ -1,13 +1,7 @@
 import { z } from "zod";
 import { idSchema, pagingSchema } from "../../../contracts/common-schemas.js";
 
-const scrumTrackerIdSchema = z.union([
-  z.literal(2),
-  z.literal(3),
-  z.literal(5),
-  z.literal(6),
-  z.literal(7)
-]);
+const reqTrackerIdSchema = z.number().int().positive();
 
 export const reqCreateWorkItemInput = z.object({
   project_id: idSchema,
@@ -109,7 +103,7 @@ export const reqCountWorkItemTreeInput = pagingSchema
   })
   .extend({
     project_id: idSchema,
-    tracker_ids: z.array(scrumTrackerIdSchema).min(1).optional()
+    tracker_ids: z.array(reqTrackerIdSchema).min(1).optional()
   });
 
 export const reqListWorkItemTreeInput = pagingSchema
@@ -119,7 +113,7 @@ export const reqListWorkItemTreeInput = pagingSchema
   })
   .extend({
     project_id: idSchema,
-    tracker_ids: z.array(scrumTrackerIdSchema).min(1).optional()
+    tracker_ids: z.array(reqTrackerIdSchema).min(1).optional()
   });
 
 export const reqListWorkItemTagsInput = pagingSchema
@@ -178,10 +172,10 @@ export const reqListProjectWorkHourTypesInput = pagingSchema
   })
   .extend({
     project_id: idSchema,
-    status: z.union([z.literal(1), z.literal(2)]).optional()
+    status: z.number().int().positive().optional()
   });
 
-const reqChildWorkItemQueryTypeSchema = z.enum(["basic", "custom", "query"]);
+const reqChildWorkItemQueryTypeSchema = z.string().min(1);
 
 export const reqListChildWorkItemsInput = pagingSchema
   .pick({
@@ -320,7 +314,7 @@ export const reqListAssociatedCommitsInput = pagingSchema
   .extend({
     project_id: idSchema,
     work_item_id: idSchema,
-    type: z.enum(["commit", "branch"]).default("commit")
+    type: z.string().min(1).default("commit")
   })
   .omit({
     keyword: true,
@@ -369,17 +363,17 @@ export const reqListWorkItemStatusAttributesInput = z.object({
 
 export const reqListWorkItemStatusDetailsInput = z.object({
   project_id: idSchema,
-  tracker_id: scrumTrackerIdSchema
+  tracker_id: reqTrackerIdSchema
 });
 
 export const reqListWorkItemStatusConfigsInput = z.object({
   project_id: idSchema,
-  tracker_id: scrumTrackerIdSchema
+  tracker_id: reqTrackerIdSchema
 });
 
 export const reqListOptionalWorkItemStatusConfigsInput = z.object({
   project_id: idSchema,
-  tracker_id: scrumTrackerIdSchema
+  tracker_id: reqTrackerIdSchema
 });
 
 export const reqGetProjectPublicConfigInput = z.object({
@@ -388,7 +382,7 @@ export const reqGetProjectPublicConfigInput = z.object({
 
 export const reqListWorkItemWorkflowConfigInput = z.object({
   project_id: idSchema,
-  tracker_id: scrumTrackerIdSchema
+  tracker_id: reqTrackerIdSchema
 });
 
 export const reqListBoardWorkItemWorkflowConfigInput = z.object({
@@ -404,7 +398,7 @@ export const reqListJobCacheBoardsInput = z.object({
 
 export const reqListWorkItemTemplatesInput = z.object({
   project_id: idSchema,
-  tracker_id: scrumTrackerIdSchema.optional()
+  tracker_id: reqTrackerIdSchema.optional()
 });
 
 const reqCreateWorkItemTemplateFieldConfigInput = z.object({
@@ -418,7 +412,7 @@ const reqCreateWorkItemTemplateFieldConfigInput = z.object({
 export const reqCreateWorkItemTemplateInput = z
   .object({
     project_id: idSchema,
-    tracker_id: scrumTrackerIdSchema,
+    tracker_id: reqTrackerIdSchema,
     description: z.string().optional(),
     issue_field_configs: z.array(reqCreateWorkItemTemplateFieldConfigInput).min(1).optional(),
     dry_run: z.boolean().default(true)
@@ -435,22 +429,22 @@ export const reqCreateWorkItemTemplateInput = z
 
 export const reqGetWorkItemTemplateConfigInput = z.object({
   project_id: idSchema,
-  tracker_id: scrumTrackerIdSchema
+  tracker_id: reqTrackerIdSchema
 });
 
 export const reqListWorkItemCustomFieldsInput = z.object({
   project_id: idSchema,
-  tracker_id: scrumTrackerIdSchema.optional()
+  tracker_id: reqTrackerIdSchema.optional()
 });
 
 export const reqGetWorkItemStatusRuleFlagInput = z.object({
   project_id: idSchema,
-  tracker_id: scrumTrackerIdSchema
+  tracker_id: reqTrackerIdSchema
 });
 
 export const reqListWorkItemTrackerHandlersInput = z.object({
   project_id: idSchema,
-  tracker_id: scrumTrackerIdSchema
+  tracker_id: reqTrackerIdSchema
 });
 
 export const reqListCacheDataInput = z.object({

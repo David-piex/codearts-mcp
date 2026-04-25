@@ -11,7 +11,7 @@ type ReqCreateWorkItemTemplateFieldConfig = {
 
 export function previewCreateWorkItemTemplate(input: {
   project_id: string;
-  tracker_id: 2 | 3 | 5 | 6 | 7;
+  tracker_id: number;
   description?: string;
   issue_field_configs?: ReqCreateWorkItemTemplateFieldConfig[];
   dry_run: boolean;
@@ -30,7 +30,7 @@ export function previewCreateWorkItemTemplate(input: {
 
 export function mapCreatedWorkItemTemplate(input: {
   project_id: string;
-  tracker_id: 2 | 3 | 5 | 6 | 7;
+  tracker_id: number;
   description?: string;
   issue_field_configs?: ReqCreateWorkItemTemplateFieldConfig[];
   status?: string;
@@ -48,12 +48,12 @@ export function mapCreatedWorkItemTemplate(input: {
 type ReqCreateWorkItemTemplateClient = {
   createWorkItemTemplate: (input: {
     project_id: string;
-    tracker_id: 2 | 3 | 5 | 6 | 7;
+    tracker_id: number;
     description?: string;
     issue_field_configs?: ReqCreateWorkItemTemplateFieldConfig[];
   }) => Promise<{
     project_id: string;
-    tracker_id: 2 | 3 | 5 | 6 | 7;
+    tracker_id: number;
     description?: string;
     issue_field_configs?: ReqCreateWorkItemTemplateFieldConfig[];
     status?: string;

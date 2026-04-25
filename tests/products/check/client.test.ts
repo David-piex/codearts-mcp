@@ -66,14 +66,23 @@ describe("createCheckClient", () => {
 
     await client.createTask(createTaskInput({
       rule_set_id: "ruleset-1",
+      resource_pool_id: "pool-1",
+      resource_pool_type: "custom",
+      include_paths: "src,lib",
+      exclude_dir: "dist",
       task_type: "full"
     }));
 
     expect(requestedPath).toBe("/v2/project-1/task");
     expect(requestedBody).toEqual({
+      task_name: "scan-demo",
       git_url: "https://example.com/demo.git",
       git_branch: "main",
       check_type: ["source"],
+      resource_pool_id: "pool-1",
+      resource_pool_type: "custom",
+      include_paths: "src,lib",
+      exclude_dir: "dist",
       rule_sets: [
         {
           language: "java",
@@ -100,9 +109,14 @@ describe("createCheckClient", () => {
     }));
 
     expect(requestedBody).toEqual({
+      task_name: "scan-demo",
       git_url: "https://example.com/demo.git",
       git_branch: "main",
       check_type: ["source"],
+      resource_pool_id: undefined,
+      resource_pool_type: undefined,
+      include_paths: undefined,
+      exclude_dir: undefined,
       language: ["java"],
       task_type: "inc"
     });
@@ -142,6 +156,35 @@ describe("createCheckClient", () => {
     await client.runTask(createTaskRefInput());
 
     expect(requestedBody).toEqual({});
+  });
+
+  it("passes the documented ref when running a task", async () => {
+    let requestedBody: unknown;
+    const client = createClient({
+      post: async (_path: string, body?: unknown) => {
+        requestedBody = body;
+        return {
+          task_id: "task-1",
+          exec_id: "exec-1"
+        };
+      }
+    });
+
+    const result = await client.runTask(
+      createTaskRefInput({
+        ref: "refs/merge-requests/12/head"
+      })
+    );
+
+    expect(requestedBody).toEqual({
+      ref: "refs/merge-requests/12/head"
+    });
+    expect(result).toEqual({
+      task_id: "task-1",
+      job_id: "exec-1",
+      exec_id: "exec-1",
+      status: undefined
+    });
   });
 
   it("sends an empty json object when stopping a task", async () => {

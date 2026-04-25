@@ -248,7 +248,7 @@ PDF 复核结论：当前 PDF 中没有明确搜到需求池 IR/RR 的官方创�
 | 特性集 / E2E | `req_list_ipd_snapshot_versions`, `req_list_ipd_feature_sets`, `req_list_ipd_snapshot_features`, `req_get_ipd_e2e_graph` |
 | 租户字段 | `req_list_ipd_tenant_fields`, `req_get_ipd_tenant_field_used`, `req_get_ipd_tenant_field_option_used`, `req_get_ipd_project_field_option_used` |
 
-真实 smoke 状态：租户级 IPD 可达性已验证；当前 AK 的 IPD 项目列表为空，所以项目级 IPD 非空样本仍待补。
+真实 smoke 状态：租户级 IPD 可达性已验证；当前 AK 的 IPD 项目列表为空，所以项目级 IPD 非空样本仍待补。`req_list_ipd_projects` 的 `model` 现已支持自定义模型值，并兼容 `model_id` 别名透传筛选。
 
 ### IPD 配置写入
 

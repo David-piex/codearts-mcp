@@ -23,7 +23,7 @@ type ReqOptionalStatusConfig = {
 
 type ReqOptionalWorkItemStatusConfigs = {
   project_id: string;
-  tracker_id: 2 | 3 | 5 | 6 | 7;
+  tracker_id: number;
   issue_statuses: ReqOptionalStatusConfig[];
 };
 
@@ -62,7 +62,7 @@ export function mapReqOptionalWorkItemStatusConfigs(input: ReqOptionalWorkItemSt
 type ReqListOptionalWorkItemStatusConfigsClient = {
   listOptionalWorkItemStatusConfigs: (input: {
     project_id: string;
-    tracker_id: 2 | 3 | 5 | 6 | 7;
+    tracker_id: number;
   }) => Promise<ReqOptionalWorkItemStatusConfigs>;
 };
 

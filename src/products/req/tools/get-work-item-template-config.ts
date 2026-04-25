@@ -18,7 +18,7 @@ type ReqWorkItemTemplateFieldConfig = {
 
 type ReqWorkItemTemplateConfig = {
   project_id: string;
-  tracker_id: 2 | 3 | 5 | 6 | 7;
+  tracker_id: number;
   templates: Array<{
     id?: number | string;
     name?: string;
@@ -56,7 +56,7 @@ export function mapReqWorkItemTemplateConfig(input: ReqWorkItemTemplateConfig) {
 type ReqGetWorkItemTemplateConfigClient = {
   getWorkItemTemplateConfig: (input: {
     project_id: string;
-    tracker_id: 2 | 3 | 5 | 6 | 7;
+    tracker_id: number;
   }) => Promise<ReqWorkItemTemplateConfig>;
 };
 

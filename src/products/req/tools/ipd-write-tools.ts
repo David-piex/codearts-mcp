@@ -94,7 +94,7 @@ type ReqIpdWriteClient = {
     work_date_begin: string;
     work_date_end: string;
     work_hours: string | number;
-    work_hour_type: 1 | 2 | string;
+    work_hour_type: number | string;
     include_weekend: boolean;
     work_hour_category?: string;
     description?: string;
