@@ -1,10 +1,12 @@
-# CodeArts MCP Function API Reference
+# CodeArts MCP 功能 API 参考
 
-Generated date: 2026-04-25
+生成日期：2026-04-25
 
-This document lists every function API exposed by the current HTTP MCP mode. All function APIs use the same HTTP endpoint: `POST /mcp`. The JSON-RPC method is `tools/call`, and the concrete function is selected by `params.name`. Read [HTTP-MCP-Interface](./HTTP-MCP-Interface.md) first for session, authentication, and error handling.
+本文档列出当前 HTTP MCP 模式暴露的每个功能 API。所有功能 API 都使用同一个 HTTP 入口：`POST /mcp`；JSON-RPC 方法固定为 `tools/call`；具体功能由 `params.name` 指定。会话、鉴权、错误响应和完整 HTTP 调用流程请先阅读 [HTTP-MCP-Interface](./HTTP-MCP-Interface.md)。
 
-## Common Call Shape
+工具名、参数名和 JSON Schema 是实际调用契约，必须保持英文原值；本文档中的中文说明用于帮助理解功能含义。
+
+## 通用调用格式
 
 ```json
 {
@@ -18,7 +20,7 @@ This document lists every function API exposed by the current HTTP MCP mode. All
 }
 ```
 
-Headers:
+请求头：
 
 ```http
 content-type: application/json
@@ -26,44 +28,46 @@ mcp-session-id: <session-id>
 authorization: Bearer <auth-token>
 ```
 
-## Module Index
+## 模块目录
 
-| Module | API count |
+| 模块 | API 数量 |
 | --- | ---: |
-| [Auth / Session](#auth-session) | 2 |
-| [Req](#req) | 174 |
-| [Repo](#repo) | 25 |
-| [Pipeline](#pipeline) | 77 |
-| [Check](#check) | 8 |
-| [TestPlan](#testplan) | 7 |
-| [Deploy](#deploy) | 59 |
-| [Build](#build) | 22 |
-| [Artifact](#artifact) | 12 |
-| **Total** | **386** |
+| [鉴权 / 会话](#鉴权--会话) | 2 |
+| [Req 需求管理](#req-需求管理) | 174 |
+| [Repo 代码仓](#repo-代码仓) | 25 |
+| [Pipeline 流水线](#pipeline-流水线) | 77 |
+| [Check 代码检查](#check-代码检查) | 8 |
+| [TestPlan 测试计划](#testplan-测试计划) | 7 |
+| [Deploy 部署](#deploy-部署) | 59 |
+| [Build 构建](#build-构建) | 22 |
+| [Artifact 制品仓](#artifact-制品仓) | 12 |
+| **合计** | **386** |
 
-## Auth / Session
+## 鉴权 / 会话
 
-| API | Description |
+| API | 中文说明 |
 | --- | --- |
-| `auth_clear_session` | Clear Huawei Cloud credentials for the current MCP session |
-| `auth_configure_session` | Configure Huawei Cloud credentials for the current MCP session. Standard CodeArts regions only need access_key, secret_key, and region; *_base_url fields are optional overrides. |
+| `auth_clear_session` | 清除并撤销当前 MCP 会话的华为云凭证。 |
+| `auth_configure_session` | 为当前 MCP 会话配置华为云 AK/SK、区域和可选服务 base URL。 |
 
 ### auth_clear_session
 
-Description: Clear Huawei Cloud credentials for the current MCP session
+中文说明：清除并撤销当前 MCP 会话的华为云凭证。
 
-| Field | Value |
+原始工具说明：Clear Huawei Cloud credentials for the current MCP session
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `auth_clear_session` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `auth_clear_session` |
 
-Arguments:
+参数：
 
-No arguments.
+无参数。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -77,7 +81,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -89,32 +93,34 @@ Argument JSON Schema:
 
 ### auth_configure_session
 
-Description: Configure Huawei Cloud credentials for the current MCP session. Standard CodeArts regions only need access_key, secret_key, and region; *_base_url fields are optional overrides.
+中文说明：为当前 MCP 会话配置华为云 AK/SK、区域和可选服务 base URL。
 
-| Field | Value |
+原始工具说明：Configure Huawei Cloud credentials for the current MCP session. Standard CodeArts regions only need access_key, secret_key, and region; *_base_url fields are optional overrides.
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `auth_configure_session` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `auth_configure_session` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `access_key` | yes | `string` |  |  |
-| `secret_key` | yes | `string` |  |  |
-| `region` | yes | `string` |  |  |
-| `req_base_url` | no | `string` |  |  |
-| `repo_base_url` | no | `string` |  |  |
-| `pipeline_base_url` | no | `string` |  |  |
-| `check_base_url` | no | `string` |  |  |
-| `testplan_base_url` | no | `string` |  |  |
-| `deploy_base_url` | no | `string` |  |  |
-| `build_base_url` | no | `string` |  |  |
-| `artifact_base_url` | no | `string` |  |  |
+| `access_key` | 是 | `string` |  |  |
+| `secret_key` | 是 | `string` |  |  |
+| `region` | 是 | `string` |  |  |
+| `req_base_url` | 否 | `string` |  |  |
+| `repo_base_url` | 否 | `string` |  |  |
+| `pipeline_base_url` | 否 | `string` |  |  |
+| `check_base_url` | 否 | `string` |  |  |
+| `testplan_base_url` | 否 | `string` |  |  |
+| `deploy_base_url` | 否 | `string` |  |  |
+| `build_base_url` | 否 | `string` |  |  |
+| `artifact_base_url` | 否 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -132,7 +138,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -193,206 +199,208 @@ Argument JSON Schema:
 }
 ```
 
-## Req
+## Req 需求管理
 
-| API | Description |
+| API | 中文说明 |
 | --- | --- |
-| `req_add_iteration_work_items` | Add work items to a CodeArts Req iteration |
-| `req_add_plan_work_items` | Add work items to a CodeArts Req plan |
-| `req_add_project_member` | Add member to a CodeArts Req project |
-| `req_add_work_item_comment` | Add comment to a CodeArts Req work item |
-| `req_add_work_item_work_hour` | Add a work hour record to a CodeArts Req work item |
-| `req_batch_add_project_members` | Add multiple members to a CodeArts Req project |
-| `req_batch_create_ipd_issues` | Batch create CodeArts Req IPD issues |
-| `req_batch_delete_ipd_issues` | Batch delete CodeArts Req IPD issues |
-| `req_batch_delete_iterations` | Delete multiple CodeArts Req iterations |
-| `req_batch_delete_project_members` | Remove multiple members from a CodeArts Req project |
-| `req_batch_delete_work_items` | Delete multiple CodeArts Req work items |
-| `req_batch_transfer_ipd_work_item_flow` | Batch transfer CodeArts Req IPD work item flow |
-| `req_batch_update_ipd_issues` | Batch update CodeArts Req IPD issues |
-| `req_batch_update_work_items` | Batch update CodeArts Req work items |
-| `req_check_project_name` | Check whether a CodeArts Req project name exists |
-| `req_check_work_item_status_name` | Check whether a CodeArts Req work item status name already exists |
-| `req_clear_plan_work_items` | Clear work items from a CodeArts Req plan |
-| `req_copy_work_items` | Copy CodeArts Req work items between projects |
-| `req_count_work_item_tree` | Count CodeArts Req work items in tree mode |
-| `req_create_ipd_feature_set` | Create CodeArts Req IPD feature set |
-| `req_create_ipd_issue` | Create CodeArts Req IPD issue |
-| `req_create_ipd_label` | Create CodeArts Req IPD label |
-| `req_create_ipd_module` | Create CodeArts Req IPD module |
-| `req_create_ipd_work_hour` | Create CodeArts Req IPD work hour record |
-| `req_create_iteration` | Create CodeArts Req iteration |
-| `req_create_iteration_work_item` | Create CodeArts Req iteration work item |
-| `req_create_plan` | Create CodeArts Req plan |
-| `req_create_plan_work_item` | Create CodeArts Req plan work item |
-| `req_create_project` | Create CodeArts Req project |
-| `req_create_project_module` | Create CodeArts Req project module |
-| `req_create_work_item` | Create CodeArts Req work item |
-| `req_create_work_item_template` | Create or update a CodeArts Req work item template |
-| `req_delete_attachment` | Delete a CodeArts Req work item attachment |
-| `req_delete_ipd_feature_set` | Delete CodeArts Req IPD feature set |
-| `req_delete_ipd_issue_image` | Delete image from CodeArts Req IPD issue description |
-| `req_delete_ipd_label` | Delete CodeArts Req IPD label |
-| `req_delete_ipd_module` | Delete CodeArts Req IPD module |
-| `req_delete_ipd_work_hour` | Delete CodeArts Req IPD work hour record |
-| `req_delete_iteration` | Delete CodeArts Req iteration |
-| `req_delete_plan` | Delete CodeArts Req plan |
-| `req_delete_project` | Delete CodeArts Req project |
-| `req_delete_project_module` | Delete CodeArts Req project module |
-| `req_delete_project_template` | Delete a CodeArts Req project template |
-| `req_delete_work_item` | Delete CodeArts Req work item |
-| `req_download_attachment` | Download a CodeArts Req work item attachment |
-| `req_download_image_file` | Download a CodeArts Req image file |
-| `req_download_ipd_issue_attachment` | Download CodeArts Req IPD issue attachment |
-| `req_download_ipd_issue_image` | Download image from CodeArts Req IPD issue description |
-| `req_get_current_user_info` | Get current CodeArts Req user info |
-| `req_get_current_user_role` | Get current CodeArts Req user role in a project |
-| `req_get_ipd_e2e_graph` | Get CodeArts Req IPD E2E trace graph |
-| `req_get_ipd_issue` | Get CodeArts Req IPD issue detail |
-| `req_get_ipd_project_field_option_used` | Get CodeArts Req IPD project field option usage |
-| `req_get_ipd_statistic_dashboard` | Get CodeArts Req IPD statistic dashboard |
-| `req_get_ipd_tenant_field_option_used` | Get CodeArts Req IPD tenant field option usage |
-| `req_get_ipd_tenant_field_used` | Get CodeArts Req IPD tenant field usage |
-| `req_get_ipd_work_item_flow_detail` | Get CodeArts Req IPD work item flow detail |
-| `req_get_ir` | Get a CodeArts Req requirement pool IR detail |
-| `req_get_iteration` | Get CodeArts Req iteration detail |
-| `req_get_plan` | Get CodeArts Req plan detail |
-| `req_get_project` | Get CodeArts Req project detail |
-| `req_get_project_bug_density` | Get CodeArts Req project bug density metric |
-| `req_get_project_bugs_per_developer` | Get CodeArts Req project bugs per developer metric |
-| `req_get_project_completion_rate` | Get CodeArts Req project completion rate metric |
-| `req_get_project_due_days_after` | Get CodeArts Req project due-days-after config |
-| `req_get_project_public_config` | Get CodeArts Req project public config |
-| `req_get_project_summary` | Get CodeArts Req project summary |
-| `req_get_project_workhour_config` | Get CodeArts Req project workhour config |
-| `req_get_work_item` | Get CodeArts Req work item detail |
-| `req_get_work_item_completion_rate` | Get CodeArts Req work item completion rates |
-| `req_get_work_item_index_counts` | Get CodeArts Req work item index counts |
-| `req_get_work_item_issue_details` | Get CodeArts Req work item issue details from the V2 detail endpoint |
-| `req_get_work_item_status_rule_flag` | Get CodeArts Req work item status rule flag |
-| `req_get_work_item_template_config` | Get CodeArts Req work item template config |
-| `req_group_ipd_issues` | Group CodeArts Req IPD issues |
-| `req_leave_project` | Leave a CodeArts Req project as the current member |
-| `req_list_associated_commits` | List CodeArts Req associated commits |
-| `req_list_associated_issues` | List CodeArts Req associated issues |
-| `req_list_associated_test_cases` | List CodeArts Req associated test cases |
-| `req_list_associated_wikis` | List CodeArts Req associated wikis |
-| `req_list_board_work_item_status_records` | List CodeArts Req board work item status records |
-| `req_list_board_work_item_workflow_config` | List CodeArts Req board work item workflow config |
-| `req_list_board_work_items` | List CodeArts Req board work items |
-| `req_list_cache_data` | List CodeArts Req cache data |
-| `req_list_child_work_items` | List CodeArts Req child work items |
-| `req_list_ipd_attached_wikis` | List CodeArts Req IPD issue attached wikis |
-| `req_list_ipd_category_statuses` | List CodeArts Req IPD category statuses |
-| `req_list_ipd_feature_sets` | List CodeArts Req IPD feature sets |
-| `req_list_ipd_issue_attachments` | List CodeArts Req IPD issue attachments |
-| `req_list_ipd_issue_fields` | List CodeArts Req IPD issue fields |
-| `req_list_ipd_issue_relation_config` | List CodeArts Req IPD issue relation config |
-| `req_list_ipd_issue_tree` | List CodeArts Req IPD issue tree |
-| `req_list_ipd_issues` | List CodeArts Req IPD issues |
-| `req_list_ipd_labels` | List CodeArts Req IPD labels |
-| `req_list_ipd_modules` | List CodeArts Req IPD modules |
-| `req_list_ipd_project_fields` | List CodeArts Req IPD project fields |
-| `req_list_ipd_project_users` | List CodeArts Req IPD project users |
-| `req_list_ipd_projects` | List CodeArts Req IPD projects |
-| `req_list_ipd_snapshot_features` | List CodeArts Req IPD snapshot features |
-| `req_list_ipd_snapshot_versions` | List CodeArts Req IPD feature set snapshot versions |
-| `req_list_ipd_statuses` | List CodeArts Req IPD statuses |
-| `req_list_ipd_tenant_fields` | List CodeArts Req IPD tenant fields |
-| `req_list_ipd_tenant_issues` | List CodeArts Req IPD tenant issues |
-| `req_list_ipd_work_hour_categories` | List CodeArts Req IPD work hour categories |
-| `req_list_ipd_work_hours` | List CodeArts Req IPD work hour records |
-| `req_list_ipd_workflow_fields` | List CodeArts Req IPD workflow fields |
-| `req_list_ipd_workflow_templates` | List CodeArts Req IPD workflow templates |
-| `req_list_ir_children` | List CodeArts Req requirement pool IR children |
-| `req_list_ir_histories` | List CodeArts Req requirement pool IR history records |
-| `req_list_issue_severities` | List CodeArts Req issue severities |
-| `req_list_iteration_status_statistics` | List CodeArts Req iteration status statistics |
-| `req_list_iteration_work_items` | List CodeArts Req work items in an iteration |
-| `req_list_iterations` | List CodeArts Req iterations |
-| `req_list_job_cache_boards` | List CodeArts Req board cache fields |
-| `req_list_not_added_projects` | List CodeArts Req projects not yet added to the current domain |
-| `req_list_optional_work_item_status_configs` | List CodeArts Req optional work item status configs |
-| `req_list_plan_addable_work_items` | List addable work items for a CodeArts Req plan |
-| `req_list_plan_work_items` | List CodeArts Req work items in a plan |
-| `req_list_plans` | List CodeArts Req plans |
-| `req_list_program_fields` | List CodeArts Req program IR or RR fields |
-| `req_list_programs` | List CodeArts Req project spaces / programs |
-| `req_list_project_bug_statistics` | List CodeArts Req project bug statistics |
-| `req_list_project_demand_statistics` | List CodeArts Req project demand statistics |
-| `req_list_project_domains` | List CodeArts Req project domains |
-| `req_list_project_members` | List CodeArts Req project members |
-| `req_list_project_modules` | List CodeArts Req project modules |
-| `req_list_project_work_hour_types` | List CodeArts Req project work hour types |
-| `req_list_project_work_hours` | List CodeArts Req project work hour records |
-| `req_list_project_work_item_records` | List CodeArts Req project work item records |
-| `req_list_projects` | List CodeArts Req projects |
-| `req_list_related_users` | List CodeArts Req related users |
-| `req_list_rr_histories` | List CodeArts Req requirement pool RR history records |
-| `req_list_rr_statuses` | List CodeArts Req requirement pool RR statuses |
-| `req_list_rrs` | List CodeArts Req requirement pool RRs |
-| `req_list_user_features` | List CodeArts Req user features |
-| `req_list_work_item_comments` | List CodeArts Req work item comments |
-| `req_list_work_item_custom_fields` | List CodeArts Req work item custom fields |
-| `req_list_work_item_records` | List CodeArts Req work item records |
-| `req_list_work_item_status_attributes` | List CodeArts Req work item status attributes |
-| `req_list_work_item_status_configs` | List CodeArts Req work item status configs |
-| `req_list_work_item_status_details` | List CodeArts Req work item status details |
-| `req_list_work_item_statuses` | List CodeArts Req work item statuses |
-| `req_list_work_item_tags` | List CodeArts Req work item tags |
-| `req_list_work_item_templates` | List CodeArts Req work item templates |
-| `req_list_work_item_tracker_handlers` | List CodeArts Req work item tracker handlers |
-| `req_list_work_item_tree` | List CodeArts Req work items in tree mode |
-| `req_list_work_item_work_hours` | List CodeArts Req work hour records for a work item |
-| `req_list_work_item_workflow_config` | List CodeArts Req work item workflow config |
-| `req_list_work_items` | List CodeArts Req work items |
-| `req_query_iteration_immovable_issues` | Query CodeArts Req iteration immovable issues |
-| `req_transfer_ipd_work_item_flow` | Transfer CodeArts Req IPD work item flow |
-| `req_update_cache_data` | Update CodeArts Req cache data |
-| `req_update_ipd_feature_set` | Update CodeArts Req IPD feature set |
-| `req_update_ipd_label` | Update CodeArts Req IPD label |
-| `req_update_ipd_module` | Update CodeArts Req IPD module |
-| `req_update_ipd_project_field` | Update CodeArts Req IPD project field |
-| `req_update_ipd_tenant_field` | Update CodeArts Req IPD tenant field |
-| `req_update_ipd_work_hour` | Update CodeArts Req IPD work hour record |
-| `req_update_iteration` | Update CodeArts Req iteration |
-| `req_update_iteration_state` | Update CodeArts Req iteration state |
-| `req_update_plan` | Update CodeArts Req plan |
-| `req_update_plan_image` | Update image for a CodeArts Req plan |
-| `req_update_project` | Update CodeArts Req project |
-| `req_update_project_member_role` | Update a CodeArts Req project member role |
-| `req_update_project_module` | Update CodeArts Req project module |
-| `req_update_project_template` | Update a CodeArts Req project template |
-| `req_update_work_item` | Update CodeArts Req work item |
-| `req_update_work_item_comment` | Update a CodeArts Req work item comment |
-| `req_update_work_item_flow` | Update CodeArts Req work item flow |
-| `req_upload_attachment` | Upload a CodeArts Req work item attachment |
-| `req_upload_ipd_issue_attachment` | Upload attachment to CodeArts Req IPD issue |
-| `req_upload_ipd_issue_image` | Upload image to CodeArts Req IPD issue description |
-| `req_upload_work_item_image` | Upload an image for CodeArts Req work items |
-| `req_validate_module_name` | Validate whether a CodeArts Req module name already exists |
+| `req_add_iteration_work_items` | 新增Req 需求管理的迭代工作项。 |
+| `req_add_plan_work_items` | 新增Req 需求管理的计划工作项。 |
+| `req_add_project_member` | 新增Req 需求管理的项目成员。 |
+| `req_add_work_item_comment` | 新增Req 需求管理的工作项评论。 |
+| `req_add_work_item_work_hour` | 新增Req 需求管理的工作项工作hour。 |
+| `req_batch_add_project_members` | 批量Req 需求管理的add项目成员。 |
+| `req_batch_create_ipd_issues` | 批量Req 需求管理的createipd问题。 |
+| `req_batch_delete_ipd_issues` | 批量Req 需求管理的deleteipd问题。 |
+| `req_batch_delete_iterations` | 批量Req 需求管理的delete迭代。 |
+| `req_batch_delete_project_members` | 批量Req 需求管理的delete项目成员。 |
+| `req_batch_delete_work_items` | 批量Req 需求管理的delete工作项。 |
+| `req_batch_transfer_ipd_work_item_flow` | 批量Req 需求管理的transferipd工作项流程。 |
+| `req_batch_update_ipd_issues` | 批量Req 需求管理的updateipd问题。 |
+| `req_batch_update_work_items` | 批量Req 需求管理的update工作项。 |
+| `req_check_project_name` | checkReq 需求管理的项目name。 |
+| `req_check_work_item_status_name` | checkReq 需求管理的工作项状态name。 |
+| `req_clear_plan_work_items` | 清除Req 需求管理的计划工作项。 |
+| `req_copy_work_items` | copyReq 需求管理的工作项。 |
+| `req_count_work_item_tree` | countReq 需求管理的工作项树。 |
+| `req_create_ipd_feature_set` | 创建Req 需求管理的ipdfeatureset。 |
+| `req_create_ipd_issue` | 创建Req 需求管理的ipd问题。 |
+| `req_create_ipd_label` | 创建Req 需求管理的ipdlabel。 |
+| `req_create_ipd_module` | 创建Req 需求管理的ipdmodule。 |
+| `req_create_ipd_work_hour` | 创建Req 需求管理的ipd工作hour。 |
+| `req_create_iteration` | 创建Req 需求管理的迭代。 |
+| `req_create_iteration_work_item` | 创建Req 需求管理的迭代工作项。 |
+| `req_create_plan` | 创建Req 需求管理的计划。 |
+| `req_create_plan_work_item` | 创建Req 需求管理的计划工作项。 |
+| `req_create_project` | 创建Req 需求管理的项目。 |
+| `req_create_project_module` | 创建Req 需求管理的项目module。 |
+| `req_create_work_item` | 创建Req 需求管理的工作项。 |
+| `req_create_work_item_template` | 创建Req 需求管理的工作项模板。 |
+| `req_delete_attachment` | 删除Req 需求管理的附件。 |
+| `req_delete_ipd_feature_set` | 删除Req 需求管理的ipdfeatureset。 |
+| `req_delete_ipd_issue_image` | 删除Req 需求管理的ipd问题图片。 |
+| `req_delete_ipd_label` | 删除Req 需求管理的ipdlabel。 |
+| `req_delete_ipd_module` | 删除Req 需求管理的ipdmodule。 |
+| `req_delete_ipd_work_hour` | 删除Req 需求管理的ipd工作hour。 |
+| `req_delete_iteration` | 删除Req 需求管理的迭代。 |
+| `req_delete_plan` | 删除Req 需求管理的计划。 |
+| `req_delete_project` | 删除Req 需求管理的项目。 |
+| `req_delete_project_module` | 删除Req 需求管理的项目module。 |
+| `req_delete_project_template` | 删除Req 需求管理的项目模板。 |
+| `req_delete_work_item` | 删除Req 需求管理的工作项。 |
+| `req_download_attachment` | 下载Req 需求管理的附件。 |
+| `req_download_image_file` | 下载Req 需求管理的图片文件。 |
+| `req_download_ipd_issue_attachment` | 下载Req 需求管理的ipd问题附件。 |
+| `req_download_ipd_issue_image` | 下载Req 需求管理的ipd问题图片。 |
+| `req_get_current_user_info` | 获取Req 需求管理的current用户信息。 |
+| `req_get_current_user_role` | 获取Req 需求管理的current用户role。 |
+| `req_get_ipd_e2e_graph` | 获取Req 需求管理的ipde2e图。 |
+| `req_get_ipd_issue` | 获取Req 需求管理的ipd问题。 |
+| `req_get_ipd_project_field_option_used` | 获取Req 需求管理的ipd项目fieldoptionused。 |
+| `req_get_ipd_statistic_dashboard` | 获取Req 需求管理的ipdstatisticdashboard。 |
+| `req_get_ipd_tenant_field_option_used` | 获取Req 需求管理的ipdtenantfieldoptionused。 |
+| `req_get_ipd_tenant_field_used` | 获取Req 需求管理的ipdtenantfieldused。 |
+| `req_get_ipd_work_item_flow_detail` | 获取Req 需求管理的ipd工作项流程详情。 |
+| `req_get_ir` | 获取Req 需求管理的ir。 |
+| `req_get_iteration` | 获取Req 需求管理的迭代。 |
+| `req_get_plan` | 获取Req 需求管理的计划。 |
+| `req_get_project` | 获取Req 需求管理的项目。 |
+| `req_get_project_bug_density` | 获取Req 需求管理的项目bugdensity。 |
+| `req_get_project_bugs_per_developer` | 获取Req 需求管理的项目bugsperdeveloper。 |
+| `req_get_project_completion_rate` | 获取Req 需求管理的项目completionrate。 |
+| `req_get_project_due_days_after` | 获取Req 需求管理的项目duedaysafter。 |
+| `req_get_project_public_config` | 获取Req 需求管理的项目public配置。 |
+| `req_get_project_summary` | 获取Req 需求管理的项目summary。 |
+| `req_get_project_workhour_config` | 获取Req 需求管理的项目workhour配置。 |
+| `req_get_work_item` | 获取Req 需求管理的工作项。 |
+| `req_get_work_item_completion_rate` | 获取Req 需求管理的工作项completionrate。 |
+| `req_get_work_item_index_counts` | 获取Req 需求管理的工作项indexcounts。 |
+| `req_get_work_item_issue_details` | 获取Req 需求管理的工作项问题详情。 |
+| `req_get_work_item_status_rule_flag` | 获取Req 需求管理的工作项状态ruleflag。 |
+| `req_get_work_item_template_config` | 获取Req 需求管理的工作项模板配置。 |
+| `req_group_ipd_issues` | groupReq 需求管理的ipd问题。 |
+| `req_leave_project` | leaveReq 需求管理的项目。 |
+| `req_list_associated_commits` | 查询列表Req 需求管理的associatedcommits。 |
+| `req_list_associated_issues` | 查询列表Req 需求管理的associated问题。 |
+| `req_list_associated_test_cases` | 查询列表Req 需求管理的associatedtest用例。 |
+| `req_list_associated_wikis` | 查询列表Req 需求管理的associatedwikis。 |
+| `req_list_board_work_item_status_records` | 查询列表Req 需求管理的board工作项状态记录。 |
+| `req_list_board_work_item_workflow_config` | 查询列表Req 需求管理的board工作项workflow配置。 |
+| `req_list_board_work_items` | 查询列表Req 需求管理的board工作项。 |
+| `req_list_cache_data` | 查询列表Req 需求管理的cachedata。 |
+| `req_list_child_work_items` | 查询列表Req 需求管理的child工作项。 |
+| `req_list_ipd_attached_wikis` | 查询列表Req 需求管理的ipdattachedwikis。 |
+| `req_list_ipd_category_statuses` | 查询列表Req 需求管理的ipdcategory状态。 |
+| `req_list_ipd_feature_sets` | 查询列表Req 需求管理的ipdfeaturesets。 |
+| `req_list_ipd_issue_attachments` | 查询列表Req 需求管理的ipd问题附件。 |
+| `req_list_ipd_issue_fields` | 查询列表Req 需求管理的ipd问题fields。 |
+| `req_list_ipd_issue_relation_config` | 查询列表Req 需求管理的ipd问题relation配置。 |
+| `req_list_ipd_issue_tree` | 查询列表Req 需求管理的ipd问题树。 |
+| `req_list_ipd_issues` | 查询列表Req 需求管理的ipd问题。 |
+| `req_list_ipd_labels` | 查询列表Req 需求管理的ipdlabels。 |
+| `req_list_ipd_modules` | 查询列表Req 需求管理的ipdmodules。 |
+| `req_list_ipd_project_fields` | 查询列表Req 需求管理的ipd项目fields。 |
+| `req_list_ipd_project_users` | 查询列表Req 需求管理的ipd项目用户。 |
+| `req_list_ipd_projects` | 查询列表Req 需求管理的ipd项目。 |
+| `req_list_ipd_snapshot_features` | 查询列表Req 需求管理的ipdsnapshotfeatures。 |
+| `req_list_ipd_snapshot_versions` | 查询列表Req 需求管理的ipdsnapshot版本。 |
+| `req_list_ipd_statuses` | 查询列表Req 需求管理的ipd状态。 |
+| `req_list_ipd_tenant_fields` | 查询列表Req 需求管理的ipdtenantfields。 |
+| `req_list_ipd_tenant_issues` | 查询列表Req 需求管理的ipdtenant问题。 |
+| `req_list_ipd_work_hour_categories` | 查询列表Req 需求管理的ipd工作hourcategories。 |
+| `req_list_ipd_work_hours` | 查询列表Req 需求管理的ipd工作hours。 |
+| `req_list_ipd_workflow_fields` | 查询列表Req 需求管理的ipdworkflowfields。 |
+| `req_list_ipd_workflow_templates` | 查询列表Req 需求管理的ipdworkflowtemplates。 |
+| `req_list_ir_children` | 查询列表Req 需求管理的irchildren。 |
+| `req_list_ir_histories` | 查询列表Req 需求管理的ir历史记录。 |
+| `req_list_issue_severities` | 查询列表Req 需求管理的问题severities。 |
+| `req_list_iteration_status_statistics` | 查询列表Req 需求管理的迭代状态统计。 |
+| `req_list_iteration_work_items` | 查询列表Req 需求管理的迭代工作项。 |
+| `req_list_iterations` | 查询列表Req 需求管理的迭代。 |
+| `req_list_job_cache_boards` | 查询列表Req 需求管理的任务cacheboards。 |
+| `req_list_not_added_projects` | 查询列表Req 需求管理的notadded项目。 |
+| `req_list_optional_work_item_status_configs` | 查询列表Req 需求管理的optional工作项状态配置。 |
+| `req_list_plan_addable_work_items` | 查询列表Req 需求管理的计划addable工作项。 |
+| `req_list_plan_work_items` | 查询列表Req 需求管理的计划工作项。 |
+| `req_list_plans` | 查询列表Req 需求管理的计划。 |
+| `req_list_program_fields` | 查询列表Req 需求管理的programfields。 |
+| `req_list_programs` | 查询列表Req 需求管理的programs。 |
+| `req_list_project_bug_statistics` | 查询列表Req 需求管理的项目bug统计。 |
+| `req_list_project_demand_statistics` | 查询列表Req 需求管理的项目demand统计。 |
+| `req_list_project_domains` | 查询列表Req 需求管理的项目domains。 |
+| `req_list_project_members` | 查询列表Req 需求管理的项目成员。 |
+| `req_list_project_modules` | 查询列表Req 需求管理的项目modules。 |
+| `req_list_project_work_hour_types` | 查询列表Req 需求管理的项目工作hourtypes。 |
+| `req_list_project_work_hours` | 查询列表Req 需求管理的项目工作hours。 |
+| `req_list_project_work_item_records` | 查询列表Req 需求管理的项目工作项记录。 |
+| `req_list_projects` | 查询列表Req 需求管理的项目。 |
+| `req_list_related_users` | 查询列表Req 需求管理的related用户。 |
+| `req_list_rr_histories` | 查询列表Req 需求管理的rr历史记录。 |
+| `req_list_rr_statuses` | 查询列表Req 需求管理的rr状态。 |
+| `req_list_rrs` | 查询列表Req 需求管理的rrs。 |
+| `req_list_user_features` | 查询列表Req 需求管理的用户features。 |
+| `req_list_work_item_comments` | 查询列表Req 需求管理的工作项评论。 |
+| `req_list_work_item_custom_fields` | 查询列表Req 需求管理的工作项customfields。 |
+| `req_list_work_item_records` | 查询列表Req 需求管理的工作项记录。 |
+| `req_list_work_item_status_attributes` | 查询列表Req 需求管理的工作项状态attributes。 |
+| `req_list_work_item_status_configs` | 查询列表Req 需求管理的工作项状态配置。 |
+| `req_list_work_item_status_details` | 查询列表Req 需求管理的工作项状态详情。 |
+| `req_list_work_item_statuses` | 查询列表Req 需求管理的工作项状态。 |
+| `req_list_work_item_tags` | 查询列表Req 需求管理的工作项tags。 |
+| `req_list_work_item_templates` | 查询列表Req 需求管理的工作项templates。 |
+| `req_list_work_item_tracker_handlers` | 查询列表Req 需求管理的工作项trackerhandlers。 |
+| `req_list_work_item_tree` | 查询列表Req 需求管理的工作项树。 |
+| `req_list_work_item_work_hours` | 查询列表Req 需求管理的工作项工作hours。 |
+| `req_list_work_item_workflow_config` | 查询列表Req 需求管理的工作项workflow配置。 |
+| `req_list_work_items` | 查询列表Req 需求管理的工作项。 |
+| `req_query_iteration_immovable_issues` | 查询Req 需求管理的迭代immovable问题。 |
+| `req_transfer_ipd_work_item_flow` | transferReq 需求管理的ipd工作项流程。 |
+| `req_update_cache_data` | 更新Req 需求管理的cachedata。 |
+| `req_update_ipd_feature_set` | 更新Req 需求管理的ipdfeatureset。 |
+| `req_update_ipd_label` | 更新Req 需求管理的ipdlabel。 |
+| `req_update_ipd_module` | 更新Req 需求管理的ipdmodule。 |
+| `req_update_ipd_project_field` | 更新Req 需求管理的ipd项目field。 |
+| `req_update_ipd_tenant_field` | 更新Req 需求管理的ipdtenantfield。 |
+| `req_update_ipd_work_hour` | 更新Req 需求管理的ipd工作hour。 |
+| `req_update_iteration` | 更新Req 需求管理的迭代。 |
+| `req_update_iteration_state` | 更新Req 需求管理的迭代state。 |
+| `req_update_plan` | 更新Req 需求管理的计划。 |
+| `req_update_plan_image` | 更新Req 需求管理的计划图片。 |
+| `req_update_project` | 更新Req 需求管理的项目。 |
+| `req_update_project_member_role` | 更新Req 需求管理的项目成员role。 |
+| `req_update_project_module` | 更新Req 需求管理的项目module。 |
+| `req_update_project_template` | 更新Req 需求管理的项目模板。 |
+| `req_update_work_item` | 更新Req 需求管理的工作项。 |
+| `req_update_work_item_comment` | 更新Req 需求管理的工作项评论。 |
+| `req_update_work_item_flow` | 更新Req 需求管理的工作项流程。 |
+| `req_upload_attachment` | 上传Req 需求管理的附件。 |
+| `req_upload_ipd_issue_attachment` | 上传Req 需求管理的ipd问题附件。 |
+| `req_upload_ipd_issue_image` | 上传Req 需求管理的ipd问题图片。 |
+| `req_upload_work_item_image` | 上传Req 需求管理的工作项图片。 |
+| `req_validate_module_name` | validateReq 需求管理的modulename。 |
 
 ### req_add_iteration_work_items
 
-Description: Add work items to a CodeArts Req iteration
+中文说明：新增Req 需求管理的迭代工作项。
 
-| Field | Value |
+原始工具说明：Add work items to a CodeArts Req iteration
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_add_iteration_work_items` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_add_iteration_work_items` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `iteration_id` | yes | `unknown` |  |  |
-| `work_item_ids` | yes | `array` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `iteration_id` | 是 | `unknown` |  |  |
+| `work_item_ids` | 是 | `array` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -410,7 +418,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -447,25 +455,27 @@ Argument JSON Schema:
 
 ### req_add_plan_work_items
 
-Description: Add work items to a CodeArts Req plan
+中文说明：新增Req 需求管理的计划工作项。
 
-| Field | Value |
+原始工具说明：Add work items to a CodeArts Req plan
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_add_plan_work_items` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_add_plan_work_items` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `plan_id` | yes | `unknown` |  |  |
-| `work_item_ids` | yes | `array` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `plan_id` | 是 | `unknown` |  |  |
+| `work_item_ids` | 是 | `array` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -483,7 +493,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -520,27 +530,29 @@ Argument JSON Schema:
 
 ### req_add_project_member
 
-Description: Add member to a CodeArts Req project
+中文说明：新增Req 需求管理的项目成员。
 
-| Field | Value |
+原始工具说明：Add member to a CodeArts Req project
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_add_project_member` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_add_project_member` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `user_id` | yes | `unknown` |  |  |
-| `domain_id` | yes | `unknown` |  |  |
-| `domain_name` | no | `string` |  |  |
-| `role_id` | no | `number` |  | enum: -1, 3, 4, 5, 6, 7, 8, 9, 10, 11 |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `user_id` | 是 | `unknown` |  |  |
+| `domain_id` | 是 | `unknown` |  |  |
+| `domain_name` | 否 | `string` |  |  |
+| `role_id` | 否 | `number` |  | 可选值：-1：3：4：5：6：7：8：9：10：11 |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -558,7 +570,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -610,25 +622,27 @@ Argument JSON Schema:
 
 ### req_add_work_item_comment
 
-Description: Add comment to a CodeArts Req work item
+中文说明：新增Req 需求管理的工作项评论。
 
-| Field | Value |
+原始工具说明：Add comment to a CodeArts Req work item
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_add_work_item_comment` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_add_work_item_comment` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `work_item_id` | yes | `unknown` |  |  |
-| `content` | yes | `string` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `work_item_id` | 是 | `unknown` |  |  |
+| `content` | 是 | `string` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -646,7 +660,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -680,20 +694,22 @@ Argument JSON Schema:
 
 ### req_add_work_item_work_hour
 
-Description: Add a work hour record to a CodeArts Req work item
+中文说明：新增Req 需求管理的工作项工作hour。
 
-| Field | Value |
+原始工具说明：Add a work hour record to a CodeArts Req work item
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_add_work_item_work_hour` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_add_work_item_work_hour` |
 
-Arguments:
+参数：
 
-No arguments.
+无参数。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -707,7 +723,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -718,24 +734,26 @@ Argument JSON Schema:
 
 ### req_batch_add_project_members
 
-Description: Add multiple members to a CodeArts Req project
+中文说明：批量Req 需求管理的add项目成员。
 
-| Field | Value |
+原始工具说明：Add multiple members to a CodeArts Req project
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_batch_add_project_members` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_batch_add_project_members` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `members` | yes | `array` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `members` | 是 | `array` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -752,7 +770,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -809,24 +827,26 @@ Argument JSON Schema:
 
 ### req_batch_create_ipd_issues
 
-Description: Batch create CodeArts Req IPD issues
+中文说明：批量Req 需求管理的createipd问题。
 
-| Field | Value |
+原始工具说明：Batch create CodeArts Req IPD issues
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_batch_create_ipd_issues` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_batch_create_ipd_issues` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `issues` | yes | `array` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `issues` | 是 | `array` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -843,7 +863,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -1026,26 +1046,28 @@ Argument JSON Schema:
 
 ### req_batch_delete_ipd_issues
 
-Description: Batch delete CodeArts Req IPD issues
+中文说明：批量Req 需求管理的deleteipd问题。
 
-| Field | Value |
+原始工具说明：Batch delete CodeArts Req IPD issues
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_batch_delete_ipd_issues` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_batch_delete_ipd_issues` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `issue_ids` | yes | `array` |  |  |
-| `is_permanent_delete` | no | `boolean` |  |  |
-| `src_project_id` | no | `unknown` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `issue_ids` | 是 | `array` |  |  |
+| `is_permanent_delete` | 否 | `boolean` |  |  |
+| `src_project_id` | 否 | `unknown` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -1062,7 +1084,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -1102,24 +1124,26 @@ Argument JSON Schema:
 
 ### req_batch_delete_iterations
 
-Description: Delete multiple CodeArts Req iterations
+中文说明：批量Req 需求管理的delete迭代。
 
-| Field | Value |
+原始工具说明：Delete multiple CodeArts Req iterations
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_batch_delete_iterations` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_batch_delete_iterations` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `iteration_ids` | yes | `array` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `iteration_ids` | 是 | `array` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -1136,7 +1160,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -1169,24 +1193,26 @@ Argument JSON Schema:
 
 ### req_batch_delete_project_members
 
-Description: Remove multiple members from a CodeArts Req project
+中文说明：批量Req 需求管理的delete项目成员。
 
-| Field | Value |
+原始工具说明：Remove multiple members from a CodeArts Req project
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_batch_delete_project_members` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_batch_delete_project_members` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `user_ids` | yes | `array` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `user_ids` | 是 | `array` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -1203,7 +1229,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -1236,24 +1262,26 @@ Argument JSON Schema:
 
 ### req_batch_delete_work_items
 
-Description: Delete multiple CodeArts Req work items
+中文说明：批量Req 需求管理的delete工作项。
 
-| Field | Value |
+原始工具说明：Delete multiple CodeArts Req work items
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_batch_delete_work_items` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_batch_delete_work_items` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `work_item_ids` | yes | `array` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `work_item_ids` | 是 | `array` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -1270,7 +1298,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -1304,28 +1332,30 @@ Argument JSON Schema:
 
 ### req_batch_transfer_ipd_work_item_flow
 
-Description: Batch transfer CodeArts Req IPD work item flow
+中文说明：批量Req 需求管理的transferipd工作项流程。
 
-| Field | Value |
+原始工具说明：Batch transfer CodeArts Req IPD work item flow
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_batch_transfer_ipd_work_item_flow` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_batch_transfer_ipd_work_item_flow` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `issue_ids` | yes | `array` |  |  |
-| `issue_category` | yes | `string` |  |  |
-| `flow_code` | yes | `string` |  |  |
-| `is_recover` | no | `boolean` | false |  |
-| `process_context` | no | `object` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `issue_ids` | 是 | `array` |  |  |
+| `issue_category` | 是 | `string` |  |  |
+| `flow_code` | 是 | `string` |  |  |
+| `is_recover` | 否 | `boolean` | false |  |
+| `process_context` | 否 | `object` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -1344,7 +1374,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -1395,25 +1425,27 @@ Argument JSON Schema:
 
 ### req_batch_update_ipd_issues
 
-Description: Batch update CodeArts Req IPD issues
+中文说明：批量Req 需求管理的updateipd问题。
 
-| Field | Value |
+原始工具说明：Batch update CodeArts Req IPD issues
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_batch_update_ipd_issues` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_batch_update_ipd_issues` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `issue_ids` | yes | `array` |  |  |
-| `attribute` | yes | `object` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `issue_ids` | 是 | `array` |  |  |
+| `attribute` | 是 | `object` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -1431,7 +1463,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -1596,20 +1628,22 @@ Argument JSON Schema:
 
 ### req_batch_update_work_items
 
-Description: Batch update CodeArts Req work items
+中文说明：批量Req 需求管理的update工作项。
 
-| Field | Value |
+原始工具说明：Batch update CodeArts Req work items
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_batch_update_work_items` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_batch_update_work_items` |
 
-Arguments:
+参数：
 
-No arguments.
+无参数。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -1623,7 +1657,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -1634,22 +1668,24 @@ Argument JSON Schema:
 
 ### req_check_project_name
 
-Description: Check whether a CodeArts Req project name exists
+中文说明：checkReq 需求管理的项目name。
 
-| Field | Value |
+原始工具说明：Check whether a CodeArts Req project name exists
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_check_project_name` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_check_project_name` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `name` | yes | `string` |  |  |
+| `name` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -1665,7 +1701,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -1686,23 +1722,25 @@ Argument JSON Schema:
 
 ### req_check_work_item_status_name
 
-Description: Check whether a CodeArts Req work item status name already exists
+中文说明：checkReq 需求管理的工作项状态name。
 
-| Field | Value |
+原始工具说明：Check whether a CodeArts Req work item status name already exists
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_check_work_item_status_name` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_check_work_item_status_name` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `status_name` | yes | `string` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `status_name` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -1719,7 +1757,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -1746,24 +1784,26 @@ Argument JSON Schema:
 
 ### req_clear_plan_work_items
 
-Description: Clear work items from a CodeArts Req plan
+中文说明：清除Req 需求管理的计划工作项。
 
-| Field | Value |
+原始工具说明：Clear work items from a CodeArts Req plan
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_clear_plan_work_items` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_clear_plan_work_items` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `plan_id` | yes | `unknown` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `plan_id` | 是 | `unknown` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -1780,7 +1820,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -1809,27 +1849,29 @@ Argument JSON Schema:
 
 ### req_copy_work_items
 
-Description: Copy CodeArts Req work items between projects
+中文说明：copyReq 需求管理的工作项。
 
-| Field | Value |
+原始工具说明：Copy CodeArts Req work items between projects
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_copy_work_items` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_copy_work_items` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `from_project_id` | yes | `string` |  |  |
-| `to_project_id` | yes | `unknown` |  |  |
-| `work_item_ids` | yes | `array` |  |  |
-| `copy_comments` | no | `boolean` | false |  |
-| `copy_work_hours` | no | `boolean` | false |  |
-| `dry_run` | no | `boolean` | true |  |
+| `from_project_id` | 是 | `string` |  |  |
+| `to_project_id` | 是 | `unknown` |  |  |
+| `work_item_ids` | 是 | `array` |  |  |
+| `copy_comments` | 否 | `boolean` | false |  |
+| `copy_work_hours` | 否 | `boolean` | false |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -1847,7 +1889,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -1892,25 +1934,27 @@ Argument JSON Schema:
 
 ### req_count_work_item_tree
 
-Description: Count CodeArts Req work items in tree mode
+中文说明：countReq 需求管理的工作项树。
 
-| Field | Value |
+原始工具说明：Count CodeArts Req work items in tree mode
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_count_work_item_tree` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_count_work_item_tree` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `project_id` | yes | `string` |  |  |
-| `tracker_ids` | no | `array` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `project_id` | 是 | `string` |  |  |
+| `tracker_ids` | 否 | `array` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -1926,7 +1970,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -1972,25 +2016,27 @@ Argument JSON Schema:
 
 ### req_create_ipd_feature_set
 
-Description: Create CodeArts Req IPD feature set
+中文说明：创建Req 需求管理的ipdfeatureset。
 
-| Field | Value |
+原始工具说明：Create CodeArts Req IPD feature set
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_create_ipd_feature_set` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_create_ipd_feature_set` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `title` | yes | `string` |  |  |
-| `parent_id` | yes | `unknown` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `title` | 是 | `string` |  |  |
+| `parent_id` | 是 | `unknown` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -2008,7 +2054,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -2042,43 +2088,45 @@ Argument JSON Schema:
 
 ### req_create_ipd_issue
 
-Description: Create CodeArts Req IPD issue
+中文说明：创建Req 需求管理的ipd问题。
 
-| Field | Value |
+原始工具说明：Create CodeArts Req IPD issue
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_create_ipd_issue` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_create_ipd_issue` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `title` | yes | `string` |  |  |
-| `description` | yes | `string` |  |  |
-| `category` | yes | `string` |  |  |
-| `assignee` | yes | `unknown` |  |  |
-| `status` | no | `string` |  |  |
-| `src_domain` | no | `unknown` |  |  |
-| `submitted_by` | no | `unknown` |  |  |
-| `domain_id` | no | `unknown` |  |  |
-| `recipient` | no | `array` |  |  |
-| `expect_delivery_time` | no | `integer` |  |  |
-| `priority` | no | `string` |  |  |
-| `assigned_cc` | no | `array` |  |  |
-| `plan_pi` | no | `unknown` |  |  |
-| `plan_iteration` | no | `unknown` |  |  |
-| `plan_start_date` | no | `integer` |  |  |
-| `plan_end_date` | no | `integer` |  |  |
-| `workload_man_day` | no | `number` |  |  |
-| `business_domain` | no | `string` |  |  |
-| `need_break` | no | `string` |  |  |
-| `extra_fields` | no | `object` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `title` | 是 | `string` |  |  |
+| `description` | 是 | `string` |  |  |
+| `category` | 是 | `string` |  |  |
+| `assignee` | 是 | `unknown` |  |  |
+| `status` | 否 | `string` |  |  |
+| `src_domain` | 否 | `unknown` |  |  |
+| `submitted_by` | 否 | `unknown` |  |  |
+| `domain_id` | 否 | `unknown` |  |  |
+| `recipient` | 否 | `array` |  |  |
+| `expect_delivery_time` | 否 | `integer` |  |  |
+| `priority` | 否 | `string` |  |  |
+| `assigned_cc` | 否 | `array` |  |  |
+| `plan_pi` | 否 | `unknown` |  |  |
+| `plan_iteration` | 否 | `unknown` |  |  |
+| `plan_start_date` | 否 | `integer` |  |  |
+| `plan_end_date` | 否 | `integer` |  |  |
+| `workload_man_day` | 否 | `number` |  |  |
+| `business_domain` | 否 | `string` |  |  |
+| `need_break` | 否 | `string` |  |  |
+| `extra_fields` | 否 | `object` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -2098,7 +2146,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -2199,26 +2247,28 @@ Argument JSON Schema:
 
 ### req_create_ipd_label
 
-Description: Create CodeArts Req IPD label
+中文说明：创建Req 需求管理的ipdlabel。
 
-| Field | Value |
+原始工具说明：Create CodeArts Req IPD label
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_create_ipd_label` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_create_ipd_label` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `label_type` | yes | `string` |  |  |
-| `color` | yes | `string` |  |  |
-| `title` | yes | `string` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `label_type` | 是 | `string` |  |  |
+| `color` | 是 | `string` |  |  |
+| `title` | 是 | `string` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -2237,7 +2287,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -2279,27 +2329,29 @@ Argument JSON Schema:
 
 ### req_create_ipd_module
 
-Description: Create CodeArts Req IPD module
+中文说明：创建Req 需求管理的ipdmodule。
 
-| Field | Value |
+原始工具说明：Create CodeArts Req IPD module
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_create_ipd_module` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_create_ipd_module` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `display_value` | yes | `string` |  |  |
-| `parent_id` | yes | `unknown` |  |  |
-| `description` | no | `string` |  |  |
-| `assignee` | no | `unknown` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `display_value` | 是 | `string` |  |  |
+| `parent_id` | 是 | `unknown` |  |  |
+| `description` | 否 | `string` |  |  |
+| `assignee` | 否 | `unknown` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -2317,7 +2369,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -2359,31 +2411,33 @@ Argument JSON Schema:
 
 ### req_create_ipd_work_hour
 
-Description: Create CodeArts Req IPD work hour record
+中文说明：创建Req 需求管理的ipd工作hour。
 
-| Field | Value |
+原始工具说明：Create CodeArts Req IPD work hour record
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_create_ipd_work_hour` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_create_ipd_work_hour` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `issue_id` | yes | `unknown` |  |  |
-| `work_date_begin` | yes | `string` |  |  |
-| `work_date_end` | yes | `string` |  |  |
-| `work_hours` | yes | `string \| number` |  |  |
-| `work_hour_type` | yes | `anyOf` |  |  |
-| `include_weekend` | yes | `boolean` |  |  |
-| `work_hour_category` | no | `string` |  |  |
-| `description` | no | `string` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `issue_id` | 是 | `unknown` |  |  |
+| `work_date_begin` | 是 | `string` |  |  |
+| `work_date_end` | 是 | `string` |  |  |
+| `work_hours` | 是 | `string \| number` |  |  |
+| `work_hour_type` | 是 | `anyOf` |  |  |
+| `include_weekend` | 是 | `boolean` |  |  |
+| `work_hour_category` | 否 | `string` |  |  |
+| `description` | 否 | `string` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -2405,7 +2459,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -2478,27 +2532,29 @@ Argument JSON Schema:
 
 ### req_create_iteration
 
-Description: Create CodeArts Req iteration
+中文说明：创建Req 需求管理的迭代。
 
-| Field | Value |
+原始工具说明：Create CodeArts Req iteration
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_create_iteration` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_create_iteration` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `name` | yes | `string` |  |  |
-| `begin_time` | yes | `string` |  |  |
-| `end_time` | yes | `string` |  |  |
-| `description` | no | `string` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `name` | 是 | `string` |  |  |
+| `begin_time` | 是 | `string` |  |  |
+| `end_time` | 是 | `string` |  |  |
+| `description` | 否 | `string` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -2517,7 +2573,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -2560,35 +2616,37 @@ Argument JSON Schema:
 
 ### req_create_iteration_work_item
 
-Description: Create CodeArts Req iteration work item
+中文说明：创建Req 需求管理的迭代工作项。
 
-| Field | Value |
+原始工具说明：Create CodeArts Req iteration work item
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_create_iteration_work_item` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_create_iteration_work_item` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `iteration_id` | yes | `unknown` |  |  |
-| `title` | yes | `string` |  |  |
-| `work_item_type` | yes | `string` |  |  |
-| `description` | no | `string` |  |  |
-| `priority_id` | no | `integer` |  |  |
-| `module_id` | no | `unknown` |  |  |
-| `severity_id` | no | `integer` |  |  |
-| `assigned_id` | no | `unknown` |  |  |
-| `done_ratio` | no | `integer` |  |  |
-| `expected_work_hours` | no | `integer` |  |  |
-| `start_date` | no | `integer` |  |  |
-| `due_date` | no | `integer` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `iteration_id` | 是 | `unknown` |  |  |
+| `title` | 是 | `string` |  |  |
+| `work_item_type` | 是 | `string` |  |  |
+| `description` | 否 | `string` |  |  |
+| `priority_id` | 否 | `integer` |  |  |
+| `module_id` | 否 | `unknown` |  |  |
+| `severity_id` | 否 | `integer` |  |  |
+| `assigned_id` | 否 | `unknown` |  |  |
+| `done_ratio` | 否 | `integer` |  |  |
+| `expected_work_hours` | 否 | `integer` |  |  |
+| `start_date` | 否 | `integer` |  |  |
+| `due_date` | 否 | `integer` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -2607,7 +2665,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -2679,25 +2737,27 @@ Argument JSON Schema:
 
 ### req_create_plan
 
-Description: Create CodeArts Req plan
+中文说明：创建Req 需求管理的计划。
 
-| Field | Value |
+原始工具说明：Create CodeArts Req plan
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_create_plan` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_create_plan` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `name` | yes | `string` |  |  |
-| `type` | yes | `string` |  | enum: gantt, mind |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `name` | 是 | `string` |  |  |
+| `type` | 是 | `string` |  | 可选值：gantt：mind |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -2715,7 +2775,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -2753,38 +2813,40 @@ Argument JSON Schema:
 
 ### req_create_plan_work_item
 
-Description: Create CodeArts Req plan work item
+中文说明：创建Req 需求管理的计划工作项。
 
-| Field | Value |
+原始工具说明：Create CodeArts Req plan work item
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_create_plan_work_item` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_create_plan_work_item` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `plan_id` | yes | `unknown` |  |  |
-| `title` | yes | `string` |  |  |
-| `work_item_type` | yes | `string` |  |  |
-| `parent_work_item_id` | no | `unknown` |  |  |
-| `description` | no | `string` |  |  |
-| `iteration_id` | no | `unknown` |  |  |
-| `module_id` | no | `unknown` |  |  |
-| `priority_id` | no | `integer` |  |  |
-| `severity_id` | no | `integer` |  |  |
-| `status_id` | no | `integer` |  |  |
-| `assigned_id` | no | `unknown` |  |  |
-| `done_ratio` | no | `integer` |  |  |
-| `expected_work_hours` | no | `integer` |  |  |
-| `start_date` | no | `integer` |  |  |
-| `due_date` | no | `integer` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `plan_id` | 是 | `unknown` |  |  |
+| `title` | 是 | `string` |  |  |
+| `work_item_type` | 是 | `string` |  |  |
+| `parent_work_item_id` | 否 | `unknown` |  |  |
+| `description` | 否 | `string` |  |  |
+| `iteration_id` | 否 | `unknown` |  |  |
+| `module_id` | 否 | `unknown` |  |  |
+| `priority_id` | 否 | `integer` |  |  |
+| `severity_id` | 否 | `integer` |  |  |
+| `status_id` | 否 | `integer` |  |  |
+| `assigned_id` | 否 | `unknown` |  |  |
+| `done_ratio` | 否 | `integer` |  |  |
+| `expected_work_hours` | 否 | `integer` |  |  |
+| `start_date` | 否 | `integer` |  |  |
+| `due_date` | 否 | `integer` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -2803,7 +2865,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -2885,24 +2947,26 @@ Argument JSON Schema:
 
 ### req_create_project
 
-Description: Create CodeArts Req project
+中文说明：创建Req 需求管理的项目。
 
-| Field | Value |
+原始工具说明：Create CodeArts Req project
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_create_project` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_create_project` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `name` | yes | `string` |  |  |
-| `description` | no | `string` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `name` | 是 | `string` |  |  |
+| `description` | 否 | `string` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -2918,7 +2982,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -2946,27 +3010,29 @@ Argument JSON Schema:
 
 ### req_create_project_module
 
-Description: Create CodeArts Req project module
+中文说明：创建Req 需求管理的项目module。
 
-| Field | Value |
+原始工具说明：Create CodeArts Req project module
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_create_project_module` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_create_project_module` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `module_name` | yes | `string` |  |  |
-| `owner_user_id` | yes | `unknown` |  |  |
-| `parent_module_id` | no | `integer` |  |  |
-| `description` | no | `string` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `module_name` | 是 | `string` |  |  |
+| `owner_user_id` | 是 | `unknown` |  |  |
+| `parent_module_id` | 否 | `integer` |  |  |
+| `description` | 否 | `string` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -2984,7 +3050,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -3027,35 +3093,37 @@ Argument JSON Schema:
 
 ### req_create_work_item
 
-Description: Create CodeArts Req work item
+中文说明：创建Req 需求管理的工作项。
 
-| Field | Value |
+原始工具说明：Create CodeArts Req work item
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_create_work_item` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_create_work_item` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `title` | yes | `string` |  |  |
-| `work_item_type` | yes | `string` |  |  |
-| `description` | no | `string` |  |  |
-| `priority_id` | no | `integer` |  |  |
-| `iteration_id` | no | `unknown` |  |  |
-| `module_id` | no | `unknown` |  |  |
-| `severity_id` | no | `integer` |  |  |
-| `assigned_id` | no | `unknown` |  |  |
-| `done_ratio` | no | `integer` |  |  |
-| `expected_work_hours` | no | `integer` |  |  |
-| `start_date` | no | `integer` |  |  |
-| `due_date` | no | `integer` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `title` | 是 | `string` |  |  |
+| `work_item_type` | 是 | `string` |  |  |
+| `description` | 否 | `string` |  |  |
+| `priority_id` | 否 | `integer` |  |  |
+| `iteration_id` | 否 | `unknown` |  |  |
+| `module_id` | 否 | `unknown` |  |  |
+| `severity_id` | 否 | `integer` |  |  |
+| `assigned_id` | 否 | `unknown` |  |  |
+| `done_ratio` | 否 | `integer` |  |  |
+| `expected_work_hours` | 否 | `integer` |  |  |
+| `start_date` | 否 | `integer` |  |  |
+| `due_date` | 否 | `integer` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -3073,7 +3141,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -3144,20 +3212,22 @@ Argument JSON Schema:
 
 ### req_create_work_item_template
 
-Description: Create or update a CodeArts Req work item template
+中文说明：创建Req 需求管理的工作项模板。
 
-| Field | Value |
+原始工具说明：Create or update a CodeArts Req work item template
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_create_work_item_template` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_create_work_item_template` |
 
-Arguments:
+参数：
 
-No arguments.
+无参数。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -3171,7 +3241,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -3182,25 +3252,27 @@ Argument JSON Schema:
 
 ### req_delete_attachment
 
-Description: Delete a CodeArts Req work item attachment
+中文说明：删除Req 需求管理的附件。
 
-| Field | Value |
+原始工具说明：Delete a CodeArts Req work item attachment
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_delete_attachment` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_delete_attachment` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `work_item_id` | yes | `unknown` |  |  |
-| `attachment_id` | yes | `unknown` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `work_item_id` | 是 | `unknown` |  |  |
+| `attachment_id` | 是 | `unknown` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -3218,7 +3290,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -3251,24 +3323,26 @@ Argument JSON Schema:
 
 ### req_delete_ipd_feature_set
 
-Description: Delete CodeArts Req IPD feature set
+中文说明：删除Req 需求管理的ipdfeatureset。
 
-| Field | Value |
+原始工具说明：Delete CodeArts Req IPD feature set
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_delete_ipd_feature_set` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_delete_ipd_feature_set` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `feature_set_id` | yes | `unknown` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `feature_set_id` | 是 | `unknown` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -3285,7 +3359,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -3314,25 +3388,27 @@ Argument JSON Schema:
 
 ### req_delete_ipd_issue_image
 
-Description: Delete image from CodeArts Req IPD issue description
+中文说明：删除Req 需求管理的ipd问题图片。
 
-| Field | Value |
+原始工具说明：Delete image from CodeArts Req IPD issue description
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_delete_ipd_issue_image` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_delete_ipd_issue_image` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `issue_id` | yes | `unknown` |  |  |
-| `file_name` | yes | `string` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `issue_id` | 是 | `unknown` |  |  |
+| `file_name` | 是 | `string` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -3350,7 +3426,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -3384,24 +3460,26 @@ Argument JSON Schema:
 
 ### req_delete_ipd_label
 
-Description: Delete CodeArts Req IPD label
+中文说明：删除Req 需求管理的ipdlabel。
 
-| Field | Value |
+原始工具说明：Delete CodeArts Req IPD label
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_delete_ipd_label` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_delete_ipd_label` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `label_id` | yes | `unknown` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `label_id` | 是 | `unknown` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -3418,7 +3496,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -3447,24 +3525,26 @@ Argument JSON Schema:
 
 ### req_delete_ipd_module
 
-Description: Delete CodeArts Req IPD module
+中文说明：删除Req 需求管理的ipdmodule。
 
-| Field | Value |
+原始工具说明：Delete CodeArts Req IPD module
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_delete_ipd_module` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_delete_ipd_module` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `module_id` | yes | `unknown` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `module_id` | 是 | `unknown` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -3481,7 +3561,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -3510,25 +3590,27 @@ Argument JSON Schema:
 
 ### req_delete_ipd_work_hour
 
-Description: Delete CodeArts Req IPD work hour record
+中文说明：删除Req 需求管理的ipd工作hour。
 
-| Field | Value |
+原始工具说明：Delete CodeArts Req IPD work hour record
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_delete_ipd_work_hour` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_delete_ipd_work_hour` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `issue_id` | yes | `unknown` |  |  |
-| `workhour_id` | yes | `unknown` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `issue_id` | 是 | `unknown` |  |  |
+| `workhour_id` | 是 | `unknown` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -3546,7 +3628,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -3579,24 +3661,26 @@ Argument JSON Schema:
 
 ### req_delete_iteration
 
-Description: Delete CodeArts Req iteration
+中文说明：删除Req 需求管理的迭代。
 
-| Field | Value |
+原始工具说明：Delete CodeArts Req iteration
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_delete_iteration` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_delete_iteration` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `iteration_id` | yes | `unknown` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `iteration_id` | 是 | `unknown` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -3613,7 +3697,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -3642,24 +3726,26 @@ Argument JSON Schema:
 
 ### req_delete_plan
 
-Description: Delete CodeArts Req plan
+中文说明：删除Req 需求管理的计划。
 
-| Field | Value |
+原始工具说明：Delete CodeArts Req plan
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_delete_plan` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_delete_plan` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `plan_id` | yes | `unknown` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `plan_id` | 是 | `unknown` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -3676,7 +3762,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -3705,23 +3791,25 @@ Argument JSON Schema:
 
 ### req_delete_project
 
-Description: Delete CodeArts Req project
+中文说明：删除Req 需求管理的项目。
 
-| Field | Value |
+原始工具说明：Delete CodeArts Req project
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_delete_project` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_delete_project` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -3737,7 +3825,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -3762,24 +3850,26 @@ Argument JSON Schema:
 
 ### req_delete_project_module
 
-Description: Delete CodeArts Req project module
+中文说明：删除Req 需求管理的项目module。
 
-| Field | Value |
+原始工具说明：Delete CodeArts Req project module
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_delete_project_module` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_delete_project_module` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `module_id` | yes | `unknown` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `module_id` | 是 | `unknown` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -3796,7 +3886,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -3825,23 +3915,25 @@ Argument JSON Schema:
 
 ### req_delete_project_template
 
-Description: Delete a CodeArts Req project template
+中文说明：删除Req 需求管理的项目模板。
 
-| Field | Value |
+原始工具说明：Delete a CodeArts Req project template
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_delete_project_template` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_delete_project_template` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `template_id` | yes | `string` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `template_id` | 是 | `string` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -3857,7 +3949,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -3882,24 +3974,26 @@ Argument JSON Schema:
 
 ### req_delete_work_item
 
-Description: Delete CodeArts Req work item
+中文说明：删除Req 需求管理的工作项。
 
-| Field | Value |
+原始工具说明：Delete CodeArts Req work item
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_delete_work_item` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_delete_work_item` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `work_item_id` | yes | `unknown` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `work_item_id` | 是 | `unknown` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -3916,7 +4010,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -3945,24 +4039,26 @@ Argument JSON Schema:
 
 ### req_download_attachment
 
-Description: Download a CodeArts Req work item attachment
+中文说明：下载Req 需求管理的附件。
 
-| Field | Value |
+原始工具说明：Download a CodeArts Req work item attachment
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_download_attachment` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_download_attachment` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `work_item_id` | yes | `unknown` |  |  |
-| `attachment_id` | yes | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `work_item_id` | 是 | `unknown` |  |  |
+| `attachment_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -3980,7 +4076,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -4009,23 +4105,25 @@ Argument JSON Schema:
 
 ### req_download_image_file
 
-Description: Download a CodeArts Req image file
+中文说明：下载Req 需求管理的图片文件。
 
-| Field | Value |
+原始工具说明：Download a CodeArts Req image file
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_download_image_file` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_download_image_file` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `image_uri` | yes | `string` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `image_uri` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -4042,7 +4140,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -4068,23 +4166,25 @@ Argument JSON Schema:
 
 ### req_download_ipd_issue_attachment
 
-Description: Download CodeArts Req IPD issue attachment
+中文说明：下载Req 需求管理的ipd问题附件。
 
-| Field | Value |
+原始工具说明：Download CodeArts Req IPD issue attachment
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_download_ipd_issue_attachment` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_download_ipd_issue_attachment` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `attachment_id` | yes | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `attachment_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -4101,7 +4201,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -4126,25 +4226,27 @@ Argument JSON Schema:
 
 ### req_download_ipd_issue_image
 
-Description: Download image from CodeArts Req IPD issue description
+中文说明：下载Req 需求管理的ipd问题图片。
 
-| Field | Value |
+原始工具说明：Download image from CodeArts Req IPD issue description
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_download_ipd_issue_image` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_download_ipd_issue_image` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `issue_id` | yes | `unknown` |  |  |
-| `file_name` | yes | `string` |  |  |
-| `field_code` | no | `string` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `issue_id` | 是 | `unknown` |  |  |
+| `file_name` | 是 | `string` |  |  |
+| `field_code` | 否 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -4162,7 +4264,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -4196,20 +4298,22 @@ Argument JSON Schema:
 
 ### req_get_current_user_info
 
-Description: Get current CodeArts Req user info
+中文说明：获取Req 需求管理的current用户信息。
 
-| Field | Value |
+原始工具说明：Get current CodeArts Req user info
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_get_current_user_info` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_get_current_user_info` |
 
-Arguments:
+参数：
 
-No arguments.
+无参数。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -4223,7 +4327,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -4236,22 +4340,24 @@ Argument JSON Schema:
 
 ### req_get_current_user_role
 
-Description: Get current CodeArts Req user role in a project
+中文说明：获取Req 需求管理的current用户role。
 
-| Field | Value |
+原始工具说明：Get current CodeArts Req user role in a project
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_get_current_user_role` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_get_current_user_role` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
+| `project_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -4267,7 +4373,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -4288,25 +4394,27 @@ Argument JSON Schema:
 
 ### req_get_ipd_e2e_graph
 
-Description: Get CodeArts Req IPD E2E trace graph
+中文说明：获取Req 需求管理的ipde2e图。
 
-| Field | Value |
+原始工具说明：Get CodeArts Req IPD E2E trace graph
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_get_ipd_e2e_graph` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_get_ipd_e2e_graph` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `issue_id` | yes | `unknown` |  |  |
-| `category` | yes | `string` |  |  |
-| `is_src` | no | `boolean` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `issue_id` | 是 | `unknown` |  |  |
+| `category` | 是 | `string` |  |  |
+| `is_src` | 否 | `boolean` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -4324,7 +4432,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -4357,24 +4465,26 @@ Argument JSON Schema:
 
 ### req_get_ipd_issue
 
-Description: Get CodeArts Req IPD issue detail
+中文说明：获取Req 需求管理的ipd问题。
 
-| Field | Value |
+原始工具说明：Get CodeArts Req IPD issue detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_get_ipd_issue` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_get_ipd_issue` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `issue_id` | yes | `unknown` |  |  |
-| `version` | no | `string` | "v2" | enum: v1, v2 |
+| `project_id` | 是 | `string` |  |  |
+| `issue_id` | 是 | `unknown` |  |  |
+| `version` | 否 | `string` | "v2" | 可选值：v1：v2 |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -4391,7 +4501,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -4424,23 +4534,25 @@ Argument JSON Schema:
 
 ### req_get_ipd_project_field_option_used
 
-Description: Get CodeArts Req IPD project field option usage
+中文说明：获取Req 需求管理的ipd项目fieldoptionused。
 
-| Field | Value |
+原始工具说明：Get CodeArts Req IPD project field option usage
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_get_ipd_project_field_option_used` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_get_ipd_project_field_option_used` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `code` | yes | `string` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `code` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -4457,7 +4569,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -4483,25 +4595,27 @@ Argument JSON Schema:
 
 ### req_get_ipd_statistic_dashboard
 
-Description: Get CodeArts Req IPD statistic dashboard
+中文说明：获取Req 需求管理的ipdstatisticdashboard。
 
-| Field | Value |
+原始工具说明：Get CodeArts Req IPD statistic dashboard
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_get_ipd_statistic_dashboard` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_get_ipd_statistic_dashboard` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `classification` | yes | `string` |  | enum: requirement, bug |
-| `plan` | no | `object` |  |  |
-| `created_date` | no | `object` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `classification` | 是 | `string` |  | 可选值：requirement：bug |
+| `plan` | 否 | `object` |  |  |
+| `created_date` | 否 | `object` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -4518,7 +4632,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -4571,22 +4685,24 @@ Argument JSON Schema:
 
 ### req_get_ipd_tenant_field_option_used
 
-Description: Get CodeArts Req IPD tenant field option usage
+中文说明：获取Req 需求管理的ipdtenantfieldoptionused。
 
-| Field | Value |
+原始工具说明：Get CodeArts Req IPD tenant field option usage
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_get_ipd_tenant_field_option_used` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_get_ipd_tenant_field_option_used` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `code` | yes | `string` |  |  |
+| `code` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -4602,7 +4718,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -4623,22 +4739,24 @@ Argument JSON Schema:
 
 ### req_get_ipd_tenant_field_used
 
-Description: Get CodeArts Req IPD tenant field usage
+中文说明：获取Req 需求管理的ipdtenantfieldused。
 
-| Field | Value |
+原始工具说明：Get CodeArts Req IPD tenant field usage
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_get_ipd_tenant_field_used` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_get_ipd_tenant_field_used` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `field_id` | yes | `string` |  |  |
+| `field_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -4654,7 +4772,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -4675,24 +4793,26 @@ Argument JSON Schema:
 
 ### req_get_ipd_work_item_flow_detail
 
-Description: Get CodeArts Req IPD work item flow detail
+中文说明：获取Req 需求管理的ipd工作项流程详情。
 
-| Field | Value |
+原始工具说明：Get CodeArts Req IPD work item flow detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_get_ipd_work_item_flow_detail` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_get_ipd_work_item_flow_detail` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `issue_id` | yes | `unknown` |  |  |
-| `issue_category` | yes | `string` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `issue_id` | 是 | `unknown` |  |  |
+| `issue_category` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -4710,7 +4830,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -4740,23 +4860,25 @@ Argument JSON Schema:
 
 ### req_get_ir
 
-Description: Get a CodeArts Req requirement pool IR detail
+中文说明：获取Req 需求管理的ir。
 
-| Field | Value |
+原始工具说明：Get a CodeArts Req requirement pool IR detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_get_ir` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_get_ir` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `program_id` | yes | `string` |  |  |
-| `ir_id` | yes | `unknown` |  |  |
+| `program_id` | 是 | `string` |  |  |
+| `ir_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -4773,7 +4895,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -4798,22 +4920,24 @@ Argument JSON Schema:
 
 ### req_get_iteration
 
-Description: Get CodeArts Req iteration detail
+中文说明：获取Req 需求管理的迭代。
 
-| Field | Value |
+原始工具说明：Get CodeArts Req iteration detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_get_iteration` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_get_iteration` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `iteration_id` | yes | `string` |  |  |
+| `iteration_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -4829,7 +4953,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -4850,23 +4974,25 @@ Argument JSON Schema:
 
 ### req_get_plan
 
-Description: Get CodeArts Req plan detail
+中文说明：获取Req 需求管理的计划。
 
-| Field | Value |
+原始工具说明：Get CodeArts Req plan detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_get_plan` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_get_plan` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `plan_id` | yes | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `plan_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -4883,7 +5009,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -4908,22 +5034,24 @@ Argument JSON Schema:
 
 ### req_get_project
 
-Description: Get CodeArts Req project detail
+中文说明：获取Req 需求管理的项目。
 
-| Field | Value |
+原始工具说明：Get CodeArts Req project detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_get_project` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_get_project` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
+| `project_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -4939,7 +5067,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -4960,26 +5088,28 @@ Argument JSON Schema:
 
 ### req_get_project_bug_density
 
-Description: Get CodeArts Req project bug density metric
+中文说明：获取Req 需求管理的项目bugdensity。
 
-| Field | Value |
+原始工具说明：Get CodeArts Req project bug density metric
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_get_project_bug_density` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_get_project_bug_density` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `date_range` | no | `string` |  |  |
-| `metric_type` | no | `string` |  |  |
-| `dividend` | no | `object` |  |  |
-| `divisor` | no | `object` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `date_range` | 否 | `string` |  |  |
+| `metric_type` | 否 | `string` |  |  |
+| `dividend` | 否 | `object` |  |  |
+| `divisor` | 否 | `object` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -4995,7 +5125,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -5061,22 +5191,24 @@ Argument JSON Schema:
 
 ### req_get_project_bugs_per_developer
 
-Description: Get CodeArts Req project bugs per developer metric
+中文说明：获取Req 需求管理的项目bugsperdeveloper。
 
-| Field | Value |
+原始工具说明：Get CodeArts Req project bugs per developer metric
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_get_project_bugs_per_developer` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_get_project_bugs_per_developer` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
+| `project_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -5092,7 +5224,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -5113,27 +5245,29 @@ Argument JSON Schema:
 
 ### req_get_project_completion_rate
 
-Description: Get CodeArts Req project completion rate metric
+中文说明：获取Req 需求管理的项目completionrate。
 
-| Field | Value |
+原始工具说明：Get CodeArts Req project completion rate metric
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_get_project_completion_rate` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_get_project_completion_rate` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `date_range` | no | `string` |  |  |
-| `metric_type` | no | `string` |  |  |
-| `sprint_id` | no | `unknown` |  |  |
-| `dividend` | no | `object` |  |  |
-| `divisor` | no | `object` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `date_range` | 否 | `string` |  |  |
+| `metric_type` | 否 | `string` |  |  |
+| `sprint_id` | 否 | `unknown` |  |  |
+| `dividend` | 否 | `object` |  |  |
+| `divisor` | 否 | `object` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -5149,7 +5283,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -5193,22 +5327,24 @@ Argument JSON Schema:
 
 ### req_get_project_due_days_after
 
-Description: Get CodeArts Req project due-days-after config
+中文说明：获取Req 需求管理的项目duedaysafter。
 
-| Field | Value |
+原始工具说明：Get CodeArts Req project due-days-after config
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_get_project_due_days_after` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_get_project_due_days_after` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
+| `project_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -5224,7 +5360,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -5245,22 +5381,24 @@ Argument JSON Schema:
 
 ### req_get_project_public_config
 
-Description: Get CodeArts Req project public config
+中文说明：获取Req 需求管理的项目public配置。
 
-| Field | Value |
+原始工具说明：Get CodeArts Req project public config
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_get_project_public_config` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_get_project_public_config` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
+| `project_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -5276,7 +5414,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -5297,22 +5435,24 @@ Argument JSON Schema:
 
 ### req_get_project_summary
 
-Description: Get CodeArts Req project summary
+中文说明：获取Req 需求管理的项目summary。
 
-| Field | Value |
+原始工具说明：Get CodeArts Req project summary
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_get_project_summary` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_get_project_summary` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
+| `project_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -5328,7 +5468,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -5349,22 +5489,24 @@ Argument JSON Schema:
 
 ### req_get_project_workhour_config
 
-Description: Get CodeArts Req project workhour config
+中文说明：获取Req 需求管理的项目workhour配置。
 
-| Field | Value |
+原始工具说明：Get CodeArts Req project workhour config
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_get_project_workhour_config` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_get_project_workhour_config` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
+| `project_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -5380,7 +5522,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -5401,23 +5543,25 @@ Argument JSON Schema:
 
 ### req_get_work_item
 
-Description: Get CodeArts Req work item detail
+中文说明：获取Req 需求管理的工作项。
 
-| Field | Value |
+原始工具说明：Get CodeArts Req work item detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_get_work_item` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_get_work_item` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `work_item_id` | yes | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `work_item_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -5434,7 +5578,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -5459,22 +5603,24 @@ Argument JSON Schema:
 
 ### req_get_work_item_completion_rate
 
-Description: Get CodeArts Req work item completion rates
+中文说明：获取Req 需求管理的工作项completionrate。
 
-| Field | Value |
+原始工具说明：Get CodeArts Req work item completion rates
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_get_work_item_completion_rate` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_get_work_item_completion_rate` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
+| `project_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -5490,7 +5636,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -5511,23 +5657,25 @@ Argument JSON Schema:
 
 ### req_get_work_item_index_counts
 
-Description: Get CodeArts Req work item index counts
+中文说明：获取Req 需求管理的工作项indexcounts。
 
-| Field | Value |
+原始工具说明：Get CodeArts Req work item index counts
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_get_work_item_index_counts` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_get_work_item_index_counts` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `work_item_id` | yes | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `work_item_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -5544,7 +5692,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -5569,24 +5717,26 @@ Argument JSON Schema:
 
 ### req_get_work_item_issue_details
 
-Description: Get CodeArts Req work item issue details from the V2 detail endpoint
+中文说明：获取Req 需求管理的工作项问题详情。
 
-| Field | Value |
+原始工具说明：Get CodeArts Req work item issue details from the V2 detail endpoint
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_get_work_item_issue_details` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_get_work_item_issue_details` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `work_item_id` | yes | `unknown` |  |  |
-| `include` | no | `string` | "children,parent" |  |
+| `project_id` | 是 | `string` |  |  |
+| `work_item_id` | 是 | `unknown` |  |  |
+| `include` | 否 | `string` | "children,parent" |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -5603,7 +5753,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -5633,23 +5783,25 @@ Argument JSON Schema:
 
 ### req_get_work_item_status_rule_flag
 
-Description: Get CodeArts Req work item status rule flag
+中文说明：获取Req 需求管理的工作项状态ruleflag。
 
-| Field | Value |
+原始工具说明：Get CodeArts Req work item status rule flag
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_get_work_item_status_rule_flag` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_get_work_item_status_rule_flag` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `tracker_id` | yes | `number` |  | enum: 2, 3, 5, 6, 7 |
+| `project_id` | 是 | `string` |  |  |
+| `tracker_id` | 是 | `number` |  | 可选值：2：3：5：6：7 |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -5666,7 +5818,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -5698,23 +5850,25 @@ Argument JSON Schema:
 
 ### req_get_work_item_template_config
 
-Description: Get CodeArts Req work item template config
+中文说明：获取Req 需求管理的工作项模板配置。
 
-| Field | Value |
+原始工具说明：Get CodeArts Req work item template config
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_get_work_item_template_config` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_get_work_item_template_config` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `tracker_id` | yes | `number` |  | enum: 2, 3, 5, 6, 7 |
+| `project_id` | 是 | `string` |  |  |
+| `tracker_id` | 是 | `number` |  | 可选值：2：3：5：6：7 |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -5731,7 +5885,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -5763,31 +5917,33 @@ Argument JSON Schema:
 
 ### req_group_ipd_issues
 
-Description: Group CodeArts Req IPD issues
+中文说明：groupReq 需求管理的ipd问题。
 
-| Field | Value |
+原始工具说明：Group CodeArts Req IPD issues
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_group_ipd_issues` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_group_ipd_issues` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `project_id` | yes | `string` |  |  |
-| `issue_type` | yes | `string` |  |  |
-| `group_field_id` | yes | `unknown` |  |  |
-| `is_project_group` | no | `boolean` |  |  |
-| `group_sort` | no | `string` |  | enum: asc, desc |
-| `filter` | no | `array` |  |  |
-| `filter_mode` | no | `string` | "AND_OR" | enum: OR_AND, AND_OR |
-| `sort` | no | `array` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `project_id` | 是 | `string` |  |  |
+| `issue_type` | 是 | `string` |  |  |
+| `group_field_id` | 是 | `unknown` |  |  |
+| `is_project_group` | 否 | `boolean` |  |  |
+| `group_sort` | 否 | `string` |  | 可选值：asc：desc |
+| `filter` | 否 | `array` |  |  |
+| `filter_mode` | 否 | `string` | "AND_OR" | 可选值：OR_AND：AND_OR |
+| `sort` | 否 | `array` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -5805,7 +5961,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -5901,23 +6057,25 @@ Argument JSON Schema:
 
 ### req_leave_project
 
-Description: Leave a CodeArts Req project as the current member
+中文说明：leaveReq 需求管理的项目。
 
-| Field | Value |
+原始工具说明：Leave a CodeArts Req project as the current member
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_leave_project` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_leave_project` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -5933,7 +6091,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -5958,26 +6116,28 @@ Argument JSON Schema:
 
 ### req_list_associated_commits
 
-Description: List CodeArts Req associated commits
+中文说明：查询列表Req 需求管理的associatedcommits。
 
-| Field | Value |
+原始工具说明：List CodeArts Req associated commits
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_associated_commits` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_associated_commits` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `project_id` | yes | `string` |  |  |
-| `work_item_id` | yes | `unknown` |  |  |
-| `type` | no | `string` | "commit" | enum: commit, branch |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `project_id` | 是 | `string` |  |  |
+| `work_item_id` | 是 | `unknown` |  |  |
+| `type` | 否 | `string` | "commit" | 可选值：commit：branch |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -5994,7 +6154,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -6038,25 +6198,27 @@ Argument JSON Schema:
 
 ### req_list_associated_issues
 
-Description: List CodeArts Req associated issues
+中文说明：查询列表Req 需求管理的associated问题。
 
-| Field | Value |
+原始工具说明：List CodeArts Req associated issues
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_associated_issues` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_associated_issues` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `project_id` | yes | `string` |  |  |
-| `work_item_id` | yes | `unknown` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `project_id` | 是 | `string` |  |  |
+| `work_item_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -6073,7 +6235,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -6109,25 +6271,27 @@ Argument JSON Schema:
 
 ### req_list_associated_test_cases
 
-Description: List CodeArts Req associated test cases
+中文说明：查询列表Req 需求管理的associatedtest用例。
 
-| Field | Value |
+原始工具说明：List CodeArts Req associated test cases
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_associated_test_cases` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_associated_test_cases` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `project_id` | yes | `string` |  |  |
-| `work_item_id` | yes | `unknown` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `project_id` | 是 | `string` |  |  |
+| `work_item_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -6144,7 +6308,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -6180,25 +6344,27 @@ Argument JSON Schema:
 
 ### req_list_associated_wikis
 
-Description: List CodeArts Req associated wikis
+中文说明：查询列表Req 需求管理的associatedwikis。
 
-| Field | Value |
+原始工具说明：List CodeArts Req associated wikis
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_associated_wikis` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_associated_wikis` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `project_id` | yes | `string` |  |  |
-| `work_item_id` | yes | `unknown` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `project_id` | 是 | `string` |  |  |
+| `work_item_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -6215,7 +6381,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -6251,24 +6417,26 @@ Argument JSON Schema:
 
 ### req_list_board_work_item_status_records
 
-Description: List CodeArts Req board work item status records
+中文说明：查询列表Req 需求管理的board工作项状态记录。
 
-| Field | Value |
+原始工具说明：List CodeArts Req board work item status records
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_board_work_item_status_records` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_board_work_item_status_records` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `project_id` | yes | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `project_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -6284,7 +6452,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -6316,23 +6484,25 @@ Argument JSON Schema:
 
 ### req_list_board_work_item_workflow_config
 
-Description: List CodeArts Req board work item workflow config
+中文说明：查询列表Req 需求管理的board工作项workflow配置。
 
-| Field | Value |
+原始工具说明：List CodeArts Req board work item workflow config
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_board_work_item_workflow_config` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_board_work_item_workflow_config` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `board_id` | yes | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `board_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -6349,7 +6519,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -6374,25 +6544,27 @@ Argument JSON Schema:
 
 ### req_list_board_work_items
 
-Description: List CodeArts Req board work items
+中文说明：查询列表Req 需求管理的board工作项。
 
-| Field | Value |
+原始工具说明：List CodeArts Req board work items
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_board_work_items` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_board_work_items` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `project_id` | yes | `string` |  |  |
-| `created_time_interval` | no | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `project_id` | 是 | `string` |  |  |
+| `created_time_interval` | 否 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -6408,7 +6580,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -6443,23 +6615,25 @@ Argument JSON Schema:
 
 ### req_list_cache_data
 
-Description: List CodeArts Req cache data
+中文说明：查询列表Req 需求管理的cachedata。
 
-| Field | Value |
+原始工具说明：List CodeArts Req cache data
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_cache_data` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_cache_data` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | no | `string` |  |  |
-| `type` | no | `string` | "backlog" |  |
+| `project_id` | 否 | `string` |  |  |
+| `type` | 否 | `string` | "backlog" |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -6473,7 +6647,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -6496,27 +6670,29 @@ Argument JSON Schema:
 
 ### req_list_child_work_items
 
-Description: List CodeArts Req child work items
+中文说明：查询列表Req 需求管理的child工作项。
 
-| Field | Value |
+原始工具说明：List CodeArts Req child work items
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_child_work_items` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_child_work_items` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `project_id` | yes | `string` |  |  |
-| `parent_id` | yes | `unknown` |  |  |
-| `subject` | no | `string` |  |  |
-| `query_type` | no | `string` | "basic" | enum: basic, custom, query |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `project_id` | 是 | `string` |  |  |
+| `parent_id` | 是 | `unknown` |  |  |
+| `subject` | 否 | `string` |  |  |
+| `query_type` | 否 | `string` | "basic" | 可选值：basic：custom：query |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -6533,7 +6709,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -6581,24 +6757,26 @@ Argument JSON Schema:
 
 ### req_list_ipd_attached_wikis
 
-Description: List CodeArts Req IPD issue attached wikis
+中文说明：查询列表Req 需求管理的ipdattachedwikis。
 
-| Field | Value |
+原始工具说明：List CodeArts Req IPD issue attached wikis
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_ipd_attached_wikis` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_ipd_attached_wikis` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `issue_id` | yes | `unknown` |  |  |
-| `category` | no | `string` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `issue_id` | 是 | `unknown` |  |  |
+| `category` | 否 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -6615,7 +6793,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -6643,23 +6821,25 @@ Argument JSON Schema:
 
 ### req_list_ipd_category_statuses
 
-Description: List CodeArts Req IPD category statuses
+中文说明：查询列表Req 需求管理的ipdcategory状态。
 
-| Field | Value |
+原始工具说明：List CodeArts Req IPD category statuses
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_ipd_category_statuses` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_ipd_category_statuses` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `category_id` | yes | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `category_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -6676,7 +6856,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -6701,23 +6881,25 @@ Argument JSON Schema:
 
 ### req_list_ipd_feature_sets
 
-Description: List CodeArts Req IPD feature sets
+中文说明：查询列表Req 需求管理的ipdfeaturesets。
 
-| Field | Value |
+原始工具说明：List CodeArts Req IPD feature sets
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_ipd_feature_sets` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_ipd_feature_sets` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `snapshot_version_id` | no | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `snapshot_version_id` | 否 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -6733,7 +6915,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -6757,24 +6939,26 @@ Argument JSON Schema:
 
 ### req_list_ipd_issue_attachments
 
-Description: List CodeArts Req IPD issue attachments
+中文说明：查询列表Req 需求管理的ipd问题附件。
 
-| Field | Value |
+原始工具说明：List CodeArts Req IPD issue attachments
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_ipd_issue_attachments` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_ipd_issue_attachments` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `issue_id` | yes | `unknown` |  |  |
-| `source_project_id` | no | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `issue_id` | 是 | `unknown` |  |  |
+| `source_project_id` | 否 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -6791,7 +6975,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -6819,23 +7003,25 @@ Argument JSON Schema:
 
 ### req_list_ipd_issue_fields
 
-Description: List CodeArts Req IPD issue fields
+中文说明：查询列表Req 需求管理的ipd问题fields。
 
-| Field | Value |
+原始工具说明：List CodeArts Req IPD issue fields
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_ipd_issue_fields` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_ipd_issue_fields` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `category_id` | yes | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `category_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -6852,7 +7038,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -6877,22 +7063,24 @@ Argument JSON Schema:
 
 ### req_list_ipd_issue_relation_config
 
-Description: List CodeArts Req IPD issue relation config
+中文说明：查询列表Req 需求管理的ipd问题relation配置。
 
-| Field | Value |
+原始工具说明：List CodeArts Req IPD issue relation config
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_ipd_issue_relation_config` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_ipd_issue_relation_config` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
+| `project_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -6908,7 +7096,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -6929,29 +7117,31 @@ Argument JSON Schema:
 
 ### req_list_ipd_issue_tree
 
-Description: List CodeArts Req IPD issue tree
+中文说明：查询列表Req 需求管理的ipd问题树。
 
-| Field | Value |
+原始工具说明：List CodeArts Req IPD issue tree
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_ipd_issue_tree` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_ipd_issue_tree` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `project_id` | yes | `string` |  |  |
-| `category` | yes | `string` |  |  |
-| `keyword` | no | `string` |  |  |
-| `number` | no | `array` |  |  |
-| `plan` | no | `array` |  |  |
-| `modified_date` | no | `object` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `project_id` | 是 | `string` |  |  |
+| `category` | 是 | `string` |  |  |
+| `keyword` | 否 | `string` |  |  |
+| `number` | 否 | `array` |  |  |
+| `plan` | 否 | `array` |  |  |
+| `modified_date` | 否 | `object` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -6968,7 +7158,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -7044,27 +7234,29 @@ Argument JSON Schema:
 
 ### req_list_ipd_issues
 
-Description: List CodeArts Req IPD issues
+中文说明：查询列表Req 需求管理的ipd问题。
 
-| Field | Value |
+原始工具说明：List CodeArts Req IPD issues
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_ipd_issues` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_ipd_issues` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `project_id` | yes | `string` |  |  |
-| `issue_type` | yes | `string` |  |  |
-| `filter` | no | `array` |  |  |
-| `filter_mode` | no | `string` | "AND_OR" | enum: OR_AND, AND_OR |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `project_id` | 是 | `string` |  |  |
+| `issue_type` | 是 | `string` |  |  |
+| `filter` | 否 | `array` |  |  |
+| `filter_mode` | 否 | `string` | "AND_OR" | 可选值：OR_AND：AND_OR |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -7081,7 +7273,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -7133,24 +7325,26 @@ Argument JSON Schema:
 
 ### req_list_ipd_labels
 
-Description: List CodeArts Req IPD labels
+中文说明：查询列表Req 需求管理的ipdlabels。
 
-| Field | Value |
+原始工具说明：List CodeArts Req IPD labels
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_ipd_labels` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_ipd_labels` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `project_id` | yes | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `project_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -7166,7 +7360,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -7198,24 +7392,26 @@ Argument JSON Schema:
 
 ### req_list_ipd_modules
 
-Description: List CodeArts Req IPD modules
+中文说明：查询列表Req 需求管理的ipdmodules。
 
-| Field | Value |
+原始工具说明：List CodeArts Req IPD modules
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_ipd_modules` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_ipd_modules` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `project_id` | yes | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `project_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -7231,7 +7427,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -7263,24 +7459,26 @@ Argument JSON Schema:
 
 ### req_list_ipd_project_fields
 
-Description: List CodeArts Req IPD project fields
+中文说明：查询列表Req 需求管理的ipd项目fields。
 
-| Field | Value |
+原始工具说明：List CodeArts Req IPD project fields
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_ipd_project_fields` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_ipd_project_fields` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `project_id` | yes | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `project_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -7296,7 +7494,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -7328,22 +7526,24 @@ Argument JSON Schema:
 
 ### req_list_ipd_project_users
 
-Description: List CodeArts Req IPD project users
+中文说明：查询列表Req 需求管理的ipd项目用户。
 
-| Field | Value |
+原始工具说明：List CodeArts Req IPD project users
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_ipd_project_users` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_ipd_project_users` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
+| `project_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -7359,7 +7559,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -7380,23 +7580,25 @@ Argument JSON Schema:
 
 ### req_list_ipd_projects
 
-Description: List CodeArts Req IPD projects
+中文说明：查询列表Req 需求管理的ipd项目。
 
-| Field | Value |
+原始工具说明：List CodeArts Req IPD projects
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_ipd_projects` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_ipd_projects` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `search` | no | `string` |  |  |
-| `model` | no | `string` |  | enum: 10001, 10002, 10003 |
+| `search` | 否 | `string` |  |  |
+| `model` | 否 | `string` |  | 可选值：10001：10002：10003 |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -7410,7 +7612,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -7435,26 +7637,28 @@ Argument JSON Schema:
 
 ### req_list_ipd_snapshot_features
 
-Description: List CodeArts Req IPD snapshot features
+中文说明：查询列表Req 需求管理的ipdsnapshotfeatures。
 
-| Field | Value |
+原始工具说明：List CodeArts Req IPD snapshot features
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_ipd_snapshot_features` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_ipd_snapshot_features` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `project_id` | yes | `string` |  |  |
-| `snapshot_version_id` | yes | `unknown` |  |  |
-| `feature_set_id` | yes | `unknown` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `project_id` | 是 | `string` |  |  |
+| `snapshot_version_id` | 是 | `unknown` |  |  |
+| `feature_set_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -7472,7 +7676,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -7512,22 +7716,24 @@ Argument JSON Schema:
 
 ### req_list_ipd_snapshot_versions
 
-Description: List CodeArts Req IPD feature set snapshot versions
+中文说明：查询列表Req 需求管理的ipdsnapshot版本。
 
-| Field | Value |
+原始工具说明：List CodeArts Req IPD feature set snapshot versions
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_ipd_snapshot_versions` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_ipd_snapshot_versions` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
+| `project_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -7543,7 +7749,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -7564,23 +7770,25 @@ Argument JSON Schema:
 
 ### req_list_ipd_statuses
 
-Description: List CodeArts Req IPD statuses
+中文说明：查询列表Req 需求管理的ipd状态。
 
-| Field | Value |
+原始工具说明：List CodeArts Req IPD statuses
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_ipd_statuses` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_ipd_statuses` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `category_id` | no | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `category_id` | 否 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -7596,7 +7804,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -7620,25 +7828,27 @@ Argument JSON Schema:
 
 ### req_list_ipd_tenant_fields
 
-Description: List CodeArts Req IPD tenant fields
+中文说明：查询列表Req 需求管理的ipdtenantfields。
 
-| Field | Value |
+原始工具说明：List CodeArts Req IPD tenant fields
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_ipd_tenant_fields` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_ipd_tenant_fields` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `search` | no | `string` |  |  |
-| `sort_info` | no | `object` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `search` | 否 | `string` |  |  |
+| `sort_info` | 否 | `object` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -7652,7 +7862,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -7692,28 +7902,30 @@ Argument JSON Schema:
 
 ### req_list_ipd_tenant_issues
 
-Description: List CodeArts Req IPD tenant issues
+中文说明：查询列表Req 需求管理的ipdtenant问题。
 
-| Field | Value |
+原始工具说明：List CodeArts Req IPD tenant issues
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_ipd_tenant_issues` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_ipd_tenant_issues` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `project_id` | no | `anyOf` |  |  |
-| `issue_type` | yes | `string` |  |  |
-| `filter` | no | `array` |  |  |
-| `filter_mode` | no | `string` | "AND_OR" | enum: OR_AND, AND_OR |
-| `sort` | no | `array` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `project_id` | 否 | `anyOf` |  |  |
+| `issue_type` | 是 | `string` |  |  |
+| `filter` | 否 | `array` |  |  |
+| `filter_mode` | 否 | `string` | "AND_OR" | 可选值：OR_AND：AND_OR |
+| `sort` | 否 | `array` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -7729,7 +7941,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -7821,23 +8033,25 @@ Argument JSON Schema:
 
 ### req_list_ipd_work_hour_categories
 
-Description: List CodeArts Req IPD work hour categories
+中文说明：查询列表Req 需求管理的ipd工作hourcategories。
 
-| Field | Value |
+原始工具说明：List CodeArts Req IPD work hour categories
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_ipd_work_hour_categories` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_ipd_work_hour_categories` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `display_value` | no | `string` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `display_value` | 否 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -7853,7 +8067,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -7878,28 +8092,30 @@ Argument JSON Schema:
 
 ### req_list_ipd_work_hours
 
-Description: List CodeArts Req IPD work hour records
+中文说明：查询列表Req 需求管理的ipd工作hours。
 
-| Field | Value |
+原始工具说明：List CodeArts Req IPD work hour records
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_ipd_work_hours` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_ipd_work_hours` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `project_id` | yes | `string` |  |  |
-| `plan_pi` | no | `array` |  |  |
-| `plan_iteration` | no | `array` |  |  |
-| `workitem_id` | no | `array` |  |  |
-| `created_by` | no | `array` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `project_id` | 是 | `string` |  |  |
+| `plan_pi` | 否 | `array` |  |  |
+| `plan_iteration` | 否 | `array` |  |  |
+| `workitem_id` | 否 | `array` |  |  |
+| `created_by` | 否 | `array` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -7915,7 +8131,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -7971,23 +8187,25 @@ Argument JSON Schema:
 
 ### req_list_ipd_workflow_fields
 
-Description: List CodeArts Req IPD workflow fields
+中文说明：查询列表Req 需求管理的ipdworkflowfields。
 
-| Field | Value |
+原始工具说明：List CodeArts Req IPD workflow fields
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_ipd_workflow_fields` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_ipd_workflow_fields` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `category_id` | yes | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `category_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -8004,7 +8222,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -8029,23 +8247,25 @@ Argument JSON Schema:
 
 ### req_list_ipd_workflow_templates
 
-Description: List CodeArts Req IPD workflow templates
+中文说明：查询列表Req 需求管理的ipdworkflowtemplates。
 
-| Field | Value |
+原始工具说明：List CodeArts Req IPD workflow templates
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_ipd_workflow_templates` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_ipd_workflow_templates` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `category_id` | no | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `category_id` | 否 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -8061,7 +8281,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -8085,26 +8305,28 @@ Argument JSON Schema:
 
 ### req_list_ir_children
 
-Description: List CodeArts Req requirement pool IR children
+中文说明：查询列表Req 需求管理的irchildren。
 
-| Field | Value |
+原始工具说明：List CodeArts Req requirement pool IR children
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_ir_children` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_ir_children` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `program_id` | yes | `string` |  |  |
-| `ir_id` | yes | `unknown` |  |  |
-| `query_type` | yes | `string` |  | enum: RR, ITEMS |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `program_id` | 是 | `string` |  |  |
+| `ir_id` | 是 | `unknown` |  |  |
+| `query_type` | 是 | `string` |  | 可选值：RR：ITEMS |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -8122,7 +8344,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -8166,24 +8388,26 @@ Argument JSON Schema:
 
 ### req_list_ir_histories
 
-Description: List CodeArts Req requirement pool IR history records
+中文说明：查询列表Req 需求管理的ir历史记录。
 
-| Field | Value |
+原始工具说明：List CodeArts Req requirement pool IR history records
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_ir_histories` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_ir_histories` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `ir_id` | yes | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `ir_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -8199,7 +8423,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -8231,20 +8455,22 @@ Argument JSON Schema:
 
 ### req_list_issue_severities
 
-Description: List CodeArts Req issue severities
+中文说明：查询列表Req 需求管理的问题severities。
 
-| Field | Value |
+原始工具说明：List CodeArts Req issue severities
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_issue_severities` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_issue_severities` |
 
-Arguments:
+参数：
 
-No arguments.
+无参数。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -8258,7 +8484,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -8271,25 +8497,27 @@ Argument JSON Schema:
 
 ### req_list_iteration_status_statistics
 
-Description: List CodeArts Req iteration status statistics
+中文说明：查询列表Req 需求管理的迭代状态统计。
 
-| Field | Value |
+原始工具说明：List CodeArts Req iteration status statistics
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_iteration_status_statistics` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_iteration_status_statistics` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `iteration_id` | yes | `unknown` |  |  |
-| `tracker_id` | no | `integer` |  |  |
-| `status_id` | no | `integer` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `iteration_id` | 是 | `unknown` |  |  |
+| `tracker_id` | 否 | `integer` |  |  |
+| `status_id` | 否 | `integer` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -8306,7 +8534,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -8339,30 +8567,32 @@ Argument JSON Schema:
 
 ### req_list_iteration_work_items
 
-Description: List CodeArts Req work items in an iteration
+中文说明：查询列表Req 需求管理的迭代工作项。
 
-| Field | Value |
+原始工具说明：List CodeArts Req work items in an iteration
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_iteration_work_items` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_iteration_work_items` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `project_id` | yes | `string` |  |  |
-| `iteration_id` | yes | `unknown` |  |  |
-| `tracker_id` | no | `number` |  | enum: 2, 3, 5, 6, 7 |
-| `status_id` | no | `integer` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `project_id` | 是 | `string` |  |  |
+| `iteration_id` | 是 | `unknown` |  |  |
+| `tracker_id` | 否 | `number` |  | 可选值：2：3：5：6：7 |
+| `status_id` | 否 | `integer` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -8379,7 +8609,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -8442,27 +8672,29 @@ Argument JSON Schema:
 
 ### req_list_iterations
 
-Description: List CodeArts Req iterations
+中文说明：查询列表Req 需求管理的迭代。
 
-| Field | Value |
+原始工具说明：List CodeArts Req iterations
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_iterations` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_iterations` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `project_id` | yes | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `project_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -8478,7 +8710,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -8523,24 +8755,26 @@ Argument JSON Schema:
 
 ### req_list_job_cache_boards
 
-Description: List CodeArts Req board cache fields
+中文说明：查询列表Req 需求管理的任务cacheboards。
 
-| Field | Value |
+原始工具说明：List CodeArts Req board cache fields
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_job_cache_boards` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_job_cache_boards` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `type` | no | `string` | "board" |  |
-| `region` | no | `string` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `type` | 否 | `string` | "board" |  |
+| `region` | 否 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -8556,7 +8790,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -8586,23 +8820,25 @@ Argument JSON Schema:
 
 ### req_list_not_added_projects
 
-Description: List CodeArts Req projects not yet added to the current domain
+中文说明：查询列表Req 需求管理的notadded项目。
 
-| Field | Value |
+原始工具说明：List CodeArts Req projects not yet added to the current domain
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_not_added_projects` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_not_added_projects` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -8616,7 +8852,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -8641,23 +8877,25 @@ Argument JSON Schema:
 
 ### req_list_optional_work_item_status_configs
 
-Description: List CodeArts Req optional work item status configs
+中文说明：查询列表Req 需求管理的optional工作项状态配置。
 
-| Field | Value |
+原始工具说明：List CodeArts Req optional work item status configs
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_optional_work_item_status_configs` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_optional_work_item_status_configs` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `tracker_id` | yes | `number` |  | enum: 2, 3, 5, 6, 7 |
+| `project_id` | 是 | `string` |  |  |
+| `tracker_id` | 是 | `number` |  | 可选值：2：3：5：6：7 |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -8674,7 +8912,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -8706,26 +8944,28 @@ Argument JSON Schema:
 
 ### req_list_plan_addable_work_items
 
-Description: List addable work items for a CodeArts Req plan
+中文说明：查询列表Req 需求管理的计划addable工作项。
 
-| Field | Value |
+原始工具说明：List addable work items for a CodeArts Req plan
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_plan_addable_work_items` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_plan_addable_work_items` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `project_id` | yes | `string` |  |  |
-| `plan_id` | yes | `unknown` |  |  |
-| `subject` | no | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `project_id` | 是 | `string` |  |  |
+| `plan_id` | 是 | `unknown` |  |  |
+| `subject` | 否 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -8742,7 +8982,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -8781,28 +9021,30 @@ Argument JSON Schema:
 
 ### req_list_plan_work_items
 
-Description: List CodeArts Req work items in a plan
+中文说明：查询列表Req 需求管理的计划工作项。
 
-| Field | Value |
+原始工具说明：List CodeArts Req work items in a plan
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_plan_work_items` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_plan_work_items` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `project_id` | yes | `string` |  |  |
-| `plan_id` | yes | `unknown` |  |  |
-| `subject` | no | `string` |  |  |
-| `show_type` | no | `string` | "list" | enum: list, tree |
-| `tracker_id` | no | `number` |  | enum: 2, 3, 5, 6, 7 |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `project_id` | 是 | `string` |  |  |
+| `plan_id` | 是 | `unknown` |  |  |
+| `subject` | 否 | `string` |  |  |
+| `show_type` | 否 | `string` | "list" | 可选值：list：tree |
+| `tracker_id` | 否 | `number` |  | 可选值：2：3：5：6：7 |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -8819,7 +9061,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -8876,30 +9118,32 @@ Argument JSON Schema:
 
 ### req_list_plans
 
-Description: List CodeArts Req plans
+中文说明：查询列表Req 需求管理的计划。
 
-| Field | Value |
+原始工具说明：List CodeArts Req plans
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_plans` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_plans` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `project_id` | yes | `string` |  |  |
-| `status_id` | no | `integer` |  |  |
-| `plan_id` | no | `unknown` |  |  |
-| `search` | no | `string` |  |  |
-| `user_ids` | no | `array` |  |  |
-| `sort` | no | `string` |  |  |
-| `type` | no | `string` |  | enum: gantt, mind |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `project_id` | 是 | `string` |  |  |
+| `status_id` | 否 | `integer` |  |  |
+| `plan_id` | 否 | `unknown` |  |  |
+| `search` | 否 | `string` |  |  |
+| `user_ids` | 否 | `array` |  |  |
+| `sort` | 否 | `string` |  |  |
+| `type` | 否 | `string` |  | 可选值：gantt：mind |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -8915,7 +9159,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -8973,23 +9217,25 @@ Argument JSON Schema:
 
 ### req_list_program_fields
 
-Description: List CodeArts Req program IR or RR fields
+中文说明：查询列表Req 需求管理的programfields。
 
-| Field | Value |
+原始工具说明：List CodeArts Req program IR or RR fields
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_program_fields` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_program_fields` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `program_id` | yes | `string` |  |  |
-| `field_type` | yes | `string` |  | enum: IR, RR |
+| `program_id` | 是 | `string` |  |  |
+| `field_type` | 是 | `string` |  | 可选值：IR：RR |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -9006,7 +9252,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -9035,27 +9281,29 @@ Argument JSON Schema:
 
 ### req_list_programs
 
-Description: List CodeArts Req project spaces / programs
+中文说明：查询列表Req 需求管理的programs。
 
-| Field | Value |
+原始工具说明：List CodeArts Req project spaces / programs
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_programs` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_programs` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `search` | no | `string` |  |  |
-| `sort_key` | no | `string` |  | enum: name, created_time |
-| `sort_dir` | no | `string` |  | enum: ASC, DESC, asc, desc |
-| `is_watched` | no | `boolean` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `search` | 否 | `string` |  |  |
+| `sort_key` | 否 | `string` |  | 可选值：name：created_time |
+| `sort_dir` | 否 | `string` |  | 可选值：ASC：DESC：asc：desc |
+| `is_watched` | 否 | `boolean` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -9069,7 +9317,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -9117,22 +9365,24 @@ Argument JSON Schema:
 
 ### req_list_project_bug_statistics
 
-Description: List CodeArts Req project bug statistics
+中文说明：查询列表Req 需求管理的项目bug统计。
 
-| Field | Value |
+原始工具说明：List CodeArts Req project bug statistics
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_project_bug_statistics` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_project_bug_statistics` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
+| `project_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -9148,7 +9398,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -9169,22 +9419,24 @@ Argument JSON Schema:
 
 ### req_list_project_demand_statistics
 
-Description: List CodeArts Req project demand statistics
+中文说明：查询列表Req 需求管理的项目demand统计。
 
-| Field | Value |
+原始工具说明：List CodeArts Req project demand statistics
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_project_demand_statistics` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_project_demand_statistics` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
+| `project_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -9200,7 +9452,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -9221,24 +9473,26 @@ Argument JSON Schema:
 
 ### req_list_project_domains
 
-Description: List CodeArts Req project domains
+中文说明：查询列表Req 需求管理的项目domains。
 
-| Field | Value |
+原始工具说明：List CodeArts Req project domains
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_project_domains` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_project_domains` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `project_id` | yes | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `project_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -9254,7 +9508,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -9286,27 +9540,29 @@ Argument JSON Schema:
 
 ### req_list_project_members
 
-Description: List CodeArts Req project members
+中文说明：查询列表Req 需求管理的项目成员。
 
-| Field | Value |
+原始工具说明：List CodeArts Req project members
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_project_members` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_project_members` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `project_id` | yes | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `project_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -9322,7 +9578,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -9367,24 +9623,26 @@ Argument JSON Schema:
 
 ### req_list_project_modules
 
-Description: List CodeArts Req project modules
+中文说明：查询列表Req 需求管理的项目modules。
 
-| Field | Value |
+原始工具说明：List CodeArts Req project modules
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_project_modules` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_project_modules` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `project_id` | yes | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `project_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -9400,7 +9658,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -9432,25 +9690,27 @@ Argument JSON Schema:
 
 ### req_list_project_work_hour_types
 
-Description: List CodeArts Req project work hour types
+中文说明：查询列表Req 需求管理的项目工作hourtypes。
 
-| Field | Value |
+原始工具说明：List CodeArts Req project work hour types
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_project_work_hour_types` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_project_work_hour_types` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `project_id` | yes | `string` |  |  |
-| `status` | no | `number` |  | enum: 1, 2 |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `project_id` | 是 | `string` |  |  |
+| `status` | 否 | `number` |  | 可选值：1：2 |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -9466,7 +9726,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -9505,28 +9765,30 @@ Argument JSON Schema:
 
 ### req_list_project_work_hours
 
-Description: List CodeArts Req project work hour records
+中文说明：查询列表Req 需求管理的项目工作hours。
 
-| Field | Value |
+原始工具说明：List CodeArts Req project work hour records
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_project_work_hours` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_project_work_hours` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `project_ids` | yes | `array` |  |  |
-| `begin_time` | no | `string` |  |  |
-| `end_time` | no | `string` |  |  |
-| `work_hours_dates` | no | `string` |  |  |
-| `work_hours_types` | no | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `project_ids` | 是 | `array` |  |  |
+| `begin_time` | 否 | `string` |  |  |
+| `end_time` | 否 | `string` |  |  |
+| `work_hours_dates` | 否 | `string` |  |  |
+| `work_hours_types` | 否 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -9542,7 +9804,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -9594,25 +9856,27 @@ Argument JSON Schema:
 
 ### req_list_project_work_item_records
 
-Description: List CodeArts Req project work item records
+中文说明：查询列表Req 需求管理的项目工作项记录。
 
-| Field | Value |
+原始工具说明：List CodeArts Req project work item records
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_project_work_item_records` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_project_work_item_records` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `project_id` | yes | `string` |  |  |
-| `operated_time_interval` | no | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `project_id` | 是 | `string` |  |  |
+| `operated_time_interval` | 否 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -9628,7 +9892,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -9664,27 +9928,29 @@ Argument JSON Schema:
 
 ### req_list_projects
 
-Description: List CodeArts Req projects
+中文说明：查询列表Req 需求管理的项目。
 
-| Field | Value |
+原始工具说明：List CodeArts Req projects
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_projects` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_projects` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `organization_id` | no | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `organization_id` | 否 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -9698,7 +9964,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -9740,22 +10006,24 @@ Argument JSON Schema:
 
 ### req_list_related_users
 
-Description: List CodeArts Req related users
+中文说明：查询列表Req 需求管理的related用户。
 
-| Field | Value |
+原始工具说明：List CodeArts Req related users
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_related_users` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_related_users` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
+| `project_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -9771,7 +10039,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -9792,24 +10060,26 @@ Argument JSON Schema:
 
 ### req_list_rr_histories
 
-Description: List CodeArts Req requirement pool RR history records
+中文说明：查询列表Req 需求管理的rr历史记录。
 
-| Field | Value |
+原始工具说明：List CodeArts Req requirement pool RR history records
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_rr_histories` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_rr_histories` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `rr_id` | yes | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `rr_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -9825,7 +10095,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -9857,23 +10127,25 @@ Argument JSON Schema:
 
 ### req_list_rr_statuses
 
-Description: List CodeArts Req requirement pool RR statuses
+中文说明：查询列表Req 需求管理的rr状态。
 
-| Field | Value |
+原始工具说明：List CodeArts Req requirement pool RR statuses
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_rr_statuses` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_rr_statuses` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `program_id` | yes | `string` |  |  |
-| `rr_ids` | yes | `array` |  |  |
+| `program_id` | 是 | `string` |  |  |
+| `rr_ids` | 是 | `array` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -9890,7 +10162,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -9920,27 +10192,29 @@ Argument JSON Schema:
 
 ### req_list_rrs
 
-Description: List CodeArts Req requirement pool RRs
+中文说明：查询列表Req 需求管理的rrs。
 
-| Field | Value |
+原始工具说明：List CodeArts Req requirement pool RRs
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_rrs` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_rrs` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `program_id` | yes | `string` |  |  |
-| `query_type` | no | `string` | "ALL" | enum: ALL, DST, SRC |
-| `include_deleted` | no | `boolean` |  |  |
-| `updated_time_interval` | no | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `program_id` | 是 | `string` |  |  |
+| `query_type` | 否 | `string` | "ALL" | 可选值：ALL：DST：SRC |
+| `include_deleted` | 否 | `boolean` |  |  |
+| `updated_time_interval` | 否 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -9956,7 +10230,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -10004,22 +10278,24 @@ Argument JSON Schema:
 
 ### req_list_user_features
 
-Description: List CodeArts Req user features
+中文说明：查询列表Req 需求管理的用户features。
 
-| Field | Value |
+原始工具说明：List CodeArts Req user features
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_user_features` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_user_features` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
+| `project_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -10035,7 +10311,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -10056,25 +10332,27 @@ Argument JSON Schema:
 
 ### req_list_work_item_comments
 
-Description: List CodeArts Req work item comments
+中文说明：查询列表Req 需求管理的工作项评论。
 
-| Field | Value |
+原始工具说明：List CodeArts Req work item comments
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_work_item_comments` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_work_item_comments` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `project_id` | yes | `string` |  |  |
-| `work_item_id` | yes | `unknown` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `project_id` | 是 | `string` |  |  |
+| `work_item_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -10091,7 +10369,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -10127,23 +10405,25 @@ Argument JSON Schema:
 
 ### req_list_work_item_custom_fields
 
-Description: List CodeArts Req work item custom fields
+中文说明：查询列表Req 需求管理的工作项customfields。
 
-| Field | Value |
+原始工具说明：List CodeArts Req work item custom fields
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_work_item_custom_fields` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_work_item_custom_fields` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `tracker_id` | no | `number` |  | enum: 2, 3, 5, 6, 7 |
+| `project_id` | 是 | `string` |  |  |
+| `tracker_id` | 否 | `number` |  | 可选值：2：3：5：6：7 |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -10159,7 +10439,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -10190,26 +10470,28 @@ Argument JSON Schema:
 
 ### req_list_work_item_records
 
-Description: List CodeArts Req work item records
+中文说明：查询列表Req 需求管理的工作项记录。
 
-| Field | Value |
+原始工具说明：List CodeArts Req work item records
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_work_item_records` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_work_item_records` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `project_id` | yes | `string` |  |  |
-| `work_item_id` | yes | `unknown` |  |  |
-| `journalized_type` | no | `string` | "Issue" |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `project_id` | 是 | `string` |  |  |
+| `work_item_id` | 是 | `unknown` |  |  |
+| `journalized_type` | 否 | `string` | "Issue" |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -10226,7 +10508,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -10267,22 +10549,24 @@ Argument JSON Schema:
 
 ### req_list_work_item_status_attributes
 
-Description: List CodeArts Req work item status attributes
+中文说明：查询列表Req 需求管理的工作项状态attributes。
 
-| Field | Value |
+原始工具说明：List CodeArts Req work item status attributes
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_work_item_status_attributes` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_work_item_status_attributes` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
+| `project_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -10298,7 +10582,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -10319,23 +10603,25 @@ Argument JSON Schema:
 
 ### req_list_work_item_status_configs
 
-Description: List CodeArts Req work item status configs
+中文说明：查询列表Req 需求管理的工作项状态配置。
 
-| Field | Value |
+原始工具说明：List CodeArts Req work item status configs
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_work_item_status_configs` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_work_item_status_configs` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `tracker_id` | yes | `number` |  | enum: 2, 3, 5, 6, 7 |
+| `project_id` | 是 | `string` |  |  |
+| `tracker_id` | 是 | `number` |  | 可选值：2：3：5：6：7 |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -10352,7 +10638,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -10384,23 +10670,25 @@ Argument JSON Schema:
 
 ### req_list_work_item_status_details
 
-Description: List CodeArts Req work item status details
+中文说明：查询列表Req 需求管理的工作项状态详情。
 
-| Field | Value |
+原始工具说明：List CodeArts Req work item status details
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_work_item_status_details` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_work_item_status_details` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `tracker_id` | yes | `number` |  | enum: 2, 3, 5, 6, 7 |
+| `project_id` | 是 | `string` |  |  |
+| `tracker_id` | 是 | `number` |  | 可选值：2：3：5：6：7 |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -10417,7 +10705,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -10449,22 +10737,24 @@ Argument JSON Schema:
 
 ### req_list_work_item_statuses
 
-Description: List CodeArts Req work item statuses
+中文说明：查询列表Req 需求管理的工作项状态。
 
-| Field | Value |
+原始工具说明：List CodeArts Req work item statuses
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_work_item_statuses` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_work_item_statuses` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
+| `project_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -10480,7 +10770,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -10501,25 +10791,27 @@ Argument JSON Schema:
 
 ### req_list_work_item_tags
 
-Description: List CodeArts Req work item tags
+中文说明：查询列表Req 需求管理的工作项tags。
 
-| Field | Value |
+原始工具说明：List CodeArts Req work item tags
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_work_item_tags` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_work_item_tags` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `project_id` | yes | `string` |  |  |
-| `name` | no | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `project_id` | 是 | `string` |  |  |
+| `name` | 否 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -10535,7 +10827,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -10571,23 +10863,25 @@ Argument JSON Schema:
 
 ### req_list_work_item_templates
 
-Description: List CodeArts Req work item templates
+中文说明：查询列表Req 需求管理的工作项templates。
 
-| Field | Value |
+原始工具说明：List CodeArts Req work item templates
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_work_item_templates` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_work_item_templates` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `tracker_id` | no | `number` |  | enum: 2, 3, 5, 6, 7 |
+| `project_id` | 是 | `string` |  |  |
+| `tracker_id` | 否 | `number` |  | 可选值：2：3：5：6：7 |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -10603,7 +10897,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -10634,23 +10928,25 @@ Argument JSON Schema:
 
 ### req_list_work_item_tracker_handlers
 
-Description: List CodeArts Req work item tracker handlers
+中文说明：查询列表Req 需求管理的工作项trackerhandlers。
 
-| Field | Value |
+原始工具说明：List CodeArts Req work item tracker handlers
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_work_item_tracker_handlers` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_work_item_tracker_handlers` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `tracker_id` | yes | `number` |  | enum: 2, 3, 5, 6, 7 |
+| `project_id` | 是 | `string` |  |  |
+| `tracker_id` | 是 | `number` |  | 可选值：2：3：5：6：7 |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -10667,7 +10963,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -10699,25 +10995,27 @@ Argument JSON Schema:
 
 ### req_list_work_item_tree
 
-Description: List CodeArts Req work items in tree mode
+中文说明：查询列表Req 需求管理的工作项树。
 
-| Field | Value |
+原始工具说明：List CodeArts Req work items in tree mode
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_work_item_tree` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_work_item_tree` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `project_id` | yes | `string` |  |  |
-| `tracker_ids` | no | `array` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `project_id` | 是 | `string` |  |  |
+| `tracker_ids` | 否 | `array` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -10733,7 +11031,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -10779,23 +11077,25 @@ Argument JSON Schema:
 
 ### req_list_work_item_work_hours
 
-Description: List CodeArts Req work hour records for a work item
+中文说明：查询列表Req 需求管理的工作项工作hours。
 
-| Field | Value |
+原始工具说明：List CodeArts Req work hour records for a work item
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_work_item_work_hours` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_work_item_work_hours` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `work_item_id` | yes | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `work_item_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -10812,7 +11112,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -10837,23 +11137,25 @@ Argument JSON Schema:
 
 ### req_list_work_item_workflow_config
 
-Description: List CodeArts Req work item workflow config
+中文说明：查询列表Req 需求管理的工作项workflow配置。
 
-| Field | Value |
+原始工具说明：List CodeArts Req work item workflow config
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_work_item_workflow_config` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_work_item_workflow_config` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `tracker_id` | yes | `number` |  | enum: 2, 3, 5, 6, 7 |
+| `project_id` | 是 | `string` |  |  |
+| `tracker_id` | 是 | `number` |  | 可选值：2：3：5：6：7 |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -10870,7 +11172,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -10902,27 +11204,29 @@ Argument JSON Schema:
 
 ### req_list_work_items
 
-Description: List CodeArts Req work items
+中文说明：查询列表Req 需求管理的工作项。
 
-| Field | Value |
+原始工具说明：List CodeArts Req work items
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_list_work_items` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_list_work_items` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `project_id` | yes | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `project_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -10938,7 +11242,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -10983,23 +11287,25 @@ Argument JSON Schema:
 
 ### req_query_iteration_immovable_issues
 
-Description: Query CodeArts Req iteration immovable issues
+中文说明：查询Req 需求管理的迭代immovable问题。
 
-| Field | Value |
+原始工具说明：Query CodeArts Req iteration immovable issues
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_query_iteration_immovable_issues` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_query_iteration_immovable_issues` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `version_id` | yes | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `version_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -11016,7 +11322,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -11041,27 +11347,29 @@ Argument JSON Schema:
 
 ### req_transfer_ipd_work_item_flow
 
-Description: Transfer CodeArts Req IPD work item flow
+中文说明：transferReq 需求管理的ipd工作项流程。
 
-| Field | Value |
+原始工具说明：Transfer CodeArts Req IPD work item flow
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_transfer_ipd_work_item_flow` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_transfer_ipd_work_item_flow` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `issue_id` | yes | `unknown` |  |  |
-| `issue_category` | yes | `string` |  |  |
-| `flow_code` | yes | `string` |  |  |
-| `process_context` | no | `object` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `issue_id` | 是 | `unknown` |  |  |
+| `issue_category` | 是 | `string` |  |  |
+| `flow_code` | 是 | `string` |  |  |
+| `process_context` | 否 | `object` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -11080,7 +11388,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -11123,20 +11431,22 @@ Argument JSON Schema:
 
 ### req_update_cache_data
 
-Description: Update CodeArts Req cache data
+中文说明：更新Req 需求管理的cachedata。
 
-| Field | Value |
+原始工具说明：Update CodeArts Req cache data
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_update_cache_data` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_update_cache_data` |
 
-Arguments:
+参数：
 
-No arguments.
+无参数。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -11150,7 +11460,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -11161,27 +11471,29 @@ Argument JSON Schema:
 
 ### req_update_ipd_feature_set
 
-Description: Update CodeArts Req IPD feature set
+中文说明：更新Req 需求管理的ipdfeatureset。
 
-| Field | Value |
+原始工具说明：Update CodeArts Req IPD feature set
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_update_ipd_feature_set` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_update_ipd_feature_set` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `feature_set_id` | yes | `unknown` |  |  |
-| `parent_id` | yes | `unknown` |  |  |
-| `title` | no | `string` |  |  |
-| `position_float` | no | `number` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `feature_set_id` | 是 | `unknown` |  |  |
+| `parent_id` | 是 | `unknown` |  |  |
+| `title` | 否 | `string` |  |  |
+| `position_float` | 否 | `number` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -11199,7 +11511,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -11239,20 +11551,22 @@ Argument JSON Schema:
 
 ### req_update_ipd_label
 
-Description: Update CodeArts Req IPD label
+中文说明：更新Req 需求管理的ipdlabel。
 
-| Field | Value |
+原始工具说明：Update CodeArts Req IPD label
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_update_ipd_label` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_update_ipd_label` |
 
-Arguments:
+参数：
 
-No arguments.
+无参数。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -11266,7 +11580,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -11277,28 +11591,30 @@ Argument JSON Schema:
 
 ### req_update_ipd_module
 
-Description: Update CodeArts Req IPD module
+中文说明：更新Req 需求管理的ipdmodule。
 
-| Field | Value |
+原始工具说明：Update CodeArts Req IPD module
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_update_ipd_module` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_update_ipd_module` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `display_value` | yes | `string` |  |  |
-| `parent_id` | yes | `unknown` |  |  |
-| `description` | no | `string` |  |  |
-| `assignee` | no | `unknown` |  |  |
-| `dry_run` | no | `boolean` | true |  |
-| `module_id` | yes | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `display_value` | 是 | `string` |  |  |
+| `parent_id` | 是 | `unknown` |  |  |
+| `description` | 否 | `string` |  |  |
+| `assignee` | 否 | `unknown` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
+| `module_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -11317,7 +11633,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -11363,20 +11679,22 @@ Argument JSON Schema:
 
 ### req_update_ipd_project_field
 
-Description: Update CodeArts Req IPD project field
+中文说明：更新Req 需求管理的ipd项目field。
 
-| Field | Value |
+原始工具说明：Update CodeArts Req IPD project field
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_update_ipd_project_field` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_update_ipd_project_field` |
 
-Arguments:
+参数：
 
-No arguments.
+无参数。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -11390,7 +11708,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -11401,20 +11719,22 @@ Argument JSON Schema:
 
 ### req_update_ipd_tenant_field
 
-Description: Update CodeArts Req IPD tenant field
+中文说明：更新Req 需求管理的ipdtenantfield。
 
-| Field | Value |
+原始工具说明：Update CodeArts Req IPD tenant field
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_update_ipd_tenant_field` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_update_ipd_tenant_field` |
 
-Arguments:
+参数：
 
-No arguments.
+无参数。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -11428,7 +11748,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -11439,20 +11759,22 @@ Argument JSON Schema:
 
 ### req_update_ipd_work_hour
 
-Description: Update CodeArts Req IPD work hour record
+中文说明：更新Req 需求管理的ipd工作hour。
 
-| Field | Value |
+原始工具说明：Update CodeArts Req IPD work hour record
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_update_ipd_work_hour` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_update_ipd_work_hour` |
 
-Arguments:
+参数：
 
-No arguments.
+无参数。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -11466,7 +11788,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -11477,30 +11799,32 @@ Argument JSON Schema:
 
 ### req_update_iteration
 
-Description: Update CodeArts Req iteration
+中文说明：更新Req 需求管理的迭代。
 
-| Field | Value |
+原始工具说明：Update CodeArts Req iteration
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_update_iteration` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_update_iteration` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `iteration_id` | yes | `unknown` |  |  |
-| `name` | yes | `string` |  |  |
-| `begin_time` | no | `string` |  |  |
-| `end_time` | no | `string` |  |  |
-| `description` | no | `string` |  |  |
-| `status` | no | `string` |  | enum: 0, 1, 2 |
-| `over_type` | no | `string` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `iteration_id` | 是 | `unknown` |  |  |
+| `name` | 是 | `string` |  |  |
+| `begin_time` | 否 | `string` |  |  |
+| `end_time` | 否 | `string` |  |  |
+| `description` | 否 | `string` |  |  |
+| `status` | 否 | `string` |  | 可选值：0：1：2 |
+| `over_type` | 否 | `string` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -11518,7 +11842,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -11575,28 +11899,30 @@ Argument JSON Schema:
 
 ### req_update_iteration_state
 
-Description: Update CodeArts Req iteration state
+中文说明：更新Req 需求管理的迭代state。
 
-| Field | Value |
+原始工具说明：Update CodeArts Req iteration state
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_update_iteration_state` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_update_iteration_state` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `iteration_id` | yes | `unknown` |  |  |
-| `name` | yes | `string` |  |  |
-| `status` | yes | `string` |  | enum: 0, 1, 2 |
-| `due_date` | no | `string` |  |  |
-| `start_date` | no | `string` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `iteration_id` | 是 | `unknown` |  |  |
+| `name` | 是 | `string` |  |  |
+| `status` | 是 | `string` |  | 可选值：0：1：2 |
+| `due_date` | 否 | `string` |  |  |
+| `start_date` | 否 | `string` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -11615,7 +11941,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -11666,25 +11992,27 @@ Argument JSON Schema:
 
 ### req_update_plan
 
-Description: Update CodeArts Req plan
+中文说明：更新Req 需求管理的计划。
 
-| Field | Value |
+原始工具说明：Update CodeArts Req plan
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_update_plan` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_update_plan` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `plan_id` | yes | `unknown` |  |  |
-| `name` | yes | `string` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `plan_id` | 是 | `unknown` |  |  |
+| `name` | 是 | `string` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -11702,7 +12030,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -11736,25 +12064,27 @@ Argument JSON Schema:
 
 ### req_update_plan_image
 
-Description: Update image for a CodeArts Req plan
+中文说明：更新Req 需求管理的计划图片。
 
-| Field | Value |
+原始工具说明：Update image for a CodeArts Req plan
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_update_plan_image` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_update_plan_image` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `plan_id` | yes | `unknown` |  |  |
-| `img_url` | yes | `string` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `plan_id` | 是 | `unknown` |  |  |
+| `img_url` | 是 | `string` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -11772,7 +12102,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -11806,25 +12136,27 @@ Argument JSON Schema:
 
 ### req_update_project
 
-Description: Update CodeArts Req project
+中文说明：更新Req 需求管理的项目。
 
-| Field | Value |
+原始工具说明：Update CodeArts Req project
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_update_project` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_update_project` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `name` | yes | `string` |  |  |
-| `description` | no | `string` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `name` | 是 | `string` |  |  |
+| `description` | 否 | `string` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -11841,7 +12173,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -11874,25 +12206,27 @@ Argument JSON Schema:
 
 ### req_update_project_member_role
 
-Description: Update a CodeArts Req project member role
+中文说明：更新Req 需求管理的项目成员role。
 
-| Field | Value |
+原始工具说明：Update a CodeArts Req project member role
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_update_project_member_role` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_update_project_member_role` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `user_id` | yes | `unknown` |  |  |
-| `role_id` | yes | `number` |  | enum: -1, 3, 4, 5, 6, 7, 8, 9 |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `user_id` | 是 | `unknown` |  |  |
+| `role_id` | 是 | `number` |  | 可选值：-1：3：4：5：6：7：8：9 |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -11910,7 +12244,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -11953,27 +12287,29 @@ Argument JSON Schema:
 
 ### req_update_project_module
 
-Description: Update CodeArts Req project module
+中文说明：更新Req 需求管理的项目module。
 
-| Field | Value |
+原始工具说明：Update CodeArts Req project module
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_update_project_module` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_update_project_module` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `module_id` | yes | `unknown` |  |  |
-| `module_name` | yes | `string` |  |  |
-| `owner_user_id` | yes | `unknown` |  |  |
-| `description` | no | `string` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `module_id` | 是 | `unknown` |  |  |
+| `module_name` | 是 | `string` |  |  |
+| `owner_user_id` | 是 | `unknown` |  |  |
+| `description` | 否 | `string` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -11992,7 +12328,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -12035,20 +12371,22 @@ Argument JSON Schema:
 
 ### req_update_project_template
 
-Description: Update a CodeArts Req project template
+中文说明：更新Req 需求管理的项目模板。
 
-| Field | Value |
+原始工具说明：Update a CodeArts Req project template
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_update_project_template` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_update_project_template` |
 
-Arguments:
+参数：
 
-No arguments.
+无参数。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -12062,7 +12400,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -12073,37 +12411,39 @@ Argument JSON Schema:
 
 ### req_update_work_item
 
-Description: Update CodeArts Req work item
+中文说明：更新Req 需求管理的工作项。
 
-| Field | Value |
+原始工具说明：Update CodeArts Req work item
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_update_work_item` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_update_work_item` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `work_item_id` | yes | `unknown` |  |  |
-| `title` | no | `string` |  |  |
-| `work_item_type` | no | `string` |  |  |
-| `description` | no | `string` |  |  |
-| `status_id` | no | `integer` |  |  |
-| `priority_id` | no | `integer` |  |  |
-| `iteration_id` | no | `unknown` |  |  |
-| `module_id` | no | `unknown` |  |  |
-| `severity_id` | no | `integer` |  |  |
-| `assigned_id` | no | `unknown` |  |  |
-| `done_ratio` | no | `integer` |  |  |
-| `expected_work_hours` | no | `integer` |  |  |
-| `start_date` | no | `integer` |  |  |
-| `due_date` | no | `integer` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `work_item_id` | 是 | `unknown` |  |  |
+| `title` | 否 | `string` |  |  |
+| `work_item_type` | 否 | `string` |  |  |
+| `description` | 否 | `string` |  |  |
+| `status_id` | 否 | `integer` |  |  |
+| `priority_id` | 否 | `integer` |  |  |
+| `iteration_id` | 否 | `unknown` |  |  |
+| `module_id` | 否 | `unknown` |  |  |
+| `severity_id` | 否 | `integer` |  |  |
+| `assigned_id` | 否 | `unknown` |  |  |
+| `done_ratio` | 否 | `integer` |  |  |
+| `expected_work_hours` | 否 | `integer` |  |  |
+| `start_date` | 否 | `integer` |  |  |
+| `due_date` | 否 | `integer` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -12120,7 +12460,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -12197,26 +12537,28 @@ Argument JSON Schema:
 
 ### req_update_work_item_comment
 
-Description: Update a CodeArts Req work item comment
+中文说明：更新Req 需求管理的工作项评论。
 
-| Field | Value |
+原始工具说明：Update a CodeArts Req work item comment
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_update_work_item_comment` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_update_work_item_comment` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `work_item_id` | yes | `unknown` |  |  |
-| `comment_id` | yes | `unknown` |  |  |
-| `content` | yes | `string` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `work_item_id` | 是 | `unknown` |  |  |
+| `comment_id` | 是 | `unknown` |  |  |
+| `content` | 是 | `string` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -12235,7 +12577,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -12273,25 +12615,27 @@ Argument JSON Schema:
 
 ### req_update_work_item_flow
 
-Description: Update CodeArts Req work item flow
+中文说明：更新Req 需求管理的工作项流程。
 
-| Field | Value |
+原始工具说明：Update CodeArts Req work item flow
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_update_work_item_flow` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_update_work_item_flow` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `work_item_id` | yes | `unknown` |  |  |
-| `status_id` | yes | `integer` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `work_item_id` | 是 | `unknown` |  |  |
+| `status_id` | 是 | `integer` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -12309,7 +12653,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -12343,25 +12687,27 @@ Argument JSON Schema:
 
 ### req_upload_attachment
 
-Description: Upload a CodeArts Req work item attachment
+中文说明：上传Req 需求管理的附件。
 
-| Field | Value |
+原始工具说明：Upload a CodeArts Req work item attachment
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_upload_attachment` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_upload_attachment` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `work_item_id` | yes | `unknown` |  |  |
-| `file_path` | yes | `string` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `work_item_id` | 是 | `unknown` |  |  |
+| `file_path` | 是 | `string` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -12379,7 +12725,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -12413,25 +12759,27 @@ Argument JSON Schema:
 
 ### req_upload_ipd_issue_attachment
 
-Description: Upload attachment to CodeArts Req IPD issue
+中文说明：上传Req 需求管理的ipd问题附件。
 
-| Field | Value |
+原始工具说明：Upload attachment to CodeArts Req IPD issue
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_upload_ipd_issue_attachment` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_upload_ipd_issue_attachment` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `issue_id` | yes | `unknown` |  |  |
-| `file_path` | yes | `string` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `issue_id` | 是 | `unknown` |  |  |
+| `file_path` | 是 | `string` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -12449,7 +12797,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -12483,25 +12831,27 @@ Argument JSON Schema:
 
 ### req_upload_ipd_issue_image
 
-Description: Upload image to CodeArts Req IPD issue description
+中文说明：上传Req 需求管理的ipd问题图片。
 
-| Field | Value |
+原始工具说明：Upload image to CodeArts Req IPD issue description
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_upload_ipd_issue_image` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_upload_ipd_issue_image` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `issue_id` | yes | `unknown` |  |  |
-| `file_path` | yes | `string` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `issue_id` | 是 | `unknown` |  |  |
+| `file_path` | 是 | `string` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -12519,7 +12869,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -12553,24 +12903,26 @@ Argument JSON Schema:
 
 ### req_upload_work_item_image
 
-Description: Upload an image for CodeArts Req work items
+中文说明：上传Req 需求管理的工作项图片。
 
-| Field | Value |
+原始工具说明：Upload an image for CodeArts Req work items
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_upload_work_item_image` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_upload_work_item_image` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `file_path` | yes | `string` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `file_path` | 是 | `string` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -12587,7 +12939,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -12617,23 +12969,25 @@ Argument JSON Schema:
 
 ### req_validate_module_name
 
-Description: Validate whether a CodeArts Req module name already exists
+中文说明：validateReq 需求管理的modulename。
 
-| Field | Value |
+原始工具说明：Validate whether a CodeArts Req module name already exists
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `req_validate_module_name` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `req_validate_module_name` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `module_name` | yes | `string` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `module_name` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -12650,7 +13004,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -12675,56 +13029,58 @@ Argument JSON Schema:
 }
 ```
 
-## Repo
+## Repo 代码仓
 
-| API | Description |
+| API | 中文说明 |
 | --- | --- |
-| `repo_close_merge_request` | Close CodeArts Repo merge request |
-| `repo_compare_refs` | Compare CodeArts Repo refs |
-| `repo_create_merge_request` | Create CodeArts Repo merge request |
-| `repo_create_merge_request_discussion` | Create CodeArts Repo merge request discussion |
-| `repo_create_repository` | Create CodeArts Repo repository |
-| `repo_create_tag` | Create CodeArts Repo tag |
-| `repo_delete_tag` | Delete CodeArts Repo tag |
-| `repo_get_branch` | Get CodeArts Repo branch detail |
-| `repo_get_commit` | Get CodeArts Repo commit detail |
-| `repo_get_file` | Get CodeArts Repo file content |
-| `repo_get_merge_request` | Get CodeArts Repo merge request detail |
-| `repo_get_repository` | Get CodeArts Repo repository detail |
-| `repo_get_tag` | Get CodeArts Repo tag detail |
-| `repo_list_branches` | List CodeArts Repo branches |
-| `repo_list_commits` | List CodeArts Repo commits |
-| `repo_list_events` | List CodeArts Repo events |
-| `repo_list_merge_request_changes` | List CodeArts Repo merge request changes |
-| `repo_list_merge_request_discussions` | List CodeArts Repo merge request discussions |
-| `repo_list_merge_requests` | List CodeArts Repo merge requests |
-| `repo_list_protected_branches` | List CodeArts Repo protected branches |
-| `repo_list_repositories` | List CodeArts Repo repositories |
-| `repo_list_repository_labels` | List CodeArts Repo repository labels |
-| `repo_list_tags` | List CodeArts Repo tags |
-| `repo_merge_merge_request` | Merge CodeArts Repo merge request |
-| `repo_review_merge_request` | Review CodeArts Repo merge request |
+| `repo_close_merge_request` | closeRepo 代码仓的mergerequest。 |
+| `repo_compare_refs` | compareRepo 代码仓的refs。 |
+| `repo_create_merge_request` | 创建Repo 代码仓的mergerequest。 |
+| `repo_create_merge_request_discussion` | 创建Repo 代码仓的mergerequestdiscussion。 |
+| `repo_create_repository` | 创建Repo 代码仓的仓库。 |
+| `repo_create_tag` | 创建Repo 代码仓的tag。 |
+| `repo_delete_tag` | 删除Repo 代码仓的tag。 |
+| `repo_get_branch` | 获取Repo 代码仓的branch。 |
+| `repo_get_commit` | 获取Repo 代码仓的commit。 |
+| `repo_get_file` | 获取Repo 代码仓的文件。 |
+| `repo_get_merge_request` | 获取Repo 代码仓的mergerequest。 |
+| `repo_get_repository` | 获取Repo 代码仓的仓库。 |
+| `repo_get_tag` | 获取Repo 代码仓的tag。 |
+| `repo_list_branches` | 查询列表Repo 代码仓的branches。 |
+| `repo_list_commits` | 查询列表Repo 代码仓的commits。 |
+| `repo_list_events` | 查询列表Repo 代码仓的events。 |
+| `repo_list_merge_request_changes` | 查询列表Repo 代码仓的mergerequestchanges。 |
+| `repo_list_merge_request_discussions` | 查询列表Repo 代码仓的mergerequestdiscussions。 |
+| `repo_list_merge_requests` | 查询列表Repo 代码仓的mergerequests。 |
+| `repo_list_protected_branches` | 查询列表Repo 代码仓的protectedbranches。 |
+| `repo_list_repositories` | 查询列表Repo 代码仓的仓库。 |
+| `repo_list_repository_labels` | 查询列表Repo 代码仓的仓库labels。 |
+| `repo_list_tags` | 查询列表Repo 代码仓的tags。 |
+| `repo_merge_merge_request` | mergeRepo 代码仓的mergerequest。 |
+| `repo_review_merge_request` | reviewRepo 代码仓的mergerequest。 |
 
 ### repo_close_merge_request
 
-Description: Close CodeArts Repo merge request
+中文说明：closeRepo 代码仓的mergerequest。
 
-| Field | Value |
+原始工具说明：Close CodeArts Repo merge request
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `repo_close_merge_request` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `repo_close_merge_request` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | yes | `string` |  |  |
-| `merge_request_iid` | yes | `unknown` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `repository_id` | 是 | `string` |  |  |
+| `merge_request_iid` | 是 | `unknown` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -12741,7 +13097,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -12770,27 +13126,29 @@ Argument JSON Schema:
 
 ### repo_compare_refs
 
-Description: Compare CodeArts Repo refs
+中文说明：compareRepo 代码仓的refs。
 
-| Field | Value |
+原始工具说明：Compare CodeArts Repo refs
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `repo_compare_refs` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `repo_compare_refs` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | yes | `string` |  |  |
-| `from` | yes | `string` |  |  |
-| `to` | yes | `string` |  |  |
-| `straight` | no | `boolean` |  |  |
-| `ignore_whitespace_change` | no | `boolean` |  |  |
-| `view` | no | `string` |  |  |
+| `repository_id` | 是 | `string` |  |  |
+| `from` | 是 | `string` |  |  |
+| `to` | 是 | `string` |  |  |
+| `straight` | 否 | `boolean` |  |  |
+| `ignore_whitespace_change` | 否 | `boolean` |  |  |
+| `view` | 否 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -12808,7 +13166,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -12849,27 +13207,29 @@ Argument JSON Schema:
 
 ### repo_create_merge_request
 
-Description: Create CodeArts Repo merge request
+中文说明：创建Repo 代码仓的mergerequest。
 
-| Field | Value |
+原始工具说明：Create CodeArts Repo merge request
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `repo_create_merge_request` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `repo_create_merge_request` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | yes | `string` |  |  |
-| `source_branch` | yes | `string` |  |  |
-| `target_branch` | yes | `string` |  |  |
-| `title` | yes | `string` |  |  |
-| `description` | no | `string` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `repository_id` | 是 | `string` |  |  |
+| `source_branch` | 是 | `string` |  |  |
+| `target_branch` | 是 | `string` |  |  |
+| `title` | 是 | `string` |  |  |
+| `description` | 否 | `string` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -12888,7 +13248,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -12931,25 +13291,27 @@ Argument JSON Schema:
 
 ### repo_create_merge_request_discussion
 
-Description: Create CodeArts Repo merge request discussion
+中文说明：创建Repo 代码仓的mergerequestdiscussion。
 
-| Field | Value |
+原始工具说明：Create CodeArts Repo merge request discussion
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `repo_create_merge_request_discussion` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `repo_create_merge_request_discussion` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | yes | `string` |  |  |
-| `merge_request_iid` | yes | `unknown` |  |  |
-| `body` | yes | `string` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `repository_id` | 是 | `string` |  |  |
+| `merge_request_iid` | 是 | `unknown` |  |  |
+| `body` | 是 | `string` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -12967,7 +13329,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -13001,33 +13363,35 @@ Argument JSON Schema:
 
 ### repo_create_repository
 
-Description: Create CodeArts Repo repository
+中文说明：创建Repo 代码仓的仓库。
 
-| Field | Value |
+原始工具说明：Create CodeArts Repo repository
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `repo_create_repository` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `repo_create_repository` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_uuid` | yes | `string` |  |  |
-| `name` | yes | `string` |  |  |
-| `import_members` | no | `integer` |  |  |
-| `template_id` | no | `string` |  |  |
-| `visibility_level` | no | `number` |  | enum: 0, 20 |
-| `import_url` | no | `string` |  |  |
-| `description` | no | `string` |  |  |
-| `gitignore_id` | no | `string` |  |  |
-| `license_id` | no | `integer` |  |  |
-| `enable_readme` | no | `anyOf` |  |  |
-| `caller` | no | `string` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_uuid` | 是 | `string` |  |  |
+| `name` | 是 | `string` |  |  |
+| `import_members` | 否 | `integer` |  |  |
+| `template_id` | 否 | `string` |  |  |
+| `visibility_level` | 否 | `number` |  | 可选值：0：20 |
+| `import_url` | 否 | `string` |  |  |
+| `description` | 否 | `string` |  |  |
+| `gitignore_id` | 否 | `string` |  |  |
+| `license_id` | 否 | `integer` |  |  |
+| `enable_readme` | 否 | `anyOf` |  |  |
+| `caller` | 否 | `string` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -13044,7 +13408,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -13122,26 +13486,28 @@ Argument JSON Schema:
 
 ### repo_create_tag
 
-Description: Create CodeArts Repo tag
+中文说明：创建Repo 代码仓的tag。
 
-| Field | Value |
+原始工具说明：Create CodeArts Repo tag
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `repo_create_tag` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `repo_create_tag` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | yes | `string` |  |  |
-| `tag_name` | yes | `string` |  |  |
-| `ref` | yes | `string` |  |  |
-| `message` | no | `string` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `repository_id` | 是 | `string` |  |  |
+| `tag_name` | 是 | `string` |  |  |
+| `ref` | 是 | `string` |  |  |
+| `message` | 否 | `string` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -13159,7 +13525,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -13197,24 +13563,26 @@ Argument JSON Schema:
 
 ### repo_delete_tag
 
-Description: Delete CodeArts Repo tag
+中文说明：删除Repo 代码仓的tag。
 
-| Field | Value |
+原始工具说明：Delete CodeArts Repo tag
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `repo_delete_tag` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `repo_delete_tag` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | yes | `string` |  |  |
-| `tag_name` | yes | `string` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `repository_id` | 是 | `string` |  |  |
+| `tag_name` | 是 | `string` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -13231,7 +13599,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -13261,23 +13629,25 @@ Argument JSON Schema:
 
 ### repo_get_branch
 
-Description: Get CodeArts Repo branch detail
+中文说明：获取Repo 代码仓的branch。
 
-| Field | Value |
+原始工具说明：Get CodeArts Repo branch detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `repo_get_branch` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `repo_get_branch` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | yes | `string` |  |  |
-| `branch_name` | yes | `string` |  |  |
+| `repository_id` | 是 | `string` |  |  |
+| `branch_name` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -13294,7 +13664,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -13320,23 +13690,25 @@ Argument JSON Schema:
 
 ### repo_get_commit
 
-Description: Get CodeArts Repo commit detail
+中文说明：获取Repo 代码仓的commit。
 
-| Field | Value |
+原始工具说明：Get CodeArts Repo commit detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `repo_get_commit` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `repo_get_commit` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | yes | `string` |  |  |
-| `commit_sha` | yes | `unknown` |  |  |
+| `repository_id` | 是 | `string` |  |  |
+| `commit_sha` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -13353,7 +13725,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -13378,24 +13750,26 @@ Argument JSON Schema:
 
 ### repo_get_file
 
-Description: Get CodeArts Repo file content
+中文说明：获取Repo 代码仓的文件。
 
-| Field | Value |
+原始工具说明：Get CodeArts Repo file content
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `repo_get_file` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `repo_get_file` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | yes | `string` |  |  |
-| `file_path` | yes | `string` |  |  |
-| `branch` | yes | `string` |  |  |
+| `repository_id` | 是 | `string` |  |  |
+| `file_path` | 是 | `string` |  |  |
+| `branch` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -13413,7 +13787,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -13444,23 +13818,25 @@ Argument JSON Schema:
 
 ### repo_get_merge_request
 
-Description: Get CodeArts Repo merge request detail
+中文说明：获取Repo 代码仓的mergerequest。
 
-| Field | Value |
+原始工具说明：Get CodeArts Repo merge request detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `repo_get_merge_request` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `repo_get_merge_request` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | yes | `string` |  |  |
-| `merge_request_iid` | yes | `unknown` |  |  |
+| `repository_id` | 是 | `string` |  |  |
+| `merge_request_iid` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -13477,7 +13853,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -13502,22 +13878,24 @@ Argument JSON Schema:
 
 ### repo_get_repository
 
-Description: Get CodeArts Repo repository detail
+中文说明：获取Repo 代码仓的仓库。
 
-| Field | Value |
+原始工具说明：Get CodeArts Repo repository detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `repo_get_repository` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `repo_get_repository` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | yes | `string` |  |  |
+| `repository_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -13533,7 +13911,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -13554,23 +13932,25 @@ Argument JSON Schema:
 
 ### repo_get_tag
 
-Description: Get CodeArts Repo tag detail
+中文说明：获取Repo 代码仓的tag。
 
-| Field | Value |
+原始工具说明：Get CodeArts Repo tag detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `repo_get_tag` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `repo_get_tag` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | yes | `string` |  |  |
-| `tag_name` | yes | `string` |  |  |
+| `repository_id` | 是 | `string` |  |  |
+| `tag_name` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -13587,7 +13967,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -13613,27 +13993,29 @@ Argument JSON Schema:
 
 ### repo_list_branches
 
-Description: List CodeArts Repo branches
+中文说明：查询列表Repo 代码仓的branches。
 
-| Field | Value |
+原始工具说明：List CodeArts Repo branches
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `repo_list_branches` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `repo_list_branches` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `repository_id` | yes | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `repository_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -13649,7 +14031,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -13694,28 +14076,30 @@ Argument JSON Schema:
 
 ### repo_list_commits
 
-Description: List CodeArts Repo commits
+中文说明：查询列表Repo 代码仓的commits。
 
-| Field | Value |
+原始工具说明：List CodeArts Repo commits
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `repo_list_commits` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `repo_list_commits` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `repository_id` | yes | `string` |  |  |
-| `ref_name` | no | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `repository_id` | 是 | `string` |  |  |
+| `ref_name` | 否 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -13731,7 +14115,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -13779,27 +14163,29 @@ Argument JSON Schema:
 
 ### repo_list_events
 
-Description: List CodeArts Repo events
+中文说明：查询列表Repo 代码仓的events。
 
-| Field | Value |
+原始工具说明：List CodeArts Repo events
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `repo_list_events` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `repo_list_events` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `repository_id` | yes | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `repository_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -13815,7 +14201,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -13860,28 +14246,30 @@ Argument JSON Schema:
 
 ### repo_list_merge_request_changes
 
-Description: List CodeArts Repo merge request changes
+中文说明：查询列表Repo 代码仓的mergerequestchanges。
 
-| Field | Value |
+原始工具说明：List CodeArts Repo merge request changes
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `repo_list_merge_request_changes` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `repo_list_merge_request_changes` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `repository_id` | yes | `string` |  |  |
-| `merge_request_iid` | yes | `unknown` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `repository_id` | 是 | `string` |  |  |
+| `merge_request_iid` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -13898,7 +14286,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -13947,28 +14335,30 @@ Argument JSON Schema:
 
 ### repo_list_merge_request_discussions
 
-Description: List CodeArts Repo merge request discussions
+中文说明：查询列表Repo 代码仓的mergerequestdiscussions。
 
-| Field | Value |
+原始工具说明：List CodeArts Repo merge request discussions
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `repo_list_merge_request_discussions` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `repo_list_merge_request_discussions` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `repository_id` | yes | `string` |  |  |
-| `merge_request_iid` | yes | `unknown` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `repository_id` | 是 | `string` |  |  |
+| `merge_request_iid` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -13985,7 +14375,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -14034,28 +14424,30 @@ Argument JSON Schema:
 
 ### repo_list_merge_requests
 
-Description: List CodeArts Repo merge requests
+中文说明：查询列表Repo 代码仓的mergerequests。
 
-| Field | Value |
+原始工具说明：List CodeArts Repo merge requests
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `repo_list_merge_requests` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `repo_list_merge_requests` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `repository_id` | yes | `string` |  |  |
-| `state` | no | `string` |  | enum: all, opened, closed, merged |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `repository_id` | 是 | `string` |  |  |
+| `state` | 否 | `string` |  | 可选值：all：opened：closed：merged |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -14071,7 +14463,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -14125,27 +14517,29 @@ Argument JSON Schema:
 
 ### repo_list_protected_branches
 
-Description: List CodeArts Repo protected branches
+中文说明：查询列表Repo 代码仓的protectedbranches。
 
-| Field | Value |
+原始工具说明：List CodeArts Repo protected branches
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `repo_list_protected_branches` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `repo_list_protected_branches` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `repository_id` | yes | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `repository_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -14161,7 +14555,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -14206,27 +14600,29 @@ Argument JSON Schema:
 
 ### repo_list_repositories
 
-Description: List CodeArts Repo repositories
+中文说明：查询列表Repo 代码仓的仓库。
 
-| Field | Value |
+原始工具说明：List CodeArts Repo repositories
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `repo_list_repositories` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `repo_list_repositories` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `project_id` | yes | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `project_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -14242,7 +14638,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -14287,27 +14683,29 @@ Argument JSON Schema:
 
 ### repo_list_repository_labels
 
-Description: List CodeArts Repo repository labels
+中文说明：查询列表Repo 代码仓的仓库labels。
 
-| Field | Value |
+原始工具说明：List CodeArts Repo repository labels
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `repo_list_repository_labels` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `repo_list_repository_labels` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `repository_id` | yes | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `repository_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -14323,7 +14721,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -14368,27 +14766,29 @@ Argument JSON Schema:
 
 ### repo_list_tags
 
-Description: List CodeArts Repo tags
+中文说明：查询列表Repo 代码仓的tags。
 
-| Field | Value |
+原始工具说明：List CodeArts Repo tags
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `repo_list_tags` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `repo_list_tags` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `repository_id` | yes | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `repository_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -14404,7 +14804,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -14449,26 +14849,28 @@ Argument JSON Schema:
 
 ### repo_merge_merge_request
 
-Description: Merge CodeArts Repo merge request
+中文说明：mergeRepo 代码仓的mergerequest。
 
-| Field | Value |
+原始工具说明：Merge CodeArts Repo merge request
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `repo_merge_merge_request` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `repo_merge_merge_request` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | yes | `string` |  |  |
-| `merge_request_iid` | yes | `unknown` |  |  |
-| `squash` | no | `boolean` |  |  |
-| `force_merge` | no | `boolean` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `repository_id` | 是 | `string` |  |  |
+| `merge_request_iid` | 是 | `unknown` |  |  |
+| `squash` | 否 | `boolean` |  |  |
+| `force_merge` | 否 | `boolean` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -14485,7 +14887,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -14520,26 +14922,28 @@ Argument JSON Schema:
 
 ### repo_review_merge_request
 
-Description: Review CodeArts Repo merge request
+中文说明：reviewRepo 代码仓的mergerequest。
 
-| Field | Value |
+原始工具说明：Review CodeArts Repo merge request
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `repo_review_merge_request` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `repo_review_merge_request` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | yes | `string` |  |  |
-| `merge_request_iid` | yes | `unknown` |  |  |
-| `action_type` | yes | `string` |  | enum: approve, reject, reset |
-| `approver_comment` | no | `string` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `repository_id` | 是 | `string` |  |  |
+| `merge_request_iid` | 是 | `unknown` |  |  |
+| `action_type` | 是 | `string` |  | 可选值：approve：reject：reset |
+| `approver_comment` | 否 | `string` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -14557,7 +14961,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -14596,111 +15000,113 @@ Argument JSON Schema:
 }
 ```
 
-## Pipeline
+## Pipeline 流水线
 
-| API | Description |
+| API | 中文说明 |
 | --- | --- |
-| `pipeline_approve_run` | Approve CodeArts Pipeline manual review |
-| `pipeline_bind_variable_groups_to_pipeline` | Bind CodeArts Pipeline variable groups to pipeline |
-| `pipeline_create_extension_endpoint` | Create CodeArts Pipeline extension endpoint |
-| `pipeline_create_group` | Create CodeArts Pipeline group |
-| `pipeline_create_project_strategy` | Create CodeArts Pipeline project strategy |
-| `pipeline_create_rule` | Create CodeArts Pipeline rule |
-| `pipeline_create_strategy` | Create CodeArts Pipeline strategy |
-| `pipeline_create_tag` | Create CodeArts Pipeline tag |
-| `pipeline_create_variable_group` | Create CodeArts Pipeline variable group |
-| `pipeline_delete_extension_endpoint` | Delete CodeArts Pipeline extension endpoint |
-| `pipeline_delete_group` | Delete CodeArts Pipeline group |
-| `pipeline_delete_pipeline` | Delete CodeArts Pipeline |
-| `pipeline_delete_project_strategy` | Delete CodeArts Pipeline project strategy |
-| `pipeline_delete_rule` | Delete CodeArts Pipeline rule |
-| `pipeline_delete_strategy` | Delete CodeArts Pipeline strategy |
-| `pipeline_delete_tag` | Delete CodeArts Pipeline tag |
-| `pipeline_delete_variable_group` | Delete CodeArts Pipeline variable group |
-| `pipeline_disable_pipeline` | Disable CodeArts Pipeline |
-| `pipeline_enable_pipeline` | Enable CodeArts Pipeline |
-| `pipeline_get_extension_endpoint` | Get CodeArts Pipeline extension endpoint detail |
-| `pipeline_get_extension_module` | Get CodeArts Pipeline extension module detail |
-| `pipeline_get_manual_review_context` | Get CodeArts Pipeline manual review context |
-| `pipeline_get_pipeline` | Get CodeArts Pipeline detail |
-| `pipeline_get_plugin_inputs` | Get CodeArts Pipeline plugin inputs |
-| `pipeline_get_plugin_outputs` | Get CodeArts Pipeline plugin outputs |
-| `pipeline_get_plugin_version` | Get CodeArts Pipeline plugin version detail |
-| `pipeline_get_project_strategy` | Get CodeArts Pipeline project strategy |
-| `pipeline_get_project_strategy_detail` | Get CodeArts Pipeline project strategy detail |
-| `pipeline_get_project_strategy_related_info` | Get CodeArts Pipeline project strategy related info |
-| `pipeline_get_rule` | Get CodeArts Pipeline rule detail |
-| `pipeline_get_rule_related_info` | Get CodeArts Pipeline rule related info |
-| `pipeline_get_run` | Get CodeArts Pipeline run detail |
-| `pipeline_get_run_detail` | Get CodeArts Pipeline run detail |
-| `pipeline_get_run_log` | Get CodeArts Pipeline run step log |
-| `pipeline_get_run_parameters` | Get CodeArts Pipeline run parameters |
-| `pipeline_get_step_outputs` | Get CodeArts Pipeline step outputs |
-| `pipeline_get_strategy` | Get CodeArts Pipeline strategy detail |
-| `pipeline_get_strategy_related_info` | Get CodeArts Pipeline strategy related info |
-| `pipeline_get_variable_group` | Get CodeArts Pipeline variable group detail |
-| `pipeline_inherit_project_strategy` | Inherit CodeArts Pipeline project strategy |
-| `pipeline_list_artifacts` | List CodeArts Pipeline artifacts |
-| `pipeline_list_available_publishers` | List CodeArts Pipeline available publishers |
-| `pipeline_list_base_plugins` | List CodeArts Pipeline base plugins |
-| `pipeline_list_base_plugins_paged` | List CodeArts Pipeline base plugins (paged) |
-| `pipeline_list_extension_endpoints` | List CodeArts Pipeline extension endpoints |
-| `pipeline_list_extension_modules` | List CodeArts Pipeline extension modules |
-| `pipeline_list_groups` | List CodeArts Pipeline groups |
-| `pipeline_list_pipeline_variable_groups` | List CodeArts Pipeline variable groups for pipeline |
-| `pipeline_list_pipelines` | List CodeArts Pipelines |
-| `pipeline_list_plugin_versions` | List CodeArts Pipeline plugin versions |
-| `pipeline_list_plugins` | List CodeArts Pipeline plugins |
-| `pipeline_list_project_strategies` | List CodeArts Pipeline project strategies |
-| `pipeline_list_publishers` | List CodeArts Pipeline publishers |
-| `pipeline_list_rule_types` | List CodeArts Pipeline rule types |
-| `pipeline_list_rules` | List CodeArts Pipeline rules |
-| `pipeline_list_runs` | List CodeArts Pipeline runs |
-| `pipeline_list_stage_plugins` | List CodeArts Pipeline stage plugins |
-| `pipeline_list_strategies` | List CodeArts Pipeline strategies |
-| `pipeline_list_strategy_children` | List CodeArts Pipeline strategy children |
-| `pipeline_list_tags` | List CodeArts Pipeline tags |
-| `pipeline_list_templates` | List CodeArts Pipeline templates |
-| `pipeline_list_variable_groups` | List CodeArts Pipeline variable groups |
-| `pipeline_move_pipelines_to_group` | Move CodeArts Pipelines to group |
-| `pipeline_reject_run` | Reject CodeArts Pipeline manual review |
-| `pipeline_retry_run` | Retry CodeArts Pipeline run |
-| `pipeline_run_pipeline` | Run CodeArts Pipeline |
-| `pipeline_set_tags_for_pipelines` | Set CodeArts Pipeline tags for pipelines |
-| `pipeline_stop_run` | Stop CodeArts Pipeline run |
-| `pipeline_switch_project_strategy` | Switch CodeArts Pipeline project strategy |
-| `pipeline_switch_strategy` | Switch CodeArts Pipeline strategy |
-| `pipeline_update_extension_endpoint` | Update CodeArts Pipeline extension endpoint |
-| `pipeline_update_group` | Update CodeArts Pipeline group |
-| `pipeline_update_project_strategy` | Update CodeArts Pipeline project strategy |
-| `pipeline_update_rule` | Update CodeArts Pipeline rule |
-| `pipeline_update_strategy` | Update CodeArts Pipeline strategy |
-| `pipeline_update_tag` | Update CodeArts Pipeline tag |
-| `pipeline_update_variable_group` | Update CodeArts Pipeline variable group |
+| `pipeline_approve_run` | approvePipeline 流水线的run。 |
+| `pipeline_bind_variable_groups_to_pipeline` | bindPipeline 流水线的变量组to流水线。 |
+| `pipeline_create_extension_endpoint` | 创建Pipeline 流水线的extensionendpoint。 |
+| `pipeline_create_group` | 创建Pipeline 流水线的组。 |
+| `pipeline_create_project_strategy` | 创建Pipeline 流水线的项目strategy。 |
+| `pipeline_create_rule` | 创建Pipeline 流水线的rule。 |
+| `pipeline_create_strategy` | 创建Pipeline 流水线的strategy。 |
+| `pipeline_create_tag` | 创建Pipeline 流水线的tag。 |
+| `pipeline_create_variable_group` | 创建Pipeline 流水线的变量组。 |
+| `pipeline_delete_extension_endpoint` | 删除Pipeline 流水线的extensionendpoint。 |
+| `pipeline_delete_group` | 删除Pipeline 流水线的组。 |
+| `pipeline_delete_pipeline` | 删除Pipeline 流水线的流水线。 |
+| `pipeline_delete_project_strategy` | 删除Pipeline 流水线的项目strategy。 |
+| `pipeline_delete_rule` | 删除Pipeline 流水线的rule。 |
+| `pipeline_delete_strategy` | 删除Pipeline 流水线的strategy。 |
+| `pipeline_delete_tag` | 删除Pipeline 流水线的tag。 |
+| `pipeline_delete_variable_group` | 删除Pipeline 流水线的变量组。 |
+| `pipeline_disable_pipeline` | disablePipeline 流水线的流水线。 |
+| `pipeline_enable_pipeline` | enablePipeline 流水线的流水线。 |
+| `pipeline_get_extension_endpoint` | 获取Pipeline 流水线的extensionendpoint。 |
+| `pipeline_get_extension_module` | 获取Pipeline 流水线的extensionmodule。 |
+| `pipeline_get_manual_review_context` | 获取Pipeline 流水线的manualreviewcontext。 |
+| `pipeline_get_pipeline` | 获取Pipeline 流水线的流水线。 |
+| `pipeline_get_plugin_inputs` | 获取Pipeline 流水线的plugininputs。 |
+| `pipeline_get_plugin_outputs` | 获取Pipeline 流水线的pluginoutputs。 |
+| `pipeline_get_plugin_version` | 获取Pipeline 流水线的plugin版本。 |
+| `pipeline_get_project_strategy` | 获取Pipeline 流水线的项目strategy。 |
+| `pipeline_get_project_strategy_detail` | 获取Pipeline 流水线的项目strategy详情。 |
+| `pipeline_get_project_strategy_related_info` | 获取Pipeline 流水线的项目strategyrelated信息。 |
+| `pipeline_get_rule` | 获取Pipeline 流水线的rule。 |
+| `pipeline_get_rule_related_info` | 获取Pipeline 流水线的rulerelated信息。 |
+| `pipeline_get_run` | 获取Pipeline 流水线的run。 |
+| `pipeline_get_run_detail` | 获取Pipeline 流水线的run详情。 |
+| `pipeline_get_run_log` | 获取Pipeline 流水线的run日志。 |
+| `pipeline_get_run_parameters` | 获取Pipeline 流水线的run参数。 |
+| `pipeline_get_step_outputs` | 获取Pipeline 流水线的步骤outputs。 |
+| `pipeline_get_strategy` | 获取Pipeline 流水线的strategy。 |
+| `pipeline_get_strategy_related_info` | 获取Pipeline 流水线的strategyrelated信息。 |
+| `pipeline_get_variable_group` | 获取Pipeline 流水线的变量组。 |
+| `pipeline_inherit_project_strategy` | inheritPipeline 流水线的项目strategy。 |
+| `pipeline_list_artifacts` | 查询列表Pipeline 流水线的制品。 |
+| `pipeline_list_available_publishers` | 查询列表Pipeline 流水线的availablepublishers。 |
+| `pipeline_list_base_plugins` | 查询列表Pipeline 流水线的baseplugins。 |
+| `pipeline_list_base_plugins_paged` | 查询列表Pipeline 流水线的basepluginspaged。 |
+| `pipeline_list_extension_endpoints` | 查询列表Pipeline 流水线的extensionendpoints。 |
+| `pipeline_list_extension_modules` | 查询列表Pipeline 流水线的extensionmodules。 |
+| `pipeline_list_groups` | 查询列表Pipeline 流水线的组。 |
+| `pipeline_list_pipeline_variable_groups` | 查询列表Pipeline 流水线的流水线变量组。 |
+| `pipeline_list_pipelines` | 查询列表Pipeline 流水线的流水线。 |
+| `pipeline_list_plugin_versions` | 查询列表Pipeline 流水线的plugin版本。 |
+| `pipeline_list_plugins` | 查询列表Pipeline 流水线的plugins。 |
+| `pipeline_list_project_strategies` | 查询列表Pipeline 流水线的项目strategies。 |
+| `pipeline_list_publishers` | 查询列表Pipeline 流水线的publishers。 |
+| `pipeline_list_rule_types` | 查询列表Pipeline 流水线的ruletypes。 |
+| `pipeline_list_rules` | 查询列表Pipeline 流水线的rules。 |
+| `pipeline_list_runs` | 查询列表Pipeline 流水线的runs。 |
+| `pipeline_list_stage_plugins` | 查询列表Pipeline 流水线的阶段plugins。 |
+| `pipeline_list_strategies` | 查询列表Pipeline 流水线的strategies。 |
+| `pipeline_list_strategy_children` | 查询列表Pipeline 流水线的strategychildren。 |
+| `pipeline_list_tags` | 查询列表Pipeline 流水线的tags。 |
+| `pipeline_list_templates` | 查询列表Pipeline 流水线的templates。 |
+| `pipeline_list_variable_groups` | 查询列表Pipeline 流水线的变量组。 |
+| `pipeline_move_pipelines_to_group` | 移动Pipeline 流水线的流水线to组。 |
+| `pipeline_reject_run` | rejectPipeline 流水线的run。 |
+| `pipeline_retry_run` | 重试Pipeline 流水线的run。 |
+| `pipeline_run_pipeline` | 运行Pipeline 流水线的流水线。 |
+| `pipeline_set_tags_for_pipelines` | setPipeline 流水线的tagsfor流水线。 |
+| `pipeline_stop_run` | 停止Pipeline 流水线的run。 |
+| `pipeline_switch_project_strategy` | switchPipeline 流水线的项目strategy。 |
+| `pipeline_switch_strategy` | switchPipeline 流水线的strategy。 |
+| `pipeline_update_extension_endpoint` | 更新Pipeline 流水线的extensionendpoint。 |
+| `pipeline_update_group` | 更新Pipeline 流水线的组。 |
+| `pipeline_update_project_strategy` | 更新Pipeline 流水线的项目strategy。 |
+| `pipeline_update_rule` | 更新Pipeline 流水线的rule。 |
+| `pipeline_update_strategy` | 更新Pipeline 流水线的strategy。 |
+| `pipeline_update_tag` | 更新Pipeline 流水线的tag。 |
+| `pipeline_update_variable_group` | 更新Pipeline 流水线的变量组。 |
 
 ### pipeline_approve_run
 
-Description: Approve CodeArts Pipeline manual review
+中文说明：approvePipeline 流水线的run。
 
-| Field | Value |
+原始工具说明：Approve CodeArts Pipeline manual review
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_approve_run` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_approve_run` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `pipeline_id` | yes | `unknown` |  |  |
-| `run_id` | yes | `unknown` |  |  |
-| `job_id` | yes | `unknown` |  |  |
-| `step_id` | yes | `unknown` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `pipeline_id` | 是 | `unknown` |  |  |
+| `run_id` | 是 | `unknown` |  |  |
+| `job_id` | 是 | `unknown` |  |  |
+| `step_id` | 是 | `unknown` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -14720,7 +15126,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -14761,25 +15167,27 @@ Argument JSON Schema:
 
 ### pipeline_bind_variable_groups_to_pipeline
 
-Description: Bind CodeArts Pipeline variable groups to pipeline
+中文说明：bindPipeline 流水线的变量组to流水线。
 
-| Field | Value |
+原始工具说明：Bind CodeArts Pipeline variable groups to pipeline
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_bind_variable_groups_to_pipeline` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_bind_variable_groups_to_pipeline` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `pipeline_id` | yes | `unknown` |  |  |
-| `pipeline_group_ids` | yes | `array` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `pipeline_id` | 是 | `unknown` |  |  |
+| `pipeline_group_ids` | 是 | `array` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -14797,7 +15205,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -14834,29 +15242,31 @@ Argument JSON Schema:
 
 ### pipeline_create_extension_endpoint
 
-Description: Create CodeArts Pipeline extension endpoint
+中文说明：创建Pipeline 流水线的extensionendpoint。
 
-| Field | Value |
+原始工具说明：Create CodeArts Pipeline extension endpoint
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_create_extension_endpoint` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_create_extension_endpoint` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | no | `string` |  |  |
-| `region_name` | no | `string` |  |  |
-| `module_id` | no | `string` |  |  |
-| `name` | no | `string` |  |  |
-| `url` | no | `string` |  |  |
-| `authorization` | no | `object` |  |  |
-| `data` | no | `unknown` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 否 | `string` |  |  |
+| `region_name` | 否 | `string` |  |  |
+| `module_id` | 否 | `string` |  |  |
+| `name` | 否 | `string` |  |  |
+| `url` | 否 | `string` |  |  |
+| `authorization` | 否 | `object` |  |  |
+| `data` | 否 | `unknown` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -14870,7 +15280,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -14925,25 +15335,27 @@ Argument JSON Schema:
 
 ### pipeline_create_group
 
-Description: Create CodeArts Pipeline group
+中文说明：创建Pipeline 流水线的组。
 
-| Field | Value |
+原始工具说明：Create CodeArts Pipeline group
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_create_group` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_create_group` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `name` | yes | `string` |  |  |
-| `parent_id` | no | `unknown` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `name` | 是 | `string` |  |  |
+| `parent_id` | 否 | `unknown` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -14960,7 +15372,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -14994,25 +15406,27 @@ Argument JSON Schema:
 
 ### pipeline_create_project_strategy
 
-Description: Create CodeArts Pipeline project strategy
+中文说明：创建Pipeline 流水线的项目strategy。
 
-| Field | Value |
+原始工具说明：Create CodeArts Pipeline project strategy
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_create_project_strategy` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_create_project_strategy` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `name` | yes | `string` |  |  |
-| `rules` | yes | `array` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `name` | 是 | `string` |  |  |
+| `rules` | 是 | `array` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -15030,7 +15444,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -15077,30 +15491,32 @@ Argument JSON Schema:
 
 ### pipeline_create_rule
 
-Description: Create CodeArts Pipeline rule
+中文说明：创建Pipeline 流水线的rule。
 
-| Field | Value |
+原始工具说明：Create CodeArts Pipeline rule
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_create_rule` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_create_rule` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | yes | `string` |  |  |
-| `name` | yes | `string` |  |  |
-| `type` | yes | `string` |  |  |
-| `layout_content` | yes | `string` |  |  |
-| `plugin_id` | no | `string` |  |  |
-| `plugin_name` | no | `string` |  |  |
-| `plugin_version` | no | `string` |  |  |
-| `content` | yes | `array` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `domain_id` | 是 | `string` |  |  |
+| `name` | 是 | `string` |  |  |
+| `type` | 是 | `string` |  |  |
+| `layout_content` | 是 | `string` |  |  |
+| `plugin_id` | 否 | `string` |  |  |
+| `plugin_name` | 否 | `string` |  |  |
+| `plugin_version` | 否 | `string` |  |  |
+| `content` | 是 | `array` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -15120,7 +15536,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -15240,25 +15656,27 @@ Argument JSON Schema:
 
 ### pipeline_create_strategy
 
-Description: Create CodeArts Pipeline strategy
+中文说明：创建Pipeline 流水线的strategy。
 
-| Field | Value |
+原始工具说明：Create CodeArts Pipeline strategy
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_create_strategy` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_create_strategy` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | yes | `string` |  |  |
-| `name` | yes | `string` |  |  |
-| `rules` | yes | `array` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `domain_id` | 是 | `string` |  |  |
+| `name` | 是 | `string` |  |  |
+| `rules` | 是 | `array` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -15276,7 +15694,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -15323,25 +15741,27 @@ Argument JSON Schema:
 
 ### pipeline_create_tag
 
-Description: Create CodeArts Pipeline tag
+中文说明：创建Pipeline 流水线的tag。
 
-| Field | Value |
+原始工具说明：Create CodeArts Pipeline tag
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_create_tag` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_create_tag` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `name` | yes | `string` |  |  |
-| `color` | yes | `string` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `name` | 是 | `string` |  |  |
+| `color` | 是 | `string` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -15359,7 +15779,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -15394,26 +15814,28 @@ Argument JSON Schema:
 
 ### pipeline_create_variable_group
 
-Description: Create CodeArts Pipeline variable group
+中文说明：创建Pipeline 流水线的变量组。
 
-| Field | Value |
+原始工具说明：Create CodeArts Pipeline variable group
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_create_variable_group` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_create_variable_group` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `name` | yes | `string` |  |  |
-| `description` | no | `string` |  |  |
-| `variables` | no | `array` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `name` | 是 | `string` |  |  |
+| `description` | 否 | `string` |  |  |
+| `variables` | 否 | `array` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -15430,7 +15852,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -15492,24 +15914,26 @@ Argument JSON Schema:
 
 ### pipeline_delete_extension_endpoint
 
-Description: Delete CodeArts Pipeline extension endpoint
+中文说明：删除Pipeline 流水线的extensionendpoint。
 
-| Field | Value |
+原始工具说明：Delete CodeArts Pipeline extension endpoint
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_delete_extension_endpoint` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_delete_extension_endpoint` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `uuid` | yes | `string` |  |  |
-| `project_id` | no | `string` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `uuid` | 是 | `string` |  |  |
+| `project_id` | 否 | `string` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -15525,7 +15949,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -15554,24 +15978,26 @@ Argument JSON Schema:
 
 ### pipeline_delete_group
 
-Description: Delete CodeArts Pipeline group
+中文说明：删除Pipeline 流水线的组。
 
-| Field | Value |
+原始工具说明：Delete CodeArts Pipeline group
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_delete_group` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_delete_group` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `id` | yes | `unknown` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `id` | 是 | `unknown` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -15588,7 +16014,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -15617,24 +16043,26 @@ Argument JSON Schema:
 
 ### pipeline_delete_pipeline
 
-Description: Delete CodeArts Pipeline
+中文说明：删除Pipeline 流水线的流水线。
 
-| Field | Value |
+原始工具说明：Delete CodeArts Pipeline
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_delete_pipeline` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_delete_pipeline` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `pipeline_id` | yes | `unknown` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `pipeline_id` | 是 | `unknown` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -15651,7 +16079,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -15680,24 +16108,26 @@ Argument JSON Schema:
 
 ### pipeline_delete_project_strategy
 
-Description: Delete CodeArts Pipeline project strategy
+中文说明：删除Pipeline 流水线的项目strategy。
 
-| Field | Value |
+原始工具说明：Delete CodeArts Pipeline project strategy
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_delete_project_strategy` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_delete_project_strategy` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `rule_set_id` | yes | `unknown` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `rule_set_id` | 是 | `unknown` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -15714,7 +16144,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -15743,24 +16173,26 @@ Argument JSON Schema:
 
 ### pipeline_delete_rule
 
-Description: Delete CodeArts Pipeline rule
+中文说明：删除Pipeline 流水线的rule。
 
-| Field | Value |
+原始工具说明：Delete CodeArts Pipeline rule
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_delete_rule` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_delete_rule` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | yes | `string` |  |  |
-| `rule_id` | yes | `unknown` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `domain_id` | 是 | `string` |  |  |
+| `rule_id` | 是 | `unknown` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -15777,7 +16209,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -15806,24 +16238,26 @@ Argument JSON Schema:
 
 ### pipeline_delete_strategy
 
-Description: Delete CodeArts Pipeline strategy
+中文说明：删除Pipeline 流水线的strategy。
 
-| Field | Value |
+原始工具说明：Delete CodeArts Pipeline strategy
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_delete_strategy` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_delete_strategy` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | yes | `string` |  |  |
-| `rule_set_id` | yes | `unknown` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `domain_id` | 是 | `string` |  |  |
+| `rule_set_id` | 是 | `unknown` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -15840,7 +16274,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -15869,24 +16303,26 @@ Argument JSON Schema:
 
 ### pipeline_delete_tag
 
-Description: Delete CodeArts Pipeline tag
+中文说明：删除Pipeline 流水线的tag。
 
-| Field | Value |
+原始工具说明：Delete CodeArts Pipeline tag
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_delete_tag` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_delete_tag` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `tag_id` | yes | `unknown` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `tag_id` | 是 | `unknown` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -15903,7 +16339,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -15932,24 +16368,26 @@ Argument JSON Schema:
 
 ### pipeline_delete_variable_group
 
-Description: Delete CodeArts Pipeline variable group
+中文说明：删除Pipeline 流水线的变量组。
 
-| Field | Value |
+原始工具说明：Delete CodeArts Pipeline variable group
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_delete_variable_group` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_delete_variable_group` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `id` | yes | `unknown` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `id` | 是 | `unknown` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -15966,7 +16404,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -15995,24 +16433,26 @@ Argument JSON Schema:
 
 ### pipeline_disable_pipeline
 
-Description: Disable CodeArts Pipeline
+中文说明：disablePipeline 流水线的流水线。
 
-| Field | Value |
+原始工具说明：Disable CodeArts Pipeline
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_disable_pipeline` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_disable_pipeline` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `pipeline_id` | yes | `unknown` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `pipeline_id` | 是 | `unknown` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -16029,7 +16469,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -16058,24 +16498,26 @@ Argument JSON Schema:
 
 ### pipeline_enable_pipeline
 
-Description: Enable CodeArts Pipeline
+中文说明：enablePipeline 流水线的流水线。
 
-| Field | Value |
+原始工具说明：Enable CodeArts Pipeline
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_enable_pipeline` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_enable_pipeline` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `pipeline_id` | yes | `unknown` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `pipeline_id` | 是 | `unknown` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -16092,7 +16534,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -16121,22 +16563,24 @@ Argument JSON Schema:
 
 ### pipeline_get_extension_endpoint
 
-Description: Get CodeArts Pipeline extension endpoint detail
+中文说明：获取Pipeline 流水线的extensionendpoint。
 
-| Field | Value |
+原始工具说明：Get CodeArts Pipeline extension endpoint detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_get_extension_endpoint` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_get_extension_endpoint` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `uuid` | yes | `string` |  |  |
+| `uuid` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -16152,7 +16596,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -16173,22 +16617,24 @@ Argument JSON Schema:
 
 ### pipeline_get_extension_module
 
-Description: Get CodeArts Pipeline extension module detail
+中文说明：获取Pipeline 流水线的extensionmodule。
 
-| Field | Value |
+原始工具说明：Get CodeArts Pipeline extension module detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_get_extension_module` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_get_extension_module` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `module_id` | yes | `string` |  |  |
+| `module_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -16204,7 +16650,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -16225,24 +16671,26 @@ Argument JSON Schema:
 
 ### pipeline_get_manual_review_context
 
-Description: Get CodeArts Pipeline manual review context
+中文说明：获取Pipeline 流水线的manualreviewcontext。
 
-| Field | Value |
+原始工具说明：Get CodeArts Pipeline manual review context
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_get_manual_review_context` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_get_manual_review_context` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `pipeline_id` | yes | `unknown` |  |  |
-| `run_id` | yes | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `pipeline_id` | 是 | `unknown` |  |  |
+| `run_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -16260,7 +16708,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -16289,23 +16737,25 @@ Argument JSON Schema:
 
 ### pipeline_get_pipeline
 
-Description: Get CodeArts Pipeline detail
+中文说明：获取Pipeline 流水线的流水线。
 
-| Field | Value |
+原始工具说明：Get CodeArts Pipeline detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_get_pipeline` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_get_pipeline` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `pipeline_id` | yes | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `pipeline_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -16322,7 +16772,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -16347,26 +16797,28 @@ Argument JSON Schema:
 
 ### pipeline_get_plugin_inputs
 
-Description: Get CodeArts Pipeline plugin inputs
+中文说明：获取Pipeline 流水线的plugininputs。
 
-| Field | Value |
+原始工具说明：Get CodeArts Pipeline plugin inputs
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_get_plugin_inputs` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_get_plugin_inputs` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | yes | `string` |  |  |
-| `plugin_name` | yes | `string` |  |  |
-| `display_name` | yes | `string` |  |  |
-| `version` | yes | `string` |  |  |
-| `plugin_attribution` | yes | `string` |  | enum: custom, official |
+| `domain_id` | 是 | `string` |  |  |
+| `plugin_name` | 是 | `string` |  |  |
+| `display_name` | 是 | `string` |  |  |
+| `version` | 是 | `string` |  |  |
+| `plugin_attribution` | 是 | `string` |  | 可选值：custom：official |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -16386,7 +16838,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -16430,26 +16882,28 @@ Argument JSON Schema:
 
 ### pipeline_get_plugin_outputs
 
-Description: Get CodeArts Pipeline plugin outputs
+中文说明：获取Pipeline 流水线的pluginoutputs。
 
-| Field | Value |
+原始工具说明：Get CodeArts Pipeline plugin outputs
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_get_plugin_outputs` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_get_plugin_outputs` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | yes | `string` |  |  |
-| `plugin_name` | yes | `string` |  |  |
-| `display_name` | yes | `string` |  |  |
-| `version` | yes | `string` |  |  |
-| `plugin_attribution` | yes | `string` |  | enum: custom, official |
+| `domain_id` | 是 | `string` |  |  |
+| `plugin_name` | 是 | `string` |  |  |
+| `display_name` | 是 | `string` |  |  |
+| `version` | 是 | `string` |  |  |
+| `plugin_attribution` | 是 | `string` |  | 可选值：custom：official |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -16469,7 +16923,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -16513,24 +16967,26 @@ Argument JSON Schema:
 
 ### pipeline_get_plugin_version
 
-Description: Get CodeArts Pipeline plugin version detail
+中文说明：获取Pipeline 流水线的plugin版本。
 
-| Field | Value |
+原始工具说明：Get CodeArts Pipeline plugin version detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_get_plugin_version` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_get_plugin_version` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | yes | `string` |  |  |
-| `plugin_name` | yes | `string` |  |  |
-| `version` | yes | `string` |  |  |
+| `domain_id` | 是 | `string` |  |  |
+| `plugin_name` | 是 | `string` |  |  |
+| `version` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -16548,7 +17004,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -16579,23 +17035,25 @@ Argument JSON Schema:
 
 ### pipeline_get_project_strategy
 
-Description: Get CodeArts Pipeline project strategy
+中文说明：获取Pipeline 流水线的项目strategy。
 
-| Field | Value |
+原始工具说明：Get CodeArts Pipeline project strategy
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_get_project_strategy` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_get_project_strategy` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `rule_set_id` | yes | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `rule_set_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -16612,7 +17070,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -16637,23 +17095,25 @@ Argument JSON Schema:
 
 ### pipeline_get_project_strategy_detail
 
-Description: Get CodeArts Pipeline project strategy detail
+中文说明：获取Pipeline 流水线的项目strategy详情。
 
-| Field | Value |
+原始工具说明：Get CodeArts Pipeline project strategy detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_get_project_strategy_detail` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_get_project_strategy_detail` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `rule_set_id` | yes | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `rule_set_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -16670,7 +17130,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -16695,23 +17155,25 @@ Argument JSON Schema:
 
 ### pipeline_get_project_strategy_related_info
 
-Description: Get CodeArts Pipeline project strategy related info
+中文说明：获取Pipeline 流水线的项目strategyrelated信息。
 
-| Field | Value |
+原始工具说明：Get CodeArts Pipeline project strategy related info
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_get_project_strategy_related_info` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_get_project_strategy_related_info` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `rule_set_id` | yes | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `rule_set_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -16728,7 +17190,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -16753,23 +17215,25 @@ Argument JSON Schema:
 
 ### pipeline_get_rule
 
-Description: Get CodeArts Pipeline rule detail
+中文说明：获取Pipeline 流水线的rule。
 
-| Field | Value |
+原始工具说明：Get CodeArts Pipeline rule detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_get_rule` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_get_rule` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | yes | `string` |  |  |
-| `rule_id` | yes | `unknown` |  |  |
+| `domain_id` | 是 | `string` |  |  |
+| `rule_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -16786,7 +17250,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -16811,23 +17275,25 @@ Argument JSON Schema:
 
 ### pipeline_get_rule_related_info
 
-Description: Get CodeArts Pipeline rule related info
+中文说明：获取Pipeline 流水线的rulerelated信息。
 
-| Field | Value |
+原始工具说明：Get CodeArts Pipeline rule related info
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_get_rule_related_info` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_get_rule_related_info` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | yes | `string` |  |  |
-| `rule_id` | yes | `unknown` |  |  |
+| `domain_id` | 是 | `string` |  |  |
+| `rule_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -16844,7 +17310,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -16869,24 +17335,26 @@ Argument JSON Schema:
 
 ### pipeline_get_run
 
-Description: Get CodeArts Pipeline run detail
+中文说明：获取Pipeline 流水线的run。
 
-| Field | Value |
+原始工具说明：Get CodeArts Pipeline run detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_get_run` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_get_run` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `pipeline_id` | yes | `unknown` |  |  |
-| `run_id` | yes | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `pipeline_id` | 是 | `unknown` |  |  |
+| `run_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -16904,7 +17372,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -16933,24 +17401,26 @@ Argument JSON Schema:
 
 ### pipeline_get_run_detail
 
-Description: Get CodeArts Pipeline run detail
+中文说明：获取Pipeline 流水线的run详情。
 
-| Field | Value |
+原始工具说明：Get CodeArts Pipeline run detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_get_run_detail` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_get_run_detail` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `pipeline_id` | yes | `unknown` |  |  |
-| `run_id` | yes | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `pipeline_id` | 是 | `unknown` |  |  |
+| `run_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -16968,7 +17438,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -16997,26 +17467,28 @@ Argument JSON Schema:
 
 ### pipeline_get_run_log
 
-Description: Get CodeArts Pipeline run step log
+中文说明：获取Pipeline 流水线的run日志。
 
-| Field | Value |
+原始工具说明：Get CodeArts Pipeline run step log
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_get_run_log` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_get_run_log` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `pipeline_id` | yes | `unknown` |  |  |
-| `run_id` | yes | `unknown` |  |  |
-| `job_id` | yes | `unknown` |  |  |
-| `step_id` | yes | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `pipeline_id` | 是 | `unknown` |  |  |
+| `run_id` | 是 | `unknown` |  |  |
+| `job_id` | 是 | `unknown` |  |  |
+| `step_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -17036,7 +17508,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -17073,24 +17545,26 @@ Argument JSON Schema:
 
 ### pipeline_get_run_parameters
 
-Description: Get CodeArts Pipeline run parameters
+中文说明：获取Pipeline 流水线的run参数。
 
-| Field | Value |
+原始工具说明：Get CodeArts Pipeline run parameters
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_get_run_parameters` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_get_run_parameters` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `pipeline_id` | yes | `unknown` |  |  |
-| `run_id` | yes | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `pipeline_id` | 是 | `unknown` |  |  |
+| `run_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -17108,7 +17582,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -17137,25 +17611,27 @@ Argument JSON Schema:
 
 ### pipeline_get_step_outputs
 
-Description: Get CodeArts Pipeline step outputs
+中文说明：获取Pipeline 流水线的步骤outputs。
 
-| Field | Value |
+原始工具说明：Get CodeArts Pipeline step outputs
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_get_step_outputs` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_get_step_outputs` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `pipeline_id` | yes | `unknown` |  |  |
-| `run_id` | yes | `unknown` |  |  |
-| `step_run_ids` | yes | `array` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `pipeline_id` | 是 | `unknown` |  |  |
+| `run_id` | 是 | `unknown` |  |  |
+| `step_run_ids` | 是 | `array` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -17174,7 +17650,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -17211,24 +17687,26 @@ Argument JSON Schema:
 
 ### pipeline_get_strategy
 
-Description: Get CodeArts Pipeline strategy detail
+中文说明：获取Pipeline 流水线的strategy。
 
-| Field | Value |
+原始工具说明：Get CodeArts Pipeline strategy detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_get_strategy` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_get_strategy` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | yes | `string` |  |  |
-| `rule_set_id` | yes | `unknown` |  |  |
-| `cloud_project_id` | no | `unknown` |  |  |
+| `domain_id` | 是 | `string` |  |  |
+| `rule_set_id` | 是 | `unknown` |  |  |
+| `cloud_project_id` | 否 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -17245,7 +17723,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -17273,23 +17751,25 @@ Argument JSON Schema:
 
 ### pipeline_get_strategy_related_info
 
-Description: Get CodeArts Pipeline strategy related info
+中文说明：获取Pipeline 流水线的strategyrelated信息。
 
-| Field | Value |
+原始工具说明：Get CodeArts Pipeline strategy related info
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_get_strategy_related_info` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_get_strategy_related_info` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | yes | `string` |  |  |
-| `rule_set_id` | yes | `unknown` |  |  |
+| `domain_id` | 是 | `string` |  |  |
+| `rule_set_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -17306,7 +17786,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -17331,23 +17811,25 @@ Argument JSON Schema:
 
 ### pipeline_get_variable_group
 
-Description: Get CodeArts Pipeline variable group detail
+中文说明：获取Pipeline 流水线的变量组。
 
-| Field | Value |
+原始工具说明：Get CodeArts Pipeline variable group detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_get_variable_group` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_get_variable_group` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `id` | yes | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -17364,7 +17846,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -17389,27 +17871,29 @@ Argument JSON Schema:
 
 ### pipeline_inherit_project_strategy
 
-Description: Inherit CodeArts Pipeline project strategy
+中文说明：inheritPipeline 流水线的项目strategy。
 
-| Field | Value |
+原始工具说明：Inherit CodeArts Pipeline project strategy
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_inherit_project_strategy` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_inherit_project_strategy` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `name` | yes | `string` |  |  |
-| `parent_id` | yes | `unknown` |  |  |
-| `rules` | no | `array` |  |  |
-| `is_valid` | yes | `boolean` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `name` | 是 | `string` |  |  |
+| `parent_id` | 是 | `unknown` |  |  |
+| `rules` | 否 | `array` |  |  |
+| `is_valid` | 是 | `boolean` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -17428,7 +17912,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -17472,24 +17956,26 @@ Argument JSON Schema:
 
 ### pipeline_list_artifacts
 
-Description: List CodeArts Pipeline artifacts
+中文说明：查询列表Pipeline 流水线的制品。
 
-| Field | Value |
+原始工具说明：List CodeArts Pipeline artifacts
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_list_artifacts` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_list_artifacts` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `pipeline_id` | yes | `unknown` |  |  |
-| `run_id` | yes | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `pipeline_id` | 是 | `unknown` |  |  |
+| `run_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -17507,7 +17993,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -17536,22 +18022,24 @@ Argument JSON Schema:
 
 ### pipeline_list_available_publishers
 
-Description: List CodeArts Pipeline available publishers
+中文说明：查询列表Pipeline 流水线的availablepublishers。
 
-| Field | Value |
+原始工具说明：List CodeArts Pipeline available publishers
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_list_available_publishers` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_list_available_publishers` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | yes | `string` |  |  |
+| `domain_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -17567,7 +18055,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -17588,22 +18076,24 @@ Argument JSON Schema:
 
 ### pipeline_list_base_plugins
 
-Description: List CodeArts Pipeline base plugins
+中文说明：查询列表Pipeline 流水线的baseplugins。
 
-| Field | Value |
+原始工具说明：List CodeArts Pipeline base plugins
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_list_base_plugins` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_list_base_plugins` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | yes | `string` |  |  |
+| `domain_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -17619,7 +18109,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -17640,24 +18130,26 @@ Argument JSON Schema:
 
 ### pipeline_list_base_plugins_paged
 
-Description: List CodeArts Pipeline base plugins (paged)
+中文说明：查询列表Pipeline 流水线的basepluginspaged。
 
-| Field | Value |
+原始工具说明：List CodeArts Pipeline base plugins (paged)
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_list_base_plugins_paged` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_list_base_plugins_paged` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | yes | `string` |  |  |
-| `offset` | no | `integer` | 0 |  |
-| `limit` | no | `integer` | 20 |  |
+| `domain_id` | 是 | `string` |  |  |
+| `offset` | 否 | `integer` | 0 |  |
+| `limit` | 否 | `integer` | 20 |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -17673,7 +18165,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -17705,26 +18197,28 @@ Argument JSON Schema:
 
 ### pipeline_list_extension_endpoints
 
-Description: List CodeArts Pipeline extension endpoints
+中文说明：查询列表Pipeline 流水线的extensionendpoints。
 
-| Field | Value |
+原始工具说明：List CodeArts Pipeline extension endpoints
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_list_extension_endpoints` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_list_extension_endpoints` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `region_name` | yes | `string` |  |  |
-| `module_id` | no | `string` |  |  |
-| `offset` | no | `integer` | 0 |  |
-| `limit` | no | `integer` | 20 |  |
+| `project_id` | 是 | `string` |  |  |
+| `region_name` | 是 | `string` |  |  |
+| `module_id` | 否 | `string` |  |  |
+| `offset` | 否 | `integer` | 0 |  |
+| `limit` | 否 | `integer` | 20 |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -17741,7 +18235,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -17782,29 +18276,31 @@ Argument JSON Schema:
 
 ### pipeline_list_extension_modules
 
-Description: List CodeArts Pipeline extension modules
+中文说明：查询列表Pipeline 流水线的extensionmodules。
 
-| Field | Value |
+原始工具说明：List CodeArts Pipeline extension modules
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_list_extension_modules` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_list_extension_modules` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `locations` | yes | `array` |  |  |
-| `project_id` | no | `string` |  |  |
-| `region_name` | no | `string` |  |  |
-| `name` | no | `string` |  |  |
-| `product_line` | no | `string` |  |  |
-| `tags` | no | `array` |  |  |
-| `offset` | no | `integer` | 0 |  |
-| `limit` | no | `integer` | 20 |  |
+| `locations` | 是 | `array` |  |  |
+| `project_id` | 否 | `string` |  |  |
+| `region_name` | 否 | `string` |  |  |
+| `name` | 否 | `string` |  |  |
+| `product_line` | 否 | `string` |  |  |
+| `tags` | 否 | `array` |  |  |
+| `offset` | 否 | `integer` | 0 |  |
+| `limit` | 否 | `integer` | 20 |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -17820,7 +18316,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -17879,22 +18375,24 @@ Argument JSON Schema:
 
 ### pipeline_list_groups
 
-Description: List CodeArts Pipeline groups
+中文说明：查询列表Pipeline 流水线的组。
 
-| Field | Value |
+原始工具说明：List CodeArts Pipeline groups
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_list_groups` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_list_groups` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
+| `project_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -17910,7 +18408,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -17931,23 +18429,25 @@ Argument JSON Schema:
 
 ### pipeline_list_pipeline_variable_groups
 
-Description: List CodeArts Pipeline variable groups for pipeline
+中文说明：查询列表Pipeline 流水线的流水线变量组。
 
-| Field | Value |
+原始工具说明：List CodeArts Pipeline variable groups for pipeline
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_list_pipeline_variable_groups` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_list_pipeline_variable_groups` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `pipeline_id` | yes | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `pipeline_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -17964,7 +18464,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -17989,27 +18489,29 @@ Argument JSON Schema:
 
 ### pipeline_list_pipelines
 
-Description: List CodeArts Pipelines
+中文说明：查询列表Pipeline 流水线的流水线。
 
-| Field | Value |
+原始工具说明：List CodeArts Pipelines
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_list_pipelines` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_list_pipelines` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `project_id` | yes | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `project_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -18025,7 +18527,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -18070,25 +18572,27 @@ Argument JSON Schema:
 
 ### pipeline_list_plugin_versions
 
-Description: List CodeArts Pipeline plugin versions
+中文说明：查询列表Pipeline 流水线的plugin版本。
 
-| Field | Value |
+原始工具说明：List CodeArts Pipeline plugin versions
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_list_plugin_versions` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_list_plugin_versions` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | yes | `string` |  |  |
-| `plugin_name` | yes | `string` |  |  |
-| `offset` | no | `integer` | 0 |  |
-| `limit` | no | `integer` | 20 |  |
+| `domain_id` | 是 | `string` |  |  |
+| `plugin_name` | 是 | `string` |  |  |
+| `offset` | 否 | `integer` | 0 |  |
+| `limit` | 否 | `integer` | 20 |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -18105,7 +18609,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -18142,28 +18646,30 @@ Argument JSON Schema:
 
 ### pipeline_list_plugins
 
-Description: List CodeArts Pipeline plugins
+中文说明：查询列表Pipeline 流水线的plugins。
 
-| Field | Value |
+原始工具说明：List CodeArts Pipeline plugins
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_list_plugins` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_list_plugins` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | yes | `string` |  |  |
-| `offset` | no | `integer` | 0 |  |
-| `limit` | no | `integer` | 20 |  |
-| `plugin_attribution` | no | `string` |  | enum: custom, official |
-| `business_type` | no | `array` |  |  |
-| `maintainer` | no | `string` |  |  |
-| `plugin_name` | no | `string` |  |  |
+| `domain_id` | 是 | `string` |  |  |
+| `offset` | 否 | `integer` | 0 |  |
+| `limit` | 否 | `integer` | 20 |  |
+| `plugin_attribution` | 否 | `string` |  | 可选值：custom：official |
+| `business_type` | 否 | `array` |  |  |
+| `maintainer` | 否 | `string` |  |  |
+| `plugin_name` | 否 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -18179,7 +18685,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -18239,28 +18745,30 @@ Argument JSON Schema:
 
 ### pipeline_list_project_strategies
 
-Description: List CodeArts Pipeline project strategies
+中文说明：查询列表Pipeline 流水线的项目strategies。
 
-| Field | Value |
+原始工具说明：List CodeArts Pipeline project strategies
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_list_project_strategies` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_list_project_strategies` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `offset` | yes | `integer` |  |  |
-| `limit` | yes | `integer` |  |  |
-| `include_tenant_rule_set` | no | `boolean` | false |  |
-| `name` | no | `string` |  |  |
-| `is_valid` | no | `boolean` |  |  |
-| `type` | no | `string` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `offset` | 是 | `integer` |  |  |
+| `limit` | 是 | `integer` |  |  |
+| `include_tenant_rule_set` | 否 | `boolean` | false |  |
+| `name` | 否 | `string` |  |  |
+| `is_valid` | 否 | `boolean` |  |  |
+| `type` | 否 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -18278,7 +18786,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -18325,24 +18833,26 @@ Argument JSON Schema:
 
 ### pipeline_list_publishers
 
-Description: List CodeArts Pipeline publishers
+中文说明：查询列表Pipeline 流水线的publishers。
 
-| Field | Value |
+原始工具说明：List CodeArts Pipeline publishers
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_list_publishers` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_list_publishers` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | yes | `string` |  |  |
-| `offset` | no | `integer` | 0 |  |
-| `limit` | no | `integer` | 20 |  |
+| `domain_id` | 是 | `string` |  |  |
+| `offset` | 否 | `integer` | 0 |  |
+| `limit` | 否 | `integer` | 20 |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -18358,7 +18868,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -18390,22 +18900,24 @@ Argument JSON Schema:
 
 ### pipeline_list_rule_types
 
-Description: List CodeArts Pipeline rule types
+中文说明：查询列表Pipeline 流水线的ruletypes。
 
-| Field | Value |
+原始工具说明：List CodeArts Pipeline rule types
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_list_rule_types` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_list_rule_types` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `organization_id` | yes | `string` |  |  |
+| `organization_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -18421,7 +18933,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -18442,27 +18954,29 @@ Argument JSON Schema:
 
 ### pipeline_list_rules
 
-Description: List CodeArts Pipeline rules
+中文说明：查询列表Pipeline 流水线的rules。
 
-| Field | Value |
+原始工具说明：List CodeArts Pipeline rules
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_list_rules` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_list_rules` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | yes | `string` |  |  |
-| `offset` | yes | `integer` |  |  |
-| `limit` | yes | `integer` |  |  |
-| `cloud_project_id` | no | `unknown` |  |  |
-| `type` | no | `string` |  |  |
-| `name` | no | `string` |  |  |
+| `domain_id` | 是 | `string` |  |  |
+| `offset` | 是 | `integer` |  |  |
+| `limit` | 是 | `integer` |  |  |
+| `cloud_project_id` | 否 | `unknown` |  |  |
+| `type` | 否 | `string` |  |  |
+| `name` | 否 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -18480,7 +18994,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -18523,28 +19037,30 @@ Argument JSON Schema:
 
 ### pipeline_list_runs
 
-Description: List CodeArts Pipeline runs
+中文说明：查询列表Pipeline 流水线的runs。
 
-| Field | Value |
+原始工具说明：List CodeArts Pipeline runs
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_list_runs` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_list_runs` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `project_id` | yes | `string` |  |  |
-| `pipeline_id` | yes | `unknown` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `project_id` | 是 | `string` |  |  |
+| `pipeline_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -18561,7 +19077,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -18610,26 +19126,28 @@ Argument JSON Schema:
 
 ### pipeline_list_stage_plugins
 
-Description: List CodeArts Pipeline stage plugins
+中文说明：查询列表Pipeline 流水线的阶段plugins。
 
-| Field | Value |
+原始工具说明：List CodeArts Pipeline stage plugins
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_list_stage_plugins` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_list_stage_plugins` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | yes | `string` |  |  |
-| `use_condition` | yes | `string` |  |  |
-| `business_type` | no | `array` |  |  |
-| `deploy_type` | no | `string` |  |  |
-| `comp_extend_type` | no | `string` |  |  |
+| `domain_id` | 是 | `string` |  |  |
+| `use_condition` | 是 | `string` |  |  |
+| `business_type` | 否 | `array` |  |  |
+| `deploy_type` | 否 | `string` |  |  |
+| `comp_extend_type` | 否 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -18646,7 +19164,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -18693,28 +19211,30 @@ Argument JSON Schema:
 
 ### pipeline_list_strategies
 
-Description: List CodeArts Pipeline strategies
+中文说明：查询列表Pipeline 流水线的strategies。
 
-| Field | Value |
+原始工具说明：List CodeArts Pipeline strategies
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_list_strategies` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_list_strategies` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | yes | `string` |  |  |
-| `offset` | yes | `integer` |  |  |
-| `limit` | yes | `integer` |  |  |
-| `include_tenant_rule_set` | no | `boolean` | true |  |
-| `name` | no | `string` |  |  |
-| `is_valid` | no | `boolean` |  |  |
-| `type` | no | `string` |  |  |
+| `domain_id` | 是 | `string` |  |  |
+| `offset` | 是 | `integer` |  |  |
+| `limit` | 是 | `integer` |  |  |
+| `include_tenant_rule_set` | 否 | `boolean` | true |  |
+| `name` | 否 | `string` |  |  |
+| `is_valid` | 否 | `boolean` |  |  |
+| `type` | 否 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -18732,7 +19252,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -18779,25 +19299,27 @@ Argument JSON Schema:
 
 ### pipeline_list_strategy_children
 
-Description: List CodeArts Pipeline strategy children
+中文说明：查询列表Pipeline 流水线的strategychildren。
 
-| Field | Value |
+原始工具说明：List CodeArts Pipeline strategy children
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_list_strategy_children` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_list_strategy_children` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | yes | `string` |  |  |
-| `rule_set_id` | yes | `unknown` |  |  |
-| `offset` | no | `integer` | 0 |  |
-| `limit` | no | `integer` | 20 |  |
+| `domain_id` | 是 | `string` |  |  |
+| `rule_set_id` | 是 | `unknown` |  |  |
+| `offset` | 否 | `integer` | 0 |  |
+| `limit` | 否 | `integer` | 20 |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -18814,7 +19336,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -18850,23 +19372,25 @@ Argument JSON Schema:
 
 ### pipeline_list_tags
 
-Description: List CodeArts Pipeline tags
+中文说明：查询列表Pipeline 流水线的tags。
 
-| Field | Value |
+原始工具说明：List CodeArts Pipeline tags
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_list_tags` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_list_tags` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `proj_id` | no | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `proj_id` | 否 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -18882,7 +19406,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -18906,29 +19430,31 @@ Argument JSON Schema:
 
 ### pipeline_list_templates
 
-Description: List CodeArts Pipeline templates
+中文说明：查询列表Pipeline 流水线的templates。
 
-| Field | Value |
+原始工具说明：List CodeArts Pipeline templates
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_list_templates` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_list_templates` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `tenant_id` | yes | `string` |  |  |
-| `language` | no | `string` |  |  |
-| `is_system` | no | `boolean` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `tenant_id` | 是 | `string` |  |  |
+| `language` | 否 | `string` |  |  |
+| `is_system` | 否 | `boolean` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -18944,7 +19470,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -18995,28 +19521,30 @@ Argument JSON Schema:
 
 ### pipeline_list_variable_groups
 
-Description: List CodeArts Pipeline variable groups
+中文说明：查询列表Pipeline 流水线的变量组。
 
-| Field | Value |
+原始工具说明：List CodeArts Pipeline variable groups
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_list_variable_groups` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_list_variable_groups` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `project_id` | yes | `string` |  |  |
-| `name` | no | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `project_id` | 是 | `string` |  |  |
+| `name` | 否 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -19032,7 +19560,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -19081,25 +19609,27 @@ Argument JSON Schema:
 
 ### pipeline_move_pipelines_to_group
 
-Description: Move CodeArts Pipelines to group
+中文说明：移动Pipeline 流水线的流水线to组。
 
-| Field | Value |
+原始工具说明：Move CodeArts Pipelines to group
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_move_pipelines_to_group` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_move_pipelines_to_group` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `group_id` | yes | `unknown` |  |  |
-| `pipelines` | yes | `array` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `group_id` | 是 | `unknown` |  |  |
+| `pipelines` | 是 | `array` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -19117,7 +19647,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -19168,27 +19698,29 @@ Argument JSON Schema:
 
 ### pipeline_reject_run
 
-Description: Reject CodeArts Pipeline manual review
+中文说明：rejectPipeline 流水线的run。
 
-| Field | Value |
+原始工具说明：Reject CodeArts Pipeline manual review
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_reject_run` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_reject_run` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `pipeline_id` | yes | `unknown` |  |  |
-| `run_id` | yes | `unknown` |  |  |
-| `job_id` | yes | `unknown` |  |  |
-| `step_id` | yes | `unknown` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `pipeline_id` | 是 | `unknown` |  |  |
+| `run_id` | 是 | `unknown` |  |  |
+| `job_id` | 是 | `unknown` |  |  |
+| `step_id` | 是 | `unknown` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -19208,7 +19740,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -19249,25 +19781,27 @@ Argument JSON Schema:
 
 ### pipeline_retry_run
 
-Description: Retry CodeArts Pipeline run
+中文说明：重试Pipeline 流水线的run。
 
-| Field | Value |
+原始工具说明：Retry CodeArts Pipeline run
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_retry_run` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_retry_run` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `pipeline_id` | yes | `unknown` |  |  |
-| `run_id` | yes | `unknown` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `pipeline_id` | 是 | `unknown` |  |  |
+| `run_id` | 是 | `unknown` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -19285,7 +19819,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -19318,26 +19852,28 @@ Argument JSON Schema:
 
 ### pipeline_run_pipeline
 
-Description: Run CodeArts Pipeline
+中文说明：运行Pipeline 流水线的流水线。
 
-| Field | Value |
+原始工具说明：Run CodeArts Pipeline
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_run_pipeline` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_run_pipeline` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `pipeline_id` | yes | `unknown` |  |  |
-| `branch` | no | `string` |  |  |
-| `description` | no | `string` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `pipeline_id` | 是 | `unknown` |  |  |
+| `branch` | 否 | `string` |  |  |
+| `description` | 否 | `string` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -19354,7 +19890,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -19391,25 +19927,27 @@ Argument JSON Schema:
 
 ### pipeline_set_tags_for_pipelines
 
-Description: Set CodeArts Pipeline tags for pipelines
+中文说明：setPipeline 流水线的tagsfor流水线。
 
-| Field | Value |
+原始工具说明：Set CodeArts Pipeline tags for pipelines
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_set_tags_for_pipelines` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_set_tags_for_pipelines` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `pipeline_ids` | yes | `array` |  |  |
-| `tag_ids` | yes | `array` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `pipeline_ids` | 是 | `array` |  |  |
+| `tag_ids` | 是 | `array` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -19427,7 +19965,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -19468,24 +20006,26 @@ Argument JSON Schema:
 
 ### pipeline_stop_run
 
-Description: Stop CodeArts Pipeline run
+中文说明：停止Pipeline 流水线的run。
 
-| Field | Value |
+原始工具说明：Stop CodeArts Pipeline run
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_stop_run` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_stop_run` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `pipeline_id` | yes | `string` |  |  |
-| `run_id` | yes | `unknown` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `pipeline_id` | 是 | `string` |  |  |
+| `run_id` | 是 | `unknown` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -19502,7 +20042,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -19531,25 +20071,27 @@ Argument JSON Schema:
 
 ### pipeline_switch_project_strategy
 
-Description: Switch CodeArts Pipeline project strategy
+中文说明：switchPipeline 流水线的项目strategy。
 
-| Field | Value |
+原始工具说明：Switch CodeArts Pipeline project strategy
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_switch_project_strategy` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_switch_project_strategy` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `rule_set_id` | yes | `unknown` |  |  |
-| `is_valid` | yes | `boolean` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `rule_set_id` | 是 | `unknown` |  |  |
+| `is_valid` | 是 | `boolean` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -19567,7 +20109,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -19600,25 +20142,27 @@ Argument JSON Schema:
 
 ### pipeline_switch_strategy
 
-Description: Switch CodeArts Pipeline strategy
+中文说明：switchPipeline 流水线的strategy。
 
-| Field | Value |
+原始工具说明：Switch CodeArts Pipeline strategy
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_switch_strategy` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_switch_strategy` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | yes | `string` |  |  |
-| `rule_set_id` | yes | `unknown` |  |  |
-| `is_valid` | yes | `boolean` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `domain_id` | 是 | `string` |  |  |
+| `rule_set_id` | 是 | `unknown` |  |  |
+| `is_valid` | 是 | `boolean` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -19636,7 +20180,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -19669,30 +20213,32 @@ Argument JSON Schema:
 
 ### pipeline_update_extension_endpoint
 
-Description: Update CodeArts Pipeline extension endpoint
+中文说明：更新Pipeline 流水线的extensionendpoint。
 
-| Field | Value |
+原始工具说明：Update CodeArts Pipeline extension endpoint
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_update_extension_endpoint` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_update_extension_endpoint` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `uuid` | yes | `string` |  |  |
-| `project_id` | no | `string` |  |  |
-| `region_name` | no | `string` |  |  |
-| `module_id` | no | `string` |  |  |
-| `name` | no | `string` |  |  |
-| `url` | no | `string` |  |  |
-| `authorization` | no | `object` |  |  |
-| `data` | no | `unknown` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `uuid` | 是 | `string` |  |  |
+| `project_id` | 否 | `string` |  |  |
+| `region_name` | 否 | `string` |  |  |
+| `module_id` | 否 | `string` |  |  |
+| `name` | 否 | `string` |  |  |
+| `url` | 否 | `string` |  |  |
+| `authorization` | 否 | `object` |  |  |
+| `data` | 否 | `unknown` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -19708,7 +20254,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -19770,25 +20316,27 @@ Argument JSON Schema:
 
 ### pipeline_update_group
 
-Description: Update CodeArts Pipeline group
+中文说明：更新Pipeline 流水线的组。
 
-| Field | Value |
+原始工具说明：Update CodeArts Pipeline group
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_update_group` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_update_group` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `id` | yes | `unknown` |  |  |
-| `name` | yes | `string` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `id` | 是 | `unknown` |  |  |
+| `name` | 是 | `string` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -19806,7 +20354,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -19841,26 +20389,28 @@ Argument JSON Schema:
 
 ### pipeline_update_project_strategy
 
-Description: Update CodeArts Pipeline project strategy
+中文说明：更新Pipeline 流水线的项目strategy。
 
-| Field | Value |
+原始工具说明：Update CodeArts Pipeline project strategy
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_update_project_strategy` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_update_project_strategy` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `rule_set_id` | yes | `unknown` |  |  |
-| `name` | yes | `string` |  |  |
-| `rules` | yes | `array` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `rule_set_id` | 是 | `unknown` |  |  |
+| `name` | 是 | `string` |  |  |
+| `rules` | 是 | `array` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -19879,7 +20429,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -19930,30 +20480,32 @@ Argument JSON Schema:
 
 ### pipeline_update_rule
 
-Description: Update CodeArts Pipeline rule
+中文说明：更新Pipeline 流水线的rule。
 
-| Field | Value |
+原始工具说明：Update CodeArts Pipeline rule
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_update_rule` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_update_rule` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | yes | `string` |  |  |
-| `rule_id` | yes | `unknown` |  |  |
-| `name` | yes | `string` |  |  |
-| `type` | yes | `string` |  |  |
-| `plugin_id` | no | `string` |  |  |
-| `plugin_name` | no | `string` |  |  |
-| `plugin_version` | no | `string` |  |  |
-| `content` | yes | `array` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `domain_id` | 是 | `string` |  |  |
+| `rule_id` | 是 | `unknown` |  |  |
+| `name` | 是 | `string` |  |  |
+| `type` | 是 | `string` |  |  |
+| `plugin_id` | 否 | `string` |  |  |
+| `plugin_name` | 否 | `string` |  |  |
+| `plugin_version` | 否 | `string` |  |  |
+| `content` | 是 | `array` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -19973,7 +20525,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -20092,26 +20644,28 @@ Argument JSON Schema:
 
 ### pipeline_update_strategy
 
-Description: Update CodeArts Pipeline strategy
+中文说明：更新Pipeline 流水线的strategy。
 
-| Field | Value |
+原始工具说明：Update CodeArts Pipeline strategy
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_update_strategy` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_update_strategy` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | yes | `string` |  |  |
-| `rule_set_id` | yes | `unknown` |  |  |
-| `name` | yes | `string` |  |  |
-| `rules` | no | `array` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `domain_id` | 是 | `string` |  |  |
+| `rule_set_id` | 是 | `unknown` |  |  |
+| `name` | 是 | `string` |  |  |
+| `rules` | 否 | `array` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -20129,7 +20683,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -20179,26 +20733,28 @@ Argument JSON Schema:
 
 ### pipeline_update_tag
 
-Description: Update CodeArts Pipeline tag
+中文说明：更新Pipeline 流水线的tag。
 
-| Field | Value |
+原始工具说明：Update CodeArts Pipeline tag
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_update_tag` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_update_tag` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `tag_id` | yes | `unknown` |  |  |
-| `name` | yes | `string` |  |  |
-| `color` | yes | `string` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `tag_id` | 是 | `unknown` |  |  |
+| `name` | 是 | `string` |  |  |
+| `color` | 是 | `string` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -20217,7 +20773,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -20256,27 +20812,29 @@ Argument JSON Schema:
 
 ### pipeline_update_variable_group
 
-Description: Update CodeArts Pipeline variable group
+中文说明：更新Pipeline 流水线的变量组。
 
-| Field | Value |
+原始工具说明：Update CodeArts Pipeline variable group
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `pipeline_update_variable_group` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `pipeline_update_variable_group` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `id` | yes | `unknown` |  |  |
-| `name` | yes | `string` |  |  |
-| `description` | no | `string` |  |  |
-| `variables` | no | `array` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `id` | 是 | `unknown` |  |  |
+| `name` | 是 | `string` |  |  |
+| `description` | 否 | `string` |  |  |
+| `variables` | 否 | `array` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -20294,7 +20852,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -20358,44 +20916,46 @@ Argument JSON Schema:
 }
 ```
 
-## Check
+## Check 代码检查
 
-| API | Description |
+| API | 中文说明 |
 | --- | --- |
-| `check_create_task` | Create CodeArts Check task |
-| `check_get_metrics` | Get CodeArts Check task metrics |
-| `check_get_task` | Get CodeArts Check task detail |
-| `check_list_rulesets` | List CodeArts Check rulesets |
-| `check_list_task_issues` | List CodeArts Check task issues |
-| `check_list_tasks` | List CodeArts Check tasks |
-| `check_run_task` | Run CodeArts Check task |
-| `check_stop_task` | Stop CodeArts Check task |
+| `check_create_task` | 创建Check 代码检查的任务。 |
+| `check_get_metrics` | 获取Check 代码检查的metrics。 |
+| `check_get_task` | 获取Check 代码检查的任务。 |
+| `check_list_rulesets` | 查询列表Check 代码检查的rulesets。 |
+| `check_list_task_issues` | 查询列表Check 代码检查的任务问题。 |
+| `check_list_tasks` | 查询列表Check 代码检查的任务。 |
+| `check_run_task` | 运行Check 代码检查的任务。 |
+| `check_stop_task` | 停止Check 代码检查的任务。 |
 
 ### check_create_task
 
-Description: Create CodeArts Check task
+中文说明：创建Check 代码检查的任务。
 
-| Field | Value |
+原始工具说明：Create CodeArts Check task
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `check_create_task` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `check_create_task` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `task_name` | yes | `string` |  |  |
-| `git_url` | yes | `string` |  |  |
-| `git_branch` | yes | `string` |  |  |
-| `language` | yes | `string` |  |  |
-| `rule_set_id` | no | `unknown` |  |  |
-| `task_type` | no | `string` |  | enum: full, incremental |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `task_name` | 是 | `string` |  |  |
+| `git_url` | 是 | `string` |  |  |
+| `git_branch` | 是 | `string` |  |  |
+| `language` | 是 | `string` |  |  |
+| `rule_set_id` | 否 | `unknown` |  |  |
+| `task_type` | 否 | `string` |  | 可选值：full：incremental |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -20415,7 +20975,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -20470,23 +21030,25 @@ Argument JSON Schema:
 
 ### check_get_metrics
 
-Description: Get CodeArts Check task metrics
+中文说明：获取Check 代码检查的metrics。
 
-| Field | Value |
+原始工具说明：Get CodeArts Check task metrics
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `check_get_metrics` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `check_get_metrics` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | no | `string` |  |  |
-| `task_id` | yes | `unknown` |  |  |
+| `project_id` | 否 | `string` |  |  |
+| `task_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -20502,7 +21064,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -20526,22 +21088,24 @@ Argument JSON Schema:
 
 ### check_get_task
 
-Description: Get CodeArts Check task detail
+中文说明：获取Check 代码检查的任务。
 
-| Field | Value |
+原始工具说明：Get CodeArts Check task detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `check_get_task` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `check_get_task` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `task_id` | yes | `string` |  |  |
+| `task_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -20557,7 +21121,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -20578,28 +21142,30 @@ Argument JSON Schema:
 
 ### check_list_rulesets
 
-Description: List CodeArts Check rulesets
+中文说明：查询列表Check 代码检查的rulesets。
 
-| Field | Value |
+原始工具说明：List CodeArts Check rulesets
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `check_list_rulesets` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `check_list_rulesets` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `project_id` | yes | `string` |  |  |
-| `language` | no | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `project_id` | 是 | `string` |  |  |
+| `language` | 否 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -20615,7 +21181,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -20663,27 +21229,29 @@ Argument JSON Schema:
 
 ### check_list_task_issues
 
-Description: List CodeArts Check task issues
+中文说明：查询列表Check 代码检查的任务问题。
 
-| Field | Value |
+原始工具说明：List CodeArts Check task issues
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `check_list_task_issues` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `check_list_task_issues` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `task_id` | yes | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `task_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -20699,7 +21267,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -20744,27 +21312,29 @@ Argument JSON Schema:
 
 ### check_list_tasks
 
-Description: List CodeArts Check tasks
+中文说明：查询列表Check 代码检查的任务。
 
-| Field | Value |
+原始工具说明：List CodeArts Check tasks
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `check_list_tasks` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `check_list_tasks` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `project_id` | no | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `project_id` | 否 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -20778,7 +21348,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -20820,23 +21390,25 @@ Argument JSON Schema:
 
 ### check_run_task
 
-Description: Run CodeArts Check task
+中文说明：运行Check 代码检查的任务。
 
-| Field | Value |
+原始工具说明：Run CodeArts Check task
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `check_run_task` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `check_run_task` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `task_id` | yes | `string` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `task_id` | 是 | `string` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -20852,7 +21424,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -20877,23 +21449,25 @@ Argument JSON Schema:
 
 ### check_stop_task
 
-Description: Stop CodeArts Check task
+中文说明：停止Check 代码检查的任务。
 
-| Field | Value |
+原始工具说明：Stop CodeArts Check task
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `check_stop_task` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `check_stop_task` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `task_id` | yes | `string` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `task_id` | 是 | `string` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -20909,7 +21483,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -20932,37 +21506,39 @@ Argument JSON Schema:
 }
 ```
 
-## TestPlan
+## TestPlan 测试计划
 
-| API | Description |
+| API | 中文说明 |
 | --- | --- |
-| `testplan_get_case` | Get CodeArts TestPlan case detail |
-| `testplan_get_plan` | Get CodeArts TestPlan plan detail |
-| `testplan_list_cases` | List CodeArts TestPlan cases |
-| `testplan_list_issues` | List CodeArts TestPlan requirement tree |
-| `testplan_list_plans` | List CodeArts TestPlan plans |
-| `testplan_list_runs` | List CodeArts TestPlan runs |
-| `testplan_run_cases` | Run CodeArts TestPlan cases |
+| `testplan_get_case` | 获取TestPlan 测试计划的用例。 |
+| `testplan_get_plan` | 获取TestPlan 测试计划的计划。 |
+| `testplan_list_cases` | 查询列表TestPlan 测试计划的用例。 |
+| `testplan_list_issues` | 查询列表TestPlan 测试计划的问题。 |
+| `testplan_list_plans` | 查询列表TestPlan 测试计划的计划。 |
+| `testplan_list_runs` | 查询列表TestPlan 测试计划的runs。 |
+| `testplan_run_cases` | 运行TestPlan 测试计划的用例。 |
 
 ### testplan_get_case
 
-Description: Get CodeArts TestPlan case detail
+中文说明：获取TestPlan 测试计划的用例。
 
-| Field | Value |
+原始工具说明：Get CodeArts TestPlan case detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `testplan_get_case` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `testplan_get_case` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `case_id` | yes | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `case_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -20979,7 +21555,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -21004,23 +21580,25 @@ Argument JSON Schema:
 
 ### testplan_get_plan
 
-Description: Get CodeArts TestPlan plan detail
+中文说明：获取TestPlan 测试计划的计划。
 
-| Field | Value |
+原始工具说明：Get CodeArts TestPlan plan detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `testplan_get_plan` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `testplan_get_plan` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `plan_id` | yes | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `plan_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -21037,7 +21615,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -21062,28 +21640,30 @@ Argument JSON Schema:
 
 ### testplan_list_cases
 
-Description: List CodeArts TestPlan cases
+中文说明：查询列表TestPlan 测试计划的用例。
 
-| Field | Value |
+原始工具说明：List CodeArts TestPlan cases
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `testplan_list_cases` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `testplan_list_cases` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `project_id` | yes | `string` |  |  |
-| `plan_id` | yes | `unknown` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `project_id` | 是 | `string` |  |  |
+| `plan_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -21100,7 +21680,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -21149,23 +21729,25 @@ Argument JSON Schema:
 
 ### testplan_list_issues
 
-Description: List CodeArts TestPlan requirement tree
+中文说明：查询列表TestPlan 测试计划的问题。
 
-| Field | Value |
+原始工具说明：List CodeArts TestPlan requirement tree
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `testplan_list_issues` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `testplan_list_issues` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `plan_id` | yes | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `plan_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -21182,7 +21764,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -21207,27 +21789,29 @@ Argument JSON Schema:
 
 ### testplan_list_plans
 
-Description: List CodeArts TestPlan plans
+中文说明：查询列表TestPlan 测试计划的计划。
 
-| Field | Value |
+原始工具说明：List CodeArts TestPlan plans
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `testplan_list_plans` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `testplan_list_plans` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `project_id` | yes | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `project_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -21243,7 +21827,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -21288,28 +21872,30 @@ Argument JSON Schema:
 
 ### testplan_list_runs
 
-Description: List CodeArts TestPlan runs
+中文说明：查询列表TestPlan 测试计划的runs。
 
-| Field | Value |
+原始工具说明：List CodeArts TestPlan runs
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `testplan_list_runs` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `testplan_list_runs` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `project_id` | yes | `string` |  |  |
-| `plan_id` | yes | `unknown` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `project_id` | 是 | `string` |  |  |
+| `plan_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -21326,7 +21912,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -21375,24 +21961,26 @@ Argument JSON Schema:
 
 ### testplan_run_cases
 
-Description: Run CodeArts TestPlan cases
+中文说明：运行TestPlan 测试计划的用例。
 
-| Field | Value |
+原始工具说明：Run CodeArts TestPlan cases
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `testplan_run_cases` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `testplan_run_cases` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `execute_list` | yes | `array` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `execute_list` | 是 | `array` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -21409,7 +21997,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -21449,92 +22037,94 @@ Argument JSON Schema:
 }
 ```
 
-## Deploy
+## Deploy 部署
 
-| API | Description |
+| API | 中文说明 |
 | --- | --- |
-| `deploy_add_v4_environment_hosts` | Add hosts into a CodeArts Deploy v4 environment |
-| `deploy_cancel_v4_deploy_record` | Cancel CodeArts Deploy v4 deploy record |
-| `deploy_create_application` | Create CodeArts Deploy application |
-| `deploy_create_environment` | Create CodeArts Deploy environment |
-| `deploy_create_task_by_template` | Create CodeArts Deploy task from template |
-| `deploy_delete_v4_cluster_hosts` | Delete hosts from a CodeArts Deploy v4 cluster |
-| `deploy_delete_v4_environment_hosts` | Delete hosts from a CodeArts Deploy v4 environment |
-| `deploy_get_app` | Get CodeArts Deploy application detail |
-| `deploy_get_app_log` | Get CodeArts Deploy application log |
-| `deploy_get_deploy_source_detail` | Get CodeArts Deploy task source detail |
-| `deploy_get_execution_params` | Get CodeArts Deploy execution params |
-| `deploy_get_history_detail` | Get CodeArts Deploy history detail |
-| `deploy_get_host_group` | Get CodeArts Deploy host group detail |
-| `deploy_get_last_record_detail` | Get CodeArts Deploy v4 orchestration last record detail |
-| `deploy_get_runtime_variables` | Get CodeArts Deploy runtime variables |
-| `deploy_get_status` | Get CodeArts Deploy task status |
-| `deploy_get_task` | Get CodeArts Deploy task detail |
-| `deploy_get_template_detail` | Get CodeArts Deploy template detail |
-| `deploy_get_v4_cluster` | Get CodeArts Deploy v4 cluster detail |
-| `deploy_get_v4_cluster_count` | Get CodeArts Deploy v4 cluster counts |
-| `deploy_get_v4_cluster_host` | Get CodeArts Deploy v4 cluster host detail |
-| `deploy_get_v4_deploy_record` | Get CodeArts Deploy v4 deploy record detail |
-| `deploy_get_v4_deploy_record_step_detail` | Get CodeArts Deploy v4 deploy record step detail |
-| `deploy_get_v4_deploy_record_step_logs` | Get CodeArts Deploy v4 deploy record step logs |
-| `deploy_get_v4_environment` | Get CodeArts Deploy v4 environment detail |
-| `deploy_get_v4_environment_resource_detail` | Get CodeArts Deploy v4 environment resource detail |
-| `deploy_import_hosts_to_environment` | Import hosts into a CodeArts Deploy environment |
-| `deploy_list_app_host_groups` | List CodeArts Deploy host groups available to an application |
-| `deploy_list_app_operations_log` | List CodeArts Deploy application operation logs |
-| `deploy_list_apps` | List CodeArts Deploy applications |
-| `deploy_list_deployment_units` | List CodeArts Deploy deployment units for an application |
-| `deploy_list_environment_hosts` | List CodeArts Deploy hosts in an environment |
-| `deploy_list_environments` | List CodeArts Deploy application environments |
-| `deploy_list_histories` | List CodeArts Deploy histories |
-| `deploy_list_host_group_environments` | List CodeArts Deploy environments linked to a host group |
-| `deploy_list_host_group_hosts` | List CodeArts Deploy hosts in a host group |
-| `deploy_list_host_groups` | List CodeArts Deploy host groups |
-| `deploy_list_system_configs` | List CodeArts Deploy system config keys |
-| `deploy_list_tasks` | List CodeArts Deploy tasks |
-| `deploy_list_v4_applications` | List CodeArts Deploy v4 applications |
-| `deploy_list_v4_cluster_hosts` | List CodeArts Deploy v4 cluster hosts |
-| `deploy_list_v4_clusters` | List CodeArts Deploy v4 clusters |
-| `deploy_list_v4_deploy_records` | List CodeArts Deploy v4 deploy records |
-| `deploy_list_v4_environment_applications` | List CodeArts Deploy v4 applications under an environment |
-| `deploy_list_v4_environment_hosts` | List CodeArts Deploy v4 environment hosts |
-| `deploy_list_v4_environments` | List CodeArts Deploy v4 environments |
-| `deploy_list_v4_orchestrations` | List CodeArts Deploy v4 orchestrations |
-| `deploy_list_variable_history` | List CodeArts Deploy variable history by scope |
-| `deploy_list_variables` | List CodeArts Deploy variables by scope |
-| `deploy_modify_application` | Modify CodeArts Deploy application |
-| `deploy_pass_v4_manual_check` | Pass CodeArts Deploy v4 manual check step |
-| `deploy_query_variables` | Query CodeArts Deploy variables by scope |
-| `deploy_refuse_v4_manual_check` | Refuse CodeArts Deploy v4 manual check step |
-| `deploy_rerun_v4_deploy_record` | Rerun CodeArts Deploy v4 deploy record |
-| `deploy_retry_v4_deploy_record` | Retry CodeArts Deploy v4 deploy record |
-| `deploy_rollback_app` | Rollback CodeArts Deploy task |
-| `deploy_rollback_v4_deploy_record` | Rollback CodeArts Deploy v4 deploy record |
-| `deploy_start_app` | Start CodeArts Deploy task |
-| `deploy_stop_app` | Stop CodeArts Deploy task |
+| `deploy_add_v4_environment_hosts` | 新增Deploy 部署的v4环境主机。 |
+| `deploy_cancel_v4_deploy_record` | 取消Deploy 部署的v4部署记录。 |
+| `deploy_create_application` | 创建Deploy 部署的应用。 |
+| `deploy_create_environment` | 创建Deploy 部署的环境。 |
+| `deploy_create_task_by_template` | 创建Deploy 部署的任务by模板。 |
+| `deploy_delete_v4_cluster_hosts` | 删除Deploy 部署的v4集群主机。 |
+| `deploy_delete_v4_environment_hosts` | 删除Deploy 部署的v4环境主机。 |
+| `deploy_get_app` | 获取Deploy 部署的应用。 |
+| `deploy_get_app_log` | 获取Deploy 部署的应用日志。 |
+| `deploy_get_deploy_source_detail` | 获取Deploy 部署的部署来源详情。 |
+| `deploy_get_execution_params` | 获取Deploy 部署的执行params。 |
+| `deploy_get_history_detail` | 获取Deploy 部署的历史记录详情。 |
+| `deploy_get_host_group` | 获取Deploy 部署的主机组。 |
+| `deploy_get_last_record_detail` | 获取Deploy 部署的last记录详情。 |
+| `deploy_get_runtime_variables` | 获取Deploy 部署的运行时变量。 |
+| `deploy_get_status` | 获取Deploy 部署的状态。 |
+| `deploy_get_task` | 获取Deploy 部署的任务。 |
+| `deploy_get_template_detail` | 获取Deploy 部署的模板详情。 |
+| `deploy_get_v4_cluster` | 获取Deploy 部署的v4集群。 |
+| `deploy_get_v4_cluster_count` | 获取Deploy 部署的v4集群数量。 |
+| `deploy_get_v4_cluster_host` | 获取Deploy 部署的v4集群主机。 |
+| `deploy_get_v4_deploy_record` | 获取Deploy 部署的v4部署记录。 |
+| `deploy_get_v4_deploy_record_step_detail` | 获取Deploy 部署的v4部署记录步骤详情。 |
+| `deploy_get_v4_deploy_record_step_logs` | 获取Deploy 部署的v4部署记录步骤日志。 |
+| `deploy_get_v4_environment` | 获取Deploy 部署的v4环境。 |
+| `deploy_get_v4_environment_resource_detail` | 获取Deploy 部署的v4环境资源详情。 |
+| `deploy_import_hosts_to_environment` | 导入Deploy 部署的主机to环境。 |
+| `deploy_list_app_host_groups` | 查询列表Deploy 部署的应用主机组。 |
+| `deploy_list_app_operations_log` | 查询列表Deploy 部署的应用操作日志。 |
+| `deploy_list_apps` | 查询列表Deploy 部署的apps。 |
+| `deploy_list_deployment_units` | 查询列表Deploy 部署的部署单元。 |
+| `deploy_list_environment_hosts` | 查询列表Deploy 部署的环境主机。 |
+| `deploy_list_environments` | 查询列表Deploy 部署的环境。 |
+| `deploy_list_histories` | 查询列表Deploy 部署的历史记录。 |
+| `deploy_list_host_group_environments` | 查询列表Deploy 部署的主机组环境。 |
+| `deploy_list_host_group_hosts` | 查询列表Deploy 部署的主机组主机。 |
+| `deploy_list_host_groups` | 查询列表Deploy 部署的主机组。 |
+| `deploy_list_system_configs` | 查询列表Deploy 部署的系统配置。 |
+| `deploy_list_tasks` | 查询列表Deploy 部署的任务。 |
+| `deploy_list_v4_applications` | 查询列表Deploy 部署的v4应用。 |
+| `deploy_list_v4_cluster_hosts` | 查询列表Deploy 部署的v4集群主机。 |
+| `deploy_list_v4_clusters` | 查询列表Deploy 部署的v4clusters。 |
+| `deploy_list_v4_deploy_records` | 查询列表Deploy 部署的v4部署记录。 |
+| `deploy_list_v4_environment_applications` | 查询列表Deploy 部署的v4环境应用。 |
+| `deploy_list_v4_environment_hosts` | 查询列表Deploy 部署的v4环境主机。 |
+| `deploy_list_v4_environments` | 查询列表Deploy 部署的v4环境。 |
+| `deploy_list_v4_orchestrations` | 查询列表Deploy 部署的v4编排。 |
+| `deploy_list_variable_history` | 查询列表Deploy 部署的变量历史记录。 |
+| `deploy_list_variables` | 查询列表Deploy 部署的变量。 |
+| `deploy_modify_application` | 修改Deploy 部署的应用。 |
+| `deploy_pass_v4_manual_check` | 通过Deploy 部署的v4manualcheck。 |
+| `deploy_query_variables` | 查询Deploy 部署的变量。 |
+| `deploy_refuse_v4_manual_check` | 拒绝Deploy 部署的v4manualcheck。 |
+| `deploy_rerun_v4_deploy_record` | 重新运行Deploy 部署的v4部署记录。 |
+| `deploy_retry_v4_deploy_record` | 重试Deploy 部署的v4部署记录。 |
+| `deploy_rollback_app` | 回滚Deploy 部署的应用。 |
+| `deploy_rollback_v4_deploy_record` | 回滚Deploy 部署的v4部署记录。 |
+| `deploy_start_app` | 启动Deploy 部署的应用。 |
+| `deploy_stop_app` | 停止Deploy 部署的应用。 |
 
 ### deploy_add_v4_environment_hosts
 
-Description: Add hosts into a CodeArts Deploy v4 environment
+中文说明：新增Deploy 部署的v4环境主机。
 
-| Field | Value |
+原始工具说明：Add hosts into a CodeArts Deploy v4 environment
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_add_v4_environment_hosts` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_add_v4_environment_hosts` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `environment_id` | yes | `unknown` |  |  |
-| `cluster_id` | yes | `unknown` |  |  |
-| `host_ids` | yes | `array` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `environment_id` | 是 | `unknown` |  |  |
+| `cluster_id` | 是 | `unknown` |  |  |
+| `host_ids` | 是 | `array` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -21553,7 +22143,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -21594,25 +22184,27 @@ Argument JSON Schema:
 
 ### deploy_cancel_v4_deploy_record
 
-Description: Cancel CodeArts Deploy v4 deploy record
+中文说明：取消Deploy 部署的v4部署记录。
 
-| Field | Value |
+原始工具说明：Cancel CodeArts Deploy v4 deploy record
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_cancel_v4_deploy_record` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_cancel_v4_deploy_record` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `record_id` | yes | `unknown` |  |  |
-| `body` | no | `object` | {} |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `record_id` | 是 | `unknown` |  |  |
+| `body` | 否 | `object` | {} |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -21629,7 +22221,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -21663,34 +22255,36 @@ Argument JSON Schema:
 
 ### deploy_create_application
 
-Description: Create CodeArts Deploy application
+中文说明：创建Deploy 部署的应用。
 
-| Field | Value |
+原始工具说明：Create CodeArts Deploy application
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_create_application` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_create_application` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `name` | yes | `string` |  |  |
-| `description` | no | `string` | "" |  |
-| `timeout` | no | `number \| null` |  |  |
-| `trigger` | no | `object` | {"trigger_source":"0","artifact_source_system":"","artifact_type":""} |  |
-| `slave_cluster_id` | no | `string` | "" |  |
-| `slave_resource_type` | no | `string` | "" |  |
-| `create_type` | no | `string` | "template" |  |
-| `is_draft` | no | `boolean` | false |  |
-| `group_id` | no | `string` |  |  |
-| `agency_urn` | no | `string` |  |  |
-| `arrange_infos` | yes | `array` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `name` | 是 | `string` |  |  |
+| `description` | 否 | `string` | "" |  |
+| `timeout` | 否 | `number \| null` |  |  |
+| `trigger` | 否 | `object` | {"trigger_source":"0","artifact_source_system":"","artifact_type":""} |  |
+| `slave_cluster_id` | 否 | `string` | "" |  |
+| `slave_resource_type` | 否 | `string` | "" |  |
+| `create_type` | 否 | `string` | "template" |  |
+| `is_draft` | 否 | `boolean` | false |  |
+| `group_id` | 否 | `string` |  |  |
+| `agency_urn` | 否 | `string` |  |  |
+| `arrange_infos` | 是 | `array` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -21708,7 +22302,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -21815,28 +22409,30 @@ Argument JSON Schema:
 
 ### deploy_create_environment
 
-Description: Create CodeArts Deploy environment
+中文说明：创建Deploy 部署的环境。
 
-| Field | Value |
+原始工具说明：Create CodeArts Deploy environment
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_create_environment` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_create_environment` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `application_id` | yes | `string` |  |  |
-| `project_id` | yes | `unknown` |  |  |
-| `name` | yes | `string` |  |  |
-| `os` | no | `string` | "linux" |  |
-| `deploy_type` | no | `integer` | 0 |  |
-| `description` | no | `string` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `application_id` | 是 | `string` |  |  |
+| `project_id` | 是 | `unknown` |  |  |
+| `name` | 是 | `string` |  |  |
+| `os` | 否 | `string` | "linux" |  |
+| `deploy_type` | 否 | `integer` | 0 |  |
+| `description` | 否 | `string` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -21854,7 +22450,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -21901,27 +22497,29 @@ Argument JSON Schema:
 
 ### deploy_create_task_by_template
 
-Description: Create CodeArts Deploy task from template
+中文说明：创建Deploy 部署的任务by模板。
 
-| Field | Value |
+原始工具说明：Create CodeArts Deploy task from template
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_create_task_by_template` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_create_task_by_template` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `project_name` | yes | `string` |  |  |
-| `template_id` | yes | `unknown` |  |  |
-| `task_name` | yes | `string` |  |  |
-| `configs` | no | `array` | [] |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `project_name` | 是 | `string` |  |  |
+| `template_id` | 是 | `unknown` |  |  |
+| `task_name` | 是 | `string` |  |  |
+| `configs` | 否 | `array` | [] |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -21940,7 +22538,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -22028,25 +22626,27 @@ Argument JSON Schema:
 
 ### deploy_delete_v4_cluster_hosts
 
-Description: Delete hosts from a CodeArts Deploy v4 cluster
+中文说明：删除Deploy 部署的v4集群主机。
 
-| Field | Value |
+原始工具说明：Delete hosts from a CodeArts Deploy v4 cluster
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_delete_v4_cluster_hosts` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_delete_v4_cluster_hosts` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `cluster_id` | yes | `unknown` |  |  |
-| `host_ids` | yes | `array` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `cluster_id` | 是 | `unknown` |  |  |
+| `host_ids` | 是 | `array` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -22064,7 +22664,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -22101,25 +22701,27 @@ Argument JSON Schema:
 
 ### deploy_delete_v4_environment_hosts
 
-Description: Delete hosts from a CodeArts Deploy v4 environment
+中文说明：删除Deploy 部署的v4环境主机。
 
-| Field | Value |
+原始工具说明：Delete hosts from a CodeArts Deploy v4 environment
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_delete_v4_environment_hosts` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_delete_v4_environment_hosts` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `environment_id` | yes | `unknown` |  |  |
-| `host_ids` | yes | `array` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `environment_id` | 是 | `unknown` |  |  |
+| `host_ids` | 是 | `array` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -22137,7 +22739,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -22174,22 +22776,24 @@ Argument JSON Schema:
 
 ### deploy_get_app
 
-Description: Get CodeArts Deploy application detail
+中文说明：获取Deploy 部署的应用。
 
-| Field | Value |
+原始工具说明：Get CodeArts Deploy application detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_get_app` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_get_app` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `application_id` | yes | `string` |  |  |
+| `application_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -22205,7 +22809,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -22226,26 +22830,28 @@ Argument JSON Schema:
 
 ### deploy_get_app_log
 
-Description: Get CodeArts Deploy application log
+中文说明：获取Deploy 部署的应用日志。
 
-| Field | Value |
+原始工具说明：Get CodeArts Deploy application log
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_get_app_log` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_get_app_log` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `application_id` | yes | `string` |  |  |
-| `record_id` | yes | `unknown` |  |  |
-| `step_id` | no | `unknown` |  |  |
-| `offset` | no | `string` | "0" |  |
-| `end_offset` | no | `string` | "0" |  |
+| `application_id` | 是 | `string` |  |  |
+| `record_id` | 是 | `unknown` |  |  |
+| `step_id` | 否 | `unknown` |  |  |
+| `offset` | 否 | `string` | "0" |  |
+| `end_offset` | 否 | `string` | "0" |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -22262,7 +22868,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -22298,22 +22904,24 @@ Argument JSON Schema:
 
 ### deploy_get_deploy_source_detail
 
-Description: Get CodeArts Deploy task source detail
+中文说明：获取Deploy 部署的部署来源详情。
 
-| Field | Value |
+原始工具说明：Get CodeArts Deploy task source detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_get_deploy_source_detail` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_get_deploy_source_detail` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `task_id` | yes | `string` |  |  |
+| `task_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -22329,7 +22937,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -22350,23 +22958,25 @@ Argument JSON Schema:
 
 ### deploy_get_execution_params
 
-Description: Get CodeArts Deploy execution params
+中文说明：获取Deploy 部署的执行params。
 
-| Field | Value |
+原始工具说明：Get CodeArts Deploy execution params
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_get_execution_params` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_get_execution_params` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `task_id` | yes | `string` |  |  |
-| `record_id` | yes | `unknown` |  |  |
+| `task_id` | 是 | `string` |  |  |
+| `record_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -22383,7 +22993,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -22408,23 +23018,25 @@ Argument JSON Schema:
 
 ### deploy_get_history_detail
 
-Description: Get CodeArts Deploy history detail
+中文说明：获取Deploy 部署的历史记录详情。
 
-| Field | Value |
+原始工具说明：Get CodeArts Deploy history detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_get_history_detail` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_get_history_detail` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `task_id` | yes | `string` |  |  |
-| `record_id` | yes | `unknown` |  |  |
+| `task_id` | 是 | `string` |  |  |
+| `record_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -22441,7 +23053,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -22466,22 +23078,24 @@ Argument JSON Schema:
 
 ### deploy_get_host_group
 
-Description: Get CodeArts Deploy host group detail
+中文说明：获取Deploy 部署的主机组。
 
-| Field | Value |
+原始工具说明：Get CodeArts Deploy host group detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_get_host_group` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_get_host_group` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `group_id` | yes | `string` |  |  |
+| `group_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -22497,7 +23111,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -22518,23 +23132,25 @@ Argument JSON Schema:
 
 ### deploy_get_last_record_detail
 
-Description: Get CodeArts Deploy v4 orchestration last record detail
+中文说明：获取Deploy 部署的last记录详情。
 
-| Field | Value |
+原始工具说明：Get CodeArts Deploy v4 orchestration last record detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_get_last_record_detail` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_get_last_record_detail` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `orchestration_id` | yes | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `orchestration_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -22551,7 +23167,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -22576,23 +23192,25 @@ Argument JSON Schema:
 
 ### deploy_get_runtime_variables
 
-Description: Get CodeArts Deploy runtime variables
+中文说明：获取Deploy 部署的运行时变量。
 
-| Field | Value |
+原始工具说明：Get CodeArts Deploy runtime variables
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_get_runtime_variables` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_get_runtime_variables` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `app_id` | no | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `app_id` | 否 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -22608,7 +23226,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -22632,23 +23250,25 @@ Argument JSON Schema:
 
 ### deploy_get_status
 
-Description: Get CodeArts Deploy task status
+中文说明：获取Deploy 部署的状态。
 
-| Field | Value |
+原始工具说明：Get CodeArts Deploy task status
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_get_status` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_get_status` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `task_id` | yes | `string` |  |  |
-| `record_id` | no | `unknown` |  |  |
+| `task_id` | 是 | `string` |  |  |
+| `record_id` | 否 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -22664,7 +23284,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -22688,22 +23308,24 @@ Argument JSON Schema:
 
 ### deploy_get_task
 
-Description: Get CodeArts Deploy task detail
+中文说明：获取Deploy 部署的任务。
 
-| Field | Value |
+原始工具说明：Get CodeArts Deploy task detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_get_task` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_get_task` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `task_id` | yes | `string` |  |  |
+| `task_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -22719,7 +23341,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -22740,23 +23362,25 @@ Argument JSON Schema:
 
 ### deploy_get_template_detail
 
-Description: Get CodeArts Deploy template detail
+中文说明：获取Deploy 部署的模板详情。
 
-| Field | Value |
+原始工具说明：Get CodeArts Deploy template detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_get_template_detail` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_get_template_detail` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `template_id` | yes | `string` |  |  |
-| `task_id` | no | `unknown` |  |  |
+| `template_id` | 是 | `string` |  |  |
+| `task_id` | 否 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -22772,7 +23396,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -22796,24 +23420,26 @@ Argument JSON Schema:
 
 ### deploy_get_v4_cluster
 
-Description: Get CodeArts Deploy v4 cluster detail
+中文说明：获取Deploy 部署的v4集群。
 
-| Field | Value |
+原始工具说明：Get CodeArts Deploy v4 cluster detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_get_v4_cluster` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_get_v4_cluster` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `cluster_id` | yes | `unknown` |  |  |
-| `cluster_type` | yes | `string` |  | enum: host, container |
+| `project_id` | 是 | `string` |  |  |
+| `cluster_id` | 是 | `unknown` |  |  |
+| `cluster_type` | 是 | `string` |  | 可选值：host：container |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -22831,7 +23457,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -22864,23 +23490,25 @@ Argument JSON Schema:
 
 ### deploy_get_v4_cluster_count
 
-Description: Get CodeArts Deploy v4 cluster counts
+中文说明：获取Deploy 部署的v4集群数量。
 
-| Field | Value |
+原始工具说明：Get CodeArts Deploy v4 cluster counts
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_get_v4_cluster_count` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_get_v4_cluster_count` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `cluster_type` | yes | `string` |  | enum: host, container |
+| `project_id` | 是 | `string` |  |  |
+| `cluster_type` | 是 | `string` |  | 可选值：host：container |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -22897,7 +23525,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -22926,24 +23554,26 @@ Argument JSON Schema:
 
 ### deploy_get_v4_cluster_host
 
-Description: Get CodeArts Deploy v4 cluster host detail
+中文说明：获取Deploy 部署的v4集群主机。
 
-| Field | Value |
+原始工具说明：Get CodeArts Deploy v4 cluster host detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_get_v4_cluster_host` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_get_v4_cluster_host` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `cluster_id` | yes | `unknown` |  |  |
-| `host_id` | yes | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `cluster_id` | 是 | `unknown` |  |  |
+| `host_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -22961,7 +23591,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -22990,24 +23620,26 @@ Argument JSON Schema:
 
 ### deploy_get_v4_deploy_record
 
-Description: Get CodeArts Deploy v4 deploy record detail
+中文说明：获取Deploy 部署的v4部署记录。
 
-| Field | Value |
+原始工具说明：Get CodeArts Deploy v4 deploy record detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_get_v4_deploy_record` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_get_v4_deploy_record` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `record_id` | yes | `unknown` |  |  |
-| `step_id` | no | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `record_id` | 是 | `unknown` |  |  |
+| `step_id` | 否 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -23024,7 +23656,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -23052,23 +23684,25 @@ Argument JSON Schema:
 
 ### deploy_get_v4_deploy_record_step_detail
 
-Description: Get CodeArts Deploy v4 deploy record step detail
+中文说明：获取Deploy 部署的v4部署记录步骤详情。
 
-| Field | Value |
+原始工具说明：Get CodeArts Deploy v4 deploy record step detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_get_v4_deploy_record_step_detail` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_get_v4_deploy_record_step_detail` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `record_id` | yes | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `record_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -23085,7 +23719,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -23110,25 +23744,27 @@ Argument JSON Schema:
 
 ### deploy_get_v4_deploy_record_step_logs
 
-Description: Get CodeArts Deploy v4 deploy record step logs
+中文说明：获取Deploy 部署的v4部署记录步骤日志。
 
-| Field | Value |
+原始工具说明：Get CodeArts Deploy v4 deploy record step logs
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_get_v4_deploy_record_step_logs` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_get_v4_deploy_record_step_logs` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `record_id` | yes | `unknown` |  |  |
-| `step_id` | yes | `unknown` |  |  |
-| `body` | no | `object` | {} |  |
+| `project_id` | 是 | `string` |  |  |
+| `record_id` | 是 | `unknown` |  |  |
+| `step_id` | 是 | `unknown` |  |  |
+| `body` | 否 | `object` | {} |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -23146,7 +23782,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -23180,23 +23816,25 @@ Argument JSON Schema:
 
 ### deploy_get_v4_environment
 
-Description: Get CodeArts Deploy v4 environment detail
+中文说明：获取Deploy 部署的v4环境。
 
-| Field | Value |
+原始工具说明：Get CodeArts Deploy v4 environment detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_get_v4_environment` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_get_v4_environment` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `environment_id` | yes | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `environment_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -23213,7 +23851,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -23238,23 +23876,25 @@ Argument JSON Schema:
 
 ### deploy_get_v4_environment_resource_detail
 
-Description: Get CodeArts Deploy v4 environment resource detail
+中文说明：获取Deploy 部署的v4环境资源详情。
 
-| Field | Value |
+原始工具说明：Get CodeArts Deploy v4 environment resource detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_get_v4_environment_resource_detail` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_get_v4_environment_resource_detail` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `environment_id` | yes | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `environment_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -23271,7 +23911,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -23296,26 +23936,28 @@ Argument JSON Schema:
 
 ### deploy_import_hosts_to_environment
 
-Description: Import hosts into a CodeArts Deploy environment
+中文说明：导入Deploy 部署的主机to环境。
 
-| Field | Value |
+原始工具说明：Import hosts into a CodeArts Deploy environment
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_import_hosts_to_environment` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_import_hosts_to_environment` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `application_id` | yes | `string` |  |  |
-| `environment_id` | yes | `unknown` |  |  |
-| `group_id` | yes | `unknown` |  |  |
-| `host_ids` | yes | `array` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `application_id` | 是 | `string` |  |  |
+| `environment_id` | 是 | `unknown` |  |  |
+| `group_id` | 是 | `unknown` |  |  |
+| `host_ids` | 是 | `array` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -23334,7 +23976,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -23375,28 +24017,30 @@ Argument JSON Schema:
 
 ### deploy_list_app_host_groups
 
-Description: List CodeArts Deploy host groups available to an application
+中文说明：查询列表Deploy 部署的应用主机组。
 
-| Field | Value |
+原始工具说明：List CodeArts Deploy host groups available to an application
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_list_app_host_groups` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_list_app_host_groups` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `application_id` | yes | `string` |  |  |
-| `project_id` | yes | `unknown` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `application_id` | 是 | `string` |  |  |
+| `project_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -23413,7 +24057,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -23462,26 +24106,28 @@ Argument JSON Schema:
 
 ### deploy_list_app_operations_log
 
-Description: List CodeArts Deploy application operation logs
+中文说明：查询列表Deploy 部署的应用操作日志。
 
-| Field | Value |
+原始工具说明：List CodeArts Deploy application operation logs
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_list_app_operations_log` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_list_app_operations_log` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `app_id` | yes | `string` |  |  |
-| `page_size` | no | `integer` | 20 |  |
-| `page_index` | no | `integer` | 1 |  |
-| `start_date` | no | `string` |  |  |
-| `end_date` | no | `string` |  |  |
+| `app_id` | 是 | `string` |  |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `page_index` | 否 | `integer` | 1 |  |
+| `start_date` | 否 | `string` |  |  |
+| `end_date` | 否 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -23497,7 +24143,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -23535,27 +24181,29 @@ Argument JSON Schema:
 
 ### deploy_list_apps
 
-Description: List CodeArts Deploy applications
+中文说明：查询列表Deploy 部署的apps。
 
-| Field | Value |
+原始工具说明：List CodeArts Deploy applications
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_list_apps` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_list_apps` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `project_id` | yes | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `project_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -23571,7 +24219,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -23616,23 +24264,25 @@ Argument JSON Schema:
 
 ### deploy_list_deployment_units
 
-Description: List CodeArts Deploy deployment units for an application
+中文说明：查询列表Deploy 部署的部署单元。
 
-| Field | Value |
+原始工具说明：List CodeArts Deploy deployment units for an application
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_list_deployment_units` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_list_deployment_units` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `app_id` | yes | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `app_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -23649,7 +24299,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -23674,28 +24324,30 @@ Argument JSON Schema:
 
 ### deploy_list_environment_hosts
 
-Description: List CodeArts Deploy hosts in an environment
+中文说明：查询列表Deploy 部署的环境主机。
 
-| Field | Value |
+原始工具说明：List CodeArts Deploy hosts in an environment
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_list_environment_hosts` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_list_environment_hosts` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `application_id` | yes | `string` |  |  |
-| `environment_id` | yes | `unknown` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `application_id` | 是 | `string` |  |  |
+| `environment_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -23712,7 +24364,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -23761,28 +24413,30 @@ Argument JSON Schema:
 
 ### deploy_list_environments
 
-Description: List CodeArts Deploy application environments
+中文说明：查询列表Deploy 部署的环境。
 
-| Field | Value |
+原始工具说明：List CodeArts Deploy application environments
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_list_environments` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_list_environments` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `application_id` | yes | `string` |  |  |
-| `project_id` | yes | `unknown` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `application_id` | 是 | `string` |  |  |
+| `project_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -23799,7 +24453,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -23848,30 +24502,32 @@ Argument JSON Schema:
 
 ### deploy_list_histories
 
-Description: List CodeArts Deploy histories
+中文说明：查询列表Deploy 部署的历史记录。
 
-| Field | Value |
+原始工具说明：List CodeArts Deploy histories
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_list_histories` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_list_histories` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `project_id` | yes | `string` |  |  |
-| `task_id` | yes | `unknown` |  |  |
-| `start_date` | no | `string` |  |  |
-| `end_date` | no | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `project_id` | 是 | `string` |  |  |
+| `task_id` | 是 | `unknown` |  |  |
+| `start_date` | 否 | `string` |  |  |
+| `end_date` | 否 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -23888,7 +24544,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -23943,27 +24599,29 @@ Argument JSON Schema:
 
 ### deploy_list_host_group_environments
 
-Description: List CodeArts Deploy environments linked to a host group
+中文说明：查询列表Deploy 部署的主机组环境。
 
-| Field | Value |
+原始工具说明：List CodeArts Deploy environments linked to a host group
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_list_host_group_environments` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_list_host_group_environments` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `group_id` | yes | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `group_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -23979,7 +24637,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -24024,27 +24682,29 @@ Argument JSON Schema:
 
 ### deploy_list_host_group_hosts
 
-Description: List CodeArts Deploy hosts in a host group
+中文说明：查询列表Deploy 部署的主机组主机。
 
-| Field | Value |
+原始工具说明：List CodeArts Deploy hosts in a host group
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_list_host_group_hosts` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_list_host_group_hosts` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `group_id` | yes | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `group_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -24060,7 +24720,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -24105,27 +24765,29 @@ Argument JSON Schema:
 
 ### deploy_list_host_groups
 
-Description: List CodeArts Deploy host groups
+中文说明：查询列表Deploy 部署的主机组。
 
-| Field | Value |
+原始工具说明：List CodeArts Deploy host groups
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_list_host_groups` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_list_host_groups` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `project_id` | yes | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `project_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -24141,7 +24803,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -24186,20 +24848,22 @@ Argument JSON Schema:
 
 ### deploy_list_system_configs
 
-Description: List CodeArts Deploy system config keys
+中文说明：查询列表Deploy 部署的系统配置。
 
-| Field | Value |
+原始工具说明：List CodeArts Deploy system config keys
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_list_system_configs` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_list_system_configs` |
 
-Arguments:
+参数：
 
-No arguments.
+无参数。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -24213,7 +24877,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -24226,27 +24890,29 @@ Argument JSON Schema:
 
 ### deploy_list_tasks
 
-Description: List CodeArts Deploy tasks
+中文说明：查询列表Deploy 部署的任务。
 
-| Field | Value |
+原始工具说明：List CodeArts Deploy tasks
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_list_tasks` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_list_tasks` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `project_id` | yes | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `project_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -24262,7 +24928,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -24307,25 +24973,27 @@ Argument JSON Schema:
 
 ### deploy_list_v4_applications
 
-Description: List CodeArts Deploy v4 applications
+中文说明：查询列表Deploy 部署的v4应用。
 
-| Field | Value |
+原始工具说明：List CodeArts Deploy v4 applications
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_list_v4_applications` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_list_v4_applications` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `limit` | no | `integer` | 20 |  |
-| `offset` | no | `integer` | 0 |  |
-| `keyword` | no | `string` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `limit` | 否 | `integer` | 20 |  |
+| `offset` | 否 | `integer` | 0 |  |
+| `keyword` | 否 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -24341,7 +25009,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -24376,24 +25044,26 @@ Argument JSON Schema:
 
 ### deploy_list_v4_cluster_hosts
 
-Description: List CodeArts Deploy v4 cluster hosts
+中文说明：查询列表Deploy 部署的v4集群主机。
 
-| Field | Value |
+原始工具说明：List CodeArts Deploy v4 cluster hosts
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_list_v4_cluster_hosts` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_list_v4_cluster_hosts` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `cluster_id` | yes | `unknown` |  |  |
-| `body` | no | `object` | {} |  |
+| `project_id` | 是 | `string` |  |  |
+| `cluster_id` | 是 | `unknown` |  |  |
+| `body` | 否 | `object` | {} |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -24410,7 +25080,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -24440,24 +25110,26 @@ Argument JSON Schema:
 
 ### deploy_list_v4_clusters
 
-Description: List CodeArts Deploy v4 clusters
+中文说明：查询列表Deploy 部署的v4clusters。
 
-| Field | Value |
+原始工具说明：List CodeArts Deploy v4 clusters
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_list_v4_clusters` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_list_v4_clusters` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `cluster_type` | yes | `string` |  | enum: host, container |
-| `body` | no | `object` | {} |  |
+| `project_id` | 是 | `string` |  |  |
+| `cluster_type` | 是 | `string` |  | 可选值：host：container |
+| `body` | 否 | `object` | {} |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -24474,7 +25146,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -24508,24 +25180,26 @@ Argument JSON Schema:
 
 ### deploy_list_v4_deploy_records
 
-Description: List CodeArts Deploy v4 deploy records
+中文说明：查询列表Deploy 部署的v4部署记录。
 
-| Field | Value |
+原始工具说明：List CodeArts Deploy v4 deploy records
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_list_v4_deploy_records` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_list_v4_deploy_records` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `limit` | no | `integer` | 20 |  |
-| `offset` | no | `integer` | 0 |  |
+| `project_id` | 是 | `string` |  |  |
+| `limit` | 否 | `integer` | 20 |  |
+| `offset` | 否 | `integer` | 0 |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -24541,7 +25215,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -24573,25 +25247,27 @@ Argument JSON Schema:
 
 ### deploy_list_v4_environment_applications
 
-Description: List CodeArts Deploy v4 applications under an environment
+中文说明：查询列表Deploy 部署的v4环境应用。
 
-| Field | Value |
+原始工具说明：List CodeArts Deploy v4 applications under an environment
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_list_v4_environment_applications` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_list_v4_environment_applications` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `environment_id` | yes | `unknown` |  |  |
-| `limit` | no | `integer` | 20 |  |
-| `offset` | no | `integer` | 0 |  |
+| `project_id` | 是 | `string` |  |  |
+| `environment_id` | 是 | `unknown` |  |  |
+| `limit` | 否 | `integer` | 20 |  |
+| `offset` | 否 | `integer` | 0 |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -24608,7 +25284,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -24644,24 +25320,26 @@ Argument JSON Schema:
 
 ### deploy_list_v4_environment_hosts
 
-Description: List CodeArts Deploy v4 environment hosts
+中文说明：查询列表Deploy 部署的v4环境主机。
 
-| Field | Value |
+原始工具说明：List CodeArts Deploy v4 environment hosts
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_list_v4_environment_hosts` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_list_v4_environment_hosts` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `environment_id` | yes | `unknown` |  |  |
-| `query` | no | `object` | {} |  |
+| `project_id` | 是 | `string` |  |  |
+| `environment_id` | 是 | `unknown` |  |  |
+| `query` | 否 | `object` | {} |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -24678,7 +25356,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -24714,24 +25392,26 @@ Argument JSON Schema:
 
 ### deploy_list_v4_environments
 
-Description: List CodeArts Deploy v4 environments
+中文说明：查询列表Deploy 部署的v4环境。
 
-| Field | Value |
+原始工具说明：List CodeArts Deploy v4 environments
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_list_v4_environments` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_list_v4_environments` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `limit` | no | `integer` | 20 |  |
-| `offset` | no | `integer` | 0 |  |
+| `project_id` | 是 | `string` |  |  |
+| `limit` | 否 | `integer` | 20 |  |
+| `offset` | 否 | `integer` | 0 |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -24747,7 +25427,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -24779,25 +25459,27 @@ Argument JSON Schema:
 
 ### deploy_list_v4_orchestrations
 
-Description: List CodeArts Deploy v4 orchestrations
+中文说明：查询列表Deploy 部署的v4编排。
 
-| Field | Value |
+原始工具说明：List CodeArts Deploy v4 orchestrations
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_list_v4_orchestrations` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_list_v4_orchestrations` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `app_id` | yes | `unknown` |  |  |
-| `limit` | no | `integer` | 20 |  |
-| `offset` | no | `integer` | 0 |  |
+| `project_id` | 是 | `string` |  |  |
+| `app_id` | 是 | `unknown` |  |  |
+| `limit` | 否 | `integer` | 20 |  |
+| `offset` | 否 | `integer` | 0 |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -24814,7 +25496,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -24850,20 +25532,22 @@ Argument JSON Schema:
 
 ### deploy_list_variable_history
 
-Description: List CodeArts Deploy variable history by scope
+中文说明：查询列表Deploy 部署的变量历史记录。
 
-| Field | Value |
+原始工具说明：List CodeArts Deploy variable history by scope
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_list_variable_history` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_list_variable_history` |
 
-Arguments:
+参数：
 
-No arguments.
+无参数。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -24877,7 +25561,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -24888,20 +25572,22 @@ Argument JSON Schema:
 
 ### deploy_list_variables
 
-Description: List CodeArts Deploy variables by scope
+中文说明：查询列表Deploy 部署的变量。
 
-| Field | Value |
+原始工具说明：List CodeArts Deploy variables by scope
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_list_variables` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_list_variables` |
 
-Arguments:
+参数：
 
-No arguments.
+无参数。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -24915,7 +25601,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -24926,35 +25612,37 @@ Argument JSON Schema:
 
 ### deploy_modify_application
 
-Description: Modify CodeArts Deploy application
+中文说明：修改Deploy 部署的应用。
 
-| Field | Value |
+原始工具说明：Modify CodeArts Deploy application
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_modify_application` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_modify_application` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `id` | yes | `string` |  |  |
-| `project_id` | yes | `unknown` |  |  |
-| `name` | yes | `string` |  |  |
-| `description` | no | `string` | "" |  |
-| `timeout` | no | `number \| null` |  |  |
-| `trigger` | no | `object` | {"trigger_source":"0","artifact_source_system":"","artifact_type":""} |  |
-| `slave_cluster_id` | no | `string` | "" |  |
-| `slave_resource_type` | no | `string` | "" |  |
-| `create_type` | no | `string` | "template" |  |
-| `is_draft` | no | `boolean` | false |  |
-| `group_id` | no | `string` |  |  |
-| `agency_urn` | no | `string` |  |  |
-| `arrange_infos` | yes | `array` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `id` | 是 | `string` |  |  |
+| `project_id` | 是 | `unknown` |  |  |
+| `name` | 是 | `string` |  |  |
+| `description` | 否 | `string` | "" |  |
+| `timeout` | 否 | `number \| null` |  |  |
+| `trigger` | 否 | `object` | {"trigger_source":"0","artifact_source_system":"","artifact_type":""} |  |
+| `slave_cluster_id` | 否 | `string` | "" |  |
+| `slave_resource_type` | 否 | `string` | "" |  |
+| `create_type` | 否 | `string` | "template" |  |
+| `is_draft` | 否 | `boolean` | false |  |
+| `group_id` | 否 | `string` |  |  |
+| `agency_urn` | 否 | `string` |  |  |
+| `arrange_infos` | 是 | `array` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -24973,7 +25661,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -25090,25 +25778,27 @@ Argument JSON Schema:
 
 ### deploy_pass_v4_manual_check
 
-Description: Pass CodeArts Deploy v4 manual check step
+中文说明：通过Deploy 部署的v4manualcheck。
 
-| Field | Value |
+原始工具说明：Pass CodeArts Deploy v4 manual check step
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_pass_v4_manual_check` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_pass_v4_manual_check` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `record_id` | yes | `unknown` |  |  |
-| `step_id` | yes | `unknown` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `record_id` | 是 | `unknown` |  |  |
+| `step_id` | 是 | `unknown` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -25126,7 +25816,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -25159,20 +25849,22 @@ Argument JSON Schema:
 
 ### deploy_query_variables
 
-Description: Query CodeArts Deploy variables by scope
+中文说明：查询Deploy 部署的变量。
 
-| Field | Value |
+原始工具说明：Query CodeArts Deploy variables by scope
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_query_variables` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_query_variables` |
 
-Arguments:
+参数：
 
-No arguments.
+无参数。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -25186,7 +25878,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -25197,25 +25889,27 @@ Argument JSON Schema:
 
 ### deploy_refuse_v4_manual_check
 
-Description: Refuse CodeArts Deploy v4 manual check step
+中文说明：拒绝Deploy 部署的v4manualcheck。
 
-| Field | Value |
+原始工具说明：Refuse CodeArts Deploy v4 manual check step
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_refuse_v4_manual_check` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_refuse_v4_manual_check` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `record_id` | yes | `unknown` |  |  |
-| `step_id` | yes | `unknown` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `record_id` | 是 | `unknown` |  |  |
+| `step_id` | 是 | `unknown` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -25233,7 +25927,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -25266,25 +25960,27 @@ Argument JSON Schema:
 
 ### deploy_rerun_v4_deploy_record
 
-Description: Rerun CodeArts Deploy v4 deploy record
+中文说明：重新运行Deploy 部署的v4部署记录。
 
-| Field | Value |
+原始工具说明：Rerun CodeArts Deploy v4 deploy record
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_rerun_v4_deploy_record` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_rerun_v4_deploy_record` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `record_id` | yes | `unknown` |  |  |
-| `body` | no | `object` | {} |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `record_id` | 是 | `unknown` |  |  |
+| `body` | 否 | `object` | {} |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -25301,7 +25997,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -25335,25 +26031,27 @@ Argument JSON Schema:
 
 ### deploy_retry_v4_deploy_record
 
-Description: Retry CodeArts Deploy v4 deploy record
+中文说明：重试Deploy 部署的v4部署记录。
 
-| Field | Value |
+原始工具说明：Retry CodeArts Deploy v4 deploy record
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_retry_v4_deploy_record` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_retry_v4_deploy_record` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `record_id` | yes | `unknown` |  |  |
-| `body` | no | `object` | {} |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `record_id` | 是 | `unknown` |  |  |
+| `body` | 否 | `object` | {} |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -25370,7 +26068,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -25404,24 +26102,26 @@ Argument JSON Schema:
 
 ### deploy_rollback_app
 
-Description: Rollback CodeArts Deploy task
+中文说明：回滚Deploy 部署的应用。
 
-| Field | Value |
+原始工具说明：Rollback CodeArts Deploy task
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_rollback_app` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_rollback_app` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `task_id` | yes | `string` |  |  |
-| `record_id` | yes | `unknown` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `task_id` | 是 | `string` |  |  |
+| `record_id` | 是 | `unknown` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -25438,7 +26138,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -25467,25 +26167,27 @@ Argument JSON Schema:
 
 ### deploy_rollback_v4_deploy_record
 
-Description: Rollback CodeArts Deploy v4 deploy record
+中文说明：回滚Deploy 部署的v4部署记录。
 
-| Field | Value |
+原始工具说明：Rollback CodeArts Deploy v4 deploy record
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_rollback_v4_deploy_record` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_rollback_v4_deploy_record` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `record_id` | yes | `unknown` |  |  |
-| `body` | no | `object` | {} |  |
-| `dry_run` | no | `boolean` | true |  |
+| `project_id` | 是 | `string` |  |  |
+| `record_id` | 是 | `unknown` |  |  |
+| `body` | 否 | `object` | {} |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -25502,7 +26204,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -25536,25 +26238,27 @@ Argument JSON Schema:
 
 ### deploy_start_app
 
-Description: Start CodeArts Deploy task
+中文说明：启动Deploy 部署的应用。
 
-| Field | Value |
+原始工具说明：Start CodeArts Deploy task
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_start_app` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_start_app` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `task_id` | yes | `string` |  |  |
-| `trigger_source` | no | `number \| string` |  | enum: 0, 1, 0, 1 |
-| `params` | no | `array` | [] |  |
-| `dry_run` | no | `boolean` | true |  |
+| `task_id` | 是 | `string` |  |  |
+| `trigger_source` | 否 | `number \| string` |  | 可选值：0：1：0：1 |
+| `params` | 否 | `array` | [] |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -25570,7 +26274,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -25631,24 +26335,26 @@ Argument JSON Schema:
 
 ### deploy_stop_app
 
-Description: Stop CodeArts Deploy task
+中文说明：停止Deploy 部署的应用。
 
-| Field | Value |
+原始工具说明：Stop CodeArts Deploy task
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `deploy_stop_app` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `deploy_stop_app` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `task_id` | yes | `string` |  |  |
-| `record_id` | yes | `unknown` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `task_id` | 是 | `string` |  |  |
+| `record_id` | 是 | `unknown` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -25665,7 +26371,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -25692,61 +26398,63 @@ Argument JSON Schema:
 }
 ```
 
-## Build
+## Build 构建
 
-| API | Description |
+| API | 中文说明 |
 | --- | --- |
-| `build_append_job_step` | Append a new step to a CodeArts Build job |
-| `build_append_release_upload_step` | Append the official release repository upload step to a CodeArts Build job |
-| `build_configure_release_upload_step` | Configure an existing release repository upload step in a CodeArts Build job |
-| `build_get_error_log` | Get CodeArts Build error log analysis |
-| `build_get_full_stages` | Get CodeArts Build full stages |
-| `build_get_history_details` | Get CodeArts Build history details |
-| `build_get_info_record` | Get CodeArts Build info record |
-| `build_get_job` | Get CodeArts Build job detail |
-| `build_get_project_record_statistics` | Get CodeArts Build project record statistics |
-| `build_get_real_time_log` | Get CodeArts Build real-time log |
-| `build_get_record` | Get CodeArts Build record detail |
-| `build_get_record_flow_graph` | Get CodeArts Build record flow graph |
-| `build_get_record_script` | Get CodeArts Build record script |
-| `build_list_build_parameters` | List CodeArts Build parameters |
-| `build_list_jobs` | List CodeArts Build jobs |
-| `build_list_project_records` | List CodeArts Build project records |
-| `build_list_records` | List CodeArts Build records |
-| `build_prepare_deployable_node_app` | Prepare a single-file deployable Node app by appending bundling commands to a build step |
-| `build_prepare_node_runtime_bundle` | Prepare a Node runtime bundle by appending packaging commands to a build step |
-| `build_run_job` | Run CodeArts Build job |
-| `build_stop_job` | Stop CodeArts Build job |
-| `build_update_job_step` | Update CodeArts Build job step image or command |
+| `build_append_job_step` | 追加Build 构建的任务步骤。 |
+| `build_append_release_upload_step` | 追加Build 构建的发布上传步骤。 |
+| `build_configure_release_upload_step` | 配置Build 构建的发布上传步骤。 |
+| `build_get_error_log` | 获取Build 构建的错误日志。 |
+| `build_get_full_stages` | 获取Build 构建的完整阶段。 |
+| `build_get_history_details` | 获取Build 构建的历史记录详情。 |
+| `build_get_info_record` | 获取Build 构建的信息记录。 |
+| `build_get_job` | 获取Build 构建的任务。 |
+| `build_get_project_record_statistics` | 获取Build 构建的项目记录统计。 |
+| `build_get_real_time_log` | 获取Build 构建的实时time日志。 |
+| `build_get_record` | 获取Build 构建的记录。 |
+| `build_get_record_flow_graph` | 获取Build 构建的记录流程图。 |
+| `build_get_record_script` | 获取Build 构建的记录脚本。 |
+| `build_list_build_parameters` | 查询列表Build 构建的构建参数。 |
+| `build_list_jobs` | 查询列表Build 构建的任务。 |
+| `build_list_project_records` | 查询列表Build 构建的项目记录。 |
+| `build_list_records` | 查询列表Build 构建的记录。 |
+| `build_prepare_deployable_node_app` | 准备Build 构建的deployable节点应用。 |
+| `build_prepare_node_runtime_bundle` | 准备Build 构建的节点运行时bundle。 |
+| `build_run_job` | 运行Build 构建的任务。 |
+| `build_stop_job` | 停止Build 构建的任务。 |
+| `build_update_job_step` | 更新Build 构建的任务步骤。 |
 
 ### build_append_job_step
 
-Description: Append a new step to a CodeArts Build job
+中文说明：追加Build 构建的任务步骤。
 
-| Field | Value |
+原始工具说明：Append a new step to a CodeArts Build job
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `build_append_job_step` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `build_append_job_step` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `job_id` | yes | `string` |  |  |
-| `step_name` | yes | `string` |  |  |
-| `module_id` | yes | `string` |  |  |
-| `enable` | no | `boolean` | true |  |
-| `version` | no | `string` |  |  |
-| `image` | no | `string` |  |  |
-| `command` | no | `string` |  |  |
-| `pre_condition` | no | `string` |  |  |
-| `properties` | no | `object` |  |  |
-| `insert_after_step_name` | no | `string` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `job_id` | 是 | `string` |  |  |
+| `step_name` | 是 | `string` |  |  |
+| `module_id` | 是 | `string` |  |  |
+| `enable` | 否 | `boolean` | true |  |
+| `version` | 否 | `string` |  |  |
+| `image` | 否 | `string` |  |  |
+| `command` | 否 | `string` |  |  |
+| `pre_condition` | 否 | `string` |  |  |
+| `properties` | 否 | `object` |  |  |
+| `insert_after_step_name` | 否 | `string` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -25764,7 +26472,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -25827,32 +26535,34 @@ Argument JSON Schema:
 
 ### build_append_release_upload_step
 
-Description: Append the official release repository upload step to a CodeArts Build job
+中文说明：追加Build 构建的发布上传步骤。
 
-| Field | Value |
+原始工具说明：Append the official release repository upload step to a CodeArts Build job
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `build_append_release_upload_step` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `build_append_release_upload_step` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `job_id` | yes | `string` |  |  |
-| `path` | yes | `string` |  |  |
-| `package_name` | no | `string` |  |  |
-| `package_version` | no | `string` |  |  |
-| `custom_upload_path` | no | `string` |  |  |
-| `upload_tool` | no | `string` | "curl" |  |
-| `continue_on_failure` | no | `boolean` | false |  |
-| `step_name` | no | `string` | "Upload package to release repository" |  |
-| `pre_condition` | no | `string` | "SUCCESS" |  |
-| `insert_after_step_name` | no | `string` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `job_id` | 是 | `string` |  |  |
+| `path` | 是 | `string` |  |  |
+| `package_name` | 否 | `string` |  |  |
+| `package_version` | 否 | `string` |  |  |
+| `custom_upload_path` | 否 | `string` |  |  |
+| `upload_tool` | 否 | `string` | "curl" |  |
+| `continue_on_failure` | 否 | `boolean` | false |  |
+| `step_name` | 否 | `string` | "Upload package to release repository" |  |
+| `pre_condition` | 否 | `string` | "SUCCESS" |  |
+| `insert_after_step_name` | 否 | `string` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -25869,7 +26579,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -25934,31 +26644,33 @@ Argument JSON Schema:
 
 ### build_configure_release_upload_step
 
-Description: Configure an existing release repository upload step in a CodeArts Build job
+中文说明：配置Build 构建的发布上传步骤。
 
-| Field | Value |
+原始工具说明：Configure an existing release repository upload step in a CodeArts Build job
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `build_configure_release_upload_step` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `build_configure_release_upload_step` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `job_id` | yes | `string` |  |  |
-| `step_name` | no | `string` | "Upload package to release repository" |  |
-| `file` | yes | `string` |  |  |
-| `package_name` | no | `string` |  |  |
-| `build_version` | no | `string` |  |  |
-| `custom_upload_path` | no | `string` |  |  |
-| `upload_tool` | no | `string` | "curl" |  |
-| `remain_origin_path` | no | `string` | "FLAT" |  |
-| `pre_condition` | no | `string` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `job_id` | 是 | `string` |  |  |
+| `step_name` | 否 | `string` | "Upload package to release repository" |  |
+| `file` | 是 | `string` |  |  |
+| `package_name` | 否 | `string` |  |  |
+| `build_version` | 否 | `string` |  |  |
+| `custom_upload_path` | 否 | `string` |  |  |
+| `upload_tool` | 否 | `string` | "curl" |  |
+| `remain_origin_path` | 否 | `string` | "FLAT" |  |
+| `pre_condition` | 否 | `string` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -25975,7 +26687,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -26035,28 +26747,30 @@ Argument JSON Schema:
 
 ### build_get_error_log
 
-Description: Get CodeArts Build error log analysis
+中文说明：获取Build 构建的错误日志。
 
-| Field | Value |
+原始工具说明：Get CodeArts Build error log analysis
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `build_get_error_log` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `build_get_error_log` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `job_id` | yes | `string` |  |  |
-| `build_no` | yes | `integer` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `job_id` | 是 | `string` |  |  |
+| `build_no` | 是 | `integer` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -26073,7 +26787,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -26123,23 +26837,25 @@ Argument JSON Schema:
 
 ### build_get_full_stages
 
-Description: Get CodeArts Build full stages
+中文说明：获取Build 构建的完整阶段。
 
-| Field | Value |
+原始工具说明：Get CodeArts Build full stages
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `build_get_full_stages` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `build_get_full_stages` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `record_id` | yes | `string` |  |  |
-| `cascade` | no | `boolean` | true |  |
+| `record_id` | 是 | `string` |  |  |
+| `cascade` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -26155,7 +26871,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -26180,23 +26896,25 @@ Argument JSON Schema:
 
 ### build_get_history_details
 
-Description: Get CodeArts Build history details
+中文说明：获取Build 构建的历史记录详情。
 
-| Field | Value |
+原始工具说明：Get CodeArts Build history details
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `build_get_history_details` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `build_get_history_details` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `job_id` | yes | `string` |  |  |
-| `build_number` | yes | `integer` |  |  |
+| `job_id` | 是 | `string` |  |  |
+| `build_number` | 是 | `integer` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -26213,7 +26931,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -26239,23 +26957,25 @@ Argument JSON Schema:
 
 ### build_get_info_record
 
-Description: Get CodeArts Build info record
+中文说明：获取Build 构建的信息记录。
 
-| Field | Value |
+原始工具说明：Get CodeArts Build info record
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `build_get_info_record` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `build_get_info_record` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `job_id` | yes | `string` |  |  |
-| `build_no` | yes | `integer` |  |  |
+| `job_id` | 是 | `string` |  |  |
+| `build_no` | 是 | `integer` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -26272,7 +26992,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -26298,22 +27018,24 @@ Argument JSON Schema:
 
 ### build_get_job
 
-Description: Get CodeArts Build job detail
+中文说明：获取Build 构建的任务。
 
-| Field | Value |
+原始工具说明：Get CodeArts Build job detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `build_get_job` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `build_get_job` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `job_id` | yes | `string` |  |  |
+| `job_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -26329,7 +27051,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -26350,23 +27072,25 @@ Argument JSON Schema:
 
 ### build_get_project_record_statistics
 
-Description: Get CodeArts Build project record statistics
+中文说明：获取Build 构建的项目记录统计。
 
-| Field | Value |
+原始工具说明：Get CodeArts Build project record statistics
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `build_get_project_record_statistics` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `build_get_project_record_statistics` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | yes | `string` |  |  |
-| `build_project_id` | no | `unknown` |  |  |
+| `project_id` | 是 | `string` |  |  |
+| `build_project_id` | 否 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -26382,7 +27106,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -26406,24 +27130,26 @@ Argument JSON Schema:
 
 ### build_get_real_time_log
 
-Description: Get CodeArts Build real-time log
+中文说明：获取Build 构建的实时time日志。
 
-| Field | Value |
+原始工具说明：Get CodeArts Build real-time log
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `build_get_real_time_log` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `build_get_real_time_log` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `job_id` | yes | `string` |  |  |
-| `build_no` | yes | `integer` |  |  |
-| `offset` | yes | `integer` |  |  |
+| `job_id` | 是 | `string` |  |  |
+| `build_no` | 是 | `integer` |  |  |
+| `offset` | 是 | `integer` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -26441,7 +27167,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -26472,22 +27198,24 @@ Argument JSON Schema:
 
 ### build_get_record
 
-Description: Get CodeArts Build record detail
+中文说明：获取Build 构建的记录。
 
-| Field | Value |
+原始工具说明：Get CodeArts Build record detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `build_get_record` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `build_get_record` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `record_id` | yes | `string` |  |  |
+| `record_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -26503,7 +27231,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -26524,22 +27252,24 @@ Argument JSON Schema:
 
 ### build_get_record_flow_graph
 
-Description: Get CodeArts Build record flow graph
+中文说明：获取Build 构建的记录流程图。
 
-| Field | Value |
+原始工具说明：Get CodeArts Build record flow graph
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `build_get_record_flow_graph` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `build_get_record_flow_graph` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `record_id` | yes | `string` |  |  |
+| `record_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -26555,7 +27285,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -26576,22 +27306,24 @@ Argument JSON Schema:
 
 ### build_get_record_script
 
-Description: Get CodeArts Build record script
+中文说明：获取Build 构建的记录脚本。
 
-| Field | Value |
+原始工具说明：Get CodeArts Build record script
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `build_get_record_script` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `build_get_record_script` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `record_id` | yes | `string` |  |  |
+| `record_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -26607,7 +27339,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -26628,23 +27360,25 @@ Argument JSON Schema:
 
 ### build_list_build_parameters
 
-Description: List CodeArts Build parameters
+中文说明：查询列表Build 构建的构建参数。
 
-| Field | Value |
+原始工具说明：List CodeArts Build parameters
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `build_list_build_parameters` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `build_list_build_parameters` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `job_id` | yes | `string` |  |  |
-| `build_no` | yes | `integer` |  |  |
+| `job_id` | 是 | `string` |  |  |
+| `build_no` | 是 | `integer` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -26661,7 +27395,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -26687,27 +27421,29 @@ Argument JSON Schema:
 
 ### build_list_jobs
 
-Description: List CodeArts Build jobs
+中文说明：查询列表Build 构建的任务。
 
-| Field | Value |
+原始工具说明：List CodeArts Build jobs
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `build_list_jobs` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `build_list_jobs` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `project_id` | yes | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `project_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -26723,7 +27459,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -26768,28 +27504,30 @@ Argument JSON Schema:
 
 ### build_list_project_records
 
-Description: List CodeArts Build project records
+中文说明：查询列表Build 构建的项目记录。
 
-| Field | Value |
+原始工具说明：List CodeArts Build project records
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `build_list_project_records` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `build_list_project_records` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `project_id` | yes | `string` |  |  |
-| `build_project_id` | no | `unknown` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `project_id` | 是 | `string` |  |  |
+| `build_project_id` | 否 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -26805,7 +27543,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -26853,27 +27591,29 @@ Argument JSON Schema:
 
 ### build_list_records
 
-Description: List CodeArts Build records
+中文说明：查询列表Build 构建的记录。
 
-| Field | Value |
+原始工具说明：List CodeArts Build records
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `build_list_records` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `build_list_records` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `job_id` | yes | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `job_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -26889,7 +27629,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -26934,20 +27674,22 @@ Argument JSON Schema:
 
 ### build_prepare_deployable_node_app
 
-Description: Prepare a single-file deployable Node app by appending bundling commands to a build step
+中文说明：准备Build 构建的deployable节点应用。
 
-| Field | Value |
+原始工具说明：Prepare a single-file deployable Node app by appending bundling commands to a build step
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `build_prepare_deployable_node_app` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `build_prepare_deployable_node_app` |
 
-Arguments:
+参数：
 
-No arguments.
+无参数。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -26961,7 +27703,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -26972,27 +27714,29 @@ Argument JSON Schema:
 
 ### build_prepare_node_runtime_bundle
 
-Description: Prepare a Node runtime bundle by appending packaging commands to a build step
+中文说明：准备Build 构建的节点运行时bundle。
 
-| Field | Value |
+原始工具说明：Prepare a Node runtime bundle by appending packaging commands to a build step
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `build_prepare_node_runtime_bundle` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `build_prepare_node_runtime_bundle` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `job_id` | yes | `string` |  |  |
-| `step_name` | no | `string` |  |  |
-| `output_file` | no | `string` | "codearts-mcp.tgz" |  |
-| `staging_dir` | no | `string` | ".release-bundle" |  |
-| `replace_existing` | no | `boolean` | false |  |
-| `dry_run` | no | `boolean` | true |  |
+| `job_id` | 是 | `string` |  |  |
+| `step_name` | 否 | `string` |  |  |
+| `output_file` | 否 | `string` | "codearts-mcp.tgz" |  |
+| `staging_dir` | 否 | `string` | ".release-bundle" |  |
+| `replace_existing` | 否 | `boolean` | false |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -27008,7 +27752,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -27051,24 +27795,26 @@ Argument JSON Schema:
 
 ### build_run_job
 
-Description: Run CodeArts Build job
+中文说明：运行Build 构建的任务。
 
-| Field | Value |
+原始工具说明：Run CodeArts Build job
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `build_run_job` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `build_run_job` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `job_id` | yes | `string` |  |  |
-| `branch` | no | `string` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `job_id` | 是 | `string` |  |  |
+| `branch` | 否 | `string` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -27084,7 +27830,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -27113,24 +27859,26 @@ Argument JSON Schema:
 
 ### build_stop_job
 
-Description: Stop CodeArts Build job
+中文说明：停止Build 构建的任务。
 
-| Field | Value |
+原始工具说明：Stop CodeArts Build job
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `build_stop_job` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `build_stop_job` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `job_id` | yes | `string` |  |  |
-| `build_no` | yes | `integer` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `job_id` | 是 | `string` |  |  |
+| `build_no` | 是 | `integer` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -27147,7 +27895,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -27177,20 +27925,22 @@ Argument JSON Schema:
 
 ### build_update_job_step
 
-Description: Update CodeArts Build job step image or command
+中文说明：更新Build 构建的任务步骤。
 
-| Field | Value |
+原始工具说明：Update CodeArts Build job step image or command
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `build_update_job_step` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `build_update_job_step` |
 
-Arguments:
+参数：
 
-No arguments.
+无参数。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -27204,7 +27954,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -27213,46 +27963,48 @@ Argument JSON Schema:
 }
 ```
 
-## Artifact
+## Artifact 制品仓
 
-| API | Description |
+| API | 中文说明 |
 | --- | --- |
-| `artifact_delete_file` | Delete CodeArts Artifact file |
-| `artifact_get_download_url` | Get CodeArts Artifact file download URL |
-| `artifact_get_file` | Get CodeArts Artifact file detail |
-| `artifact_get_file_tree` | Get CodeArts Artifact file tree |
-| `artifact_get_repository` | Get CodeArts Artifact repository detail |
-| `artifact_list_build_archives` | List CodeArts Artifact build archives |
-| `artifact_list_files` | List CodeArts Artifact files |
-| `artifact_list_latest_version_files` | List CodeArts Artifact latest version files |
-| `artifact_list_repositories` | List CodeArts Artifact repositories |
-| `artifact_list_versions` | List CodeArts Artifact versions |
-| `artifact_search_artifacts` | Search CodeArts Artifact artifacts |
-| `artifact_show_audit` | Show CodeArts Artifact audit logs |
+| `artifact_delete_file` | 删除Artifact 制品仓的文件。 |
+| `artifact_get_download_url` | 获取Artifact 制品仓的下载url。 |
+| `artifact_get_file` | 获取Artifact 制品仓的文件。 |
+| `artifact_get_file_tree` | 获取Artifact 制品仓的文件树。 |
+| `artifact_get_repository` | 获取Artifact 制品仓的仓库。 |
+| `artifact_list_build_archives` | 查询列表Artifact 制品仓的构建归档。 |
+| `artifact_list_files` | 查询列表Artifact 制品仓的文件。 |
+| `artifact_list_latest_version_files` | 查询列表Artifact 制品仓的最新版本文件。 |
+| `artifact_list_repositories` | 查询列表Artifact 制品仓的仓库。 |
+| `artifact_list_versions` | 查询列表Artifact 制品仓的版本。 |
+| `artifact_search_artifacts` | 搜索Artifact 制品仓的制品。 |
+| `artifact_show_audit` | 查看Artifact 制品仓的审计。 |
 
 ### artifact_delete_file
 
-Description: Delete CodeArts Artifact file
+中文说明：删除Artifact 制品仓的文件。
 
-| Field | Value |
+原始工具说明：Delete CodeArts Artifact file
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `artifact_delete_file` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `artifact_delete_file` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `tenant_id` | yes | `string` |  |  |
-| `project_id` | yes | `unknown` |  |  |
-| `repo_name` | yes | `string` |  |  |
-| `path` | yes | `string` |  |  |
-| `format` | yes | `string` |  |  |
-| `dry_run` | no | `boolean` | true |  |
+| `tenant_id` | 是 | `string` |  |  |
+| `project_id` | 是 | `unknown` |  |  |
+| `repo_name` | 是 | `string` |  |  |
+| `path` | 是 | `string` |  |  |
+| `format` | 是 | `string` |  |  |
+| `dry_run` | 否 | `boolean` | true |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -27272,7 +28024,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -27316,26 +28068,28 @@ Argument JSON Schema:
 
 ### artifact_get_download_url
 
-Description: Get CodeArts Artifact file download URL
+中文说明：获取Artifact 制品仓的下载url。
 
-| Field | Value |
+原始工具说明：Get CodeArts Artifact file download URL
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `artifact_get_download_url` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `artifact_get_download_url` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `tenant_id` | yes | `string` |  |  |
-| `project_id` | yes | `unknown` |  |  |
-| `repo_name` | yes | `string` |  |  |
-| `path` | yes | `string` |  |  |
-| `format` | yes | `string` |  |  |
+| `tenant_id` | 是 | `string` |  |  |
+| `project_id` | 是 | `unknown` |  |  |
+| `repo_name` | 是 | `string` |  |  |
+| `path` | 是 | `string` |  |  |
+| `format` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -27355,7 +28109,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -27395,26 +28149,28 @@ Argument JSON Schema:
 
 ### artifact_get_file
 
-Description: Get CodeArts Artifact file detail
+中文说明：获取Artifact 制品仓的文件。
 
-| Field | Value |
+原始工具说明：Get CodeArts Artifact file detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `artifact_get_file` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `artifact_get_file` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `tenant_id` | yes | `string` |  |  |
-| `project_id` | yes | `unknown` |  |  |
-| `repo_name` | yes | `string` |  |  |
-| `path` | yes | `string` |  |  |
-| `format` | yes | `string` |  |  |
+| `tenant_id` | 是 | `string` |  |  |
+| `project_id` | 是 | `unknown` |  |  |
+| `repo_name` | 是 | `string` |  |  |
+| `path` | 是 | `string` |  |  |
+| `format` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -27434,7 +28190,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -27474,24 +28230,26 @@ Argument JSON Schema:
 
 ### artifact_get_file_tree
 
-Description: Get CodeArts Artifact file tree
+中文说明：获取Artifact 制品仓的文件树。
 
-| Field | Value |
+原始工具说明：Get CodeArts Artifact file tree
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `artifact_get_file_tree` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `artifact_get_file_tree` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `tenant_id` | yes | `string` |  |  |
-| `project_id` | yes | `unknown` |  |  |
-| `repo_name` | yes | `string` |  |  |
+| `tenant_id` | 是 | `string` |  |  |
+| `project_id` | 是 | `unknown` |  |  |
+| `repo_name` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -27509,7 +28267,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -27539,22 +28297,24 @@ Argument JSON Schema:
 
 ### artifact_get_repository
 
-Description: Get CodeArts Artifact repository detail
+中文说明：获取Artifact 制品仓的仓库。
 
-| Field | Value |
+原始工具说明：Get CodeArts Artifact repository detail
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `artifact_get_repository` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `artifact_get_repository` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | yes | `string` |  |  |
+| `repository_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -27570,7 +28330,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -27591,26 +28351,28 @@ Argument JSON Schema:
 
 ### artifact_list_build_archives
 
-Description: List CodeArts Artifact build archives
+中文说明：查询列表Artifact 制品仓的构建归档。
 
-| Field | Value |
+原始工具说明：List CodeArts Artifact build archives
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `artifact_list_build_archives` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `artifact_list_build_archives` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -27624,7 +28386,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -27662,28 +28424,30 @@ Argument JSON Schema:
 
 ### artifact_list_files
 
-Description: List CodeArts Artifact files
+中文说明：查询列表Artifact 制品仓的文件。
 
-| Field | Value |
+原始工具说明：List CodeArts Artifact files
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `artifact_list_files` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `artifact_list_files` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `project_id` | yes | `string` |  |  |
-| `repo_name` | yes | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `project_id` | 是 | `string` |  |  |
+| `repo_name` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -27700,7 +28464,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -27750,27 +28514,29 @@ Argument JSON Schema:
 
 ### artifact_list_latest_version_files
 
-Description: List CodeArts Artifact latest version files
+中文说明：查询列表Artifact 制品仓的最新版本文件。
 
-| Field | Value |
+原始工具说明：List CodeArts Artifact latest version files
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `artifact_list_latest_version_files` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `artifact_list_latest_version_files` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `project_id` | yes | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `project_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -27786,7 +28552,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -27831,28 +28597,30 @@ Argument JSON Schema:
 
 ### artifact_list_repositories
 
-Description: List CodeArts Artifact repositories
+中文说明：查询列表Artifact 制品仓的仓库。
 
-| Field | Value |
+原始工具说明：List CodeArts Artifact repositories
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `artifact_list_repositories` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `artifact_list_repositories` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `tenant_id` | yes | `string` |  |  |
-| `project_id` | yes | `unknown` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `tenant_id` | 是 | `string` |  |  |
+| `project_id` | 是 | `unknown` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -27869,7 +28637,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -27918,27 +28686,29 @@ Argument JSON Schema:
 
 ### artifact_list_versions
 
-Description: List CodeArts Artifact versions
+中文说明：查询列表Artifact 制品仓的版本。
 
-| Field | Value |
+原始工具说明：List CodeArts Artifact versions
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `artifact_list_versions` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `artifact_list_versions` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `project_id` | yes | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `project_id` | 是 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -27954,7 +28724,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -27999,29 +28769,31 @@ Argument JSON Schema:
 
 ### artifact_search_artifacts
 
-Description: Search CodeArts Artifact artifacts
+中文说明：搜索Artifact 制品仓的制品。
 
-| Field | Value |
+原始工具说明：Search CodeArts Artifact artifacts
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `artifact_search_artifacts` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `artifact_search_artifacts` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `artifact_name` | yes | `string` |  |  |
-| `repo_name` | no | `string` |  |  |
-| `project_id` | no | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `artifact_name` | 是 | `string` |  |  |
+| `repo_name` | 否 | `string` |  |  |
+| `project_id` | 否 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -28037,7 +28809,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
@@ -28089,34 +28861,36 @@ Argument JSON Schema:
 
 ### artifact_show_audit
 
-Description: Show CodeArts Artifact audit logs
+中文说明：查看Artifact 制品仓的审计。
 
-| Field | Value |
+原始工具说明：Show CodeArts Artifact audit logs
+
+| 字段 | 值 |
 | --- | --- |
-| HTTP Method | `POST` |
-| Path | `/mcp` |
-| JSON-RPC method | `tools/call` |
-| Tool name | `artifact_show_audit` |
+| HTTP 方法 | `POST` |
+| 路径 | `/mcp` |
+| JSON-RPC 方法 | `tools/call` |
+| 工具名 | `artifact_show_audit` |
 
-Arguments:
+参数：
 
-| Argument | Required | Type | Default | Notes |
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | no | `integer` | 1 |  |
-| `page_size` | no | `integer` | 20 |  |
-| `keyword` | no | `string` |  |  |
-| `sort_by` | no | `string` |  |  |
-| `sort_order` | no | `string` |  | enum: asc, desc |
-| `tenant_id` | yes | `string` |  |  |
-| `project_id` | yes | `unknown` |  |  |
-| `module` | yes | `string` |  |  |
-| `repo` | yes | `string` |  |  |
-| `user_id` | no | `string` |  |  |
-| `instance_id` | no | `string` |  |  |
-| `format` | no | `string` |  |  |
-| `resource_id` | no | `string` |  |  |
+| `page` | 否 | `integer` | 1 |  |
+| `page_size` | 否 | `integer` | 20 |  |
+| `keyword` | 否 | `string` |  |  |
+| `sort_by` | 否 | `string` |  |  |
+| `sort_order` | 否 | `string` |  | 可选值：asc：desc |
+| `tenant_id` | 是 | `string` |  |  |
+| `project_id` | 是 | `unknown` |  |  |
+| `module` | 是 | `string` |  |  |
+| `repo` | 是 | `string` |  |  |
+| `user_id` | 否 | `string` |  |  |
+| `instance_id` | 否 | `string` |  |  |
+| `format` | 否 | `string` |  |  |
+| `resource_id` | 否 | `string` |  |  |
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -28135,7 +28909,7 @@ Call example:
 }
 ```
 
-Argument JSON Schema:
+参数 JSON Schema：
 
 ```json
 {
