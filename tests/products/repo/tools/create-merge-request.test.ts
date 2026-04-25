@@ -11,6 +11,14 @@ describe("previewCreateMergeRequest", () => {
       source_branch: "feature/demo",
       target_branch: "main",
       title: "Add demo",
+      target_project_id: "target-project-1",
+      assignee_id: 1001,
+      reviewer_ids: [1002, "1003"],
+      remove_source_branch: true,
+      squash: true,
+      draft: false,
+      labels: ["feat", "api"],
+      milestone_id: 7,
       dry_run: true
     });
 
@@ -20,6 +28,14 @@ describe("previewCreateMergeRequest", () => {
       sourceBranch: "feature/demo",
       targetBranch: "main",
       title: "Add demo",
+      targetProjectId: "target-project-1",
+      assigneeId: 1001,
+      reviewerIds: [1002, "1003"],
+      removeSourceBranch: true,
+      squash: true,
+      draft: false,
+      labels: ["feat", "api"],
+      milestoneId: 7,
       executed: false
     });
   });

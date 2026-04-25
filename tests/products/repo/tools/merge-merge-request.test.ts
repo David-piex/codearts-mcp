@@ -11,6 +11,10 @@ describe("previewMergeMergeRequest", () => {
       merge_request_iid: "12",
       squash: true,
       force_merge: false,
+      sha: "abc123",
+      merge_commit_message: "Merge feature/demo",
+      squash_commit_message: "Squash feature/demo",
+      should_remove_source_branch: true,
       dry_run: true
     });
 
@@ -20,6 +24,10 @@ describe("previewMergeMergeRequest", () => {
       mergeRequestIid: "12",
       squash: true,
       forceMerge: false,
+      sha: "abc123",
+      mergeCommitMessage: "Merge feature/demo",
+      squashCommitMessage: "Squash feature/demo",
+      shouldRemoveSourceBranch: true,
       executed: false
     });
   });

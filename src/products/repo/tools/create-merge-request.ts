@@ -7,12 +7,28 @@ export function previewCreateMergeRequest(input: {
   target_branch: string;
   title: string;
   dry_run: boolean;
+  target_project_id?: string;
+  assignee_id?: string | number;
+  reviewer_ids?: Array<string | number>;
+  remove_source_branch?: boolean;
+  squash?: boolean;
+  draft?: boolean;
+  labels?: string | string[];
+  milestone_id?: string | number;
 }) {
   return asItemResult(`Dry run: create merge request ${input.title}`, {
     repositoryId: input.repository_id,
     sourceBranch: input.source_branch,
     targetBranch: input.target_branch,
     title: input.title,
+    targetProjectId: input.target_project_id,
+    assigneeId: input.assignee_id,
+    reviewerIds: input.reviewer_ids,
+    removeSourceBranch: input.remove_source_branch,
+    squash: input.squash,
+    draft: input.draft,
+    labels: input.labels,
+    milestoneId: input.milestone_id,
     executed: !input.dry_run
   });
 }
@@ -49,6 +65,14 @@ type RepoCreateMergeRequestClient = {
     target_branch: string;
     title: string;
     description?: string;
+    target_project_id?: string;
+    assignee_id?: string | number;
+    reviewer_ids?: Array<string | number>;
+    remove_source_branch?: boolean;
+    squash?: boolean;
+    draft?: boolean;
+    labels?: string | string[];
+    milestone_id?: string | number;
   }) => Promise<{
     id: number | string;
     iid?: number;

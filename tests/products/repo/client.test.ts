@@ -275,4 +275,75 @@ describe("createRepoClient", () => {
       code: "CH.000001"
     });
   });
+  it("passes merge request creation optional fields", async () => {
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createRepoClient({
+      post: async (_path: string, body: Record<string, unknown>) => {
+        requestedBody = body;
+        return { id: 1, iid: 2, title: "Add demo" };
+      }
+    } as never);
+
+    await client.createMergeRequest({
+      repository_id: "repo-1",
+      source_branch: "feature/demo",
+      target_branch: "main",
+      title: "Add demo",
+      description: "Demo",
+      target_project_id: "target-project-1",
+      assignee_id: 1001,
+      reviewer_ids: [1002, "1003"],
+      remove_source_branch: true,
+      squash: true,
+      draft: false,
+      labels: ["feat", "api"],
+      milestone_id: 7
+    });
+
+    expect(requestedBody).toEqual({
+      source_branch: "feature/demo",
+      target_branch: "main",
+      title: "Add demo",
+      description: "Demo",
+      target_project_id: "target-project-1",
+      assignee_id: 1001,
+      reviewer_ids: [1002, "1003"],
+      remove_source_branch: true,
+      squash: true,
+      draft: false,
+      labels: "feat,api",
+      milestone_id: 7
+    });
+  });
+
+  it("passes merge request merge optional fields", async () => {
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createRepoClient({
+      put: async (_path: string, body: Record<string, unknown>) => {
+        requestedBody = body;
+        return { id: 1, iid: 2, state: "merged" };
+      }
+    } as never);
+
+    await client.mergeMergeRequest({
+      repository_id: "repo-1",
+      merge_request_iid: "2",
+      squash: true,
+      force_merge: false,
+      sha: "abc123",
+      merge_commit_message: "Merge feature/demo",
+      squash_commit_message: "Squash feature/demo",
+      should_remove_source_branch: true
+    });
+
+    expect(requestedBody).toEqual({
+      squash: true,
+      force_merge: false,
+      sha: "abc123",
+      merge_commit_message: "Merge feature/demo",
+      squash_commit_message: "Squash feature/demo",
+      should_remove_source_branch: true
+    });
+  });
+
 });

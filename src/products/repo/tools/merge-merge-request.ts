@@ -6,6 +6,10 @@ export function previewMergeMergeRequest(input: {
   merge_request_iid: string;
   squash?: boolean;
   force_merge?: boolean;
+  sha?: string;
+  merge_commit_message?: string;
+  squash_commit_message?: string;
+  should_remove_source_branch?: boolean;
   dry_run: boolean;
 }) {
   return asItemResult(`Dry run: merge merge request ${input.merge_request_iid}`, {
@@ -13,6 +17,10 @@ export function previewMergeMergeRequest(input: {
     mergeRequestIid: input.merge_request_iid,
     squash: input.squash,
     forceMerge: input.force_merge,
+    sha: input.sha,
+    mergeCommitMessage: input.merge_commit_message,
+    squashCommitMessage: input.squash_commit_message,
+    shouldRemoveSourceBranch: input.should_remove_source_branch,
     executed: !input.dry_run
   });
 }
@@ -46,6 +54,10 @@ type RepoMergeMergeRequestClient = {
     merge_request_iid: string;
     squash?: boolean;
     force_merge?: boolean;
+    sha?: string;
+    merge_commit_message?: string;
+    squash_commit_message?: string;
+    should_remove_source_branch?: boolean;
   }) => Promise<{
     id: number | string;
     iid?: number;

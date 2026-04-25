@@ -59,6 +59,14 @@ export const repoCreateMergeRequestInput = z.object({
   target_branch: z.string().min(1),
   title: z.string().min(1),
   description: z.string().optional(),
+  target_project_id: idSchema.optional(),
+  assignee_id: z.union([z.string().min(1), z.number().int().positive()]).optional(),
+  reviewer_ids: z.array(z.union([z.string().min(1), z.number().int().positive()])).optional(),
+  remove_source_branch: z.boolean().optional(),
+  squash: z.boolean().optional(),
+  draft: z.boolean().optional(),
+  labels: z.union([z.string().min(1), z.array(z.string().min(1))]).optional(),
+  milestone_id: z.union([z.string().min(1), z.number().int().positive()]).optional(),
   dry_run: z.boolean().default(true)
 });
 
@@ -84,6 +92,10 @@ export const repoMergeMergeRequestInput = z.object({
   merge_request_iid: idSchema,
   squash: z.boolean().optional(),
   force_merge: z.boolean().optional(),
+  sha: z.string().min(1).optional(),
+  merge_commit_message: z.string().min(1).optional(),
+  squash_commit_message: z.string().min(1).optional(),
+  should_remove_source_branch: z.boolean().optional(),
   dry_run: z.boolean().default(true)
 });
 

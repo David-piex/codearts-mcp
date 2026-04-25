@@ -190,6 +190,10 @@ export type RepoClient = {
     merge_request_iid: string;
     squash?: boolean;
     force_merge?: boolean;
+    sha?: string;
+    merge_commit_message?: string;
+    squash_commit_message?: string;
+    should_remove_source_branch?: boolean;
   }) => Promise<{
     id: number | string;
     iid?: number;
@@ -219,6 +223,14 @@ export type RepoClient = {
     target_branch: string;
     title: string;
     description?: string;
+    target_project_id?: string;
+    assignee_id?: string | number;
+    reviewer_ids?: Array<string | number>;
+    remove_source_branch?: boolean;
+    squash?: boolean;
+    draft?: boolean;
+    labels?: string | string[];
+    milestone_id?: string | number;
   }) => Promise<{
     id: number | string;
     iid?: number;
@@ -836,7 +848,11 @@ export function createRepoClient(
         `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/${encodeURIComponent(input.merge_request_iid)}/merge`,
         {
           squash: input.squash,
-          force_merge: input.force_merge
+          force_merge: input.force_merge,
+          sha: input.sha,
+          merge_commit_message: input.merge_commit_message,
+          squash_commit_message: input.squash_commit_message,
+          should_remove_source_branch: input.should_remove_source_branch
         }
       )) as {
         id?: number | string;
@@ -895,7 +911,15 @@ export function createRepoClient(
           source_branch: input.source_branch,
           target_branch: input.target_branch,
           title: input.title,
-          description: input.description
+          description: input.description,
+          target_project_id: input.target_project_id,
+          assignee_id: input.assignee_id,
+          reviewer_ids: input.reviewer_ids,
+          remove_source_branch: input.remove_source_branch,
+          squash: input.squash,
+          draft: input.draft,
+          labels: Array.isArray(input.labels) ? input.labels.join(",") : input.labels,
+          milestone_id: input.milestone_id
         }
       )) as {
         id?: number | string;

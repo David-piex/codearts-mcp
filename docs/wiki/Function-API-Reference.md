@@ -2516,6 +2516,14 @@ authorization: Bearer <auth-token>
 | `display_value` | 是 | `string` |  | 展示名称或显示值。 |
 | `parent_id` | 是 | `unknown` |  | 父级资源 ID。用于创建模块、特性集或树形结构节点。 |
 | `description` | 否 | `string` |  | 对象的详细描述或备注信息。 |
+| `target_project_id` | 否 | `string` |  | 目标项目/仓库 ID，用于跨项目 MR。 |
+| `assignee_id` | 否 | `string | number` |  | MR 负责人用户 ID。 |
+| `reviewer_ids` | 否 | `array` |  | MR 评审人用户 ID 列表。 |
+| `remove_source_branch` | 否 | `boolean` |  | 合并后是否删除源分支。 |
+| `squash` | 否 | `boolean` |  | 创建 MR 时是否启用 squash。 |
+| `draft` | 否 | `boolean` |  | 是否创建为草稿 MR。 |
+| `labels` | 否 | `string | array` |  | MR 标签；数组会以逗号拼接传给服务端。 |
+| `milestone_id` | 否 | `string | number` |  | 里程碑 ID。 |
 | `assignee` | 否 | `unknown` |  | 责任人信息或责任人 ID，格式以对应 IPD 接口为准。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -15783,6 +15791,10 @@ authorization: Bearer <auth-token>
 | `merge_request_iid` | 是 | `unknown` |  | 合并请求 IID。用于定位仓库内的某个 MR。 |
 | `squash` | 否 | `boolean` |  | 是否压缩提交后合并 MR。 |
 | `force_merge` | 否 | `boolean` |  | 是否强制合并 MR。 |
+| `sha` | 否 | `string` |  | 合并时校验的源分支最新提交 SHA。 |
+| `merge_commit_message` | 否 | `string` |  | 合并提交信息。 |
+| `squash_commit_message` | 否 | `string` |  | squash 提交信息。 |
+| `should_remove_source_branch` | 否 | `boolean` |  | 合并后是否删除源分支。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
