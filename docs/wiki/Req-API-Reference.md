@@ -167,6 +167,20 @@ Req 写工具遵循两个层面的安全策略：
 责任人说明：创建或更新工作项时可以传 `assigned_id` 关联责任人；该值是项目成员用户 ID，可先调用 `req_list_project_members` 获取。
 
 
+常用枚举映射：
+
+- 工作项类型 / `tracker_id`：`2`=Task/任务，`3`=Bug/缺陷，`5`=Epic，`6`=Feature，`7`=Story。`work_item_type` 可以传 `task`、`bug`、`epic`、`feature`、`story`，也可以传数字字符串。
+- 工作项状态 / `status_id`：`1`=新建，`2`=进行中，`3`=已解决，`4`=测试中，`5`=已关闭，`6`=已拒绝。项目自定义状态以状态配置/工作流接口返回为准。
+- 项目成员角色 / `role_id`：`-1`=项目创建者，`3`=项目经理，`4`=开发人员，`5`=测试经理，`6`=测试人员，`7`=参与者，`8`=浏览者，`9`=运维经理；部分接口还允许 `10`、`11` 等扩展角色，以租户配置为准。
+- 计划类型 / `type`：`gantt`=甘特图，`mind`=思维导图。
+- 计划工作项展示 / `show_type`：`list`=列表，`tree`=树形。
+- 需求池字段 / `field_type`：`IR`=原始需求字段，`RR`=研发需求字段。
+- 需求池查询 / `query_type`：IR 子项查询支持 `RR`、`ITEMS`；RR 列表支持 `ALL`、`DST`、`SRC`。
+- IPD 过滤 / `filter_mode`：`AND_OR`=组内 AND、组间 OR；`OR_AND`=组内 OR、组间 AND。
+- IPD 统计 / `classification`：`requirement`=需求，`bug`=缺陷。
+
+
+
 ### 协作与附件
 
 | 工具 | 类型 | 用途 |

@@ -568,7 +568,7 @@ authorization: Bearer <auth-token>
 | `user_id` | 是 | `unknown` |  | 用户 ID。用于定位项目成员、操作者或需要授权的用户。 |
 | `domain_id` | 是 | `unknown` |  | 租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。 |
 | `domain_name` | 否 | `string` |  | 租户/组织名称。添加成员或展示组织信息时使用。 |
-| `role_id` | 否 | `number` |  | 角色 ID。用于指定项目成员角色或权限级别。 |
+| `role_id` | 否 | `number` |  | 项目成员角色 ID：-1=项目创建者，3=项目经理，4=开发人员，5=测试经理，6=测试人员，7=参与者，8=浏览者，9=运维经理；部分接口还允许 10、11 等扩展角色，以租户配置为准。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -627,7 +627,7 @@ authorization: Bearer <auth-token>
         10,
         11
       ],
-      "description": "角色 ID。用于指定项目成员角色或权限级别。"
+      "description": "项目成员角色 ID：-1=项目创建者，3=项目经理，4=开发人员，5=测试经理，6=测试人员，7=参与者，8=浏览者，9=运维经理；部分接口还允许 10、11 等扩展角色，以租户配置为准。"
     },
     "dry_run": {
       "type": "boolean",
@@ -833,7 +833,7 @@ authorization: Bearer <auth-token>
               10,
               11
             ],
-            "description": "角色 ID。用于指定项目成员角色或权限级别。"
+            "description": "项目成员角色 ID：-1=项目创建者，3=项目经理，4=开发人员，5=测试经理，6=测试人员，7=参与者，8=浏览者，9=运维经理；部分接口还允许 10、11 等扩展角色，以租户配置为准。"
           }
         },
         "required": [
@@ -936,7 +936,7 @@ authorization: Bearer <auth-token>
           "status": {
             "type": "string",
             "minLength": 1,
-            "description": "status 参数，按对应 CodeArts API 要求传入。"
+            "description": "状态值。Scrum 迭代状态可取 \"0\"、\"1\"、\"2\"；工作项状态常见映射为 1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝；具体以项目状态配置为准。"
           },
           "assignee": {
             "type": "object",
@@ -1598,7 +1598,7 @@ authorization: Bearer <auth-token>
         },
         "status": {
           "type": "string",
-          "description": "status 参数，按对应 CodeArts API 要求传入。"
+          "description": "状态值。Scrum 迭代状态可取 \"0\"、\"1\"、\"2\"；工作项状态常见映射为 1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝；具体以项目状态配置为准。"
         },
         "assignee": {
           "type": "object",
@@ -2085,7 +2085,7 @@ authorization: Bearer <auth-token>
 | `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
 | `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `tracker_ids` | 否 | `array` |  | Scrum 工作项类型 ID 列表，可选值为 2、3、5、6、7，分别表示 Task、Bug、Epic、Feature、Story。 |
+| `tracker_ids` | 否 | `array` |  | Scrum 工作项类型 ID 列表：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
 
 调用示例：
 
@@ -2140,7 +2140,7 @@ authorization: Bearer <auth-token>
         ]
       },
       "minItems": 1,
-      "description": "Scrum 工作项类型 ID 列表，可选值为 2、3、5、6、7，分别表示 Task、Bug、Epic、Feature、Story。"
+      "description": "Scrum 工作项类型 ID 列表：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。"
     }
   },
   "required": [
@@ -2249,7 +2249,7 @@ authorization: Bearer <auth-token>
 | `description` | 是 | `string` |  | 对象的详细描述或备注信息。 |
 | `category` | 是 | `string` |  | 分类编码。用于按需求、缺陷等对象类型查询或创建。 |
 | `assignee` | 是 | `unknown` |  | 责任人信息或责任人 ID，格式以对应接口要求为准。 |
-| `status` | 否 | `string` |  | 状态值，用于过滤或更新状态。 |
+| `status` | 否 | `string` |  | 状态值。Scrum 迭代状态可取 "0"、"1"、"2"；工作项状态常见映射为 1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝；具体以项目状态配置为准。 |
 | `src_domain` | 否 | `unknown` |  | 来源租户或域标识。 |
 | `submitted_by` | 否 | `unknown` |  | 提交人。 |
 | `domain_id` | 否 | `unknown` |  | 租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。 |
@@ -2320,7 +2320,7 @@ authorization: Bearer <auth-token>
     },
     "status": {
       "type": "string",
-      "description": "状态值，用于过滤或更新状态。"
+      "description": "状态值。Scrum 迭代状态可取 \"0\"、\"1\"、\"2\"；工作项状态常见映射为 1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝；具体以项目状态配置为准。"
     },
     "src_domain": {
       "$ref": "#/properties/project_id",
@@ -2605,7 +2605,7 @@ authorization: Bearer <auth-token>
 | `work_date_begin` | 是 | `string` |  | 工时开始日期。 |
 | `work_date_end` | 是 | `string` |  | 工时结束日期。 |
 | `work_hours` | 是 | `string \| number` |  | 工时数。 |
-| `work_hour_type` | 是 | `number \| number \| string` |  | 工时类型，用于区分登记工时的类别。 |
+| `work_hour_type` | 是 | `number \| number \| string` |  | 工时类型：1、2 或租户自定义字符串；具体含义以项目工时类型配置为准。 |
 | `include_weekend` | 是 | `boolean` |  | 是否包含周末。 |
 | `work_hour_category` | 否 | `string` |  | 工时分类。 |
 | `description` | 否 | `string` |  | 对象的详细描述或备注信息。 |
@@ -2680,7 +2680,7 @@ authorization: Bearer <auth-token>
           "minLength": 1
         }
       ],
-      "description": "工时类型，用于区分登记工时的类别。"
+      "description": "工时类型：1、2 或租户自定义字符串；具体含义以项目工时类型配置为准。"
     },
     "include_weekend": {
       "type": "boolean",
@@ -2824,11 +2824,11 @@ authorization: Bearer <auth-token>
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `iteration_id` | 是 | `unknown` |  | 迭代唯一标识。 |
 | `title` | 是 | `string` |  | 标题。用于工作项、需求、合并请求、标签等资源的展示名称。 |
-| `work_item_type` | 是 | `string` |  | 工作项类型，会映射为 Scrum tracker_id；支持 task=2、bug=3、epic=5、feature=6、story=7，也可以直接传数字字符串 "2"、"3"、"5"、"6"、"7"。 |
+| `work_item_type` | 是 | `string` |  | 工作项类型，会映射为 Scrum tracker_id：task/"2"=Task/任务，bug/"3"=Bug/缺陷，epic/"5"=Epic，feature/"6"=Feature，story/"7"=Story。 |
 | `description` | 否 | `string` |  | 对象的详细描述或备注信息。 |
-| `priority_id` | 否 | `integer` |  | 优先级 ID。用于设置或过滤工作项优先级。 |
+| `priority_id` | 否 | `integer` |  | 工作项优先级 ID。创建工作项未传时默认使用 2；具体优先级名称和可选值以项目字段配置/优先级选项接口返回为准。 |
 | `module_id` | 否 | `unknown` |  | 模块 ID。用于把工作项、IPD 对象或项目模块归属到指定模块。 |
-| `severity_id` | 否 | `integer` |  | 严重程度 ID。通常用于缺陷或问题等级。 |
+| `severity_id` | 否 | `integer` |  | 严重程度 ID。通常用于缺陷或问题等级；可通过 `req_list_issue_severities` 查询当前可用严重程度。 |
 | `assigned_id` | 否 | `unknown` |  | 关联责任人用户 ID。创建或更新工作项时传入该字段即可指定责任人；可先调用 `req_list_project_members` 获取项目成员用户 ID。 |
 | `done_ratio` | 否 | `integer` |  | 完成度百分比，用于表示工作项当前完成进度。 |
 | `expected_work_hours` | 否 | `integer` |  | 预计工时，用于记录计划投入的工作小时数。 |
@@ -2878,7 +2878,7 @@ authorization: Bearer <auth-token>
     "work_item_type": {
       "type": "string",
       "minLength": 1,
-      "description": "工作项类型，会映射为 Scrum tracker_id；支持 task=2、bug=3、epic=5、feature=6、story=7，也可以直接传数字字符串 \"2\"、\"3\"、\"5\"、\"6\"、\"7\"。"
+      "description": "工作项类型，会映射为 Scrum tracker_id：task/\"2\"=Task/任务，bug/\"3\"=Bug/缺陷，epic/\"5\"=Epic，feature/\"6\"=Feature，story/\"7\"=Story。"2\"、\"3\"、\"5\"、\"6\"、\"7\"。"
     },
     "description": {
       "type": "string",
@@ -2887,7 +2887,7 @@ authorization: Bearer <auth-token>
     "priority_id": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "优先级 ID。用于设置或过滤工作项优先级。"
+      "description": "工作项优先级 ID。创建工作项未传时默认使用 2；具体优先级名称和可选值以项目字段配置/优先级选项接口返回为准。"
     },
     "module_id": {
       "$ref": "#/properties/project_id",
@@ -2896,7 +2896,7 @@ authorization: Bearer <auth-token>
     "severity_id": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "严重程度 ID。通常用于缺陷或问题等级。"
+      "description": "严重程度 ID。通常用于缺陷或问题等级；可通过 `req_list_issue_severities` 查询当前可用严重程度。"
     },
     "assigned_id": {
       "$ref": "#/properties/project_id",
@@ -2958,7 +2958,7 @@ authorization: Bearer <auth-token>
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `name` | 是 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
-| `type` | 是 | `string` |  | 类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。 |
+| `type` | 是 | `string` |  | 类型。常见取值按接口区分：Req 计划 type 可取 gantt=甘特图、mind=思维导图；关联提交 type 可取 commit 或 branch；其他接口以对应服务枚举为准。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -3001,7 +3001,7 @@ authorization: Bearer <auth-token>
         "gantt",
         "mind"
       ],
-      "description": "类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。"
+      "description": "类型。常见取值按接口区分：Req 计划 type 可取 gantt=甘特图、mind=思维导图；关联提交 type 可取 commit 或 branch；其他接口以对应服务枚举为准。"
     },
     "dry_run": {
       "type": "boolean",
@@ -3039,14 +3039,14 @@ authorization: Bearer <auth-token>
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `plan_id` | 是 | `unknown` |  | 规划/计划 ID。用于定位 CodeArts Req 中的计划资源。 |
 | `title` | 是 | `string` |  | 标题。用于工作项、需求、合并请求、标签等资源的展示名称。 |
-| `work_item_type` | 是 | `string` |  | 工作项类型，会映射为 Scrum tracker_id；支持 task=2、bug=3、epic=5、feature=6、story=7，也可以直接传数字字符串 "2"、"3"、"5"、"6"、"7"。 |
+| `work_item_type` | 是 | `string` |  | 工作项类型，会映射为 Scrum tracker_id：task/"2"=Task/任务，bug/"3"=Bug/缺陷，epic/"5"=Epic，feature/"6"=Feature，story/"7"=Story。 |
 | `parent_work_item_id` | 否 | `unknown` |  | 父工作项 ID。创建计划工作项或子工作项时用于挂到父级。 |
 | `description` | 否 | `string` |  | 对象的详细描述或备注信息。 |
 | `iteration_id` | 否 | `unknown` |  | 迭代唯一标识。 |
 | `module_id` | 否 | `unknown` |  | 模块 ID。用于把工作项、IPD 对象或项目模块归属到指定模块。 |
-| `priority_id` | 否 | `integer` |  | 优先级 ID。用于设置或过滤工作项优先级。 |
-| `severity_id` | 否 | `integer` |  | 严重程度 ID。通常用于缺陷或问题等级。 |
-| `status_id` | 否 | `integer` |  | 工作项状态 ID。用于更新工作项状态或按状态过滤；状态 ID 可通过状态配置/工作流接口查询。 |
+| `priority_id` | 否 | `integer` |  | 工作项优先级 ID。创建工作项未传时默认使用 2；具体优先级名称和可选值以项目字段配置/优先级选项接口返回为准。 |
+| `severity_id` | 否 | `integer` |  | 严重程度 ID。通常用于缺陷或问题等级；可通过 `req_list_issue_severities` 查询当前可用严重程度。 |
+| `status_id` | 否 | `integer` |  | 工作项状态 ID：1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝。用于更新工作项状态或按状态过滤；状态 ID 也可通过状态配置/工作流接口查询。 |
 | `assigned_id` | 否 | `unknown` |  | 关联责任人用户 ID。创建或更新工作项时传入该字段即可指定责任人；可先调用 `req_list_project_members` 获取项目成员用户 ID。 |
 | `done_ratio` | 否 | `integer` |  | 完成度百分比，用于表示工作项当前完成进度。 |
 | `expected_work_hours` | 否 | `integer` |  | 预计工时，用于记录计划投入的工作小时数。 |
@@ -3096,7 +3096,7 @@ authorization: Bearer <auth-token>
     "work_item_type": {
       "type": "string",
       "minLength": 1,
-      "description": "工作项类型，会映射为 Scrum tracker_id；支持 task=2、bug=3、epic=5、feature=6、story=7，也可以直接传数字字符串 \"2\"、\"3\"、\"5\"、\"6\"、\"7\"。"
+      "description": "工作项类型，会映射为 Scrum tracker_id：task/\"2\"=Task/任务，bug/\"3\"=Bug/缺陷，epic/\"5\"=Epic，feature/\"6\"=Feature，story/\"7\"=Story。"2\"、\"3\"、\"5\"、\"6\"、\"7\"。"
     },
     "parent_work_item_id": {
       "$ref": "#/properties/project_id",
@@ -3117,17 +3117,17 @@ authorization: Bearer <auth-token>
     "priority_id": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "优先级 ID。用于设置或过滤工作项优先级。"
+      "description": "工作项优先级 ID。创建工作项未传时默认使用 2；具体优先级名称和可选值以项目字段配置/优先级选项接口返回为准。"
     },
     "severity_id": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "严重程度 ID。通常用于缺陷或问题等级。"
+      "description": "严重程度 ID。通常用于缺陷或问题等级；可通过 `req_list_issue_severities` 查询当前可用严重程度。"
     },
     "status_id": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "工作项状态 ID。用于更新工作项状态或按状态过滤；状态 ID 可通过状态配置/工作流接口查询。"
+      "description": "工作项状态 ID：1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝。用于更新工作项状态或按状态过滤；状态 ID 也可通过状态配置/工作流接口查询。"
     },
     "assigned_id": {
       "$ref": "#/properties/project_id",
@@ -3344,12 +3344,12 @@ authorization: Bearer <auth-token>
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `title` | 是 | `string` |  | 标题。用于工作项、需求、合并请求、标签等资源的展示名称。 |
-| `work_item_type` | 是 | `string` |  | 工作项类型，会映射为 Scrum tracker_id；支持 task=2、bug=3、epic=5、feature=6、story=7，也可以直接传数字字符串 "2"、"3"、"5"、"6"、"7"。 |
+| `work_item_type` | 是 | `string` |  | 工作项类型，会映射为 Scrum tracker_id：task/"2"=Task/任务，bug/"3"=Bug/缺陷，epic/"5"=Epic，feature/"6"=Feature，story/"7"=Story。 |
 | `description` | 否 | `string` |  | 对象的详细描述或备注信息。 |
-| `priority_id` | 否 | `integer` |  | 优先级 ID。用于设置或过滤工作项优先级。 |
+| `priority_id` | 否 | `integer` |  | 工作项优先级 ID。创建工作项未传时默认使用 2；具体优先级名称和可选值以项目字段配置/优先级选项接口返回为准。 |
 | `iteration_id` | 否 | `unknown` |  | 迭代唯一标识。 |
 | `module_id` | 否 | `unknown` |  | 模块 ID。用于把工作项、IPD 对象或项目模块归属到指定模块。 |
-| `severity_id` | 否 | `integer` |  | 严重程度 ID。通常用于缺陷或问题等级。 |
+| `severity_id` | 否 | `integer` |  | 严重程度 ID。通常用于缺陷或问题等级；可通过 `req_list_issue_severities` 查询当前可用严重程度。 |
 | `assigned_id` | 否 | `unknown` |  | 关联责任人用户 ID。创建或更新工作项时传入该字段即可指定责任人；可先调用 `req_list_project_members` 获取项目成员用户 ID。 |
 | `done_ratio` | 否 | `integer` |  | 完成度百分比，用于表示工作项当前完成进度。 |
 | `expected_work_hours` | 否 | `integer` |  | 预计工时，用于记录计划投入的工作小时数。 |
@@ -3394,7 +3394,7 @@ authorization: Bearer <auth-token>
     "work_item_type": {
       "type": "string",
       "minLength": 1,
-      "description": "工作项类型，会映射为 Scrum tracker_id；支持 task=2、bug=3、epic=5、feature=6、story=7，也可以直接传数字字符串 \"2\"、\"3\"、\"5\"、\"6\"、\"7\"。"
+      "description": "工作项类型，会映射为 Scrum tracker_id：task/\"2\"=Task/任务，bug/\"3\"=Bug/缺陷，epic/\"5\"=Epic，feature/\"6\"=Feature，story/\"7\"=Story。"2\"、\"3\"、\"5\"、\"6\"、\"7\"。"
     },
     "description": {
       "type": "string",
@@ -3403,7 +3403,7 @@ authorization: Bearer <auth-token>
     "priority_id": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "优先级 ID。用于设置或过滤工作项优先级。"
+      "description": "工作项优先级 ID。创建工作项未传时默认使用 2；具体优先级名称和可选值以项目字段配置/优先级选项接口返回为准。"
     },
     "iteration_id": {
       "$ref": "#/properties/project_id",
@@ -3416,7 +3416,7 @@ authorization: Bearer <auth-token>
     "severity_id": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "严重程度 ID。通常用于缺陷或问题等级。"
+      "description": "严重程度 ID。通常用于缺陷或问题等级；可通过 `req_list_issue_severities` 查询当前可用严重程度。"
     },
     "assigned_id": {
       "$ref": "#/properties/project_id",
@@ -4783,7 +4783,7 @@ authorization: Bearer <auth-token>
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `issue_id` | 是 | `unknown` |  | IPD 工作项 ID。用于定位 IPD 需求、缺陷或任务。 |
-| `version` | 否 | `string` | "v2" | 版本号。用于指定插件版本、接口版本或工具步骤版本。 |
+| `version` | 否 | `string` | "v2" | 接口版本。IPD 工作项详情支持 v1、v2，默认 v2；插件/构建步骤中的 version 表示对应插件或步骤版本。 |
 
 调用示例：
 
@@ -4824,7 +4824,7 @@ authorization: Bearer <auth-token>
         "v2"
       ],
       "default": "v2",
-      "description": "版本号。用于指定插件版本、接口版本或工具步骤版本。"
+      "description": "接口版本。IPD 工作项详情支持 v1、v2，默认 v2；插件/构建步骤中的 version 表示对应插件或步骤版本。"
     }
   },
   "required": [
@@ -4917,7 +4917,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `classification` | 是 | `string` |  | 统计分类，例如 requirement 或 bug。 |
+| `classification` | 是 | `string` |  | 统计分类：requirement=需求，bug=缺陷。 |
 | `plan` | 否 | `object` |  | 计划或迭代过滤条件。 |
 | `created_date` | 否 | `object` |  | 创建时间范围。 |
 
@@ -4955,7 +4955,7 @@ authorization: Bearer <auth-token>
         "requirement",
         "bug"
       ],
-      "description": "统计分类，例如 requirement 或 bug。"
+      "description": "统计分类：requirement=需求，bug=缺陷。"
     },
     "plan": {
       "type": "object",
@@ -6152,7 +6152,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `tracker_id` | 是 | `number` |  | Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。 |
+| `tracker_id` | 是 | `number` |  | Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
 
 调用示例：
 
@@ -6191,7 +6191,7 @@ authorization: Bearer <auth-token>
         6,
         7
       ],
-      "description": "Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。"
+      "description": "Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。"
     }
   },
   "required": [
@@ -6221,7 +6221,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `tracker_id` | 是 | `number` |  | Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。 |
+| `tracker_id` | 是 | `number` |  | Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
 
 调用示例：
 
@@ -6260,7 +6260,7 @@ authorization: Bearer <auth-token>
         6,
         7
       ],
-      "description": "Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。"
+      "description": "Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。"
     }
   },
   "required": [
@@ -6295,9 +6295,9 @@ authorization: Bearer <auth-token>
 | `issue_type` | 是 | `string` |  | IPD 工作项类型。用于指定需求、缺陷等 IPD 对象类别。 |
 | `group_field_id` | 是 | `unknown` |  | 分组字段 ID。IPD 分组查询时指定按哪个字段分组。 |
 | `is_project_group` | 否 | `boolean` |  | 是否按项目维度分组。 |
-| `group_sort` | 否 | `string` |  | 分组排序方向。用于控制分组结果升序或降序。 |
+| `group_sort` | 否 | `string` |  | 分组排序方向：asc=升序，desc=降序。 |
 | `filter` | 否 | `array` |  | 过滤条件列表。 |
-| `filter_mode` | 否 | `string` | "AND_OR" | 过滤条件组合方式。 |
+| `filter_mode` | 否 | `string` | "AND_OR" | 过滤条件组合方式：AND_OR 表示组内 AND、组间 OR；OR_AND 表示组内 OR、组间 AND。 |
 | `sort` | 否 | `array` |  | 排序条件。 |
 
 调用示例：
@@ -6361,7 +6361,7 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "分组排序方向。用于控制分组结果升序或降序。"
+      "description": "分组排序方向：asc=升序，desc=降序。"
     },
     "filter": {
       "type": "array",
@@ -6393,7 +6393,7 @@ authorization: Bearer <auth-token>
         "AND_OR"
       ],
       "default": "AND_OR",
-      "description": "过滤条件组合方式。"
+      "description": "过滤条件组合方式：AND_OR 表示组内 AND、组间 OR；OR_AND 表示组内 OR、组间 AND。"
     },
     "sort": {
       "type": "array",
@@ -6506,7 +6506,7 @@ authorization: Bearer <auth-token>
 | `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `work_item_id` | 是 | `unknown` |  | 工作项 ID。用于定位 Scrum 工作项、评论、附件、流转或关联资源。 |
-| `type` | 否 | `string` | "commit" | 类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。 |
+| `type` | 否 | `string` | "commit" | 类型。常见取值按接口区分：Req 计划 type 可取 gantt=甘特图、mind=思维导图；关联提交 type 可取 commit 或 branch；其他接口以对应服务枚举为准。 |
 
 调用示例：
 
@@ -6560,7 +6560,7 @@ authorization: Bearer <auth-token>
         "branch"
       ],
       "default": "commit",
-      "description": "类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。"
+      "description": "类型。常见取值按接口区分：Req 计划 type 可取 gantt=甘特图、mind=思维导图；关联提交 type 可取 commit 或 branch；其他接口以对应服务枚举为准。"
     }
   },
   "required": [
@@ -7028,7 +7028,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 否 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `type` | 否 | `string` | "backlog" | 类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。 |
+| `type` | 否 | `string` | "backlog" | 类型。常见取值按接口区分：Req 计划 type 可取 gantt=甘特图、mind=思维导图；关联提交 type 可取 commit 或 branch；其他接口以对应服务枚举为准。 |
 
 调用示例：
 
@@ -7059,7 +7059,7 @@ authorization: Bearer <auth-token>
       "type": "string",
       "minLength": 1,
       "default": "backlog",
-      "description": "类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。"
+      "description": "类型。常见取值按接口区分：Req 计划 type 可取 gantt=甘特图、mind=思维导图；关联提交 type 可取 commit 或 branch；其他接口以对应服务枚举为准。"
     }
   },
   "additionalProperties": false,
@@ -7089,7 +7089,7 @@ authorization: Bearer <auth-token>
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `parent_id` | 是 | `unknown` |  | 父级资源 ID。用于创建模块、特性集或树形结构节点。 |
 | `subject` | 否 | `string` |  | 标题/主题关键字。用于按工作项标题或主题过滤可添加/已关联工作项。 |
-| `query_type` | 否 | `string` | "basic" | 查询类型。 |
+| `query_type` | 否 | `string` | "basic" | 查询类型。常见取值：IR 子项查询 RR=研发需求、ITEMS=条目；RR 列表查询 ALL=全部、DST=目标、SRC=来源；子工作项查询 basic/custom/query。 |
 
 调用示例：
 
@@ -7148,7 +7148,7 @@ authorization: Bearer <auth-token>
         "query"
       ],
       "default": "basic",
-      "description": "查询类型。"
+      "description": "查询类型。常见取值：IR 子项查询 RR=研发需求、ITEMS=条目；RR 列表查询 ALL=全部、DST=目标、SRC=来源；子工作项查询 basic/custom/query。"
     }
   },
   "required": [
@@ -7684,7 +7684,7 @@ authorization: Bearer <auth-token>
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `issue_type` | 是 | `string` |  | IPD 工作项类型。用于指定需求、缺陷等 IPD 对象类别。 |
 | `filter` | 否 | `array` |  | 过滤条件列表。 |
-| `filter_mode` | 否 | `string` | "AND_OR" | 过滤条件组合方式。 |
+| `filter_mode` | 否 | `string` | "AND_OR" | 过滤条件组合方式：AND_OR 表示组内 AND、组间 OR；OR_AND 表示组内 OR、组间 AND。 |
 
 调用示例：
 
@@ -7747,7 +7747,7 @@ authorization: Bearer <auth-token>
         "AND_OR"
       ],
       "default": "AND_OR",
-      "description": "过滤条件组合方式。"
+      "description": "过滤条件组合方式：AND_OR 表示组内 AND、组间 OR；OR_AND 表示组内 OR、组间 AND。"
     }
   },
   "required": [
@@ -8042,7 +8042,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `search` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `model` | 否 | `string` |  | IPD 项目模型。用于筛选不同类型的 IPD 项目。 |
+| `model` | 否 | `string` |  | IPD 项目模型：10001、10002、10003，分别对应租户启用的不同 IPD 项目模型；具体名称以租户配置为准。 |
 
 调用示例：
 
@@ -8075,7 +8075,7 @@ authorization: Bearer <auth-token>
         "10002",
         "10003"
       ],
-      "description": "IPD 项目模型。用于筛选不同类型的 IPD 项目。"
+      "description": "IPD 项目模型：10001、10002、10003，分别对应租户启用的不同 IPD 项目模型；具体名称以租户配置为准。"
     }
   },
   "additionalProperties": false,
@@ -8384,7 +8384,7 @@ authorization: Bearer <auth-token>
 | `project_id` | 否 | `string | array` | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `issue_type` | 是 | `string` |  | IPD 工作项类型。用于指定需求、缺陷等 IPD 对象类别。 |
 | `filter` | 否 | `array` |  | 过滤条件列表。 |
-| `filter_mode` | 否 | `string` | "AND_OR" | 过滤条件组合方式。 |
+| `filter_mode` | 否 | `string` | "AND_OR" | 过滤条件组合方式：AND_OR 表示组内 AND、组间 OR；OR_AND 表示组内 OR、组间 AND。 |
 | `sort` | 否 | `array` |  | 排序条件。 |
 
 调用示例：
@@ -8473,7 +8473,7 @@ authorization: Bearer <auth-token>
         "AND_OR"
       ],
       "default": "AND_OR",
-      "description": "过滤条件组合方式。"
+      "description": "过滤条件组合方式：AND_OR 表示组内 AND、组间 OR；OR_AND 表示组内 OR、组间 AND。"
     },
     "sort": {
       "type": "array",
@@ -8808,7 +8808,7 @@ authorization: Bearer <auth-token>
 | `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
 | `program_id` | 是 | `string` |  | 项目空间/需求池 ID。用于定位 IR/RR 所属空间。 |
 | `ir_id` | 是 | `unknown` |  | IR ID。用于定位需求池中的原始需求。 |
-| `query_type` | 是 | `string` |  | 查询类型。 |
+| `query_type` | 是 | `string` |  | 查询类型。常见取值：IR 子项查询 RR=研发需求、ITEMS=条目；RR 列表查询 ALL=全部、DST=目标、SRC=来源；子工作项查询 basic/custom/query。 |
 
 调用示例：
 
@@ -8862,7 +8862,7 @@ authorization: Bearer <auth-token>
         "RR",
         "ITEMS"
       ],
-      "description": "查询类型。"
+      "description": "查询类型。常见取值：IR 子项查询 RR=研发需求、ITEMS=条目；RR 列表查询 ALL=全部、DST=目标、SRC=来源；子工作项查询 basic/custom/query。"
     }
   },
   "required": [
@@ -9006,8 +9006,8 @@ authorization: Bearer <auth-token>
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `iteration_id` | 是 | `unknown` |  | 迭代唯一标识。 |
-| `tracker_id` | 否 | `integer` |  | Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。 |
-| `status_id` | 否 | `integer` |  | 工作项状态 ID。用于更新工作项状态或按状态过滤；状态 ID 可通过状态配置/工作流接口查询。 |
+| `tracker_id` | 否 | `integer` |  | Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
+| `status_id` | 否 | `integer` |  | 工作项状态 ID：1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝。用于更新工作项状态或按状态过滤；状态 ID 也可通过状态配置/工作流接口查询。 |
 
 调用示例：
 
@@ -9044,12 +9044,12 @@ authorization: Bearer <auth-token>
     "tracker_id": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。"
+      "description": "Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。"
     },
     "status_id": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "工作项状态 ID。用于更新工作项状态或按状态过滤；状态 ID 可通过状态配置/工作流接口查询。"
+      "description": "工作项状态 ID：1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝。用于更新工作项状态或按状态过滤；状态 ID 也可通过状态配置/工作流接口查询。"
     }
   },
   "required": [
@@ -9085,8 +9085,8 @@ authorization: Bearer <auth-token>
 | `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `iteration_id` | 是 | `unknown` |  | 迭代唯一标识。 |
-| `tracker_id` | 否 | `number` |  | Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。 |
-| `status_id` | 否 | `integer` |  | 工作项状态 ID。用于更新工作项状态或按状态过滤；状态 ID 可通过状态配置/工作流接口查询。 |
+| `tracker_id` | 否 | `number` |  | Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
+| `status_id` | 否 | `integer` |  | 工作项状态 ID：1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝。用于更新工作项状态或按状态过滤；状态 ID 也可通过状态配置/工作流接口查询。 |
 
 调用示例：
 
@@ -9158,12 +9158,12 @@ authorization: Bearer <auth-token>
         6,
         7
       ],
-      "description": "Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。"
+      "description": "Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。"
     },
     "status_id": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "工作项状态 ID。用于更新工作项状态或按状态过滤；状态 ID 可通过状态配置/工作流接口查询。"
+      "description": "工作项状态 ID：1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝。用于更新工作项状态或按状态过滤；状态 ID 也可通过状态配置/工作流接口查询。"
     }
   },
   "required": [
@@ -9282,7 +9282,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `type` | 否 | `string` | "board" | 类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。 |
+| `type` | 否 | `string` | "board" | 类型。常见取值按接口区分：Req 计划 type 可取 gantt=甘特图、mind=思维导图；关联提交 type 可取 commit 或 branch；其他接口以对应服务枚举为准。 |
 | `region` | 否 | `string` |  | 华为云区域标识，例如 cn-north-4。 |
 
 调用示例：
@@ -9316,7 +9316,7 @@ authorization: Bearer <auth-token>
       "type": "string",
       "minLength": 1,
       "default": "board",
-      "description": "类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。"
+      "description": "类型。常见取值按接口区分：Req 计划 type 可取 gantt=甘特图、mind=思维导图；关联提交 type 可取 commit 或 branch；其他接口以对应服务枚举为准。"
     },
     "region": {
       "type": "string",
@@ -9409,7 +9409,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `tracker_id` | 是 | `number` |  | Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。 |
+| `tracker_id` | 是 | `number` |  | Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
 
 调用示例：
 
@@ -9448,7 +9448,7 @@ authorization: Bearer <auth-token>
         6,
         7
       ],
-      "description": "Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。"
+      "description": "Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。"
     }
   },
   "required": [
@@ -9564,8 +9564,8 @@ authorization: Bearer <auth-token>
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `plan_id` | 是 | `unknown` |  | 规划/计划 ID。用于定位 CodeArts Req 中的计划资源。 |
 | `subject` | 否 | `string` |  | 标题/主题关键字。用于按工作项标题或主题过滤可添加/已关联工作项。 |
-| `show_type` | 否 | `string` | "list" | 展示方式，例如 list 或 tree。 |
-| `tracker_id` | 否 | `number` |  | Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。 |
+| `show_type` | 否 | `string` | "list" | 展示方式：list=列表，tree=树形。 |
+| `tracker_id` | 否 | `number` |  | Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
 
 调用示例：
 
@@ -9623,7 +9623,7 @@ authorization: Bearer <auth-token>
         "tree"
       ],
       "default": "list",
-      "description": "展示方式，例如 list 或 tree。"
+      "description": "展示方式：list=列表，tree=树形。"
     },
     "tracker_id": {
       "type": "number",
@@ -9634,7 +9634,7 @@ authorization: Bearer <auth-token>
         6,
         7
       ],
-      "description": "Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。"
+      "description": "Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。"
     }
   },
   "required": [
@@ -9666,12 +9666,12 @@ authorization: Bearer <auth-token>
 | `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
 | `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `status_id` | 否 | `integer` |  | 工作项状态 ID。用于更新工作项状态或按状态过滤；状态 ID 可通过状态配置/工作流接口查询。 |
+| `status_id` | 否 | `integer` |  | 工作项状态 ID：1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝。用于更新工作项状态或按状态过滤；状态 ID 也可通过状态配置/工作流接口查询。 |
 | `plan_id` | 否 | `unknown` |  | 规划/计划 ID。用于定位 CodeArts Req 中的计划资源。 |
 | `search` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
 | `user_ids` | 否 | `array` |  | 用户 ID 列表。用于批量成员、权限或过滤操作。 |
 | `sort` | 否 | `string` |  | 排序条件。 |
-| `type` | 否 | `string` |  | 类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。 |
+| `type` | 否 | `string` |  | 类型。常见取值按接口区分：Req 计划 type 可取 gantt=甘特图、mind=思维导图；关联提交 type 可取 commit 或 branch；其他接口以对应服务枚举为准。 |
 
 调用示例：
 
@@ -9716,7 +9716,7 @@ authorization: Bearer <auth-token>
     "status_id": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "工作项状态 ID。用于更新工作项状态或按状态过滤；状态 ID 可通过状态配置/工作流接口查询。"
+      "description": "工作项状态 ID：1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝。用于更新工作项状态或按状态过滤；状态 ID 也可通过状态配置/工作流接口查询。"
     },
     "plan_id": {
       "$ref": "#/properties/project_id",
@@ -9743,7 +9743,7 @@ authorization: Bearer <auth-token>
         "gantt",
         "mind"
       ],
-      "description": "类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。"
+      "description": "类型。常见取值按接口区分：Req 计划 type 可取 gantt=甘特图、mind=思维导图；关联提交 type 可取 commit 或 branch；其他接口以对应服务枚举为准。"
     }
   },
   "required": [
@@ -9772,7 +9772,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `program_id` | 是 | `string` |  | 项目空间/需求池 ID。用于定位 IR/RR 所属空间。 |
-| `field_type` | 是 | `string` |  | field type 类型。 |
+| `field_type` | 是 | `string` |  | 需求池字段类型：IR=原始需求字段，RR=研发需求字段。 |
 
 调用示例：
 
@@ -9808,7 +9808,7 @@ authorization: Bearer <auth-token>
         "IR",
         "RR"
       ],
-      "description": "field type 类型。"
+      "description": "需求池字段类型：IR=原始需求字段，RR=研发需求字段。"
     }
   },
   "required": [
@@ -9840,8 +9840,8 @@ authorization: Bearer <auth-token>
 | `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
 | `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
 | `search` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_key` | 否 | `string` |  | 排序字段。用于项目空间/需求池列表排序。 |
-| `sort_dir` | 否 | `string` |  | 排序方向。可取 ASC/DESC 或 asc/desc。 |
+| `sort_key` | 否 | `string` |  | 排序字段：name=名称，created_time=创建时间。 |
+| `sort_dir` | 否 | `string` |  | 排序方向：ASC/asc=升序，DESC/desc=降序。 |
 | `is_watched` | 否 | `boolean` |  | 是否watched。 |
 
 调用示例：
@@ -9888,7 +9888,7 @@ authorization: Bearer <auth-token>
         "name",
         "created_time"
       ],
-      "description": "排序字段。用于项目空间/需求池列表排序。"
+      "description": "排序字段：name=名称，created_time=创建时间。"
     },
     "sort_dir": {
       "type": "string",
@@ -9898,7 +9898,7 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向。可取 ASC/DESC 或 asc/desc。"
+      "description": "排序方向：ASC/asc=升序，DESC/desc=降序。"
     },
     "is_watched": {
       "type": "boolean",
@@ -10269,7 +10269,7 @@ authorization: Bearer <auth-token>
 | `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
 | `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `status` | 否 | `number` |  | 状态值，用于过滤或更新状态。 |
+| `status` | 否 | `number` |  | 状态值。Scrum 迭代状态可取 "0"、"1"、"2"；工作项状态常见映射为 1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝；具体以项目状态配置为准。 |
 
 调用示例：
 
@@ -10317,7 +10317,7 @@ authorization: Bearer <auth-token>
         1,
         2
       ],
-      "description": "状态值，用于过滤或更新状态。"
+      "description": "状态值。Scrum 迭代状态可取 \"0\"、\"1\"、\"2\"；工作项状态常见映射为 1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝；具体以项目状态配置为准。"
     }
   },
   "required": [
@@ -10798,8 +10798,8 @@ authorization: Bearer <auth-token>
 | `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
 | `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
 | `program_id` | 是 | `string` |  | 项目空间/需求池 ID。用于定位 IR/RR 所属空间。 |
-| `query_type` | 否 | `string` | "ALL" | 查询类型。 |
-| `include_deleted` | 否 | `boolean` |  | 是否包含已删除数据。 |
+| `query_type` | 否 | `string` | "ALL" | 查询类型。常见取值：IR 子项查询 RR=研发需求、ITEMS=条目；RR 列表查询 ALL=全部、DST=目标、SRC=来源；子工作项查询 basic/custom/query。 |
+| `include_deleted` | 否 | `boolean` |  | 是否包含已删除数据：true=包含，false=不包含。 |
 | `updated_time_interval` | 否 | `string` |  | 更新时间范围。 |
 
 调用示例：
@@ -10850,11 +10850,11 @@ authorization: Bearer <auth-token>
         "SRC"
       ],
       "default": "ALL",
-      "description": "查询类型。"
+      "description": "查询类型。常见取值：IR 子项查询 RR=研发需求、ITEMS=条目；RR 列表查询 ALL=全部、DST=目标、SRC=来源；子工作项查询 basic/custom/query。"
     },
     "include_deleted": {
       "type": "boolean",
-      "description": "是否包含已删除数据。"
+      "description": "是否包含已删除数据：true=包含，false=不包含。"
     },
     "updated_time_interval": {
       "type": "string",
@@ -11020,7 +11020,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `tracker_id` | 否 | `number` |  | Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。 |
+| `tracker_id` | 否 | `number` |  | Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
 
 调用示例：
 
@@ -11058,7 +11058,7 @@ authorization: Bearer <auth-token>
         6,
         7
       ],
-      "description": "Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。"
+      "description": "Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。"
     }
   },
   "required": [
@@ -11226,7 +11226,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `tracker_id` | 是 | `number` |  | Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。 |
+| `tracker_id` | 是 | `number` |  | Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
 
 调用示例：
 
@@ -11265,7 +11265,7 @@ authorization: Bearer <auth-token>
         6,
         7
       ],
-      "description": "Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。"
+      "description": "Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。"
     }
   },
   "required": [
@@ -11295,7 +11295,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `tracker_id` | 是 | `number` |  | Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。 |
+| `tracker_id` | 是 | `number` |  | Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
 
 调用示例：
 
@@ -11334,7 +11334,7 @@ authorization: Bearer <auth-token>
         6,
         7
       ],
-      "description": "Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。"
+      "description": "Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。"
     }
   },
   "required": [
@@ -11495,7 +11495,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `tracker_id` | 否 | `number` |  | Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。 |
+| `tracker_id` | 否 | `number` |  | Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
 
 调用示例：
 
@@ -11533,7 +11533,7 @@ authorization: Bearer <auth-token>
         6,
         7
       ],
-      "description": "Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。"
+      "description": "Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。"
     }
   },
   "required": [
@@ -11562,7 +11562,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `tracker_id` | 是 | `number` |  | Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。 |
+| `tracker_id` | 是 | `number` |  | Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
 
 调用示例：
 
@@ -11601,7 +11601,7 @@ authorization: Bearer <auth-token>
         6,
         7
       ],
-      "description": "Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。"
+      "description": "Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。"
     }
   },
   "required": [
@@ -11633,7 +11633,7 @@ authorization: Bearer <auth-token>
 | `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
 | `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `tracker_ids` | 否 | `array` |  | Scrum 工作项类型 ID 列表，可选值为 2、3、5、6、7，分别表示 Task、Bug、Epic、Feature、Story。 |
+| `tracker_ids` | 否 | `array` |  | Scrum 工作项类型 ID 列表：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
 
 调用示例：
 
@@ -11688,7 +11688,7 @@ authorization: Bearer <auth-token>
         ]
       },
       "minItems": 1,
-      "description": "Scrum 工作项类型 ID 列表，可选值为 2、3、5、6、7，分别表示 Task、Bug、Epic、Feature、Story。"
+      "description": "Scrum 工作项类型 ID 列表：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。"
     }
   },
   "required": [
@@ -11779,7 +11779,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `tracker_id` | 是 | `number` |  | Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。 |
+| `tracker_id` | 是 | `number` |  | Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
 
 调用示例：
 
@@ -11818,7 +11818,7 @@ authorization: Bearer <auth-token>
         6,
         7
       ],
-      "description": "Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。"
+      "description": "Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。"
     }
   },
   "required": [
@@ -12475,7 +12475,7 @@ authorization: Bearer <auth-token>
 | `begin_time` | 否 | `string` |  | 开始时间。 |
 | `end_time` | 否 | `string` |  | 结束时间。 |
 | `description` | 否 | `string` |  | 对象的详细描述或备注信息。 |
-| `status` | 否 | `string` |  | 状态值，用于过滤或更新状态。 |
+| `status` | 否 | `string` |  | 状态值。Scrum 迭代状态可取 "0"、"1"、"2"；工作项状态常见映射为 1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝；具体以项目状态配置为准。 |
 | `over_type` | 否 | `string` |  | over type 类型。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -12538,7 +12538,7 @@ authorization: Bearer <auth-token>
         "1",
         "2"
       ],
-      "description": "状态值，用于过滤或更新状态。"
+      "description": "状态值。Scrum 迭代状态可取 \"0\"、\"1\"、\"2\"；工作项状态常见映射为 1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝；具体以项目状态配置为准。"
     },
     "over_type": {
       "type": "string",
@@ -12581,7 +12581,7 @@ authorization: Bearer <auth-token>
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `iteration_id` | 是 | `unknown` |  | 迭代唯一标识。 |
 | `name` | 是 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
-| `status` | 是 | `string` |  | 状态值，用于过滤或更新状态。 |
+| `status` | 是 | `string` |  | 状态值。Scrum 迭代状态可取 "0"、"1"、"2"；工作项状态常见映射为 1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝；具体以项目状态配置为准。 |
 | `due_date` | 否 | `string` |  | 计划完成或截止日期。 |
 | `start_date` | 否 | `string` |  | 开始日期。用于时间范围查询；在工作项接口中表示计划开始时间。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
@@ -12632,7 +12632,7 @@ authorization: Bearer <auth-token>
         "1",
         "2"
       ],
-      "description": "状态值，用于过滤或更新状态。"
+      "description": "状态值。Scrum 迭代状态可取 \"0\"、\"1\"、\"2\"；工作项状态常见映射为 1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝；具体以项目状态配置为准。"
     },
     "due_date": {
       "type": "string",
@@ -12906,7 +12906,7 @@ authorization: Bearer <auth-token>
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `user_id` | 是 | `unknown` |  | 用户 ID。用于定位项目成员、操作者或需要授权的用户。 |
-| `role_id` | 是 | `number` |  | 角色 ID。用于指定项目成员角色或权限级别。 |
+| `role_id` | 是 | `number` |  | 项目成员角色 ID：-1=项目创建者，3=项目经理，4=开发人员，5=测试经理，6=测试人员，7=参与者，8=浏览者，9=运维经理；部分接口还允许 10、11 等扩展角色，以租户配置为准。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -12954,7 +12954,7 @@ authorization: Bearer <auth-token>
         8,
         9
       ],
-      "description": "角色 ID。用于指定项目成员角色或权限级别。"
+      "description": "项目成员角色 ID：-1=项目创建者，3=项目经理，4=开发人员，5=测试经理，6=测试人员，7=参与者，8=浏览者，9=运维经理；部分接口还允许 10、11 等扩展角色，以租户配置为准。"
     },
     "dry_run": {
       "type": "boolean",
@@ -13122,13 +13122,13 @@ authorization: Bearer <auth-token>
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `work_item_id` | 是 | `unknown` |  | 工作项 ID。用于定位 Scrum 工作项、评论、附件、流转或关联资源。 |
 | `title` | 否 | `string` |  | 标题。用于工作项、需求、合并请求、标签等资源的展示名称。 |
-| `work_item_type` | 否 | `string` |  | 工作项类型，会映射为 Scrum tracker_id；支持 task=2、bug=3、epic=5、feature=6、story=7，也可以直接传数字字符串 "2"、"3"、"5"、"6"、"7"。 |
+| `work_item_type` | 否 | `string` |  | 工作项类型，会映射为 Scrum tracker_id：task/"2"=Task/任务，bug/"3"=Bug/缺陷，epic/"5"=Epic，feature/"6"=Feature，story/"7"=Story。 |
 | `description` | 否 | `string` |  | 对象的详细描述或备注信息。 |
-| `status_id` | 否 | `integer` |  | 工作项状态 ID。用于更新工作项状态或按状态过滤；状态 ID 可通过状态配置/工作流接口查询。 |
-| `priority_id` | 否 | `integer` |  | 优先级 ID。用于设置或过滤工作项优先级。 |
+| `status_id` | 否 | `integer` |  | 工作项状态 ID：1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝。用于更新工作项状态或按状态过滤；状态 ID 也可通过状态配置/工作流接口查询。 |
+| `priority_id` | 否 | `integer` |  | 工作项优先级 ID。创建工作项未传时默认使用 2；具体优先级名称和可选值以项目字段配置/优先级选项接口返回为准。 |
 | `iteration_id` | 否 | `unknown` |  | 迭代唯一标识。 |
 | `module_id` | 否 | `unknown` |  | 模块 ID。用于把工作项、IPD 对象或项目模块归属到指定模块。 |
-| `severity_id` | 否 | `integer` |  | 严重程度 ID。通常用于缺陷或问题等级。 |
+| `severity_id` | 否 | `integer` |  | 严重程度 ID。通常用于缺陷或问题等级；可通过 `req_list_issue_severities` 查询当前可用严重程度。 |
 | `assigned_id` | 否 | `unknown` |  | 关联责任人用户 ID。创建或更新工作项时传入该字段即可指定责任人；可先调用 `req_list_project_members` 获取项目成员用户 ID。 |
 | `done_ratio` | 否 | `integer` |  | 完成度百分比，用于表示工作项当前完成进度。 |
 | `expected_work_hours` | 否 | `integer` |  | 预计工时，用于记录计划投入的工作小时数。 |
@@ -13176,7 +13176,7 @@ authorization: Bearer <auth-token>
     "work_item_type": {
       "type": "string",
       "minLength": 1,
-      "description": "工作项类型，会映射为 Scrum tracker_id；支持 task=2、bug=3、epic=5、feature=6、story=7，也可以直接传数字字符串 \"2\"、\"3\"、\"5\"、\"6\"、\"7\"。"
+      "description": "工作项类型，会映射为 Scrum tracker_id：task/\"2\"=Task/任务，bug/\"3\"=Bug/缺陷，epic/\"5\"=Epic，feature/\"6\"=Feature，story/\"7\"=Story。"2\"、\"3\"、\"5\"、\"6\"、\"7\"。"
     },
     "description": {
       "type": "string",
@@ -13185,12 +13185,12 @@ authorization: Bearer <auth-token>
     "status_id": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "工作项状态 ID。用于更新工作项状态或按状态过滤；状态 ID 可通过状态配置/工作流接口查询。"
+      "description": "工作项状态 ID：1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝。用于更新工作项状态或按状态过滤；状态 ID 也可通过状态配置/工作流接口查询。"
     },
     "priority_id": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "优先级 ID。用于设置或过滤工作项优先级。"
+      "description": "工作项优先级 ID。创建工作项未传时默认使用 2；具体优先级名称和可选值以项目字段配置/优先级选项接口返回为准。"
     },
     "iteration_id": {
       "$ref": "#/properties/project_id",
@@ -13203,7 +13203,7 @@ authorization: Bearer <auth-token>
     "severity_id": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "严重程度 ID。通常用于缺陷或问题等级。"
+      "description": "严重程度 ID。通常用于缺陷或问题等级；可通过 `req_list_issue_severities` 查询当前可用严重程度。"
     },
     "assigned_id": {
       "$ref": "#/properties/project_id",
@@ -13346,7 +13346,7 @@ authorization: Bearer <auth-token>
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `work_item_id` | 是 | `unknown` |  | 工作项 ID。用于定位 Scrum 工作项、评论、附件、流转或关联资源。 |
-| `status_id` | 是 | `integer` |  | 工作项状态 ID。用于更新工作项状态或按状态过滤；状态 ID 可通过状态配置/工作流接口查询。 |
+| `status_id` | 是 | `integer` |  | 工作项状态 ID：1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝。用于更新工作项状态或按状态过滤；状态 ID 也可通过状态配置/工作流接口查询。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -13385,7 +13385,7 @@ authorization: Bearer <auth-token>
     "status_id": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "工作项状态 ID。用于更新工作项状态或按状态过滤；状态 ID 可通过状态配置/工作流接口查询。"
+      "description": "工作项状态 ID：1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝。用于更新工作项状态或按状态过滤；状态 ID 也可通过状态配置/工作流接口查询。"
     },
     "dry_run": {
       "type": "boolean",
@@ -14136,12 +14136,12 @@ authorization: Bearer <auth-token>
 | `name` | 是 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
 | `import_members` | 否 | `integer` |  | 是否导入成员。创建仓库时控制是否导入项目成员。 |
 | `template_id` | 否 | `string` |  | 模板 ID。用于按模板创建部署任务、应用或查询模板详情。 |
-| `visibility_level` | 否 | `number` |  | 仓库可见级别。用于设置私有或公开等可见性。 |
+| `visibility_level` | 否 | `number` |  | 仓库可见级别：0=私有，20=公开/项目内可见（以 CodeArts Repo 租户配置为准）。 |
 | `import_url` | 否 | `string` |  | 导入仓库 URL。创建仓库时可从外部仓库导入。 |
 | `description` | 否 | `string` |  | 对象的详细描述或备注信息。 |
 | `gitignore_id` | 否 | `string` |  | gitignore 模板 ID。创建仓库时用于初始化忽略规则。 |
 | `license_id` | 否 | `integer` |  | 许可证模板 ID。创建仓库时用于初始化许可证。 |
-| `enable_readme` | 否 | `boolean \| integer` |  | 是否初始化 README。创建仓库时控制是否生成 README 文件。 |
+| `enable_readme` | 否 | `boolean \| integer` |  | 是否初始化 README：true/1=创建 README，false/0=不创建。 |
 | `caller` | 否 | `string` |  | 调用来源标识。创建 Repo 仓库时用于标记调用方。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -14196,7 +14196,7 @@ authorization: Bearer <auth-token>
         0,
         20
       ],
-      "description": "仓库可见级别。用于设置私有或公开等可见性。"
+      "description": "仓库可见级别：0=私有，20=公开/项目内可见（以 CodeArts Repo 租户配置为准）。"
     },
     "import_url": {
       "type": "string",
@@ -14228,7 +14228,7 @@ authorization: Bearer <auth-token>
           "maximum": 1
         }
       ],
-      "description": "是否初始化 README。创建仓库时控制是否生成 README 文件。"
+      "description": "是否初始化 README：true/1=创建 README，false/0=不创建。"
     },
     "caller": {
       "type": "string",
@@ -15264,7 +15264,7 @@ authorization: Bearer <auth-token>
 | `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
 | `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
 | `repository_id` | 是 | `string` |  | 代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。 |
-| `state` | 否 | `string` |  | 状态值，用于过滤或切换对象状态。 |
+| `state` | 否 | `string` |  | 合并请求状态过滤：all=全部，opened=开启中，closed=已关闭，merged=已合并。 |
 
 调用示例：
 
@@ -15330,7 +15330,7 @@ authorization: Bearer <auth-token>
         "closed",
         "merged"
       ],
-      "description": "状态值，用于过滤或切换对象状态。"
+      "description": "合并请求状态过滤：all=全部，opened=开启中，closed=已关闭，merged=已合并。"
     }
   },
   "required": [
@@ -15794,7 +15794,7 @@ authorization: Bearer <auth-token>
 | --- | --- | --- | --- | --- |
 | `repository_id` | 是 | `string` |  | 代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。 |
 | `merge_request_iid` | 是 | `unknown` |  | 合并请求 IID。用于定位仓库内的某个 MR。 |
-| `action_type` | 是 | `string` |  | 评审动作。用于 MR 审批、驳回或重置评审状态。 |
+| `action_type` | 是 | `string` |  | 合并请求评审动作：approve=通过，reject=驳回，reset=重置评审状态。 |
 | `approver_comment` | 否 | `string` |  | 评审意见。审批或驳回合并请求时填写。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -15838,7 +15838,7 @@ authorization: Bearer <auth-token>
         "reject",
         "reset"
       ],
-      "description": "评审动作。用于 MR 审批、驳回或重置评审状态。"
+      "description": "合并请求评审动作：approve=通过，reject=驳回，reset=重置评审状态。"
     },
     "approver_comment": {
       "type": "string",
@@ -16398,7 +16398,7 @@ authorization: Bearer <auth-token>
 | --- | --- | --- | --- | --- |
 | `domain_id` | 是 | `string` |  | 租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。 |
 | `name` | 是 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
-| `type` | 是 | `string` |  | 类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。 |
+| `type` | 是 | `string` |  | 类型。常见取值按接口区分：Req 计划 type 可取 gantt=甘特图、mind=思维导图；关联提交 type 可取 commit 或 branch；其他接口以对应服务枚举为准。 |
 | `layout_content` | 是 | `string` |  | 规则布局内容。创建或更新 Pipeline 规则时用于描述规则表单/布局配置。 |
 | `plugin_id` | 否 | `string` |  | 插件 ID。用于定位 Pipeline 插件。 |
 | `plugin_name` | 否 | `string` |  | 插件名称。用于查询插件版本、输入或输出定义。 |
@@ -16445,7 +16445,7 @@ authorization: Bearer <auth-token>
     "type": {
       "type": "string",
       "minLength": 1,
-      "description": "类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。"
+      "description": "类型。常见取值按接口区分：Req 计划 type 可取 gantt=甘特图、mind=思维导图；关联提交 type 可取 commit 或 branch；其他接口以对应服务枚举为准。"
     },
     "layout_content": {
       "type": "string",
@@ -16498,7 +16498,7 @@ authorization: Bearer <auth-token>
                 "type": {
                   "type": "string",
                   "minLength": 1,
-                  "description": "类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。"
+                  "description": "类型。常见取值按接口区分：Req 计划 type 可取 gantt=甘特图、mind=思维导图；关联提交 type 可取 commit 或 branch；其他接口以对应服务枚举为准。"
                 },
                 "name": {
                   "type": "string",
@@ -16809,7 +16809,7 @@ authorization: Bearer <auth-token>
           "type": {
             "type": "string",
             "minLength": 1,
-            "description": "类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。"
+            "description": "类型。常见取值按接口区分：Req 计划 type 可取 gantt=甘特图、mind=思维导图；关联提交 type 可取 commit 或 branch；其他接口以对应服务枚举为准。"
           },
           "value": {
             "type": "string",
@@ -17783,8 +17783,8 @@ authorization: Bearer <auth-token>
 | `domain_id` | 是 | `string` |  | 租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。 |
 | `plugin_name` | 是 | `string` |  | 插件名称。用于查询插件版本、输入或输出定义。 |
 | `display_name` | 是 | `string` |  | display name 名称。 |
-| `version` | 是 | `string` |  | 版本号。用于指定插件版本、接口版本或工具步骤版本。 |
-| `plugin_attribution` | 是 | `string` |  | 插件归属。可区分官方插件和自定义插件。 |
+| `version` | 是 | `string` |  | 接口版本。IPD 工作项详情支持 v1、v2，默认 v2；插件/构建步骤中的 version 表示对应插件或步骤版本。 |
+| `plugin_attribution` | 是 | `string` |  | 插件归属：official=官方插件，custom=自定义插件。 |
 
 调用示例：
 
@@ -17830,7 +17830,7 @@ authorization: Bearer <auth-token>
     "version": {
       "type": "string",
       "minLength": 1,
-      "description": "版本号。用于指定插件版本、接口版本或工具步骤版本。"
+      "description": "接口版本。IPD 工作项详情支持 v1、v2，默认 v2；插件/构建步骤中的 version 表示对应插件或步骤版本。"
     },
     "plugin_attribution": {
       "type": "string",
@@ -17838,7 +17838,7 @@ authorization: Bearer <auth-token>
         "custom",
         "official"
       ],
-      "description": "插件归属。可区分官方插件和自定义插件。"
+      "description": "插件归属：official=官方插件，custom=自定义插件。"
     }
   },
   "required": [
@@ -17873,8 +17873,8 @@ authorization: Bearer <auth-token>
 | `domain_id` | 是 | `string` |  | 租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。 |
 | `plugin_name` | 是 | `string` |  | 插件名称。用于查询插件版本、输入或输出定义。 |
 | `display_name` | 是 | `string` |  | display name 名称。 |
-| `version` | 是 | `string` |  | 版本号。用于指定插件版本、接口版本或工具步骤版本。 |
-| `plugin_attribution` | 是 | `string` |  | 插件归属。可区分官方插件和自定义插件。 |
+| `version` | 是 | `string` |  | 接口版本。IPD 工作项详情支持 v1、v2，默认 v2；插件/构建步骤中的 version 表示对应插件或步骤版本。 |
+| `plugin_attribution` | 是 | `string` |  | 插件归属：official=官方插件，custom=自定义插件。 |
 
 调用示例：
 
@@ -17920,7 +17920,7 @@ authorization: Bearer <auth-token>
     "version": {
       "type": "string",
       "minLength": 1,
-      "description": "版本号。用于指定插件版本、接口版本或工具步骤版本。"
+      "description": "接口版本。IPD 工作项详情支持 v1、v2，默认 v2；插件/构建步骤中的 version 表示对应插件或步骤版本。"
     },
     "plugin_attribution": {
       "type": "string",
@@ -17928,7 +17928,7 @@ authorization: Bearer <auth-token>
         "custom",
         "official"
       ],
-      "description": "插件归属。可区分官方插件和自定义插件。"
+      "description": "插件归属：official=官方插件，custom=自定义插件。"
     }
   },
   "required": [
@@ -17962,7 +17962,7 @@ authorization: Bearer <auth-token>
 | --- | --- | --- | --- | --- |
 | `domain_id` | 是 | `string` |  | 租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。 |
 | `plugin_name` | 是 | `string` |  | 插件名称。用于查询插件版本、输入或输出定义。 |
-| `version` | 是 | `string` |  | 版本号。用于指定插件版本、接口版本或工具步骤版本。 |
+| `version` | 是 | `string` |  | 接口版本。IPD 工作项详情支持 v1、v2，默认 v2；插件/构建步骤中的 version 表示对应插件或步骤版本。 |
 
 调用示例：
 
@@ -18001,7 +18001,7 @@ authorization: Bearer <auth-token>
     "version": {
       "type": "string",
       "minLength": 1,
-      "description": "版本号。用于指定插件版本、接口版本或工具步骤版本。"
+      "description": "接口版本。IPD 工作项详情支持 v1、v2，默认 v2；插件/构建步骤中的 version 表示对应插件或步骤版本。"
     }
   },
   "required": [
@@ -19720,8 +19720,8 @@ authorization: Bearer <auth-token>
 | `domain_id` | 是 | `string` |  | 租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。 |
 | `offset` | 否 | `integer` | 0 | 偏移量。用于分页或日志读取位置。 |
 | `limit` | 否 | `integer` | 20 | 返回数量上限。用于 offset/limit 分页。 |
-| `plugin_attribution` | 否 | `string` |  | 插件归属。可区分官方插件和自定义插件。 |
-| `business_type` | 否 | `array` |  | business type 类型。 |
+| `plugin_attribution` | 否 | `string` |  | 插件归属：official=官方插件，custom=自定义插件。 |
+| `business_type` | 否 | `array` |  | 插件业务类型：Build=构建，Gate=准入/门禁，Deploy=部署，Test=测试，Normal=普通。 |
 | `maintainer` | 否 | `string` |  | 维护者。用于按插件维护者筛选 Pipeline 插件。 |
 | `plugin_name` | 否 | `string` |  | 插件名称。用于查询插件版本、输入或输出定义。 |
 
@@ -19771,7 +19771,7 @@ authorization: Bearer <auth-token>
         "custom",
         "official"
       ],
-      "description": "插件归属。可区分官方插件和自定义插件。"
+      "description": "插件归属：official=官方插件，custom=自定义插件。"
     },
     "business_type": {
       "type": "array",
@@ -19785,7 +19785,7 @@ authorization: Bearer <auth-token>
           "Normal"
         ]
       },
-      "description": "business type 类型。"
+      "description": "插件业务类型：Build=构建，Gate=准入/门禁，Deploy=部署，Test=测试，Normal=普通。"
     },
     "maintainer": {
       "type": "string",
@@ -19829,7 +19829,7 @@ authorization: Bearer <auth-token>
 | `include_tenant_rule_set` | 否 | `boolean` | false | 是否包含tenantruleset。 |
 | `name` | 否 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
 | `is_valid` | 否 | `boolean` |  | 是否valid。 |
-| `type` | 否 | `string` |  | 类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。 |
+| `type` | 否 | `string` |  | 类型。常见取值按接口区分：Req 计划 type 可取 gantt=甘特图、mind=思维导图；关联提交 type 可取 commit 或 branch；其他接口以对应服务枚举为准。 |
 
 调用示例：
 
@@ -19888,7 +19888,7 @@ authorization: Bearer <auth-token>
     "type": {
       "type": "string",
       "minLength": 1,
-      "description": "类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。"
+      "description": "类型。常见取值按接口区分：Req 计划 type 可取 gantt=甘特图、mind=思维导图；关联提交 type 可取 commit 或 branch；其他接口以对应服务枚举为准。"
     }
   },
   "required": [
@@ -20047,7 +20047,7 @@ authorization: Bearer <auth-token>
 | `offset` | 是 | `integer` |  | 偏移量。用于分页或日志读取位置。 |
 | `limit` | 是 | `integer` |  | 返回数量上限。用于 offset/limit 分页。 |
 | `cloud_project_id` | 否 | `unknown` |  | 云项目 ID。查询租户级策略或规则时用于限定云项目范围。 |
-| `type` | 否 | `string` |  | 类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。 |
+| `type` | 否 | `string` |  | 类型。常见取值按接口区分：Req 计划 type 可取 gantt=甘特图、mind=思维导图；关联提交 type 可取 commit 或 branch；其他接口以对应服务枚举为准。 |
 | `name` | 否 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
 
 调用示例：
@@ -20097,7 +20097,7 @@ authorization: Bearer <auth-token>
     "type": {
       "type": "string",
       "minLength": 1,
-      "description": "类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。"
+      "description": "类型。常见取值按接口区分：Req 计划 type 可取 gantt=甘特图、mind=思维导图；关联提交 type 可取 commit 或 branch；其他接口以对应服务枚举为准。"
     },
     "name": {
       "type": "string",
@@ -20230,7 +20230,7 @@ authorization: Bearer <auth-token>
 | --- | --- | --- | --- | --- |
 | `domain_id` | 是 | `string` |  | 租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。 |
 | `use_condition` | 是 | `string` |  | 使用场景条件。用于筛选当前阶段可用插件。 |
-| `business_type` | 否 | `array` |  | business type 类型。 |
+| `business_type` | 否 | `array` |  | 插件业务类型：Build=构建，Gate=准入/门禁，Deploy=部署，Test=测试，Normal=普通。 |
 | `deploy_type` | 否 | `string` |  | 部署类型。 |
 | `comp_extend_type` | 否 | `string` |  | comp extend type 类型。 |
 
@@ -20279,7 +20279,7 @@ authorization: Bearer <auth-token>
           "Normal"
         ]
       },
-      "description": "business type 类型。"
+      "description": "插件业务类型：Build=构建，Gate=准入/门禁，Deploy=部署，Test=测试，Normal=普通。"
     },
     "deploy_type": {
       "type": "string",
@@ -20324,7 +20324,7 @@ authorization: Bearer <auth-token>
 | `include_tenant_rule_set` | 否 | `boolean` | true | 是否包含tenantruleset。 |
 | `name` | 否 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
 | `is_valid` | 否 | `boolean` |  | 是否valid。 |
-| `type` | 否 | `string` |  | 类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。 |
+| `type` | 否 | `string` |  | 类型。常见取值按接口区分：Req 计划 type 可取 gantt=甘特图、mind=思维导图；关联提交 type 可取 commit 或 branch；其他接口以对应服务枚举为准。 |
 
 调用示例：
 
@@ -20383,7 +20383,7 @@ authorization: Bearer <auth-token>
     "type": {
       "type": "string",
       "minLength": 1,
-      "description": "类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。"
+      "description": "类型。常见取值按接口区分：Req 计划 type 可取 gantt=甘特图、mind=思维导图；关联提交 type 可取 commit 或 branch；其他接口以对应服务枚举为准。"
     }
   },
   "required": [
@@ -21676,7 +21676,7 @@ authorization: Bearer <auth-token>
 | `domain_id` | 是 | `string` |  | 租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。 |
 | `rule_id` | 是 | `unknown` |  | 规则 ID。用于定位流水线规则。 |
 | `name` | 是 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
-| `type` | 是 | `string` |  | 类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。 |
+| `type` | 是 | `string` |  | 类型。常见取值按接口区分：Req 计划 type 可取 gantt=甘特图、mind=思维导图；关联提交 type 可取 commit 或 branch；其他接口以对应服务枚举为准。 |
 | `plugin_id` | 否 | `string` |  | 插件 ID。用于定位 Pipeline 插件。 |
 | `plugin_name` | 否 | `string` |  | 插件名称。用于查询插件版本、输入或输出定义。 |
 | `plugin_version` | 否 | `string` |  | 插件版本。用于定位具体插件版本。 |
@@ -21726,7 +21726,7 @@ authorization: Bearer <auth-token>
     "type": {
       "type": "string",
       "minLength": 1,
-      "description": "类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。"
+      "description": "类型。常见取值按接口区分：Req 计划 type 可取 gantt=甘特图、mind=思维导图；关联提交 type 可取 commit 或 branch；其他接口以对应服务枚举为准。"
     },
     "plugin_id": {
       "type": "string",
@@ -21774,7 +21774,7 @@ authorization: Bearer <auth-token>
                 "type": {
                   "type": "string",
                   "minLength": 1,
-                  "description": "类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。"
+                  "description": "类型。常见取值按接口区分：Req 计划 type 可取 gantt=甘特图、mind=思维导图；关联提交 type 可取 commit 或 branch；其他接口以对应服务枚举为准。"
                 },
                 "name": {
                   "type": "string",
@@ -22103,7 +22103,7 @@ authorization: Bearer <auth-token>
           "type": {
             "type": "string",
             "minLength": 1,
-            "description": "类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。"
+            "description": "类型。常见取值按接口区分：Req 计划 type 可取 gantt=甘特图、mind=思维导图；关联提交 type 可取 commit 或 branch；其他接口以对应服务枚举为准。"
           },
           "value": {
             "type": "string",
@@ -22174,7 +22174,7 @@ authorization: Bearer <auth-token>
 | `git_branch` | 是 | `string` |  | Git 分支。 |
 | `language` | 是 | `string` |  | 语言类型。 |
 | `rule_set_id` | 否 | `unknown` |  | 规则集 ID。用于定位代码检查或流水线策略规则集。 |
-| `task_type` | 否 | `string` |  | 任务类型。用于区分全量、增量等执行方式。 |
+| `task_type` | 否 | `string` |  | 检查任务类型：full=全量检查，incremental=增量检查。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -22238,7 +22238,7 @@ authorization: Bearer <auth-token>
         "full",
         "incremental"
       ],
-      "description": "任务类型。用于区分全量、增量等执行方式。"
+      "description": "检查任务类型：full=全量检查，incremental=增量检查。"
     },
     "dry_run": {
       "type": "boolean",
@@ -23631,7 +23631,7 @@ authorization: Bearer <auth-token>
         "trigger_source": {
           "type": "string",
           "default": "0",
-          "description": "触发来源，用于标识流水线或部署任务的启动来源。"
+          "description": "部署启动来源：0 或 \"0\" 表示普通/手动触发，1 或 \"1\" 表示流水线等外部触发；具体来源以 Deploy 返回为准。"
         },
         "artifact_source_system": {
           "type": "string",
@@ -23896,7 +23896,7 @@ authorization: Bearer <auth-token>
           "type": {
             "type": "string",
             "minLength": 1,
-            "description": "类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。"
+            "description": "类型。常见取值按接口区分：Req 计划 type 可取 gantt=甘特图、mind=思维导图；关联提交 type 可取 commit 或 branch；其他接口以对应服务枚举为准。"
           },
           "description": {
             "type": "string",
@@ -24800,7 +24800,7 @@ authorization: Bearer <auth-token>
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `cluster_id` | 是 | `unknown` |  | 集群 ID。用于定位 Deploy v4 主机或容器集群。 |
-| `cluster_type` | 是 | `string` |  | cluster type 类型。 |
+| `cluster_type` | 是 | `string` |  | Deploy v4 集群类型：host=主机集群，container=容器集群。 |
 
 调用示例：
 
@@ -24841,7 +24841,7 @@ authorization: Bearer <auth-token>
         "host",
         "container"
       ],
-      "description": "cluster type 类型。"
+      "description": "Deploy v4 集群类型：host=主机集群，container=容器集群。"
     }
   },
   "required": [
@@ -24872,7 +24872,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `cluster_type` | 是 | `string` |  | cluster type 类型。 |
+| `cluster_type` | 是 | `string` |  | Deploy v4 集群类型：host=主机集群，container=容器集群。 |
 
 调用示例：
 
@@ -24908,7 +24908,7 @@ authorization: Bearer <auth-token>
         "host",
         "container"
       ],
-      "description": "cluster type 类型。"
+      "description": "Deploy v4 集群类型：host=主机集群，container=容器集群。"
     }
   },
   "required": [
@@ -26589,7 +26589,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `cluster_type` | 是 | `string` |  | cluster type 类型。 |
+| `cluster_type` | 是 | `string` |  | Deploy v4 集群类型：host=主机集群，container=容器集群。 |
 | `body` | 否 | `object` | {} | 请求体对象，用于透传该接口的扩展参数。 |
 
 调用示例：
@@ -26626,7 +26626,7 @@ authorization: Bearer <auth-token>
         "host",
         "container"
       ],
-      "description": "cluster type 类型。"
+      "description": "Deploy v4 集群类型：host=主机集群，container=容器集群。"
     },
     "body": {
       "type": "object",
@@ -27182,7 +27182,7 @@ authorization: Bearer <auth-token>
         "trigger_source": {
           "type": "string",
           "default": "0",
-          "description": "触发来源，用于标识流水线或部署任务的启动来源。"
+          "description": "部署启动来源：0 或 \"0\" 表示普通/手动触发，1 或 \"1\" 表示流水线等外部触发；具体来源以 Deploy 返回为准。"
         },
         "artifact_source_system": {
           "type": "string",
@@ -27781,7 +27781,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `task_id` | 是 | `string` |  | 任务 ID。用于定位构建、部署、检查或测试计划任务。 |
-| `trigger_source` | 否 | `number \| string` |  | 触发来源，用于标识流水线或部署任务的启动来源。 |
+| `trigger_source` | 否 | `number \| string` |  | 部署启动来源：0 或 "0" 表示普通/手动触发，1 或 "1" 表示流水线等外部触发；具体来源以 Deploy 返回为准。 |
 | `params` | 否 | `array` | [] | 启动或执行参数列表。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -27823,7 +27823,7 @@ authorization: Bearer <auth-token>
         "0",
         "1"
       ],
-      "description": "触发来源，用于标识流水线或部署任务的启动来源。"
+      "description": "部署启动来源：0 或 \"0\" 表示普通/手动触发，1 或 \"1\" 表示流水线等外部触发；具体来源以 Deploy 返回为准。"
     },
     "params": {
       "type": "array",
@@ -27838,7 +27838,7 @@ authorization: Bearer <auth-token>
           "type": {
             "type": "string",
             "minLength": 1,
-            "description": "类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。"
+            "description": "类型。常见取值按接口区分：Req 计划 type 可取 gantt=甘特图、mind=思维导图；关联提交 type 可取 commit 或 branch；其他接口以对应服务枚举为准。"
           },
           "value": {
             "type": "string",
@@ -27983,7 +27983,7 @@ authorization: Bearer <auth-token>
 | `step_name` | 是 | `string` |  | 步骤名称。 |
 | `module_id` | 是 | `string` |  | 模块 ID。用于把工作项、IPD 对象或项目模块归属到指定模块。 |
 | `enable` | 否 | `boolean` | true | 是否启用该步骤。 |
-| `version` | 否 | `string` |  | 版本号。用于指定插件版本、接口版本或工具步骤版本。 |
+| `version` | 否 | `string` |  | 接口版本。IPD 工作项详情支持 v1、v2，默认 v2；插件/构建步骤中的 version 表示对应插件或步骤版本。 |
 | `image` | 否 | `string` |  | 步骤运行镜像。 |
 | `command` | 否 | `string` |  | 要执行的命令。 |
 | `pre_condition` | 否 | `string` |  | 步骤执行前置条件。 |
@@ -28038,7 +28038,7 @@ authorization: Bearer <auth-token>
     "version": {
       "type": "string",
       "minLength": 1,
-      "description": "版本号。用于指定插件版本、接口版本或工具步骤版本。"
+      "description": "接口版本。IPD 工作项详情支持 v1、v2，默认 v2；插件/构建步骤中的 version 表示对应插件或步骤版本。"
     },
     "image": {
       "type": "string",
