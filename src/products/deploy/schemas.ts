@@ -1,6 +1,24 @@
 import { z } from "zod";
 import { idSchema, pagingSchema } from "../../contracts/common-schemas.js";
 
+const deployV4ListBodyInput = z.object({
+  limit: z.number().int().positive().max(200).optional(),
+  offset: z.number().int().nonnegative().optional(),
+  keyword: z.string().optional(),
+  name: z.string().optional(),
+  status: z.string().optional(),
+  sort_by: z.string().optional(),
+  sort_order: z.enum(["asc", "desc"]).optional(),
+  body: z.record(z.string(), z.unknown()).default({})
+});
+
+const deployV4RecordActionBodyInput = z.object({
+  reason: z.string().optional(),
+  description: z.string().optional(),
+  operator: z.string().optional(),
+  body: z.record(z.string(), z.unknown()).default({})
+});
+
 export const deployListAppsInput = pagingSchema.extend({
   project_id: idSchema
 });
@@ -12,10 +30,9 @@ export const deployListV4ApplicationsInput = z.object({
   keyword: z.string().optional()
 });
 
-export const deployListV4ClustersInput = z.object({
+export const deployListV4ClustersInput = deployV4ListBodyInput.extend({
   project_id: idSchema,
-  cluster_type: z.enum(["host", "container"]),
-  body: z.record(z.string(), z.unknown()).default({})
+  cluster_type: z.enum(["host", "container"])
 });
 
 export const deployGetV4ClusterInput = z.object({
@@ -42,10 +59,12 @@ export const deployGetV4ClusterCountInput = z.object({
   cluster_type: z.enum(["host", "container"])
 });
 
-export const deployListV4ClusterHostsInput = z.object({
+export const deployListV4ClusterHostsInput = deployV4ListBodyInput.extend({
   project_id: idSchema,
   cluster_id: idSchema,
-  body: z.record(z.string(), z.unknown()).default({})
+  ip: z.string().optional(),
+  os: z.string().optional(),
+  connection_status: z.string().optional()
 });
 
 export const deployGetV4EnvironmentInput = z.object({
@@ -130,34 +149,34 @@ export const deployGetV4DeployRecordStepLogsInput = z.object({
   project_id: idSchema,
   record_id: idSchema,
   step_id: idSchema,
+  offset: z.union([z.string(), z.number()]).optional(),
+  limit: z.number().int().positive().max(1000).optional(),
+  start_time: z.string().optional(),
+  end_time: z.string().optional(),
   body: z.record(z.string(), z.unknown()).default({})
 });
 
-export const deployCancelV4DeployRecordInput = z.object({
+export const deployCancelV4DeployRecordInput = deployV4RecordActionBodyInput.extend({
   project_id: idSchema,
   record_id: idSchema,
-  body: z.record(z.string(), z.unknown()).default({}),
   dry_run: z.boolean().default(true)
 });
 
-export const deployRerunV4DeployRecordInput = z.object({
+export const deployRerunV4DeployRecordInput = deployV4RecordActionBodyInput.extend({
   project_id: idSchema,
   record_id: idSchema,
-  body: z.record(z.string(), z.unknown()).default({}),
   dry_run: z.boolean().default(true)
 });
 
-export const deployRetryV4DeployRecordInput = z.object({
+export const deployRetryV4DeployRecordInput = deployV4RecordActionBodyInput.extend({
   project_id: idSchema,
   record_id: idSchema,
-  body: z.record(z.string(), z.unknown()).default({}),
   dry_run: z.boolean().default(true)
 });
 
-export const deployRollbackV4DeployRecordInput = z.object({
+export const deployRollbackV4DeployRecordInput = deployV4RecordActionBodyInput.extend({
   project_id: idSchema,
   record_id: idSchema,
-  body: z.record(z.string(), z.unknown()).default({}),
   dry_run: z.boolean().default(true)
 });
 

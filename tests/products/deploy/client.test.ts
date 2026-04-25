@@ -1729,14 +1729,24 @@ describe("createDeployClient", () => {
     const result = await client.getV4DeployRecordStepLogs(
       createProjectRecordInput({
         step_id: "11111111111111111111111111111111",
-        body: { offset: 0 }
+        offset: 128,
+        limit: 200,
+        start_time: "2026-04-25T00:00:00Z",
+        end_time: "2026-04-25T01:00:00Z",
+        body: { keyword: "deploy" }
       })
     );
 
     expect(requestedPath).toBe(
       "/v4/projects/project-1/deploy-records/rec-1/step/11111111111111111111111111111111/logs"
     );
-    expect(requestedBody).toEqual({ offset: 0 });
+    expect(requestedBody).toEqual({
+      keyword: "deploy",
+      offset: 128,
+      limit: 200,
+      start_time: "2026-04-25T00:00:00Z",
+      end_time: "2026-04-25T01:00:00Z"
+    });
     expect(result).toEqual({
       project_id: "project-1",
       record_id: "rec-1",
@@ -1866,12 +1876,24 @@ describe("createDeployClient", () => {
 
     const result = await client.listV4ClusterHosts(
       createProjectClusterInput({
-        body: {}
+        limit: 10,
+        offset: 0,
+        ip: "10.0.0.1",
+        os: "linux",
+        connection_status: "online",
+        body: { name: "ecs" }
       })
     );
 
     expect(requestedPath).toBe("/v4/projects/project-1/clusters/cluster-1/hosts/list");
-    expect(requestedBody).toEqual({});
+    expect(requestedBody).toEqual({
+      name: "ecs",
+      limit: 10,
+      offset: 0,
+      ip: "10.0.0.1",
+      os: "linux",
+      connection_status: "online"
+    });
     expect(result).toEqual({
       project_id: "project-1",
       cluster_id: "cluster-1",

@@ -6,6 +6,10 @@ type DeployGetV4DeployRecordStepLogsClient = {
     project_id: string;
     record_id: string;
     step_id: string;
+    offset?: string | number;
+    limit?: number;
+    start_time?: string;
+    end_time?: string;
     body?: Record<string, unknown>;
   }) => Promise<{
     project_id: string;

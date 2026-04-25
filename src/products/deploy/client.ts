@@ -60,6 +60,64 @@ type DeployModifyApplicationInput = {
   arrange_infos: DeployApplicationArrangeInfoInput[];
 };
 
+type DeployV4ListBodyInput = {
+  limit?: number;
+  offset?: number;
+  keyword?: string;
+  name?: string;
+  status?: string;
+  sort_by?: string;
+  sort_order?: "asc" | "desc";
+  body?: Record<string, unknown>;
+};
+
+type DeployV4RecordActionBodyInput = {
+  reason?: string;
+  description?: string;
+  operator?: string;
+  body?: Record<string, unknown>;
+};
+
+type DeployV4StepLogBodyInput = {
+  offset?: string | number;
+  limit?: number;
+  start_time?: string;
+  end_time?: string;
+  body?: Record<string, unknown>;
+};
+
+function buildDeployV4ListBody(input: DeployV4ListBodyInput) {
+  return {
+    ...(input.body ?? {}),
+    ...(typeof input.limit !== "undefined" ? { limit: input.limit } : {}),
+    ...(typeof input.offset !== "undefined" ? { offset: input.offset } : {}),
+    ...(input.keyword ? { keyword: input.keyword } : {}),
+    ...(input.name ? { name: input.name } : {}),
+    ...(input.status ? { status: input.status } : {}),
+    ...(input.sort_by ? { sort_by: input.sort_by } : {}),
+    ...(input.sort_order ? { sort_order: input.sort_order } : {})
+  };
+}
+
+function buildDeployV4RecordActionBody(input: DeployV4RecordActionBodyInput) {
+  return {
+    ...(input.body ?? {}),
+    ...(input.reason ? { reason: input.reason } : {}),
+    ...(input.description ? { description: input.description } : {}),
+    ...(input.operator ? { operator: input.operator } : {})
+  };
+}
+
+function buildDeployV4StepLogBody(input: DeployV4StepLogBodyInput) {
+  return {
+    ...(input.body ?? {}),
+    ...(typeof input.offset !== "undefined" ? { offset: input.offset } : {}),
+    ...(typeof input.limit !== "undefined" ? { limit: input.limit } : {}),
+    ...(input.start_time ? { start_time: input.start_time } : {}),
+    ...(input.end_time ? { end_time: input.end_time } : {})
+  };
+}
+
 function buildDeployArrangeInfoPayload(input: DeployApplicationArrangeInfoInput) {
   const { template_id, operation_list, ...rest } = input;
 
@@ -502,6 +560,10 @@ export type DeployClient = {
     project_id: string;
     record_id: string;
     step_id: string;
+    offset?: string | number;
+    limit?: number;
+    start_time?: string;
+    end_time?: string;
     body?: Record<string, unknown>;
   }) => Promise<{
     project_id: string;
@@ -512,6 +574,9 @@ export type DeployClient = {
   cancelV4DeployRecord: (input: {
     project_id: string;
     record_id: string;
+    reason?: string;
+    description?: string;
+    operator?: string;
     body?: Record<string, unknown>;
   }) => Promise<{
     project_id: string;
@@ -522,6 +587,9 @@ export type DeployClient = {
   rerunV4DeployRecord: (input: {
     project_id: string;
     record_id: string;
+    reason?: string;
+    description?: string;
+    operator?: string;
     body?: Record<string, unknown>;
   }) => Promise<{
     project_id: string;
@@ -532,6 +600,9 @@ export type DeployClient = {
   retryV4DeployRecord: (input: {
     project_id: string;
     record_id: string;
+    reason?: string;
+    description?: string;
+    operator?: string;
     body?: Record<string, unknown>;
   }) => Promise<{
     project_id: string;
@@ -542,6 +613,9 @@ export type DeployClient = {
   rollbackV4DeployRecord: (input: {
     project_id: string;
     record_id: string;
+    reason?: string;
+    description?: string;
+    operator?: string;
     body?: Record<string, unknown>;
   }) => Promise<{
     project_id: string;
@@ -647,6 +721,13 @@ export type DeployClient = {
   listV4Clusters: (input: {
     project_id: string;
     cluster_type: "host" | "container";
+    limit?: number;
+    offset?: number;
+    keyword?: string;
+    name?: string;
+    status?: string;
+    sort_by?: string;
+    sort_order?: "asc" | "desc";
     body?: Record<string, unknown>;
   }) => Promise<{
     project_id: string;
@@ -706,6 +787,16 @@ export type DeployClient = {
   listV4ClusterHosts: (input: {
     project_id: string;
     cluster_id: string;
+    limit?: number;
+    offset?: number;
+    keyword?: string;
+    name?: string;
+    status?: string;
+    sort_by?: string;
+    sort_order?: "asc" | "desc";
+    ip?: string;
+    os?: string;
+    connection_status?: string;
     body?: Record<string, unknown>;
   }) => Promise<{
     project_id: string;
@@ -1920,7 +2011,7 @@ export function createDeployClient(_http: ReturnTypeCreateHttpClient): DeployCli
     async getV4DeployRecordStepLogs(input) {
       const response = await _http.post(
         `/v4/projects/${encodeURIComponent(input.project_id)}/deploy-records/${encodeURIComponent(input.record_id)}/step/${encodeURIComponent(input.step_id)}/logs`,
-        input.body ?? {}
+        buildDeployV4StepLogBody(input)
       );
 
       return {
@@ -1933,7 +2024,7 @@ export function createDeployClient(_http: ReturnTypeCreateHttpClient): DeployCli
     async cancelV4DeployRecord(input) {
       const response = await _http.post(
         `/v4/projects/${encodeURIComponent(input.project_id)}/deploy-records/${encodeURIComponent(input.record_id)}/cancel`,
-        input.body ?? {}
+        buildDeployV4RecordActionBody(input)
       );
 
       return {
@@ -1946,7 +2037,7 @@ export function createDeployClient(_http: ReturnTypeCreateHttpClient): DeployCli
     async rerunV4DeployRecord(input) {
       const response = await _http.post(
         `/v4/projects/${encodeURIComponent(input.project_id)}/deploy-records/${encodeURIComponent(input.record_id)}/rerun`,
-        input.body ?? {}
+        buildDeployV4RecordActionBody(input)
       );
 
       return {
@@ -1959,7 +2050,7 @@ export function createDeployClient(_http: ReturnTypeCreateHttpClient): DeployCli
     async retryV4DeployRecord(input) {
       const response = await _http.post(
         `/v4/projects/${encodeURIComponent(input.project_id)}/deploy-records/${encodeURIComponent(input.record_id)}/retry`,
-        input.body ?? {}
+        buildDeployV4RecordActionBody(input)
       );
 
       return {
@@ -1972,7 +2063,7 @@ export function createDeployClient(_http: ReturnTypeCreateHttpClient): DeployCli
     async rollbackV4DeployRecord(input) {
       const response = await _http.post(
         `/v4/projects/${encodeURIComponent(input.project_id)}/deploy-records/${encodeURIComponent(input.record_id)}/rollback`,
-        input.body ?? {}
+        buildDeployV4RecordActionBody(input)
       );
 
       return {
@@ -2246,7 +2337,7 @@ export function createDeployClient(_http: ReturnTypeCreateHttpClient): DeployCli
       const response = (await _http.post(
         `/v4/projects/${encodeURIComponent(input.project_id)}/clusters/list`,
         {
-          ...(input.body ?? {}),
+          ...buildDeployV4ListBody(input),
           cluster_type: input.cluster_type
         }
       )) as {
@@ -2387,7 +2478,12 @@ export function createDeployClient(_http: ReturnTypeCreateHttpClient): DeployCli
     async listV4ClusterHosts(input) {
       const response = (await _http.post(
         `/v4/projects/${encodeURIComponent(input.project_id)}/clusters/${encodeURIComponent(input.cluster_id)}/hosts/list`,
-        input.body ?? {}
+        {
+          ...buildDeployV4ListBody(input),
+          ...(input.ip ? { ip: input.ip } : {}),
+          ...(input.os ? { os: input.os } : {}),
+          ...(input.connection_status ? { connection_status: input.connection_status } : {})
+        }
       )) as {
         total?: number;
         resources?: unknown;

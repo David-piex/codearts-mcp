@@ -5,6 +5,13 @@ type DeployListV4ClustersClient = {
   listV4Clusters: (input: {
     project_id: string;
     cluster_type: "host" | "container";
+    limit?: number;
+    offset?: number;
+    keyword?: string;
+    name?: string;
+    status?: string;
+    sort_by?: string;
+    sort_order?: "asc" | "desc";
     body?: Record<string, unknown>;
   }) => Promise<{
     project_id: string;
