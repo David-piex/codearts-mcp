@@ -95,6 +95,21 @@ node dist/src/server/index.js
 }
 ```
 
+当前已部署的共享服务可以直接使用下面这份配置：
+
+```json
+{
+  "mcpServers": {
+    "codearts-shared": {
+      "disabled": false,
+      "timeout": 60,
+      "type": "streamableHttp",
+      "url": "http://39.106.183.205/mcp"
+    }
+  }
+}
+```
+
 若客户端不保留 Cookie，可将 auth_token 固定到 URL：
 
 ```json
