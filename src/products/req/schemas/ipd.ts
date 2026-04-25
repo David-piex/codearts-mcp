@@ -1,6 +1,13 @@
 import { z } from "zod";
 import { idSchema, pagingSchema } from "../../../contracts/common-schemas.js";
 
+const ipdConditionSchema = z
+  .object({
+    values: z.array(z.string()).optional(),
+    operator: z.string().optional()
+  })
+  .passthrough();
+
 const ipdPagingSchema = pagingSchema
   .pick({
     page: true,
@@ -28,16 +35,9 @@ export const reqGetIpdIssueInput = z.object({
 export const reqListIpdIssuesInput = ipdPagingSchema.extend({
   project_id: idSchema,
   issue_type: z.string().min(1),
-  filter: z.array(z.record(z.string(), z.unknown())).optional(),
+  filter: z.array(z.record(z.string(), ipdConditionSchema)).max(200).optional(),
   filter_mode: z.enum(["OR_AND", "AND_OR"]).default("AND_OR")
 });
-
-const ipdConditionSchema = z
-  .object({
-    values: z.array(z.string()).optional(),
-    operator: z.string().optional()
-  })
-  .passthrough();
 
 const ipdSortInfoSchema = z
   .object({

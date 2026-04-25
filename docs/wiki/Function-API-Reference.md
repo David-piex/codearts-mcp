@@ -6321,7 +6321,7 @@ authorization: Bearer <auth-token>
 | `group_field_id` | 是 | `unknown` |  | 分组字段 ID。IPD 分组查询时指定按哪个字段分组。 |
 | `is_project_group` | 否 | `boolean` |  | 是否按项目维度分组。 |
 | `group_sort` | 否 | `string` |  | 分组排序方向：asc=升序，desc=降序。 |
-| `filter` | 否 | `array` |  | 过滤条件列表。 |
+| `filter` | 否 | `array` |  | 过滤条件列表。每一项是 `{ 字段名: { values, operator } }`，例如 `{ "status": { "values": ["new"], "operator": "in" } }`。 |
 | `filter_mode` | 否 | `string` | "AND_OR" | 过滤条件组合方式：AND_OR 表示组内 AND、组间 OR；OR_AND 表示组内 OR、组间 AND。 |
 | `sort` | 否 | `array` |  | 排序条件。 |
 
@@ -7761,9 +7761,24 @@ authorization: Bearer <auth-token>
       "type": "array",
       "items": {
         "type": "object",
-        "additionalProperties": {}
+        "additionalProperties": {
+          "type": "object",
+          "properties": {
+            "values": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "过滤值列表。"
+            },
+            "operator": {
+              "type": "string",
+              "description": "过滤操作符，例如 in、eq、contains 等；以 CodeArts Req 实际字段能力为准。"
+            }
+          },
+          "additionalProperties": true
+        }
       },
-      "description": "过滤条件列表。"
+      "maxItems": 200,
+      "description": "过滤条件列表。每一项是字段名到条件对象的映射，条件对象支持 values、operator，并保留官方扩展字段。"
     },
     "filter_mode": {
       "type": "string",
