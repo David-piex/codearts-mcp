@@ -2085,7 +2085,7 @@ authorization: Bearer <auth-token>
 | `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
 | `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `tracker_ids` | 否 | `array` |  | tracker ID 列表，用于批量操作。 |
+| `tracker_ids` | 否 | `array` |  | Scrum 工作项类型 ID 列表，可选值为 2、3、5、6、7，分别表示 Task、Bug、Epic、Feature、Story。 |
 
 调用示例：
 
@@ -2140,7 +2140,7 @@ authorization: Bearer <auth-token>
         ]
       },
       "minItems": 1,
-      "description": "tracker ID 列表，用于批量操作。"
+      "description": "Scrum 工作项类型 ID 列表，可选值为 2、3、5、6、7，分别表示 Task、Bug、Epic、Feature、Story。"
     }
   },
   "required": [
@@ -2824,7 +2824,7 @@ authorization: Bearer <auth-token>
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `iteration_id` | 是 | `unknown` |  | 迭代唯一标识。 |
 | `title` | 是 | `string` |  | 对象标题，用于展示工作项、合并请求或标签等资源。 |
-| `work_item_type` | 是 | `string` |  | 工作项类型，例如 Story、Task、Bug 等。 |
+| `work_item_type` | 是 | `string` |  | 工作项类型，会映射为 Scrum tracker_id；支持 task=2、bug=3、epic=5、feature=6、story=7，也可以直接传数字字符串 "2"、"3"、"5"、"6"、"7"。 |
 | `description` | 否 | `string` |  | 对象的详细描述或备注信息。 |
 | `priority_id` | 否 | `integer` |  | 优先级 ID，用于设置或过滤优先级。 |
 | `module_id` | 否 | `unknown` |  | 模块唯一标识。 |
@@ -2878,7 +2878,7 @@ authorization: Bearer <auth-token>
     "work_item_type": {
       "type": "string",
       "minLength": 1,
-      "description": "工作项类型，例如 Story、Task、Bug 等。"
+      "description": "工作项类型，会映射为 Scrum tracker_id；支持 task=2、bug=3、epic=5、feature=6、story=7，也可以直接传数字字符串 \"2\"、\"3\"、\"5\"、\"6\"、\"7\"。"
     },
     "description": {
       "type": "string",
@@ -3039,7 +3039,7 @@ authorization: Bearer <auth-token>
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `plan_id` | 是 | `unknown` |  | plan的唯一标识。 |
 | `title` | 是 | `string` |  | 对象标题，用于展示工作项、合并请求或标签等资源。 |
-| `work_item_type` | 是 | `string` |  | 工作项类型，例如 Story、Task、Bug 等。 |
+| `work_item_type` | 是 | `string` |  | 工作项类型，会映射为 Scrum tracker_id；支持 task=2、bug=3、epic=5、feature=6、story=7，也可以直接传数字字符串 "2"、"3"、"5"、"6"、"7"。 |
 | `parent_work_item_id` | 否 | `unknown` |  | parent_work_item的唯一标识。 |
 | `description` | 否 | `string` |  | 对象的详细描述或备注信息。 |
 | `iteration_id` | 否 | `unknown` |  | 迭代唯一标识。 |
@@ -3096,7 +3096,7 @@ authorization: Bearer <auth-token>
     "work_item_type": {
       "type": "string",
       "minLength": 1,
-      "description": "工作项类型，例如 Story、Task、Bug 等。"
+      "description": "工作项类型，会映射为 Scrum tracker_id；支持 task=2、bug=3、epic=5、feature=6、story=7，也可以直接传数字字符串 \"2\"、\"3\"、\"5\"、\"6\"、\"7\"。"
     },
     "parent_work_item_id": {
       "$ref": "#/properties/project_id",
@@ -3344,7 +3344,7 @@ authorization: Bearer <auth-token>
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `title` | 是 | `string` |  | 对象标题，用于展示工作项、合并请求或标签等资源。 |
-| `work_item_type` | 是 | `string` |  | 工作项类型，例如 Story、Task、Bug 等。 |
+| `work_item_type` | 是 | `string` |  | 工作项类型，会映射为 Scrum tracker_id；支持 task=2、bug=3、epic=5、feature=6、story=7，也可以直接传数字字符串 "2"、"3"、"5"、"6"、"7"。 |
 | `description` | 否 | `string` |  | 对象的详细描述或备注信息。 |
 | `priority_id` | 否 | `integer` |  | 优先级 ID，用于设置或过滤优先级。 |
 | `iteration_id` | 否 | `unknown` |  | 迭代唯一标识。 |
@@ -3394,7 +3394,7 @@ authorization: Bearer <auth-token>
     "work_item_type": {
       "type": "string",
       "minLength": 1,
-      "description": "工作项类型，例如 Story、Task、Bug 等。"
+      "description": "工作项类型，会映射为 Scrum tracker_id；支持 task=2、bug=3、epic=5、feature=6、story=7，也可以直接传数字字符串 \"2\"、\"3\"、\"5\"、\"6\"、\"7\"。"
     },
     "description": {
       "type": "string",
@@ -6152,7 +6152,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `tracker_id` | 是 | `number` |  | tracker的唯一标识。 |
+| `tracker_id` | 是 | `number` |  | Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。 |
 
 调用示例：
 
@@ -6191,7 +6191,7 @@ authorization: Bearer <auth-token>
         6,
         7
       ],
-      "description": "tracker的唯一标识。"
+      "description": "Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。"
     }
   },
   "required": [
@@ -6221,7 +6221,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `tracker_id` | 是 | `number` |  | tracker的唯一标识。 |
+| `tracker_id` | 是 | `number` |  | Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。 |
 
 调用示例：
 
@@ -6260,7 +6260,7 @@ authorization: Bearer <auth-token>
         6,
         7
       ],
-      "description": "tracker的唯一标识。"
+      "description": "Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。"
     }
   },
   "required": [
@@ -9006,7 +9006,7 @@ authorization: Bearer <auth-token>
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `iteration_id` | 是 | `unknown` |  | 迭代唯一标识。 |
-| `tracker_id` | 否 | `integer` |  | tracker的唯一标识。 |
+| `tracker_id` | 否 | `integer` |  | Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。 |
 | `status_id` | 否 | `integer` |  | status的唯一标识。 |
 
 调用示例：
@@ -9044,7 +9044,7 @@ authorization: Bearer <auth-token>
     "tracker_id": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "tracker的唯一标识。"
+      "description": "Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。"
     },
     "status_id": {
       "type": "integer",
@@ -9085,7 +9085,7 @@ authorization: Bearer <auth-token>
 | `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `iteration_id` | 是 | `unknown` |  | 迭代唯一标识。 |
-| `tracker_id` | 否 | `number` |  | tracker的唯一标识。 |
+| `tracker_id` | 否 | `number` |  | Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。 |
 | `status_id` | 否 | `integer` |  | status的唯一标识。 |
 
 调用示例：
@@ -9158,7 +9158,7 @@ authorization: Bearer <auth-token>
         6,
         7
       ],
-      "description": "tracker的唯一标识。"
+      "description": "Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。"
     },
     "status_id": {
       "type": "integer",
@@ -9409,7 +9409,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `tracker_id` | 是 | `number` |  | tracker的唯一标识。 |
+| `tracker_id` | 是 | `number` |  | Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。 |
 
 调用示例：
 
@@ -9448,7 +9448,7 @@ authorization: Bearer <auth-token>
         6,
         7
       ],
-      "description": "tracker的唯一标识。"
+      "description": "Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。"
     }
   },
   "required": [
@@ -9565,7 +9565,7 @@ authorization: Bearer <auth-token>
 | `plan_id` | 是 | `unknown` |  | plan的唯一标识。 |
 | `subject` | 否 | `string` |  | subject 参数，按对应 CodeArts API 要求传入。 |
 | `show_type` | 否 | `string` | "list" | 展示方式，例如 list 或 tree。 |
-| `tracker_id` | 否 | `number` |  | tracker的唯一标识。 |
+| `tracker_id` | 否 | `number` |  | Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。 |
 
 调用示例：
 
@@ -9634,7 +9634,7 @@ authorization: Bearer <auth-token>
         6,
         7
       ],
-      "description": "tracker的唯一标识。"
+      "description": "Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。"
     }
   },
   "required": [
@@ -11020,7 +11020,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `tracker_id` | 否 | `number` |  | tracker的唯一标识。 |
+| `tracker_id` | 否 | `number` |  | Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。 |
 
 调用示例：
 
@@ -11058,7 +11058,7 @@ authorization: Bearer <auth-token>
         6,
         7
       ],
-      "description": "tracker的唯一标识。"
+      "description": "Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。"
     }
   },
   "required": [
@@ -11226,7 +11226,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `tracker_id` | 是 | `number` |  | tracker的唯一标识。 |
+| `tracker_id` | 是 | `number` |  | Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。 |
 
 调用示例：
 
@@ -11265,7 +11265,7 @@ authorization: Bearer <auth-token>
         6,
         7
       ],
-      "description": "tracker的唯一标识。"
+      "description": "Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。"
     }
   },
   "required": [
@@ -11295,7 +11295,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `tracker_id` | 是 | `number` |  | tracker的唯一标识。 |
+| `tracker_id` | 是 | `number` |  | Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。 |
 
 调用示例：
 
@@ -11334,7 +11334,7 @@ authorization: Bearer <auth-token>
         6,
         7
       ],
-      "description": "tracker的唯一标识。"
+      "description": "Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。"
     }
   },
   "required": [
@@ -11495,7 +11495,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `tracker_id` | 否 | `number` |  | tracker的唯一标识。 |
+| `tracker_id` | 否 | `number` |  | Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。 |
 
 调用示例：
 
@@ -11533,7 +11533,7 @@ authorization: Bearer <auth-token>
         6,
         7
       ],
-      "description": "tracker的唯一标识。"
+      "description": "Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。"
     }
   },
   "required": [
@@ -11562,7 +11562,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `tracker_id` | 是 | `number` |  | tracker的唯一标识。 |
+| `tracker_id` | 是 | `number` |  | Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。 |
 
 调用示例：
 
@@ -11601,7 +11601,7 @@ authorization: Bearer <auth-token>
         6,
         7
       ],
-      "description": "tracker的唯一标识。"
+      "description": "Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。"
     }
   },
   "required": [
@@ -11633,7 +11633,7 @@ authorization: Bearer <auth-token>
 | `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
 | `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `tracker_ids` | 否 | `array` |  | tracker ID 列表，用于批量操作。 |
+| `tracker_ids` | 否 | `array` |  | Scrum 工作项类型 ID 列表，可选值为 2、3、5、6、7，分别表示 Task、Bug、Epic、Feature、Story。 |
 
 调用示例：
 
@@ -11688,7 +11688,7 @@ authorization: Bearer <auth-token>
         ]
       },
       "minItems": 1,
-      "description": "tracker ID 列表，用于批量操作。"
+      "description": "Scrum 工作项类型 ID 列表，可选值为 2、3、5、6、7，分别表示 Task、Bug、Epic、Feature、Story。"
     }
   },
   "required": [
@@ -11779,7 +11779,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `tracker_id` | 是 | `number` |  | tracker的唯一标识。 |
+| `tracker_id` | 是 | `number` |  | Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。 |
 
 调用示例：
 
@@ -11818,7 +11818,7 @@ authorization: Bearer <auth-token>
         6,
         7
       ],
-      "description": "tracker的唯一标识。"
+      "description": "Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。"
     }
   },
   "required": [
@@ -13122,7 +13122,7 @@ authorization: Bearer <auth-token>
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `work_item_id` | 是 | `unknown` |  | work_item的唯一标识。 |
 | `title` | 否 | `string` |  | 对象标题，用于展示工作项、合并请求或标签等资源。 |
-| `work_item_type` | 否 | `string` |  | 工作项类型，例如 Story、Task、Bug 等。 |
+| `work_item_type` | 否 | `string` |  | 工作项类型，会映射为 Scrum tracker_id；支持 task=2、bug=3、epic=5、feature=6、story=7，也可以直接传数字字符串 "2"、"3"、"5"、"6"、"7"。 |
 | `description` | 否 | `string` |  | 对象的详细描述或备注信息。 |
 | `status_id` | 否 | `integer` |  | status的唯一标识。 |
 | `priority_id` | 否 | `integer` |  | 优先级 ID，用于设置或过滤优先级。 |
@@ -13176,7 +13176,7 @@ authorization: Bearer <auth-token>
     "work_item_type": {
       "type": "string",
       "minLength": 1,
-      "description": "工作项类型，例如 Story、Task、Bug 等。"
+      "description": "工作项类型，会映射为 Scrum tracker_id；支持 task=2、bug=3、epic=5、feature=6、story=7，也可以直接传数字字符串 \"2\"、\"3\"、\"5\"、\"6\"、\"7\"。"
     },
     "description": {
       "type": "string",

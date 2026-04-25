@@ -162,6 +162,11 @@ Req 写工具遵循两个层面的安全策略：
 
 真实 smoke 状态：基础读路径已验证；工作项写闭环需要 `HUAWEICLOUD_REQ_LIVE_WRITE_PROJECT_ID`。状态流转还需要稳定的目标 `status_id` 样本。
 
+工作项类型说明：`req_create_work_item`、`req_update_work_item`、`req_create_plan_work_item` 使用入参 `work_item_type`，内部会转换为官方 `tracker_id`。支持传名称或数字字符串：`task`/`"2"` 表示 Task，`bug`/`"3"` 表示 Bug，`epic`/`"5"` 表示 Epic，`feature`/`"6"` 表示 Feature，`story`/`"7"` 表示 Story。也就是说可用 tracker_id 集合是 `2、3、5、6、7`。
+
+责任人说明：创建或更新工作项时可以传 `assigned_id` 关联责任人；该值是项目成员用户 ID，可先调用 `req_list_project_members` 获取。
+
+
 ### 协作与附件
 
 | 工具 | 类型 | 用途 |
