@@ -268,6 +268,12 @@ const reqIpdIssueUpdateAttributeInput = z
     plan_iteration: idSchema.optional(),
     business_domain: z.string().optional(),
     feature_set: idSchema.optional(),
+    plan_end_date: z.union([z.string(), z.number().int()]).optional(),
+    link: z.string().optional(),
+    suspended: z.boolean().optional(),
+    break_status: z.string().optional(),
+    baseline: z.string().optional(),
+    status_modified_time: z.union([z.string(), z.number().int()]).optional(),
     extra_fields: z.record(z.string(), z.unknown()).optional()
   })
   .passthrough();

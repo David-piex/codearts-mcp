@@ -879,6 +879,12 @@ authorization: Bearer <auth-token>
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `issues` | 是 | `array` |  | IPD 工作项批量请求体列表。每个元素描述一个要创建或更新的 IPD 工作项。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+| `issues[].link` / `attribute.link` | 否 | `string` |  | IPD 工作项关联链接。 |
+| `issues[].suspended` / `attribute.suspended` | 否 | `boolean` |  | 是否挂起。 |
+| `issues[].break_status` / `attribute.break_status` | 否 | `string` |  | 中断/阻塞状态。 |
+| `issues[].baseline` / `attribute.baseline` | 否 | `string` |  | 基线标识。 |
+| `issues[].plan_end_date` / `attribute.plan_end_date` | 否 | `string | integer` |  | 计划结束时间，支持字符串或时间戳。 |
+| `issues[].status_modified_time` / `attribute.status_modified_time` | 否 | `string | integer` |  | 状态更新时间，支持字符串或时间戳。 |
 
 调用示例：
 
@@ -1534,6 +1540,12 @@ authorization: Bearer <auth-token>
 | `issue_ids` | 是 | `array` |  | IPD 工作项 ID 列表。用于批量更新、删除或流程流转。 |
 | `attribute` | 是 | `object` |  | 批量更新的属性集合。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+| `issues[].link` / `attribute.link` | 否 | `string` |  | IPD 工作项关联链接。 |
+| `issues[].suspended` / `attribute.suspended` | 否 | `boolean` |  | 是否挂起。 |
+| `issues[].break_status` / `attribute.break_status` | 否 | `string` |  | 中断/阻塞状态。 |
+| `issues[].baseline` / `attribute.baseline` | 否 | `string` |  | 基线标识。 |
+| `issues[].plan_end_date` / `attribute.plan_end_date` | 否 | `string | integer` |  | 计划结束时间，支持字符串或时间戳。 |
+| `issues[].status_modified_time` / `attribute.status_modified_time` | 否 | `string | integer` |  | 状态更新时间，支持字符串或时间戳。 |
 
 调用示例：
 
