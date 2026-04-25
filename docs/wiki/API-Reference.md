@@ -15,7 +15,7 @@
 | Build | 22 | 14 | 8 | `HUAWEICLOUD_BUILD_BASE_URL` |
 | Artifact | 12 | 11 | 1 | `HUAWEICLOUD_ARTIFACT_BASE_URL` |
 
-Product tools total: `384`. Shared HTTP mode adds `auth_configure_session` and `auth_revoke_session`, so the shared HTTP total is `386`.
+Product tools total: `384`. Shared HTTP mode adds `auth_configure_session` and `auth_clear_session`, so the shared HTTP total is `386`.
 
 ## Common Runtime
 
@@ -260,6 +260,7 @@ Req has 174 tools; keep the full Req inventory in [Req-API-Reference](./Req-API-
 ## Related Docs
 
 - [Req-API-Reference](./Req-API-Reference.md)
+- [HTTP-MCP-Interface](./HTTP-MCP-Interface.md)
 - [Module-Functions-Overview](./Module-Functions-Overview.md)
 - [Capability-Matrix](./Capability-Matrix.md)
 - [Module-Live-Readiness](./Module-Live-Readiness.md)
