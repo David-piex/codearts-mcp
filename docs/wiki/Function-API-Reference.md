@@ -408,7 +408,7 @@ authorization: Bearer <auth-token>
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `iteration_id` | 是 | `unknown` |  | 迭代唯一标识。 |
-| `work_item_ids` | 是 | `array` |  | work_item ID 列表，用于批量操作。 |
+| `work_item_ids` | 是 | `array` |  | 工作项 ID 列表。用于批量删除、复制、更新或加入计划/迭代。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -450,7 +450,7 @@ authorization: Bearer <auth-token>
         "$ref": "#/properties/project_id"
       },
       "minItems": 1,
-      "description": "work_item ID 列表，用于批量操作。"
+      "description": "工作项 ID 列表。用于批量删除、复制、更新或加入计划/迭代。"
     },
     "dry_run": {
       "type": "boolean",
@@ -486,8 +486,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `plan_id` | 是 | `unknown` |  | plan的唯一标识。 |
-| `work_item_ids` | 是 | `array` |  | work_item ID 列表，用于批量操作。 |
+| `plan_id` | 是 | `unknown` |  | 规划/计划 ID。用于定位 CodeArts Req 中的计划资源。 |
+| `work_item_ids` | 是 | `array` |  | 工作项 ID 列表。用于批量删除、复制、更新或加入计划/迭代。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -521,7 +521,7 @@ authorization: Bearer <auth-token>
     },
     "plan_id": {
       "$ref": "#/properties/project_id",
-      "description": "plan的唯一标识。"
+      "description": "规划/计划 ID。用于定位 CodeArts Req 中的计划资源。"
     },
     "work_item_ids": {
       "type": "array",
@@ -529,7 +529,7 @@ authorization: Bearer <auth-token>
         "$ref": "#/properties/project_id"
       },
       "minItems": 1,
-      "description": "work_item ID 列表，用于批量操作。"
+      "description": "工作项 ID 列表。用于批量删除、复制、更新或加入计划/迭代。"
     },
     "dry_run": {
       "type": "boolean",
@@ -565,10 +565,10 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `user_id` | 是 | `unknown` |  | user的唯一标识。 |
-| `domain_id` | 是 | `unknown` |  | domain的唯一标识。 |
-| `domain_name` | 否 | `string` |  | 租户或组织名称。 |
-| `role_id` | 否 | `number` |  | role的唯一标识。 |
+| `user_id` | 是 | `unknown` |  | 用户 ID。用于定位项目成员、操作者或需要授权的用户。 |
+| `domain_id` | 是 | `unknown` |  | 租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。 |
+| `domain_name` | 否 | `string` |  | 租户/组织名称。添加成员或展示组织信息时使用。 |
+| `role_id` | 否 | `number` |  | 角色 ID。用于指定项目成员角色或权限级别。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -602,16 +602,16 @@ authorization: Bearer <auth-token>
     },
     "user_id": {
       "$ref": "#/properties/project_id",
-      "description": "user的唯一标识。"
+      "description": "用户 ID。用于定位项目成员、操作者或需要授权的用户。"
     },
     "domain_id": {
       "$ref": "#/properties/project_id",
-      "description": "domain的唯一标识。"
+      "description": "租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。"
     },
     "domain_name": {
       "type": "string",
       "minLength": 1,
-      "description": "租户或组织名称。"
+      "description": "租户/组织名称。添加成员或展示组织信息时使用。"
     },
     "role_id": {
       "type": "number",
@@ -627,7 +627,7 @@ authorization: Bearer <auth-token>
         10,
         11
       ],
-      "description": "role的唯一标识。"
+      "description": "角色 ID。用于指定项目成员角色或权限级别。"
     },
     "dry_run": {
       "type": "boolean",
@@ -663,8 +663,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `work_item_id` | 是 | `unknown` |  | work_item的唯一标识。 |
-| `content` | 是 | `string` |  | 评论、规则或文本内容。 |
+| `work_item_id` | 是 | `unknown` |  | 工作项 ID。用于定位 Scrum 工作项、评论、附件、流转或关联资源。 |
+| `content` | 是 | `string` |  | 规则内容配置。创建或更新 Pipeline 规则时描述规则分组、属性和校验条件。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -698,12 +698,12 @@ authorization: Bearer <auth-token>
     },
     "work_item_id": {
       "$ref": "#/properties/project_id",
-      "description": "work_item的唯一标识。"
+      "description": "工作项 ID。用于定位 Scrum 工作项、评论、附件、流转或关联资源。"
     },
     "content": {
       "type": "string",
       "minLength": 1,
-      "description": "评论、规则或文本内容。"
+      "description": "规则内容配置。创建或更新 Pipeline 规则时描述规则分组、属性和校验条件。"
     },
     "dry_run": {
       "type": "boolean",
@@ -817,7 +817,7 @@ authorization: Bearer <auth-token>
         "properties": {
           "user_id": {
             "$ref": "#/properties/project_id",
-            "description": "user的唯一标识。"
+            "description": "用户 ID。用于定位项目成员、操作者或需要授权的用户。"
           },
           "role_id": {
             "type": "number",
@@ -833,7 +833,7 @@ authorization: Bearer <auth-token>
               10,
               11
             ],
-            "description": "role的唯一标识。"
+            "description": "角色 ID。用于指定项目成员角色或权限级别。"
           }
         },
         "required": [
@@ -877,7 +877,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `issues` | 是 | `array` |  | issues 参数，按对应 CodeArts API 要求传入。 |
+| `issues` | 是 | `array` |  | IPD 工作项批量请求体列表。每个元素描述一个要创建或更新的 IPD 工作项。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -916,13 +916,13 @@ authorization: Bearer <auth-token>
           "category": {
             "type": "string",
             "minLength": 1,
-            "description": "issues 参数，按对应 CodeArts API 要求传入。"
+            "description": "分类编码。用于按需求、缺陷等对象类型查询或创建。"
           },
           "title": {
             "type": "string",
             "minLength": 1,
             "maxLength": 256,
-            "description": "对象标题，用于展示工作项、合并请求或标签等资源。"
+            "description": "标题。用于工作项、需求、合并请求、标签等资源的展示名称。"
           },
           "description": {
             "type": "string",
@@ -931,7 +931,7 @@ authorization: Bearer <auth-token>
           },
           "parent_id": {
             "$ref": "#/properties/project_id",
-            "description": "parent的唯一标识。"
+            "description": "父级资源 ID。用于创建模块、特性集或树形结构节点。"
           },
           "status": {
             "type": "string",
@@ -943,11 +943,11 @@ authorization: Bearer <auth-token>
             "properties": {
               "id": {
                 "$ref": "#/properties/project_id",
-                "description": "issues 参数，按对应 CodeArts API 要求传入。"
+                "description": "资源 ID。返回结果或嵌套对象中的通用唯一标识。"
               },
               "name": {
                 "type": "string",
-                "description": "对象名称，用于展示、查询或创建资源。"
+                "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
               },
               "nick_name": {
                 "type": "string",
@@ -986,7 +986,7 @@ authorization: Bearer <auth-token>
               "properties": {
                 "id": {
                   "$ref": "#/properties/project_id",
-                  "description": "labels 参数，按对应 CodeArts API 要求传入。"
+                  "description": "资源 ID。返回结果或嵌套对象中的通用唯一标识。"
                 },
                 "label_type": {
                   "type": "string",
@@ -998,7 +998,7 @@ authorization: Bearer <auth-token>
                 },
                 "title": {
                   "type": "string",
-                  "description": "对象标题，用于展示工作项、合并请求或标签等资源。"
+                  "description": "标题。用于工作项、需求、合并请求、标签等资源的展示名称。"
                 }
               },
               "additionalProperties": true
@@ -1013,7 +1013,7 @@ authorization: Bearer <auth-token>
                 "code": {
                   "type": "string",
                   "minLength": 1,
-                  "description": "自定义字段列表，用于传递项目或流程定义的扩展字段。"
+                  "description": "字段/配置编码。用于查询字段选项使用情况或配置项。"
                 },
                 "value": {
                   "type": [
@@ -1022,7 +1022,7 @@ authorization: Bearer <auth-token>
                     "boolean",
                     "null"
                   ],
-                  "description": "字段值。"
+                  "description": "字段值。用于变量、自定义字段、过滤项或配置项的具体取值。"
                 }
               },
               "required": [
@@ -1131,9 +1131,9 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `issue_ids` | 是 | `array` |  | IPD 工作项 ID 列表，用于批量操作。 |
+| `issue_ids` | 是 | `array` |  | IPD 工作项 ID 列表。用于批量更新、删除或流程流转。 |
 | `is_permanent_delete` | 否 | `boolean` |  | 是否永久删除，true 表示执行不可恢复删除。 |
-| `src_project_id` | 否 | `unknown` |  | src_project的唯一标识。 |
+| `src_project_id` | 否 | `unknown` |  | 源项目 ID。跨项目复制、删除或迁移资源时用于定位来源项目。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -1171,7 +1171,7 @@ authorization: Bearer <auth-token>
       },
       "minItems": 1,
       "maxItems": 50,
-      "description": "IPD 工作项 ID 列表，用于批量操作。"
+      "description": "IPD 工作项 ID 列表。用于批量更新、删除或流程流转。"
     },
     "is_permanent_delete": {
       "type": "boolean",
@@ -1179,7 +1179,7 @@ authorization: Bearer <auth-token>
     },
     "src_project_id": {
       "$ref": "#/properties/project_id",
-      "description": "src_project的唯一标识。"
+      "description": "源项目 ID。跨项目复制、删除或迁移资源时用于定位来源项目。"
     },
     "dry_run": {
       "type": "boolean",
@@ -1286,7 +1286,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `user_ids` | 是 | `array` |  | user ID 列表，用于批量操作。 |
+| `user_ids` | 是 | `array` |  | 用户 ID 列表。用于批量成员、权限或过滤操作。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -1323,7 +1323,7 @@ authorization: Bearer <auth-token>
         "$ref": "#/properties/project_id"
       },
       "minItems": 1,
-      "description": "user ID 列表，用于批量操作。"
+      "description": "用户 ID 列表。用于批量成员、权限或过滤操作。"
     },
     "dry_run": {
       "type": "boolean",
@@ -1358,7 +1358,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `work_item_ids` | 是 | `array` |  | work_item ID 列表，用于批量操作。 |
+| `work_item_ids` | 是 | `array` |  | 工作项 ID 列表。用于批量删除、复制、更新或加入计划/迭代。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -1396,7 +1396,7 @@ authorization: Bearer <auth-token>
       },
       "minItems": 1,
       "maxItems": 100,
-      "description": "work_item ID 列表，用于批量操作。"
+      "description": "工作项 ID 列表。用于批量删除、复制、更新或加入计划/迭代。"
     },
     "dry_run": {
       "type": "boolean",
@@ -1431,8 +1431,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `issue_ids` | 是 | `array` |  | IPD 工作项 ID 列表，用于批量操作。 |
-| `issue_category` | 是 | `string` |  | 工作项分类，用于指定 IPD 需求、缺陷等类别。 |
+| `issue_ids` | 是 | `array` |  | IPD 工作项 ID 列表。用于批量更新、删除或流程流转。 |
+| `issue_category` | 是 | `string` |  | IPD 工作项分类。用于指定需求、缺陷、任务等分类编码。 |
 | `flow_code` | 是 | `string` |  | 流程流转编码，表示要执行的状态流转动作。 |
 | `is_recover` | 否 | `boolean` | false | 是否按恢复流程处理。 |
 | `process_context` | 否 | `object` |  | 流程流转上下文，按工作流要求传入。 |
@@ -1474,12 +1474,12 @@ authorization: Bearer <auth-token>
         "$ref": "#/properties/project_id"
       },
       "minItems": 1,
-      "description": "IPD 工作项 ID 列表，用于批量操作。"
+      "description": "IPD 工作项 ID 列表。用于批量更新、删除或流程流转。"
     },
     "issue_category": {
       "type": "string",
       "minLength": 1,
-      "description": "工作项分类，用于指定 IPD 需求、缺陷等类别。"
+      "description": "IPD 工作项分类。用于指定需求、缺陷、任务等分类编码。"
     },
     "flow_code": {
       "type": "string",
@@ -1531,7 +1531,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `issue_ids` | 是 | `array` |  | IPD 工作项 ID 列表，用于批量操作。 |
+| `issue_ids` | 是 | `array` |  | IPD 工作项 ID 列表。用于批量更新、删除或流程流转。 |
 | `attribute` | 是 | `object` |  | 批量更新的属性集合。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -1570,7 +1570,7 @@ authorization: Bearer <auth-token>
         "$ref": "#/properties/project_id"
       },
       "minItems": 1,
-      "description": "IPD 工作项 ID 列表，用于批量操作。"
+      "description": "IPD 工作项 ID 列表。用于批量更新、删除或流程流转。"
     },
     "attribute": {
       "type": "object",
@@ -1578,13 +1578,13 @@ authorization: Bearer <auth-token>
         "category": {
           "type": "string",
           "minLength": 1,
-          "description": "批量更新的属性集合。"
+          "description": "分类编码。用于按需求、缺陷等对象类型查询或创建。"
         },
         "title": {
           "type": "string",
           "minLength": 1,
           "maxLength": 256,
-          "description": "对象标题，用于展示工作项、合并请求或标签等资源。"
+          "description": "标题。用于工作项、需求、合并请求、标签等资源的展示名称。"
         },
         "description": {
           "type": "string",
@@ -1594,7 +1594,7 @@ authorization: Bearer <auth-token>
         },
         "parent_id": {
           "$ref": "#/properties/project_id",
-          "description": "parent的唯一标识。"
+          "description": "父级资源 ID。用于创建模块、特性集或树形结构节点。"
         },
         "status": {
           "type": "string",
@@ -1605,11 +1605,11 @@ authorization: Bearer <auth-token>
           "properties": {
             "id": {
               "$ref": "#/properties/project_id",
-              "description": "批量更新的属性集合。"
+              "description": "资源 ID。返回结果或嵌套对象中的通用唯一标识。"
             },
             "name": {
               "type": "string",
-              "description": "对象名称，用于展示、查询或创建资源。"
+              "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
             },
             "nick_name": {
               "type": "string",
@@ -1648,7 +1648,7 @@ authorization: Bearer <auth-token>
             "properties": {
               "id": {
                 "$ref": "#/properties/project_id",
-                "description": "labels 参数，按对应 CodeArts API 要求传入。"
+                "description": "资源 ID。返回结果或嵌套对象中的通用唯一标识。"
               },
               "label_type": {
                 "type": "string",
@@ -1660,7 +1660,7 @@ authorization: Bearer <auth-token>
               },
               "title": {
                 "type": "string",
-                "description": "对象标题，用于展示工作项、合并请求或标签等资源。"
+                "description": "标题。用于工作项、需求、合并请求、标签等资源的展示名称。"
               }
             },
             "additionalProperties": true
@@ -1675,7 +1675,7 @@ authorization: Bearer <auth-token>
               "code": {
                 "type": "string",
                 "minLength": 1,
-                "description": "自定义字段列表，用于传递项目或流程定义的扩展字段。"
+                "description": "字段/配置编码。用于查询字段选项使用情况或配置项。"
               },
               "value": {
                 "type": [
@@ -1684,7 +1684,7 @@ authorization: Bearer <auth-token>
                   "boolean",
                   "null"
                 ],
-                "description": "字段值。"
+                "description": "字段值。用于变量、自定义字段、过滤项或配置项的具体取值。"
               }
             },
             "required": [
@@ -1804,7 +1804,7 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `name` | 是 | `string` |  | 对象名称，用于展示、查询或创建资源。 |
+| `name` | 是 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
 
 调用示例：
 
@@ -1831,7 +1831,7 @@ authorization: Bearer <auth-token>
     "name": {
       "type": "string",
       "minLength": 1,
-      "description": "对象名称，用于展示、查询或创建资源。"
+      "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
     }
   },
   "required": [
@@ -1924,7 +1924,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `plan_id` | 是 | `unknown` |  | plan的唯一标识。 |
+| `plan_id` | 是 | `unknown` |  | 规划/计划 ID。用于定位 CodeArts Req 中的计划资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -1957,7 +1957,7 @@ authorization: Bearer <auth-token>
     },
     "plan_id": {
       "$ref": "#/properties/project_id",
-      "description": "plan的唯一标识。"
+      "description": "规划/计划 ID。用于定位 CodeArts Req 中的计划资源。"
     },
     "dry_run": {
       "type": "boolean",
@@ -1991,9 +1991,9 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `from_project_id` | 是 | `string` |  | from_project的唯一标识。 |
-| `to_project_id` | 是 | `unknown` |  | to_project的唯一标识。 |
-| `work_item_ids` | 是 | `array` |  | work_item ID 列表，用于批量操作。 |
+| `from_project_id` | 是 | `string` |  | 源项目 ID。复制工作项时用于指定复制来源。 |
+| `to_project_id` | 是 | `unknown` |  | 目标项目 ID。复制工作项时用于指定复制目标。 |
+| `work_item_ids` | 是 | `array` |  | 工作项 ID 列表。用于批量删除、复制、更新或加入计划/迭代。 |
 | `copy_comments` | 否 | `boolean` | false | 复制工作项时是否同时复制评论。 |
 | `copy_work_hours` | 否 | `boolean` | false | 是否复制工时。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
@@ -2025,11 +2025,11 @@ authorization: Bearer <auth-token>
     "from_project_id": {
       "type": "string",
       "minLength": 1,
-      "description": "from_project的唯一标识。"
+      "description": "源项目 ID。复制工作项时用于指定复制来源。"
     },
     "to_project_id": {
       "$ref": "#/properties/from_project_id",
-      "description": "to_project的唯一标识。"
+      "description": "目标项目 ID。复制工作项时用于指定复制目标。"
     },
     "work_item_ids": {
       "type": "array",
@@ -2037,7 +2037,7 @@ authorization: Bearer <auth-token>
         "$ref": "#/properties/from_project_id"
       },
       "minItems": 1,
-      "description": "work_item ID 列表，用于批量操作。"
+      "description": "工作项 ID 列表。用于批量删除、复制、更新或加入计划/迭代。"
     },
     "copy_comments": {
       "type": "boolean",
@@ -2082,8 +2082,8 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `tracker_ids` | 否 | `array` |  | Scrum 工作项类型 ID 列表，可选值为 2、3、5、6、7，分别表示 Task、Bug、Epic、Feature、Story。 |
 
@@ -2113,14 +2113,14 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "project_id": {
       "type": "string",
@@ -2169,8 +2169,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `title` | 是 | `string` |  | 对象标题，用于展示工作项、合并请求或标签等资源。 |
-| `parent_id` | 是 | `unknown` |  | parent的唯一标识。 |
+| `title` | 是 | `string` |  | 标题。用于工作项、需求、合并请求、标签等资源的展示名称。 |
+| `parent_id` | 是 | `unknown` |  | 父级资源 ID。用于创建模块、特性集或树形结构节点。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -2205,11 +2205,11 @@ authorization: Bearer <auth-token>
     "title": {
       "type": "string",
       "minLength": 1,
-      "description": "对象标题，用于展示工作项、合并请求或标签等资源。"
+      "description": "标题。用于工作项、需求、合并请求、标签等资源的展示名称。"
     },
     "parent_id": {
       "$ref": "#/properties/project_id",
-      "description": "parent的唯一标识。"
+      "description": "父级资源 ID。用于创建模块、特性集或树形结构节点。"
     },
     "dry_run": {
       "type": "boolean",
@@ -2245,14 +2245,14 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `title` | 是 | `string` |  | 对象标题，用于展示工作项、合并请求或标签等资源。 |
+| `title` | 是 | `string` |  | 标题。用于工作项、需求、合并请求、标签等资源的展示名称。 |
 | `description` | 是 | `string` |  | 对象的详细描述或备注信息。 |
-| `category` | 是 | `string` |  | 分类标识。 |
+| `category` | 是 | `string` |  | 分类编码。用于按需求、缺陷等对象类型查询或创建。 |
 | `assignee` | 是 | `unknown` |  | 责任人信息或责任人 ID，格式以对应接口要求为准。 |
 | `status` | 否 | `string` |  | 状态值，用于过滤或更新状态。 |
 | `src_domain` | 否 | `unknown` |  | 来源租户或域标识。 |
 | `submitted_by` | 否 | `unknown` |  | 提交人。 |
-| `domain_id` | 否 | `unknown` |  | domain的唯一标识。 |
+| `domain_id` | 否 | `unknown` |  | 租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。 |
 | `recipient` | 否 | `array` |  | 接收人列表。 |
 | `expect_delivery_time` | 否 | `integer` |  | 期望交付时间。 |
 | `priority` | 否 | `string` |  | 优先级。 |
@@ -2302,7 +2302,7 @@ authorization: Bearer <auth-token>
       "type": "string",
       "minLength": 1,
       "maxLength": 256,
-      "description": "对象标题，用于展示工作项、合并请求或标签等资源。"
+      "description": "标题。用于工作项、需求、合并请求、标签等资源的展示名称。"
     },
     "description": {
       "type": "string",
@@ -2312,7 +2312,7 @@ authorization: Bearer <auth-token>
     "category": {
       "type": "string",
       "minLength": 1,
-      "description": "分类标识。"
+      "description": "分类编码。用于按需求、缺陷等对象类型查询或创建。"
     },
     "assignee": {
       "$ref": "#/properties/project_id",
@@ -2332,7 +2332,7 @@ authorization: Bearer <auth-token>
     },
     "domain_id": {
       "$ref": "#/properties/project_id",
-      "description": "domain的唯一标识。"
+      "description": "租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。"
     },
     "recipient": {
       "type": "array",
@@ -2428,7 +2428,7 @@ authorization: Bearer <auth-token>
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `label_type` | 是 | `string` |  | 标签类型。 |
 | `color` | 是 | `string` |  | 颜色值，通常用于标签或展示配置。 |
-| `title` | 是 | `string` |  | 对象标题，用于展示工作项、合并请求或标签等资源。 |
+| `title` | 是 | `string` |  | 标题。用于工作项、需求、合并请求、标签等资源的展示名称。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -2476,7 +2476,7 @@ authorization: Bearer <auth-token>
       "type": "string",
       "minLength": 1,
       "maxLength": 15,
-      "description": "对象标题，用于展示工作项、合并请求或标签等资源。"
+      "description": "标题。用于工作项、需求、合并请求、标签等资源的展示名称。"
     },
     "dry_run": {
       "type": "boolean",
@@ -2514,7 +2514,7 @@ authorization: Bearer <auth-token>
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `display_value` | 是 | `string` |  | 展示名称或显示值。 |
-| `parent_id` | 是 | `unknown` |  | parent的唯一标识。 |
+| `parent_id` | 是 | `unknown` |  | 父级资源 ID。用于创建模块、特性集或树形结构节点。 |
 | `description` | 否 | `string` |  | 对象的详细描述或备注信息。 |
 | `assignee` | 否 | `unknown` |  | 责任人信息或责任人 ID，格式以对应 IPD 接口为准。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
@@ -2556,7 +2556,7 @@ authorization: Bearer <auth-token>
     },
     "parent_id": {
       "$ref": "#/properties/project_id",
-      "description": "parent的唯一标识。"
+      "description": "父级资源 ID。用于创建模块、特性集或树形结构节点。"
     },
     "description": {
       "type": "string",
@@ -2601,7 +2601,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `issue_id` | 是 | `unknown` |  | IPD 工作项唯一标识。 |
+| `issue_id` | 是 | `unknown` |  | IPD 工作项 ID。用于定位 IPD 需求、缺陷或任务。 |
 | `work_date_begin` | 是 | `string` |  | 工时开始日期。 |
 | `work_date_end` | 是 | `string` |  | 工时结束日期。 |
 | `work_hours` | 是 | `string \| number` |  | 工时数。 |
@@ -2646,7 +2646,7 @@ authorization: Bearer <auth-token>
     },
     "issue_id": {
       "$ref": "#/properties/project_id",
-      "description": "IPD 工作项唯一标识。"
+      "description": "IPD 工作项 ID。用于定位 IPD 需求、缺陷或任务。"
     },
     "work_date_begin": {
       "type": "string",
@@ -2732,7 +2732,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `name` | 是 | `string` |  | 对象名称，用于展示、查询或创建资源。 |
+| `name` | 是 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
 | `begin_time` | 是 | `string` |  | 开始时间。 |
 | `end_time` | 是 | `string` |  | 结束时间。 |
 | `description` | 否 | `string` |  | 对象的详细描述或备注信息。 |
@@ -2771,7 +2771,7 @@ authorization: Bearer <auth-token>
     "name": {
       "type": "string",
       "minLength": 1,
-      "description": "对象名称，用于展示、查询或创建资源。"
+      "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
     },
     "begin_time": {
       "type": "string",
@@ -2823,16 +2823,16 @@ authorization: Bearer <auth-token>
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `iteration_id` | 是 | `unknown` |  | 迭代唯一标识。 |
-| `title` | 是 | `string` |  | 对象标题，用于展示工作项、合并请求或标签等资源。 |
+| `title` | 是 | `string` |  | 标题。用于工作项、需求、合并请求、标签等资源的展示名称。 |
 | `work_item_type` | 是 | `string` |  | 工作项类型，会映射为 Scrum tracker_id；支持 task=2、bug=3、epic=5、feature=6、story=7，也可以直接传数字字符串 "2"、"3"、"5"、"6"、"7"。 |
 | `description` | 否 | `string` |  | 对象的详细描述或备注信息。 |
-| `priority_id` | 否 | `integer` |  | 优先级 ID，用于设置或过滤优先级。 |
-| `module_id` | 否 | `unknown` |  | 模块唯一标识。 |
-| `severity_id` | 否 | `integer` |  | 严重级别 ID，通常用于缺陷或问题等级。 |
+| `priority_id` | 否 | `integer` |  | 优先级 ID。用于设置或过滤工作项优先级。 |
+| `module_id` | 否 | `unknown` |  | 模块 ID。用于把工作项、IPD 对象或项目模块归属到指定模块。 |
+| `severity_id` | 否 | `integer` |  | 严重程度 ID。通常用于缺陷或问题等级。 |
 | `assigned_id` | 否 | `unknown` |  | 关联责任人用户 ID。创建或更新工作项时传入该字段即可指定责任人；可先调用 `req_list_project_members` 获取项目成员用户 ID。 |
 | `done_ratio` | 否 | `integer` |  | 完成度百分比，用于表示工作项当前完成进度。 |
 | `expected_work_hours` | 否 | `integer` |  | 预计工时，用于记录计划投入的工作小时数。 |
-| `start_date` | 否 | `integer` |  | 计划开始日期，使用接口要求的时间戳或日期值。 |
+| `start_date` | 否 | `integer` |  | 开始日期。用于时间范围查询；在工作项接口中表示计划开始时间。 |
 | `due_date` | 否 | `integer` |  | 计划完成或截止日期。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -2873,7 +2873,7 @@ authorization: Bearer <auth-token>
     "title": {
       "type": "string",
       "minLength": 1,
-      "description": "对象标题，用于展示工作项、合并请求或标签等资源。"
+      "description": "标题。用于工作项、需求、合并请求、标签等资源的展示名称。"
     },
     "work_item_type": {
       "type": "string",
@@ -2887,16 +2887,16 @@ authorization: Bearer <auth-token>
     "priority_id": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "优先级 ID，用于设置或过滤优先级。"
+      "description": "优先级 ID。用于设置或过滤工作项优先级。"
     },
     "module_id": {
       "$ref": "#/properties/project_id",
-      "description": "模块唯一标识。"
+      "description": "模块 ID。用于把工作项、IPD 对象或项目模块归属到指定模块。"
     },
     "severity_id": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "严重级别 ID，通常用于缺陷或问题等级。"
+      "description": "严重程度 ID。通常用于缺陷或问题等级。"
     },
     "assigned_id": {
       "$ref": "#/properties/project_id",
@@ -2915,7 +2915,7 @@ authorization: Bearer <auth-token>
     "start_date": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "计划开始日期，使用接口要求的时间戳或日期值。"
+      "description": "开始日期。用于时间范围查询；在工作项接口中表示计划开始时间。"
     },
     "due_date": {
       "type": "integer",
@@ -2957,8 +2957,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `name` | 是 | `string` |  | 对象名称，用于展示、查询或创建资源。 |
-| `type` | 是 | `string` |  | 类型字段，含义取决于对应接口。 |
+| `name` | 是 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
+| `type` | 是 | `string` |  | 类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -2993,7 +2993,7 @@ authorization: Bearer <auth-token>
     "name": {
       "type": "string",
       "minLength": 1,
-      "description": "对象名称，用于展示、查询或创建资源。"
+      "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
     },
     "type": {
       "type": "string",
@@ -3001,7 +3001,7 @@ authorization: Bearer <auth-token>
         "gantt",
         "mind"
       ],
-      "description": "类型字段，含义取决于对应接口。"
+      "description": "类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。"
     },
     "dry_run": {
       "type": "boolean",
@@ -3037,20 +3037,20 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `plan_id` | 是 | `unknown` |  | plan的唯一标识。 |
-| `title` | 是 | `string` |  | 对象标题，用于展示工作项、合并请求或标签等资源。 |
+| `plan_id` | 是 | `unknown` |  | 规划/计划 ID。用于定位 CodeArts Req 中的计划资源。 |
+| `title` | 是 | `string` |  | 标题。用于工作项、需求、合并请求、标签等资源的展示名称。 |
 | `work_item_type` | 是 | `string` |  | 工作项类型，会映射为 Scrum tracker_id；支持 task=2、bug=3、epic=5、feature=6、story=7，也可以直接传数字字符串 "2"、"3"、"5"、"6"、"7"。 |
-| `parent_work_item_id` | 否 | `unknown` |  | parent_work_item的唯一标识。 |
+| `parent_work_item_id` | 否 | `unknown` |  | 父工作项 ID。创建计划工作项或子工作项时用于挂到父级。 |
 | `description` | 否 | `string` |  | 对象的详细描述或备注信息。 |
 | `iteration_id` | 否 | `unknown` |  | 迭代唯一标识。 |
-| `module_id` | 否 | `unknown` |  | 模块唯一标识。 |
-| `priority_id` | 否 | `integer` |  | 优先级 ID，用于设置或过滤优先级。 |
-| `severity_id` | 否 | `integer` |  | 严重级别 ID，通常用于缺陷或问题等级。 |
-| `status_id` | 否 | `integer` |  | status的唯一标识。 |
+| `module_id` | 否 | `unknown` |  | 模块 ID。用于把工作项、IPD 对象或项目模块归属到指定模块。 |
+| `priority_id` | 否 | `integer` |  | 优先级 ID。用于设置或过滤工作项优先级。 |
+| `severity_id` | 否 | `integer` |  | 严重程度 ID。通常用于缺陷或问题等级。 |
+| `status_id` | 否 | `integer` |  | 工作项状态 ID。用于更新工作项状态或按状态过滤；状态 ID 可通过状态配置/工作流接口查询。 |
 | `assigned_id` | 否 | `unknown` |  | 关联责任人用户 ID。创建或更新工作项时传入该字段即可指定责任人；可先调用 `req_list_project_members` 获取项目成员用户 ID。 |
 | `done_ratio` | 否 | `integer` |  | 完成度百分比，用于表示工作项当前完成进度。 |
 | `expected_work_hours` | 否 | `integer` |  | 预计工时，用于记录计划投入的工作小时数。 |
-| `start_date` | 否 | `integer` |  | 计划开始日期，使用接口要求的时间戳或日期值。 |
+| `start_date` | 否 | `integer` |  | 开始日期。用于时间范围查询；在工作项接口中表示计划开始时间。 |
 | `due_date` | 否 | `integer` |  | 计划完成或截止日期。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -3086,12 +3086,12 @@ authorization: Bearer <auth-token>
     },
     "plan_id": {
       "$ref": "#/properties/project_id",
-      "description": "plan的唯一标识。"
+      "description": "规划/计划 ID。用于定位 CodeArts Req 中的计划资源。"
     },
     "title": {
       "type": "string",
       "minLength": 1,
-      "description": "对象标题，用于展示工作项、合并请求或标签等资源。"
+      "description": "标题。用于工作项、需求、合并请求、标签等资源的展示名称。"
     },
     "work_item_type": {
       "type": "string",
@@ -3100,7 +3100,7 @@ authorization: Bearer <auth-token>
     },
     "parent_work_item_id": {
       "$ref": "#/properties/project_id",
-      "description": "parent_work_item的唯一标识。"
+      "description": "父工作项 ID。创建计划工作项或子工作项时用于挂到父级。"
     },
     "description": {
       "type": "string",
@@ -3112,22 +3112,22 @@ authorization: Bearer <auth-token>
     },
     "module_id": {
       "$ref": "#/properties/project_id",
-      "description": "模块唯一标识。"
+      "description": "模块 ID。用于把工作项、IPD 对象或项目模块归属到指定模块。"
     },
     "priority_id": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "优先级 ID，用于设置或过滤优先级。"
+      "description": "优先级 ID。用于设置或过滤工作项优先级。"
     },
     "severity_id": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "严重级别 ID，通常用于缺陷或问题等级。"
+      "description": "严重程度 ID。通常用于缺陷或问题等级。"
     },
     "status_id": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "status的唯一标识。"
+      "description": "工作项状态 ID。用于更新工作项状态或按状态过滤；状态 ID 可通过状态配置/工作流接口查询。"
     },
     "assigned_id": {
       "$ref": "#/properties/project_id",
@@ -3146,7 +3146,7 @@ authorization: Bearer <auth-token>
     "start_date": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "计划开始日期，使用接口要求的时间戳或日期值。"
+      "description": "开始日期。用于时间范围查询；在工作项接口中表示计划开始时间。"
     },
     "due_date": {
       "type": "integer",
@@ -3187,7 +3187,7 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `name` | 是 | `string` |  | 对象名称，用于展示、查询或创建资源。 |
+| `name` | 是 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
 | `description` | 否 | `string` |  | 对象的详细描述或备注信息。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -3216,7 +3216,7 @@ authorization: Bearer <auth-token>
     "name": {
       "type": "string",
       "minLength": 1,
-      "description": "对象名称，用于展示、查询或创建资源。"
+      "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
     },
     "description": {
       "type": "string",
@@ -3254,9 +3254,9 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `module_name` | 是 | `string` |  | 模块名称。 |
-| `owner_user_id` | 是 | `unknown` |  | owner_user的唯一标识。 |
-| `parent_module_id` | 否 | `integer` |  | parent_module的唯一标识。 |
+| `module_name` | 是 | `string` |  | 模块名称。用于创建或更新项目模块。 |
+| `owner_user_id` | 是 | `unknown` |  | 模块负责人用户 ID。创建或更新项目模块时指定负责人。 |
+| `parent_module_id` | 否 | `integer` |  | 父模块 ID。创建项目模块时用于构建模块层级。 |
 | `description` | 否 | `string` |  | 对象的详细描述或备注信息。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -3293,16 +3293,16 @@ authorization: Bearer <auth-token>
       "type": "string",
       "minLength": 1,
       "maxLength": 30,
-      "description": "模块名称。"
+      "description": "模块名称。用于创建或更新项目模块。"
     },
     "owner_user_id": {
       "$ref": "#/properties/project_id",
-      "description": "owner_user的唯一标识。"
+      "description": "模块负责人用户 ID。创建或更新项目模块时指定负责人。"
     },
     "parent_module_id": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "parent_module的唯一标识。"
+      "description": "父模块 ID。创建项目模块时用于构建模块层级。"
     },
     "description": {
       "type": "string",
@@ -3343,17 +3343,17 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `title` | 是 | `string` |  | 对象标题，用于展示工作项、合并请求或标签等资源。 |
+| `title` | 是 | `string` |  | 标题。用于工作项、需求、合并请求、标签等资源的展示名称。 |
 | `work_item_type` | 是 | `string` |  | 工作项类型，会映射为 Scrum tracker_id；支持 task=2、bug=3、epic=5、feature=6、story=7，也可以直接传数字字符串 "2"、"3"、"5"、"6"、"7"。 |
 | `description` | 否 | `string` |  | 对象的详细描述或备注信息。 |
-| `priority_id` | 否 | `integer` |  | 优先级 ID，用于设置或过滤优先级。 |
+| `priority_id` | 否 | `integer` |  | 优先级 ID。用于设置或过滤工作项优先级。 |
 | `iteration_id` | 否 | `unknown` |  | 迭代唯一标识。 |
-| `module_id` | 否 | `unknown` |  | 模块唯一标识。 |
-| `severity_id` | 否 | `integer` |  | 严重级别 ID，通常用于缺陷或问题等级。 |
+| `module_id` | 否 | `unknown` |  | 模块 ID。用于把工作项、IPD 对象或项目模块归属到指定模块。 |
+| `severity_id` | 否 | `integer` |  | 严重程度 ID。通常用于缺陷或问题等级。 |
 | `assigned_id` | 否 | `unknown` |  | 关联责任人用户 ID。创建或更新工作项时传入该字段即可指定责任人；可先调用 `req_list_project_members` 获取项目成员用户 ID。 |
 | `done_ratio` | 否 | `integer` |  | 完成度百分比，用于表示工作项当前完成进度。 |
 | `expected_work_hours` | 否 | `integer` |  | 预计工时，用于记录计划投入的工作小时数。 |
-| `start_date` | 否 | `integer` |  | 计划开始日期，使用接口要求的时间戳或日期值。 |
+| `start_date` | 否 | `integer` |  | 开始日期。用于时间范围查询；在工作项接口中表示计划开始时间。 |
 | `due_date` | 否 | `integer` |  | 计划完成或截止日期。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -3389,7 +3389,7 @@ authorization: Bearer <auth-token>
     "title": {
       "type": "string",
       "minLength": 1,
-      "description": "对象标题，用于展示工作项、合并请求或标签等资源。"
+      "description": "标题。用于工作项、需求、合并请求、标签等资源的展示名称。"
     },
     "work_item_type": {
       "type": "string",
@@ -3403,7 +3403,7 @@ authorization: Bearer <auth-token>
     "priority_id": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "优先级 ID，用于设置或过滤优先级。"
+      "description": "优先级 ID。用于设置或过滤工作项优先级。"
     },
     "iteration_id": {
       "$ref": "#/properties/project_id",
@@ -3411,12 +3411,12 @@ authorization: Bearer <auth-token>
     },
     "module_id": {
       "$ref": "#/properties/project_id",
-      "description": "模块唯一标识。"
+      "description": "模块 ID。用于把工作项、IPD 对象或项目模块归属到指定模块。"
     },
     "severity_id": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "严重级别 ID，通常用于缺陷或问题等级。"
+      "description": "严重程度 ID。通常用于缺陷或问题等级。"
     },
     "assigned_id": {
       "$ref": "#/properties/project_id",
@@ -3435,7 +3435,7 @@ authorization: Bearer <auth-token>
     "start_date": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "计划开始日期，使用接口要求的时间戳或日期值。"
+      "description": "开始日期。用于时间范围查询；在工作项接口中表示计划开始时间。"
     },
     "due_date": {
       "type": "integer",
@@ -3516,8 +3516,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `work_item_id` | 是 | `unknown` |  | work_item的唯一标识。 |
-| `attachment_id` | 是 | `unknown` |  | 附件唯一标识。 |
+| `work_item_id` | 是 | `unknown` |  | 工作项 ID。用于定位 Scrum 工作项、评论、附件、流转或关联资源。 |
+| `attachment_id` | 是 | `unknown` |  | 附件 ID。用于下载或删除工作项/IPD 附件。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -3551,11 +3551,11 @@ authorization: Bearer <auth-token>
     },
     "work_item_id": {
       "$ref": "#/properties/project_id",
-      "description": "work_item的唯一标识。"
+      "description": "工作项 ID。用于定位 Scrum 工作项、评论、附件、流转或关联资源。"
     },
     "attachment_id": {
       "$ref": "#/properties/project_id",
-      "description": "附件唯一标识。"
+      "description": "附件 ID。用于下载或删除工作项/IPD 附件。"
     },
     "dry_run": {
       "type": "boolean",
@@ -3591,7 +3591,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `feature_set_id` | 是 | `unknown` |  | feature_set的唯一标识。 |
+| `feature_set_id` | 是 | `unknown` |  | IPD 特性集 ID。用于定位、更新、删除或查询特性集快照。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -3624,7 +3624,7 @@ authorization: Bearer <auth-token>
     },
     "feature_set_id": {
       "$ref": "#/properties/project_id",
-      "description": "feature_set的唯一标识。"
+      "description": "IPD 特性集 ID。用于定位、更新、删除或查询特性集快照。"
     },
     "dry_run": {
       "type": "boolean",
@@ -3659,8 +3659,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `issue_id` | 是 | `unknown` |  | IPD 工作项唯一标识。 |
-| `file_name` | 是 | `string` |  | 文件名。 |
+| `issue_id` | 是 | `unknown` |  | IPD 工作项 ID。用于定位 IPD 需求、缺陷或任务。 |
+| `file_name` | 是 | `string` |  | 文件名。用于上传、下载或删除图片/附件。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -3694,12 +3694,12 @@ authorization: Bearer <auth-token>
     },
     "issue_id": {
       "$ref": "#/properties/project_id",
-      "description": "IPD 工作项唯一标识。"
+      "description": "IPD 工作项 ID。用于定位 IPD 需求、缺陷或任务。"
     },
     "file_name": {
       "type": "string",
       "minLength": 1,
-      "description": "文件名。"
+      "description": "文件名。用于上传、下载或删除图片/附件。"
     },
     "dry_run": {
       "type": "boolean",
@@ -3735,7 +3735,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `label_id` | 是 | `unknown` |  | label的唯一标识。 |
+| `label_id` | 是 | `unknown` |  | IPD 标签 ID。用于更新或删除 IPD 标签。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -3768,7 +3768,7 @@ authorization: Bearer <auth-token>
     },
     "label_id": {
       "$ref": "#/properties/project_id",
-      "description": "label的唯一标识。"
+      "description": "IPD 标签 ID。用于更新或删除 IPD 标签。"
     },
     "dry_run": {
       "type": "boolean",
@@ -3803,7 +3803,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `module_id` | 是 | `unknown` |  | 模块唯一标识。 |
+| `module_id` | 是 | `unknown` |  | 模块 ID。用于把工作项、IPD 对象或项目模块归属到指定模块。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -3836,7 +3836,7 @@ authorization: Bearer <auth-token>
     },
     "module_id": {
       "$ref": "#/properties/project_id",
-      "description": "模块唯一标识。"
+      "description": "模块 ID。用于把工作项、IPD 对象或项目模块归属到指定模块。"
     },
     "dry_run": {
       "type": "boolean",
@@ -3871,8 +3871,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `issue_id` | 是 | `unknown` |  | IPD 工作项唯一标识。 |
-| `workhour_id` | 是 | `unknown` |  | workhour的唯一标识。 |
+| `issue_id` | 是 | `unknown` |  | IPD 工作项 ID。用于定位 IPD 需求、缺陷或任务。 |
+| `workhour_id` | 是 | `unknown` |  | 工时记录 ID。用于更新或删除 IPD 工时记录。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -3906,11 +3906,11 @@ authorization: Bearer <auth-token>
     },
     "issue_id": {
       "$ref": "#/properties/project_id",
-      "description": "IPD 工作项唯一标识。"
+      "description": "IPD 工作项 ID。用于定位 IPD 需求、缺陷或任务。"
     },
     "workhour_id": {
       "$ref": "#/properties/project_id",
-      "description": "workhour的唯一标识。"
+      "description": "工时记录 ID。用于更新或删除 IPD 工时记录。"
     },
     "dry_run": {
       "type": "boolean",
@@ -4014,7 +4014,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `plan_id` | 是 | `unknown` |  | plan的唯一标识。 |
+| `plan_id` | 是 | `unknown` |  | 规划/计划 ID。用于定位 CodeArts Req 中的计划资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -4047,7 +4047,7 @@ authorization: Bearer <auth-token>
     },
     "plan_id": {
       "$ref": "#/properties/project_id",
-      "description": "plan的唯一标识。"
+      "description": "规划/计划 ID。用于定位 CodeArts Req 中的计划资源。"
     },
     "dry_run": {
       "type": "boolean",
@@ -4143,7 +4143,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `module_id` | 是 | `unknown` |  | 模块唯一标识。 |
+| `module_id` | 是 | `unknown` |  | 模块 ID。用于把工作项、IPD 对象或项目模块归属到指定模块。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -4176,7 +4176,7 @@ authorization: Bearer <auth-token>
     },
     "module_id": {
       "$ref": "#/properties/project_id",
-      "description": "模块唯一标识。"
+      "description": "模块 ID。用于把工作项、IPD 对象或项目模块归属到指定模块。"
     },
     "dry_run": {
       "type": "boolean",
@@ -4210,7 +4210,7 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `template_id` | 是 | `string` |  | template的唯一标识。 |
+| `template_id` | 是 | `string` |  | 模板 ID。用于按模板创建部署任务、应用或查询模板详情。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -4238,7 +4238,7 @@ authorization: Bearer <auth-token>
     "template_id": {
       "type": "string",
       "minLength": 1,
-      "description": "template的唯一标识。"
+      "description": "模板 ID。用于按模板创建部署任务、应用或查询模板详情。"
     },
     "dry_run": {
       "type": "boolean",
@@ -4272,7 +4272,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `work_item_id` | 是 | `unknown` |  | work_item的唯一标识。 |
+| `work_item_id` | 是 | `unknown` |  | 工作项 ID。用于定位 Scrum 工作项、评论、附件、流转或关联资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -4305,7 +4305,7 @@ authorization: Bearer <auth-token>
     },
     "work_item_id": {
       "$ref": "#/properties/project_id",
-      "description": "work_item的唯一标识。"
+      "description": "工作项 ID。用于定位 Scrum 工作项、评论、附件、流转或关联资源。"
     },
     "dry_run": {
       "type": "boolean",
@@ -4340,8 +4340,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `work_item_id` | 是 | `unknown` |  | work_item的唯一标识。 |
-| `attachment_id` | 是 | `unknown` |  | 附件唯一标识。 |
+| `work_item_id` | 是 | `unknown` |  | 工作项 ID。用于定位 Scrum 工作项、评论、附件、流转或关联资源。 |
+| `attachment_id` | 是 | `unknown` |  | 附件 ID。用于下载或删除工作项/IPD 附件。 |
 
 调用示例：
 
@@ -4374,11 +4374,11 @@ authorization: Bearer <auth-token>
     },
     "work_item_id": {
       "$ref": "#/properties/project_id",
-      "description": "work_item的唯一标识。"
+      "description": "工作项 ID。用于定位 Scrum 工作项、评论、附件、流转或关联资源。"
     },
     "attachment_id": {
       "$ref": "#/properties/project_id",
-      "description": "附件唯一标识。"
+      "description": "附件 ID。用于下载或删除工作项/IPD 附件。"
     }
   },
   "required": [
@@ -4409,7 +4409,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `image_uri` | 是 | `string` |  | 图片资源 URI。 |
+| `image_uri` | 是 | `string` |  | 图片 URI。用于下载 Req 图片文件。 |
 
 调用示例：
 
@@ -4442,7 +4442,7 @@ authorization: Bearer <auth-token>
     "image_uri": {
       "type": "string",
       "minLength": 1,
-      "description": "图片资源 URI。"
+      "description": "图片 URI。用于下载 Req 图片文件。"
     }
   },
   "required": [
@@ -4472,7 +4472,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `attachment_id` | 是 | `unknown` |  | 附件唯一标识。 |
+| `attachment_id` | 是 | `unknown` |  | 附件 ID。用于下载或删除工作项/IPD 附件。 |
 
 调用示例：
 
@@ -4504,7 +4504,7 @@ authorization: Bearer <auth-token>
     },
     "attachment_id": {
       "$ref": "#/properties/project_id",
-      "description": "附件唯一标识。"
+      "description": "附件 ID。用于下载或删除工作项/IPD 附件。"
     }
   },
   "required": [
@@ -4534,9 +4534,9 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `issue_id` | 是 | `unknown` |  | IPD 工作项唯一标识。 |
-| `file_name` | 是 | `string` |  | 文件名。 |
-| `field_code` | 否 | `string` |  | 字段编码。 |
+| `issue_id` | 是 | `unknown` |  | IPD 工作项 ID。用于定位 IPD 需求、缺陷或任务。 |
+| `file_name` | 是 | `string` |  | 文件名。用于上传、下载或删除图片/附件。 |
+| `field_code` | 否 | `string` |  | 字段编码。用于定位字段配置或图片上传字段。 |
 
 调用示例：
 
@@ -4569,17 +4569,17 @@ authorization: Bearer <auth-token>
     },
     "issue_id": {
       "$ref": "#/properties/project_id",
-      "description": "IPD 工作项唯一标识。"
+      "description": "IPD 工作项 ID。用于定位 IPD 需求、缺陷或任务。"
     },
     "file_name": {
       "type": "string",
       "minLength": 1,
-      "description": "文件名。"
+      "description": "文件名。用于上传、下载或删除图片/附件。"
     },
     "field_code": {
       "type": "string",
       "maxLength": 64,
-      "description": "字段编码。"
+      "description": "字段编码。用于定位字段配置或图片上传字段。"
     }
   },
   "required": [
@@ -4707,8 +4707,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `issue_id` | 是 | `unknown` |  | IPD 工作项唯一标识。 |
-| `category` | 是 | `string` |  | category 参数，按对应 CodeArts API 要求传入。 |
+| `issue_id` | 是 | `unknown` |  | IPD 工作项 ID。用于定位 IPD 需求、缺陷或任务。 |
+| `category` | 是 | `string` |  | 分类编码。用于按需求、缺陷等对象类型查询或创建。 |
 | `is_src` | 否 | `boolean` |  | 是否src。 |
 
 调用示例：
@@ -4742,12 +4742,12 @@ authorization: Bearer <auth-token>
     },
     "issue_id": {
       "$ref": "#/properties/project_id",
-      "description": "IPD 工作项唯一标识。"
+      "description": "IPD 工作项 ID。用于定位 IPD 需求、缺陷或任务。"
     },
     "category": {
       "type": "string",
       "minLength": 1,
-      "description": "category 参数，按对应 CodeArts API 要求传入。"
+      "description": "分类编码。用于按需求、缺陷等对象类型查询或创建。"
     },
     "is_src": {
       "type": "boolean",
@@ -4782,8 +4782,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `issue_id` | 是 | `unknown` |  | IPD 工作项唯一标识。 |
-| `version` | 否 | `string` | "v2" | version 参数，按对应 CodeArts API 要求传入。 |
+| `issue_id` | 是 | `unknown` |  | IPD 工作项 ID。用于定位 IPD 需求、缺陷或任务。 |
+| `version` | 否 | `string` | "v2" | 版本号。用于指定插件版本、接口版本或工具步骤版本。 |
 
 调用示例：
 
@@ -4815,7 +4815,7 @@ authorization: Bearer <auth-token>
     },
     "issue_id": {
       "$ref": "#/properties/project_id",
-      "description": "IPD 工作项唯一标识。"
+      "description": "IPD 工作项 ID。用于定位 IPD 需求、缺陷或任务。"
     },
     "version": {
       "type": "string",
@@ -4824,7 +4824,7 @@ authorization: Bearer <auth-token>
         "v2"
       ],
       "default": "v2",
-      "description": "version 参数，按对应 CodeArts API 要求传入。"
+      "description": "版本号。用于指定插件版本、接口版本或工具步骤版本。"
     }
   },
   "required": [
@@ -4854,7 +4854,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `code` | 是 | `string` |  | 字段编码或配置编码。 |
+| `code` | 是 | `string` |  | 字段/配置编码。用于查询字段选项使用情况或配置项。 |
 
 调用示例：
 
@@ -4887,7 +4887,7 @@ authorization: Bearer <auth-token>
     "code": {
       "type": "string",
       "minLength": 1,
-      "description": "字段编码或配置编码。"
+      "description": "字段/配置编码。用于查询字段选项使用情况或配置项。"
     }
   },
   "required": [
@@ -4977,11 +4977,11 @@ authorization: Bearer <auth-token>
       "properties": {
         "start_date": {
           "type": "string",
-          "description": "计划开始日期，使用接口要求的时间戳或日期值。"
+          "description": "开始日期。用于时间范围查询；在工作项接口中表示计划开始时间。"
         },
         "end_date": {
           "type": "string",
-          "description": "创建时间范围。"
+          "description": "结束日期。用于按时间范围查询操作日志、历史记录或统计数据。"
         }
       },
       "additionalProperties": true,
@@ -5014,7 +5014,7 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `code` | 是 | `string` |  | 字段编码或配置编码。 |
+| `code` | 是 | `string` |  | 字段/配置编码。用于查询字段选项使用情况或配置项。 |
 
 调用示例：
 
@@ -5041,7 +5041,7 @@ authorization: Bearer <auth-token>
     "code": {
       "type": "string",
       "minLength": 1,
-      "description": "字段编码或配置编码。"
+      "description": "字段/配置编码。用于查询字段选项使用情况或配置项。"
     }
   },
   "required": [
@@ -5069,7 +5069,7 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `field_id` | 是 | `string` |  | field的唯一标识。 |
+| `field_id` | 是 | `string` |  | 字段 ID。用于定位 IPD 租户字段或自定义字段。 |
 
 调用示例：
 
@@ -5096,7 +5096,7 @@ authorization: Bearer <auth-token>
     "field_id": {
       "type": "string",
       "minLength": 1,
-      "description": "field的唯一标识。"
+      "description": "字段 ID。用于定位 IPD 租户字段或自定义字段。"
     }
   },
   "required": [
@@ -5125,8 +5125,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `issue_id` | 是 | `unknown` |  | IPD 工作项唯一标识。 |
-| `issue_category` | 是 | `string` |  | IPD 工作项分类。 |
+| `issue_id` | 是 | `unknown` |  | IPD 工作项 ID。用于定位 IPD 需求、缺陷或任务。 |
+| `issue_category` | 是 | `string` |  | IPD 工作项分类。用于指定需求、缺陷、任务等分类编码。 |
 
 调用示例：
 
@@ -5159,12 +5159,12 @@ authorization: Bearer <auth-token>
     },
     "issue_id": {
       "$ref": "#/properties/project_id",
-      "description": "IPD 工作项唯一标识。"
+      "description": "IPD 工作项 ID。用于定位 IPD 需求、缺陷或任务。"
     },
     "issue_category": {
       "type": "string",
       "minLength": 1,
-      "description": "IPD 工作项分类。"
+      "description": "IPD 工作项分类。用于指定需求、缺陷、任务等分类编码。"
     }
   },
   "required": [
@@ -5194,8 +5194,8 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `program_id` | 是 | `string` |  | program的唯一标识。 |
-| `ir_id` | 是 | `unknown` |  | ir的唯一标识。 |
+| `program_id` | 是 | `string` |  | 项目空间/需求池 ID。用于定位 IR/RR 所属空间。 |
+| `ir_id` | 是 | `unknown` |  | IR ID。用于定位需求池中的原始需求。 |
 
 调用示例：
 
@@ -5223,11 +5223,11 @@ authorization: Bearer <auth-token>
     "program_id": {
       "type": "string",
       "minLength": 1,
-      "description": "program的唯一标识。"
+      "description": "项目空间/需求池 ID。用于定位 IR/RR 所属空间。"
     },
     "ir_id": {
       "$ref": "#/properties/program_id",
-      "description": "ir的唯一标识。"
+      "description": "IR ID。用于定位需求池中的原始需求。"
     }
   },
   "required": [
@@ -5312,7 +5312,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `plan_id` | 是 | `unknown` |  | plan的唯一标识。 |
+| `plan_id` | 是 | `unknown` |  | 规划/计划 ID。用于定位 CodeArts Req 中的计划资源。 |
 
 调用示例：
 
@@ -5344,7 +5344,7 @@ authorization: Bearer <auth-token>
     },
     "plan_id": {
       "$ref": "#/properties/project_id",
-      "description": "plan的唯一标识。"
+      "description": "规划/计划 ID。用于定位 CodeArts Req 中的计划资源。"
     }
   },
   "required": [
@@ -5482,7 +5482,7 @@ authorization: Bearer <auth-token>
               "name": {
                 "type": "string",
                 "minLength": 1,
-                "description": "对象名称，用于展示、查询或创建资源。"
+                "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
               },
               "options": {
                 "type": "string",
@@ -5598,7 +5598,7 @@ authorization: Bearer <auth-token>
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `date_range` | 否 | `string` |  | 日期范围。 |
 | `metric_type` | 否 | `string` |  | 指标类型。 |
-| `sprint_id` | 否 | `unknown` |  | sprint的唯一标识。 |
+| `sprint_id` | 否 | `unknown` |  | 冲刺/迭代 ID。用于项目完成率等统计口径。 |
 | `dividend` | 否 | `object` |  | 指标分子过滤条件。 |
 | `divisor` | 否 | `object` |  | 指标分母过滤条件。 |
 
@@ -5641,7 +5641,7 @@ authorization: Bearer <auth-token>
     },
     "sprint_id": {
       "$ref": "#/properties/project_id",
-      "description": "sprint的唯一标识。"
+      "description": "冲刺/迭代 ID。用于项目完成率等统计口径。"
     },
     "dividend": {
       "type": "object",
@@ -5904,7 +5904,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `work_item_id` | 是 | `unknown` |  | work_item的唯一标识。 |
+| `work_item_id` | 是 | `unknown` |  | 工作项 ID。用于定位 Scrum 工作项、评论、附件、流转或关联资源。 |
 
 调用示例：
 
@@ -5936,7 +5936,7 @@ authorization: Bearer <auth-token>
     },
     "work_item_id": {
       "$ref": "#/properties/project_id",
-      "description": "work_item的唯一标识。"
+      "description": "工作项 ID。用于定位 Scrum 工作项、评论、附件、流转或关联资源。"
     }
   },
   "required": [
@@ -6021,7 +6021,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `work_item_id` | 是 | `unknown` |  | work_item的唯一标识。 |
+| `work_item_id` | 是 | `unknown` |  | 工作项 ID。用于定位 Scrum 工作项、评论、附件、流转或关联资源。 |
 
 调用示例：
 
@@ -6053,7 +6053,7 @@ authorization: Bearer <auth-token>
     },
     "work_item_id": {
       "$ref": "#/properties/project_id",
-      "description": "work_item的唯一标识。"
+      "description": "工作项 ID。用于定位 Scrum 工作项、评论、附件、流转或关联资源。"
     }
   },
   "required": [
@@ -6083,8 +6083,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `work_item_id` | 是 | `unknown` |  | work_item的唯一标识。 |
-| `include` | 否 | `string` | "children,parent" | include 参数，按对应 CodeArts API 要求传入。 |
+| `work_item_id` | 是 | `unknown` |  | 工作项 ID。用于定位 Scrum 工作项、评论、附件、流转或关联资源。 |
+| `include` | 否 | `string` | "children,parent" | 详情附加项。用于指定详情接口是否包含评论、附件、关联等扩展数据。 |
 
 调用示例：
 
@@ -6116,13 +6116,13 @@ authorization: Bearer <auth-token>
     },
     "work_item_id": {
       "$ref": "#/properties/project_id",
-      "description": "work_item的唯一标识。"
+      "description": "工作项 ID。用于定位 Scrum 工作项、评论、附件、流转或关联资源。"
     },
     "include": {
       "type": "string",
       "minLength": 1,
       "default": "children,parent",
-      "description": "include 参数，按对应 CodeArts API 要求传入。"
+      "description": "详情附加项。用于指定详情接口是否包含评论、附件、关联等扩展数据。"
     }
   },
   "required": [
@@ -6289,13 +6289,13 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `issue_type` | 是 | `string` |  | IPD 工作项类型。 |
-| `group_field_id` | 是 | `unknown` |  | group_field的唯一标识。 |
+| `issue_type` | 是 | `string` |  | IPD 工作项类型。用于指定需求、缺陷等 IPD 对象类别。 |
+| `group_field_id` | 是 | `unknown` |  | 分组字段 ID。IPD 分组查询时指定按哪个字段分组。 |
 | `is_project_group` | 否 | `boolean` |  | 是否按项目维度分组。 |
-| `group_sort` | 否 | `string` |  | 分组排序方向。 |
+| `group_sort` | 否 | `string` |  | 分组排序方向。用于控制分组结果升序或降序。 |
 | `filter` | 否 | `array` |  | 过滤条件列表。 |
 | `filter_mode` | 否 | `string` | "AND_OR" | 过滤条件组合方式。 |
 | `sort` | 否 | `array` |  | 排序条件。 |
@@ -6328,14 +6328,14 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "project_id": {
       "type": "string",
@@ -6345,11 +6345,11 @@ authorization: Bearer <auth-token>
     "issue_type": {
       "type": "string",
       "minLength": 1,
-      "description": "IPD 工作项类型。"
+      "description": "IPD 工作项类型。用于指定需求、缺陷等 IPD 对象类别。"
     },
     "group_field_id": {
       "$ref": "#/properties/project_id",
-      "description": "group_field的唯一标识。"
+      "description": "分组字段 ID。IPD 分组查询时指定按哪个字段分组。"
     },
     "is_project_group": {
       "type": "boolean",
@@ -6361,7 +6361,7 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "分组排序方向。"
+      "description": "分组排序方向。用于控制分组结果升序或降序。"
     },
     "filter": {
       "type": "array",
@@ -6502,11 +6502,11 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `work_item_id` | 是 | `unknown` |  | work_item的唯一标识。 |
-| `type` | 否 | `string` | "commit" | 类型字段，含义取决于对应接口。 |
+| `work_item_id` | 是 | `unknown` |  | 工作项 ID。用于定位 Scrum 工作项、评论、附件、流转或关联资源。 |
+| `type` | 否 | `string` | "commit" | 类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。 |
 
 调用示例：
 
@@ -6535,14 +6535,14 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "project_id": {
       "type": "string",
@@ -6551,7 +6551,7 @@ authorization: Bearer <auth-token>
     },
     "work_item_id": {
       "$ref": "#/properties/project_id",
-      "description": "work_item的唯一标识。"
+      "description": "工作项 ID。用于定位 Scrum 工作项、评论、附件、流转或关联资源。"
     },
     "type": {
       "type": "string",
@@ -6560,7 +6560,7 @@ authorization: Bearer <auth-token>
         "branch"
       ],
       "default": "commit",
-      "description": "类型字段，含义取决于对应接口。"
+      "description": "类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。"
     }
   },
   "required": [
@@ -6589,10 +6589,10 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `work_item_id` | 是 | `unknown` |  | work_item的唯一标识。 |
+| `work_item_id` | 是 | `unknown` |  | 工作项 ID。用于定位 Scrum 工作项、评论、附件、流转或关联资源。 |
 
 调用示例：
 
@@ -6621,14 +6621,14 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "project_id": {
       "type": "string",
@@ -6637,7 +6637,7 @@ authorization: Bearer <auth-token>
     },
     "work_item_id": {
       "$ref": "#/properties/project_id",
-      "description": "work_item的唯一标识。"
+      "description": "工作项 ID。用于定位 Scrum 工作项、评论、附件、流转或关联资源。"
     }
   },
   "required": [
@@ -6666,10 +6666,10 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `work_item_id` | 是 | `unknown` |  | work_item的唯一标识。 |
+| `work_item_id` | 是 | `unknown` |  | 工作项 ID。用于定位 Scrum 工作项、评论、附件、流转或关联资源。 |
 
 调用示例：
 
@@ -6698,14 +6698,14 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "project_id": {
       "type": "string",
@@ -6714,7 +6714,7 @@ authorization: Bearer <auth-token>
     },
     "work_item_id": {
       "$ref": "#/properties/project_id",
-      "description": "work_item的唯一标识。"
+      "description": "工作项 ID。用于定位 Scrum 工作项、评论、附件、流转或关联资源。"
     }
   },
   "required": [
@@ -6743,10 +6743,10 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `work_item_id` | 是 | `unknown` |  | work_item的唯一标识。 |
+| `work_item_id` | 是 | `unknown` |  | 工作项 ID。用于定位 Scrum 工作项、评论、附件、流转或关联资源。 |
 
 调用示例：
 
@@ -6775,14 +6775,14 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "project_id": {
       "type": "string",
@@ -6791,7 +6791,7 @@ authorization: Bearer <auth-token>
     },
     "work_item_id": {
       "$ref": "#/properties/project_id",
-      "description": "work_item的唯一标识。"
+      "description": "工作项 ID。用于定位 Scrum 工作项、评论、附件、流转或关联资源。"
     }
   },
   "required": [
@@ -6820,8 +6820,8 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 调用示例：
@@ -6850,14 +6850,14 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "project_id": {
       "type": "string",
@@ -6891,7 +6891,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `board_id` | 是 | `unknown` |  | board的唯一标识。 |
+| `board_id` | 是 | `unknown` |  | 看板 ID。用于查询指定看板的工作流配置。 |
 
 调用示例：
 
@@ -6923,7 +6923,7 @@ authorization: Bearer <auth-token>
     },
     "board_id": {
       "$ref": "#/properties/project_id",
-      "description": "board的唯一标识。"
+      "description": "看板 ID。用于查询指定看板的工作流配置。"
     }
   },
   "required": [
@@ -6952,8 +6952,8 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `created_time_interval` | 否 | `string` |  | 创建时间范围。 |
 
@@ -6983,14 +6983,14 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "project_id": {
       "type": "string",
@@ -7028,7 +7028,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 否 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `type` | 否 | `string` | "backlog" | 类型字段，含义取决于对应接口。 |
+| `type` | 否 | `string` | "backlog" | 类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。 |
 
 调用示例：
 
@@ -7059,7 +7059,7 @@ authorization: Bearer <auth-token>
       "type": "string",
       "minLength": 1,
       "default": "backlog",
-      "description": "类型字段，含义取决于对应接口。"
+      "description": "类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。"
     }
   },
   "additionalProperties": false,
@@ -7084,11 +7084,11 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `parent_id` | 是 | `unknown` |  | parent的唯一标识。 |
-| `subject` | 否 | `string` |  | subject 参数，按对应 CodeArts API 要求传入。 |
+| `parent_id` | 是 | `unknown` |  | 父级资源 ID。用于创建模块、特性集或树形结构节点。 |
+| `subject` | 否 | `string` |  | 标题/主题关键字。用于按工作项标题或主题过滤可添加/已关联工作项。 |
 | `query_type` | 否 | `string` | "basic" | 查询类型。 |
 
 调用示例：
@@ -7118,14 +7118,14 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "project_id": {
       "type": "string",
@@ -7134,11 +7134,11 @@ authorization: Bearer <auth-token>
     },
     "parent_id": {
       "$ref": "#/properties/project_id",
-      "description": "parent的唯一标识。"
+      "description": "父级资源 ID。用于创建模块、特性集或树形结构节点。"
     },
     "subject": {
       "type": "string",
-      "description": "subject 参数，按对应 CodeArts API 要求传入。"
+      "description": "标题/主题关键字。用于按工作项标题或主题过滤可添加/已关联工作项。"
     },
     "query_type": {
       "type": "string",
@@ -7178,8 +7178,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `issue_id` | 是 | `unknown` |  | IPD 工作项唯一标识。 |
-| `category` | 否 | `string` |  | category 参数，按对应 CodeArts API 要求传入。 |
+| `issue_id` | 是 | `unknown` |  | IPD 工作项 ID。用于定位 IPD 需求、缺陷或任务。 |
+| `category` | 否 | `string` |  | 分类编码。用于按需求、缺陷等对象类型查询或创建。 |
 
 调用示例：
 
@@ -7211,11 +7211,11 @@ authorization: Bearer <auth-token>
     },
     "issue_id": {
       "$ref": "#/properties/project_id",
-      "description": "IPD 工作项唯一标识。"
+      "description": "IPD 工作项 ID。用于定位 IPD 需求、缺陷或任务。"
     },
     "category": {
       "type": "string",
-      "description": "category 参数，按对应 CodeArts API 要求传入。"
+      "description": "分类编码。用于按需求、缺陷等对象类型查询或创建。"
     }
   },
   "required": [
@@ -7245,7 +7245,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `category_id` | 是 | `unknown` |  | category的唯一标识。 |
+| `category_id` | 是 | `unknown` |  | 分类 ID。用于查询某类 IPD 字段、状态或工作流配置。 |
 
 调用示例：
 
@@ -7277,7 +7277,7 @@ authorization: Bearer <auth-token>
     },
     "category_id": {
       "$ref": "#/properties/project_id",
-      "description": "category的唯一标识。"
+      "description": "分类 ID。用于查询某类 IPD 字段、状态或工作流配置。"
     }
   },
   "required": [
@@ -7307,7 +7307,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `snapshot_version_id` | 否 | `unknown` |  | snapshot_version的唯一标识。 |
+| `snapshot_version_id` | 否 | `unknown` |  | 快照版本 ID。用于查询 IPD 特性集快照数据。 |
 
 调用示例：
 
@@ -7338,7 +7338,7 @@ authorization: Bearer <auth-token>
     },
     "snapshot_version_id": {
       "$ref": "#/properties/project_id",
-      "description": "snapshot_version的唯一标识。"
+      "description": "快照版本 ID。用于查询 IPD 特性集快照数据。"
     }
   },
   "required": [
@@ -7367,8 +7367,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `issue_id` | 是 | `unknown` |  | IPD 工作项唯一标识。 |
-| `source_project_id` | 否 | `unknown` |  | source_project的唯一标识。 |
+| `issue_id` | 是 | `unknown` |  | IPD 工作项 ID。用于定位 IPD 需求、缺陷或任务。 |
+| `source_project_id` | 否 | `unknown` |  | 源项目 ID。下载或查询跨项目资源时用于定位来源项目。 |
 
 调用示例：
 
@@ -7400,11 +7400,11 @@ authorization: Bearer <auth-token>
     },
     "issue_id": {
       "$ref": "#/properties/project_id",
-      "description": "IPD 工作项唯一标识。"
+      "description": "IPD 工作项 ID。用于定位 IPD 需求、缺陷或任务。"
     },
     "source_project_id": {
       "$ref": "#/properties/project_id",
-      "description": "source_project的唯一标识。"
+      "description": "源项目 ID。下载或查询跨项目资源时用于定位来源项目。"
     }
   },
   "required": [
@@ -7434,7 +7434,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `category_id` | 是 | `unknown` |  | category的唯一标识。 |
+| `category_id` | 是 | `unknown` |  | 分类 ID。用于查询某类 IPD 字段、状态或工作流配置。 |
 
 调用示例：
 
@@ -7466,7 +7466,7 @@ authorization: Bearer <auth-token>
     },
     "category_id": {
       "$ref": "#/properties/project_id",
-      "description": "category的唯一标识。"
+      "description": "分类 ID。用于查询某类 IPD 字段、状态或工作流配置。"
     }
   },
   "required": [
@@ -7550,11 +7550,11 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `category` | 是 | `string` |  | category 参数，按对应 CodeArts API 要求传入。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
+| `category` | 是 | `string` |  | 分类编码。用于按需求、缺陷等对象类型查询或创建。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
 | `number` | 否 | `array` |  | 编号列表。 |
 | `plan` | 否 | `array` |  | 计划或迭代过滤条件。 |
 | `modified_date` | 否 | `object` |  | 修改时间范围。 |
@@ -7586,14 +7586,14 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 1000,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "project_id": {
       "type": "string",
@@ -7603,11 +7603,11 @@ authorization: Bearer <auth-token>
     "category": {
       "type": "string",
       "minLength": 1,
-      "description": "category 参数，按对应 CodeArts API 要求传入。"
+      "description": "分类编码。用于按需求、缺陷等对象类型查询或创建。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "number": {
       "type": "array",
@@ -7642,11 +7642,11 @@ authorization: Bearer <auth-token>
       "properties": {
         "start_date": {
           "type": "string",
-          "description": "计划开始日期，使用接口要求的时间戳或日期值。"
+          "description": "开始日期。用于时间范围查询；在工作项接口中表示计划开始时间。"
         },
         "end_date": {
           "type": "string",
-          "description": "修改时间范围。"
+          "description": "结束日期。用于按时间范围查询操作日志、历史记录或统计数据。"
         }
       },
       "additionalProperties": true,
@@ -7679,10 +7679,10 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `issue_type` | 是 | `string` |  | 工作项类型或 IPD 问题类型。 |
+| `issue_type` | 是 | `string` |  | IPD 工作项类型。用于指定需求、缺陷等 IPD 对象类别。 |
 | `filter` | 否 | `array` |  | 过滤条件列表。 |
 | `filter_mode` | 否 | `string` | "AND_OR" | 过滤条件组合方式。 |
 
@@ -7713,14 +7713,14 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 1000,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "project_id": {
       "type": "string",
@@ -7730,7 +7730,7 @@ authorization: Bearer <auth-token>
     "issue_type": {
       "type": "string",
       "minLength": 1,
-      "description": "工作项类型或 IPD 问题类型。"
+      "description": "IPD 工作项类型。用于指定需求、缺陷等 IPD 对象类别。"
     },
     "filter": {
       "type": "array",
@@ -7776,8 +7776,8 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 调用示例：
@@ -7806,14 +7806,14 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 1000,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "project_id": {
       "type": "string",
@@ -7846,8 +7846,8 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 调用示例：
@@ -7876,14 +7876,14 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 1000,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "project_id": {
       "type": "string",
@@ -7916,8 +7916,8 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 调用示例：
@@ -7946,14 +7946,14 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 1000,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "project_id": {
       "type": "string",
@@ -8041,8 +8041,8 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `search` | 否 | `string` |  | 搜索条件。 |
-| `model` | 否 | `string` |  | model 参数，按对应 CodeArts API 要求传入。 |
+| `search` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `model` | 否 | `string` |  | IPD 项目模型。用于筛选不同类型的 IPD 项目。 |
 
 调用示例：
 
@@ -8066,7 +8066,7 @@ authorization: Bearer <auth-token>
   "properties": {
     "search": {
       "type": "string",
-      "description": "搜索条件。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "model": {
       "type": "string",
@@ -8075,7 +8075,7 @@ authorization: Bearer <auth-token>
         "10002",
         "10003"
       ],
-      "description": "model 参数，按对应 CodeArts API 要求传入。"
+      "description": "IPD 项目模型。用于筛选不同类型的 IPD 项目。"
     }
   },
   "additionalProperties": false,
@@ -8100,11 +8100,11 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `snapshot_version_id` | 是 | `unknown` |  | snapshot_version的唯一标识。 |
-| `feature_set_id` | 是 | `unknown` |  | feature_set的唯一标识。 |
+| `snapshot_version_id` | 是 | `unknown` |  | 快照版本 ID。用于查询 IPD 特性集快照数据。 |
+| `feature_set_id` | 是 | `unknown` |  | IPD 特性集 ID。用于定位、更新、删除或查询特性集快照。 |
 
 调用示例：
 
@@ -8134,14 +8134,14 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 1000,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "project_id": {
       "type": "string",
@@ -8150,11 +8150,11 @@ authorization: Bearer <auth-token>
     },
     "snapshot_version_id": {
       "$ref": "#/properties/project_id",
-      "description": "snapshot_version的唯一标识。"
+      "description": "快照版本 ID。用于查询 IPD 特性集快照数据。"
     },
     "feature_set_id": {
       "$ref": "#/properties/project_id",
-      "description": "feature_set的唯一标识。"
+      "description": "IPD 特性集 ID。用于定位、更新、删除或查询特性集快照。"
     }
   },
   "required": [
@@ -8240,7 +8240,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `category_id` | 否 | `unknown` |  | category的唯一标识。 |
+| `category_id` | 否 | `unknown` |  | 分类 ID。用于查询某类 IPD 字段、状态或工作流配置。 |
 
 调用示例：
 
@@ -8271,7 +8271,7 @@ authorization: Bearer <auth-token>
     },
     "category_id": {
       "$ref": "#/properties/project_id",
-      "description": "category的唯一标识。"
+      "description": "分类 ID。用于查询某类 IPD 字段、状态或工作流配置。"
     }
   },
   "required": [
@@ -8299,9 +8299,9 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `search` | 否 | `string` |  | 搜索条件。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `search` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
 | `sort_info` | 否 | `object` |  | 排序信息。 |
 
 调用示例：
@@ -8328,18 +8328,18 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "search": {
       "type": "string",
-      "description": "搜索条件。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_info": {
       "type": "object",
@@ -8379,10 +8379,10 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
 | `project_id` | 否 | `string | array` | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `issue_type` | 是 | `string` |  | 工作项类型或 IPD 问题类型。 |
+| `issue_type` | 是 | `string` |  | IPD 工作项类型。用于指定需求、缺陷等 IPD 对象类别。 |
 | `filter` | 否 | `array` |  | 过滤条件列表。 |
 | `filter_mode` | 否 | `string` | "AND_OR" | 过滤条件组合方式。 |
 | `sort` | 否 | `array` |  | 排序条件。 |
@@ -8413,14 +8413,14 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "project_id": {
       "anyOf": [
@@ -8441,7 +8441,7 @@ authorization: Bearer <auth-token>
     "issue_type": {
       "type": "string",
       "minLength": 1,
-      "description": "工作项类型或 IPD 问题类型。"
+      "description": "IPD 工作项类型。用于指定需求、缺陷等 IPD 对象类别。"
     },
     "filter": {
       "type": "array",
@@ -8580,13 +8580,13 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `plan_pi` | 否 | `array` |  | PI 计划。 |
 | `plan_iteration` | 否 | `array` |  | 计划迭代。 |
-| `workitem_id` | 否 | `array` |  | workitem的唯一标识。 |
-| `created_by` | 否 | `array` |  | created by 参数，按对应 CodeArts API 要求传入。 |
+| `workitem_id` | 否 | `array` |  | 工作项 ID。IPD 工时或查询条件中用于定位具体工作项。 |
+| `created_by` | 否 | `array` |  | 创建人用户 ID 列表。用于按工时记录创建人过滤。 |
 
 调用示例：
 
@@ -8614,14 +8614,14 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "project_id": {
       "type": "string",
@@ -8647,14 +8647,14 @@ authorization: Bearer <auth-token>
       "items": {
         "$ref": "#/properties/project_id"
       },
-      "description": "workitem的唯一标识。"
+      "description": "工作项 ID。IPD 工时或查询条件中用于定位具体工作项。"
     },
     "created_by": {
       "type": "array",
       "items": {
         "$ref": "#/properties/project_id"
       },
-      "description": "created by 参数，按对应 CodeArts API 要求传入。"
+      "description": "创建人用户 ID 列表。用于按工时记录创建人过滤。"
     }
   },
   "required": [
@@ -8683,7 +8683,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `category_id` | 是 | `unknown` |  | category的唯一标识。 |
+| `category_id` | 是 | `unknown` |  | 分类 ID。用于查询某类 IPD 字段、状态或工作流配置。 |
 
 调用示例：
 
@@ -8715,7 +8715,7 @@ authorization: Bearer <auth-token>
     },
     "category_id": {
       "$ref": "#/properties/project_id",
-      "description": "category的唯一标识。"
+      "description": "分类 ID。用于查询某类 IPD 字段、状态或工作流配置。"
     }
   },
   "required": [
@@ -8745,7 +8745,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `category_id` | 否 | `unknown` |  | category的唯一标识。 |
+| `category_id` | 否 | `unknown` |  | 分类 ID。用于查询某类 IPD 字段、状态或工作流配置。 |
 
 调用示例：
 
@@ -8776,7 +8776,7 @@ authorization: Bearer <auth-token>
     },
     "category_id": {
       "$ref": "#/properties/project_id",
-      "description": "category的唯一标识。"
+      "description": "分类 ID。用于查询某类 IPD 字段、状态或工作流配置。"
     }
   },
   "required": [
@@ -8804,10 +8804,10 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `program_id` | 是 | `string` |  | program的唯一标识。 |
-| `ir_id` | 是 | `unknown` |  | ir的唯一标识。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `program_id` | 是 | `string` |  | 项目空间/需求池 ID。用于定位 IR/RR 所属空间。 |
+| `ir_id` | 是 | `unknown` |  | IR ID。用于定位需求池中的原始需求。 |
 | `query_type` | 是 | `string` |  | 查询类型。 |
 
 调用示例：
@@ -8838,23 +8838,23 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 1000,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "program_id": {
       "type": "string",
       "minLength": 1,
-      "description": "program的唯一标识。"
+      "description": "项目空间/需求池 ID。用于定位 IR/RR 所属空间。"
     },
     "ir_id": {
       "$ref": "#/properties/program_id",
-      "description": "ir的唯一标识。"
+      "description": "IR ID。用于定位需求池中的原始需求。"
     },
     "query_type": {
       "type": "string",
@@ -8892,9 +8892,9 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `ir_id` | 是 | `string` |  | ir的唯一标识。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `ir_id` | 是 | `string` |  | IR ID。用于定位需求池中的原始需求。 |
 
 调用示例：
 
@@ -8922,19 +8922,19 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 1000,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "ir_id": {
       "type": "string",
       "minLength": 1,
-      "description": "ir的唯一标识。"
+      "description": "IR ID。用于定位需求池中的原始需求。"
     }
   },
   "required": [
@@ -9007,7 +9007,7 @@ authorization: Bearer <auth-token>
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `iteration_id` | 是 | `unknown` |  | 迭代唯一标识。 |
 | `tracker_id` | 否 | `integer` |  | Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。 |
-| `status_id` | 否 | `integer` |  | status的唯一标识。 |
+| `status_id` | 否 | `integer` |  | 工作项状态 ID。用于更新工作项状态或按状态过滤；状态 ID 可通过状态配置/工作流接口查询。 |
 
 调用示例：
 
@@ -9049,7 +9049,7 @@ authorization: Bearer <auth-token>
     "status_id": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "status的唯一标识。"
+      "description": "工作项状态 ID。用于更新工作项状态或按状态过滤；状态 ID 可通过状态配置/工作流接口查询。"
     }
   },
   "required": [
@@ -9078,15 +9078,15 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `iteration_id` | 是 | `unknown` |  | 迭代唯一标识。 |
 | `tracker_id` | 否 | `number` |  | Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。 |
-| `status_id` | 否 | `integer` |  | status的唯一标识。 |
+| `status_id` | 否 | `integer` |  | 工作项状态 ID。用于更新工作项状态或按状态过滤；状态 ID 可通过状态配置/工作流接口查询。 |
 
 调用示例：
 
@@ -9115,22 +9115,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -9138,7 +9138,7 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "project_id": {
       "type": "string",
@@ -9163,7 +9163,7 @@ authorization: Bearer <auth-token>
     "status_id": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "status的唯一标识。"
+      "description": "工作项状态 ID。用于更新工作项状态或按状态过滤；状态 ID 可通过状态配置/工作流接口查询。"
     }
   },
   "required": [
@@ -9192,11 +9192,11 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 调用示例：
@@ -9225,22 +9225,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -9248,7 +9248,7 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "project_id": {
       "type": "string",
@@ -9282,7 +9282,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `type` | 否 | `string` | "board" | 类型字段，含义取决于对应接口。 |
+| `type` | 否 | `string` | "board" | 类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。 |
 | `region` | 否 | `string` |  | 华为云区域标识，例如 cn-north-4。 |
 
 调用示例：
@@ -9316,7 +9316,7 @@ authorization: Bearer <auth-token>
       "type": "string",
       "minLength": 1,
       "default": "board",
-      "description": "类型字段，含义取决于对应接口。"
+      "description": "类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。"
     },
     "region": {
       "type": "string",
@@ -9349,8 +9349,8 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
 
 调用示例：
 
@@ -9376,14 +9376,14 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 100,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     }
   },
   "additionalProperties": false,
@@ -9477,11 +9477,11 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `plan_id` | 是 | `unknown` |  | plan的唯一标识。 |
-| `subject` | 否 | `string` |  | 标题或主题过滤条件。 |
+| `plan_id` | 是 | `unknown` |  | 规划/计划 ID。用于定位 CodeArts Req 中的计划资源。 |
+| `subject` | 否 | `string` |  | 标题/主题关键字。用于按工作项标题或主题过滤可添加/已关联工作项。 |
 
 调用示例：
 
@@ -9510,14 +9510,14 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "project_id": {
       "type": "string",
@@ -9526,11 +9526,11 @@ authorization: Bearer <auth-token>
     },
     "plan_id": {
       "$ref": "#/properties/project_id",
-      "description": "plan的唯一标识。"
+      "description": "规划/计划 ID。用于定位 CodeArts Req 中的计划资源。"
     },
     "subject": {
       "type": "string",
-      "description": "标题或主题过滤条件。"
+      "description": "标题/主题关键字。用于按工作项标题或主题过滤可添加/已关联工作项。"
     }
   },
   "required": [
@@ -9559,11 +9559,11 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `plan_id` | 是 | `unknown` |  | plan的唯一标识。 |
-| `subject` | 否 | `string` |  | subject 参数，按对应 CodeArts API 要求传入。 |
+| `plan_id` | 是 | `unknown` |  | 规划/计划 ID。用于定位 CodeArts Req 中的计划资源。 |
+| `subject` | 否 | `string` |  | 标题/主题关键字。用于按工作项标题或主题过滤可添加/已关联工作项。 |
 | `show_type` | 否 | `string` | "list" | 展示方式，例如 list 或 tree。 |
 | `tracker_id` | 否 | `number` |  | Scrum 工作项类型 ID：2=Task，3=Bug，5=Epic，6=Feature，7=Story。 |
 
@@ -9594,14 +9594,14 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "project_id": {
       "type": "string",
@@ -9610,11 +9610,11 @@ authorization: Bearer <auth-token>
     },
     "plan_id": {
       "$ref": "#/properties/project_id",
-      "description": "plan的唯一标识。"
+      "description": "规划/计划 ID。用于定位 CodeArts Req 中的计划资源。"
     },
     "subject": {
       "type": "string",
-      "description": "subject 参数，按对应 CodeArts API 要求传入。"
+      "description": "标题/主题关键字。用于按工作项标题或主题过滤可添加/已关联工作项。"
     },
     "show_type": {
       "type": "string",
@@ -9663,15 +9663,15 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `status_id` | 否 | `integer` |  | status的唯一标识。 |
-| `plan_id` | 否 | `unknown` |  | plan的唯一标识。 |
-| `search` | 否 | `string` |  | 搜索条件。 |
-| `user_ids` | 否 | `array` |  | user ID 列表，用于批量操作。 |
+| `status_id` | 否 | `integer` |  | 工作项状态 ID。用于更新工作项状态或按状态过滤；状态 ID 可通过状态配置/工作流接口查询。 |
+| `plan_id` | 否 | `unknown` |  | 规划/计划 ID。用于定位 CodeArts Req 中的计划资源。 |
+| `search` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `user_ids` | 否 | `array` |  | 用户 ID 列表。用于批量成员、权限或过滤操作。 |
 | `sort` | 否 | `string` |  | 排序条件。 |
-| `type` | 否 | `string` |  | 类型字段，含义取决于对应接口。 |
+| `type` | 否 | `string` |  | 类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。 |
 
 调用示例：
 
@@ -9699,14 +9699,14 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "project_id": {
       "type": "string",
@@ -9716,22 +9716,22 @@ authorization: Bearer <auth-token>
     "status_id": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "status的唯一标识。"
+      "description": "工作项状态 ID。用于更新工作项状态或按状态过滤；状态 ID 可通过状态配置/工作流接口查询。"
     },
     "plan_id": {
       "$ref": "#/properties/project_id",
-      "description": "plan的唯一标识。"
+      "description": "规划/计划 ID。用于定位 CodeArts Req 中的计划资源。"
     },
     "search": {
       "type": "string",
-      "description": "搜索条件。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "user_ids": {
       "type": "array",
       "items": {
         "$ref": "#/properties/project_id"
       },
-      "description": "user ID 列表，用于批量操作。"
+      "description": "用户 ID 列表。用于批量成员、权限或过滤操作。"
     },
     "sort": {
       "type": "string",
@@ -9743,7 +9743,7 @@ authorization: Bearer <auth-token>
         "gantt",
         "mind"
       ],
-      "description": "类型字段，含义取决于对应接口。"
+      "description": "类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。"
     }
   },
   "required": [
@@ -9771,7 +9771,7 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `program_id` | 是 | `string` |  | program的唯一标识。 |
+| `program_id` | 是 | `string` |  | 项目空间/需求池 ID。用于定位 IR/RR 所属空间。 |
 | `field_type` | 是 | `string` |  | field type 类型。 |
 
 调用示例：
@@ -9800,7 +9800,7 @@ authorization: Bearer <auth-token>
     "program_id": {
       "type": "string",
       "minLength": 1,
-      "description": "program的唯一标识。"
+      "description": "项目空间/需求池 ID。用于定位 IR/RR 所属空间。"
     },
     "field_type": {
       "type": "string",
@@ -9837,11 +9837,11 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `search` | 否 | `string` |  | 搜索条件。 |
-| `sort_key` | 否 | `string` |  | 对象名称，用于展示和查询。 |
-| `sort_dir` | 否 | `string` |  | sort dir 参数，按对应 CodeArts API 要求传入。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `search` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_key` | 否 | `string` |  | 排序字段。用于项目空间/需求池列表排序。 |
+| `sort_dir` | 否 | `string` |  | 排序方向。可取 ASC/DESC 或 asc/desc。 |
 | `is_watched` | 否 | `boolean` |  | 是否watched。 |
 
 调用示例：
@@ -9868,19 +9868,19 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 100,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "search": {
       "type": "string",
       "minLength": 1,
-      "description": "搜索条件。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_key": {
       "type": "string",
@@ -9888,7 +9888,7 @@ authorization: Bearer <auth-token>
         "name",
         "created_time"
       ],
-      "description": "对象名称，用于展示和查询。"
+      "description": "排序字段。用于项目空间/需求池列表排序。"
     },
     "sort_dir": {
       "type": "string",
@@ -9898,7 +9898,7 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "sort dir 参数，按对应 CodeArts API 要求传入。"
+      "description": "排序方向。可取 ASC/DESC 或 asc/desc。"
     },
     "is_watched": {
       "type": "boolean",
@@ -10037,8 +10037,8 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 调用示例：
@@ -10067,14 +10067,14 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 100,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "project_id": {
       "type": "string",
@@ -10107,11 +10107,11 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 调用示例：
@@ -10140,22 +10140,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -10163,7 +10163,7 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "project_id": {
       "type": "string",
@@ -10196,8 +10196,8 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 调用示例：
@@ -10226,14 +10226,14 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 1000,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "project_id": {
       "type": "string",
@@ -10266,8 +10266,8 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `status` | 否 | `number` |  | 状态值，用于过滤或更新状态。 |
 
@@ -10297,14 +10297,14 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "project_id": {
       "type": "string",
@@ -10345,8 +10345,8 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
 | `project_ids` | 是 | `array` |  | project ID 列表，用于批量操作。 |
 | `begin_time` | 否 | `string` |  | 开始时间。 |
 | `end_time` | 否 | `string` |  | 结束时间。 |
@@ -10379,14 +10379,14 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "project_ids": {
       "type": "array",
@@ -10443,8 +10443,8 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `operated_time_interval` | 否 | `string` |  | 操作时间范围。 |
 
@@ -10474,14 +10474,14 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "project_id": {
       "type": "string",
@@ -10519,12 +10519,12 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
-| `organization_id` | 否 | `string` |  | organization的唯一标识。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
+| `organization_id` | 否 | `string` |  | 组织 ID。用于查询组织级规则类型或项目列表。 |
 
 调用示例：
 
@@ -10550,22 +10550,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -10573,12 +10573,12 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "organization_id": {
       "type": "string",
       "minLength": 1,
-      "description": "organization的唯一标识。"
+      "description": "组织 ID。用于查询组织级规则类型或项目列表。"
     }
   },
   "additionalProperties": false,
@@ -10658,9 +10658,9 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `rr_id` | 是 | `string` |  | rr的唯一标识。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `rr_id` | 是 | `string` |  | RR ID。用于定位需求池中的研发需求。 |
 
 调用示例：
 
@@ -10688,19 +10688,19 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 1000,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "rr_id": {
       "type": "string",
       "minLength": 1,
-      "description": "rr的唯一标识。"
+      "description": "RR ID。用于定位需求池中的研发需求。"
     }
   },
   "required": [
@@ -10728,8 +10728,8 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `program_id` | 是 | `string` |  | program的唯一标识。 |
-| `rr_ids` | 是 | `array` |  | rr ID 列表，用于批量操作。 |
+| `program_id` | 是 | `string` |  | 项目空间/需求池 ID。用于定位 IR/RR 所属空间。 |
+| `rr_ids` | 是 | `array` |  | RR ID 列表。用于批量查询 RR 状态。 |
 
 调用示例：
 
@@ -10757,7 +10757,7 @@ authorization: Bearer <auth-token>
     "program_id": {
       "type": "string",
       "minLength": 1,
-      "description": "program的唯一标识。"
+      "description": "项目空间/需求池 ID。用于定位 IR/RR 所属空间。"
     },
     "rr_ids": {
       "type": "array",
@@ -10766,7 +10766,7 @@ authorization: Bearer <auth-token>
       },
       "minItems": 1,
       "maxItems": 100,
-      "description": "rr ID 列表，用于批量操作。"
+      "description": "RR ID 列表。用于批量查询 RR 状态。"
     }
   },
   "required": [
@@ -10795,9 +10795,9 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `program_id` | 是 | `string` |  | program的唯一标识。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `program_id` | 是 | `string` |  | 项目空间/需求池 ID。用于定位 IR/RR 所属空间。 |
 | `query_type` | 否 | `string` | "ALL" | 查询类型。 |
 | `include_deleted` | 否 | `boolean` |  | 是否包含已删除数据。 |
 | `updated_time_interval` | 否 | `string` |  | 更新时间范围。 |
@@ -10828,19 +10828,19 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 1000,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "program_id": {
       "type": "string",
       "minLength": 1,
-      "description": "program的唯一标识。"
+      "description": "项目空间/需求池 ID。用于定位 IR/RR 所属空间。"
     },
     "query_type": {
       "type": "string",
@@ -10942,10 +10942,10 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `work_item_id` | 是 | `unknown` |  | work_item的唯一标识。 |
+| `work_item_id` | 是 | `unknown` |  | 工作项 ID。用于定位 Scrum 工作项、评论、附件、流转或关联资源。 |
 
 调用示例：
 
@@ -10974,14 +10974,14 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "project_id": {
       "type": "string",
@@ -10990,7 +10990,7 @@ authorization: Bearer <auth-token>
     },
     "work_item_id": {
       "$ref": "#/properties/project_id",
-      "description": "work_item的唯一标识。"
+      "description": "工作项 ID。用于定位 Scrum 工作项、评论、附件、流转或关联资源。"
     }
   },
   "required": [
@@ -11086,10 +11086,10 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `work_item_id` | 是 | `unknown` |  | work_item的唯一标识。 |
+| `work_item_id` | 是 | `unknown` |  | 工作项 ID。用于定位 Scrum 工作项、评论、附件、流转或关联资源。 |
 | `journalized_type` | 否 | `string` | "Issue" | journalized type 类型。 |
 
 调用示例：
@@ -11119,14 +11119,14 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "project_id": {
       "type": "string",
@@ -11135,7 +11135,7 @@ authorization: Bearer <auth-token>
     },
     "work_item_id": {
       "$ref": "#/properties/project_id",
-      "description": "work_item的唯一标识。"
+      "description": "工作项 ID。用于定位 Scrum 工作项、评论、附件、流转或关联资源。"
     },
     "journalized_type": {
       "type": "string",
@@ -11418,10 +11418,10 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `name` | 否 | `string` |  | 对象名称，用于展示、查询或创建资源。 |
+| `name` | 否 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
 
 调用示例：
 
@@ -11449,14 +11449,14 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "project_id": {
       "type": "string",
@@ -11466,7 +11466,7 @@ authorization: Bearer <auth-token>
     "name": {
       "type": "string",
       "minLength": 1,
-      "description": "对象名称，用于展示、查询或创建资源。"
+      "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
     }
   },
   "required": [
@@ -11630,8 +11630,8 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `tracker_ids` | 否 | `array` |  | Scrum 工作项类型 ID 列表，可选值为 2、3、5、6、7，分别表示 Task、Bug、Epic、Feature、Story。 |
 
@@ -11661,14 +11661,14 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "project_id": {
       "type": "string",
@@ -11717,7 +11717,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `work_item_id` | 是 | `unknown` |  | work_item的唯一标识。 |
+| `work_item_id` | 是 | `unknown` |  | 工作项 ID。用于定位 Scrum 工作项、评论、附件、流转或关联资源。 |
 
 调用示例：
 
@@ -11749,7 +11749,7 @@ authorization: Bearer <auth-token>
     },
     "work_item_id": {
       "$ref": "#/properties/project_id",
-      "description": "work_item的唯一标识。"
+      "description": "工作项 ID。用于定位 Scrum 工作项、评论、附件、流转或关联资源。"
     }
   },
   "required": [
@@ -11847,11 +11847,11 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 调用示例：
@@ -11880,22 +11880,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -11903,7 +11903,7 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "project_id": {
       "type": "string",
@@ -11937,7 +11937,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `version_id` | 是 | `unknown` |  | version的唯一标识。 |
+| `version_id` | 是 | `unknown` |  | 版本/迭代 ID。用于查询不可移动工作项等版本相关数据。 |
 
 调用示例：
 
@@ -11969,7 +11969,7 @@ authorization: Bearer <auth-token>
     },
     "version_id": {
       "$ref": "#/properties/project_id",
-      "description": "version的唯一标识。"
+      "description": "版本/迭代 ID。用于查询不可移动工作项等版本相关数据。"
     }
   },
   "required": [
@@ -11999,8 +11999,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `issue_id` | 是 | `unknown` |  | IPD 工作项唯一标识。 |
-| `issue_category` | 是 | `string` |  | IPD 工作项分类。 |
+| `issue_id` | 是 | `unknown` |  | IPD 工作项 ID。用于定位 IPD 需求、缺陷或任务。 |
+| `issue_category` | 是 | `string` |  | IPD 工作项分类。用于指定需求、缺陷、任务等分类编码。 |
 | `flow_code` | 是 | `string` |  | 流程流转编码，表示要执行的状态流转动作。 |
 | `process_context` | 否 | `object` |  | 流程流转上下文，按工作流要求传入。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
@@ -12037,12 +12037,12 @@ authorization: Bearer <auth-token>
     },
     "issue_id": {
       "$ref": "#/properties/project_id",
-      "description": "IPD 工作项唯一标识。"
+      "description": "IPD 工作项 ID。用于定位 IPD 需求、缺陷或任务。"
     },
     "issue_category": {
       "type": "string",
       "minLength": 1,
-      "description": "IPD 工作项分类。"
+      "description": "IPD 工作项分类。用于指定需求、缺陷、任务等分类编码。"
     },
     "flow_code": {
       "type": "string",
@@ -12129,10 +12129,10 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `feature_set_id` | 是 | `unknown` |  | feature_set的唯一标识。 |
-| `parent_id` | 是 | `unknown` |  | parent的唯一标识。 |
-| `title` | 否 | `string` |  | 对象标题，用于展示工作项、合并请求或标签等资源。 |
-| `position_float` | 否 | `number` |  | position float 参数，按对应 CodeArts API 要求传入。 |
+| `feature_set_id` | 是 | `unknown` |  | IPD 特性集 ID。用于定位、更新、删除或查询特性集快照。 |
+| `parent_id` | 是 | `unknown` |  | 父级资源 ID。用于创建模块、特性集或树形结构节点。 |
+| `title` | 否 | `string` |  | 标题。用于工作项、需求、合并请求、标签等资源的展示名称。 |
+| `position_float` | 否 | `number` |  | 排序位置值。用于调整 IPD 特性集或树节点的展示顺序。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -12166,20 +12166,20 @@ authorization: Bearer <auth-token>
     },
     "feature_set_id": {
       "$ref": "#/properties/project_id",
-      "description": "feature_set的唯一标识。"
+      "description": "IPD 特性集 ID。用于定位、更新、删除或查询特性集快照。"
     },
     "parent_id": {
       "$ref": "#/properties/project_id",
-      "description": "parent的唯一标识。"
+      "description": "父级资源 ID。用于创建模块、特性集或树形结构节点。"
     },
     "title": {
       "type": "string",
       "minLength": 1,
-      "description": "对象标题，用于展示工作项、合并请求或标签等资源。"
+      "description": "标题。用于工作项、需求、合并请求、标签等资源的展示名称。"
     },
     "position_float": {
       "type": "number",
-      "description": "position float 参数，按对应 CodeArts API 要求传入。"
+      "description": "排序位置值。用于调整 IPD 特性集或树节点的展示顺序。"
     },
     "dry_run": {
       "type": "boolean",
@@ -12256,11 +12256,11 @@ authorization: Bearer <auth-token>
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `display_value` | 是 | `string` |  | 展示名称或显示值。 |
-| `parent_id` | 是 | `unknown` |  | parent的唯一标识。 |
+| `parent_id` | 是 | `unknown` |  | 父级资源 ID。用于创建模块、特性集或树形结构节点。 |
 | `description` | 否 | `string` |  | 对象的详细描述或备注信息。 |
 | `assignee` | 否 | `unknown` |  | 责任人信息或责任人 ID，格式以对应 IPD 接口为准。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
-| `module_id` | 是 | `unknown` |  | 模块唯一标识。 |
+| `module_id` | 是 | `unknown` |  | 模块 ID。用于把工作项、IPD 对象或项目模块归属到指定模块。 |
 
 调用示例：
 
@@ -12300,7 +12300,7 @@ authorization: Bearer <auth-token>
     },
     "parent_id": {
       "$ref": "#/properties/project_id",
-      "description": "parent的唯一标识。"
+      "description": "父级资源 ID。用于创建模块、特性集或树形结构节点。"
     },
     "description": {
       "type": "string",
@@ -12318,7 +12318,7 @@ authorization: Bearer <auth-token>
     },
     "module_id": {
       "$ref": "#/properties/project_id",
-      "description": "模块唯一标识。"
+      "description": "模块 ID。用于把工作项、IPD 对象或项目模块归属到指定模块。"
     }
   },
   "required": [
@@ -12471,7 +12471,7 @@ authorization: Bearer <auth-token>
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `iteration_id` | 是 | `unknown` |  | 迭代唯一标识。 |
-| `name` | 是 | `string` |  | 对象名称，用于展示、查询或创建资源。 |
+| `name` | 是 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
 | `begin_time` | 否 | `string` |  | 开始时间。 |
 | `end_time` | 否 | `string` |  | 结束时间。 |
 | `description` | 否 | `string` |  | 对象的详细描述或备注信息。 |
@@ -12515,7 +12515,7 @@ authorization: Bearer <auth-token>
     "name": {
       "type": "string",
       "minLength": 1,
-      "description": "对象名称，用于展示、查询或创建资源。"
+      "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
     },
     "begin_time": {
       "type": "string",
@@ -12580,10 +12580,10 @@ authorization: Bearer <auth-token>
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `iteration_id` | 是 | `unknown` |  | 迭代唯一标识。 |
-| `name` | 是 | `string` |  | 对象名称，用于展示、查询或创建资源。 |
+| `name` | 是 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
 | `status` | 是 | `string` |  | 状态值，用于过滤或更新状态。 |
 | `due_date` | 否 | `string` |  | 计划完成或截止日期。 |
-| `start_date` | 否 | `string` |  | 计划开始日期，使用接口要求的时间戳或日期值。 |
+| `start_date` | 否 | `string` |  | 开始日期。用于时间范围查询；在工作项接口中表示计划开始时间。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -12623,7 +12623,7 @@ authorization: Bearer <auth-token>
     "name": {
       "type": "string",
       "minLength": 1,
-      "description": "对象名称，用于展示、查询或创建资源。"
+      "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
     },
     "status": {
       "type": "string",
@@ -12642,7 +12642,7 @@ authorization: Bearer <auth-token>
     "start_date": {
       "type": "string",
       "minLength": 1,
-      "description": "计划开始日期，使用接口要求的时间戳或日期值。"
+      "description": "开始日期。用于时间范围查询；在工作项接口中表示计划开始时间。"
     },
     "dry_run": {
       "type": "boolean",
@@ -12679,8 +12679,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `plan_id` | 是 | `unknown` |  | plan的唯一标识。 |
-| `name` | 是 | `string` |  | 对象名称，用于展示、查询或创建资源。 |
+| `plan_id` | 是 | `unknown` |  | 规划/计划 ID。用于定位 CodeArts Req 中的计划资源。 |
+| `name` | 是 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -12714,12 +12714,12 @@ authorization: Bearer <auth-token>
     },
     "plan_id": {
       "$ref": "#/properties/project_id",
-      "description": "plan的唯一标识。"
+      "description": "规划/计划 ID。用于定位 CodeArts Req 中的计划资源。"
     },
     "name": {
       "type": "string",
       "minLength": 1,
-      "description": "对象名称，用于展示、查询或创建资源。"
+      "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
     },
     "dry_run": {
       "type": "boolean",
@@ -12755,7 +12755,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `plan_id` | 是 | `unknown` |  | plan的唯一标识。 |
+| `plan_id` | 是 | `unknown` |  | 规划/计划 ID。用于定位 CodeArts Req 中的计划资源。 |
 | `img_url` | 是 | `string` |  | 图片 URL。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -12790,7 +12790,7 @@ authorization: Bearer <auth-token>
     },
     "plan_id": {
       "$ref": "#/properties/project_id",
-      "description": "plan的唯一标识。"
+      "description": "规划/计划 ID。用于定位 CodeArts Req 中的计划资源。"
     },
     "img_url": {
       "type": "string",
@@ -12831,7 +12831,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `name` | 是 | `string` |  | 对象名称，用于展示、查询或创建资源。 |
+| `name` | 是 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
 | `description` | 否 | `string` |  | 对象的详细描述或备注信息。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -12866,7 +12866,7 @@ authorization: Bearer <auth-token>
     "name": {
       "type": "string",
       "minLength": 1,
-      "description": "对象名称，用于展示、查询或创建资源。"
+      "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
     },
     "description": {
       "type": "string",
@@ -12905,8 +12905,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `user_id` | 是 | `unknown` |  | user的唯一标识。 |
-| `role_id` | 是 | `number` |  | role的唯一标识。 |
+| `user_id` | 是 | `unknown` |  | 用户 ID。用于定位项目成员、操作者或需要授权的用户。 |
+| `role_id` | 是 | `number` |  | 角色 ID。用于指定项目成员角色或权限级别。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -12940,7 +12940,7 @@ authorization: Bearer <auth-token>
     },
     "user_id": {
       "$ref": "#/properties/project_id",
-      "description": "user的唯一标识。"
+      "description": "用户 ID。用于定位项目成员、操作者或需要授权的用户。"
     },
     "role_id": {
       "type": "number",
@@ -12954,7 +12954,7 @@ authorization: Bearer <auth-token>
         8,
         9
       ],
-      "description": "role的唯一标识。"
+      "description": "角色 ID。用于指定项目成员角色或权限级别。"
     },
     "dry_run": {
       "type": "boolean",
@@ -12990,9 +12990,9 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `module_id` | 是 | `unknown` |  | 模块唯一标识。 |
-| `module_name` | 是 | `string` |  | 模块名称。 |
-| `owner_user_id` | 是 | `unknown` |  | owner_user的唯一标识。 |
+| `module_id` | 是 | `unknown` |  | 模块 ID。用于把工作项、IPD 对象或项目模块归属到指定模块。 |
+| `module_name` | 是 | `string` |  | 模块名称。用于创建或更新项目模块。 |
+| `owner_user_id` | 是 | `unknown` |  | 模块负责人用户 ID。创建或更新项目模块时指定负责人。 |
 | `description` | 否 | `string` |  | 对象的详细描述或备注信息。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -13028,17 +13028,17 @@ authorization: Bearer <auth-token>
     },
     "module_id": {
       "$ref": "#/properties/project_id",
-      "description": "模块唯一标识。"
+      "description": "模块 ID。用于把工作项、IPD 对象或项目模块归属到指定模块。"
     },
     "module_name": {
       "type": "string",
       "minLength": 1,
       "maxLength": 30,
-      "description": "模块名称。"
+      "description": "模块名称。用于创建或更新项目模块。"
     },
     "owner_user_id": {
       "$ref": "#/properties/project_id",
-      "description": "owner_user的唯一标识。"
+      "description": "模块负责人用户 ID。创建或更新项目模块时指定负责人。"
     },
     "description": {
       "type": "string",
@@ -13120,19 +13120,19 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `work_item_id` | 是 | `unknown` |  | work_item的唯一标识。 |
-| `title` | 否 | `string` |  | 对象标题，用于展示工作项、合并请求或标签等资源。 |
+| `work_item_id` | 是 | `unknown` |  | 工作项 ID。用于定位 Scrum 工作项、评论、附件、流转或关联资源。 |
+| `title` | 否 | `string` |  | 标题。用于工作项、需求、合并请求、标签等资源的展示名称。 |
 | `work_item_type` | 否 | `string` |  | 工作项类型，会映射为 Scrum tracker_id；支持 task=2、bug=3、epic=5、feature=6、story=7，也可以直接传数字字符串 "2"、"3"、"5"、"6"、"7"。 |
 | `description` | 否 | `string` |  | 对象的详细描述或备注信息。 |
-| `status_id` | 否 | `integer` |  | status的唯一标识。 |
-| `priority_id` | 否 | `integer` |  | 优先级 ID，用于设置或过滤优先级。 |
+| `status_id` | 否 | `integer` |  | 工作项状态 ID。用于更新工作项状态或按状态过滤；状态 ID 可通过状态配置/工作流接口查询。 |
+| `priority_id` | 否 | `integer` |  | 优先级 ID。用于设置或过滤工作项优先级。 |
 | `iteration_id` | 否 | `unknown` |  | 迭代唯一标识。 |
-| `module_id` | 否 | `unknown` |  | 模块唯一标识。 |
-| `severity_id` | 否 | `integer` |  | 严重级别 ID，通常用于缺陷或问题等级。 |
+| `module_id` | 否 | `unknown` |  | 模块 ID。用于把工作项、IPD 对象或项目模块归属到指定模块。 |
+| `severity_id` | 否 | `integer` |  | 严重程度 ID。通常用于缺陷或问题等级。 |
 | `assigned_id` | 否 | `unknown` |  | 关联责任人用户 ID。创建或更新工作项时传入该字段即可指定责任人；可先调用 `req_list_project_members` 获取项目成员用户 ID。 |
 | `done_ratio` | 否 | `integer` |  | 完成度百分比，用于表示工作项当前完成进度。 |
 | `expected_work_hours` | 否 | `integer` |  | 预计工时，用于记录计划投入的工作小时数。 |
-| `start_date` | 否 | `integer` |  | 计划开始日期，使用接口要求的时间戳或日期值。 |
+| `start_date` | 否 | `integer` |  | 开始日期。用于时间范围查询；在工作项接口中表示计划开始时间。 |
 | `due_date` | 否 | `integer` |  | 计划完成或截止日期。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -13166,12 +13166,12 @@ authorization: Bearer <auth-token>
     },
     "work_item_id": {
       "$ref": "#/properties/project_id",
-      "description": "work_item的唯一标识。"
+      "description": "工作项 ID。用于定位 Scrum 工作项、评论、附件、流转或关联资源。"
     },
     "title": {
       "type": "string",
       "minLength": 1,
-      "description": "对象标题，用于展示工作项、合并请求或标签等资源。"
+      "description": "标题。用于工作项、需求、合并请求、标签等资源的展示名称。"
     },
     "work_item_type": {
       "type": "string",
@@ -13185,12 +13185,12 @@ authorization: Bearer <auth-token>
     "status_id": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "status的唯一标识。"
+      "description": "工作项状态 ID。用于更新工作项状态或按状态过滤；状态 ID 可通过状态配置/工作流接口查询。"
     },
     "priority_id": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "优先级 ID，用于设置或过滤优先级。"
+      "description": "优先级 ID。用于设置或过滤工作项优先级。"
     },
     "iteration_id": {
       "$ref": "#/properties/project_id",
@@ -13198,12 +13198,12 @@ authorization: Bearer <auth-token>
     },
     "module_id": {
       "$ref": "#/properties/project_id",
-      "description": "模块唯一标识。"
+      "description": "模块 ID。用于把工作项、IPD 对象或项目模块归属到指定模块。"
     },
     "severity_id": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "严重级别 ID，通常用于缺陷或问题等级。"
+      "description": "严重程度 ID。通常用于缺陷或问题等级。"
     },
     "assigned_id": {
       "$ref": "#/properties/project_id",
@@ -13222,7 +13222,7 @@ authorization: Bearer <auth-token>
     "start_date": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "计划开始日期，使用接口要求的时间戳或日期值。"
+      "description": "开始日期。用于时间范围查询；在工作项接口中表示计划开始时间。"
     },
     "due_date": {
       "type": "integer",
@@ -13262,9 +13262,9 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `work_item_id` | 是 | `unknown` |  | work_item的唯一标识。 |
-| `comment_id` | 是 | `unknown` |  | comment的唯一标识。 |
-| `content` | 是 | `string` |  | 评论、规则或文本内容。 |
+| `work_item_id` | 是 | `unknown` |  | 工作项 ID。用于定位 Scrum 工作项、评论、附件、流转或关联资源。 |
+| `comment_id` | 是 | `unknown` |  | 评论 ID。用于更新指定工作项评论。 |
+| `content` | 是 | `string` |  | 规则内容配置。创建或更新 Pipeline 规则时描述规则分组、属性和校验条件。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -13299,16 +13299,16 @@ authorization: Bearer <auth-token>
     },
     "work_item_id": {
       "$ref": "#/properties/project_id",
-      "description": "work_item的唯一标识。"
+      "description": "工作项 ID。用于定位 Scrum 工作项、评论、附件、流转或关联资源。"
     },
     "comment_id": {
       "$ref": "#/properties/project_id",
-      "description": "comment的唯一标识。"
+      "description": "评论 ID。用于更新指定工作项评论。"
     },
     "content": {
       "type": "string",
       "minLength": 1,
-      "description": "评论、规则或文本内容。"
+      "description": "规则内容配置。创建或更新 Pipeline 规则时描述规则分组、属性和校验条件。"
     },
     "dry_run": {
       "type": "boolean",
@@ -13345,8 +13345,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `work_item_id` | 是 | `unknown` |  | work_item的唯一标识。 |
-| `status_id` | 是 | `integer` |  | status的唯一标识。 |
+| `work_item_id` | 是 | `unknown` |  | 工作项 ID。用于定位 Scrum 工作项、评论、附件、流转或关联资源。 |
+| `status_id` | 是 | `integer` |  | 工作项状态 ID。用于更新工作项状态或按状态过滤；状态 ID 可通过状态配置/工作流接口查询。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -13380,12 +13380,12 @@ authorization: Bearer <auth-token>
     },
     "work_item_id": {
       "$ref": "#/properties/project_id",
-      "description": "work_item的唯一标识。"
+      "description": "工作项 ID。用于定位 Scrum 工作项、评论、附件、流转或关联资源。"
     },
     "status_id": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "status的唯一标识。"
+      "description": "工作项状态 ID。用于更新工作项状态或按状态过滤；状态 ID 可通过状态配置/工作流接口查询。"
     },
     "dry_run": {
       "type": "boolean",
@@ -13421,7 +13421,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `work_item_id` | 是 | `unknown` |  | work_item的唯一标识。 |
+| `work_item_id` | 是 | `unknown` |  | 工作项 ID。用于定位 Scrum 工作项、评论、附件、流转或关联资源。 |
 | `file_path` | 是 | `string` |  | 本地文件路径，用于上传附件或图片。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -13456,7 +13456,7 @@ authorization: Bearer <auth-token>
     },
     "work_item_id": {
       "$ref": "#/properties/project_id",
-      "description": "work_item的唯一标识。"
+      "description": "工作项 ID。用于定位 Scrum 工作项、评论、附件、流转或关联资源。"
     },
     "file_path": {
       "type": "string",
@@ -13497,7 +13497,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `issue_id` | 是 | `unknown` |  | IPD 工作项唯一标识。 |
+| `issue_id` | 是 | `unknown` |  | IPD 工作项 ID。用于定位 IPD 需求、缺陷或任务。 |
 | `file_path` | 是 | `string` |  | 本地文件路径，用于上传附件或图片。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -13532,7 +13532,7 @@ authorization: Bearer <auth-token>
     },
     "issue_id": {
       "$ref": "#/properties/project_id",
-      "description": "IPD 工作项唯一标识。"
+      "description": "IPD 工作项 ID。用于定位 IPD 需求、缺陷或任务。"
     },
     "file_path": {
       "type": "string",
@@ -13573,7 +13573,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `issue_id` | 是 | `unknown` |  | IPD 工作项唯一标识。 |
+| `issue_id` | 是 | `unknown` |  | IPD 工作项 ID。用于定位 IPD 需求、缺陷或任务。 |
 | `file_path` | 是 | `string` |  | 本地文件路径，用于上传附件或图片。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -13608,7 +13608,7 @@ authorization: Bearer <auth-token>
     },
     "issue_id": {
       "$ref": "#/properties/project_id",
-      "description": "IPD 工作项唯一标识。"
+      "description": "IPD 工作项 ID。用于定位 IPD 需求、缺陷或任务。"
     },
     "file_path": {
       "type": "string",
@@ -13718,7 +13718,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `module_name` | 是 | `string` |  | 模块名称。 |
+| `module_name` | 是 | `string` |  | 模块名称。用于创建或更新项目模块。 |
 
 调用示例：
 
@@ -13752,7 +13752,7 @@ authorization: Bearer <auth-token>
       "type": "string",
       "minLength": 1,
       "maxLength": 30,
-      "description": "模块名称。"
+      "description": "模块名称。用于创建或更新项目模块。"
     }
   },
   "required": [
@@ -13811,8 +13811,8 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | 是 | `string` |  | repository的唯一标识。 |
-| `merge_request_iid` | 是 | `unknown` |  | 合并请求在仓库内的 IID。 |
+| `repository_id` | 是 | `string` |  | 代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。 |
+| `merge_request_iid` | 是 | `unknown` |  | 合并请求 IID。用于定位仓库内的某个 MR。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -13841,11 +13841,11 @@ authorization: Bearer <auth-token>
     "repository_id": {
       "type": "string",
       "minLength": 1,
-      "description": "repository的唯一标识。"
+      "description": "代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。"
     },
     "merge_request_iid": {
       "$ref": "#/properties/repository_id",
-      "description": "合并请求在仓库内的 IID。"
+      "description": "合并请求 IID。用于定位仓库内的某个 MR。"
     },
     "dry_run": {
       "type": "boolean",
@@ -13879,12 +13879,12 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | 是 | `string` |  | repository的唯一标识。 |
-| `from` | 是 | `string` |  | from 参数，按对应 CodeArts API 要求传入。 |
-| `to` | 是 | `string` |  | 比较目标引用。 |
-| `straight` | 否 | `boolean` |  | straight 参数，按对应 CodeArts API 要求传入。 |
+| `repository_id` | 是 | `string` |  | 代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。 |
+| `from` | 是 | `string` |  | 起始引用。Repo 比较接口中表示源分支、标签或提交。 |
+| `to` | 是 | `string` |  | 目标引用。Repo 比较接口中表示目标分支、标签或提交。 |
+| `straight` | 否 | `boolean` |  | 是否直线比较。用于 Repo ref 比较接口控制比较方式。 |
 | `ignore_whitespace_change` | 否 | `boolean` |  | 是否忽略空白字符变更。 |
-| `view` | 否 | `string` |  | view 参数，按对应 CodeArts API 要求传入。 |
+| `view` | 否 | `string` |  | 差异展示视图。用于 Repo 比较接口选择返回格式。 |
 
 调用示例：
 
@@ -13913,21 +13913,21 @@ authorization: Bearer <auth-token>
     "repository_id": {
       "type": "string",
       "minLength": 1,
-      "description": "repository的唯一标识。"
+      "description": "代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。"
     },
     "from": {
       "type": "string",
       "minLength": 1,
-      "description": "from 参数，按对应 CodeArts API 要求传入。"
+      "description": "起始引用。Repo 比较接口中表示源分支、标签或提交。"
     },
     "to": {
       "type": "string",
       "minLength": 1,
-      "description": "比较目标引用。"
+      "description": "目标引用。Repo 比较接口中表示目标分支、标签或提交。"
     },
     "straight": {
       "type": "boolean",
-      "description": "straight 参数，按对应 CodeArts API 要求传入。"
+      "description": "是否直线比较。用于 Repo ref 比较接口控制比较方式。"
     },
     "ignore_whitespace_change": {
       "type": "boolean",
@@ -13936,7 +13936,7 @@ authorization: Bearer <auth-token>
     "view": {
       "type": "string",
       "minLength": 1,
-      "description": "view 参数，按对应 CodeArts API 要求传入。"
+      "description": "差异展示视图。用于 Repo 比较接口选择返回格式。"
     }
   },
   "required": [
@@ -13966,10 +13966,10 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | 是 | `string` |  | repository的唯一标识。 |
-| `source_branch` | 是 | `string` |  | source branch 参数，按对应 CodeArts API 要求传入。 |
-| `target_branch` | 是 | `string` |  | 合并请求目标分支。 |
-| `title` | 是 | `string` |  | 对象标题，用于展示工作项、合并请求或标签等资源。 |
+| `repository_id` | 是 | `string` |  | 代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。 |
+| `source_branch` | 是 | `string` |  | 源分支。创建合并请求时作为变更来源。 |
+| `target_branch` | 是 | `string` |  | 目标分支。创建合并请求时作为合并目标。 |
+| `title` | 是 | `string` |  | 标题。用于工作项、需求、合并请求、标签等资源的展示名称。 |
 | `description` | 否 | `string` |  | 对象的详细描述或备注信息。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -14001,22 +14001,22 @@ authorization: Bearer <auth-token>
     "repository_id": {
       "type": "string",
       "minLength": 1,
-      "description": "repository的唯一标识。"
+      "description": "代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。"
     },
     "source_branch": {
       "type": "string",
       "minLength": 1,
-      "description": "source branch 参数，按对应 CodeArts API 要求传入。"
+      "description": "源分支。创建合并请求时作为变更来源。"
     },
     "target_branch": {
       "type": "string",
       "minLength": 1,
-      "description": "合并请求目标分支。"
+      "description": "目标分支。创建合并请求时作为合并目标。"
     },
     "title": {
       "type": "string",
       "minLength": 1,
-      "description": "对象标题，用于展示工作项、合并请求或标签等资源。"
+      "description": "标题。用于工作项、需求、合并请求、标签等资源的展示名称。"
     },
     "description": {
       "type": "string",
@@ -14056,8 +14056,8 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | 是 | `string` |  | repository的唯一标识。 |
-| `merge_request_iid` | 是 | `unknown` |  | 合并请求在仓库内的 IID。 |
+| `repository_id` | 是 | `string` |  | 代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。 |
+| `merge_request_iid` | 是 | `unknown` |  | 合并请求 IID。用于定位仓库内的某个 MR。 |
 | `body` | 是 | `string` |  | 请求体对象，用于透传该接口的扩展参数。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -14088,11 +14088,11 @@ authorization: Bearer <auth-token>
     "repository_id": {
       "type": "string",
       "minLength": 1,
-      "description": "repository的唯一标识。"
+      "description": "代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。"
     },
     "merge_request_iid": {
       "$ref": "#/properties/repository_id",
-      "description": "合并请求在仓库内的 IID。"
+      "description": "合并请求 IID。用于定位仓库内的某个 MR。"
     },
     "body": {
       "type": "string",
@@ -14132,17 +14132,17 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_uuid` | 是 | `string` |  | CodeArts 项目的 UUID，用于创建或关联代码仓等项目资源。 |
-| `name` | 是 | `string` |  | 对象名称，用于展示、查询或创建资源。 |
-| `import_members` | 否 | `integer` |  | 是否导入项目成员。 |
-| `template_id` | 否 | `string` |  | template的唯一标识。 |
-| `visibility_level` | 否 | `number` |  | 仓库可见级别。 |
-| `import_url` | 否 | `string` |  | 导入仓库 URL。 |
+| `project_uuid` | 是 | `string` |  | 项目 UUID。创建仓库等资源时用于定位 CodeArts 项目。 |
+| `name` | 是 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
+| `import_members` | 否 | `integer` |  | 是否导入成员。创建仓库时控制是否导入项目成员。 |
+| `template_id` | 否 | `string` |  | 模板 ID。用于按模板创建部署任务、应用或查询模板详情。 |
+| `visibility_level` | 否 | `number` |  | 仓库可见级别。用于设置私有或公开等可见性。 |
+| `import_url` | 否 | `string` |  | 导入仓库 URL。创建仓库时可从外部仓库导入。 |
 | `description` | 否 | `string` |  | 对象的详细描述或备注信息。 |
-| `gitignore_id` | 否 | `string` |  | gitignore的唯一标识。 |
-| `license_id` | 否 | `integer` |  | license的唯一标识。 |
-| `enable_readme` | 否 | `boolean \| integer` |  | 是否初始化 README。 |
-| `caller` | 否 | `string` |  | caller 参数，按对应 CodeArts API 要求传入。 |
+| `gitignore_id` | 否 | `string` |  | gitignore 模板 ID。创建仓库时用于初始化忽略规则。 |
+| `license_id` | 否 | `integer` |  | 许可证模板 ID。创建仓库时用于初始化许可证。 |
+| `enable_readme` | 否 | `boolean \| integer` |  | 是否初始化 README。创建仓库时控制是否生成 README 文件。 |
+| `caller` | 否 | `string` |  | 调用来源标识。创建 Repo 仓库时用于标记调用方。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -14171,24 +14171,24 @@ authorization: Bearer <auth-token>
     "project_uuid": {
       "type": "string",
       "minLength": 1,
-      "description": "CodeArts 项目的 UUID，用于创建或关联代码仓等项目资源。"
+      "description": "项目 UUID。创建仓库等资源时用于定位 CodeArts 项目。"
     },
     "name": {
       "type": "string",
       "minLength": 1,
       "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
-      "description": "对象名称，用于展示、查询或创建资源。"
+      "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
     },
     "import_members": {
       "type": "integer",
       "minimum": 0,
       "maximum": 1,
-      "description": "是否导入项目成员。"
+      "description": "是否导入成员。创建仓库时控制是否导入项目成员。"
     },
     "template_id": {
       "type": "string",
       "minLength": 1,
-      "description": "template的唯一标识。"
+      "description": "模板 ID。用于按模板创建部署任务、应用或查询模板详情。"
     },
     "visibility_level": {
       "type": "number",
@@ -14196,12 +14196,12 @@ authorization: Bearer <auth-token>
         0,
         20
       ],
-      "description": "仓库可见级别。"
+      "description": "仓库可见级别。用于设置私有或公开等可见性。"
     },
     "import_url": {
       "type": "string",
       "minLength": 1,
-      "description": "导入仓库 URL。"
+      "description": "导入仓库 URL。创建仓库时可从外部仓库导入。"
     },
     "description": {
       "type": "string",
@@ -14210,12 +14210,12 @@ authorization: Bearer <auth-token>
     "gitignore_id": {
       "type": "string",
       "minLength": 1,
-      "description": "gitignore的唯一标识。"
+      "description": "gitignore 模板 ID。创建仓库时用于初始化忽略规则。"
     },
     "license_id": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "license的唯一标识。"
+      "description": "许可证模板 ID。创建仓库时用于初始化许可证。"
     },
     "enable_readme": {
       "anyOf": [
@@ -14228,12 +14228,12 @@ authorization: Bearer <auth-token>
           "maximum": 1
         }
       ],
-      "description": "是否初始化 README。"
+      "description": "是否初始化 README。创建仓库时控制是否生成 README 文件。"
     },
     "caller": {
       "type": "string",
       "minLength": 1,
-      "description": "caller 参数，按对应 CodeArts API 要求传入。"
+      "description": "调用来源标识。创建 Repo 仓库时用于标记调用方。"
     },
     "dry_run": {
       "type": "boolean",
@@ -14267,10 +14267,10 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | 是 | `string` |  | repository的唯一标识。 |
-| `tag_name` | 是 | `string` |  | 标签名称。 |
-| `ref` | 是 | `string` |  | ref 参数，按对应 CodeArts API 要求传入。 |
-| `message` | 否 | `string` |  | 标签或提交说明。 |
+| `repository_id` | 是 | `string` |  | 代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。 |
+| `tag_name` | 是 | `string` |  | 标签名称。用于创建、查询或删除 Repo 标签。 |
+| `ref` | 是 | `string` |  | 代码引用。可以是分支、标签或提交 SHA，用于创建标签或定位代码版本。 |
+| `message` | 否 | `string` |  | 标签或提交说明。创建标签等操作时作为描述信息。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -14300,21 +14300,21 @@ authorization: Bearer <auth-token>
     "repository_id": {
       "type": "string",
       "minLength": 1,
-      "description": "repository的唯一标识。"
+      "description": "代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。"
     },
     "tag_name": {
       "type": "string",
       "minLength": 1,
-      "description": "标签名称。"
+      "description": "标签名称。用于创建、查询或删除 Repo 标签。"
     },
     "ref": {
       "type": "string",
       "minLength": 1,
-      "description": "ref 参数，按对应 CodeArts API 要求传入。"
+      "description": "代码引用。可以是分支、标签或提交 SHA，用于创建标签或定位代码版本。"
     },
     "message": {
       "type": "string",
-      "description": "标签或提交说明。"
+      "description": "标签或提交说明。创建标签等操作时作为描述信息。"
     },
     "dry_run": {
       "type": "boolean",
@@ -14349,8 +14349,8 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | 是 | `string` |  | repository的唯一标识。 |
-| `tag_name` | 是 | `string` |  | 标签名称。 |
+| `repository_id` | 是 | `string` |  | 代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。 |
+| `tag_name` | 是 | `string` |  | 标签名称。用于创建、查询或删除 Repo 标签。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -14379,12 +14379,12 @@ authorization: Bearer <auth-token>
     "repository_id": {
       "type": "string",
       "minLength": 1,
-      "description": "repository的唯一标识。"
+      "description": "代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。"
     },
     "tag_name": {
       "type": "string",
       "minLength": 1,
-      "description": "标签名称。"
+      "description": "标签名称。用于创建、查询或删除 Repo 标签。"
     },
     "dry_run": {
       "type": "boolean",
@@ -14418,7 +14418,7 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | 是 | `string` |  | repository的唯一标识。 |
+| `repository_id` | 是 | `string` |  | 代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。 |
 | `branch_name` | 是 | `string` |  | 分支名称。 |
 
 调用示例：
@@ -14447,7 +14447,7 @@ authorization: Bearer <auth-token>
     "repository_id": {
       "type": "string",
       "minLength": 1,
-      "description": "repository的唯一标识。"
+      "description": "代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。"
     },
     "branch_name": {
       "type": "string",
@@ -14481,7 +14481,7 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | 是 | `string` |  | repository的唯一标识。 |
+| `repository_id` | 是 | `string` |  | 代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。 |
 | `commit_sha` | 是 | `unknown` |  | 提交 SHA。 |
 
 调用示例：
@@ -14510,7 +14510,7 @@ authorization: Bearer <auth-token>
     "repository_id": {
       "type": "string",
       "minLength": 1,
-      "description": "repository的唯一标识。"
+      "description": "代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。"
     },
     "commit_sha": {
       "$ref": "#/properties/repository_id",
@@ -14543,7 +14543,7 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | 是 | `string` |  | repository的唯一标识。 |
+| `repository_id` | 是 | `string` |  | 代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。 |
 | `file_path` | 是 | `string` |  | 本地文件路径，用于上传附件或图片。 |
 | `branch` | 是 | `string` |  | 分支名，用于指定代码、构建或流水线运行分支。 |
 
@@ -14574,7 +14574,7 @@ authorization: Bearer <auth-token>
     "repository_id": {
       "type": "string",
       "minLength": 1,
-      "description": "repository的唯一标识。"
+      "description": "代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。"
     },
     "file_path": {
       "type": "string",
@@ -14614,8 +14614,8 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | 是 | `string` |  | repository的唯一标识。 |
-| `merge_request_iid` | 是 | `unknown` |  | merge request iid 参数，按对应 CodeArts API 要求传入。 |
+| `repository_id` | 是 | `string` |  | 代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。 |
+| `merge_request_iid` | 是 | `unknown` |  | 合并请求 IID。用于定位仓库内的某个 MR。 |
 
 调用示例：
 
@@ -14643,11 +14643,11 @@ authorization: Bearer <auth-token>
     "repository_id": {
       "type": "string",
       "minLength": 1,
-      "description": "repository的唯一标识。"
+      "description": "代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。"
     },
     "merge_request_iid": {
       "$ref": "#/properties/repository_id",
-      "description": "merge request iid 参数，按对应 CodeArts API 要求传入。"
+      "description": "合并请求 IID。用于定位仓库内的某个 MR。"
     }
   },
   "required": [
@@ -14676,7 +14676,7 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | 是 | `string` |  | repository的唯一标识。 |
+| `repository_id` | 是 | `string` |  | 代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。 |
 
 调用示例：
 
@@ -14703,7 +14703,7 @@ authorization: Bearer <auth-token>
     "repository_id": {
       "type": "string",
       "minLength": 1,
-      "description": "repository的唯一标识。"
+      "description": "代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。"
     }
   },
   "required": [
@@ -14731,8 +14731,8 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | 是 | `string` |  | repository的唯一标识。 |
-| `tag_name` | 是 | `string` |  | 标签名称。 |
+| `repository_id` | 是 | `string` |  | 代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。 |
+| `tag_name` | 是 | `string` |  | 标签名称。用于创建、查询或删除 Repo 标签。 |
 
 调用示例：
 
@@ -14760,12 +14760,12 @@ authorization: Bearer <auth-token>
     "repository_id": {
       "type": "string",
       "minLength": 1,
-      "description": "repository的唯一标识。"
+      "description": "代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。"
     },
     "tag_name": {
       "type": "string",
       "minLength": 1,
-      "description": "标签名称。"
+      "description": "标签名称。用于创建、查询或删除 Repo 标签。"
     }
   },
   "required": [
@@ -14794,12 +14794,12 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
-| `repository_id` | 是 | `string` |  | repository的唯一标识。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
+| `repository_id` | 是 | `string` |  | 代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。 |
 
 调用示例：
 
@@ -14827,22 +14827,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -14850,12 +14850,12 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "repository_id": {
       "type": "string",
       "minLength": 1,
-      "description": "repository的唯一标识。"
+      "description": "代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。"
     }
   },
   "required": [
@@ -14883,12 +14883,12 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
-| `repository_id` | 是 | `string` |  | repository的唯一标识。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
+| `repository_id` | 是 | `string` |  | 代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。 |
 | `ref_name` | 否 | `string` |  | ref name 名称。 |
 
 调用示例：
@@ -14917,22 +14917,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -14940,12 +14940,12 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "repository_id": {
       "type": "string",
       "minLength": 1,
-      "description": "repository的唯一标识。"
+      "description": "代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。"
     },
     "ref_name": {
       "type": "string",
@@ -14977,12 +14977,12 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
-| `repository_id` | 是 | `string` |  | repository的唯一标识。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
+| `repository_id` | 是 | `string` |  | 代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。 |
 
 调用示例：
 
@@ -15010,22 +15010,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -15033,12 +15033,12 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "repository_id": {
       "type": "string",
       "minLength": 1,
-      "description": "repository的唯一标识。"
+      "description": "代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。"
     }
   },
   "required": [
@@ -15066,13 +15066,13 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
-| `repository_id` | 是 | `string` |  | repository的唯一标识。 |
-| `merge_request_iid` | 是 | `unknown` |  | 合并请求在仓库内的 IID。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
+| `repository_id` | 是 | `string` |  | 代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。 |
+| `merge_request_iid` | 是 | `unknown` |  | 合并请求 IID。用于定位仓库内的某个 MR。 |
 
 调用示例：
 
@@ -15101,22 +15101,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -15124,16 +15124,16 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "repository_id": {
       "type": "string",
       "minLength": 1,
-      "description": "repository的唯一标识。"
+      "description": "代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。"
     },
     "merge_request_iid": {
       "$ref": "#/properties/repository_id",
-      "description": "合并请求在仓库内的 IID。"
+      "description": "合并请求 IID。用于定位仓库内的某个 MR。"
     }
   },
   "required": [
@@ -15162,13 +15162,13 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
-| `repository_id` | 是 | `string` |  | repository的唯一标识。 |
-| `merge_request_iid` | 是 | `unknown` |  | merge request iid 参数，按对应 CodeArts API 要求传入。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
+| `repository_id` | 是 | `string` |  | 代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。 |
+| `merge_request_iid` | 是 | `unknown` |  | 合并请求 IID。用于定位仓库内的某个 MR。 |
 
 调用示例：
 
@@ -15197,22 +15197,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -15220,16 +15220,16 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "repository_id": {
       "type": "string",
       "minLength": 1,
-      "description": "repository的唯一标识。"
+      "description": "代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。"
     },
     "merge_request_iid": {
       "$ref": "#/properties/repository_id",
-      "description": "merge request iid 参数，按对应 CodeArts API 要求传入。"
+      "description": "合并请求 IID。用于定位仓库内的某个 MR。"
     }
   },
   "required": [
@@ -15258,12 +15258,12 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
-| `repository_id` | 是 | `string` |  | repository的唯一标识。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
+| `repository_id` | 是 | `string` |  | 代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。 |
 | `state` | 否 | `string` |  | 状态值，用于过滤或切换对象状态。 |
 
 调用示例：
@@ -15292,22 +15292,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -15315,12 +15315,12 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "repository_id": {
       "type": "string",
       "minLength": 1,
-      "description": "repository的唯一标识。"
+      "description": "代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。"
     },
     "state": {
       "type": "string",
@@ -15358,12 +15358,12 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
-| `repository_id` | 是 | `string` |  | repository的唯一标识。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
+| `repository_id` | 是 | `string` |  | 代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。 |
 
 调用示例：
 
@@ -15391,22 +15391,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -15414,12 +15414,12 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "repository_id": {
       "type": "string",
       "minLength": 1,
-      "description": "repository的唯一标识。"
+      "description": "代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。"
     }
   },
   "required": [
@@ -15447,11 +15447,11 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 调用示例：
@@ -15480,22 +15480,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -15503,7 +15503,7 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "project_id": {
       "type": "string",
@@ -15536,12 +15536,12 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
-| `repository_id` | 是 | `string` |  | repository的唯一标识。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
+| `repository_id` | 是 | `string` |  | 代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。 |
 
 调用示例：
 
@@ -15569,22 +15569,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -15592,12 +15592,12 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "repository_id": {
       "type": "string",
       "minLength": 1,
-      "description": "repository的唯一标识。"
+      "description": "代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。"
     }
   },
   "required": [
@@ -15625,12 +15625,12 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
-| `repository_id` | 是 | `string` |  | repository的唯一标识。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
+| `repository_id` | 是 | `string` |  | 代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。 |
 
 调用示例：
 
@@ -15658,22 +15658,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -15681,12 +15681,12 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "repository_id": {
       "type": "string",
       "minLength": 1,
-      "description": "repository的唯一标识。"
+      "description": "代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。"
     }
   },
   "required": [
@@ -15714,10 +15714,10 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | 是 | `string` |  | repository的唯一标识。 |
-| `merge_request_iid` | 是 | `unknown` |  | 合并请求在仓库内的 IID。 |
-| `squash` | 否 | `boolean` |  | squash 参数，按对应 CodeArts API 要求传入。 |
-| `force_merge` | 否 | `boolean` |  | 是否强制合并。 |
+| `repository_id` | 是 | `string` |  | 代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。 |
+| `merge_request_iid` | 是 | `unknown` |  | 合并请求 IID。用于定位仓库内的某个 MR。 |
+| `squash` | 否 | `boolean` |  | 是否压缩提交后合并 MR。 |
+| `force_merge` | 否 | `boolean` |  | 是否强制合并 MR。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -15746,19 +15746,19 @@ authorization: Bearer <auth-token>
     "repository_id": {
       "type": "string",
       "minLength": 1,
-      "description": "repository的唯一标识。"
+      "description": "代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。"
     },
     "merge_request_iid": {
       "$ref": "#/properties/repository_id",
-      "description": "合并请求在仓库内的 IID。"
+      "description": "合并请求 IID。用于定位仓库内的某个 MR。"
     },
     "squash": {
       "type": "boolean",
-      "description": "squash 参数，按对应 CodeArts API 要求传入。"
+      "description": "是否压缩提交后合并 MR。"
     },
     "force_merge": {
       "type": "boolean",
-      "description": "是否强制合并。"
+      "description": "是否强制合并 MR。"
     },
     "dry_run": {
       "type": "boolean",
@@ -15792,10 +15792,10 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | 是 | `string` |  | repository的唯一标识。 |
-| `merge_request_iid` | 是 | `unknown` |  | merge request iid 参数，按对应 CodeArts API 要求传入。 |
-| `action_type` | 是 | `string` |  | 评审动作，例如 approve、reject 或 reset。 |
-| `approver_comment` | 否 | `string` |  | approver comment 参数，按对应 CodeArts API 要求传入。 |
+| `repository_id` | 是 | `string` |  | 代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。 |
+| `merge_request_iid` | 是 | `unknown` |  | 合并请求 IID。用于定位仓库内的某个 MR。 |
+| `action_type` | 是 | `string` |  | 评审动作。用于 MR 审批、驳回或重置评审状态。 |
+| `approver_comment` | 否 | `string` |  | 评审意见。审批或驳回合并请求时填写。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -15825,11 +15825,11 @@ authorization: Bearer <auth-token>
     "repository_id": {
       "type": "string",
       "minLength": 1,
-      "description": "repository的唯一标识。"
+      "description": "代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。"
     },
     "merge_request_iid": {
       "$ref": "#/properties/repository_id",
-      "description": "merge request iid 参数，按对应 CodeArts API 要求传入。"
+      "description": "合并请求 IID。用于定位仓库内的某个 MR。"
     },
     "action_type": {
       "type": "string",
@@ -15838,11 +15838,11 @@ authorization: Bearer <auth-token>
         "reject",
         "reset"
       ],
-      "description": "评审动作，例如 approve、reject 或 reset。"
+      "description": "评审动作。用于 MR 审批、驳回或重置评审状态。"
     },
     "approver_comment": {
       "type": "string",
-      "description": "approver comment 参数，按对应 CodeArts API 要求传入。"
+      "description": "评审意见。审批或驳回合并请求时填写。"
     },
     "dry_run": {
       "type": "boolean",
@@ -15960,10 +15960,10 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `pipeline_id` | 是 | `unknown` |  | pipeline的唯一标识。 |
-| `run_id` | 是 | `unknown` |  | run的唯一标识。 |
-| `job_id` | 是 | `unknown` |  | 构建任务或流水线任务唯一标识。 |
-| `step_id` | 是 | `unknown` |  | step的唯一标识。 |
+| `pipeline_id` | 是 | `unknown` |  | 流水线 ID。用于定位流水线、运行记录、日志、制品或变量组绑定。 |
+| `run_id` | 是 | `unknown` |  | 流水线运行 ID。用于定位某次流水线执行记录。 |
+| `job_id` | 是 | `unknown` |  | 任务 ID。用于定位构建任务或流水线任务步骤。 |
+| `step_id` | 是 | `unknown` |  | 步骤 ID。用于定位流水线、部署或构建记录中的具体步骤。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -15999,19 +15999,19 @@ authorization: Bearer <auth-token>
     },
     "pipeline_id": {
       "$ref": "#/properties/project_id",
-      "description": "pipeline的唯一标识。"
+      "description": "流水线 ID。用于定位流水线、运行记录、日志、制品或变量组绑定。"
     },
     "run_id": {
       "$ref": "#/properties/project_id",
-      "description": "run的唯一标识。"
+      "description": "流水线运行 ID。用于定位某次流水线执行记录。"
     },
     "job_id": {
       "$ref": "#/properties/project_id",
-      "description": "构建任务或流水线任务唯一标识。"
+      "description": "任务 ID。用于定位构建任务或流水线任务步骤。"
     },
     "step_id": {
       "$ref": "#/properties/project_id",
-      "description": "step的唯一标识。"
+      "description": "步骤 ID。用于定位流水线、部署或构建记录中的具体步骤。"
     },
     "dry_run": {
       "type": "boolean",
@@ -16049,7 +16049,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `pipeline_id` | 是 | `unknown` |  | pipeline的唯一标识。 |
+| `pipeline_id` | 是 | `unknown` |  | 流水线 ID。用于定位流水线、运行记录、日志、制品或变量组绑定。 |
 | `pipeline_group_ids` | 是 | `array` |  | pipeline_group ID 列表，用于批量操作。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -16084,7 +16084,7 @@ authorization: Bearer <auth-token>
     },
     "pipeline_id": {
       "$ref": "#/properties/project_id",
-      "description": "pipeline的唯一标识。"
+      "description": "流水线 ID。用于定位流水线、运行记录、日志、制品或变量组绑定。"
     },
     "pipeline_group_ids": {
       "type": "array",
@@ -16129,11 +16129,11 @@ authorization: Bearer <auth-token>
 | --- | --- | --- | --- | --- |
 | `project_id` | 否 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `region_name` | 否 | `string` |  | region name 名称。 |
-| `module_id` | 否 | `string` |  | 模块唯一标识。 |
-| `name` | 否 | `string` |  | 对象名称，用于展示、查询或创建资源。 |
-| `url` | 否 | `string` |  | url 参数，按对应 CodeArts API 要求传入。 |
-| `authorization` | 否 | `object` |  | authorization 参数，按对应 CodeArts API 要求传入。 |
-| `data` | 否 | `unknown` |  | data 参数，按对应 CodeArts API 要求传入。 |
+| `module_id` | 否 | `string` |  | 模块 ID。用于把工作项、IPD 对象或项目模块归属到指定模块。 |
+| `name` | 否 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
+| `url` | 否 | `string` |  | URL 地址。用于扩展端点、导入仓库或第三方服务地址。 |
+| `authorization` | 否 | `object` |  | 授权配置。用于扩展端点的认证方式和参数。 |
+| `data` | 否 | `unknown` |  | 扩展数据。用于透传扩展端点所需配置。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -16169,17 +16169,17 @@ authorization: Bearer <auth-token>
     "module_id": {
       "type": "string",
       "minLength": 1,
-      "description": "模块唯一标识。"
+      "description": "模块 ID。用于把工作项、IPD 对象或项目模块归属到指定模块。"
     },
     "name": {
       "type": "string",
       "minLength": 1,
-      "description": "对象名称，用于展示、查询或创建资源。"
+      "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
     },
     "url": {
       "type": "string",
       "minLength": 1,
-      "description": "url 参数，按对应 CodeArts API 要求传入。"
+      "description": "URL 地址。用于扩展端点、导入仓库或第三方服务地址。"
     },
     "authorization": {
       "type": "object",
@@ -16187,7 +16187,7 @@ authorization: Bearer <auth-token>
         "parameters": {
           "type": "object",
           "additionalProperties": {},
-          "description": "authorization 参数，按对应 CodeArts API 要求传入。"
+          "description": "授权配置。用于扩展端点的认证方式和参数。"
         },
         "scheme": {
           "type": "string",
@@ -16200,7 +16200,7 @@ authorization: Bearer <auth-token>
     },
     "data": {
       "$ref": "#/properties/authorization/properties/parameters",
-      "description": "data 参数，按对应 CodeArts API 要求传入。"
+      "description": "扩展数据。用于透传扩展端点所需配置。"
     },
     "dry_run": {
       "type": "boolean",
@@ -16231,8 +16231,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `name` | 是 | `string` |  | 对象名称，用于展示、查询或创建资源。 |
-| `parent_id` | 否 | `unknown` |  | parent的唯一标识。 |
+| `name` | 是 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
+| `parent_id` | 否 | `unknown` |  | 父级资源 ID。用于创建模块、特性集或树形结构节点。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -16267,11 +16267,11 @@ authorization: Bearer <auth-token>
       "type": "string",
       "minLength": 1,
       "maxLength": 32,
-      "description": "对象名称，用于展示、查询或创建资源。"
+      "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
     },
     "parent_id": {
       "$ref": "#/properties/project_id",
-      "description": "parent的唯一标识。"
+      "description": "父级资源 ID。用于创建模块、特性集或树形结构节点。"
     },
     "dry_run": {
       "type": "boolean",
@@ -16306,8 +16306,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `name` | 是 | `string` |  | 对象名称，用于展示、查询或创建资源。 |
-| `rules` | 是 | `array` |  | rules 参数，按对应 CodeArts API 要求传入。 |
+| `name` | 是 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
+| `rules` | 是 | `array` |  | 规则列表。创建或更新策略时用于绑定规则 ID 和启用状态。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -16342,7 +16342,7 @@ authorization: Bearer <auth-token>
     "name": {
       "type": "string",
       "minLength": 1,
-      "description": "对象名称，用于展示、查询或创建资源。"
+      "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
     },
     "rules": {
       "type": "array",
@@ -16351,7 +16351,7 @@ authorization: Bearer <auth-token>
         "properties": {
           "id": {
             "$ref": "#/properties/project_id",
-            "description": "rules 参数，按对应 CodeArts API 要求传入。"
+            "description": "规则列表。创建或更新策略时用于绑定规则 ID 和启用状态。"
           },
           "is_valid": {
             "type": "boolean",
@@ -16396,14 +16396,14 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | domain的唯一标识。 |
-| `name` | 是 | `string` |  | 对象名称，用于展示、查询或创建资源。 |
-| `type` | 是 | `string` |  | 类型字段，含义取决于对应接口。 |
-| `layout_content` | 是 | `string` |  | layout content 参数，按对应 CodeArts API 要求传入。 |
-| `plugin_id` | 否 | `string` |  | plugin的唯一标识。 |
-| `plugin_name` | 否 | `string` |  | plugin name 名称。 |
-| `plugin_version` | 否 | `string` |  | plugin version 参数，按对应 CodeArts API 要求传入。 |
-| `content` | 是 | `array` |  | 评论、规则或文本内容。 |
+| `domain_id` | 是 | `string` |  | 租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。 |
+| `name` | 是 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
+| `type` | 是 | `string` |  | 类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。 |
+| `layout_content` | 是 | `string` |  | 规则布局内容。创建或更新 Pipeline 规则时用于描述规则表单/布局配置。 |
+| `plugin_id` | 否 | `string` |  | 插件 ID。用于定位 Pipeline 插件。 |
+| `plugin_name` | 否 | `string` |  | 插件名称。用于查询插件版本、输入或输出定义。 |
+| `plugin_version` | 否 | `string` |  | 插件版本。用于定位具体插件版本。 |
+| `content` | 是 | `array` |  | 规则内容配置。创建或更新 Pipeline 规则时描述规则分组、属性和校验条件。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -16435,37 +16435,37 @@ authorization: Bearer <auth-token>
     "domain_id": {
       "type": "string",
       "minLength": 1,
-      "description": "domain的唯一标识。"
+      "description": "租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。"
     },
     "name": {
       "type": "string",
       "minLength": 1,
-      "description": "对象名称，用于展示、查询或创建资源。"
+      "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
     },
     "type": {
       "type": "string",
       "minLength": 1,
-      "description": "类型字段，含义取决于对应接口。"
+      "description": "类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。"
     },
     "layout_content": {
       "type": "string",
       "minLength": 1,
-      "description": "layout content 参数，按对应 CodeArts API 要求传入。"
+      "description": "规则布局内容。创建或更新 Pipeline 规则时用于描述规则表单/布局配置。"
     },
     "plugin_id": {
       "type": "string",
       "minLength": 1,
-      "description": "plugin的唯一标识。"
+      "description": "插件 ID。用于定位 Pipeline 插件。"
     },
     "plugin_name": {
       "type": "string",
       "minLength": 1,
-      "description": "plugin name 名称。"
+      "description": "插件名称。用于查询插件版本、输入或输出定义。"
     },
     "plugin_version": {
       "type": "string",
       "minLength": 1,
-      "description": "plugin version 参数，按对应 CodeArts API 要求传入。"
+      "description": "插件版本。用于定位具体插件版本。"
     },
     "content": {
       "type": "array",
@@ -16475,7 +16475,7 @@ authorization: Bearer <auth-token>
           "group_name": {
             "type": "string",
             "minLength": 1,
-            "description": "评论、规则或文本内容。"
+            "description": "规则内容配置。创建或更新 Pipeline 规则时描述规则分组、属性和校验条件。"
           },
           "can_modify_when_inherit": {
             "type": "boolean",
@@ -16498,12 +16498,12 @@ authorization: Bearer <auth-token>
                 "type": {
                   "type": "string",
                   "minLength": 1,
-                  "description": "content 参数，按对应 CodeArts API 要求传入。"
+                  "description": "类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。"
                 },
                 "name": {
                   "type": "string",
                   "minLength": 1,
-                  "description": "对象名称，用于展示、查询或创建资源。"
+                  "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
                 },
                 "operator": {
                   "type": "string",
@@ -16512,7 +16512,7 @@ authorization: Bearer <auth-token>
                 },
                 "value": {
                   "type": "string",
-                  "description": "字段值。"
+                  "description": "字段值。用于变量、自定义字段、过滤项或配置项的具体取值。"
                 },
                 "value_type": {
                   "type": "string",
@@ -16544,7 +16544,7 @@ authorization: Bearer <auth-token>
         "additionalProperties": false
       },
       "minItems": 1,
-      "description": "评论、规则或文本内容。"
+      "description": "规则内容配置。创建或更新 Pipeline 规则时描述规则分组、属性和校验条件。"
     },
     "dry_run": {
       "type": "boolean",
@@ -16581,9 +16581,9 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | domain的唯一标识。 |
-| `name` | 是 | `string` |  | 对象名称，用于展示、查询或创建资源。 |
-| `rules` | 是 | `array` |  | rules 参数，按对应 CodeArts API 要求传入。 |
+| `domain_id` | 是 | `string` |  | 租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。 |
+| `name` | 是 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
+| `rules` | 是 | `array` |  | 规则列表。创建或更新策略时用于绑定规则 ID 和启用状态。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -16613,12 +16613,12 @@ authorization: Bearer <auth-token>
     "domain_id": {
       "type": "string",
       "minLength": 1,
-      "description": "domain的唯一标识。"
+      "description": "租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。"
     },
     "name": {
       "type": "string",
       "minLength": 1,
-      "description": "对象名称，用于展示、查询或创建资源。"
+      "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
     },
     "rules": {
       "type": "array",
@@ -16627,7 +16627,7 @@ authorization: Bearer <auth-token>
         "properties": {
           "id": {
             "$ref": "#/properties/domain_id",
-            "description": "rules 参数，按对应 CodeArts API 要求传入。"
+            "description": "规则列表。创建或更新策略时用于绑定规则 ID 和启用状态。"
           },
           "is_valid": {
             "type": "boolean",
@@ -16673,7 +16673,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `name` | 是 | `string` |  | 对象名称，用于展示、查询或创建资源。 |
+| `name` | 是 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
 | `color` | 是 | `string` |  | 颜色值，通常用于标签或展示配置。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -16709,7 +16709,7 @@ authorization: Bearer <auth-token>
     "name": {
       "type": "string",
       "minLength": 1,
-      "description": "对象名称，用于展示、查询或创建资源。"
+      "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
     },
     "color": {
       "type": "string",
@@ -16750,7 +16750,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `name` | 是 | `string` |  | 对象名称，用于展示、查询或创建资源。 |
+| `name` | 是 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
 | `description` | 否 | `string` |  | 对象的详细描述或备注信息。 |
 | `variables` | 否 | `array` |  | 变量列表。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
@@ -16786,7 +16786,7 @@ authorization: Bearer <auth-token>
     "name": {
       "type": "string",
       "minLength": 1,
-      "description": "对象名称，用于展示、查询或创建资源。"
+      "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
     },
     "description": {
       "type": "string",
@@ -16800,7 +16800,7 @@ authorization: Bearer <auth-token>
           "name": {
             "type": "string",
             "minLength": 1,
-            "description": "变量列表。"
+            "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
           },
           "sequence": {
             "type": "integer",
@@ -16809,11 +16809,11 @@ authorization: Bearer <auth-token>
           "type": {
             "type": "string",
             "minLength": 1,
-            "description": "变量列表。"
+            "description": "类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。"
           },
           "value": {
             "type": "string",
-            "description": "字段值。"
+            "description": "字段值。用于变量、自定义字段、过滤项或配置项的具体取值。"
           },
           "is_secret": {
             "type": "boolean",
@@ -16860,7 +16860,7 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `uuid` | 是 | `string` |  | uuid 参数，按对应 CodeArts API 要求传入。 |
+| `uuid` | 是 | `string` |  | 扩展端点 UUID。用于定位 Pipeline 扩展端点。 |
 | `project_id` | 否 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -16889,7 +16889,7 @@ authorization: Bearer <auth-token>
     "uuid": {
       "type": "string",
       "minLength": 1,
-      "description": "uuid 参数，按对应 CodeArts API 要求传入。"
+      "description": "扩展端点 UUID。用于定位 Pipeline 扩展端点。"
     },
     "project_id": {
       "type": "string",
@@ -16928,7 +16928,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `id` | 是 | `unknown` |  | id 参数，按对应 CodeArts API 要求传入。 |
+| `id` | 是 | `unknown` |  | 资源 ID。返回结果或嵌套对象中的通用唯一标识。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -16961,7 +16961,7 @@ authorization: Bearer <auth-token>
     },
     "id": {
       "$ref": "#/properties/project_id",
-      "description": "id 参数，按对应 CodeArts API 要求传入。"
+      "description": "资源 ID。返回结果或嵌套对象中的通用唯一标识。"
     },
     "dry_run": {
       "type": "boolean",
@@ -16996,7 +16996,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `pipeline_id` | 是 | `unknown` |  | pipeline的唯一标识。 |
+| `pipeline_id` | 是 | `unknown` |  | 流水线 ID。用于定位流水线、运行记录、日志、制品或变量组绑定。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -17029,7 +17029,7 @@ authorization: Bearer <auth-token>
     },
     "pipeline_id": {
       "$ref": "#/properties/project_id",
-      "description": "pipeline的唯一标识。"
+      "description": "流水线 ID。用于定位流水线、运行记录、日志、制品或变量组绑定。"
     },
     "dry_run": {
       "type": "boolean",
@@ -17064,7 +17064,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `rule_set_id` | 是 | `unknown` |  | rule_set的唯一标识。 |
+| `rule_set_id` | 是 | `unknown` |  | 规则集 ID。用于定位代码检查或流水线策略规则集。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -17097,7 +17097,7 @@ authorization: Bearer <auth-token>
     },
     "rule_set_id": {
       "$ref": "#/properties/project_id",
-      "description": "rule_set的唯一标识。"
+      "description": "规则集 ID。用于定位代码检查或流水线策略规则集。"
     },
     "dry_run": {
       "type": "boolean",
@@ -17131,8 +17131,8 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | domain的唯一标识。 |
-| `rule_id` | 是 | `unknown` |  | rule的唯一标识。 |
+| `domain_id` | 是 | `string` |  | 租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。 |
+| `rule_id` | 是 | `unknown` |  | 规则 ID。用于定位流水线规则。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -17161,11 +17161,11 @@ authorization: Bearer <auth-token>
     "domain_id": {
       "type": "string",
       "minLength": 1,
-      "description": "domain的唯一标识。"
+      "description": "租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。"
     },
     "rule_id": {
       "$ref": "#/properties/domain_id",
-      "description": "rule的唯一标识。"
+      "description": "规则 ID。用于定位流水线规则。"
     },
     "dry_run": {
       "type": "boolean",
@@ -17199,8 +17199,8 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | domain的唯一标识。 |
-| `rule_set_id` | 是 | `unknown` |  | rule_set的唯一标识。 |
+| `domain_id` | 是 | `string` |  | 租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。 |
+| `rule_set_id` | 是 | `unknown` |  | 规则集 ID。用于定位代码检查或流水线策略规则集。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -17229,11 +17229,11 @@ authorization: Bearer <auth-token>
     "domain_id": {
       "type": "string",
       "minLength": 1,
-      "description": "domain的唯一标识。"
+      "description": "租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。"
     },
     "rule_set_id": {
       "$ref": "#/properties/domain_id",
-      "description": "rule_set的唯一标识。"
+      "description": "规则集 ID。用于定位代码检查或流水线策略规则集。"
     },
     "dry_run": {
       "type": "boolean",
@@ -17268,7 +17268,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `tag_id` | 是 | `unknown` |  | tag的唯一标识。 |
+| `tag_id` | 是 | `unknown` |  | 标签 ID。用于更新、删除或绑定流水线标签。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -17301,7 +17301,7 @@ authorization: Bearer <auth-token>
     },
     "tag_id": {
       "$ref": "#/properties/project_id",
-      "description": "tag的唯一标识。"
+      "description": "标签 ID。用于更新、删除或绑定流水线标签。"
     },
     "dry_run": {
       "type": "boolean",
@@ -17336,7 +17336,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `id` | 是 | `unknown` |  | id 参数，按对应 CodeArts API 要求传入。 |
+| `id` | 是 | `unknown` |  | 资源 ID。返回结果或嵌套对象中的通用唯一标识。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -17369,7 +17369,7 @@ authorization: Bearer <auth-token>
     },
     "id": {
       "$ref": "#/properties/project_id",
-      "description": "id 参数，按对应 CodeArts API 要求传入。"
+      "description": "资源 ID。返回结果或嵌套对象中的通用唯一标识。"
     },
     "dry_run": {
       "type": "boolean",
@@ -17404,7 +17404,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `pipeline_id` | 是 | `unknown` |  | pipeline的唯一标识。 |
+| `pipeline_id` | 是 | `unknown` |  | 流水线 ID。用于定位流水线、运行记录、日志、制品或变量组绑定。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -17437,7 +17437,7 @@ authorization: Bearer <auth-token>
     },
     "pipeline_id": {
       "$ref": "#/properties/project_id",
-      "description": "pipeline的唯一标识。"
+      "description": "流水线 ID。用于定位流水线、运行记录、日志、制品或变量组绑定。"
     },
     "dry_run": {
       "type": "boolean",
@@ -17472,7 +17472,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `pipeline_id` | 是 | `unknown` |  | pipeline的唯一标识。 |
+| `pipeline_id` | 是 | `unknown` |  | 流水线 ID。用于定位流水线、运行记录、日志、制品或变量组绑定。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -17505,7 +17505,7 @@ authorization: Bearer <auth-token>
     },
     "pipeline_id": {
       "$ref": "#/properties/project_id",
-      "description": "pipeline的唯一标识。"
+      "description": "流水线 ID。用于定位流水线、运行记录、日志、制品或变量组绑定。"
     },
     "dry_run": {
       "type": "boolean",
@@ -17539,7 +17539,7 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `uuid` | 是 | `string` |  | uuid 参数，按对应 CodeArts API 要求传入。 |
+| `uuid` | 是 | `string` |  | 扩展端点 UUID。用于定位 Pipeline 扩展端点。 |
 
 调用示例：
 
@@ -17566,7 +17566,7 @@ authorization: Bearer <auth-token>
     "uuid": {
       "type": "string",
       "minLength": 1,
-      "description": "uuid 参数，按对应 CodeArts API 要求传入。"
+      "description": "扩展端点 UUID。用于定位 Pipeline 扩展端点。"
     }
   },
   "required": [
@@ -17594,7 +17594,7 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `module_id` | 是 | `string` |  | 模块唯一标识。 |
+| `module_id` | 是 | `string` |  | 模块 ID。用于把工作项、IPD 对象或项目模块归属到指定模块。 |
 
 调用示例：
 
@@ -17621,7 +17621,7 @@ authorization: Bearer <auth-token>
     "module_id": {
       "type": "string",
       "minLength": 1,
-      "description": "模块唯一标识。"
+      "description": "模块 ID。用于把工作项、IPD 对象或项目模块归属到指定模块。"
     }
   },
   "required": [
@@ -17650,8 +17650,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `pipeline_id` | 是 | `unknown` |  | pipeline的唯一标识。 |
-| `run_id` | 是 | `unknown` |  | run的唯一标识。 |
+| `pipeline_id` | 是 | `unknown` |  | 流水线 ID。用于定位流水线、运行记录、日志、制品或变量组绑定。 |
+| `run_id` | 是 | `unknown` |  | 流水线运行 ID。用于定位某次流水线执行记录。 |
 
 调用示例：
 
@@ -17684,11 +17684,11 @@ authorization: Bearer <auth-token>
     },
     "pipeline_id": {
       "$ref": "#/properties/project_id",
-      "description": "pipeline的唯一标识。"
+      "description": "流水线 ID。用于定位流水线、运行记录、日志、制品或变量组绑定。"
     },
     "run_id": {
       "$ref": "#/properties/project_id",
-      "description": "run的唯一标识。"
+      "description": "流水线运行 ID。用于定位某次流水线执行记录。"
     }
   },
   "required": [
@@ -17719,7 +17719,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `pipeline_id` | 是 | `unknown` |  | pipeline的唯一标识。 |
+| `pipeline_id` | 是 | `unknown` |  | 流水线 ID。用于定位流水线、运行记录、日志、制品或变量组绑定。 |
 
 调用示例：
 
@@ -17751,7 +17751,7 @@ authorization: Bearer <auth-token>
     },
     "pipeline_id": {
       "$ref": "#/properties/project_id",
-      "description": "pipeline的唯一标识。"
+      "description": "流水线 ID。用于定位流水线、运行记录、日志、制品或变量组绑定。"
     }
   },
   "required": [
@@ -17780,11 +17780,11 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | domain的唯一标识。 |
-| `plugin_name` | 是 | `string` |  | plugin name 名称。 |
+| `domain_id` | 是 | `string` |  | 租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。 |
+| `plugin_name` | 是 | `string` |  | 插件名称。用于查询插件版本、输入或输出定义。 |
 | `display_name` | 是 | `string` |  | display name 名称。 |
-| `version` | 是 | `string` |  | 版本号。 |
-| `plugin_attribution` | 是 | `string` |  | plugin attribution 参数，按对应 CodeArts API 要求传入。 |
+| `version` | 是 | `string` |  | 版本号。用于指定插件版本、接口版本或工具步骤版本。 |
+| `plugin_attribution` | 是 | `string` |  | 插件归属。可区分官方插件和自定义插件。 |
 
 调用示例：
 
@@ -17815,12 +17815,12 @@ authorization: Bearer <auth-token>
     "domain_id": {
       "type": "string",
       "minLength": 1,
-      "description": "domain的唯一标识。"
+      "description": "租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。"
     },
     "plugin_name": {
       "type": "string",
       "minLength": 1,
-      "description": "plugin name 名称。"
+      "description": "插件名称。用于查询插件版本、输入或输出定义。"
     },
     "display_name": {
       "type": "string",
@@ -17830,7 +17830,7 @@ authorization: Bearer <auth-token>
     "version": {
       "type": "string",
       "minLength": 1,
-      "description": "版本号。"
+      "description": "版本号。用于指定插件版本、接口版本或工具步骤版本。"
     },
     "plugin_attribution": {
       "type": "string",
@@ -17838,7 +17838,7 @@ authorization: Bearer <auth-token>
         "custom",
         "official"
       ],
-      "description": "plugin attribution 参数，按对应 CodeArts API 要求传入。"
+      "description": "插件归属。可区分官方插件和自定义插件。"
     }
   },
   "required": [
@@ -17870,11 +17870,11 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | domain的唯一标识。 |
-| `plugin_name` | 是 | `string` |  | plugin name 名称。 |
+| `domain_id` | 是 | `string` |  | 租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。 |
+| `plugin_name` | 是 | `string` |  | 插件名称。用于查询插件版本、输入或输出定义。 |
 | `display_name` | 是 | `string` |  | display name 名称。 |
-| `version` | 是 | `string` |  | version 参数，按对应 CodeArts API 要求传入。 |
-| `plugin_attribution` | 是 | `string` |  | plugin attribution 参数，按对应 CodeArts API 要求传入。 |
+| `version` | 是 | `string` |  | 版本号。用于指定插件版本、接口版本或工具步骤版本。 |
+| `plugin_attribution` | 是 | `string` |  | 插件归属。可区分官方插件和自定义插件。 |
 
 调用示例：
 
@@ -17905,12 +17905,12 @@ authorization: Bearer <auth-token>
     "domain_id": {
       "type": "string",
       "minLength": 1,
-      "description": "domain的唯一标识。"
+      "description": "租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。"
     },
     "plugin_name": {
       "type": "string",
       "minLength": 1,
-      "description": "plugin name 名称。"
+      "description": "插件名称。用于查询插件版本、输入或输出定义。"
     },
     "display_name": {
       "type": "string",
@@ -17920,7 +17920,7 @@ authorization: Bearer <auth-token>
     "version": {
       "type": "string",
       "minLength": 1,
-      "description": "version 参数，按对应 CodeArts API 要求传入。"
+      "description": "版本号。用于指定插件版本、接口版本或工具步骤版本。"
     },
     "plugin_attribution": {
       "type": "string",
@@ -17928,7 +17928,7 @@ authorization: Bearer <auth-token>
         "custom",
         "official"
       ],
-      "description": "plugin attribution 参数，按对应 CodeArts API 要求传入。"
+      "description": "插件归属。可区分官方插件和自定义插件。"
     }
   },
   "required": [
@@ -17960,9 +17960,9 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | domain的唯一标识。 |
-| `plugin_name` | 是 | `string` |  | plugin name 名称。 |
-| `version` | 是 | `string` |  | version 参数，按对应 CodeArts API 要求传入。 |
+| `domain_id` | 是 | `string` |  | 租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。 |
+| `plugin_name` | 是 | `string` |  | 插件名称。用于查询插件版本、输入或输出定义。 |
+| `version` | 是 | `string` |  | 版本号。用于指定插件版本、接口版本或工具步骤版本。 |
 
 调用示例：
 
@@ -17991,17 +17991,17 @@ authorization: Bearer <auth-token>
     "domain_id": {
       "type": "string",
       "minLength": 1,
-      "description": "domain的唯一标识。"
+      "description": "租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。"
     },
     "plugin_name": {
       "type": "string",
       "minLength": 1,
-      "description": "plugin name 名称。"
+      "description": "插件名称。用于查询插件版本、输入或输出定义。"
     },
     "version": {
       "type": "string",
       "minLength": 1,
-      "description": "version 参数，按对应 CodeArts API 要求传入。"
+      "description": "版本号。用于指定插件版本、接口版本或工具步骤版本。"
     }
   },
   "required": [
@@ -18032,7 +18032,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `rule_set_id` | 是 | `unknown` |  | rule_set的唯一标识。 |
+| `rule_set_id` | 是 | `unknown` |  | 规则集 ID。用于定位代码检查或流水线策略规则集。 |
 
 调用示例：
 
@@ -18064,7 +18064,7 @@ authorization: Bearer <auth-token>
     },
     "rule_set_id": {
       "$ref": "#/properties/project_id",
-      "description": "rule_set的唯一标识。"
+      "description": "规则集 ID。用于定位代码检查或流水线策略规则集。"
     }
   },
   "required": [
@@ -18094,7 +18094,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `rule_set_id` | 是 | `unknown` |  | rule_set的唯一标识。 |
+| `rule_set_id` | 是 | `unknown` |  | 规则集 ID。用于定位代码检查或流水线策略规则集。 |
 
 调用示例：
 
@@ -18126,7 +18126,7 @@ authorization: Bearer <auth-token>
     },
     "rule_set_id": {
       "$ref": "#/properties/project_id",
-      "description": "rule_set的唯一标识。"
+      "description": "规则集 ID。用于定位代码检查或流水线策略规则集。"
     }
   },
   "required": [
@@ -18156,7 +18156,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `rule_set_id` | 是 | `unknown` |  | rule_set的唯一标识。 |
+| `rule_set_id` | 是 | `unknown` |  | 规则集 ID。用于定位代码检查或流水线策略规则集。 |
 
 调用示例：
 
@@ -18188,7 +18188,7 @@ authorization: Bearer <auth-token>
     },
     "rule_set_id": {
       "$ref": "#/properties/project_id",
-      "description": "rule_set的唯一标识。"
+      "description": "规则集 ID。用于定位代码检查或流水线策略规则集。"
     }
   },
   "required": [
@@ -18217,8 +18217,8 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | domain的唯一标识。 |
-| `rule_id` | 是 | `unknown` |  | rule的唯一标识。 |
+| `domain_id` | 是 | `string` |  | 租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。 |
+| `rule_id` | 是 | `unknown` |  | 规则 ID。用于定位流水线规则。 |
 
 调用示例：
 
@@ -18246,11 +18246,11 @@ authorization: Bearer <auth-token>
     "domain_id": {
       "type": "string",
       "minLength": 1,
-      "description": "domain的唯一标识。"
+      "description": "租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。"
     },
     "rule_id": {
       "$ref": "#/properties/domain_id",
-      "description": "rule的唯一标识。"
+      "description": "规则 ID。用于定位流水线规则。"
     }
   },
   "required": [
@@ -18279,8 +18279,8 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | domain的唯一标识。 |
-| `rule_id` | 是 | `unknown` |  | rule的唯一标识。 |
+| `domain_id` | 是 | `string` |  | 租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。 |
+| `rule_id` | 是 | `unknown` |  | 规则 ID。用于定位流水线规则。 |
 
 调用示例：
 
@@ -18308,11 +18308,11 @@ authorization: Bearer <auth-token>
     "domain_id": {
       "type": "string",
       "minLength": 1,
-      "description": "domain的唯一标识。"
+      "description": "租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。"
     },
     "rule_id": {
       "$ref": "#/properties/domain_id",
-      "description": "rule的唯一标识。"
+      "description": "规则 ID。用于定位流水线规则。"
     }
   },
   "required": [
@@ -18342,8 +18342,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `pipeline_id` | 是 | `unknown` |  | pipeline的唯一标识。 |
-| `run_id` | 是 | `unknown` |  | run的唯一标识。 |
+| `pipeline_id` | 是 | `unknown` |  | 流水线 ID。用于定位流水线、运行记录、日志、制品或变量组绑定。 |
+| `run_id` | 是 | `unknown` |  | 流水线运行 ID。用于定位某次流水线执行记录。 |
 
 调用示例：
 
@@ -18376,11 +18376,11 @@ authorization: Bearer <auth-token>
     },
     "pipeline_id": {
       "$ref": "#/properties/project_id",
-      "description": "pipeline的唯一标识。"
+      "description": "流水线 ID。用于定位流水线、运行记录、日志、制品或变量组绑定。"
     },
     "run_id": {
       "$ref": "#/properties/project_id",
-      "description": "run的唯一标识。"
+      "description": "流水线运行 ID。用于定位某次流水线执行记录。"
     }
   },
   "required": [
@@ -18411,8 +18411,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `pipeline_id` | 是 | `unknown` |  | pipeline的唯一标识。 |
-| `run_id` | 是 | `unknown` |  | run的唯一标识。 |
+| `pipeline_id` | 是 | `unknown` |  | 流水线 ID。用于定位流水线、运行记录、日志、制品或变量组绑定。 |
+| `run_id` | 是 | `unknown` |  | 流水线运行 ID。用于定位某次流水线执行记录。 |
 
 调用示例：
 
@@ -18445,11 +18445,11 @@ authorization: Bearer <auth-token>
     },
     "pipeline_id": {
       "$ref": "#/properties/project_id",
-      "description": "pipeline的唯一标识。"
+      "description": "流水线 ID。用于定位流水线、运行记录、日志、制品或变量组绑定。"
     },
     "run_id": {
       "$ref": "#/properties/project_id",
-      "description": "run的唯一标识。"
+      "description": "流水线运行 ID。用于定位某次流水线执行记录。"
     }
   },
   "required": [
@@ -18480,10 +18480,10 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `pipeline_id` | 是 | `unknown` |  | pipeline的唯一标识。 |
-| `run_id` | 是 | `unknown` |  | run的唯一标识。 |
-| `job_id` | 是 | `unknown` |  | 构建任务或流水线任务唯一标识。 |
-| `step_id` | 是 | `unknown` |  | step的唯一标识。 |
+| `pipeline_id` | 是 | `unknown` |  | 流水线 ID。用于定位流水线、运行记录、日志、制品或变量组绑定。 |
+| `run_id` | 是 | `unknown` |  | 流水线运行 ID。用于定位某次流水线执行记录。 |
+| `job_id` | 是 | `unknown` |  | 任务 ID。用于定位构建任务或流水线任务步骤。 |
+| `step_id` | 是 | `unknown` |  | 步骤 ID。用于定位流水线、部署或构建记录中的具体步骤。 |
 
 调用示例：
 
@@ -18518,19 +18518,19 @@ authorization: Bearer <auth-token>
     },
     "pipeline_id": {
       "$ref": "#/properties/project_id",
-      "description": "pipeline的唯一标识。"
+      "description": "流水线 ID。用于定位流水线、运行记录、日志、制品或变量组绑定。"
     },
     "run_id": {
       "$ref": "#/properties/project_id",
-      "description": "run的唯一标识。"
+      "description": "流水线运行 ID。用于定位某次流水线执行记录。"
     },
     "job_id": {
       "$ref": "#/properties/project_id",
-      "description": "构建任务或流水线任务唯一标识。"
+      "description": "任务 ID。用于定位构建任务或流水线任务步骤。"
     },
     "step_id": {
       "$ref": "#/properties/project_id",
-      "description": "step的唯一标识。"
+      "description": "步骤 ID。用于定位流水线、部署或构建记录中的具体步骤。"
     }
   },
   "required": [
@@ -18563,8 +18563,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `pipeline_id` | 是 | `unknown` |  | pipeline的唯一标识。 |
-| `run_id` | 是 | `unknown` |  | run的唯一标识。 |
+| `pipeline_id` | 是 | `unknown` |  | 流水线 ID。用于定位流水线、运行记录、日志、制品或变量组绑定。 |
+| `run_id` | 是 | `unknown` |  | 流水线运行 ID。用于定位某次流水线执行记录。 |
 
 调用示例：
 
@@ -18597,11 +18597,11 @@ authorization: Bearer <auth-token>
     },
     "pipeline_id": {
       "$ref": "#/properties/project_id",
-      "description": "pipeline的唯一标识。"
+      "description": "流水线 ID。用于定位流水线、运行记录、日志、制品或变量组绑定。"
     },
     "run_id": {
       "$ref": "#/properties/project_id",
-      "description": "run的唯一标识。"
+      "description": "流水线运行 ID。用于定位某次流水线执行记录。"
     }
   },
   "required": [
@@ -18632,9 +18632,9 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `pipeline_id` | 是 | `unknown` |  | pipeline的唯一标识。 |
-| `run_id` | 是 | `unknown` |  | run的唯一标识。 |
-| `step_run_ids` | 是 | `array` |  | step_run ID 列表，用于批量操作。 |
+| `pipeline_id` | 是 | `unknown` |  | 流水线 ID。用于定位流水线、运行记录、日志、制品或变量组绑定。 |
+| `run_id` | 是 | `unknown` |  | 流水线运行 ID。用于定位某次流水线执行记录。 |
+| `step_run_ids` | 是 | `array` |  | 步骤运行 ID 列表。用于批量查询步骤输出。 |
 
 调用示例：
 
@@ -18668,11 +18668,11 @@ authorization: Bearer <auth-token>
     },
     "pipeline_id": {
       "$ref": "#/properties/project_id",
-      "description": "pipeline的唯一标识。"
+      "description": "流水线 ID。用于定位流水线、运行记录、日志、制品或变量组绑定。"
     },
     "run_id": {
       "$ref": "#/properties/project_id",
-      "description": "run的唯一标识。"
+      "description": "流水线运行 ID。用于定位某次流水线执行记录。"
     },
     "step_run_ids": {
       "type": "array",
@@ -18680,7 +18680,7 @@ authorization: Bearer <auth-token>
         "$ref": "#/properties/project_id"
       },
       "minItems": 1,
-      "description": "step_run ID 列表，用于批量操作。"
+      "description": "步骤运行 ID 列表。用于批量查询步骤输出。"
     }
   },
   "required": [
@@ -18711,9 +18711,9 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | domain的唯一标识。 |
-| `rule_set_id` | 是 | `unknown` |  | rule_set的唯一标识。 |
-| `cloud_project_id` | 否 | `unknown` |  | cloud_project的唯一标识。 |
+| `domain_id` | 是 | `string` |  | 租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。 |
+| `rule_set_id` | 是 | `unknown` |  | 规则集 ID。用于定位代码检查或流水线策略规则集。 |
+| `cloud_project_id` | 否 | `unknown` |  | 云项目 ID。查询租户级策略或规则时用于限定云项目范围。 |
 
 调用示例：
 
@@ -18741,15 +18741,15 @@ authorization: Bearer <auth-token>
     "domain_id": {
       "type": "string",
       "minLength": 1,
-      "description": "domain的唯一标识。"
+      "description": "租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。"
     },
     "rule_set_id": {
       "$ref": "#/properties/domain_id",
-      "description": "rule_set的唯一标识。"
+      "description": "规则集 ID。用于定位代码检查或流水线策略规则集。"
     },
     "cloud_project_id": {
       "$ref": "#/properties/domain_id",
-      "description": "cloud_project的唯一标识。"
+      "description": "云项目 ID。查询租户级策略或规则时用于限定云项目范围。"
     }
   },
   "required": [
@@ -18778,8 +18778,8 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | domain的唯一标识。 |
-| `rule_set_id` | 是 | `unknown` |  | rule_set的唯一标识。 |
+| `domain_id` | 是 | `string` |  | 租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。 |
+| `rule_set_id` | 是 | `unknown` |  | 规则集 ID。用于定位代码检查或流水线策略规则集。 |
 
 调用示例：
 
@@ -18807,11 +18807,11 @@ authorization: Bearer <auth-token>
     "domain_id": {
       "type": "string",
       "minLength": 1,
-      "description": "domain的唯一标识。"
+      "description": "租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。"
     },
     "rule_set_id": {
       "$ref": "#/properties/domain_id",
-      "description": "rule_set的唯一标识。"
+      "description": "规则集 ID。用于定位代码检查或流水线策略规则集。"
     }
   },
   "required": [
@@ -18841,7 +18841,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `id` | 是 | `unknown` |  | id 参数，按对应 CodeArts API 要求传入。 |
+| `id` | 是 | `unknown` |  | 资源 ID。返回结果或嵌套对象中的通用唯一标识。 |
 
 调用示例：
 
@@ -18873,7 +18873,7 @@ authorization: Bearer <auth-token>
     },
     "id": {
       "$ref": "#/properties/project_id",
-      "description": "id 参数，按对应 CodeArts API 要求传入。"
+      "description": "资源 ID。返回结果或嵌套对象中的通用唯一标识。"
     }
   },
   "required": [
@@ -18903,9 +18903,9 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `name` | 是 | `string` |  | 对象名称，用于展示、查询或创建资源。 |
-| `parent_id` | 是 | `unknown` |  | parent的唯一标识。 |
-| `rules` | 否 | `array` |  | rules 参数，按对应 CodeArts API 要求传入。 |
+| `name` | 是 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
+| `parent_id` | 是 | `unknown` |  | 父级资源 ID。用于创建模块、特性集或树形结构节点。 |
+| `rules` | 否 | `array` |  | 规则列表。创建或更新策略时用于绑定规则 ID 和启用状态。 |
 | `is_valid` | 是 | `boolean` |  | 是否valid。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -18942,18 +18942,18 @@ authorization: Bearer <auth-token>
     "name": {
       "type": "string",
       "minLength": 1,
-      "description": "对象名称，用于展示、查询或创建资源。"
+      "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
     },
     "parent_id": {
       "$ref": "#/properties/project_id",
-      "description": "parent的唯一标识。"
+      "description": "父级资源 ID。用于创建模块、特性集或树形结构节点。"
     },
     "rules": {
       "type": "array",
       "items": {
         "$ref": "#/properties/project_id"
       },
-      "description": "rules 参数，按对应 CodeArts API 要求传入。"
+      "description": "规则列表。创建或更新策略时用于绑定规则 ID 和启用状态。"
     },
     "is_valid": {
       "type": "boolean",
@@ -18994,8 +18994,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `pipeline_id` | 是 | `unknown` |  | pipeline的唯一标识。 |
-| `run_id` | 是 | `unknown` |  | run的唯一标识。 |
+| `pipeline_id` | 是 | `unknown` |  | 流水线 ID。用于定位流水线、运行记录、日志、制品或变量组绑定。 |
+| `run_id` | 是 | `unknown` |  | 流水线运行 ID。用于定位某次流水线执行记录。 |
 
 调用示例：
 
@@ -19028,11 +19028,11 @@ authorization: Bearer <auth-token>
     },
     "pipeline_id": {
       "$ref": "#/properties/project_id",
-      "description": "pipeline的唯一标识。"
+      "description": "流水线 ID。用于定位流水线、运行记录、日志、制品或变量组绑定。"
     },
     "run_id": {
       "$ref": "#/properties/project_id",
-      "description": "run的唯一标识。"
+      "description": "流水线运行 ID。用于定位某次流水线执行记录。"
     }
   },
   "required": [
@@ -19062,7 +19062,7 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | domain的唯一标识。 |
+| `domain_id` | 是 | `string` |  | 租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。 |
 
 调用示例：
 
@@ -19089,7 +19089,7 @@ authorization: Bearer <auth-token>
     "domain_id": {
       "type": "string",
       "minLength": 1,
-      "description": "domain的唯一标识。"
+      "description": "租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。"
     }
   },
   "required": [
@@ -19117,7 +19117,7 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | domain的唯一标识。 |
+| `domain_id` | 是 | `string` |  | 租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。 |
 
 调用示例：
 
@@ -19144,7 +19144,7 @@ authorization: Bearer <auth-token>
     "domain_id": {
       "type": "string",
       "minLength": 1,
-      "description": "domain的唯一标识。"
+      "description": "租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。"
     }
   },
   "required": [
@@ -19172,9 +19172,9 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | domain的唯一标识。 |
-| `offset` | 否 | `integer` | 0 | offset 参数，按对应 CodeArts API 要求传入。 |
-| `limit` | 否 | `integer` | 20 | 本次查询最多返回的记录数。 |
+| `domain_id` | 是 | `string` |  | 租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。 |
+| `offset` | 否 | `integer` | 0 | 偏移量。用于分页或日志读取位置。 |
+| `limit` | 否 | `integer` | 20 | 返回数量上限。用于 offset/limit 分页。 |
 
 调用示例：
 
@@ -19201,20 +19201,20 @@ authorization: Bearer <auth-token>
     "domain_id": {
       "type": "string",
       "minLength": 1,
-      "description": "domain的唯一标识。"
+      "description": "租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。"
     },
     "offset": {
       "type": "integer",
       "minimum": 0,
       "default": 0,
-      "description": "offset 参数，按对应 CodeArts API 要求传入。"
+      "description": "偏移量。用于分页或日志读取位置。"
     },
     "limit": {
       "type": "integer",
       "minimum": 1,
       "maximum": 100,
       "default": 20,
-      "description": "本次查询最多返回的记录数。"
+      "description": "返回数量上限。用于 offset/limit 分页。"
     }
   },
   "required": [
@@ -19244,9 +19244,9 @@ authorization: Bearer <auth-token>
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `region_name` | 是 | `string` |  | region name 名称。 |
-| `module_id` | 否 | `string` |  | 模块唯一标识。 |
-| `offset` | 否 | `integer` | 0 | 分页偏移量，用于跳过前面的记录。 |
-| `limit` | 否 | `integer` | 20 | limit 参数，按对应 CodeArts API 要求传入。 |
+| `module_id` | 否 | `string` |  | 模块 ID。用于把工作项、IPD 对象或项目模块归属到指定模块。 |
+| `offset` | 否 | `integer` | 0 | 偏移量。用于分页或日志读取位置。 |
+| `limit` | 否 | `integer` | 20 | 返回数量上限。用于 offset/limit 分页。 |
 
 调用示例：
 
@@ -19284,20 +19284,20 @@ authorization: Bearer <auth-token>
     "module_id": {
       "type": "string",
       "minLength": 1,
-      "description": "模块唯一标识。"
+      "description": "模块 ID。用于把工作项、IPD 对象或项目模块归属到指定模块。"
     },
     "offset": {
       "type": "integer",
       "minimum": 0,
       "default": 0,
-      "description": "分页偏移量，用于跳过前面的记录。"
+      "description": "偏移量。用于分页或日志读取位置。"
     },
     "limit": {
       "type": "integer",
       "minimum": 1,
       "maximum": 100,
       "default": 20,
-      "description": "limit 参数，按对应 CodeArts API 要求传入。"
+      "description": "返回数量上限。用于 offset/limit 分页。"
     }
   },
   "required": [
@@ -19326,14 +19326,14 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `locations` | 是 | `array` |  | locations 参数，按对应 CodeArts API 要求传入。 |
+| `locations` | 是 | `array` |  | 扩展模块位置列表。用于筛选 Pipeline 扩展模块可用位置。 |
 | `project_id` | 否 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `region_name` | 否 | `string` |  | region name 名称。 |
-| `name` | 否 | `string` |  | 对象名称，用于展示、查询或创建资源。 |
-| `product_line` | 否 | `string` |  | product line 参数，按对应 CodeArts API 要求传入。 |
-| `tags` | 否 | `array` |  | tags 参数，按对应 CodeArts API 要求传入。 |
-| `offset` | 否 | `integer` | 0 | 分页偏移量，用于跳过前面的记录。 |
-| `limit` | 否 | `integer` | 20 | limit 参数，按对应 CodeArts API 要求传入。 |
+| `name` | 否 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
+| `product_line` | 否 | `string` |  | 产品线标识。用于筛选 Pipeline 扩展模块所属产品线。 |
+| `tags` | 否 | `array` |  | 标签列表。用于筛选扩展模块、绑定标签或描述资源标签。 |
+| `offset` | 否 | `integer` | 0 | 偏移量。用于分页或日志读取位置。 |
+| `limit` | 否 | `integer` | 20 | 返回数量上限。用于 offset/limit 分页。 |
 
 调用示例：
 
@@ -19364,7 +19364,7 @@ authorization: Bearer <auth-token>
         "minLength": 1
       },
       "minItems": 1,
-      "description": "locations 参数，按对应 CodeArts API 要求传入。"
+      "description": "扩展模块位置列表。用于筛选 Pipeline 扩展模块可用位置。"
     },
     "project_id": {
       "type": "string",
@@ -19379,12 +19379,12 @@ authorization: Bearer <auth-token>
     "name": {
       "type": "string",
       "minLength": 1,
-      "description": "对象名称，用于展示、查询或创建资源。"
+      "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
     },
     "product_line": {
       "type": "string",
       "minLength": 1,
-      "description": "product line 参数，按对应 CodeArts API 要求传入。"
+      "description": "产品线标识。用于筛选 Pipeline 扩展模块所属产品线。"
     },
     "tags": {
       "type": "array",
@@ -19392,20 +19392,20 @@ authorization: Bearer <auth-token>
         "type": "string",
         "minLength": 1
       },
-      "description": "tags 参数，按对应 CodeArts API 要求传入。"
+      "description": "标签列表。用于筛选扩展模块、绑定标签或描述资源标签。"
     },
     "offset": {
       "type": "integer",
       "minimum": 0,
       "default": 0,
-      "description": "分页偏移量，用于跳过前面的记录。"
+      "description": "偏移量。用于分页或日志读取位置。"
     },
     "limit": {
       "type": "integer",
       "minimum": 1,
       "maximum": 100,
       "default": 20,
-      "description": "limit 参数，按对应 CodeArts API 要求传入。"
+      "description": "返回数量上限。用于 offset/limit 分页。"
     }
   },
   "required": [
@@ -19489,7 +19489,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `pipeline_id` | 是 | `unknown` |  | pipeline的唯一标识。 |
+| `pipeline_id` | 是 | `unknown` |  | 流水线 ID。用于定位流水线、运行记录、日志、制品或变量组绑定。 |
 
 调用示例：
 
@@ -19521,7 +19521,7 @@ authorization: Bearer <auth-token>
     },
     "pipeline_id": {
       "$ref": "#/properties/project_id",
-      "description": "pipeline的唯一标识。"
+      "description": "流水线 ID。用于定位流水线、运行记录、日志、制品或变量组绑定。"
     }
   },
   "required": [
@@ -19550,11 +19550,11 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 调用示例：
@@ -19583,22 +19583,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -19606,7 +19606,7 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "project_id": {
       "type": "string",
@@ -19639,10 +19639,10 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | domain的唯一标识。 |
-| `plugin_name` | 是 | `string` |  | plugin name 名称。 |
-| `offset` | 否 | `integer` | 0 | offset 参数，按对应 CodeArts API 要求传入。 |
-| `limit` | 否 | `integer` | 20 | 本次查询最多返回的记录数。 |
+| `domain_id` | 是 | `string` |  | 租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。 |
+| `plugin_name` | 是 | `string` |  | 插件名称。用于查询插件版本、输入或输出定义。 |
+| `offset` | 否 | `integer` | 0 | 偏移量。用于分页或日志读取位置。 |
+| `limit` | 否 | `integer` | 20 | 返回数量上限。用于 offset/limit 分页。 |
 
 调用示例：
 
@@ -19670,25 +19670,25 @@ authorization: Bearer <auth-token>
     "domain_id": {
       "type": "string",
       "minLength": 1,
-      "description": "domain的唯一标识。"
+      "description": "租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。"
     },
     "plugin_name": {
       "type": "string",
       "minLength": 1,
-      "description": "plugin name 名称。"
+      "description": "插件名称。用于查询插件版本、输入或输出定义。"
     },
     "offset": {
       "type": "integer",
       "minimum": 0,
       "default": 0,
-      "description": "offset 参数，按对应 CodeArts API 要求传入。"
+      "description": "偏移量。用于分页或日志读取位置。"
     },
     "limit": {
       "type": "integer",
       "minimum": 1,
       "maximum": 100,
       "default": 20,
-      "description": "本次查询最多返回的记录数。"
+      "description": "返回数量上限。用于 offset/limit 分页。"
     }
   },
   "required": [
@@ -19717,13 +19717,13 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | domain的唯一标识。 |
-| `offset` | 否 | `integer` | 0 | 分页偏移量，用于跳过前面的记录。 |
-| `limit` | 否 | `integer` | 20 | limit 参数，按对应 CodeArts API 要求传入。 |
-| `plugin_attribution` | 否 | `string` |  | plugin attribution 参数，按对应 CodeArts API 要求传入。 |
+| `domain_id` | 是 | `string` |  | 租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。 |
+| `offset` | 否 | `integer` | 0 | 偏移量。用于分页或日志读取位置。 |
+| `limit` | 否 | `integer` | 20 | 返回数量上限。用于 offset/limit 分页。 |
+| `plugin_attribution` | 否 | `string` |  | 插件归属。可区分官方插件和自定义插件。 |
 | `business_type` | 否 | `array` |  | business type 类型。 |
-| `maintainer` | 否 | `string` |  | maintainer 参数，按对应 CodeArts API 要求传入。 |
-| `plugin_name` | 否 | `string` |  | plugin name 名称。 |
+| `maintainer` | 否 | `string` |  | 维护者。用于按插件维护者筛选 Pipeline 插件。 |
+| `plugin_name` | 否 | `string` |  | 插件名称。用于查询插件版本、输入或输出定义。 |
 
 调用示例：
 
@@ -19750,20 +19750,20 @@ authorization: Bearer <auth-token>
     "domain_id": {
       "type": "string",
       "minLength": 1,
-      "description": "domain的唯一标识。"
+      "description": "租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。"
     },
     "offset": {
       "type": "integer",
       "minimum": 0,
       "default": 0,
-      "description": "分页偏移量，用于跳过前面的记录。"
+      "description": "偏移量。用于分页或日志读取位置。"
     },
     "limit": {
       "type": "integer",
       "minimum": 1,
       "maximum": 100,
       "default": 20,
-      "description": "limit 参数，按对应 CodeArts API 要求传入。"
+      "description": "返回数量上限。用于 offset/limit 分页。"
     },
     "plugin_attribution": {
       "type": "string",
@@ -19771,7 +19771,7 @@ authorization: Bearer <auth-token>
         "custom",
         "official"
       ],
-      "description": "plugin attribution 参数，按对应 CodeArts API 要求传入。"
+      "description": "插件归属。可区分官方插件和自定义插件。"
     },
     "business_type": {
       "type": "array",
@@ -19790,12 +19790,12 @@ authorization: Bearer <auth-token>
     "maintainer": {
       "type": "string",
       "minLength": 1,
-      "description": "maintainer 参数，按对应 CodeArts API 要求传入。"
+      "description": "维护者。用于按插件维护者筛选 Pipeline 插件。"
     },
     "plugin_name": {
       "type": "string",
       "minLength": 1,
-      "description": "plugin name 名称。"
+      "description": "插件名称。用于查询插件版本、输入或输出定义。"
     }
   },
   "required": [
@@ -19824,12 +19824,12 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `offset` | 是 | `integer` |  | offset 参数，按对应 CodeArts API 要求传入。 |
-| `limit` | 是 | `integer` |  | 本次查询最多返回的记录数。 |
+| `offset` | 是 | `integer` |  | 偏移量。用于分页或日志读取位置。 |
+| `limit` | 是 | `integer` |  | 返回数量上限。用于 offset/limit 分页。 |
 | `include_tenant_rule_set` | 否 | `boolean` | false | 是否包含tenantruleset。 |
-| `name` | 否 | `string` |  | 对象名称，用于展示、查询或创建资源。 |
+| `name` | 否 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
 | `is_valid` | 否 | `boolean` |  | 是否valid。 |
-| `type` | 否 | `string` |  | 类型字段，含义取决于对应接口。 |
+| `type` | 否 | `string` |  | 类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。 |
 
 调用示例：
 
@@ -19863,13 +19863,13 @@ authorization: Bearer <auth-token>
     "offset": {
       "type": "integer",
       "minimum": 0,
-      "description": "offset 参数，按对应 CodeArts API 要求传入。"
+      "description": "偏移量。用于分页或日志读取位置。"
     },
     "limit": {
       "type": "integer",
       "minimum": 1,
       "maximum": 100,
-      "description": "本次查询最多返回的记录数。"
+      "description": "返回数量上限。用于 offset/limit 分页。"
     },
     "include_tenant_rule_set": {
       "type": "boolean",
@@ -19879,7 +19879,7 @@ authorization: Bearer <auth-token>
     "name": {
       "type": "string",
       "minLength": 1,
-      "description": "对象名称，用于展示、查询或创建资源。"
+      "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
     },
     "is_valid": {
       "type": "boolean",
@@ -19888,7 +19888,7 @@ authorization: Bearer <auth-token>
     "type": {
       "type": "string",
       "minLength": 1,
-      "description": "类型字段，含义取决于对应接口。"
+      "description": "类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。"
     }
   },
   "required": [
@@ -19918,9 +19918,9 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | domain的唯一标识。 |
-| `offset` | 否 | `integer` | 0 | 分页偏移量，用于跳过前面的记录。 |
-| `limit` | 否 | `integer` | 20 | limit 参数，按对应 CodeArts API 要求传入。 |
+| `domain_id` | 是 | `string` |  | 租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。 |
+| `offset` | 否 | `integer` | 0 | 偏移量。用于分页或日志读取位置。 |
+| `limit` | 否 | `integer` | 20 | 返回数量上限。用于 offset/limit 分页。 |
 
 调用示例：
 
@@ -19947,20 +19947,20 @@ authorization: Bearer <auth-token>
     "domain_id": {
       "type": "string",
       "minLength": 1,
-      "description": "domain的唯一标识。"
+      "description": "租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。"
     },
     "offset": {
       "type": "integer",
       "minimum": 0,
       "default": 0,
-      "description": "分页偏移量，用于跳过前面的记录。"
+      "description": "偏移量。用于分页或日志读取位置。"
     },
     "limit": {
       "type": "integer",
       "minimum": 1,
       "maximum": 100,
       "default": 20,
-      "description": "limit 参数，按对应 CodeArts API 要求传入。"
+      "description": "返回数量上限。用于 offset/limit 分页。"
     }
   },
   "required": [
@@ -19988,7 +19988,7 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `organization_id` | 是 | `string` |  | organization的唯一标识。 |
+| `organization_id` | 是 | `string` |  | 组织 ID。用于查询组织级规则类型或项目列表。 |
 
 调用示例：
 
@@ -20015,7 +20015,7 @@ authorization: Bearer <auth-token>
     "organization_id": {
       "type": "string",
       "minLength": 1,
-      "description": "organization的唯一标识。"
+      "description": "组织 ID。用于查询组织级规则类型或项目列表。"
     }
   },
   "required": [
@@ -20043,12 +20043,12 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | domain的唯一标识。 |
-| `offset` | 是 | `integer` |  | 分页偏移量，用于跳过前面的记录。 |
-| `limit` | 是 | `integer` |  | limit 参数，按对应 CodeArts API 要求传入。 |
-| `cloud_project_id` | 否 | `unknown` |  | cloud_project的唯一标识。 |
-| `type` | 否 | `string` |  | 类型字段，含义取决于对应接口。 |
-| `name` | 否 | `string` |  | 对象名称，用于展示、查询或创建资源。 |
+| `domain_id` | 是 | `string` |  | 租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。 |
+| `offset` | 是 | `integer` |  | 偏移量。用于分页或日志读取位置。 |
+| `limit` | 是 | `integer` |  | 返回数量上限。用于 offset/limit 分页。 |
+| `cloud_project_id` | 否 | `unknown` |  | 云项目 ID。查询租户级策略或规则时用于限定云项目范围。 |
+| `type` | 否 | `string` |  | 类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。 |
+| `name` | 否 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
 
 调用示例：
 
@@ -20077,32 +20077,32 @@ authorization: Bearer <auth-token>
     "domain_id": {
       "type": "string",
       "minLength": 1,
-      "description": "domain的唯一标识。"
+      "description": "租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。"
     },
     "offset": {
       "type": "integer",
       "minimum": 0,
-      "description": "分页偏移量，用于跳过前面的记录。"
+      "description": "偏移量。用于分页或日志读取位置。"
     },
     "limit": {
       "type": "integer",
       "minimum": 1,
       "maximum": 100,
-      "description": "limit 参数，按对应 CodeArts API 要求传入。"
+      "description": "返回数量上限。用于 offset/limit 分页。"
     },
     "cloud_project_id": {
       "$ref": "#/properties/domain_id",
-      "description": "cloud_project的唯一标识。"
+      "description": "云项目 ID。查询租户级策略或规则时用于限定云项目范围。"
     },
     "type": {
       "type": "string",
       "minLength": 1,
-      "description": "类型字段，含义取决于对应接口。"
+      "description": "类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。"
     },
     "name": {
       "type": "string",
       "minLength": 1,
-      "description": "对象名称，用于展示、查询或创建资源。"
+      "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
     }
   },
   "required": [
@@ -20132,13 +20132,13 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `pipeline_id` | 是 | `unknown` |  | pipeline的唯一标识。 |
+| `pipeline_id` | 是 | `unknown` |  | 流水线 ID。用于定位流水线、运行记录、日志、制品或变量组绑定。 |
 
 调用示例：
 
@@ -20167,22 +20167,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -20190,7 +20190,7 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "project_id": {
       "type": "string",
@@ -20199,7 +20199,7 @@ authorization: Bearer <auth-token>
     },
     "pipeline_id": {
       "$ref": "#/properties/project_id",
-      "description": "pipeline的唯一标识。"
+      "description": "流水线 ID。用于定位流水线、运行记录、日志、制品或变量组绑定。"
     }
   },
   "required": [
@@ -20228,8 +20228,8 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | domain的唯一标识。 |
-| `use_condition` | 是 | `string` |  | use condition 参数，按对应 CodeArts API 要求传入。 |
+| `domain_id` | 是 | `string` |  | 租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。 |
+| `use_condition` | 是 | `string` |  | 使用场景条件。用于筛选当前阶段可用插件。 |
 | `business_type` | 否 | `array` |  | business type 类型。 |
 | `deploy_type` | 否 | `string` |  | 部署类型。 |
 | `comp_extend_type` | 否 | `string` |  | comp extend type 类型。 |
@@ -20260,12 +20260,12 @@ authorization: Bearer <auth-token>
     "domain_id": {
       "type": "string",
       "minLength": 1,
-      "description": "domain的唯一标识。"
+      "description": "租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。"
     },
     "use_condition": {
       "type": "string",
       "minLength": 1,
-      "description": "use condition 参数，按对应 CodeArts API 要求传入。"
+      "description": "使用场景条件。用于筛选当前阶段可用插件。"
     },
     "business_type": {
       "type": "array",
@@ -20318,13 +20318,13 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | domain的唯一标识。 |
-| `offset` | 是 | `integer` |  | 分页偏移量，用于跳过前面的记录。 |
-| `limit` | 是 | `integer` |  | limit 参数，按对应 CodeArts API 要求传入。 |
+| `domain_id` | 是 | `string` |  | 租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。 |
+| `offset` | 是 | `integer` |  | 偏移量。用于分页或日志读取位置。 |
+| `limit` | 是 | `integer` |  | 返回数量上限。用于 offset/limit 分页。 |
 | `include_tenant_rule_set` | 否 | `boolean` | true | 是否包含tenantruleset。 |
-| `name` | 否 | `string` |  | 对象名称，用于展示、查询或创建资源。 |
+| `name` | 否 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
 | `is_valid` | 否 | `boolean` |  | 是否valid。 |
-| `type` | 否 | `string` |  | 类型字段，含义取决于对应接口。 |
+| `type` | 否 | `string` |  | 类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。 |
 
 调用示例：
 
@@ -20353,18 +20353,18 @@ authorization: Bearer <auth-token>
     "domain_id": {
       "type": "string",
       "minLength": 1,
-      "description": "domain的唯一标识。"
+      "description": "租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。"
     },
     "offset": {
       "type": "integer",
       "minimum": 0,
-      "description": "分页偏移量，用于跳过前面的记录。"
+      "description": "偏移量。用于分页或日志读取位置。"
     },
     "limit": {
       "type": "integer",
       "minimum": 1,
       "maximum": 100,
-      "description": "limit 参数，按对应 CodeArts API 要求传入。"
+      "description": "返回数量上限。用于 offset/limit 分页。"
     },
     "include_tenant_rule_set": {
       "type": "boolean",
@@ -20374,7 +20374,7 @@ authorization: Bearer <auth-token>
     "name": {
       "type": "string",
       "minLength": 1,
-      "description": "对象名称，用于展示、查询或创建资源。"
+      "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
     },
     "is_valid": {
       "type": "boolean",
@@ -20383,7 +20383,7 @@ authorization: Bearer <auth-token>
     "type": {
       "type": "string",
       "minLength": 1,
-      "description": "类型字段，含义取决于对应接口。"
+      "description": "类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。"
     }
   },
   "required": [
@@ -20413,10 +20413,10 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | domain的唯一标识。 |
-| `rule_set_id` | 是 | `unknown` |  | rule_set的唯一标识。 |
-| `offset` | 否 | `integer` | 0 | 分页偏移量，用于跳过前面的记录。 |
-| `limit` | 否 | `integer` | 20 | limit 参数，按对应 CodeArts API 要求传入。 |
+| `domain_id` | 是 | `string` |  | 租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。 |
+| `rule_set_id` | 是 | `unknown` |  | 规则集 ID。用于定位代码检查或流水线策略规则集。 |
+| `offset` | 否 | `integer` | 0 | 偏移量。用于分页或日志读取位置。 |
+| `limit` | 否 | `integer` | 20 | 返回数量上限。用于 offset/limit 分页。 |
 
 调用示例：
 
@@ -20444,24 +20444,24 @@ authorization: Bearer <auth-token>
     "domain_id": {
       "type": "string",
       "minLength": 1,
-      "description": "domain的唯一标识。"
+      "description": "租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。"
     },
     "rule_set_id": {
       "$ref": "#/properties/domain_id",
-      "description": "rule_set的唯一标识。"
+      "description": "规则集 ID。用于定位代码检查或流水线策略规则集。"
     },
     "offset": {
       "type": "integer",
       "minimum": 0,
       "default": 0,
-      "description": "分页偏移量，用于跳过前面的记录。"
+      "description": "偏移量。用于分页或日志读取位置。"
     },
     "limit": {
       "type": "integer",
       "minimum": 1,
       "maximum": 100,
       "default": 20,
-      "description": "limit 参数，按对应 CodeArts API 要求传入。"
+      "description": "返回数量上限。用于 offset/limit 分页。"
     }
   },
   "required": [
@@ -20491,7 +20491,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `proj_id` | 否 | `unknown` |  | proj的唯一标识。 |
+| `proj_id` | 否 | `unknown` |  | 项目 ID。部分 Pipeline 标签接口使用的项目标识别名。 |
 
 调用示例：
 
@@ -20522,7 +20522,7 @@ authorization: Bearer <auth-token>
     },
     "proj_id": {
       "$ref": "#/properties/project_id",
-      "description": "proj的唯一标识。"
+      "description": "项目 ID。部分 Pipeline 标签接口使用的项目标识别名。"
     }
   },
   "required": [
@@ -20550,12 +20550,12 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
-| `tenant_id` | 是 | `string` |  | tenant的唯一标识。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
+| `tenant_id` | 是 | `string` |  | 租户 ID。用于定位制品仓、流水线模板等租户范围资源。 |
 | `language` | 否 | `string` |  | 语言类型。 |
 | `is_system` | 否 | `boolean` |  | 是否system。 |
 
@@ -20585,22 +20585,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -20608,12 +20608,12 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "tenant_id": {
       "type": "string",
       "minLength": 1,
-      "description": "tenant的唯一标识。"
+      "description": "租户 ID。用于定位制品仓、流水线模板等租户范围资源。"
     },
     "language": {
       "type": "string",
@@ -20649,13 +20649,13 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `name` | 否 | `string` |  | 对象名称，用于展示、查询或创建资源。 |
+| `name` | 否 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
 
 调用示例：
 
@@ -20683,22 +20683,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -20706,7 +20706,7 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "project_id": {
       "type": "string",
@@ -20716,7 +20716,7 @@ authorization: Bearer <auth-token>
     "name": {
       "type": "string",
       "minLength": 1,
-      "description": "对象名称，用于展示、查询或创建资源。"
+      "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
     }
   },
   "required": [
@@ -20745,8 +20745,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `group_id` | 是 | `unknown` |  | 分组或主机组唯一标识。 |
-| `pipelines` | 是 | `array` |  | pipelines 参数，按对应 CodeArts API 要求传入。 |
+| `group_id` | 是 | `unknown` |  | 分组 ID。用于流水线分组、部署主机组或资源分组。 |
+| `pipelines` | 是 | `array` |  | 流水线列表。移动流水线分组时传入流水线 ID 和名称。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -20780,7 +20780,7 @@ authorization: Bearer <auth-token>
     },
     "group_id": {
       "$ref": "#/properties/project_id",
-      "description": "分组或主机组唯一标识。"
+      "description": "分组 ID。用于流水线分组、部署主机组或资源分组。"
     },
     "pipelines": {
       "type": "array",
@@ -20789,7 +20789,7 @@ authorization: Bearer <auth-token>
         "properties": {
           "pipeline_id": {
             "$ref": "#/properties/project_id",
-            "description": "pipeline的唯一标识。"
+            "description": "流水线列表。移动流水线分组时传入流水线 ID 和名称。"
           },
           "pipeline_name": {
             "type": "string",
@@ -20840,10 +20840,10 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `pipeline_id` | 是 | `unknown` |  | pipeline的唯一标识。 |
-| `run_id` | 是 | `unknown` |  | run的唯一标识。 |
-| `job_id` | 是 | `unknown` |  | 构建任务或流水线任务唯一标识。 |
-| `step_id` | 是 | `unknown` |  | step的唯一标识。 |
+| `pipeline_id` | 是 | `unknown` |  | 流水线 ID。用于定位流水线、运行记录、日志、制品或变量组绑定。 |
+| `run_id` | 是 | `unknown` |  | 流水线运行 ID。用于定位某次流水线执行记录。 |
+| `job_id` | 是 | `unknown` |  | 任务 ID。用于定位构建任务或流水线任务步骤。 |
+| `step_id` | 是 | `unknown` |  | 步骤 ID。用于定位流水线、部署或构建记录中的具体步骤。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -20879,19 +20879,19 @@ authorization: Bearer <auth-token>
     },
     "pipeline_id": {
       "$ref": "#/properties/project_id",
-      "description": "pipeline的唯一标识。"
+      "description": "流水线 ID。用于定位流水线、运行记录、日志、制品或变量组绑定。"
     },
     "run_id": {
       "$ref": "#/properties/project_id",
-      "description": "run的唯一标识。"
+      "description": "流水线运行 ID。用于定位某次流水线执行记录。"
     },
     "job_id": {
       "$ref": "#/properties/project_id",
-      "description": "构建任务或流水线任务唯一标识。"
+      "description": "任务 ID。用于定位构建任务或流水线任务步骤。"
     },
     "step_id": {
       "$ref": "#/properties/project_id",
-      "description": "step的唯一标识。"
+      "description": "步骤 ID。用于定位流水线、部署或构建记录中的具体步骤。"
     },
     "dry_run": {
       "type": "boolean",
@@ -20929,8 +20929,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `pipeline_id` | 是 | `unknown` |  | pipeline的唯一标识。 |
-| `run_id` | 是 | `unknown` |  | run的唯一标识。 |
+| `pipeline_id` | 是 | `unknown` |  | 流水线 ID。用于定位流水线、运行记录、日志、制品或变量组绑定。 |
+| `run_id` | 是 | `unknown` |  | 流水线运行 ID。用于定位某次流水线执行记录。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -20964,11 +20964,11 @@ authorization: Bearer <auth-token>
     },
     "pipeline_id": {
       "$ref": "#/properties/project_id",
-      "description": "pipeline的唯一标识。"
+      "description": "流水线 ID。用于定位流水线、运行记录、日志、制品或变量组绑定。"
     },
     "run_id": {
       "$ref": "#/properties/project_id",
-      "description": "run的唯一标识。"
+      "description": "流水线运行 ID。用于定位某次流水线执行记录。"
     },
     "dry_run": {
       "type": "boolean",
@@ -21004,7 +21004,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `pipeline_id` | 是 | `unknown` |  | pipeline的唯一标识。 |
+| `pipeline_id` | 是 | `unknown` |  | 流水线 ID。用于定位流水线、运行记录、日志、制品或变量组绑定。 |
 | `branch` | 否 | `string` |  | 分支名，用于指定代码、构建或流水线运行分支。 |
 | `description` | 否 | `string` |  | 对象的详细描述或备注信息。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
@@ -21039,7 +21039,7 @@ authorization: Bearer <auth-token>
     },
     "pipeline_id": {
       "$ref": "#/properties/project_id",
-      "description": "pipeline的唯一标识。"
+      "description": "流水线 ID。用于定位流水线、运行记录、日志、制品或变量组绑定。"
     },
     "branch": {
       "type": "string",
@@ -21166,8 +21166,8 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `pipeline_id` | 是 | `string` |  | pipeline的唯一标识。 |
-| `run_id` | 是 | `unknown` |  | run的唯一标识。 |
+| `pipeline_id` | 是 | `string` |  | 流水线 ID。用于定位流水线、运行记录、日志、制品或变量组绑定。 |
+| `run_id` | 是 | `unknown` |  | 流水线运行 ID。用于定位某次流水线执行记录。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -21196,11 +21196,11 @@ authorization: Bearer <auth-token>
     "pipeline_id": {
       "type": "string",
       "minLength": 1,
-      "description": "pipeline的唯一标识。"
+      "description": "流水线 ID。用于定位流水线、运行记录、日志、制品或变量组绑定。"
     },
     "run_id": {
       "$ref": "#/properties/pipeline_id",
-      "description": "run的唯一标识。"
+      "description": "流水线运行 ID。用于定位某次流水线执行记录。"
     },
     "dry_run": {
       "type": "boolean",
@@ -21235,7 +21235,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `rule_set_id` | 是 | `unknown` |  | rule_set的唯一标识。 |
+| `rule_set_id` | 是 | `unknown` |  | 规则集 ID。用于定位代码检查或流水线策略规则集。 |
 | `is_valid` | 是 | `boolean` |  | 是否valid。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -21270,7 +21270,7 @@ authorization: Bearer <auth-token>
     },
     "rule_set_id": {
       "$ref": "#/properties/project_id",
-      "description": "rule_set的唯一标识。"
+      "description": "规则集 ID。用于定位代码检查或流水线策略规则集。"
     },
     "is_valid": {
       "type": "boolean",
@@ -21309,8 +21309,8 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | domain的唯一标识。 |
-| `rule_set_id` | 是 | `unknown` |  | rule_set的唯一标识。 |
+| `domain_id` | 是 | `string` |  | 租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。 |
+| `rule_set_id` | 是 | `unknown` |  | 规则集 ID。用于定位代码检查或流水线策略规则集。 |
 | `is_valid` | 是 | `boolean` |  | 是否valid。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -21341,11 +21341,11 @@ authorization: Bearer <auth-token>
     "domain_id": {
       "type": "string",
       "minLength": 1,
-      "description": "domain的唯一标识。"
+      "description": "租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。"
     },
     "rule_set_id": {
       "$ref": "#/properties/domain_id",
-      "description": "rule_set的唯一标识。"
+      "description": "规则集 ID。用于定位代码检查或流水线策略规则集。"
     },
     "is_valid": {
       "type": "boolean",
@@ -21384,14 +21384,14 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `uuid` | 是 | `string` |  | uuid 参数，按对应 CodeArts API 要求传入。 |
+| `uuid` | 是 | `string` |  | 扩展端点 UUID。用于定位 Pipeline 扩展端点。 |
 | `project_id` | 否 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `region_name` | 否 | `string` |  | region name 名称。 |
-| `module_id` | 否 | `string` |  | 模块唯一标识。 |
-| `name` | 否 | `string` |  | 对象名称，用于展示、查询或创建资源。 |
-| `url` | 否 | `string` |  | url 参数，按对应 CodeArts API 要求传入。 |
-| `authorization` | 否 | `object` |  | authorization 参数，按对应 CodeArts API 要求传入。 |
-| `data` | 否 | `unknown` |  | data 参数，按对应 CodeArts API 要求传入。 |
+| `module_id` | 否 | `string` |  | 模块 ID。用于把工作项、IPD 对象或项目模块归属到指定模块。 |
+| `name` | 否 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
+| `url` | 否 | `string` |  | URL 地址。用于扩展端点、导入仓库或第三方服务地址。 |
+| `authorization` | 否 | `object` |  | 授权配置。用于扩展端点的认证方式和参数。 |
+| `data` | 否 | `unknown` |  | 扩展数据。用于透传扩展端点所需配置。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -21419,7 +21419,7 @@ authorization: Bearer <auth-token>
     "uuid": {
       "type": "string",
       "minLength": 1,
-      "description": "uuid 参数，按对应 CodeArts API 要求传入。"
+      "description": "扩展端点 UUID。用于定位 Pipeline 扩展端点。"
     },
     "project_id": {
       "type": "string",
@@ -21434,17 +21434,17 @@ authorization: Bearer <auth-token>
     "module_id": {
       "type": "string",
       "minLength": 1,
-      "description": "模块唯一标识。"
+      "description": "模块 ID。用于把工作项、IPD 对象或项目模块归属到指定模块。"
     },
     "name": {
       "type": "string",
       "minLength": 1,
-      "description": "对象名称，用于展示、查询或创建资源。"
+      "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
     },
     "url": {
       "type": "string",
       "minLength": 1,
-      "description": "url 参数，按对应 CodeArts API 要求传入。"
+      "description": "URL 地址。用于扩展端点、导入仓库或第三方服务地址。"
     },
     "authorization": {
       "type": "object",
@@ -21452,7 +21452,7 @@ authorization: Bearer <auth-token>
         "parameters": {
           "type": "object",
           "additionalProperties": {},
-          "description": "authorization 参数，按对应 CodeArts API 要求传入。"
+          "description": "授权配置。用于扩展端点的认证方式和参数。"
         },
         "scheme": {
           "type": "string",
@@ -21465,7 +21465,7 @@ authorization: Bearer <auth-token>
     },
     "data": {
       "$ref": "#/properties/authorization/properties/parameters",
-      "description": "data 参数，按对应 CodeArts API 要求传入。"
+      "description": "扩展数据。用于透传扩展端点所需配置。"
     },
     "dry_run": {
       "type": "boolean",
@@ -21499,8 +21499,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `id` | 是 | `unknown` |  | id 参数，按对应 CodeArts API 要求传入。 |
-| `name` | 是 | `string` |  | 对象名称，用于展示、查询或创建资源。 |
+| `id` | 是 | `unknown` |  | 资源 ID。返回结果或嵌套对象中的通用唯一标识。 |
+| `name` | 是 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -21534,13 +21534,13 @@ authorization: Bearer <auth-token>
     },
     "id": {
       "$ref": "#/properties/project_id",
-      "description": "id 参数，按对应 CodeArts API 要求传入。"
+      "description": "资源 ID。返回结果或嵌套对象中的通用唯一标识。"
     },
     "name": {
       "type": "string",
       "minLength": 1,
       "maxLength": 32,
-      "description": "对象名称，用于展示、查询或创建资源。"
+      "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
     },
     "dry_run": {
       "type": "boolean",
@@ -21576,9 +21576,9 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `rule_set_id` | 是 | `unknown` |  | rule_set的唯一标识。 |
-| `name` | 是 | `string` |  | 对象名称，用于展示、查询或创建资源。 |
-| `rules` | 是 | `array` |  | rules 参数，按对应 CodeArts API 要求传入。 |
+| `rule_set_id` | 是 | `unknown` |  | 规则集 ID。用于定位代码检查或流水线策略规则集。 |
+| `name` | 是 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
+| `rules` | 是 | `array` |  | 规则列表。创建或更新策略时用于绑定规则 ID 和启用状态。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -21613,12 +21613,12 @@ authorization: Bearer <auth-token>
     },
     "rule_set_id": {
       "$ref": "#/properties/project_id",
-      "description": "rule_set的唯一标识。"
+      "description": "规则集 ID。用于定位代码检查或流水线策略规则集。"
     },
     "name": {
       "type": "string",
       "minLength": 1,
-      "description": "对象名称，用于展示、查询或创建资源。"
+      "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
     },
     "rules": {
       "type": "array",
@@ -21627,7 +21627,7 @@ authorization: Bearer <auth-token>
         "properties": {
           "id": {
             "$ref": "#/properties/project_id",
-            "description": "rules 参数，按对应 CodeArts API 要求传入。"
+            "description": "规则列表。创建或更新策略时用于绑定规则 ID 和启用状态。"
           },
           "is_valid": {
             "type": "boolean",
@@ -21673,14 +21673,14 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | domain的唯一标识。 |
-| `rule_id` | 是 | `unknown` |  | rule的唯一标识。 |
-| `name` | 是 | `string` |  | 对象名称，用于展示、查询或创建资源。 |
-| `type` | 是 | `string` |  | 类型字段，含义取决于对应接口。 |
-| `plugin_id` | 否 | `string` |  | plugin的唯一标识。 |
-| `plugin_name` | 否 | `string` |  | plugin name 名称。 |
-| `plugin_version` | 否 | `string` |  | plugin version 参数，按对应 CodeArts API 要求传入。 |
-| `content` | 是 | `array` |  | 评论、规则或文本内容。 |
+| `domain_id` | 是 | `string` |  | 租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。 |
+| `rule_id` | 是 | `unknown` |  | 规则 ID。用于定位流水线规则。 |
+| `name` | 是 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
+| `type` | 是 | `string` |  | 类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。 |
+| `plugin_id` | 否 | `string` |  | 插件 ID。用于定位 Pipeline 插件。 |
+| `plugin_name` | 否 | `string` |  | 插件名称。用于查询插件版本、输入或输出定义。 |
+| `plugin_version` | 否 | `string` |  | 插件版本。用于定位具体插件版本。 |
+| `content` | 是 | `array` |  | 规则内容配置。创建或更新 Pipeline 规则时描述规则分组、属性和校验条件。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -21712,36 +21712,36 @@ authorization: Bearer <auth-token>
     "domain_id": {
       "type": "string",
       "minLength": 1,
-      "description": "domain的唯一标识。"
+      "description": "租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。"
     },
     "rule_id": {
       "$ref": "#/properties/domain_id",
-      "description": "rule的唯一标识。"
+      "description": "规则 ID。用于定位流水线规则。"
     },
     "name": {
       "type": "string",
       "minLength": 1,
-      "description": "对象名称，用于展示、查询或创建资源。"
+      "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
     },
     "type": {
       "type": "string",
       "minLength": 1,
-      "description": "类型字段，含义取决于对应接口。"
+      "description": "类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。"
     },
     "plugin_id": {
       "type": "string",
       "minLength": 1,
-      "description": "plugin的唯一标识。"
+      "description": "插件 ID。用于定位 Pipeline 插件。"
     },
     "plugin_name": {
       "type": "string",
       "minLength": 1,
-      "description": "plugin name 名称。"
+      "description": "插件名称。用于查询插件版本、输入或输出定义。"
     },
     "plugin_version": {
       "type": "string",
       "minLength": 1,
-      "description": "plugin version 参数，按对应 CodeArts API 要求传入。"
+      "description": "插件版本。用于定位具体插件版本。"
     },
     "content": {
       "type": "array",
@@ -21751,7 +21751,7 @@ authorization: Bearer <auth-token>
           "group_name": {
             "type": "string",
             "minLength": 1,
-            "description": "评论、规则或文本内容。"
+            "description": "规则内容配置。创建或更新 Pipeline 规则时描述规则分组、属性和校验条件。"
           },
           "can_modify_when_inherit": {
             "type": "boolean",
@@ -21774,12 +21774,12 @@ authorization: Bearer <auth-token>
                 "type": {
                   "type": "string",
                   "minLength": 1,
-                  "description": "类型字段，含义取决于对应接口。"
+                  "description": "类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。"
                 },
                 "name": {
                   "type": "string",
                   "minLength": 1,
-                  "description": "对象名称，用于展示、查询或创建资源。"
+                  "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
                 },
                 "operator": {
                   "type": "string",
@@ -21788,7 +21788,7 @@ authorization: Bearer <auth-token>
                 },
                 "value": {
                   "type": "string",
-                  "description": "content 参数，按对应 CodeArts API 要求传入。"
+                  "description": "字段值。用于变量、自定义字段、过滤项或配置项的具体取值。"
                 },
                 "value_type": {
                   "type": "string",
@@ -21820,7 +21820,7 @@ authorization: Bearer <auth-token>
         "additionalProperties": false
       },
       "minItems": 1,
-      "description": "评论、规则或文本内容。"
+      "description": "规则内容配置。创建或更新 Pipeline 规则时描述规则分组、属性和校验条件。"
     },
     "dry_run": {
       "type": "boolean",
@@ -21857,10 +21857,10 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | domain的唯一标识。 |
-| `rule_set_id` | 是 | `unknown` |  | rule_set的唯一标识。 |
-| `name` | 是 | `string` |  | 对象名称，用于展示、查询或创建资源。 |
-| `rules` | 否 | `array` |  | rules 参数，按对应 CodeArts API 要求传入。 |
+| `domain_id` | 是 | `string` |  | 租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。 |
+| `rule_set_id` | 是 | `unknown` |  | 规则集 ID。用于定位代码检查或流水线策略规则集。 |
+| `name` | 是 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
+| `rules` | 否 | `array` |  | 规则列表。创建或更新策略时用于绑定规则 ID 和启用状态。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -21890,16 +21890,16 @@ authorization: Bearer <auth-token>
     "domain_id": {
       "type": "string",
       "minLength": 1,
-      "description": "domain的唯一标识。"
+      "description": "租户/组织 ID。用于定位 CodeArts 所属租户或组织范围。"
     },
     "rule_set_id": {
       "$ref": "#/properties/domain_id",
-      "description": "rule_set的唯一标识。"
+      "description": "规则集 ID。用于定位代码检查或流水线策略规则集。"
     },
     "name": {
       "type": "string",
       "minLength": 1,
-      "description": "对象名称，用于展示、查询或创建资源。"
+      "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
     },
     "rules": {
       "type": "array",
@@ -21908,7 +21908,7 @@ authorization: Bearer <auth-token>
         "properties": {
           "id": {
             "$ref": "#/properties/domain_id",
-            "description": "rules 参数，按对应 CodeArts API 要求传入。"
+            "description": "规则列表。创建或更新策略时用于绑定规则 ID 和启用状态。"
           },
           "is_valid": {
             "type": "boolean",
@@ -21954,8 +21954,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `tag_id` | 是 | `unknown` |  | tag的唯一标识。 |
-| `name` | 是 | `string` |  | 对象名称，用于展示、查询或创建资源。 |
+| `tag_id` | 是 | `unknown` |  | 标签 ID。用于更新、删除或绑定流水线标签。 |
+| `name` | 是 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
 | `color` | 是 | `string` |  | 颜色值。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -21991,12 +21991,12 @@ authorization: Bearer <auth-token>
     },
     "tag_id": {
       "$ref": "#/properties/project_id",
-      "description": "tag的唯一标识。"
+      "description": "标签 ID。用于更新、删除或绑定流水线标签。"
     },
     "name": {
       "type": "string",
       "minLength": 1,
-      "description": "对象名称，用于展示、查询或创建资源。"
+      "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
     },
     "color": {
       "type": "string",
@@ -22038,8 +22038,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `id` | 是 | `unknown` |  | id 参数，按对应 CodeArts API 要求传入。 |
-| `name` | 是 | `string` |  | 对象名称，用于展示、查询或创建资源。 |
+| `id` | 是 | `unknown` |  | 资源 ID。返回结果或嵌套对象中的通用唯一标识。 |
+| `name` | 是 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
 | `description` | 否 | `string` |  | 对象的详细描述或备注信息。 |
 | `variables` | 否 | `array` |  | 变量列表。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
@@ -22075,12 +22075,12 @@ authorization: Bearer <auth-token>
     },
     "id": {
       "$ref": "#/properties/project_id",
-      "description": "id 参数，按对应 CodeArts API 要求传入。"
+      "description": "资源 ID。返回结果或嵌套对象中的通用唯一标识。"
     },
     "name": {
       "type": "string",
       "minLength": 1,
-      "description": "对象名称，用于展示、查询或创建资源。"
+      "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
     },
     "description": {
       "type": "string",
@@ -22094,7 +22094,7 @@ authorization: Bearer <auth-token>
           "name": {
             "type": "string",
             "minLength": 1,
-            "description": "变量列表。"
+            "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
           },
           "sequence": {
             "type": "integer",
@@ -22103,11 +22103,11 @@ authorization: Bearer <auth-token>
           "type": {
             "type": "string",
             "minLength": 1,
-            "description": "变量列表。"
+            "description": "类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。"
           },
           "value": {
             "type": "string",
-            "description": "字段值。"
+            "description": "字段值。用于变量、自定义字段、过滤项或配置项的具体取值。"
           },
           "is_secret": {
             "type": "boolean",
@@ -22169,12 +22169,12 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `task_name` | 是 | `string` |  | 任务名称。 |
+| `task_name` | 是 | `string` |  | 任务名称。创建检查、部署或流水线任务时使用。 |
 | `git_url` | 是 | `string` |  | Git 仓库地址。 |
 | `git_branch` | 是 | `string` |  | Git 分支。 |
 | `language` | 是 | `string` |  | 语言类型。 |
-| `rule_set_id` | 否 | `unknown` |  | rule_set的唯一标识。 |
-| `task_type` | 否 | `string` |  | 任务类型。 |
+| `rule_set_id` | 否 | `unknown` |  | 规则集 ID。用于定位代码检查或流水线策略规则集。 |
+| `task_type` | 否 | `string` |  | 任务类型。用于区分全量、增量等执行方式。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -22211,7 +22211,7 @@ authorization: Bearer <auth-token>
     "task_name": {
       "type": "string",
       "minLength": 1,
-      "description": "任务名称。"
+      "description": "任务名称。创建检查、部署或流水线任务时使用。"
     },
     "git_url": {
       "type": "string",
@@ -22230,7 +22230,7 @@ authorization: Bearer <auth-token>
     },
     "rule_set_id": {
       "$ref": "#/properties/project_id",
-      "description": "rule_set的唯一标识。"
+      "description": "规则集 ID。用于定位代码检查或流水线策略规则集。"
     },
     "task_type": {
       "type": "string",
@@ -22238,7 +22238,7 @@ authorization: Bearer <auth-token>
         "full",
         "incremental"
       ],
-      "description": "任务类型。"
+      "description": "任务类型。用于区分全量、增量等执行方式。"
     },
     "dry_run": {
       "type": "boolean",
@@ -22276,7 +22276,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 否 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `task_id` | 是 | `unknown` |  | task的唯一标识。 |
+| `task_id` | 是 | `unknown` |  | 任务 ID。用于定位构建、部署、检查或测试计划任务。 |
 
 调用示例：
 
@@ -22307,7 +22307,7 @@ authorization: Bearer <auth-token>
     },
     "task_id": {
       "$ref": "#/properties/project_id",
-      "description": "task的唯一标识。"
+      "description": "任务 ID。用于定位构建、部署、检查或测试计划任务。"
     }
   },
   "required": [
@@ -22335,7 +22335,7 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `task_id` | 是 | `string` |  | task的唯一标识。 |
+| `task_id` | 是 | `string` |  | 任务 ID。用于定位构建、部署、检查或测试计划任务。 |
 
 调用示例：
 
@@ -22362,7 +22362,7 @@ authorization: Bearer <auth-token>
     "task_id": {
       "type": "string",
       "minLength": 1,
-      "description": "task的唯一标识。"
+      "description": "任务 ID。用于定位构建、部署、检查或测试计划任务。"
     }
   },
   "required": [
@@ -22390,11 +22390,11 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `language` | 否 | `string` |  | 语言类型。 |
 
@@ -22424,22 +22424,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -22447,7 +22447,7 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "project_id": {
       "type": "string",
@@ -22484,12 +22484,12 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
-| `task_id` | 是 | `string` |  | task的唯一标识。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
+| `task_id` | 是 | `string` |  | 任务 ID。用于定位构建、部署、检查或测试计划任务。 |
 
 调用示例：
 
@@ -22517,22 +22517,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -22540,12 +22540,12 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "task_id": {
       "type": "string",
       "minLength": 1,
-      "description": "task的唯一标识。"
+      "description": "任务 ID。用于定位构建、部署、检查或测试计划任务。"
     }
   },
   "required": [
@@ -22573,11 +22573,11 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
 | `project_id` | 否 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 调用示例：
@@ -22604,22 +22604,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -22627,7 +22627,7 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "project_id": {
       "type": "string",
@@ -22657,7 +22657,7 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `task_id` | 是 | `string` |  | task的唯一标识。 |
+| `task_id` | 是 | `string` |  | 任务 ID。用于定位构建、部署、检查或测试计划任务。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -22685,7 +22685,7 @@ authorization: Bearer <auth-token>
     "task_id": {
       "type": "string",
       "minLength": 1,
-      "description": "task的唯一标识。"
+      "description": "任务 ID。用于定位构建、部署、检查或测试计划任务。"
     },
     "dry_run": {
       "type": "boolean",
@@ -22718,7 +22718,7 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `task_id` | 是 | `string` |  | task的唯一标识。 |
+| `task_id` | 是 | `string` |  | 任务 ID。用于定位构建、部署、检查或测试计划任务。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -22746,7 +22746,7 @@ authorization: Bearer <auth-token>
     "task_id": {
       "type": "string",
       "minLength": 1,
-      "description": "task的唯一标识。"
+      "description": "任务 ID。用于定位构建、部署、检查或测试计划任务。"
     },
     "dry_run": {
       "type": "boolean",
@@ -22792,7 +22792,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `case_id` | 是 | `unknown` |  | case的唯一标识。 |
+| `case_id` | 是 | `unknown` |  | 测试用例 ID。用于定位 TestPlan 中的测试用例。 |
 
 调用示例：
 
@@ -22824,7 +22824,7 @@ authorization: Bearer <auth-token>
     },
     "case_id": {
       "$ref": "#/properties/project_id",
-      "description": "case的唯一标识。"
+      "description": "测试用例 ID。用于定位 TestPlan 中的测试用例。"
     }
   },
   "required": [
@@ -22854,7 +22854,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `plan_id` | 是 | `unknown` |  | plan的唯一标识。 |
+| `plan_id` | 是 | `unknown` |  | 规划/计划 ID。用于定位 CodeArts Req 中的计划资源。 |
 
 调用示例：
 
@@ -22886,7 +22886,7 @@ authorization: Bearer <auth-token>
     },
     "plan_id": {
       "$ref": "#/properties/project_id",
-      "description": "plan的唯一标识。"
+      "description": "规划/计划 ID。用于定位 CodeArts Req 中的计划资源。"
     }
   },
   "required": [
@@ -22915,13 +22915,13 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `plan_id` | 是 | `unknown` |  | plan的唯一标识。 |
+| `plan_id` | 是 | `unknown` |  | 规划/计划 ID。用于定位 CodeArts Req 中的计划资源。 |
 
 调用示例：
 
@@ -22950,22 +22950,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -22973,7 +22973,7 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "project_id": {
       "type": "string",
@@ -22982,7 +22982,7 @@ authorization: Bearer <auth-token>
     },
     "plan_id": {
       "$ref": "#/properties/project_id",
-      "description": "plan的唯一标识。"
+      "description": "规划/计划 ID。用于定位 CodeArts Req 中的计划资源。"
     }
   },
   "required": [
@@ -23012,7 +23012,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `plan_id` | 是 | `unknown` |  | plan的唯一标识。 |
+| `plan_id` | 是 | `unknown` |  | 规划/计划 ID。用于定位 CodeArts Req 中的计划资源。 |
 
 调用示例：
 
@@ -23044,7 +23044,7 @@ authorization: Bearer <auth-token>
     },
     "plan_id": {
       "$ref": "#/properties/project_id",
-      "description": "plan的唯一标识。"
+      "description": "规划/计划 ID。用于定位 CodeArts Req 中的计划资源。"
     }
   },
   "required": [
@@ -23073,11 +23073,11 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 调用示例：
@@ -23106,22 +23106,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -23129,7 +23129,7 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "project_id": {
       "type": "string",
@@ -23162,13 +23162,13 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `plan_id` | 是 | `unknown` |  | plan的唯一标识。 |
+| `plan_id` | 是 | `unknown` |  | 规划/计划 ID。用于定位 CodeArts Req 中的计划资源。 |
 
 调用示例：
 
@@ -23197,22 +23197,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -23220,7 +23220,7 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "project_id": {
       "type": "string",
@@ -23229,7 +23229,7 @@ authorization: Bearer <auth-token>
     },
     "plan_id": {
       "$ref": "#/properties/project_id",
-      "description": "plan的唯一标识。"
+      "description": "规划/计划 ID。用于定位 CodeArts Req 中的计划资源。"
     }
   },
   "required": [
@@ -23259,7 +23259,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `execute_list` | 是 | `array` |  | execute list 参数，按对应 CodeArts API 要求传入。 |
+| `execute_list` | 是 | `array` |  | 执行用例列表。运行测试用例时传入待执行的 case_id 集合。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -23297,7 +23297,7 @@ authorization: Bearer <auth-token>
         "properties": {
           "case_id": {
             "$ref": "#/properties/project_id",
-            "description": "case的唯一标识。"
+            "description": "执行用例列表。运行测试用例时传入待执行的 case_id 集合。"
           }
         },
         "required": [
@@ -23405,9 +23405,9 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `environment_id` | 是 | `unknown` |  | environment的唯一标识。 |
-| `cluster_id` | 是 | `unknown` |  | cluster的唯一标识。 |
-| `host_ids` | 是 | `array` |  | host ID 列表，用于批量操作。 |
+| `environment_id` | 是 | `unknown` |  | 部署环境 ID。用于定位环境、环境主机或环境下的应用。 |
+| `cluster_id` | 是 | `unknown` |  | 集群 ID。用于定位 Deploy v4 主机或容器集群。 |
+| `host_ids` | 是 | `array` |  | 主机 ID 列表。用于批量添加或移除环境/集群主机。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -23442,11 +23442,11 @@ authorization: Bearer <auth-token>
     },
     "environment_id": {
       "$ref": "#/properties/project_id",
-      "description": "environment的唯一标识。"
+      "description": "部署环境 ID。用于定位环境、环境主机或环境下的应用。"
     },
     "cluster_id": {
       "$ref": "#/properties/project_id",
-      "description": "cluster的唯一标识。"
+      "description": "集群 ID。用于定位 Deploy v4 主机或容器集群。"
     },
     "host_ids": {
       "type": "array",
@@ -23454,7 +23454,7 @@ authorization: Bearer <auth-token>
         "$ref": "#/properties/project_id"
       },
       "minItems": 1,
-      "description": "host ID 列表，用于批量操作。"
+      "description": "主机 ID 列表。用于批量添加或移除环境/集群主机。"
     },
     "dry_run": {
       "type": "boolean",
@@ -23491,7 +23491,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `record_id` | 是 | `unknown` |  | record的唯一标识。 |
+| `record_id` | 是 | `unknown` |  | 执行记录 ID。用于定位构建、部署或流水线的一次运行记录。 |
 | `body` | 否 | `object` | {} | 请求体对象，用于透传该接口的扩展参数。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -23525,7 +23525,7 @@ authorization: Bearer <auth-token>
     },
     "record_id": {
       "$ref": "#/properties/project_id",
-      "description": "record的唯一标识。"
+      "description": "执行记录 ID。用于定位构建、部署或流水线的一次运行记录。"
     },
     "body": {
       "type": "object",
@@ -23566,7 +23566,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `name` | 是 | `string` |  | 对象名称，用于展示、查询或创建资源。 |
+| `name` | 是 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
 | `description` | 否 | `string` | "" | 对象的详细描述或备注信息。 |
 | `timeout` | 否 | `number | null` | 超时时间。 |
 | `trigger` | 否 | `object` | {"trigger_source":"0","artifact_source_system":"","artifact_type":""} | 触发器配置。 |
@@ -23574,7 +23574,7 @@ authorization: Bearer <auth-token>
 | `slave_resource_type` | 否 | `string` | "" | 从属资源类型。 |
 | `create_type` | 否 | `string` | "template" | 创建方式，例如 template 表示按模板创建。 |
 | `is_draft` | 否 | `boolean` | false | 是否保存为草稿。 |
-| `group_id` | 否 | `string` |  | 分组或主机组唯一标识。 |
+| `group_id` | 否 | `string` |  | 分组 ID。用于流水线分组、部署主机组或资源分组。 |
 | `agency_urn` | 否 | `string` |  | 委托 URN。 |
 | `arrange_infos` | 是 | `array` |  | 部署编排信息列表，用于描述模板和操作组合。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
@@ -23611,7 +23611,7 @@ authorization: Bearer <auth-token>
     "name": {
       "type": "string",
       "minLength": 1,
-      "description": "对象名称，用于展示、查询或创建资源。"
+      "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
     },
     "description": {
       "type": "string",
@@ -23674,7 +23674,7 @@ authorization: Bearer <auth-token>
     },
     "group_id": {
       "type": "string",
-      "description": "分组或主机组唯一标识。"
+      "description": "分组 ID。用于流水线分组、部署主机组或资源分组。"
     },
     "agency_urn": {
       "type": "string",
@@ -23687,7 +23687,7 @@ authorization: Bearer <auth-token>
         "properties": {
           "template_id": {
             "$ref": "#/properties/project_id",
-            "description": "部署编排信息列表，用于描述模板和操作组合。"
+            "description": "模板 ID。用于按模板创建部署任务、应用或查询模板详情。"
           },
           "operation_list": {
             "type": "array",
@@ -23737,9 +23737,9 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `application_id` | 是 | `string` |  | application的唯一标识。 |
+| `application_id` | 是 | `string` |  | 部署应用 ID。用于定位 Deploy 应用、环境、主机组和部署记录。 |
 | `project_id` | 是 | `unknown` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `name` | 是 | `string` |  | 对象名称，用于展示、查询或创建资源。 |
+| `name` | 是 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
 | `os` | 否 | `string` | "linux" | 操作系统类型。 |
 | `deploy_type` | 否 | `integer` | 0 | 部署类型。 |
 | `description` | 否 | `string` |  | 对象的详细描述或备注信息。 |
@@ -23772,7 +23772,7 @@ authorization: Bearer <auth-token>
     "application_id": {
       "type": "string",
       "minLength": 1,
-      "description": "application的唯一标识。"
+      "description": "部署应用 ID。用于定位 Deploy 应用、环境、主机组和部署记录。"
     },
     "project_id": {
       "$ref": "#/properties/application_id",
@@ -23781,7 +23781,7 @@ authorization: Bearer <auth-token>
     "name": {
       "type": "string",
       "minLength": 1,
-      "description": "对象名称，用于展示、查询或创建资源。"
+      "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
     },
     "os": {
       "type": "string",
@@ -23834,8 +23834,8 @@ authorization: Bearer <auth-token>
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `project_name` | 是 | `string` |  | CodeArts 项目名称，通常用于模板创建或展示。 |
-| `template_id` | 是 | `unknown` |  | template的唯一标识。 |
-| `task_name` | 是 | `string` |  | 任务名称。 |
+| `template_id` | 是 | `unknown` |  | 模板 ID。用于按模板创建部署任务、应用或查询模板详情。 |
+| `task_name` | 是 | `string` |  | 任务名称。创建检查、部署或流水线任务时使用。 |
 | `configs` | 否 | `array` | [] | 任务配置项列表。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -23876,12 +23876,12 @@ authorization: Bearer <auth-token>
     },
     "template_id": {
       "$ref": "#/properties/project_id",
-      "description": "template的唯一标识。"
+      "description": "模板 ID。用于按模板创建部署任务、应用或查询模板详情。"
     },
     "task_name": {
       "type": "string",
       "minLength": 1,
-      "description": "任务名称。"
+      "description": "任务名称。创建检查、部署或流水线任务时使用。"
     },
     "configs": {
       "type": "array",
@@ -23891,12 +23891,12 @@ authorization: Bearer <auth-token>
           "name": {
             "type": "string",
             "minLength": 1,
-            "description": "对象名称，用于展示、查询或创建资源。"
+            "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
           },
           "type": {
             "type": "string",
             "minLength": 1,
-            "description": "任务配置项列表。"
+            "description": "类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。"
           },
           "description": {
             "type": "string",
@@ -23904,7 +23904,7 @@ authorization: Bearer <auth-token>
           },
           "value": {
             "type": "string",
-            "description": "任务配置项列表。"
+            "description": "字段值。用于变量、自定义字段、过滤项或配置项的具体取值。"
           },
           "static_status": {
             "type": "integer",
@@ -23918,11 +23918,11 @@ authorization: Bearer <auth-token>
                 "name": {
                   "type": "string",
                   "minLength": 1,
-                  "description": "对象名称，用于展示、查询或创建资源。"
+                  "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
                 },
                 "value": {
                   "type": "string",
-                  "description": "字段值。"
+                  "description": "字段值。用于变量、自定义字段、过滤项或配置项的具体取值。"
                 }
               },
               "required": [
@@ -23976,8 +23976,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `cluster_id` | 是 | `unknown` |  | cluster的唯一标识。 |
-| `host_ids` | 是 | `array` |  | host ID 列表，用于批量操作。 |
+| `cluster_id` | 是 | `unknown` |  | 集群 ID。用于定位 Deploy v4 主机或容器集群。 |
+| `host_ids` | 是 | `array` |  | 主机 ID 列表。用于批量添加或移除环境/集群主机。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -24011,7 +24011,7 @@ authorization: Bearer <auth-token>
     },
     "cluster_id": {
       "$ref": "#/properties/project_id",
-      "description": "cluster的唯一标识。"
+      "description": "集群 ID。用于定位 Deploy v4 主机或容器集群。"
     },
     "host_ids": {
       "type": "array",
@@ -24019,7 +24019,7 @@ authorization: Bearer <auth-token>
         "$ref": "#/properties/project_id"
       },
       "minItems": 1,
-      "description": "host ID 列表，用于批量操作。"
+      "description": "主机 ID 列表。用于批量添加或移除环境/集群主机。"
     },
     "dry_run": {
       "type": "boolean",
@@ -24055,8 +24055,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `environment_id` | 是 | `unknown` |  | environment的唯一标识。 |
-| `host_ids` | 是 | `array` |  | host ID 列表，用于批量操作。 |
+| `environment_id` | 是 | `unknown` |  | 部署环境 ID。用于定位环境、环境主机或环境下的应用。 |
+| `host_ids` | 是 | `array` |  | 主机 ID 列表。用于批量添加或移除环境/集群主机。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -24090,7 +24090,7 @@ authorization: Bearer <auth-token>
     },
     "environment_id": {
       "$ref": "#/properties/project_id",
-      "description": "environment的唯一标识。"
+      "description": "部署环境 ID。用于定位环境、环境主机或环境下的应用。"
     },
     "host_ids": {
       "type": "array",
@@ -24098,7 +24098,7 @@ authorization: Bearer <auth-token>
         "$ref": "#/properties/project_id"
       },
       "minItems": 1,
-      "description": "host ID 列表，用于批量操作。"
+      "description": "主机 ID 列表。用于批量添加或移除环境/集群主机。"
     },
     "dry_run": {
       "type": "boolean",
@@ -24133,7 +24133,7 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `application_id` | 是 | `string` |  | application的唯一标识。 |
+| `application_id` | 是 | `string` |  | 部署应用 ID。用于定位 Deploy 应用、环境、主机组和部署记录。 |
 
 调用示例：
 
@@ -24160,7 +24160,7 @@ authorization: Bearer <auth-token>
     "application_id": {
       "type": "string",
       "minLength": 1,
-      "description": "application的唯一标识。"
+      "description": "部署应用 ID。用于定位 Deploy 应用、环境、主机组和部署记录。"
     }
   },
   "required": [
@@ -24188,10 +24188,10 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `application_id` | 是 | `string` |  | application的唯一标识。 |
-| `record_id` | 是 | `unknown` |  | record的唯一标识。 |
-| `step_id` | 否 | `unknown` |  | step的唯一标识。 |
-| `offset` | 否 | `string` | "0" | offset 参数，按对应 CodeArts API 要求传入。 |
+| `application_id` | 是 | `string` |  | 部署应用 ID。用于定位 Deploy 应用、环境、主机组和部署记录。 |
+| `record_id` | 是 | `unknown` |  | 执行记录 ID。用于定位构建、部署或流水线的一次运行记录。 |
+| `step_id` | 否 | `unknown` |  | 步骤 ID。用于定位流水线、部署或构建记录中的具体步骤。 |
+| `offset` | 否 | `string` | "0" | 偏移量。用于分页或日志读取位置。 |
 | `end_offset` | 否 | `string` | "0" | 日志结束偏移量。 |
 
 调用示例：
@@ -24220,20 +24220,20 @@ authorization: Bearer <auth-token>
     "application_id": {
       "type": "string",
       "minLength": 1,
-      "description": "application的唯一标识。"
+      "description": "部署应用 ID。用于定位 Deploy 应用、环境、主机组和部署记录。"
     },
     "record_id": {
       "$ref": "#/properties/application_id",
-      "description": "record的唯一标识。"
+      "description": "执行记录 ID。用于定位构建、部署或流水线的一次运行记录。"
     },
     "step_id": {
       "$ref": "#/properties/application_id",
-      "description": "step的唯一标识。"
+      "description": "步骤 ID。用于定位流水线、部署或构建记录中的具体步骤。"
     },
     "offset": {
       "type": "string",
       "default": "0",
-      "description": "offset 参数，按对应 CodeArts API 要求传入。"
+      "description": "偏移量。用于分页或日志读取位置。"
     },
     "end_offset": {
       "type": "string",
@@ -24267,7 +24267,7 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `task_id` | 是 | `string` |  | task的唯一标识。 |
+| `task_id` | 是 | `string` |  | 任务 ID。用于定位构建、部署、检查或测试计划任务。 |
 
 调用示例：
 
@@ -24294,7 +24294,7 @@ authorization: Bearer <auth-token>
     "task_id": {
       "type": "string",
       "minLength": 1,
-      "description": "task的唯一标识。"
+      "description": "任务 ID。用于定位构建、部署、检查或测试计划任务。"
     }
   },
   "required": [
@@ -24322,8 +24322,8 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `task_id` | 是 | `string` |  | task的唯一标识。 |
-| `record_id` | 是 | `unknown` |  | record的唯一标识。 |
+| `task_id` | 是 | `string` |  | 任务 ID。用于定位构建、部署、检查或测试计划任务。 |
+| `record_id` | 是 | `unknown` |  | 执行记录 ID。用于定位构建、部署或流水线的一次运行记录。 |
 
 调用示例：
 
@@ -24351,11 +24351,11 @@ authorization: Bearer <auth-token>
     "task_id": {
       "type": "string",
       "minLength": 1,
-      "description": "task的唯一标识。"
+      "description": "任务 ID。用于定位构建、部署、检查或测试计划任务。"
     },
     "record_id": {
       "$ref": "#/properties/task_id",
-      "description": "record的唯一标识。"
+      "description": "执行记录 ID。用于定位构建、部署或流水线的一次运行记录。"
     }
   },
   "required": [
@@ -24384,8 +24384,8 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `task_id` | 是 | `string` |  | task的唯一标识。 |
-| `record_id` | 是 | `unknown` |  | record的唯一标识。 |
+| `task_id` | 是 | `string` |  | 任务 ID。用于定位构建、部署、检查或测试计划任务。 |
+| `record_id` | 是 | `unknown` |  | 执行记录 ID。用于定位构建、部署或流水线的一次运行记录。 |
 
 调用示例：
 
@@ -24413,11 +24413,11 @@ authorization: Bearer <auth-token>
     "task_id": {
       "type": "string",
       "minLength": 1,
-      "description": "task的唯一标识。"
+      "description": "任务 ID。用于定位构建、部署、检查或测试计划任务。"
     },
     "record_id": {
       "$ref": "#/properties/task_id",
-      "description": "record的唯一标识。"
+      "description": "执行记录 ID。用于定位构建、部署或流水线的一次运行记录。"
     }
   },
   "required": [
@@ -24446,7 +24446,7 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `group_id` | 是 | `string` |  | 分组或主机组唯一标识。 |
+| `group_id` | 是 | `string` |  | 分组 ID。用于流水线分组、部署主机组或资源分组。 |
 
 调用示例：
 
@@ -24473,7 +24473,7 @@ authorization: Bearer <auth-token>
     "group_id": {
       "type": "string",
       "minLength": 1,
-      "description": "分组或主机组唯一标识。"
+      "description": "分组 ID。用于流水线分组、部署主机组或资源分组。"
     }
   },
   "required": [
@@ -24502,7 +24502,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `orchestration_id` | 是 | `unknown` |  | orchestration的唯一标识。 |
+| `orchestration_id` | 是 | `unknown` |  | 编排 ID。用于查询 Deploy v4 编排最近一次记录。 |
 
 调用示例：
 
@@ -24534,7 +24534,7 @@ authorization: Bearer <auth-token>
     },
     "orchestration_id": {
       "$ref": "#/properties/project_id",
-      "description": "orchestration的唯一标识。"
+      "description": "编排 ID。用于查询 Deploy v4 编排最近一次记录。"
     }
   },
   "required": [
@@ -24564,7 +24564,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `app_id` | 否 | `unknown` |  | app的唯一标识。 |
+| `app_id` | 否 | `unknown` |  | 应用 ID。用于定位 Deploy v4 应用或查询变量/编排。 |
 
 调用示例：
 
@@ -24595,7 +24595,7 @@ authorization: Bearer <auth-token>
     },
     "app_id": {
       "$ref": "#/properties/project_id",
-      "description": "app的唯一标识。"
+      "description": "应用 ID。用于定位 Deploy v4 应用或查询变量/编排。"
     }
   },
   "required": [
@@ -24623,8 +24623,8 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `task_id` | 是 | `string` |  | task的唯一标识。 |
-| `record_id` | 否 | `unknown` |  | record的唯一标识。 |
+| `task_id` | 是 | `string` |  | 任务 ID。用于定位构建、部署、检查或测试计划任务。 |
+| `record_id` | 否 | `unknown` |  | 执行记录 ID。用于定位构建、部署或流水线的一次运行记录。 |
 
 调用示例：
 
@@ -24651,11 +24651,11 @@ authorization: Bearer <auth-token>
     "task_id": {
       "type": "string",
       "minLength": 1,
-      "description": "task的唯一标识。"
+      "description": "任务 ID。用于定位构建、部署、检查或测试计划任务。"
     },
     "record_id": {
       "$ref": "#/properties/task_id",
-      "description": "record的唯一标识。"
+      "description": "执行记录 ID。用于定位构建、部署或流水线的一次运行记录。"
     }
   },
   "required": [
@@ -24683,7 +24683,7 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `task_id` | 是 | `string` |  | task的唯一标识。 |
+| `task_id` | 是 | `string` |  | 任务 ID。用于定位构建、部署、检查或测试计划任务。 |
 
 调用示例：
 
@@ -24710,7 +24710,7 @@ authorization: Bearer <auth-token>
     "task_id": {
       "type": "string",
       "minLength": 1,
-      "description": "task的唯一标识。"
+      "description": "任务 ID。用于定位构建、部署、检查或测试计划任务。"
     }
   },
   "required": [
@@ -24738,8 +24738,8 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `template_id` | 是 | `string` |  | template的唯一标识。 |
-| `task_id` | 否 | `unknown` |  | task的唯一标识。 |
+| `template_id` | 是 | `string` |  | 模板 ID。用于按模板创建部署任务、应用或查询模板详情。 |
+| `task_id` | 否 | `unknown` |  | 任务 ID。用于定位构建、部署、检查或测试计划任务。 |
 
 调用示例：
 
@@ -24766,11 +24766,11 @@ authorization: Bearer <auth-token>
     "template_id": {
       "type": "string",
       "minLength": 1,
-      "description": "template的唯一标识。"
+      "description": "模板 ID。用于按模板创建部署任务、应用或查询模板详情。"
     },
     "task_id": {
       "$ref": "#/properties/template_id",
-      "description": "task的唯一标识。"
+      "description": "任务 ID。用于定位构建、部署、检查或测试计划任务。"
     }
   },
   "required": [
@@ -24799,7 +24799,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `cluster_id` | 是 | `unknown` |  | cluster的唯一标识。 |
+| `cluster_id` | 是 | `unknown` |  | 集群 ID。用于定位 Deploy v4 主机或容器集群。 |
 | `cluster_type` | 是 | `string` |  | cluster type 类型。 |
 
 调用示例：
@@ -24833,7 +24833,7 @@ authorization: Bearer <auth-token>
     },
     "cluster_id": {
       "$ref": "#/properties/project_id",
-      "description": "cluster的唯一标识。"
+      "description": "集群 ID。用于定位 Deploy v4 主机或容器集群。"
     },
     "cluster_type": {
       "type": "string",
@@ -24938,8 +24938,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `cluster_id` | 是 | `unknown` |  | cluster的唯一标识。 |
-| `host_id` | 是 | `unknown` |  | host的唯一标识。 |
+| `cluster_id` | 是 | `unknown` |  | 集群 ID。用于定位 Deploy v4 主机或容器集群。 |
+| `host_id` | 是 | `unknown` |  | 主机 ID。用于定位集群中的单台主机。 |
 
 调用示例：
 
@@ -24972,11 +24972,11 @@ authorization: Bearer <auth-token>
     },
     "cluster_id": {
       "$ref": "#/properties/project_id",
-      "description": "cluster的唯一标识。"
+      "description": "集群 ID。用于定位 Deploy v4 主机或容器集群。"
     },
     "host_id": {
       "$ref": "#/properties/project_id",
-      "description": "host的唯一标识。"
+      "description": "主机 ID。用于定位集群中的单台主机。"
     }
   },
   "required": [
@@ -25007,8 +25007,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `record_id` | 是 | `unknown` |  | record的唯一标识。 |
-| `step_id` | 否 | `unknown` |  | step的唯一标识。 |
+| `record_id` | 是 | `unknown` |  | 执行记录 ID。用于定位构建、部署或流水线的一次运行记录。 |
+| `step_id` | 否 | `unknown` |  | 步骤 ID。用于定位流水线、部署或构建记录中的具体步骤。 |
 
 调用示例：
 
@@ -25040,11 +25040,11 @@ authorization: Bearer <auth-token>
     },
     "record_id": {
       "$ref": "#/properties/project_id",
-      "description": "record的唯一标识。"
+      "description": "执行记录 ID。用于定位构建、部署或流水线的一次运行记录。"
     },
     "step_id": {
       "$ref": "#/properties/project_id",
-      "description": "step的唯一标识。"
+      "description": "步骤 ID。用于定位流水线、部署或构建记录中的具体步骤。"
     }
   },
   "required": [
@@ -25074,7 +25074,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `record_id` | 是 | `unknown` |  | record的唯一标识。 |
+| `record_id` | 是 | `unknown` |  | 执行记录 ID。用于定位构建、部署或流水线的一次运行记录。 |
 
 调用示例：
 
@@ -25106,7 +25106,7 @@ authorization: Bearer <auth-token>
     },
     "record_id": {
       "$ref": "#/properties/project_id",
-      "description": "record的唯一标识。"
+      "description": "执行记录 ID。用于定位构建、部署或流水线的一次运行记录。"
     }
   },
   "required": [
@@ -25136,8 +25136,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `record_id` | 是 | `unknown` |  | record的唯一标识。 |
-| `step_id` | 是 | `unknown` |  | step的唯一标识。 |
+| `record_id` | 是 | `unknown` |  | 执行记录 ID。用于定位构建、部署或流水线的一次运行记录。 |
+| `step_id` | 是 | `unknown` |  | 步骤 ID。用于定位流水线、部署或构建记录中的具体步骤。 |
 | `body` | 否 | `object` | {} | 请求体对象，用于透传该接口的扩展参数。 |
 
 调用示例：
@@ -25171,11 +25171,11 @@ authorization: Bearer <auth-token>
     },
     "record_id": {
       "$ref": "#/properties/project_id",
-      "description": "record的唯一标识。"
+      "description": "执行记录 ID。用于定位构建、部署或流水线的一次运行记录。"
     },
     "step_id": {
       "$ref": "#/properties/project_id",
-      "description": "step的唯一标识。"
+      "description": "步骤 ID。用于定位流水线、部署或构建记录中的具体步骤。"
     },
     "body": {
       "type": "object",
@@ -25212,7 +25212,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `environment_id` | 是 | `unknown` |  | environment的唯一标识。 |
+| `environment_id` | 是 | `unknown` |  | 部署环境 ID。用于定位环境、环境主机或环境下的应用。 |
 
 调用示例：
 
@@ -25244,7 +25244,7 @@ authorization: Bearer <auth-token>
     },
     "environment_id": {
       "$ref": "#/properties/project_id",
-      "description": "environment的唯一标识。"
+      "description": "部署环境 ID。用于定位环境、环境主机或环境下的应用。"
     }
   },
   "required": [
@@ -25274,7 +25274,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `environment_id` | 是 | `unknown` |  | environment的唯一标识。 |
+| `environment_id` | 是 | `unknown` |  | 部署环境 ID。用于定位环境、环境主机或环境下的应用。 |
 
 调用示例：
 
@@ -25306,7 +25306,7 @@ authorization: Bearer <auth-token>
     },
     "environment_id": {
       "$ref": "#/properties/project_id",
-      "description": "environment的唯一标识。"
+      "description": "部署环境 ID。用于定位环境、环境主机或环境下的应用。"
     }
   },
   "required": [
@@ -25335,10 +25335,10 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `application_id` | 是 | `string` |  | application的唯一标识。 |
-| `environment_id` | 是 | `unknown` |  | environment的唯一标识。 |
-| `group_id` | 是 | `unknown` |  | 分组或主机组唯一标识。 |
-| `host_ids` | 是 | `array` |  | host ID 列表，用于批量操作。 |
+| `application_id` | 是 | `string` |  | 部署应用 ID。用于定位 Deploy 应用、环境、主机组和部署记录。 |
+| `environment_id` | 是 | `unknown` |  | 部署环境 ID。用于定位环境、环境主机或环境下的应用。 |
+| `group_id` | 是 | `unknown` |  | 分组 ID。用于流水线分组、部署主机组或资源分组。 |
+| `host_ids` | 是 | `array` |  | 主机 ID 列表。用于批量添加或移除环境/集群主机。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -25369,15 +25369,15 @@ authorization: Bearer <auth-token>
     "application_id": {
       "type": "string",
       "minLength": 1,
-      "description": "application的唯一标识。"
+      "description": "部署应用 ID。用于定位 Deploy 应用、环境、主机组和部署记录。"
     },
     "environment_id": {
       "$ref": "#/properties/application_id",
-      "description": "environment的唯一标识。"
+      "description": "部署环境 ID。用于定位环境、环境主机或环境下的应用。"
     },
     "group_id": {
       "$ref": "#/properties/application_id",
-      "description": "分组或主机组唯一标识。"
+      "description": "分组 ID。用于流水线分组、部署主机组或资源分组。"
     },
     "host_ids": {
       "type": "array",
@@ -25385,7 +25385,7 @@ authorization: Bearer <auth-token>
         "$ref": "#/properties/application_id"
       },
       "minItems": 1,
-      "description": "host ID 列表，用于批量操作。"
+      "description": "主机 ID 列表。用于批量添加或移除环境/集群主机。"
     },
     "dry_run": {
       "type": "boolean",
@@ -25421,12 +25421,12 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
-| `application_id` | 是 | `string` |  | application的唯一标识。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
+| `application_id` | 是 | `string` |  | 部署应用 ID。用于定位 Deploy 应用、环境、主机组和部署记录。 |
 | `project_id` | 是 | `unknown` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 调用示例：
@@ -25456,22 +25456,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -25479,12 +25479,12 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "application_id": {
       "type": "string",
       "minLength": 1,
-      "description": "application的唯一标识。"
+      "description": "部署应用 ID。用于定位 Deploy 应用、环境、主机组和部署记录。"
     },
     "project_id": {
       "$ref": "#/properties/application_id",
@@ -25517,11 +25517,11 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `app_id` | 是 | `string` |  | app的唯一标识。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `page_index` | 否 | `integer` | 1 | page index 参数，按对应 CodeArts API 要求传入。 |
-| `start_date` | 否 | `string` |  | 计划开始日期，使用接口要求的时间戳或日期值。 |
-| `end_date` | 否 | `string` |  | end date 参数，按对应 CodeArts API 要求传入。 |
+| `app_id` | 是 | `string` |  | 应用 ID。用于定位 Deploy v4 应用或查询变量/编排。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `page_index` | 否 | `integer` | 1 | 页码。部分 Deploy 接口使用的分页页码，通常从 1 开始。 |
+| `start_date` | 否 | `string` |  | 开始日期。用于时间范围查询；在工作项接口中表示计划开始时间。 |
+| `end_date` | 否 | `string` |  | 结束日期。用于按时间范围查询操作日志、历史记录或统计数据。 |
 
 调用示例：
 
@@ -25548,28 +25548,28 @@ authorization: Bearer <auth-token>
     "app_id": {
       "type": "string",
       "minLength": 1,
-      "description": "app的唯一标识。"
+      "description": "应用 ID。用于定位 Deploy v4 应用或查询变量/编排。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 100,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "page_index": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "page index 参数，按对应 CodeArts API 要求传入。"
+      "description": "页码。部分 Deploy 接口使用的分页页码，通常从 1 开始。"
     },
     "start_date": {
       "type": "string",
-      "description": "计划开始日期，使用接口要求的时间戳或日期值。"
+      "description": "开始日期。用于时间范围查询；在工作项接口中表示计划开始时间。"
     },
     "end_date": {
       "type": "string",
-      "description": "end date 参数，按对应 CodeArts API 要求传入。"
+      "description": "结束日期。用于按时间范围查询操作日志、历史记录或统计数据。"
     }
   },
   "required": [
@@ -25597,11 +25597,11 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 调用示例：
@@ -25630,22 +25630,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -25653,7 +25653,7 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "project_id": {
       "type": "string",
@@ -25687,7 +25687,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `app_id` | 是 | `unknown` |  | app的唯一标识。 |
+| `app_id` | 是 | `unknown` |  | 应用 ID。用于定位 Deploy v4 应用或查询变量/编排。 |
 
 调用示例：
 
@@ -25719,7 +25719,7 @@ authorization: Bearer <auth-token>
     },
     "app_id": {
       "$ref": "#/properties/project_id",
-      "description": "app的唯一标识。"
+      "description": "应用 ID。用于定位 Deploy v4 应用或查询变量/编排。"
     }
   },
   "required": [
@@ -25748,13 +25748,13 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
-| `application_id` | 是 | `string` |  | application的唯一标识。 |
-| `environment_id` | 是 | `unknown` |  | environment的唯一标识。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
+| `application_id` | 是 | `string` |  | 部署应用 ID。用于定位 Deploy 应用、环境、主机组和部署记录。 |
+| `environment_id` | 是 | `unknown` |  | 部署环境 ID。用于定位环境、环境主机或环境下的应用。 |
 
 调用示例：
 
@@ -25783,22 +25783,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -25806,16 +25806,16 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "application_id": {
       "type": "string",
       "minLength": 1,
-      "description": "application的唯一标识。"
+      "description": "部署应用 ID。用于定位 Deploy 应用、环境、主机组和部署记录。"
     },
     "environment_id": {
       "$ref": "#/properties/application_id",
-      "description": "environment的唯一标识。"
+      "description": "部署环境 ID。用于定位环境、环境主机或环境下的应用。"
     }
   },
   "required": [
@@ -25844,12 +25844,12 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
-| `application_id` | 是 | `string` |  | application的唯一标识。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
+| `application_id` | 是 | `string` |  | 部署应用 ID。用于定位 Deploy 应用、环境、主机组和部署记录。 |
 | `project_id` | 是 | `unknown` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 调用示例：
@@ -25879,22 +25879,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -25902,12 +25902,12 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "application_id": {
       "type": "string",
       "minLength": 1,
-      "description": "application的唯一标识。"
+      "description": "部署应用 ID。用于定位 Deploy 应用、环境、主机组和部署记录。"
     },
     "project_id": {
       "$ref": "#/properties/application_id",
@@ -25940,15 +25940,15 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `task_id` | 是 | `unknown` |  | task的唯一标识。 |
-| `start_date` | 否 | `string` |  | 计划开始日期，使用接口要求的时间戳或日期值。 |
-| `end_date` | 否 | `string` |  | end date 参数，按对应 CodeArts API 要求传入。 |
+| `task_id` | 是 | `unknown` |  | 任务 ID。用于定位构建、部署、检查或测试计划任务。 |
+| `start_date` | 否 | `string` |  | 开始日期。用于时间范围查询；在工作项接口中表示计划开始时间。 |
+| `end_date` | 否 | `string` |  | 结束日期。用于按时间范围查询操作日志、历史记录或统计数据。 |
 
 调用示例：
 
@@ -25977,22 +25977,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -26000,7 +26000,7 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "project_id": {
       "type": "string",
@@ -26009,15 +26009,15 @@ authorization: Bearer <auth-token>
     },
     "task_id": {
       "$ref": "#/properties/project_id",
-      "description": "task的唯一标识。"
+      "description": "任务 ID。用于定位构建、部署、检查或测试计划任务。"
     },
     "start_date": {
       "type": "string",
-      "description": "计划开始日期，使用接口要求的时间戳或日期值。"
+      "description": "开始日期。用于时间范围查询；在工作项接口中表示计划开始时间。"
     },
     "end_date": {
       "type": "string",
-      "description": "end date 参数，按对应 CodeArts API 要求传入。"
+      "description": "结束日期。用于按时间范围查询操作日志、历史记录或统计数据。"
     }
   },
   "required": [
@@ -26046,12 +26046,12 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
-| `group_id` | 是 | `string` |  | 分组或主机组唯一标识。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
+| `group_id` | 是 | `string` |  | 分组 ID。用于流水线分组、部署主机组或资源分组。 |
 
 调用示例：
 
@@ -26079,22 +26079,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -26102,12 +26102,12 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "group_id": {
       "type": "string",
       "minLength": 1,
-      "description": "分组或主机组唯一标识。"
+      "description": "分组 ID。用于流水线分组、部署主机组或资源分组。"
     }
   },
   "required": [
@@ -26135,12 +26135,12 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
-| `group_id` | 是 | `string` |  | 分组或主机组唯一标识。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
+| `group_id` | 是 | `string` |  | 分组 ID。用于流水线分组、部署主机组或资源分组。 |
 
 调用示例：
 
@@ -26168,22 +26168,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -26191,12 +26191,12 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "group_id": {
       "type": "string",
       "minLength": 1,
-      "description": "分组或主机组唯一标识。"
+      "description": "分组 ID。用于流水线分组、部署主机组或资源分组。"
     }
   },
   "required": [
@@ -26224,11 +26224,11 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 调用示例：
@@ -26257,22 +26257,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -26280,7 +26280,7 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "project_id": {
       "type": "string",
@@ -26355,11 +26355,11 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 调用示例：
@@ -26388,22 +26388,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -26411,7 +26411,7 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "project_id": {
       "type": "string",
@@ -26445,9 +26445,9 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `limit` | 否 | `integer` | 20 | 本次查询最多返回的记录数。 |
-| `offset` | 否 | `integer` | 0 | offset 参数，按对应 CodeArts API 要求传入。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
+| `limit` | 否 | `integer` | 20 | 返回数量上限。用于 offset/limit 分页。 |
+| `offset` | 否 | `integer` | 0 | 偏移量。用于分页或日志读取位置。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
 
 调用示例：
 
@@ -26481,17 +26481,17 @@ authorization: Bearer <auth-token>
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "本次查询最多返回的记录数。"
+      "description": "返回数量上限。用于 offset/limit 分页。"
     },
     "offset": {
       "type": "integer",
       "minimum": 0,
       "default": 0,
-      "description": "offset 参数，按对应 CodeArts API 要求传入。"
+      "description": "偏移量。用于分页或日志读取位置。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     }
   },
   "required": [
@@ -26520,7 +26520,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `cluster_id` | 是 | `unknown` |  | cluster的唯一标识。 |
+| `cluster_id` | 是 | `unknown` |  | 集群 ID。用于定位 Deploy v4 主机或容器集群。 |
 | `body` | 否 | `object` | {} | 请求体对象，用于透传该接口的扩展参数。 |
 
 调用示例：
@@ -26553,7 +26553,7 @@ authorization: Bearer <auth-token>
     },
     "cluster_id": {
       "$ref": "#/properties/project_id",
-      "description": "cluster的唯一标识。"
+      "description": "集群 ID。用于定位 Deploy v4 主机或容器集群。"
     },
     "body": {
       "type": "object",
@@ -26662,8 +26662,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `limit` | 否 | `integer` | 20 | 本次查询最多返回的记录数。 |
-| `offset` | 否 | `integer` | 0 | offset 参数，按对应 CodeArts API 要求传入。 |
+| `limit` | 否 | `integer` | 20 | 返回数量上限。用于 offset/limit 分页。 |
+| `offset` | 否 | `integer` | 0 | 偏移量。用于分页或日志读取位置。 |
 
 调用示例：
 
@@ -26697,13 +26697,13 @@ authorization: Bearer <auth-token>
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "本次查询最多返回的记录数。"
+      "description": "返回数量上限。用于 offset/limit 分页。"
     },
     "offset": {
       "type": "integer",
       "minimum": 0,
       "default": 0,
-      "description": "offset 参数，按对应 CodeArts API 要求传入。"
+      "description": "偏移量。用于分页或日志读取位置。"
     }
   },
   "required": [
@@ -26732,9 +26732,9 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `environment_id` | 是 | `unknown` |  | environment的唯一标识。 |
-| `limit` | 否 | `integer` | 20 | 本次查询最多返回的记录数。 |
-| `offset` | 否 | `integer` | 0 | offset 参数，按对应 CodeArts API 要求传入。 |
+| `environment_id` | 是 | `unknown` |  | 部署环境 ID。用于定位环境、环境主机或环境下的应用。 |
+| `limit` | 否 | `integer` | 20 | 返回数量上限。用于 offset/limit 分页。 |
+| `offset` | 否 | `integer` | 0 | 偏移量。用于分页或日志读取位置。 |
 
 调用示例：
 
@@ -26766,20 +26766,20 @@ authorization: Bearer <auth-token>
     },
     "environment_id": {
       "$ref": "#/properties/project_id",
-      "description": "environment的唯一标识。"
+      "description": "部署环境 ID。用于定位环境、环境主机或环境下的应用。"
     },
     "limit": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "本次查询最多返回的记录数。"
+      "description": "返回数量上限。用于 offset/limit 分页。"
     },
     "offset": {
       "type": "integer",
       "minimum": 0,
       "default": 0,
-      "description": "offset 参数，按对应 CodeArts API 要求传入。"
+      "description": "偏移量。用于分页或日志读取位置。"
     }
   },
   "required": [
@@ -26809,8 +26809,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `environment_id` | 是 | `unknown` |  | environment的唯一标识。 |
-| `query` | 否 | `object` | {} | 查询条件对象。 |
+| `environment_id` | 是 | `unknown` |  | 部署环境 ID。用于定位环境、环境主机或环境下的应用。 |
+| `query` | 否 | `object` | {} | 查询条件对象。用于传递服务端支持的筛选、分页或过滤结构。 |
 
 调用示例：
 
@@ -26842,7 +26842,7 @@ authorization: Bearer <auth-token>
     },
     "environment_id": {
       "$ref": "#/properties/project_id",
-      "description": "environment的唯一标识。"
+      "description": "部署环境 ID。用于定位环境、环境主机或环境下的应用。"
     },
     "query": {
       "type": "object",
@@ -26854,7 +26854,7 @@ authorization: Bearer <auth-token>
         ]
       },
       "default": {},
-      "description": "查询条件对象。"
+      "description": "查询条件对象。用于传递服务端支持的筛选、分页或过滤结构。"
     }
   },
   "required": [
@@ -26884,8 +26884,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `limit` | 否 | `integer` | 20 | 本次查询最多返回的记录数。 |
-| `offset` | 否 | `integer` | 0 | offset 参数，按对应 CodeArts API 要求传入。 |
+| `limit` | 否 | `integer` | 20 | 返回数量上限。用于 offset/limit 分页。 |
+| `offset` | 否 | `integer` | 0 | 偏移量。用于分页或日志读取位置。 |
 
 调用示例：
 
@@ -26919,13 +26919,13 @@ authorization: Bearer <auth-token>
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "本次查询最多返回的记录数。"
+      "description": "返回数量上限。用于 offset/limit 分页。"
     },
     "offset": {
       "type": "integer",
       "minimum": 0,
       "default": 0,
-      "description": "offset 参数，按对应 CodeArts API 要求传入。"
+      "description": "偏移量。用于分页或日志读取位置。"
     }
   },
   "required": [
@@ -26954,9 +26954,9 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `app_id` | 是 | `unknown` |  | app的唯一标识。 |
-| `limit` | 否 | `integer` | 20 | 本次查询最多返回的记录数。 |
-| `offset` | 否 | `integer` | 0 | offset 参数，按对应 CodeArts API 要求传入。 |
+| `app_id` | 是 | `unknown` |  | 应用 ID。用于定位 Deploy v4 应用或查询变量/编排。 |
+| `limit` | 否 | `integer` | 20 | 返回数量上限。用于 offset/limit 分页。 |
+| `offset` | 否 | `integer` | 0 | 偏移量。用于分页或日志读取位置。 |
 
 调用示例：
 
@@ -26988,20 +26988,20 @@ authorization: Bearer <auth-token>
     },
     "app_id": {
       "$ref": "#/properties/project_id",
-      "description": "app的唯一标识。"
+      "description": "应用 ID。用于定位 Deploy v4 应用或查询变量/编排。"
     },
     "limit": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "本次查询最多返回的记录数。"
+      "description": "返回数量上限。用于 offset/limit 分页。"
     },
     "offset": {
       "type": "integer",
       "minimum": 0,
       "default": 0,
-      "description": "offset 参数，按对应 CodeArts API 要求传入。"
+      "description": "偏移量。用于分页或日志读取位置。"
     }
   },
   "required": [
@@ -27110,9 +27110,9 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `id` | 是 | `string` |  | id 参数，按对应 CodeArts API 要求传入。 |
+| `id` | 是 | `string` |  | 资源 ID。返回结果或嵌套对象中的通用唯一标识。 |
 | `project_id` | 是 | `unknown` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `name` | 是 | `string` |  | 对象名称，用于展示、查询或创建资源。 |
+| `name` | 是 | `string` |  | 资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。 |
 | `description` | 否 | `string` | "" | 对象的详细描述或备注信息。 |
 | `timeout` | 否 | `number | null` | 超时时间。 |
 | `trigger` | 否 | `object` | {"trigger_source":"0","artifact_source_system":"","artifact_type":""} | 触发器配置。 |
@@ -27120,7 +27120,7 @@ authorization: Bearer <auth-token>
 | `slave_resource_type` | 否 | `string` | "" | 从属资源类型。 |
 | `create_type` | 否 | `string` | "template" | 创建方式，例如 template 表示按模板创建。 |
 | `is_draft` | 否 | `boolean` | false | 是否保存为草稿。 |
-| `group_id` | 否 | `string` |  | 分组或主机组唯一标识。 |
+| `group_id` | 否 | `string` |  | 分组 ID。用于流水线分组、部署主机组或资源分组。 |
 | `agency_urn` | 否 | `string` |  | 委托 URN。 |
 | `arrange_infos` | 是 | `array` |  | 部署编排信息列表，用于描述模板和操作组合。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
@@ -27153,7 +27153,7 @@ authorization: Bearer <auth-token>
     "id": {
       "type": "string",
       "minLength": 1,
-      "description": "id 参数，按对应 CodeArts API 要求传入。"
+      "description": "资源 ID。返回结果或嵌套对象中的通用唯一标识。"
     },
     "project_id": {
       "$ref": "#/properties/id",
@@ -27162,7 +27162,7 @@ authorization: Bearer <auth-token>
     "name": {
       "type": "string",
       "minLength": 1,
-      "description": "对象名称，用于展示、查询或创建资源。"
+      "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
     },
     "description": {
       "type": "string",
@@ -27225,7 +27225,7 @@ authorization: Bearer <auth-token>
     },
     "group_id": {
       "type": "string",
-      "description": "分组或主机组唯一标识。"
+      "description": "分组 ID。用于流水线分组、部署主机组或资源分组。"
     },
     "agency_urn": {
       "type": "string",
@@ -27238,7 +27238,7 @@ authorization: Bearer <auth-token>
         "properties": {
           "id": {
             "$ref": "#/properties/id",
-            "description": "部署编排信息列表，用于描述模板和操作组合。"
+            "description": "资源 ID。返回结果或嵌套对象中的通用唯一标识。"
           },
           "deploy_system": {
             "type": "string",
@@ -27246,7 +27246,7 @@ authorization: Bearer <auth-token>
           },
           "template_id": {
             "$ref": "#/properties/id",
-            "description": "template的唯一标识。"
+            "description": "模板 ID。用于按模板创建部署任务、应用或查询模板详情。"
           },
           "operation_list": {
             "type": "array",
@@ -27298,8 +27298,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `record_id` | 是 | `unknown` |  | record的唯一标识。 |
-| `step_id` | 是 | `unknown` |  | step的唯一标识。 |
+| `record_id` | 是 | `unknown` |  | 执行记录 ID。用于定位构建、部署或流水线的一次运行记录。 |
+| `step_id` | 是 | `unknown` |  | 步骤 ID。用于定位流水线、部署或构建记录中的具体步骤。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -27333,11 +27333,11 @@ authorization: Bearer <auth-token>
     },
     "record_id": {
       "$ref": "#/properties/project_id",
-      "description": "record的唯一标识。"
+      "description": "执行记录 ID。用于定位构建、部署或流水线的一次运行记录。"
     },
     "step_id": {
       "$ref": "#/properties/project_id",
-      "description": "step的唯一标识。"
+      "description": "步骤 ID。用于定位流水线、部署或构建记录中的具体步骤。"
     },
     "dry_run": {
       "type": "boolean",
@@ -27413,8 +27413,8 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `record_id` | 是 | `unknown` |  | record的唯一标识。 |
-| `step_id` | 是 | `unknown` |  | step的唯一标识。 |
+| `record_id` | 是 | `unknown` |  | 执行记录 ID。用于定位构建、部署或流水线的一次运行记录。 |
+| `step_id` | 是 | `unknown` |  | 步骤 ID。用于定位流水线、部署或构建记录中的具体步骤。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -27448,11 +27448,11 @@ authorization: Bearer <auth-token>
     },
     "record_id": {
       "$ref": "#/properties/project_id",
-      "description": "record的唯一标识。"
+      "description": "执行记录 ID。用于定位构建、部署或流水线的一次运行记录。"
     },
     "step_id": {
       "$ref": "#/properties/project_id",
-      "description": "step的唯一标识。"
+      "description": "步骤 ID。用于定位流水线、部署或构建记录中的具体步骤。"
     },
     "dry_run": {
       "type": "boolean",
@@ -27488,7 +27488,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `record_id` | 是 | `unknown` |  | record的唯一标识。 |
+| `record_id` | 是 | `unknown` |  | 执行记录 ID。用于定位构建、部署或流水线的一次运行记录。 |
 | `body` | 否 | `object` | {} | 请求体对象，用于透传该接口的扩展参数。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -27522,7 +27522,7 @@ authorization: Bearer <auth-token>
     },
     "record_id": {
       "$ref": "#/properties/project_id",
-      "description": "record的唯一标识。"
+      "description": "执行记录 ID。用于定位构建、部署或流水线的一次运行记录。"
     },
     "body": {
       "type": "object",
@@ -27563,7 +27563,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `record_id` | 是 | `unknown` |  | record的唯一标识。 |
+| `record_id` | 是 | `unknown` |  | 执行记录 ID。用于定位构建、部署或流水线的一次运行记录。 |
 | `body` | 否 | `object` | {} | 请求体对象，用于透传该接口的扩展参数。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -27597,7 +27597,7 @@ authorization: Bearer <auth-token>
     },
     "record_id": {
       "$ref": "#/properties/project_id",
-      "description": "record的唯一标识。"
+      "description": "执行记录 ID。用于定位构建、部署或流水线的一次运行记录。"
     },
     "body": {
       "type": "object",
@@ -27637,8 +27637,8 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `task_id` | 是 | `string` |  | task的唯一标识。 |
-| `record_id` | 是 | `unknown` |  | record的唯一标识。 |
+| `task_id` | 是 | `string` |  | 任务 ID。用于定位构建、部署、检查或测试计划任务。 |
+| `record_id` | 是 | `unknown` |  | 执行记录 ID。用于定位构建、部署或流水线的一次运行记录。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -27667,11 +27667,11 @@ authorization: Bearer <auth-token>
     "task_id": {
       "type": "string",
       "minLength": 1,
-      "description": "task的唯一标识。"
+      "description": "任务 ID。用于定位构建、部署、检查或测试计划任务。"
     },
     "record_id": {
       "$ref": "#/properties/task_id",
-      "description": "record的唯一标识。"
+      "description": "执行记录 ID。用于定位构建、部署或流水线的一次运行记录。"
     },
     "dry_run": {
       "type": "boolean",
@@ -27706,7 +27706,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `record_id` | 是 | `unknown` |  | record的唯一标识。 |
+| `record_id` | 是 | `unknown` |  | 执行记录 ID。用于定位构建、部署或流水线的一次运行记录。 |
 | `body` | 否 | `object` | {} | 请求体对象，用于透传该接口的扩展参数。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -27740,7 +27740,7 @@ authorization: Bearer <auth-token>
     },
     "record_id": {
       "$ref": "#/properties/project_id",
-      "description": "record的唯一标识。"
+      "description": "执行记录 ID。用于定位构建、部署或流水线的一次运行记录。"
     },
     "body": {
       "type": "object",
@@ -27780,7 +27780,7 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `task_id` | 是 | `string` |  | task的唯一标识。 |
+| `task_id` | 是 | `string` |  | 任务 ID。用于定位构建、部署、检查或测试计划任务。 |
 | `trigger_source` | 否 | `number \| string` |  | 触发来源，用于标识流水线或部署任务的启动来源。 |
 | `params` | 否 | `array` | [] | 启动或执行参数列表。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
@@ -27810,7 +27810,7 @@ authorization: Bearer <auth-token>
     "task_id": {
       "type": "string",
       "minLength": 1,
-      "description": "task的唯一标识。"
+      "description": "任务 ID。用于定位构建、部署、检查或测试计划任务。"
     },
     "trigger_source": {
       "type": [
@@ -27833,16 +27833,16 @@ authorization: Bearer <auth-token>
           "name": {
             "type": "string",
             "minLength": 1,
-            "description": "对象名称，用于展示、查询或创建资源。"
+            "description": "资源名称。创建、更新或过滤资源时使用，具体资源类型由当前工具决定。"
           },
           "type": {
             "type": "string",
             "minLength": 1,
-            "description": "类型字段，含义取决于对应接口。"
+            "description": "类型。用于区分资源类别，取值范围由当前工具和对应 CodeArts API 决定。"
           },
           "value": {
             "type": "string",
-            "description": "启动或执行参数列表。"
+            "description": "字段值。用于变量、自定义字段、过滤项或配置项的具体取值。"
           }
         },
         "required": [
@@ -27884,8 +27884,8 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `task_id` | 是 | `string` |  | task的唯一标识。 |
-| `record_id` | 是 | `unknown` |  | record的唯一标识。 |
+| `task_id` | 是 | `string` |  | 任务 ID。用于定位构建、部署、检查或测试计划任务。 |
+| `record_id` | 是 | `unknown` |  | 执行记录 ID。用于定位构建、部署或流水线的一次运行记录。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -27914,11 +27914,11 @@ authorization: Bearer <auth-token>
     "task_id": {
       "type": "string",
       "minLength": 1,
-      "description": "task的唯一标识。"
+      "description": "任务 ID。用于定位构建、部署、检查或测试计划任务。"
     },
     "record_id": {
       "$ref": "#/properties/task_id",
-      "description": "record的唯一标识。"
+      "description": "执行记录 ID。用于定位构建、部署或流水线的一次运行记录。"
     },
     "dry_run": {
       "type": "boolean",
@@ -27940,15 +27940,15 @@ authorization: Bearer <auth-token>
 | API | 中文说明 |
 | --- | --- |
 | `build_append_job_step` | 追加Build 构建的任务step。 |
-| `build_append_release_upload_step` | 追加Build 构建的releaseuploadstep。 |
-| `build_configure_release_upload_step` | 配置Build 构建的releaseuploadstep。 |
+| `build_append_release_upload_step` | 向 Build 构建任务追加发布仓上传步骤。 |
+| `build_configure_release_upload_step` | 配置 Build 构建任务中的发布仓上传步骤。 |
 | `build_get_error_log` | 获取Build 构建的error日志。 |
-| `build_get_full_stages` | 获取Build 构建的full阶段。 |
+| `build_get_full_stages` | 获取 Build 构建完整阶段信息。 |
 | `build_get_history_details` | 获取Build 构建的historydetails。 |
 | `build_get_info_record` | 获取Build 构建的info记录。 |
 | `build_get_job` | 获取Build 构建的任务。 |
 | `build_get_project_record_statistics` | 获取Build 构建的项目记录statistics。 |
-| `build_get_real_time_log` | 获取Build 构建的realtime日志。 |
+| `build_get_real_time_log` | 获取 Build 构建实时日志。 |
 | `build_get_record` | 获取Build 构建的记录。 |
 | `build_get_record_flow_graph` | 获取Build 构建的记录流程graph。 |
 | `build_get_record_script` | 获取Build 构建的记录脚本。 |
@@ -27979,11 +27979,11 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `job_id` | 是 | `string` |  | 构建任务或流水线任务唯一标识。 |
+| `job_id` | 是 | `string` |  | 任务 ID。用于定位构建任务或流水线任务步骤。 |
 | `step_name` | 是 | `string` |  | 步骤名称。 |
-| `module_id` | 是 | `string` |  | 模块唯一标识。 |
+| `module_id` | 是 | `string` |  | 模块 ID。用于把工作项、IPD 对象或项目模块归属到指定模块。 |
 | `enable` | 否 | `boolean` | true | 是否启用该步骤。 |
-| `version` | 否 | `string` |  | 版本号。 |
+| `version` | 否 | `string` |  | 版本号。用于指定插件版本、接口版本或工具步骤版本。 |
 | `image` | 否 | `string` |  | 步骤运行镜像。 |
 | `command` | 否 | `string` |  | 要执行的命令。 |
 | `pre_condition` | 否 | `string` |  | 步骤执行前置条件。 |
@@ -28018,7 +28018,7 @@ authorization: Bearer <auth-token>
     "job_id": {
       "type": "string",
       "minLength": 1,
-      "description": "构建任务或流水线任务唯一标识。"
+      "description": "任务 ID。用于定位构建任务或流水线任务步骤。"
     },
     "step_name": {
       "type": "string",
@@ -28028,7 +28028,7 @@ authorization: Bearer <auth-token>
     "module_id": {
       "type": "string",
       "minLength": 1,
-      "description": "模块唯一标识。"
+      "description": "模块 ID。用于把工作项、IPD 对象或项目模块归属到指定模块。"
     },
     "enable": {
       "type": "boolean",
@@ -28038,7 +28038,7 @@ authorization: Bearer <auth-token>
     "version": {
       "type": "string",
       "minLength": 1,
-      "description": "版本号。"
+      "description": "版本号。用于指定插件版本、接口版本或工具步骤版本。"
     },
     "image": {
       "type": "string",
@@ -28083,7 +28083,7 @@ authorization: Bearer <auth-token>
 
 ### build_append_release_upload_step
 
-中文说明：追加Build 构建的releaseuploadstep。
+中文说明：向 Build 构建任务追加发布仓上传步骤。
 
 原始工具说明：Append the official release repository upload step to a CodeArts Build job
 
@@ -28098,7 +28098,7 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `job_id` | 是 | `string` |  | 构建任务或流水线任务唯一标识。 |
+| `job_id` | 是 | `string` |  | 任务 ID。用于定位构建任务或流水线任务步骤。 |
 | `path` | 是 | `string` |  | 远端或仓库内的路径。 |
 | `package_name` | 否 | `string` |  | 包名称。 |
 | `package_version` | 否 | `string` |  | 包版本。 |
@@ -28136,7 +28136,7 @@ authorization: Bearer <auth-token>
     "job_id": {
       "type": "string",
       "minLength": 1,
-      "description": "构建任务或流水线任务唯一标识。"
+      "description": "任务 ID。用于定位构建任务或流水线任务步骤。"
     },
     "path": {
       "type": "string",
@@ -28203,7 +28203,7 @@ authorization: Bearer <auth-token>
 
 ### build_configure_release_upload_step
 
-中文说明：配置Build 构建的releaseuploadstep。
+中文说明：配置 Build 构建任务中的发布仓上传步骤。
 
 原始工具说明：Configure an existing release repository upload step in a CodeArts Build job
 
@@ -28218,9 +28218,9 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `job_id` | 是 | `string` |  | 构建任务或流水线任务唯一标识。 |
+| `job_id` | 是 | `string` |  | 任务 ID。用于定位构建任务或流水线任务步骤。 |
 | `step_name` | 否 | `string` | "Upload package to release repository" | 步骤名称。 |
-| `file` | 是 | `string` |  | file 参数，按对应 CodeArts API 要求传入。 |
+| `file` | 是 | `string` |  | 构建产物或上传文件路径。配置发布仓上传步骤时指定要上传的文件。 |
 | `package_name` | 否 | `string` |  | 包名称。 |
 | `build_version` | 否 | `string` |  | 构建版本。 |
 | `custom_upload_path` | 否 | `string` |  | 自定义上传路径。 |
@@ -28255,7 +28255,7 @@ authorization: Bearer <auth-token>
     "job_id": {
       "type": "string",
       "minLength": 1,
-      "description": "构建任务或流水线任务唯一标识。"
+      "description": "任务 ID。用于定位构建任务或流水线任务步骤。"
     },
     "step_name": {
       "type": "string",
@@ -28266,7 +28266,7 @@ authorization: Bearer <auth-token>
     "file": {
       "type": "string",
       "minLength": 1,
-      "description": "file 参数，按对应 CodeArts API 要求传入。"
+      "description": "构建产物或上传文件路径。配置发布仓上传步骤时指定要上传的文件。"
     },
     "package_name": {
       "type": "string",
@@ -28331,13 +28331,13 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
-| `job_id` | 是 | `string` |  | 构建任务或流水线任务唯一标识。 |
-| `build_no` | 是 | `integer` |  | 构建编号。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
+| `job_id` | 是 | `string` |  | 任务 ID。用于定位构建任务或流水线任务步骤。 |
+| `build_no` | 是 | `integer` |  | 构建编号。用于读取指定构建任务的一次构建记录。 |
 
 调用示例：
 
@@ -28366,22 +28366,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -28389,17 +28389,17 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "job_id": {
       "type": "string",
       "minLength": 1,
-      "description": "构建任务或流水线任务唯一标识。"
+      "description": "任务 ID。用于定位构建任务或流水线任务步骤。"
     },
     "build_no": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "构建编号。"
+      "description": "构建编号。用于读取指定构建任务的一次构建记录。"
     }
   },
   "required": [
@@ -28413,7 +28413,7 @@ authorization: Bearer <auth-token>
 
 ### build_get_full_stages
 
-中文说明：获取Build 构建的full阶段。
+中文说明：获取 Build 构建完整阶段信息。
 
 原始工具说明：Get CodeArts Build full stages
 
@@ -28428,7 +28428,7 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `record_id` | 是 | `string` |  | record的唯一标识。 |
+| `record_id` | 是 | `string` |  | 执行记录 ID。用于定位构建、部署或流水线的一次运行记录。 |
 | `cascade` | 否 | `boolean` | true | 是否级联返回子阶段或子资源。 |
 
 调用示例：
@@ -28456,7 +28456,7 @@ authorization: Bearer <auth-token>
     "record_id": {
       "type": "string",
       "minLength": 1,
-      "description": "record的唯一标识。"
+      "description": "执行记录 ID。用于定位构建、部署或流水线的一次运行记录。"
     },
     "cascade": {
       "type": "boolean",
@@ -28489,8 +28489,8 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `job_id` | 是 | `string` |  | 构建任务或流水线任务唯一标识。 |
-| `build_number` | 是 | `integer` |  | 构建编号。 |
+| `job_id` | 是 | `string` |  | 任务 ID。用于定位构建任务或流水线任务步骤。 |
+| `build_number` | 是 | `integer` |  | 构建编号。用于读取历史详情。 |
 
 调用示例：
 
@@ -28518,12 +28518,12 @@ authorization: Bearer <auth-token>
     "job_id": {
       "type": "string",
       "minLength": 1,
-      "description": "构建任务或流水线任务唯一标识。"
+      "description": "任务 ID。用于定位构建任务或流水线任务步骤。"
     },
     "build_number": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "构建编号。"
+      "description": "构建编号。用于读取历史详情。"
     }
   },
   "required": [
@@ -28552,8 +28552,8 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `job_id` | 是 | `string` |  | 构建任务或流水线任务唯一标识。 |
-| `build_no` | 是 | `integer` |  | 构建编号。 |
+| `job_id` | 是 | `string` |  | 任务 ID。用于定位构建任务或流水线任务步骤。 |
+| `build_no` | 是 | `integer` |  | 构建编号。用于读取指定构建任务的一次构建记录。 |
 
 调用示例：
 
@@ -28581,12 +28581,12 @@ authorization: Bearer <auth-token>
     "job_id": {
       "type": "string",
       "minLength": 1,
-      "description": "构建任务或流水线任务唯一标识。"
+      "description": "任务 ID。用于定位构建任务或流水线任务步骤。"
     },
     "build_no": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "构建编号。"
+      "description": "构建编号。用于读取指定构建任务的一次构建记录。"
     }
   },
   "required": [
@@ -28615,7 +28615,7 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `job_id` | 是 | `string` |  | 构建任务或流水线任务唯一标识。 |
+| `job_id` | 是 | `string` |  | 任务 ID。用于定位构建任务或流水线任务步骤。 |
 
 调用示例：
 
@@ -28642,7 +28642,7 @@ authorization: Bearer <auth-token>
     "job_id": {
       "type": "string",
       "minLength": 1,
-      "description": "构建任务或流水线任务唯一标识。"
+      "description": "任务 ID。用于定位构建任务或流水线任务步骤。"
     }
   },
   "required": [
@@ -28671,7 +28671,7 @@ authorization: Bearer <auth-token>
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `build_project_id` | 否 | `unknown` |  | build_project的唯一标识。 |
+| `build_project_id` | 否 | `unknown` |  | 构建项目 ID。用于限定构建记录统计或项目记录查询范围。 |
 
 调用示例：
 
@@ -28702,7 +28702,7 @@ authorization: Bearer <auth-token>
     },
     "build_project_id": {
       "$ref": "#/properties/project_id",
-      "description": "build_project的唯一标识。"
+      "description": "构建项目 ID。用于限定构建记录统计或项目记录查询范围。"
     }
   },
   "required": [
@@ -28715,7 +28715,7 @@ authorization: Bearer <auth-token>
 
 ### build_get_real_time_log
 
-中文说明：获取Build 构建的realtime日志。
+中文说明：获取 Build 构建实时日志。
 
 原始工具说明：Get CodeArts Build real-time log
 
@@ -28730,9 +28730,9 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `job_id` | 是 | `string` |  | 构建任务或流水线任务唯一标识。 |
-| `build_no` | 是 | `integer` |  | build no 参数，按对应 CodeArts API 要求传入。 |
-| `offset` | 是 | `integer` |  | 分页偏移量，用于跳过前面的记录。 |
+| `job_id` | 是 | `string` |  | 任务 ID。用于定位构建任务或流水线任务步骤。 |
+| `build_no` | 是 | `integer` |  | 构建编号。用于读取指定构建任务的一次构建记录。 |
+| `offset` | 是 | `integer` |  | 偏移量。用于分页或日志读取位置。 |
 
 调用示例：
 
@@ -28761,17 +28761,17 @@ authorization: Bearer <auth-token>
     "job_id": {
       "type": "string",
       "minLength": 1,
-      "description": "构建任务或流水线任务唯一标识。"
+      "description": "任务 ID。用于定位构建任务或流水线任务步骤。"
     },
     "build_no": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "build no 参数，按对应 CodeArts API 要求传入。"
+      "description": "构建编号。用于读取指定构建任务的一次构建记录。"
     },
     "offset": {
       "type": "integer",
       "minimum": 0,
-      "description": "分页偏移量，用于跳过前面的记录。"
+      "description": "偏移量。用于分页或日志读取位置。"
     }
   },
   "required": [
@@ -28801,7 +28801,7 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `record_id` | 是 | `string` |  | record的唯一标识。 |
+| `record_id` | 是 | `string` |  | 执行记录 ID。用于定位构建、部署或流水线的一次运行记录。 |
 
 调用示例：
 
@@ -28828,7 +28828,7 @@ authorization: Bearer <auth-token>
     "record_id": {
       "type": "string",
       "minLength": 1,
-      "description": "record的唯一标识。"
+      "description": "执行记录 ID。用于定位构建、部署或流水线的一次运行记录。"
     }
   },
   "required": [
@@ -28856,7 +28856,7 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `record_id` | 是 | `string` |  | record的唯一标识。 |
+| `record_id` | 是 | `string` |  | 执行记录 ID。用于定位构建、部署或流水线的一次运行记录。 |
 
 调用示例：
 
@@ -28883,7 +28883,7 @@ authorization: Bearer <auth-token>
     "record_id": {
       "type": "string",
       "minLength": 1,
-      "description": "record的唯一标识。"
+      "description": "执行记录 ID。用于定位构建、部署或流水线的一次运行记录。"
     }
   },
   "required": [
@@ -28911,7 +28911,7 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `record_id` | 是 | `string` |  | record的唯一标识。 |
+| `record_id` | 是 | `string` |  | 执行记录 ID。用于定位构建、部署或流水线的一次运行记录。 |
 
 调用示例：
 
@@ -28938,7 +28938,7 @@ authorization: Bearer <auth-token>
     "record_id": {
       "type": "string",
       "minLength": 1,
-      "description": "record的唯一标识。"
+      "description": "执行记录 ID。用于定位构建、部署或流水线的一次运行记录。"
     }
   },
   "required": [
@@ -28966,8 +28966,8 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `job_id` | 是 | `string` |  | 构建任务或流水线任务唯一标识。 |
-| `build_no` | 是 | `integer` |  | build no 参数，按对应 CodeArts API 要求传入。 |
+| `job_id` | 是 | `string` |  | 任务 ID。用于定位构建任务或流水线任务步骤。 |
+| `build_no` | 是 | `integer` |  | 构建编号。用于读取指定构建任务的一次构建记录。 |
 
 调用示例：
 
@@ -28995,12 +28995,12 @@ authorization: Bearer <auth-token>
     "job_id": {
       "type": "string",
       "minLength": 1,
-      "description": "构建任务或流水线任务唯一标识。"
+      "description": "任务 ID。用于定位构建任务或流水线任务步骤。"
     },
     "build_no": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "build no 参数，按对应 CodeArts API 要求传入。"
+      "description": "构建编号。用于读取指定构建任务的一次构建记录。"
     }
   },
   "required": [
@@ -29029,11 +29029,11 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 调用示例：
@@ -29062,22 +29062,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -29085,7 +29085,7 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "project_id": {
       "type": "string",
@@ -29118,13 +29118,13 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `build_project_id` | 否 | `unknown` |  | build_project的唯一标识。 |
+| `build_project_id` | 否 | `unknown` |  | 构建项目 ID。用于限定构建记录统计或项目记录查询范围。 |
 
 调用示例：
 
@@ -29152,22 +29152,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -29175,7 +29175,7 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "project_id": {
       "type": "string",
@@ -29184,7 +29184,7 @@ authorization: Bearer <auth-token>
     },
     "build_project_id": {
       "$ref": "#/properties/project_id",
-      "description": "build_project的唯一标识。"
+      "description": "构建项目 ID。用于限定构建记录统计或项目记录查询范围。"
     }
   },
   "required": [
@@ -29212,12 +29212,12 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
-| `job_id` | 是 | `string` |  | 构建任务或流水线任务唯一标识。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
+| `job_id` | 是 | `string` |  | 任务 ID。用于定位构建任务或流水线任务步骤。 |
 
 调用示例：
 
@@ -29245,22 +29245,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -29268,12 +29268,12 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "job_id": {
       "type": "string",
       "minLength": 1,
-      "description": "构建任务或流水线任务唯一标识。"
+      "description": "任务 ID。用于定位构建任务或流水线任务步骤。"
     }
   },
   "required": [
@@ -29341,7 +29341,7 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `job_id` | 是 | `string` |  | 构建任务或流水线任务唯一标识。 |
+| `job_id` | 是 | `string` |  | 任务 ID。用于定位构建任务或流水线任务步骤。 |
 | `step_name` | 否 | `string` |  | 步骤名称。 |
 | `output_file` | 否 | `string` | "codearts-mcp.tgz" | 输出文件名。 |
 | `staging_dir` | 否 | `string` | ".release-bundle" | 临时打包目录。 |
@@ -29373,7 +29373,7 @@ authorization: Bearer <auth-token>
     "job_id": {
       "type": "string",
       "minLength": 1,
-      "description": "构建任务或流水线任务唯一标识。"
+      "description": "任务 ID。用于定位构建任务或流水线任务步骤。"
     },
     "step_name": {
       "type": "string",
@@ -29428,7 +29428,7 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `job_id` | 是 | `string` |  | 构建任务或流水线任务唯一标识。 |
+| `job_id` | 是 | `string` |  | 任务 ID。用于定位构建任务或流水线任务步骤。 |
 | `branch` | 否 | `string` |  | 分支名，用于指定代码、构建或流水线运行分支。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -29457,7 +29457,7 @@ authorization: Bearer <auth-token>
     "job_id": {
       "type": "string",
       "minLength": 1,
-      "description": "构建任务或流水线任务唯一标识。"
+      "description": "任务 ID。用于定位构建任务或流水线任务步骤。"
     },
     "branch": {
       "type": "string",
@@ -29495,8 +29495,8 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `job_id` | 是 | `string` |  | 构建任务或流水线任务唯一标识。 |
-| `build_no` | 是 | `integer` |  | build no 参数，按对应 CodeArts API 要求传入。 |
+| `job_id` | 是 | `string` |  | 任务 ID。用于定位构建任务或流水线任务步骤。 |
+| `build_no` | 是 | `integer` |  | 构建编号。用于读取指定构建任务的一次构建记录。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 调用示例：
@@ -29525,12 +29525,12 @@ authorization: Bearer <auth-token>
     "job_id": {
       "type": "string",
       "minLength": 1,
-      "description": "构建任务或流水线任务唯一标识。"
+      "description": "任务 ID。用于定位构建任务或流水线任务步骤。"
     },
     "build_no": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "build no 参数，按对应 CodeArts API 要求传入。"
+      "description": "构建编号。用于读取指定构建任务的一次构建记录。"
     },
     "dry_run": {
       "type": "boolean",
@@ -29621,9 +29621,9 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `tenant_id` | 是 | `string` |  | tenant的唯一标识。 |
+| `tenant_id` | 是 | `string` |  | 租户 ID。用于定位制品仓、流水线模板等租户范围资源。 |
 | `project_id` | 是 | `unknown` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `repo_name` | 是 | `string` |  | repo name 名称。 |
+| `repo_name` | 是 | `string` |  | 仓库名称。用于定位制品仓或代码仓中的具体仓库。 |
 | `path` | 是 | `string` |  | 远端或仓库内的路径。 |
 | `format` | 是 | `string` |  | 仓库或文件格式。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
@@ -29657,7 +29657,7 @@ authorization: Bearer <auth-token>
     "tenant_id": {
       "type": "string",
       "minLength": 1,
-      "description": "tenant的唯一标识。"
+      "description": "租户 ID。用于定位制品仓、流水线模板等租户范围资源。"
     },
     "project_id": {
       "$ref": "#/properties/tenant_id",
@@ -29666,7 +29666,7 @@ authorization: Bearer <auth-token>
     "repo_name": {
       "type": "string",
       "minLength": 1,
-      "description": "repo name 名称。"
+      "description": "仓库名称。用于定位制品仓或代码仓中的具体仓库。"
     },
     "path": {
       "type": "string",
@@ -29713,9 +29713,9 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `tenant_id` | 是 | `string` |  | tenant的唯一标识。 |
+| `tenant_id` | 是 | `string` |  | 租户 ID。用于定位制品仓、流水线模板等租户范围资源。 |
 | `project_id` | 是 | `unknown` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `repo_name` | 是 | `string` |  | repo name 名称。 |
+| `repo_name` | 是 | `string` |  | 仓库名称。用于定位制品仓或代码仓中的具体仓库。 |
 | `path` | 是 | `string` |  | 远端或仓库内的路径。 |
 | `format` | 是 | `string` |  | 仓库或文件格式。 |
 
@@ -29748,7 +29748,7 @@ authorization: Bearer <auth-token>
     "tenant_id": {
       "type": "string",
       "minLength": 1,
-      "description": "tenant的唯一标识。"
+      "description": "租户 ID。用于定位制品仓、流水线模板等租户范围资源。"
     },
     "project_id": {
       "$ref": "#/properties/tenant_id",
@@ -29757,7 +29757,7 @@ authorization: Bearer <auth-token>
     "repo_name": {
       "type": "string",
       "minLength": 1,
-      "description": "repo name 名称。"
+      "description": "仓库名称。用于定位制品仓或代码仓中的具体仓库。"
     },
     "path": {
       "type": "string",
@@ -29799,9 +29799,9 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `tenant_id` | 是 | `string` |  | tenant的唯一标识。 |
+| `tenant_id` | 是 | `string` |  | 租户 ID。用于定位制品仓、流水线模板等租户范围资源。 |
 | `project_id` | 是 | `unknown` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `repo_name` | 是 | `string` |  | 制品或仓库名称，与对应项目一起定位资源。 |
+| `repo_name` | 是 | `string` |  | 仓库名称。用于定位制品仓或代码仓中的具体仓库。 |
 | `path` | 是 | `string` |  | 制品、文件或上传路径。 |
 | `format` | 是 | `string` |  | 仓库或文件格式。 |
 
@@ -29834,7 +29834,7 @@ authorization: Bearer <auth-token>
     "tenant_id": {
       "type": "string",
       "minLength": 1,
-      "description": "tenant的唯一标识。"
+      "description": "租户 ID。用于定位制品仓、流水线模板等租户范围资源。"
     },
     "project_id": {
       "$ref": "#/properties/tenant_id",
@@ -29843,7 +29843,7 @@ authorization: Bearer <auth-token>
     "repo_name": {
       "type": "string",
       "minLength": 1,
-      "description": "制品或仓库名称，与对应项目一起定位资源。"
+      "description": "仓库名称。用于定位制品仓或代码仓中的具体仓库。"
     },
     "path": {
       "type": "string",
@@ -29885,9 +29885,9 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `tenant_id` | 是 | `string` |  | tenant的唯一标识。 |
+| `tenant_id` | 是 | `string` |  | 租户 ID。用于定位制品仓、流水线模板等租户范围资源。 |
 | `project_id` | 是 | `unknown` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `repo_name` | 是 | `string` |  | repo name 名称。 |
+| `repo_name` | 是 | `string` |  | 仓库名称。用于定位制品仓或代码仓中的具体仓库。 |
 
 调用示例：
 
@@ -29916,7 +29916,7 @@ authorization: Bearer <auth-token>
     "tenant_id": {
       "type": "string",
       "minLength": 1,
-      "description": "tenant的唯一标识。"
+      "description": "租户 ID。用于定位制品仓、流水线模板等租户范围资源。"
     },
     "project_id": {
       "$ref": "#/properties/tenant_id",
@@ -29925,7 +29925,7 @@ authorization: Bearer <auth-token>
     "repo_name": {
       "type": "string",
       "minLength": 1,
-      "description": "repo name 名称。"
+      "description": "仓库名称。用于定位制品仓或代码仓中的具体仓库。"
     }
   },
   "required": [
@@ -29955,7 +29955,7 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | 是 | `string` |  | repository的唯一标识。 |
+| `repository_id` | 是 | `string` |  | 代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。 |
 
 调用示例：
 
@@ -29982,7 +29982,7 @@ authorization: Bearer <auth-token>
     "repository_id": {
       "type": "string",
       "minLength": 1,
-      "description": "repository的唯一标识。"
+      "description": "代码仓/制品仓 ID。用于定位 Repo 或 Artifact 中的仓库资源。"
     }
   },
   "required": [
@@ -30010,11 +30010,11 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
 
 调用示例：
 
@@ -30040,22 +30040,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -30063,7 +30063,7 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     }
   },
   "additionalProperties": false,
@@ -30088,13 +30088,13 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `repo_name` | 是 | `string` |  | 制品或仓库名称，与对应项目一起定位资源。 |
+| `repo_name` | 是 | `string` |  | 仓库名称。用于定位制品仓或代码仓中的具体仓库。 |
 
 调用示例：
 
@@ -30123,22 +30123,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -30146,7 +30146,7 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "project_id": {
       "type": "string",
@@ -30156,7 +30156,7 @@ authorization: Bearer <auth-token>
     "repo_name": {
       "type": "string",
       "minLength": 1,
-      "description": "制品或仓库名称，与对应项目一起定位资源。"
+      "description": "仓库名称。用于定位制品仓或代码仓中的具体仓库。"
     }
   },
   "required": [
@@ -30185,11 +30185,11 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 调用示例：
@@ -30218,22 +30218,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -30241,7 +30241,7 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "project_id": {
       "type": "string",
@@ -30274,12 +30274,12 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
-| `tenant_id` | 是 | `string` |  | tenant的唯一标识。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
+| `tenant_id` | 是 | `string` |  | 租户 ID。用于定位制品仓、流水线模板等租户范围资源。 |
 | `project_id` | 是 | `unknown` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 调用示例：
@@ -30309,22 +30309,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -30332,12 +30332,12 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "tenant_id": {
       "type": "string",
       "minLength": 1,
-      "description": "tenant的唯一标识。"
+      "description": "租户 ID。用于定位制品仓、流水线模板等租户范围资源。"
     },
     "project_id": {
       "$ref": "#/properties/tenant_id",
@@ -30370,11 +30370,11 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 调用示例：
@@ -30403,22 +30403,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -30426,7 +30426,7 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "project_id": {
       "type": "string",
@@ -30459,13 +30459,13 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
 | `artifact_name` | 是 | `string` |  | 制品名称。 |
-| `repo_name` | 否 | `string` |  | 制品或仓库名称，与对应项目一起定位资源。 |
+| `repo_name` | 否 | `string` |  | 仓库名称。用于定位制品仓或代码仓中的具体仓库。 |
 | `project_id` | 否 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 调用示例：
@@ -30494,22 +30494,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -30517,7 +30517,7 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "artifact_name": {
       "type": "string",
@@ -30526,7 +30526,7 @@ authorization: Bearer <auth-token>
     },
     "repo_name": {
       "type": "string",
-      "description": "制品或仓库名称，与对应项目一起定位资源。"
+      "description": "仓库名称。用于定位制品仓或代码仓中的具体仓库。"
     },
     "project_id": {
       "type": "string",
@@ -30559,19 +30559,19 @@ authorization: Bearer <auth-token>
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 分页页码，通常从 1 开始。 |
-| `page_size` | 否 | `integer` | 20 | 每页返回数量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题或编号过滤结果。 |
-| `sort_by` | 否 | `string` |  | 排序字段。 |
-| `sort_order` | 否 | `string` |  | 排序方向，asc 表示升序，desc 表示降序。 |
-| `tenant_id` | 是 | `string` |  | tenant的唯一标识。 |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
+| `tenant_id` | 是 | `string` |  | 租户 ID。用于定位制品仓、流水线模板等租户范围资源。 |
 | `project_id` | 是 | `unknown` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `module` | 是 | `string` |  | 模块名称。 |
 | `repo` | 是 | `string` |  | 仓库名称。 |
-| `user_id` | 否 | `string` |  | user的唯一标识。 |
-| `instance_id` | 否 | `string` |  | instance的唯一标识。 |
+| `user_id` | 否 | `string` |  | 用户 ID。用于定位项目成员、操作者或需要授权的用户。 |
+| `instance_id` | 否 | `string` |  | 实例 ID。审计日志查询时用于定位具体资源实例。 |
 | `format` | 否 | `string` |  | 仓库或文件格式。 |
-| `resource_id` | 否 | `string` |  | resource的唯一标识。 |
+| `resource_id` | 否 | `string` |  | 资源 ID。审计日志或资源查询时用于限定具体资源。 |
 
 调用示例：
 
@@ -30602,22 +30602,22 @@ authorization: Bearer <auth-token>
       "type": "integer",
       "exclusiveMinimum": 0,
       "default": 1,
-      "description": "分页页码，通常从 1 开始。"
+      "description": "页码。用于 page/page_size 分页。"
     },
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 200,
       "default": 20,
-      "description": "每页返回数量。"
+      "description": "每页数量。用于分页查询。"
     },
     "keyword": {
       "type": "string",
-      "description": "搜索关键字，用于按名称、标题或编号过滤结果。"
+      "description": "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。"
     },
     "sort_by": {
       "type": "string",
-      "description": "排序字段。"
+      "description": "排序字段。用于选择服务端排序字段。"
     },
     "sort_order": {
       "type": "string",
@@ -30625,12 +30625,12 @@ authorization: Bearer <auth-token>
         "asc",
         "desc"
       ],
-      "description": "排序方向，asc 表示升序，desc 表示降序。"
+      "description": "排序方向。asc 表示升序，desc 表示降序。"
     },
     "tenant_id": {
       "type": "string",
       "minLength": 1,
-      "description": "tenant的唯一标识。"
+      "description": "租户 ID。用于定位制品仓、流水线模板等租户范围资源。"
     },
     "project_id": {
       "$ref": "#/properties/tenant_id",
@@ -30648,11 +30648,11 @@ authorization: Bearer <auth-token>
     },
     "user_id": {
       "type": "string",
-      "description": "user的唯一标识。"
+      "description": "用户 ID。用于定位项目成员、操作者或需要授权的用户。"
     },
     "instance_id": {
       "type": "string",
-      "description": "instance的唯一标识。"
+      "description": "实例 ID。审计日志查询时用于定位具体资源实例。"
     },
     "format": {
       "type": "string",
@@ -30660,7 +30660,7 @@ authorization: Bearer <auth-token>
     },
     "resource_id": {
       "type": "string",
-      "description": "resource的唯一标识。"
+      "description": "资源 ID。审计日志或资源查询时用于限定具体资源。"
     }
   },
   "required": [
