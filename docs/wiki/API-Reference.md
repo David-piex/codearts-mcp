@@ -261,6 +261,7 @@ Req has 174 tools; keep the full Req inventory in [Req-API-Reference](./Req-API-
 
 - [Req-API-Reference](./Req-API-Reference.md)
 - [HTTP-MCP-Interface](./HTTP-MCP-Interface.md)
+- [Function-API-Reference](./Function-API-Reference.md)
 - [Module-Functions-Overview](./Module-Functions-Overview.md)
 - [Capability-Matrix](./Capability-Matrix.md)
 - [Module-Live-Readiness](./Module-Live-Readiness.md)

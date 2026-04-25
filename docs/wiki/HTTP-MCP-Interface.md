@@ -1,6 +1,6 @@
 # CodeArts MCP HTTP 接口文档
 
-本文档面向要直接接入 `codearts-mcp` HTTP 服务的客户端开发者，说明 HTTP 端点、MCP JSON-RPC 请求格式、会话复用、鉴权配置、工具调用和错误响应。工具清单请继续参考 [API-Reference](./API-Reference.md)，Req 深度接口请参考 [Req-API-Reference](./Req-API-Reference.md)。
+本文档面向要直接接入 `codearts-mcp` HTTP 服务的客户端开发者，说明 HTTP 端点、MCP JSON-RPC 请求格式、会话复用、鉴权配置、工具调用和错误响应。每个功能的完整 API 参数请参考 [Function-API-Reference](./Function-API-Reference.md)，工具清单总览请参考 [API-Reference](./API-Reference.md)，Req 深度接口请参考 [Req-API-Reference](./Req-API-Reference.md)。
 
 ## 1. 基础信息
 
