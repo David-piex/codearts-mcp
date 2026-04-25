@@ -32,6 +32,14 @@ type CheckListTaskIssuesClient = {
     task_id: string;
     page: number;
     page_size: number;
+    keyword?: string;
+    severity?: string;
+    defect_level?: string;
+    rule_id?: string;
+    rule_name?: string;
+    file_path?: string;
+    status?: string;
+    checker?: string;
   }) => Promise<{
     issues: Array<{
       issue_id: string;

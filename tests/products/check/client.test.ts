@@ -255,11 +255,19 @@ describe("createCheckClient", () => {
     await client.listTaskIssues(
       createTaskPageInput({
         page: 2,
-        page_size: 50
+        page_size: 50,
+        severity: "1",
+        rule_id: "rule-1",
+        rule_name: "NullPointer",
+        file_path: "src/App.java",
+        status: "open",
+        checker: "java"
       })
     );
 
-    expect(requestedPath).toBe("/v2/tasks/task-1/defects-detail?offset=50&limit=50");
+    expect(requestedPath).toBe(
+      "/v2/tasks/task-1/defects-detail?offset=50&limit=50&defect_level=1&rule_id=rule-1&rule_name=NullPointer&file_path=src%2FApp.java&status=open&checker=java"
+    );
   });
 
   it("maps documented defects-detail fields into MCP issue items", async () => {

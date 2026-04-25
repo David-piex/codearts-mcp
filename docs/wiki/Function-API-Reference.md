@@ -22579,6 +22579,13 @@ authorization: Bearer <auth-token>
 | `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
 | `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
 | `task_id` | 是 | `string` |  | 任务 ID。用于定位构建、部署、检查或测试计划任务。 |
+| `severity` | 否 | `string` |  | 缺陷级别过滤；MCP 会映射到官方 `defect_level` 查询参数。 |
+| `defect_level` | 否 | `string` |  | 官方 Query 参数：缺陷级别。 |
+| `rule_id` | 否 | `string` |  | 官方 Query 参数：规则 ID。 |
+| `rule_name` | 否 | `string` |  | 官方 Query 参数：规则名称；未传时可使用 `keyword` 作为兼容别名。 |
+| `file_path` | 否 | `string` |  | 官方 Query 参数：文件路径。 |
+| `status` | 否 | `string` |  | 官方 Query 参数：缺陷状态。 |
+| `checker` | 否 | `string` |  | 官方 Query 参数：检查器/语言类型。 |
 
 调用示例：
 
@@ -22635,6 +22642,41 @@ authorization: Bearer <auth-token>
       "type": "string",
       "minLength": 1,
       "description": "任务 ID。用于定位构建、部署、检查或测试计划任务。"
+    },
+    "severity": {
+      "type": "string",
+      "minLength": 1,
+      "description": "缺陷级别过滤；MCP 会映射到官方 defect_level 查询参数。"
+    },
+    "defect_level": {
+      "type": "string",
+      "minLength": 1,
+      "description": "官方 Query 参数：缺陷级别。"
+    },
+    "rule_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "官方 Query 参数：规则 ID。"
+    },
+    "rule_name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "官方 Query 参数：规则名称；未传时可使用 keyword 作为兼容别名。"
+    },
+    "file_path": {
+      "type": "string",
+      "minLength": 1,
+      "description": "官方 Query 参数：文件路径。"
+    },
+    "status": {
+      "type": "string",
+      "minLength": 1,
+      "description": "官方 Query 参数：缺陷状态。"
+    },
+    "checker": {
+      "type": "string",
+      "minLength": 1,
+      "description": "官方 Query 参数：检查器/语言类型。"
     }
   },
   "required": [
@@ -23010,7 +23052,14 @@ authorization: Bearer <auth-token>
 | `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
 | `sort_order` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `plan_id` | 是 | `unknown` |  | 规划/计划 ID。用于定位 CodeArts Req 中的计划资源。 |
+| `plan_id` | 是 | `string` |  | 测试计划 URI。MCP 会同时映射到 `iterator_uri` 和 `version_uri`。 |
+| `owner_id` | 否 | `string` |  | 用例负责人用户 ID。 |
+| `status` | 否 | `string` |  | 用例状态。 |
+| `priority` | 否 | `string` |  | 用例优先级。 |
+| `module_id` | 否 | `string` |  | 模块/目录 ID。 |
+| `label_id` | 否 | `string` |  | 标签 ID。 |
+| `test_case_type` | 否 | `string` |  | 用例类型，例如 manual、auto。 |
+| `query` | 否 | `object` |  | 额外筛选条件兜底对象；会直接合并到 `batch-query` 请求体。 |
 
 调用示例：
 
@@ -23071,7 +23120,60 @@ authorization: Bearer <auth-token>
     },
     "plan_id": {
       "$ref": "#/properties/project_id",
-      "description": "规划/计划 ID。用于定位 CodeArts Req 中的计划资源。"
+      "description": "测试计划 URI。MCP 会同时映射到 iterator_uri 和 version_uri。"
+    },
+    "owner_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "用例负责人用户 ID。"
+    },
+    "status": {
+      "type": "string",
+      "minLength": 1,
+      "description": "用例状态。"
+    },
+    "priority": {
+      "type": "string",
+      "minLength": 1,
+      "description": "用例优先级。"
+    },
+    "module_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "模块/目录 ID。"
+    },
+    "label_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "标签 ID。"
+    },
+    "test_case_type": {
+      "type": "string",
+      "minLength": 1,
+      "description": "用例类型，例如 manual、auto。"
+    },
+    "query": {
+      "type": "object",
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "number"
+          },
+          {
+            "type": "boolean"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "description": "额外筛选条件兜底对象；会直接合并到 batch-query 请求体。"
     }
   },
   "required": [

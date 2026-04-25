@@ -34,6 +34,13 @@ type TestPlanListCasesClient = {
     page: number;
     page_size: number;
     keyword?: string;
+    owner_id?: string;
+    status?: string;
+    priority?: string;
+    module_id?: string;
+    label_id?: string;
+    test_case_type?: string;
+    query?: Record<string, string | number | boolean | string[]>;
   }) => Promise<{
     cases: Array<{
       case_id: string;

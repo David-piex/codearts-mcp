@@ -12,7 +12,19 @@ export const testPlanGetPlanInput = z.object({
 
 export const testPlanListCasesInput = pagingSchema.extend({
   project_id: idSchema,
-  plan_id: idSchema
+  plan_id: idSchema,
+  owner_id: idSchema.optional(),
+  status: z.string().min(1).optional(),
+  priority: z.string().min(1).optional(),
+  module_id: z.string().min(1).optional(),
+  label_id: z.string().min(1).optional(),
+  test_case_type: z.string().min(1).optional(),
+  query: z
+    .record(
+      z.string(),
+      z.union([z.string(), z.number(), z.boolean(), z.array(z.string())])
+    )
+    .optional()
 });
 
 export const testPlanListRunsInput = pagingSchema.extend({

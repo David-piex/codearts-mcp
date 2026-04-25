@@ -40,6 +40,13 @@ export type TestPlanClient = {
     page: number;
     page_size: number;
     keyword?: string;
+    owner_id?: string;
+    status?: string;
+    priority?: string;
+    module_id?: string;
+    label_id?: string;
+    test_case_type?: string;
+    query?: Record<string, string | number | boolean | string[]>;
   }) => Promise<{
     cases: Array<{
       case_id: string;
@@ -200,17 +207,41 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
     },
     async listCases(input) {
       const offset = (input.page - 1) * input.page_size;
+      const body: Record<string, unknown> = {
+        page_no: input.page,
+        page_size: input.page_size,
+        offset,
+        limit: input.page_size,
+        keyword: input.keyword,
+        iterator_uri: input.plan_id,
+        version_uri: input.plan_id
+      };
+
+      if (input.owner_id) {
+        body.owner_id = input.owner_id;
+      }
+      if (input.status) {
+        body.status = input.status;
+      }
+      if (input.priority) {
+        body.priority = input.priority;
+      }
+      if (input.module_id) {
+        body.module_id = input.module_id;
+      }
+      if (input.label_id) {
+        body.label_id = input.label_id;
+      }
+      if (input.test_case_type) {
+        body.test_case_type = input.test_case_type;
+      }
+      if (input.query) {
+        Object.assign(body, input.query);
+      }
+
       const response = (await _http.post(
         `/GT3KServer/v4/${encodeURIComponent(input.project_id)}/testcases/batch-query`,
-        {
-          page_no: input.page,
-          page_size: input.page_size,
-          offset,
-          limit: input.page_size,
-          keyword: input.keyword,
-          iterator_uri: input.plan_id,
-          version_uri: input.plan_id
-        }
+        body
       )) as {
         testcases?: Array<{
           case_uri?: string;

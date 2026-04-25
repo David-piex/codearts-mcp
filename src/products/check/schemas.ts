@@ -31,7 +31,14 @@ export const checkStopTaskInput = z.object({
 });
 
 export const checkListTaskIssuesInput = pagingSchema.extend({
-  task_id: idSchema
+  task_id: idSchema,
+  severity: z.string().min(1).optional(),
+  defect_level: z.string().min(1).optional(),
+  rule_id: z.string().min(1).optional(),
+  rule_name: z.string().min(1).optional(),
+  file_path: z.string().min(1).optional(),
+  status: z.string().min(1).optional(),
+  checker: z.string().min(1).optional()
 });
 
 export const checkGetMetricsInput = z.object({

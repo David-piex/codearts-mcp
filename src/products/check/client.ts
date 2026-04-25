@@ -58,6 +58,14 @@ export type CheckClient = {
     task_id: string;
     page: number;
     page_size: number;
+    keyword?: string;
+    severity?: string;
+    defect_level?: string;
+    rule_id?: string;
+    rule_name?: string;
+    file_path?: string;
+    status?: string;
+    checker?: string;
   }) => Promise<{
     issues: Array<{
       issue_id: string;
@@ -299,6 +307,25 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
         offset: String(offset),
         limit: String(input.page_size)
       });
+      const defectLevel = input.defect_level ?? input.severity;
+      if (defectLevel) {
+        query.set("defect_level", defectLevel);
+      }
+      if (input.rule_id) {
+        query.set("rule_id", input.rule_id);
+      }
+      if (input.rule_name ?? input.keyword) {
+        query.set("rule_name", input.rule_name ?? input.keyword ?? "");
+      }
+      if (input.file_path) {
+        query.set("file_path", input.file_path);
+      }
+      if (input.status) {
+        query.set("status", input.status);
+      }
+      if (input.checker) {
+        query.set("checker", input.checker);
+      }
       const response = (await _http.get(
         `/v2/tasks/${encodeURIComponent(input.task_id)}/defects-detail?${query.toString()}`
       )) as {
