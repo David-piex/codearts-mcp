@@ -4,20 +4,26 @@ import {
   createReqBatchDeleteIpdIssuesHandler,
   createReqBatchTransferIpdWorkItemFlowHandler,
   createReqBatchUpdateIpdIssuesHandler,
+  createReqCreateIpdChangeReviewFormHandler,
   createReqCreateIpdIssueHandler,
   createReqCreateIpdFeatureSetHandler,
   createReqCreateIpdLabelHandler,
   createReqCreateIpdModuleHandler,
+  createReqCreateIpdProcessInstanceHandler,
   createReqCreateIpdWorkHourHandler,
+  createReqDeleteIpdChangeReviewFormHandler,
   createReqDeleteIpdFeatureSetHandler,
   createReqDeleteIpdIssueImageHandler,
   createReqDeleteIpdLabelHandler,
   createReqDeleteIpdModuleHandler,
+  createReqDeleteIpdProcessInstanceHandler,
   createReqDeleteIpdWorkHourHandler,
   createReqTransferIpdWorkItemFlowHandler,
+  createReqUpdateIpdChangeReviewFormHandler,
   createReqUpdateIpdFeatureSetHandler,
   createReqUpdateIpdLabelHandler,
   createReqUpdateIpdModuleHandler,
+  createReqUpdateIpdProcessInstanceHandler,
   createReqUpdateIpdProjectFieldHandler,
   createReqUpdateIpdTenantFieldHandler,
   createReqUpdateIpdWorkHourHandler,
@@ -26,6 +32,87 @@ import {
 } from "../../../../src/products/req/tools/ipd-write-tools.js";
 
 describe("Req IPD write tools", () => {
+  it("previews and executes IPD review form mutations", async () => {
+    const createIpdChangeReviewForm = vi.fn();
+    const deleteIpdProcessInstance = vi.fn();
+
+    const previewedCr = await createReqCreateIpdChangeReviewFormHandler({ createIpdChangeReviewForm })({
+      project_id: "ipd-1",
+      title: "CR review",
+      need_approval: true,
+      status: { code: "Committed" },
+      cos: [
+        {
+          issue_id: "issue-1",
+          issue_number: "RR-1",
+          issue_category: "RR",
+          change_type: "Modify",
+          before_change: "{}",
+          after_change: "{\"execute\":{}}",
+          reviewer: ["u-1"],
+          approver: ["u-2"]
+        }
+      ]
+    });
+    const updatedCr = await createReqUpdateIpdChangeReviewFormHandler({
+      updateIpdChangeReviewForm: async () => ({ id: "review-1", title: "CR review", category: "CR", status: { name: "ToBeReviewed" } })
+    })({
+      project_id: "ipd-1",
+      id: "review-1",
+      old_status: { code: "Committed" },
+      status: { code: "ToBeReviewed" },
+      cos: [{ id: "co-1", review_comments: [{ result: "Approved", comment: "ok" }] }],
+      dry_run: false
+    });
+    const deletedCr = await createReqDeleteIpdChangeReviewFormHandler({
+      deleteIpdChangeReviewForm: async () => ({ id: "review-1", operator: "u-1" })
+    })({ project_id: "ipd-1", id: "review-1", dry_run: false });
+    const createdProcess = await createReqCreateIpdProcessInstanceHandler({
+      createIpdProcessInstance: async () => ({ id: "process-1", title: "BR review", category: "BR", status: { name: "Committed" } })
+    })({
+      project_id: "ipd-1",
+      title: "BR review",
+      category: "BR",
+      status: "Committed",
+      ccbs: [{ user_id: "u-2" }],
+      dry_run: false
+    });
+    const updatedProcess = await createReqUpdateIpdProcessInstanceHandler({
+      updateIpdProcessInstance: async () => ({ id: "process-1", title: "BR review updated", category: "BR" })
+    })({
+      project_id: "ipd-1",
+      id: "process-1",
+      title: "BR review updated",
+      status: "ToBeReviewed",
+      dry_run: false
+    });
+    const previewedDeleteProcess = await createReqDeleteIpdProcessInstanceHandler({ deleteIpdProcessInstance })({
+      project_id: "ipd-1",
+      id: "process-1"
+    });
+
+    expect(createIpdChangeReviewForm).not.toHaveBeenCalled();
+    expect(deleteIpdProcessInstance).not.toHaveBeenCalled();
+    expect(previewedCr.structuredContent.item).toEqual(
+      expect.objectContaining({ executed: false, title: "CR review", category: "CR" })
+    );
+    expect(updatedCr.structuredContent.item).toEqual(
+      expect.objectContaining({ executed: true, id: "review-1", title: "CR review" })
+    );
+    expect(deletedCr.structuredContent.item).toEqual(
+      expect.objectContaining({ executed: true, id: "review-1", category: "CR" })
+    );
+    expect(createdProcess.structuredContent.item).toEqual(
+      expect.objectContaining({ executed: true, id: "process-1", title: "BR review", category: "BR" })
+    );
+    expect(updatedProcess.structuredContent.item).toEqual(
+      expect.objectContaining({ executed: true, id: "process-1", title: "BR review updated" })
+    );
+    expect(previewedDeleteProcess.structuredContent.item).toEqual(
+      expect.objectContaining({ executed: false, id: "process-1" })
+    );
+  });
+
   it("previews and executes IPD issue mutations", async () => {
     const createIpdIssue = vi.fn();
     const batchDeleteIpdIssues = vi.fn();

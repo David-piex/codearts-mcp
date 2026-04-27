@@ -483,6 +483,21 @@ export type ReqClient = {
     created_on?: string;
     updated_on?: string;
   }>;
+  listReleasePlans: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    key_word?: string;
+    updated_time_interval?: string;
+  }) => Promise<{
+    plans: ReqReleasePlan[];
+    total?: number;
+    page?: number;
+    page_size?: number;
+    status?: string;
+    message?: string | null;
+  }>;
+  getReleasePlan: (input: { project_id: string; plan_id: string }) => Promise<ReqReleasePlanMutationResult>;
   listPlanAddableWorkItems: (input: {
     project_id: string;
     plan_id: string;
@@ -571,6 +586,31 @@ export type ReqClient = {
       nick_name?: string;
       first_name?: string;
     };
+  }>;
+  createReleasePlan: (input: ReqReleasePlanCreateInput) => Promise<ReqReleasePlanMutationResult>;
+  updateReleasePlan: (input: ReqReleasePlanUpdateInput) => Promise<ReqReleasePlanMutationResult>;
+  batchDeleteReleasePlans: (input: {
+    project_id: string;
+    plan_ids: string[];
+  }) => Promise<ReqReleasePlanBatchResult>;
+  batchUpdateReleasePlanBaseline: (input: {
+    project_id: string;
+    plan_ids: string[];
+    baseline: string;
+  }) => Promise<ReqReleasePlanBatchResult>;
+  changeReleasePlanStatus: (input: {
+    project_id: string;
+    plan_id: string;
+    operate: string;
+    move_to_sprint_id?: string;
+  }) => Promise<{
+    project_id: string;
+    plan_id: string;
+    operate: string;
+    move_to_sprint_id?: string;
+    status?: string;
+    message?: string;
+    result?: unknown;
   }>;
   updatePlanImage: (input: {
     project_id: string;
@@ -755,6 +795,23 @@ export type ReqClient = {
       domain_name?: string;
     }>;
     total?: number;
+  }>;
+  createProjectDomain: (input: { project_id: string; domain_name: string }) => Promise<{
+    domain_id?: string;
+    domain_name?: string;
+  }>;
+  updateProjectDomain: (input: {
+    project_id: string;
+    domain_id: string;
+    domain_name: string;
+  }) => Promise<{
+    domain_id?: string;
+    domain_name?: string;
+  }>;
+  cancelProjectDomain: (input: { project_id: string; domain_id: string }) => Promise<{
+    project_id: string;
+    domain_id: string;
+    cancelled: true;
   }>;
   listProjects: (input: { page: number; page_size: number; keyword?: string }) => Promise<{
     projects: Array<{ project_id: string; name: string; project_num_id?: number }>;
@@ -1231,6 +1288,60 @@ export type ReqClient = {
   }) => Promise<{
     exist: boolean;
   }>;
+  createProjectStatusConfig: (input: {
+    project_id: string;
+    defined_name: string;
+    status_attribute: number;
+    description?: string;
+  }) => Promise<{
+    status?: string;
+    result?: {
+      id?: string;
+      statusId?: number;
+      definedName?: string;
+      position?: number;
+      flag?: number;
+      projectUUId?: string;
+      description?: string;
+      statusAttribute?: number;
+    };
+  }>;
+  batchCreateTrackerConfig: (input: {
+    project_id: string;
+    tracker_id: number;
+    status_config_ids: string[];
+  }) => Promise<{
+    status?: string;
+    result?: {
+      issueStatusConfigs?: Array<{
+        trackerList?: number[];
+        id?: string;
+        statusId?: number;
+        definedName?: string;
+        description?: string;
+        position?: number;
+        flag?: number;
+        is_closed?: boolean;
+        is_initial?: boolean;
+        statusAttribute?: number;
+        statusAttributeName?: string;
+        issueStatusAttribute?: {
+          id?: number | string;
+          name?: string;
+          type?: string;
+        };
+        trackerId?: number;
+      }>;
+    };
+  }>;
+  updateTrackerConfig: (input: {
+    project_id: string;
+    tracker_id: number;
+    status_config_id: string;
+    new_position: number;
+  }) => Promise<{
+    status?: string;
+  }>;
   listWorkItemStatusDetails: (input: {
     project_id: string;
     tracker_id: number;
@@ -1651,6 +1762,10 @@ export type ReqClient = {
     users: ReqIpdUser[];
   }>;
   getIpdIssue: (input: { project_id: string; issue_id: string; version: "v1" | "v2" }) => Promise<ReqIpdIssue>;
+  listIpdChangeReviewIssueApprovers: (input: { project_id: string; issue_id: string }) => Promise<{
+    users: ReqIpdUser[];
+    total?: number;
+  }>;
   listIpdIssues: (input: {
     project_id: string;
     issue_type: string;
@@ -1676,6 +1791,35 @@ export type ReqClient = {
     wikis: ReqIpdWiki[];
     total?: number;
   }>;
+  listIpdReviewForms: (input: {
+    project_id: string;
+    type: "CR" | "BR" | "GR";
+    created_by?: string;
+    keyword?: string;
+    created_time?: Record<string, unknown>;
+    plan_end_date?: Record<string, unknown>;
+    plan_start_date?: Record<string, unknown>;
+    closed_time?: Record<string, unknown>;
+    approver?: string;
+    reviewer?: string;
+    offset: number;
+    limit: number;
+    sort?: Array<Record<string, unknown>>;
+  }) => Promise<{ reviews: ReqIpdReviewEntity[]; total?: number }>;
+  getIpdReviewForm: (input: { project_id: string; id: string; category: "CR" | "BR" | "GR" }) => Promise<ReqIpdReviewEntity>;
+  getIpdProcessInstance: (input: { project_id: string; id: string }) => Promise<ReqIpdReviewEntity>;
+  listIpdProcessInstances: (input: {
+    project_id: string;
+    filter: Array<Record<string, unknown>>;
+    sort?: Array<Record<string, unknown>>;
+    page: { page_no: number; page_size: number } & Record<string, unknown>;
+  }) => Promise<{ process_instances: ReqIpdReviewEntity[]; total?: number }>;
+  listIpdReviewRoleUsers: (input: {
+    project_id: string;
+    user_type: "approver" | "reviewer";
+    target_project_id?: string;
+    review_id?: string;
+  }) => Promise<{ users: ReqIpdUser[] }>;
   groupIpdIssues: (input: {
     project_id: string;
     issue_type: string;
@@ -1790,6 +1934,12 @@ export type ReqClient = {
     is_recover: boolean;
     process_context?: Record<string, unknown>;
   }) => Promise<unknown>;
+  createIpdChangeReviewForm: (input: Record<string, unknown> & { project_id: string }) => Promise<ReqIpdReviewEntity>;
+  updateIpdChangeReviewForm: (input: Record<string, unknown> & { project_id: string; id: string }) => Promise<ReqIpdReviewEntity>;
+  deleteIpdChangeReviewForm: (input: { project_id: string; id: string; category: "CR" }) => Promise<unknown>;
+  createIpdProcessInstance: (input: Record<string, unknown> & { project_id: string; domain_id?: string; operate_type?: string }) => Promise<ReqIpdReviewEntity>;
+  updateIpdProcessInstance: (input: Record<string, unknown> & { project_id: string; id: string; domain_id?: string }) => Promise<ReqIpdReviewEntity>;
+  deleteIpdProcessInstance: (input: { project_id: string; id: string }) => Promise<unknown>;
   createIpdIssue: (input: {
     project_id: string;
     title: string;
@@ -1996,6 +2146,42 @@ export type ReqClient = {
     work_hours?: string | number;
     region?: string;
   }>;
+  updateWorkingHours: (input: {
+    project_id: string;
+    issue_id: string;
+    work_hours_id: string;
+    summary?: string;
+    work_hours?: number;
+    work_hour_type?: number;
+  }) => Promise<{
+    total?: number;
+    work_hours: Array<{
+      id?: string | number;
+      issueId?: string | number;
+      issue_id?: string | number;
+      userId?: string;
+      user_id?: string;
+      userNumId?: string | number;
+      user_num_id?: string | number;
+      userName?: string;
+      user_name?: string;
+      nickName?: string;
+      nick_name?: string;
+      summary?: string;
+      workDate?: string;
+      work_date?: string;
+      workDateTimestamp?: string | number;
+      work_date_timestamp?: string | number;
+      workHours?: string | number;
+      work_hours?: string | number;
+      status?: number;
+      region?: string;
+      workHourTypeId?: number;
+      work_hour_type_id?: number;
+      workHourTypeName?: string;
+      work_hour_type_name?: string;
+    }>;
+  }>;
   deleteAttachment: (input: {
     project_id: string;
     work_item_id: string;
@@ -2132,6 +2318,10 @@ function mapReqCopyIssue(item: ReqCopyIssueResponse) {
   };
 }
 
+function withoutKeys<T extends Record<string, unknown>>(input: T, keys: string[]) {
+  return Object.fromEntries(Object.entries(input).filter(([key]) => !keys.includes(key)));
+}
+
 type ReqIssueListItem = {
   id: number | string;
   subject?: string;
@@ -2139,6 +2329,71 @@ type ReqIssueListItem = {
   status?: { name?: string };
   tracker?: { name?: string };
   tracker_name?: string;
+};
+
+type ReqReleasePlanCreateInput = {
+  project_id: string;
+  title: string;
+  category: string;
+  plan_start_date: string | number;
+  plan_end_date: string | number;
+  description?: string;
+  parent_id?: string;
+  workload?: string;
+  owner?: string;
+};
+
+type ReqReleasePlanUpdateInput = {
+  project_id: string;
+  plan_id: string;
+  title?: string;
+  category?: string;
+  description?: string;
+  status?: string;
+  plan_start_date?: string | number;
+  plan_end_date?: string | number;
+  created_date?: number;
+  parent_id?: string;
+  baseline?: string;
+  workload?: string;
+  owner?: string;
+};
+
+type ReqReleasePlan = {
+  id?: string;
+  title?: string;
+  category?: string;
+  description?: string;
+  state?: string;
+  status?: string;
+  children?: ReqReleasePlan[];
+  created_by?: string;
+  modified_by?: string;
+  plan_start_date?: string | number;
+  plan_end_date?: string | number;
+  created_date?: number;
+  parent_id?: string;
+  baseline?: string;
+  workload?: string;
+  owner?: string;
+};
+
+type ReqReleasePlanMutationResult = {
+  project_id: string;
+  status?: string;
+  message?: string | null;
+  plan: ReqReleasePlan;
+};
+
+type ReqReleasePlanBatchResult = {
+  project_id: string;
+  plan_ids: string[];
+  status?: string;
+  message?: string | null;
+  success_num?: number;
+  fail_num?: number;
+  success: Array<{ id?: string; modified_by?: string }>;
+  failed: Array<{ id?: string; modified_by?: string }>;
 };
 
 type ReqCopyIssueResponse = {
@@ -2494,6 +2749,25 @@ type ReqIpdIssue = {
   modified_time?: number | string;
   modified_date?: number | string;
   children?: ReqIpdIssue[];
+};
+
+type ReqIpdReviewEntity = Record<string, unknown> & {
+  id?: string | number;
+  number?: string;
+  title?: string;
+  category?: string;
+  state?: string;
+  status?: string | { id?: string | number; name?: string; label?: string };
+  created_by?: ReqIpdUser;
+  modified_by?: ReqIpdUser;
+  created_time?: string | number;
+  modified_time?: string | number;
+  plan_start_date?: string | number;
+  plan_end_date?: string | number;
+  close_time?: string | number;
+  closed_time?: string | number;
+  approver?: string;
+  reviewer?: string;
 };
 
 type ReqIpdNamedItem = {
@@ -3599,6 +3873,53 @@ export function createReqClient(
         issues_count: result.issues_count
       };
     },
+    async listReleasePlans(input) {
+      const query = new URLSearchParams({
+        page: String(input.page),
+        size: String(input.page_size),
+        key_word: input.key_word ?? "",
+        updated_time_interval: input.updated_time_interval ?? ""
+      });
+      const response = (await _http.get(
+        `/v1/planservice/projects/${encodeURIComponent(input.project_id)}/plans/query?${query.toString()}`
+      )) as {
+        status?: string;
+        message?: string | null;
+        result?: ReqReleasePlan[];
+        page?: {
+          page?: number;
+          size?: number;
+          count?: number;
+        };
+      };
+
+      return {
+        plans: response.result ?? [],
+        total: response.page?.count,
+        page: response.page?.page,
+        page_size: response.page?.size,
+        status: response.status,
+        message: response.message
+      };
+    },
+    async getReleasePlan(input) {
+      const response = (await _http.get(
+        `/v1/planservice/projects/${encodeURIComponent(input.project_id)}/plans/${encodeURIComponent(input.plan_id)}`
+      )) as {
+        status?: string;
+        message?: string | null;
+        result?: ReqReleasePlan;
+      };
+
+      return {
+        project_id: input.project_id,
+        status: response.status,
+        message: response.message,
+        plan: response.result ?? {
+          id: input.plan_id
+        }
+      };
+    },
     async createPlan(input) {
       const response = (await _http.post(
         `/v3/plan/${encodeURIComponent(input.project_id)}/management`,
@@ -3708,6 +4029,176 @@ export function createReqClient(
         project_id: result.project_id ?? input.project_id,
         img_url: result.img_url,
         creator: result.creator
+      };
+    },
+    async createReleasePlan(input) {
+      const response = (await _http.post(
+        `/v1/planservice/projects/${encodeURIComponent(input.project_id)}/plans`,
+        {
+          title: input.title,
+          category: input.category,
+          plan_start_date: input.plan_start_date,
+          plan_end_date: input.plan_end_date,
+          ...(typeof input.description !== "undefined" ? { description: input.description } : {}),
+          ...(typeof input.parent_id !== "undefined" ? { parent_id: input.parent_id } : {}),
+          ...(typeof input.workload !== "undefined" ? { workload: input.workload } : {}),
+          ...(typeof input.owner !== "undefined" ? { owner: input.owner } : {})
+        }
+      )) as {
+        status?: string;
+        message?: string | null;
+        result?: ReqReleasePlan;
+      };
+
+      assertReqMutationSucceeded("create release plan", response.status);
+
+      return {
+        project_id: input.project_id,
+        status: response.status,
+        message: response.message,
+        plan: response.result ?? {
+          title: input.title,
+          category: input.category,
+          plan_start_date: input.plan_start_date,
+          plan_end_date: input.plan_end_date,
+          description: input.description,
+          parent_id: input.parent_id,
+          workload: input.workload,
+          owner: input.owner
+        }
+      };
+    },
+    async updateReleasePlan(input) {
+      const response = (await _http.put(
+        `/v1/planservice/projects/${encodeURIComponent(input.project_id)}/plans/${encodeURIComponent(input.plan_id)}`,
+        {
+          id: input.plan_id,
+          ...(typeof input.title !== "undefined" ? { title: input.title } : {}),
+          ...(typeof input.category !== "undefined" ? { category: input.category } : {}),
+          ...(typeof input.description !== "undefined" ? { description: input.description } : {}),
+          ...(typeof input.status !== "undefined" ? { status: input.status } : {}),
+          ...(typeof input.plan_start_date !== "undefined" ? { plan_start_date: input.plan_start_date } : {}),
+          ...(typeof input.plan_end_date !== "undefined" ? { plan_end_date: input.plan_end_date } : {}),
+          ...(typeof input.created_date !== "undefined" ? { created_date: input.created_date } : {}),
+          ...(typeof input.parent_id !== "undefined" ? { parent_id: input.parent_id } : {}),
+          ...(typeof input.baseline !== "undefined" ? { baseline: input.baseline } : {}),
+          ...(typeof input.workload !== "undefined" ? { workload: input.workload } : {}),
+          ...(typeof input.owner !== "undefined" ? { owner: input.owner } : {})
+        }
+      )) as {
+        status?: string;
+        message?: string | null;
+        result?: ReqReleasePlan;
+      };
+
+      assertReqMutationSucceeded("update release plan", response.status);
+
+      return {
+        project_id: input.project_id,
+        status: response.status,
+        message: response.message,
+        plan: response.result ?? {
+          id: input.plan_id,
+          title: input.title,
+          category: input.category,
+          description: input.description,
+          status: input.status,
+          plan_start_date: input.plan_start_date,
+          plan_end_date: input.plan_end_date,
+          created_date: input.created_date,
+          parent_id: input.parent_id,
+          baseline: input.baseline,
+          workload: input.workload,
+          owner: input.owner
+        }
+      };
+    },
+    async batchDeleteReleasePlans(input) {
+      const response = (await _http.delete(
+        `/v1/planservice/projects/${encodeURIComponent(input.project_id)}/plans/batch-delete`,
+        { ids: input.plan_ids }
+      )) as {
+        status?: string;
+        message?: string | null;
+        result?: {
+          success_num?: number;
+          fail_num?: number;
+          success?: Array<{ id?: string; modified_by?: string }>;
+          failed?: Array<{ id?: string; modified_by?: string }>;
+        };
+      };
+
+      assertReqMutationSucceeded("batch delete release plans", response.status);
+
+      return {
+        project_id: input.project_id,
+        plan_ids: input.plan_ids,
+        status: response.status,
+        message: response.message,
+        success_num: response.result?.success_num,
+        fail_num: response.result?.fail_num,
+        success: response.result?.success ?? [],
+        failed: response.result?.failed ?? []
+      };
+    },
+    async batchUpdateReleasePlanBaseline(input) {
+      const response = (await _http.put(
+        `/v1/planservice/projects/${encodeURIComponent(input.project_id)}/plans/batch-baseline`,
+        {
+          ids: input.plan_ids,
+          attribute: {
+            baseline: input.baseline
+          }
+        }
+      )) as {
+        status?: string;
+        message?: string | null;
+        result?: {
+          success_num?: number;
+          fail_num?: number;
+          success?: Array<{ id?: string; modified_by?: string }>;
+          failed?: Array<{ id?: string; modified_by?: string }>;
+        };
+      };
+
+      assertReqMutationSucceeded("batch update release plan baseline", response.status);
+
+      return {
+        project_id: input.project_id,
+        plan_ids: input.plan_ids,
+        status: response.status,
+        message: response.message,
+        success_num: response.result?.success_num,
+        fail_num: response.result?.fail_num,
+        success: response.result?.success ?? [],
+        failed: response.result?.failed ?? []
+      };
+    },
+    async changeReleasePlanStatus(input) {
+      const response = (await _http.put(
+        `/v1/planservice/projects/${encodeURIComponent(input.project_id)}/plans/${encodeURIComponent(input.plan_id)}/status`,
+        {
+          operate: input.operate,
+          ...(typeof input.move_to_sprint_id !== "undefined"
+            ? { move_to_sprint_id: input.move_to_sprint_id }
+            : {})
+        }
+      )) as {
+        status?: string;
+        message?: string;
+        result?: unknown;
+      };
+
+      assertReqMutationSucceeded("change release plan status", response.status);
+
+      return {
+        project_id: input.project_id,
+        plan_id: input.plan_id,
+        operate: input.operate,
+        move_to_sprint_id: input.move_to_sprint_id,
+        status: response.status,
+        message: response.message,
+        result: response.result
       };
     },
     async updatePlanImage(input) {
@@ -4242,6 +4733,49 @@ export function createReqClient(
       return {
         domains: response.domains ?? [],
         total: response.total
+      };
+    },
+    async createProjectDomain(input) {
+      const response = (await _http.post(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/domain`,
+        {
+          domain_name: input.domain_name
+        }
+      )) as {
+        domain_id?: string;
+        domain_name?: string;
+      };
+
+      return {
+        domain_id: response.domain_id,
+        domain_name: response.domain_name ?? input.domain_name
+      };
+    },
+    async updateProjectDomain(input) {
+      const response = (await _http.put(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/domains/${encodeURIComponent(input.domain_id)}`,
+        {
+          domain_name: input.domain_name
+        }
+      )) as {
+        domain_id?: string;
+        domain_name?: string;
+      };
+
+      return {
+        domain_id: response.domain_id ?? input.domain_id,
+        domain_name: response.domain_name ?? input.domain_name
+      };
+    },
+    async cancelProjectDomain(input) {
+      await _http.delete(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/domains/${encodeURIComponent(input.domain_id)}`
+      );
+
+      return {
+        project_id: input.project_id,
+        domain_id: input.domain_id,
+        cancelled: true as const
       };
     },
     async listWorkItems(input) {
@@ -5180,6 +5714,66 @@ export function createReqClient(
         exist: response.result?.exist ?? response.exist ?? false
       };
     },
+    async createProjectStatusConfig(input) {
+      return (await _http.post("/v2/issue-status/project-status-config", {
+        projectUUId: input.project_id,
+        definedName: input.defined_name,
+        description: input.description,
+        statusAttribute: input.status_attribute
+      })) as {
+        status?: string;
+        result?: {
+          id?: string;
+          statusId?: number;
+          definedName?: string;
+          position?: number;
+          flag?: number;
+          projectUUId?: string;
+          description?: string;
+          statusAttribute?: number;
+        };
+      };
+    },
+    async batchCreateTrackerConfig(input) {
+      return (await _http.post("/v2/issue-status/batch-tracker-config", {
+        projectUUId: input.project_id,
+        trackerId: String(input.tracker_id),
+        ids: input.status_config_ids
+      })) as {
+        status?: string;
+        result?: {
+          issueStatusConfigs?: Array<{
+            trackerList?: number[];
+            id?: string;
+            statusId?: number;
+            definedName?: string;
+            description?: string;
+            position?: number;
+            flag?: number;
+            is_closed?: boolean;
+            is_initial?: boolean;
+            statusAttribute?: number;
+            statusAttributeName?: string;
+            issueStatusAttribute?: {
+              id?: number | string;
+              name?: string;
+              type?: string;
+            };
+            trackerId?: number;
+          }>;
+        };
+      };
+    },
+    async updateTrackerConfig(input) {
+      return (await _http.post("/v2/issue-status/update-tracker-config", {
+        trackerId: String(input.tracker_id),
+        id: input.status_config_id,
+        newPosition: input.new_position,
+        projectUUId: input.project_id
+      })) as {
+        status?: string;
+      };
+    },
     async listWorkItemStatusDetails(input) {
       const query = new URLSearchParams({
         project_id: input.project_id,
@@ -5988,6 +6582,22 @@ export function createReqClient(
 
       return response.result ?? response;
     },
+    async listIpdChangeReviewIssueApprovers(input) {
+      const response = (await _http.get(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/review/issues/${encodeURIComponent(input.issue_id)}/approvers`
+      )) as {
+        result?: { data?: ReqIpdUser[]; users?: ReqIpdUser[]; total?: number };
+        data?: ReqIpdUser[];
+        users?: ReqIpdUser[];
+        total?: number;
+      };
+      const result = response.result ?? response;
+
+      return {
+        users: result.data ?? result.users ?? [],
+        total: result.total
+      };
+    },
     async listIpdIssues(input) {
       const query = new URLSearchParams({
         issue_type: input.issue_type
@@ -6059,6 +6669,95 @@ export function createReqClient(
       return {
         wikis: response.data ?? [],
         total: response.total
+      };
+    },
+    async listIpdReviewForms(input) {
+      const response = (await _http.post(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/review/query`,
+        {
+          type: input.type,
+          ...(input.created_by ? { created_by: input.created_by } : {}),
+          ...(input.keyword ? { keyword: input.keyword } : {}),
+          ...(input.created_time ? { created_time: input.created_time } : {}),
+          ...(input.plan_end_date ? { plan_end_date: input.plan_end_date } : {}),
+          ...(input.plan_start_date ? { plan_start_date: input.plan_start_date } : {}),
+          ...(input.closed_time ? { closed_time: input.closed_time } : {}),
+          ...(input.approver ? { approver: input.approver } : {}),
+          ...(input.reviewer ? { reviewer: input.reviewer } : {}),
+          offset: input.offset,
+          limit: input.limit,
+          ...(input.sort ? { sort: input.sort } : {})
+        }
+      )) as {
+        result?: { data?: ReqIpdReviewEntity[]; reviews?: ReqIpdReviewEntity[]; total?: number };
+        data?: ReqIpdReviewEntity[];
+        reviews?: ReqIpdReviewEntity[];
+        total?: number;
+      };
+      const result = response.result ?? response;
+
+      return {
+        reviews: result.data ?? result.reviews ?? [],
+        total: result.total
+      };
+    },
+    async getIpdReviewForm(input) {
+      const query = new URLSearchParams({ category: input.category });
+      const response = (await _http.get(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/review/${encodeURIComponent(input.id)}?${query.toString()}`
+      )) as { result?: ReqIpdReviewEntity } & ReqIpdReviewEntity;
+
+      return response.result ?? response;
+    },
+    async getIpdProcessInstance(input) {
+      const response = (await _http.get(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/process-instances/${encodeURIComponent(input.id)}`
+      )) as { result?: ReqIpdReviewEntity } & ReqIpdReviewEntity;
+
+      return response.result ?? response;
+    },
+    async listIpdProcessInstances(input) {
+      const response = (await _http.post(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/process-instances/query`,
+        {
+          filter: input.filter,
+          ...(input.sort ? { sort: input.sort } : {}),
+          page: input.page
+        }
+      )) as {
+        result?: {
+          process_instances?: ReqIpdReviewEntity[];
+          data?: ReqIpdReviewEntity[];
+          total?: number;
+        };
+        process_instances?: ReqIpdReviewEntity[];
+        data?: ReqIpdReviewEntity[];
+        total?: number;
+      };
+      const result = response.result ?? response;
+
+      return {
+        process_instances: result.process_instances ?? result.data ?? [],
+        total: result.total
+      };
+    },
+    async listIpdReviewRoleUsers(input) {
+      const query = new URLSearchParams({ user_type: input.user_type });
+      if (input.target_project_id) {
+        query.set("target_project_id", input.target_project_id);
+      }
+      if (input.review_id) {
+        query.set("review_id", input.review_id);
+      }
+      const response = (await _http.get(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/user/role?${query.toString()}`
+      )) as {
+        result?: { users?: ReqIpdUser[] };
+        users?: ReqIpdUser[];
+      };
+
+      return {
+        users: response.result?.users ?? response.users ?? []
       };
     },
     async groupIpdIssues(input) {
@@ -6476,6 +7175,100 @@ export function createReqClient(
       };
 
       assertReqMutationSucceeded("batch transfer IPD work item flow", response.status);
+
+      return response.result ?? response;
+    },
+    async createIpdChangeReviewForm(input) {
+      const { project_id, extra_fields, ...rest } = input;
+      const response = (await _http.post(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(project_id)}/review`,
+        {
+          ...rest,
+          ...(extra_fields && typeof extra_fields === "object" ? extra_fields : {})
+        }
+      )) as { status?: string; result?: ReqIpdReviewEntity } & ReqIpdReviewEntity;
+
+      if (response.status) {
+        assertReqMutationSucceeded("create IPD change review form", response.status);
+      }
+
+      return response.result ?? response;
+    },
+    async updateIpdChangeReviewForm(input) {
+      const { project_id, id, extra_fields, ...rest } = input;
+      const response = (await _http.put(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(project_id)}/review/${encodeURIComponent(id)}`,
+        {
+          ...rest,
+          ...(extra_fields && typeof extra_fields === "object" ? extra_fields : {})
+        }
+      )) as { status?: string; result?: ReqIpdReviewEntity } & ReqIpdReviewEntity;
+
+      if (response.status) {
+        assertReqMutationSucceeded("update IPD change review form", response.status);
+      }
+
+      return response.result ?? response;
+    },
+    async deleteIpdChangeReviewForm(input) {
+      const query = new URLSearchParams({ category: input.category });
+      return await _http.delete(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/review/${encodeURIComponent(input.id)}?${query.toString()}`
+      );
+    },
+    async createIpdProcessInstance(input) {
+      const query = new URLSearchParams();
+      if (input.operate_type && typeof input.operate_type === "string") {
+        query.set("operate_type", input.operate_type);
+      }
+      if (input.domain_id && typeof input.domain_id === "string") {
+        query.set("domain_id", input.domain_id);
+      }
+      const suffix = query.toString() ? `?${query.toString()}` : "";
+      const { project_id, extra_fields, ...rest } = input;
+      const response = (await _http.post(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(project_id)}/process-instances${suffix}`,
+        {
+          ...withoutKeys(rest, ["operate_type", "domain_id"]),
+          ...(extra_fields && typeof extra_fields === "object" ? extra_fields : {})
+        }
+      )) as { status?: string; result?: ReqIpdReviewEntity } & ReqIpdReviewEntity;
+
+      if (response.status) {
+        assertReqMutationSucceeded("create IPD process instance", response.status);
+      }
+
+      return response.result ?? response;
+    },
+    async updateIpdProcessInstance(input) {
+      const query = new URLSearchParams();
+      if (input.domain_id && typeof input.domain_id === "string") {
+        query.set("domain_id", input.domain_id);
+      }
+      const suffix = query.toString() ? `?${query.toString()}` : "";
+      const { project_id, id, extra_fields, ...rest } = input;
+      const response = (await _http.put(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(project_id)}/process-instances/${encodeURIComponent(id)}${suffix}`,
+        {
+          ...withoutKeys(rest, ["domain_id"]),
+          ...(extra_fields && typeof extra_fields === "object" ? extra_fields : {})
+        }
+      )) as { status?: string; result?: ReqIpdReviewEntity } & ReqIpdReviewEntity;
+
+      if (response.status) {
+        assertReqMutationSucceeded("update IPD process instance", response.status);
+      }
+
+      return response.result ?? response;
+    },
+    async deleteIpdProcessInstance(input) {
+      const response = (await _http.delete(
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/process-instances/${encodeURIComponent(input.id)}`
+      )) as { status?: string; result?: unknown };
+
+      if (response.status) {
+        assertReqMutationSucceeded("delete IPD process instance", response.status);
+      }
 
       return response.result ?? response;
     },
@@ -7069,6 +7862,54 @@ export function createReqClient(
         work_date_timestamp: record?.work_date_timestamp,
         work_hours: record?.work_hours,
         region: record?.region
+      };
+    },
+    async updateWorkingHours(input) {
+      const response = (await _http.put(
+        `/v3/projects/${encodeURIComponent(input.project_id)}/issues/${encodeURIComponent(input.issue_id)}/work-hours/${encodeURIComponent(input.work_hours_id)}`,
+        {
+          ...(typeof input.summary !== "undefined" ? { summary: input.summary } : {}),
+          ...(typeof input.work_hours !== "undefined" ? { work_hours: input.work_hours } : {}),
+          ...(typeof input.work_hour_type !== "undefined" ? { work_hour_type: input.work_hour_type } : {})
+        }
+      )) as {
+        result?: {
+          total?: number;
+          data?: Array<Record<string, unknown>>;
+        };
+        status?: string;
+      };
+
+      assertReqMutationSucceeded("update working hours", response.status);
+
+      return {
+        total: response.result?.total,
+        work_hours: (response.result?.data ?? []) as Array<{
+          id?: string | number;
+          issueId?: string | number;
+          issue_id?: string | number;
+          userId?: string;
+          user_id?: string;
+          userNumId?: string | number;
+          user_num_id?: string | number;
+          userName?: string;
+          user_name?: string;
+          nickName?: string;
+          nick_name?: string;
+          summary?: string;
+          workDate?: string;
+          work_date?: string;
+          workDateTimestamp?: string | number;
+          work_date_timestamp?: string | number;
+          workHours?: string | number;
+          work_hours?: string | number;
+          status?: number;
+          region?: string;
+          workHourTypeId?: number;
+          work_hour_type_id?: number;
+          workHourTypeName?: string;
+          work_hour_type_name?: string;
+        }>
       };
     },
     async deleteAttachment(input) {

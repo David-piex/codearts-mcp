@@ -3918,6 +3918,43 @@ describe("createReqClient", () => {
     });
   });
 
+  it("includes the required empty key_word query parameter for release plan reads", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          status: "success",
+          result: [],
+          page: {
+            page: 1,
+            size: 10,
+            count: 0
+          }
+        };
+      }
+    } as never);
+
+    const result = await client.listReleasePlans({
+      project_id: "p-1",
+      page: 1,
+      page_size: 10
+    });
+
+    expect(requestedPath).toBe(
+      "/v1/planservice/projects/p-1/plans/query?page=1&size=10&key_word=&updated_time_interval="
+    );
+    expect(result).toEqual({
+      plans: [],
+      total: 0,
+      page: 1,
+      page_size: 10,
+      status: "success",
+      message: undefined
+    });
+  });
+
   it("maps plan write endpoints to the documented request shapes", async () => {
     const requests: Array<{
       method: string;

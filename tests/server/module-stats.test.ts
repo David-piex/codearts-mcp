@@ -20,6 +20,7 @@ describe("classifyToolAccess", () => {
     expect(classifyToolAccess("pipeline_switch_strategy")).toBe("write");
     expect(classifyToolAccess("pipeline_inherit_project_strategy")).toBe("write");
     expect(classifyToolAccess("req_batch_update_work_items")).toBe("write");
+    expect(classifyToolAccess("req_change_release_plan_status")).toBe("write");
     expect(classifyToolAccess("req_leave_project")).toBe("write");
     expect(classifyToolAccess("req_upload_work_item_image")).toBe("write");
   });
@@ -28,7 +29,7 @@ describe("classifyToolAccess", () => {
 describe("collectModuleStats", () => {
   it("returns the current per-module tool totals and read/write split", () => {
     expect(collectModuleStats()).toEqual([
-      { module: "Req", total: 174, read: 110, write: 64 },
+      { module: "Req", total: 200, read: 119, write: 81 },
       { module: "Repo", total: 25, read: 17, write: 8 },
       { module: "Pipeline", total: 77, read: 42, write: 35 },
       { module: "Check", total: 8, read: 5, write: 3 },
@@ -42,9 +43,9 @@ describe("collectModuleStats", () => {
   it("returns the current aggregate product tool totals", () => {
     expect(collectProductToolStats()).toEqual({
       modules: 8,
-      total: 384,
-      read: 249,
-      write: 135
+      total: 410,
+      read: 258,
+      write: 152
     });
   });
 
@@ -52,14 +53,14 @@ describe("collectModuleStats", () => {
     expect(renderModuleStatsMarkdown()).toContain("| Module | Total | Read | Write |");
     expect(renderModuleStatsMarkdown()).toContain("| Deploy | 59 | 44 | 15 |");
     expect(renderModuleStatsMarkdown()).toContain("- Product modules: `8`");
-    expect(renderModuleStatsMarkdown()).toContain("- Product tools: `384`");
-    expect(renderModuleStatsMarkdown()).toContain("- Shared HTTP total with auth tools: `386`");
+    expect(renderModuleStatsMarkdown()).toContain("- Product tools: `410`");
+    expect(renderModuleStatsMarkdown()).toContain("- Shared HTTP total with auth tools: `412`");
   });
 
   it("renders a json report from the current stats", () => {
     expect(JSON.parse(renderModuleStatsReportJson())).toEqual({
       modules: [
-        { module: "Req", total: 174, read: 110, write: 64 },
+        { module: "Req", total: 200, read: 119, write: 81 },
         { module: "Repo", total: 25, read: 17, write: 8 },
         { module: "Pipeline", total: 77, read: 42, write: 35 },
         { module: "Check", total: 8, read: 5, write: 3 },
@@ -70,10 +71,10 @@ describe("collectModuleStats", () => {
       ],
       totals: {
         modules: 8,
-        total: 384,
-        read: 249,
-        write: 135,
-        httpTotalWithAuth: 386
+        total: 410,
+        read: 258,
+        write: 152,
+        httpTotalWithAuth: 412
       }
     });
   });

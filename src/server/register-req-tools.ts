@@ -7,6 +7,8 @@ import {
   reqAddWorkItemWorkHourInput,
   reqAddProjectMemberInput,
   reqBatchAddProjectMembersInput,
+  reqBatchCreateTrackerConfigInput,
+  reqBatchDeleteReleasePlansInput,
   reqBatchCreateIpdIssuesInput,
   reqBatchDeleteIpdIssuesInput,
   reqBatchDeleteProjectMembersInput,
@@ -14,26 +16,36 @@ import {
   reqBatchDeleteWorkItemsInput,
   reqBatchTransferIpdWorkItemFlowInput,
   reqBatchUpdateIpdIssuesInput,
+  reqBatchUpdateReleasePlanBaselineInput,
+  reqChangeReleasePlanStatusInput,
   reqCopyWorkItemsInput,
   reqCheckProjectNameInput,
   reqCheckWorkItemStatusNameInput,
   reqClearPlanWorkItemsInput,
+  reqCreateIpdChangeReviewFormInput,
   reqCreateIpdIssueInput,
   reqCreateIpdFeatureSetInput,
   reqCreateIpdLabelInput,
   reqCreateIpdModuleInput,
+  reqCreateIpdProcessInstanceInput,
   reqCreateIpdWorkHourInput,
   reqCreateIterationWorkItemInput,
   reqCreatePlanWorkItemInput,
   reqCreatePlanInput,
+  reqCreateReleasePlanInput,
   reqCreateIterationInput,
   reqCreateProjectInput,
+  reqCreateProjectDomainInput,
   reqCreateProjectModuleInput,
+  reqCreateProjectStatusConfigInput,
+  reqCancelProjectDomainInput,
   reqDeletePlanInput,
+  reqDeleteIpdChangeReviewFormInput,
   reqDeleteIpdFeatureSetInput,
   reqDeleteIpdIssueImageInput,
   reqDeleteIpdLabelInput,
   reqDeleteIpdModuleInput,
+  reqDeleteIpdProcessInstanceInput,
   reqDeleteIpdWorkHourInput,
   reqDeleteProjectInput,
   reqDeleteIterationInput,
@@ -45,7 +57,9 @@ import {
   reqCountWorkItemTreeInput,
   reqCreateWorkItemTemplateInput,
   reqGetIpdIssueInput,
+  reqGetIpdProcessInstanceInput,
   reqGetIpdProjectFieldOptionUsedInput,
+  reqGetIpdReviewFormInput,
   reqGetIpdStatisticDashboardInput,
   reqGetIpdTenantFieldOptionUsedInput,
   reqGetIpdTenantFieldUsedInput,
@@ -71,6 +85,7 @@ import {
   reqGetProjectWorkhourConfigInput,
   reqGetIterationInput,
   reqGetPlanInput,
+  reqGetReleasePlanInput,
   reqGetProjectInput,
   reqGetWorkItemCompletionRateInput,
   reqGetWorkItemIssueDetailsInput,
@@ -81,9 +96,13 @@ import {
   reqListIterationStatusStatisticsInput,
   reqGetIpdE2EGraphInput,
   reqListIpdCategoryStatusesInput,
+  reqListIpdChangeReviewIssueApproversInput,
   reqListIpdAttachedWikisInput,
   reqListIpdIssueAttachmentsInput,
   reqListIpdIssueTreeInput,
+  reqListIpdProcessInstancesInput,
+  reqListIpdReviewFormsInput,
+  reqListIpdReviewRoleUsersInput,
   reqListIpdWorkHourCategoriesInput,
   reqListIpdWorkHoursInput,
   reqListIpdFeatureSetsInput,
@@ -110,6 +129,7 @@ import {
   reqListPlanAddableWorkItemsInput,
   reqListPlanWorkItemsInput,
   reqListPlansInput,
+  reqListReleasePlansInput,
   reqListProgramFieldsInput,
   reqListProgramsInput,
   reqListProjectBugStatisticsInput,
@@ -152,9 +172,12 @@ import {
   reqListRrsInput,
   reqListRrStatusesInput,
   reqUpdatePlanInput,
+  reqUpdateReleasePlanInput,
+  reqUpdateIpdChangeReviewFormInput,
   reqUpdateIpdFeatureSetInput,
   reqUpdateIpdLabelInput,
   reqUpdateIpdModuleInput,
+  reqUpdateIpdProcessInstanceInput,
   reqUpdateIpdProjectFieldInput,
   reqUpdateIpdTenantFieldInput,
   reqUpdateIpdWorkHourInput,
@@ -165,11 +188,14 @@ import {
   reqUpdateProjectModuleInput,
   reqUpdateProjectTemplateInput,
   reqUpdateProjectMemberRoleInput,
+  reqUpdateProjectDomainInput,
   reqUpdateProjectInput,
+  reqUpdateTrackerConfigInput,
   reqTransferIpdWorkItemFlowInput,
   reqUpdateWorkItemCommentInput,
   reqUpdateWorkItemFlowInput,
   reqUpdateWorkItemInput,
+  reqUpdateWorkingHoursInput,
   reqUploadAttachmentInput,
   reqUploadIpdIssueAttachmentInput,
   reqUploadIpdIssueImageInput,
@@ -182,19 +208,27 @@ import { createReqAddWorkItemCommentHandler } from "../products/req/tools/add-wo
 import { createReqAddWorkItemWorkHourHandler } from "../products/req/tools/add-work-item-work-hour.js";
 import { createReqAddProjectMemberHandler } from "../products/req/tools/add-project-member.js";
 import { createReqBatchAddProjectMembersHandler } from "../products/req/tools/batch-add-project-members.js";
+import { createReqBatchCreateTrackerConfigHandler } from "../products/req/tools/batch-create-tracker-config.js";
+import { createReqBatchDeleteReleasePlansHandler } from "../products/req/tools/batch-delete-release-plans.js";
 import { createReqBatchDeleteProjectMembersHandler } from "../products/req/tools/batch-delete-project-members.js";
 import { createReqBatchDeleteIterationsHandler } from "../products/req/tools/batch-delete-iterations.js";
 import { createReqBatchDeleteWorkItemsHandler } from "../products/req/tools/batch-delete-work-items.js";
+import { createReqBatchUpdateReleasePlanBaselineHandler } from "../products/req/tools/batch-update-release-plan-baseline.js";
+import { createReqChangeReleasePlanStatusHandler } from "../products/req/tools/change-release-plan-status.js";
 import { createReqCopyWorkItemsHandler } from "../products/req/tools/copy-work-items.js";
 import { createReqCheckProjectNameHandler } from "../products/req/tools/check-project-name.js";
 import { createReqCheckWorkItemStatusNameHandler } from "../products/req/tools/check-work-item-status-name.js";
 import { createReqClearPlanWorkItemsHandler } from "../products/req/tools/clear-plan-work-items.js";
 import { createReqCreatePlanHandler } from "../products/req/tools/create-plan.js";
 import { createReqCreatePlanWorkItemHandler } from "../products/req/tools/create-plan-work-item.js";
+import { createReqCreateReleasePlanHandler } from "../products/req/tools/create-release-plan.js";
 import { createReqCreateIterationHandler } from "../products/req/tools/create-iteration.js";
 import { createReqCreateIterationWorkItemHandler } from "../products/req/tools/create-iteration-work-item.js";
 import { createReqCreateProjectHandler } from "../products/req/tools/create-project.js";
+import { createReqCreateProjectDomainHandler } from "../products/req/tools/create-project-domain.js";
 import { createReqCreateProjectModuleHandler } from "../products/req/tools/create-project-module.js";
+import { createReqCreateProjectStatusConfigHandler } from "../products/req/tools/create-project-status-config.js";
+import { createReqCancelProjectDomainHandler } from "../products/req/tools/cancel-project-domain.js";
 import { createReqDeleteAttachmentHandler } from "../products/req/tools/delete-attachment.js";
 import { createReqDeletePlanHandler } from "../products/req/tools/delete-plan.js";
 import { createReqDeleteProjectHandler } from "../products/req/tools/delete-project.js";
@@ -213,6 +247,7 @@ import { createReqGetCurrentUserRoleHandler } from "../products/req/tools/get-cu
 import { createReqGetIrHandler } from "../products/req/tools/get-ir.js";
 import { createReqGetIterationHandler } from "../products/req/tools/get-iteration.js";
 import { createReqGetPlanHandler } from "../products/req/tools/get-plan.js";
+import { createReqGetReleasePlanHandler } from "../products/req/tools/get-release-plan.js";
 import { createReqGetProjectBugDensityHandler } from "../products/req/tools/get-project-bug-density.js";
 import { createReqGetProjectBugsPerDeveloperHandler } from "../products/req/tools/get-project-bugs-per-developer.js";
 import { createReqGetProjectCompletionRateHandler } from "../products/req/tools/get-project-completion-rate.js";
@@ -246,6 +281,7 @@ import { createReqListOptionalWorkItemStatusConfigsHandler } from "../products/r
 import { createReqListPlanAddableWorkItemsHandler } from "../products/req/tools/list-plan-addable-work-items.js";
 import { createReqListPlanWorkItemsHandler } from "../products/req/tools/list-plan-work-items.js";
 import { createReqListPlansHandler } from "../products/req/tools/list-plans.js";
+import { createReqListReleasePlansHandler } from "../products/req/tools/list-release-plans.js";
 import { createReqListProgramFieldsHandler } from "../products/req/tools/list-program-fields.js";
 import { createReqListProgramsHandler } from "../products/req/tools/list-programs.js";
 import { createReqListProjectBugStatisticsHandler } from "../products/req/tools/list-project-bug-statistics.js";
@@ -282,16 +318,20 @@ import { createReqListRrsHandler } from "../products/req/tools/list-rrs.js";
 import { createReqQueryIterationImmovableIssuesHandler } from "../products/req/tools/query-iteration-immovable-issues.js";
 import { createReqUpdatePlanHandler } from "../products/req/tools/update-plan.js";
 import { createReqUpdatePlanImageHandler } from "../products/req/tools/update-plan-image.js";
+import { createReqUpdateReleasePlanHandler } from "../products/req/tools/update-release-plan.js";
 import { createReqUpdateIterationHandler } from "../products/req/tools/update-iteration.js";
 import { createReqUpdateIterationStateHandler } from "../products/req/tools/update-iteration-state.js";
 import { createReqUpdateCacheDataHandler } from "../products/req/tools/update-cache-data.js";
+import { createReqUpdateProjectDomainHandler } from "../products/req/tools/update-project-domain.js";
 import { createReqUpdateProjectModuleHandler } from "../products/req/tools/update-project-module.js";
 import { createReqUpdateProjectTemplateHandler } from "../products/req/tools/update-project-template.js";
 import { createReqUpdateProjectMemberRoleHandler } from "../products/req/tools/update-project-member-role.js";
 import { createReqUpdateProjectHandler } from "../products/req/tools/update-project.js";
+import { createReqUpdateTrackerConfigHandler } from "../products/req/tools/update-tracker-config.js";
 import { createReqUpdateWorkItemCommentHandler } from "../products/req/tools/update-work-item-comment.js";
 import { createReqUpdateWorkItemFlowHandler } from "../products/req/tools/update-work-item-flow.js";
 import { createReqUpdateWorkItemHandler } from "../products/req/tools/update-work-item.js";
+import { createReqUpdateWorkingHoursHandler } from "../products/req/tools/update-working-hours.js";
 import { createReqUploadAttachmentHandler } from "../products/req/tools/upload-attachment.js";
 import { createReqUploadWorkItemImageHandler } from "../products/req/tools/upload-work-item-image.js";
 import { createReqValidateModuleNameHandler } from "../products/req/tools/validate-module-name.js";
@@ -300,7 +340,9 @@ import {
   createReqDownloadIpdIssueImageHandler,
   createReqGetIpdE2EGraphHandler,
   createReqGetIpdIssueHandler,
+  createReqGetIpdProcessInstanceHandler,
   createReqGetIpdProjectFieldOptionUsedHandler,
+  createReqGetIpdReviewFormHandler,
   createReqGetIpdStatisticDashboardHandler,
   createReqGetIpdTenantFieldOptionUsedHandler,
   createReqGetIpdTenantFieldUsedHandler,
@@ -308,9 +350,13 @@ import {
   createReqGroupIpdIssuesHandler,
   createReqListIpdAttachedWikisHandler,
   createReqListIpdCategoryStatusesHandler,
+  createReqListIpdChangeReviewIssueApproversHandler,
   createReqListIpdFeatureSetsHandler,
   createReqListIpdIssueAttachmentsHandler,
   createReqListIpdIssueTreeHandler,
+  createReqListIpdProcessInstancesHandler,
+  createReqListIpdReviewFormsHandler,
+  createReqListIpdReviewRoleUsersHandler,
   createReqListIpdWorkHourCategoriesHandler,
   createReqListIpdWorkHoursHandler,
   createReqListIpdIssueFieldsHandler,
@@ -334,20 +380,26 @@ import {
   createReqBatchDeleteIpdIssuesHandler,
   createReqBatchTransferIpdWorkItemFlowHandler,
   createReqBatchUpdateIpdIssuesHandler,
+  createReqCreateIpdChangeReviewFormHandler,
   createReqCreateIpdIssueHandler,
   createReqCreateIpdFeatureSetHandler,
   createReqCreateIpdLabelHandler,
   createReqCreateIpdModuleHandler,
+  createReqCreateIpdProcessInstanceHandler,
   createReqCreateIpdWorkHourHandler,
+  createReqDeleteIpdChangeReviewFormHandler,
   createReqDeleteIpdFeatureSetHandler,
   createReqDeleteIpdIssueImageHandler,
   createReqDeleteIpdLabelHandler,
   createReqDeleteIpdModuleHandler,
+  createReqDeleteIpdProcessInstanceHandler,
   createReqDeleteIpdWorkHourHandler,
   createReqTransferIpdWorkItemFlowHandler,
+  createReqUpdateIpdChangeReviewFormHandler,
   createReqUpdateIpdFeatureSetHandler,
   createReqUpdateIpdLabelHandler,
   createReqUpdateIpdModuleHandler,
+  createReqUpdateIpdProcessInstanceHandler,
   createReqUpdateIpdProjectFieldHandler,
   createReqUpdateIpdTenantFieldHandler,
   createReqUpdateIpdWorkHourHandler,
@@ -391,6 +443,14 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqBatchAddProjectMembersHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqBatchAddProjectMembersHandler,
     rateLimitAction: "req_batch_add_project_members"
+  }),
+  "req_batch_create_tracker_config": defineProductTool({
+    description: "Bind custom work item statuses to a CodeArts Req tracker",
+    inputSchema: reqBatchCreateTrackerConfigInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqBatchCreateTrackerConfigHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqBatchCreateTrackerConfigHandler,
+    rateLimitAction: "req_batch_create_tracker_config"
   }),
   "req_batch_delete_project_members": defineProductTool({
     description: "Remove multiple members from a CodeArts Req project",
@@ -475,6 +535,14 @@ const reqToolDefinitions = {
     createProductHandler: createReqCreatePlanHandler,
     rateLimitAction: "req_create_plan"
   }),
+  "req_create_release_plan": defineProductTool({
+    description: "Create CodeArts Req release or iteration plan",
+    inputSchema: reqCreateReleasePlanInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqCreateReleasePlanHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqCreateReleasePlanHandler,
+    rateLimitAction: "req_create_release_plan"
+  }),
   "req_create_plan_work_item": defineProductTool({
     description: "Create CodeArts Req plan work item",
     inputSchema: reqCreatePlanWorkItemInput,
@@ -506,6 +574,22 @@ const reqToolDefinitions = {
     createProductHandler: createReqCreateProjectModuleHandler,
     rateLimitAction: "req_create_project_module"
   }),
+  "req_create_project_domain": defineProductTool({
+    description: "Create CodeArts Req project domain",
+    inputSchema: reqCreateProjectDomainInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqCreateProjectDomainHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqCreateProjectDomainHandler,
+    rateLimitAction: "req_create_project_domain"
+  }),
+  "req_create_project_status_config": defineProductTool({
+    description: "Create a CodeArts Req custom project status",
+    inputSchema: reqCreateProjectStatusConfigInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqCreateProjectStatusConfigHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqCreateProjectStatusConfigHandler,
+    rateLimitAction: "req_create_project_status_config"
+  }),
   "req_update_project": defineProductTool({
     description: "Update CodeArts Req project",
     inputSchema: reqUpdateProjectInput,
@@ -519,6 +603,39 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUpdatePlanHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqUpdatePlanHandler,
     rateLimitAction: "req_update_plan"
+  }),
+  "req_update_release_plan": defineProductTool({
+    description: "Update CodeArts Req release or iteration plan",
+    inputSchema: reqUpdateReleasePlanInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUpdateReleasePlanHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqUpdateReleasePlanHandler,
+    rateLimitAction: "req_update_release_plan"
+  }),
+  "req_batch_delete_release_plans": defineProductTool({
+    description: "Batch delete CodeArts Req release or iteration plans",
+    inputSchema: reqBatchDeleteReleasePlansInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqBatchDeleteReleasePlansHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqBatchDeleteReleasePlansHandler,
+    rateLimitAction: "req_batch_delete_release_plans"
+  }),
+  "req_batch_update_release_plan_baseline": defineProductTool({
+    description: "Batch update CodeArts Req release or iteration plan baseline",
+    inputSchema: reqBatchUpdateReleasePlanBaselineInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqBatchUpdateReleasePlanBaselineHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqBatchUpdateReleasePlanBaselineHandler,
+    rateLimitAction: "req_batch_update_release_plan_baseline"
+  }),
+  "req_change_release_plan_status": defineProductTool({
+    description: "Change CodeArts Req release or iteration plan status",
+    inputSchema: reqChangeReleasePlanStatusInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqChangeReleasePlanStatusHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqChangeReleasePlanStatusHandler,
+    rateLimitAction: "req_change_release_plan_status"
   }),
   "req_update_plan_image": defineProductTool({
     description: "Update image for a CodeArts Req plan",
@@ -542,6 +659,22 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqUpdateProjectModuleHandler,
     rateLimitAction: "req_update_project_module"
+  }),
+  "req_update_project_domain": defineProductTool({
+    description: "Update CodeArts Req project domain",
+    inputSchema: reqUpdateProjectDomainInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUpdateProjectDomainHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqUpdateProjectDomainHandler,
+    rateLimitAction: "req_update_project_domain"
+  }),
+  "req_update_tracker_config": defineProductTool({
+    description: "Update a CodeArts Req tracker status config position",
+    inputSchema: reqUpdateTrackerConfigInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUpdateTrackerConfigHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqUpdateTrackerConfigHandler,
+    rateLimitAction: "req_update_tracker_config"
   }),
   "req_update_project_template": defineProductTool({
     description: "Update a CodeArts Req project template",
@@ -579,6 +712,14 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqDeleteProjectModuleHandler,
     rateLimitAction: "req_delete_project_module"
+  }),
+  "req_cancel_project_domain": defineProductTool({
+    description: "Cancel a CodeArts Req project domain association",
+    inputSchema: reqCancelProjectDomainInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqCancelProjectDomainHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqCancelProjectDomainHandler,
+    rateLimitAction: "req_cancel_project_domain"
   }),
   "req_delete_project_template": defineProductTool({
     description: "Delete a CodeArts Req project template",
@@ -755,6 +896,13 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqListIpdProjectUsersHandler
   }),
+  "req_list_ipd_change_review_issue_approvers": defineProductTool({
+    description: "List CodeArts Req IPD change review approvers for an issue",
+    inputSchema: reqListIpdChangeReviewIssueApproversInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIpdChangeReviewIssueApproversHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListIpdChangeReviewIssueApproversHandler
+  }),
   "req_list_ipd_issues": defineProductTool({
     description: "List CodeArts Req IPD issues",
     inputSchema: reqListIpdIssuesInput,
@@ -775,6 +923,41 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIpdAttachedWikisHandler>[0] }) =>
       clients.reqClient,
     createProductHandler: createReqListIpdAttachedWikisHandler
+  }),
+  "req_list_ipd_review_forms": defineProductTool({
+    description: "List CodeArts Req IPD review forms",
+    inputSchema: reqListIpdReviewFormsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIpdReviewFormsHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListIpdReviewFormsHandler
+  }),
+  "req_get_ipd_review_form": defineProductTool({
+    description: "Get a CodeArts Req IPD review form",
+    inputSchema: reqGetIpdReviewFormInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGetIpdReviewFormHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqGetIpdReviewFormHandler
+  }),
+  "req_get_ipd_process_instance": defineProductTool({
+    description: "Get a CodeArts Req IPD process instance",
+    inputSchema: reqGetIpdProcessInstanceInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGetIpdProcessInstanceHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqGetIpdProcessInstanceHandler
+  }),
+  "req_list_ipd_process_instances": defineProductTool({
+    description: "List CodeArts Req IPD process instances",
+    inputSchema: reqListIpdProcessInstancesInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIpdProcessInstancesHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListIpdProcessInstancesHandler
+  }),
+  "req_list_ipd_review_role_users": defineProductTool({
+    description: "List CodeArts Req IPD review approver or reviewer role users",
+    inputSchema: reqListIpdReviewRoleUsersInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIpdReviewRoleUsersHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListIpdReviewRoleUsersHandler
   }),
   "req_group_ipd_issues": defineProductTool({
     description: "Group CodeArts Req IPD issues",
@@ -938,6 +1121,54 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqBatchTransferIpdWorkItemFlowHandler,
     rateLimitAction: "req_batch_transfer_ipd_work_item_flow"
+  }),
+  "req_create_ipd_change_review_form": defineProductTool({
+    description: "Create a CodeArts Req IPD change review form",
+    inputSchema: reqCreateIpdChangeReviewFormInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqCreateIpdChangeReviewFormHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqCreateIpdChangeReviewFormHandler,
+    rateLimitAction: "req_create_ipd_change_review_form"
+  }),
+  "req_update_ipd_change_review_form": defineProductTool({
+    description: "Update a CodeArts Req IPD change review form",
+    inputSchema: reqUpdateIpdChangeReviewFormInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUpdateIpdChangeReviewFormHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqUpdateIpdChangeReviewFormHandler,
+    rateLimitAction: "req_update_ipd_change_review_form"
+  }),
+  "req_delete_ipd_change_review_form": defineProductTool({
+    description: "Delete a CodeArts Req IPD change review form",
+    inputSchema: reqDeleteIpdChangeReviewFormInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqDeleteIpdChangeReviewFormHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqDeleteIpdChangeReviewFormHandler,
+    rateLimitAction: "req_delete_ipd_change_review_form"
+  }),
+  "req_create_ipd_process_instance": defineProductTool({
+    description: "Create a CodeArts Req IPD BR/GR process instance",
+    inputSchema: reqCreateIpdProcessInstanceInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqCreateIpdProcessInstanceHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqCreateIpdProcessInstanceHandler,
+    rateLimitAction: "req_create_ipd_process_instance"
+  }),
+  "req_update_ipd_process_instance": defineProductTool({
+    description: "Update a CodeArts Req IPD BR/GR process instance",
+    inputSchema: reqUpdateIpdProcessInstanceInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUpdateIpdProcessInstanceHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqUpdateIpdProcessInstanceHandler,
+    rateLimitAction: "req_update_ipd_process_instance"
+  }),
+  "req_delete_ipd_process_instance": defineProductTool({
+    description: "Delete a CodeArts Req IPD BR/GR process instance",
+    inputSchema: reqDeleteIpdProcessInstanceInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqDeleteIpdProcessInstanceHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqDeleteIpdProcessInstanceHandler,
+    rateLimitAction: "req_delete_ipd_process_instance"
   }),
   "req_create_ipd_issue": defineProductTool({
     description: "Create CodeArts Req IPD issue",
@@ -1175,6 +1406,13 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGetPlanHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqGetPlanHandler
   }),
+  "req_get_release_plan": defineProductTool({
+    description: "Get CodeArts Req release or iteration plan",
+    inputSchema: reqGetReleasePlanInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGetReleasePlanHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqGetReleasePlanHandler
+  }),
   "req_list_project_modules": defineProductTool({
     description: "List CodeArts Req project modules",
     inputSchema: reqListProjectModulesInput,
@@ -1272,6 +1510,14 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqAddWorkItemWorkHourHandler,
     rateLimitAction: "req_add_work_item_work_hour"
+  }),
+  "req_update_working_hours": defineProductTool({
+    description: "Update a CodeArts Req work item work hour record",
+    inputSchema: reqUpdateWorkingHoursInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUpdateWorkingHoursHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqUpdateWorkingHoursHandler,
+    rateLimitAction: "req_update_working_hours"
   }),
   "req_delete_work_item": defineProductTool({
     description: "Delete CodeArts Req work item",
@@ -1540,6 +1786,13 @@ const reqToolDefinitions = {
     inputSchema: reqListPlansInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListPlansHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqListPlansHandler
+  }),
+  "req_list_release_plans": defineProductTool({
+    description: "List CodeArts Req release or iteration plans",
+    inputSchema: reqListReleasePlansInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListReleasePlansHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListReleasePlansHandler
   }),
   "req_list_project_work_hours": defineProductTool({
     description: "List CodeArts Req project work hour records",

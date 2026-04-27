@@ -5,7 +5,9 @@ import { toPageInfo } from "../../../core/pagination/page-info.js";
 import {
   reqGetIpdE2EGraphInput,
   reqGetIpdIssueInput,
+  reqGetIpdProcessInstanceInput,
   reqGetIpdProjectFieldOptionUsedInput,
+  reqGetIpdReviewFormInput,
   reqGetIpdTenantFieldOptionUsedInput,
   reqGetIpdTenantFieldUsedInput,
   reqGetIpdStatisticDashboardInput,
@@ -15,8 +17,12 @@ import {
   reqDownloadIpdIssueImageInput,
   reqListIpdAttachedWikisInput,
   reqListIpdCategoryStatusesInput,
+  reqListIpdChangeReviewIssueApproversInput,
   reqListIpdIssueAttachmentsInput,
   reqListIpdIssueTreeInput,
+  reqListIpdProcessInstancesInput,
+  reqListIpdReviewFormsInput,
+  reqListIpdReviewRoleUsersInput,
   reqListIpdTenantIssuesInput,
   reqListIpdWorkHourCategoriesInput,
   reqListIpdWorkHoursInput,
@@ -45,6 +51,7 @@ import {
   mapIpdWiki,
   mapIpdWorkHour,
   mapIpdProject,
+  mapIpdReviewEntity,
   mapIpdUser,
   type ReqIpdAttachment,
   type ReqIpdDashboardItem,
@@ -52,6 +59,7 @@ import {
   type ReqIpdIssue,
   type ReqIpdNamedItem,
   type ReqIpdProject,
+  type ReqIpdReviewEntity,
   type ReqIpdUser,
   type ReqIpdWiki,
   type ReqIpdWorkHour
@@ -61,6 +69,10 @@ type ReqIpdReadClient = {
   listIpdProjects: (input: { search?: string; model?: string; model_id?: string }) => Promise<{ projects: ReqIpdProject[] }>;
   listIpdProjectUsers: (input: { project_id: string }) => Promise<{ users: ReqIpdUser[] }>;
   getIpdIssue: (input: { project_id: string; issue_id: string; version: "v1" | "v2" }) => Promise<ReqIpdIssue>;
+  listIpdChangeReviewIssueApprovers: (input: {
+    project_id: string;
+    issue_id: string;
+  }) => Promise<{ users: ReqIpdUser[]; total?: number }>;
   listIpdIssues: (input: {
     project_id: string;
     issue_type: string;
@@ -84,6 +96,35 @@ type ReqIpdReadClient = {
     issue_id: string;
     category?: string;
   }) => Promise<{ wikis: ReqIpdWiki[]; total?: number }>;
+  listIpdReviewForms: (input: {
+    project_id: string;
+    type: "CR" | "BR" | "GR";
+    created_by?: string;
+    keyword?: string;
+    created_time?: Record<string, unknown>;
+    plan_end_date?: Record<string, unknown>;
+    plan_start_date?: Record<string, unknown>;
+    closed_time?: Record<string, unknown>;
+    approver?: string;
+    reviewer?: string;
+    offset: number;
+    limit: number;
+    sort?: Array<Record<string, unknown>>;
+  }) => Promise<{ reviews: ReqIpdReviewEntity[]; total?: number }>;
+  getIpdReviewForm: (input: { project_id: string; id: string; category: "CR" | "BR" | "GR" }) => Promise<ReqIpdReviewEntity>;
+  getIpdProcessInstance: (input: { project_id: string; id: string }) => Promise<ReqIpdReviewEntity>;
+  listIpdProcessInstances: (input: {
+    project_id: string;
+    filter: Array<Record<string, unknown>>;
+    sort?: Array<Record<string, unknown>>;
+    page: { page_no: number; page_size: number } & Record<string, unknown>;
+  }) => Promise<{ process_instances: ReqIpdReviewEntity[]; total?: number }>;
+  listIpdReviewRoleUsers: (input: {
+    project_id: string;
+    user_type: "approver" | "reviewer";
+    target_project_id?: string;
+    review_id?: string;
+  }) => Promise<{ users: ReqIpdUser[] }>;
   groupIpdIssues: (input: {
     project_id: string;
     issue_type: string;
@@ -220,6 +261,22 @@ export function createReqGetIpdIssueHandler(client: Pick<ReqIpdReadClient, "getI
   };
 }
 
+export function createReqListIpdChangeReviewIssueApproversHandler(
+  client: Pick<ReqIpdReadClient, "listIpdChangeReviewIssueApprovers">
+) {
+  return async (input: unknown) => {
+    const parsed = reqListIpdChangeReviewIssueApproversInput.parse(input);
+    const response = await client.listIpdChangeReviewIssueApprovers(parsed);
+    const result = asListResult(
+      `${response.users.length} IPD change review issue approvers found`,
+      response.users.map(mapIpdUser),
+      response.total ? toPageInfo(1, response.users.length || response.total, response.total) : undefined,
+      response
+    );
+    return { content: [{ type: "text" as const, text: listText(result) }], structuredContent: result };
+  };
+}
+
 export function createReqListIpdIssuesHandler(client: Pick<ReqIpdReadClient, "listIpdIssues">) {
   return async (input: unknown) => {
     const parsed = reqListIpdIssuesInput.parse(input);
@@ -248,6 +305,64 @@ export function createReqListIpdAttachedWikisHandler(client: Pick<ReqIpdReadClie
     const parsed = reqListIpdAttachedWikisInput.parse(input);
     const response = await client.listIpdAttachedWikis(parsed);
     const result = asListResult(`${response.wikis.length} IPD attached wikis found`, response.wikis.map(mapIpdWiki), undefined, response);
+    return { content: [{ type: "text" as const, text: listText(result) }], structuredContent: result };
+  };
+}
+
+export function createReqListIpdReviewFormsHandler(client: Pick<ReqIpdReadClient, "listIpdReviewForms">) {
+  return async (input: unknown) => {
+    const parsed = reqListIpdReviewFormsInput.parse(input);
+    const response = await client.listIpdReviewForms(parsed);
+    const page = Math.floor(parsed.offset / parsed.limit) + 1;
+    const result = asListResult(
+      `${response.reviews.length} IPD review forms found`,
+      response.reviews.map(mapIpdReviewEntity),
+      toPageInfo(page, parsed.limit, response.total),
+      response
+    );
+    return { content: [{ type: "text" as const, text: listText(result) }], structuredContent: result };
+  };
+}
+
+export function createReqGetIpdReviewFormHandler(client: Pick<ReqIpdReadClient, "getIpdReviewForm">) {
+  return async (input: unknown) => {
+    const parsed = reqGetIpdReviewFormInput.parse(input);
+    const response = await client.getIpdReviewForm(parsed);
+    const item = mapIpdReviewEntity(response);
+    const result = asItemResult(`Loaded IPD review form ${item.id ?? parsed.id}`, item, response);
+    return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+  };
+}
+
+export function createReqGetIpdProcessInstanceHandler(client: Pick<ReqIpdReadClient, "getIpdProcessInstance">) {
+  return async (input: unknown) => {
+    const parsed = reqGetIpdProcessInstanceInput.parse(input);
+    const response = await client.getIpdProcessInstance(parsed);
+    const item = mapIpdReviewEntity(response);
+    const result = asItemResult(`Loaded IPD process instance ${item.id ?? parsed.id}`, item, response);
+    return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+  };
+}
+
+export function createReqListIpdProcessInstancesHandler(client: Pick<ReqIpdReadClient, "listIpdProcessInstances">) {
+  return async (input: unknown) => {
+    const parsed = reqListIpdProcessInstancesInput.parse(input);
+    const response = await client.listIpdProcessInstances(parsed);
+    const result = asListResult(
+      `${response.process_instances.length} IPD process instances found`,
+      response.process_instances.map(mapIpdReviewEntity),
+      toPageInfo(parsed.page.page_no, parsed.page.page_size, response.total),
+      response
+    );
+    return { content: [{ type: "text" as const, text: listText(result) }], structuredContent: result };
+  };
+}
+
+export function createReqListIpdReviewRoleUsersHandler(client: Pick<ReqIpdReadClient, "listIpdReviewRoleUsers">) {
+  return async (input: unknown) => {
+    const parsed = reqListIpdReviewRoleUsersInput.parse(input);
+    const response = await client.listIpdReviewRoleUsers(parsed);
+    const result = asListResult(`${response.users.length} IPD review role users found`, response.users.map(mapIpdUser), undefined, response);
     return { content: [{ type: "text" as const, text: listText(result) }], structuredContent: result };
   };
 }

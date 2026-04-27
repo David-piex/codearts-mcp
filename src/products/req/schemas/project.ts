@@ -106,6 +106,25 @@ export const reqListProjectDomainsInput = pagingSchema
     page_size: z.number().int().positive().max(100).default(20)
   });
 
+export const reqCreateProjectDomainInput = z.object({
+  project_id: idSchema,
+  domain_name: z.string().min(1).max(31),
+  dry_run: z.boolean().default(true)
+});
+
+export const reqUpdateProjectDomainInput = z.object({
+  project_id: idSchema,
+  domain_id: idSchema,
+  domain_name: z.string().min(1).max(31),
+  dry_run: z.boolean().default(true)
+});
+
+export const reqCancelProjectDomainInput = z.object({
+  project_id: idSchema,
+  domain_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
 export const reqCreateProjectModuleInput = z.object({
   project_id: idSchema,
   module_name: z.string().min(1).max(30),

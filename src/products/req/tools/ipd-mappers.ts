@@ -150,6 +150,25 @@ export type ReqIpdWorkHour = {
   work_hours?: string | number;
 };
 
+export type ReqIpdReviewEntity = Record<string, unknown> & {
+  id?: string | number;
+  number?: string;
+  title?: string;
+  category?: string;
+  state?: string;
+  status?: string | { id?: string | number; name?: string; label?: string };
+  created_by?: ReqIpdUser;
+  modified_by?: ReqIpdUser;
+  created_time?: string | number;
+  modified_time?: string | number;
+  plan_start_date?: string | number;
+  plan_end_date?: string | number;
+  close_time?: string | number;
+  closed_time?: string | number;
+  approver?: string;
+  reviewer?: string;
+};
+
 export function mapIpdProject(item: ReqIpdProject) {
   return {
     id: item.id,
@@ -320,5 +339,25 @@ export function mapIpdWorkHour(item: ReqIpdWorkHour) {
     workHours: item.work_hours,
     createdBy: mapIpdUserLike(item.created_by),
     modifiedBy: mapIpdUserLike(item.modified_by)
+  };
+}
+
+export function mapIpdReviewEntity(item: ReqIpdReviewEntity) {
+  return {
+    id: item.id,
+    number: item.number,
+    title: item.title,
+    category: item.category,
+    state: item.state,
+    status: mapStatus(item.status as ReqIpdIssue["status"]),
+    createdByName: item.created_by?.nick_name ?? item.created_by?.user_name ?? item.created_by?.name,
+    modifiedByName: item.modified_by?.nick_name ?? item.modified_by?.user_name ?? item.modified_by?.name,
+    createdTime: item.created_time,
+    modifiedTime: item.modified_time,
+    planStartDate: item.plan_start_date,
+    planEndDate: item.plan_end_date,
+    closedTime: item.closed_time ?? item.close_time,
+    approver: item.approver,
+    reviewer: item.reviewer
   };
 }

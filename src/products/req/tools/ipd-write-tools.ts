@@ -6,20 +6,26 @@ import {
   reqBatchDeleteIpdIssuesInput,
   reqBatchTransferIpdWorkItemFlowInput,
   reqBatchUpdateIpdIssuesInput,
+  reqCreateIpdChangeReviewFormInput,
   reqCreateIpdIssueInput,
   reqCreateIpdFeatureSetInput,
   reqCreateIpdLabelInput,
   reqCreateIpdModuleInput,
+  reqCreateIpdProcessInstanceInput,
   reqCreateIpdWorkHourInput,
+  reqDeleteIpdChangeReviewFormInput,
   reqDeleteIpdFeatureSetInput,
   reqDeleteIpdIssueImageInput,
   reqDeleteIpdLabelInput,
   reqDeleteIpdModuleInput,
+  reqDeleteIpdProcessInstanceInput,
   reqDeleteIpdWorkHourInput,
   reqTransferIpdWorkItemFlowInput,
+  reqUpdateIpdChangeReviewFormInput,
   reqUpdateIpdFeatureSetInput,
   reqUpdateIpdLabelInput,
   reqUpdateIpdModuleInput,
+  reqUpdateIpdProcessInstanceInput,
   reqUpdateIpdProjectFieldInput,
   reqUpdateIpdTenantFieldInput,
   reqUpdateIpdWorkHourInput,
@@ -30,10 +36,12 @@ import {
   mapIpdAttachment,
   mapIpdIssue,
   mapIpdNamedItem,
+  mapIpdReviewEntity,
   mapIpdWorkHour,
   type ReqIpdAttachment,
   type ReqIpdIssue,
   type ReqIpdNamedItem,
+  type ReqIpdReviewEntity,
   type ReqIpdWorkHour
 } from "./ipd-mappers.js";
 
@@ -168,6 +176,12 @@ type ReqIpdWriteClient = {
     is_recover: boolean;
     process_context?: Record<string, unknown>;
   }) => Promise<unknown>;
+  createIpdChangeReviewForm: (input: Record<string, unknown> & { project_id: string }) => Promise<ReqIpdReviewEntity>;
+  updateIpdChangeReviewForm: (input: Record<string, unknown> & { project_id: string; id: string }) => Promise<ReqIpdReviewEntity>;
+  deleteIpdChangeReviewForm: (input: { project_id: string; id: string; category: "CR" }) => Promise<unknown>;
+  createIpdProcessInstance: (input: Record<string, unknown> & { project_id: string; domain_id?: string; operate_type?: string }) => Promise<ReqIpdReviewEntity>;
+  updateIpdProcessInstance: (input: Record<string, unknown> & { project_id: string; id: string; domain_id?: string }) => Promise<ReqIpdReviewEntity>;
+  deleteIpdProcessInstance: (input: { project_id: string; id: string }) => Promise<unknown>;
 };
 
 function preview(summary: string, item: Record<string, unknown>) {
@@ -239,12 +253,148 @@ function itemResponse(summary: string, item: ReqIpdNamedItem, raw?: unknown) {
   return asItemResult(summary, mapIpdNamedItem(item), raw);
 }
 
+function reviewResponse(summary: string, item: ReqIpdReviewEntity, raw?: unknown) {
+  return asItemResult(
+    summary,
+    {
+      ...mapIpdReviewEntity(item),
+      executed: true
+    },
+    raw
+  );
+}
+
 function fieldPreviewItem(parsed: Record<string, unknown>) {
   const { dry_run, extra_fields, ...rest } = parsed;
   return {
     ...rest,
     ...(extra_fields && typeof extra_fields === "object" ? { extraFields: extra_fields } : {}),
     executed: false
+  };
+}
+
+function reviewPreviewItem(parsed: Record<string, unknown>) {
+  const { dry_run, extra_fields, ...rest } = parsed;
+  return {
+    ...rest,
+    ...(extra_fields && typeof extra_fields === "object" ? { extraFields: extra_fields } : {}),
+    executed: false
+  };
+}
+
+export function createReqCreateIpdChangeReviewFormHandler(
+  client: Pick<ReqIpdWriteClient, "createIpdChangeReviewForm">
+) {
+  return async (input: unknown) => {
+    const parsed = reqCreateIpdChangeReviewFormInput.parse(input);
+
+    if (parsed.dry_run) {
+      const result = preview(`Dry run: create IPD change review form ${parsed.title}`, reviewPreviewItem(parsed));
+      return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+    }
+
+    const { dry_run, ...payload } = parsed;
+    const response = await client.createIpdChangeReviewForm(payload);
+    const result = reviewResponse(`Created IPD change review form ${response.id ?? parsed.title}`, response, response);
+    return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+  };
+}
+
+export function createReqUpdateIpdChangeReviewFormHandler(
+  client: Pick<ReqIpdWriteClient, "updateIpdChangeReviewForm">
+) {
+  return async (input: unknown) => {
+    const parsed = reqUpdateIpdChangeReviewFormInput.parse(input);
+
+    if (parsed.dry_run) {
+      const result = preview(`Dry run: update IPD change review form ${parsed.id}`, reviewPreviewItem(parsed));
+      return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+    }
+
+    const { dry_run, ...payload } = parsed;
+    const response = await client.updateIpdChangeReviewForm(payload);
+    const result = reviewResponse(`Updated IPD change review form ${response.id ?? parsed.id}`, response, response);
+    return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+  };
+}
+
+export function createReqDeleteIpdChangeReviewFormHandler(
+  client: Pick<ReqIpdWriteClient, "deleteIpdChangeReviewForm">
+) {
+  return async (input: unknown) => {
+    const parsed = reqDeleteIpdChangeReviewFormInput.parse(input);
+
+    if (parsed.dry_run) {
+      const result = preview(`Dry run: delete IPD change review form ${parsed.id}`, reviewPreviewItem(parsed));
+      return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+    }
+
+    const { dry_run, ...payload } = parsed;
+    const response = await client.deleteIpdChangeReviewForm(payload);
+    const result = asItemResult(
+      `Deleted IPD change review form ${parsed.id}`,
+      { projectId: parsed.project_id, id: parsed.id, category: parsed.category, executed: true },
+      response
+    );
+    return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+  };
+}
+
+export function createReqCreateIpdProcessInstanceHandler(
+  client: Pick<ReqIpdWriteClient, "createIpdProcessInstance">
+) {
+  return async (input: unknown) => {
+    const parsed = reqCreateIpdProcessInstanceInput.parse(input);
+
+    if (parsed.dry_run) {
+      const result = preview(`Dry run: create IPD process instance ${parsed.title ?? parsed.category}`, reviewPreviewItem(parsed));
+      return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+    }
+
+    const { dry_run, ...payload } = parsed;
+    const response = await client.createIpdProcessInstance(payload);
+    const result = reviewResponse(`Created IPD process instance ${response.id ?? parsed.title ?? parsed.category}`, response, response);
+    return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+  };
+}
+
+export function createReqUpdateIpdProcessInstanceHandler(
+  client: Pick<ReqIpdWriteClient, "updateIpdProcessInstance">
+) {
+  return async (input: unknown) => {
+    const parsed = reqUpdateIpdProcessInstanceInput.parse(input);
+
+    if (parsed.dry_run) {
+      const result = preview(`Dry run: update IPD process instance ${parsed.id}`, reviewPreviewItem(parsed));
+      return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+    }
+
+    const { dry_run, ...payload } = parsed;
+    const response = await client.updateIpdProcessInstance(payload);
+    const result = reviewResponse(`Updated IPD process instance ${response.id ?? parsed.id}`, response, response);
+    return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+  };
+}
+
+export function createReqDeleteIpdProcessInstanceHandler(
+  client: Pick<ReqIpdWriteClient, "deleteIpdProcessInstance">
+) {
+  return async (input: unknown) => {
+    const parsed = reqDeleteIpdProcessInstanceInput.parse(input);
+
+    if (parsed.dry_run) {
+      const result = preview(`Dry run: delete IPD process instance ${parsed.id}`, reviewPreviewItem(parsed));
+      return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+    }
+
+    const { dry_run, ...payload } = parsed;
+    const response = await client.deleteIpdProcessInstance(payload);
+    const result = asItemResult(
+      `Deleted IPD process instance ${parsed.id}`,
+      { projectId: parsed.project_id, id: parsed.id, executed: true },
+      response
+    );
+    return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
   };
 }
 

@@ -222,9 +222,9 @@ describe("file auth repository", () => {
     const repo = createFileAuthRepository(path);
     readFileSyncSpy.mockClear();
 
-    await repo.prewarm();
-
-    expect(readFileSyncSpy).toHaveBeenCalledTimes(1);
+    expect(await repo.prewarm()).toEqual({
+      recordCount: 1
+    });
 
     readFileSyncSpy.mockClear();
 

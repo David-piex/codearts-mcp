@@ -36,6 +36,11 @@ export const reqGetIpdIssueInput = z.object({
   version: z.enum(["v1", "v2"]).default("v2")
 });
 
+export const reqListIpdChangeReviewIssueApproversInput = z.object({
+  project_id: idSchema,
+  issue_id: idSchema
+});
+
 export const reqListIpdIssuesInput = ipdPagingSchema.extend({
   project_id: idSchema,
   issue_type: z.string().min(1),
@@ -79,6 +84,62 @@ export const reqListIpdAttachedWikisInput = z.object({
   project_id: idSchema,
   issue_id: idSchema,
   category: z.string().optional()
+});
+
+export const reqListIpdReviewFormsInput = z.object({
+  project_id: idSchema,
+  type: z.enum(["CR", "BR", "GR"]),
+  created_by: idSchema.optional(),
+  keyword: z.string().optional(),
+  created_time: ipdDateFilterSchema.optional(),
+  plan_end_date: ipdDateFilterSchema.optional(),
+  plan_start_date: ipdDateFilterSchema.optional(),
+  closed_time: ipdDateFilterSchema.optional(),
+  approver: z.string().optional(),
+  reviewer: z.string().optional(),
+  offset: z.number().int().nonnegative().default(0),
+  limit: z.number().int().positive().max(1000).default(20),
+  sort: z.array(ipdSortInfoSchema).optional()
+});
+
+export const reqGetIpdReviewFormInput = z.object({
+  project_id: idSchema,
+  id: idSchema,
+  category: z.enum(["CR", "BR", "GR"])
+});
+
+export const reqGetIpdProcessInstanceInput = z.object({
+  project_id: idSchema,
+  id: idSchema
+});
+
+const ipdProcessInstancePageSchema = z
+  .object({
+    page_no: z.number().int().positive().default(1),
+    page_size: z.number().int().positive().max(200).default(200)
+  })
+  .passthrough();
+
+export const reqListIpdProcessInstancesInput = z.object({
+  project_id: idSchema,
+  filter: z
+    .array(
+      z
+        .object({
+          field: ipdConditionSchema.optional()
+        })
+        .passthrough()
+    )
+    .default([]),
+  sort: z.array(ipdSortInfoSchema).optional(),
+  page: ipdProcessInstancePageSchema.default({ page_no: 1, page_size: 200 })
+});
+
+export const reqListIpdReviewRoleUsersInput = z.object({
+  project_id: idSchema,
+  user_type: z.enum(["approver", "reviewer"]).default("approver"),
+  target_project_id: idSchema.optional(),
+  review_id: idSchema.optional()
 });
 
 export const reqGroupIpdIssuesInput = ipdPagingSchema.extend({
@@ -134,7 +195,7 @@ export const reqListIpdTenantFieldsInput = pagingSchema
     page_size: true
   })
   .extend({
-    page_size: z.number().int().positive().max(200).default(20),
+    page_size: z.number().int().min(10).max(200).default(20),
     search: z.string().optional(),
     sort_info: z
       .object({
@@ -228,6 +289,145 @@ export const reqBatchTransferIpdWorkItemFlowInput = z.object({
   flow_code: z.string().min(1),
   is_recover: z.boolean().default(false),
   process_context: z.record(z.string(), z.unknown()).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+const reqIpdReviewStatusInput = z
+  .object({
+    code: z.string().min(1)
+  })
+  .passthrough();
+
+const reqIpdReviewCreateUserInput = z
+  .object({
+    id: idSchema
+  })
+  .passthrough();
+
+const reqIpdReviewCoCreateInput = z
+  .object({
+    issue_id: idSchema,
+    issue_number: z.string().min(1),
+    issue_category: z.string().min(1),
+    change_type: z.string().min(1),
+    before_change: z.string().min(1),
+    after_change: z.string().min(1),
+    reviewer: z.array(idSchema).min(1),
+    approver: z.array(idSchema).min(1),
+    description: z.string().optional()
+  })
+  .passthrough();
+
+const reqIpdReviewCommentUpdateInput = z
+  .object({
+    result: z.string().optional(),
+    comment: z.string().optional(),
+    other_user_id: idSchema.optional()
+  })
+  .passthrough();
+
+const reqIpdReviewCoUpdateInput = z
+  .object({
+    id: idSchema,
+    review_comments: z.array(reqIpdReviewCommentUpdateInput).optional(),
+    approval_comments: z.array(reqIpdReviewCommentUpdateInput).optional()
+  })
+  .passthrough();
+
+const reqIpdProcessUserInput = z
+  .object({
+    user_id: idSchema.optional(),
+    curr_owner: idSchema.optional()
+  })
+  .passthrough();
+
+const reqIpdProcessCoInput = z
+  .object({
+    number: z.string().optional(),
+    issue_id: idSchema.optional(),
+    issue_category: z.string().optional(),
+    change_type: z.string().optional(),
+    before_change: z.string().optional(),
+    after_change: z.string().optional()
+  })
+  .passthrough();
+
+export const reqCreateIpdChangeReviewFormInput = z.object({
+  project_id: idSchema,
+  category: z.literal("CR").default("CR"),
+  title: z.string().min(1).max(256),
+  description: z.string().min(1).max(50000).optional(),
+  need_approval: z.boolean(),
+  status: reqIpdReviewStatusInput,
+  cc: z.array(reqIpdReviewCreateUserInput).optional(),
+  cos: z.array(reqIpdReviewCoCreateInput).min(1),
+  plan_end_date: z.string().optional(),
+  plan_start_date: z.string().optional(),
+  extra_fields: z.record(z.string(), z.unknown()).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const reqUpdateIpdChangeReviewFormInput = z.object({
+  project_id: idSchema,
+  id: idSchema,
+  category: z.literal("CR").default("CR"),
+  old_status: reqIpdReviewStatusInput,
+  status: reqIpdReviewStatusInput,
+  cos: z.array(reqIpdReviewCoUpdateInput).min(1),
+  extra_fields: z.record(z.string(), z.unknown()).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const reqDeleteIpdChangeReviewFormInput = z.object({
+  project_id: idSchema,
+  id: idSchema,
+  category: z.literal("CR").default("CR"),
+  dry_run: z.boolean().default(true)
+});
+
+export const reqCreateIpdProcessInstanceInput = z.object({
+  project_id: idSchema,
+  operate_type: z.string().optional(),
+  domain_id: idSchema.optional(),
+  title: z.string().min(1).max(256).optional(),
+  description: z.string().optional(),
+  category: z.enum(["BR", "GR"]),
+  need_approval: z.boolean().optional(),
+  plan_end_date: z.string().optional(),
+  plan_start_date: z.string().optional(),
+  status: z.string().min(1),
+  cc: z.array(idSchema).optional(),
+  attachWikis: z.array(z.string()).optional(),
+  attachDocuments: z.array(z.string()).optional(),
+  ccbs: z.array(reqIpdProcessUserInput).optional(),
+  opinions: z.array(reqIpdProcessUserInput).optional(),
+  cos: z.array(reqIpdProcessCoInput).optional(),
+  local_attachment_names: z.array(z.string()).optional(),
+  extra_fields: z.record(z.string(), z.unknown()).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const reqUpdateIpdProcessInstanceInput = z.object({
+  project_id: idSchema,
+  id: idSchema,
+  domain_id: idSchema.optional(),
+  old_status: z.string().optional(),
+  status: z.string().optional(),
+  title: z.string().min(1).max(256).optional(),
+  description: z.string().optional(),
+  plan_start_date: z.union([z.string(), z.number().int()]).optional(),
+  plan_end_date: z.union([z.string(), z.number().int()]).optional(),
+  ccbs: z.array(reqIpdProcessUserInput).optional(),
+  opinions: z.array(reqIpdProcessUserInput).optional(),
+  cc: z.array(reqIpdProcessUserInput).optional(),
+  cos: z.array(reqIpdProcessCoInput).optional(),
+  extra_fields: z.record(z.string(), z.unknown()).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const reqDeleteIpdProcessInstanceInput = z.object({
+  project_id: idSchema,
+  id: idSchema,
   dry_run: z.boolean().default(true)
 });
 

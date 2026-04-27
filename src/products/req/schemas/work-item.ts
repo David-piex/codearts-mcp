@@ -278,6 +278,16 @@ export const reqAddWorkItemWorkHourInput = z
     }
   );
 
+export const reqUpdateWorkingHoursInput = z.object({
+  project_id: idSchema,
+  issue_id: z.union([idSchema, z.number().int().positive()]).transform(String),
+  work_hours_id: idSchema,
+  summary: z.string().min(1).max(128).optional(),
+  work_hours: z.number().nonnegative().max(100000000).optional(),
+  work_hour_type: z.number().int().positive().optional(),
+  dry_run: z.boolean().default(true)
+});
+
 export const reqListProjectWorkHoursInput = pagingSchema
   .extend({
     project_ids: z.array(idSchema).min(1),
@@ -355,6 +365,29 @@ export const reqListWorkItemStatusesInput = z.object({
 export const reqCheckWorkItemStatusNameInput = z.object({
   project_id: idSchema,
   status_name: z.string().min(1).max(15)
+});
+
+export const reqCreateProjectStatusConfigInput = z.object({
+  project_id: idSchema,
+  defined_name: z.string().min(1).max(15),
+  status_attribute: z.number().int().positive(),
+  description: z.string().optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const reqBatchCreateTrackerConfigInput = z.object({
+  project_id: idSchema,
+  tracker_id: reqTrackerIdSchema,
+  status_config_ids: z.array(idSchema).min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const reqUpdateTrackerConfigInput = z.object({
+  project_id: idSchema,
+  tracker_id: reqTrackerIdSchema,
+  status_config_id: idSchema,
+  new_position: z.number().int().nonnegative(),
+  dry_run: z.boolean().default(true)
 });
 
 export const reqListWorkItemStatusAttributesInput = z.object({

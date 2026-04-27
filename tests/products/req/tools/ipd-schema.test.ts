@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { reqListIpdIssuesInput } from "../../../../src/products/req/schemas/ipd.js";
+import {
+  reqListIpdIssuesInput,
+  reqListIpdTenantFieldsInput
+} from "../../../../src/products/req/schemas/ipd.js";
 
 describe("Req IPD schemas", () => {
   it("validates list issue filter conditions with official condition shape", () => {
@@ -32,6 +35,14 @@ describe("Req IPD schemas", () => {
         filter: [{ status: "new" }]
       })
     ).toThrow();
+  });
+
+  it("requires tenant field page_size values accepted by the live IPD endpoint", () => {
+    expect(reqListIpdTenantFieldsInput.parse({ page: 1, page_size: 10 })).toEqual({
+      page: 1,
+      page_size: 10
+    });
+    expect(() => reqListIpdTenantFieldsInput.parse({ page: 1, page_size: 5 })).toThrow();
   });
 
   it("accepts batch IPD issue mutation fields from the official issue entity", async () => {

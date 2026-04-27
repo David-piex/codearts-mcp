@@ -4,7 +4,9 @@ import {
   createReqDownloadIpdIssueImageHandler,
   createReqGetIpdE2EGraphHandler,
   createReqGetIpdIssueHandler,
+  createReqGetIpdProcessInstanceHandler,
   createReqGetIpdProjectFieldOptionUsedHandler,
+  createReqGetIpdReviewFormHandler,
   createReqGetIpdStatisticDashboardHandler,
   createReqGetIpdTenantFieldOptionUsedHandler,
   createReqGetIpdTenantFieldUsedHandler,
@@ -12,9 +14,13 @@ import {
   createReqGroupIpdIssuesHandler,
   createReqListIpdAttachedWikisHandler,
   createReqListIpdCategoryStatusesHandler,
+  createReqListIpdChangeReviewIssueApproversHandler,
   createReqListIpdFeatureSetsHandler,
   createReqListIpdIssueAttachmentsHandler,
   createReqListIpdIssueTreeHandler,
+  createReqListIpdProcessInstancesHandler,
+  createReqListIpdReviewFormsHandler,
+  createReqListIpdReviewRoleUsersHandler,
   createReqListIpdWorkHourCategoriesHandler,
   createReqListIpdWorkHoursHandler,
   createReqListIpdIssueFieldsHandler,
@@ -75,6 +81,67 @@ describe("Req IPD read tools", () => {
     );
     expect(list.structuredContent.items?.[0]).toEqual(
       expect.objectContaining({ id: "issue-1", title: "IPD requirement", status: "新建" })
+    );
+  });
+
+  it("maps IPD review form and process instance reads", async () => {
+    const approvers = await createReqListIpdChangeReviewIssueApproversHandler({
+      listIpdChangeReviewIssueApprovers: async () => ({
+        users: [{ id: "u-1", name: "alice", nick_name: "Alice" }],
+        total: 1
+      })
+    })({ project_id: "ipd-1", issue_id: "issue-1" });
+    const forms = await createReqListIpdReviewFormsHandler({
+      listIpdReviewForms: async () => ({
+        reviews: [{ id: "review-1", number: "CR-1", title: "Change review", category: "CR", status: { name: "Open" } }],
+        total: 1
+      })
+    })({ project_id: "ipd-1", type: "CR", offset: 0, limit: 20 });
+    const form = await createReqGetIpdReviewFormHandler({
+      getIpdReviewForm: async () => ({
+        id: "review-1",
+        number: "CR-1",
+        title: "Change review",
+        category: "CR",
+        created_by: { user_id: "u-1", nick_name: "Alice" }
+      })
+    })({ project_id: "ipd-1", id: "review-1", category: "CR" });
+    const process = await createReqGetIpdProcessInstanceHandler({
+      getIpdProcessInstance: async () => ({
+        id: "process-1",
+        number: "BR-1",
+        title: "Baseline review",
+        category: "BR",
+        state: "working"
+      })
+    })({ project_id: "ipd-1", id: "process-1" });
+    const processes = await createReqListIpdProcessInstancesHandler({
+      listIpdProcessInstances: async () => ({
+        process_instances: [{ id: "process-1", number: "BR-1", title: "Baseline review", category: "BR" }],
+        total: 1
+      })
+    })({ project_id: "ipd-1", filter: [], page: { page_no: 1, page_size: 200 } });
+    const roleUsers = await createReqListIpdReviewRoleUsersHandler({
+      listIpdReviewRoleUsers: async () => ({
+        users: [{ user_id: "u-2", user_name: "bob", nick_name: "Bob", domain_id: "d-1" }]
+      })
+    })({ project_id: "ipd-1", user_type: "reviewer" });
+
+    expect(approvers.structuredContent.items?.[0]).toEqual(expect.objectContaining({ id: "u-1", name: "Alice" }));
+    expect(forms.structuredContent.items?.[0]).toEqual(
+      expect.objectContaining({ id: "review-1", number: "CR-1", title: "Change review", category: "CR", status: "Open" })
+    );
+    expect(form.structuredContent.item).toEqual(
+      expect.objectContaining({ id: "review-1", title: "Change review", createdByName: "Alice" })
+    );
+    expect(process.structuredContent.item).toEqual(
+      expect.objectContaining({ id: "process-1", title: "Baseline review", state: "working" })
+    );
+    expect(processes.structuredContent.items?.[0]).toEqual(
+      expect.objectContaining({ id: "process-1", number: "BR-1", category: "BR" })
+    );
+    expect(roleUsers.structuredContent.items?.[0]).toEqual(
+      expect.objectContaining({ id: "u-2", name: "Bob", userName: "bob", domainId: "d-1" })
     );
   });
 
