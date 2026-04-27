@@ -6,7 +6,7 @@
 
 | 模块 | 工具数 | 读接口 | 写接口 | 基础 URL 环境变量 |
 | --- | ---: | ---: | ---: | --- |
-| Req | 174 | 110 | 64 | `HUAWEICLOUD_REQ_BASE_URL` |
+| Req | 200 | 119 | 81 | `HUAWEICLOUD_REQ_BASE_URL` |
 | Repo | 25 | 17 | 8 | `HUAWEICLOUD_REPO_BASE_URL` |
 | Pipeline | 77 | 42 | 35 | `HUAWEICLOUD_PIPELINE_BASE_URL` |
 | Check | 8 | 5 | 3 | `HUAWEICLOUD_CHECK_BASE_URL` |
@@ -15,7 +15,7 @@
 | Build | 22 | 14 | 8 | `HUAWEICLOUD_BUILD_BASE_URL` |
 | Artifact | 12 | 11 | 1 | `HUAWEICLOUD_ARTIFACT_BASE_URL` |
 
-产品工具合计 `384` 个。HTTP 共享模式额外提供 `auth_configure_session` 和 `auth_clear_session` 两个会话工具，因此 HTTP MCP 总工具数为 `386`。
+产品工具合计 `410` 个。HTTP 共享模式额外提供 `auth_configure_session` 和 `auth_clear_session` 两个会话工具，因此 HTTP MCP 总工具数为 `412`。
 
 ## 通用运行环境
 
@@ -58,6 +58,7 @@ Req 覆盖需求和项目协作，包括 Scrum 项目管理、成员、模块、
 | 工作项 | `req_list_work_items`, `req_get_work_item`, `req_create_work_item`, `req_update_work_item`, `req_delete_work_item` |
 | 需求池 | `req_list_programs`, `req_get_ir`, `req_list_rrs`, `req_list_rr_statuses` |
 | IPD | `req_list_ipd_projects`, `req_get_ipd_issue`, `req_create_ipd_issue`, `req_batch_update_ipd_issues`, `req_transfer_ipd_work_item_flow` |
+| 本次增量 | `req_batch_create_tracker_config`, `req_batch_delete_release_plans`, `req_batch_update_release_plan_baseline`, `req_cancel_project_domain`, `req_change_release_plan_status`, `req_create_ipd_change_review_form`, `req_create_ipd_process_instance`, `req_create_project_domain`, `req_create_project_status_config`, `req_create_release_plan`, `req_delete_ipd_change_review_form`, `req_delete_ipd_process_instance`, `req_get_ipd_process_instance`, `req_get_ipd_review_form`, `req_get_release_plan`, `req_list_ipd_change_review_issue_approvers`, `req_list_ipd_process_instances`, `req_list_ipd_review_forms`, `req_list_ipd_review_role_users`, `req_list_release_plans`, `req_update_ipd_change_review_form`, `req_update_ipd_process_instance`, `req_update_project_domain`, `req_update_release_plan`, `req_update_tracker_config`, `req_update_working_hours` |
 
 完整 Req API 参考：[Req-API-Reference](./Req-API-Reference.md)。
 

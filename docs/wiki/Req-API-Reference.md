@@ -6,11 +6,20 @@
 
 | 范围 | 数量 |
 | --- | ---: |
-| Req MCP 工具 | 174 |
-| 读工具 | 110 |
-| 写工具 | 64 |
-| 产品工具总数 | 384 |
-| 含鉴权的共享 HTTP 工具 | 386 |
+| Req MCP 工具 | 200 |
+| 读工具 | 119 |
+| 写工具 | 81 |
+| 产品工具总数 | 410 |
+| 含鉴权的共享 HTTP 工具 | 412 |
+
+2026-04-27 覆盖增量：
+
+- 项目域写入：`req_create_project_domain`, `req_update_project_domain`, `req_cancel_project_domain`
+- 状态配置写入：`req_create_project_status_config`, `req_batch_create_tracker_config`, `req_update_tracker_config`
+- 发布/迭代计划：`req_list_release_plans`, `req_get_release_plan`, `req_create_release_plan`, `req_update_release_plan`, `req_batch_delete_release_plans`, `req_batch_update_release_plan_baseline`, `req_change_release_plan_status`
+- IPD 评审读取：`req_list_ipd_change_review_issue_approvers`, `req_list_ipd_review_forms`, `req_get_ipd_review_form`, `req_get_ipd_process_instance`, `req_list_ipd_process_instances`, `req_list_ipd_review_role_users`
+- IPD 评审写入：`req_create_ipd_change_review_form`, `req_update_ipd_change_review_form`, `req_delete_ipd_change_review_form`, `req_create_ipd_process_instance`, `req_update_ipd_process_instance`, `req_delete_ipd_process_instance`
+- Scrum 工时写入：`req_update_working_hours`
 
 ## 设计边界
 

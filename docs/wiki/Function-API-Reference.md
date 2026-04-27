@@ -1,6 +1,6 @@
 # CodeArts MCP 功能 API 参考
 
-生成日期：2026-04-25
+生成日期：2026-04-27
 
 本文档列出当前 HTTP MCP 模式暴露的每个功能 API。所有功能 API 都使用同一个 HTTP 入口：`POST /mcp`；JSON-RPC 方法固定为 `tools/call`；具体功能由 `params.name` 指定。会话、鉴权、错误响应和完整 HTTP 调用流程请先阅读 [HTTP-MCP-Interface](./HTTP-MCP-Interface.md)。
 
@@ -33,7 +33,7 @@ authorization: Bearer <auth-token>
 | 模块 | API 数量 |
 | --- | ---: |
 | [鉴权 / 会话](#鉴权--会话) | 2 |
-| [Req 需求管理](#req-需求管理) | 174 |
+| [Req 需求管理](#req-需求管理) | 200 |
 | [Repo 代码仓](#repo-代码仓) | 25 |
 | [Pipeline 流水线](#pipeline-流水线) | 77 |
 | [Check 代码检查](#check-代码检查) | 8 |
@@ -41,7 +41,40 @@ authorization: Bearer <auth-token>
 | [Deploy 部署](#deploy-部署) | 59 |
 | [Build 构建](#build-构建) | 22 |
 | [Artifact 制品仓](#artifact-制品仓) | 12 |
-| **合计** | **386** |
+| **合计** | **412** |
+
+## 2026-04-27 Req API 增量
+
+本节补齐本次 Req MCP 扩展新增的函数 API 名称；完整调用仍使用统一 `POST /mcp`、JSON-RPC `tools/call`、`params.name` 指定工具名。
+
+| API | 说明 |
+| --- | --- |
+| `req_batch_create_tracker_config` | 绑定自定义工作项状态到 tracker |
+| `req_batch_delete_release_plans` | 批量删除发布或迭代计划 |
+| `req_batch_update_release_plan_baseline` | 批量更新发布或迭代计划基线 |
+| `req_cancel_project_domain` | 取消项目域关联 |
+| `req_change_release_plan_status` | 变更发布或迭代计划状态 |
+| `req_create_ipd_change_review_form` | 创建 IPD 变更评审单 |
+| `req_create_ipd_process_instance` | 创建 IPD BR/GR 流程实例 |
+| `req_create_project_domain` | 创建项目域关联 |
+| `req_create_project_status_config` | 创建项目自定义状态 |
+| `req_create_release_plan` | 创建发布或迭代计划 |
+| `req_delete_ipd_change_review_form` | 删除 IPD 变更评审单 |
+| `req_delete_ipd_process_instance` | 删除 IPD BR/GR 流程实例 |
+| `req_get_ipd_process_instance` | 获取 IPD 流程实例详情 |
+| `req_get_ipd_review_form` | 获取 IPD 评审单详情 |
+| `req_get_release_plan` | 获取发布或迭代计划详情 |
+| `req_list_ipd_change_review_issue_approvers` | 查询 IPD 变更评审工作项审批人 |
+| `req_list_ipd_process_instances` | 查询 IPD 流程实例 |
+| `req_list_ipd_review_forms` | 查询 IPD 评审单 |
+| `req_list_ipd_review_role_users` | 查询 IPD 评审角色用户 |
+| `req_list_release_plans` | 查询发布或迭代计划 |
+| `req_update_ipd_change_review_form` | 更新 IPD 变更评审单 |
+| `req_update_ipd_process_instance` | 更新 IPD BR/GR 流程实例 |
+| `req_update_project_domain` | 更新项目域关联 |
+| `req_update_release_plan` | 更新发布或迭代计划 |
+| `req_update_tracker_config` | 调整 tracker 状态配置位置 |
+| `req_update_working_hours` | 更新 Scrum 工作项工时 |
 
 ## 鉴权 / 会话
 
