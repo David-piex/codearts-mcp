@@ -7,7 +7,11 @@ import {
   objectFromShape
 } from "@modelcontextprotocol/sdk/server/zod-compat.js";
 import { ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
-import type { AppConfig, ServerMetadataConfig } from "../core/config/env.js";
+import {
+  DEFAULT_HTTP_WRITE_RATE_LIMIT,
+  type AppConfig,
+  type ServerMetadataConfig
+} from "../core/config/env.js";
 import { configureHttpAuthRuntimeConfig } from "./auth-session-runtime.js";
 import { buildStdioClients } from "./build-stdio-clients.js";
 import { type AuthRepository } from "./auth-session-tools.js";
@@ -32,9 +36,6 @@ export {
   createConfigureSessionHandler,
   createConfigureSessionHandlerWithPersistence
 };
-
-const PRODUCT_WRITE_RATE_LIMIT_MAX_REQUESTS = 3000;
-const PRODUCT_WRITE_RATE_LIMIT_WINDOW_MS = 60_000;
 
 type RegisterToolMethod = McpServer["registerTool"];
 type ToolSchema = AnySchema | ZodRawShapeCompat;
@@ -370,7 +371,11 @@ function captureRegisteredTools(
   dependencies.registerAuthTools({
     server: capturingServer,
     mode: options.mode,
-    sessionStore: options.mode === "http" ? options.sessionStore : undefined
+    sessionStore: options.mode === "http" ? options.sessionStore : undefined,
+    rateLimit:
+      options.mode === "http"
+        ? options.config.authWriteRateLimit ?? DEFAULT_HTTP_WRITE_RATE_LIMIT
+        : undefined
   });
 
   for (const toolName of dependencies.collectToolNames()) {
@@ -420,8 +425,12 @@ export function createServerFactory(
   const productWriteRateLimiter =
     options.mode === "http"
       ? resolvedDependencies.createFixedWindowRateLimiter({
-          maxRequests: PRODUCT_WRITE_RATE_LIMIT_MAX_REQUESTS,
-          windowMs: PRODUCT_WRITE_RATE_LIMIT_WINDOW_MS
+          maxRequests:
+            options.config.productWriteRateLimit?.maxRequests ??
+            DEFAULT_HTTP_WRITE_RATE_LIMIT.maxRequests,
+          windowMs:
+            options.config.productWriteRateLimit?.windowMs ??
+            DEFAULT_HTTP_WRITE_RATE_LIMIT.windowMs
         })
       : undefined;
   const registeredToolPlans = captureRegisteredTools(

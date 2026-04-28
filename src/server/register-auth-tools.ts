@@ -4,20 +4,26 @@ import {
   createClearSessionHandlerWithPersistence,
   createConfigureSessionHandlerWithPersistence
 } from "./auth-session-tools.js";
+import {
+  DEFAULT_HTTP_WRITE_RATE_LIMIT,
+  type FixedWindowRateLimitConfig
+} from "../core/config/env.js";
 import { createFixedWindowRateLimiter, type RateLimiter } from "./rate-limiter.js";
 import { readHttpAuthRuntimeConfig } from "./auth-session-runtime.js";
 import type { SessionCredentialStore } from "./session-store.js";
 
 type RegisterableServer = Pick<McpServer, "registerTool">;
-const AUTH_WRITE_RATE_LIMIT_MAX_REQUESTS = 3000;
-const AUTH_WRITE_RATE_LIMIT_WINDOW_MS = 60_000;
+
+function createAuthWriteRateLimiter(rateLimit = DEFAULT_HTTP_WRITE_RATE_LIMIT) {
+  return createFixedWindowRateLimiter({
+    maxRequests: rateLimit.maxRequests,
+    windowMs: rateLimit.windowMs
+  });
+}
 
 export function createConfigureSessionHandler(
   store: SessionCredentialStore,
-  rateLimiter = createFixedWindowRateLimiter({
-    maxRequests: AUTH_WRITE_RATE_LIMIT_MAX_REQUESTS,
-    windowMs: AUTH_WRITE_RATE_LIMIT_WINDOW_MS
-  })
+  rateLimiter = createAuthWriteRateLimiter()
 ) {
   const httpAuthRuntimeConfig = readHttpAuthRuntimeConfig();
   return createConfigureSessionHandlerWithPersistence({
@@ -30,10 +36,7 @@ export function createConfigureSessionHandler(
 
 export function createClearSessionHandler(
   store: SessionCredentialStore,
-  rateLimiter = createFixedWindowRateLimiter({
-    maxRequests: AUTH_WRITE_RATE_LIMIT_MAX_REQUESTS,
-    windowMs: AUTH_WRITE_RATE_LIMIT_WINDOW_MS
-  })
+  rateLimiter = createAuthWriteRateLimiter()
 ) {
   const httpAuthRuntimeConfig = readHttpAuthRuntimeConfig();
   return createClearSessionHandlerWithPersistence({
@@ -49,15 +52,13 @@ export function registerAuthTools(options: {
   server: RegisterableServer;
   mode: "http" | "stdio";
   sessionStore?: SessionCredentialStore;
+  rateLimit?: FixedWindowRateLimitConfig;
 }) {
   if (options.mode !== "http") {
     return;
   }
 
-  const rateLimiter: RateLimiter = createFixedWindowRateLimiter({
-    maxRequests: AUTH_WRITE_RATE_LIMIT_MAX_REQUESTS,
-    windowMs: AUTH_WRITE_RATE_LIMIT_WINDOW_MS
-  });
+  const rateLimiter: RateLimiter = createAuthWriteRateLimiter(options.rateLimit);
 
   options.server.registerTool(
     "auth_configure_session",

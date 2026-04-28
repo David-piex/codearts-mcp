@@ -164,6 +164,7 @@ describe("createServer tool registration", () => {
       return true;
     });
     const registerScaffoldToolMock = vi.fn();
+    const createFixedWindowRateLimiterMock = vi.fn(() => ({ check: vi.fn() }));
     const createdServers: Array<{
       _registeredTools: Record<string, unknown>;
       registerToolCalls: string[];
@@ -205,6 +206,14 @@ describe("createServer tool registration", () => {
             repoListRepositoriesMs: 60_000,
             pipelineListPipelinesMs: 5_000,
             buildListJobsMs: 5_000
+          },
+          productWriteRateLimit: {
+            maxRequests: 1200,
+            windowMs: 30_000
+          },
+          authWriteRateLimit: {
+            maxRequests: 600,
+            windowMs: 15_000
           }
         },
         sessionStore: createSessionCredentialStore()
@@ -214,7 +223,8 @@ describe("createServer tool registration", () => {
         collectToolNames: collectToolNamesMock,
         registerAuthTools: registerAuthToolsMock as never,
         registerProductTool: registerProductToolMock as never,
-        registerScaffoldTool: registerScaffoldToolMock as never
+        registerScaffoldTool: registerScaffoldToolMock as never,
+        createFixedWindowRateLimiter: createFixedWindowRateLimiterMock as never
       }
     );
 
@@ -223,6 +233,18 @@ describe("createServer tool registration", () => {
 
     expect(collectToolNamesMock).toHaveBeenCalledTimes(1);
     expect(registerAuthToolsMock).toHaveBeenCalledTimes(1);
+    expect(registerAuthToolsMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        rateLimit: {
+          maxRequests: 600,
+          windowMs: 15_000
+        }
+      })
+    );
+    expect(createFixedWindowRateLimiterMock).toHaveBeenCalledWith({
+      maxRequests: 1200,
+      windowMs: 30_000
+    });
     expect(registerProductToolMock).toHaveBeenCalledTimes(2);
     expect(registerScaffoldToolMock).not.toHaveBeenCalled();
     expect(McpServerMock).toHaveBeenCalledTimes(3);

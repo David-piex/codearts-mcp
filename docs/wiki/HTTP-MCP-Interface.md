@@ -539,8 +539,8 @@ allow: POST, DELETE
 
 | 类型 | 规则 |
 | --- | --- |
-| 鉴权写入 | `auth_configure_session`、`auth_clear_session` 每个 session 每 60 秒最多 3000 次 |
-| 产品写入 | HTTP 模式下按 action/session 每 60 秒最多 3000 次 |
+| 鉴权写入 | `auth_configure_session`、`auth_clear_session` 每个 session 默认每 60 秒最多 3000 次，可用 `MCP_AUTH_WRITE_RATE_LIMIT_*` 调整 |
+| 产品写入 | HTTP 模式下按 action/session 默认每 60 秒最多 3000 次，可用 `MCP_PRODUCT_WRITE_RATE_LIMIT_*` 调整 |
 | dry run | 解析到 `dry_run: true` 的产品写入请求不计入真实写入限流 |
 | 读缓存 | 部分高频列表工具支持 TTL 缓存，具体由环境变量控制 |
 
@@ -551,12 +551,16 @@ allow: POST, DELETE
 | `MCP_SERVER_NAME` | MCP server 名称 | 无，必填 |
 | `MCP_SERVER_VERSION` | MCP server 版本 | 无，必填 |
 | `MCP_HTTP_PORT` | HTTP 监听端口 | `3000` |
+| `MCP_PRODUCT_WRITE_RATE_LIMIT_MAX_REQUESTS` | 产品写入每个 action/session 的限流次数 | `3000` |
+| `MCP_PRODUCT_WRITE_RATE_LIMIT_WINDOW_MS` | 产品写入限流窗口，单位毫秒 | `60000` |
 | `MCP_AUTH_MASTER_KEY` | HTTP 持久化凭证加密主密钥 | HTTP 模式必填 |
 | `MCP_AUTH_DATA_PATH` | 持久化鉴权数据文件 | `.codearts-mcp/auth-store.json` |
 | `MCP_AUTH_COOKIE_NAME` | 鉴权 Cookie 名称 | `codearts_mcp_auth` |
 | `MCP_AUTH_COOKIE_SECURE` | 是否设置 Secure Cookie | `false` |
 | `MCP_AUTH_TOKEN_TTL_SECONDS` | 鉴权 token TTL | `2592000` |
 | `MCP_AUTH_ALLOW_QUERY_TOKEN` | 是否允许 `/mcp?auth_token=...` 兼容模式 | `false` |
+| `MCP_AUTH_WRITE_RATE_LIMIT_MAX_REQUESTS` | 鉴权写入每个 session 的限流次数 | `3000` |
+| `MCP_AUTH_WRITE_RATE_LIMIT_WINDOW_MS` | 鉴权写入限流窗口，单位毫秒 | `60000` |
 | `MCP_REQ_LIST_PROJECTS_CACHE_TTL_MS` | Req 项目列表读缓存 TTL | 由代码默认策略决定 |
 | `MCP_REPO_LIST_REPOSITORIES_CACHE_TTL_MS` | Repo 仓库列表读缓存 TTL | 由代码默认策略决定 |
 | `MCP_PIPELINE_LIST_PIPELINES_CACHE_TTL_MS` | Pipeline 列表读缓存 TTL | 由代码默认策略决定 |

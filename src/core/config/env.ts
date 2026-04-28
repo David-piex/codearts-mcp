@@ -40,7 +40,14 @@ export type ServerMetadataConfig = {
   serverName: string;
   serverVersion: string;
   httpPort: number;
+  productWriteRateLimit?: FixedWindowRateLimitConfig;
+  authWriteRateLimit?: FixedWindowRateLimitConfig;
   readCacheTtls?: ReadCacheTtls;
+};
+
+export type FixedWindowRateLimitConfig = {
+  maxRequests: number;
+  windowMs: number;
 };
 
 export type HttpAuthConfig = {
@@ -51,6 +58,29 @@ export type HttpAuthConfig = {
   authTokenTtlSeconds: number;
   allowQueryAuthToken: boolean;
 };
+
+export const DEFAULT_HTTP_WRITE_RATE_LIMIT: FixedWindowRateLimitConfig = {
+  maxRequests: 3000,
+  windowMs: 60_000
+};
+
+function parsePositiveInteger(
+  value: string | undefined,
+  envName: string,
+  defaultValue: number
+) {
+  if (value === undefined) {
+    return defaultValue;
+  }
+
+  const parsed = Number(value);
+
+  if (!Number.isInteger(parsed) || parsed <= 0) {
+    throw new Error(`${envName} must be a positive integer.`);
+  }
+
+  return parsed;
+}
 
 function parseReadCacheTtlMs(
   value: string | undefined,
@@ -90,6 +120,25 @@ function loadReadCacheTtls(
       "MCP_BUILD_LIST_JOBS_CACHE_TTL_MS"
     )
   });
+}
+
+function loadFixedWindowRateLimitConfig(
+  source: Record<string, string | undefined>,
+  maxRequestsEnvName: string,
+  windowMsEnvName: string
+): FixedWindowRateLimitConfig {
+  return {
+    maxRequests: parsePositiveInteger(
+      source[maxRequestsEnvName],
+      maxRequestsEnvName,
+      DEFAULT_HTTP_WRITE_RATE_LIMIT.maxRequests
+    ),
+    windowMs: parsePositiveInteger(
+      source[windowMsEnvName],
+      windowMsEnvName,
+      DEFAULT_HTTP_WRITE_RATE_LIMIT.windowMs
+    )
+  };
 }
 
 export function loadEnvConfig(source: Record<string, string | undefined> = process.env): AppConfig {
@@ -138,6 +187,16 @@ export function loadServerMetadataConfig(
     serverName,
     serverVersion,
     httpPort: Number(source.MCP_HTTP_PORT ?? "3000"),
+    productWriteRateLimit: loadFixedWindowRateLimitConfig(
+      source,
+      "MCP_PRODUCT_WRITE_RATE_LIMIT_MAX_REQUESTS",
+      "MCP_PRODUCT_WRITE_RATE_LIMIT_WINDOW_MS"
+    ),
+    authWriteRateLimit: loadFixedWindowRateLimitConfig(
+      source,
+      "MCP_AUTH_WRITE_RATE_LIMIT_MAX_REQUESTS",
+      "MCP_AUTH_WRITE_RATE_LIMIT_WINDOW_MS"
+    ),
     readCacheTtls: loadReadCacheTtls(source)
   };
 }

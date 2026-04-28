@@ -272,6 +272,10 @@ Live 状态说明：
 | 变量 | 说明 | 默认值 |
 | --- | --- | --- |
 | `MCP_HTTP_PORT` | HTTP 监听端口 | `3000` |
+| `MCP_PRODUCT_WRITE_RATE_LIMIT_MAX_REQUESTS` | 产品写入每个 action/session 的限流次数 | `3000` |
+| `MCP_PRODUCT_WRITE_RATE_LIMIT_WINDOW_MS` | 产品写入限流窗口 | `60000` |
+| `MCP_AUTH_WRITE_RATE_LIMIT_MAX_REQUESTS` | 鉴权写入每个 session 的限流次数 | `3000` |
+| `MCP_AUTH_WRITE_RATE_LIMIT_WINDOW_MS` | 鉴权写入限流窗口 | `60000` |
 | `MCP_AUTH_DATA_PATH` | 加密凭证持久化路径 | `.codearts-mcp/auth-store.json` |
 | `MCP_AUTH_COOKIE_SECURE` | HTTPS 环境下设置 Cookie Secure 标志 | `false` |
 | `HUAWEICLOUD_AK` | 默认 AK（stdio 模式） | — |

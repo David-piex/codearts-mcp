@@ -95,6 +95,14 @@ describe("loadServerMetadataConfig", () => {
       serverName: "codearts-mcp",
       serverVersion: "0.1.0",
       httpPort: 3100,
+      productWriteRateLimit: {
+        maxRequests: 3000,
+        windowMs: 60_000
+      },
+      authWriteRateLimit: {
+        maxRequests: 3000,
+        windowMs: 60_000
+      },
       readCacheTtls: {
         reqListProjectsMs: 45_000,
         repoListRepositoriesMs: 47_000,
@@ -102,6 +110,55 @@ describe("loadServerMetadataConfig", () => {
         buildListJobsMs: 3_500
       }
     });
+  });
+
+  it("allows HTTP write rate limit overrides", () => {
+    expect(
+      loadServerMetadataConfig({
+        MCP_SERVER_NAME: "codearts-mcp",
+        MCP_SERVER_VERSION: "0.1.0",
+        MCP_PRODUCT_WRITE_RATE_LIMIT_MAX_REQUESTS: "1200",
+        MCP_PRODUCT_WRITE_RATE_LIMIT_WINDOW_MS: "30000",
+        MCP_AUTH_WRITE_RATE_LIMIT_MAX_REQUESTS: "600",
+        MCP_AUTH_WRITE_RATE_LIMIT_WINDOW_MS: "15000"
+      })
+    ).toEqual({
+      serverName: "codearts-mcp",
+      serverVersion: "0.1.0",
+      httpPort: 3000,
+      productWriteRateLimit: {
+        maxRequests: 1200,
+        windowMs: 30_000
+      },
+      authWriteRateLimit: {
+        maxRequests: 600,
+        windowMs: 15_000
+      },
+      readCacheTtls: {
+        reqListProjectsMs: 60_000,
+        repoListRepositoriesMs: 60_000,
+        pipelineListPipelinesMs: 5_000,
+        buildListJobsMs: 5_000
+      }
+    });
+  });
+
+  it("rejects invalid HTTP write rate limits", () => {
+    expect(() =>
+      loadServerMetadataConfig({
+        MCP_SERVER_NAME: "codearts-mcp",
+        MCP_SERVER_VERSION: "0.1.0",
+        MCP_PRODUCT_WRITE_RATE_LIMIT_MAX_REQUESTS: "0"
+      })
+    ).toThrow(/MCP_PRODUCT_WRITE_RATE_LIMIT_MAX_REQUESTS/);
+
+    expect(() =>
+      loadServerMetadataConfig({
+        MCP_SERVER_NAME: "codearts-mcp",
+        MCP_SERVER_VERSION: "0.1.0",
+        MCP_AUTH_WRITE_RATE_LIMIT_WINDOW_MS: "1.5"
+      })
+    ).toThrow(/MCP_AUTH_WRITE_RATE_LIMIT_WINDOW_MS/);
   });
 });
 
