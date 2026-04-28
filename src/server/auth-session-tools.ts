@@ -168,7 +168,7 @@ export function createConfigureSessionHandlerWithPersistence(options: {
           text:
             `Session ${sessionId} configured for ${parsed.region}. ` +
             "Save the returned auth_token and reuse it via Authorization: Bearer <token> " +
-            "or by connecting to /mcp?auth_token=<token> when your client does not persist cookies."
+            "when your client does not persist cookies."
         }
       ],
       structuredContent: {
@@ -181,8 +181,7 @@ export function createConfigureSessionHandlerWithPersistence(options: {
         token_preview: `${token.raw.slice(0, 6)}...`,
         cookie_expected: true,
         bearer_supported: true,
-        query_token_supported: true,
-        query_token_parameter: "auth_token"
+        query_token_supported: false
       },
       _httpAuthToken: token.raw
     };

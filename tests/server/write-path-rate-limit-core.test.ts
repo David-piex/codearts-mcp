@@ -103,7 +103,7 @@ describe("write path rate limits", () => {
     const fetchMock = stubJsonFetch({}, { status: 204 });
     const context = createSessionAuthContext("session-rate-limit", "auth-1");
 
-    for (let index = 0; index < 300; index += 1) {
+    for (let index = 0; index < 3000; index += 1) {
       await handler(
         {
           project_id: "project-1",
@@ -115,7 +115,7 @@ describe("write path rate limits", () => {
       );
     }
 
-    for (let index = 0; index < 300; index += 1) {
+    for (let index = 0; index < 3000; index += 1) {
       await handler(
         {
           project_id: "project-1",
@@ -137,7 +137,7 @@ describe("write path rate limits", () => {
       context
     );
 
-    expect(fetchMock).toHaveBeenCalledTimes(300);
+    expect(fetchMock).toHaveBeenCalledTimes(3000);
     expectRateLimitResult(blocked, "req_add_project_member");
   });
 
@@ -893,17 +893,17 @@ describe("write path rate limits", () => {
     const fetchMock = stubJsonFetch(responsePayload, responseInit);
     const context = createSessionAuthContext("session-rate-limit", "auth-1");
 
-    for (let index = 0; index < 300; index += 1) {
+    for (let index = 0; index < 3000; index += 1) {
       await handler(dryRunInput, context);
     }
 
-    for (let index = 0; index < 300; index += 1) {
+    for (let index = 0; index < 3000; index += 1) {
       await handler(liveInput(index), context);
     }
 
     const blocked = await handler(blockedInput, context);
 
-    expect(fetchMock).toHaveBeenCalledTimes(300);
+    expect(fetchMock).toHaveBeenCalledTimes(3000);
     expectRateLimitResult(blocked, toolName);
   });
 });

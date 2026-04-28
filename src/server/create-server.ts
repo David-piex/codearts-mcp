@@ -33,7 +33,7 @@ export {
   createConfigureSessionHandlerWithPersistence
 };
 
-const PRODUCT_WRITE_RATE_LIMIT_MAX_REQUESTS = 300;
+const PRODUCT_WRITE_RATE_LIMIT_MAX_REQUESTS = 3000;
 const PRODUCT_WRITE_RATE_LIMIT_WINDOW_MS = 60_000;
 
 type RegisterToolMethod = McpServer["registerTool"];

@@ -59,6 +59,9 @@ describe("file auth repository", () => {
       auth_id: "auth-1",
       region: "cn-north-4"
     });
+    if (process.platform !== "win32") {
+      expect((fs.statSync(path).mode & 0o777)).toBe(0o600);
+    }
   });
 
   it("marks records revoked without deleting history", async () => {

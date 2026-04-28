@@ -271,8 +271,7 @@ curl -i http://127.0.0.1:3000/mcp \
       "token_preview": "abc123...",
       "cookie_expected": true,
       "bearer_supported": true,
-      "query_token_supported": true,
-      "query_token_parameter": "auth_token"
+      "query_token_supported": false
     }
   }
 }
@@ -280,15 +279,14 @@ curl -i http://127.0.0.1:3000/mcp \
 
 ### 4.2 复用凭证
 
-客户端可以用三种方式复用已配置凭证：
+客户端可以用两种方式复用已配置凭证：
 
 | 方式 | 示例 |
 | --- | --- |
 | Cookie | `Cookie: codearts_mcp_auth=<opaque-token>` |
 | Bearer | `Authorization: Bearer <opaque-token>` |
-| Query | `/mcp?auth_token=<opaque-token>` |
 
-如果请求携带了有效 token，服务端会把 token 对应的凭证绑定到当前 MCP session。推荐优先使用 Cookie 或 Bearer；Query token 仅用于无法设置 header 的客户端。
+如果请求携带了有效 token，服务端会把 token 对应的凭证绑定到当前 MCP session。Query token 默认关闭，因为 URL 容易进入代理日志、浏览器历史和监控系统；只有遗留客户端确实无法设置 header 或保留 Cookie 时，才应显式启用 `MCP_AUTH_ALLOW_QUERY_TOKEN=true`。
 
 ### 4.3 清除会话凭证
 
@@ -541,8 +539,8 @@ allow: POST, DELETE
 
 | 类型 | 规则 |
 | --- | --- |
-| 鉴权写入 | `auth_configure_session`、`auth_clear_session` 每个 session 每 60 秒最多 300 次 |
-| 产品写入 | HTTP 模式下按 action/session 每 60 秒最多 300 次 |
+| 鉴权写入 | `auth_configure_session`、`auth_clear_session` 每个 session 每 60 秒最多 3000 次 |
+| 产品写入 | HTTP 模式下按 action/session 每 60 秒最多 3000 次 |
 | dry run | 解析到 `dry_run: true` 的产品写入请求不计入真实写入限流 |
 | 读缓存 | 部分高频列表工具支持 TTL 缓存，具体由环境变量控制 |
 
@@ -558,6 +556,7 @@ allow: POST, DELETE
 | `MCP_AUTH_COOKIE_NAME` | 鉴权 Cookie 名称 | `codearts_mcp_auth` |
 | `MCP_AUTH_COOKIE_SECURE` | 是否设置 Secure Cookie | `false` |
 | `MCP_AUTH_TOKEN_TTL_SECONDS` | 鉴权 token TTL | `2592000` |
+| `MCP_AUTH_ALLOW_QUERY_TOKEN` | 是否允许 `/mcp?auth_token=...` 兼容模式 | `false` |
 | `MCP_REQ_LIST_PROJECTS_CACHE_TTL_MS` | Req 项目列表读缓存 TTL | 由代码默认策略决定 |
 | `MCP_REPO_LIST_REPOSITORIES_CACHE_TTL_MS` | Repo 仓库列表读缓存 TTL | 由代码默认策略决定 |
 | `MCP_PIPELINE_LIST_PIPELINES_CACHE_TTL_MS` | Pipeline 列表读缓存 TTL | 由代码默认策略决定 |

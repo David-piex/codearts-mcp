@@ -9,6 +9,7 @@ import { formatToolErrorMessage } from "./tool-error-hints.js";
 type RegisterableServer = Pick<McpServer, "registerTool">;
 
 type ToolModeOptions<TClient> = {
+  toolName: string;
   mode: "http" | "stdio";
   sessionStore?: SessionCredentialStore;
   stdioClient?: TClient;
@@ -60,6 +61,50 @@ function isDryRunInput(input: unknown, inputSchema: { safeParse?: (value: unknow
   return (parsed.data as { dry_run?: unknown }).dry_run === true;
 }
 
+const WRITE_ACTIONS = new Set([
+  "add",
+  "append",
+  "approve",
+  "batch",
+  "bind",
+  "cancel",
+  "change",
+  "clear",
+  "close",
+  "configure",
+  "copy",
+  "create",
+  "delete",
+  "disable",
+  "enable",
+  "inherit",
+  "import",
+  "leave",
+  "merge",
+  "modify",
+  "move",
+  "pass",
+  "prepare",
+  "refuse",
+  "reject",
+  "retry",
+  "review",
+  "rollback",
+  "run",
+  "set",
+  "start",
+  "stop",
+  "switch",
+  "transfer",
+  "upload",
+  "update"
+]);
+
+function inferWriteRateLimitAction(toolName: string) {
+  const [, action = ""] = toolName.split("_");
+  return WRITE_ACTIONS.has(action) ? toolName : undefined;
+}
+
 export function defineProductTool<
   THttpClients,
   TClient,
@@ -76,7 +121,8 @@ export function defineProductTool<
     inputSchema: options.inputSchema,
     resolveHandler(resolveOptions) {
       if (resolveOptions.mode === "http") {
-        const rateLimitAction = options.rateLimitAction;
+        const rateLimitAction =
+          options.rateLimitAction ?? inferWriteRateLimitAction(resolveOptions.toolName);
 
         return createSessionAwareProductToolHandler({
           store: resolveOptions.sessionStore!,
@@ -138,6 +184,7 @@ export function registerDefinedTool<
       options.toolName,
       definition.resolveHandler({
         mode: options.mode,
+        toolName: options.toolName,
         sessionStore: options.sessionStore,
         stdioClient: options.stdioClient,
         rateLimiter: options.rateLimiter

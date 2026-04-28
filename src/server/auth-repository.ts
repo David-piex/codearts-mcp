@@ -61,8 +61,9 @@ function loadFile(path: string): AuthRepositoryFile {
 }
 
 function saveFile(path: string, data: AuthRepositoryFile) {
-  fs.mkdirSync(dirname(path), { recursive: true });
-  fs.writeFileSync(path, JSON.stringify(data, null, 2));
+  fs.mkdirSync(dirname(path), { recursive: true, mode: 0o700 });
+  fs.writeFileSync(path, JSON.stringify(data, null, 2), { mode: 0o600 });
+  fs.chmodSync(path, 0o600);
 }
 
 function getFileSignature(path: string): FileSignature | undefined {

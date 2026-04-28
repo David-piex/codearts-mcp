@@ -76,6 +76,89 @@ describe("product tool registry helper", () => {
     );
   });
 
+  it("rate limits inferred write tools before resolving session clients", async () => {
+    const registerTool = vi.fn();
+    const rateLimiter = {
+      check: vi.fn(() => {
+        throw new Error("limited");
+      })
+    };
+    const demoToolDefinitions = {
+      "demo_create_item": defineProductTool({
+        description: "Demo write tool",
+        inputSchema: {
+          safeParse: () => ({ success: true, data: {} })
+        },
+        selectHttpClient: (clients: { demoClient: { id: string } }) => clients.demoClient,
+        createProductHandler: (client: { id: string }) => async () => ({
+          structuredContent: {
+            clientId: client.id
+          }
+        })
+      })
+    } as const;
+
+    registerDefinedTool({
+      toolName: "demo_create_item",
+      server: { registerTool },
+      definitions: demoToolDefinitions,
+      mode: "http",
+      sessionStore: createSessionCredentialStore(),
+      rateLimiter: rateLimiter as never
+    });
+
+    const handler = registerTool.mock.calls[0][2] as (
+      input: unknown,
+      extra: { sessionId?: string }
+    ) => Promise<{ isError?: boolean }>;
+
+    await expect(handler({}, { sessionId: "session-1" })).resolves.toMatchObject({
+      isError: true
+    });
+    expect(rateLimiter.check).toHaveBeenCalledWith(
+      "demo_create_item:session-1",
+      "demo_create_item"
+    );
+  });
+
+  it("does not rate limit inferred write tools for dry-run input", async () => {
+    const registerTool = vi.fn();
+    const rateLimiter = { check: vi.fn() };
+    const demoToolDefinitions = {
+      "demo_create_item": defineProductTool({
+        description: "Demo write tool",
+        inputSchema: {
+          safeParse: () => ({ success: true, data: { dry_run: true } })
+        },
+        selectHttpClient: (clients: { demoClient: { id: string } }) => clients.demoClient,
+        createProductHandler: () => async () => ({
+          structuredContent: {
+            dryRun: true
+          }
+        })
+      })
+    } as const;
+
+    registerDefinedTool({
+      toolName: "demo_create_item",
+      server: { registerTool },
+      definitions: demoToolDefinitions,
+      mode: "http",
+      sessionStore: createSessionCredentialStore(),
+      rateLimiter: rateLimiter as never
+    });
+
+    const handler = registerTool.mock.calls[0][2] as (
+      input: unknown,
+      extra: { sessionId?: string }
+    ) => Promise<{ isError?: boolean }>;
+
+    await expect(handler({}, { sessionId: "session-1" })).resolves.toMatchObject({
+      isError: true
+    });
+    expect(rateLimiter.check).not.toHaveBeenCalled();
+  });
+
   it("wraps product handler failures into tool error results", async () => {
     const registerTool = vi.fn();
     const demoToolDefinitions = {

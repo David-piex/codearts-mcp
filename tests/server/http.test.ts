@@ -20,7 +20,8 @@ const httpAuthConfig = {
   authDataPath: ".codearts-mcp/auth-store.json",
   authCookieName: "codearts_mcp_auth",
   authCookieSecure: false,
-  authTokenTtlSeconds: 60
+  authTokenTtlSeconds: 60,
+  allowQueryAuthToken: false
 };
 
 function createFakeListeningServer(onListen?: () => void) {

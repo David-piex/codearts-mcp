@@ -118,8 +118,20 @@ describe("loadHttpAuthConfig", () => {
       authDataPath: ".codearts-mcp/auth-store.json",
       authCookieName: "codearts_mcp_auth",
       authCookieSecure: false,
-      authTokenTtlSeconds: 2592000
+      authTokenTtlSeconds: 2592000,
+      allowQueryAuthToken: false
     });
+  });
+
+  it("allows query auth tokens only when explicitly enabled", () => {
+    expect(
+      loadHttpAuthConfig({
+        MCP_AUTH_MASTER_KEY: "0123456789abcdef0123456789abcdef",
+        MCP_AUTH_ALLOW_QUERY_TOKEN: "true",
+        MCP_SERVER_NAME: "codearts-mcp",
+        MCP_SERVER_VERSION: "0.1.0"
+      }).allowQueryAuthToken
+    ).toBe(true);
   });
 
   it("rejects missing master key", () => {

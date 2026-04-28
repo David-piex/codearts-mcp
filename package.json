@@ -11,8 +11,11 @@
     "stats:modules": "tsx src/server/print-module-stats.ts",
     "stats:check-docs": "tsx src/server/check-module-stats-docs.ts",
     "stats:sync-docs": "tsx src/server/sync-module-stats-docs.ts",
+    "function-api:check": "tsx src/server/check-function-api-reference.ts",
+    "function-api:sync": "tsx src/server/sync-function-api-reference.ts",
     "test": "vitest run --no-isolate",
     "test:fast": "vitest run --no-isolate",
+    "test:live": "vitest run --no-isolate --config vitest.live.config.ts",
     "test:isolate": "vitest run",
     "lint": "eslint ."
   },

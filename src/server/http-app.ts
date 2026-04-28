@@ -415,7 +415,9 @@ export function createHttpApp(
               authorization: normalizeHeaderValue(req.headers.authorization),
               cookie: normalizeHeaderValue(req.headers.cookie)
             },
-            queryToken: url.searchParams.get("auth_token") ?? undefined
+            queryToken: authConfig?.allowQueryAuthToken
+              ? url.searchParams.get("auth_token") ?? undefined
+              : undefined
           })
         : undefined;
       recordRequestPhase("auth_resolve", Date.now() - authResolveStartedAt);

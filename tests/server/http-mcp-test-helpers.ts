@@ -14,6 +14,7 @@ type TestHttpServer = Awaited<ReturnType<typeof startTestHttpServer>>;
 export function createTestHttpAuthConfig(options?: {
   prefix?: string;
   ttlSeconds?: number;
+  allowQueryAuthToken?: boolean;
 }): HttpAuthConfig {
   return {
     masterKey,
@@ -23,7 +24,8 @@ export function createTestHttpAuthConfig(options?: {
     ),
     authCookieName: "codearts_mcp_auth",
     authCookieSecure: false,
-    authTokenTtlSeconds: options?.ttlSeconds ?? 60
+    authTokenTtlSeconds: options?.ttlSeconds ?? 60,
+    allowQueryAuthToken: options?.allowQueryAuthToken ?? false
   };
 }
 

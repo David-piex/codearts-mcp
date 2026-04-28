@@ -338,7 +338,9 @@ export function findDriftedModuleStatsDocuments(
 ): string[] {
   const synced = syncModuleStatsDocuments(documents);
 
-  return Object.keys(documents).filter((path) => documents[path] !== synced[path]);
+  return Object.keys(documents).filter(
+    (path) => documents[path].replace(/\r\n/g, "\n") !== synced[path].replace(/\r\n/g, "\n")
+  );
 }
 
 export function loadTrackedModuleStatsDocuments(): Record<string, string> {

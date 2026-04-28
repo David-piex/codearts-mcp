@@ -49,6 +49,7 @@ export type HttpAuthConfig = {
   authCookieName: string;
   authCookieSecure: boolean;
   authTokenTtlSeconds: number;
+  allowQueryAuthToken: boolean;
 };
 
 function parseReadCacheTtlMs(
@@ -155,6 +156,7 @@ export function loadHttpAuthConfig(
     authDataPath: source.MCP_AUTH_DATA_PATH ?? ".codearts-mcp/auth-store.json",
     authCookieName: source.MCP_AUTH_COOKIE_NAME ?? "codearts_mcp_auth",
     authCookieSecure: source.MCP_AUTH_COOKIE_SECURE === "true",
-    authTokenTtlSeconds: Number(source.MCP_AUTH_TOKEN_TTL_SECONDS ?? "2592000")
+    authTokenTtlSeconds: Number(source.MCP_AUTH_TOKEN_TTL_SECONDS ?? "2592000"),
+    allowQueryAuthToken: source.MCP_AUTH_ALLOW_QUERY_TOKEN === "true"
   };
 }

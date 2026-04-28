@@ -38,7 +38,7 @@ docker compose logs
 - `MCP_AUTH_DATA_PATH` 指向的文件是否被删掉
 - 客户端是否真的保留了 Cookie
 
-如果客户端不保留 Cookie，改用 `auth_token` 固定 URL。
+如果客户端不保留 Cookie，改用 `Authorization: Bearer <auth_token>`。不要把 token 固定到 URL query，除非已显式启用 `MCP_AUTH_ALLOW_QUERY_TOKEN=true` 并确认代理日志会脱敏。
 
 ## 4. `tools/list` 正常，但产品工具调用报错
 

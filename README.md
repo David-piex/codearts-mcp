@@ -110,17 +110,10 @@ node dist/src/server/index.js
 }
 ```
 
-若客户端不保留 Cookie，可将 auth_token 固定到 URL：
+若客户端不保留 Cookie，请使用 `Authorization: Bearer <auth_token>` 复用凭证。不要把 token 放到 URL query；URL 容易进入代理日志、浏览器历史和监控系统。
 
-```json
-{
-  "mcpServers": {
-    "codearts-shared": {
-      "type": "http",
-      "url": "http://your-server-ip/mcp?auth_token=replace-with-auth-token"
-    }
-  }
-}
+```http
+Authorization: Bearer replace-with-auth-token
 ```
 
 ### 3. 首次鉴权

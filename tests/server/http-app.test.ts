@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import {
   clearSessionTool,
+  callTool,
   createTestHttpServerRegistry,
   createTestHttpAuthConfig,
   fetchJsonFromTestServer,
@@ -138,7 +139,8 @@ describe("http app", () => {
       authDataPath: join(parentFile, "auth-store.json"),
       authCookieName: "codearts_mcp_auth",
       authCookieSecure: false,
-      authTokenTtlSeconds: 60
+      authTokenTtlSeconds: 60,
+      allowQueryAuthToken: false
     });
     const { response, body } = await fetchJsonFromTestServer<{
       status: string;
@@ -272,8 +274,35 @@ describe("http app", () => {
     expect(clearResponse.headers.get("set-cookie")).toContain("Max-Age=0");
   });
 
-  it("reuses query-token-backed auth after a reconnect", async () => {
+  it("ignores query-token-backed auth by default", async () => {
     const { port } = await startConfiguredServer();
+    const { sessionId: firstSessionId, authToken } = await initializeConfiguredSession(port);
+
+    expect(authToken).toBeTruthy();
+
+    const reconnectInit = await initializeSession(port, {
+      queryToken: authToken
+    });
+    const reconnectSessionId = reconnectInit.sessionId;
+
+    expect(reconnectSessionId).toBeTruthy();
+    expect(reconnectSessionId).not.toBe(firstSessionId);
+
+    const { response: clearResponse, body } = await callTool(port, {
+      id: "list-projects",
+      name: "req_list_projects",
+      arguments: {},
+      sessionId: reconnectSessionId ?? undefined,
+      queryToken: authToken
+    });
+
+    expect(clearResponse.status).toBe(200);
+    expect(body.result?.isError).toBe(true);
+  });
+
+  it("can opt in to query-token-backed auth for legacy clients", async () => {
+    const authConfig = createTestHttpAuthConfig({ allowQueryAuthToken: true });
+    const { port } = await servers.start(authConfig);
     const { sessionId: firstSessionId, authToken } = await initializeConfiguredSession(port);
 
     expect(authToken).toBeTruthy();

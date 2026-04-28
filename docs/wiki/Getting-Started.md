@@ -123,7 +123,7 @@ node dist/src/server/index.js
 共享 `http` 模式下：
 
 - 客户端如果保留 Cookie，后续重连通常不需要重新输入 `AK/SK`
-- 客户端如果不保留 Cookie，可以把返回的 `auth_token` 固定到 `/mcp?auth_token=...`
+- 客户端如果不保留 Cookie，请用 `Authorization: Bearer <auth_token>`；不要把 token 固定到 URL query
 - 若需撤销当前用户已保存的凭证，调用 `auth_clear_session`
 
 ## 下一步看什么

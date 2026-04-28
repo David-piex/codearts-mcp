@@ -6,7 +6,15 @@ dist
 deploy/nginx/ssl/*.pem
 deploy/nginx/ssl/*.key
 coverage
+tests
+docs
 .git
 .worktrees
 worktrees
 npm-debug.log
+.deploy-upload*.tgz
+codearts-mcp-deploy.tgz
+tmp/
+tmp-*
+.qoder
+docs/superpowers
