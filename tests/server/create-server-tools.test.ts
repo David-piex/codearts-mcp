@@ -150,6 +150,7 @@ describe("createServer tool registration", () => {
           kind: "product",
           module: "Req",
           transport: "all",
+          access: "read",
           family: "req"
         },
         {
@@ -157,6 +158,7 @@ describe("createServer tool registration", () => {
           kind: "product",
           module: "Repo",
           transport: "all",
+          access: "read",
           family: "repo"
         }
       ]

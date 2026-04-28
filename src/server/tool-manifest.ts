@@ -10,6 +10,7 @@ import type { ProductToolFamily } from "./register-product-tools.js";
 
 export type ToolManifestKind = "auth" | "product";
 export type ToolManifestTransport = "all" | "http";
+export type ToolAccess = "read" | "write";
 export type ProductToolModule =
   | "Req"
   | "Repo"
@@ -25,6 +26,7 @@ export type ToolManifestEntry = {
   kind: ToolManifestKind;
   module: ProductToolModule | "Auth / Session";
   transport: ToolManifestTransport;
+  access: ToolAccess;
   family?: ProductToolFamily;
 };
 
@@ -54,18 +56,64 @@ const productToolSources: Array<{
   { family: "testplan", module: "TestPlan", names: testPlanToolNames }
 ];
 
+const WRITE_ACTIONS = new Set([
+  "add",
+  "append",
+  "approve",
+  "batch",
+  "bind",
+  "cancel",
+  "change",
+  "clear",
+  "close",
+  "configure",
+  "copy",
+  "create",
+  "delete",
+  "disable",
+  "enable",
+  "inherit",
+  "import",
+  "leave",
+  "merge",
+  "modify",
+  "move",
+  "pass",
+  "prepare",
+  "refuse",
+  "reject",
+  "retry",
+  "review",
+  "rollback",
+  "run",
+  "set",
+  "start",
+  "stop",
+  "switch",
+  "transfer",
+  "upload",
+  "update"
+]);
+
+export function classifyToolAccess(toolName: string): ToolAccess {
+  const [, action = ""] = toolName.split("_");
+  return WRITE_ACTIONS.has(action) ? "write" : "read";
+}
+
 const authToolManifest: ToolManifestEntry[] = [
   {
     name: "auth_clear_session",
     kind: "auth",
     module: "Auth / Session",
-    transport: "http"
+    transport: "http",
+    access: "write"
   },
   {
     name: "auth_configure_session",
     kind: "auth",
     module: "Auth / Session",
-    transport: "http"
+    transport: "http",
+    access: "write"
   }
 ];
 
@@ -76,6 +124,7 @@ function createProductToolManifest(): ToolManifestEntry[] {
       kind: "product" as const,
       module: source.module,
       transport: "all" as const,
+      access: classifyToolAccess(name),
       family: source.family
     }))
   );

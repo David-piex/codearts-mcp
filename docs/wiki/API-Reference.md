@@ -7,12 +7,12 @@
 <!-- GENERATED:api-reference-scale:start -->
 | 模块 | 工具数 | 读接口 | 写接口 | 基础 URL 环境变量 |
 | --- | ---: | ---: | ---: | --- |
-| Req | 200 | 119 | 81 | `HUAWEICLOUD_REQ_BASE_URL` |
+| Req | 200 | 117 | 83 | `HUAWEICLOUD_REQ_BASE_URL` |
 | Repo | 25 | 17 | 8 | `HUAWEICLOUD_REPO_BASE_URL` |
 | Pipeline | 77 | 42 | 35 | `HUAWEICLOUD_PIPELINE_BASE_URL` |
 | Check | 8 | 5 | 3 | `HUAWEICLOUD_CHECK_BASE_URL` |
 | TestPlan | 7 | 6 | 1 | `HUAWEICLOUD_TESTPLAN_BASE_URL` |
-| Deploy | 59 | 44 | 15 | `HUAWEICLOUD_DEPLOY_BASE_URL` |
+| Deploy | 59 | 43 | 16 | `HUAWEICLOUD_DEPLOY_BASE_URL` |
 | Build | 22 | 14 | 8 | `HUAWEICLOUD_BUILD_BASE_URL` |
 | Artifact | 12 | 11 | 1 | `HUAWEICLOUD_ARTIFACT_BASE_URL` |
 

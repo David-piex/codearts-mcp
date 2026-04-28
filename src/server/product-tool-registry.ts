@@ -5,6 +5,7 @@ import type { RateLimiter } from "./rate-limiter.js";
 import { createSessionAwareProductToolHandler } from "./session-aware-handler.js";
 import type { SessionCredentialStore } from "./session-store.js";
 import { formatToolErrorMessage } from "./tool-error-hints.js";
+import { classifyToolAccess } from "./tool-manifest.js";
 
 type RegisterableServer = Pick<McpServer, "registerTool">;
 
@@ -61,48 +62,8 @@ function isDryRunInput(input: unknown, inputSchema: { safeParse?: (value: unknow
   return (parsed.data as { dry_run?: unknown }).dry_run === true;
 }
 
-const WRITE_ACTIONS = new Set([
-  "add",
-  "append",
-  "approve",
-  "batch",
-  "bind",
-  "cancel",
-  "change",
-  "clear",
-  "close",
-  "configure",
-  "copy",
-  "create",
-  "delete",
-  "disable",
-  "enable",
-  "inherit",
-  "import",
-  "leave",
-  "merge",
-  "modify",
-  "move",
-  "pass",
-  "prepare",
-  "refuse",
-  "reject",
-  "retry",
-  "review",
-  "rollback",
-  "run",
-  "set",
-  "start",
-  "stop",
-  "switch",
-  "transfer",
-  "upload",
-  "update"
-]);
-
 function inferWriteRateLimitAction(toolName: string) {
-  const [, action = ""] = toolName.split("_");
-  return WRITE_ACTIONS.has(action) ? toolName : undefined;
+  return classifyToolAccess(toolName) === "write" ? toolName : undefined;
 }
 
 export function defineProductTool<

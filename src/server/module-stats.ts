@@ -1,49 +1,14 @@
 import {
+  classifyToolAccess,
   collectProductToolManifest,
   collectToolManifest,
   productToolModuleOrder,
-  type ProductToolModule
+  type ProductToolModule,
+  type ToolAccess
 } from "./tool-manifest.js";
 
-const WRITE_ACTIONS = new Set([
-  "add",
-  "append",
-  "approve",
-  "batch",
-  "bind",
-  "change",
-  "clear",
-  "close",
-  "configure",
-  "copy",
-  "create",
-  "delete",
-  "disable",
-  "enable",
-  "inherit",
-  "import",
-  "leave",
-  "merge",
-  "modify",
-  "move",
-  "pass",
-  "prepare",
-  "refuse",
-  "reject",
-  "retry",
-  "review",
-  "rollback",
-  "run",
-  "set",
-  "start",
-  "stop",
-  "switch",
-  "upload",
-  "update"
-]);
-
 export type ModuleName = ProductToolModule;
-export type ToolAccess = "read" | "write";
+export { classifyToolAccess, type ToolAccess };
 
 export type ModuleToolStats = {
   module: ModuleName;
@@ -52,17 +17,12 @@ export type ModuleToolStats = {
   write: number;
 };
 
-export function classifyToolAccess(toolName: string): ToolAccess {
-  const [, action = ""] = toolName.split("_");
-  return WRITE_ACTIONS.has(action) ? "write" : "read";
-}
-
 export function collectModuleStats(): ModuleToolStats[] {
   const entries = collectProductToolManifest();
 
   return productToolModuleOrder.map((module) => {
     const moduleTools = entries.filter((entry) => entry.module === module);
-    const write = moduleTools.filter((entry) => classifyToolAccess(entry.name) === "write").length;
+    const write = moduleTools.filter((entry) => entry.access === "write").length;
 
     return {
       module,
@@ -128,4 +88,3 @@ export function renderModuleStatsReportJson(): string {
     2
   );
 }
-
