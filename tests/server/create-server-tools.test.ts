@@ -151,6 +151,11 @@ describe("createServer tool registration", () => {
           module: "Req",
           transport: "all",
           access: "read",
+          supportsDryRun: false,
+          liveStatus: "partial",
+          docGroup: "req:project",
+          riskLevel: "low",
+          requiresExplicitLiveSample: false,
           family: "req"
         },
         {
@@ -159,6 +164,11 @@ describe("createServer tool registration", () => {
           module: "Repo",
           transport: "all",
           access: "read",
+          supportsDryRun: false,
+          liveStatus: "validated",
+          docGroup: "repo",
+          riskLevel: "low",
+          requiresExplicitLiveSample: false,
           family: "repo"
         }
       ]

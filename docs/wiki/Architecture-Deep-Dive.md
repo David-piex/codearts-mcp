@@ -77,6 +77,10 @@ graph LR
 - `http` 模式只是在 handler 外层额外做会话注入、限流和鉴权恢复
 - 新工具增加时不需要重复写一遍 stdio/http 双版本
 
+### ToolManifest 元数据
+
+`src/server/tool-manifest.ts` 现在承载第二阶段运维元数据：`supportsDryRun`、`liveStatus`、`docGroup`、`riskLevel` 和 `requiresExplicitLiveSample`。注册、文档生成、模块统计和 live 治理都应继续从 manifest 读取这些字段，避免在各处重复维护分类表。
+
 ## 5. Session-aware 产品工具
 
 `src/server/session-aware-product-handlers.ts` 是整个项目里最关键的桥接层之一。
@@ -125,6 +129,10 @@ graph LR
 - Repo：`25`
 
 这也解释了为什么 Req、Pipeline 和 Deploy 的文档与 live 状态需要单独强调。
+
+### Req client 资源切片
+
+Req 是当前最大的产品面，所以 `src/products/req/client-parts.ts` 在 `ReqClient` 外提供兼容切片 facade。当前资源组为 `project`、`member`、`iteration`、`plan`、`work-item`、`config`、`ipd`、`attachment` 和 `work-hour`。这样可以先为 client、文档和后续注册清理建立稳定边界，同时不改变现有 HTTP 行为。
 
 ## 9. 测试结构
 

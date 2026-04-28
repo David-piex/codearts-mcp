@@ -7,6 +7,7 @@ import {
   initializeConfiguredSession,
   initializeSession
 } from "./http-mcp-test-helpers.js";
+import { readOptionalLiveSampleValue } from "../live-sample-helpers.js";
 
 function hasLiveEnv(source: NodeJS.ProcessEnv) {
   return Boolean(
@@ -189,8 +190,9 @@ if (hasLiveEnv(process.env)) {
       expect(pipelineStarted.response.status).toBe(200);
       expect(pipelineStarted.body.result?.isError).not.toBe(true);
       expect(pipelineStarted.body.result?.structuredContent?.item?.executed).toBe(true);
-      const pipelineRunId = String(
-        pipelineStarted.body.result?.structuredContent?.item?.pipelineRunId ?? ""
+      const pipelineRunId = readOptionalLiveSampleValue(
+        pipelineStarted.body.result?.structuredContent?.item?.pipelineRunId,
+        "pipeline_run_pipeline run id"
       );
       if (pipelineRunId) {
         expect(pipelineRunId).toMatch(/^[0-9a-f]{32}$/);

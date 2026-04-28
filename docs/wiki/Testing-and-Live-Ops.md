@@ -34,6 +34,8 @@ npm test
 - 用真实 AK/SK 验证核心读路径和受控写路径
 - 确认不是“本地模拟可过”，而是真能碰到上游 CodeArts 服务
 
+当 live 用例只是缺少租户当前非空样本时，统一使用 `tests/live-sample-helpers.ts` 走 soft-pass 路径。它会输出 `[live-soft-pass]` 说明并跳过依赖样本的后续断言；鉴权失败、状态码失败和返回结构回归仍然按失败处理。
+
 ### 4. 高风险 execute-class live
 
 目标：

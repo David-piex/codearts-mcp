@@ -11,6 +11,8 @@ import type { ProductToolFamily } from "./register-product-tools.js";
 export type ToolManifestKind = "auth" | "product";
 export type ToolManifestTransport = "all" | "http";
 export type ToolAccess = "read" | "write";
+export type ToolLiveStatus = "validated" | "partial" | "unpublished" | "unknown";
+export type ToolRiskLevel = "low" | "medium" | "high";
 export type ProductToolModule =
   | "Req"
   | "Repo"
@@ -27,6 +29,11 @@ export type ToolManifestEntry = {
   module: ProductToolModule | "Auth / Session";
   transport: ToolManifestTransport;
   access: ToolAccess;
+  supportsDryRun: boolean;
+  liveStatus: ToolLiveStatus;
+  docGroup: string;
+  riskLevel: ToolRiskLevel;
+  requiresExplicitLiveSample: boolean;
   family?: ProductToolFamily;
 };
 
@@ -95,9 +102,114 @@ const WRITE_ACTIONS = new Set([
   "update"
 ]);
 
+const HIGH_RISK_ACTIONS = new Set([
+  "delete",
+  "rollback",
+  "run",
+  "start",
+  "stop"
+]);
+
+const explicitLiveSampleActions = new Set([
+  "rollback",
+  "start",
+  "stop"
+]);
+
+const moduleLiveStatus: Record<ProductToolModule, ToolLiveStatus> = {
+  Req: "partial",
+  Repo: "validated",
+  Pipeline: "partial",
+  Check: "validated",
+  TestPlan: "partial",
+  Deploy: "partial",
+  Build: "validated",
+  Artifact: "partial"
+};
+
 export function classifyToolAccess(toolName: string): ToolAccess {
   const [, action = ""] = toolName.split("_");
   return WRITE_ACTIONS.has(action) ? "write" : "read";
+}
+
+function getToolAction(toolName: string) {
+  return toolName.split("_")[1] ?? "";
+}
+
+function inferRiskLevel(toolName: string): ToolRiskLevel {
+  const action = getToolAction(toolName);
+
+  if (HIGH_RISK_ACTIONS.has(action)) {
+    return "high";
+  }
+
+  return classifyToolAccess(toolName) === "write" ? "medium" : "low";
+}
+
+function inferDocGroup(toolName: string, family: ProductToolFamily) {
+  if (family !== "req") {
+    return family;
+  }
+
+  if (toolName.includes("_ipd_")) {
+    if (toolName.includes("_attachment") || toolName.includes("_image")) {
+      return "req:attachment";
+    }
+    if (toolName.includes("_work_hour")) {
+      return "req:work-hour";
+    }
+    return "req:ipd";
+  }
+
+  if (toolName.includes("_attachment") || toolName.includes("_image")) {
+    return "req:attachment";
+  }
+
+  if (toolName.includes("_work_hour") || toolName.includes("_working_hours")) {
+    return "req:work-hour";
+  }
+
+  if (toolName.includes("_member") || toolName === "req_leave_project") {
+    return "req:member";
+  }
+
+  if (toolName.includes("_iteration")) {
+    return "req:iteration";
+  }
+
+  if (
+    toolName.includes("_plan") ||
+    toolName.includes("_release_") ||
+    toolName.includes("_ir") ||
+    toolName.includes("_rr") ||
+    toolName.includes("_program") ||
+    toolName.includes("_severity")
+  ) {
+    return "req:plan";
+  }
+
+  if (
+    toolName.includes("_status") ||
+    toolName.includes("_config") ||
+    toolName.includes("_template") ||
+    toolName.includes("_tracker") ||
+    toolName.includes("_cache") ||
+    toolName.includes("_feature")
+  ) {
+    return "req:config";
+  }
+
+  if (toolName.includes("_work_item") || toolName.includes("_issue")) {
+    return "req:work-item";
+  }
+
+  return "req:project";
+}
+
+function requiresExplicitLiveSample(toolName: string) {
+  const action = getToolAction(toolName);
+
+  return explicitLiveSampleActions.has(action) || toolName.includes("_execute_");
 }
 
 const authToolManifest: ToolManifestEntry[] = [
@@ -106,14 +218,24 @@ const authToolManifest: ToolManifestEntry[] = [
     kind: "auth",
     module: "Auth / Session",
     transport: "http",
-    access: "write"
+    access: "write",
+    supportsDryRun: false,
+    liveStatus: "validated",
+    docGroup: "auth",
+    riskLevel: "medium",
+    requiresExplicitLiveSample: false
   },
   {
     name: "auth_configure_session",
     kind: "auth",
     module: "Auth / Session",
     transport: "http",
-    access: "write"
+    access: "write",
+    supportsDryRun: false,
+    liveStatus: "validated",
+    docGroup: "auth",
+    riskLevel: "medium",
+    requiresExplicitLiveSample: false
   }
 ];
 
@@ -125,6 +247,11 @@ function createProductToolManifest(): ToolManifestEntry[] {
       module: source.module,
       transport: "all" as const,
       access: classifyToolAccess(name),
+      supportsDryRun: classifyToolAccess(name) === "write",
+      liveStatus: moduleLiveStatus[source.module],
+      docGroup: inferDocGroup(name, source.family),
+      riskLevel: inferRiskLevel(name),
+      requiresExplicitLiveSample: requiresExplicitLiveSample(name),
       family: source.family
     }))
   );

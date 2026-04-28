@@ -2218,6 +2218,13 @@ export type ReqClient = {
   }>;
 };
 
+export {
+  createReqClientSlices,
+  resolveReqClientResourceGroup,
+  type ReqClientResourceGroup,
+  type ReqClientSlices
+} from "./client-parts.js";
+
 function toTrackerId(workItemType?: string): number | undefined {
   if (!workItemType) {
     return undefined;

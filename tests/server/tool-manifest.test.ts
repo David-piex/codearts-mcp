@@ -6,8 +6,13 @@ import {
   collectProductToolManifest,
   collectToolManifest,
   findToolManifestEntry,
-  toolManifest
+  toolManifest,
+  type ToolLiveStatus,
+  type ToolRiskLevel
 } from "../../src/server/tool-manifest.js";
+
+const liveStatuses: ToolLiveStatus[] = ["validated", "partial", "unpublished", "unknown"];
+const riskLevels: ToolRiskLevel[] = ["low", "medium", "high"];
 
 describe("ToolManifest", () => {
   it("is the product tool-name source of truth", () => {
@@ -35,5 +40,33 @@ describe("ToolManifest", () => {
 
   it("matches actual stdio and HTTP server registration", () => {
     expect(() => checkToolManifestRegistration()).not.toThrow();
+  });
+
+  it("carries operational metadata for docs and live governance", () => {
+    expect(
+      toolManifest.every(
+        (entry) =>
+          entry.docGroup.length > 0 &&
+          liveStatuses.includes(entry.liveStatus) &&
+          riskLevels.includes(entry.riskLevel)
+      )
+    ).toBe(true);
+    expect(
+      collectProductToolManifest()
+        .filter((entry) => entry.access === "write")
+        .every((entry) => entry.supportsDryRun)
+    ).toBe(true);
+
+    expect(findToolManifestEntry("auth_configure_session")?.supportsDryRun).toBe(false);
+    expect(findToolManifestEntry("req_list_projects")).toMatchObject({
+      docGroup: "req:project",
+      riskLevel: "low",
+      liveStatus: "partial",
+      requiresExplicitLiveSample: false
+    });
+    expect(findToolManifestEntry("deploy_start_app")).toMatchObject({
+      riskLevel: "high",
+      requiresExplicitLiveSample: true
+    });
   });
 });

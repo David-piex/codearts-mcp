@@ -51,6 +51,8 @@ MCP_SERVER_VERSION=0.1.0
 
 Req 覆盖需求和项目协作，包括 Scrum 项目管理、成员、模块、迭代、计划、工作项、评论、附件、状态和配置读取、看板/缓存读取、需求池读取，以及 IPD 读写能力。
 
+Req client 现在已经建立资源切片边界：`project`、`member`、`iteration`、`plan`、`work-item`、`config`、`ipd`、`attachment`、`work-hour`。第一阶段是兼容 facade，不改变工具名、schema 或实际 HTTP 行为。
+
 关键入口工具：
 
 | 领域 | 工具 |

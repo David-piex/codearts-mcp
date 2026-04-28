@@ -3,6 +3,7 @@ import { createHuaweiAuthHeaders } from "../../../src/core/auth/huawei-auth.js";
 import { loadEnvConfig } from "../../../src/core/config/env.js";
 import { createHttpClient } from "../../../src/core/http/client.js";
 import { createPipelineClient } from "../../../src/products/pipeline/client.js";
+import { softPassWhenNoLiveSample } from "../../live-sample-helpers.js";
 
 function hasLiveEnv(source: NodeJS.ProcessEnv) {
   return Boolean(
@@ -216,11 +217,11 @@ if (hasLiveEnv(process.env)) {
       );
 
       expect(Array.isArray(runs.records)).toBe(true);
-      if (runs.records.length === 0) {
+      if (!softPassWhenNoLiveSample(runs.records, "pipeline run")) {
         return;
       }
 
-      const latestRunId = runs.records[0]!.pipeline_run_id;
+      const latestRunId = runs.records[0].pipeline_run_id;
       const [run, detail] = await Promise.all([
         client.getRun(
           createProjectPipelineRunInput(target.projectId, target.pipelineId, latestRunId)
