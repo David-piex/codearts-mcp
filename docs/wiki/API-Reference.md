@@ -4,6 +4,7 @@
 
 当前规模：
 
+<!-- GENERATED:api-reference-scale:start -->
 | 模块 | 工具数 | 读接口 | 写接口 | 基础 URL 环境变量 |
 | --- | ---: | ---: | ---: | --- |
 | Req | 200 | 119 | 81 | `HUAWEICLOUD_REQ_BASE_URL` |
@@ -16,6 +17,7 @@
 | Artifact | 12 | 11 | 1 | `HUAWEICLOUD_ARTIFACT_BASE_URL` |
 
 产品工具合计 `410` 个。HTTP 共享模式额外提供 `auth_configure_session` 和 `auth_clear_session` 两个会话工具，因此 HTTP MCP 总工具数为 `412`。
+<!-- GENERATED:api-reference-scale:end -->
 
 ## 通用运行环境
 

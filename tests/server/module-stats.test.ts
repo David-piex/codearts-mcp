@@ -1,11 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
   classifyToolAccess,
+  collectHttpToolTotal,
   collectModuleStats,
   collectProductToolStats,
   renderModuleStatsMarkdown,
   renderModuleStatsReportJson
 } from "../../src/server/module-stats.js";
+import { collectProductToolManifest } from "../../src/server/tool-manifest.js";
 
 describe("classifyToolAccess", () => {
   it("treats list_runs as read and run_cases as write", () => {
@@ -43,7 +45,7 @@ describe("collectModuleStats", () => {
   it("returns the current aggregate product tool totals", () => {
     expect(collectProductToolStats()).toEqual({
       modules: 8,
-      total: 410,
+      total: collectProductToolManifest().length,
       read: 258,
       write: 152
     });
@@ -53,8 +55,12 @@ describe("collectModuleStats", () => {
     expect(renderModuleStatsMarkdown()).toContain("| Module | Total | Read | Write |");
     expect(renderModuleStatsMarkdown()).toContain("| Deploy | 59 | 44 | 15 |");
     expect(renderModuleStatsMarkdown()).toContain("- Product modules: `8`");
-    expect(renderModuleStatsMarkdown()).toContain("- Product tools: `410`");
-    expect(renderModuleStatsMarkdown()).toContain("- Shared HTTP total with auth tools: `412`");
+    expect(renderModuleStatsMarkdown()).toContain(
+      `- Product tools: \`${collectProductToolManifest().length}\``
+    );
+    expect(renderModuleStatsMarkdown()).toContain(
+      `- Shared HTTP total with auth tools: \`${collectHttpToolTotal()}\``
+    );
   });
 
   it("renders a json report from the current stats", () => {
@@ -71,10 +77,10 @@ describe("collectModuleStats", () => {
       ],
       totals: {
         modules: 8,
-        total: 410,
+        total: collectProductToolManifest().length,
         read: 258,
         write: 152,
-        httpTotalWithAuth: 412
+        httpTotalWithAuth: collectHttpToolTotal()
       }
     });
   });

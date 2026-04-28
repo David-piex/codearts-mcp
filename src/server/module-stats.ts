@@ -1,11 +1,9 @@
-import { artifactToolNames } from "../products/artifact/tools/index.js";
-import { buildToolNames } from "../products/build/tools/index.js";
-import { checkToolNames } from "../products/check/tools/index.js";
-import { deployToolNames } from "../products/deploy/tools/index.js";
-import { pipelineToolNames } from "../products/pipeline/tools/index.js";
-import { repoToolNames } from "../products/repo/tools/index.js";
-import { reqToolNames } from "../products/req/tools/index.js";
-import { testPlanToolNames } from "../products/testplan/tools/index.js";
+import {
+  collectProductToolManifest,
+  collectToolManifest,
+  productToolModuleOrder,
+  type ProductToolModule
+} from "./tool-manifest.js";
 
 const WRITE_ACTIONS = new Set([
   "add",
@@ -44,18 +42,7 @@ const WRITE_ACTIONS = new Set([
   "update"
 ]);
 
-const moduleToolMap = {
-  Req: reqToolNames,
-  Repo: repoToolNames,
-  Pipeline: pipelineToolNames,
-  Check: checkToolNames,
-  TestPlan: testPlanToolNames,
-  Deploy: deployToolNames,
-  Build: buildToolNames,
-  Artifact: artifactToolNames
-} as const;
-
-export type ModuleName = keyof typeof moduleToolMap;
+export type ModuleName = ProductToolModule;
 export type ToolAccess = "read" | "write";
 
 export type ModuleToolStats = {
@@ -71,12 +58,16 @@ export function classifyToolAccess(toolName: string): ToolAccess {
 }
 
 export function collectModuleStats(): ModuleToolStats[] {
-  return Object.entries(moduleToolMap).map(([module, toolNames]) => {
-    const write = toolNames.filter((toolName) => classifyToolAccess(toolName) === "write").length;
+  const entries = collectProductToolManifest();
+
+  return productToolModuleOrder.map((module) => {
+    const moduleTools = entries.filter((entry) => entry.module === module);
+    const write = moduleTools.filter((entry) => classifyToolAccess(entry.name) === "write").length;
+
     return {
-      module: module as ModuleName,
-      total: toolNames.length,
-      read: toolNames.length - write,
+      module,
+      total: moduleTools.length,
+      read: moduleTools.length - write,
       write
     };
   });
@@ -93,6 +84,14 @@ export function collectProductToolStats() {
   };
 }
 
+export function collectHttpToolTotal() {
+  return collectToolManifest({ mode: "http" }).length;
+}
+
+export function collectHttpAuthToolTotal() {
+  return collectToolManifest({ mode: "http", kind: "auth" }).length;
+}
+
 export function renderModuleStatsMarkdown(): string {
   const moduleStats = collectModuleStats();
   const totals = collectProductToolStats();
@@ -107,7 +106,7 @@ export function renderModuleStatsMarkdown(): string {
     `- Product tools: \`${totals.total}\``,
     `- Product reads: \`${totals.read}\``,
     `- Product writes: \`${totals.write}\``,
-    `- Shared HTTP total with auth tools: \`${totals.total + 2}\``
+    `- Shared HTTP total with auth tools: \`${collectHttpToolTotal()}\``
   ];
 
   return lines.join("\n");
@@ -122,10 +121,11 @@ export function renderModuleStatsReportJson(): string {
       modules: moduleStats,
       totals: {
         ...totals,
-        httpTotalWithAuth: totals.total + 2
+        httpTotalWithAuth: collectHttpToolTotal()
       }
     },
     null,
     2
   );
 }
+

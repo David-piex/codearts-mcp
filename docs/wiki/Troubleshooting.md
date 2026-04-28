@@ -111,9 +111,10 @@ npm run stats:sync-docs
 无论是本地还是共享部署，建议都按这个顺序排：
 
 1. `npm run build`
-2. `npm test`
-3. `/health`
-4. `auth_configure_session`
-5. `req_list_projects`
-6. `repo_list_repositories`
-7. 再进入具体模块
+2. `npm run tool-manifest:check`
+3. `npm test`
+4. `/health`
+5. `auth_configure_session`
+6. `req_list_projects`
+7. `repo_list_repositories`
+8. 再进入具体模块

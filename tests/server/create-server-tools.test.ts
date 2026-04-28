@@ -2,6 +2,11 @@ import { describe, expect, it, vi } from "vitest";
 import { createServer, createServerFactory } from "../../src/server/create-server.js";
 import { collectToolNames } from "../../src/server/register-tools.js";
 import { createSessionCredentialStore } from "../../src/server/session-store.js";
+import {
+  collectManifestToolNames,
+  collectProductToolManifest,
+  type ToolManifestEntry
+} from "../../src/server/tool-manifest.js";
 
 const httpConfig = {
   serverName: "codearts-mcp",
@@ -88,26 +93,24 @@ async function invokeInternalListToolsHandler(server: unknown) {
 }
 
 describe("createServer tool registration", () => {
-  it("registers only the 410 product tools in stdio mode", () => {
+  it("registers only product manifest tools in stdio mode", () => {
     const server = createStdioServer();
 
     const toolNames = readRegisteredToolNames(server);
 
     expect(toolNames).toEqual(collectToolNames());
-    expect(toolNames).toHaveLength(410);
+    expect(toolNames).toHaveLength(collectProductToolManifest().length);
     expect(toolNames).not.toContain("auth_configure_session");
     expect(toolNames).not.toContain("auth_clear_session");
   });
 
-  it("registers 412 tools including auth tools in http mode", () => {
+  it("registers the HTTP manifest including auth tools in http mode", () => {
     const server = createHttpServer();
 
     const toolNames = readRegisteredToolNames(server);
 
-    expect(toolNames).toHaveLength(412);
-    expect(toolNames).toEqual(
-      [...collectToolNames(), "auth_clear_session", "auth_configure_session"].sort()
-    );
+    expect(toolNames).toHaveLength(collectManifestToolNames({ mode: "http" }).length);
+    expect(toolNames).toEqual(collectManifestToolNames({ mode: "http" }));
   });
 
   it("exposes auth_configure_session with optional endpoint overrides in http mode", () => {
@@ -134,11 +137,30 @@ describe("createServer tool registration", () => {
     const secondResult = await invokeInternalListToolsHandler(server);
 
     expect(firstResult).toBe(secondResult);
-    expect((firstResult as { tools?: unknown[] }).tools).toHaveLength(412);
+    expect((firstResult as { tools?: unknown[] }).tools).toHaveLength(
+      collectManifestToolNames({ mode: "http" }).length
+    );
   });
 
   it("captures tool registrations once and hydrates later server instances from a template", () => {
-    const collectToolNamesMock = vi.fn(() => ["req_list_projects", "repo_list_repositories"]);
+    const collectProductToolManifestMock = vi.fn(
+      (): ToolManifestEntry[] => [
+        {
+          name: "req_list_projects",
+          kind: "product",
+          module: "Req",
+          transport: "all",
+          family: "req"
+        },
+        {
+          name: "repo_list_repositories",
+          kind: "product",
+          module: "Repo",
+          transport: "all",
+          family: "repo"
+        }
+      ]
+    );
     const registerAuthToolsMock = vi.fn((options: {
       server: { registerTool: (name: string, config: unknown, handler: unknown) => void };
     }) => {
@@ -220,7 +242,7 @@ describe("createServer tool registration", () => {
       },
       {
         McpServer: McpServerMock as never,
-        collectToolNames: collectToolNamesMock,
+        collectProductToolManifest: collectProductToolManifestMock,
         registerAuthTools: registerAuthToolsMock as never,
         registerProductTool: registerProductToolMock as never,
         registerScaffoldTool: registerScaffoldToolMock as never,
@@ -231,7 +253,7 @@ describe("createServer tool registration", () => {
     const first = factory();
     const second = factory();
 
-    expect(collectToolNamesMock).toHaveBeenCalledTimes(1);
+    expect(collectProductToolManifestMock).toHaveBeenCalledTimes(1);
     expect(registerAuthToolsMock).toHaveBeenCalledTimes(1);
     expect(registerAuthToolsMock).toHaveBeenCalledWith(
       expect.objectContaining({

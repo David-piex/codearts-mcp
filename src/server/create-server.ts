@@ -25,9 +25,10 @@ import {
 import { registerProductTool } from "./register-product-tools.js";
 import { createFixedWindowRateLimiter } from "./rate-limiter.js";
 import { registerScaffoldTool } from "./register-scaffold-tool.js";
-import { collectToolNames, createServerInfo } from "./register-tools.js";
+import { createServerInfo } from "./register-tools.js";
 import { recordRequestPhase } from "./request-context.js";
 import type { SessionCredentialStore } from "./session-store.js";
+import { collectProductToolManifest } from "./tool-manifest.js";
 
 export * from "./session-aware-product-handlers.js";
 export {
@@ -125,7 +126,7 @@ type CreateServerFactoryDependencies = {
   registerAuthTools?: typeof registerAuthTools;
   registerProductTool?: typeof registerProductTool;
   registerScaffoldTool?: typeof registerScaffoldTool;
-  collectToolNames?: typeof collectToolNames;
+  collectProductToolManifest?: typeof collectProductToolManifest;
 };
 
 function buildHttpRuntimeConfig(options: CreateServerOptions) {
@@ -378,7 +379,9 @@ function captureRegisteredTools(
         : undefined
   });
 
-  for (const toolName of dependencies.collectToolNames()) {
+  for (const toolManifestEntry of dependencies.collectProductToolManifest()) {
+    const toolName = toolManifestEntry.name;
+
     if (
       dependencies.registerProductTool({
         toolName,
@@ -415,7 +418,8 @@ export function createServerFactory(
     registerAuthTools: dependencies.registerAuthTools ?? registerAuthTools,
     registerProductTool: dependencies.registerProductTool ?? registerProductTool,
     registerScaffoldTool: dependencies.registerScaffoldTool ?? registerScaffoldTool,
-    collectToolNames: dependencies.collectToolNames ?? collectToolNames
+    collectProductToolManifest:
+      dependencies.collectProductToolManifest ?? collectProductToolManifest
   };
 
   resolvedDependencies.configureHttpAuthRuntimeConfig(buildHttpRuntimeConfig(options));

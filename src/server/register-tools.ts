@@ -1,24 +1,8 @@
-import { artifactToolNames } from "../products/artifact/tools/index.js";
-import { buildToolNames } from "../products/build/tools/index.js";
-import { checkToolNames } from "../products/check/tools/index.js";
 import type { AppConfig } from "../core/config/env.js";
-import { deployToolNames } from "../products/deploy/tools/index.js";
-import { pipelineToolNames } from "../products/pipeline/tools/index.js";
-import { repoToolNames } from "../products/repo/tools/index.js";
-import { reqToolNames } from "../products/req/tools/index.js";
-import { testPlanToolNames } from "../products/testplan/tools/index.js";
+import { collectManifestToolNames } from "./tool-manifest.js";
 
 export function collectToolNames(): string[] {
-  return [
-    ...artifactToolNames,
-    ...buildToolNames,
-    ...checkToolNames,
-    ...deployToolNames,
-    ...reqToolNames,
-    ...repoToolNames,
-    ...pipelineToolNames,
-    ...testPlanToolNames
-  ].sort();
+  return collectManifestToolNames({ kind: "product" });
 }
 
 export function createServerInfo(config: Pick<AppConfig, "serverName" | "serverVersion">) {

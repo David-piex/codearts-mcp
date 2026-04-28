@@ -1,6 +1,10 @@
 import { readFileSync } from "node:fs";
 import { createServer } from "./create-server.js";
 import { createSessionCredentialStore } from "./session-store.js";
+import {
+  collectManifestToolNames,
+  findToolManifestEntry
+} from "./tool-manifest.js";
 
 const FUNCTION_API_REFERENCE_PATH = "docs/wiki/Function-API-Reference.md";
 
@@ -14,24 +18,8 @@ type ToolsListResult = {
   tools?: ToolDefinition[];
 };
 
-const moduleLabels: Record<string, string> = {
-  auth: "Auth / Session",
-  req: "Req",
-  repo: "Repo",
-  pipeline: "Pipeline",
-  check: "Check",
-  testplan: "TestPlan",
-  deploy: "Deploy",
-  build: "Build",
-  artifact: "Artifact"
-};
-
-function getToolPrefix(toolName: string) {
-  return toolName.split("_")[0] ?? "other";
-}
-
 function getModuleLabel(toolName: string) {
-  return moduleLabels[getToolPrefix(toolName)] ?? "Other";
+  return findToolManifestEntry(toolName)?.module ?? "Other";
 }
 
 function sortTools(tools: ToolDefinition[]) {
@@ -75,7 +63,15 @@ export async function collectHttpToolDefinitions(): Promise<ToolDefinition[]> {
     {}
   )) as ToolsListResult;
 
-  return sortTools(result.tools ?? []);
+  const tools = sortTools(result.tools ?? []);
+  const expectedToolNames = collectManifestToolNames({ mode: "http" });
+  const actualToolNames = tools.map((tool) => tool.name);
+
+  if (actualToolNames.join("\n") !== expectedToolNames.join("\n")) {
+    throw new Error("HTTP tools/list output does not match the ToolManifest.");
+  }
+
+  return tools;
 }
 
 export function renderFunctionApiReference(tools: ToolDefinition[]) {
@@ -89,7 +85,7 @@ export function renderFunctionApiReference(tools: ToolDefinition[]) {
   const lines = [
     "# CodeArts MCP Function API Reference",
     "",
-    "This document is generated from the current HTTP MCP `tools/list` registry. Do not edit tool entries by hand.",
+    "This document is generated from the ToolManifest-validated HTTP MCP `tools/list` registry. Do not edit tool entries by hand.",
     "",
     "All function APIs use the same HTTP endpoint: `POST /mcp`. The JSON-RPC method is `tools/call`; select a function with `params.name`.",
     "",

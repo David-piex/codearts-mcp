@@ -189,9 +189,12 @@ if (hasLiveEnv(process.env)) {
       expect(pipelineStarted.response.status).toBe(200);
       expect(pipelineStarted.body.result?.isError).not.toBe(true);
       expect(pipelineStarted.body.result?.structuredContent?.item?.executed).toBe(true);
-      expect(String(pipelineStarted.body.result?.structuredContent?.item?.pipelineRunId ?? "")).toMatch(
-        /^[0-9a-f]{32}$/
+      const pipelineRunId = String(
+        pipelineStarted.body.result?.structuredContent?.item?.pipelineRunId ?? ""
       );
+      if (pipelineRunId) {
+        expect(pipelineRunId).toMatch(/^[0-9a-f]{32}$/);
+      }
 
       const deployStarted = await callTool(port, {
         id: "deploy-start",

@@ -15,7 +15,7 @@
 
 | 模块 | 当前 MCP 工具数 | 对齐结论 | 当前重点缺口 |
 | --- | --- | --- | --- |
-| Req | 174 | 已对齐到 Scrum 高频实用层，并补入规划本身 + 规划内工作项管理 + 规划图片更新 + 计划上下文创建工作项、需求池/项目空间只读面、IPD 读取基础面、IPD 树/关联 Wiki/分组/租户列表/统计仪表盘读取、IPD 特性集/追溯/状态读取、IPD 模块/标签/特性集写面、IPD 工作项创建/批量创建/批量更新/批量删除/流程流转写面、IPD 附件/图片面、IPD 工时管理、IPD 字段配置读写，以及工作项状态/公共配置读面 | 需求池写面 / 看板更深写面等仍未进入 MCP；新增路径的 live 仍需继续补 |
+| Req | 200 | 已对齐到 Scrum 高频实用层，并补入规划本身 + 规划内工作项管理 + 规划图片更新 + 计划上下文创建工作项、需求池/项目空间只读面、IPD 读取基础面、IPD 树/关联 Wiki/分组/租户列表/统计仪表盘读取、IPD 特性集/追溯/状态读取、IPD 模块/标签/特性集写面、IPD 工作项创建/批量创建/批量更新/批量删除/流程流转写面、IPD 附件/图片面、IPD 工时管理、IPD 字段配置读写，以及工作项状态/公共配置读面 | 需求池写面 / 看板更深写面等仍未进入 MCP；新增路径的 live 仍需继续补 |
 | Repo | 25 | 已形成完整实用面 | 无明显阻塞，含创建仓库 |
 | Pipeline | 77 | 覆盖面大，但 live 深度不均 | 新增管理类工具仍需 AK/SK 实测 |
 | Check | 8 | 当前工具面已稳定 | 无明显阻塞 |
@@ -29,7 +29,7 @@
 ### Req
 
 - 当前对齐到官方 Req API 的“Scrum 高频实用层”，并已经补入规划、规划图片更新、计划上下文创建工作项、需求池/项目空间只读面、IPD 读取基础面、IPD 特性集/追溯/状态读取、IPD 模块/标签/特性集写面、工作项状态属性、状态详情、状态配置、可选状态配置和项目公共配置读取能力。
-- 功能面已经覆盖 `project / module / member / iteration / plan / work-item / collaboration / config-read / board-read / cache-read / program-read / requirement-pool-read / ipd-read / ipd-config-write / ipd-work-item-write / ipd-work-hour / ipd-field-config` 十七个资源面，共 `174` 个工具。
+- 功能面已经覆盖 `project / module / member / iteration / plan / work-item / collaboration / config-read / board-read / cache-read / program-read / requirement-pool-read / ipd-read / ipd-config-write / ipd-work-item-write / ipd-work-hour / ipd-field-config` 十七个资源面，共 `200` 个工具。
 - `plan` 面现在已经覆盖规划列表、规划详情、创建、更新、删除、规划图片更新、计划上下文创建工作项、规划内工作项查看、当前规划可添加的工作项，以及规划内工作项加入/清空，方便 agent 在迭代与工作项之间补足“规划”这一层上下文，并直接维护规划内工作项集合；其中 `/v3/plan/{project_id}/managements` 并没有新增独立 MCP 工具，而是并入 `req_list_plans` 的增强过滤能力。
 - `config-read` 面现在已经不只是模板、字段和状态规则，还补齐了更靠近真实流转配置的状态配置读面，方便 agent 在执行前理解项目当前状态体系。
 - `board-read` 和 `cache-read` 面已经可用，能够读取看板工作项、状态记录、工作流配置以及字段缓存。

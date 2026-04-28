@@ -64,7 +64,7 @@
 | [Testing-and-Live-Ops](./Testing-and-Live-Ops.md) | 测试分层、AK/SK live 联调、线上排查和执行型变量 |
 | [Official-API-Alignment](./Official-API-Alignment.md) | 8 个官方 PDF 维度下的 MCP 化现状 |
 | [HTTP-MCP-Interface](./HTTP-MCP-Interface.md) | HTTP 端点、MCP JSON-RPC、鉴权会话、请求响应和接入示例 |
-| [Function-API-Reference](./Function-API-Reference.md) | 386 个 MCP 功能 API 的工具名、参数表、调用示例和 JSON Schema |
+| [Function-API-Reference](./Function-API-Reference.md) | 412 个 MCP 功能 API 的工具名、参数表、调用示例和 JSON Schema |
 | [API-Reference](./API-Reference.md) | 8 个 CodeArts 服务的 MCP API 总览、基础 URL、工具清单和 live 边界 |
 | [Req-API-Reference](./Req-API-Reference.md) | Req MCP API 工具、写入 gate、真实 smoke 和剩余样本缺口 |
 | [Troubleshooting](./Troubleshooting.md) | 常见问题、排查顺序和修复建议 |
@@ -76,6 +76,8 @@
 - `src/server/index.ts`
 - `src/server/http-app.ts`
 - `src/server/create-server.ts`
+- `src/server/tool-manifest.ts`
+- `src/server/check-tool-manifest.ts`
 - `src/server/product-tool-registry.ts`
 - `src/server/session-aware-product-handlers.ts`
 - `src/server/auth-repository.ts`
@@ -86,4 +88,5 @@
 - 少页数，不堆重复表格
 - README 只做入口，不再塞进全部背景材料
 - 统计数字尽量来自自动生成块，而不是手工维护
+- 工具清单以 `ToolManifest` 为准，注册、统计和 Function API 文档都要能通过 `npm run tool-manifest:check`
 - 对“没做完”的部分写清楚，不做模糊表达

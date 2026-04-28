@@ -1,21 +1,19 @@
 import { readFileSync } from "node:fs";
-import { collectModuleStats, collectProductToolStats } from "./module-stats.js";
+import {
+  collectHttpAuthToolTotal,
+  collectHttpToolTotal,
+  collectModuleStats,
+  collectProductToolStats,
+  type ModuleName
+} from "./module-stats.js";
 
 export const trackedModuleStatsDocumentPaths = [
   "README.md",
+  "docs/wiki/API-Reference.md",
   "docs/wiki/Capability-Matrix.md",
-  "docs/wiki/Module-Live-Readiness.md"
+  "docs/wiki/Module-Live-Readiness.md",
+  "docs/wiki/Req-API-Reference.md"
 ] as const;
-
-type ModuleName =
-  | "Req"
-  | "Repo"
-  | "Pipeline"
-  | "Check"
-  | "TestPlan"
-  | "Deploy"
-  | "Build"
-  | "Artifact";
 
 type ReadWriteMatrixMeta = {
   live: string;
@@ -35,6 +33,17 @@ type ToolStatusSummaryMeta = {
 type ReadmeModuleNumbersMeta = {
   liveStatus: string;
   breakdown: string;
+};
+
+const moduleBaseUrlEnv: Record<ModuleName, string> = {
+  Req: "HUAWEICLOUD_REQ_BASE_URL",
+  Repo: "HUAWEICLOUD_REPO_BASE_URL",
+  Pipeline: "HUAWEICLOUD_PIPELINE_BASE_URL",
+  Check: "HUAWEICLOUD_CHECK_BASE_URL",
+  TestPlan: "HUAWEICLOUD_TESTPLAN_BASE_URL",
+  Deploy: "HUAWEICLOUD_DEPLOY_BASE_URL",
+  Build: "HUAWEICLOUD_BUILD_BASE_URL",
+  Artifact: "HUAWEICLOUD_ARTIFACT_BASE_URL"
 };
 
 const readWriteMatrixMeta: Record<ModuleName, ReadWriteMatrixMeta> = {
@@ -221,11 +230,12 @@ export function replaceGeneratedSection(
 
 export function renderReadmeExposureSummaryMarkdown(): string {
   const totals = collectProductToolStats();
+  const authToolTotal = collectHttpAuthToolTotal();
   return [
     `- \`${totals.modules}\` product modules`,
     `- \`${totals.total}\` product tools`,
-    "- `2` session/auth tools for shared `http` mode",
-    `- \`${totals.total + 2}\` total MCP tools in shared \`http\` mode`
+    `- \`${authToolTotal}\` session/auth tools for shared \`http\` mode`,
+    `- \`${collectHttpToolTotal()}\` total MCP tools in shared \`http\` mode`
   ].join("\n");
 }
 
@@ -238,6 +248,39 @@ export function renderReadWriteMatrixMarkdown(): string {
       const meta = readWriteMatrixMeta[item.module as ModuleName];
       return `| ${item.module} | ${item.read} | ${item.write} | ${meta.live} | ${meta.keyGaps} |`;
     })
+  ].join("\n");
+}
+
+export function renderApiReferenceScaleMarkdown(): string {
+  const moduleStats = collectModuleStats();
+  const totals = collectProductToolStats();
+  return [
+    "| 模块 | 工具数 | 读接口 | 写接口 | 基础 URL 环境变量 |",
+    "| --- | ---: | ---: | ---: | --- |",
+    ...moduleStats.map(
+      (item) =>
+        `| ${item.module} | ${item.total} | ${item.read} | ${item.write} | \`${moduleBaseUrlEnv[item.module]}\` |`
+    ),
+    "",
+    `产品工具合计 \`${totals.total}\` 个。HTTP 共享模式额外提供 \`auth_configure_session\` 和 \`auth_clear_session\` 两个会话工具，因此 HTTP MCP 总工具数为 \`${collectHttpToolTotal()}\`。`
+  ].join("\n");
+}
+
+export function renderReqApiReferenceScaleMarkdown(): string {
+  const reqStats = collectModuleStats().find((item) => item.module === "Req");
+
+  if (!reqStats) {
+    throw new Error("Req module stats are missing.");
+  }
+
+  return [
+    "| 范围 | 数量 |",
+    "| --- | ---: |",
+    `| Req MCP 工具 | ${reqStats.total} |`,
+    `| 读工具 | ${reqStats.read} |`,
+    `| 写工具 | ${reqStats.write} |`,
+    `| 产品工具总数 | ${collectProductToolStats().total} |`,
+    `| 含鉴权的共享 HTTP 工具 | ${collectHttpToolTotal()} |`
   ].join("\n");
 }
 
@@ -267,11 +310,12 @@ export function renderImplementationStatusTableMarkdown(): string {
 
 export function renderImplementationStatusTotalsMarkdown(): string {
   const totals = collectProductToolStats();
+  const authToolTotal = collectHttpAuthToolTotal();
   return [
     `- Product modules implemented: \`${totals.modules}\``,
     `- Product tools implemented: \`${totals.total}\``,
-    "- Auth/session tools implemented: `2`",
-    `- Total MCP tools exposed: \`${totals.total + 2}\``
+    `- Auth/session tools implemented: \`${authToolTotal}\``,
+    `- Total MCP tools exposed: \`${collectHttpToolTotal()}\``
   ].join("\n");
 }
 
@@ -303,6 +347,14 @@ export function syncModuleStatsDocuments(documents: Record<string, string>): Rec
     );
   }
 
+  if (nextDocuments["docs/wiki/API-Reference.md"]) {
+    nextDocuments["docs/wiki/API-Reference.md"] = replaceGeneratedSection(
+      nextDocuments["docs/wiki/API-Reference.md"],
+      "api-reference-scale",
+      renderApiReferenceScaleMarkdown()
+    );
+  }
+
   if (nextDocuments["docs/wiki/Capability-Matrix.md"]) {
     nextDocuments["docs/wiki/Capability-Matrix.md"] = replaceGeneratedSection(
       nextDocuments["docs/wiki/Capability-Matrix.md"],
@@ -327,6 +379,14 @@ export function syncModuleStatsDocuments(documents: Record<string, string>): Rec
       nextDocuments["docs/wiki/Module-Live-Readiness.md"],
       "module-live-readiness-summary",
       renderToolStatusModuleSummaryMarkdown()
+    );
+  }
+
+  if (nextDocuments["docs/wiki/Req-API-Reference.md"]) {
+    nextDocuments["docs/wiki/Req-API-Reference.md"] = replaceGeneratedSection(
+      nextDocuments["docs/wiki/Req-API-Reference.md"],
+      "req-api-reference-scale",
+      renderReqApiReferenceScaleMarkdown()
     );
   }
 

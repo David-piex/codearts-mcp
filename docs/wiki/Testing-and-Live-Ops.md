@@ -44,8 +44,9 @@ npm test
 ## 常用命令
 
 ```bash
-npm test
-npm run build
+npm run check
+npm run test:live
+npm run tool-manifest:check
 npm run stats:check-docs
 npm run probe:edge
 ```
@@ -73,9 +74,10 @@ MCP_SERVER_VERSION=0.1.0
 
 ## 最近一轮真实结论
 
-按 `2026-04-22` 在北京四租户上做的全量 `*live*.test.ts` 扫描结果：
+按 `2026-04-28` 在北京四租户上做的全量 `*live*.test.ts` 扫描结果：
 
-- `126` 个 live 相关测试文件中，`122 passed / 4 skipped / 0 failed`
+- `128` 个 live 相关测试文件中，`124 passed / 4 skipped / 0 failed`
+- `212` 个 live 测试全部通过
 - 核心共享 `http` 会话链路通过
 - `repo_create_repository` 真创建通过
 - `req_create_work_item` 真写入通过
@@ -134,8 +136,8 @@ MCP_SERVER_VERSION=0.1.0
 
 如果你刚部署完服务，建议按这个顺序做：
 
-1. `npm run build`
-2. `npm test`
+1. `npm run check`
+2. `npm run test:live`
 3. `GET /health`
 4. `auth_configure_session`
 5. 4 个低风险读工具

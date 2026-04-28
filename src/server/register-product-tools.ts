@@ -10,6 +10,7 @@ import { registerReqTool } from "./register-req-tools.js";
 import { registerTestPlanTool } from "./register-testplan-tools.js";
 import type { RateLimiter } from "./rate-limiter.js";
 import type { SessionCredentialStore } from "./session-store.js";
+import { findToolManifestEntry } from "./tool-manifest.js";
 
 type RegisterableServer = Pick<McpServer, "registerTool">;
 export type ProductToolFamily =
@@ -23,22 +24,13 @@ export type ProductToolFamily =
   | "testplan";
 
 export function resolveProductToolFamily(toolName: string): ProductToolFamily | undefined {
-  const separatorIndex = toolName.indexOf("_");
-  const family = separatorIndex === -1 ? toolName : toolName.slice(0, separatorIndex);
+  const manifestEntry = findToolManifestEntry(toolName);
 
-  switch (family) {
-    case "artifact":
-    case "build":
-    case "check":
-    case "deploy":
-    case "pipeline":
-    case "repo":
-    case "req":
-    case "testplan":
-      return family;
-    default:
-      return undefined;
+  if (manifestEntry?.kind === "product") {
+    return manifestEntry.family;
   }
+
+  return undefined;
 }
 
 export function registerProductTool(options: {

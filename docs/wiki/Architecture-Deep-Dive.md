@@ -60,16 +60,19 @@ graph LR
 
 真正把 8 个产品模块挂到 MCP Server 上的核心在两层：
 
+- `src/server/tool-manifest.ts`
 - `src/server/create-server.ts`
 - `src/server/product-tool-registry.ts`
 
 其中：
 
+- `tool-manifest.ts` 维护工具名、模块归属、产品族、可见传输模式，是工具清单的单一来源
 - `create-server.ts` 负责搭建服务器、注册 auth/session 工具、为写操作挂限流器、拼装最终工具集
 - `product-tool-registry.ts` 负责把“产品工具定义”转成真正注册到 MCP 上的 handler，并统一包一层错误格式化
 
 这层设计的好处是：
 
+- `ToolManifest`、实际 stdio/http 注册、模块统计和 Function API 文档可以互相校验，避免工具新增后只改一处
 - `stdio` 和 `http` 共用同一套产品工具定义
 - `http` 模式只是在 handler 外层额外做会话注入、限流和鉴权恢复
 - 新工具增加时不需要重复写一遍 stdio/http 双版本
@@ -116,11 +119,12 @@ graph LR
 
 当前工具规模最大的模块是：
 
+- Req：`200`
 - Pipeline：`77`
 - Deploy：`59`
 - Repo：`25`
 
-这也解释了为什么 Pipeline 和 Deploy 的文档与 live 状态需要单独强调。
+这也解释了为什么 Req、Pipeline 和 Deploy 的文档与 live 状态需要单独强调。
 
 ## 9. 测试结构
 
@@ -128,6 +132,7 @@ graph LR
 
 - `tests/products/*`：产品级 client / tool / live smoke
 - `tests/server/*`：HTTP、会话、限流、工具注册、写路径联调
+- `npm run tool-manifest:check`：专门校验 `ToolManifest` 与实际 stdio/http 工具注册是否一致
 
 项目目前不是只靠 unit test 说自己“可用”，而是把一部分关键路径做到了真实 AK/SK 联调，包括：
 

@@ -1,6 +1,6 @@
 # CodeArts MCP Function API Reference
 
-This document is generated from the current HTTP MCP `tools/list` registry. Do not edit tool entries by hand.
+This document is generated from the ToolManifest-validated HTTP MCP `tools/list` registry. Do not edit tool entries by hand.
 
 All function APIs use the same HTTP endpoint: `POST /mcp`. The JSON-RPC method is `tools/call`; select a function with `params.name`.
 

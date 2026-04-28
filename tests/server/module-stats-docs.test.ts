@@ -1,9 +1,15 @@
 import { describe, expect, it } from "vitest";
 import {
+  collectHttpToolTotal,
+  collectProductToolStats
+} from "../../src/server/module-stats.js";
+import {
   findDriftedModuleStatsDocuments,
   loadTrackedModuleStatsDocuments,
   replaceGeneratedSection,
+  renderApiReferenceScaleMarkdown,
   renderReadWriteMatrixMarkdown,
+  renderReqApiReferenceScaleMarkdown,
   renderReadmeExposureSummaryMarkdown,
   syncModuleStatsDocuments
 } from "../../src/server/module-stats-docs.js";
@@ -43,9 +49,11 @@ describe("replaceGeneratedSection", () => {
 
 describe("module stats doc rendering", () => {
   it("renders the README exposure summary from current tool totals", () => {
-    expect(renderReadmeExposureSummaryMarkdown()).toContain("- `410` product tools");
     expect(renderReadmeExposureSummaryMarkdown()).toContain(
-      "- `412` total MCP tools in shared `http` mode"
+      `- \`${collectProductToolStats().total}\` product tools`
+    );
+    expect(renderReadmeExposureSummaryMarkdown()).toContain(
+      `- \`${collectHttpToolTotal()}\` total MCP tools in shared \`http\` mode`
     );
   });
 
@@ -56,6 +64,16 @@ describe("module stats doc rendering", () => {
     expect(markdown).toContain("| Deploy | 44 | 15 | Partial |");
     expect(markdown).toContain("| Build | 14 | 8 | Validated |");
   });
+
+  it("renders API reference scale tables from current module stats", () => {
+    expect(renderApiReferenceScaleMarkdown()).toContain(
+      `产品工具合计 \`${collectProductToolStats().total}\` 个`
+    );
+    expect(renderReqApiReferenceScaleMarkdown()).toContain("| Req MCP 工具 | 200 |");
+    expect(renderReqApiReferenceScaleMarkdown()).toContain(
+      `| 含鉴权的共享 HTTP 工具 | ${collectHttpToolTotal()} |`
+    );
+  });
 });
 
 describe("syncModuleStatsDocuments", () => {
@@ -64,6 +82,9 @@ describe("syncModuleStatsDocuments", () => {
       "README.md": createDocWithGeneratedBlocks("# README", [
         ["readme-exposure-summary", "old"],
         ["readme-module-numbers", "old"]
+      ]),
+      "docs/wiki/API-Reference.md": createDocWithGeneratedBlocks("# API Reference", [
+        ["api-reference-scale", "old"]
       ]),
       "docs/wiki/Capability-Matrix.md": createDocWithGeneratedBlocks("# Capability Matrix", [
         ["capability-matrix", "old"]
@@ -75,24 +96,36 @@ describe("syncModuleStatsDocuments", () => {
           ["module-live-readiness-totals", "old"],
           ["module-live-readiness-summary", "old"]
         ]
+      ),
+      "docs/wiki/Req-API-Reference.md": createDocWithGeneratedBlocks(
+        "# Req API Reference",
+        [["req-api-reference-scale", "old"]]
       )
     };
 
     const synced = syncModuleStatsDocuments(docs);
 
-    expect(synced["README.md"]).toContain("- `410` product tools");
+    expect(synced["README.md"]).toContain(
+      `- \`${collectProductToolStats().total}\` product tools`
+    );
     expect(synced["README.md"]).toContain("| Pipeline | 77 | Partial |");
     expect(synced["README.md"]).toContain("| Req | 200 | Partial |");
     expect(synced["docs/wiki/Capability-Matrix.md"]).toContain(
       "| Req | 119 | 81 | Partial |"
     );
+    expect(synced["docs/wiki/API-Reference.md"]).toContain(
+      `产品工具合计 \`${collectProductToolStats().total}\` 个`
+    );
     expect(synced["docs/wiki/Module-Live-Readiness.md"]).toContain(
       "| Req | 200 | 119 | 81 | Partial |"
     );
     expect(synced["docs/wiki/Module-Live-Readiness.md"]).toContain(
-      "- Total MCP tools exposed: `412`"
+      `- Total MCP tools exposed: \`${collectHttpToolTotal()}\``
     );
     expect(synced["docs/wiki/Module-Live-Readiness.md"]).toContain("| Deploy | 59 |");
+    expect(synced["docs/wiki/Req-API-Reference.md"]).toContain(
+      `| 含鉴权的共享 HTTP 工具 | ${collectHttpToolTotal()} |`
+    );
   });
 });
 
@@ -118,8 +151,10 @@ describe("tracked module stats docs", () => {
 
     expect(Object.keys(docs)).toEqual([
       "README.md",
+      "docs/wiki/API-Reference.md",
       "docs/wiki/Capability-Matrix.md",
-      "docs/wiki/Module-Live-Readiness.md"
+      "docs/wiki/Module-Live-Readiness.md",
+      "docs/wiki/Req-API-Reference.md"
     ]);
     expect(findDriftedModuleStatsDocuments(docs)).toEqual(expect.any(Array));
   });

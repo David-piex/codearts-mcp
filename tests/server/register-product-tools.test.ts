@@ -46,6 +46,7 @@ describe("registerProductTool", () => {
     expect(resolveProductToolFamily("pipeline_list_pipelines")).toBe("pipeline");
     expect(resolveProductToolFamily("req_list_projects")).toBe("req");
     expect(resolveProductToolFamily("totally_unknown_tool")).toBeUndefined();
+    expect(resolveProductToolFamily("req_not_in_manifest")).toBeUndefined();
 
     expect(
       collectToolNames().every((toolName) => resolveProductToolFamily(toolName) !== undefined)
