@@ -6,6 +6,8 @@ dist/
 coverage/
 .playwright-cli/
 .deploy-upload*.tgz
+codearts-mcp-deploy.tgz
+tmp/
 tmp-*
 tmp-*.log
 tmp-govern-*
