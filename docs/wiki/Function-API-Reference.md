@@ -50,10 +50,27 @@
   "method": "tools/call",
   "params": {
     "name": "artifact_delete_file",
-    "arguments": {}
+    "arguments": {
+      "tenant_id": "<tenant_id>",
+      "project_id": "<project_id>",
+      "repo_name": "<repo_name>",
+      "path": "<path>",
+      "format": "<format>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `tenant_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `repo_name` | 是 | `string` |  | 资源名称。 |
+| `path` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `format` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -112,10 +129,26 @@
   "method": "tools/call",
   "params": {
     "name": "artifact_get_download_url",
-    "arguments": {}
+    "arguments": {
+      "tenant_id": "<tenant_id>",
+      "project_id": "<project_id>",
+      "repo_name": "<repo_name>",
+      "path": "<path>",
+      "format": "<format>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `tenant_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `repo_name` | 是 | `string` |  | 资源名称。 |
+| `path` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `format` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -170,10 +203,26 @@
   "method": "tools/call",
   "params": {
     "name": "artifact_get_file",
-    "arguments": {}
+    "arguments": {
+      "tenant_id": "<tenant_id>",
+      "project_id": "<project_id>",
+      "repo_name": "<repo_name>",
+      "path": "<path>",
+      "format": "<format>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `tenant_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `repo_name` | 是 | `string` |  | 资源名称。 |
+| `path` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `format` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -228,10 +277,23 @@
   "method": "tools/call",
   "params": {
     "name": "artifact_get_file_tree",
-    "arguments": {}
+    "arguments": {
+      "tenant_id": "<tenant_id>",
+      "project_id": "<project_id>",
+      "repo_name": "<repo_name>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `tenant_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `repo_name` | 是 | `string` |  | 资源名称。 |
+| `path` | 否 | `string` | "/" | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -281,10 +343,18 @@
   "method": "tools/call",
   "params": {
     "name": "artifact_get_repository",
-    "arguments": {}
+    "arguments": {
+      "repository_id": "<repository_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
 
 输入 JSON Schema：
 
@@ -324,6 +394,16 @@
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
 
 输入 JSON Schema：
 
@@ -376,10 +456,25 @@
   "method": "tools/call",
   "params": {
     "name": "artifact_list_files",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "repo_name": "<repo_name>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `repo_name` | 是 | `string` |  | 资源名称。 |
 
 输入 JSON Schema：
 
@@ -444,10 +539,23 @@
   "method": "tools/call",
   "params": {
     "name": "artifact_list_latest_version_files",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 输入 JSON Schema：
 
@@ -507,10 +615,30 @@
   "method": "tools/call",
   "params": {
     "name": "artifact_list_repositories",
-    "arguments": {}
+    "arguments": {
+      "tenant_id": "<tenant_id>",
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `tenant_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `qname` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `type` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `format` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `format_list` | 否 | `array<string>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `is_recycle_bin` | 否 | `boolean` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -596,10 +724,23 @@
   "method": "tools/call",
   "params": {
     "name": "artifact_list_versions",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 输入 JSON Schema：
 
@@ -659,10 +800,25 @@
   "method": "tools/call",
   "params": {
     "name": "artifact_search_artifacts",
-    "arguments": {}
+    "arguments": {
+      "artifact_name": "<artifact_name>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `artifact_name` | 是 | `string` |  | 资源名称。 |
+| `repo_name` | 否 | `string` |  | 资源名称。 |
+| `project_id` | 否 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 输入 JSON Schema：
 
@@ -729,10 +885,33 @@
   "method": "tools/call",
   "params": {
     "name": "artifact_show_audit",
-    "arguments": {}
+    "arguments": {
+      "tenant_id": "<tenant_id>",
+      "project_id": "<project_id>",
+      "module": "<module>",
+      "repo": "<repo>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `tenant_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `module` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `repo` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `user_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `instance_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `format` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `resource_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -823,6 +1002,10 @@
 }
 ```
 
+参数：
+
+无参数。
+
 输入 JSON Schema：
 
 ```json
@@ -848,10 +1031,30 @@
   "method": "tools/call",
   "params": {
     "name": "auth_configure_session",
-    "arguments": {}
+    "arguments": {
+      "access_key": "<access_key>",
+      "secret_key": "<secret_key>",
+      "region": "<region>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `access_key` | 是 | `string` |  | 华为云访问密钥 ID，用于当前 MCP 会话鉴权。 |
+| `secret_key` | 是 | `string` |  | 华为云访问密钥 Secret，仅用于签名鉴权，请勿写入日志或公开文档。 |
+| `region` | 是 | `string` |  | 华为云区域标识，例如 cn-north-4。 |
+| `req_base_url` | 否 | `string` |  | 服务地址或资源 URL。 |
+| `repo_base_url` | 否 | `string` |  | 服务地址或资源 URL。 |
+| `pipeline_base_url` | 否 | `string` |  | 服务地址或资源 URL。 |
+| `check_base_url` | 否 | `string` |  | 服务地址或资源 URL。 |
+| `testplan_base_url` | 否 | `string` |  | 服务地址或资源 URL。 |
+| `deploy_base_url` | 否 | `string` |  | 服务地址或资源 URL。 |
+| `build_base_url` | 否 | `string` |  | 服务地址或资源 URL。 |
+| `artifact_base_url` | 否 | `string` |  | 服务地址或资源 URL。 |
 
 输入 JSON Schema：
 
@@ -929,10 +1132,30 @@
   "method": "tools/call",
   "params": {
     "name": "build_append_job_step",
-    "arguments": {}
+    "arguments": {
+      "job_id": "<job_id>",
+      "step_name": "<step_name>",
+      "module_id": "<module_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `job_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `step_name` | 是 | `string` |  | 资源名称。 |
+| `module_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `enable` | 否 | `boolean` | true | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `version` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `image` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `command` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `pre_condition` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `properties` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `insert_after_step_name` | 否 | `string` |  | 资源名称。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -1010,10 +1233,29 @@
   "method": "tools/call",
   "params": {
     "name": "build_append_release_upload_step",
-    "arguments": {}
+    "arguments": {
+      "job_id": "<job_id>",
+      "path": "<path>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `job_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `path` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `package_name` | 否 | `string` |  | 资源名称。 |
+| `package_version` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `custom_upload_path` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `upload_tool` | 否 | `string` | "curl" | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `continue_on_failure` | 否 | `boolean` | false | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `step_name` | 否 | `string` | "Upload package to release repository" | 资源名称。 |
+| `pre_condition` | 否 | `string` | "SUCCESS" | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `insert_after_step_name` | 否 | `string` |  | 资源名称。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -1093,10 +1335,28 @@
   "method": "tools/call",
   "params": {
     "name": "build_configure_release_upload_step",
-    "arguments": {}
+    "arguments": {
+      "job_id": "<job_id>",
+      "file": "<file>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `job_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `step_name` | 否 | `string` | "Upload package to release repository" | 资源名称。 |
+| `file` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `package_name` | 否 | `string` |  | 资源名称。 |
+| `build_version` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `custom_upload_path` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `upload_tool` | 否 | `string` | "curl" | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `remain_origin_path` | 否 | `string` | "FLAT" | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `pre_condition` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -1171,10 +1431,25 @@
   "method": "tools/call",
   "params": {
     "name": "build_get_error_log",
-    "arguments": {}
+    "arguments": {
+      "job_id": "<job_id>",
+      "build_no": "<build_no>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `job_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `build_no` | 是 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -1239,10 +1514,19 @@
   "method": "tools/call",
   "params": {
     "name": "build_get_full_stages",
-    "arguments": {}
+    "arguments": {
+      "record_id": "<record_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `record_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `cascade` | 否 | `boolean` | true | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -1282,10 +1566,20 @@
   "method": "tools/call",
   "params": {
     "name": "build_get_history_details",
-    "arguments": {}
+    "arguments": {
+      "job_id": "<job_id>",
+      "build_number": "<build_number>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `job_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `build_number` | 是 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -1326,10 +1620,20 @@
   "method": "tools/call",
   "params": {
     "name": "build_get_info_record",
-    "arguments": {}
+    "arguments": {
+      "job_id": "<job_id>",
+      "build_no": "<build_no>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `job_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `build_no` | 是 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -1370,10 +1674,18 @@
   "method": "tools/call",
   "params": {
     "name": "build_get_job",
-    "arguments": {}
+    "arguments": {
+      "job_id": "<job_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `job_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -1409,10 +1721,19 @@
   "method": "tools/call",
   "params": {
     "name": "build_get_project_record_statistics",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `build_project_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -1451,10 +1772,22 @@
   "method": "tools/call",
   "params": {
     "name": "build_get_real_time_log",
-    "arguments": {}
+    "arguments": {
+      "job_id": "<job_id>",
+      "build_no": "<build_no>",
+      "offset": "<offset>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `job_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `build_no` | 是 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `offset` | 是 | `integer` |  | 分页偏移量。 |
 
 输入 JSON Schema：
 
@@ -1500,10 +1833,18 @@
   "method": "tools/call",
   "params": {
     "name": "build_get_record",
-    "arguments": {}
+    "arguments": {
+      "record_id": "<record_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `record_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -1539,10 +1880,18 @@
   "method": "tools/call",
   "params": {
     "name": "build_get_record_flow_graph",
-    "arguments": {}
+    "arguments": {
+      "record_id": "<record_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `record_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -1578,10 +1927,18 @@
   "method": "tools/call",
   "params": {
     "name": "build_get_record_script",
-    "arguments": {}
+    "arguments": {
+      "record_id": "<record_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `record_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -1617,10 +1974,20 @@
   "method": "tools/call",
   "params": {
     "name": "build_list_build_parameters",
-    "arguments": {}
+    "arguments": {
+      "job_id": "<job_id>",
+      "build_no": "<build_no>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `job_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `build_no` | 是 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -1661,10 +2028,23 @@
   "method": "tools/call",
   "params": {
     "name": "build_list_jobs",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 输入 JSON Schema：
 
@@ -1724,10 +2104,24 @@
   "method": "tools/call",
   "params": {
     "name": "build_list_project_records",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `build_project_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -1790,10 +2184,23 @@
   "method": "tools/call",
   "params": {
     "name": "build_list_records",
-    "arguments": {}
+    "arguments": {
+      "job_id": "<job_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `job_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -1858,6 +2265,10 @@
 }
 ```
 
+参数：
+
+无参数。
+
 输入 JSON Schema：
 
 ```json
@@ -1882,10 +2293,23 @@
   "method": "tools/call",
   "params": {
     "name": "build_prepare_node_runtime_bundle",
-    "arguments": {}
+    "arguments": {
+      "job_id": "<job_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `job_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `step_name` | 否 | `string` |  | 资源名称。 |
+| `output_file` | 否 | `string` | "codearts-mcp.tgz" | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `staging_dir` | 否 | `string` | ".release-bundle" | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `replace_existing` | 否 | `boolean` | false | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -1943,10 +2367,20 @@
   "method": "tools/call",
   "params": {
     "name": "build_run_job",
-    "arguments": {}
+    "arguments": {
+      "job_id": "<job_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `job_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `branch` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -1990,10 +2424,21 @@
   "method": "tools/call",
   "params": {
     "name": "build_stop_job",
-    "arguments": {}
+    "arguments": {
+      "job_id": "<job_id>",
+      "build_no": "<build_no>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `job_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `build_no` | 是 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -2043,6 +2488,10 @@
 }
 ```
 
+参数：
+
+无参数。
+
 输入 JSON Schema：
 
 ```json
@@ -2067,10 +2516,33 @@
   "method": "tools/call",
   "params": {
     "name": "check_create_task",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "task_name": "<task_name>",
+      "git_url": "<git_url>",
+      "git_branch": "<git_branch>",
+      "language": "<language>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `task_name` | 是 | `string` |  | 资源名称。 |
+| `git_url` | 是 | `string` |  | 服务地址或资源 URL。 |
+| `git_branch` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `language` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `rule_set_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `resource_pool_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `resource_pool_type` | 否 | `"default" \| "custom"` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`default`、`custom`。 |
+| `include_paths` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `exclude_dir` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `task_type` | 否 | `"full" \| "incremental"` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`full`、`incremental`。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -2158,10 +2630,19 @@
   "method": "tools/call",
   "params": {
     "name": "check_get_metrics",
-    "arguments": {}
+    "arguments": {
+      "task_id": "<task_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 否 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `task_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -2200,10 +2681,18 @@
   "method": "tools/call",
   "params": {
     "name": "check_get_task",
-    "arguments": {}
+    "arguments": {
+      "task_id": "<task_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `task_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -2239,10 +2728,24 @@
   "method": "tools/call",
   "params": {
     "name": "check_list_rulesets",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `language` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -2305,10 +2808,30 @@
   "method": "tools/call",
   "params": {
     "name": "check_list_task_issues",
-    "arguments": {}
+    "arguments": {
+      "task_id": "<task_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `task_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `severity` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `defect_level` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `rule_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `rule_name` | 否 | `string` |  | 资源名称。 |
+| `file_path` | 否 | `string` |  | 仓库内文件路径。 |
+| `status` | 否 | `string` |  | 状态过滤条件或目标状态。 |
+| `checker` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -2401,6 +2924,17 @@
 }
 ```
 
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `project_id` | 否 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+
 输入 JSON Schema：
 
 ```json
@@ -2456,10 +2990,20 @@
   "method": "tools/call",
   "params": {
     "name": "check_run_task",
-    "arguments": {}
+    "arguments": {
+      "task_id": "<task_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `task_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `ref` | 否 | `string` |  | Git 引用，可以是分支、标签或提交 SHA。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -2503,10 +3047,19 @@
   "method": "tools/call",
   "params": {
     "name": "check_stop_task",
-    "arguments": {}
+    "arguments": {
+      "task_id": "<task_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `task_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -2546,10 +3099,25 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_add_v4_environment_hosts",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "environment_id": "<environment_id>",
+      "cluster_id": "<cluster_id>",
+      "host_ids": "<host_ids>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `environment_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `cluster_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `host_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -2605,10 +3173,25 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_cancel_v4_deploy_record",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "record_id": "<record_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `reason` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `description` | 否 | `string` |  | 资源描述信息。 |
+| `operator` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `body` | 否 | `object` | {} | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `record_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -2666,10 +3249,32 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_create_application",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "name": "<name>",
+      "arrange_infos": "<arrange_infos>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `name` | 是 | `string` |  | 资源名称。 |
+| `description` | 否 | `string` | "" | 资源描述信息。 |
+| `timeout` | 否 | `number \| null` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `trigger` | 否 | `object` | {"trigger_source":"0","artifact_source_system":"","artifact_type":""} | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `slave_cluster_id` | 否 | `string` | "" | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `slave_resource_type` | 否 | `string` | "" | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `create_type` | 否 | `string` | "template" | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `is_draft` | 否 | `boolean` | false | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `group_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `agency_urn` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `arrange_infos` | 是 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -2820,10 +3425,26 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_create_environment",
-    "arguments": {}
+    "arguments": {
+      "application_id": "<application_id>",
+      "project_id": "<project_id>",
+      "name": "<name>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `application_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `name` | 是 | `string` |  | 资源名称。 |
+| `os` | 否 | `string` | "linux" | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `deploy_type` | 否 | `integer` | 0 | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `description` | 否 | `string` |  | 资源描述信息。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -2885,10 +3506,26 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_create_task_by_template",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "project_name": "<project_name>",
+      "template_id": "<template_id>",
+      "task_name": "<task_name>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_name` | 是 | `string` |  | 资源名称。 |
+| `template_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `task_name` | 是 | `string` |  | 资源名称。 |
+| `configs` | 否 | `array<object>` | [] | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -2991,10 +3628,23 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_delete_v4_cluster_hosts",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "cluster_id": "<cluster_id>",
+      "host_ids": "<host_ids>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `cluster_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `host_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -3046,10 +3696,23 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_delete_v4_environment_hosts",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "environment_id": "<environment_id>",
+      "host_ids": "<host_ids>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `environment_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `host_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -3101,10 +3764,18 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_get_app",
-    "arguments": {}
+    "arguments": {
+      "application_id": "<application_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `application_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -3140,10 +3811,23 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_get_app_log",
-    "arguments": {}
+    "arguments": {
+      "application_id": "<application_id>",
+      "record_id": "<record_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `application_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `record_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `step_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `offset` | 否 | `string` | "0" | 分页偏移量。 |
+| `end_offset` | 否 | `string` | "0" | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -3194,10 +3878,18 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_get_deploy_source_detail",
-    "arguments": {}
+    "arguments": {
+      "task_id": "<task_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `task_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -3233,10 +3925,20 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_get_execution_params",
-    "arguments": {}
+    "arguments": {
+      "task_id": "<task_id>",
+      "record_id": "<record_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `task_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `record_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -3276,10 +3978,20 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_get_history_detail",
-    "arguments": {}
+    "arguments": {
+      "task_id": "<task_id>",
+      "record_id": "<record_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `task_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `record_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -3319,10 +4031,18 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_get_host_group",
-    "arguments": {}
+    "arguments": {
+      "group_id": "<group_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `group_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -3358,10 +4078,20 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_get_last_record_detail",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "orchestration_id": "<orchestration_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `orchestration_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -3401,10 +4131,19 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_get_runtime_variables",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `app_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -3443,10 +4182,19 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_get_status",
-    "arguments": {}
+    "arguments": {
+      "task_id": "<task_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `task_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `record_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -3485,10 +4233,18 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_get_task",
-    "arguments": {}
+    "arguments": {
+      "task_id": "<task_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `task_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -3524,10 +4280,19 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_get_template_detail",
-    "arguments": {}
+    "arguments": {
+      "template_id": "<template_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `template_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `task_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -3566,10 +4331,22 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_get_v4_cluster",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "cluster_id": "<cluster_id>",
+      "cluster_type": "<cluster_type>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `cluster_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `cluster_type` | 是 | `"host" \| "container"` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`host`、`container`。 |
 
 输入 JSON Schema：
 
@@ -3617,10 +4394,20 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_get_v4_cluster_count",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "cluster_type": "<cluster_type>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `cluster_type` | 是 | `"host" \| "container"` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`host`、`container`。 |
 
 输入 JSON Schema：
 
@@ -3664,10 +4451,22 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_get_v4_cluster_host",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "cluster_id": "<cluster_id>",
+      "host_id": "<host_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `cluster_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `host_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -3711,10 +4510,21 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_get_v4_deploy_record",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "record_id": "<record_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `record_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `step_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -3757,10 +4567,20 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_get_v4_deploy_record_step_detail",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "record_id": "<record_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `record_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -3800,10 +4620,27 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_get_v4_deploy_record_step_logs",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "record_id": "<record_id>",
+      "step_id": "<step_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `record_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `step_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `offset` | 否 | `string \| number` |  | 分页偏移量。 |
+| `limit` | 否 | `integer` |  | 分页数量上限。 |
+| `start_time` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `end_time` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `body` | 否 | `object` | {} | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -3869,10 +4706,20 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_get_v4_environment",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "environment_id": "<environment_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `environment_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -3912,10 +4759,20 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_get_v4_environment_resource_detail",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "environment_id": "<environment_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `environment_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -3955,10 +4812,25 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_import_hosts_to_environment",
-    "arguments": {}
+    "arguments": {
+      "application_id": "<application_id>",
+      "environment_id": "<environment_id>",
+      "group_id": "<group_id>",
+      "host_ids": "<host_ids>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `application_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `environment_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `group_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `host_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -4014,10 +4886,25 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_list_app_host_groups",
-    "arguments": {}
+    "arguments": {
+      "application_id": "<application_id>",
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `application_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 输入 JSON Schema：
 
@@ -4081,10 +4968,22 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_list_app_operations_log",
-    "arguments": {}
+    "arguments": {
+      "app_id": "<app_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `app_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `page_index` | 否 | `integer` | 1 | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `start_date` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `end_date` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -4137,10 +5036,23 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_list_apps",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 输入 JSON Schema：
 
@@ -4200,10 +5112,20 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_list_deployment_units",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "app_id": "<app_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `app_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -4243,10 +5165,27 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_list_environment_hosts",
-    "arguments": {}
+    "arguments": {
+      "application_id": "<application_id>",
+      "environment_id": "<environment_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `application_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `environment_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `key_field` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `as_proxy` | 否 | `boolean` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -4317,10 +5256,25 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_list_environments",
-    "arguments": {}
+    "arguments": {
+      "application_id": "<application_id>",
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `application_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 输入 JSON Schema：
 
@@ -4384,10 +5338,27 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_list_histories",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "task_id": "<task_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `task_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `start_date` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `end_date` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -4457,10 +5428,23 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_list_host_group_environments",
-    "arguments": {}
+    "arguments": {
+      "group_id": "<group_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `group_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -4520,10 +5504,23 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_list_host_group_hosts",
-    "arguments": {}
+    "arguments": {
+      "group_id": "<group_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `group_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -4583,10 +5580,23 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_list_host_groups",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 输入 JSON Schema：
 
@@ -4651,6 +5661,10 @@
 }
 ```
 
+参数：
+
+无参数。
+
 输入 JSON Schema：
 
 ```json
@@ -4677,10 +5691,23 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_list_tasks",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 输入 JSON Schema：
 
@@ -4740,10 +5767,21 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_list_v4_applications",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `limit` | 否 | `integer` | 20 | 分页数量上限。 |
+| `offset` | 否 | `integer` | 0 | 分页偏移量。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
 
 输入 JSON Schema：
 
@@ -4793,10 +5831,31 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_list_v4_cluster_hosts",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "cluster_id": "<cluster_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `limit` | 否 | `integer` |  | 分页数量上限。 |
+| `offset` | 否 | `integer` |  | 分页偏移量。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `name` | 否 | `string` |  | 资源名称。 |
+| `status` | 否 | `string` |  | 状态过滤条件或目标状态。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `body` | 否 | `object` | {} | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `cluster_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `ip` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `os` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `connection_status` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -4878,10 +5937,28 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_list_v4_clusters",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "cluster_type": "<cluster_type>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `limit` | 否 | `integer` |  | 分页数量上限。 |
+| `offset` | 否 | `integer` |  | 分页偏移量。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `name` | 否 | `string` |  | 资源名称。 |
+| `status` | 否 | `string` |  | 状态过滤条件或目标状态。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `body` | 否 | `object` | {} | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `cluster_type` | 是 | `"host" \| "container"` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`host`、`container`。 |
 
 输入 JSON Schema：
 
@@ -4958,10 +6035,20 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_list_v4_deploy_records",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `limit` | 否 | `integer` | 20 | 分页数量上限。 |
+| `offset` | 否 | `integer` | 0 | 分页偏移量。 |
 
 输入 JSON Schema：
 
@@ -5008,10 +6095,22 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_list_v4_environment_applications",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "environment_id": "<environment_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `environment_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `limit` | 否 | `integer` | 20 | 分页数量上限。 |
+| `offset` | 否 | `integer` | 0 | 分页偏移量。 |
 
 输入 JSON Schema：
 
@@ -5062,10 +6161,21 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_list_v4_environment_hosts",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "environment_id": "<environment_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `environment_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `query` | 否 | `object` | {} | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -5116,10 +6226,20 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_list_v4_environments",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `limit` | 否 | `integer` | 20 | 分页数量上限。 |
+| `offset` | 否 | `integer` | 0 | 分页偏移量。 |
 
 输入 JSON Schema：
 
@@ -5166,10 +6286,22 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_list_v4_orchestrations",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "app_id": "<app_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `app_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `limit` | 否 | `integer` | 20 | 分页数量上限。 |
+| `offset` | 否 | `integer` | 0 | 分页偏移量。 |
 
 输入 JSON Schema：
 
@@ -5225,6 +6357,10 @@
 }
 ```
 
+参数：
+
+无参数。
+
 输入 JSON Schema：
 
 ```json
@@ -5254,6 +6390,10 @@
 }
 ```
 
+参数：
+
+无参数。
+
 输入 JSON Schema：
 
 ```json
@@ -5278,10 +6418,34 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_modify_application",
-    "arguments": {}
+    "arguments": {
+      "id": "<id>",
+      "project_id": "<project_id>",
+      "name": "<name>",
+      "arrange_infos": "<arrange_infos>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `name` | 是 | `string` |  | 资源名称。 |
+| `description` | 否 | `string` | "" | 资源描述信息。 |
+| `timeout` | 否 | `number \| null` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `trigger` | 否 | `object` | {"trigger_source":"0","artifact_source_system":"","artifact_type":""} | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `slave_cluster_id` | 否 | `string` | "" | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `slave_resource_type` | 否 | `string` | "" | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `create_type` | 否 | `string` | "template" | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `is_draft` | 否 | `boolean` | false | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `group_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `agency_urn` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `arrange_infos` | 是 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -5442,10 +6606,23 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_pass_v4_manual_check",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "record_id": "<record_id>",
+      "step_id": "<step_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `record_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `step_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -5498,6 +6675,10 @@
 }
 ```
 
+参数：
+
+无参数。
+
 输入 JSON Schema：
 
 ```json
@@ -5522,10 +6703,23 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_refuse_v4_manual_check",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "record_id": "<record_id>",
+      "step_id": "<step_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `record_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `step_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -5573,10 +6767,25 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_rerun_v4_deploy_record",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "record_id": "<record_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `reason` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `description` | 否 | `string` |  | 资源描述信息。 |
+| `operator` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `body` | 否 | `object` | {} | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `record_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -5634,10 +6843,25 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_retry_v4_deploy_record",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "record_id": "<record_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `reason` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `description` | 否 | `string` |  | 资源描述信息。 |
+| `operator` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `body` | 否 | `object` | {} | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `record_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -5695,10 +6919,21 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_rollback_app",
-    "arguments": {}
+    "arguments": {
+      "task_id": "<task_id>",
+      "record_id": "<record_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `task_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `record_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -5742,10 +6977,25 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_rollback_v4_deploy_record",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "record_id": "<record_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `reason` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `description` | 否 | `string` |  | 资源描述信息。 |
+| `operator` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `body` | 否 | `object` | {} | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `record_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -5803,10 +7053,21 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_start_app",
-    "arguments": {}
+    "arguments": {
+      "task_id": "<task_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `task_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `trigger_source` | 否 | `0 \| 1 \| "0" \| "1"` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`0`、`1`、`0`、`1`。 |
+| `params` | 否 | `array<object>` | [] | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -5882,10 +7143,21 @@
   "method": "tools/call",
   "params": {
     "name": "deploy_stop_app",
-    "arguments": {}
+    "arguments": {
+      "task_id": "<task_id>",
+      "record_id": "<record_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `task_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `record_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -5929,10 +7201,27 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_approve_run",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "pipeline_id": "<pipeline_id>",
+      "run_id": "<run_id>",
+      "job_id": "<job_id>",
+      "step_id": "<step_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `pipeline_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `run_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `job_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `step_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -5988,10 +7277,23 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_bind_variable_groups_to_pipeline",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "pipeline_id": "<pipeline_id>",
+      "pipeline_group_ids": "<pipeline_group_ids>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `pipeline_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `pipeline_group_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -6047,6 +7349,19 @@
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 否 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `region_name` | 否 | `string` |  | 资源名称。 |
+| `module_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `name` | 否 | `string` |  | 资源名称。 |
+| `url` | 否 | `string` |  | 远程仓库或镜像地址。 |
+| `authorization` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `data` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -6116,10 +7431,22 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_create_group",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "name": "<name>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `name` | 是 | `string` |  | 资源名称。 |
+| `parent_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -6168,10 +7495,23 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_create_project_strategy",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "name": "<name>",
+      "rules": "<rules>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `name` | 是 | `string` |  | 资源名称。 |
+| `rules` | 是 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -6233,10 +7573,30 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_create_rule",
-    "arguments": {}
+    "arguments": {
+      "domain_id": "<domain_id>",
+      "name": "<name>",
+      "type": "<type>",
+      "layout_content": "<layout_content>",
+      "content": "<content>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `name` | 是 | `string` |  | 资源名称。 |
+| `type` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `layout_content` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `plugin_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `plugin_name` | 否 | `string` |  | 资源名称。 |
+| `plugin_version` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `content` | 是 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -6371,10 +7731,23 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_create_strategy",
-    "arguments": {}
+    "arguments": {
+      "domain_id": "<domain_id>",
+      "name": "<name>",
+      "rules": "<rules>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `name` | 是 | `string` |  | 资源名称。 |
+| `rules` | 是 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -6436,10 +7809,23 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_create_tag",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "name": "<name>",
+      "color": "<color>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `name` | 是 | `string` |  | 资源名称。 |
+| `color` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -6489,10 +7875,23 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_create_variable_group",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "name": "<name>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `name` | 是 | `string` |  | 资源名称。 |
+| `description` | 否 | `string` |  | 资源描述信息。 |
+| `variables` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -6569,10 +7968,20 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_delete_extension_endpoint",
-    "arguments": {}
+    "arguments": {
+      "uuid": "<uuid>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `uuid` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 否 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -6616,10 +8025,21 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_delete_group",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "id": "<id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `id` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -6663,10 +8083,21 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_delete_pipeline",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "pipeline_id": "<pipeline_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `pipeline_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -6710,10 +8141,21 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_delete_project_strategy",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "rule_set_id": "<rule_set_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `rule_set_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -6757,10 +8199,21 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_delete_rule",
-    "arguments": {}
+    "arguments": {
+      "domain_id": "<domain_id>",
+      "rule_id": "<rule_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `rule_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -6804,10 +8257,21 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_delete_strategy",
-    "arguments": {}
+    "arguments": {
+      "domain_id": "<domain_id>",
+      "rule_set_id": "<rule_set_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `rule_set_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -6851,10 +8315,21 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_delete_tag",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "tag_id": "<tag_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `tag_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -6898,10 +8373,21 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_delete_variable_group",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "id": "<id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `id` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -6945,10 +8431,21 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_disable_pipeline",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "pipeline_id": "<pipeline_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `pipeline_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -6992,10 +8489,21 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_enable_pipeline",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "pipeline_id": "<pipeline_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `pipeline_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -7039,10 +8547,18 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_get_extension_endpoint",
-    "arguments": {}
+    "arguments": {
+      "uuid": "<uuid>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `uuid` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -7078,10 +8594,18 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_get_extension_module",
-    "arguments": {}
+    "arguments": {
+      "module_id": "<module_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `module_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -7117,10 +8641,22 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_get_manual_review_context",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "pipeline_id": "<pipeline_id>",
+      "run_id": "<run_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `pipeline_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `run_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -7164,10 +8700,20 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_get_pipeline",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "pipeline_id": "<pipeline_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `pipeline_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -7207,10 +8753,26 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_get_plugin_inputs",
-    "arguments": {}
+    "arguments": {
+      "domain_id": "<domain_id>",
+      "plugin_name": "<plugin_name>",
+      "display_name": "<display_name>",
+      "version": "<version>",
+      "plugin_attribution": "<plugin_attribution>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `plugin_name` | 是 | `string` |  | 资源名称。 |
+| `display_name` | 是 | `string` |  | 资源名称。 |
+| `version` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `plugin_attribution` | 是 | `"custom" \| "official"` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`custom`、`official`。 |
 
 输入 JSON Schema：
 
@@ -7269,10 +8831,26 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_get_plugin_outputs",
-    "arguments": {}
+    "arguments": {
+      "domain_id": "<domain_id>",
+      "plugin_name": "<plugin_name>",
+      "display_name": "<display_name>",
+      "version": "<version>",
+      "plugin_attribution": "<plugin_attribution>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `plugin_name` | 是 | `string` |  | 资源名称。 |
+| `display_name` | 是 | `string` |  | 资源名称。 |
+| `version` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `plugin_attribution` | 是 | `"custom" \| "official"` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`custom`、`official`。 |
 
 输入 JSON Schema：
 
@@ -7331,10 +8909,22 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_get_plugin_version",
-    "arguments": {}
+    "arguments": {
+      "domain_id": "<domain_id>",
+      "plugin_name": "<plugin_name>",
+      "version": "<version>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `plugin_name` | 是 | `string` |  | 资源名称。 |
+| `version` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -7380,10 +8970,20 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_get_project_strategy",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "rule_set_id": "<rule_set_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `rule_set_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -7423,10 +9023,20 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_get_project_strategy_detail",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "rule_set_id": "<rule_set_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `rule_set_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -7466,10 +9076,20 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_get_project_strategy_related_info",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "rule_set_id": "<rule_set_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `rule_set_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -7509,10 +9129,20 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_get_rule",
-    "arguments": {}
+    "arguments": {
+      "domain_id": "<domain_id>",
+      "rule_id": "<rule_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `rule_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -7552,10 +9182,20 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_get_rule_related_info",
-    "arguments": {}
+    "arguments": {
+      "domain_id": "<domain_id>",
+      "rule_id": "<rule_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `rule_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -7595,10 +9235,22 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_get_run",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "pipeline_id": "<pipeline_id>",
+      "run_id": "<run_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `pipeline_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `run_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -7642,10 +9294,22 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_get_run_detail",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "pipeline_id": "<pipeline_id>",
+      "run_id": "<run_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `pipeline_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `run_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -7689,10 +9353,26 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_get_run_log",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "pipeline_id": "<pipeline_id>",
+      "run_id": "<run_id>",
+      "job_id": "<job_id>",
+      "step_id": "<step_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `pipeline_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `run_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `job_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `step_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -7744,10 +9424,22 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_get_run_parameters",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "pipeline_id": "<pipeline_id>",
+      "run_id": "<run_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `pipeline_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `run_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -7791,10 +9483,24 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_get_step_outputs",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "pipeline_id": "<pipeline_id>",
+      "run_id": "<run_id>",
+      "step_run_ids": "<step_run_ids>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `pipeline_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `run_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `step_run_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -7846,10 +9552,21 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_get_strategy",
-    "arguments": {}
+    "arguments": {
+      "domain_id": "<domain_id>",
+      "rule_set_id": "<rule_set_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `rule_set_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `cloud_project_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -7892,10 +9609,20 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_get_strategy_related_info",
-    "arguments": {}
+    "arguments": {
+      "domain_id": "<domain_id>",
+      "rule_set_id": "<rule_set_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `rule_set_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -7935,10 +9662,20 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_get_variable_group",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "id": "<id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `id` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -7978,10 +9715,26 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_inherit_project_strategy",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "name": "<name>",
+      "parent_id": "<parent_id>",
+      "is_valid": "<is_valid>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `name` | 是 | `string` |  | 资源名称。 |
+| `parent_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `rules` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `is_valid` | 是 | `boolean` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -8040,10 +9793,22 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_list_artifacts",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "pipeline_id": "<pipeline_id>",
+      "run_id": "<run_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `pipeline_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `run_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -8087,10 +9852,18 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_list_available_publishers",
-    "arguments": {}
+    "arguments": {
+      "domain_id": "<domain_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -8126,10 +9899,18 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_list_base_plugins",
-    "arguments": {}
+    "arguments": {
+      "domain_id": "<domain_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -8165,10 +9946,20 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_list_base_plugins_paged",
-    "arguments": {}
+    "arguments": {
+      "domain_id": "<domain_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `offset` | 否 | `integer` | 0 | 分页偏移量。 |
+| `limit` | 否 | `integer` | 20 | 分页数量上限。 |
 
 输入 JSON Schema：
 
@@ -8215,10 +10006,23 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_list_extension_endpoints",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "region_name": "<region_name>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `region_name` | 是 | `string` |  | 资源名称。 |
+| `module_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `offset` | 否 | `integer` | 0 | 分页偏移量。 |
+| `limit` | 否 | `integer` | 20 | 分页数量上限。 |
 
 输入 JSON Schema：
 
@@ -8274,10 +10078,25 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_list_extension_modules",
-    "arguments": {}
+    "arguments": {
+      "locations": "<locations>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `locations` | 是 | `array<string>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 否 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `region_name` | 否 | `string` |  | 资源名称。 |
+| `name` | 否 | `string` |  | 资源名称。 |
+| `product_line` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `tags` | 否 | `array<string>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `offset` | 否 | `integer` | 0 | 分页偏移量。 |
+| `limit` | 否 | `integer` | 20 | 分页数量上限。 |
 
 输入 JSON Schema：
 
@@ -8351,10 +10170,18 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_list_groups",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 输入 JSON Schema：
 
@@ -8390,10 +10217,20 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_list_pipeline_variable_groups",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "pipeline_id": "<pipeline_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `pipeline_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -8433,10 +10270,23 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_list_pipelines",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 输入 JSON Schema：
 
@@ -8496,10 +10346,22 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_list_plugin_versions",
-    "arguments": {}
+    "arguments": {
+      "domain_id": "<domain_id>",
+      "plugin_name": "<plugin_name>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `plugin_name` | 是 | `string` |  | 资源名称。 |
+| `offset` | 否 | `integer` | 0 | 分页偏移量。 |
+| `limit` | 否 | `integer` | 20 | 分页数量上限。 |
 
 输入 JSON Schema：
 
@@ -8551,10 +10413,24 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_list_plugins",
-    "arguments": {}
+    "arguments": {
+      "domain_id": "<domain_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `offset` | 否 | `integer` | 0 | 分页偏移量。 |
+| `limit` | 否 | `integer` | 20 | 分页数量上限。 |
+| `plugin_attribution` | 否 | `"custom" \| "official"` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`custom`、`official`。 |
+| `business_type` | 否 | `array<"Build" \| "Gate" \| "Deploy" \| "Test" \| "Normal">` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`Build`、`Gate`、`Deploy`、`Test`、`Normal`。 |
+| `maintainer` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `plugin_name` | 否 | `string` |  | 资源名称。 |
 
 输入 JSON Schema：
 
@@ -8629,10 +10505,26 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_list_project_strategies",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "offset": "<offset>",
+      "limit": "<limit>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `offset` | 是 | `integer` |  | 分页偏移量。 |
+| `limit` | 是 | `integer` |  | 分页数量上限。 |
+| `include_tenant_rule_set` | 否 | `boolean` | false | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `name` | 否 | `string` |  | 资源名称。 |
+| `is_valid` | 否 | `boolean` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `type` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -8694,10 +10586,20 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_list_publishers",
-    "arguments": {}
+    "arguments": {
+      "domain_id": "<domain_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `offset` | 否 | `integer` | 0 | 分页偏移量。 |
+| `limit` | 否 | `integer` | 20 | 分页数量上限。 |
 
 输入 JSON Schema：
 
@@ -8744,10 +10646,18 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_list_rule_types",
-    "arguments": {}
+    "arguments": {
+      "organization_id": "<organization_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `organization_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -8783,10 +10693,25 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_list_rules",
-    "arguments": {}
+    "arguments": {
+      "domain_id": "<domain_id>",
+      "offset": "<offset>",
+      "limit": "<limit>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `offset` | 是 | `integer` |  | 分页偏移量。 |
+| `limit` | 是 | `integer` |  | 分页数量上限。 |
+| `cloud_project_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `type` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `name` | 否 | `string` |  | 资源名称。 |
 
 输入 JSON Schema：
 
@@ -8844,10 +10769,25 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_list_runs",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "pipeline_id": "<pipeline_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `pipeline_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -8911,10 +10851,23 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_list_stage_plugins",
-    "arguments": {}
+    "arguments": {
+      "domain_id": "<domain_id>",
+      "use_condition": "<use_condition>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `use_condition` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `business_type` | 否 | `array<"Build" \| "Gate" \| "Deploy" \| "Test" \| "Normal">` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`Build`、`Gate`、`Deploy`、`Test`、`Normal`。 |
+| `deploy_type` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `comp_extend_type` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -8976,10 +10929,26 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_list_strategies",
-    "arguments": {}
+    "arguments": {
+      "domain_id": "<domain_id>",
+      "offset": "<offset>",
+      "limit": "<limit>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `offset` | 是 | `integer` |  | 分页偏移量。 |
+| `limit` | 是 | `integer` |  | 分页数量上限。 |
+| `include_tenant_rule_set` | 否 | `boolean` | true | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `name` | 否 | `string` |  | 资源名称。 |
+| `is_valid` | 否 | `boolean` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `type` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -9041,10 +11010,22 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_list_strategy_children",
-    "arguments": {}
+    "arguments": {
+      "domain_id": "<domain_id>",
+      "rule_set_id": "<rule_set_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `rule_set_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `offset` | 否 | `integer` | 0 | 分页偏移量。 |
+| `limit` | 否 | `integer` | 20 | 分页数量上限。 |
 
 输入 JSON Schema：
 
@@ -9095,10 +11076,19 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_list_tags",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `proj_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -9137,10 +11127,25 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_list_templates",
-    "arguments": {}
+    "arguments": {
+      "tenant_id": "<tenant_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `tenant_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `language` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `is_system` | 否 | `boolean` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -9206,10 +11211,24 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_list_variable_groups",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `name` | 否 | `string` |  | 资源名称。 |
 
 输入 JSON Schema：
 
@@ -9273,10 +11292,23 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_move_pipelines_to_group",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "group_id": "<group_id>",
+      "pipelines": "<pipelines>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `group_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `pipelines` | 是 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -9342,10 +11374,27 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_reject_run",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "pipeline_id": "<pipeline_id>",
+      "run_id": "<run_id>",
+      "job_id": "<job_id>",
+      "step_id": "<step_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `pipeline_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `run_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `job_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `step_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -9401,10 +11450,23 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_retry_run",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "pipeline_id": "<pipeline_id>",
+      "run_id": "<run_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `pipeline_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `run_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -9452,10 +11514,23 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_run_pipeline",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "pipeline_id": "<pipeline_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `pipeline_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `branch` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `description` | 否 | `string` |  | 资源描述信息。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -9507,10 +11582,23 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_set_tags_for_pipelines",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "pipeline_ids": "<pipeline_ids>",
+      "tag_ids": "<tag_ids>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `pipeline_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `tag_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -9566,10 +11654,21 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_stop_run",
-    "arguments": {}
+    "arguments": {
+      "pipeline_id": "<pipeline_id>",
+      "run_id": "<run_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `pipeline_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `run_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -9613,10 +11712,23 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_switch_project_strategy",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "rule_set_id": "<rule_set_id>",
+      "is_valid": "<is_valid>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `rule_set_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `is_valid` | 是 | `boolean` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -9664,10 +11776,23 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_switch_strategy",
-    "arguments": {}
+    "arguments": {
+      "domain_id": "<domain_id>",
+      "rule_set_id": "<rule_set_id>",
+      "is_valid": "<is_valid>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `rule_set_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `is_valid` | 是 | `boolean` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -9715,10 +11840,26 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_update_extension_endpoint",
-    "arguments": {}
+    "arguments": {
+      "uuid": "<uuid>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `uuid` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 否 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `region_name` | 否 | `string` |  | 资源名称。 |
+| `module_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `name` | 否 | `string` |  | 资源名称。 |
+| `url` | 否 | `string` |  | 远程仓库或镜像地址。 |
+| `authorization` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `data` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -9795,10 +11936,23 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_update_group",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "id": "<id>",
+      "name": "<name>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `id` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `name` | 是 | `string` |  | 资源名称。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -9848,10 +12002,25 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_update_project_strategy",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "rule_set_id": "<rule_set_id>",
+      "name": "<name>",
+      "rules": "<rules>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `rule_set_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `name` | 是 | `string` |  | 资源名称。 |
+| `rules` | 是 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -9917,10 +12086,30 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_update_rule",
-    "arguments": {}
+    "arguments": {
+      "domain_id": "<domain_id>",
+      "rule_id": "<rule_id>",
+      "name": "<name>",
+      "type": "<type>",
+      "content": "<content>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `rule_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `name` | 是 | `string` |  | 资源名称。 |
+| `type` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `plugin_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `plugin_name` | 否 | `string` |  | 资源名称。 |
+| `plugin_version` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `content` | 是 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -10054,10 +12243,24 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_update_strategy",
-    "arguments": {}
+    "arguments": {
+      "domain_id": "<domain_id>",
+      "rule_set_id": "<rule_set_id>",
+      "name": "<name>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `rule_set_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `name` | 是 | `string` |  | 资源名称。 |
+| `rules` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -10122,10 +12325,25 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_update_tag",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "tag_id": "<tag_id>",
+      "name": "<name>",
+      "color": "<color>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `tag_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `name` | 是 | `string` |  | 资源名称。 |
+| `color` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -10179,10 +12397,25 @@
   "method": "tools/call",
   "params": {
     "name": "pipeline_update_variable_group",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "id": "<id>",
+      "name": "<name>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `id` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `name` | 是 | `string` |  | 资源名称。 |
+| `description` | 否 | `string` |  | 资源描述信息。 |
+| `variables` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -10263,10 +12496,21 @@
   "method": "tools/call",
   "params": {
     "name": "repo_associate_remote_mirror",
-    "arguments": {}
+    "arguments": {
+      "repository_id": "<repository_id>",
+      "url": "<url>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
+| `url` | 是 | `string` |  | 远程仓库或镜像地址。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -10311,10 +12555,21 @@
   "method": "tools/call",
   "params": {
     "name": "repo_close_merge_request",
-    "arguments": {}
+    "arguments": {
+      "repository_id": "<repository_id>",
+      "merge_request_iid": "<merge_request_iid>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
+| `merge_request_iid` | 是 | `string` |  | 合并请求在仓库内的 IID。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -10358,10 +12613,25 @@
   "method": "tools/call",
   "params": {
     "name": "repo_compare_refs",
-    "arguments": {}
+    "arguments": {
+      "repository_id": "<repository_id>",
+      "from": "<from>",
+      "to": "<to>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
+| `from` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `to` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `straight` | 否 | `boolean` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `ignore_whitespace_change` | 否 | `boolean` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `view` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -10417,10 +12687,34 @@
   "method": "tools/call",
   "params": {
     "name": "repo_create_merge_request",
-    "arguments": {}
+    "arguments": {
+      "repository_id": "<repository_id>",
+      "source_branch": "<source_branch>",
+      "target_branch": "<target_branch>",
+      "title": "<title>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
+| `source_branch` | 是 | `string` |  | 源分支名称。 |
+| `target_branch` | 是 | `string` |  | 目标分支名称。 |
+| `title` | 是 | `string` |  | 标题。 |
+| `description` | 否 | `string` |  | 资源描述信息。 |
+| `target_project_id` | 否 | `string` |  | 目标项目 ID。 |
+| `assignee_id` | 否 | `string \| integer` |  | 负责人用户 ID。 |
+| `reviewer_ids` | 否 | `array<string \| integer>` |  | 评审人用户 ID 列表。 |
+| `remove_source_branch` | 否 | `boolean` |  | 合并后是否删除源分支。 |
+| `squash` | 否 | `boolean` |  | 是否压缩提交。 |
+| `draft` | 否 | `boolean` |  | 是否创建为草稿合并请求。 |
+| `labels` | 否 | `string \| array<string>` |  | 标签列表或逗号分隔的标签字符串。 |
+| `milestone_id` | 否 | `string \| integer` |  | 里程碑 ID。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -10544,10 +12838,23 @@
   "method": "tools/call",
   "params": {
     "name": "repo_create_merge_request_discussion",
-    "arguments": {}
+    "arguments": {
+      "repository_id": "<repository_id>",
+      "merge_request_iid": "<merge_request_iid>",
+      "body": "<body>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
+| `merge_request_iid` | 是 | `string` |  | 合并请求在仓库内的 IID。 |
+| `body` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -10596,10 +12903,30 @@
   "method": "tools/call",
   "params": {
     "name": "repo_create_repository",
-    "arguments": {}
+    "arguments": {
+      "project_uuid": "<project_uuid>",
+      "name": "<name>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_uuid` | 是 | `string` |  | CodeArts 项目的 UUID，用于创建代码仓或定位项目资源。 |
+| `name` | 是 | `string` |  | 资源名称。 |
+| `import_members` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `template_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `visibility_level` | 否 | `0 \| 20` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`0`、`20`。 |
+| `import_url` | 否 | `string` |  | 服务地址或资源 URL。 |
+| `description` | 否 | `string` |  | 资源描述信息。 |
+| `gitignore_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `license_id` | 否 | `integer` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `enable_readme` | 否 | `boolean \| integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `caller` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -10692,10 +13019,24 @@
   "method": "tools/call",
   "params": {
     "name": "repo_create_tag",
-    "arguments": {}
+    "arguments": {
+      "repository_id": "<repository_id>",
+      "tag_name": "<tag_name>",
+      "ref": "<ref>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
+| `tag_name` | 是 | `string` |  | 标签名称。 |
+| `ref` | 是 | `string` |  | Git 引用，可以是分支、标签或提交 SHA。 |
+| `message` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -10748,10 +13089,21 @@
   "method": "tools/call",
   "params": {
     "name": "repo_delete_tag",
-    "arguments": {}
+    "arguments": {
+      "repository_id": "<repository_id>",
+      "tag_name": "<tag_name>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
+| `tag_name` | 是 | `string` |  | 标签名称。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -10796,10 +13148,20 @@
   "method": "tools/call",
   "params": {
     "name": "repo_get_branch",
-    "arguments": {}
+    "arguments": {
+      "repository_id": "<repository_id>",
+      "branch_name": "<branch_name>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
+| `branch_name` | 是 | `string` |  | 分支名称。 |
 
 输入 JSON Schema：
 
@@ -10840,10 +13202,20 @@
   "method": "tools/call",
   "params": {
     "name": "repo_get_commit",
-    "arguments": {}
+    "arguments": {
+      "repository_id": "<repository_id>",
+      "commit_sha": "<commit_sha>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
+| `commit_sha` | 是 | `string` |  | 提交 SHA。 |
 
 输入 JSON Schema：
 
@@ -10883,10 +13255,22 @@
   "method": "tools/call",
   "params": {
     "name": "repo_get_file",
-    "arguments": {}
+    "arguments": {
+      "repository_id": "<repository_id>",
+      "file_path": "<file_path>",
+      "branch": "<branch>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
+| `file_path` | 是 | `string` |  | 仓库内文件路径。 |
+| `branch` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -10932,10 +13316,20 @@
   "method": "tools/call",
   "params": {
     "name": "repo_get_merge_request",
-    "arguments": {}
+    "arguments": {
+      "repository_id": "<repository_id>",
+      "merge_request_iid": "<merge_request_iid>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
+| `merge_request_iid` | 是 | `string` |  | 合并请求在仓库内的 IID。 |
 
 输入 JSON Schema：
 
@@ -10975,10 +13369,18 @@
   "method": "tools/call",
   "params": {
     "name": "repo_get_remote_mirror",
-    "arguments": {}
+    "arguments": {
+      "repository_id": "<repository_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
 
 输入 JSON Schema：
 
@@ -11014,10 +13416,18 @@
   "method": "tools/call",
   "params": {
     "name": "repo_get_repository",
-    "arguments": {}
+    "arguments": {
+      "repository_id": "<repository_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
 
 输入 JSON Schema：
 
@@ -11053,10 +13463,20 @@
   "method": "tools/call",
   "params": {
     "name": "repo_get_tag",
-    "arguments": {}
+    "arguments": {
+      "repository_id": "<repository_id>",
+      "tag_name": "<tag_name>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
+| `tag_name` | 是 | `string` |  | 标签名称。 |
 
 输入 JSON Schema：
 
@@ -11097,10 +13517,23 @@
   "method": "tools/call",
   "params": {
     "name": "repo_list_branches",
-    "arguments": {}
+    "arguments": {
+      "repository_id": "<repository_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
 
 输入 JSON Schema：
 
@@ -11160,10 +13593,28 @@
   "method": "tools/call",
   "params": {
     "name": "repo_list_commits",
-    "arguments": {}
+    "arguments": {
+      "repository_id": "<repository_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
+| `ref_name` | 否 | `string` |  | 资源名称。 |
+| `since` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `until` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `order_by_date` | 否 | `boolean` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `with_stats` | 否 | `boolean` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -11238,10 +13689,23 @@
   "method": "tools/call",
   "params": {
     "name": "repo_list_events",
-    "arguments": {}
+    "arguments": {
+      "repository_id": "<repository_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
 
 输入 JSON Schema：
 
@@ -11301,10 +13765,25 @@
   "method": "tools/call",
   "params": {
     "name": "repo_list_merge_request_changes",
-    "arguments": {}
+    "arguments": {
+      "repository_id": "<repository_id>",
+      "merge_request_iid": "<merge_request_iid>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
+| `merge_request_iid` | 是 | `string` |  | 合并请求在仓库内的 IID。 |
 
 输入 JSON Schema：
 
@@ -11368,10 +13847,25 @@
   "method": "tools/call",
   "params": {
     "name": "repo_list_merge_request_discussions",
-    "arguments": {}
+    "arguments": {
+      "repository_id": "<repository_id>",
+      "merge_request_iid": "<merge_request_iid>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
+| `merge_request_iid` | 是 | `string` |  | 合并请求在仓库内的 IID。 |
 
 输入 JSON Schema：
 
@@ -11435,10 +13929,24 @@
   "method": "tools/call",
   "params": {
     "name": "repo_list_merge_requests",
-    "arguments": {}
+    "arguments": {
+      "repository_id": "<repository_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
+| `state` | 否 | `"all" \| "opened" \| "closed" \| "merged"` |  | 状态过滤条件或目标状态。可选值：`all`、`opened`、`closed`、`merged`。 |
 
 输入 JSON Schema：
 
@@ -11511,6 +14019,25 @@
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `state` | 否 | `"finished" \| "fail" \| "importing"` |  | 状态过滤条件或目标状态。可选值：`finished`、`fail`、`importing`。 |
+| `source_type` | 否 | `"gitee" \| "self_managed_gitlab" \| "gitlab" \| "github" \| "git" \| "svn" \| "coding" \| "bitbucket" \| "gerrit" \| "codeup"` |  | 导入来源类型，例如 gitee、github、gitlab、git、svn 等。可选值：`gitee`、`self_managed_gitlab`、`gitlab`、`github`、`git`、`svn`、`coding`、`bitbucket`、`gerrit`、`codeup`。 |
+| `created_after` | 否 | `string` |  | 创建时间下界，通常使用 ISO 8601 时间字符串。 |
+| `created_before` | 否 | `string` |  | 创建时间上界，通常使用 ISO 8601 时间字符串。 |
+| `finished_after` | 否 | `string` |  | 完成时间下界，通常使用 ISO 8601 时间字符串。 |
+| `finished_before` | 否 | `string` |  | 完成时间上界，通常使用 ISO 8601 时间字符串。 |
+| `search` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `order_by` | 否 | `"created_at" \| "source_repo_name" \| "size"` |  | 排序字段。用于选择服务端排序字段。可选值：`created_at`、`source_repo_name`、`size`。 |
+| `sort` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
 
 输入 JSON Schema：
 
@@ -11621,10 +14148,23 @@
   "method": "tools/call",
   "params": {
     "name": "repo_list_protected_branches",
-    "arguments": {}
+    "arguments": {
+      "repository_id": "<repository_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
 
 输入 JSON Schema：
 
@@ -11684,10 +14224,23 @@
   "method": "tools/call",
   "params": {
     "name": "repo_list_repositories",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 输入 JSON Schema：
 
@@ -11747,10 +14300,23 @@
   "method": "tools/call",
   "params": {
     "name": "repo_list_repository_labels",
-    "arguments": {}
+    "arguments": {
+      "repository_id": "<repository_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
 
 输入 JSON Schema：
 
@@ -11810,10 +14376,23 @@
   "method": "tools/call",
   "params": {
     "name": "repo_list_tags",
-    "arguments": {}
+    "arguments": {
+      "repository_id": "<repository_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
 
 输入 JSON Schema：
 
@@ -11873,10 +14452,27 @@
   "method": "tools/call",
   "params": {
     "name": "repo_merge_merge_request",
-    "arguments": {}
+    "arguments": {
+      "repository_id": "<repository_id>",
+      "merge_request_iid": "<merge_request_iid>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
+| `merge_request_iid` | 是 | `string` |  | 合并请求在仓库内的 IID。 |
+| `squash` | 否 | `boolean` |  | 是否压缩提交。 |
+| `force_merge` | 否 | `boolean` |  | 是否强制合并。 |
+| `sha` | 否 | `string` |  | 提交 SHA，用于校验合并请求头部提交。 |
+| `merge_commit_message` | 否 | `string` |  | 合并提交信息。 |
+| `squash_commit_message` | 否 | `string` |  | 压缩提交信息。 |
+| `should_remove_source_branch` | 否 | `boolean` |  | 合并后是否删除源分支。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -11941,10 +14537,24 @@
   "method": "tools/call",
   "params": {
     "name": "repo_review_merge_request",
-    "arguments": {}
+    "arguments": {
+      "repository_id": "<repository_id>",
+      "merge_request_iid": "<merge_request_iid>",
+      "action_type": "<action_type>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
+| `merge_request_iid` | 是 | `string` |  | 合并请求在仓库内的 IID。 |
+| `action_type` | 是 | `"approve" \| "reject" \| "reset"` |  | 评审动作类型。可选值：`approve`、`reject`、`reset`。 |
+| `approver_comment` | 否 | `string` |  | 评审意见。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -12000,10 +14610,23 @@
   "method": "tools/call",
   "params": {
     "name": "repo_start_remote_mirror_synchronization",
-    "arguments": {}
+    "arguments": {
+      "repository_id": "<repository_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
+| `username` | 否 | `string` |  | 远程镜像认证用户名。按官方接口要求需要传入 base64 后的值。 |
+| `password` | 否 | `string` |  | 远程镜像认证密码。按官方接口要求需要传入 base64 后的值。 |
+| `endpoint_uuid` | 否 | `string` |  | 服务端点 UUID，用于远程镜像认证或网络访问配置。 |
+| `force_fetch` | 否 | `boolean` |  | 是否强制拉取远端镜像。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -12058,10 +14681,23 @@
   "method": "tools/call",
   "params": {
     "name": "repo_update_remote_mirror",
-    "arguments": {}
+    "arguments": {
+      "repository_id": "<repository_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
+| `url` | 否 | `string` |  | 远程仓库或镜像地址。 |
+| `sync_branch_type` | 否 | `"all" \| "default"` |  | 远程镜像同步分支范围，all 表示全部分支，default 表示默认分支。可选值：`all`、`default`。 |
+| `mirroring_enabled` | 否 | `boolean` |  | 是否启用远程镜像。 |
+| `endpoint_uuid` | 否 | `string` |  | 服务端点 UUID，用于远程镜像认证或网络访问配置。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -12119,10 +14755,23 @@
   "method": "tools/call",
   "params": {
     "name": "req_add_iteration_work_items",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "iteration_id": "<iteration_id>",
+      "work_item_ids": "<work_item_ids>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `iteration_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `work_item_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -12174,10 +14823,23 @@
   "method": "tools/call",
   "params": {
     "name": "req_add_plan_work_items",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "plan_id": "<plan_id>",
+      "work_item_ids": "<work_item_ids>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `plan_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `work_item_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -12229,10 +14891,25 @@
   "method": "tools/call",
   "params": {
     "name": "req_add_project_member",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "user_id": "<user_id>",
+      "domain_id": "<domain_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `user_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `domain_name` | 否 | `string` |  | 资源名称。 |
+| `role_id` | 否 | `number \| integer` |  | 项目成员角色 ID：-1=项目创建者，3=项目经理，4=开发人员，5=测试经理，6=测试人员，7=参与者，8=浏览者，9=运维经理；部分接口还允许 10、11 等扩展角色，以租户配置为准。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -12296,10 +14973,23 @@
   "method": "tools/call",
   "params": {
     "name": "req_add_work_item_comment",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "work_item_id": "<work_item_id>",
+      "content": "<content>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `work_item_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `content` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -12353,6 +15043,10 @@
 }
 ```
 
+参数：
+
+无参数。
+
 输入 JSON Schema：
 
 ```json
@@ -12377,10 +15071,21 @@
   "method": "tools/call",
   "params": {
     "name": "req_batch_add_project_members",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "members": "<members>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `members` | 是 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -12449,10 +15154,21 @@
   "method": "tools/call",
   "params": {
     "name": "req_batch_create_ipd_issues",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "issues": "<issues>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `issues` | 是 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -12682,10 +15398,23 @@
   "method": "tools/call",
   "params": {
     "name": "req_batch_create_tracker_config",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "tracker_id": "<tracker_id>",
+      "status_config_ids": "<status_config_ids>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `tracker_id` | 是 | `integer` |  | Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
+| `status_config_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -12738,10 +15467,23 @@
   "method": "tools/call",
   "params": {
     "name": "req_batch_delete_ipd_issues",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "issue_ids": "<issue_ids>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `issue_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `is_permanent_delete` | 否 | `boolean` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `src_project_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -12796,10 +15538,21 @@
   "method": "tools/call",
   "params": {
     "name": "req_batch_delete_iterations",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "iteration_ids": "<iteration_ids>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `iteration_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -12847,10 +15600,21 @@
   "method": "tools/call",
   "params": {
     "name": "req_batch_delete_project_members",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "user_ids": "<user_ids>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `user_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -12898,10 +15662,21 @@
   "method": "tools/call",
   "params": {
     "name": "req_batch_delete_release_plans",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "plan_ids": "<plan_ids>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `plan_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -12949,10 +15724,21 @@
   "method": "tools/call",
   "params": {
     "name": "req_batch_delete_work_items",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "work_item_ids": "<work_item_ids>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `work_item_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -13001,10 +15787,27 @@
   "method": "tools/call",
   "params": {
     "name": "req_batch_transfer_ipd_work_item_flow",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "issue_ids": "<issue_ids>",
+      "issue_category": "<issue_category>",
+      "flow_code": "<flow_code>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `issue_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `issue_category` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `flow_code` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `is_recover` | 否 | `boolean` | false | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `process_context` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -13070,10 +15873,23 @@
   "method": "tools/call",
   "params": {
     "name": "req_batch_update_ipd_issues",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "issue_ids": "<issue_ids>",
+      "attribute": "<attribute>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `issue_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `attribute` | 是 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -13285,10 +16101,23 @@
   "method": "tools/call",
   "params": {
     "name": "req_batch_update_release_plan_baseline",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "plan_ids": "<plan_ids>",
+      "baseline": "<baseline>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `plan_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `baseline` | 是 | `"baselined" \| "unbaseline" \| "baseline-reviewing"` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`baselined`、`unbaseline`、`baseline-reviewing`。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -13350,6 +16179,10 @@
 }
 ```
 
+参数：
+
+无参数。
+
 输入 JSON Schema：
 
 ```json
@@ -13374,10 +16207,21 @@
   "method": "tools/call",
   "params": {
     "name": "req_cancel_project_domain",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "domain_id": "<domain_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -13421,10 +16265,24 @@
   "method": "tools/call",
   "params": {
     "name": "req_change_release_plan_status",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "plan_id": "<plan_id>",
+      "operate": "<operate>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `plan_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `operate` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `move_to_sprint_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -13476,10 +16334,18 @@
   "method": "tools/call",
   "params": {
     "name": "req_check_project_name",
-    "arguments": {}
+    "arguments": {
+      "name": "<name>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `name` | 是 | `string` |  | 资源名称。 |
 
 输入 JSON Schema：
 
@@ -13515,10 +16381,20 @@
   "method": "tools/call",
   "params": {
     "name": "req_check_work_item_status_name",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "status_name": "<status_name>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `status_name` | 是 | `string` |  | 资源名称。 |
 
 输入 JSON Schema：
 
@@ -13560,10 +16436,21 @@
   "method": "tools/call",
   "params": {
     "name": "req_clear_plan_work_items",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "plan_id": "<plan_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `plan_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -13607,10 +16494,25 @@
   "method": "tools/call",
   "params": {
     "name": "req_copy_work_items",
-    "arguments": {}
+    "arguments": {
+      "from_project_id": "<from_project_id>",
+      "to_project_id": "<to_project_id>",
+      "work_item_ids": "<work_item_ids>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `from_project_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `to_project_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `work_item_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `copy_comments` | 否 | `boolean` | false | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `copy_work_hours` | 否 | `boolean` | false | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -13670,10 +16572,21 @@
   "method": "tools/call",
   "params": {
     "name": "req_count_work_item_tree",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `tracker_ids` | 否 | `array<integer>` |  | Scrum 工作项类型 ID 列表：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
 
 输入 JSON Schema：
 
@@ -13728,10 +16641,33 @@
   "method": "tools/call",
   "params": {
     "name": "req_create_ipd_change_review_form",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "title": "<title>",
+      "need_approval": "<need_approval>",
+      "status": "<status>",
+      "cos": "<cos>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `category` | 否 | `string` | "CR" | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `title` | 是 | `string` |  | 标题。 |
+| `description` | 否 | `string` |  | 资源描述信息。 |
+| `need_approval` | 是 | `boolean` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `status` | 是 | `object` |  | 状态过滤条件或目标状态。 |
+| `cc` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `cos` | 是 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `plan_end_date` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `plan_start_date` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `extra_fields` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -13891,10 +16827,23 @@
   "method": "tools/call",
   "params": {
     "name": "req_create_ipd_feature_set",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "title": "<title>",
+      "parent_id": "<parent_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `title` | 是 | `string` |  | 标题。 |
+| `parent_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -13943,10 +16892,43 @@
   "method": "tools/call",
   "params": {
     "name": "req_create_ipd_issue",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "title": "<title>",
+      "description": "<description>",
+      "category": "<category>",
+      "assignee": "<assignee>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `title` | 是 | `string` |  | 标题。 |
+| `description` | 是 | `string` |  | 资源描述信息。 |
+| `category` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `assignee` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `status` | 否 | `string` |  | 状态过滤条件或目标状态。 |
+| `src_domain` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `submitted_by` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `domain_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `recipient` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `expect_delivery_time` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `priority` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `assigned_cc` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `plan_pi` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `plan_iteration` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `plan_start_date` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `plan_end_date` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `workload_man_day` | 否 | `number` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `business_domain` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `need_break` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `extra_fields` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -14062,10 +17044,25 @@
   "method": "tools/call",
   "params": {
     "name": "req_create_ipd_label",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "label_type": "<label_type>",
+      "color": "<color>",
+      "title": "<title>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `label_type` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `color` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `title` | 是 | `string` |  | 标题。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -14122,10 +17119,25 @@
   "method": "tools/call",
   "params": {
     "name": "req_create_ipd_module",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "display_value": "<display_value>",
+      "parent_id": "<parent_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `display_value` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `parent_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `description` | 否 | `string` |  | 资源描述信息。 |
+| `assignee` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -14182,10 +17194,38 @@
   "method": "tools/call",
   "params": {
     "name": "req_create_ipd_process_instance",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "category": "<category>",
+      "status": "<status>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `operate_type` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `domain_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `title` | 否 | `string` |  | 标题。 |
+| `description` | 否 | `string` |  | 资源描述信息。 |
+| `category` | 是 | `"BR" \| "GR"` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`BR`、`GR`。 |
+| `need_approval` | 否 | `boolean` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `plan_end_date` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `plan_start_date` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `status` | 是 | `string` |  | 状态过滤条件或目标状态。 |
+| `cc` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `attachWikis` | 否 | `array<string>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `attachDocuments` | 否 | `array<string>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `ccbs` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `opinions` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `cos` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `local_attachment_names` | 否 | `array<string>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `extra_fields` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -14337,10 +17377,33 @@
   "method": "tools/call",
   "params": {
     "name": "req_create_ipd_work_hour",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "issue_id": "<issue_id>",
+      "work_date_begin": "<work_date_begin>",
+      "work_date_end": "<work_date_end>",
+      "work_hours": "<work_hours>",
+      "work_hour_type": "<work_hour_type>",
+      "include_weekend": "<include_weekend>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `issue_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `work_date_begin` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `work_date_end` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `work_hours` | 是 | `string \| number` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `work_hour_type` | 是 | `integer \| string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `include_weekend` | 是 | `boolean` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `work_hour_category` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `description` | 否 | `string` |  | 资源描述信息。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -14424,10 +17487,26 @@
   "method": "tools/call",
   "params": {
     "name": "req_create_iteration",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "name": "<name>",
+      "begin_time": "<begin_time>",
+      "end_time": "<end_time>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `name` | 是 | `string` |  | 资源名称。 |
+| `begin_time` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `end_time` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `description` | 否 | `string` |  | 资源描述信息。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -14485,10 +17564,36 @@
   "method": "tools/call",
   "params": {
     "name": "req_create_iteration_work_item",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "iteration_id": "<iteration_id>",
+      "title": "<title>",
+      "work_item_type": "<work_item_type>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `iteration_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `title` | 是 | `string` |  | 标题。 |
+| `work_item_type` | 是 | `string` |  | 工作项类型，会映射为 Scrum tracker_id：task/"2"=Task/任务，bug/"3"=Bug/缺陷，epic/"5"=Epic，feature/"6"=Feature，story/"7"=Story。 |
+| `parent_work_item_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `description` | 否 | `string` |  | 资源描述信息。 |
+| `priority_id` | 否 | `integer` |  | 工作项优先级 ID。创建工作项未传时默认使用 2；具体优先级名称和可选值以项目字段配置/优先级选项接口返回为准。 |
+| `module_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `severity_id` | 否 | `integer` |  | 严重程度 ID。通常用于缺陷或问题等级；可通过 req_list_issue_severities 查询当前可用严重程度。 |
+| `assigned_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `developer_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `done_ratio` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `expected_work_hours` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `start_date` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `due_date` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -14581,10 +17686,23 @@
   "method": "tools/call",
   "params": {
     "name": "req_create_plan",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "name": "<name>",
+      "type": "<type>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `name` | 是 | `string` |  | 资源名称。 |
+| `type` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -14634,10 +17752,38 @@
   "method": "tools/call",
   "params": {
     "name": "req_create_plan_work_item",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "plan_id": "<plan_id>",
+      "title": "<title>",
+      "work_item_type": "<work_item_type>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `plan_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `title` | 是 | `string` |  | 标题。 |
+| `work_item_type` | 是 | `string` |  | 工作项类型，会映射为 Scrum tracker_id：task/"2"=Task/任务，bug/"3"=Bug/缺陷，epic/"5"=Epic，feature/"6"=Feature，story/"7"=Story。 |
+| `parent_work_item_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `description` | 否 | `string` |  | 资源描述信息。 |
+| `iteration_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `module_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `priority_id` | 否 | `integer` |  | 工作项优先级 ID。创建工作项未传时默认使用 2；具体优先级名称和可选值以项目字段配置/优先级选项接口返回为准。 |
+| `severity_id` | 否 | `integer` |  | 严重程度 ID。通常用于缺陷或问题等级；可通过 req_list_issue_severities 查询当前可用严重程度。 |
+| `status_id` | 否 | `integer` |  | 工作项状态 ID：1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝。项目自定义状态以状态配置/工作流接口返回为准。 |
+| `assigned_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `developer_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `done_ratio` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `expected_work_hours` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `start_date` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `due_date` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -14737,10 +17883,20 @@
   "method": "tools/call",
   "params": {
     "name": "req_create_project",
-    "arguments": {}
+    "arguments": {
+      "name": "<name>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `name` | 是 | `string` |  | 资源名称。 |
+| `description` | 否 | `string` |  | 资源描述信息。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -14783,10 +17939,21 @@
   "method": "tools/call",
   "params": {
     "name": "req_create_project_domain",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "domain_name": "<domain_name>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `domain_name` | 是 | `string` |  | 资源名称。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -14832,10 +17999,25 @@
   "method": "tools/call",
   "params": {
     "name": "req_create_project_module",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "module_name": "<module_name>",
+      "owner_user_id": "<owner_user_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `module_name` | 是 | `string` |  | 资源名称。 |
+| `owner_user_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `parent_module_id` | 否 | `integer` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `description` | 否 | `string` |  | 资源描述信息。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -14893,10 +18075,24 @@
   "method": "tools/call",
   "params": {
     "name": "req_create_project_status_config",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "defined_name": "<defined_name>",
+      "status_attribute": "<status_attribute>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `defined_name` | 是 | `string` |  | 资源名称。 |
+| `status_attribute` | 是 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `description` | 否 | `string` |  | 资源描述信息。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -14950,10 +18146,31 @@
   "method": "tools/call",
   "params": {
     "name": "req_create_release_plan",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "title": "<title>",
+      "category": "<category>",
+      "plan_start_date": "<plan_start_date>",
+      "plan_end_date": "<plan_end_date>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `title` | 是 | `string` |  | 标题。 |
+| `category` | 是 | `"PI" \| "Iteration" \| "PlanMilestone"` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`PI`、`Iteration`、`PlanMilestone`。 |
+| `plan_start_date` | 是 | `string \| integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `plan_end_date` | 是 | `string \| integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `description` | 否 | `string` |  | 资源描述信息。 |
+| `parent_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `workload` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `owner` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -15036,10 +18253,35 @@
   "method": "tools/call",
   "params": {
     "name": "req_create_work_item",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "title": "<title>",
+      "work_item_type": "<work_item_type>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `title` | 是 | `string` |  | 标题。 |
+| `work_item_type` | 是 | `string` |  | 工作项类型，会映射为 Scrum tracker_id：task/"2"=Task/任务，bug/"3"=Bug/缺陷，epic/"5"=Epic，feature/"6"=Feature，story/"7"=Story。 |
+| `parent_work_item_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `description` | 否 | `string` |  | 资源描述信息。 |
+| `priority_id` | 否 | `integer` |  | 工作项优先级 ID。创建工作项未传时默认使用 2；具体优先级名称和可选值以项目字段配置/优先级选项接口返回为准。 |
+| `iteration_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `module_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `severity_id` | 否 | `integer` |  | 严重程度 ID。通常用于缺陷或问题等级；可通过 req_list_issue_severities 查询当前可用严重程度。 |
+| `assigned_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `developer_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `done_ratio` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `expected_work_hours` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `start_date` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `due_date` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -15136,6 +18378,10 @@
 }
 ```
 
+参数：
+
+无参数。
+
 输入 JSON Schema：
 
 ```json
@@ -15160,10 +18406,23 @@
   "method": "tools/call",
   "params": {
     "name": "req_delete_attachment",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "work_item_id": "<work_item_id>",
+      "attachment_id": "<attachment_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `work_item_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `attachment_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -15211,10 +18470,22 @@
   "method": "tools/call",
   "params": {
     "name": "req_delete_ipd_change_review_form",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "id": "<id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `id` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `category` | 否 | `string` | "CR" | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -15263,10 +18534,21 @@
   "method": "tools/call",
   "params": {
     "name": "req_delete_ipd_feature_set",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "feature_set_id": "<feature_set_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `feature_set_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -15310,10 +18592,23 @@
   "method": "tools/call",
   "params": {
     "name": "req_delete_ipd_issue_image",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "issue_id": "<issue_id>",
+      "file_name": "<file_name>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `issue_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `file_name` | 是 | `string` |  | 资源名称。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -15362,10 +18657,21 @@
   "method": "tools/call",
   "params": {
     "name": "req_delete_ipd_label",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "label_id": "<label_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `label_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -15409,10 +18715,21 @@
   "method": "tools/call",
   "params": {
     "name": "req_delete_ipd_module",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "module_id": "<module_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `module_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -15456,10 +18773,21 @@
   "method": "tools/call",
   "params": {
     "name": "req_delete_ipd_process_instance",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "id": "<id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `id` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -15503,10 +18831,23 @@
   "method": "tools/call",
   "params": {
     "name": "req_delete_ipd_work_hour",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "issue_id": "<issue_id>",
+      "workhour_id": "<workhour_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `issue_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `workhour_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -15554,10 +18895,21 @@
   "method": "tools/call",
   "params": {
     "name": "req_delete_iteration",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "iteration_id": "<iteration_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `iteration_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -15601,10 +18953,21 @@
   "method": "tools/call",
   "params": {
     "name": "req_delete_plan",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "plan_id": "<plan_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `plan_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -15648,10 +19011,19 @@
   "method": "tools/call",
   "params": {
     "name": "req_delete_project",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -15691,10 +19063,21 @@
   "method": "tools/call",
   "params": {
     "name": "req_delete_project_module",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "module_id": "<module_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `module_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -15738,10 +19121,19 @@
   "method": "tools/call",
   "params": {
     "name": "req_delete_project_template",
-    "arguments": {}
+    "arguments": {
+      "template_id": "<template_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `template_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -15781,10 +19173,21 @@
   "method": "tools/call",
   "params": {
     "name": "req_delete_work_item",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "work_item_id": "<work_item_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `work_item_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -15828,10 +19231,22 @@
   "method": "tools/call",
   "params": {
     "name": "req_download_attachment",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "work_item_id": "<work_item_id>",
+      "attachment_id": "<attachment_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `work_item_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `attachment_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -15875,10 +19290,20 @@
   "method": "tools/call",
   "params": {
     "name": "req_download_image_file",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "image_uri": "<image_uri>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `image_uri` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -15919,10 +19344,20 @@
   "method": "tools/call",
   "params": {
     "name": "req_download_ipd_issue_attachment",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "attachment_id": "<attachment_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `attachment_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -15962,10 +19397,23 @@
   "method": "tools/call",
   "params": {
     "name": "req_download_ipd_issue_image",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "issue_id": "<issue_id>",
+      "file_name": "<file_name>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `issue_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `file_name` | 是 | `string` |  | 资源名称。 |
+| `field_code` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -16019,6 +19467,10 @@
 }
 ```
 
+参数：
+
+无参数。
+
 输入 JSON Schema：
 
 ```json
@@ -16045,10 +19497,18 @@
   "method": "tools/call",
   "params": {
     "name": "req_get_current_user_role",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 输入 JSON Schema：
 
@@ -16084,10 +19544,23 @@
   "method": "tools/call",
   "params": {
     "name": "req_get_ipd_e2e_graph",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "issue_id": "<issue_id>",
+      "category": "<category>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `issue_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `category` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `is_src` | 否 | `boolean` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -16135,10 +19608,21 @@
   "method": "tools/call",
   "params": {
     "name": "req_get_ipd_issue",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "issue_id": "<issue_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `issue_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `version` | 否 | `"v1" \| "v2"` | "v2" | 请参考字段名和上游 CodeArts API 语义填写。可选值：`v1`、`v2`。 |
 
 输入 JSON Schema：
 
@@ -16186,10 +19670,20 @@
   "method": "tools/call",
   "params": {
     "name": "req_get_ipd_process_instance",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "id": "<id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `id` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -16229,10 +19723,20 @@
   "method": "tools/call",
   "params": {
     "name": "req_get_ipd_project_field_option_used",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "code": "<code>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `code` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -16273,10 +19777,22 @@
   "method": "tools/call",
   "params": {
     "name": "req_get_ipd_review_form",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "id": "<id>",
+      "category": "<category>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `id` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `category` | 是 | `"CR" \| "BR" \| "GR"` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`CR`、`BR`、`GR`。 |
 
 输入 JSON Schema：
 
@@ -16325,10 +19841,22 @@
   "method": "tools/call",
   "params": {
     "name": "req_get_ipd_statistic_dashboard",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "classification": "<classification>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `classification` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `plan` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `created_date` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -16393,10 +19921,18 @@
   "method": "tools/call",
   "params": {
     "name": "req_get_ipd_tenant_field_option_used",
-    "arguments": {}
+    "arguments": {
+      "code": "<code>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `code` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -16432,10 +19968,18 @@
   "method": "tools/call",
   "params": {
     "name": "req_get_ipd_tenant_field_used",
-    "arguments": {}
+    "arguments": {
+      "field_id": "<field_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `field_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -16471,10 +20015,22 @@
   "method": "tools/call",
   "params": {
     "name": "req_get_ipd_work_item_flow_detail",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "issue_id": "<issue_id>",
+      "issue_category": "<issue_category>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `issue_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `issue_category` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -16519,10 +20075,20 @@
   "method": "tools/call",
   "params": {
     "name": "req_get_ir",
-    "arguments": {}
+    "arguments": {
+      "program_id": "<program_id>",
+      "ir_id": "<ir_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `program_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `ir_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -16562,10 +20128,18 @@
   "method": "tools/call",
   "params": {
     "name": "req_get_iteration",
-    "arguments": {}
+    "arguments": {
+      "iteration_id": "<iteration_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `iteration_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -16601,10 +20175,20 @@
   "method": "tools/call",
   "params": {
     "name": "req_get_plan",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "plan_id": "<plan_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `plan_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -16644,10 +20228,18 @@
   "method": "tools/call",
   "params": {
     "name": "req_get_project",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 输入 JSON Schema：
 
@@ -16683,10 +20275,22 @@
   "method": "tools/call",
   "params": {
     "name": "req_get_project_bug_density",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `date_range` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `metric_type` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dividend` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `divisor` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -16767,10 +20371,18 @@
   "method": "tools/call",
   "params": {
     "name": "req_get_project_bugs_per_developer",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 输入 JSON Schema：
 
@@ -16806,10 +20418,23 @@
   "method": "tools/call",
   "params": {
     "name": "req_get_project_completion_rate",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `date_range` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `metric_type` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `sprint_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `dividend` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `divisor` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -16868,10 +20493,18 @@
   "method": "tools/call",
   "params": {
     "name": "req_get_project_due_days_after",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 输入 JSON Schema：
 
@@ -16907,10 +20540,18 @@
   "method": "tools/call",
   "params": {
     "name": "req_get_project_public_config",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 输入 JSON Schema：
 
@@ -16946,10 +20587,18 @@
   "method": "tools/call",
   "params": {
     "name": "req_get_project_summary",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 输入 JSON Schema：
 
@@ -16985,10 +20634,18 @@
   "method": "tools/call",
   "params": {
     "name": "req_get_project_workhour_config",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 输入 JSON Schema：
 
@@ -17024,10 +20681,20 @@
   "method": "tools/call",
   "params": {
     "name": "req_get_release_plan",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "plan_id": "<plan_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `plan_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -17067,10 +20734,20 @@
   "method": "tools/call",
   "params": {
     "name": "req_get_work_item",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "work_item_id": "<work_item_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `work_item_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -17110,10 +20787,18 @@
   "method": "tools/call",
   "params": {
     "name": "req_get_work_item_completion_rate",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 输入 JSON Schema：
 
@@ -17149,10 +20834,20 @@
   "method": "tools/call",
   "params": {
     "name": "req_get_work_item_index_counts",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "work_item_id": "<work_item_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `work_item_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -17192,10 +20887,21 @@
   "method": "tools/call",
   "params": {
     "name": "req_get_work_item_issue_details",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "work_item_id": "<work_item_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `work_item_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `include` | 否 | `string` | "children,parent" | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -17240,10 +20946,20 @@
   "method": "tools/call",
   "params": {
     "name": "req_get_work_item_status_rule_flag",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "tracker_id": "<tracker_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `tracker_id` | 是 | `integer` |  | Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
 
 输入 JSON Schema：
 
@@ -17284,10 +21000,20 @@
   "method": "tools/call",
   "params": {
     "name": "req_get_work_item_template_config",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "tracker_id": "<tracker_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `tracker_id` | 是 | `integer` |  | Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
 
 输入 JSON Schema：
 
@@ -17328,10 +21054,29 @@
   "method": "tools/call",
   "params": {
     "name": "req_group_ipd_issues",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "issue_type": "<issue_type>",
+      "group_field_id": "<group_field_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `issue_type` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `group_field_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `is_project_group` | 否 | `boolean` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `group_sort` | 否 | `"asc" \| "desc"` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`asc`、`desc`。 |
+| `filter` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `filter_mode` | 否 | `"OR_AND" \| "AND_OR"` | "AND_OR" | 请参考字段名和上游 CodeArts API 语义填写。可选值：`OR_AND`、`AND_OR`。 |
+| `sort` | 否 | `array<object>` |  | 排序方向。asc 表示升序，desc 表示降序。 |
 
 输入 JSON Schema：
 
@@ -17442,10 +21187,19 @@
   "method": "tools/call",
   "params": {
     "name": "req_leave_project",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -17485,10 +21239,23 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_associated_commits",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "work_item_id": "<work_item_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `work_item_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `type` | 否 | `string` | "commit" | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -17544,10 +21311,22 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_associated_issues",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "work_item_id": "<work_item_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `work_item_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -17598,10 +21377,22 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_associated_test_cases",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "work_item_id": "<work_item_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `work_item_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -17652,10 +21443,22 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_associated_wikis",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "work_item_id": "<work_item_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `work_item_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -17706,10 +21509,20 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_board_work_item_status_records",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 输入 JSON Schema：
 
@@ -17756,10 +21569,20 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_board_work_item_workflow_config",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "board_id": "<board_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `board_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -17799,10 +21622,21 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_board_work_items",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `created_time_interval` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -17857,6 +21691,13 @@
 }
 ```
 
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 否 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `type` | 否 | `string` | "backlog" | 请参考字段名和上游 CodeArts API 语义填写。 |
+
 输入 JSON Schema：
 
 ```json
@@ -17893,10 +21734,24 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_child_work_items",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "parent_id": "<parent_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `parent_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `subject` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `query_type` | 否 | `string` | "basic" | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -17955,10 +21810,21 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_ipd_attached_wikis",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "issue_id": "<issue_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `issue_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `category` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -18001,10 +21867,20 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_ipd_category_statuses",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "category_id": "<category_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `category_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -18044,10 +21920,20 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_ipd_change_review_issue_approvers",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "issue_id": "<issue_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `issue_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -18087,10 +21973,19 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_ipd_feature_sets",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `snapshot_version_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -18129,10 +22024,21 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_ipd_issue_attachments",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "issue_id": "<issue_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `issue_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `source_project_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -18175,10 +22081,20 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_ipd_issue_fields",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "category_id": "<category_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `category_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -18218,10 +22134,18 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_ipd_issue_relation_config",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 输入 JSON Schema：
 
@@ -18257,10 +22181,26 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_ipd_issue_tree",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "category": "<category>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `category` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `number` | 否 | `array<string>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `plan` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `modified_date` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -18351,10 +22291,24 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_ipd_issues",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "issue_type": "<issue_type>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `issue_type` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `filter` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `filter_mode` | 否 | `"OR_AND" \| "AND_OR"` | "AND_OR" | 请参考字段名和上游 CodeArts API 语义填写。可选值：`OR_AND`、`AND_OR`。 |
 
 输入 JSON Schema：
 
@@ -18436,10 +22390,20 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_ipd_labels",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 输入 JSON Schema：
 
@@ -18486,10 +22450,20 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_ipd_modules",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 输入 JSON Schema：
 
@@ -18536,10 +22510,21 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_ipd_process_instances",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `filter` | 否 | `array<object>` | [] | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `sort` | 否 | `array<object>` |  | 排序方向。asc 表示升序，desc 表示降序。 |
+| `page` | 否 | `object` | {"page_no":1,"page_size":200} | 页码。用于 page/page_size 分页。 |
 
 输入 JSON Schema：
 
@@ -18636,10 +22621,20 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_ipd_project_fields",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 输入 JSON Schema：
 
@@ -18686,10 +22681,18 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_ipd_project_users",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 输入 JSON Schema：
 
@@ -18730,6 +22733,10 @@
 }
 ```
 
+参数：
+
+无参数。
+
 输入 JSON Schema：
 
 ```json
@@ -18754,10 +22761,31 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_ipd_review_forms",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "type": "<type>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `type` | 是 | `"CR" \| "BR" \| "GR"` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`CR`、`BR`、`GR`。 |
+| `created_by` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `created_time` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `plan_end_date` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `plan_start_date` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `closed_time` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `approver` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `reviewer` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `offset` | 否 | `integer` | 0 | 分页偏移量。 |
+| `limit` | 否 | `integer` | 20 | 分页数量上限。 |
+| `sort` | 否 | `array<object>` |  | 排序方向。asc 表示升序，desc 表示降序。 |
 
 输入 JSON Schema：
 
@@ -18861,10 +22889,21 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_ipd_review_role_users",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `user_type` | 否 | `"approver" \| "reviewer"` | "approver" | 请参考字段名和上游 CodeArts API 语义填写。可选值：`approver`、`reviewer`。 |
+| `target_project_id` | 否 | `string` |  | 目标项目 ID。 |
+| `review_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -18914,10 +22953,24 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_ipd_snapshot_features",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "snapshot_version_id": "<snapshot_version_id>",
+      "feature_set_id": "<feature_set_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `snapshot_version_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `feature_set_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -18972,10 +23025,18 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_ipd_snapshot_versions",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 输入 JSON Schema：
 
@@ -19011,10 +23072,19 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_ipd_statuses",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `category_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -19057,6 +23127,15 @@
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `search` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_info` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -19111,10 +23190,24 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_ipd_tenant_issues",
-    "arguments": {}
+    "arguments": {
+      "issue_type": "<issue_type>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `project_id` | 否 | `string \| array<object>` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `issue_type` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `filter` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `filter_mode` | 否 | `"OR_AND" \| "AND_OR"` | "AND_OR" | 请参考字段名和上游 CodeArts API 语义填写。可选值：`OR_AND`、`AND_OR`。 |
+| `sort` | 否 | `array<object>` |  | 排序方向。asc 表示升序，desc 表示降序。 |
 
 输入 JSON Schema：
 
@@ -19221,10 +23314,19 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_ipd_work_hour_categories",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `display_value` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -19264,10 +23366,24 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_ipd_work_hours",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `plan_pi` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `plan_iteration` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `workitem_id` | 否 | `array<object>` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `created_by` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -19338,10 +23454,20 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_ipd_workflow_fields",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "category_id": "<category_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `category_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -19381,10 +23507,19 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_ipd_workflow_templates",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `category_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -19423,10 +23558,24 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_ir_children",
-    "arguments": {}
+    "arguments": {
+      "program_id": "<program_id>",
+      "ir_id": "<ir_id>",
+      "query_type": "<query_type>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `program_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `ir_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `query_type` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -19482,10 +23631,20 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_ir_histories",
-    "arguments": {}
+    "arguments": {
+      "ir_id": "<ir_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `ir_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -19537,6 +23696,10 @@
 }
 ```
 
+参数：
+
+无参数。
+
 输入 JSON Schema：
 
 ```json
@@ -19563,10 +23726,22 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_iteration_status_statistics",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "iteration_id": "<iteration_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `iteration_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `tracker_id` | 否 | `integer` |  | Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
+| `status_id` | 否 | `integer` |  | 工作项状态 ID：1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝。项目自定义状态以状态配置/工作流接口返回为准。 |
 
 输入 JSON Schema：
 
@@ -19614,10 +23789,27 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_iteration_work_items",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "iteration_id": "<iteration_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `iteration_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `tracker_id` | 否 | `integer` |  | Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
+| `status_id` | 否 | `integer` |  | 工作项状态 ID：1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝。项目自定义状态以状态配置/工作流接口返回为准。 |
 
 输入 JSON Schema：
 
@@ -19689,10 +23881,23 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_iterations",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 输入 JSON Schema：
 
@@ -19752,10 +23957,20 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_job_cache_boards",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `type` | 否 | `string` | "board" | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `region` | 否 | `string` |  | 华为云区域标识，例如 cn-north-4。 |
 
 输入 JSON Schema：
 
@@ -19805,6 +24020,13 @@
 }
 ```
 
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+
 输入 JSON Schema：
 
 ```json
@@ -19843,10 +24065,20 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_optional_work_item_status_configs",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "tracker_id": "<tracker_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `tracker_id` | 是 | `integer` |  | Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
 
 输入 JSON Schema：
 
@@ -19887,10 +24119,23 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_plan_addable_work_items",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "plan_id": "<plan_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `plan_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `subject` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -19944,10 +24189,25 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_plan_work_items",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "plan_id": "<plan_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `plan_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `subject` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `show_type` | 否 | `"list" \| "tree"` | "list" | 请参考字段名和上游 CodeArts API 语义填写。可选值：`list`、`tree`。 |
+| `tracker_id` | 否 | `integer` |  | Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
 
 输入 JSON Schema：
 
@@ -20013,10 +24273,26 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_plans",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `status_id` | 否 | `integer` |  | 工作项状态 ID：1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝。项目自定义状态以状态配置/工作流接口返回为准。 |
+| `plan_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `search` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `user_ids` | 否 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `sort` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
+| `type` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -20086,10 +24362,20 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_program_fields",
-    "arguments": {}
+    "arguments": {
+      "program_id": "<program_id>",
+      "field_type": "<field_type>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `program_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `field_type` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -20134,6 +24420,17 @@
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `search` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_key` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `sort_dir` | 否 | `"ASC" \| "DESC" \| "asc" \| "desc"` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`ASC`、`DESC`、`asc`、`desc`。 |
+| `is_watched` | 否 | `boolean` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -20193,10 +24490,18 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_project_bug_statistics",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 输入 JSON Schema：
 
@@ -20232,10 +24537,18 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_project_demand_statistics",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 输入 JSON Schema：
 
@@ -20271,10 +24584,20 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_project_domains",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 输入 JSON Schema：
 
@@ -20321,10 +24644,23 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_project_members",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 输入 JSON Schema：
 
@@ -20384,10 +24720,20 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_project_modules",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 输入 JSON Schema：
 
@@ -20434,10 +24780,21 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_project_work_hour_types",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `status` | 否 | `integer` |  | 状态过滤条件或目标状态。 |
 
 输入 JSON Schema：
 
@@ -20488,10 +24845,24 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_project_work_hours",
-    "arguments": {}
+    "arguments": {
+      "project_ids": "<project_ids>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `project_ids` | 是 | `array<string>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `begin_time` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `end_time` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `work_hours_dates` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `work_hours_types` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -20558,10 +24929,21 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_project_work_item_records",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `operated_time_interval` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -20616,6 +24998,17 @@
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `organization_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -20672,10 +25065,18 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_related_users",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 输入 JSON Schema：
 
@@ -20711,10 +25112,22 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_release_plans",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `key_word` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `updated_time_interval` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -20767,10 +25180,20 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_rr_histories",
-    "arguments": {}
+    "arguments": {
+      "rr_id": "<rr_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `rr_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -20817,10 +25240,20 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_rr_statuses",
-    "arguments": {}
+    "arguments": {
+      "program_id": "<program_id>",
+      "rr_ids": "<rr_ids>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `program_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `rr_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -20865,10 +25298,23 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_rrs",
-    "arguments": {}
+    "arguments": {
+      "program_id": "<program_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `program_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `query_type` | 否 | `string` | "ALL" | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `include_deleted` | 否 | `boolean` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `updated_time_interval` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -20927,10 +25373,18 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_user_features",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 输入 JSON Schema：
 
@@ -20966,10 +25420,22 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_work_item_comments",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "work_item_id": "<work_item_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `work_item_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -21020,10 +25486,19 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_work_item_custom_fields",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `tracker_id` | 否 | `integer` |  | Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
 
 输入 JSON Schema：
 
@@ -21063,10 +25538,23 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_work_item_records",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "work_item_id": "<work_item_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `work_item_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `journalized_type` | 否 | `string` | "Issue" | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -21122,10 +25610,18 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_work_item_status_attributes",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 输入 JSON Schema：
 
@@ -21161,10 +25657,20 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_work_item_status_configs",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "tracker_id": "<tracker_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `tracker_id` | 是 | `integer` |  | Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
 
 输入 JSON Schema：
 
@@ -21205,10 +25711,20 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_work_item_status_details",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "tracker_id": "<tracker_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `tracker_id` | 是 | `integer` |  | Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
 
 输入 JSON Schema：
 
@@ -21249,10 +25765,18 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_work_item_statuses",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 输入 JSON Schema：
 
@@ -21288,10 +25812,21 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_work_item_tags",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `name` | 否 | `string` |  | 资源名称。 |
 
 输入 JSON Schema：
 
@@ -21342,10 +25877,19 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_work_item_templates",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `tracker_id` | 否 | `integer` |  | Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
 
 输入 JSON Schema：
 
@@ -21385,10 +25929,20 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_work_item_tracker_handlers",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "tracker_id": "<tracker_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `tracker_id` | 是 | `integer` |  | Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
 
 输入 JSON Schema：
 
@@ -21429,10 +25983,21 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_work_item_tree",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `tracker_ids` | 否 | `array<integer>` |  | Scrum 工作项类型 ID 列表：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
 
 输入 JSON Schema：
 
@@ -21487,10 +26052,20 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_work_item_work_hours",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "work_item_id": "<work_item_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `work_item_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -21530,10 +26105,20 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_work_item_workflow_config",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "tracker_id": "<tracker_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `tracker_id` | 是 | `integer` |  | Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
 
 输入 JSON Schema：
 
@@ -21574,10 +26159,23 @@
   "method": "tools/call",
   "params": {
     "name": "req_list_work_items",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 输入 JSON Schema：
 
@@ -21637,10 +26235,20 @@
   "method": "tools/call",
   "params": {
     "name": "req_query_iteration_immovable_issues",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "version_id": "<version_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `version_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -21680,10 +26288,26 @@
   "method": "tools/call",
   "params": {
     "name": "req_transfer_ipd_work_item_flow",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "issue_id": "<issue_id>",
+      "issue_category": "<issue_category>",
+      "flow_code": "<flow_code>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `issue_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `issue_category` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `flow_code` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `process_context` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -21746,6 +26370,10 @@
 }
 ```
 
+参数：
+
+无参数。
+
 输入 JSON Schema：
 
 ```json
@@ -21770,10 +26398,29 @@
   "method": "tools/call",
   "params": {
     "name": "req_update_ipd_change_review_form",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "id": "<id>",
+      "old_status": "<old_status>",
+      "status": "<status>",
+      "cos": "<cos>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `id` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `category` | 否 | `string` | "CR" | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `old_status` | 是 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `status` | 是 | `object` |  | 状态过滤条件或目标状态。 |
+| `cos` | 是 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `extra_fields` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -21885,10 +26532,25 @@
   "method": "tools/call",
   "params": {
     "name": "req_update_ipd_feature_set",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "feature_set_id": "<feature_set_id>",
+      "parent_id": "<parent_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `feature_set_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `parent_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `title` | 否 | `string` |  | 标题。 |
+| `position_float` | 否 | `number` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -21948,6 +26610,10 @@
 }
 ```
 
+参数：
+
+无参数。
+
 输入 JSON Schema：
 
 ```json
@@ -21972,10 +26638,27 @@
   "method": "tools/call",
   "params": {
     "name": "req_update_ipd_module",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "display_value": "<display_value>",
+      "parent_id": "<parent_id>",
+      "module_id": "<module_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `display_value` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `parent_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `description` | 否 | `string` |  | 资源描述信息。 |
+| `assignee` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+| `module_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -22036,10 +26719,33 @@
   "method": "tools/call",
   "params": {
     "name": "req_update_ipd_process_instance",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "id": "<id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `id` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `domain_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `old_status` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `status` | 否 | `string` |  | 状态过滤条件或目标状态。 |
+| `title` | 否 | `string` |  | 标题。 |
+| `description` | 否 | `string` |  | 资源描述信息。 |
+| `plan_start_date` | 否 | `string \| integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `plan_end_date` | 否 | `string \| integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `ccbs` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `opinions` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `cc` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `cos` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `extra_fields` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -22183,6 +26889,10 @@
 }
 ```
 
+参数：
+
+无参数。
+
 输入 JSON Schema：
 
 ```json
@@ -22211,6 +26921,10 @@
   }
 }
 ```
+
+参数：
+
+无参数。
 
 输入 JSON Schema：
 
@@ -22241,6 +26955,10 @@
 }
 ```
 
+参数：
+
+无参数。
+
 输入 JSON Schema：
 
 ```json
@@ -22265,10 +26983,28 @@
   "method": "tools/call",
   "params": {
     "name": "req_update_iteration",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "iteration_id": "<iteration_id>",
+      "name": "<name>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `iteration_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `name` | 是 | `string` |  | 资源名称。 |
+| `begin_time` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `end_time` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `description` | 否 | `string` |  | 资源描述信息。 |
+| `status` | 否 | `string` |  | 状态过滤条件或目标状态。 |
+| `over_type` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -22336,10 +27072,27 @@
   "method": "tools/call",
   "params": {
     "name": "req_update_iteration_state",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "iteration_id": "<iteration_id>",
+      "name": "<name>",
+      "status": "<status>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `iteration_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `name` | 是 | `string` |  | 资源名称。 |
+| `status` | 是 | `string` |  | 状态过滤条件或目标状态。 |
+| `due_date` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `start_date` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -22401,10 +27154,23 @@
   "method": "tools/call",
   "params": {
     "name": "req_update_plan",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "plan_id": "<plan_id>",
+      "name": "<name>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `plan_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `name` | 是 | `string` |  | 资源名称。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -22453,10 +27219,23 @@
   "method": "tools/call",
   "params": {
     "name": "req_update_plan_image",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "plan_id": "<plan_id>",
+      "img_url": "<img_url>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `plan_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `img_url` | 是 | `string` |  | 服务地址或资源 URL。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -22505,10 +27284,22 @@
   "method": "tools/call",
   "params": {
     "name": "req_update_project",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "name": "<name>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `name` | 是 | `string` |  | 资源名称。 |
+| `description` | 否 | `string` |  | 资源描述信息。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -22556,10 +27347,23 @@
   "method": "tools/call",
   "params": {
     "name": "req_update_project_domain",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "domain_id": "<domain_id>",
+      "domain_name": "<domain_name>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `domain_name` | 是 | `string` |  | 资源名称。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -22609,10 +27413,23 @@
   "method": "tools/call",
   "params": {
     "name": "req_update_project_member_role",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "user_id": "<user_id>",
+      "role_id": "<role_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `user_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `role_id` | 是 | `number \| integer` |  | 项目成员角色 ID：-1=项目创建者，3=项目经理，4=开发人员，5=测试经理，6=测试人员，7=参与者，8=浏览者，9=运维经理；部分接口还允许 10、11 等扩展角色，以租户配置为准。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -22669,10 +27486,26 @@
   "method": "tools/call",
   "params": {
     "name": "req_update_project_module",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "module_id": "<module_id>",
+      "module_name": "<module_name>",
+      "owner_user_id": "<owner_user_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `module_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `module_name` | 是 | `string` |  | 资源名称。 |
+| `owner_user_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `description` | 否 | `string` |  | 资源描述信息。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -22735,6 +27568,10 @@
 }
 ```
 
+参数：
+
+无参数。
+
 输入 JSON Schema：
 
 ```json
@@ -22759,10 +27596,32 @@
   "method": "tools/call",
   "params": {
     "name": "req_update_release_plan",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "plan_id": "<plan_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `plan_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `title` | 否 | `string` |  | 标题。 |
+| `category` | 否 | `"PI" \| "Iteration" \| "PlanMilestone"` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`PI`、`Iteration`、`PlanMilestone`。 |
+| `description` | 否 | `string` |  | 资源描述信息。 |
+| `status` | 否 | `"planned" \| "going" \| "ended"` |  | 状态过滤条件或目标状态。可选值：`planned`、`going`、`ended`。 |
+| `plan_start_date` | 否 | `string \| integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `plan_end_date` | 否 | `string \| integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `created_date` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `parent_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `baseline` | 否 | `"baselined" \| "unbaseline" \| "baseline-reviewing"` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`baselined`、`unbaseline`、`baseline-reviewing`。 |
+| `workload` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `owner` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -22865,10 +27724,25 @@
   "method": "tools/call",
   "params": {
     "name": "req_update_tracker_config",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "tracker_id": "<tracker_id>",
+      "status_config_id": "<status_config_id>",
+      "new_position": "<new_position>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `tracker_id` | 是 | `integer` |  | Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
+| `status_config_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `new_position` | 是 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -22922,10 +27796,35 @@
   "method": "tools/call",
   "params": {
     "name": "req_update_work_item",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "work_item_id": "<work_item_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `work_item_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `title` | 否 | `string` |  | 标题。 |
+| `work_item_type` | 否 | `string` |  | 工作项类型，会映射为 Scrum tracker_id：task/"2"=Task/任务，bug/"3"=Bug/缺陷，epic/"5"=Epic，feature/"6"=Feature，story/"7"=Story。 |
+| `description` | 否 | `string` |  | 资源描述信息。 |
+| `status_id` | 否 | `integer` |  | 工作项状态 ID：1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝。项目自定义状态以状态配置/工作流接口返回为准。 |
+| `priority_id` | 否 | `integer` |  | 工作项优先级 ID。创建工作项未传时默认使用 2；具体优先级名称和可选值以项目字段配置/优先级选项接口返回为准。 |
+| `iteration_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `module_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `severity_id` | 否 | `integer` |  | 严重程度 ID。通常用于缺陷或问题等级；可通过 req_list_issue_severities 查询当前可用严重程度。 |
+| `assigned_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `developer_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `done_ratio` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `expected_work_hours` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `start_date` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `due_date` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -23020,10 +27919,25 @@
   "method": "tools/call",
   "params": {
     "name": "req_update_work_item_comment",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "work_item_id": "<work_item_id>",
+      "comment_id": "<comment_id>",
+      "content": "<content>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `work_item_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `comment_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `content` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -23076,10 +27990,23 @@
   "method": "tools/call",
   "params": {
     "name": "req_update_work_item_flow",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "work_item_id": "<work_item_id>",
+      "status_id": "<status_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `work_item_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `status_id` | 是 | `integer` |  | 工作项状态 ID：1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝。项目自定义状态以状态配置/工作流接口返回为准。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -23128,10 +28055,26 @@
   "method": "tools/call",
   "params": {
     "name": "req_update_working_hours",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "issue_id": "<issue_id>",
+      "work_hours_id": "<work_hours_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `issue_id` | 是 | `object \| integer` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `work_hours_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `summary` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `work_hours` | 否 | `number` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `work_hour_type` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -23201,10 +28144,23 @@
   "method": "tools/call",
   "params": {
     "name": "req_upload_attachment",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "work_item_id": "<work_item_id>",
+      "file_path": "<file_path>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `work_item_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `file_path` | 是 | `string` |  | 仓库内文件路径。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -23253,10 +28209,23 @@
   "method": "tools/call",
   "params": {
     "name": "req_upload_ipd_issue_attachment",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "issue_id": "<issue_id>",
+      "file_path": "<file_path>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `issue_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `file_path` | 是 | `string` |  | 仓库内文件路径。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -23305,10 +28274,23 @@
   "method": "tools/call",
   "params": {
     "name": "req_upload_ipd_issue_image",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "issue_id": "<issue_id>",
+      "file_path": "<file_path>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `issue_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `file_path` | 是 | `string` |  | 仓库内文件路径。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -23357,10 +28339,21 @@
   "method": "tools/call",
   "params": {
     "name": "req_upload_work_item_image",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "file_path": "<file_path>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `file_path` | 是 | `string` |  | 仓库内文件路径。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 
@@ -23405,10 +28398,20 @@
   "method": "tools/call",
   "params": {
     "name": "req_validate_module_name",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "module_name": "<module_name>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `module_name` | 是 | `string` |  | 资源名称。 |
 
 输入 JSON Schema：
 
@@ -23450,10 +28453,20 @@
   "method": "tools/call",
   "params": {
     "name": "testplan_get_case",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "case_id": "<case_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `case_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -23493,10 +28506,20 @@
   "method": "tools/call",
   "params": {
     "name": "testplan_get_plan",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "plan_id": "<plan_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `plan_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -23536,10 +28559,32 @@
   "method": "tools/call",
   "params": {
     "name": "testplan_list_cases",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "plan_id": "<plan_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `plan_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `owner_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `status` | 否 | `string` |  | 状态过滤条件或目标状态。 |
+| `priority` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `module_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `label_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `test_case_type` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `query` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
 
 输入 JSON Schema：
 
@@ -23648,10 +28693,25 @@
   "method": "tools/call",
   "params": {
     "name": "testplan_list_issues",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "plan_id": "<plan_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `plan_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -23715,10 +28775,23 @@
   "method": "tools/call",
   "params": {
     "name": "testplan_list_plans",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 
 输入 JSON Schema：
 
@@ -23778,10 +28851,25 @@
   "method": "tools/call",
   "params": {
     "name": "testplan_list_runs",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "plan_id": "<plan_id>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `plan_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -23845,10 +28933,21 @@
   "method": "tools/call",
   "params": {
     "name": "testplan_run_cases",
-    "arguments": {}
+    "arguments": {
+      "project_id": "<project_id>",
+      "execute_list": "<execute_list>"
+    }
   }
 }
 ```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `execute_list` | 是 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
 

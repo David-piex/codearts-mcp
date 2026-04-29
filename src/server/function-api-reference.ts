@@ -18,6 +18,21 @@ type ToolsListResult = {
   tools?: ToolDefinition[];
 };
 
+type JsonSchemaObject = {
+  type?: string | string[];
+  properties?: Record<string, JsonSchemaObject>;
+  required?: string[];
+  default?: unknown;
+  description?: string;
+  enum?: unknown[];
+  items?: JsonSchemaObject;
+  anyOf?: JsonSchemaObject[];
+  oneOf?: JsonSchemaObject[];
+  allOf?: JsonSchemaObject[];
+  format?: string;
+  $ref?: string;
+};
+
 function getModuleLabel(toolName: string) {
   return findToolManifestEntry(toolName)?.module ?? "Other";
 }
@@ -28,6 +43,14 @@ function sortTools(tools: ToolDefinition[]) {
 
 function renderJson(value: unknown) {
   return JSON.stringify(value ?? { type: "object", properties: {} }, null, 2);
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value && typeof value === "object" && !Array.isArray(value));
+}
+
+function asJsonSchemaObject(value: unknown): JsonSchemaObject {
+  return isRecord(value) ? (value as JsonSchemaObject) : { type: "object", properties: {} };
 }
 
 const moduleChineseNames: Record<string, string> = {
@@ -286,6 +309,230 @@ function describeToolInChinese(toolName: string) {
   return `${actionLabel}${moduleLabel}的${resourceLabel}。`;
 }
 
+function describeParameter(name: string) {
+  const exactDescriptions: Record<string, string> = {
+    access_key: "华为云访问密钥 ID，用于当前 MCP 会话鉴权。",
+    secret_key: "华为云访问密钥 Secret，仅用于签名鉴权，请勿写入日志或公开文档。",
+    region: "华为云区域标识，例如 cn-north-4。",
+    dry_run: "为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。",
+    project_id: "CodeArts 项目的唯一标识，用于确定本次操作所属项目。",
+    project_uuid: "CodeArts 项目的 UUID，用于创建代码仓或定位项目资源。",
+    repository_id: "代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。",
+    repository_uuid: "代码仓库 UUID，用于定位 CodeArts Repo 仓库。",
+    merge_request_iid: "合并请求在仓库内的 IID。",
+    branch_name: "分支名称。",
+    tag_name: "标签名称。",
+    ref: "Git 引用，可以是分支、标签或提交 SHA。",
+    file_path: "仓库内文件路径。",
+    commit_sha: "提交 SHA。",
+    page: "页码。用于 page/page_size 分页。",
+    page_size: "每页数量。用于分页查询。",
+    offset: "分页偏移量。",
+    limit: "分页数量上限。",
+    keyword: "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。",
+    search: "搜索关键字。用于按名称、标题、编号等文本条件过滤列表。",
+    sort: "排序方向。asc 表示升序，desc 表示降序。",
+    sort_by: "排序字段。用于选择服务端排序字段。",
+    sort_order: "排序方向。asc 表示升序，desc 表示降序。",
+    order_by: "排序字段。用于选择服务端排序字段。",
+    name: "资源名称。",
+    description: "资源描述信息。",
+    title: "标题。",
+    state: "状态过滤条件或目标状态。",
+    status: "状态过滤条件或目标状态。",
+    status_id: "工作项状态 ID：1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝。项目自定义状态以状态配置/工作流接口返回为准。",
+    tracker_id: "Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。",
+    tracker_ids: "Scrum 工作项类型 ID 列表：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。",
+    work_item_type: "工作项类型，会映射为 Scrum tracker_id：task/\"2\"=Task/任务，bug/\"3\"=Bug/缺陷，epic/\"5\"=Epic，feature/\"6\"=Feature，story/\"7\"=Story。",
+    role_id: "项目成员角色 ID：-1=项目创建者，3=项目经理，4=开发人员，5=测试经理，6=测试人员，7=参与者，8=浏览者，9=运维经理；部分接口还允许 10、11 等扩展角色，以租户配置为准。",
+    priority_id: "工作项优先级 ID。创建工作项未传时默认使用 2；具体优先级名称和可选值以项目字段配置/优先级选项接口返回为准。",
+    severity_id: "严重程度 ID。通常用于缺陷或问题等级；可通过 req_list_issue_severities 查询当前可用严重程度。",
+    created_after: "创建时间下界，通常使用 ISO 8601 时间字符串。",
+    created_before: "创建时间上界，通常使用 ISO 8601 时间字符串。",
+    finished_after: "完成时间下界，通常使用 ISO 8601 时间字符串。",
+    finished_before: "完成时间上界，通常使用 ISO 8601 时间字符串。",
+    source_type: "导入来源类型，例如 gitee、github、gitlab、git、svn 等。",
+    source_branch: "源分支名称。",
+    target_branch: "目标分支名称。",
+    target_project_id: "目标项目 ID。",
+    assignee_id: "负责人用户 ID。",
+    reviewer_ids: "评审人用户 ID 列表。",
+    remove_source_branch: "合并后是否删除源分支。",
+    should_remove_source_branch: "合并后是否删除源分支。",
+    squash: "是否压缩提交。",
+    draft: "是否创建为草稿合并请求。",
+    labels: "标签列表或逗号分隔的标签字符串。",
+    milestone_id: "里程碑 ID。",
+    action_type: "评审动作类型。",
+    approver_comment: "评审意见。",
+    force_merge: "是否强制合并。",
+    force_fetch: "是否强制拉取远端镜像。",
+    sha: "提交 SHA，用于校验合并请求头部提交。",
+    merge_commit_message: "合并提交信息。",
+    squash_commit_message: "压缩提交信息。",
+    url: "远程仓库或镜像地址。",
+    username: "远程镜像认证用户名。按官方接口要求需要传入 base64 后的值。",
+    password: "远程镜像认证密码。按官方接口要求需要传入 base64 后的值。",
+    endpoint_uuid: "服务端点 UUID，用于远程镜像认证或网络访问配置。",
+    sync_branch_type: "远程镜像同步分支范围，all 表示全部分支，default 表示默认分支。",
+    mirroring_enabled: "是否启用远程镜像。"
+  };
+
+  if (exactDescriptions[name]) {
+    return exactDescriptions[name];
+  }
+
+  if (name.endsWith("_id")) {
+    return "资源 ID，用于定位对应的 CodeArts 资源。";
+  }
+
+  if (name.endsWith("_ids")) {
+    return "资源 ID 列表，用于批量定位对应的 CodeArts 资源。";
+  }
+
+  if (name.endsWith("_url")) {
+    return "服务地址或资源 URL。";
+  }
+
+  if (name.endsWith("_name")) {
+    return "资源名称。";
+  }
+
+  return "请参考字段名和上游 CodeArts API 语义填写。";
+}
+
+function hasKnownParameterDescription(name: string) {
+  return [
+    "status_id",
+    "tracker_id",
+    "tracker_ids",
+    "work_item_type",
+    "role_id",
+    "priority_id",
+    "severity_id"
+  ].includes(name);
+}
+
+function getSchemaType(schema: JsonSchemaObject): string {
+  if (schema.enum) {
+    return schema.enum.map((item) => JSON.stringify(item)).join(" | ");
+  }
+
+  if (Array.isArray(schema.type)) {
+    return schema.type.join(" | ");
+  }
+
+  if (schema.type === "array") {
+    return schema.items ? `array<${getSchemaType(schema.items)}>` : "array";
+  }
+
+  const variants = schema.anyOf ?? schema.oneOf;
+  if (variants?.length) {
+    return variants.map(getSchemaType).join(" | ");
+  }
+
+  if (schema.allOf?.length) {
+    return schema.allOf.map(getSchemaType).join(" & ");
+  }
+
+  return schema.type ?? "object";
+}
+
+function renderDefaultValue(value: unknown) {
+  if (value === undefined) {
+    return "";
+  }
+
+  return JSON.stringify(value);
+}
+
+function escapeMarkdownCell(value: string) {
+  return value.replace(/\|/g, "\\|").replace(/\r?\n/g, " ");
+}
+
+function renderEnumValues(schema: JsonSchemaObject): string | undefined {
+  if (schema.enum?.length) {
+    return schema.enum.map((item) => `\`${String(item)}\``).join("、");
+  }
+
+  const variants = schema.anyOf ?? schema.oneOf;
+  const enumValues = variants?.flatMap((item) => item.enum ?? []) ?? [];
+  if (enumValues.length > 0) {
+    return enumValues.map((item) => `\`${String(item)}\``).join("、");
+  }
+
+  if (schema.items?.enum?.length) {
+    return schema.items.enum.map((item) => `\`${String(item)}\``).join("、");
+  }
+
+  return undefined;
+}
+
+function describeSchemaParameter(name: string, schema: JsonSchemaObject, originalSchema: JsonSchemaObject) {
+  const baseDescription = hasKnownParameterDescription(name)
+    ? describeParameter(name)
+    : schema.description ?? originalSchema.description ?? describeParameter(name);
+  const enumValues = renderEnumValues(schema);
+
+  if (!enumValues || baseDescription.includes("可选值")) {
+    return baseDescription;
+  }
+
+  return `${baseDescription}可选值：${enumValues}。`;
+}
+
+function resolveLocalSchemaRef(schema: JsonSchemaObject, root: JsonSchemaObject) {
+  if (!schema.$ref?.startsWith("#/properties/")) {
+    return schema;
+  }
+
+  const propertyName = schema.$ref.slice("#/properties/".length);
+  return root.properties?.[propertyName] ?? schema;
+}
+
+function renderParameterTable(inputSchema: unknown) {
+  const schema = asJsonSchemaObject(inputSchema);
+  const properties = schema.properties ?? {};
+  const entries = Object.entries(properties);
+
+  if (entries.length === 0) {
+    return ["无参数。"];
+  }
+
+  const required = new Set(schema.required ?? []);
+  const lines = [
+    "| 参数 | 必填 | 类型 | 默认值 | 说明 |",
+    "| --- | --- | --- | --- | --- |"
+  ];
+
+  for (const [name, propertySchema] of entries) {
+    const resolvedSchema = resolveLocalSchemaRef(propertySchema, schema);
+    const description = describeSchemaParameter(name, resolvedSchema, propertySchema);
+    lines.push(
+      `| \`${name}\` | ${required.has(name) ? "是" : "否"} | \`${escapeMarkdownCell(getSchemaType(resolvedSchema))}\` | ${escapeMarkdownCell(renderDefaultValue(resolvedSchema.default ?? propertySchema.default))} | ${escapeMarkdownCell(description)} |`
+    );
+  }
+
+  return lines;
+}
+
+function buildExampleArguments(inputSchema: unknown) {
+  const schema = asJsonSchemaObject(inputSchema);
+  const required = schema.required ?? [];
+  const properties = schema.properties ?? {};
+  const args: Record<string, string> = {};
+
+  for (const key of required) {
+    if (properties[key]?.default !== undefined) {
+      continue;
+    }
+
+    args[key] = `<${key}>`;
+  }
+
+  return args;
+}
+
 export async function collectHttpToolDefinitions(): Promise<ToolDefinition[]> {
   const server = createServer({
     mode: "http",
@@ -373,6 +620,8 @@ export function renderFunctionApiReference(tools: ToolDefinition[]) {
   ];
 
   for (const tool of sortedTools) {
+    const exampleArguments = buildExampleArguments(tool.inputSchema);
+
     lines.push(
       `### ${tool.name}`,
       "",
@@ -389,10 +638,14 @@ export function renderFunctionApiReference(tools: ToolDefinition[]) {
         method: "tools/call",
         params: {
           name: tool.name,
-          arguments: {}
+          arguments: exampleArguments
         }
       }),
       "```",
+      "",
+      "参数：",
+      "",
+      ...renderParameterTable(tool.inputSchema),
       "",
       "输入 JSON Schema：",
       "",
