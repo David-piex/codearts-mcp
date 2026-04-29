@@ -1,10 +1,10 @@
-# CodeArts MCP Function API Reference
+# CodeArts MCP 函数 API 参考
 
-This document is generated from the ToolManifest-validated HTTP MCP `tools/list` registry. Do not edit tool entries by hand.
+本文档由通过 ToolManifest 校验的 HTTP MCP `tools/list` 注册表生成。不要手工编辑工具条目。
 
-All function APIs use the same HTTP endpoint: `POST /mcp`. The JSON-RPC method is `tools/call`; select a function with `params.name`.
+所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
-## Common Call Shape
+## 通用调用结构
 
 ```json
 {
@@ -18,30 +18,30 @@ All function APIs use the same HTTP endpoint: `POST /mcp`. The JSON-RPC method i
 }
 ```
 
-## Module Directory
+## 模块目录
 
-| Module | APIs |
+| 模块 | API 数量 |
 | --- | ---: |
-| Artifact | 12 |
-| Auth / Session | 2 |
-| Build | 22 |
-| Check | 8 |
-| Deploy | 59 |
-| Pipeline | 77 |
-| Repo | 25 |
-| Req | 200 |
-| TestPlan | 7 |
-| **Total** | **412** |
+| 制品仓 | 12 |
+| 鉴权会话 | 2 |
+| 编译构建 | 22 |
+| 代码检查 | 8 |
+| 部署 | 59 |
+| 流水线 | 77 |
+| 代码仓库 | 30 |
+| 需求管理 | 200 |
+| 测试计划 | 7 |
+| **总计** | **417** |
 
-## APIs
+## API 清单
 
 ### artifact_delete_file
 
-Module: `Artifact`
+所属模块：`制品仓`
 
-Description: Delete CodeArts Artifact file
+说明：删除制品仓的文件。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -55,7 +55,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -99,11 +99,11 @@ Input JSON Schema:
 
 ### artifact_get_download_url
 
-Module: `Artifact`
+所属模块：`制品仓`
 
-Description: Get CodeArts Artifact file download URL
+说明：获取制品仓的下载url。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -117,7 +117,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -157,11 +157,11 @@ Input JSON Schema:
 
 ### artifact_get_file
 
-Module: `Artifact`
+所属模块：`制品仓`
 
-Description: Get CodeArts Artifact file detail
+说明：获取制品仓的文件。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -175,7 +175,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -215,11 +215,11 @@ Input JSON Schema:
 
 ### artifact_get_file_tree
 
-Module: `Artifact`
+所属模块：`制品仓`
 
-Description: Get CodeArts Artifact file tree
+说明：获取制品仓的文件树。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -233,7 +233,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -268,11 +268,11 @@ Input JSON Schema:
 
 ### artifact_get_repository
 
-Module: `Artifact`
+所属模块：`制品仓`
 
-Description: Get CodeArts Artifact repository detail
+说明：获取制品仓的仓库。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -286,7 +286,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -307,11 +307,11 @@ Input JSON Schema:
 
 ### artifact_list_build_archives
 
-Module: `Artifact`
+所属模块：`制品仓`
 
-Description: List CodeArts Artifact build archives
+说明：查询制品仓的构建archives。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -325,7 +325,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -363,11 +363,11 @@ Input JSON Schema:
 
 ### artifact_list_files
 
-Module: `Artifact`
+所属模块：`制品仓`
 
-Description: List CodeArts Artifact files
+说明：查询制品仓的文件。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -381,7 +381,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -431,11 +431,11 @@ Input JSON Schema:
 
 ### artifact_list_latest_version_files
 
-Module: `Artifact`
+所属模块：`制品仓`
 
-Description: List CodeArts Artifact latest version files
+说明：查询制品仓的最新版本文件。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -449,7 +449,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -494,11 +494,11 @@ Input JSON Schema:
 
 ### artifact_list_repositories
 
-Module: `Artifact`
+所属模块：`制品仓`
 
-Description: List CodeArts Artifact repositories
+说明：查询制品仓的仓库。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -512,7 +512,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -583,11 +583,11 @@ Input JSON Schema:
 
 ### artifact_list_versions
 
-Module: `Artifact`
+所属模块：`制品仓`
 
-Description: List CodeArts Artifact versions
+说明：查询制品仓的版本。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -601,7 +601,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -646,11 +646,11 @@ Input JSON Schema:
 
 ### artifact_search_artifacts
 
-Module: `Artifact`
+所属模块：`制品仓`
 
-Description: Search CodeArts Artifact artifacts
+说明：搜索制品仓的制品。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -664,7 +664,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -716,11 +716,11 @@ Input JSON Schema:
 
 ### artifact_show_audit
 
-Module: `Artifact`
+所属模块：`制品仓`
 
-Description: Show CodeArts Artifact audit logs
+说明：执行制品仓的审计日志。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -734,7 +734,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -805,11 +805,11 @@ Input JSON Schema:
 
 ### auth_clear_session
 
-Module: `Auth / Session`
+所属模块：`鉴权会话`
 
-Description: Clear Huawei Cloud credentials for the current MCP session
+说明：清除当前 MCP 会话中保存的华为云凭据。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -823,7 +823,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -835,11 +835,11 @@ Input JSON Schema:
 
 ### auth_configure_session
 
-Module: `Auth / Session`
+所属模块：`鉴权会话`
 
-Description: Configure Huawei Cloud credentials for the current MCP session. Standard CodeArts regions only need access_key, secret_key, and region; *_base_url fields are optional overrides.
+说明：配置当前 MCP 会话使用的华为云 AK/SK、区域和可选服务地址。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -853,7 +853,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -916,11 +916,11 @@ Input JSON Schema:
 
 ### build_append_job_step
 
-Module: `Build`
+所属模块：`编译构建`
 
-Description: Append a new step to a CodeArts Build job
+说明：追加编译构建的任务步骤。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -934,7 +934,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -997,11 +997,11 @@ Input JSON Schema:
 
 ### build_append_release_upload_step
 
-Module: `Build`
+所属模块：`编译构建`
 
-Description: Append the official release repository upload step to a CodeArts Build job
+说明：追加编译构建的发布上传步骤。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -1015,7 +1015,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -1080,11 +1080,11 @@ Input JSON Schema:
 
 ### build_configure_release_upload_step
 
-Module: `Build`
+所属模块：`编译构建`
 
-Description: Configure an existing release repository upload step in a CodeArts Build job
+说明：配置编译构建的发布上传步骤。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -1098,7 +1098,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -1158,11 +1158,11 @@ Input JSON Schema:
 
 ### build_get_error_log
 
-Module: `Build`
+所属模块：`编译构建`
 
-Description: Get CodeArts Build error log analysis
+说明：获取编译构建的错误日志。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -1176,7 +1176,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -1226,11 +1226,11 @@ Input JSON Schema:
 
 ### build_get_full_stages
 
-Module: `Build`
+所属模块：`编译构建`
 
-Description: Get CodeArts Build full stages
+说明：获取编译构建的full阶段。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -1244,7 +1244,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -1269,11 +1269,11 @@ Input JSON Schema:
 
 ### build_get_history_details
 
-Module: `Build`
+所属模块：`编译构建`
 
-Description: Get CodeArts Build history details
+说明：获取编译构建的历史详情。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -1287,7 +1287,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -1313,11 +1313,11 @@ Input JSON Schema:
 
 ### build_get_info_record
 
-Module: `Build`
+所属模块：`编译构建`
 
-Description: Get CodeArts Build info record
+说明：获取编译构建的信息记录。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -1331,7 +1331,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -1357,11 +1357,11 @@ Input JSON Schema:
 
 ### build_get_job
 
-Module: `Build`
+所属模块：`编译构建`
 
-Description: Get CodeArts Build job detail
+说明：获取编译构建的任务。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -1375,7 +1375,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -1396,11 +1396,11 @@ Input JSON Schema:
 
 ### build_get_project_record_statistics
 
-Module: `Build`
+所属模块：`编译构建`
 
-Description: Get CodeArts Build project record statistics
+说明：获取编译构建的项目记录统计。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -1414,7 +1414,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -1438,11 +1438,11 @@ Input JSON Schema:
 
 ### build_get_real_time_log
 
-Module: `Build`
+所属模块：`编译构建`
 
-Description: Get CodeArts Build real-time log
+说明：获取编译构建的realtime日志。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -1456,7 +1456,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -1487,11 +1487,11 @@ Input JSON Schema:
 
 ### build_get_record
 
-Module: `Build`
+所属模块：`编译构建`
 
-Description: Get CodeArts Build record detail
+说明：获取编译构建的记录。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -1505,7 +1505,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -1526,11 +1526,11 @@ Input JSON Schema:
 
 ### build_get_record_flow_graph
 
-Module: `Build`
+所属模块：`编译构建`
 
-Description: Get CodeArts Build record flow graph
+说明：获取编译构建的记录流程图。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -1544,7 +1544,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -1565,11 +1565,11 @@ Input JSON Schema:
 
 ### build_get_record_script
 
-Module: `Build`
+所属模块：`编译构建`
 
-Description: Get CodeArts Build record script
+说明：获取编译构建的记录脚本。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -1583,7 +1583,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -1604,11 +1604,11 @@ Input JSON Schema:
 
 ### build_list_build_parameters
 
-Module: `Build`
+所属模块：`编译构建`
 
-Description: List CodeArts Build parameters
+说明：查询编译构建的构建参数。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -1622,7 +1622,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -1648,11 +1648,11 @@ Input JSON Schema:
 
 ### build_list_jobs
 
-Module: `Build`
+所属模块：`编译构建`
 
-Description: List CodeArts Build jobs
+说明：查询编译构建的任务。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -1666,7 +1666,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -1711,11 +1711,11 @@ Input JSON Schema:
 
 ### build_list_project_records
 
-Module: `Build`
+所属模块：`编译构建`
 
-Description: List CodeArts Build project records
+说明：查询编译构建的项目记录。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -1729,7 +1729,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -1777,11 +1777,11 @@ Input JSON Schema:
 
 ### build_list_records
 
-Module: `Build`
+所属模块：`编译构建`
 
-Description: List CodeArts Build records
+说明：查询编译构建的记录。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -1795,7 +1795,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -1840,11 +1840,11 @@ Input JSON Schema:
 
 ### build_prepare_deployable_node_app
 
-Module: `Build`
+所属模块：`编译构建`
 
-Description: Prepare a single-file deployable Node app by appending bundling commands to a build step
+说明：准备编译构建的deployableNode应用。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -1858,7 +1858,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -1869,11 +1869,11 @@ Input JSON Schema:
 
 ### build_prepare_node_runtime_bundle
 
-Module: `Build`
+所属模块：`编译构建`
 
-Description: Prepare a Node runtime bundle by appending packaging commands to a build step
+说明：准备编译构建的Noderuntimebundle。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -1887,7 +1887,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -1930,11 +1930,11 @@ Input JSON Schema:
 
 ### build_run_job
 
-Module: `Build`
+所属模块：`编译构建`
 
-Description: Run CodeArts Build job
+说明：运行编译构建的任务。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -1948,7 +1948,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -1977,11 +1977,11 @@ Input JSON Schema:
 
 ### build_stop_job
 
-Module: `Build`
+所属模块：`编译构建`
 
-Description: Stop CodeArts Build job
+说明：停止编译构建的任务。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -1995,7 +1995,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -2025,11 +2025,11 @@ Input JSON Schema:
 
 ### build_update_job_step
 
-Module: `Build`
+所属模块：`编译构建`
 
-Description: Update CodeArts Build job step image or command
+说明：更新编译构建的任务步骤。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -2043,7 +2043,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -2054,11 +2054,11 @@ Input JSON Schema:
 
 ### check_create_task
 
-Module: `Check`
+所属模块：`代码检查`
 
-Description: Create CodeArts Check task
+说明：创建代码检查的任务。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -2072,7 +2072,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -2145,11 +2145,11 @@ Input JSON Schema:
 
 ### check_get_metrics
 
-Module: `Check`
+所属模块：`代码检查`
 
-Description: Get CodeArts Check task metrics
+说明：获取代码检查的metrics。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -2163,7 +2163,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -2187,11 +2187,11 @@ Input JSON Schema:
 
 ### check_get_task
 
-Module: `Check`
+所属模块：`代码检查`
 
-Description: Get CodeArts Check task detail
+说明：获取代码检查的任务。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -2205,7 +2205,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -2226,11 +2226,11 @@ Input JSON Schema:
 
 ### check_list_rulesets
 
-Module: `Check`
+所属模块：`代码检查`
 
-Description: List CodeArts Check rulesets
+说明：查询代码检查的rulesets。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -2244,7 +2244,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -2292,11 +2292,11 @@ Input JSON Schema:
 
 ### check_list_task_issues
 
-Module: `Check`
+所属模块：`代码检查`
 
-Description: List CodeArts Check task issues
+说明：查询代码检查的任务工作项。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -2310,7 +2310,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -2383,11 +2383,11 @@ Input JSON Schema:
 
 ### check_list_tasks
 
-Module: `Check`
+所属模块：`代码检查`
 
-Description: List CodeArts Check tasks
+说明：查询代码检查的任务。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -2401,7 +2401,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -2443,11 +2443,11 @@ Input JSON Schema:
 
 ### check_run_task
 
-Module: `Check`
+所属模块：`代码检查`
 
-Description: Run CodeArts Check task
+说明：运行代码检查的任务。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -2461,7 +2461,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -2490,11 +2490,11 @@ Input JSON Schema:
 
 ### check_stop_task
 
-Module: `Check`
+所属模块：`代码检查`
 
-Description: Stop CodeArts Check task
+说明：停止代码检查的任务。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -2508,7 +2508,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -2533,11 +2533,11 @@ Input JSON Schema:
 
 ### deploy_add_v4_environment_hosts
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: Add hosts into a CodeArts Deploy v4 environment
+说明：添加部署的v4环境主机。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -2551,7 +2551,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -2592,11 +2592,11 @@ Input JSON Schema:
 
 ### deploy_cancel_v4_deploy_record
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: Cancel CodeArts Deploy v4 deploy record
+说明：取消部署的v4部署记录。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -2610,7 +2610,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -2653,11 +2653,11 @@ Input JSON Schema:
 
 ### deploy_create_application
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: Create CodeArts Deploy application
+说明：创建部署的application。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -2671,7 +2671,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -2807,11 +2807,11 @@ Input JSON Schema:
 
 ### deploy_create_environment
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: Create CodeArts Deploy environment
+说明：创建部署的环境。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -2825,7 +2825,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -2872,11 +2872,11 @@ Input JSON Schema:
 
 ### deploy_create_task_by_template
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: Create CodeArts Deploy task from template
+说明：创建部署的任务by模板。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -2890,7 +2890,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -2978,11 +2978,11 @@ Input JSON Schema:
 
 ### deploy_delete_v4_cluster_hosts
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: Delete hosts from a CodeArts Deploy v4 cluster
+说明：删除部署的v4集群主机。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -2996,7 +2996,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -3033,11 +3033,11 @@ Input JSON Schema:
 
 ### deploy_delete_v4_environment_hosts
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: Delete hosts from a CodeArts Deploy v4 environment
+说明：删除部署的v4环境主机。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -3051,7 +3051,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -3088,11 +3088,11 @@ Input JSON Schema:
 
 ### deploy_get_app
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: Get CodeArts Deploy application detail
+说明：获取部署的应用。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -3106,7 +3106,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -3127,11 +3127,11 @@ Input JSON Schema:
 
 ### deploy_get_app_log
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: Get CodeArts Deploy application log
+说明：获取部署的应用日志。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -3145,7 +3145,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -3181,11 +3181,11 @@ Input JSON Schema:
 
 ### deploy_get_deploy_source_detail
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: Get CodeArts Deploy task source detail
+说明：获取部署的部署来源详情。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -3199,7 +3199,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -3220,11 +3220,11 @@ Input JSON Schema:
 
 ### deploy_get_execution_params
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: Get CodeArts Deploy execution params
+说明：获取部署的执行params。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -3238,7 +3238,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -3263,11 +3263,11 @@ Input JSON Schema:
 
 ### deploy_get_history_detail
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: Get CodeArts Deploy history detail
+说明：获取部署的历史详情。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -3281,7 +3281,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -3306,11 +3306,11 @@ Input JSON Schema:
 
 ### deploy_get_host_group
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: Get CodeArts Deploy host group detail
+说明：获取部署的主机组。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -3324,7 +3324,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -3345,11 +3345,11 @@ Input JSON Schema:
 
 ### deploy_get_last_record_detail
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: Get CodeArts Deploy v4 orchestration last record detail
+说明：获取部署的last记录详情。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -3363,7 +3363,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -3388,11 +3388,11 @@ Input JSON Schema:
 
 ### deploy_get_runtime_variables
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: Get CodeArts Deploy runtime variables
+说明：获取部署的runtime变量。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -3406,7 +3406,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -3430,11 +3430,11 @@ Input JSON Schema:
 
 ### deploy_get_status
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: Get CodeArts Deploy task status
+说明：获取部署的状态。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -3448,7 +3448,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -3472,11 +3472,11 @@ Input JSON Schema:
 
 ### deploy_get_task
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: Get CodeArts Deploy task detail
+说明：获取部署的任务。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -3490,7 +3490,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -3511,11 +3511,11 @@ Input JSON Schema:
 
 ### deploy_get_template_detail
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: Get CodeArts Deploy template detail
+说明：获取部署的模板详情。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -3529,7 +3529,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -3553,11 +3553,11 @@ Input JSON Schema:
 
 ### deploy_get_v4_cluster
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: Get CodeArts Deploy v4 cluster detail
+说明：获取部署的v4集群。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -3571,7 +3571,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -3604,11 +3604,11 @@ Input JSON Schema:
 
 ### deploy_get_v4_cluster_count
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: Get CodeArts Deploy v4 cluster counts
+说明：获取部署的v4集群数量。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -3622,7 +3622,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -3651,11 +3651,11 @@ Input JSON Schema:
 
 ### deploy_get_v4_cluster_host
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: Get CodeArts Deploy v4 cluster host detail
+说明：获取部署的v4集群主机。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -3669,7 +3669,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -3698,11 +3698,11 @@ Input JSON Schema:
 
 ### deploy_get_v4_deploy_record
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: Get CodeArts Deploy v4 deploy record detail
+说明：获取部署的v4部署记录。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -3716,7 +3716,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -3744,11 +3744,11 @@ Input JSON Schema:
 
 ### deploy_get_v4_deploy_record_step_detail
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: Get CodeArts Deploy v4 deploy record step detail
+说明：获取部署的v4部署记录步骤详情。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -3762,7 +3762,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -3787,11 +3787,11 @@ Input JSON Schema:
 
 ### deploy_get_v4_deploy_record_step_logs
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: Get CodeArts Deploy v4 deploy record step logs
+说明：获取部署的v4部署记录步骤日志。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -3805,7 +3805,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -3856,11 +3856,11 @@ Input JSON Schema:
 
 ### deploy_get_v4_environment
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: Get CodeArts Deploy v4 environment detail
+说明：获取部署的v4环境。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -3874,7 +3874,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -3899,11 +3899,11 @@ Input JSON Schema:
 
 ### deploy_get_v4_environment_resource_detail
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: Get CodeArts Deploy v4 environment resource detail
+说明：获取部署的v4环境资源详情。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -3917,7 +3917,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -3942,11 +3942,11 @@ Input JSON Schema:
 
 ### deploy_import_hosts_to_environment
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: Import hosts into a CodeArts Deploy environment
+说明：导入部署的主机to环境。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -3960,7 +3960,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -4001,11 +4001,11 @@ Input JSON Schema:
 
 ### deploy_list_app_host_groups
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: List CodeArts Deploy host groups available to an application
+说明：查询部署的应用主机组。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -4019,7 +4019,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -4068,11 +4068,11 @@ Input JSON Schema:
 
 ### deploy_list_app_operations_log
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: List CodeArts Deploy application operation logs
+说明：查询部署的应用operations日志。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -4086,7 +4086,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -4124,11 +4124,11 @@ Input JSON Schema:
 
 ### deploy_list_apps
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: List CodeArts Deploy applications
+说明：查询部署的应用。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -4142,7 +4142,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -4187,11 +4187,11 @@ Input JSON Schema:
 
 ### deploy_list_deployment_units
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: List CodeArts Deploy deployment units for an application
+说明：查询部署的deploymentunits。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -4205,7 +4205,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -4230,11 +4230,11 @@ Input JSON Schema:
 
 ### deploy_list_environment_hosts
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: List CodeArts Deploy hosts in an environment
+说明：查询部署的环境主机。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -4248,7 +4248,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -4304,11 +4304,11 @@ Input JSON Schema:
 
 ### deploy_list_environments
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: List CodeArts Deploy application environments
+说明：查询部署的环境。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -4322,7 +4322,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -4371,11 +4371,11 @@ Input JSON Schema:
 
 ### deploy_list_histories
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: List CodeArts Deploy histories
+说明：查询部署的histories。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -4389,7 +4389,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -4444,11 +4444,11 @@ Input JSON Schema:
 
 ### deploy_list_host_group_environments
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: List CodeArts Deploy environments linked to a host group
+说明：查询部署的主机组环境。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -4462,7 +4462,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -4507,11 +4507,11 @@ Input JSON Schema:
 
 ### deploy_list_host_group_hosts
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: List CodeArts Deploy hosts in a host group
+说明：查询部署的主机组主机。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -4525,7 +4525,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -4570,11 +4570,11 @@ Input JSON Schema:
 
 ### deploy_list_host_groups
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: List CodeArts Deploy host groups
+说明：查询部署的主机组。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -4588,7 +4588,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -4633,11 +4633,11 @@ Input JSON Schema:
 
 ### deploy_list_system_configs
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: List CodeArts Deploy system config keys
+说明：查询部署的system配置。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -4651,7 +4651,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -4664,11 +4664,11 @@ Input JSON Schema:
 
 ### deploy_list_tasks
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: List CodeArts Deploy tasks
+说明：查询部署的任务。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -4682,7 +4682,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -4727,11 +4727,11 @@ Input JSON Schema:
 
 ### deploy_list_v4_applications
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: List CodeArts Deploy v4 applications
+说明：查询部署的v4applications。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -4745,7 +4745,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -4780,11 +4780,11 @@ Input JSON Schema:
 
 ### deploy_list_v4_cluster_hosts
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: List CodeArts Deploy v4 cluster hosts
+说明：查询部署的v4集群主机。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -4798,7 +4798,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -4865,11 +4865,11 @@ Input JSON Schema:
 
 ### deploy_list_v4_clusters
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: List CodeArts Deploy v4 clusters
+说明：查询部署的v4集群。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -4883,7 +4883,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -4945,11 +4945,11 @@ Input JSON Schema:
 
 ### deploy_list_v4_deploy_records
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: List CodeArts Deploy v4 deploy records
+说明：查询部署的v4部署记录。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -4963,7 +4963,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -4995,11 +4995,11 @@ Input JSON Schema:
 
 ### deploy_list_v4_environment_applications
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: List CodeArts Deploy v4 applications under an environment
+说明：查询部署的v4环境applications。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -5013,7 +5013,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -5049,11 +5049,11 @@ Input JSON Schema:
 
 ### deploy_list_v4_environment_hosts
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: List CodeArts Deploy v4 environment hosts
+说明：查询部署的v4环境主机。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -5067,7 +5067,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -5103,11 +5103,11 @@ Input JSON Schema:
 
 ### deploy_list_v4_environments
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: List CodeArts Deploy v4 environments
+说明：查询部署的v4环境。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -5121,7 +5121,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -5153,11 +5153,11 @@ Input JSON Schema:
 
 ### deploy_list_v4_orchestrations
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: List CodeArts Deploy v4 orchestrations
+说明：查询部署的v4编排。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -5171,7 +5171,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -5207,11 +5207,11 @@ Input JSON Schema:
 
 ### deploy_list_variable_history
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: List CodeArts Deploy variable history by scope
+说明：查询部署的变量历史。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -5225,7 +5225,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -5236,11 +5236,11 @@ Input JSON Schema:
 
 ### deploy_list_variables
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: List CodeArts Deploy variables by scope
+说明：查询部署的变量。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -5254,7 +5254,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -5265,11 +5265,11 @@ Input JSON Schema:
 
 ### deploy_modify_application
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: Modify CodeArts Deploy application
+说明：修改部署的application。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -5283,7 +5283,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -5429,11 +5429,11 @@ Input JSON Schema:
 
 ### deploy_pass_v4_manual_check
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: Pass CodeArts Deploy v4 manual check step
+说明：通过部署的v4人工检查。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -5447,7 +5447,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -5480,11 +5480,11 @@ Input JSON Schema:
 
 ### deploy_query_variables
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: Query CodeArts Deploy variables by scope
+说明：查询部署的变量。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -5498,7 +5498,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -5509,11 +5509,11 @@ Input JSON Schema:
 
 ### deploy_refuse_v4_manual_check
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: Refuse CodeArts Deploy v4 manual check step
+说明：拒绝部署的v4人工检查。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -5527,7 +5527,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -5560,11 +5560,11 @@ Input JSON Schema:
 
 ### deploy_rerun_v4_deploy_record
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: Rerun CodeArts Deploy v4 deploy record
+说明：执行部署的v4部署记录。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -5578,7 +5578,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -5621,11 +5621,11 @@ Input JSON Schema:
 
 ### deploy_retry_v4_deploy_record
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: Retry CodeArts Deploy v4 deploy record
+说明：重试部署的v4部署记录。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -5639,7 +5639,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -5682,11 +5682,11 @@ Input JSON Schema:
 
 ### deploy_rollback_app
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: Rollback CodeArts Deploy task
+说明：回滚部署的应用。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -5700,7 +5700,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -5729,11 +5729,11 @@ Input JSON Schema:
 
 ### deploy_rollback_v4_deploy_record
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: Rollback CodeArts Deploy v4 deploy record
+说明：回滚部署的v4部署记录。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -5747,7 +5747,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -5790,11 +5790,11 @@ Input JSON Schema:
 
 ### deploy_start_app
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: Start CodeArts Deploy task
+说明：启动部署的应用。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -5808,7 +5808,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -5869,11 +5869,11 @@ Input JSON Schema:
 
 ### deploy_stop_app
 
-Module: `Deploy`
+所属模块：`部署`
 
-Description: Stop CodeArts Deploy task
+说明：停止部署的应用。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -5887,7 +5887,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -5916,11 +5916,11 @@ Input JSON Schema:
 
 ### pipeline_approve_run
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Approve CodeArts Pipeline manual review
+说明：审批通过流水线的运行。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -5934,7 +5934,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -5975,11 +5975,11 @@ Input JSON Schema:
 
 ### pipeline_bind_variable_groups_to_pipeline
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Bind CodeArts Pipeline variable groups to pipeline
+说明：绑定流水线的变量组to流水线。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -5993,7 +5993,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -6030,11 +6030,11 @@ Input JSON Schema:
 
 ### pipeline_create_extension_endpoint
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Create CodeArts Pipeline extension endpoint
+说明：创建流水线的extensionendpoint。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -6048,7 +6048,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -6103,11 +6103,11 @@ Input JSON Schema:
 
 ### pipeline_create_group
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Create CodeArts Pipeline group
+说明：创建流水线的组。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -6121,7 +6121,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -6155,11 +6155,11 @@ Input JSON Schema:
 
 ### pipeline_create_project_strategy
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Create CodeArts Pipeline project strategy
+说明：创建流水线的项目strategy。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -6173,7 +6173,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -6220,11 +6220,11 @@ Input JSON Schema:
 
 ### pipeline_create_rule
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Create CodeArts Pipeline rule
+说明：创建流水线的规则。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -6238,7 +6238,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -6358,11 +6358,11 @@ Input JSON Schema:
 
 ### pipeline_create_strategy
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Create CodeArts Pipeline strategy
+说明：创建流水线的strategy。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -6376,7 +6376,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -6423,11 +6423,11 @@ Input JSON Schema:
 
 ### pipeline_create_tag
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Create CodeArts Pipeline tag
+说明：创建流水线的标签。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -6441,7 +6441,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -6476,11 +6476,11 @@ Input JSON Schema:
 
 ### pipeline_create_variable_group
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Create CodeArts Pipeline variable group
+说明：创建流水线的变量组。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -6494,7 +6494,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -6556,11 +6556,11 @@ Input JSON Schema:
 
 ### pipeline_delete_extension_endpoint
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Delete CodeArts Pipeline extension endpoint
+说明：删除流水线的extensionendpoint。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -6574,7 +6574,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -6603,11 +6603,11 @@ Input JSON Schema:
 
 ### pipeline_delete_group
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Delete CodeArts Pipeline group
+说明：删除流水线的组。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -6621,7 +6621,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -6650,11 +6650,11 @@ Input JSON Schema:
 
 ### pipeline_delete_pipeline
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Delete CodeArts Pipeline
+说明：删除流水线的流水线。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -6668,7 +6668,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -6697,11 +6697,11 @@ Input JSON Schema:
 
 ### pipeline_delete_project_strategy
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Delete CodeArts Pipeline project strategy
+说明：删除流水线的项目strategy。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -6715,7 +6715,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -6744,11 +6744,11 @@ Input JSON Schema:
 
 ### pipeline_delete_rule
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Delete CodeArts Pipeline rule
+说明：删除流水线的规则。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -6762,7 +6762,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -6791,11 +6791,11 @@ Input JSON Schema:
 
 ### pipeline_delete_strategy
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Delete CodeArts Pipeline strategy
+说明：删除流水线的strategy。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -6809,7 +6809,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -6838,11 +6838,11 @@ Input JSON Schema:
 
 ### pipeline_delete_tag
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Delete CodeArts Pipeline tag
+说明：删除流水线的标签。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -6856,7 +6856,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -6885,11 +6885,11 @@ Input JSON Schema:
 
 ### pipeline_delete_variable_group
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Delete CodeArts Pipeline variable group
+说明：删除流水线的变量组。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -6903,7 +6903,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -6932,11 +6932,11 @@ Input JSON Schema:
 
 ### pipeline_disable_pipeline
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Disable CodeArts Pipeline
+说明：停用流水线的流水线。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -6950,7 +6950,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -6979,11 +6979,11 @@ Input JSON Schema:
 
 ### pipeline_enable_pipeline
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Enable CodeArts Pipeline
+说明：启用流水线的流水线。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -6997,7 +6997,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -7026,11 +7026,11 @@ Input JSON Schema:
 
 ### pipeline_get_extension_endpoint
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Get CodeArts Pipeline extension endpoint detail
+说明：获取流水线的extensionendpoint。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -7044,7 +7044,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -7065,11 +7065,11 @@ Input JSON Schema:
 
 ### pipeline_get_extension_module
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Get CodeArts Pipeline extension module detail
+说明：获取流水线的extension模块。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -7083,7 +7083,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -7104,11 +7104,11 @@ Input JSON Schema:
 
 ### pipeline_get_manual_review_context
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Get CodeArts Pipeline manual review context
+说明：获取流水线的人工评审context。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -7122,7 +7122,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -7151,11 +7151,11 @@ Input JSON Schema:
 
 ### pipeline_get_pipeline
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Get CodeArts Pipeline detail
+说明：获取流水线的流水线。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -7169,7 +7169,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -7194,11 +7194,11 @@ Input JSON Schema:
 
 ### pipeline_get_plugin_inputs
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Get CodeArts Pipeline plugin inputs
+说明：获取流水线的plugininputs。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -7212,7 +7212,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -7256,11 +7256,11 @@ Input JSON Schema:
 
 ### pipeline_get_plugin_outputs
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Get CodeArts Pipeline plugin outputs
+说明：获取流水线的pluginoutputs。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -7274,7 +7274,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -7318,11 +7318,11 @@ Input JSON Schema:
 
 ### pipeline_get_plugin_version
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Get CodeArts Pipeline plugin version detail
+说明：获取流水线的plugin版本。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -7336,7 +7336,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -7367,11 +7367,11 @@ Input JSON Schema:
 
 ### pipeline_get_project_strategy
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Get CodeArts Pipeline project strategy
+说明：获取流水线的项目strategy。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -7385,7 +7385,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -7410,11 +7410,11 @@ Input JSON Schema:
 
 ### pipeline_get_project_strategy_detail
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Get CodeArts Pipeline project strategy detail
+说明：获取流水线的项目strategy详情。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -7428,7 +7428,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -7453,11 +7453,11 @@ Input JSON Schema:
 
 ### pipeline_get_project_strategy_related_info
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Get CodeArts Pipeline project strategy related info
+说明：获取流水线的项目strategy相关信息。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -7471,7 +7471,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -7496,11 +7496,11 @@ Input JSON Schema:
 
 ### pipeline_get_rule
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Get CodeArts Pipeline rule detail
+说明：获取流水线的规则。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -7514,7 +7514,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -7539,11 +7539,11 @@ Input JSON Schema:
 
 ### pipeline_get_rule_related_info
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Get CodeArts Pipeline rule related info
+说明：获取流水线的规则相关信息。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -7557,7 +7557,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -7582,11 +7582,11 @@ Input JSON Schema:
 
 ### pipeline_get_run
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Get CodeArts Pipeline run detail
+说明：获取流水线的运行。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -7600,7 +7600,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -7629,11 +7629,11 @@ Input JSON Schema:
 
 ### pipeline_get_run_detail
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Get CodeArts Pipeline run detail
+说明：获取流水线的运行详情。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -7647,7 +7647,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -7676,11 +7676,11 @@ Input JSON Schema:
 
 ### pipeline_get_run_log
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Get CodeArts Pipeline run step log
+说明：获取流水线的运行日志。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -7694,7 +7694,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -7731,11 +7731,11 @@ Input JSON Schema:
 
 ### pipeline_get_run_parameters
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Get CodeArts Pipeline run parameters
+说明：获取流水线的运行参数。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -7749,7 +7749,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -7778,11 +7778,11 @@ Input JSON Schema:
 
 ### pipeline_get_step_outputs
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Get CodeArts Pipeline step outputs
+说明：获取流水线的步骤outputs。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -7796,7 +7796,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -7833,11 +7833,11 @@ Input JSON Schema:
 
 ### pipeline_get_strategy
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Get CodeArts Pipeline strategy detail
+说明：获取流水线的strategy。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -7851,7 +7851,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -7879,11 +7879,11 @@ Input JSON Schema:
 
 ### pipeline_get_strategy_related_info
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Get CodeArts Pipeline strategy related info
+说明：获取流水线的strategy相关信息。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -7897,7 +7897,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -7922,11 +7922,11 @@ Input JSON Schema:
 
 ### pipeline_get_variable_group
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Get CodeArts Pipeline variable group detail
+说明：获取流水线的变量组。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -7940,7 +7940,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -7965,11 +7965,11 @@ Input JSON Schema:
 
 ### pipeline_inherit_project_strategy
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Inherit CodeArts Pipeline project strategy
+说明：执行流水线的项目strategy。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -7983,7 +7983,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -8027,11 +8027,11 @@ Input JSON Schema:
 
 ### pipeline_list_artifacts
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: List CodeArts Pipeline artifacts
+说明：查询流水线的制品。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -8045,7 +8045,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -8074,11 +8074,11 @@ Input JSON Schema:
 
 ### pipeline_list_available_publishers
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: List CodeArts Pipeline available publishers
+说明：查询流水线的availablepublishers。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -8092,7 +8092,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -8113,11 +8113,11 @@ Input JSON Schema:
 
 ### pipeline_list_base_plugins
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: List CodeArts Pipeline base plugins
+说明：查询流水线的baseplugins。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -8131,7 +8131,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -8152,11 +8152,11 @@ Input JSON Schema:
 
 ### pipeline_list_base_plugins_paged
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: List CodeArts Pipeline base plugins (paged)
+说明：查询流水线的basepluginspaged。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -8170,7 +8170,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -8202,11 +8202,11 @@ Input JSON Schema:
 
 ### pipeline_list_extension_endpoints
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: List CodeArts Pipeline extension endpoints
+说明：查询流水线的extensionendpoints。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -8220,7 +8220,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -8261,11 +8261,11 @@ Input JSON Schema:
 
 ### pipeline_list_extension_modules
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: List CodeArts Pipeline extension modules
+说明：查询流水线的extension模块。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -8279,7 +8279,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -8338,11 +8338,11 @@ Input JSON Schema:
 
 ### pipeline_list_groups
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: List CodeArts Pipeline groups
+说明：查询流水线的组。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -8356,7 +8356,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -8377,11 +8377,11 @@ Input JSON Schema:
 
 ### pipeline_list_pipeline_variable_groups
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: List CodeArts Pipeline variable groups for pipeline
+说明：查询流水线的流水线变量组。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -8395,7 +8395,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -8420,11 +8420,11 @@ Input JSON Schema:
 
 ### pipeline_list_pipelines
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: List CodeArts Pipelines
+说明：查询流水线的流水线。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -8438,7 +8438,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -8483,11 +8483,11 @@ Input JSON Schema:
 
 ### pipeline_list_plugin_versions
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: List CodeArts Pipeline plugin versions
+说明：查询流水线的plugin版本。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -8501,7 +8501,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -8538,11 +8538,11 @@ Input JSON Schema:
 
 ### pipeline_list_plugins
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: List CodeArts Pipeline plugins
+说明：查询流水线的plugins。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -8556,7 +8556,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -8616,11 +8616,11 @@ Input JSON Schema:
 
 ### pipeline_list_project_strategies
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: List CodeArts Pipeline project strategies
+说明：查询流水线的项目strategies。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -8634,7 +8634,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -8681,11 +8681,11 @@ Input JSON Schema:
 
 ### pipeline_list_publishers
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: List CodeArts Pipeline publishers
+说明：查询流水线的publishers。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -8699,7 +8699,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -8731,11 +8731,11 @@ Input JSON Schema:
 
 ### pipeline_list_rule_types
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: List CodeArts Pipeline rule types
+说明：查询流水线的规则types。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -8749,7 +8749,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -8770,11 +8770,11 @@ Input JSON Schema:
 
 ### pipeline_list_rules
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: List CodeArts Pipeline rules
+说明：查询流水线的rules。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -8788,7 +8788,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -8831,11 +8831,11 @@ Input JSON Schema:
 
 ### pipeline_list_runs
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: List CodeArts Pipeline runs
+说明：查询流水线的运行。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -8849,7 +8849,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -8898,11 +8898,11 @@ Input JSON Schema:
 
 ### pipeline_list_stage_plugins
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: List CodeArts Pipeline stage plugins
+说明：查询流水线的阶段plugins。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -8916,7 +8916,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -8963,11 +8963,11 @@ Input JSON Schema:
 
 ### pipeline_list_strategies
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: List CodeArts Pipeline strategies
+说明：查询流水线的strategies。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -8981,7 +8981,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -9028,11 +9028,11 @@ Input JSON Schema:
 
 ### pipeline_list_strategy_children
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: List CodeArts Pipeline strategy children
+说明：查询流水线的strategychildren。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -9046,7 +9046,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -9082,11 +9082,11 @@ Input JSON Schema:
 
 ### pipeline_list_tags
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: List CodeArts Pipeline tags
+说明：查询流水线的标签。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -9100,7 +9100,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -9124,11 +9124,11 @@ Input JSON Schema:
 
 ### pipeline_list_templates
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: List CodeArts Pipeline templates
+说明：查询流水线的模板。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -9142,7 +9142,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -9193,11 +9193,11 @@ Input JSON Schema:
 
 ### pipeline_list_variable_groups
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: List CodeArts Pipeline variable groups
+说明：查询流水线的变量组。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -9211,7 +9211,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -9260,11 +9260,11 @@ Input JSON Schema:
 
 ### pipeline_move_pipelines_to_group
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Move CodeArts Pipelines to group
+说明：执行流水线的流水线to组。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -9278,7 +9278,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -9329,11 +9329,11 @@ Input JSON Schema:
 
 ### pipeline_reject_run
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Reject CodeArts Pipeline manual review
+说明：驳回流水线的运行。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -9347,7 +9347,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -9388,11 +9388,11 @@ Input JSON Schema:
 
 ### pipeline_retry_run
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Retry CodeArts Pipeline run
+说明：重试流水线的运行。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -9406,7 +9406,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -9439,11 +9439,11 @@ Input JSON Schema:
 
 ### pipeline_run_pipeline
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Run CodeArts Pipeline
+说明：运行流水线的流水线。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -9457,7 +9457,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -9494,11 +9494,11 @@ Input JSON Schema:
 
 ### pipeline_set_tags_for_pipelines
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Set CodeArts Pipeline tags for pipelines
+说明：设置流水线的标签for流水线。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -9512,7 +9512,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -9553,11 +9553,11 @@ Input JSON Schema:
 
 ### pipeline_stop_run
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Stop CodeArts Pipeline run
+说明：停止流水线的运行。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -9571,7 +9571,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -9600,11 +9600,11 @@ Input JSON Schema:
 
 ### pipeline_switch_project_strategy
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Switch CodeArts Pipeline project strategy
+说明：切换流水线的项目strategy。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -9618,7 +9618,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -9651,11 +9651,11 @@ Input JSON Schema:
 
 ### pipeline_switch_strategy
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Switch CodeArts Pipeline strategy
+说明：切换流水线的strategy。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -9669,7 +9669,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -9702,11 +9702,11 @@ Input JSON Schema:
 
 ### pipeline_update_extension_endpoint
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Update CodeArts Pipeline extension endpoint
+说明：更新流水线的extensionendpoint。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -9720,7 +9720,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -9782,11 +9782,11 @@ Input JSON Schema:
 
 ### pipeline_update_group
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Update CodeArts Pipeline group
+说明：更新流水线的组。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -9800,7 +9800,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -9835,11 +9835,11 @@ Input JSON Schema:
 
 ### pipeline_update_project_strategy
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Update CodeArts Pipeline project strategy
+说明：更新流水线的项目strategy。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -9853,7 +9853,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -9904,11 +9904,11 @@ Input JSON Schema:
 
 ### pipeline_update_rule
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Update CodeArts Pipeline rule
+说明：更新流水线的规则。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -9922,7 +9922,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -10041,11 +10041,11 @@ Input JSON Schema:
 
 ### pipeline_update_strategy
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Update CodeArts Pipeline strategy
+说明：更新流水线的strategy。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -10059,7 +10059,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -10109,11 +10109,11 @@ Input JSON Schema:
 
 ### pipeline_update_tag
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Update CodeArts Pipeline tag
+说明：更新流水线的标签。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -10127,7 +10127,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -10166,11 +10166,11 @@ Input JSON Schema:
 
 ### pipeline_update_variable_group
 
-Module: `Pipeline`
+所属模块：`流水线`
 
-Description: Update CodeArts Pipeline variable group
+说明：更新流水线的变量组。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -10184,7 +10184,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -10248,13 +10248,61 @@ Input JSON Schema:
 }
 ```
 
+### repo_associate_remote_mirror
+
+所属模块：`代码仓库`
+
+说明：关联代码仓远程镜像地址。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_associate_remote_mirror",
+    "arguments": {}
+  }
+}
+```
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "repository_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "url": {
+      "type": "string",
+      "minLength": 1
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "repository_id",
+    "url"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### repo_close_merge_request
 
-Module: `Repo`
+所属模块：`代码仓库`
 
-Description: Close CodeArts Repo merge request
+说明：关闭代码仓库的合并请求请求。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -10268,7 +10316,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -10297,11 +10345,11 @@ Input JSON Schema:
 
 ### repo_compare_refs
 
-Module: `Repo`
+所属模块：`代码仓库`
 
-Description: Compare CodeArts Repo refs
+说明：对比代码仓库的引用。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -10315,7 +10363,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -10356,11 +10404,11 @@ Input JSON Schema:
 
 ### repo_create_merge_request
 
-Module: `Repo`
+所属模块：`代码仓库`
 
-Description: Create CodeArts Repo merge request
+说明：创建代码仓库的合并请求请求。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -10374,7 +10422,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -10483,11 +10531,11 @@ Input JSON Schema:
 
 ### repo_create_merge_request_discussion
 
-Module: `Repo`
+所属模块：`代码仓库`
 
-Description: Create CodeArts Repo merge request discussion
+说明：创建代码仓库的合并请求请求讨论。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -10501,7 +10549,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -10535,11 +10583,11 @@ Input JSON Schema:
 
 ### repo_create_repository
 
-Module: `Repo`
+所属模块：`代码仓库`
 
-Description: Create CodeArts Repo repository
+说明：创建代码仓库的仓库。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -10553,7 +10601,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -10631,11 +10679,11 @@ Input JSON Schema:
 
 ### repo_create_tag
 
-Module: `Repo`
+所属模块：`代码仓库`
 
-Description: Create CodeArts Repo tag
+说明：创建代码仓库的标签。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -10649,7 +10697,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -10687,11 +10735,11 @@ Input JSON Schema:
 
 ### repo_delete_tag
 
-Module: `Repo`
+所属模块：`代码仓库`
 
-Description: Delete CodeArts Repo tag
+说明：删除代码仓库的标签。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -10705,7 +10753,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -10735,11 +10783,11 @@ Input JSON Schema:
 
 ### repo_get_branch
 
-Module: `Repo`
+所属模块：`代码仓库`
 
-Description: Get CodeArts Repo branch detail
+说明：获取代码仓库的分支。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -10753,7 +10801,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -10779,11 +10827,11 @@ Input JSON Schema:
 
 ### repo_get_commit
 
-Module: `Repo`
+所属模块：`代码仓库`
 
-Description: Get CodeArts Repo commit detail
+说明：获取代码仓库的提交。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -10797,7 +10845,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -10822,11 +10870,11 @@ Input JSON Schema:
 
 ### repo_get_file
 
-Module: `Repo`
+所属模块：`代码仓库`
 
-Description: Get CodeArts Repo file content
+说明：获取代码仓库的文件。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -10840,7 +10888,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -10871,11 +10919,11 @@ Input JSON Schema:
 
 ### repo_get_merge_request
 
-Module: `Repo`
+所属模块：`代码仓库`
 
-Description: Get CodeArts Repo merge request detail
+说明：获取代码仓库的合并请求请求。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -10889,7 +10937,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -10912,13 +10960,52 @@ Input JSON Schema:
 }
 ```
 
+### repo_get_remote_mirror
+
+所属模块：`代码仓库`
+
+说明：获取代码仓远程镜像配置和同步状态。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_get_remote_mirror",
+    "arguments": {}
+  }
+}
+```
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "repository_id": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "repository_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### repo_get_repository
 
-Module: `Repo`
+所属模块：`代码仓库`
 
-Description: Get CodeArts Repo repository detail
+说明：获取代码仓库的仓库。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -10932,7 +11019,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -10953,11 +11040,11 @@ Input JSON Schema:
 
 ### repo_get_tag
 
-Module: `Repo`
+所属模块：`代码仓库`
 
-Description: Get CodeArts Repo tag detail
+说明：获取代码仓库的标签。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -10971,7 +11058,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -10997,11 +11084,11 @@ Input JSON Schema:
 
 ### repo_list_branches
 
-Module: `Repo`
+所属模块：`代码仓库`
 
-Description: List CodeArts Repo branches
+说明：查询代码仓库的分支。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -11015,7 +11102,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -11060,11 +11147,11 @@ Input JSON Schema:
 
 ### repo_list_commits
 
-Module: `Repo`
+所属模块：`代码仓库`
 
-Description: List CodeArts Repo commits
+说明：查询代码仓库的提交。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -11078,7 +11165,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -11138,11 +11225,11 @@ Input JSON Schema:
 
 ### repo_list_events
 
-Module: `Repo`
+所属模块：`代码仓库`
 
-Description: List CodeArts Repo events
+说明：查询代码仓库的events。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -11156,7 +11243,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -11201,11 +11288,11 @@ Input JSON Schema:
 
 ### repo_list_merge_request_changes
 
-Module: `Repo`
+所属模块：`代码仓库`
 
-Description: List CodeArts Repo merge request changes
+说明：查询代码仓库的合并请求请求changes。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -11219,7 +11306,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -11268,11 +11355,11 @@ Input JSON Schema:
 
 ### repo_list_merge_request_discussions
 
-Module: `Repo`
+所属模块：`代码仓库`
 
-Description: List CodeArts Repo merge request discussions
+说明：查询代码仓库的合并请求请求讨论。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -11286,7 +11373,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -11335,11 +11422,11 @@ Input JSON Schema:
 
 ### repo_list_merge_requests
 
-Module: `Repo`
+所属模块：`代码仓库`
 
-Description: List CodeArts Repo merge requests
+说明：查询代码仓库的合并请求请求。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -11353,7 +11440,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -11405,13 +11492,127 @@ Input JSON Schema:
 }
 ```
 
+### repo_list_personal_repository_import_records
+
+所属模块：`代码仓库`
+
+说明：查询当前用户的代码仓导入记录。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_list_personal_repository_import_records",
+    "arguments": {}
+  }
+}
+```
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "page": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "default": 1
+    },
+    "page_size": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 200,
+      "default": 20
+    },
+    "keyword": {
+      "type": "string"
+    },
+    "sort_by": {
+      "type": "string"
+    },
+    "sort_order": {
+      "type": "string",
+      "enum": [
+        "asc",
+        "desc"
+      ]
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "finished",
+        "fail",
+        "importing"
+      ]
+    },
+    "source_type": {
+      "type": "string",
+      "enum": [
+        "gitee",
+        "self_managed_gitlab",
+        "gitlab",
+        "github",
+        "git",
+        "svn",
+        "coding",
+        "bitbucket",
+        "gerrit",
+        "codeup"
+      ]
+    },
+    "created_after": {
+      "type": "string",
+      "minLength": 1
+    },
+    "created_before": {
+      "type": "string",
+      "minLength": 1
+    },
+    "finished_after": {
+      "type": "string",
+      "minLength": 1
+    },
+    "finished_before": {
+      "type": "string",
+      "minLength": 1
+    },
+    "search": {
+      "type": "string",
+      "minLength": 1
+    },
+    "order_by": {
+      "type": "string",
+      "enum": [
+        "created_at",
+        "source_repo_name",
+        "size"
+      ]
+    },
+    "sort": {
+      "type": "string",
+      "enum": [
+        "asc",
+        "desc"
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### repo_list_protected_branches
 
-Module: `Repo`
+所属模块：`代码仓库`
 
-Description: List CodeArts Repo protected branches
+说明：查询代码仓库的保护分支。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -11425,7 +11626,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -11470,11 +11671,11 @@ Input JSON Schema:
 
 ### repo_list_repositories
 
-Module: `Repo`
+所属模块：`代码仓库`
 
-Description: List CodeArts Repo repositories
+说明：查询代码仓库的仓库。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -11488,7 +11689,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -11533,11 +11734,11 @@ Input JSON Schema:
 
 ### repo_list_repository_labels
 
-Module: `Repo`
+所属模块：`代码仓库`
 
-Description: List CodeArts Repo repository labels
+说明：查询代码仓库的仓库标签。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -11551,7 +11752,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -11596,11 +11797,11 @@ Input JSON Schema:
 
 ### repo_list_tags
 
-Module: `Repo`
+所属模块：`代码仓库`
 
-Description: List CodeArts Repo tags
+说明：查询代码仓库的标签。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -11614,7 +11815,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -11659,11 +11860,11 @@ Input JSON Schema:
 
 ### repo_merge_merge_request
 
-Module: `Repo`
+所属模块：`代码仓库`
 
-Description: Merge CodeArts Repo merge request
+说明：合并代码仓库的合并请求请求。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -11677,7 +11878,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -11727,11 +11928,11 @@ Input JSON Schema:
 
 ### repo_review_merge_request
 
-Module: `Repo`
+所属模块：`代码仓库`
 
-Description: Review CodeArts Repo merge request
+说明：评审代码仓库的合并请求请求。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -11745,7 +11946,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -11784,13 +11985,132 @@ Input JSON Schema:
 }
 ```
 
+### repo_start_remote_mirror_synchronization
+
+所属模块：`代码仓库`
+
+说明：启动代码仓远程镜像同步任务。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_start_remote_mirror_synchronization",
+    "arguments": {}
+  }
+}
+```
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "repository_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "username": {
+      "type": "string",
+      "minLength": 1
+    },
+    "password": {
+      "type": "string",
+      "minLength": 1
+    },
+    "endpoint_uuid": {
+      "type": "string",
+      "minLength": 1
+    },
+    "force_fetch": {
+      "type": "boolean"
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "repository_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### repo_update_remote_mirror
+
+所属模块：`代码仓库`
+
+说明：更新代码仓远程镜像配置。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_update_remote_mirror",
+    "arguments": {}
+  }
+}
+```
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "repository_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "url": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sync_branch_type": {
+      "type": "string",
+      "enum": [
+        "all",
+        "default"
+      ]
+    },
+    "mirroring_enabled": {
+      "type": "boolean"
+    },
+    "endpoint_uuid": {
+      "type": "string",
+      "minLength": 1
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "repository_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### req_add_iteration_work_items
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Add work items to a CodeArts Req iteration
+说明：添加需求管理的迭代工作项。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -11804,7 +12124,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -11841,11 +12161,11 @@ Input JSON Schema:
 
 ### req_add_plan_work_items
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Add work items to a CodeArts Req plan
+说明：添加需求管理的计划工作项。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -11859,7 +12179,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -11896,11 +12216,11 @@ Input JSON Schema:
 
 ### req_add_project_member
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Add member to a CodeArts Req project
+说明：添加需求管理的项目成员。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -11914,7 +12234,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -11963,11 +12283,11 @@ Input JSON Schema:
 
 ### req_add_work_item_comment
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Add comment to a CodeArts Req work item
+说明：添加需求管理的工作项评论。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -11981,7 +12301,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -12015,11 +12335,11 @@ Input JSON Schema:
 
 ### req_add_work_item_work_hour
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Add a work hour record to a CodeArts Req work item
+说明：添加需求管理的工作项工作工时。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -12033,7 +12353,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -12044,11 +12364,11 @@ Input JSON Schema:
 
 ### req_batch_add_project_members
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Add multiple members to a CodeArts Req project
+说明：批量处理需求管理的add项目成员。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -12062,7 +12382,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -12116,11 +12436,11 @@ Input JSON Schema:
 
 ### req_batch_create_ipd_issues
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Batch create CodeArts Req IPD issues
+说明：批量处理需求管理的createIPD工作项。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -12134,7 +12454,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -12349,11 +12669,11 @@ Input JSON Schema:
 
 ### req_batch_create_tracker_config
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Bind custom work item statuses to a CodeArts Req tracker
+说明：批量处理需求管理的createtracker配置。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -12367,7 +12687,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -12405,11 +12725,11 @@ Input JSON Schema:
 
 ### req_batch_delete_ipd_issues
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Batch delete CodeArts Req IPD issues
+说明：批量处理需求管理的deleteIPD工作项。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -12423,7 +12743,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -12463,11 +12783,11 @@ Input JSON Schema:
 
 ### req_batch_delete_iterations
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Delete multiple CodeArts Req iterations
+说明：批量处理需求管理的delete迭代。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -12481,7 +12801,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -12514,11 +12834,11 @@ Input JSON Schema:
 
 ### req_batch_delete_project_members
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Remove multiple members from a CodeArts Req project
+说明：批量处理需求管理的delete项目成员。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -12532,7 +12852,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -12565,11 +12885,11 @@ Input JSON Schema:
 
 ### req_batch_delete_release_plans
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Batch delete CodeArts Req release or iteration plans
+说明：批量处理需求管理的delete发布计划。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -12583,7 +12903,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -12616,11 +12936,11 @@ Input JSON Schema:
 
 ### req_batch_delete_work_items
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Delete multiple CodeArts Req work items
+说明：批量处理需求管理的delete工作项。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -12634,7 +12954,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -12668,11 +12988,11 @@ Input JSON Schema:
 
 ### req_batch_transfer_ipd_work_item_flow
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Batch transfer CodeArts Req IPD work item flow
+说明：批量处理需求管理的transferIPD工作项流程。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -12686,7 +13006,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -12737,11 +13057,11 @@ Input JSON Schema:
 
 ### req_batch_update_ipd_issues
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Batch update CodeArts Req IPD issues
+说明：批量处理需求管理的updateIPD工作项。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -12755,7 +13075,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -12952,11 +13272,11 @@ Input JSON Schema:
 
 ### req_batch_update_release_plan_baseline
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Batch update CodeArts Req release or iteration plan baseline
+说明：批量处理需求管理的update发布计划baseline。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -12970,7 +13290,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -13012,11 +13332,11 @@ Input JSON Schema:
 
 ### req_batch_update_work_items
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Batch update CodeArts Req work items
+说明：批量处理需求管理的update工作项。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -13030,7 +13350,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -13041,11 +13361,11 @@ Input JSON Schema:
 
 ### req_cancel_project_domain
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Cancel a CodeArts Req project domain association
+说明：取消需求管理的项目领域。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -13059,7 +13379,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -13088,11 +13408,11 @@ Input JSON Schema:
 
 ### req_change_release_plan_status
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Change CodeArts Req release or iteration plan status
+说明：变更需求管理的发布计划状态。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -13106,7 +13426,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -13143,11 +13463,11 @@ Input JSON Schema:
 
 ### req_check_project_name
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Check whether a CodeArts Req project name exists
+说明：检查需求管理的项目name。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -13161,7 +13481,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -13182,11 +13502,11 @@ Input JSON Schema:
 
 ### req_check_work_item_status_name
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Check whether a CodeArts Req work item status name already exists
+说明：检查需求管理的工作项状态name。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -13200,7 +13520,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -13227,11 +13547,11 @@ Input JSON Schema:
 
 ### req_clear_plan_work_items
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Clear work items from a CodeArts Req plan
+说明：清除需求管理的计划工作项。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -13245,7 +13565,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -13274,11 +13594,11 @@ Input JSON Schema:
 
 ### req_copy_work_items
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Copy CodeArts Req work items between projects
+说明：复制需求管理的工作项。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -13292,7 +13612,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -13337,11 +13657,11 @@ Input JSON Schema:
 
 ### req_count_work_item_tree
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Count CodeArts Req work items in tree mode
+说明：统计需求管理的工作项树。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -13355,7 +13675,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -13395,11 +13715,11 @@ Input JSON Schema:
 
 ### req_create_ipd_change_review_form
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Create a CodeArts Req IPD change review form
+说明：创建需求管理的IPDchange评审form。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -13413,7 +13733,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -13558,11 +13878,11 @@ Input JSON Schema:
 
 ### req_create_ipd_feature_set
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Create CodeArts Req IPD feature set
+说明：创建需求管理的IPD特性set。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -13576,7 +13896,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -13610,11 +13930,11 @@ Input JSON Schema:
 
 ### req_create_ipd_issue
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Create CodeArts Req IPD issue
+说明：创建需求管理的IPD工作项。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -13628,7 +13948,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -13729,11 +14049,11 @@ Input JSON Schema:
 
 ### req_create_ipd_label
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Create CodeArts Req IPD label
+说明：创建需求管理的IPD标签。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -13747,7 +14067,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -13789,11 +14109,11 @@ Input JSON Schema:
 
 ### req_create_ipd_module
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Create CodeArts Req IPD module
+说明：创建需求管理的IPD模块。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -13807,7 +14127,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -13849,11 +14169,11 @@ Input JSON Schema:
 
 ### req_create_ipd_process_instance
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Create a CodeArts Req IPD BR/GR process instance
+说明：创建需求管理的IPD流程实例instance。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -13867,7 +14187,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -14004,11 +14324,11 @@ Input JSON Schema:
 
 ### req_create_ipd_work_hour
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Create CodeArts Req IPD work hour record
+说明：创建需求管理的IPD工作工时。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -14022,7 +14342,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -14091,11 +14411,11 @@ Input JSON Schema:
 
 ### req_create_iteration
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Create CodeArts Req iteration
+说明：创建需求管理的迭代。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -14109,7 +14429,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -14152,11 +14472,11 @@ Input JSON Schema:
 
 ### req_create_iteration_work_item
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Create CodeArts Req iteration work item
+说明：创建需求管理的迭代工作项。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -14170,7 +14490,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -14248,11 +14568,11 @@ Input JSON Schema:
 
 ### req_create_plan
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Create CodeArts Req plan
+说明：创建需求管理的计划。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -14266,7 +14586,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -14301,11 +14621,11 @@ Input JSON Schema:
 
 ### req_create_plan_work_item
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Create CodeArts Req plan work item
+说明：创建需求管理的计划工作项。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -14319,7 +14639,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -14404,11 +14724,11 @@ Input JSON Schema:
 
 ### req_create_project
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Create CodeArts Req project
+说明：创建需求管理的项目。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -14422,7 +14742,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -14450,11 +14770,11 @@ Input JSON Schema:
 
 ### req_create_project_domain
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Create CodeArts Req project domain
+说明：创建需求管理的项目领域。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -14468,7 +14788,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -14499,11 +14819,11 @@ Input JSON Schema:
 
 ### req_create_project_module
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Create CodeArts Req project module
+说明：创建需求管理的项目模块。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -14517,7 +14837,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -14560,11 +14880,11 @@ Input JSON Schema:
 
 ### req_create_project_status_config
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Create a CodeArts Req custom project status
+说明：创建需求管理的项目状态配置。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -14578,7 +14898,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -14617,11 +14937,11 @@ Input JSON Schema:
 
 ### req_create_release_plan
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Create CodeArts Req release or iteration plan
+说明：创建需求管理的发布计划。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -14635,7 +14955,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -14703,11 +15023,11 @@ Input JSON Schema:
 
 ### req_create_work_item
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Create CodeArts Req work item
+说明：创建需求管理的工作项。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -14721,7 +15041,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -14798,11 +15118,11 @@ Input JSON Schema:
 
 ### req_create_work_item_template
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Create or update a CodeArts Req work item template
+说明：创建需求管理的工作项模板。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -14816,7 +15136,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -14827,11 +15147,11 @@ Input JSON Schema:
 
 ### req_delete_attachment
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Delete a CodeArts Req work item attachment
+说明：删除需求管理的附件。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -14845,7 +15165,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -14878,11 +15198,11 @@ Input JSON Schema:
 
 ### req_delete_ipd_change_review_form
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Delete a CodeArts Req IPD change review form
+说明：删除需求管理的IPDchange评审form。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -14896,7 +15216,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -14930,11 +15250,11 @@ Input JSON Schema:
 
 ### req_delete_ipd_feature_set
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Delete CodeArts Req IPD feature set
+说明：删除需求管理的IPD特性set。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -14948,7 +15268,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -14977,11 +15297,11 @@ Input JSON Schema:
 
 ### req_delete_ipd_issue_image
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Delete image from CodeArts Req IPD issue description
+说明：删除需求管理的IPD工作项图片。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -14995,7 +15315,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -15029,11 +15349,11 @@ Input JSON Schema:
 
 ### req_delete_ipd_label
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Delete CodeArts Req IPD label
+说明：删除需求管理的IPD标签。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -15047,7 +15367,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -15076,11 +15396,11 @@ Input JSON Schema:
 
 ### req_delete_ipd_module
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Delete CodeArts Req IPD module
+说明：删除需求管理的IPD模块。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -15094,7 +15414,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -15123,11 +15443,11 @@ Input JSON Schema:
 
 ### req_delete_ipd_process_instance
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Delete a CodeArts Req IPD BR/GR process instance
+说明：删除需求管理的IPD流程实例instance。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -15141,7 +15461,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -15170,11 +15490,11 @@ Input JSON Schema:
 
 ### req_delete_ipd_work_hour
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Delete CodeArts Req IPD work hour record
+说明：删除需求管理的IPD工作工时。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -15188,7 +15508,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -15221,11 +15541,11 @@ Input JSON Schema:
 
 ### req_delete_iteration
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Delete CodeArts Req iteration
+说明：删除需求管理的迭代。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -15239,7 +15559,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -15268,11 +15588,11 @@ Input JSON Schema:
 
 ### req_delete_plan
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Delete CodeArts Req plan
+说明：删除需求管理的计划。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -15286,7 +15606,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -15315,11 +15635,11 @@ Input JSON Schema:
 
 ### req_delete_project
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Delete CodeArts Req project
+说明：删除需求管理的项目。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -15333,7 +15653,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -15358,11 +15678,11 @@ Input JSON Schema:
 
 ### req_delete_project_module
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Delete CodeArts Req project module
+说明：删除需求管理的项目模块。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -15376,7 +15696,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -15405,11 +15725,11 @@ Input JSON Schema:
 
 ### req_delete_project_template
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Delete a CodeArts Req project template
+说明：删除需求管理的项目模板。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -15423,7 +15743,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -15448,11 +15768,11 @@ Input JSON Schema:
 
 ### req_delete_work_item
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Delete CodeArts Req work item
+说明：删除需求管理的工作项。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -15466,7 +15786,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -15495,11 +15815,11 @@ Input JSON Schema:
 
 ### req_download_attachment
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Download a CodeArts Req work item attachment
+说明：下载需求管理的附件。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -15513,7 +15833,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -15542,11 +15862,11 @@ Input JSON Schema:
 
 ### req_download_image_file
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Download a CodeArts Req image file
+说明：下载需求管理的图片文件。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -15560,7 +15880,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -15586,11 +15906,11 @@ Input JSON Schema:
 
 ### req_download_ipd_issue_attachment
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Download CodeArts Req IPD issue attachment
+说明：下载需求管理的IPD工作项附件。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -15604,7 +15924,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -15629,11 +15949,11 @@ Input JSON Schema:
 
 ### req_download_ipd_issue_image
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Download image from CodeArts Req IPD issue description
+说明：下载需求管理的IPD工作项图片。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -15647,7 +15967,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -15681,11 +16001,11 @@ Input JSON Schema:
 
 ### req_get_current_user_info
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Get current CodeArts Req user info
+说明：获取需求管理的当前用户信息。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -15699,7 +16019,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -15712,11 +16032,11 @@ Input JSON Schema:
 
 ### req_get_current_user_role
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Get current CodeArts Req user role in a project
+说明：获取需求管理的当前用户角色。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -15730,7 +16050,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -15751,11 +16071,11 @@ Input JSON Schema:
 
 ### req_get_ipd_e2e_graph
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Get CodeArts Req IPD E2E trace graph
+说明：获取需求管理的IPDe2e图。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -15769,7 +16089,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -15802,11 +16122,11 @@ Input JSON Schema:
 
 ### req_get_ipd_issue
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Get CodeArts Req IPD issue detail
+说明：获取需求管理的IPD工作项。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -15820,7 +16140,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -15853,11 +16173,11 @@ Input JSON Schema:
 
 ### req_get_ipd_process_instance
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Get a CodeArts Req IPD process instance
+说明：获取需求管理的IPD流程实例instance。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -15871,7 +16191,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -15896,11 +16216,11 @@ Input JSON Schema:
 
 ### req_get_ipd_project_field_option_used
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Get CodeArts Req IPD project field option usage
+说明：获取需求管理的IPD项目字段optionused。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -15914,7 +16234,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -15940,11 +16260,11 @@ Input JSON Schema:
 
 ### req_get_ipd_review_form
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Get a CodeArts Req IPD review form
+说明：获取需求管理的IPD评审form。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -15958,7 +16278,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -15992,11 +16312,11 @@ Input JSON Schema:
 
 ### req_get_ipd_statistic_dashboard
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Get CodeArts Req IPD statistic dashboard
+说明：获取需求管理的IPD统计dashboard。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -16010,7 +16330,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -16060,11 +16380,11 @@ Input JSON Schema:
 
 ### req_get_ipd_tenant_field_option_used
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Get CodeArts Req IPD tenant field option usage
+说明：获取需求管理的IPD租户字段optionused。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -16078,7 +16398,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -16099,11 +16419,11 @@ Input JSON Schema:
 
 ### req_get_ipd_tenant_field_used
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Get CodeArts Req IPD tenant field usage
+说明：获取需求管理的IPD租户字段used。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -16117,7 +16437,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -16138,11 +16458,11 @@ Input JSON Schema:
 
 ### req_get_ipd_work_item_flow_detail
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Get CodeArts Req IPD work item flow detail
+说明：获取需求管理的IPD工作项流程详情。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -16156,7 +16476,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -16186,11 +16506,11 @@ Input JSON Schema:
 
 ### req_get_ir
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Get a CodeArts Req requirement pool IR detail
+说明：获取需求管理的IR。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -16204,7 +16524,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -16229,11 +16549,11 @@ Input JSON Schema:
 
 ### req_get_iteration
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Get CodeArts Req iteration detail
+说明：获取需求管理的迭代。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -16247,7 +16567,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -16268,11 +16588,11 @@ Input JSON Schema:
 
 ### req_get_plan
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Get CodeArts Req plan detail
+说明：获取需求管理的计划。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -16286,7 +16606,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -16311,11 +16631,11 @@ Input JSON Schema:
 
 ### req_get_project
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Get CodeArts Req project detail
+说明：获取需求管理的项目。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -16329,7 +16649,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -16350,11 +16670,11 @@ Input JSON Schema:
 
 ### req_get_project_bug_density
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Get CodeArts Req project bug density metric
+说明：获取需求管理的项目bug密度。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -16368,7 +16688,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -16434,11 +16754,11 @@ Input JSON Schema:
 
 ### req_get_project_bugs_per_developer
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Get CodeArts Req project bugs per developer metric
+说明：获取需求管理的项目bugsperdeveloper。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -16452,7 +16772,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -16473,11 +16793,11 @@ Input JSON Schema:
 
 ### req_get_project_completion_rate
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Get CodeArts Req project completion rate metric
+说明：获取需求管理的项目completionrate。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -16491,7 +16811,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -16535,11 +16855,11 @@ Input JSON Schema:
 
 ### req_get_project_due_days_after
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Get CodeArts Req project due-days-after config
+说明：获取需求管理的项目duedaysafter。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -16553,7 +16873,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -16574,11 +16894,11 @@ Input JSON Schema:
 
 ### req_get_project_public_config
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Get CodeArts Req project public config
+说明：获取需求管理的项目公共配置。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -16592,7 +16912,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -16613,11 +16933,11 @@ Input JSON Schema:
 
 ### req_get_project_summary
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Get CodeArts Req project summary
+说明：获取需求管理的项目摘要。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -16631,7 +16951,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -16652,11 +16972,11 @@ Input JSON Schema:
 
 ### req_get_project_workhour_config
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Get CodeArts Req project workhour config
+说明：获取需求管理的项目工时配置。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -16670,7 +16990,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -16691,11 +17011,11 @@ Input JSON Schema:
 
 ### req_get_release_plan
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Get CodeArts Req release or iteration plan
+说明：获取需求管理的发布计划。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -16709,7 +17029,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -16734,11 +17054,11 @@ Input JSON Schema:
 
 ### req_get_work_item
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Get CodeArts Req work item detail
+说明：获取需求管理的工作项。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -16752,7 +17072,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -16777,11 +17097,11 @@ Input JSON Schema:
 
 ### req_get_work_item_completion_rate
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Get CodeArts Req work item completion rates
+说明：获取需求管理的工作项completionrate。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -16795,7 +17115,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -16816,11 +17136,11 @@ Input JSON Schema:
 
 ### req_get_work_item_index_counts
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Get CodeArts Req work item index counts
+说明：获取需求管理的工作项索引counts。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -16834,7 +17154,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -16859,11 +17179,11 @@ Input JSON Schema:
 
 ### req_get_work_item_issue_details
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Get CodeArts Req work item issue details from the V2 detail endpoint
+说明：获取需求管理的工作项工作项详情。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -16877,7 +17197,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -16907,11 +17227,11 @@ Input JSON Schema:
 
 ### req_get_work_item_status_rule_flag
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Get CodeArts Req work item status rule flag
+说明：获取需求管理的工作项状态规则flag。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -16925,7 +17245,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -16951,11 +17271,11 @@ Input JSON Schema:
 
 ### req_get_work_item_template_config
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Get CodeArts Req work item template config
+说明：获取需求管理的工作项模板配置。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -16969,7 +17289,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -16995,11 +17315,11 @@ Input JSON Schema:
 
 ### req_group_ipd_issues
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Group CodeArts Req IPD issues
+说明：分组查询需求管理的IPD工作项。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -17013,7 +17333,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -17109,11 +17429,11 @@ Input JSON Schema:
 
 ### req_leave_project
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Leave a CodeArts Req project as the current member
+说明：退出需求管理的项目。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -17127,7 +17447,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -17152,11 +17472,11 @@ Input JSON Schema:
 
 ### req_list_associated_commits
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req associated commits
+说明：查询需求管理的关联提交。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -17170,7 +17490,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -17211,11 +17531,11 @@ Input JSON Schema:
 
 ### req_list_associated_issues
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req associated issues
+说明：查询需求管理的关联工作项。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -17229,7 +17549,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -17265,11 +17585,11 @@ Input JSON Schema:
 
 ### req_list_associated_test_cases
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req associated test cases
+说明：查询需求管理的关联测试用例。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -17283,7 +17603,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -17319,11 +17639,11 @@ Input JSON Schema:
 
 ### req_list_associated_wikis
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req associated wikis
+说明：查询需求管理的关联Wiki。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -17337,7 +17657,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -17373,11 +17693,11 @@ Input JSON Schema:
 
 ### req_list_board_work_item_status_records
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req board work item status records
+说明：查询需求管理的看板工作项状态记录。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -17391,7 +17711,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -17423,11 +17743,11 @@ Input JSON Schema:
 
 ### req_list_board_work_item_workflow_config
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req board work item workflow config
+说明：查询需求管理的看板工作项工作流配置。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -17441,7 +17761,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -17466,11 +17786,11 @@ Input JSON Schema:
 
 ### req_list_board_work_items
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req board work items
+说明：查询需求管理的看板工作项。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -17484,7 +17804,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -17519,11 +17839,11 @@ Input JSON Schema:
 
 ### req_list_cache_data
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req cache data
+说明：查询需求管理的缓存data。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -17537,7 +17857,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -17560,11 +17880,11 @@ Input JSON Schema:
 
 ### req_list_child_work_items
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req child work items
+说明：查询需求管理的子级工作项。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -17578,7 +17898,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -17622,11 +17942,11 @@ Input JSON Schema:
 
 ### req_list_ipd_attached_wikis
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req IPD issue attached wikis
+说明：查询需求管理的IPDattachedWiki。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -17640,7 +17960,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -17668,11 +17988,11 @@ Input JSON Schema:
 
 ### req_list_ipd_category_statuses
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req IPD category statuses
+说明：查询需求管理的IPDcategory状态。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -17686,7 +18006,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -17711,11 +18031,11 @@ Input JSON Schema:
 
 ### req_list_ipd_change_review_issue_approvers
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req IPD change review approvers for an issue
+说明：查询需求管理的IPDchange评审工作项approvers。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -17729,7 +18049,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -17754,11 +18074,11 @@ Input JSON Schema:
 
 ### req_list_ipd_feature_sets
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req IPD feature sets
+说明：查询需求管理的IPD特性sets。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -17772,7 +18092,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -17796,11 +18116,11 @@ Input JSON Schema:
 
 ### req_list_ipd_issue_attachments
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req IPD issue attachments
+说明：查询需求管理的IPD工作项附件。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -17814,7 +18134,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -17842,11 +18162,11 @@ Input JSON Schema:
 
 ### req_list_ipd_issue_fields
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req IPD issue fields
+说明：查询需求管理的IPD工作项字段。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -17860,7 +18180,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -17885,11 +18205,11 @@ Input JSON Schema:
 
 ### req_list_ipd_issue_relation_config
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req IPD issue relation config
+说明：查询需求管理的IPD工作项relation配置。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -17903,7 +18223,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -17924,11 +18244,11 @@ Input JSON Schema:
 
 ### req_list_ipd_issue_tree
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req IPD issue tree
+说明：查询需求管理的IPD工作项树。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -17942,7 +18262,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -18018,11 +18338,11 @@ Input JSON Schema:
 
 ### req_list_ipd_issues
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req IPD issues
+说明：查询需求管理的IPD工作项。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -18036,7 +18356,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -18103,11 +18423,11 @@ Input JSON Schema:
 
 ### req_list_ipd_labels
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req IPD labels
+说明：查询需求管理的IPD标签。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -18121,7 +18441,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -18153,11 +18473,11 @@ Input JSON Schema:
 
 ### req_list_ipd_modules
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req IPD modules
+说明：查询需求管理的IPD模块。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -18171,7 +18491,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -18203,11 +18523,11 @@ Input JSON Schema:
 
 ### req_list_ipd_process_instances
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req IPD process instances
+说明：查询需求管理的IPD流程实例instances。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -18221,7 +18541,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -18303,11 +18623,11 @@ Input JSON Schema:
 
 ### req_list_ipd_project_fields
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req IPD project fields
+说明：查询需求管理的IPD项目字段。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -18321,7 +18641,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -18353,11 +18673,11 @@ Input JSON Schema:
 
 ### req_list_ipd_project_users
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req IPD project users
+说明：查询需求管理的IPD项目用户。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -18371,7 +18691,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -18392,11 +18712,11 @@ Input JSON Schema:
 
 ### req_list_ipd_projects
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req IPD projects
+说明：查询需求管理的IPD项目。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -18410,7 +18730,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -18421,11 +18741,11 @@ Input JSON Schema:
 
 ### req_list_ipd_review_forms
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req IPD review forms
+说明：查询需求管理的IPD评审forms。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -18439,7 +18759,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -18528,11 +18848,11 @@ Input JSON Schema:
 
 ### req_list_ipd_review_role_users
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req IPD review approver or reviewer role users
+说明：查询需求管理的IPD评审角色用户。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -18546,7 +18866,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -18581,11 +18901,11 @@ Input JSON Schema:
 
 ### req_list_ipd_snapshot_features
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req IPD snapshot features
+说明：查询需求管理的IPDsnapshot特性。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -18599,7 +18919,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -18639,11 +18959,11 @@ Input JSON Schema:
 
 ### req_list_ipd_snapshot_versions
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req IPD feature set snapshot versions
+说明：查询需求管理的IPDsnapshot版本。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -18657,7 +18977,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -18678,11 +18998,11 @@ Input JSON Schema:
 
 ### req_list_ipd_statuses
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req IPD statuses
+说明：查询需求管理的IPD状态。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -18696,7 +19016,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -18720,11 +19040,11 @@ Input JSON Schema:
 
 ### req_list_ipd_tenant_fields
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req IPD tenant fields
+说明：查询需求管理的IPD租户字段。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -18738,7 +19058,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -18778,11 +19098,11 @@ Input JSON Schema:
 
 ### req_list_ipd_tenant_issues
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req IPD tenant issues
+说明：查询需求管理的IPD租户工作项。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -18796,7 +19116,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -18888,11 +19208,11 @@ Input JSON Schema:
 
 ### req_list_ipd_work_hour_categories
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req IPD work hour categories
+说明：查询需求管理的IPD工作工时categories。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -18906,7 +19226,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -18931,11 +19251,11 @@ Input JSON Schema:
 
 ### req_list_ipd_work_hours
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req IPD work hour records
+说明：查询需求管理的IPD工作工时。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -18949,7 +19269,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -19005,11 +19325,11 @@ Input JSON Schema:
 
 ### req_list_ipd_workflow_fields
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req IPD workflow fields
+说明：查询需求管理的IPD工作流字段。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -19023,7 +19343,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -19048,11 +19368,11 @@ Input JSON Schema:
 
 ### req_list_ipd_workflow_templates
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req IPD workflow templates
+说明：查询需求管理的IPD工作流模板。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -19066,7 +19386,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -19090,11 +19410,11 @@ Input JSON Schema:
 
 ### req_list_ir_children
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req requirement pool IR children
+说明：查询需求管理的IRchildren。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -19108,7 +19428,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -19149,11 +19469,11 @@ Input JSON Schema:
 
 ### req_list_ir_histories
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req requirement pool IR history records
+说明：查询需求管理的IRhistories。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -19167,7 +19487,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -19199,11 +19519,11 @@ Input JSON Schema:
 
 ### req_list_issue_severities
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req issue severities
+说明：查询需求管理的工作项严重级别。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -19217,7 +19537,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -19230,11 +19550,11 @@ Input JSON Schema:
 
 ### req_list_iteration_status_statistics
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req iteration status statistics
+说明：查询需求管理的迭代状态统计。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -19248,7 +19568,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -19281,11 +19601,11 @@ Input JSON Schema:
 
 ### req_list_iteration_work_items
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req work items in an iteration
+说明：查询需求管理的迭代工作项。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -19299,7 +19619,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -19356,11 +19676,11 @@ Input JSON Schema:
 
 ### req_list_iterations
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req iterations
+说明：查询需求管理的迭代。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -19374,7 +19694,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -19419,11 +19739,11 @@ Input JSON Schema:
 
 ### req_list_job_cache_boards
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req board cache fields
+说明：查询需求管理的任务缓存boards。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -19437,7 +19757,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -19467,11 +19787,11 @@ Input JSON Schema:
 
 ### req_list_not_added_projects
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req projects not yet added to the current domain
+说明：查询需求管理的notadded项目。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -19485,7 +19805,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -19510,11 +19830,11 @@ Input JSON Schema:
 
 ### req_list_optional_work_item_status_configs
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req optional work item status configs
+说明：查询需求管理的可选工作项状态配置。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -19528,7 +19848,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -19554,11 +19874,11 @@ Input JSON Schema:
 
 ### req_list_plan_addable_work_items
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List addable work items for a CodeArts Req plan
+说明：查询需求管理的计划可添加工作项。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -19572,7 +19892,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -19611,11 +19931,11 @@ Input JSON Schema:
 
 ### req_list_plan_work_items
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req work items in a plan
+说明：查询需求管理的计划工作项。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -19629,7 +19949,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -19680,11 +20000,11 @@ Input JSON Schema:
 
 ### req_list_plans
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req plans
+说明：查询需求管理的计划。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -19698,7 +20018,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -19753,11 +20073,11 @@ Input JSON Schema:
 
 ### req_list_program_fields
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req program IR or RR fields
+说明：查询需求管理的program字段。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -19771,7 +20091,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -19797,11 +20117,11 @@ Input JSON Schema:
 
 ### req_list_programs
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req project spaces / programs
+说明：查询需求管理的programs。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -19815,7 +20135,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -19860,11 +20180,11 @@ Input JSON Schema:
 
 ### req_list_project_bug_statistics
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req project bug statistics
+说明：查询需求管理的项目bug统计。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -19878,7 +20198,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -19899,11 +20219,11 @@ Input JSON Schema:
 
 ### req_list_project_demand_statistics
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req project demand statistics
+说明：查询需求管理的项目demand统计。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -19917,7 +20237,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -19938,11 +20258,11 @@ Input JSON Schema:
 
 ### req_list_project_domains
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req project domains
+说明：查询需求管理的项目领域。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -19956,7 +20276,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -19988,11 +20308,11 @@ Input JSON Schema:
 
 ### req_list_project_members
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req project members
+说明：查询需求管理的项目成员。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -20006,7 +20326,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -20051,11 +20371,11 @@ Input JSON Schema:
 
 ### req_list_project_modules
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req project modules
+说明：查询需求管理的项目模块。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -20069,7 +20389,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -20101,11 +20421,11 @@ Input JSON Schema:
 
 ### req_list_project_work_hour_types
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req project work hour types
+说明：查询需求管理的项目工作工时types。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -20119,7 +20439,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -20155,11 +20475,11 @@ Input JSON Schema:
 
 ### req_list_project_work_hours
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req project work hour records
+说明：查询需求管理的项目工作工时。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -20173,7 +20493,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -20225,11 +20545,11 @@ Input JSON Schema:
 
 ### req_list_project_work_item_records
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req project work item records
+说明：查询需求管理的项目工作项记录。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -20243,7 +20563,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -20279,11 +20599,11 @@ Input JSON Schema:
 
 ### req_list_projects
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req projects
+说明：查询需求管理的项目。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -20297,7 +20617,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -20339,11 +20659,11 @@ Input JSON Schema:
 
 ### req_list_related_users
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req related users
+说明：查询需求管理的相关用户。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -20357,7 +20677,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -20378,11 +20698,11 @@ Input JSON Schema:
 
 ### req_list_release_plans
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req release or iteration plans
+说明：查询需求管理的发布计划。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -20396,7 +20716,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -20434,11 +20754,11 @@ Input JSON Schema:
 
 ### req_list_rr_histories
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req requirement pool RR history records
+说明：查询需求管理的RRhistories。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -20452,7 +20772,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -20484,11 +20804,11 @@ Input JSON Schema:
 
 ### req_list_rr_statuses
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req requirement pool RR statuses
+说明：查询需求管理的RR状态。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -20502,7 +20822,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -20532,11 +20852,11 @@ Input JSON Schema:
 
 ### req_list_rrs
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req requirement pool RRs
+说明：查询需求管理的rrs。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -20550,7 +20870,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -20594,11 +20914,11 @@ Input JSON Schema:
 
 ### req_list_user_features
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req user features
+说明：查询需求管理的用户特性。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -20612,7 +20932,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -20633,11 +20953,11 @@ Input JSON Schema:
 
 ### req_list_work_item_comments
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req work item comments
+说明：查询需求管理的工作项评论。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -20651,7 +20971,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -20687,11 +21007,11 @@ Input JSON Schema:
 
 ### req_list_work_item_custom_fields
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req work item custom fields
+说明：查询需求管理的工作项自定义字段。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -20705,7 +21025,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -20730,11 +21050,11 @@ Input JSON Schema:
 
 ### req_list_work_item_records
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req work item records
+说明：查询需求管理的工作项记录。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -20748,7 +21068,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -20789,11 +21109,11 @@ Input JSON Schema:
 
 ### req_list_work_item_status_attributes
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req work item status attributes
+说明：查询需求管理的工作项状态attributes。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -20807,7 +21127,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -20828,11 +21148,11 @@ Input JSON Schema:
 
 ### req_list_work_item_status_configs
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req work item status configs
+说明：查询需求管理的工作项状态配置。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -20846,7 +21166,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -20872,11 +21192,11 @@ Input JSON Schema:
 
 ### req_list_work_item_status_details
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req work item status details
+说明：查询需求管理的工作项状态详情。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -20890,7 +21210,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -20916,11 +21236,11 @@ Input JSON Schema:
 
 ### req_list_work_item_statuses
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req work item statuses
+说明：查询需求管理的工作项状态。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -20934,7 +21254,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -20955,11 +21275,11 @@ Input JSON Schema:
 
 ### req_list_work_item_tags
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req work item tags
+说明：查询需求管理的工作项标签。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -20973,7 +21293,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -21009,11 +21329,11 @@ Input JSON Schema:
 
 ### req_list_work_item_templates
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req work item templates
+说明：查询需求管理的工作项模板。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -21027,7 +21347,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -21052,11 +21372,11 @@ Input JSON Schema:
 
 ### req_list_work_item_tracker_handlers
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req work item tracker handlers
+说明：查询需求管理的工作项trackerhandlers。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -21070,7 +21390,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -21096,11 +21416,11 @@ Input JSON Schema:
 
 ### req_list_work_item_tree
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req work items in tree mode
+说明：查询需求管理的工作项树。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -21114,7 +21434,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -21154,11 +21474,11 @@ Input JSON Schema:
 
 ### req_list_work_item_work_hours
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req work hour records for a work item
+说明：查询需求管理的工作项工作工时。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -21172,7 +21492,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -21197,11 +21517,11 @@ Input JSON Schema:
 
 ### req_list_work_item_workflow_config
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req work item workflow config
+说明：查询需求管理的工作项工作流配置。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -21215,7 +21535,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -21241,11 +21561,11 @@ Input JSON Schema:
 
 ### req_list_work_items
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: List CodeArts Req work items
+说明：查询需求管理的工作项。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -21259,7 +21579,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -21304,11 +21624,11 @@ Input JSON Schema:
 
 ### req_query_iteration_immovable_issues
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Query CodeArts Req iteration immovable issues
+说明：查询需求管理的迭代immovable工作项。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -21322,7 +21642,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -21347,11 +21667,11 @@ Input JSON Schema:
 
 ### req_transfer_ipd_work_item_flow
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Transfer CodeArts Req IPD work item flow
+说明：流转需求管理的IPD工作项流程。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -21365,7 +21685,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -21408,11 +21728,11 @@ Input JSON Schema:
 
 ### req_update_cache_data
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Update CodeArts Req cache data
+说明：更新需求管理的缓存data。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -21426,7 +21746,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -21437,11 +21757,11 @@ Input JSON Schema:
 
 ### req_update_ipd_change_review_form
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Update a CodeArts Req IPD change review form
+说明：更新需求管理的IPDchange评审form。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -21455,7 +21775,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -21552,11 +21872,11 @@ Input JSON Schema:
 
 ### req_update_ipd_feature_set
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Update CodeArts Req IPD feature set
+说明：更新需求管理的IPD特性set。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -21570,7 +21890,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -21610,11 +21930,11 @@ Input JSON Schema:
 
 ### req_update_ipd_label
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Update CodeArts Req IPD label
+说明：更新需求管理的IPD标签。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -21628,7 +21948,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -21639,11 +21959,11 @@ Input JSON Schema:
 
 ### req_update_ipd_module
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Update CodeArts Req IPD module
+说明：更新需求管理的IPD模块。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -21657,7 +21977,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -21703,11 +22023,11 @@ Input JSON Schema:
 
 ### req_update_ipd_process_instance
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Update a CodeArts Req IPD BR/GR process instance
+说明：更新需求管理的IPD流程实例instance。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -21721,7 +22041,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -21845,11 +22165,11 @@ Input JSON Schema:
 
 ### req_update_ipd_project_field
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Update CodeArts Req IPD project field
+说明：更新需求管理的IPD项目字段。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -21863,7 +22183,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -21874,11 +22194,11 @@ Input JSON Schema:
 
 ### req_update_ipd_tenant_field
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Update CodeArts Req IPD tenant field
+说明：更新需求管理的IPD租户字段。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -21892,7 +22212,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -21903,11 +22223,11 @@ Input JSON Schema:
 
 ### req_update_ipd_work_hour
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Update CodeArts Req IPD work hour record
+说明：更新需求管理的IPD工作工时。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -21921,7 +22241,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -21932,11 +22252,11 @@ Input JSON Schema:
 
 ### req_update_iteration
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Update CodeArts Req iteration
+说明：更新需求管理的迭代。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -21950,7 +22270,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -22003,11 +22323,11 @@ Input JSON Schema:
 
 ### req_update_iteration_state
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Update CodeArts Req iteration state
+说明：更新需求管理的迭代state。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -22021,7 +22341,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -22068,11 +22388,11 @@ Input JSON Schema:
 
 ### req_update_plan
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Update CodeArts Req plan
+说明：更新需求管理的计划。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -22086,7 +22406,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -22120,11 +22440,11 @@ Input JSON Schema:
 
 ### req_update_plan_image
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Update image for a CodeArts Req plan
+说明：更新需求管理的计划图片。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -22138,7 +22458,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -22172,11 +22492,11 @@ Input JSON Schema:
 
 ### req_update_project
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Update CodeArts Req project
+说明：更新需求管理的项目。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -22190,7 +22510,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -22223,11 +22543,11 @@ Input JSON Schema:
 
 ### req_update_project_domain
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Update CodeArts Req project domain
+说明：更新需求管理的项目领域。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -22241,7 +22561,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -22276,11 +22596,11 @@ Input JSON Schema:
 
 ### req_update_project_member_role
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Update a CodeArts Req project member role
+说明：更新需求管理的项目成员角色。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -22294,7 +22614,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -22336,11 +22656,11 @@ Input JSON Schema:
 
 ### req_update_project_module
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Update CodeArts Req project module
+说明：更新需求管理的项目模块。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -22354,7 +22674,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -22397,11 +22717,11 @@ Input JSON Schema:
 
 ### req_update_project_template
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Update a CodeArts Req project template
+说明：更新需求管理的项目模板。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -22415,7 +22735,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -22426,11 +22746,11 @@ Input JSON Schema:
 
 ### req_update_release_plan
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Update CodeArts Req release or iteration plan
+说明：更新需求管理的发布计划。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -22444,7 +22764,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -22532,11 +22852,11 @@ Input JSON Schema:
 
 ### req_update_tracker_config
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Update a CodeArts Req tracker status config position
+说明：更新需求管理的tracker配置。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -22550,7 +22870,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -22589,11 +22909,11 @@ Input JSON Schema:
 
 ### req_update_work_item
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Update CodeArts Req work item
+说明：更新需求管理的工作项。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -22607,7 +22927,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -22687,11 +23007,11 @@ Input JSON Schema:
 
 ### req_update_work_item_comment
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Update a CodeArts Req work item comment
+说明：更新需求管理的工作项评论。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -22705,7 +23025,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -22743,11 +23063,11 @@ Input JSON Schema:
 
 ### req_update_work_item_flow
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Update CodeArts Req work item flow
+说明：更新需求管理的工作项流程。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -22761,7 +23081,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -22795,11 +23115,11 @@ Input JSON Schema:
 
 ### req_update_working_hours
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Update a CodeArts Req work item work hour record
+说明：更新需求管理的工作工时。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -22813,7 +23133,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -22868,11 +23188,11 @@ Input JSON Schema:
 
 ### req_upload_attachment
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Upload a CodeArts Req work item attachment
+说明：上传需求管理的附件。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -22886,7 +23206,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -22920,11 +23240,11 @@ Input JSON Schema:
 
 ### req_upload_ipd_issue_attachment
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Upload attachment to CodeArts Req IPD issue
+说明：上传需求管理的IPD工作项附件。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -22938,7 +23258,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -22972,11 +23292,11 @@ Input JSON Schema:
 
 ### req_upload_ipd_issue_image
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Upload image to CodeArts Req IPD issue description
+说明：上传需求管理的IPD工作项图片。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -22990,7 +23310,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -23024,11 +23344,11 @@ Input JSON Schema:
 
 ### req_upload_work_item_image
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Upload an image for CodeArts Req work items
+说明：上传需求管理的工作项图片。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -23042,7 +23362,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -23072,11 +23392,11 @@ Input JSON Schema:
 
 ### req_validate_module_name
 
-Module: `Req`
+所属模块：`需求管理`
 
-Description: Validate whether a CodeArts Req module name already exists
+说明：校验需求管理的模块name。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -23090,7 +23410,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -23117,11 +23437,11 @@ Input JSON Schema:
 
 ### testplan_get_case
 
-Module: `TestPlan`
+所属模块：`测试计划`
 
-Description: Get CodeArts TestPlan case detail
+说明：获取测试计划的用例。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -23135,7 +23455,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -23160,11 +23480,11 @@ Input JSON Schema:
 
 ### testplan_get_plan
 
-Module: `TestPlan`
+所属模块：`测试计划`
 
-Description: Get CodeArts TestPlan plan detail
+说明：获取测试计划的计划。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -23178,7 +23498,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -23203,11 +23523,11 @@ Input JSON Schema:
 
 ### testplan_list_cases
 
-Module: `TestPlan`
+所属模块：`测试计划`
 
-Description: List CodeArts TestPlan cases
+说明：查询测试计划的用例。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -23221,7 +23541,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -23315,11 +23635,11 @@ Input JSON Schema:
 
 ### testplan_list_issues
 
-Module: `TestPlan`
+所属模块：`测试计划`
 
-Description: List CodeArts TestPlan requirement tree
+说明：查询测试计划的工作项。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -23333,7 +23653,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -23382,11 +23702,11 @@ Input JSON Schema:
 
 ### testplan_list_plans
 
-Module: `TestPlan`
+所属模块：`测试计划`
 
-Description: List CodeArts TestPlan plans
+说明：查询测试计划的计划。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -23400,7 +23720,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -23445,11 +23765,11 @@ Input JSON Schema:
 
 ### testplan_list_runs
 
-Module: `TestPlan`
+所属模块：`测试计划`
 
-Description: List CodeArts TestPlan runs
+说明：查询测试计划的运行。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -23463,7 +23783,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {
@@ -23512,11 +23832,11 @@ Input JSON Schema:
 
 ### testplan_run_cases
 
-Module: `TestPlan`
+所属模块：`测试计划`
 
-Description: Run CodeArts TestPlan cases
+说明：运行测试计划的用例。
 
-Call example:
+调用示例：
 
 ```json
 {
@@ -23530,7 +23850,7 @@ Call example:
 }
 ```
 
-Input JSON Schema:
+输入 JSON Schema：
 
 ```json
 {

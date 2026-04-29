@@ -346,4 +346,102 @@ describe("createRepoClient", () => {
     });
   });
 
+  it("uses the official personal repository import records path and query", async () => {
+    let requestedPath = "";
+    const client = createRepoClient({
+      get: async (path: string) => {
+        requestedPath = path;
+        return [
+          {
+            id: 1,
+            state: "finished",
+            repository: { id: 2, name: "demo" },
+            source_type: "github"
+          }
+        ];
+      }
+    } as never);
+
+    const result = await client.listPersonalRepositoryImportRecords({
+      page: 2,
+      page_size: 50,
+      state: "finished",
+      source_type: "github",
+      search: "demo",
+      order_by: "created_at",
+      sort: "desc"
+    });
+
+    expect(requestedPath).toContain("/v4/user/repository-import-records?");
+    expect(requestedPath).toContain("offset=50");
+    expect(requestedPath).toContain("limit=50");
+    expect(requestedPath).toContain("state=finished");
+    expect(requestedPath).toContain("source_type=github");
+    expect(requestedPath).toContain("search=demo");
+    expect(requestedPath).toContain("order_by=created_at");
+    expect(requestedPath).toContain("sort=desc");
+    expect(result.records[0]?.repository?.name).toBe("demo");
+    expect(result.total).toBe(1);
+  });
+
+  it("calls remote mirror endpoints with normalized bodies", async () => {
+    const calls: Array<{ method: string; path: string; body?: Record<string, unknown> }> = [];
+    const client = createRepoClient({
+      get: async (path: string) => {
+        calls.push({ method: "get", path });
+        return { id: 1, repository_id: 2, url: "https://example.com/repo.git" };
+      },
+      post: async (path: string, body: Record<string, unknown>) => {
+        calls.push({ method: "post", path, body });
+        return path.endsWith("/associate")
+          ? { id: 1, repository_id: 2, url: body.url as string }
+          : { jid: "job-1" };
+      },
+      put: async (path: string, body: Record<string, unknown>) => {
+        calls.push({ method: "put", path, body });
+        return { url: body.url as string, mirroring_enabled: body.mirroring_enabled as boolean };
+      }
+    } as never);
+
+    await client.associateRemoteMirror({ repository_id: "repo-1", url: "https://example.com/repo.git" });
+    await client.startRemoteMirrorSynchronization({
+      repository_id: "repo-1",
+      endpoint_uuid: "endpoint-1",
+      force_fetch: true
+    });
+    await client.getRemoteMirror({ repository_id: "repo-1" });
+    await client.updateRemoteMirror({
+      repository_id: "repo-1",
+      url: "https://example.com/updated.git",
+      mirroring_enabled: true,
+      sync_branch_type: "default"
+    });
+
+    expect(calls).toEqual([
+      {
+        method: "post",
+        path: "/v4/repositories/repo-1/remote-mirror/associate",
+        body: { url: "https://example.com/repo.git" }
+      },
+      {
+        method: "post",
+        path: "/v4/repositories/repo-1/remote-mirror",
+        body: { endpoint_uuid: "endpoint-1", force_fetch: true }
+      },
+      {
+        method: "get",
+        path: "/v4/repositories/repo-1/remote-mirror"
+      },
+      {
+        method: "put",
+        path: "/v4/repositories/repo-1/remote-mirror",
+        body: {
+          url: "https://example.com/updated.git",
+          mirroring_enabled: true,
+          sync_branch_type: "default"
+        }
+      }
+    ]);
+  });
+
 });

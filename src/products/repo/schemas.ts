@@ -47,6 +47,48 @@ export const repoCreateRepositoryInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const repoListPersonalRepositoryImportRecordsInput = pagingSchema.extend({
+  state: z.enum(["finished", "fail", "importing"]).optional(),
+  source_type: z
+    .enum(["gitee", "self_managed_gitlab", "gitlab", "github", "git", "svn", "coding", "bitbucket", "gerrit", "codeup"])
+    .optional(),
+  created_after: z.string().min(1).optional(),
+  created_before: z.string().min(1).optional(),
+  finished_after: z.string().min(1).optional(),
+  finished_before: z.string().min(1).optional(),
+  search: z.string().min(1).optional(),
+  order_by: z.enum(["created_at", "source_repo_name", "size"]).optional(),
+  sort: z.enum(["asc", "desc"]).optional()
+});
+
+export const repoAssociateRemoteMirrorInput = z.object({
+  repository_id: idSchema,
+  url: z.string().min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoStartRemoteMirrorSynchronizationInput = z.object({
+  repository_id: idSchema,
+  username: z.string().min(1).optional(),
+  password: z.string().min(1).optional(),
+  endpoint_uuid: z.string().min(1).optional(),
+  force_fetch: z.boolean().optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoGetRemoteMirrorInput = z.object({
+  repository_id: idSchema
+});
+
+export const repoUpdateRemoteMirrorInput = z.object({
+  repository_id: idSchema,
+  url: z.string().min(1).optional(),
+  sync_branch_type: z.enum(["all", "default"]).optional(),
+  mirroring_enabled: z.boolean().optional(),
+  endpoint_uuid: z.string().min(1).optional(),
+  dry_run: z.boolean().default(true)
+});
+
 export const repoDeleteTagInput = z.object({
   repository_id: idSchema,
   tag_name: z.string().min(1),

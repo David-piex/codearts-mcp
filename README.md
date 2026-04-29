@@ -229,9 +229,9 @@ node dist/src/server/index.js
 
 <!-- GENERATED:readme-exposure-summary:start -->
 - `8` product modules
-- `410` product tools
+- `415` product tools
 - `2` session/auth tools for shared `http` mode
-- `412` total MCP tools in shared `http` mode
+- `417` total MCP tools in shared `http` mode
 <!-- GENERATED:readme-exposure-summary:end -->
 
 工具读写分布：读操作 177 (63.7%) / 写操作 101 (36.3%)
@@ -240,7 +240,7 @@ node dist/src/server/index.js
 | Module | Tools | Live status | Current breakdown |
 | --- | --- | --- | --- |
 | Req | 200 | Partial | Expanded Req surface with current-user info/role and user-feature reads, project bug/summary/statistics/metric reads, project domain reads, work-item-tree count/list, work-item tag/index-count reads, project work-item history reads, child work-item reads, work-hours/work-hour-type reads, issue image upload/download, attachment upload/download/delete, associated wiki reads, plan work-item management, plan image update, plan-context work item creation, work-item template/copy writes, project-template update/delete writes, project due-days-after/workhour-config reads, status-name check, status/status-attribute/status-detail/workflow-config/template/template-config/custom-field/status-rule-flag/status-config/optional-status-config/tracker-handler and project-public-config reads plus field/cache reads and board work-item reads; see `docs/wiki/Req-Live-Validated.md` for validated paths and remaining live-depth gaps |
-| Repo | 25 | Validated | `25 Full / 0 Reachable / 0 Unpublished / 0 Code` |
+| Repo | 30 | Validated | `25 Full / 0 Reachable / 0 Unpublished / 0 Code` |
 | Pipeline | 77 | Partial | `16 Full / 0 Reachable / 0 Unpublished / 51 Code` |
 | Check | 8 | Validated | `8 Full` |
 | TestPlan | 7 | Partial | `1 Full / 2 Reachable / 4 Unpublished / 0 Code` |

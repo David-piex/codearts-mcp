@@ -1,4 +1,5 @@
 export const repoToolNames = [
+  "repo_associate_remote_mirror",
   "repo_compare_refs",
   "repo_close_merge_request",
   "repo_delete_tag",
@@ -7,7 +8,9 @@ export const repoToolNames = [
   "repo_create_merge_request_discussion",
   "repo_create_merge_request",
   "repo_get_branch",
+  "repo_get_remote_mirror",
   "repo_list_events",
+  "repo_list_personal_repository_import_records",
   "repo_list_protected_branches",
   "repo_list_repository_labels",
   "repo_list_tags",
@@ -23,5 +26,7 @@ export const repoToolNames = [
   "repo_get_commit",
   "repo_get_file",
   "repo_list_merge_requests",
-  "repo_get_merge_request"
+  "repo_get_merge_request",
+  "repo_start_remote_mirror_synchronization",
+  "repo_update_remote_mirror"
 ];

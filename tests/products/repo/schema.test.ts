@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { repoCreateMergeRequestInput, repoListCommitsInput, repoMergeMergeRequestInput } from "../../../src/products/repo/schemas.js";
+import {
+  repoCreateMergeRequestInput,
+  repoListCommitsInput,
+  repoListPersonalRepositoryImportRecordsInput,
+  repoMergeMergeRequestInput,
+  repoStartRemoteMirrorSynchronizationInput,
+  repoUpdateRemoteMirrorInput
+} from "../../../src/products/repo/schemas.js";
 
 describe("repo schemas", () => {
   it("accepts official commit list query fields", () => {
@@ -68,6 +75,52 @@ describe("repo schemas", () => {
       merge_commit_message: "Merge feature/demo",
       squash_commit_message: "Squash feature/demo",
       should_remove_source_branch: true
+    });
+  });
+
+  it("accepts repository import record filters", () => {
+    const parsed = repoListPersonalRepositoryImportRecordsInput.parse({
+      page: 2,
+      page_size: 50,
+      state: "finished",
+      source_type: "github",
+      created_after: "2026-01-01T00:00:00Z",
+      finished_before: "2026-02-01T00:00:00Z",
+      search: "demo",
+      order_by: "created_at",
+      sort: "desc"
+    });
+
+    expect(parsed).toMatchObject({
+      page: 2,
+      page_size: 50,
+      state: "finished",
+      source_type: "github",
+      order_by: "created_at",
+      sort: "desc"
+    });
+  });
+
+  it("defaults remote mirror write tools to dry run", () => {
+    expect(
+      repoStartRemoteMirrorSynchronizationInput.parse({
+        repository_id: "repo-1",
+        endpoint_uuid: "endpoint-1",
+        force_fetch: true
+      })
+    ).toMatchObject({
+      dry_run: true
+    });
+
+    expect(
+      repoUpdateRemoteMirrorInput.parse({
+        repository_id: "repo-1",
+        mirroring_enabled: true,
+        sync_branch_type: "all"
+      })
+    ).toMatchObject({
+      dry_run: true,
+      sync_branch_type: "all"
     });
   });
 });

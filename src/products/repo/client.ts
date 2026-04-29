@@ -4,6 +4,39 @@ import { normalizeProviderError } from "../../core/errors/app-error.js";
 import { recordRequestCacheHit } from "../../server/request-context.js";
 import type { ReturnTypeCreateHttpClient } from "../types.js";
 
+type RepoRemoteMirror = {
+  id?: number | string;
+  repository_id?: number | string;
+  update_status?: string;
+  last_update_at?: string;
+  url?: string;
+  last_successful_update_at?: string;
+  number_of_failures?: number;
+  mirroring_enabled?: boolean;
+  is_private?: boolean;
+  endpoint_uuid?: string;
+  last_error?: string;
+  sync_branch_type?: string;
+};
+
+type RepoImportRecord = {
+  id: number | string;
+  state?: string;
+  repository?: {
+    id?: number | string;
+    name?: string;
+    ssh_url_to_repo?: string;
+    http_url_to_repo?: string;
+    web_url?: string;
+  };
+  origin_full_name?: string;
+  source_url?: string;
+  source_type?: string;
+  created_at?: string;
+  finished_at?: string;
+  target_project_id?: string;
+};
+
 export type RepoClient = {
   getBranch: (input: { repository_id: string; branch_name: string }) => Promise<{
     name: string;
@@ -118,6 +151,45 @@ export type RepoClient = {
     repository_uuid: string;
     project_uuid?: string;
   }>;
+  listPersonalRepositoryImportRecords: (input: {
+    page: number;
+    page_size: number;
+    state?: string;
+    source_type?: string;
+    created_after?: string;
+    created_before?: string;
+    finished_after?: string;
+    finished_before?: string;
+    search?: string;
+    order_by?: string;
+    sort?: string;
+  }) => Promise<{
+    records: RepoImportRecord[];
+    total?: number;
+  }>;
+  associateRemoteMirror: (input: {
+    repository_id: string;
+    url: string;
+  }) => Promise<RepoRemoteMirror>;
+  startRemoteMirrorSynchronization: (input: {
+    repository_id: string;
+    username?: string;
+    password?: string;
+    endpoint_uuid?: string;
+    force_fetch?: boolean;
+  }) => Promise<{
+    jid: string;
+  }>;
+  getRemoteMirror: (input: {
+    repository_id: string;
+  }) => Promise<RepoRemoteMirror>;
+  updateRemoteMirror: (input: {
+    repository_id: string;
+    url?: string;
+    sync_branch_type?: "all" | "default";
+    mirroring_enabled?: boolean;
+    endpoint_uuid?: string;
+  }) => Promise<RepoRemoteMirror>;
   listRepositoryLabels: (input: {
     repository_id: string;
   }) => Promise<{
@@ -403,6 +475,20 @@ function omitUndefinedFields(
   return Object.fromEntries(
     Object.entries(input).filter(([, value]) => value !== undefined)
   );
+}
+
+function appendOptionalQuery(
+  query: URLSearchParams,
+  input: Record<string, unknown>,
+  keys: string[]
+) {
+  for (const key of keys) {
+    const value = input[key];
+
+    if (value !== undefined) {
+      query.set(key, String(value));
+    }
+  }
 }
 
 type RepoClientOptions = {
@@ -710,6 +796,82 @@ export function createRepoClient(
         repository_uuid: result.repository_uuid,
         project_uuid: result.project_uuid ?? input.project_uuid
       };
+    },
+    async listPersonalRepositoryImportRecords(input) {
+      const offset = (input.page - 1) * input.page_size;
+      const query = new URLSearchParams({
+        offset: String(offset),
+        limit: String(input.page_size)
+      });
+      appendOptionalQuery(query, input, [
+        "state",
+        "source_type",
+        "created_after",
+        "created_before",
+        "finished_after",
+        "finished_before",
+        "search",
+        "order_by",
+        "sort"
+      ]);
+
+      const response = (await _http.get(
+        `/v4/user/repository-import-records?${query.toString()}`
+      )) as
+        | RepoImportRecord[]
+        | {
+            records?: RepoImportRecord[];
+            repository_import_records?: RepoImportRecord[];
+            total?: number;
+          };
+
+      const records = Array.isArray(response)
+        ? response
+        : response.repository_import_records ?? response.records ?? [];
+
+      return {
+        records,
+        total: Array.isArray(response) ? records.length : response.total ?? records.length
+      };
+    },
+    async associateRemoteMirror(input) {
+      return (await _http.post(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/remote-mirror/associate`,
+        {
+          url: input.url
+        }
+      )) as RepoRemoteMirror;
+    },
+    async startRemoteMirrorSynchronization(input) {
+      const response = (await _http.post(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/remote-mirror`,
+        omitUndefinedFields({
+          username: input.username,
+          password: input.password,
+          endpoint_uuid: input.endpoint_uuid,
+          force_fetch: input.force_fetch
+        })
+      )) as { jid?: string };
+
+      return {
+        jid: response.jid ?? ""
+      };
+    },
+    async getRemoteMirror(input) {
+      return (await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/remote-mirror`
+      )) as RepoRemoteMirror;
+    },
+    async updateRemoteMirror(input) {
+      return (await _http.put(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/remote-mirror`,
+        omitUndefinedFields({
+          url: input.url,
+          sync_branch_type: input.sync_branch_type,
+          mirroring_enabled: input.mirroring_enabled,
+          endpoint_uuid: input.endpoint_uuid
+        })
+      )) as RepoRemoteMirror;
     },
     async listRepositoryLabels(input) {
       const response = (await _http.get(
