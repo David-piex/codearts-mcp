@@ -28,10 +28,10 @@
 | 代码检查 | 8 |
 | 部署 | 59 |
 | 流水线 | 77 |
-| 代码仓库 | 30 |
+| 代码仓库 | 31 |
 | 需求管理 | 200 |
 | 测试计划 | 7 |
-| **总计** | **417** |
+| **总计** | **418** |
 
 ## API 清单
 
@@ -13496,6 +13496,114 @@
   "required": [
     "repository_id",
     "tag_name"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### repo_import_repository
+
+所属模块：`代码仓库`
+
+说明：从 GitHub、GitLab、Gitee、Bitbucket、Coding、Codeup 或通用 Git/SVN HTTPS 地址导入仓库到 CodeArts Repo。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_import_repository",
+    "arguments": {
+      "project_uuid": "<project_uuid>",
+      "name": "<name>",
+      "source_type": "<source_type>",
+      "source_url": "<source_url>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_uuid` | 是 | `string` |  | CodeArts 项目的 UUID，用于创建代码仓或定位项目资源。 |
+| `name` | 是 | `string` |  | 资源名称。 |
+| `source_type` | 是 | `"gitee" \| "self_managed_gitlab" \| "gitlab" \| "github" \| "git" \| "svn" \| "coding" \| "bitbucket" \| "gerrit" \| "codeup"` |  | 导入来源类型，例如 gitee、github、gitlab、git、svn 等。可选值：`gitee`、`self_managed_gitlab`、`gitlab`、`github`、`git`、`svn`、`coding`、`bitbucket`、`gerrit`、`codeup`。 |
+| `source_url` | 是 | `string` |  | 待导入的源仓库 HTTPS URL；工具会按 CodeArts Repo 要求转换为 Base64 import_url。 |
+| `import_members` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `visibility_level` | 否 | `0 \| 20` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`0`、`20`。 |
+| `description` | 否 | `string` |  | 资源描述信息。 |
+| `caller` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_uuid": {
+      "type": "string",
+      "minLength": 1
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+    },
+    "source_type": {
+      "type": "string",
+      "enum": [
+        "gitee",
+        "self_managed_gitlab",
+        "gitlab",
+        "github",
+        "git",
+        "svn",
+        "coding",
+        "bitbucket",
+        "gerrit",
+        "codeup"
+      ]
+    },
+    "source_url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "import_members": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "visibility_level": {
+      "type": "number",
+      "enum": [
+        0,
+        20
+      ]
+    },
+    "description": {
+      "type": "string"
+    },
+    "caller": {
+      "type": "string",
+      "minLength": 1
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "project_uuid",
+    "name",
+    "source_type",
+    "source_url"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

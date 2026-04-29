@@ -282,6 +282,7 @@ function getChineseResourceLabel(parts: string[]) {
 function describeToolInChinese(toolName: string) {
   const exactDescriptions: Record<string, string> = {
     repo_list_personal_repository_import_records: "查询当前用户的代码仓导入记录。",
+    repo_import_repository: "从 GitHub、GitLab、Gitee、Bitbucket、Coding、Codeup 或通用 Git/SVN HTTPS 地址导入仓库到 CodeArts Repo。",
     repo_associate_remote_mirror: "关联代码仓远程镜像地址。",
     repo_start_remote_mirror_synchronization: "启动代码仓远程镜像同步任务。",
     repo_get_remote_mirror: "获取代码仓远程镜像配置和同步状态。",
@@ -352,6 +353,8 @@ function describeParameter(name: string) {
     finished_after: "完成时间下界，通常使用 ISO 8601 时间字符串。",
     finished_before: "完成时间上界，通常使用 ISO 8601 时间字符串。",
     source_type: "导入来源类型，例如 gitee、github、gitlab、git、svn 等。",
+    source_url: "待导入的源仓库 HTTPS URL；工具会按 CodeArts Repo 要求转换为 Base64 import_url。",
+    importUrlEncoding: "导入 URL 的编码方式。",
     source_branch: "源分支名称。",
     target_branch: "目标分支名称。",
     target_project_id: "目标项目 ID。",

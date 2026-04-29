@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   repoCreateMergeRequestInput,
+  repoImportRepositoryInput,
   repoListCommitsInput,
   repoListPersonalRepositoryImportRecordsInput,
   repoMergeMergeRequestInput,
@@ -99,6 +100,36 @@ describe("repo schemas", () => {
       order_by: "created_at",
       sort: "desc"
     });
+  });
+
+  it("accepts explicit repository import requests", () => {
+    const parsed = repoImportRepositoryInput.parse({
+      project_uuid: "project-1",
+      name: "demo-repo",
+      source_type: "github",
+      source_url: "https://github.com/example/demo.git",
+      visibility_level: 20
+    });
+
+    expect(parsed).toMatchObject({
+      project_uuid: "project-1",
+      name: "demo-repo",
+      source_type: "github",
+      source_url: "https://github.com/example/demo.git",
+      visibility_level: 20,
+      dry_run: true
+    });
+  });
+
+  it("rejects non-HTTPS repository import URLs", () => {
+    expect(() =>
+      repoImportRepositoryInput.parse({
+        project_uuid: "project-1",
+        name: "demo-repo",
+        source_type: "github",
+        source_url: "http://github.com/example/demo.git"
+      })
+    ).toThrow("Repository import source_url must be an HTTPS URL");
   });
 
   it("defaults remote mirror write tools to dry run", () => {

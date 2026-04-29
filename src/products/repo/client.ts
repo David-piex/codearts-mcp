@@ -477,6 +477,24 @@ function omitUndefinedFields(
   );
 }
 
+function normalizeRepositoryImportUrl(importUrl: string | undefined) {
+  if (!importUrl) {
+    return undefined;
+  }
+
+  try {
+    const parsed = new URL(importUrl);
+
+    if (parsed.protocol === "http:" || parsed.protocol === "https:") {
+      return Buffer.from(importUrl, "utf8").toString("base64");
+    }
+  } catch {
+    return importUrl;
+  }
+
+  return importUrl;
+}
+
 function appendOptionalQuery(
   query: URLSearchParams,
   input: Record<string, unknown>,
@@ -752,7 +770,7 @@ export function createRepoClient(
           import_members: input.import_members,
           template_id: input.template_id,
           visibility_level: input.visibility_level,
-          import_url: input.import_url,
+          import_url: normalizeRepositoryImportUrl(input.import_url),
           description: input.description,
           gitignore_id: input.gitignore_id,
           license_id: input.license_id,

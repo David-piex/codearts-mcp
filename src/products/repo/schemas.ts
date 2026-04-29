@@ -1,6 +1,19 @@
 import { z } from "zod";
 import { idSchema, pagingSchema } from "../../contracts/common-schemas.js";
 
+export const repoImportSourceType = z.enum([
+  "gitee",
+  "self_managed_gitlab",
+  "gitlab",
+  "github",
+  "git",
+  "svn",
+  "coding",
+  "bitbucket",
+  "gerrit",
+  "codeup"
+]);
+
 export const repoListRepositoriesInput = pagingSchema.extend({
   project_id: idSchema
 });
@@ -47,11 +60,26 @@ export const repoCreateRepositoryInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const repoImportRepositoryInput = z.object({
+  project_uuid: idSchema,
+  name: z
+    .string()
+    .min(1)
+    .regex(/^[A-Za-z][A-Za-z0-9_-]*$/, "Repository name must start with a letter and use letters, numbers, hyphens, or underscores"),
+  source_type: repoImportSourceType,
+  source_url: z.string().url().refine((value) => new URL(value).protocol === "https:", {
+    message: "Repository import source_url must be an HTTPS URL"
+  }),
+  import_members: z.number().int().min(0).max(1).optional(),
+  visibility_level: z.union([z.literal(0), z.literal(20)]).optional(),
+  description: z.string().optional(),
+  caller: z.string().min(1).optional(),
+  dry_run: z.boolean().default(true)
+});
+
 export const repoListPersonalRepositoryImportRecordsInput = pagingSchema.extend({
   state: z.enum(["finished", "fail", "importing"]).optional(),
-  source_type: z
-    .enum(["gitee", "self_managed_gitlab", "gitlab", "github", "git", "svn", "coding", "bitbucket", "gerrit", "codeup"])
-    .optional(),
+  source_type: repoImportSourceType.optional(),
   created_after: z.string().min(1).optional(),
   created_before: z.string().min(1).optional(),
   finished_after: z.string().min(1).optional(),

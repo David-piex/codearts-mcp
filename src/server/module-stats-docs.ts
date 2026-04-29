@@ -55,7 +55,7 @@ const readWriteMatrixMeta: Record<ModuleName, ReadWriteMatrixMeta> = {
   Repo: {
     live: "Partial",
     keyGaps:
-      "The original 25 Repo collaboration tools have real AK/SK validation; the 5 repository import / remote mirror tools are implemented and unit-tested, but still need dedicated live samples"
+      "The original 25 Repo collaboration tools have real AK/SK validation; the 6 repository import / remote mirror tools are implemented and unit-tested, but still need dedicated live samples"
   },
   Pipeline: {
     live: "Partial",
@@ -96,7 +96,7 @@ const implementationStatusMeta: Record<ModuleName, ImplementationStatusMeta> = {
   Repo: {
     live: "Partial",
     notes:
-      "The original 25 Repo collaboration tools are live-validated, including `repo_create_repository` through the HTTP MCP session on the writable sampled project. The 5 repository import / remote mirror tools are implemented and covered by unit regression tests, but still need dedicated live samples before being marked AK/SK Full."
+      "The original 25 Repo collaboration tools are live-validated, including `repo_create_repository` through the HTTP MCP session on the writable sampled project. The 6 repository import / remote mirror tools are implemented and covered by unit regression tests, but still need dedicated live samples before being marked AK/SK Full."
   },
   Pipeline: {
     live: "Partial",
@@ -137,7 +137,7 @@ const toolStatusSummaryMeta: Record<ModuleName, ToolStatusSummaryMeta> = {
       "The Req MCP surface has grown from the original 8-tool core to current-user info/role and user-feature reads, project/module/member/project-domain/iteration/plan/work-item/work-item-tree/project-wide-record-history/child-work-item collaboration, work-item tag/index-count reads, project bug/demand-statistic/project summary/project bug-density/project bugs-per-developer/project completion-rate/work-item completion-rate reads, work-hours/work-hour-type reads, issue image upload/download, attachment upload/download/delete, associated issue/test-case/wiki reads, plan work-item management, plan image update, plan-context work item creation, work-item template/copy writes, project-template update/delete writes, project due-days-after/workhour-config reads, status-name check, status/status-attribute/status-detail/workflow-config/template/template-config/custom-field/status-rule-flag/status-config/optional-status-config/tracker-handler and project-public-config reads, field/cache reads, and initial board work-item read coverage; core live loops are validated while deeper member, batch, plan, plan work-item management, plan image update, plan-context work item creation, summary/statistics/metric read samples, cache-read, and board samples remain pending."
   },
   Repo: {
-    summary: "`25 Full / 0 Reachable / 0 Unpublished / 5 Code`",
+    summary: "`25 Full / 0 Reachable / 0 Unpublished / 6 Code`",
     conclusion:
       "`repo_create_repository` remains live-validated with the previous Repo surface. The repository import / remote mirror tools are code-complete and unit-tested, but not yet counted as AK/SK Full."
   },
@@ -180,7 +180,7 @@ const readmeModuleNumbersMeta: Record<ModuleName, ReadmeModuleNumbersMeta> = {
   },
   Repo: {
     liveStatus: "Partial",
-    breakdown: "`25 Full / 0 Reachable / 0 Unpublished / 5 Code`"
+    breakdown: "`25 Full / 0 Reachable / 0 Unpublished / 6 Code`"
   },
   Pipeline: {
     liveStatus: "Partial",

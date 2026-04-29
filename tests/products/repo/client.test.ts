@@ -225,6 +225,29 @@ describe("createRepoClient", () => {
     });
   });
 
+  it("encodes HTTPS import_url values when creating a repository", async () => {
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createRepoClient({
+      post: async (_path: string, body: Record<string, unknown>) => {
+        requestedBody = body;
+        return {
+          repository_uuid: "repo-uuid-5",
+          project_uuid: "project-uuid-5"
+        };
+      }
+    } as never);
+
+    await client.createRepository({
+      project_uuid: "project-uuid-5",
+      name: "imported-repo",
+      import_url: "https://github.com/example/demo.git"
+    });
+
+    expect(requestedBody).toMatchObject({
+      import_url: "aHR0cHM6Ly9naXRodWIuY29tL2V4YW1wbGUvZGVtby5naXQ="
+    });
+  });
+
   it("normalizes boolean enable_readme values to provider integers", async () => {
     let requestedBody: Record<string, unknown> | undefined;
     const client = createRepoClient({

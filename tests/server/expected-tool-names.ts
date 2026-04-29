@@ -192,6 +192,7 @@ export const expectedToolNames = [
   "repo_get_remote_mirror",
   "repo_get_repository",
   "repo_get_tag",
+  "repo_import_repository",
   "repo_list_branches",
   "repo_list_commits",
   "repo_list_events",
