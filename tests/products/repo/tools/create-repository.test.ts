@@ -15,6 +15,24 @@ describe("repoCreateRepositoryInput", () => {
 
     expect(parsed.template_id).toBe("template-1");
   });
+
+  it("accepts official repository name characters", () => {
+    const parsed = repoCreateRepositoryInput.parse({
+      project_uuid: "project-1",
+      name: "1_demo.repo-name"
+    });
+
+    expect(parsed.name).toBe("1_demo.repo-name");
+  });
+
+  it("rejects repository names with forbidden suffixes", () => {
+    expect(() =>
+      repoCreateRepositoryInput.parse({
+        project_uuid: "project-1",
+        name: "demo.git"
+      })
+    ).toThrow("Repository name must not end with .git, .atom, or a dot");
+  });
 });
 
 describe("previewCreateRepository", () => {

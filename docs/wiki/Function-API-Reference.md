@@ -28,10 +28,10 @@
 | 代码检查 | 8 |
 | 部署 | 59 |
 | 流水线 | 77 |
-| 代码仓库 | 31 |
+| 代码仓库 | 32 |
 | 需求管理 | 200 |
 | 测试计划 | 7 |
-| **总计** | **418** |
+| **总计** | **419** |
 
 ## API 清单
 
@@ -12941,7 +12941,8 @@
     "name": {
       "type": "string",
       "minLength": 1,
-      "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*$"
     },
     "import_members": {
       "type": "integer",
@@ -13517,96 +13518,21 @@
   "method": "tools/call",
   "params": {
     "name": "repo_import_repository",
-    "arguments": {
-      "project_uuid": "<project_uuid>",
-      "name": "<name>",
-      "source_type": "<source_type>",
-      "source_url": "<source_url>"
-    }
+    "arguments": {}
   }
 }
 ```
 
 参数：
 
-| 参数 | 必填 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- | --- |
-| `project_uuid` | 是 | `string` |  | CodeArts 项目的 UUID，用于创建代码仓或定位项目资源。 |
-| `name` | 是 | `string` |  | 资源名称。 |
-| `source_type` | 是 | `"gitee" \| "self_managed_gitlab" \| "gitlab" \| "github" \| "git" \| "svn" \| "coding" \| "bitbucket" \| "gerrit" \| "codeup"` |  | 导入来源类型，例如 gitee、github、gitlab、git、svn 等。可选值：`gitee`、`self_managed_gitlab`、`gitlab`、`github`、`git`、`svn`、`coding`、`bitbucket`、`gerrit`、`codeup`。 |
-| `source_url` | 是 | `string` |  | 待导入的源仓库 HTTPS URL；工具会按 CodeArts Repo 要求转换为 Base64 import_url。 |
-| `import_members` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `visibility_level` | 否 | `0 \| 20` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`0`、`20`。 |
-| `description` | 否 | `string` |  | 资源描述信息。 |
-| `caller` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+无参数。
 
 输入 JSON Schema：
 
 ```json
 {
   "type": "object",
-  "properties": {
-    "project_uuid": {
-      "type": "string",
-      "minLength": 1
-    },
-    "name": {
-      "type": "string",
-      "minLength": 1,
-      "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
-    },
-    "source_type": {
-      "type": "string",
-      "enum": [
-        "gitee",
-        "self_managed_gitlab",
-        "gitlab",
-        "github",
-        "git",
-        "svn",
-        "coding",
-        "bitbucket",
-        "gerrit",
-        "codeup"
-      ]
-    },
-    "source_url": {
-      "type": "string",
-      "format": "uri"
-    },
-    "import_members": {
-      "type": "integer",
-      "minimum": 0,
-      "maximum": 1
-    },
-    "visibility_level": {
-      "type": "number",
-      "enum": [
-        0,
-        20
-      ]
-    },
-    "description": {
-      "type": "string"
-    },
-    "caller": {
-      "type": "string",
-      "minLength": 1
-    },
-    "dry_run": {
-      "type": "boolean",
-      "default": true
-    }
-  },
-  "required": [
-    "project_uuid",
-    "name",
-    "source_type",
-    "source_url"
-  ],
-  "additionalProperties": false,
-  "$schema": "http://json-schema.org/draft-07/schema#"
+  "properties": {}
 }
 ```
 
@@ -13853,6 +13779,86 @@
   "required": [
     "repository_id"
   ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### repo_list_impersonation_tokens
+
+所属模块：`代码仓库`
+
+说明：查询当前用户的个人访问令牌元数据，不返回令牌明文。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_list_impersonation_tokens",
+    "arguments": {}
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `state` | 否 | `"all" \| "active" \| "inactive"` |  | 状态过滤条件或目标状态。可选值：`all`、`active`、`inactive`。 |
+| `search` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "page": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "default": 1
+    },
+    "page_size": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 100,
+      "default": 20
+    },
+    "keyword": {
+      "type": "string"
+    },
+    "sort_by": {
+      "type": "string"
+    },
+    "sort_order": {
+      "type": "string",
+      "enum": [
+        "asc",
+        "desc"
+      ]
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "all",
+        "active",
+        "inactive"
+      ]
+    },
+    "search": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
 }

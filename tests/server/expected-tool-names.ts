@@ -196,6 +196,7 @@ export const expectedToolNames = [
   "repo_list_branches",
   "repo_list_commits",
   "repo_list_events",
+  "repo_list_impersonation_tokens",
   "repo_list_merge_request_changes",
   "repo_list_merge_request_discussions",
   "repo_list_merge_requests",

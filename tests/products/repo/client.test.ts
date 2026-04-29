@@ -407,6 +407,60 @@ describe("createRepoClient", () => {
     expect(result.total).toBe(1);
   });
 
+  it("uses the portal repository import path and HAR-compatible body", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createRepoClient({
+      post: async (path: string, body: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+        return { status: "success" };
+      }
+    } as never);
+
+    const result = await client.importRepository({
+      project_uuid: "project-uuid-1",
+      import_type: "git",
+      codecheck: 0,
+      fetch_refs_type: "default",
+      endpoint_uuid: "",
+      source_repo_id: "123456",
+      source_url: "https://gitee.com/example/demo.git",
+      source_type: "gitee",
+      source_full_name: "example/demo",
+      target_repo_name: "demo",
+      visibility_level: 0,
+      security_level: "",
+      group_id: null,
+      mirror_repository: 0,
+      source_visibility: "public"
+    });
+
+    expect(requestedPath).toBe("/v1/repo/repository/importRepository");
+    expect(requestedBody).toEqual({
+      projectId: "project-uuid-1",
+      importType: "git",
+      codecheck: 0,
+      fetchRefsType: "default",
+      endpointUUId: "",
+      importRepoList: [
+        {
+          sourceRepoId: "123456",
+          sourceUrl: "aHR0cHM6Ly9naXRlZS5jb20vZXhhbXBsZS9kZW1vLmdpdA==",
+          sourceType: "gitee",
+          sourceFullName: "example/demo",
+          targetRepoName: "demo",
+          visibilityLevel: 0,
+          securityLevel: "",
+          groupId: null,
+          mirrorRepository: 0,
+          sourceVisibility: "public"
+        }
+      ]
+    });
+    expect(result.status).toBe("success");
+  });
+
   it("calls remote mirror endpoints with normalized bodies", async () => {
     const calls: Array<{ method: string; path: string; body?: Record<string, unknown> }> = [];
     const client = createRepoClient({

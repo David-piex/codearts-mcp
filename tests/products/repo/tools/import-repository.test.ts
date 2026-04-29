@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  buildRepositoryImportSourceUrl,
   createRepoImportRepositoryHandler,
   encodeRepositoryImportUrl,
   mapImportedRepository,
@@ -12,6 +13,16 @@ describe("repository import helpers", () => {
     expect(encodeRepositoryImportUrl("https://github.com/example/demo.git")).toBe(
       "aHR0cHM6Ly9naXRodWIuY29tL2V4YW1wbGUvZGVtby5naXQ="
     );
+  });
+
+  it("builds credentialed source URLs before import_url encoding", () => {
+    expect(
+      buildRepositoryImportSourceUrl({
+        source_url: "https://gitee.com/example/demo.git",
+        source_username: "source-user",
+        source_token: "token-value"
+      })
+    ).toBe("https://source-user:token-value@gitee.com/example/demo.git");
   });
 
   it("validates known hosted source types against their hosts", () => {
@@ -38,6 +49,12 @@ describe("previewImportRepository", () => {
       name: "demo-repo",
       source_type: "git",
       source_url: "https://user:secret@example.com/group/demo.git",
+      source_username: "user",
+      source_token: "secret",
+      import_type: "git",
+      fetch_refs_type: "default",
+      codecheck: 0,
+      mirror_repository: 0,
       import_members: 1,
       visibility_level: 20,
       dry_run: true
@@ -49,6 +66,12 @@ describe("previewImportRepository", () => {
       name: "demo-repo",
       sourceType: "git",
       sourceUrl: "https://***:***@example.com/group/demo.git",
+      sourceUsername: "user",
+      hasSourceToken: true,
+      importType: "git",
+      fetchRefsType: "default",
+      codecheck: 0,
+      mirrorRepository: 0,
       importMembers: 1,
       visibilityLevel: 20,
       importUrlEncoding: "base64",
@@ -68,7 +91,13 @@ describe("mapImportedRepository", () => {
         project_uuid: "project-uuid-1",
         name: "demo-repo",
         source_type: "github",
-        source_url: "https://github.com/example/demo.git"
+        source_url: "https://github.com/example/demo.git",
+        source_username: "octo",
+        source_token: "token-value",
+        import_type: "git",
+        fetch_refs_type: "default",
+        codecheck: 0,
+        mirror_repository: 0
       }
     );
 
@@ -79,6 +108,12 @@ describe("mapImportedRepository", () => {
       name: "demo-repo",
       sourceType: "github",
       sourceUrl: "https://github.com/example/demo.git",
+      sourceUsername: "octo",
+      hasSourceToken: true,
+      importType: "git",
+      fetchRefsType: "default",
+      codecheck: 0,
+      mirrorRepository: 0,
       executed: true
     });
   });
@@ -88,10 +123,10 @@ describe("createRepoImportRepositoryHandler", () => {
   it("creates a repository import request with encoded import_url", async () => {
     let requestedBody: Record<string, unknown> | undefined;
     const handler = createRepoImportRepositoryHandler({
-      createRepository: async (input) => {
+      importRepository: async (input) => {
         requestedBody = input;
         return {
-          repository_uuid: "repo-uuid-1",
+          status: "success",
           project_uuid: "project-uuid-1"
         };
       }
@@ -102,15 +137,31 @@ describe("createRepoImportRepositoryHandler", () => {
       name: "demo-repo",
       source_type: "github",
       source_url: "https://github.com/example/demo.git",
+      source_repo_id: "123",
+      source_full_name: "example/demo",
+      source_visibility: "public",
+      source_username: "octo",
+      source_token: "token-value",
       visibility_level: 20,
       dry_run: false
     });
 
     expect(requestedBody).toEqual({
       project_uuid: "project-uuid-1",
-      name: "demo-repo",
+      import_type: "git",
+      codecheck: 0,
+      fetch_refs_type: "default",
+      endpoint_uuid: undefined,
+      source_repo_id: "123",
+      source_url: "https://octo:token-value@github.com/example/demo.git",
+      source_type: "github",
+      source_full_name: "example/demo",
+      target_repo_name: "demo-repo",
       visibility_level: 20,
-      import_url: "aHR0cHM6Ly9naXRodWIuY29tL2V4YW1wbGUvZGVtby5naXQ="
+      security_level: undefined,
+      group_id: undefined,
+      mirror_repository: 0,
+      source_visibility: "public"
     });
     expect(result.structuredContent.summary).toContain("Started import");
   });

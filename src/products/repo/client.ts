@@ -37,6 +37,18 @@ type RepoImportRecord = {
   target_project_id?: string;
 };
 
+type RepoImpersonationToken = {
+  id: number | string;
+  name?: string;
+  revoked?: boolean;
+  created_at?: string;
+  scopes?: string[];
+  active?: boolean;
+  expires_at?: string;
+  impersonation?: boolean;
+  description?: string | null;
+};
+
 export type RepoClient = {
   getBranch: (input: { repository_id: string; branch_name: string }) => Promise<{
     name: string;
@@ -165,6 +177,34 @@ export type RepoClient = {
     sort?: string;
   }) => Promise<{
     records: RepoImportRecord[];
+    total?: number;
+  }>;
+  importRepository: (input: {
+    project_uuid: string;
+    import_type: string;
+    codecheck: number;
+    fetch_refs_type: "all" | "default";
+    endpoint_uuid?: string;
+    source_repo_id?: string;
+    source_url: string;
+    source_type: string;
+    source_full_name?: string;
+    target_repo_name: string;
+    visibility_level?: number;
+    security_level?: string;
+    group_id?: string | number | null;
+    mirror_repository: number;
+    source_visibility?: string;
+  }) => Promise<{
+    status?: string;
+  }>;
+  listImpersonationTokens: (input: {
+    page: number;
+    page_size: number;
+    state?: string;
+    search?: string;
+  }) => Promise<{
+    tokens: RepoImpersonationToken[];
     total?: number;
   }>;
   associateRemoteMirror: (input: {
@@ -850,6 +890,65 @@ export function createRepoClient(
       return {
         records,
         total: Array.isArray(response) ? records.length : response.total ?? records.length
+      };
+    },
+    async importRepository(input) {
+      const response = (await _http.post(
+        `/v1/repo/repository/importRepository`,
+        omitUndefinedFields({
+          projectId: input.project_uuid,
+          importType: input.import_type,
+          codecheck: input.codecheck,
+          fetchRefsType: input.fetch_refs_type,
+          endpointUUId: input.endpoint_uuid ?? "",
+          importRepoList: [
+            omitUndefinedFields({
+              sourceRepoId: input.source_repo_id,
+              sourceUrl: normalizeRepositoryImportUrl(input.source_url),
+              sourceType: input.source_type,
+              sourceFullName: input.source_full_name,
+              targetRepoName: input.target_repo_name,
+              visibilityLevel: input.visibility_level ?? 0,
+              securityLevel: input.security_level ?? "",
+              groupId: input.group_id ?? null,
+              mirrorRepository: input.mirror_repository,
+              sourceVisibility: input.source_visibility
+            })
+          ]
+        })
+      )) as {
+        status?: string;
+      };
+
+      return {
+        status: response.status
+      };
+    },
+    async listImpersonationTokens(input) {
+      const offset = (input.page - 1) * input.page_size;
+      const query = new URLSearchParams({
+        offset: String(offset),
+        limit: String(input.page_size)
+      });
+      appendOptionalQuery(query, input, ["state", "search"]);
+
+      const response = (await _http.get(
+        `/v4/users/impersonation-tokens?${query.toString()}`
+      )) as
+        | RepoImpersonationToken[]
+        | {
+            tokens?: RepoImpersonationToken[];
+            impersonation_tokens?: RepoImpersonationToken[];
+            total?: number;
+          };
+
+      const tokens = Array.isArray(response)
+        ? response
+        : response.impersonation_tokens ?? response.tokens ?? [];
+
+      return {
+        tokens,
+        total: Array.isArray(response) ? tokens.length : response.total ?? tokens.length
       };
     },
     async associateRemoteMirror(input) {

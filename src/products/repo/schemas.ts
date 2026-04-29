@@ -1,6 +1,18 @@
 import { z } from "zod";
 import { idSchema, pagingSchema } from "../../contracts/common-schemas.js";
 
+const repositoryNameSchema = z
+  .string()
+  .min(1)
+  .max(256)
+  .regex(
+    /^[A-Za-z0-9_][A-Za-z0-9_.-]*$/,
+    "Repository name must start with a letter, number, or underscore and use letters, numbers, dots, hyphens, or underscores"
+  )
+  .refine((value) => !value.endsWith(".git") && !value.endsWith(".atom") && !value.endsWith("."), {
+    message: "Repository name must not end with .git, .atom, or a dot"
+  });
+
 export const repoImportSourceType = z.enum([
   "gitee",
   "self_managed_gitlab",
@@ -44,10 +56,7 @@ export const repoCreateTagInput = z.object({
 
 export const repoCreateRepositoryInput = z.object({
   project_uuid: idSchema,
-  name: z
-    .string()
-    .min(1)
-    .regex(/^[A-Za-z][A-Za-z0-9_-]*$/, "Repository name must start with a letter and use letters, numbers, hyphens, or underscores"),
+  name: repositoryNameSchema,
   import_members: z.number().int().min(0).max(1).optional(),
   template_id: z.string().min(1).optional(),
   visibility_level: z.union([z.literal(0), z.literal(20)]).optional(),
@@ -62,19 +71,31 @@ export const repoCreateRepositoryInput = z.object({
 
 export const repoImportRepositoryInput = z.object({
   project_uuid: idSchema,
-  name: z
-    .string()
-    .min(1)
-    .regex(/^[A-Za-z][A-Za-z0-9_-]*$/, "Repository name must start with a letter and use letters, numbers, hyphens, or underscores"),
+  name: repositoryNameSchema,
   source_type: repoImportSourceType,
   source_url: z.string().url().refine((value) => new URL(value).protocol === "https:", {
     message: "Repository import source_url must be an HTTPS URL"
   }),
+  source_repo_id: z.string().min(1).optional(),
+  source_full_name: z.string().min(1).optional(),
+  source_visibility: z.string().min(1).optional(),
+  source_username: z.string().min(1).optional(),
+  source_token: z.string().min(1).optional(),
+  import_type: z.string().min(1).default("git"),
+  fetch_refs_type: z.enum(["all", "default"]).default("default"),
+  endpoint_uuid: z.string().optional(),
+  codecheck: z.number().int().min(0).max(1).default(0),
+  group_id: z.union([z.string().min(1), z.number().int().positive(), z.null()]).optional(),
+  mirror_repository: z.number().int().min(0).max(1).default(0),
+  security_level: z.string().optional(),
   import_members: z.number().int().min(0).max(1).optional(),
   visibility_level: z.union([z.literal(0), z.literal(20)]).optional(),
   description: z.string().optional(),
   caller: z.string().min(1).optional(),
   dry_run: z.boolean().default(true)
+}).refine((input) => !input.source_token || Boolean(input.source_username), {
+  message: "source_username is required when source_token is provided",
+  path: ["source_username"]
 });
 
 export const repoListPersonalRepositoryImportRecordsInput = pagingSchema.extend({
@@ -87,6 +108,12 @@ export const repoListPersonalRepositoryImportRecordsInput = pagingSchema.extend(
   search: z.string().min(1).optional(),
   order_by: z.enum(["created_at", "source_repo_name", "size"]).optional(),
   sort: z.enum(["asc", "desc"]).optional()
+});
+
+export const repoListImpersonationTokensInput = pagingSchema.extend({
+  page_size: z.number().int().positive().max(100).default(20),
+  state: z.enum(["all", "active", "inactive"]).optional(),
+  search: z.string().min(1).optional()
 });
 
 export const repoAssociateRemoteMirrorInput = z.object({

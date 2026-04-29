@@ -11,6 +11,7 @@ export const repoToolNames = [
   "repo_get_remote_mirror",
   "repo_import_repository",
   "repo_list_events",
+  "repo_list_impersonation_tokens",
   "repo_list_personal_repository_import_records",
   "repo_list_protected_branches",
   "repo_list_repository_labels",

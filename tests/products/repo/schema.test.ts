@@ -108,6 +108,8 @@ describe("repo schemas", () => {
       name: "demo-repo",
       source_type: "github",
       source_url: "https://github.com/example/demo.git",
+      source_username: "octo",
+      source_token: "token-value",
       visibility_level: 20
     });
 
@@ -116,9 +118,23 @@ describe("repo schemas", () => {
       name: "demo-repo",
       source_type: "github",
       source_url: "https://github.com/example/demo.git",
+      source_username: "octo",
+      source_token: "token-value",
       visibility_level: 20,
       dry_run: true
     });
+  });
+
+  it("requires a source username when repository import token is provided", () => {
+    expect(() =>
+      repoImportRepositoryInput.parse({
+        project_uuid: "project-1",
+        name: "demo-repo",
+        source_type: "github",
+        source_url: "https://github.com/example/demo.git",
+        source_token: "token-value"
+      })
+    ).toThrow("source_username is required when source_token is provided");
   });
 
   it("rejects non-HTTPS repository import URLs", () => {
