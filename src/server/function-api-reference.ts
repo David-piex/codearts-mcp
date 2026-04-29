@@ -345,7 +345,7 @@ function describeParameter(name: string) {
     status_id: "工作项状态 ID：1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝。项目自定义状态以状态配置/工作流接口返回为准。",
     tracker_id: "Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。",
     tracker_ids: "Scrum 工作项类型 ID 列表：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。",
-    work_item_type: "工作项类型，会映射为 Scrum tracker_id：task/\"2\"=Task/任务，bug/\"3\"=Bug/缺陷，epic/\"5\"=Epic，feature/\"6\"=Feature，story/\"7\"=Story。",
+    work_item_type: "工作项类型。可填写类型名称或对应的 Scrum tracker_id：task 或 2 表示 Task/任务，bug 或 3 表示 Bug/缺陷，epic 或 5 表示 Epic，feature 或 6 表示 Feature，story 或 7 表示 Story。工具会自动转换为 CodeArts 需要的 tracker_id。",
     role_id: "项目成员角色 ID：-1=项目创建者，3=项目经理，4=开发人员，5=测试经理，6=测试人员，7=参与者，8=浏览者，9=运维经理；部分接口还允许 10、11 等扩展角色，以租户配置为准。",
     priority_id: "工作项优先级 ID。创建工作项未传时默认使用 2；具体优先级名称和可选值以项目字段配置/优先级选项接口返回为准。",
     severity_id: "严重程度 ID。通常用于缺陷或问题等级；可通过 req_list_issue_severities 查询当前可用严重程度。",
