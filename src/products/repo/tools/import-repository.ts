@@ -177,7 +177,27 @@ type RepoImportRepositoryClient = {
     mirror_repository: number;
     source_visibility?: string;
   }) => Promise<CreatedRepositoryResponse>;
+  createRepository?: (input: {
+    project_uuid: string;
+    name: string;
+    import_members?: number;
+    visibility_level?: number;
+    import_url?: string;
+    description?: string;
+    caller?: string;
+  }) => Promise<CreatedRepositoryResponse>;
 };
+
+function shouldFallbackToCreateRepository(error: unknown) {
+  return Boolean(
+    error &&
+      typeof error === "object" &&
+      "status" in error &&
+      (error as { status?: unknown }).status === 404 &&
+      "code" in error &&
+      (error as { code?: unknown }).code === "APIGW.0101"
+  );
+}
 
 export function createRepoImportRepositoryHandler(client: RepoImportRepositoryClient) {
   return async (input: unknown) => {
@@ -194,23 +214,42 @@ export function createRepoImportRepositoryHandler(client: RepoImportRepositoryCl
       };
     }
 
-    const response = await client.importRepository({
-      project_uuid: parsed.project_uuid,
-      import_type: parsed.import_type,
-      codecheck: parsed.codecheck,
-      fetch_refs_type: parsed.fetch_refs_type,
-      endpoint_uuid: parsed.endpoint_uuid,
-      source_repo_id: parsed.source_repo_id,
-      source_url: buildRepositoryImportSourceUrl(parsed),
-      source_type: parsed.source_type,
-      source_full_name: parsed.source_full_name,
-      target_repo_name: parsed.name,
-      visibility_level: parsed.visibility_level,
-      security_level: parsed.security_level,
-      group_id: parsed.group_id,
-      mirror_repository: parsed.mirror_repository,
-      source_visibility: parsed.source_visibility
-    });
+    let response: CreatedRepositoryResponse;
+
+    try {
+      response = await client.importRepository({
+        project_uuid: parsed.project_uuid,
+        import_type: parsed.import_type,
+        codecheck: parsed.codecheck,
+        fetch_refs_type: parsed.fetch_refs_type,
+        endpoint_uuid: parsed.endpoint_uuid,
+        source_repo_id: parsed.source_repo_id,
+        source_url: buildRepositoryImportSourceUrl(parsed),
+        source_type: parsed.source_type,
+        source_full_name: parsed.source_full_name,
+        target_repo_name: parsed.name,
+        visibility_level: parsed.visibility_level,
+        security_level: parsed.security_level,
+        group_id: parsed.group_id,
+        mirror_repository: parsed.mirror_repository,
+        source_visibility: parsed.source_visibility
+      });
+    } catch (error) {
+      if (!client.createRepository || !shouldFallbackToCreateRepository(error)) {
+        throw error;
+      }
+
+      response = await client.createRepository({
+        project_uuid: parsed.project_uuid,
+        name: parsed.name,
+        import_members: parsed.import_members,
+        visibility_level: parsed.visibility_level,
+        import_url: encodeRepositoryImportUrl(buildRepositoryImportSourceUrl(parsed)),
+        description: parsed.description,
+        caller: parsed.caller
+      });
+    }
+
     const result = mapImportedRepository(response, parsed);
 
     return {

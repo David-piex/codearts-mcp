@@ -165,4 +165,44 @@ describe("createRepoImportRepositoryHandler", () => {
     });
     expect(result.structuredContent.summary).toContain("Started import");
   });
+
+  it("falls back to CreateRepository import_url when the portal import API is not published", async () => {
+    const calls: Array<{ method: string; input: Record<string, unknown> }> = [];
+    const handler = createRepoImportRepositoryHandler({
+      importRepository: async (input) => {
+        calls.push({ method: "importRepository", input });
+        throw Object.assign(new Error("not published"), {
+          status: 404,
+          code: "APIGW.0101"
+        });
+      },
+      createRepository: async (input) => {
+        calls.push({ method: "createRepository", input });
+        return {
+          repository_uuid: "repo-uuid-2",
+          project_uuid: "project-uuid-1"
+        };
+      }
+    });
+
+    const result = await handler({
+      project_uuid: "project-uuid-1",
+      name: "demo-repo",
+      source_type: "gitee",
+      source_url: "https://gitee.com/example/demo.git",
+      visibility_level: 0,
+      dry_run: false
+    });
+
+    expect(calls.map((call) => call.method)).toEqual(["importRepository", "createRepository"]);
+    expect(calls[1]?.input).toMatchObject({
+      project_uuid: "project-uuid-1",
+      name: "demo-repo",
+      visibility_level: 0,
+      import_url: "aHR0cHM6Ly9naXRlZS5jb20vZXhhbXBsZS9kZW1vLmdpdA=="
+    });
+    expect(result.structuredContent.item).toMatchObject({
+      repositoryUuid: "repo-uuid-2"
+    });
+  });
 });
