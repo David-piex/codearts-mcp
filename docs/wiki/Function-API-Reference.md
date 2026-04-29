@@ -17695,7 +17695,7 @@
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `iteration_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 | `title` | 是 | `string` |  | 标题。 |
-| `work_item_type` | 是 | `string` |  | 工作项类型。可填写类型名称或对应的 Scrum tracker_id：task 或 2 表示 Task/任务，bug 或 3 表示 Bug/缺陷，epic 或 5 表示 Epic，feature 或 6 表示 Feature，story 或 7 表示 Story。工具会自动转换为 CodeArts 需要的 tracker_id。 |
+| `work_item_type` | 是 | `string` |  | 参数解释：<br>工作项类型，用于指定创建或更新的 CodeArts Scrum 工作项类型。工具会把填写的类型名称或数字 ID 自动转换为 CodeArts 需要的 tracker_id。<br>约束限制：<br>创建子工作项时，父子类型需符合层级关系：Epic 只能作为 Feature 的父工作项类型；Feature 只能作为 Story 的父工作项类型；Story 只能作为 Task/任务、Bug/缺陷的父工作项类型。未创建子工作项时不涉及该限制。<br>取值范围：<br>2（任务/Task，可填 task 或 2）；<br>3（缺陷/Bug，可填 bug 或 3）；<br>5（Epic，可填 epic 或 5）；<br>6（Feature，可填 feature 或 6）；<br>7（Story，可填 story 或 7）。<br>默认取值：<br>不涉及。创建类接口必填；更新接口不传则不修改工作项类型。 |
 | `parent_work_item_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 | `description` | 否 | `string` |  | 资源描述信息。 |
 | `priority_id` | 否 | `integer` |  | 工作项优先级 ID。创建工作项未传时默认使用 2；具体优先级名称和可选值以项目字段配置/优先级选项接口返回为准。 |
@@ -17883,7 +17883,7 @@
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `plan_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 | `title` | 是 | `string` |  | 标题。 |
-| `work_item_type` | 是 | `string` |  | 工作项类型。可填写类型名称或对应的 Scrum tracker_id：task 或 2 表示 Task/任务，bug 或 3 表示 Bug/缺陷，epic 或 5 表示 Epic，feature 或 6 表示 Feature，story 或 7 表示 Story。工具会自动转换为 CodeArts 需要的 tracker_id。 |
+| `work_item_type` | 是 | `string` |  | 参数解释：<br>工作项类型，用于指定创建或更新的 CodeArts Scrum 工作项类型。工具会把填写的类型名称或数字 ID 自动转换为 CodeArts 需要的 tracker_id。<br>约束限制：<br>创建子工作项时，父子类型需符合层级关系：Epic 只能作为 Feature 的父工作项类型；Feature 只能作为 Story 的父工作项类型；Story 只能作为 Task/任务、Bug/缺陷的父工作项类型。未创建子工作项时不涉及该限制。<br>取值范围：<br>2（任务/Task，可填 task 或 2）；<br>3（缺陷/Bug，可填 bug 或 3）；<br>5（Epic，可填 epic 或 5）；<br>6（Feature，可填 feature 或 6）；<br>7（Story，可填 story 或 7）。<br>默认取值：<br>不涉及。创建类接口必填；更新接口不传则不修改工作项类型。 |
 | `parent_work_item_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 | `description` | 否 | `string` |  | 资源描述信息。 |
 | `iteration_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
@@ -18382,7 +18382,7 @@
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `title` | 是 | `string` |  | 标题。 |
-| `work_item_type` | 是 | `string` |  | 工作项类型。可填写类型名称或对应的 Scrum tracker_id：task 或 2 表示 Task/任务，bug 或 3 表示 Bug/缺陷，epic 或 5 表示 Epic，feature 或 6 表示 Feature，story 或 7 表示 Story。工具会自动转换为 CodeArts 需要的 tracker_id。 |
+| `work_item_type` | 是 | `string` |  | 参数解释：<br>工作项类型，用于指定创建或更新的 CodeArts Scrum 工作项类型。工具会把填写的类型名称或数字 ID 自动转换为 CodeArts 需要的 tracker_id。<br>约束限制：<br>创建子工作项时，父子类型需符合层级关系：Epic 只能作为 Feature 的父工作项类型；Feature 只能作为 Story 的父工作项类型；Story 只能作为 Task/任务、Bug/缺陷的父工作项类型。未创建子工作项时不涉及该限制。<br>取值范围：<br>2（任务/Task，可填 task 或 2）；<br>3（缺陷/Bug，可填 bug 或 3）；<br>5（Epic，可填 epic 或 5）；<br>6（Feature，可填 feature 或 6）；<br>7（Story，可填 story 或 7）。<br>默认取值：<br>不涉及。创建类接口必填；更新接口不传则不修改工作项类型。 |
 | `parent_work_item_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 | `description` | 否 | `string` |  | 资源描述信息。 |
 | `priority_id` | 否 | `integer` |  | 工作项优先级 ID。创建工作项未传时默认使用 2；具体优先级名称和可选值以项目字段配置/优先级选项接口返回为准。 |
@@ -27925,7 +27925,7 @@
 | `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
 | `work_item_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
 | `title` | 否 | `string` |  | 标题。 |
-| `work_item_type` | 否 | `string` |  | 工作项类型。可填写类型名称或对应的 Scrum tracker_id：task 或 2 表示 Task/任务，bug 或 3 表示 Bug/缺陷，epic 或 5 表示 Epic，feature 或 6 表示 Feature，story 或 7 表示 Story。工具会自动转换为 CodeArts 需要的 tracker_id。 |
+| `work_item_type` | 否 | `string` |  | 参数解释：<br>工作项类型，用于指定创建或更新的 CodeArts Scrum 工作项类型。工具会把填写的类型名称或数字 ID 自动转换为 CodeArts 需要的 tracker_id。<br>约束限制：<br>创建子工作项时，父子类型需符合层级关系：Epic 只能作为 Feature 的父工作项类型；Feature 只能作为 Story 的父工作项类型；Story 只能作为 Task/任务、Bug/缺陷的父工作项类型。未创建子工作项时不涉及该限制。<br>取值范围：<br>2（任务/Task，可填 task 或 2）；<br>3（缺陷/Bug，可填 bug 或 3）；<br>5（Epic，可填 epic 或 5）；<br>6（Feature，可填 feature 或 6）；<br>7（Story，可填 story 或 7）。<br>默认取值：<br>不涉及。创建类接口必填；更新接口不传则不修改工作项类型。 |
 | `description` | 否 | `string` |  | 资源描述信息。 |
 | `status_id` | 否 | `integer` |  | 工作项状态 ID：1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝。项目自定义状态以状态配置/工作流接口返回为准。 |
 | `priority_id` | 否 | `integer` |  | 工作项优先级 ID。创建工作项未传时默认使用 2；具体优先级名称和可选值以项目字段配置/优先级选项接口返回为准。 |
