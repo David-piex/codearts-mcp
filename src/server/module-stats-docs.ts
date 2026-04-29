@@ -53,9 +53,9 @@ const readWriteMatrixMeta: Record<ModuleName, ReadWriteMatrixMeta> = {
       "Current-user info/role reads, user-feature reads, Scrum project, module, member, project-domain, iteration, plan, work-item, work-item-tree count/list, work-item tag/index-count reads, project-wide work-item record history, child-work-item, comment, work-hour, work-hour-type, image upload/download, attachment upload/download/delete, associated issue/test-case/wiki reads, plan work-item management, plan image update, plan-context work item creation, project bug/demand-statistic/project summary/project bug-density/project bugs-per-developer/project completion-rate/work-item completion-rate reads, project due-days-after/workhour-config reads, status-name check, status/status-attribute/status-detail/workflow-config/template/template-config/custom-field/status-rule-flag/status-config/optional-status-config/tracker-handler/project-public-config reads, board work-item reads, work-item template/copy writes, project-template update/delete writes, and field/cache reads are implemented; deeper live coverage is still expanding for member, batch, plan, plan work-item management, plan image update, plan-context work item creation, new summary/statistics/metric reads, cache reads, and board samples"
   },
   Repo: {
-    live: "Validated",
+    live: "Partial",
     keyGaps:
-      "All 25 Repo tools, including `repo_create_repository`, now have real AK/SK validation on the writable sampled project"
+      "The original 25 Repo collaboration tools have real AK/SK validation; the 5 repository import / remote mirror tools are implemented and unit-tested, but still need dedicated live samples"
   },
   Pipeline: {
     live: "Partial",
@@ -94,9 +94,9 @@ const implementationStatusMeta: Record<ModuleName, ImplementationStatusMeta> = {
       "Req now covers current-user info/role reads, user-feature reads, Scrum project, module, member, project-domain, iteration, plan, work-item, work-item-tree count/list, work-item tag/index-count reads, project-wide work-item record history, child-work-item, comment, work-hour, work-hour-type, image upload/download, attachment upload/download/delete, associated issue/test-case/wiki reads, related-user, plan work-item management, plan image update, plan-context work item creation, project bug/demand-statistic/project summary/project bug-density/project bugs-per-developer/project completion-rate/work-item completion-rate reads, project due-days-after/workhour-config reads, status-name check, status/status-attribute/status-detail/workflow-config/template/template-config/custom-field/status-rule-flag/status-config/optional-status-config/tracker-handler/project-public-config reads, board work-item reads, work-item template/copy writes, project-template update/delete writes, field/cache reads, and flow-transition tools. Core project/work-item paths have live coverage; member, batch-operation, plan, plan work-item management, plan image update, plan-context work item creation, new summary/statistics/metric reads, cache reads, and board reads still need deeper live coverage."
   },
   Repo: {
-    live: "Validated",
+    live: "Partial",
     notes:
-      "All 25 Repo tools are now live-validated. `repo_create_repository` has real AK/SK coverage through the HTTP MCP session on the writable sampled project."
+      "The original 25 Repo collaboration tools are live-validated, including `repo_create_repository` through the HTTP MCP session on the writable sampled project. The 5 repository import / remote mirror tools are implemented and covered by unit regression tests, but still need dedicated live samples before being marked AK/SK Full."
   },
   Pipeline: {
     live: "Partial",
@@ -137,9 +137,9 @@ const toolStatusSummaryMeta: Record<ModuleName, ToolStatusSummaryMeta> = {
       "The Req MCP surface has grown from the original 8-tool core to current-user info/role and user-feature reads, project/module/member/project-domain/iteration/plan/work-item/work-item-tree/project-wide-record-history/child-work-item collaboration, work-item tag/index-count reads, project bug/demand-statistic/project summary/project bug-density/project bugs-per-developer/project completion-rate/work-item completion-rate reads, work-hours/work-hour-type reads, issue image upload/download, attachment upload/download/delete, associated issue/test-case/wiki reads, plan work-item management, plan image update, plan-context work item creation, work-item template/copy writes, project-template update/delete writes, project due-days-after/workhour-config reads, status-name check, status/status-attribute/status-detail/workflow-config/template/template-config/custom-field/status-rule-flag/status-config/optional-status-config/tracker-handler and project-public-config reads, field/cache reads, and initial board work-item read coverage; core live loops are validated while deeper member, batch, plan, plan work-item management, plan image update, plan-context work item creation, summary/statistics/metric read samples, cache-read, and board samples remain pending."
   },
   Repo: {
-    summary: "`25 Full / 0 Reachable / 0 Unpublished / 0 Code`",
+    summary: "`25 Full / 0 Reachable / 0 Unpublished / 5 Code`",
     conclusion:
-      "`repo_create_repository` has joined the previously validated Repo surface, so the full 25-tool module is now AK/SK Full."
+      "`repo_create_repository` remains live-validated with the previous Repo surface. The repository import / remote mirror tools are code-complete and unit-tested, but not yet counted as AK/SK Full."
   },
   Pipeline: {
     summary: "`16 Full / 0 Reachable / 0 Unpublished / 51 Code`",
@@ -179,8 +179,8 @@ const readmeModuleNumbersMeta: Record<ModuleName, ReadmeModuleNumbersMeta> = {
       "Expanded Req surface with current-user info/role and user-feature reads, project bug/summary/statistics/metric reads, project domain reads, work-item-tree count/list, work-item tag/index-count reads, project work-item history reads, child work-item reads, work-hours/work-hour-type reads, issue image upload/download, attachment upload/download/delete, associated wiki reads, plan work-item management, plan image update, plan-context work item creation, work-item template/copy writes, project-template update/delete writes, project due-days-after/workhour-config reads, status-name check, status/status-attribute/status-detail/workflow-config/template/template-config/custom-field/status-rule-flag/status-config/optional-status-config/tracker-handler and project-public-config reads plus field/cache reads and board work-item reads; see `docs/wiki/Req-Live-Validated.md` for validated paths and remaining live-depth gaps"
   },
   Repo: {
-    liveStatus: "Validated",
-    breakdown: "`25 Full / 0 Reachable / 0 Unpublished / 0 Code`"
+    liveStatus: "Partial",
+    breakdown: "`25 Full / 0 Reachable / 0 Unpublished / 5 Code`"
   },
   Pipeline: {
     liveStatus: "Partial",

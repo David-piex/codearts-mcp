@@ -99,8 +99,13 @@ Repo 覆盖 CodeHub 代码仓协作，包括仓库、分支、提交、文件、
 | `repo_list_events` | 查询仓库事件 |
 | `repo_list_protected_branches` | 查询保护分支 |
 | `repo_list_repository_labels` | 查询仓库标签 |
+| `repo_list_personal_repository_import_records` | 查询当前用户的仓库导入记录 |
+| `repo_associate_remote_mirror` | 关联远程镜像地址 |
+| `repo_start_remote_mirror_synchronization` | 启动远程镜像同步任务 |
+| `repo_get_remote_mirror` | 获取远程镜像配置和同步状态 |
+| `repo_update_remote_mirror` | 更新远程镜像配置 |
 
-当前真实环境状态：Repo 标记为 `Validated`，仓库创建已覆盖真实 AK/SK 测试。
+当前真实环境状态：Repo 标记为 `Partial`。原有 25 个仓库协作工具已覆盖真实 AK/SK 验证；新增的 5 个仓库导入/远程镜像工具已实现并有单测覆盖，仍需要稳定 live 样本后再标记为 Full。
 
 ## Pipeline
 
@@ -233,7 +238,7 @@ Artifact 覆盖制品仓、版本、文件、下载地址、构建归档、制�
 
 ### Repo
 
-`repo_close_merge_request`, `repo_compare_refs`, `repo_create_merge_request`, `repo_create_merge_request_discussion`, `repo_create_repository`, `repo_create_tag`, `repo_delete_tag`, `repo_get_branch`, `repo_get_commit`, `repo_get_file`, `repo_get_merge_request`, `repo_get_repository`, `repo_get_tag`, `repo_list_branches`, `repo_list_commits`, `repo_list_events`, `repo_list_merge_request_changes`, `repo_list_merge_request_discussions`, `repo_list_merge_requests`, `repo_list_protected_branches`, `repo_list_repositories`, `repo_list_repository_labels`, `repo_list_tags`, `repo_merge_merge_request`, `repo_review_merge_request`
+`repo_associate_remote_mirror`, `repo_close_merge_request`, `repo_compare_refs`, `repo_create_merge_request`, `repo_create_merge_request_discussion`, `repo_create_repository`, `repo_create_tag`, `repo_delete_tag`, `repo_get_branch`, `repo_get_commit`, `repo_get_file`, `repo_get_merge_request`, `repo_get_remote_mirror`, `repo_get_repository`, `repo_get_tag`, `repo_list_branches`, `repo_list_commits`, `repo_list_events`, `repo_list_merge_request_changes`, `repo_list_merge_request_discussions`, `repo_list_merge_requests`, `repo_list_personal_repository_import_records`, `repo_list_protected_branches`, `repo_list_repositories`, `repo_list_repository_labels`, `repo_list_tags`, `repo_merge_merge_request`, `repo_review_merge_request`, `repo_start_remote_mirror_synchronization`, `repo_update_remote_mirror`
 
 ### Pipeline
 

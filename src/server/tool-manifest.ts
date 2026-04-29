@@ -118,7 +118,7 @@ const explicitLiveSampleActions = new Set([
 
 const moduleLiveStatus: Record<ProductToolModule, ToolLiveStatus> = {
   Req: "partial",
-  Repo: "validated",
+  Repo: "partial",
   Pipeline: "partial",
   Check: "validated",
   TestPlan: "partial",

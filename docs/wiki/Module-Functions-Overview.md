@@ -15,7 +15,7 @@
 | 模块 | 中文定位 | 现在能做什么 | 典型工具 | 当前建议 |
 | --- | --- | --- | --- | --- |
 | Req | 需求、项目协作与工作项治理 | 已覆盖 `project / module / member / iteration / plan / work-item / collaboration / config-read / board-read / cache-read / program-read / requirement-pool-read / ipd-read / ipd-config-write / ipd-work-item-write / ipd-work-hour / ipd-field-config` 17 个资源面，可做项目管理、成员协作、迭代治理、规划本身、规划内工作项管理、需求池/项目空间读取、IPD 基础读取、IPD 树/关联 Wiki/分组/租户列表/统计仪表盘读取、IPD 特性集/追溯/状态读取、IPD 模块/标签/特性集维护、IPD 工作项创建/批量变更/流程流转/附件/图片、IPD 工时管理、IPD 字段配置维护、工作项协作、状态配置读取、看板读取和字段缓存读取 | `req_list_projects` `req_create_project` `req_list_project_members` `req_create_iteration` `req_create_plan` `req_create_work_item` | 核心链路可直接用，规划写面、需求池/项目空间读取、IPD 读取基础面、IPD 写面与状态/公共配置读面先结合 live 边界使用 |
-| Repo | 代码仓库协作 | 查仓库、分支、提交、文件、MR，创建仓库，发起/评审/合并 MR | `repo_list_repositories` `repo_create_repository` `repo_create_merge_request` | 适合直接使用 |
+| Repo | 代码仓库协作 | 查仓库、分支、提交、文件、MR，创建仓库，发起/评审/合并 MR，也能查看导入记录和维护远程镜像配置 | `repo_list_repositories` `repo_create_repository` `repo_create_merge_request` `repo_get_remote_mirror` | 原 25 个协作工具适合直接使用；导入/远程镜像工具已实现，仍需 live 样本补验 |
 | Pipeline | 流水线执行与治理 | 查流水线、运行记录、手动审批、重试/停止，也能管理分组、标签、变量组、规则、策略和扩展点 | `pipeline_list_pipelines` `pipeline_run_pipeline` `pipeline_create_group` | 适合进阶自动化 |
 | Check | 代码检查 | 查规则集、查检查任务、看问题、看指标、创建/执行/停止检查任务 | `check_list_rulesets` `check_list_task_issues` `check_run_task` | 适合和 Repo / Build 搭配 |
 | TestPlan | 测试计划与测试用例 | 查测试计划、查用例、查问题、查看运行记录、批量执行用例 | `testplan_list_plans` `testplan_list_cases` `testplan_run_cases` | 先按租户可用性使用 |
@@ -68,6 +68,8 @@ Repo 是当前最接近“代码协作工作台”的模块。
 - 查看仓库、分支、提交、标签、文件内容。
 - 围绕 Merge Request 做创建、讨论、评审、合并、关闭。
 - 直接从 MCP 里创建一个新仓库。
+- 查询当前用户的仓库导入记录：`repo_list_personal_repository_import_records`。
+- 关联、查询、更新远程镜像配置，并启动远程镜像同步任务：`repo_associate_remote_mirror`、`repo_get_remote_mirror`、`repo_update_remote_mirror`、`repo_start_remote_mirror_synchronization`。
 
 ## Pipeline
 
