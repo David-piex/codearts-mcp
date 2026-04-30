@@ -276,6 +276,26 @@ function createIsoDateOffset(daysFromNow: number) {
   return value.toISOString().slice(0, 10);
 }
 
+function createUtcDateTimestamp(date: string) {
+  return Date.parse(`${date}T00:00:00.000Z`);
+}
+
+function matchesLiveDateField(value: string | number | undefined, expectedDate: string) {
+  if (typeof value === "undefined") {
+    return false;
+  }
+
+  if (typeof value === "number") {
+    return new Date(value).toISOString().startsWith(expectedDate);
+  }
+
+  if (/^\d+$/.test(value)) {
+    return new Date(Number(value)).toISOString().startsWith(expectedDate);
+  }
+
+  return value.startsWith(expectedDate);
+}
+
 function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -1170,6 +1190,10 @@ if (hasLiveEnv(process.env)) {
       }
 
       const title = `mcp-live-smoke-${Date.now()}`;
+      const startDate = createIsoDateOffset(14);
+      const dueDate = createIsoDateOffset(21);
+      const startDateTimestamp = createUtcDateTimestamp(startDate);
+      const dueDateTimestamp = createUtcDateTimestamp(dueDate);
       let workItemId: string | undefined;
 
       try {
@@ -1177,31 +1201,50 @@ if (hasLiveEnv(process.env)) {
           project_id: explicitWritableProjectId,
           title,
           work_item_type: "task",
+          start_date: startDateTimestamp,
+          due_date: dueDateTimestamp,
         });
 
         expect(typeof created.id).toMatch(/string|number/);
         expect(created.name).toBe(title);
 
-        workItemId = String(created.id);
-        const got = await client.getWorkItem(
-          createProjectWorkItemInput(explicitWritableProjectId, workItemId),
+        const createdWorkItemId = String(created.id);
+        workItemId = createdWorkItemId;
+        const got = await waitForValue(
+          () =>
+            client.getWorkItem(
+              createProjectWorkItemInput(
+                explicitWritableProjectId,
+                createdWorkItemId,
+              ),
+            ),
+          (workItem) =>
+            String(workItem.id) === createdWorkItemId &&
+            matchesLiveDateField(workItem.start_date, startDate) &&
+            matchesLiveDateField(workItem.due_date, dueDate),
+          "temporary live work item date fields to become readable",
         );
 
-        expect(String(got.id)).toBe(workItemId);
+        expect(String(got.id)).toBe(createdWorkItemId);
         expect(got.subject).toBe(title);
+        expect(matchesLiveDateField(got.start_date, startDate)).toBe(true);
+        expect(matchesLiveDateField(got.due_date, dueDate)).toBe(true);
 
         const updatedTitle = `${title}-updated`;
         const updated = await client.updateWorkItem({
-          ...createProjectWorkItemInput(explicitWritableProjectId, workItemId),
+          ...createProjectWorkItemInput(
+            explicitWritableProjectId,
+            createdWorkItemId,
+          ),
           title: updatedTitle,
         });
 
-        expect(String(updated.id)).toBe(workItemId);
+        expect(String(updated.id)).toBe(createdWorkItemId);
         expect(updated.name).toBe(updatedTitle);
 
         const found = await findListedWorkItem(client, {
           projectId: explicitWritableProjectId,
-          workItemId,
+          workItemId: createdWorkItemId,
           pageSize: 20,
           maxPages: 5,
         });
@@ -1213,7 +1256,7 @@ if (hasLiveEnv(process.env)) {
           client.listWorkItemComments(
             createProjectWorkItemPageInput(
               explicitWritableProjectId,
-              workItemId,
+              createdWorkItemId,
               {
                 page_size: 50,
               },
@@ -1222,7 +1265,7 @@ if (hasLiveEnv(process.env)) {
           client.listWorkItemRecords(
             createProjectWorkItemPageInput(
               explicitWritableProjectId,
-              workItemId,
+              createdWorkItemId,
               {
                 page_size: 50,
                 journalized_type: "Issue",

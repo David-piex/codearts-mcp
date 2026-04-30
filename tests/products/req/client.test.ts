@@ -974,7 +974,9 @@ describe("createReqClient", () => {
           name: "mcp-live-smoke-updated",
           status: { name: "新建" },
           tracker: { name: "Task" },
-          description: "temporary live smoke item"
+          description: "temporary live smoke item",
+          start_date: "2028-04-12",
+          due_date: "2028-04-19"
         };
       }
     } as never);
@@ -1004,7 +1006,9 @@ describe("createReqClient", () => {
       subject: "mcp-live-smoke-updated",
       status: { name: "新建" },
       tracker_name: "Task",
-      description: "temporary live smoke item"
+      description: "temporary live smoke item",
+      start_date: "2028-04-12",
+      due_date: "2028-04-19"
     });
   });
 

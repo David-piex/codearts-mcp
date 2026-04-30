@@ -939,6 +939,8 @@ export type ReqClient = {
     status?: { name?: string };
     tracker_name?: string;
     description?: string;
+    start_date?: string | number;
+    due_date?: string | number;
   }>;
   getWorkItemIssueDetails: (input: {
     project_id: string;
@@ -5013,6 +5015,10 @@ export function createReqClient(
         tracker?: { name?: string };
         tracker_name?: string;
         description?: string;
+        start_date?: string | number;
+        due_date?: string | number;
+        begin_time?: string | number;
+        end_time?: string | number;
       };
 
       return {
@@ -5020,7 +5026,9 @@ export function createReqClient(
         subject: response.subject ?? response.name ?? "",
         status: response.status,
         tracker_name: response.tracker_name ?? response.tracker?.name,
-        description: response.description
+        description: response.description,
+        start_date: response.start_date ?? response.begin_time,
+        due_date: response.due_date ?? response.end_time
       };
     },
     async getWorkItemIssueDetails(input) {
