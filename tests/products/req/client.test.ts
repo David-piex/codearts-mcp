@@ -880,8 +880,8 @@ describe("createReqClient", () => {
       developer_id: 4091,
       done_ratio: 20,
       expected_work_hours: 8,
-      start_date: 1839340800000,
-      due_date: 1839945600000
+      begin_time: "2028-04-14",
+      end_time: "2028-04-21"
     });
     expect(result.id).toBe(101);
   });
@@ -937,8 +937,8 @@ describe("createReqClient", () => {
       developer_id: 4091,
       done_ratio: 60,
       expected_work_hours: 13,
-      start_date: 1839340800000,
-      due_date: 1839945600000
+      begin_time: "2028-04-14",
+      end_time: "2028-04-21"
     });
     expect(result).toEqual({
       id: 70779173,

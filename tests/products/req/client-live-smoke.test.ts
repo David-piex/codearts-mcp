@@ -1189,7 +1189,7 @@ if (hasLiveEnv(process.env)) {
         return;
       }
 
-      const title = `mcp-live-smoke-${Date.now()}`;
+      const title = `mcp-live-story-date-${Date.now()}`;
       const startDate = createIsoDateOffset(14);
       const dueDate = createIsoDateOffset(21);
       const startDateTimestamp = createUtcDateTimestamp(startDate);
@@ -1200,7 +1200,7 @@ if (hasLiveEnv(process.env)) {
         const created = await client.createWorkItem({
           project_id: explicitWritableProjectId,
           title,
-          work_item_type: "task",
+          work_item_type: "story",
           start_date: startDateTimestamp,
           due_date: dueDateTimestamp,
         });
@@ -1227,6 +1227,7 @@ if (hasLiveEnv(process.env)) {
 
         expect(String(got.id)).toBe(createdWorkItemId);
         expect(got.subject).toBe(title);
+        expect(got.tracker_name).toBe("Story");
         expect(matchesLiveDateField(got.start_date, startDate)).toBe(true);
         expect(matchesLiveDateField(got.due_date, dueDate)).toBe(true);
 

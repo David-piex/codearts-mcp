@@ -2261,6 +2261,14 @@ function toOptionalNumericId(value?: string): number | string | undefined {
   return /^\d+$/.test(value) ? Number(value) : value;
 }
 
+function toReqWorkItemDate(value?: number): string | undefined {
+  if (typeof value === "undefined") {
+    return undefined;
+  }
+
+  return new Date(value).toISOString().slice(0, 10);
+}
+
 function assertReqMutationSucceeded(action: string, status?: string) {
   if (status?.toLowerCase() === "success") {
     return;
@@ -3024,6 +3032,8 @@ export function createReqClient(
       };
     },
     async createWorkItem(input) {
+      const beginTime = toReqWorkItemDate(input.start_date);
+      const endTime = toReqWorkItemDate(input.due_date);
       const response = (await _http.post(`/v4/projects/${encodeURIComponent(input.project_id)}/issue`, {
         name: input.title,
         description: input.description,
@@ -3039,8 +3049,8 @@ export function createReqClient(
         ...(typeof input.expected_work_hours !== "undefined"
           ? { expected_work_hours: input.expected_work_hours }
           : {}),
-        ...(typeof input.start_date !== "undefined" ? { start_date: input.start_date } : {}),
-        ...(typeof input.due_date !== "undefined" ? { due_date: input.due_date } : {})
+        ...(beginTime ? { begin_time: beginTime } : {}),
+        ...(endTime ? { end_time: endTime } : {})
       })) as {
         id?: number | string;
         name?: string;
@@ -4502,6 +4512,8 @@ export function createReqClient(
       };
     },
     async updateWorkItem(input) {
+      const beginTime = toReqWorkItemDate(input.start_date);
+      const endTime = toReqWorkItemDate(input.due_date);
       const response = (await _http.put(
         `/v4/projects/${encodeURIComponent(input.project_id)}/issues/${encodeURIComponent(input.work_item_id)}`,
         {
@@ -4519,8 +4531,8 @@ export function createReqClient(
           ...(typeof input.expected_work_hours !== "undefined"
             ? { expected_work_hours: input.expected_work_hours }
             : {}),
-          ...(typeof input.start_date !== "undefined" ? { start_date: input.start_date } : {}),
-          ...(typeof input.due_date !== "undefined" ? { due_date: input.due_date } : {})
+          ...(beginTime ? { begin_time: beginTime } : {}),
+          ...(endTime ? { end_time: endTime } : {})
         }
       )) as {
         id?: number | string;
