@@ -47,6 +47,17 @@ MCP_SERVER_VERSION=0.1.0
 - 真实写入冒烟测试必须使用明确的样例 ID，并开启对应模块的写入开关变量。
 - 不要把 AK/SK 写入文档、提交记录、共享 shell 配置或日志。
 
+## 字段对应说明
+
+`Function-API-Reference.md` 已按所有 MCP 工具生成完整参数表，每个字段都包含“字段对应”说明，用来标明 MCP 入参和原始 CodeArts API 字段的关系。
+
+阅读规则：
+
+- 同名字段会明确标注为原始 CodeArts 对应模块 API 的同名字段，并说明字段可能位于路径参数、Query 参数或请求 Body。
+- MCP 为了易用性改名的字段会写出原始字段名，例如 Req 工作项 `title` 对应原始 `name` 或 `subject`，`work_item_type` 对应 `tracker_id`，`parent_work_item_id` 对应 `parent_issue_id`。
+- MCP 为了批量或安全封装新增的字段会说明是否提交给上游，例如 `dry_run` 是 MCP 安全开关，原始 API 无对应字段，不会提交给 CodeArts。
+- Repo 导入仓库、Req 批量更新、跨项目复制等字段名变化明显的接口，已在函数文档中写清 `target_repo_name`、`attribute.*`、`fromProjectUUId`、`toProjectUUId`、`issueIds` 等原始字段。
+
 ## Req
 
 Req 覆盖需求和项目协作，包括 Scrum 项目管理、成员、模块、迭代、计划、工作项、评论、附件、状态和配置读取、看板/缓存读取、需求池读取，以及 IPD 读写能力。
@@ -106,6 +117,12 @@ Repo 覆盖 CodeHub 代码仓协作，包括仓库、分支、提交、文件、
 | `repo_update_remote_mirror` | 更新远程镜像配置 |
 
 当前真实环境状态：Repo 标记为 `Partial`。原有 25 个仓库协作工具已覆盖真实 AK/SK 验证；新增的 5 个仓库导入/远程镜像工具已实现并有单测覆盖，仍需要稳定 live 样本后再标记为 Full。
+
+字段对应重点：
+
+- `repo_create_repository` 基本沿用原始 Repo 创建仓库 API 字段，如 `project_uuid`、`name`、`visibility_level`、`description`。
+- `repo_import_repository` 面向从 Gitee/GitHub/GitLab 等源导入仓库做了易用封装：MCP `name` 对应原始导入接口 `target_repo_name`；`source_username` 和 `source_token` 用来生成带凭据的 `source_url`，不是原始接口中的独立字段；回退到创建仓库接口时，源地址会编码为 `import_url`。
+- 远程镜像相关工具的 `repository_id`、`url`、`sync_branch_type`、`mirroring_enabled` 等字段按原始 Repo 远程镜像 API 字段语义保留。
 
 ## Pipeline
 

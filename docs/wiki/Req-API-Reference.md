@@ -75,6 +75,29 @@ Req 写工具遵循两个层面的安全策略：
 
 不要把 `HUAWEICLOUD_REQ_LIVE_ENABLE_*_MUTATIONS=true` 放进长期共享环境。它们只应在一次性验证命令或临时 CI job 中启用。
 
+## 字段对应说明
+
+完整字段表以 [Function-API-Reference](./Function-API-Reference.md) 为准。那份文档已经给每个 Req MCP 工具参数补上“字段对应”，用于把 MCP 字段和原始 CodeArts Req/PDF API 字段一一对上。
+
+常见对应关系：
+
+| MCP 字段 | 原始 CodeArts Req 字段 | 说明 |
+| --- | --- | --- |
+| `project_id` | `project_id` / `projectUUId` | V4 工作项接口多为路径参数 `project_id`；部分 V2/规划接口请求体使用 `projectUUId` |
+| `title` | `name` / `subject` | V4 创建/更新工作项对应 `name`；计划上下文创建工作项对应 `subject` |
+| `work_item_type` | `tracker_id` | MCP 支持传 `task`、`bug`、`epic`、`feature`、`story` 或数字字符串，调用前转成 `tracker_id` |
+| `parent_work_item_id` | `parent_issue_id` | 创建子工作项时使用 |
+| `work_item_id` | `issue_id` | 路径或请求字段中的工作项 ID |
+| `work_item_ids` | `id` / `issueIds` / `issue_ids` | 批量接口按原始 API 需要转换为数组或逗号分隔字符串 |
+| `dry_run` | 无 | MCP 安全开关，不提交给原始 API |
+
+几个容易混淆的接口：
+
+- `req_create_work_item`：`title -> name`，`work_item_type -> tracker_id`，`parent_work_item_id -> parent_issue_id`，`start_date/due_date` 对应 PDF 中开始/结束时间语义。
+- `req_create_plan_work_item`：走 `/v2/issues/create`，`project_id -> projectUUId`，`title -> subject`，其余工作项字段按原始计划上下文创建接口提交。
+- `req_batch_update_work_items`：`work_item_ids -> id`，状态、优先级、严重程度、处理人、开发人员、完成度、迭代、模块等更新字段进入请求体 `attribute.*`。
+- `req_copy_work_items`：`from_project_id -> fromProjectUUId`，`to_project_id -> toProjectUUId`，`work_item_ids -> issueIds`，工具会把数组拼成原始接口需要的逗号字符串。
+
 ## Scrum API 面
 
 ### 项目
