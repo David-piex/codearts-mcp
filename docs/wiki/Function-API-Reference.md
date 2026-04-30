@@ -65,11 +65,11 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `tenant_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `repo_name` | 是 | `string` |  | 资源名称。 |
-| `path` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `format` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `tenant_id` | 是 | `string` |  | 租户 ID 或 CodeArts 租户级项目标识，用于制品仓等服务定位当前租户/项目空间。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `repo_name` | 是 | `string` |  | 仓库名称。制品仓场景表示制品仓仓库名；Repo 场景表示代码仓库名。 |
+| `path` | 是 | `string` |  | 资源路径。制品仓场景表示制品或目录路径；代码仓场景表示仓库内文件路径。通常从仓库或制品仓根目录开始填写。 |
+| `format` | 是 | `string` |  | 制品仓仓库格式或制品格式，例如 maven、npm、pypi、generic、docker 等；实际可选值以制品仓配置为准。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -144,11 +144,11 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `tenant_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `repo_name` | 是 | `string` |  | 资源名称。 |
-| `path` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `format` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `tenant_id` | 是 | `string` |  | 租户 ID 或 CodeArts 租户级项目标识，用于制品仓等服务定位当前租户/项目空间。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `repo_name` | 是 | `string` |  | 仓库名称。制品仓场景表示制品仓仓库名；Repo 场景表示代码仓库名。 |
+| `path` | 是 | `string` |  | 资源路径。制品仓场景表示制品或目录路径；代码仓场景表示仓库内文件路径。通常从仓库或制品仓根目录开始填写。 |
+| `format` | 是 | `string` |  | 制品仓仓库格式或制品格式，例如 maven、npm、pypi、generic、docker 等；实际可选值以制品仓配置为准。 |
 
 输入 JSON Schema：
 
@@ -218,11 +218,11 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `tenant_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `repo_name` | 是 | `string` |  | 资源名称。 |
-| `path` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `format` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `tenant_id` | 是 | `string` |  | 租户 ID 或 CodeArts 租户级项目标识，用于制品仓等服务定位当前租户/项目空间。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `repo_name` | 是 | `string` |  | 仓库名称。制品仓场景表示制品仓仓库名；Repo 场景表示代码仓库名。 |
+| `path` | 是 | `string` |  | 资源路径。制品仓场景表示制品或目录路径；代码仓场景表示仓库内文件路径。通常从仓库或制品仓根目录开始填写。 |
+| `format` | 是 | `string` |  | 制品仓仓库格式或制品格式，例如 maven、npm、pypi、generic、docker 等；实际可选值以制品仓配置为准。 |
 
 输入 JSON Schema：
 
@@ -290,10 +290,10 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `tenant_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `repo_name` | 是 | `string` |  | 资源名称。 |
-| `path` | 否 | `string` | "/" | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `tenant_id` | 是 | `string` |  | 租户 ID 或 CodeArts 租户级项目标识，用于制品仓等服务定位当前租户/项目空间。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `repo_name` | 是 | `string` |  | 仓库名称。制品仓场景表示制品仓仓库名；Repo 场景表示代码仓库名。 |
+| `path` | 否 | `string` | "/" | 资源路径。制品仓场景表示制品或目录路径；代码仓场景表示仓库内文件路径。通常从仓库或制品仓根目录开始填写。 |
 
 输入 JSON Schema：
 
@@ -354,7 +354,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
+| `repository_id` | 是 | `string` |  | CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
 
 输入 JSON Schema：
 
@@ -399,10 +399,10 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
 
 输入 JSON Schema：
@@ -468,13 +468,13 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `repo_name` | 是 | `string` |  | 资源名称。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `repo_name` | 是 | `string` |  | 仓库名称。制品仓场景表示制品仓仓库名；Repo 场景表示代码仓库名。 |
 
 输入 JSON Schema：
 
@@ -550,12 +550,12 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 
 输入 JSON Schema：
 
@@ -627,18 +627,18 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `tenant_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `qname` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `type` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `format` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `format_list` | 否 | `array<string>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `is_recycle_bin` | 否 | `boolean` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `tenant_id` | 是 | `string` |  | 租户 ID 或 CodeArts 租户级项目标识，用于制品仓等服务定位当前租户/项目空间。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `qname` | 否 | `string` |  | 制品仓仓库名称查询关键字，用于按仓库名模糊搜索。 |
+| `type` | 否 | `string` |  | 类型字段，用于区分资源类别、操作类别或查询类别；具体取值以该接口的业务对象为准。 |
+| `format` | 否 | `string` |  | 制品仓仓库格式或制品格式，例如 maven、npm、pypi、generic、docker 等；实际可选值以制品仓配置为准。 |
+| `format_list` | 否 | `array<string>` |  | 制品仓仓库格式列表，用于一次按多个仓库格式过滤。 |
+| `is_recycle_bin` | 否 | `boolean` |  | 是否查询回收站。true 表示查询已删除或回收站中的制品仓资源。 |
 
 输入 JSON Schema：
 
@@ -735,12 +735,12 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 
 输入 JSON Schema：
 
@@ -811,14 +811,14 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `artifact_name` | 是 | `string` |  | 资源名称。 |
-| `repo_name` | 否 | `string` |  | 资源名称。 |
-| `project_id` | 否 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `artifact_name` | 是 | `string` |  | 制品名称。 |
+| `repo_name` | 否 | `string` |  | 仓库名称。制品仓场景表示制品仓仓库名；Repo 场景表示代码仓库名。 |
+| `project_id` | 否 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 
 输入 JSON Schema：
 
@@ -899,19 +899,19 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `tenant_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `module` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `repo` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `user_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `instance_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `format` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `resource_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `tenant_id` | 是 | `string` |  | 租户 ID 或 CodeArts 租户级项目标识，用于制品仓等服务定位当前租户/项目空间。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `module` | 是 | `string` |  | 模块名称或模块标识，用于按功能模块过滤或定位资源。 |
+| `repo` | 是 | `string` |  | 仓库名称或仓库标识，用于定位代码仓或制品仓资源。 |
+| `user_id` | 否 | `string` |  | 用户 ID，用于定位对应的 CodeArts 资源。 |
+| `instance_id` | 否 | `string` |  | 实例 ID，用于定位对应的 CodeArts 资源。 |
+| `format` | 否 | `string` |  | 制品仓仓库格式或制品格式，例如 maven、npm、pypi、generic、docker 等；实际可选值以制品仓配置为准。 |
+| `resource_id` | 否 | `string` |  | 资源 ID，用于定位审计、附件、制品或业务资源。具体资源类型由所在 API 决定。 |
 
 输入 JSON Schema：
 
@@ -1047,14 +1047,14 @@
 | `access_key` | 是 | `string` |  | 华为云访问密钥 ID，用于当前 MCP 会话鉴权。 |
 | `secret_key` | 是 | `string` |  | 华为云访问密钥 Secret，仅用于签名鉴权，请勿写入日志或公开文档。 |
 | `region` | 是 | `string` |  | 华为云区域标识，例如 cn-north-4。 |
-| `req_base_url` | 否 | `string` |  | 服务地址或资源 URL。 |
-| `repo_base_url` | 否 | `string` |  | 服务地址或资源 URL。 |
-| `pipeline_base_url` | 否 | `string` |  | 服务地址或资源 URL。 |
-| `check_base_url` | 否 | `string` |  | 服务地址或资源 URL。 |
-| `testplan_base_url` | 否 | `string` |  | 服务地址或资源 URL。 |
-| `deploy_base_url` | 否 | `string` |  | 服务地址或资源 URL。 |
-| `build_base_url` | 否 | `string` |  | 服务地址或资源 URL。 |
-| `artifact_base_url` | 否 | `string` |  | 服务地址或资源 URL。 |
+| `req_base_url` | 否 | `string` |  | reqbase URL，用于指定服务地址、资源地址或回调地址。 |
+| `repo_base_url` | 否 | `string` |  | repobase URL，用于指定服务地址、资源地址或回调地址。 |
+| `pipeline_base_url` | 否 | `string` |  | 流水线base URL，用于指定服务地址、资源地址或回调地址。 |
+| `check_base_url` | 否 | `string` |  | 检查base URL，用于指定服务地址、资源地址或回调地址。 |
+| `testplan_base_url` | 否 | `string` |  | testplanbase URL，用于指定服务地址、资源地址或回调地址。 |
+| `deploy_base_url` | 否 | `string` |  | 部署base URL，用于指定服务地址、资源地址或回调地址。 |
+| `build_base_url` | 否 | `string` |  | 构建base URL，用于指定服务地址、资源地址或回调地址。 |
+| `artifact_base_url` | 否 | `string` |  | 制品base URL，用于指定服务地址、资源地址或回调地址。 |
 
 输入 JSON Schema：
 
@@ -1145,16 +1145,16 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `job_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `step_name` | 是 | `string` |  | 资源名称。 |
-| `module_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `enable` | 否 | `boolean` | true | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `version` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `image` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `command` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `pre_condition` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `properties` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `insert_after_step_name` | 否 | `string` |  | 资源名称。 |
+| `job_id` | 是 | `string` |  | 构建任务 ID，用于定位对应的 CodeArts 资源。 |
+| `step_name` | 是 | `string` |  | 步骤名称。 |
+| `module_id` | 是 | `string` |  | 模块 ID，用于定位对应的 CodeArts 资源。 |
+| `enable` | 否 | `boolean` | true | 是否启用。true 表示启用该配置、步骤、规则或能力。 |
+| `version` | 否 | `string` |  | 版本号。制品仓场景表示制品版本；插件或模板场景表示对应资源版本。 |
+| `image` | 否 | `string` |  | 镜像名称或镜像地址，用于构建、部署或运行环境选择。 |
+| `command` | 否 | `string` |  | 命令行内容，用于构建、部署或脚本步骤执行。 |
+| `pre_condition` | 否 | `string` |  | 前置条件表达式，满足条件时才执行对应步骤。 |
+| `properties` | 否 | `object` |  | 属性配置对象，用于构建步骤、部署步骤或插件步骤的键值参数。 |
+| `insert_after_step_name` | 否 | `string` |  | insertafter步骤名称。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -1245,16 +1245,16 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `job_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `path` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `package_name` | 否 | `string` |  | 资源名称。 |
-| `package_version` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `custom_upload_path` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `upload_tool` | 否 | `string` | "curl" | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `continue_on_failure` | 否 | `boolean` | false | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `step_name` | 否 | `string` | "Upload package to release repository" | 资源名称。 |
-| `pre_condition` | 否 | `string` | "SUCCESS" | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `insert_after_step_name` | 否 | `string` |  | 资源名称。 |
+| `job_id` | 是 | `string` |  | 构建任务 ID，用于定位对应的 CodeArts 资源。 |
+| `path` | 是 | `string` |  | 资源路径。制品仓场景表示制品或目录路径；代码仓场景表示仓库内文件路径。通常从仓库或制品仓根目录开始填写。 |
+| `package_name` | 否 | `string` |  | package名称。 |
+| `package_version` | 否 | `string` |  | 发布包或制品版本号，用于上传、查询或归档构建产物。 |
+| `custom_upload_path` | 否 | `string` |  | 自定义上传路径，用于指定制品上传到仓库中的目标目录。 |
+| `upload_tool` | 否 | `string` | "curl" | 上传工具类型，用于选择发布包或制品上传方式。 |
+| `continue_on_failure` | 否 | `boolean` | false | 失败后是否继续。true 表示当前步骤失败后仍继续后续步骤。 |
+| `step_name` | 否 | `string` | "Upload package to release repository" | 步骤名称。 |
+| `pre_condition` | 否 | `string` | "SUCCESS" | 前置条件表达式，满足条件时才执行对应步骤。 |
+| `insert_after_step_name` | 否 | `string` |  | insertafter步骤名称。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -1347,15 +1347,15 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `job_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `step_name` | 否 | `string` | "Upload package to release repository" | 资源名称。 |
-| `file` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `package_name` | 否 | `string` |  | 资源名称。 |
-| `build_version` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `custom_upload_path` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `upload_tool` | 否 | `string` | "curl" | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `remain_origin_path` | 否 | `string` | "FLAT" | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `pre_condition` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `job_id` | 是 | `string` |  | 构建任务 ID，用于定位对应的 CodeArts 资源。 |
+| `step_name` | 否 | `string` | "Upload package to release repository" | 步骤名称。 |
+| `file` | 是 | `string` |  | 文件路径或文件内容。具体含义取决于所在接口：上传场景通常是文件路径，配置场景可能是文件名或配置内容。 |
+| `package_name` | 否 | `string` |  | package名称。 |
+| `build_version` | 否 | `string` |  | 构建产物版本号，用于发布上传步骤中标识本次产物版本。 |
+| `custom_upload_path` | 否 | `string` |  | 自定义上传路径，用于指定制品上传到仓库中的目标目录。 |
+| `upload_tool` | 否 | `string` | "curl" | 上传工具类型，用于选择发布包或制品上传方式。 |
+| `remain_origin_path` | 否 | `string` | "FLAT" | 是否保留原始路径。true 表示上传制品时保留本地目录结构。 |
+| `pre_condition` | 否 | `string` |  | 前置条件表达式，满足条件时才执行对应步骤。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -1443,13 +1443,13 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `job_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `build_no` | 是 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `job_id` | 是 | `string` |  | 构建任务 ID，用于定位对应的 CodeArts 资源。 |
+| `build_no` | 是 | `integer` |  | 构建编号，用于定位某一次构建执行记录。 |
 
 输入 JSON Schema：
 
@@ -1525,8 +1525,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `record_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `cascade` | 否 | `boolean` | true | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `record_id` | 是 | `string` |  | 执行记录 ID，用于定位对应的 CodeArts 资源。 |
+| `cascade` | 否 | `boolean` | true | 是否级联查询或级联操作。true 表示包含下级资源或对子资源同步处理。 |
 
 输入 JSON Schema：
 
@@ -1578,8 +1578,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `job_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `build_number` | 是 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `job_id` | 是 | `string` |  | 构建任务 ID，用于定位对应的 CodeArts 资源。 |
+| `build_number` | 是 | `integer` |  | 构建编号，用于定位某一次构建执行记录。 |
 
 输入 JSON Schema：
 
@@ -1632,8 +1632,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `job_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `build_no` | 是 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `job_id` | 是 | `string` |  | 构建任务 ID，用于定位对应的 CodeArts 资源。 |
+| `build_no` | 是 | `integer` |  | 构建编号，用于定位某一次构建执行记录。 |
 
 输入 JSON Schema：
 
@@ -1685,7 +1685,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `job_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `job_id` | 是 | `string` |  | 构建任务 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -1732,8 +1732,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `build_project_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `build_project_id` | 否 | `string` |  | 构建工程 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -1785,9 +1785,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `job_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `build_no` | 是 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `offset` | 是 | `integer` |  | 分页偏移量。 |
+| `job_id` | 是 | `string` |  | 构建任务 ID，用于定位对应的 CodeArts 资源。 |
+| `build_no` | 是 | `integer` |  | 构建编号，用于定位某一次构建执行记录。 |
+| `offset` | 是 | `integer` |  | 分页偏移量，表示从结果集第几条开始返回，常与 limit 配合使用。 |
 
 输入 JSON Schema：
 
@@ -1844,7 +1844,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `record_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `record_id` | 是 | `string` |  | 执行记录 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -1891,7 +1891,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `record_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `record_id` | 是 | `string` |  | 执行记录 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -1938,7 +1938,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `record_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `record_id` | 是 | `string` |  | 执行记录 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -1986,8 +1986,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `job_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `build_no` | 是 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `job_id` | 是 | `string` |  | 构建任务 ID，用于定位对应的 CodeArts 资源。 |
+| `build_no` | 是 | `integer` |  | 构建编号，用于定位某一次构建执行记录。 |
 
 输入 JSON Schema：
 
@@ -2039,12 +2039,12 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 
 输入 JSON Schema：
 
@@ -2115,13 +2115,13 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `build_project_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `build_project_id` | 否 | `string` |  | 构建工程 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -2195,12 +2195,12 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `job_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `job_id` | 是 | `string` |  | 构建任务 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -2304,11 +2304,11 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `job_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `step_name` | 否 | `string` |  | 资源名称。 |
-| `output_file` | 否 | `string` | "codearts-mcp.tgz" | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `staging_dir` | 否 | `string` | ".release-bundle" | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `replace_existing` | 否 | `boolean` | false | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `job_id` | 是 | `string` |  | 构建任务 ID，用于定位对应的 CodeArts 资源。 |
+| `step_name` | 否 | `string` |  | 步骤名称。 |
+| `output_file` | 否 | `string` | "codearts-mcp.tgz" | 输出文件路径，用于保存生成的包、归档或运行时文件。 |
+| `staging_dir` | 否 | `string` | ".release-bundle" | 临时目录路径，用于打包、构建或生成运行时文件。 |
+| `replace_existing` | 否 | `boolean` | false | 是否替换已存在文件或目录。true 表示存在同名内容时覆盖。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -2378,8 +2378,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `job_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `branch` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `job_id` | 是 | `string` |  | 构建任务 ID，用于定位对应的 CodeArts 资源。 |
+| `branch` | 否 | `string` |  | Git 分支名称，用于构建、流水线或代码仓操作时指定代码来源分支。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -2436,8 +2436,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `job_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `build_no` | 是 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `job_id` | 是 | `string` |  | 构建任务 ID，用于定位对应的 CodeArts 资源。 |
+| `build_no` | 是 | `integer` |  | 构建编号，用于定位某一次构建执行记录。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -2531,17 +2531,17 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `task_name` | 是 | `string` |  | 资源名称。 |
-| `git_url` | 是 | `string` |  | 服务地址或资源 URL。 |
-| `git_branch` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `language` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `rule_set_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `resource_pool_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `resource_pool_type` | 否 | `"default" \| "custom"` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`default`、`custom`。 |
-| `include_paths` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `exclude_dir` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `task_type` | 否 | `"full" \| "incremental"` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`full`、`incremental`。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `task_name` | 是 | `string` |  | 任务名称。 |
+| `git_url` | 是 | `string` |  | git URL，用于指定服务地址、资源地址或回调地址。 |
+| `git_branch` | 是 | `string` |  | Git 分支名称，用于代码检查、构建或流水线运行时指定代码来源分支。 |
+| `language` | 是 | `string` |  | 代码语言或技术栈，例如 Java、JavaScript、TypeScript、Python、Go；可选值以代码检查服务支持范围为准。 |
+| `rule_set_id` | 否 | `string` |  | 规则集 ID，用于定位对应的 CodeArts 资源。 |
+| `resource_pool_id` | 否 | `string` |  | 资源池 ID，用于定位对应的 CodeArts 资源。 |
+| `resource_pool_type` | 否 | `"default" \| "custom"` |  | 资源池类型，用于选择构建、检查或部署使用的执行资源池。可选值：`default`、`custom`。 |
+| `include_paths` | 否 | `string` |  | 包含路径列表，代码检查或扫描时只分析这些路径下的文件。 |
+| `exclude_dir` | 否 | `string` |  | 排除目录列表，代码检查或扫描时跳过这些目录。 |
+| `task_type` | 否 | `"full" \| "incremental"` |  | 任务类型，用于区分构建任务、检查任务、部署任务或测试任务。可选值：`full`、`incremental`。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -2641,8 +2641,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 否 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `task_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 否 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `task_id` | 是 | `string` |  | 任务 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -2692,7 +2692,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `task_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `task_id` | 是 | `string` |  | 任务 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -2739,13 +2739,13 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `language` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `language` | 否 | `string` |  | 代码语言或技术栈，例如 Java、JavaScript、TypeScript、Python、Go；可选值以代码检查服务支持范围为准。 |
 
 输入 JSON Schema：
 
@@ -2819,19 +2819,19 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `task_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `severity` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `defect_level` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `rule_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `rule_name` | 否 | `string` |  | 资源名称。 |
-| `file_path` | 否 | `string` |  | 仓库内文件路径。 |
-| `status` | 否 | `string` |  | 状态过滤条件或目标状态。 |
-| `checker` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `task_id` | 是 | `string` |  | 任务 ID，用于定位对应的 CodeArts 资源。 |
+| `severity` | 否 | `string` |  | 严重级别。代码检查场景表示问题严重程度；需求管理场景表示缺陷严重程度。 |
+| `defect_level` | 否 | `string` |  | 缺陷等级或问题等级，用于代码检查问题过滤；常见值按服务端规则集返回为准。 |
+| `rule_id` | 否 | `string` |  | 规则 ID，用于定位对应的 CodeArts 资源。 |
+| `rule_name` | 否 | `string` |  | 规则名称。 |
+| `file_path` | 否 | `string` |  | 仓库内文件路径，从仓库根目录开始填写，例如 src/index.ts；不要带仓库 URL。 |
+| `status` | 否 | `string` |  | 状态过滤条件或目标状态。用于列表查询时表示筛选状态，用于更新/流转时表示要变更到的目标状态；具体取值以对应资源的状态字典为准。 |
+| `checker` | 否 | `string` |  | 检查规则或检查器名称，用于代码检查问题过滤。 |
 
 输入 JSON Schema：
 
@@ -2928,12 +2928,12 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `project_id` | 否 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 否 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 
 输入 JSON Schema：
 
@@ -3001,8 +3001,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `task_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `ref` | 否 | `string` |  | Git 引用，可以是分支、标签或提交 SHA。 |
+| `task_id` | 是 | `string` |  | 任务 ID，用于定位对应的 CodeArts 资源。 |
+| `ref` | 否 | `string` |  | Git 引用，可以填写分支名、标签名或提交 SHA，用于指定读取文件、提交或比较的版本。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -3058,7 +3058,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `task_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `task_id` | 是 | `string` |  | 任务 ID，用于定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -3113,10 +3113,10 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `environment_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `cluster_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `host_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `environment_id` | 是 | `string` |  | 部署环境 ID，用于定位对应的 CodeArts 资源。 |
+| `cluster_id` | 是 | `string` |  | 集群 ID，用于定位对应的 CodeArts 资源。 |
+| `host_ids` | 是 | `array<object>` |  | 主机 ID 列表，用于批量定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -3185,12 +3185,12 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `reason` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `description` | 否 | `string` |  | 资源描述信息。 |
-| `operator` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `body` | 否 | `object` | {} | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `record_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `reason` | 否 | `string` |  | 原因说明，用于取消、拒绝、关闭或回滚等操作的补充说明。 |
+| `description` | 否 | `string` |  | 描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
+| `operator` | 否 | `string` |  | 操作人标识，表示执行本次操作的用户。 |
+| `body` | 否 | `object` | {} | 请求体或正文内容。复杂接口会把多个业务字段放在 body 中提交。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `record_id` | 是 | `string` |  | 执行记录 ID，用于定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -3262,18 +3262,18 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `name` | 是 | `string` |  | 资源名称。 |
-| `description` | 否 | `string` | "" | 资源描述信息。 |
-| `timeout` | 否 | `number \| null` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `trigger` | 否 | `object` | {"trigger_source":"0","artifact_source_system":"","artifact_type":""} | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `slave_cluster_id` | 否 | `string` | "" | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `slave_resource_type` | 否 | `string` | "" | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `create_type` | 否 | `string` | "template" | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `is_draft` | 否 | `boolean` | false | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `group_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `agency_urn` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `arrange_infos` | 是 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `name` | 是 | `string` |  | 名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
+| `description` | 否 | `string` | "" | 描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
+| `timeout` | 否 | `number \| null` |  | 超时时间，通常以秒或分钟为单位，超过后任务会被服务端终止。 |
+| `trigger` | 否 | `object` | {"trigger_source":"0","artifact_source_system":"","artifact_type":""} | 触发方式，用于区分手动触发、定时触发、代码提交触发等执行来源。 |
+| `slave_cluster_id` | 否 | `string` | "" | 从集群 ID，用于定位对应的 CodeArts 资源。 |
+| `slave_resource_type` | 否 | `string` | "" | 从资源类型，用于部署应用关联从属资源时标识资源类别。 |
+| `create_type` | 否 | `string` | "template" | 创建类型，用于区分手工创建、模板创建、复制创建等来源。 |
+| `is_draft` | 否 | `boolean` | false | 是否为草稿。true 表示创建为草稿状态，暂不正式生效或发布。 |
+| `group_id` | 否 | `string` |  | 分组 ID，用于定位对应的 CodeArts 资源。 |
+| `agency_urn` | 否 | `string` |  | 委托 URN，用于部署等服务通过云委托访问其他云资源。 |
+| `arrange_infos` | 是 | `array<object>` |  | 编排信息列表，用于描述部署任务或应用下各步骤的执行顺序和参数。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -3438,12 +3438,12 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `application_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `name` | 是 | `string` |  | 资源名称。 |
-| `os` | 否 | `string` | "linux" | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `deploy_type` | 否 | `integer` | 0 | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `description` | 否 | `string` |  | 资源描述信息。 |
+| `application_id` | 是 | `string` |  | 应用 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `name` | 是 | `string` |  | 名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
+| `os` | 否 | `string` | "linux" | 操作系统类型，例如 Linux 或 Windows；用于部署环境、主机或运行时选择。 |
+| `deploy_type` | 否 | `integer` | 0 | 部署类型，用于区分主机部署、容器部署、函数部署等部署方式；具体取值以部署服务为准。 |
+| `description` | 否 | `string` |  | 描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -3520,11 +3520,11 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `project_name` | 是 | `string` |  | 资源名称。 |
-| `template_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `task_name` | 是 | `string` |  | 资源名称。 |
-| `configs` | 否 | `array<object>` | [] | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `project_name` | 是 | `string` |  | 项目名称。 |
+| `template_id` | 是 | `string` |  | 模板 ID，用于定位对应的 CodeArts 资源。 |
+| `task_name` | 是 | `string` |  | 任务名称。 |
+| `configs` | 否 | `array<object>` | [] | 配置项列表或配置对象，用于创建部署任务、模板任务或执行参数。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -3641,9 +3641,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `cluster_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `host_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `cluster_id` | 是 | `string` |  | 集群 ID，用于定位对应的 CodeArts 资源。 |
+| `host_ids` | 是 | `array<object>` |  | 主机 ID 列表，用于批量定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -3709,9 +3709,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `environment_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `host_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `environment_id` | 是 | `string` |  | 部署环境 ID，用于定位对应的 CodeArts 资源。 |
+| `host_ids` | 是 | `array<object>` |  | 主机 ID 列表，用于批量定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -3775,7 +3775,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `application_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `application_id` | 是 | `string` |  | 应用 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -3823,11 +3823,11 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `application_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `record_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `step_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `offset` | 否 | `string` | "0" | 分页偏移量。 |
-| `end_offset` | 否 | `string` | "0" | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `application_id` | 是 | `string` |  | 应用 ID，用于定位对应的 CodeArts 资源。 |
+| `record_id` | 是 | `string` |  | 执行记录 ID，用于定位对应的 CodeArts 资源。 |
+| `step_id` | 否 | `string` |  | 步骤 ID，用于定位对应的 CodeArts 资源。 |
+| `offset` | 否 | `string` | "0" | 分页偏移量，表示从结果集第几条开始返回，常与 limit 配合使用。 |
+| `end_offset` | 否 | `string` | "0" | 日志结束偏移量，用于增量读取部署或构建日志。 |
 
 输入 JSON Schema：
 
@@ -3889,7 +3889,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `task_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `task_id` | 是 | `string` |  | 任务 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -3937,8 +3937,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `task_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `record_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `task_id` | 是 | `string` |  | 任务 ID，用于定位对应的 CodeArts 资源。 |
+| `record_id` | 是 | `string` |  | 执行记录 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -3990,8 +3990,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `task_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `record_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `task_id` | 是 | `string` |  | 任务 ID，用于定位对应的 CodeArts 资源。 |
+| `record_id` | 是 | `string` |  | 执行记录 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -4042,7 +4042,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `group_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `group_id` | 是 | `string` |  | 分组 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -4090,8 +4090,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `orchestration_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `orchestration_id` | 是 | `string` |  | 编排 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -4142,8 +4142,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `app_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `app_id` | 否 | `string` |  | 应用 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -4193,8 +4193,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `task_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `record_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `task_id` | 是 | `string` |  | 任务 ID，用于定位对应的 CodeArts 资源。 |
+| `record_id` | 否 | `string` |  | 执行记录 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -4244,7 +4244,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `task_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `task_id` | 是 | `string` |  | 任务 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -4291,8 +4291,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `template_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `task_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `template_id` | 是 | `string` |  | 模板 ID，用于定位对应的 CodeArts 资源。 |
+| `task_id` | 否 | `string` |  | 任务 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -4344,9 +4344,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `cluster_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `cluster_type` | 是 | `"host" \| "container"` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`host`、`container`。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `cluster_id` | 是 | `string` |  | 集群 ID，用于定位对应的 CodeArts 资源。 |
+| `cluster_type` | 是 | `"host" \| "container"` |  | 集群类型，用于区分主机集群、Kubernetes 集群或代理集群等。可选值：`host`、`container`。 |
 
 输入 JSON Schema：
 
@@ -4406,8 +4406,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `cluster_type` | 是 | `"host" \| "container"` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`host`、`container`。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `cluster_type` | 是 | `"host" \| "container"` |  | 集群类型，用于区分主机集群、Kubernetes 集群或代理集群等。可选值：`host`、`container`。 |
 
 输入 JSON Schema：
 
@@ -4464,9 +4464,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `cluster_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `host_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `cluster_id` | 是 | `string` |  | 集群 ID，用于定位对应的 CodeArts 资源。 |
+| `host_id` | 是 | `string` |  | 主机 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -4522,9 +4522,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `record_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `step_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `record_id` | 是 | `string` |  | 执行记录 ID，用于定位对应的 CodeArts 资源。 |
+| `step_id` | 否 | `string` |  | 步骤 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -4579,8 +4579,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `record_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `record_id` | 是 | `string` |  | 执行记录 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -4633,14 +4633,14 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `record_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `step_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `offset` | 否 | `string \| number` |  | 分页偏移量。 |
-| `limit` | 否 | `integer` |  | 分页数量上限。 |
-| `start_time` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `end_time` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `body` | 否 | `object` | {} | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `record_id` | 是 | `string` |  | 执行记录 ID，用于定位对应的 CodeArts 资源。 |
+| `step_id` | 是 | `string` |  | 步骤 ID，用于定位对应的 CodeArts 资源。 |
+| `offset` | 否 | `string \| number` |  | 分页偏移量，表示从结果集第几条开始返回，常与 limit 配合使用。 |
+| `limit` | 否 | `integer` |  | 分页数量上限，表示本次最多返回多少条记录。 |
+| `start_time` | 否 | `string` |  | 开始时间，通常使用时间戳或 ISO 8601 时间字符串，具体格式以接口要求为准。 |
+| `end_time` | 否 | `string` |  | 结束时间，通常使用时间戳或 ISO 8601 时间字符串，具体格式以接口要求为准。 |
+| `body` | 否 | `object` | {} | 请求体或正文内容。复杂接口会把多个业务字段放在 body 中提交。 |
 
 输入 JSON Schema：
 
@@ -4718,8 +4718,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `environment_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `environment_id` | 是 | `string` |  | 部署环境 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -4771,8 +4771,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `environment_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `environment_id` | 是 | `string` |  | 部署环境 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -4826,10 +4826,10 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `application_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `environment_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `group_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `host_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `application_id` | 是 | `string` |  | 应用 ID，用于定位对应的 CodeArts 资源。 |
+| `environment_id` | 是 | `string` |  | 部署环境 ID，用于定位对应的 CodeArts 资源。 |
+| `group_id` | 是 | `string` |  | 分组 ID，用于定位对应的 CodeArts 资源。 |
+| `host_ids` | 是 | `array<object>` |  | 主机 ID 列表，用于批量定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -4898,13 +4898,13 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `application_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `application_id` | 是 | `string` |  | 应用 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 
 输入 JSON Schema：
 
@@ -4979,11 +4979,11 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `app_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `page_index` | 否 | `integer` | 1 | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `start_date` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `end_date` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `app_id` | 是 | `string` |  | 应用 ID，用于定位对应的 CodeArts 资源。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `page_index` | 否 | `integer` | 1 | 页码或页索引，用于分页查询；起始值以对应接口约定为准。 |
+| `start_date` | 否 | `string` |  | 开始日期，通常使用 yyyy-MM-dd 或接口要求的日期格式。 |
+| `end_date` | 否 | `string` |  | 结束日期，通常使用 yyyy-MM-dd 或接口要求的日期格式。 |
 
 输入 JSON Schema：
 
@@ -5047,12 +5047,12 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 
 输入 JSON Schema：
 
@@ -5124,8 +5124,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `app_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `app_id` | 是 | `string` |  | 应用 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -5177,15 +5177,15 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `application_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `environment_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `key_field` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `as_proxy` | 否 | `boolean` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `application_id` | 是 | `string` |  | 应用 ID，用于定位对应的 CodeArts 资源。 |
+| `environment_id` | 是 | `string` |  | 部署环境 ID，用于定位对应的 CodeArts 资源。 |
+| `key_field` | 否 | `string` |  | 关键字段名，用于指定排序、分组、统计或去重时使用的字段。 |
+| `as_proxy` | 否 | `boolean` |  | 是否作为代理使用。true 表示该主机、节点或连接用于代理访问。 |
 
 输入 JSON Schema：
 
@@ -5268,13 +5268,13 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `application_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `application_id` | 是 | `string` |  | 应用 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 
 输入 JSON Schema：
 
@@ -5350,15 +5350,15 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `task_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `start_date` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `end_date` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `task_id` | 是 | `string` |  | 任务 ID，用于定位对应的 CodeArts 资源。 |
+| `start_date` | 否 | `string` |  | 开始日期，通常使用 yyyy-MM-dd 或接口要求的日期格式。 |
+| `end_date` | 否 | `string` |  | 结束日期，通常使用 yyyy-MM-dd 或接口要求的日期格式。 |
 
 输入 JSON Schema：
 
@@ -5439,12 +5439,12 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `group_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `group_id` | 是 | `string` |  | 分组 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -5515,12 +5515,12 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `group_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `group_id` | 是 | `string` |  | 分组 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -5591,12 +5591,12 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 
 输入 JSON Schema：
 
@@ -5702,12 +5702,12 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 
 输入 JSON Schema：
 
@@ -5778,10 +5778,10 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `limit` | 否 | `integer` | 20 | 分页数量上限。 |
-| `offset` | 否 | `integer` | 0 | 分页偏移量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `limit` | 否 | `integer` | 20 | 分页数量上限，表示本次最多返回多少条记录。 |
+| `offset` | 否 | `integer` | 0 | 分页偏移量，表示从结果集第几条开始返回，常与 limit 配合使用。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
 
 输入 JSON Schema：
 
@@ -5843,19 +5843,19 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `limit` | 否 | `integer` |  | 分页数量上限。 |
-| `offset` | 否 | `integer` |  | 分页偏移量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `name` | 否 | `string` |  | 资源名称。 |
-| `status` | 否 | `string` |  | 状态过滤条件或目标状态。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `limit` | 否 | `integer` |  | 分页数量上限，表示本次最多返回多少条记录。 |
+| `offset` | 否 | `integer` |  | 分页偏移量，表示从结果集第几条开始返回，常与 limit 配合使用。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `name` | 否 | `string` |  | 名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
+| `status` | 否 | `string` |  | 状态过滤条件或目标状态。用于列表查询时表示筛选状态，用于更新/流转时表示要变更到的目标状态；具体取值以对应资源的状态字典为准。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `body` | 否 | `object` | {} | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `cluster_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `ip` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `os` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `connection_status` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `body` | 否 | `object` | {} | 请求体或正文内容。复杂接口会把多个业务字段放在 body 中提交。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `cluster_id` | 是 | `string` |  | 集群 ID，用于定位对应的 CodeArts 资源。 |
+| `ip` | 否 | `string` |  | IP 地址，用于主机、集群、代理或部署目标定位。 |
+| `os` | 否 | `string` |  | 操作系统类型，例如 Linux 或 Windows；用于部署环境、主机或运行时选择。 |
+| `connection_status` | 否 | `string` |  | 连接状态，用于过滤主机、服务端点、镜像或外部系统连接结果。 |
 
 输入 JSON Schema：
 
@@ -5949,16 +5949,16 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `limit` | 否 | `integer` |  | 分页数量上限。 |
-| `offset` | 否 | `integer` |  | 分页偏移量。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `name` | 否 | `string` |  | 资源名称。 |
-| `status` | 否 | `string` |  | 状态过滤条件或目标状态。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `limit` | 否 | `integer` |  | 分页数量上限，表示本次最多返回多少条记录。 |
+| `offset` | 否 | `integer` |  | 分页偏移量，表示从结果集第几条开始返回，常与 limit 配合使用。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `name` | 否 | `string` |  | 名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
+| `status` | 否 | `string` |  | 状态过滤条件或目标状态。用于列表查询时表示筛选状态，用于更新/流转时表示要变更到的目标状态；具体取值以对应资源的状态字典为准。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `body` | 否 | `object` | {} | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `cluster_type` | 是 | `"host" \| "container"` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`host`、`container`。 |
+| `body` | 否 | `object` | {} | 请求体或正文内容。复杂接口会把多个业务字段放在 body 中提交。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `cluster_type` | 是 | `"host" \| "container"` |  | 集群类型，用于区分主机集群、Kubernetes 集群或代理集群等。可选值：`host`、`container`。 |
 
 输入 JSON Schema：
 
@@ -6046,9 +6046,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `limit` | 否 | `integer` | 20 | 分页数量上限。 |
-| `offset` | 否 | `integer` | 0 | 分页偏移量。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `limit` | 否 | `integer` | 20 | 分页数量上限，表示本次最多返回多少条记录。 |
+| `offset` | 否 | `integer` | 0 | 分页偏移量，表示从结果集第几条开始返回，常与 limit 配合使用。 |
 
 输入 JSON Schema：
 
@@ -6107,10 +6107,10 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `environment_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `limit` | 否 | `integer` | 20 | 分页数量上限。 |
-| `offset` | 否 | `integer` | 0 | 分页偏移量。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `environment_id` | 是 | `string` |  | 部署环境 ID，用于定位对应的 CodeArts 资源。 |
+| `limit` | 否 | `integer` | 20 | 分页数量上限，表示本次最多返回多少条记录。 |
+| `offset` | 否 | `integer` | 0 | 分页偏移量，表示从结果集第几条开始返回，常与 limit 配合使用。 |
 
 输入 JSON Schema：
 
@@ -6173,9 +6173,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `environment_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `query` | 否 | `object` | {} | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `environment_id` | 是 | `string` |  | 部署环境 ID，用于定位对应的 CodeArts 资源。 |
+| `query` | 否 | `object` | {} | 查询条件或搜索表达式，用于过滤列表结果；具体支持的字段由对应接口决定。 |
 
 输入 JSON Schema：
 
@@ -6237,9 +6237,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `limit` | 否 | `integer` | 20 | 分页数量上限。 |
-| `offset` | 否 | `integer` | 0 | 分页偏移量。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `limit` | 否 | `integer` | 20 | 分页数量上限，表示本次最多返回多少条记录。 |
+| `offset` | 否 | `integer` | 0 | 分页偏移量，表示从结果集第几条开始返回，常与 limit 配合使用。 |
 
 输入 JSON Schema：
 
@@ -6298,10 +6298,10 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `app_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `limit` | 否 | `integer` | 20 | 分页数量上限。 |
-| `offset` | 否 | `integer` | 0 | 分页偏移量。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `app_id` | 是 | `string` |  | 应用 ID，用于定位对应的 CodeArts 资源。 |
+| `limit` | 否 | `integer` | 20 | 分页数量上限，表示本次最多返回多少条记录。 |
+| `offset` | 否 | `integer` | 0 | 分页偏移量，表示从结果集第几条开始返回，常与 limit 配合使用。 |
 
 输入 JSON Schema：
 
@@ -6432,19 +6432,19 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `id` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `name` | 是 | `string` |  | 资源名称。 |
-| `description` | 否 | `string` | "" | 资源描述信息。 |
-| `timeout` | 否 | `number \| null` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `trigger` | 否 | `object` | {"trigger_source":"0","artifact_source_system":"","artifact_type":""} | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `slave_cluster_id` | 否 | `string` | "" | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `slave_resource_type` | 否 | `string` | "" | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `create_type` | 否 | `string` | "template" | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `is_draft` | 否 | `boolean` | false | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `group_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `agency_urn` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `arrange_infos` | 是 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `id` | 是 | `string` |  | 资源 ID，表示当前接口操作对象的唯一标识。具体含义由所在 API 决定，例如工作项 ID、记录 ID、任务 ID。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `name` | 是 | `string` |  | 名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
+| `description` | 否 | `string` | "" | 描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
+| `timeout` | 否 | `number \| null` |  | 超时时间，通常以秒或分钟为单位，超过后任务会被服务端终止。 |
+| `trigger` | 否 | `object` | {"trigger_source":"0","artifact_source_system":"","artifact_type":""} | 触发方式，用于区分手动触发、定时触发、代码提交触发等执行来源。 |
+| `slave_cluster_id` | 否 | `string` | "" | 从集群 ID，用于定位对应的 CodeArts 资源。 |
+| `slave_resource_type` | 否 | `string` | "" | 从资源类型，用于部署应用关联从属资源时标识资源类别。 |
+| `create_type` | 否 | `string` | "template" | 创建类型，用于区分手工创建、模板创建、复制创建等来源。 |
+| `is_draft` | 否 | `boolean` | false | 是否为草稿。true 表示创建为草稿状态，暂不正式生效或发布。 |
+| `group_id` | 否 | `string` |  | 分组 ID，用于定位对应的 CodeArts 资源。 |
+| `agency_urn` | 否 | `string` |  | 委托 URN，用于部署等服务通过云委托访问其他云资源。 |
+| `arrange_infos` | 是 | `array<object>` |  | 编排信息列表，用于描述部署任务或应用下各步骤的执行顺序和参数。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -6619,9 +6619,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `record_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `step_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `record_id` | 是 | `string` |  | 执行记录 ID，用于定位对应的 CodeArts 资源。 |
+| `step_id` | 是 | `string` |  | 步骤 ID，用于定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -6716,9 +6716,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `record_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `step_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `record_id` | 是 | `string` |  | 执行记录 ID，用于定位对应的 CodeArts 资源。 |
+| `step_id` | 是 | `string` |  | 步骤 ID，用于定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -6779,12 +6779,12 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `reason` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `description` | 否 | `string` |  | 资源描述信息。 |
-| `operator` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `body` | 否 | `object` | {} | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `record_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `reason` | 否 | `string` |  | 原因说明，用于取消、拒绝、关闭或回滚等操作的补充说明。 |
+| `description` | 否 | `string` |  | 描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
+| `operator` | 否 | `string` |  | 操作人标识，表示执行本次操作的用户。 |
+| `body` | 否 | `object` | {} | 请求体或正文内容。复杂接口会把多个业务字段放在 body 中提交。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `record_id` | 是 | `string` |  | 执行记录 ID，用于定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -6855,12 +6855,12 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `reason` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `description` | 否 | `string` |  | 资源描述信息。 |
-| `operator` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `body` | 否 | `object` | {} | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `record_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `reason` | 否 | `string` |  | 原因说明，用于取消、拒绝、关闭或回滚等操作的补充说明。 |
+| `description` | 否 | `string` |  | 描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
+| `operator` | 否 | `string` |  | 操作人标识，表示执行本次操作的用户。 |
+| `body` | 否 | `object` | {} | 请求体或正文内容。复杂接口会把多个业务字段放在 body 中提交。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `record_id` | 是 | `string` |  | 执行记录 ID，用于定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -6931,8 +6931,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `task_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `record_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `task_id` | 是 | `string` |  | 任务 ID，用于定位对应的 CodeArts 资源。 |
+| `record_id` | 是 | `string` |  | 执行记录 ID，用于定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -6989,12 +6989,12 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `reason` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `description` | 否 | `string` |  | 资源描述信息。 |
-| `operator` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `body` | 否 | `object` | {} | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `record_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `reason` | 否 | `string` |  | 原因说明，用于取消、拒绝、关闭或回滚等操作的补充说明。 |
+| `description` | 否 | `string` |  | 描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
+| `operator` | 否 | `string` |  | 操作人标识，表示执行本次操作的用户。 |
+| `body` | 否 | `object` | {} | 请求体或正文内容。复杂接口会把多个业务字段放在 body 中提交。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `record_id` | 是 | `string` |  | 执行记录 ID，用于定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -7064,9 +7064,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `task_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `trigger_source` | 否 | `0 \| 1 \| "0" \| "1"` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`0`、`1`、`0`、`1`。 |
-| `params` | 否 | `array<object>` | [] | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `task_id` | 是 | `string` |  | 任务 ID，用于定位对应的 CodeArts 资源。 |
+| `trigger_source` | 否 | `0 \| 1 \| "0" \| "1"` |  | 触发来源，用于标识任务由手动、定时、代码提交、流水线等来源触发。可选值：`0`、`1`、`0`、`1`。 |
+| `params` | 否 | `array<object>` | [] | 参数对象，承载接口需要透传给下游任务、部署步骤或流水线的键值配置。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -7155,8 +7155,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `task_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `record_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `task_id` | 是 | `string` |  | 任务 ID，用于定位对应的 CodeArts 资源。 |
+| `record_id` | 是 | `string` |  | 执行记录 ID，用于定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -7216,11 +7216,11 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `pipeline_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `run_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `job_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `step_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `pipeline_id` | 是 | `string` |  | 流水线 ID，用于定位对应的 CodeArts 资源。 |
+| `run_id` | 是 | `string` |  | 运行记录 ID，用于定位对应的 CodeArts 资源。 |
+| `job_id` | 是 | `string` |  | 构建任务 ID，用于定位对应的 CodeArts 资源。 |
+| `step_id` | 是 | `string` |  | 步骤 ID，用于定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -7290,9 +7290,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `pipeline_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `pipeline_group_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `pipeline_id` | 是 | `string` |  | 流水线 ID，用于定位对应的 CodeArts 资源。 |
+| `pipeline_group_ids` | 是 | `array<object>` |  | 流水线组 ID 列表，用于批量定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -7354,13 +7354,13 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 否 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `region_name` | 否 | `string` |  | 资源名称。 |
-| `module_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `name` | 否 | `string` |  | 资源名称。 |
+| `project_id` | 否 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `region_name` | 否 | `string` |  | region名称。 |
+| `module_id` | 否 | `string` |  | 模块 ID，用于定位对应的 CodeArts 资源。 |
+| `name` | 否 | `string` |  | 名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
 | `url` | 否 | `string` |  | 远程仓库或镜像地址。 |
-| `authorization` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `data` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `authorization` | 否 | `object` |  | 授权信息，用于访问受保护资源；请勿在日志或公开文档中暴露敏感值。 |
+| `data` | 否 | `object` |  | 业务数据对象，承载接口需要提交或返回的结构化内容。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -7443,9 +7443,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `name` | 是 | `string` |  | 资源名称。 |
-| `parent_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `name` | 是 | `string` |  | 名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
+| `parent_id` | 否 | `string` |  | 父级 ID，用于指定当前资源挂载到哪个父节点、父分组、父模块或父工作项下。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -7508,9 +7508,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `name` | 是 | `string` |  | 资源名称。 |
-| `rules` | 是 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `name` | 是 | `string` |  | 名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
+| `rules` | 是 | `array<object>` |  | 规则配置列表或规则表达式，用于代码检查、流水线准入、字段校验等场景。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -7588,14 +7588,14 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `name` | 是 | `string` |  | 资源名称。 |
-| `type` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `layout_content` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `plugin_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `plugin_name` | 否 | `string` |  | 资源名称。 |
-| `plugin_version` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `content` | 是 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `domain_id` | 是 | `string` |  | 租户账号 ID，也称 domainId，用于按租户维度查询 CodeArts 资源。 |
+| `name` | 是 | `string` |  | 名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
+| `type` | 是 | `string` |  | 类型字段，用于区分资源类别、操作类别或查询类别；具体取值以该接口的业务对象为准。 |
+| `layout_content` | 是 | `string` |  | 布局内容配置，用于页面、看板或表单布局的结构化配置。 |
+| `plugin_id` | 否 | `string` |  | 插件 ID，用于定位对应的 CodeArts 资源。 |
+| `plugin_name` | 否 | `string` |  | 插件名称。 |
+| `plugin_version` | 否 | `string` |  | 插件版本号，用于指定安装、查询或运行的插件版本。 |
+| `content` | 是 | `array<object>` |  | 正文内容。评论、文件或请求体场景下表示要提交的文本内容。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -7744,9 +7744,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `name` | 是 | `string` |  | 资源名称。 |
-| `rules` | 是 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `domain_id` | 是 | `string` |  | 租户账号 ID，也称 domainId，用于按租户维度查询 CodeArts 资源。 |
+| `name` | 是 | `string` |  | 名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
+| `rules` | 是 | `array<object>` |  | 规则配置列表或规则表达式，用于代码检查、流水线准入、字段校验等场景。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -7822,9 +7822,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `name` | 是 | `string` |  | 资源名称。 |
-| `color` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `name` | 是 | `string` |  | 名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
+| `color` | 是 | `string` |  | 颜色值，用于标签、状态或看板显示配置，通常为十六进制颜色。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -7887,10 +7887,10 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `name` | 是 | `string` |  | 资源名称。 |
-| `description` | 否 | `string` |  | 资源描述信息。 |
-| `variables` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `name` | 是 | `string` |  | 名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
+| `description` | 否 | `string` |  | 描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
+| `variables` | 否 | `array<object>` |  | 变量列表或变量对象，用于构建、流水线、部署等执行时注入参数。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -7979,8 +7979,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `uuid` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `project_id` | 否 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `uuid` | 是 | `string` |  | UUID，全局唯一标识，用于精确定位项目、仓库、流水线或其他资源。 |
+| `project_id` | 否 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -8037,8 +8037,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `id` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `id` | 是 | `string` |  | 资源 ID，表示当前接口操作对象的唯一标识。具体含义由所在 API 决定，例如工作项 ID、记录 ID、任务 ID。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -8095,8 +8095,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `pipeline_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `pipeline_id` | 是 | `string` |  | 流水线 ID，用于定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -8153,8 +8153,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `rule_set_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `rule_set_id` | 是 | `string` |  | 规则集 ID，用于定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -8211,8 +8211,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `rule_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `domain_id` | 是 | `string` |  | 租户账号 ID，也称 domainId，用于按租户维度查询 CodeArts 资源。 |
+| `rule_id` | 是 | `string` |  | 规则 ID，用于定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -8269,8 +8269,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `rule_set_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `domain_id` | 是 | `string` |  | 租户账号 ID，也称 domainId，用于按租户维度查询 CodeArts 资源。 |
+| `rule_set_id` | 是 | `string` |  | 规则集 ID，用于定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -8327,8 +8327,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `tag_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `tag_id` | 是 | `string` |  | 标签 ID，用于定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -8385,8 +8385,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `id` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `id` | 是 | `string` |  | 资源 ID，表示当前接口操作对象的唯一标识。具体含义由所在 API 决定，例如工作项 ID、记录 ID、任务 ID。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -8443,8 +8443,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `pipeline_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `pipeline_id` | 是 | `string` |  | 流水线 ID，用于定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -8501,8 +8501,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `pipeline_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `pipeline_id` | 是 | `string` |  | 流水线 ID，用于定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -8558,7 +8558,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `uuid` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `uuid` | 是 | `string` |  | UUID，全局唯一标识，用于精确定位项目、仓库、流水线或其他资源。 |
 
 输入 JSON Schema：
 
@@ -8605,7 +8605,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `module_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `module_id` | 是 | `string` |  | 模块 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -8654,9 +8654,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `pipeline_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `run_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `pipeline_id` | 是 | `string` |  | 流水线 ID，用于定位对应的 CodeArts 资源。 |
+| `run_id` | 是 | `string` |  | 运行记录 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -8712,8 +8712,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `pipeline_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `pipeline_id` | 是 | `string` |  | 流水线 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -8768,11 +8768,11 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `plugin_name` | 是 | `string` |  | 资源名称。 |
-| `display_name` | 是 | `string` |  | 资源名称。 |
-| `version` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `plugin_attribution` | 是 | `"custom" \| "official"` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`custom`、`official`。 |
+| `domain_id` | 是 | `string` |  | 租户账号 ID，也称 domainId，用于按租户维度查询 CodeArts 资源。 |
+| `plugin_name` | 是 | `string` |  | 插件名称。 |
+| `display_name` | 是 | `string` |  | display名称。 |
+| `version` | 是 | `string` |  | 版本号。制品仓场景表示制品版本；插件或模板场景表示对应资源版本。 |
+| `plugin_attribution` | 是 | `"custom" \| "official"` |  | 插件归属信息，用于标识插件来源、所属服务或扩展点。可选值：`custom`、`official`。 |
 
 输入 JSON Schema：
 
@@ -8846,11 +8846,11 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `plugin_name` | 是 | `string` |  | 资源名称。 |
-| `display_name` | 是 | `string` |  | 资源名称。 |
-| `version` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `plugin_attribution` | 是 | `"custom" \| "official"` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`custom`、`official`。 |
+| `domain_id` | 是 | `string` |  | 租户账号 ID，也称 domainId，用于按租户维度查询 CodeArts 资源。 |
+| `plugin_name` | 是 | `string` |  | 插件名称。 |
+| `display_name` | 是 | `string` |  | display名称。 |
+| `version` | 是 | `string` |  | 版本号。制品仓场景表示制品版本；插件或模板场景表示对应资源版本。 |
+| `plugin_attribution` | 是 | `"custom" \| "official"` |  | 插件归属信息，用于标识插件来源、所属服务或扩展点。可选值：`custom`、`official`。 |
 
 输入 JSON Schema：
 
@@ -8922,9 +8922,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `plugin_name` | 是 | `string` |  | 资源名称。 |
-| `version` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `domain_id` | 是 | `string` |  | 租户账号 ID，也称 domainId，用于按租户维度查询 CodeArts 资源。 |
+| `plugin_name` | 是 | `string` |  | 插件名称。 |
+| `version` | 是 | `string` |  | 版本号。制品仓场景表示制品版本；插件或模板场景表示对应资源版本。 |
 
 输入 JSON Schema：
 
@@ -8982,8 +8982,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `rule_set_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `rule_set_id` | 是 | `string` |  | 规则集 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -9035,8 +9035,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `rule_set_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `rule_set_id` | 是 | `string` |  | 规则集 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -9088,8 +9088,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `rule_set_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `rule_set_id` | 是 | `string` |  | 规则集 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -9141,8 +9141,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `rule_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `domain_id` | 是 | `string` |  | 租户账号 ID，也称 domainId，用于按租户维度查询 CodeArts 资源。 |
+| `rule_id` | 是 | `string` |  | 规则 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -9194,8 +9194,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `rule_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `domain_id` | 是 | `string` |  | 租户账号 ID，也称 domainId，用于按租户维度查询 CodeArts 资源。 |
+| `rule_id` | 是 | `string` |  | 规则 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -9248,9 +9248,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `pipeline_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `run_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `pipeline_id` | 是 | `string` |  | 流水线 ID，用于定位对应的 CodeArts 资源。 |
+| `run_id` | 是 | `string` |  | 运行记录 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -9307,9 +9307,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `pipeline_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `run_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `pipeline_id` | 是 | `string` |  | 流水线 ID，用于定位对应的 CodeArts 资源。 |
+| `run_id` | 是 | `string` |  | 运行记录 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -9368,11 +9368,11 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `pipeline_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `run_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `job_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `step_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `pipeline_id` | 是 | `string` |  | 流水线 ID，用于定位对应的 CodeArts 资源。 |
+| `run_id` | 是 | `string` |  | 运行记录 ID，用于定位对应的 CodeArts 资源。 |
+| `job_id` | 是 | `string` |  | 构建任务 ID，用于定位对应的 CodeArts 资源。 |
+| `step_id` | 是 | `string` |  | 步骤 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -9437,9 +9437,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `pipeline_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `run_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `pipeline_id` | 是 | `string` |  | 流水线 ID，用于定位对应的 CodeArts 资源。 |
+| `run_id` | 是 | `string` |  | 运行记录 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -9497,10 +9497,10 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `pipeline_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `run_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `step_run_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `pipeline_id` | 是 | `string` |  | 流水线 ID，用于定位对应的 CodeArts 资源。 |
+| `run_id` | 是 | `string` |  | 运行记录 ID，用于定位对应的 CodeArts 资源。 |
+| `step_run_ids` | 是 | `array<object>` |  | 步骤运行 ID 列表，用于批量定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -9564,9 +9564,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `rule_set_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `cloud_project_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `domain_id` | 是 | `string` |  | 租户账号 ID，也称 domainId，用于按租户维度查询 CodeArts 资源。 |
+| `rule_set_id` | 是 | `string` |  | 规则集 ID，用于定位对应的 CodeArts 资源。 |
+| `cloud_project_id` | 否 | `string` |  | 云项目 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -9621,8 +9621,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `rule_set_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `domain_id` | 是 | `string` |  | 租户账号 ID，也称 domainId，用于按租户维度查询 CodeArts 资源。 |
+| `rule_set_id` | 是 | `string` |  | 规则集 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -9674,8 +9674,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `id` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `id` | 是 | `string` |  | 资源 ID，表示当前接口操作对象的唯一标识。具体含义由所在 API 决定，例如工作项 ID、记录 ID、任务 ID。 |
 
 输入 JSON Schema：
 
@@ -9729,11 +9729,11 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `name` | 是 | `string` |  | 资源名称。 |
-| `parent_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `rules` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `is_valid` | 是 | `boolean` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `name` | 是 | `string` |  | 名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
+| `parent_id` | 是 | `string` |  | 父级 ID，用于指定当前资源挂载到哪个父节点、父分组、父模块或父工作项下。 |
+| `rules` | 否 | `array<object>` |  | 规则配置列表或规则表达式，用于代码检查、流水线准入、字段校验等场景。 |
+| `is_valid` | 是 | `boolean` |  | 是否有效。true 表示启用或有效，false 表示停用或无效。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -9806,9 +9806,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `pipeline_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `run_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `pipeline_id` | 是 | `string` |  | 流水线 ID，用于定位对应的 CodeArts 资源。 |
+| `run_id` | 是 | `string` |  | 运行记录 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -9863,7 +9863,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `domain_id` | 是 | `string` |  | 租户账号 ID，也称 domainId，用于按租户维度查询 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -9910,7 +9910,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `domain_id` | 是 | `string` |  | 租户账号 ID，也称 domainId，用于按租户维度查询 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -9957,9 +9957,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `offset` | 否 | `integer` | 0 | 分页偏移量。 |
-| `limit` | 否 | `integer` | 20 | 分页数量上限。 |
+| `domain_id` | 是 | `string` |  | 租户账号 ID，也称 domainId，用于按租户维度查询 CodeArts 资源。 |
+| `offset` | 否 | `integer` | 0 | 分页偏移量，表示从结果集第几条开始返回，常与 limit 配合使用。 |
+| `limit` | 否 | `integer` | 20 | 分页数量上限，表示本次最多返回多少条记录。 |
 
 输入 JSON Schema：
 
@@ -10018,11 +10018,11 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `region_name` | 是 | `string` |  | 资源名称。 |
-| `module_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `offset` | 否 | `integer` | 0 | 分页偏移量。 |
-| `limit` | 否 | `integer` | 20 | 分页数量上限。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `region_name` | 是 | `string` |  | region名称。 |
+| `module_id` | 否 | `string` |  | 模块 ID，用于定位对应的 CodeArts 资源。 |
+| `offset` | 否 | `integer` | 0 | 分页偏移量，表示从结果集第几条开始返回，常与 limit 配合使用。 |
+| `limit` | 否 | `integer` | 20 | 分页数量上限，表示本次最多返回多少条记录。 |
 
 输入 JSON Schema：
 
@@ -10089,14 +10089,14 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `locations` | 是 | `array<string>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `project_id` | 否 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `region_name` | 否 | `string` |  | 资源名称。 |
-| `name` | 否 | `string` |  | 资源名称。 |
-| `product_line` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `tags` | 否 | `array<string>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `offset` | 否 | `integer` | 0 | 分页偏移量。 |
-| `limit` | 否 | `integer` | 20 | 分页数量上限。 |
+| `locations` | 是 | `array<string>` |  | 位置列表，用于描述资源部署位置、文件位置或组织层级位置。 |
+| `project_id` | 否 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `region_name` | 否 | `string` |  | region名称。 |
+| `name` | 否 | `string` |  | 名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
+| `product_line` | 否 | `string` |  | 产品线，用于按业务产品线归类或过滤需求、计划、缺陷等资源。 |
+| `tags` | 否 | `array<string>` |  | 标签列表，用于给资源打标或按标签过滤。 |
+| `offset` | 否 | `integer` | 0 | 分页偏移量，表示从结果集第几条开始返回，常与 limit 配合使用。 |
+| `limit` | 否 | `integer` | 20 | 分页数量上限，表示本次最多返回多少条记录。 |
 
 输入 JSON Schema：
 
@@ -10181,7 +10181,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 
 输入 JSON Schema：
 
@@ -10229,8 +10229,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `pipeline_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `pipeline_id` | 是 | `string` |  | 流水线 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -10281,12 +10281,12 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 
 输入 JSON Schema：
 
@@ -10358,10 +10358,10 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `plugin_name` | 是 | `string` |  | 资源名称。 |
-| `offset` | 否 | `integer` | 0 | 分页偏移量。 |
-| `limit` | 否 | `integer` | 20 | 分页数量上限。 |
+| `domain_id` | 是 | `string` |  | 租户账号 ID，也称 domainId，用于按租户维度查询 CodeArts 资源。 |
+| `plugin_name` | 是 | `string` |  | 插件名称。 |
+| `offset` | 否 | `integer` | 0 | 分页偏移量，表示从结果集第几条开始返回，常与 limit 配合使用。 |
+| `limit` | 否 | `integer` | 20 | 分页数量上限，表示本次最多返回多少条记录。 |
 
 输入 JSON Schema：
 
@@ -10424,13 +10424,13 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `offset` | 否 | `integer` | 0 | 分页偏移量。 |
-| `limit` | 否 | `integer` | 20 | 分页数量上限。 |
-| `plugin_attribution` | 否 | `"custom" \| "official"` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`custom`、`official`。 |
-| `business_type` | 否 | `array<"Build" \| "Gate" \| "Deploy" \| "Test" \| "Normal">` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`Build`、`Gate`、`Deploy`、`Test`、`Normal`。 |
-| `maintainer` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `plugin_name` | 否 | `string` |  | 资源名称。 |
+| `domain_id` | 是 | `string` |  | 租户账号 ID，也称 domainId，用于按租户维度查询 CodeArts 资源。 |
+| `offset` | 否 | `integer` | 0 | 分页偏移量，表示从结果集第几条开始返回，常与 limit 配合使用。 |
+| `limit` | 否 | `integer` | 20 | 分页数量上限，表示本次最多返回多少条记录。 |
+| `plugin_attribution` | 否 | `"custom" \| "official"` |  | 插件归属信息，用于标识插件来源、所属服务或扩展点。可选值：`custom`、`official`。 |
+| `business_type` | 否 | `array<"Build" \| "Gate" \| "Deploy" \| "Test" \| "Normal">` |  | 业务类型，用于按服务或场景区分不同资源。可选值：`Build`、`Gate`、`Deploy`、`Test`、`Normal`。 |
+| `maintainer` | 否 | `string` |  | 维护人标识，用于指定资源维护负责人。 |
+| `plugin_name` | 否 | `string` |  | 插件名称。 |
 
 输入 JSON Schema：
 
@@ -10518,13 +10518,13 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `offset` | 是 | `integer` |  | 分页偏移量。 |
-| `limit` | 是 | `integer` |  | 分页数量上限。 |
-| `include_tenant_rule_set` | 否 | `boolean` | false | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `name` | 否 | `string` |  | 资源名称。 |
-| `is_valid` | 否 | `boolean` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `type` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `offset` | 是 | `integer` |  | 分页偏移量，表示从结果集第几条开始返回，常与 limit 配合使用。 |
+| `limit` | 是 | `integer` |  | 分页数量上限，表示本次最多返回多少条记录。 |
+| `include_tenant_rule_set` | 否 | `boolean` | false | 是否包含租户级规则集。true 表示查询结果中包含租户公共规则集。 |
+| `name` | 否 | `string` |  | 名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
+| `is_valid` | 否 | `boolean` |  | 是否有效。true 表示启用或有效，false 表示停用或无效。 |
+| `type` | 否 | `string` |  | 类型字段，用于区分资源类别、操作类别或查询类别；具体取值以该接口的业务对象为准。 |
 
 输入 JSON Schema：
 
@@ -10597,9 +10597,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `offset` | 否 | `integer` | 0 | 分页偏移量。 |
-| `limit` | 否 | `integer` | 20 | 分页数量上限。 |
+| `domain_id` | 是 | `string` |  | 租户账号 ID，也称 domainId，用于按租户维度查询 CodeArts 资源。 |
+| `offset` | 否 | `integer` | 0 | 分页偏移量，表示从结果集第几条开始返回，常与 limit 配合使用。 |
+| `limit` | 否 | `integer` | 20 | 分页数量上限，表示本次最多返回多少条记录。 |
 
 输入 JSON Schema：
 
@@ -10657,7 +10657,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `organization_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `organization_id` | 是 | `string` |  | 组织 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -10706,12 +10706,12 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `offset` | 是 | `integer` |  | 分页偏移量。 |
-| `limit` | 是 | `integer` |  | 分页数量上限。 |
-| `cloud_project_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `type` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `name` | 否 | `string` |  | 资源名称。 |
+| `domain_id` | 是 | `string` |  | 租户账号 ID，也称 domainId，用于按租户维度查询 CodeArts 资源。 |
+| `offset` | 是 | `integer` |  | 分页偏移量，表示从结果集第几条开始返回，常与 limit 配合使用。 |
+| `limit` | 是 | `integer` |  | 分页数量上限，表示本次最多返回多少条记录。 |
+| `cloud_project_id` | 否 | `string` |  | 云项目 ID，用于定位对应的 CodeArts 资源。 |
+| `type` | 否 | `string` |  | 类型字段，用于区分资源类别、操作类别或查询类别；具体取值以该接口的业务对象为准。 |
+| `name` | 否 | `string` |  | 名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
 
 输入 JSON Schema：
 
@@ -10781,13 +10781,13 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `pipeline_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `pipeline_id` | 是 | `string` |  | 流水线 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -10863,11 +10863,11 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `use_condition` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `business_type` | 否 | `array<"Build" \| "Gate" \| "Deploy" \| "Test" \| "Normal">` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`Build`、`Gate`、`Deploy`、`Test`、`Normal`。 |
-| `deploy_type` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `comp_extend_type` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `domain_id` | 是 | `string` |  | 租户账号 ID，也称 domainId，用于按租户维度查询 CodeArts 资源。 |
+| `use_condition` | 是 | `string` |  | 使用条件表达式，满足条件时才使用该配置、规则或步骤。 |
+| `business_type` | 否 | `array<"Build" \| "Gate" \| "Deploy" \| "Test" \| "Normal">` |  | 业务类型，用于按服务或场景区分不同资源。可选值：`Build`、`Gate`、`Deploy`、`Test`、`Normal`。 |
+| `deploy_type` | 否 | `string` |  | 部署类型，用于区分主机部署、容器部署、函数部署等部署方式；具体取值以部署服务为准。 |
+| `comp_extend_type` | 否 | `string` |  | 组件扩展类型，用于区分组件、插件或扩展配置类别。 |
 
 输入 JSON Schema：
 
@@ -10942,13 +10942,13 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `offset` | 是 | `integer` |  | 分页偏移量。 |
-| `limit` | 是 | `integer` |  | 分页数量上限。 |
-| `include_tenant_rule_set` | 否 | `boolean` | true | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `name` | 否 | `string` |  | 资源名称。 |
-| `is_valid` | 否 | `boolean` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `type` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `domain_id` | 是 | `string` |  | 租户账号 ID，也称 domainId，用于按租户维度查询 CodeArts 资源。 |
+| `offset` | 是 | `integer` |  | 分页偏移量，表示从结果集第几条开始返回，常与 limit 配合使用。 |
+| `limit` | 是 | `integer` |  | 分页数量上限，表示本次最多返回多少条记录。 |
+| `include_tenant_rule_set` | 否 | `boolean` | true | 是否包含租户级规则集。true 表示查询结果中包含租户公共规则集。 |
+| `name` | 否 | `string` |  | 名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
+| `is_valid` | 否 | `boolean` |  | 是否有效。true 表示启用或有效，false 表示停用或无效。 |
+| `type` | 否 | `string` |  | 类型字段，用于区分资源类别、操作类别或查询类别；具体取值以该接口的业务对象为准。 |
 
 输入 JSON Schema：
 
@@ -11022,10 +11022,10 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `rule_set_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `offset` | 否 | `integer` | 0 | 分页偏移量。 |
-| `limit` | 否 | `integer` | 20 | 分页数量上限。 |
+| `domain_id` | 是 | `string` |  | 租户账号 ID，也称 domainId，用于按租户维度查询 CodeArts 资源。 |
+| `rule_set_id` | 是 | `string` |  | 规则集 ID，用于定位对应的 CodeArts 资源。 |
+| `offset` | 否 | `integer` | 0 | 分页偏移量，表示从结果集第几条开始返回，常与 limit 配合使用。 |
+| `limit` | 否 | `integer` | 20 | 分页数量上限，表示本次最多返回多少条记录。 |
 
 输入 JSON Schema：
 
@@ -11087,8 +11087,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `proj_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `proj_id` | 否 | `string` |  | 项目 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -11138,14 +11138,14 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `tenant_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `language` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `is_system` | 否 | `boolean` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `tenant_id` | 是 | `string` |  | 租户 ID 或 CodeArts 租户级项目标识，用于制品仓等服务定位当前租户/项目空间。 |
+| `language` | 否 | `string` |  | 代码语言或技术栈，例如 Java、JavaScript、TypeScript、Python、Go；可选值以代码检查服务支持范围为准。 |
+| `is_system` | 否 | `boolean` |  | 是否系统内置。true 表示系统预置资源，false 表示用户自定义资源。 |
 
 输入 JSON Schema：
 
@@ -11222,13 +11222,13 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `name` | 否 | `string` |  | 资源名称。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `name` | 否 | `string` |  | 名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
 
 输入 JSON Schema：
 
@@ -11305,9 +11305,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `group_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `pipelines` | 是 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `group_id` | 是 | `string` |  | 分组 ID，用于定位对应的 CodeArts 资源。 |
+| `pipelines` | 是 | `array<object>` |  | 流水线列表，用于批量查询、批量运行或关联多条流水线。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -11389,11 +11389,11 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `pipeline_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `run_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `job_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `step_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `pipeline_id` | 是 | `string` |  | 流水线 ID，用于定位对应的 CodeArts 资源。 |
+| `run_id` | 是 | `string` |  | 运行记录 ID，用于定位对应的 CodeArts 资源。 |
+| `job_id` | 是 | `string` |  | 构建任务 ID，用于定位对应的 CodeArts 资源。 |
+| `step_id` | 是 | `string` |  | 步骤 ID，用于定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -11463,9 +11463,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `pipeline_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `run_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `pipeline_id` | 是 | `string` |  | 流水线 ID，用于定位对应的 CodeArts 资源。 |
+| `run_id` | 是 | `string` |  | 运行记录 ID，用于定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -11526,10 +11526,10 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `pipeline_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `branch` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `description` | 否 | `string` |  | 资源描述信息。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `pipeline_id` | 是 | `string` |  | 流水线 ID，用于定位对应的 CodeArts 资源。 |
+| `branch` | 否 | `string` |  | Git 分支名称，用于构建、流水线或代码仓操作时指定代码来源分支。 |
+| `description` | 否 | `string` |  | 描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -11595,9 +11595,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `pipeline_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
-| `tag_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `pipeline_ids` | 是 | `array<object>` |  | 流水线 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `tag_ids` | 是 | `array<object>` |  | 标签 ID 列表，用于批量定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -11666,8 +11666,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `pipeline_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `run_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `pipeline_id` | 是 | `string` |  | 流水线 ID，用于定位对应的 CodeArts 资源。 |
+| `run_id` | 是 | `string` |  | 运行记录 ID，用于定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -11725,9 +11725,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `rule_set_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `is_valid` | 是 | `boolean` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `rule_set_id` | 是 | `string` |  | 规则集 ID，用于定位对应的 CodeArts 资源。 |
+| `is_valid` | 是 | `boolean` |  | 是否有效。true 表示启用或有效，false 表示停用或无效。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -11789,9 +11789,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `rule_set_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `is_valid` | 是 | `boolean` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `domain_id` | 是 | `string` |  | 租户账号 ID，也称 domainId，用于按租户维度查询 CodeArts 资源。 |
+| `rule_set_id` | 是 | `string` |  | 规则集 ID，用于定位对应的 CodeArts 资源。 |
+| `is_valid` | 是 | `boolean` |  | 是否有效。true 表示启用或有效，false 表示停用或无效。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -11851,14 +11851,14 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `uuid` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `project_id` | 否 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `region_name` | 否 | `string` |  | 资源名称。 |
-| `module_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `name` | 否 | `string` |  | 资源名称。 |
+| `uuid` | 是 | `string` |  | UUID，全局唯一标识，用于精确定位项目、仓库、流水线或其他资源。 |
+| `project_id` | 否 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `region_name` | 否 | `string` |  | region名称。 |
+| `module_id` | 否 | `string` |  | 模块 ID，用于定位对应的 CodeArts 资源。 |
+| `name` | 否 | `string` |  | 名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
 | `url` | 否 | `string` |  | 远程仓库或镜像地址。 |
-| `authorization` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `data` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `authorization` | 否 | `object` |  | 授权信息，用于访问受保护资源；请勿在日志或公开文档中暴露敏感值。 |
+| `data` | 否 | `object` |  | 业务数据对象，承载接口需要提交或返回的结构化内容。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -11949,9 +11949,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `id` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `name` | 是 | `string` |  | 资源名称。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `id` | 是 | `string` |  | 资源 ID，表示当前接口操作对象的唯一标识。具体含义由所在 API 决定，例如工作项 ID、记录 ID、任务 ID。 |
+| `name` | 是 | `string` |  | 名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -12016,10 +12016,10 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `rule_set_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `name` | 是 | `string` |  | 资源名称。 |
-| `rules` | 是 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `rule_set_id` | 是 | `string` |  | 规则集 ID，用于定位对应的 CodeArts 资源。 |
+| `name` | 是 | `string` |  | 名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
+| `rules` | 是 | `array<object>` |  | 规则配置列表或规则表达式，用于代码检查、流水线准入、字段校验等场景。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -12101,14 +12101,14 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `rule_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `name` | 是 | `string` |  | 资源名称。 |
-| `type` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `plugin_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `plugin_name` | 否 | `string` |  | 资源名称。 |
-| `plugin_version` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `content` | 是 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `domain_id` | 是 | `string` |  | 租户账号 ID，也称 domainId，用于按租户维度查询 CodeArts 资源。 |
+| `rule_id` | 是 | `string` |  | 规则 ID，用于定位对应的 CodeArts 资源。 |
+| `name` | 是 | `string` |  | 名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
+| `type` | 是 | `string` |  | 类型字段，用于区分资源类别、操作类别或查询类别；具体取值以该接口的业务对象为准。 |
+| `plugin_id` | 否 | `string` |  | 插件 ID，用于定位对应的 CodeArts 资源。 |
+| `plugin_name` | 否 | `string` |  | 插件名称。 |
+| `plugin_version` | 否 | `string` |  | 插件版本号，用于指定安装、查询或运行的插件版本。 |
+| `content` | 是 | `array<object>` |  | 正文内容。评论、文件或请求体场景下表示要提交的文本内容。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -12256,10 +12256,10 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `rule_set_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `name` | 是 | `string` |  | 资源名称。 |
-| `rules` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `domain_id` | 是 | `string` |  | 租户账号 ID，也称 domainId，用于按租户维度查询 CodeArts 资源。 |
+| `rule_set_id` | 是 | `string` |  | 规则集 ID，用于定位对应的 CodeArts 资源。 |
+| `name` | 是 | `string` |  | 名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
+| `rules` | 否 | `array<object>` |  | 规则配置列表或规则表达式，用于代码检查、流水线准入、字段校验等场景。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -12339,10 +12339,10 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `tag_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `name` | 是 | `string` |  | 资源名称。 |
-| `color` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `tag_id` | 是 | `string` |  | 标签 ID，用于定位对应的 CodeArts 资源。 |
+| `name` | 是 | `string` |  | 名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
+| `color` | 是 | `string` |  | 颜色值，用于标签、状态或看板显示配置，通常为十六进制颜色。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -12410,11 +12410,11 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `id` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `name` | 是 | `string` |  | 资源名称。 |
-| `description` | 否 | `string` |  | 资源描述信息。 |
-| `variables` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `id` | 是 | `string` |  | 资源 ID，表示当前接口操作对象的唯一标识。具体含义由所在 API 决定，例如工作项 ID、记录 ID、任务 ID。 |
+| `name` | 是 | `string` |  | 名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
+| `description` | 否 | `string` |  | 描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
+| `variables` | 否 | `array<object>` |  | 变量列表或变量对象，用于构建、流水线、部署等执行时注入参数。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -12508,7 +12508,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
+| `repository_id` | 是 | `string` |  | CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
 | `url` | 是 | `string` |  | 远程仓库或镜像地址。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -12567,8 +12567,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
-| `merge_request_iid` | 是 | `string` |  | 合并请求在仓库内的 IID。 |
+| `repository_id` | 是 | `string` |  | CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
+| `merge_request_iid` | 是 | `string` |  | 合并请求在当前仓库内的 IID；它不是全局 ID，只在同一个仓库内唯一。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -12626,12 +12626,12 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
-| `from` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `to` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `straight` | 否 | `boolean` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `ignore_whitespace_change` | 否 | `boolean` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `view` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `repository_id` | 是 | `string` |  | CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
+| `from` | 是 | `string` |  | 起始引用、来源分支或开始位置。比较代码时通常表示源分支、源标签或源提交。 |
+| `to` | 是 | `string` |  | 目标引用、目标分支或结束位置。比较代码时通常表示目标分支、目标标签或目标提交。 |
+| `straight` | 否 | `boolean` |  | 是否直线比较。代码比较场景下用于控制比较两个引用时的提交范围口径。 |
+| `ignore_whitespace_change` | 否 | `boolean` |  | 是否忽略空白字符变化。true 表示代码比较时忽略空格、缩进、换行等差异。 |
+| `view` | 否 | `string` |  | 视图类型或视图配置，用于控制列表、看板、树形等展示方式。 |
 
 输入 JSON Schema：
 
@@ -12701,13 +12701,13 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
-| `source_branch` | 是 | `string` |  | 源分支名称。 |
-| `target_branch` | 是 | `string` |  | 目标分支名称。 |
-| `title` | 是 | `string` |  | 标题。 |
-| `description` | 否 | `string` |  | 资源描述信息。 |
-| `target_project_id` | 否 | `string` |  | 目标项目 ID。 |
-| `assignee_id` | 否 | `string \| integer` |  | 负责人用户 ID。 |
+| `repository_id` | 是 | `string` |  | CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
+| `source_branch` | 是 | `string` |  | 源分支名称。创建合并请求时表示要合入的分支，例如 feature/login。 |
+| `target_branch` | 是 | `string` |  | 目标分支名称。创建合并请求时表示被合入的分支，例如 master、main 或 develop。 |
+| `title` | 是 | `string` |  | 标题，用于工作项、合并请求、计划等资源的主显示名称。建议简洁说明要做什么。 |
+| `description` | 否 | `string` |  | 描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
+| `target_project_id` | 否 | `string` |  | 目标项目 ID，用于跨项目迁移、复制或创建目标资源。 |
+| `assignee_id` | 否 | `string \| integer` |  | 负责人用户 ID，用于指定工作项、任务或评审的当前处理人。 |
 | `reviewer_ids` | 否 | `array<string \| integer>` |  | 评审人用户 ID 列表。 |
 | `remove_source_branch` | 否 | `boolean` |  | 合并后是否删除源分支。 |
 | `squash` | 否 | `boolean` |  | 是否压缩提交。 |
@@ -12851,9 +12851,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
-| `merge_request_iid` | 是 | `string` |  | 合并请求在仓库内的 IID。 |
-| `body` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `repository_id` | 是 | `string` |  | CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
+| `merge_request_iid` | 是 | `string` |  | 合并请求在当前仓库内的 IID；它不是全局 ID，只在同一个仓库内唯一。 |
+| `body` | 是 | `string` |  | 请求体或正文内容。复杂接口会把多个业务字段放在 body 中提交。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -12915,17 +12915,17 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_uuid` | 是 | `string` |  | CodeArts 项目的 UUID，用于创建代码仓或定位项目资源。 |
-| `name` | 是 | `string` |  | 资源名称。 |
-| `import_members` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `template_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `visibility_level` | 否 | `0 \| 20` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`0`、`20`。 |
-| `import_url` | 否 | `string` |  | 服务地址或资源 URL。 |
-| `description` | 否 | `string` |  | 资源描述信息。 |
-| `gitignore_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `license_id` | 否 | `integer` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `enable_readme` | 否 | `boolean \| integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `caller` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_uuid` | 是 | `string` |  | CodeArts 项目 UUID，常用于 Repo 仓库创建、仓库查询和项目级资源定位。可通过项目列表或控制台项目详情获取。 |
+| `name` | 是 | `string` |  | 名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
+| `import_members` | 否 | `integer` |  | 是否导入成员。true 表示导入仓库或项目资源时同步导入成员关系。 |
+| `template_id` | 否 | `string` |  | 模板 ID，用于定位对应的 CodeArts 资源。 |
+| `visibility_level` | 否 | `0 \| 20` |  | 仓库可见性级别。常见取值与 CodeArts Repo/GitLab 风格一致，例如 private/internal/public 对应的数字级别；以接口返回为准。可选值：`0`、`20`。 |
+| `import_url` | 否 | `string` |  | import URL，用于指定服务地址、资源地址或回调地址。 |
+| `description` | 否 | `string` |  | 描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
+| `gitignore_id` | 否 | `string` |  | Gitignore 模板 ID，用于定位对应的 CodeArts 资源。 |
+| `license_id` | 否 | `integer` |  | 许可证 ID，用于定位对应的 CodeArts 资源。 |
+| `enable_readme` | 否 | `boolean \| integer` |  | 是否初始化 README 文件。true 表示创建仓库时自动生成 README。 |
+| `caller` | 否 | `string` |  | 调用方标识，用于审计或区分请求来源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -13033,10 +13033,10 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
-| `tag_name` | 是 | `string` |  | 标签名称。 |
-| `ref` | 是 | `string` |  | Git 引用，可以是分支、标签或提交 SHA。 |
-| `message` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `repository_id` | 是 | `string` |  | CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
+| `tag_name` | 是 | `string` |  | Git 标签名称，例如 v1.0.0。 |
+| `ref` | 是 | `string` |  | Git 引用，可以填写分支名、标签名或提交 SHA，用于指定读取文件、提交或比较的版本。 |
+| `message` | 否 | `string` |  | 消息内容或提交说明。代码仓场景常用于提交信息，通知场景用于消息正文。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -13102,8 +13102,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
-| `tag_name` | 是 | `string` |  | 标签名称。 |
+| `repository_id` | 是 | `string` |  | CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
+| `tag_name` | 是 | `string` |  | Git 标签名称，例如 v1.0.0。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -13161,8 +13161,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
-| `branch_name` | 是 | `string` |  | 分支名称。 |
+| `repository_id` | 是 | `string` |  | CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
+| `branch_name` | 是 | `string` |  | Git 分支名称，例如 master、main、develop 或 feature/login。 |
 
 输入 JSON Schema：
 
@@ -13215,8 +13215,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
-| `commit_sha` | 是 | `string` |  | 提交 SHA。 |
+| `repository_id` | 是 | `string` |  | CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
+| `commit_sha` | 是 | `string` |  | Git 提交 SHA，用于精确定位一次提交；可填写完整 SHA，部分接口也支持短 SHA。 |
 
 输入 JSON Schema：
 
@@ -13269,9 +13269,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
-| `file_path` | 是 | `string` |  | 仓库内文件路径。 |
-| `branch` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `repository_id` | 是 | `string` |  | CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
+| `file_path` | 是 | `string` |  | 仓库内文件路径，从仓库根目录开始填写，例如 src/index.ts；不要带仓库 URL。 |
+| `branch` | 是 | `string` |  | Git 分支名称，用于构建、流水线或代码仓操作时指定代码来源分支。 |
 
 输入 JSON Schema：
 
@@ -13329,8 +13329,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
-| `merge_request_iid` | 是 | `string` |  | 合并请求在仓库内的 IID。 |
+| `repository_id` | 是 | `string` |  | CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
+| `merge_request_iid` | 是 | `string` |  | 合并请求在当前仓库内的 IID；它不是全局 ID，只在同一个仓库内唯一。 |
 
 输入 JSON Schema：
 
@@ -13381,7 +13381,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
+| `repository_id` | 是 | `string` |  | CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
 
 输入 JSON Schema：
 
@@ -13428,7 +13428,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
+| `repository_id` | 是 | `string` |  | CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
 
 输入 JSON Schema：
 
@@ -13476,8 +13476,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
-| `tag_name` | 是 | `string` |  | 标签名称。 |
+| `repository_id` | 是 | `string` |  | CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
+| `tag_name` | 是 | `string` |  | Git 标签名称，例如 v1.0.0。 |
 
 输入 JSON Schema：
 
@@ -13562,12 +13562,12 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
+| `repository_id` | 是 | `string` |  | CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
 
 输入 JSON Schema：
 
@@ -13638,17 +13638,17 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
-| `ref_name` | 否 | `string` |  | 资源名称。 |
-| `since` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `until` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `order_by_date` | 否 | `boolean` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `with_stats` | 否 | `boolean` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `repository_id` | 是 | `string` |  | CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
+| `ref_name` | 否 | `string` |  | ref名称。 |
+| `since` | 否 | `string` |  | 起始边界。常用于时间范围、提交范围或分页游标的开始位置。 |
+| `until` | 否 | `string` |  | 结束边界。常用于时间范围、提交范围或分页游标的截止位置。 |
+| `order_by_date` | 否 | `boolean` |  | 按日期排序或过滤的日期字段，用于选择创建时间、更新时间、结束时间等口径。 |
+| `with_stats` | 否 | `boolean` |  | 是否返回统计信息。true 表示结果中附带数量、占比或汇总指标。 |
 
 输入 JSON Schema：
 
@@ -13734,12 +13734,12 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
+| `repository_id` | 是 | `string` |  | CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
 
 输入 JSON Schema：
 
@@ -13808,13 +13808,13 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `state` | 否 | `"all" \| "active" \| "inactive"` |  | 状态过滤条件或目标状态。可选值：`all`、`active`、`inactive`。 |
-| `search` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
+| `state` | 否 | `"all" \| "active" \| "inactive"` |  | 状态过滤条件或目标状态。用于列表查询时表示筛选状态，用于更新/流转时表示要变更到的目标状态；具体取值以对应资源的状态字典为准。可选值：`all`、`active`、`inactive`。 |
+| `search` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号等文本条件过滤列表。 |
 
 输入 JSON Schema：
 
@@ -13891,13 +13891,13 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
-| `merge_request_iid` | 是 | `string` |  | 合并请求在仓库内的 IID。 |
+| `repository_id` | 是 | `string` |  | CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
+| `merge_request_iid` | 是 | `string` |  | 合并请求在当前仓库内的 IID；它不是全局 ID，只在同一个仓库内唯一。 |
 
 输入 JSON Schema：
 
@@ -13973,13 +13973,13 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
-| `merge_request_iid` | 是 | `string` |  | 合并请求在仓库内的 IID。 |
+| `repository_id` | 是 | `string` |  | CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
+| `merge_request_iid` | 是 | `string` |  | 合并请求在当前仓库内的 IID；它不是全局 ID，只在同一个仓库内唯一。 |
 
 输入 JSON Schema：
 
@@ -14054,13 +14054,13 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
-| `state` | 否 | `"all" \| "opened" \| "closed" \| "merged"` |  | 状态过滤条件或目标状态。可选值：`all`、`opened`、`closed`、`merged`。 |
+| `repository_id` | 是 | `string` |  | CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
+| `state` | 否 | `"all" \| "opened" \| "closed" \| "merged"` |  | 状态过滤条件或目标状态。用于列表查询时表示筛选状态，用于更新/流转时表示要变更到的目标状态；具体取值以对应资源的状态字典为准。可选值：`all`、`opened`、`closed`、`merged`。 |
 
 输入 JSON Schema：
 
@@ -14138,19 +14138,19 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `state` | 否 | `"finished" \| "fail" \| "importing"` |  | 状态过滤条件或目标状态。可选值：`finished`、`fail`、`importing`。 |
+| `state` | 否 | `"finished" \| "fail" \| "importing"` |  | 状态过滤条件或目标状态。用于列表查询时表示筛选状态，用于更新/流转时表示要变更到的目标状态；具体取值以对应资源的状态字典为准。可选值：`finished`、`fail`、`importing`。 |
 | `source_type` | 否 | `"gitee" \| "self_managed_gitlab" \| "gitlab" \| "github" \| "git" \| "svn" \| "coding" \| "bitbucket" \| "gerrit" \| "codeup"` |  | 导入来源类型，例如 gitee、github、gitlab、git、svn 等。可选值：`gitee`、`self_managed_gitlab`、`gitlab`、`github`、`git`、`svn`、`coding`、`bitbucket`、`gerrit`、`codeup`。 |
 | `created_after` | 否 | `string` |  | 创建时间下界，通常使用 ISO 8601 时间字符串。 |
 | `created_before` | 否 | `string` |  | 创建时间上界，通常使用 ISO 8601 时间字符串。 |
 | `finished_after` | 否 | `string` |  | 完成时间下界，通常使用 ISO 8601 时间字符串。 |
 | `finished_before` | 否 | `string` |  | 完成时间上界，通常使用 ISO 8601 时间字符串。 |
-| `search` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `order_by` | 否 | `"created_at" \| "source_repo_name" \| "size"` |  | 排序字段。用于选择服务端排序字段。可选值：`created_at`、`source_repo_name`、`size`。 |
+| `search` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号等文本条件过滤列表。 |
+| `order_by` | 否 | `"created_at" \| "source_repo_name" \| "size"` |  | 排序字段，用于选择服务端排序依据。可选值：`created_at`、`source_repo_name`、`size`。 |
 | `sort` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
 
 输入 JSON Schema：
@@ -14273,12 +14273,12 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
+| `repository_id` | 是 | `string` |  | CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
 
 输入 JSON Schema：
 
@@ -14349,12 +14349,12 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 
 输入 JSON Schema：
 
@@ -14425,12 +14425,12 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
+| `repository_id` | 是 | `string` |  | CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
 
 输入 JSON Schema：
 
@@ -14501,12 +14501,12 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
+| `repository_id` | 是 | `string` |  | CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
 
 输入 JSON Schema：
 
@@ -14578,8 +14578,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
-| `merge_request_iid` | 是 | `string` |  | 合并请求在仓库内的 IID。 |
+| `repository_id` | 是 | `string` |  | CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
+| `merge_request_iid` | 是 | `string` |  | 合并请求在当前仓库内的 IID；它不是全局 ID，只在同一个仓库内唯一。 |
 | `squash` | 否 | `boolean` |  | 是否压缩提交。 |
 | `force_merge` | 否 | `boolean` |  | 是否强制合并。 |
 | `sha` | 否 | `string` |  | 提交 SHA，用于校验合并请求头部提交。 |
@@ -14664,9 +14664,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
-| `merge_request_iid` | 是 | `string` |  | 合并请求在仓库内的 IID。 |
-| `action_type` | 是 | `"approve" \| "reject" \| "reset"` |  | 评审动作类型。可选值：`approve`、`reject`、`reset`。 |
+| `repository_id` | 是 | `string` |  | CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
+| `merge_request_iid` | 是 | `string` |  | 合并请求在当前仓库内的 IID；它不是全局 ID，只在同一个仓库内唯一。 |
+| `action_type` | 是 | `"approve" \| "reject" \| "reset"` |  | 评审动作类型，例如通过、拒绝、重新打开或提交评论；可选值以对应评审接口为准。 |
 | `approver_comment` | 否 | `string` |  | 评审意见。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -14735,7 +14735,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
+| `repository_id` | 是 | `string` |  | CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
 | `username` | 否 | `string` |  | 远程镜像认证用户名。按官方接口要求需要传入 base64 后的值。 |
 | `password` | 否 | `string` |  | 远程镜像认证密码。按官方接口要求需要传入 base64 后的值。 |
 | `endpoint_uuid` | 否 | `string` |  | 服务端点 UUID，用于远程镜像认证或网络访问配置。 |
@@ -14806,7 +14806,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | 是 | `string` |  | 代码仓库 ID 或 UUID，用于定位 CodeArts Repo 仓库。 |
+| `repository_id` | 是 | `string` |  | CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
 | `url` | 否 | `string` |  | 远程仓库或镜像地址。 |
 | `sync_branch_type` | 否 | `"all" \| "default"` |  | 远程镜像同步分支范围，all 表示全部分支，default 表示默认分支。可选值：`all`、`default`。 |
 | `mirroring_enabled` | 否 | `boolean` |  | 是否启用远程镜像。 |
@@ -14882,9 +14882,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `iteration_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `work_item_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `iteration_id` | 是 | `string` |  | 迭代 ID，用于定位对应的 CodeArts 资源。 |
+| `work_item_ids` | 是 | `array<object>` |  | 工作项 ID 列表，用于批量定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -14950,9 +14950,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `plan_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `work_item_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `plan_id` | 是 | `string` |  | 计划 ID，用于定位对应的 CodeArts 资源。 |
+| `work_item_ids` | 是 | `array<object>` |  | 工作项 ID 列表，用于批量定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -15018,10 +15018,10 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `user_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `domain_name` | 否 | `string` |  | 资源名称。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `user_id` | 是 | `string` |  | 用户 ID，用于定位对应的 CodeArts 资源。 |
+| `domain_id` | 是 | `string` |  | 租户账号 ID，也称 domainId，用于按租户维度查询 CodeArts 资源。 |
+| `domain_name` | 否 | `string` |  | 领域名称。 |
 | `role_id` | 否 | `number \| integer` |  | 项目成员角色 ID：-1=项目创建者，3=项目经理，4=开发人员，5=测试经理，6=测试人员，7=参与者，8=浏览者，9=运维经理；部分接口还允许 10、11 等扩展角色，以租户配置为准。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -15100,9 +15100,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `work_item_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `content` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `work_item_id` | 是 | `string` |  | 工作项 ID，用于定位对应的 CodeArts 资源。 |
+| `content` | 是 | `string` |  | 正文内容。评论、文件或请求体场景下表示要提交的文本内容。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -15197,8 +15197,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `members` | 是 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `members` | 是 | `array<object>` |  | 成员列表，用于批量添加、导入或过滤项目/仓库/团队成员。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -15280,8 +15280,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `issues` | 是 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `issues` | 是 | `array<object>` |  | 工作项或问题列表，用于批量处理、关联或查询多个问题。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -15525,9 +15525,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 | `tracker_id` | 是 | `integer` |  | Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
-| `status_config_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `status_config_ids` | 是 | `array<object>` |  | 状态配置 ID 列表，用于批量定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -15593,10 +15593,10 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `issue_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
-| `is_permanent_delete` | 否 | `boolean` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `src_project_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `issue_ids` | 是 | `array<object>` |  | 工作项 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `is_permanent_delete` | 否 | `boolean` |  | 是否永久删除。true 表示绕过回收站直接彻底删除，请谨慎使用。 |
+| `src_project_id` | 否 | `string` |  | 源项目 ID，用于跨项目复制、迁移或关联场景中定位来源项目。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -15664,8 +15664,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `iteration_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `iteration_ids` | 是 | `array<object>` |  | 迭代 ID 列表，用于批量定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -15726,8 +15726,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `user_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `user_ids` | 是 | `array<object>` |  | 用户 ID 列表，用于批量定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -15788,8 +15788,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `plan_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `plan_ids` | 是 | `array<object>` |  | 计划 ID 列表，用于批量定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -15850,8 +15850,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `work_item_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `work_item_ids` | 是 | `array<object>` |  | 工作项 ID 列表，用于批量定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -15915,12 +15915,12 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `issue_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
-| `issue_category` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `flow_code` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `is_recover` | 否 | `boolean` | false | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `process_context` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `issue_ids` | 是 | `array<object>` |  | 工作项 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `issue_category` | 是 | `string` |  | 问题分类，用于按缺陷、风险、代码问题等类别过滤。 |
+| `flow_code` | 是 | `string` |  | 流程编码，用于定位工作流、审批流或状态流转流程。 |
+| `is_recover` | 否 | `boolean` | false | 是否恢复资源。true 表示从删除、归档或回收状态恢复。 |
+| `process_context` | 否 | `object` |  | 流程上下文，承载工作流或审批流执行所需的变量和状态。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -16000,9 +16000,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `issue_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
-| `attribute` | 是 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `issue_ids` | 是 | `array<object>` |  | 工作项 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `attribute` | 是 | `object` |  | 属性信息对象，用于提交字段属性、状态属性或资源扩展属性。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -16228,9 +16228,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `plan_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
-| `baseline` | 是 | `"baselined" \| "unbaseline" \| "baseline-reviewing"` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`baselined`、`unbaseline`、`baseline-reviewing`。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `plan_ids` | 是 | `array<object>` |  | 计划 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `baseline` | 是 | `"baselined" \| "unbaseline" \| "baseline-reviewing"` |  | 基线信息或是否启用基线，用于需求、计划、测试等资源的版本基准管理。可选值：`baselined`、`unbaseline`、`baseline-reviewing`。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -16333,8 +16333,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `domain_id` | 是 | `string` |  | 租户账号 ID，也称 domainId，用于按租户维度查询 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -16392,10 +16392,10 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `plan_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `operate` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `move_to_sprint_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `plan_id` | 是 | `string` |  | 计划 ID，用于定位对应的 CodeArts 资源。 |
+| `operate` | 是 | `string` |  | 操作名称或操作标识，用于指定要执行的业务动作。 |
+| `move_to_sprint_id` | 否 | `string` |  | 目标迭代 ID，用于定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -16459,7 +16459,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `name` | 是 | `string` |  | 资源名称。 |
+| `name` | 是 | `string` |  | 名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
 
 输入 JSON Schema：
 
@@ -16507,8 +16507,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `status_name` | 是 | `string` |  | 资源名称。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `status_name` | 是 | `string` |  | 状态名称。 |
 
 输入 JSON Schema：
 
@@ -16562,8 +16562,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `plan_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `plan_id` | 是 | `string` |  | 计划 ID，用于定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -16621,11 +16621,11 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `from_project_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `to_project_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `work_item_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
-| `copy_comments` | 否 | `boolean` | false | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `copy_work_hours` | 否 | `boolean` | false | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `from_project_id` | 是 | `string` |  | 来源项目 ID，用于迁移、复制或移动资源时定位原项目。 |
+| `to_project_id` | 是 | `string` |  | 目标项目 ID，用于迁移、复制或移动资源时定位新项目。 |
+| `work_item_ids` | 是 | `array<object>` |  | 工作项 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `copy_comments` | 否 | `boolean` | false | 是否复制评论。true 表示复制资源时一并复制评论记录。 |
+| `copy_work_hours` | 否 | `boolean` | false | 是否复制工时。true 表示复制工作项时一并复制工时记录。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -16697,9 +16697,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 | `tracker_ids` | 否 | `array<integer>` |  | Scrum 工作项类型 ID 列表：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
 
 输入 JSON Schema：
@@ -16770,17 +16770,17 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `category` | 否 | `string` | "CR" | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `title` | 是 | `string` |  | 标题。 |
-| `description` | 否 | `string` |  | 资源描述信息。 |
-| `need_approval` | 是 | `boolean` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `status` | 是 | `object` |  | 状态过滤条件或目标状态。 |
-| `cc` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `cos` | 是 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `plan_end_date` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `plan_start_date` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `extra_fields` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `category` | 否 | `string` | "CR" | 分类字段，用于按资源类别、工作项分类或制品分类过滤；具体字典以对应接口返回为准。 |
+| `title` | 是 | `string` |  | 标题，用于工作项、合并请求、计划等资源的主显示名称。建议简洁说明要做什么。 |
+| `description` | 否 | `string` |  | 描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
+| `need_approval` | 是 | `boolean` |  | 是否需要审批。true 表示执行前需要审批流程通过。 |
+| `status` | 是 | `object` |  | 状态过滤条件或目标状态。用于列表查询时表示筛选状态，用于更新/流转时表示要变更到的目标状态；具体取值以对应资源的状态字典为准。 |
+| `cc` | 否 | `array<object>` |  | 抄送人列表或抄送人标识，用于通知相关人员。 |
+| `cos` | 是 | `array<object>` |  | 坐标或制品定位信息，通常用于制品仓内定位组织、仓库、包名、版本等层级。 |
+| `plan_end_date` | 否 | `string` |  | 计划结束日期，用于工作项、迭代、计划或测试计划的排期。 |
+| `plan_start_date` | 否 | `string` |  | 计划开始日期，用于工作项、迭代、计划或测试计划的排期。 |
+| `extra_fields` | 否 | `object` |  | 扩展字段对象，用于填写项目自定义字段或当前接口未单独展开的业务字段。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -16954,9 +16954,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `title` | 是 | `string` |  | 标题。 |
-| `parent_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `title` | 是 | `string` |  | 标题，用于工作项、合并请求、计划等资源的主显示名称。建议简洁说明要做什么。 |
+| `parent_id` | 是 | `string` |  | 父级 ID，用于指定当前资源挂载到哪个父节点、父分组、父模块或父工作项下。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -17021,27 +17021,27 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `title` | 是 | `string` |  | 标题。 |
-| `description` | 是 | `string` |  | 资源描述信息。 |
-| `category` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `assignee` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `status` | 否 | `string` |  | 状态过滤条件或目标状态。 |
-| `src_domain` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `submitted_by` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `domain_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `recipient` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `expect_delivery_time` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `priority` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `assigned_cc` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `plan_pi` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `plan_iteration` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `plan_start_date` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `plan_end_date` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `workload_man_day` | 否 | `number` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `business_domain` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `need_break` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `extra_fields` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `title` | 是 | `string` |  | 标题，用于工作项、合并请求、计划等资源的主显示名称。建议简洁说明要做什么。 |
+| `description` | 是 | `string` |  | 描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
+| `category` | 是 | `string` |  | 分类字段，用于按资源类别、工作项分类或制品分类过滤；具体字典以对应接口返回为准。 |
+| `assignee` | 是 | `string` |  | 处理人或负责人标识，用于指定当前责任人或按责任人过滤。 |
+| `status` | 否 | `string` |  | 状态过滤条件或目标状态。用于列表查询时表示筛选状态，用于更新/流转时表示要变更到的目标状态；具体取值以对应资源的状态字典为准。 |
+| `src_domain` | 否 | `string` |  | 源租户或源账号标识，用于跨租户、跨账号迁移或复制场景。 |
+| `submitted_by` | 否 | `string` |  | 提交人标识，用于按提交人过滤评审、审批或记录。 |
+| `domain_id` | 否 | `string` |  | 租户账号 ID，也称 domainId，用于按租户维度查询 CodeArts 资源。 |
+| `recipient` | 否 | `array<object>` |  | 接收人标识或接收人列表，用于通知、消息或交付场景。 |
+| `expect_delivery_time` | 否 | `integer` |  | 期望交付时间，用于需求、特性或计划的目标交付日期。 |
+| `priority` | 否 | `string` |  | 优先级。需求管理场景通常表示工作项优先级；具体名称和取值以项目字段配置为准。 |
+| `assigned_cc` | 否 | `array<object>` |  | 抄送处理人或协同处理人列表，用于工作项通知和协作。 |
+| `plan_pi` | 否 | `string` |  | PI 计划信息，用于 IPD/敏捷场景中关联或过滤 Program Increment。 |
+| `plan_iteration` | 否 | `string` |  | 计划迭代信息，用于指定计划关联的迭代或迭代范围。 |
+| `plan_start_date` | 否 | `integer` |  | 计划开始日期，用于工作项、迭代、计划或测试计划的排期。 |
+| `plan_end_date` | 否 | `integer` |  | 计划结束日期，用于工作项、迭代、计划或测试计划的排期。 |
+| `workload_man_day` | 否 | `number` |  | 人天工作量，用于计划或统计场景中的容量评估。 |
+| `business_domain` | 否 | `string` |  | 业务领域，用于按产品线、业务域或团队范围分类。 |
+| `need_break` | 否 | `string` |  | 是否中断后续流程。true 表示满足条件后停止继续执行。 |
+| `extra_fields` | 否 | `object` |  | 扩展字段对象，用于填写项目自定义字段或当前接口未单独展开的业务字段。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -17172,10 +17172,10 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `label_type` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `color` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `title` | 是 | `string` |  | 标题。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `label_type` | 是 | `string` |  | 标签类型，用于区分系统标签、自定义标签或业务标签。 |
+| `color` | 是 | `string` |  | 颜色值，用于标签、状态或看板显示配置，通常为十六进制颜色。 |
+| `title` | 是 | `string` |  | 标题，用于工作项、合并请求、计划等资源的主显示名称。建议简洁说明要做什么。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -17246,11 +17246,11 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `display_value` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `parent_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `description` | 否 | `string` |  | 资源描述信息。 |
-| `assignee` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `display_value` | 是 | `string` |  | 显示值，表示字段在界面上展示给用户看的文本。 |
+| `parent_id` | 是 | `string` |  | 父级 ID，用于指定当前资源挂载到哪个父节点、父分组、父模块或父工作项下。 |
+| `description` | 否 | `string` |  | 描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
+| `assignee` | 否 | `string` |  | 处理人或负责人标识，用于指定当前责任人或按责任人过滤。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -17321,24 +17321,24 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `operate_type` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `domain_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `title` | 否 | `string` |  | 标题。 |
-| `description` | 否 | `string` |  | 资源描述信息。 |
-| `category` | 是 | `"BR" \| "GR"` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`BR`、`GR`。 |
-| `need_approval` | 否 | `boolean` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `plan_end_date` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `plan_start_date` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `status` | 是 | `string` |  | 状态过滤条件或目标状态。 |
-| `cc` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `attachWikis` | 否 | `array<string>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `attachDocuments` | 否 | `array<string>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `ccbs` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `opinions` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `cos` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `local_attachment_names` | 否 | `array<string>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `extra_fields` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `operate_type` | 否 | `string` |  | 操作类型，用于区分新增、更新、删除、移动、恢复等动作。 |
+| `domain_id` | 否 | `string` |  | 租户账号 ID，也称 domainId，用于按租户维度查询 CodeArts 资源。 |
+| `title` | 否 | `string` |  | 标题，用于工作项、合并请求、计划等资源的主显示名称。建议简洁说明要做什么。 |
+| `description` | 否 | `string` |  | 描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
+| `category` | 是 | `"BR" \| "GR"` |  | 分类字段，用于按资源类别、工作项分类或制品分类过滤；具体字典以对应接口返回为准。可选值：`BR`、`GR`。 |
+| `need_approval` | 否 | `boolean` |  | 是否需要审批。true 表示执行前需要审批流程通过。 |
+| `plan_end_date` | 否 | `string` |  | 计划结束日期，用于工作项、迭代、计划或测试计划的排期。 |
+| `plan_start_date` | 否 | `string` |  | 计划开始日期，用于工作项、迭代、计划或测试计划的排期。 |
+| `status` | 是 | `string` |  | 状态过滤条件或目标状态。用于列表查询时表示筛选状态，用于更新/流转时表示要变更到的目标状态；具体取值以对应资源的状态字典为准。 |
+| `cc` | 否 | `array<object>` |  | 抄送人列表或抄送人标识，用于通知相关人员。 |
+| `attachWikis` | 否 | `array<string>` |  | 是否关联 Wiki 内容或关联的 Wiki 列表，具体结构以对应接口为准。 |
+| `attachDocuments` | 否 | `array<string>` |  | 是否关联文档或关联的文档列表，具体结构以对应接口为准。 |
+| `ccbs` | 否 | `array<object>` |  | 抄送人或关注人集合，用于工作项通知、评审通知等场景。 |
+| `opinions` | 否 | `array<object>` |  | 意见内容列表，用于审批、评审或评论场景。 |
+| `cos` | 否 | `array<object>` |  | 坐标或制品定位信息，通常用于制品仓内定位组织、仓库、包名、版本等层级。 |
+| `local_attachment_names` | 否 | `array<string>` |  | 本地附件名称列表，用于上传或绑定附件时对应本地文件名。 |
+| `extra_fields` | 否 | `object` |  | 扩展字段对象，用于填写项目自定义字段或当前接口未单独展开的业务字段。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -17508,15 +17508,15 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `issue_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `work_date_begin` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `work_date_end` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `work_hours` | 是 | `string \| number` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `work_hour_type` | 是 | `integer \| string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `include_weekend` | 是 | `boolean` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `work_hour_category` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `description` | 否 | `string` |  | 资源描述信息。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `issue_id` | 是 | `string` |  | 工作项 ID，用于定位对应的 CodeArts 资源。 |
+| `work_date_begin` | 是 | `string` |  | 工时开始日期，用于按登记工时的日期范围查询。 |
+| `work_date_end` | 是 | `string` |  | 工时结束日期，用于按登记工时的日期范围查询。 |
+| `work_hours` | 是 | `string \| number` |  | 实际工时或工时明细，用于登记、更新或查询工作量。 |
+| `work_hour_type` | 是 | `integer \| string` |  | 工时类型，用于区分开发、测试、评审等工时分类；具体字典以项目配置为准。 |
+| `include_weekend` | 是 | `boolean` |  | 是否包含周末。用于工时、排期或日期范围计算。 |
+| `work_hour_category` | 否 | `string` |  | 工时分类，用于区分不同来源或用途的工时记录。 |
+| `description` | 否 | `string` |  | 描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -17615,11 +17615,11 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `name` | 是 | `string` |  | 资源名称。 |
-| `begin_time` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `end_time` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `description` | 否 | `string` |  | 资源描述信息。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `name` | 是 | `string` |  | 名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
+| `begin_time` | 是 | `string` |  | 开始时间，通常使用时间戳或 ISO 8601 时间字符串，具体格式以接口要求为准。 |
+| `end_time` | 是 | `string` |  | 结束时间，通常使用时间戳或 ISO 8601 时间字符串，具体格式以接口要求为准。 |
+| `description` | 否 | `string` |  | 描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -17692,21 +17692,21 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `iteration_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `title` | 是 | `string` |  | 标题。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `iteration_id` | 是 | `string` |  | 迭代 ID，用于定位对应的 CodeArts 资源。 |
+| `title` | 是 | `string` |  | 标题，用于工作项、合并请求、计划等资源的主显示名称。建议简洁说明要做什么。 |
 | `work_item_type` | 是 | `string` |  | 参数解释：<br>工作项类型，用于指定创建或更新的 CodeArts Scrum 工作项类型。工具会把填写的类型名称或数字 ID 自动转换为 CodeArts 需要的 tracker_id。<br>约束限制：<br>创建子工作项时，父子类型需符合层级关系：Epic 只能作为 Feature 的父工作项类型；Feature 只能作为 Story 的父工作项类型；Story 只能作为 Task/任务、Bug/缺陷的父工作项类型。未创建子工作项时不涉及该限制。<br>取值范围：<br>2（任务/Task，可填 task 或 2）；<br>3（缺陷/Bug，可填 bug 或 3）；<br>5（Epic，可填 epic 或 5）；<br>6（Feature，可填 feature 或 6）；<br>7（Story，可填 story 或 7）。<br>默认取值：<br>不涉及。创建类接口必填；更新接口不传则不修改工作项类型。 |
-| `parent_work_item_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `description` | 否 | `string` |  | 资源描述信息。 |
+| `parent_work_item_id` | 否 | `string` |  | 父工作项 ID，用于定位对应的 CodeArts 资源。 |
+| `description` | 否 | `string` |  | 描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
 | `priority_id` | 否 | `integer` |  | 工作项优先级 ID。创建工作项未传时默认使用 2；具体优先级名称和可选值以项目字段配置/优先级选项接口返回为准。 |
-| `module_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `module_id` | 否 | `string` |  | 模块 ID，用于定位对应的 CodeArts 资源。 |
 | `severity_id` | 否 | `integer` |  | 严重程度 ID。通常用于缺陷或问题等级；可通过 req_list_issue_severities 查询当前可用严重程度。 |
-| `assigned_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `developer_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `done_ratio` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `expected_work_hours` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `start_date` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `due_date` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `assigned_id` | 否 | `string` |  | 处理人 ID，用于定位对应的 CodeArts 资源。 |
+| `developer_id` | 否 | `string` |  | 开发人员 ID，用于定位对应的 CodeArts 资源。 |
+| `done_ratio` | 否 | `integer` |  | 完成百分比，通常为 0 到 100 的整数，用于表示工作项或任务完成进度。 |
+| `expected_work_hours` | 否 | `integer` |  | 预计工时，表示完成工作项或任务预计需要投入的小时数。 |
+| `start_date` | 否 | `integer` |  | 开始日期，通常使用 yyyy-MM-dd 或接口要求的日期格式。 |
+| `due_date` | 否 | `integer` |  | 截止日期，表示工作项、计划或任务期望完成时间。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -17813,9 +17813,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `name` | 是 | `string` |  | 资源名称。 |
-| `type` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `name` | 是 | `string` |  | 名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
+| `type` | 是 | `string` |  | 类型字段，用于区分资源类别、操作类别或查询类别；具体取值以该接口的业务对象为准。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -17880,23 +17880,23 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `plan_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `title` | 是 | `string` |  | 标题。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `plan_id` | 是 | `string` |  | 计划 ID，用于定位对应的 CodeArts 资源。 |
+| `title` | 是 | `string` |  | 标题，用于工作项、合并请求、计划等资源的主显示名称。建议简洁说明要做什么。 |
 | `work_item_type` | 是 | `string` |  | 参数解释：<br>工作项类型，用于指定创建或更新的 CodeArts Scrum 工作项类型。工具会把填写的类型名称或数字 ID 自动转换为 CodeArts 需要的 tracker_id。<br>约束限制：<br>创建子工作项时，父子类型需符合层级关系：Epic 只能作为 Feature 的父工作项类型；Feature 只能作为 Story 的父工作项类型；Story 只能作为 Task/任务、Bug/缺陷的父工作项类型。未创建子工作项时不涉及该限制。<br>取值范围：<br>2（任务/Task，可填 task 或 2）；<br>3（缺陷/Bug，可填 bug 或 3）；<br>5（Epic，可填 epic 或 5）；<br>6（Feature，可填 feature 或 6）；<br>7（Story，可填 story 或 7）。<br>默认取值：<br>不涉及。创建类接口必填；更新接口不传则不修改工作项类型。 |
-| `parent_work_item_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `description` | 否 | `string` |  | 资源描述信息。 |
-| `iteration_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `module_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `parent_work_item_id` | 否 | `string` |  | 父工作项 ID，用于定位对应的 CodeArts 资源。 |
+| `description` | 否 | `string` |  | 描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
+| `iteration_id` | 否 | `string` |  | 迭代 ID，用于定位对应的 CodeArts 资源。 |
+| `module_id` | 否 | `string` |  | 模块 ID，用于定位对应的 CodeArts 资源。 |
 | `priority_id` | 否 | `integer` |  | 工作项优先级 ID。创建工作项未传时默认使用 2；具体优先级名称和可选值以项目字段配置/优先级选项接口返回为准。 |
 | `severity_id` | 否 | `integer` |  | 严重程度 ID。通常用于缺陷或问题等级；可通过 req_list_issue_severities 查询当前可用严重程度。 |
 | `status_id` | 否 | `integer` |  | 工作项状态 ID：1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝。项目自定义状态以状态配置/工作流接口返回为准。 |
-| `assigned_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `developer_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `done_ratio` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `expected_work_hours` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `start_date` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `due_date` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `assigned_id` | 否 | `string` |  | 处理人 ID，用于定位对应的 CodeArts 资源。 |
+| `developer_id` | 否 | `string` |  | 开发人员 ID，用于定位对应的 CodeArts 资源。 |
+| `done_ratio` | 否 | `integer` |  | 完成百分比，通常为 0 到 100 的整数，用于表示工作项或任务完成进度。 |
+| `expected_work_hours` | 否 | `integer` |  | 预计工时，表示完成工作项或任务预计需要投入的小时数。 |
+| `start_date` | 否 | `integer` |  | 开始日期，通常使用 yyyy-MM-dd 或接口要求的日期格式。 |
+| `due_date` | 否 | `integer` |  | 截止日期，表示工作项、计划或任务期望完成时间。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -18008,8 +18008,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `name` | 是 | `string` |  | 资源名称。 |
-| `description` | 否 | `string` |  | 资源描述信息。 |
+| `name` | 是 | `string` |  | 名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
+| `description` | 否 | `string` |  | 描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -18065,8 +18065,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `domain_name` | 是 | `string` |  | 资源名称。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `domain_name` | 是 | `string` |  | 领域名称。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -18126,11 +18126,11 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `module_name` | 是 | `string` |  | 资源名称。 |
-| `owner_user_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `parent_module_id` | 否 | `integer` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `description` | 否 | `string` |  | 资源描述信息。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `module_name` | 是 | `string` |  | 模块名称。 |
+| `owner_user_id` | 是 | `string` |  | 拥有者用户 ID，用于定位对应的 CodeArts 资源。 |
+| `parent_module_id` | 否 | `integer` |  | 父模块 ID，用于定位对应的 CodeArts 资源。 |
+| `description` | 否 | `string` |  | 描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -18202,10 +18202,10 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `defined_name` | 是 | `string` |  | 资源名称。 |
-| `status_attribute` | 是 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `description` | 否 | `string` |  | 资源描述信息。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `defined_name` | 是 | `string` |  | defined名称。 |
+| `status_attribute` | 是 | `integer` |  | 状态属性，用于描述状态的类别或流转属性。 |
+| `description` | 否 | `string` |  | 描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -18275,15 +18275,15 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `title` | 是 | `string` |  | 标题。 |
-| `category` | 是 | `"PI" \| "Iteration" \| "PlanMilestone"` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`PI`、`Iteration`、`PlanMilestone`。 |
-| `plan_start_date` | 是 | `string \| integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `plan_end_date` | 是 | `string \| integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `description` | 否 | `string` |  | 资源描述信息。 |
-| `parent_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `workload` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `owner` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `title` | 是 | `string` |  | 标题，用于工作项、合并请求、计划等资源的主显示名称。建议简洁说明要做什么。 |
+| `category` | 是 | `"PI" \| "Iteration" \| "PlanMilestone"` |  | 分类字段，用于按资源类别、工作项分类或制品分类过滤；具体字典以对应接口返回为准。可选值：`PI`、`Iteration`、`PlanMilestone`。 |
+| `plan_start_date` | 是 | `string \| integer` |  | 计划开始日期，用于工作项、迭代、计划或测试计划的排期。 |
+| `plan_end_date` | 是 | `string \| integer` |  | 计划结束日期，用于工作项、迭代、计划或测试计划的排期。 |
+| `description` | 否 | `string` |  | 描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
+| `parent_id` | 否 | `string` |  | 父级 ID，用于指定当前资源挂载到哪个父节点、父分组、父模块或父工作项下。 |
+| `workload` | 否 | `string` |  | 工作量，用于计划、迭代或成员维度的容量/投入统计。 |
+| `owner` | 否 | `string` |  | 拥有者或负责人标识，用于按资源归属过滤或设置归属人。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -18380,21 +18380,21 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `title` | 是 | `string` |  | 标题。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `title` | 是 | `string` |  | 标题，用于工作项、合并请求、计划等资源的主显示名称。建议简洁说明要做什么。 |
 | `work_item_type` | 是 | `string` |  | 参数解释：<br>工作项类型，用于指定创建或更新的 CodeArts Scrum 工作项类型。工具会把填写的类型名称或数字 ID 自动转换为 CodeArts 需要的 tracker_id。<br>约束限制：<br>创建子工作项时，父子类型需符合层级关系：Epic 只能作为 Feature 的父工作项类型；Feature 只能作为 Story 的父工作项类型；Story 只能作为 Task/任务、Bug/缺陷的父工作项类型。未创建子工作项时不涉及该限制。<br>取值范围：<br>2（任务/Task，可填 task 或 2）；<br>3（缺陷/Bug，可填 bug 或 3）；<br>5（Epic，可填 epic 或 5）；<br>6（Feature，可填 feature 或 6）；<br>7（Story，可填 story 或 7）。<br>默认取值：<br>不涉及。创建类接口必填；更新接口不传则不修改工作项类型。 |
-| `parent_work_item_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `description` | 否 | `string` |  | 资源描述信息。 |
+| `parent_work_item_id` | 否 | `string` |  | 父工作项 ID，用于定位对应的 CodeArts 资源。 |
+| `description` | 否 | `string` |  | 描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
 | `priority_id` | 否 | `integer` |  | 工作项优先级 ID。创建工作项未传时默认使用 2；具体优先级名称和可选值以项目字段配置/优先级选项接口返回为准。 |
-| `iteration_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `module_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `iteration_id` | 否 | `string` |  | 迭代 ID，用于定位对应的 CodeArts 资源。 |
+| `module_id` | 否 | `string` |  | 模块 ID，用于定位对应的 CodeArts 资源。 |
 | `severity_id` | 否 | `integer` |  | 严重程度 ID。通常用于缺陷或问题等级；可通过 req_list_issue_severities 查询当前可用严重程度。 |
-| `assigned_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `developer_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `done_ratio` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `expected_work_hours` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `start_date` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `due_date` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `assigned_id` | 否 | `string` |  | 处理人 ID，用于定位对应的 CodeArts 资源。 |
+| `developer_id` | 否 | `string` |  | 开发人员 ID，用于定位对应的 CodeArts 资源。 |
+| `done_ratio` | 否 | `integer` |  | 完成百分比，通常为 0 到 100 的整数，用于表示工作项或任务完成进度。 |
+| `expected_work_hours` | 否 | `integer` |  | 预计工时，表示完成工作项或任务预计需要投入的小时数。 |
+| `start_date` | 否 | `integer` |  | 开始日期，通常使用 yyyy-MM-dd 或接口要求的日期格式。 |
+| `due_date` | 否 | `integer` |  | 截止日期，表示工作项、计划或任务期望完成时间。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -18533,9 +18533,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `work_item_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `attachment_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `work_item_id` | 是 | `string` |  | 工作项 ID，用于定位对应的 CodeArts 资源。 |
+| `attachment_id` | 是 | `string` |  | 附件 ID，用于定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -18596,9 +18596,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `id` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `category` | 否 | `string` | "CR" | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `id` | 是 | `string` |  | 资源 ID，表示当前接口操作对象的唯一标识。具体含义由所在 API 决定，例如工作项 ID、记录 ID、任务 ID。 |
+| `category` | 否 | `string` | "CR" | 分类字段，用于按资源类别、工作项分类或制品分类过滤；具体字典以对应接口返回为准。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -18660,8 +18660,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `feature_set_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `feature_set_id` | 是 | `string` |  | 特性集 ID，用于定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -18719,9 +18719,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `issue_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `file_name` | 是 | `string` |  | 资源名称。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `issue_id` | 是 | `string` |  | 工作项 ID，用于定位对应的 CodeArts 资源。 |
+| `file_name` | 是 | `string` |  | 文件名称。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -18783,8 +18783,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `label_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `label_id` | 是 | `string` |  | 标签 ID，用于定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -18841,8 +18841,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `module_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `module_id` | 是 | `string` |  | 模块 ID，用于定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -18899,8 +18899,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `id` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `id` | 是 | `string` |  | 资源 ID，表示当前接口操作对象的唯一标识。具体含义由所在 API 决定，例如工作项 ID、记录 ID、任务 ID。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -18958,9 +18958,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `issue_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `workhour_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `issue_id` | 是 | `string` |  | 工作项 ID，用于定位对应的 CodeArts 资源。 |
+| `workhour_id` | 是 | `string` |  | 工时 ID，用于定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -19021,8 +19021,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `iteration_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `iteration_id` | 是 | `string` |  | 迭代 ID，用于定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -19079,8 +19079,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `plan_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `plan_id` | 是 | `string` |  | 计划 ID，用于定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -19136,7 +19136,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -19189,8 +19189,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `module_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `module_id` | 是 | `string` |  | 模块 ID，用于定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -19246,7 +19246,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `template_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `template_id` | 是 | `string` |  | 模板 ID，用于定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -19299,8 +19299,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `work_item_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `work_item_id` | 是 | `string` |  | 工作项 ID，用于定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -19358,9 +19358,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `work_item_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `attachment_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `work_item_id` | 是 | `string` |  | 工作项 ID，用于定位对应的 CodeArts 资源。 |
+| `attachment_id` | 是 | `string` |  | 附件 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -19416,8 +19416,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `image_uri` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `image_uri` | 是 | `string` |  | 镜像 URI，用于指定容器镜像完整地址。 |
 
 输入 JSON Schema：
 
@@ -19470,8 +19470,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `attachment_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `attachment_id` | 是 | `string` |  | 附件 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -19524,10 +19524,10 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `issue_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `file_name` | 是 | `string` |  | 资源名称。 |
-| `field_code` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `issue_id` | 是 | `string` |  | 工作项 ID，用于定位对应的 CodeArts 资源。 |
+| `file_name` | 是 | `string` |  | 文件名称。 |
+| `field_code` | 否 | `string` |  | 字段编码，用于定位自定义字段或系统字段。 |
 
 输入 JSON Schema：
 
@@ -19622,7 +19622,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 
 输入 JSON Schema：
 
@@ -19671,10 +19671,10 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `issue_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `category` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `is_src` | 否 | `boolean` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `issue_id` | 是 | `string` |  | 工作项 ID，用于定位对应的 CodeArts 资源。 |
+| `category` | 是 | `string` |  | 分类字段，用于按资源类别、工作项分类或制品分类过滤；具体字典以对应接口返回为准。 |
+| `is_src` | 否 | `boolean` |  | 是否为源对象。true 表示该对象作为来源侧参与操作。 |
 
 输入 JSON Schema：
 
@@ -19734,9 +19734,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `issue_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `version` | 否 | `"v1" \| "v2"` | "v2" | 请参考字段名和上游 CodeArts API 语义填写。可选值：`v1`、`v2`。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `issue_id` | 是 | `string` |  | 工作项 ID，用于定位对应的 CodeArts 资源。 |
+| `version` | 否 | `"v1" \| "v2"` | "v2" | 版本号。制品仓场景表示制品版本；插件或模板场景表示对应资源版本。可选值：`v1`、`v2`。 |
 
 输入 JSON Schema：
 
@@ -19796,8 +19796,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `id` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `id` | 是 | `string` |  | 资源 ID，表示当前接口操作对象的唯一标识。具体含义由所在 API 决定，例如工作项 ID、记录 ID、任务 ID。 |
 
 输入 JSON Schema：
 
@@ -19849,8 +19849,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `code` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `code` | 是 | `string` |  | 编码或编号，用于标识规则、字段、状态或业务对象。 |
 
 输入 JSON Schema：
 
@@ -19904,9 +19904,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `id` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `category` | 是 | `"CR" \| "BR" \| "GR"` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`CR`、`BR`、`GR`。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `id` | 是 | `string` |  | 资源 ID，表示当前接口操作对象的唯一标识。具体含义由所在 API 决定，例如工作项 ID、记录 ID、任务 ID。 |
+| `category` | 是 | `"CR" \| "BR" \| "GR"` |  | 分类字段，用于按资源类别、工作项分类或制品分类过滤；具体字典以对应接口返回为准。可选值：`CR`、`BR`、`GR`。 |
 
 输入 JSON Schema：
 
@@ -19967,10 +19967,10 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `classification` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `plan` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `created_date` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `classification` | 是 | `string` |  | 分类标识，用于按业务分类、测试分类或资源分类过滤。 |
+| `plan` | 否 | `object` |  | 计划信息对象，用于提交计划名称、周期、负责人、状态等计划相关字段。 |
+| `created_date` | 否 | `object` |  | 创建日期过滤条件或创建日期值，通常使用 yyyy-MM-dd 或接口要求的日期格式。 |
 
 输入 JSON Schema：
 
@@ -20046,7 +20046,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `code` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `code` | 是 | `string` |  | 编码或编号，用于标识规则、字段、状态或业务对象。 |
 
 输入 JSON Schema：
 
@@ -20093,7 +20093,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `field_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `field_id` | 是 | `string` |  | 字段 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -20142,9 +20142,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `issue_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `issue_category` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `issue_id` | 是 | `string` |  | 工作项 ID，用于定位对应的 CodeArts 资源。 |
+| `issue_category` | 是 | `string` |  | 问题分类，用于按缺陷、风险、代码问题等类别过滤。 |
 
 输入 JSON Schema：
 
@@ -20201,8 +20201,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `program_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `ir_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `program_id` | 是 | `string` |  | 项目集 ID，用于定位对应的 CodeArts 资源。 |
+| `ir_id` | 是 | `string` |  | IR ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -20253,7 +20253,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `iteration_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `iteration_id` | 是 | `string` |  | 迭代 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -20301,8 +20301,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `plan_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `plan_id` | 是 | `string` |  | 计划 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -20353,7 +20353,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 
 输入 JSON Schema：
 
@@ -20400,11 +20400,11 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `date_range` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `metric_type` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `dividend` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `divisor` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `date_range` | 否 | `string` |  | 日期范围，用于统计或列表查询的时间窗口。 |
+| `metric_type` | 否 | `string` |  | 指标类型，用于选择要查询或统计的度量项。 |
+| `dividend` | 否 | `object` |  | 被除数，用于统计指标或计算公式。 |
+| `divisor` | 否 | `object` |  | 除数，用于统计指标或计算公式。 |
 
 输入 JSON Schema：
 
@@ -20496,7 +20496,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 
 输入 JSON Schema：
 
@@ -20543,12 +20543,12 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `date_range` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `metric_type` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `sprint_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `dividend` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `divisor` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `date_range` | 否 | `string` |  | 日期范围，用于统计或列表查询的时间窗口。 |
+| `metric_type` | 否 | `string` |  | 指标类型，用于选择要查询或统计的度量项。 |
+| `sprint_id` | 否 | `string` |  | 迭代 ID，用于定位对应的 CodeArts 资源。 |
+| `dividend` | 否 | `object` |  | 被除数，用于统计指标或计算公式。 |
+| `divisor` | 否 | `object` |  | 除数，用于统计指标或计算公式。 |
 
 输入 JSON Schema：
 
@@ -20618,7 +20618,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 
 输入 JSON Schema：
 
@@ -20665,7 +20665,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 
 输入 JSON Schema：
 
@@ -20712,7 +20712,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 
 输入 JSON Schema：
 
@@ -20759,7 +20759,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 
 输入 JSON Schema：
 
@@ -20807,8 +20807,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `plan_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `plan_id` | 是 | `string` |  | 计划 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -20860,8 +20860,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `work_item_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `work_item_id` | 是 | `string` |  | 工作项 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -20912,7 +20912,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 
 输入 JSON Schema：
 
@@ -20960,8 +20960,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `work_item_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `work_item_id` | 是 | `string` |  | 工作项 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -21013,9 +21013,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `work_item_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `include` | 否 | `string` | "children,parent" | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `work_item_id` | 是 | `string` |  | 工作项 ID，用于定位对应的 CodeArts 资源。 |
+| `include` | 否 | `string` | "children,parent" | 包含项配置，用于指定接口额外返回哪些关联信息。 |
 
 输入 JSON Schema：
 
@@ -21072,7 +21072,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 | `tracker_id` | 是 | `integer` |  | Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
 
 输入 JSON Schema：
@@ -21126,7 +21126,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 | `tracker_id` | 是 | `integer` |  | Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
 
 输入 JSON Schema：
@@ -21181,15 +21181,15 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `issue_type` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `group_field_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `is_project_group` | 否 | `boolean` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `group_sort` | 否 | `"asc" \| "desc"` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`asc`、`desc`。 |
-| `filter` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `filter_mode` | 否 | `"OR_AND" \| "AND_OR"` | "AND_OR" | 请参考字段名和上游 CodeArts API 语义填写。可选值：`OR_AND`、`AND_OR`。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `issue_type` | 是 | `string` |  | 问题类型或工作项类型，用于按需求、缺陷、任务等类型过滤。 |
+| `group_field_id` | 是 | `string` |  | 分组字段 ID，用于定位对应的 CodeArts 资源。 |
+| `is_project_group` | 否 | `boolean` |  | 是否为项目群。true 表示按项目群维度处理。 |
+| `group_sort` | 否 | `"asc" \| "desc"` |  | 分组排序方式，用于控制分组列表或看板列的显示顺序。可选值：`asc`、`desc`。 |
+| `filter` | 否 | `array<object>` |  | 过滤条件对象或过滤表达式，用于缩小查询范围。 |
+| `filter_mode` | 否 | `"OR_AND" \| "AND_OR"` | "AND_OR" | 过滤模式，用于指定多个过滤条件之间的匹配方式，例如全部匹配或任一匹配。可选值：`OR_AND`、`AND_OR`。 |
 | `sort` | 否 | `array<object>` |  | 排序方向。asc 表示升序，desc 表示降序。 |
 
 输入 JSON Schema：
@@ -21312,7 +21312,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -21365,11 +21365,11 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `work_item_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `type` | 否 | `string` | "commit" | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `work_item_id` | 是 | `string` |  | 工作项 ID，用于定位对应的 CodeArts 资源。 |
+| `type` | 否 | `string` | "commit" | 类型字段，用于区分资源类别、操作类别或查询类别；具体取值以该接口的业务对象为准。 |
 
 输入 JSON Schema：
 
@@ -21437,10 +21437,10 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `work_item_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `work_item_id` | 是 | `string` |  | 工作项 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -21503,10 +21503,10 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `work_item_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `work_item_id` | 是 | `string` |  | 工作项 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -21569,10 +21569,10 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `work_item_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `work_item_id` | 是 | `string` |  | 工作项 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -21634,9 +21634,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 
 输入 JSON Schema：
 
@@ -21695,8 +21695,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `board_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `board_id` | 是 | `string` |  | 看板 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -21747,10 +21747,10 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `created_time_interval` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `created_time_interval` | 否 | `string` |  | 创建时间范围，用于按创建时间过滤列表。 |
 
 输入 JSON Schema：
 
@@ -21809,8 +21809,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 否 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `type` | 否 | `string` | "backlog" | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 否 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `type` | 否 | `string` | "backlog" | 类型字段，用于区分资源类别、操作类别或查询类别；具体取值以该接口的业务对象为准。 |
 
 输入 JSON Schema：
 
@@ -21860,12 +21860,12 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `parent_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `subject` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `query_type` | 否 | `string` | "basic" | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `parent_id` | 是 | `string` |  | 父级 ID，用于指定当前资源挂载到哪个父节点、父分组、父模块或父工作项下。 |
+| `subject` | 否 | `string` |  | 主题或摘要，用于工作项、评论、通知等内容的简短说明。 |
+| `query_type` | 否 | `string` | "basic" | 查询类型，用于切换不同查询口径或筛选范围。 |
 
 输入 JSON Schema：
 
@@ -21936,9 +21936,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `issue_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `category` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `issue_id` | 是 | `string` |  | 工作项 ID，用于定位对应的 CodeArts 资源。 |
+| `category` | 否 | `string` |  | 分类字段，用于按资源类别、工作项分类或制品分类过滤；具体字典以对应接口返回为准。 |
 
 输入 JSON Schema：
 
@@ -21993,8 +21993,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `category_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `category_id` | 是 | `string` |  | 分类 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -22046,8 +22046,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `issue_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `issue_id` | 是 | `string` |  | 工作项 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -22098,8 +22098,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `snapshot_version_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `snapshot_version_id` | 否 | `string` |  | 快照版本 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -22150,9 +22150,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `issue_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `source_project_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `issue_id` | 是 | `string` |  | 工作项 ID，用于定位对应的 CodeArts 资源。 |
+| `source_project_id` | 否 | `string` |  | 源项目 ID，用于跨项目复制、迁移或关联场景中定位来源项目。 |
 
 输入 JSON Schema：
 
@@ -22207,8 +22207,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `category_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `category_id` | 是 | `string` |  | 分类 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -22259,7 +22259,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 
 输入 JSON Schema：
 
@@ -22307,14 +22307,14 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `category` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `number` | 否 | `array<string>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `plan` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `modified_date` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `category` | 是 | `string` |  | 分类字段，用于按资源类别、工作项分类或制品分类过滤；具体字典以对应接口返回为准。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `number` | 否 | `array<string>` |  | 编号，用于工作项、构建、执行记录等资源的人类可读序号。 |
+| `plan` | 否 | `array<object>` |  | 计划信息对象，用于提交计划名称、周期、负责人、状态等计划相关字段。 |
+| `modified_date` | 否 | `object` |  | 修改日期过滤条件或修改日期值，通常使用 yyyy-MM-dd 或接口要求的日期格式。 |
 
 输入 JSON Schema：
 
@@ -22417,12 +22417,12 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `issue_type` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `filter` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `filter_mode` | 否 | `"OR_AND" \| "AND_OR"` | "AND_OR" | 请参考字段名和上游 CodeArts API 语义填写。可选值：`OR_AND`、`AND_OR`。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `issue_type` | 是 | `string` |  | 问题类型或工作项类型，用于按需求、缺陷、任务等类型过滤。 |
+| `filter` | 否 | `array<object>` |  | 过滤条件对象或过滤表达式，用于缩小查询范围。 |
+| `filter_mode` | 否 | `"OR_AND" \| "AND_OR"` | "AND_OR" | 过滤模式，用于指定多个过滤条件之间的匹配方式，例如全部匹配或任一匹配。可选值：`OR_AND`、`AND_OR`。 |
 
 输入 JSON Schema：
 
@@ -22515,9 +22515,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 
 输入 JSON Schema：
 
@@ -22575,9 +22575,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 
 输入 JSON Schema：
 
@@ -22635,10 +22635,10 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `filter` | 否 | `array<object>` | [] | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `filter` | 否 | `array<object>` | [] | 过滤条件对象或过滤表达式，用于缩小查询范围。 |
 | `sort` | 否 | `array<object>` |  | 排序方向。asc 表示升序，desc 表示降序。 |
-| `page` | 否 | `object` | {"page_no":1,"page_size":200} | 页码。用于 page/page_size 分页。 |
+| `page` | 否 | `object` | {"page_no":1,"page_size":200} | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
 
 输入 JSON Schema：
 
@@ -22746,9 +22746,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 
 输入 JSON Schema：
 
@@ -22806,7 +22806,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 
 输入 JSON Schema：
 
@@ -22887,18 +22887,18 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `type` | 是 | `"CR" \| "BR" \| "GR"` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`CR`、`BR`、`GR`。 |
-| `created_by` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `created_time` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `plan_end_date` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `plan_start_date` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `closed_time` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `approver` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `reviewer` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `offset` | 否 | `integer` | 0 | 分页偏移量。 |
-| `limit` | 否 | `integer` | 20 | 分页数量上限。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `type` | 是 | `"CR" \| "BR" \| "GR"` |  | 类型字段，用于区分资源类别、操作类别或查询类别；具体取值以该接口的业务对象为准。可选值：`CR`、`BR`、`GR`。 |
+| `created_by` | 否 | `string` |  | 创建人标识，用于按创建人过滤或展示资源来源。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `created_time` | 否 | `object` |  | 创建时间过滤条件或创建时间值，通常使用时间戳或 ISO 8601 时间字符串。 |
+| `plan_end_date` | 否 | `object` |  | 计划结束日期，用于工作项、迭代、计划或测试计划的排期。 |
+| `plan_start_date` | 否 | `object` |  | 计划开始日期，用于工作项、迭代、计划或测试计划的排期。 |
+| `closed_time` | 否 | `object` |  | 关闭时间过滤条件或关闭时间值，通常使用时间戳或 ISO 8601 时间字符串。 |
+| `approver` | 否 | `string` |  | 审批人标识，用于指定或过滤审批节点处理人。 |
+| `reviewer` | 否 | `string` |  | 评审人标识，用于指定或过滤代码评审、需求评审等参与人。 |
+| `offset` | 否 | `integer` | 0 | 分页偏移量，表示从结果集第几条开始返回，常与 limit 配合使用。 |
+| `limit` | 否 | `integer` | 20 | 分页数量上限，表示本次最多返回多少条记录。 |
 | `sort` | 否 | `array<object>` |  | 排序方向。asc 表示升序，desc 表示降序。 |
 
 输入 JSON Schema：
@@ -23014,10 +23014,10 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `user_type` | 否 | `"approver" \| "reviewer"` | "approver" | 请参考字段名和上游 CodeArts API 语义填写。可选值：`approver`、`reviewer`。 |
-| `target_project_id` | 否 | `string` |  | 目标项目 ID。 |
-| `review_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `user_type` | 否 | `"approver" \| "reviewer"` | "approver" | 用户类型，用于区分项目成员、租户用户、外部用户等。可选值：`approver`、`reviewer`。 |
+| `target_project_id` | 否 | `string` |  | 目标项目 ID，用于跨项目迁移、复制或创建目标资源。 |
+| `review_id` | 否 | `string` |  | 评审 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -23080,11 +23080,11 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `snapshot_version_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `feature_set_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `snapshot_version_id` | 是 | `string` |  | 快照版本 ID，用于定位对应的 CodeArts 资源。 |
+| `feature_set_id` | 是 | `string` |  | 特性集 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -23150,7 +23150,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 
 输入 JSON Schema：
 
@@ -23197,8 +23197,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `category_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `category_id` | 否 | `string` |  | 分类 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -23246,10 +23246,10 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `search` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_info` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `search` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_info` | 否 | `object` |  | 排序配置，通常包含排序字段和排序方向。 |
 
 输入 JSON Schema：
 
@@ -23315,12 +23315,12 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `project_id` | 否 | `string \| array<object>` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `issue_type` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `filter` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `filter_mode` | 否 | `"OR_AND" \| "AND_OR"` | "AND_OR" | 请参考字段名和上游 CodeArts API 语义填写。可选值：`OR_AND`、`AND_OR`。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `project_id` | 否 | `string \| array<object>` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `issue_type` | 是 | `string` |  | 问题类型或工作项类型，用于按需求、缺陷、任务等类型过滤。 |
+| `filter` | 否 | `array<object>` |  | 过滤条件对象或过滤表达式，用于缩小查询范围。 |
+| `filter_mode` | 否 | `"OR_AND" \| "AND_OR"` | "AND_OR" | 过滤模式，用于指定多个过滤条件之间的匹配方式，例如全部匹配或任一匹配。可选值：`OR_AND`、`AND_OR`。 |
 | `sort` | 否 | `array<object>` |  | 排序方向。asc 表示升序，desc 表示降序。 |
 
 输入 JSON Schema：
@@ -23439,8 +23439,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `display_value` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `display_value` | 否 | `string` |  | 显示值，表示字段在界面上展示给用户看的文本。 |
 
 输入 JSON Schema：
 
@@ -23491,13 +23491,13 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `plan_pi` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `plan_iteration` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `workitem_id` | 否 | `array<object>` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `created_by` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `plan_pi` | 否 | `array<object>` |  | PI 计划信息，用于 IPD/敏捷场景中关联或过滤 Program Increment。 |
+| `plan_iteration` | 否 | `array<object>` |  | 计划迭代信息，用于指定计划关联的迭代或迭代范围。 |
+| `workitem_id` | 否 | `array<object>` |  | 工作项 ID，用于定位对应的 CodeArts 资源。 |
+| `created_by` | 否 | `array<object>` |  | 创建人标识，用于按创建人过滤或展示资源来源。 |
 
 输入 JSON Schema：
 
@@ -23580,8 +23580,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `category_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `category_id` | 是 | `string` |  | 分类 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -23632,8 +23632,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `category_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `category_id` | 否 | `string` |  | 分类 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -23685,11 +23685,11 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `program_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `ir_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `query_type` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `program_id` | 是 | `string` |  | 项目集 ID，用于定位对应的 CodeArts 资源。 |
+| `ir_id` | 是 | `string` |  | IR ID，用于定位对应的 CodeArts 资源。 |
+| `query_type` | 是 | `string` |  | 查询类型，用于切换不同查询口径或筛选范围。 |
 
 输入 JSON Schema：
 
@@ -23756,9 +23756,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `ir_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `ir_id` | 是 | `string` |  | IR ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -23852,8 +23852,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `iteration_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `iteration_id` | 是 | `string` |  | 迭代 ID，用于定位对应的 CodeArts 资源。 |
 | `tracker_id` | 否 | `integer` |  | Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
 | `status_id` | 否 | `integer` |  | 工作项状态 ID：1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝。项目自定义状态以状态配置/工作流接口返回为准。 |
 
@@ -23915,13 +23915,13 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `iteration_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `iteration_id` | 是 | `string` |  | 迭代 ID，用于定位对应的 CodeArts 资源。 |
 | `tracker_id` | 否 | `integer` |  | Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
 | `status_id` | 否 | `integer` |  | 工作项状态 ID：1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝。项目自定义状态以状态配置/工作流接口返回为准。 |
 
@@ -24006,12 +24006,12 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 
 输入 JSON Schema：
 
@@ -24082,8 +24082,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `type` | 否 | `string` | "board" | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `type` | 否 | `string` | "board" | 类型字段，用于区分资源类别、操作类别或查询类别；具体取值以该接口的业务对象为准。 |
 | `region` | 否 | `string` |  | 华为云区域标识，例如 cn-north-4。 |
 
 输入 JSON Schema：
@@ -24138,8 +24138,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
 
 输入 JSON Schema：
 
@@ -24191,7 +24191,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 | `tracker_id` | 是 | `integer` |  | Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
 
 输入 JSON Schema：
@@ -24245,11 +24245,11 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `plan_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `subject` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `plan_id` | 是 | `string` |  | 计划 ID，用于定位对应的 CodeArts 资源。 |
+| `subject` | 否 | `string` |  | 主题或摘要，用于工作项、评论、通知等内容的简短说明。 |
 
 输入 JSON Schema：
 
@@ -24315,12 +24315,12 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `plan_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `subject` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `show_type` | 否 | `"list" \| "tree"` | "list" | 请参考字段名和上游 CodeArts API 语义填写。可选值：`list`、`tree`。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `plan_id` | 是 | `string` |  | 计划 ID，用于定位对应的 CodeArts 资源。 |
+| `subject` | 否 | `string` |  | 主题或摘要，用于工作项、评论、通知等内容的简短说明。 |
+| `show_type` | 否 | `"list" \| "tree"` | "list" | 展示类型，用于控制列表、看板或统计结果的展示口径。可选值：`list`、`tree`。 |
 | `tracker_id` | 否 | `integer` |  | Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
 
 输入 JSON Schema：
@@ -24398,15 +24398,15 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 | `status_id` | 否 | `integer` |  | 工作项状态 ID：1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝。项目自定义状态以状态配置/工作流接口返回为准。 |
-| `plan_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `search` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `user_ids` | 否 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `plan_id` | 否 | `string` |  | 计划 ID，用于定位对应的 CodeArts 资源。 |
+| `search` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号等文本条件过滤列表。 |
+| `user_ids` | 否 | `array<object>` |  | 用户 ID 列表，用于批量定位对应的 CodeArts 资源。 |
 | `sort` | 否 | `string` |  | 排序方向。asc 表示升序，desc 表示降序。 |
-| `type` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `type` | 否 | `string` |  | 类型字段，用于区分资源类别、操作类别或查询类别；具体取值以该接口的业务对象为准。 |
 
 输入 JSON Schema：
 
@@ -24488,8 +24488,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `program_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `field_type` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `program_id` | 是 | `string` |  | 项目集 ID，用于定位对应的 CodeArts 资源。 |
+| `field_type` | 是 | `string` |  | 字段类型，用于描述自定义字段的数据类型，例如文本、数字、日期、枚举等。 |
 
 输入 JSON Schema：
 
@@ -24539,12 +24539,12 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `search` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_key` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `sort_dir` | 否 | `"ASC" \| "DESC" \| "asc" \| "desc"` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`ASC`、`DESC`、`asc`、`desc`。 |
-| `is_watched` | 否 | `boolean` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `search` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号等文本条件过滤列表。 |
+| `sort_key` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
+| `sort_dir` | 否 | `"ASC" \| "DESC" \| "asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`ASC`、`DESC`、`asc`、`desc`。 |
+| `is_watched` | 否 | `boolean` |  | 是否已关注。true 表示当前用户已关注该资源。 |
 
 输入 JSON Schema：
 
@@ -24615,7 +24615,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 
 输入 JSON Schema：
 
@@ -24662,7 +24662,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 
 输入 JSON Schema：
 
@@ -24709,9 +24709,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 
 输入 JSON Schema：
 
@@ -24769,12 +24769,12 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 
 输入 JSON Schema：
 
@@ -24845,9 +24845,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 
 输入 JSON Schema：
 
@@ -24905,10 +24905,10 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `status` | 否 | `integer` |  | 状态过滤条件或目标状态。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `status` | 否 | `integer` |  | 状态过滤条件或目标状态。用于列表查询时表示筛选状态，用于更新/流转时表示要变更到的目标状态；具体取值以对应资源的状态字典为准。 |
 
 输入 JSON Schema：
 
@@ -24970,13 +24970,13 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `project_ids` | 是 | `array<string>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
-| `begin_time` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `end_time` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `work_hours_dates` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `work_hours_types` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `project_ids` | 是 | `array<string>` |  | 项目 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `begin_time` | 否 | `string` |  | 开始时间，通常使用时间戳或 ISO 8601 时间字符串，具体格式以接口要求为准。 |
+| `end_time` | 否 | `string` |  | 结束时间，通常使用时间戳或 ISO 8601 时间字符串，具体格式以接口要求为准。 |
+| `work_hours_dates` | 否 | `string` |  | 工时日期列表，用于批量登记或查询多个日期的工时。 |
+| `work_hours_types` | 否 | `string` |  | 工时类型列表，用于按多个工时分类查询或统计。 |
 
 输入 JSON Schema：
 
@@ -25054,10 +25054,10 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `operated_time_interval` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `operated_time_interval` | 否 | `string` |  | 操作时间范围，用于按操作发生时间过滤列表。 |
 
 输入 JSON Schema：
 
@@ -25117,12 +25117,12 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `organization_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `organization_id` | 否 | `string` |  | 组织 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -25190,7 +25190,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 
 输入 JSON Schema：
 
@@ -25237,11 +25237,11 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `key_word` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `updated_time_interval` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `key_word` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `updated_time_interval` | 否 | `string` |  | 更新时间范围，用于按最近更新时间过滤列表。 |
 
 输入 JSON Schema：
 
@@ -25305,9 +25305,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `rr_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `rr_id` | 是 | `string` |  | RR ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -25366,8 +25366,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `program_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `rr_ids` | 是 | `array<object>` |  | 资源 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `program_id` | 是 | `string` |  | 项目集 ID，用于定位对应的 CodeArts 资源。 |
+| `rr_ids` | 是 | `array<object>` |  | RR ID 列表，用于批量定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -25423,12 +25423,12 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `program_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `query_type` | 否 | `string` | "ALL" | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `include_deleted` | 否 | `boolean` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `updated_time_interval` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `program_id` | 是 | `string` |  | 项目集 ID，用于定位对应的 CodeArts 资源。 |
+| `query_type` | 否 | `string` | "ALL" | 查询类型，用于切换不同查询口径或筛选范围。 |
+| `include_deleted` | 否 | `boolean` |  | 是否包含已删除资源。true 表示把已删除记录也纳入查询结果。 |
+| `updated_time_interval` | 否 | `string` |  | 更新时间范围，用于按最近更新时间过滤列表。 |
 
 输入 JSON Schema：
 
@@ -25498,7 +25498,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 
 输入 JSON Schema：
 
@@ -25546,10 +25546,10 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `work_item_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `work_item_id` | 是 | `string` |  | 工作项 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -25611,7 +25611,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 | `tracker_id` | 否 | `integer` |  | Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
 
 输入 JSON Schema：
@@ -25664,11 +25664,11 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `work_item_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `journalized_type` | 否 | `string` | "Issue" | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `work_item_id` | 是 | `string` |  | 工作项 ID，用于定位对应的 CodeArts 资源。 |
+| `journalized_type` | 否 | `string` | "Issue" | 历史记录类型，用于过滤工作项变更、评论、状态流转等动态。 |
 
 输入 JSON Schema：
 
@@ -25735,7 +25735,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 
 输入 JSON Schema：
 
@@ -25783,7 +25783,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 | `tracker_id` | 是 | `integer` |  | Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
 
 输入 JSON Schema：
@@ -25837,7 +25837,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 | `tracker_id` | 是 | `integer` |  | Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
 
 输入 JSON Schema：
@@ -25890,7 +25890,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 
 输入 JSON Schema：
 
@@ -25937,10 +25937,10 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `name` | 否 | `string` |  | 资源名称。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `name` | 否 | `string` |  | 名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
 
 输入 JSON Schema：
 
@@ -26002,7 +26002,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 | `tracker_id` | 否 | `integer` |  | Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
 
 输入 JSON Schema：
@@ -26055,7 +26055,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 | `tracker_id` | 是 | `integer` |  | Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
 
 输入 JSON Schema：
@@ -26108,9 +26108,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 | `tracker_ids` | 否 | `array<integer>` |  | Scrum 工作项类型 ID 列表：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
 
 输入 JSON Schema：
@@ -26178,8 +26178,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `work_item_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `work_item_id` | 是 | `string` |  | 工作项 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -26231,7 +26231,7 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 | `tracker_id` | 是 | `integer` |  | Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
 
 输入 JSON Schema：
@@ -26284,12 +26284,12 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 
 输入 JSON Schema：
 
@@ -26361,8 +26361,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `version_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `version_id` | 是 | `string` |  | 版本 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -26416,11 +26416,11 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `issue_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `issue_category` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `flow_code` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `process_context` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `issue_id` | 是 | `string` |  | 工作项 ID，用于定位对应的 CodeArts 资源。 |
+| `issue_category` | 是 | `string` |  | 问题分类，用于按缺陷、风险、代码问题等类别过滤。 |
+| `flow_code` | 是 | `string` |  | 流程编码，用于定位工作流、审批流或状态流转流程。 |
+| `process_context` | 否 | `object` |  | 流程上下文，承载工作流或审批流执行所需的变量和状态。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -26527,13 +26527,13 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `id` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `category` | 否 | `string` | "CR" | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `old_status` | 是 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `status` | 是 | `object` |  | 状态过滤条件或目标状态。 |
-| `cos` | 是 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `extra_fields` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `id` | 是 | `string` |  | 资源 ID，表示当前接口操作对象的唯一标识。具体含义由所在 API 决定，例如工作项 ID、记录 ID、任务 ID。 |
+| `category` | 否 | `string` | "CR" | 分类字段，用于按资源类别、工作项分类或制品分类过滤；具体字典以对应接口返回为准。 |
+| `old_status` | 是 | `object` |  | 原状态，用于状态流转、历史记录或变更校验。 |
+| `status` | 是 | `object` |  | 状态过滤条件或目标状态。用于列表查询时表示筛选状态，用于更新/流转时表示要变更到的目标状态；具体取值以对应资源的状态字典为准。 |
+| `cos` | 是 | `array<object>` |  | 坐标或制品定位信息，通常用于制品仓内定位组织、仓库、包名、版本等层级。 |
+| `extra_fields` | 否 | `object` |  | 扩展字段对象，用于填写项目自定义字段或当前接口未单独展开的业务字段。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -26659,11 +26659,11 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `feature_set_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `parent_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `title` | 否 | `string` |  | 标题。 |
-| `position_float` | 否 | `number` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `feature_set_id` | 是 | `string` |  | 特性集 ID，用于定位对应的 CodeArts 资源。 |
+| `parent_id` | 是 | `string` |  | 父级 ID，用于指定当前资源挂载到哪个父节点、父分组、父模块或父工作项下。 |
+| `title` | 否 | `string` |  | 标题，用于工作项、合并请求、计划等资源的主显示名称。建议简洁说明要做什么。 |
+| `position_float` | 否 | `number` |  | 排序位置值，用于在列表、看板或模块树中调整节点位置。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -26766,13 +26766,13 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `display_value` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `parent_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `description` | 否 | `string` |  | 资源描述信息。 |
-| `assignee` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `display_value` | 是 | `string` |  | 显示值，表示字段在界面上展示给用户看的文本。 |
+| `parent_id` | 是 | `string` |  | 父级 ID，用于指定当前资源挂载到哪个父节点、父分组、父模块或父工作项下。 |
+| `description` | 否 | `string` |  | 描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
+| `assignee` | 否 | `string` |  | 处理人或负责人标识，用于指定当前责任人或按责任人过滤。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
-| `module_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `module_id` | 是 | `string` |  | 模块 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -26845,20 +26845,20 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `id` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `domain_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `old_status` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `status` | 否 | `string` |  | 状态过滤条件或目标状态。 |
-| `title` | 否 | `string` |  | 标题。 |
-| `description` | 否 | `string` |  | 资源描述信息。 |
-| `plan_start_date` | 否 | `string \| integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `plan_end_date` | 否 | `string \| integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `ccbs` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `opinions` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `cc` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `cos` | 否 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `extra_fields` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `id` | 是 | `string` |  | 资源 ID，表示当前接口操作对象的唯一标识。具体含义由所在 API 决定，例如工作项 ID、记录 ID、任务 ID。 |
+| `domain_id` | 否 | `string` |  | 租户账号 ID，也称 domainId，用于按租户维度查询 CodeArts 资源。 |
+| `old_status` | 否 | `string` |  | 原状态，用于状态流转、历史记录或变更校验。 |
+| `status` | 否 | `string` |  | 状态过滤条件或目标状态。用于列表查询时表示筛选状态，用于更新/流转时表示要变更到的目标状态；具体取值以对应资源的状态字典为准。 |
+| `title` | 否 | `string` |  | 标题，用于工作项、合并请求、计划等资源的主显示名称。建议简洁说明要做什么。 |
+| `description` | 否 | `string` |  | 描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
+| `plan_start_date` | 否 | `string \| integer` |  | 计划开始日期，用于工作项、迭代、计划或测试计划的排期。 |
+| `plan_end_date` | 否 | `string \| integer` |  | 计划结束日期，用于工作项、迭代、计划或测试计划的排期。 |
+| `ccbs` | 否 | `array<object>` |  | 抄送人或关注人集合，用于工作项通知、评审通知等场景。 |
+| `opinions` | 否 | `array<object>` |  | 意见内容列表，用于审批、评审或评论场景。 |
+| `cc` | 否 | `array<object>` |  | 抄送人列表或抄送人标识，用于通知相关人员。 |
+| `cos` | 否 | `array<object>` |  | 坐标或制品定位信息，通常用于制品仓内定位组织、仓库、包名、版本等层级。 |
+| `extra_fields` | 否 | `object` |  | 扩展字段对象，用于填写项目自定义字段或当前接口未单独展开的业务字段。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -27110,14 +27110,14 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `iteration_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `name` | 是 | `string` |  | 资源名称。 |
-| `begin_time` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `end_time` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `description` | 否 | `string` |  | 资源描述信息。 |
-| `status` | 否 | `string` |  | 状态过滤条件或目标状态。 |
-| `over_type` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `iteration_id` | 是 | `string` |  | 迭代 ID，用于定位对应的 CodeArts 资源。 |
+| `name` | 是 | `string` |  | 名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
+| `begin_time` | 否 | `string` |  | 开始时间，通常使用时间戳或 ISO 8601 时间字符串，具体格式以接口要求为准。 |
+| `end_time` | 否 | `string` |  | 结束时间，通常使用时间戳或 ISO 8601 时间字符串，具体格式以接口要求为准。 |
+| `description` | 否 | `string` |  | 描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
+| `status` | 否 | `string` |  | 状态过滤条件或目标状态。用于列表查询时表示筛选状态，用于更新/流转时表示要变更到的目标状态；具体取值以对应资源的状态字典为准。 |
+| `over_type` | 否 | `string` |  | 完成或结束类型，用于区分正常结束、手动结束、超时结束等场景。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -27200,12 +27200,12 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `iteration_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `name` | 是 | `string` |  | 资源名称。 |
-| `status` | 是 | `string` |  | 状态过滤条件或目标状态。 |
-| `due_date` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `start_date` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `iteration_id` | 是 | `string` |  | 迭代 ID，用于定位对应的 CodeArts 资源。 |
+| `name` | 是 | `string` |  | 名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
+| `status` | 是 | `string` |  | 状态过滤条件或目标状态。用于列表查询时表示筛选状态，用于更新/流转时表示要变更到的目标状态；具体取值以对应资源的状态字典为准。 |
+| `due_date` | 否 | `string` |  | 截止日期，表示工作项、计划或任务期望完成时间。 |
+| `start_date` | 否 | `string` |  | 开始日期，通常使用 yyyy-MM-dd 或接口要求的日期格式。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -27281,9 +27281,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `plan_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `name` | 是 | `string` |  | 资源名称。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `plan_id` | 是 | `string` |  | 计划 ID，用于定位对应的 CodeArts 资源。 |
+| `name` | 是 | `string` |  | 名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -27346,9 +27346,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `plan_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `img_url` | 是 | `string` |  | 服务地址或资源 URL。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `plan_id` | 是 | `string` |  | 计划 ID，用于定位对应的 CodeArts 资源。 |
+| `img_url` | 是 | `string` |  | img URL，用于指定服务地址、资源地址或回调地址。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -27410,9 +27410,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `name` | 是 | `string` |  | 资源名称。 |
-| `description` | 否 | `string` |  | 资源描述信息。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `name` | 是 | `string` |  | 名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
+| `description` | 否 | `string` |  | 描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -27474,9 +27474,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `domain_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `domain_name` | 是 | `string` |  | 资源名称。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `domain_id` | 是 | `string` |  | 租户账号 ID，也称 domainId，用于按租户维度查询 CodeArts 资源。 |
+| `domain_name` | 是 | `string` |  | 领域名称。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -27540,8 +27540,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `user_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `user_id` | 是 | `string` |  | 用户 ID，用于定位对应的 CodeArts 资源。 |
 | `role_id` | 是 | `number \| integer` |  | 项目成员角色 ID：-1=项目创建者，3=项目经理，4=开发人员，5=测试经理，6=测试人员，7=参与者，8=浏览者，9=运维经理；部分接口还允许 10、11 等扩展角色，以租户配置为准。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -27614,11 +27614,11 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `module_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `module_name` | 是 | `string` |  | 资源名称。 |
-| `owner_user_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `description` | 否 | `string` |  | 资源描述信息。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `module_id` | 是 | `string` |  | 模块 ID，用于定位对应的 CodeArts 资源。 |
+| `module_name` | 是 | `string` |  | 模块名称。 |
+| `owner_user_id` | 是 | `string` |  | 拥有者用户 ID，用于定位对应的 CodeArts 资源。 |
+| `description` | 否 | `string` |  | 描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -27722,19 +27722,19 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `plan_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `title` | 否 | `string` |  | 标题。 |
-| `category` | 否 | `"PI" \| "Iteration" \| "PlanMilestone"` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`PI`、`Iteration`、`PlanMilestone`。 |
-| `description` | 否 | `string` |  | 资源描述信息。 |
-| `status` | 否 | `"planned" \| "going" \| "ended"` |  | 状态过滤条件或目标状态。可选值：`planned`、`going`、`ended`。 |
-| `plan_start_date` | 否 | `string \| integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `plan_end_date` | 否 | `string \| integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `created_date` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `parent_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `baseline` | 否 | `"baselined" \| "unbaseline" \| "baseline-reviewing"` |  | 请参考字段名和上游 CodeArts API 语义填写。可选值：`baselined`、`unbaseline`、`baseline-reviewing`。 |
-| `workload` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `owner` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `plan_id` | 是 | `string` |  | 计划 ID，用于定位对应的 CodeArts 资源。 |
+| `title` | 否 | `string` |  | 标题，用于工作项、合并请求、计划等资源的主显示名称。建议简洁说明要做什么。 |
+| `category` | 否 | `"PI" \| "Iteration" \| "PlanMilestone"` |  | 分类字段，用于按资源类别、工作项分类或制品分类过滤；具体字典以对应接口返回为准。可选值：`PI`、`Iteration`、`PlanMilestone`。 |
+| `description` | 否 | `string` |  | 描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
+| `status` | 否 | `"planned" \| "going" \| "ended"` |  | 状态过滤条件或目标状态。用于列表查询时表示筛选状态，用于更新/流转时表示要变更到的目标状态；具体取值以对应资源的状态字典为准。可选值：`planned`、`going`、`ended`。 |
+| `plan_start_date` | 否 | `string \| integer` |  | 计划开始日期，用于工作项、迭代、计划或测试计划的排期。 |
+| `plan_end_date` | 否 | `string \| integer` |  | 计划结束日期，用于工作项、迭代、计划或测试计划的排期。 |
+| `created_date` | 否 | `integer` |  | 创建日期过滤条件或创建日期值，通常使用 yyyy-MM-dd 或接口要求的日期格式。 |
+| `parent_id` | 否 | `string` |  | 父级 ID，用于指定当前资源挂载到哪个父节点、父分组、父模块或父工作项下。 |
+| `baseline` | 否 | `"baselined" \| "unbaseline" \| "baseline-reviewing"` |  | 基线信息或是否启用基线，用于需求、计划、测试等资源的版本基准管理。可选值：`baselined`、`unbaseline`、`baseline-reviewing`。 |
+| `workload` | 否 | `string` |  | 工作量，用于计划、迭代或成员维度的容量/投入统计。 |
+| `owner` | 否 | `string` |  | 拥有者或负责人标识，用于按资源归属过滤或设置归属人。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -27852,10 +27852,10 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 | `tracker_id` | 是 | `integer` |  | Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
-| `status_config_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `new_position` | 是 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `status_config_id` | 是 | `string` |  | 状态配置 ID，用于定位对应的 CodeArts 资源。 |
+| `new_position` | 是 | `integer` |  | 新的排序位置，用于移动工作项、模块、分组或节点。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -27922,22 +27922,22 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `work_item_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `title` | 否 | `string` |  | 标题。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `work_item_id` | 是 | `string` |  | 工作项 ID，用于定位对应的 CodeArts 资源。 |
+| `title` | 否 | `string` |  | 标题，用于工作项、合并请求、计划等资源的主显示名称。建议简洁说明要做什么。 |
 | `work_item_type` | 否 | `string` |  | 参数解释：<br>工作项类型，用于指定创建或更新的 CodeArts Scrum 工作项类型。工具会把填写的类型名称或数字 ID 自动转换为 CodeArts 需要的 tracker_id。<br>约束限制：<br>创建子工作项时，父子类型需符合层级关系：Epic 只能作为 Feature 的父工作项类型；Feature 只能作为 Story 的父工作项类型；Story 只能作为 Task/任务、Bug/缺陷的父工作项类型。未创建子工作项时不涉及该限制。<br>取值范围：<br>2（任务/Task，可填 task 或 2）；<br>3（缺陷/Bug，可填 bug 或 3）；<br>5（Epic，可填 epic 或 5）；<br>6（Feature，可填 feature 或 6）；<br>7（Story，可填 story 或 7）。<br>默认取值：<br>不涉及。创建类接口必填；更新接口不传则不修改工作项类型。 |
-| `description` | 否 | `string` |  | 资源描述信息。 |
+| `description` | 否 | `string` |  | 描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
 | `status_id` | 否 | `integer` |  | 工作项状态 ID：1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝。项目自定义状态以状态配置/工作流接口返回为准。 |
 | `priority_id` | 否 | `integer` |  | 工作项优先级 ID。创建工作项未传时默认使用 2；具体优先级名称和可选值以项目字段配置/优先级选项接口返回为准。 |
-| `iteration_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `module_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `iteration_id` | 否 | `string` |  | 迭代 ID，用于定位对应的 CodeArts 资源。 |
+| `module_id` | 否 | `string` |  | 模块 ID，用于定位对应的 CodeArts 资源。 |
 | `severity_id` | 否 | `integer` |  | 严重程度 ID。通常用于缺陷或问题等级；可通过 req_list_issue_severities 查询当前可用严重程度。 |
-| `assigned_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `developer_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `done_ratio` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `expected_work_hours` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `start_date` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `due_date` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `assigned_id` | 否 | `string` |  | 处理人 ID，用于定位对应的 CodeArts 资源。 |
+| `developer_id` | 否 | `string` |  | 开发人员 ID，用于定位对应的 CodeArts 资源。 |
+| `done_ratio` | 否 | `integer` |  | 完成百分比，通常为 0 到 100 的整数，用于表示工作项或任务完成进度。 |
+| `expected_work_hours` | 否 | `integer` |  | 预计工时，表示完成工作项或任务预计需要投入的小时数。 |
+| `start_date` | 否 | `integer` |  | 开始日期，通常使用 yyyy-MM-dd 或接口要求的日期格式。 |
+| `due_date` | 否 | `integer` |  | 截止日期，表示工作项、计划或任务期望完成时间。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -28047,10 +28047,10 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `work_item_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `comment_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `content` | 是 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `work_item_id` | 是 | `string` |  | 工作项 ID，用于定位对应的 CodeArts 资源。 |
+| `comment_id` | 是 | `string` |  | 评论 ID，用于定位对应的 CodeArts 资源。 |
+| `content` | 是 | `string` |  | 正文内容。评论、文件或请求体场景下表示要提交的文本内容。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -28117,8 +28117,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `work_item_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `work_item_id` | 是 | `string` |  | 工作项 ID，用于定位对应的 CodeArts 资源。 |
 | `status_id` | 是 | `integer` |  | 工作项状态 ID：1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝。项目自定义状态以状态配置/工作流接口返回为准。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -28182,12 +28182,12 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `issue_id` | 是 | `object \| integer` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `work_hours_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `summary` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `work_hours` | 否 | `number` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `work_hour_type` | 否 | `integer` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `issue_id` | 是 | `object \| integer` |  | 工作项 ID，用于定位对应的 CodeArts 资源。 |
+| `work_hours_id` | 是 | `string` |  | 工时 ID，用于定位对应的 CodeArts 资源。 |
+| `summary` | 否 | `string` |  | 摘要信息，用于概括问题、需求或执行结果。 |
+| `work_hours` | 否 | `number` |  | 实际工时或工时明细，用于登记、更新或查询工作量。 |
+| `work_hour_type` | 否 | `integer` |  | 工时类型，用于区分开发、测试、评审等工时分类；具体字典以项目配置为准。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -28271,9 +28271,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `work_item_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `file_path` | 是 | `string` |  | 仓库内文件路径。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `work_item_id` | 是 | `string` |  | 工作项 ID，用于定位对应的 CodeArts 资源。 |
+| `file_path` | 是 | `string` |  | 仓库内文件路径，从仓库根目录开始填写，例如 src/index.ts；不要带仓库 URL。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -28336,9 +28336,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `issue_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `file_path` | 是 | `string` |  | 仓库内文件路径。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `issue_id` | 是 | `string` |  | 工作项 ID，用于定位对应的 CodeArts 资源。 |
+| `file_path` | 是 | `string` |  | 仓库内文件路径，从仓库根目录开始填写，例如 src/index.ts；不要带仓库 URL。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -28401,9 +28401,9 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `issue_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `file_path` | 是 | `string` |  | 仓库内文件路径。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `issue_id` | 是 | `string` |  | 工作项 ID，用于定位对应的 CodeArts 资源。 |
+| `file_path` | 是 | `string` |  | 仓库内文件路径，从仓库根目录开始填写，例如 src/index.ts；不要带仓库 URL。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -28465,8 +28465,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `file_path` | 是 | `string` |  | 仓库内文件路径。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `file_path` | 是 | `string` |  | 仓库内文件路径，从仓库根目录开始填写，例如 src/index.ts；不要带仓库 URL。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -28524,8 +28524,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `module_name` | 是 | `string` |  | 资源名称。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `module_name` | 是 | `string` |  | 模块名称。 |
 
 输入 JSON Schema：
 
@@ -28579,8 +28579,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `case_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `case_id` | 是 | `string` |  | 测试用例 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -28632,8 +28632,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `plan_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `plan_id` | 是 | `string` |  | 计划 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -28685,20 +28685,20 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `plan_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `owner_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `status` | 否 | `string` |  | 状态过滤条件或目标状态。 |
-| `priority` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `module_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `label_id` | 否 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
-| `test_case_type` | 否 | `string` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
-| `query` | 否 | `object` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `plan_id` | 是 | `string` |  | 计划 ID，用于定位对应的 CodeArts 资源。 |
+| `owner_id` | 否 | `string` |  | 拥有者 ID，用于定位对应的 CodeArts 资源。 |
+| `status` | 否 | `string` |  | 状态过滤条件或目标状态。用于列表查询时表示筛选状态，用于更新/流转时表示要变更到的目标状态；具体取值以对应资源的状态字典为准。 |
+| `priority` | 否 | `string` |  | 优先级。需求管理场景通常表示工作项优先级；具体名称和取值以项目字段配置为准。 |
+| `module_id` | 否 | `string` |  | 模块 ID，用于定位对应的 CodeArts 资源。 |
+| `label_id` | 否 | `string` |  | 标签 ID，用于定位对应的 CodeArts 资源。 |
+| `test_case_type` | 否 | `string` |  | 测试用例类型，用于区分手工用例、自动化用例等。 |
+| `query` | 否 | `object` |  | 查询条件或搜索表达式，用于过滤列表结果；具体支持的字段由对应接口决定。 |
 
 输入 JSON Schema：
 
@@ -28819,13 +28819,13 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `plan_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `plan_id` | 是 | `string` |  | 计划 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -28900,12 +28900,12 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 
 输入 JSON Schema：
 
@@ -28977,13 +28977,13 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `page` | 否 | `integer` | 1 | 页码。用于 page/page_size 分页。 |
-| `page_size` | 否 | `integer` | 20 | 每页数量。用于分页查询。 |
-| `keyword` | 否 | `string` |  | 搜索关键字。用于按名称、标题、编号等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 排序字段。用于选择服务端排序字段。 |
+| `page` | 否 | `integer` | 1 | 页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `plan_id` | 是 | `string` |  | 资源 ID，用于定位对应的 CodeArts 资源。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `plan_id` | 是 | `string` |  | 计划 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -29059,8 +29059,8 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。 |
-| `execute_list` | 是 | `array<object>` |  | 请参考字段名和上游 CodeArts API 语义填写。 |
+| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `execute_list` | 是 | `array<object>` |  | 执行列表，用于指定要运行的用例、任务、步骤或节点集合。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
