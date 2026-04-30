@@ -1,6 +1,7 @@
 import { McpServer, type RegisteredTool as McpRegisteredTool } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { toJsonSchemaCompat } from "@modelcontextprotocol/sdk/server/zod-json-schema-compat.js";
 import {
+  type AnyObjectSchema,
   type AnySchema,
   type ZodRawShapeCompat,
   normalizeObjectSchema,
@@ -129,6 +130,62 @@ type CreateServerFactoryDependencies = {
   collectProductToolManifest?: typeof collectProductToolManifest;
 };
 
+function getRecordProperty(value: unknown, key: string) {
+  if (!value || typeof value !== "object" || !(key in value)) {
+    return undefined;
+  }
+
+  return (value as Record<string, unknown>)[key];
+}
+
+function getWrappedSchema(schema: unknown) {
+  const zodV3Def = getRecordProperty(schema, "_def");
+  const zodV4Def = getRecordProperty(getRecordProperty(schema, "_zod"), "def");
+  const def = zodV3Def ?? zodV4Def;
+
+  return (
+    getRecordProperty(def, "schema") ??
+    getRecordProperty(def, "innerType") ??
+    getRecordProperty(def, "in")
+  );
+}
+
+function normalizeToolObjectSchema(schema: ToolSchema | undefined): AnyObjectSchema | undefined {
+  let current: unknown = schema;
+
+  for (let depth = 0; depth < 8; depth += 1) {
+    const objectSchema = normalizeObjectSchema(current as ToolSchema | undefined);
+
+    if (objectSchema) {
+      return objectSchema;
+    }
+
+    const wrappedSchema = getWrappedSchema(current);
+
+    if (!wrappedSchema || wrappedSchema === current) {
+      return undefined;
+    }
+
+    current = wrappedSchema;
+  }
+
+  return undefined;
+}
+
+function normalizeToolConfigForRegistration(config: ToolConfig): ToolConfig {
+  return {
+    ...config,
+    inputSchema:
+      typeof config.inputSchema === "undefined"
+        ? undefined
+        : normalizeToolObjectSchema(config.inputSchema) ?? config.inputSchema,
+    outputSchema:
+      typeof config.outputSchema === "undefined"
+        ? undefined
+        : normalizeToolObjectSchema(config.outputSchema) ?? config.outputSchema
+  };
+}
+
 function buildHttpRuntimeConfig(options: CreateServerOptions) {
   return options.mode === "http"
     ? {
@@ -161,8 +218,8 @@ function createCapturedRegisteredTool(config: ToolConfig, handler: ToolHandler):
   return {
     title: config.title,
     description: config.description,
-    inputSchema: normalizeObjectSchema(config.inputSchema),
-    outputSchema: normalizeObjectSchema(config.outputSchema),
+    inputSchema: normalizeToolObjectSchema(config.inputSchema),
+    outputSchema: normalizeToolObjectSchema(config.outputSchema),
     annotations: config.annotations,
     _meta: config._meta,
     handler: handler as McpRegisteredTool["handler"],
@@ -261,7 +318,7 @@ function buildCachedToolsListResult(registeredTools: Record<string, InternalRegi
           title: tool.title,
           description: tool.description,
           inputSchema: (() => {
-            const objectSchema = normalizeObjectSchema(tool.inputSchema);
+            const objectSchema = normalizeToolObjectSchema(tool.inputSchema);
 
             return objectSchema
               ? toJsonSchemaCompat(objectSchema, {
@@ -276,7 +333,7 @@ function buildCachedToolsListResult(registeredTools: Record<string, InternalRegi
         };
 
         if (tool.outputSchema) {
-          const objectSchema = normalizeObjectSchema(tool.outputSchema);
+          const objectSchema = normalizeToolObjectSchema(tool.outputSchema);
 
           if (objectSchema) {
             toolDefinition.outputSchema = toJsonSchemaCompat(objectSchema, {
@@ -450,7 +507,11 @@ export function createServerFactory(
   });
 
   for (const toolPlan of registeredToolPlans) {
-    templateServer.registerTool(toolPlan.name, toolPlan.config, toolPlan.handler);
+    templateServer.registerTool(
+      toolPlan.name,
+      normalizeToolConfigForRegistration(toolPlan.config),
+      toolPlan.handler
+    );
   }
 
   return function createPreparedServer() {
@@ -467,7 +528,11 @@ export function createServerFactory(
     const toolRegistrationStartedAt = Date.now();
     if (!hydrateRegisteredToolsFromTemplate(templateServer, server)) {
       for (const toolPlan of registeredToolPlans) {
-        server.registerTool(toolPlan.name, toolPlan.config, toolPlan.handler);
+        server.registerTool(
+          toolPlan.name,
+          normalizeToolConfigForRegistration(toolPlan.config),
+          toolPlan.handler
+        );
       }
 
       installCachedListToolsHandler(server);

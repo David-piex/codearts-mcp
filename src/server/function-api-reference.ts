@@ -315,6 +315,160 @@ function formatParameterDoc(sections: Array<[string, string]>) {
   return sections.map(([title, body]) => `${title}：<br>${body}`).join("<br>");
 }
 
+function describeToolFieldMapping(toolName: string, name: string) {
+  const repoImportRepositoryMapping: Record<string, string> = {
+    project_uuid: "MCP 字段 `project_uuid` ↔ 原始 CodeArts Repo API 请求体字段 `project_uuid`，表示目标 CodeArts 项目 UUID。",
+    name: "MCP 字段 `name` ↔ 原始 CodeArts Repo 导入接口请求体字段 `target_repo_name`；当导入接口不可用并回退到创建仓库接口时，对应创建接口字段 `name`。",
+    source_type: "MCP 字段 `source_type` ↔ 原始 CodeArts Repo 导入接口请求体字段 `source_type`，表示来源平台类型。",
+    source_url: "MCP 字段 `source_url` ↔ 原始 CodeArts Repo 导入接口请求体字段 `source_url`；工具会在需要时把用户名/令牌拼入 HTTPS URL。回退到创建仓库接口时，会编码为 `import_url`。",
+    source_repo_id: "MCP 字段 `source_repo_id` ↔ 原始 CodeArts Repo 导入接口请求体字段 `source_repo_id`。",
+    source_full_name: "MCP 字段 `source_full_name` ↔ 原始 CodeArts Repo 导入接口请求体字段 `source_full_name`。",
+    source_visibility: "MCP 字段 `source_visibility` ↔ 原始 CodeArts Repo 导入接口请求体字段 `source_visibility`。",
+    source_username: "MCP 字段 `source_username` 用于生成带凭据的 `source_url`，原始导入接口无独立同名字段。",
+    source_token: "MCP 字段 `source_token` 用于生成带凭据的 `source_url`，原始导入接口无独立同名字段；工具只传给上游，不在结果中回显明文。",
+    import_type: "MCP 字段 `import_type` ↔ 原始 CodeArts Repo 导入接口请求体字段 `import_type`。",
+    fetch_refs_type: "MCP 字段 `fetch_refs_type` ↔ 原始 CodeArts Repo 导入接口请求体字段 `fetch_refs_type`。",
+    endpoint_uuid: "MCP 字段 `endpoint_uuid` ↔ 原始 CodeArts Repo 导入接口请求体字段 `endpoint_uuid`。",
+    codecheck: "MCP 字段 `codecheck` ↔ 原始 CodeArts Repo 导入接口请求体字段 `codecheck`。",
+    group_id: "MCP 字段 `group_id` ↔ 原始 CodeArts Repo 导入接口请求体字段 `group_id`。",
+    mirror_repository: "MCP 字段 `mirror_repository` ↔ 原始 CodeArts Repo 导入接口请求体字段 `mirror_repository`。",
+    security_level: "MCP 字段 `security_level` ↔ 原始 CodeArts Repo 导入接口请求体字段 `security_level`。",
+    import_members: "MCP 字段 `import_members` ↔ 回退创建仓库接口请求体字段 `import_members`；导入接口本身不使用该字段。",
+    visibility_level: "MCP 字段 `visibility_level` ↔ 原始 CodeArts Repo 导入接口或回退创建仓库接口请求体字段 `visibility_level`。",
+    description: "MCP 字段 `description` ↔ 回退创建仓库接口请求体字段 `description`；导入接口本身不使用该字段。",
+    caller: "MCP 字段 `caller` ↔ 回退创建仓库接口请求体字段 `caller`；导入接口本身不使用该字段。",
+    dry_run: "MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts Repo API 无对应字段，不会提交给上游。"
+  };
+
+  const createWorkItemMapping: Record<string, string> = {
+    project_id: "MCP 字段 `project_id` ↔ PDF/CodeArts 路径参数 `project_id`。",
+    title: "MCP 字段 `title` ↔ PDF/CodeArts 请求体字段 `name`。",
+    work_item_type: "MCP 字段 `work_item_type` ↔ PDF/CodeArts 请求体字段 `tracker_id`；工具会把 task/bug/epic/feature/story 转成 2/3/5/6/7。",
+    parent_work_item_id: "MCP 字段 `parent_work_item_id` ↔ PDF/CodeArts 请求体字段 `parent_issue_id`。",
+    description: "MCP 字段 `description` ↔ PDF/CodeArts 请求体字段 `description`。",
+    priority_id: "MCP 字段 `priority_id` ↔ PDF/CodeArts 请求体字段 `priority_id`。",
+    iteration_id: "MCP 字段 `iteration_id` ↔ PDF/CodeArts 请求体字段 `iteration_id`。",
+    module_id: "MCP 字段 `module_id` ↔ PDF/CodeArts 请求体字段 `module_id`。",
+    severity_id: "MCP 字段 `severity_id` ↔ PDF/CodeArts 请求体字段 `severity_id`。",
+    assigned_id: "MCP 字段 `assigned_id` ↔ PDF/CodeArts 请求体字段 `assigned_id`。",
+    developer_id: "MCP 字段 `developer_id` ↔ PDF/CodeArts 请求体字段 `developer_id`。",
+    done_ratio: "MCP 字段 `done_ratio` ↔ PDF/CodeArts 请求体字段 `done_ratio`。",
+    expected_work_hours: "MCP 字段 `expected_work_hours` ↔ PDF/CodeArts 请求体字段 `expected_work_hours`。",
+    start_date: "MCP 字段 `start_date` ↔ PDF 中开始时间字段 `begin_time` 的业务语义；当前工具实际按 CodeArts 兼容字段 `start_date` 提交。",
+    due_date: "MCP 字段 `due_date` ↔ PDF 中结束时间字段 `end_time` 的业务语义；当前工具实际按 CodeArts 兼容字段 `due_date` 提交。",
+    dry_run: "MCP 字段 `dry_run` 是本工具安全开关，PDF/CodeArts 原 API 无对应字段，不会提交给上游。"
+  };
+
+  const createIterationWorkItemMapping: Record<string, string> = {
+    ...createWorkItemMapping,
+    iteration_id: "MCP 字段 `iteration_id` ↔ PDF/CodeArts 请求体字段 `iteration_id`；同时用于指定新工作项所属迭代。"
+  };
+
+  const createPlanWorkItemMapping: Record<string, string> = {
+    project_id: "MCP 字段 `project_id` ↔ CodeArts 请求体字段 `projectUUId`。",
+    plan_id: "MCP 字段 `plan_id` ↔ CodeArts 请求体字段 `plan_id`。",
+    title: "MCP 字段 `title` ↔ CodeArts 请求体字段 `subject`。",
+    work_item_type: createWorkItemMapping.work_item_type,
+    parent_work_item_id: createWorkItemMapping.parent_work_item_id,
+    description: createWorkItemMapping.description,
+    iteration_id: createWorkItemMapping.iteration_id,
+    module_id: createWorkItemMapping.module_id,
+    priority_id: createWorkItemMapping.priority_id,
+    severity_id: createWorkItemMapping.severity_id,
+    status_id: "MCP 字段 `status_id` ↔ CodeArts 请求体字段 `status_id`。",
+    assigned_id: createWorkItemMapping.assigned_id,
+    developer_id: createWorkItemMapping.developer_id,
+    done_ratio: createWorkItemMapping.done_ratio,
+    expected_work_hours: createWorkItemMapping.expected_work_hours,
+    start_date: "MCP 字段 `start_date` ↔ CodeArts 请求体字段 `start_date`。",
+    due_date: "MCP 字段 `due_date` ↔ CodeArts 请求体字段 `due_date`。",
+    dry_run: createWorkItemMapping.dry_run
+  };
+
+  const updateWorkItemMapping: Record<string, string> = {
+    ...createWorkItemMapping,
+    work_item_id: "MCP 字段 `work_item_id` ↔ PDF/CodeArts 路径参数 `issue_id`。",
+    status_id: "MCP 字段 `status_id` ↔ PDF/CodeArts 请求体字段 `status_id`。"
+  };
+
+  const batchUpdateWorkItemsMapping: Record<string, string> = {
+    project_id: "MCP 字段 `project_id` ↔ 原始 CodeArts Req API 路径参数 `project_id`。",
+    work_item_ids: "MCP 字段 `work_item_ids` ↔ 原始 CodeArts Req API 请求体字段 `id`，批量提交时为工作项 ID 数组。",
+    status_id: "MCP 字段 `status_id` ↔ 原始 CodeArts Req API 请求体字段 `attribute.status_id`。",
+    priority_id: "MCP 字段 `priority_id` ↔ 原始 CodeArts Req API 请求体字段 `attribute.priority_id`。",
+    severity_id: "MCP 字段 `severity_id` ↔ 原始 CodeArts Req API 请求体字段 `attribute.severity_id`。",
+    assigned_id: "MCP 字段 `assigned_id` ↔ 原始 CodeArts Req API 请求体字段 `attribute.assigned_id`。",
+    developer_id: "MCP 字段 `developer_id` ↔ 原始 CodeArts Req API 请求体字段 `attribute.developer_id`；工具会把可转数字的字符串转成数字 ID。",
+    done_ratio: "MCP 字段 `done_ratio` ↔ 原始 CodeArts Req API 请求体字段 `attribute.done_ratio`。",
+    iteration_id: "MCP 字段 `iteration_id` ↔ 原始 CodeArts Req API 请求体字段 `attribute.iteration_id`。",
+    module_id: "MCP 字段 `module_id` ↔ 原始 CodeArts Req API 请求体字段 `attribute.module_id`。",
+    dry_run: createWorkItemMapping.dry_run
+  };
+
+  const copyWorkItemsMapping: Record<string, string> = {
+    from_project_id: "MCP 字段 `from_project_id` ↔ 原始 CodeArts Req API 请求体字段 `fromProjectUUId`。",
+    to_project_id: "MCP 字段 `to_project_id` ↔ 原始 CodeArts Req API 请求体字段 `toProjectUUId`。",
+    work_item_ids: "MCP 字段 `work_item_ids` ↔ 原始 CodeArts Req API 请求体字段 `issueIds`；工具会把数组按逗号拼接。",
+    copy_comments: "MCP 字段 `copy_comments` ↔ 原始 CodeArts Req API 请求体字段 `copyComments`。",
+    copy_work_hours: "MCP 字段 `copy_work_hours` ↔ 原始 CodeArts Req API 请求体字段 `copyWorkHours`。",
+    dry_run: createWorkItemMapping.dry_run
+  };
+
+  const toolMappings: Record<string, Record<string, string>> = {
+    repo_import_repository: repoImportRepositoryMapping,
+    req_batch_update_work_items: batchUpdateWorkItemsMapping,
+    req_copy_work_items: copyWorkItemsMapping,
+    req_create_work_item: createWorkItemMapping,
+    req_create_iteration_work_item: createIterationWorkItemMapping,
+    req_create_plan_work_item: createPlanWorkItemMapping,
+    req_update_work_item: updateWorkItemMapping
+  };
+
+  return toolMappings[toolName]?.[name];
+}
+
+function describeParameterFieldMapping(toolName: string, name: string) {
+  const exactMapping = describeToolFieldMapping(toolName, name);
+
+  if (exactMapping) {
+    return exactMapping;
+  }
+
+  const moduleLabel = getChineseModuleLabel(getModuleLabel(toolName));
+
+  const internalFields: Record<string, string> = {
+    dry_run: "MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。",
+    access_key: "MCP 字段 `access_key` 仅用于配置本地 MCP 会话鉴权，原始业务 API 无对应字段。",
+    secret_key: "MCP 字段 `secret_key` 仅用于配置本地 MCP 会话签名密钥，原始业务 API 无对应字段。",
+    region: "MCP 字段 `region` 用于选择华为云区域和服务端点，原始业务请求体通常无对应字段。"
+  };
+
+  if (internalFields[name]) {
+    return internalFields[name];
+  }
+
+  const commonFieldMappings: Record<string, string> = {
+    project_uuid: `MCP 字段 \`project_uuid\` ↔ 原始 CodeArts ${moduleLabel} API 中表示项目 UUID 的字段，常见原字段名为 \`project_uuid\`、\`projectUuid\` 或 \`projectUUId\`，以对应接口实际定义为准。`,
+    project_id: `MCP 字段 \`project_id\` ↔ 原始 CodeArts ${moduleLabel} API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。`,
+    repository_id: `MCP 字段 \`repository_id\` ↔ 原始 CodeArts ${moduleLabel} API 中的仓库 ID 字段，通常位于路径参数或 Query 参数。`,
+    work_item_id: `MCP 字段 \`work_item_id\` ↔ 原始 CodeArts ${moduleLabel} API 中的工作项 ID 字段，常见原字段名为 \`issue_id\` 或路径参数中的 issue 标识。`,
+    issue_id: `MCP 字段 \`issue_id\` ↔ 原始 CodeArts ${moduleLabel} API 同名字段 \`issue_id\`，表示工作项/议题 ID。`,
+    work_item_ids: `MCP 字段 \`work_item_ids\` ↔ 原始 CodeArts ${moduleLabel} API 中的工作项 ID 集合字段，常见原字段名为 \`issue_ids\`、\`issueIds\`、\`id\`。`,
+    tracker_id: `MCP 字段 \`tracker_id\` ↔ 原始 CodeArts ${moduleLabel} API 同名字段 \`tracker_id\`，表示工作项类型 ID。`,
+    work_item_type: `MCP 字段 \`work_item_type\` ↔ 原始 CodeArts ${moduleLabel} API 中的工作项类型字段，常见原字段名为 \`tracker_id\`；工具会按接口需要转换。`,
+    title: `MCP 字段 \`title\` ↔ 原始 CodeArts ${moduleLabel} API 中的标题字段，常见原字段名为 \`name\`、\`subject\` 或 \`title\`。`,
+    page: `MCP 字段 \`page\` ↔ 原始 CodeArts ${moduleLabel} API 的分页页码或由 \`offset/limit\` 换算得到的页码。`,
+    page_size: `MCP 字段 \`page_size\` ↔ 原始 CodeArts ${moduleLabel} API 的分页大小字段，常见原字段名为 \`page_size\`、\`limit\` 或 \`pageSize\`。`,
+    keyword: `MCP 字段 \`keyword\` ↔ 原始 CodeArts ${moduleLabel} API 的搜索关键字字段，常见原字段名为 \`keyword\`、\`search\` 或 \`name\`。`
+  };
+
+  if (commonFieldMappings[name]) {
+    return commonFieldMappings[name];
+  }
+
+  return `MCP 字段 \`${name}\` ↔ 原始 CodeArts ${moduleLabel} API 同名字段 \`${name}\`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。`;
+}
+
 function describeToolParameter(toolName: string, name: string) {
   const reqCreateWorkItemDescriptions: Record<string, string> = {
     project_id: formatParameterDoc([
@@ -1046,13 +1200,15 @@ function describeSchemaParameter(
     (hasKnownParameterDescription(name)
       ? describeParameter(name)
       : schema.description ?? originalSchema.description ?? describeParameter(name));
+  const fieldMapping = describeParameterFieldMapping(toolName, name);
   const enumValues = renderEnumValues(schema);
+  const descriptionWithMapping = `${formatParameterDoc([["字段对应", fieldMapping]])}<br>${baseDescription}`;
 
-  if (!enumValues || baseDescription.includes("可选值")) {
-    return baseDescription;
+  if (!enumValues || descriptionWithMapping.includes("可选值")) {
+    return descriptionWithMapping;
   }
 
-  return `${baseDescription}可选值：${enumValues}。`;
+  return `${descriptionWithMapping}可选值：${enumValues}。`;
 }
 
 function resolveLocalSchemaRef(schema: JsonSchemaObject, root: JsonSchemaObject) {

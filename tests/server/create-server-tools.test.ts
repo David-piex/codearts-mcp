@@ -142,6 +142,34 @@ describe("createServer tool registration", () => {
     );
   });
 
+  it("preserves refined object schema properties in tools/list", async () => {
+    const server = createHttpServer();
+    const result = (await invokeInternalListToolsHandler(server)) as {
+      tools?: Array<{
+        name: string;
+        inputSchema?: {
+          properties?: Record<string, unknown>;
+          required?: string[];
+        };
+      }>;
+    };
+    const importRepositoryTool = result.tools?.find((tool) => tool.name === "repo_import_repository");
+    const batchUpdateTool = result.tools?.find(
+      (tool) => tool.name === "req_batch_update_work_items"
+    );
+
+    expect(importRepositoryTool?.inputSchema?.properties).toHaveProperty("project_uuid");
+    expect(importRepositoryTool?.inputSchema?.properties).toHaveProperty("source_token");
+    expect(importRepositoryTool?.inputSchema?.required).toEqual(
+      expect.arrayContaining(["project_uuid", "name", "source_type", "source_url"])
+    );
+    expect(batchUpdateTool?.inputSchema?.properties).toHaveProperty("work_item_ids");
+    expect(batchUpdateTool?.inputSchema?.properties).toHaveProperty("status_id");
+    expect(batchUpdateTool?.inputSchema?.required).toEqual(
+      expect.arrayContaining(["project_id", "work_item_ids"])
+    );
+  });
+
   it("captures tool registrations once and hydrates later server instances from a template", () => {
     const collectProductToolManifestMock = vi.fn(
       (): ToolManifestEntry[] => [
