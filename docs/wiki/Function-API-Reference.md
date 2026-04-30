@@ -17692,21 +17692,21 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
-| `iteration_id` | 是 | `string` |  | 迭代 ID，用于定位对应的 CodeArts 资源。 |
-| `title` | 是 | `string` |  | 标题，用于工作项、合并请求、计划等资源的主显示名称。建议简洁说明要做什么。 |
-| `work_item_type` | 是 | `string` |  | 参数解释：<br>工作项类型，用于指定创建或更新的 CodeArts Scrum 工作项类型。工具会把填写的类型名称或数字 ID 自动转换为 CodeArts 需要的 tracker_id。<br>约束限制：<br>创建子工作项时，父子类型需符合层级关系：Epic 只能作为 Feature 的父工作项类型；Feature 只能作为 Story 的父工作项类型；Story 只能作为 Task/任务、Bug/缺陷的父工作项类型。未创建子工作项时不涉及该限制。<br>取值范围：<br>2（任务/Task，可填 task 或 2）；<br>3（缺陷/Bug，可填 bug 或 3）；<br>5（Epic，可填 epic 或 5）；<br>6（Feature，可填 feature 或 6）；<br>7（Story，可填 story 或 7）。<br>默认取值：<br>不涉及。创建类接口必填；更新接口不传则不修改工作项类型。 |
-| `parent_work_item_id` | 否 | `string` |  | 父工作项 ID，用于定位对应的 CodeArts 资源。 |
-| `description` | 否 | `string` |  | 描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
-| `priority_id` | 否 | `integer` |  | 工作项优先级 ID。创建工作项未传时默认使用 2；具体优先级名称和可选值以项目字段配置/优先级选项接口返回为准。 |
-| `module_id` | 否 | `string` |  | 模块 ID，用于定位对应的 CodeArts 资源。 |
-| `severity_id` | 否 | `integer` |  | 严重程度 ID。通常用于缺陷或问题等级；可通过 req_list_issue_severities 查询当前可用严重程度。 |
-| `assigned_id` | 否 | `string` |  | 处理人 ID，用于定位对应的 CodeArts 资源。 |
-| `developer_id` | 否 | `string` |  | 开发人员 ID，用于定位对应的 CodeArts 资源。 |
-| `done_ratio` | 否 | `integer` |  | 完成百分比，通常为 0 到 100 的整数，用于表示工作项或任务完成进度。 |
-| `expected_work_hours` | 否 | `integer` |  | 预计工时，表示完成工作项或任务预计需要投入的小时数。 |
-| `start_date` | 否 | `integer` |  | 开始日期，通常使用 yyyy-MM-dd 或接口要求的日期格式。 |
-| `due_date` | 否 | `integer` |  | 截止日期，表示工作项、计划或任务期望完成时间。 |
+| `project_id` | 是 | `string` |  | 参数解释：<br>项目的 32 位 UUID，项目唯一标识。可通过查询项目列表接口获取，响应消息体中的 project_id 字段值就是项目 ID。<br>约束限制：<br>正则表达式：[A-Za-z0-9]{32}。<br>取值范围：<br>不涉及。<br>默认取值：<br>不涉及。 |
+| `iteration_id` | 是 | `string` |  | 参数解释：<br>迭代 ID，用于指定本次创建的工作项归属到哪个迭代。可通过获取指定项目的迭代列表接口获取。<br>约束限制：<br>创建迭代工作项时必填；正则表达式：\d+。<br>取值范围：<br>最小值 0。<br>默认取值：<br>不涉及。 |
+| `title` | 是 | `string` |  | 参数解释：<br>工作项标题。MCP 字段 title 会映射到 CodeArts 创建工作项 API 的 name 字段。<br>约束限制：<br>创建工作项时必填；工具侧要求不能为空。建议用一句话说明要处理的问题或需求。<br>取值范围：<br>字符串。<br>默认取值：<br>不涉及。 |
+| `work_item_type` | 是 | `string` |  | 参数解释：<br>工作项类型。MCP 字段 work_item_type 会映射到 CodeArts 创建工作项 API 的 tracker_id 字段；可填写类型名称或数字 ID，工具会自动转换为 tracker_id。<br>约束限制：<br>创建子工作项时父子类型需符合层级关系：Epic 只能作为 Feature 的父工作项类型；Feature 只能作为 Story 的父工作项类型；Story 只能作为任务/Task、缺陷/Bug 的父工作项类型。<br>取值范围：<br>2（任务/Task，可填 task 或 2）；<br>3（缺陷/Bug，可填 bug 或 3）；<br>5（Epic，可填 epic 或 5）；<br>6（Feature，可填 feature 或 6）；<br>7（Story，可填 story 或 7）。<br>默认取值：<br>不涉及。 |
+| `parent_work_item_id` | 否 | `string` |  | 参数解释：<br>父工作项 ID。MCP 字段 parent_work_item_id 会映射到 CodeArts 创建工作项 API 的 parent_issue_id 字段。<br>约束限制：<br>创建子工作项时必填；父工作项类型 tracker_id 不能为 2（任务/Task）或 3（缺陷/Bug）。<br>取值范围：<br>最小值 0。<br>默认取值：<br>不涉及。 |
+| `description` | 否 | `string` |  | 参数解释：<br>工作项描述，用于补充需求背景、问题现象、验收标准或处理说明。<br>约束限制：<br>可以为空。<br>取值范围：<br>最小长度 0。<br>默认取值：<br>不涉及。 |
+| `priority_id` | 否 | `integer` |  | 参数解释：<br>工作项优先级。<br>约束限制：<br>正则表达式：\d+。<br>取值范围：<br>1（低）；2（中）；3（高）。<br>默认取值：<br>不涉及。 |
+| `module_id` | 否 | `string` |  | 参数解释：<br>模块 ID，可在“设置 - 工作项设置 - 模块设置”中创建或查看模块。<br>约束限制：<br>正则表达式：\d+。<br>取值范围：<br>最小值 0。<br>默认取值：<br>不涉及。 |
+| `severity_id` | 否 | `integer` |  | 参数解释：<br>重要程度。通常用于缺陷、问题等级等场景。<br>约束限制：<br>正则表达式：\d+。<br>取值范围：<br>10（关键）；<br>11（重要）；<br>12（一般）；<br>13（提示）。<br>默认取值：<br>不涉及。 |
+| `assigned_id` | 否 | `string` |  | 参数解释：<br>处理人数字 ID，可通过获取指定项目的成员用户列表接口获取项目成员的用户数字 ID。<br>约束限制：<br>正则表达式：\d+。<br>取值范围：<br>最小值 0。<br>默认取值：<br>不涉及。 |
+| `developer_id` | 否 | `string` |  | 参数解释：<br>开发人员数字 ID，可通过获取指定项目的成员用户列表接口获取项目成员的用户数字 ID。<br>约束限制：<br>正则表达式：\d+。<br>取值范围：<br>最小值 0。<br>默认取值：<br>不涉及。 |
+| `done_ratio` | 否 | `integer` |  | 参数解释：<br>工作项完成度。<br>约束限制：<br>输入 0 表示完成度为 0%，输入 100 表示完成度为 100%。<br>取值范围：<br>最小值 0，最大值 100。<br>默认取值：<br>不涉及。 |
+| `expected_work_hours` | 否 | `integer` |  | 参数解释：<br>预计工时。<br>约束限制：<br>可以为空。<br>取值范围：<br>最小值 0。<br>默认取值：<br>不涉及。 |
+| `start_date` | 否 | `integer` |  | 参数解释：<br>开始时间。对应 CodeArts 创建工作项文档中的开始时间语义。<br>约束限制：<br>工具侧当前接收时间戳整数并按 start_date 字段提交。<br>取值范围：<br>正整数时间戳。<br>默认取值：<br>不涉及。 |
+| `due_date` | 否 | `integer` |  | 参数解释：<br>结束时间。对应 CodeArts 创建工作项文档中的结束时间语义。<br>约束限制：<br>工具侧当前接收时间戳整数并按 due_date 字段提交。<br>取值范围：<br>正整数时间戳。<br>默认取值：<br>不涉及。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -17880,23 +17880,23 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
-| `plan_id` | 是 | `string` |  | 计划 ID，用于定位对应的 CodeArts 资源。 |
-| `title` | 是 | `string` |  | 标题，用于工作项、合并请求、计划等资源的主显示名称。建议简洁说明要做什么。 |
-| `work_item_type` | 是 | `string` |  | 参数解释：<br>工作项类型，用于指定创建或更新的 CodeArts Scrum 工作项类型。工具会把填写的类型名称或数字 ID 自动转换为 CodeArts 需要的 tracker_id。<br>约束限制：<br>创建子工作项时，父子类型需符合层级关系：Epic 只能作为 Feature 的父工作项类型；Feature 只能作为 Story 的父工作项类型；Story 只能作为 Task/任务、Bug/缺陷的父工作项类型。未创建子工作项时不涉及该限制。<br>取值范围：<br>2（任务/Task，可填 task 或 2）；<br>3（缺陷/Bug，可填 bug 或 3）；<br>5（Epic，可填 epic 或 5）；<br>6（Feature，可填 feature 或 6）；<br>7（Story，可填 story 或 7）。<br>默认取值：<br>不涉及。创建类接口必填；更新接口不传则不修改工作项类型。 |
-| `parent_work_item_id` | 否 | `string` |  | 父工作项 ID，用于定位对应的 CodeArts 资源。 |
-| `description` | 否 | `string` |  | 描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
-| `iteration_id` | 否 | `string` |  | 迭代 ID，用于定位对应的 CodeArts 资源。 |
-| `module_id` | 否 | `string` |  | 模块 ID，用于定位对应的 CodeArts 资源。 |
-| `priority_id` | 否 | `integer` |  | 工作项优先级 ID。创建工作项未传时默认使用 2；具体优先级名称和可选值以项目字段配置/优先级选项接口返回为准。 |
-| `severity_id` | 否 | `integer` |  | 严重程度 ID。通常用于缺陷或问题等级；可通过 req_list_issue_severities 查询当前可用严重程度。 |
-| `status_id` | 否 | `integer` |  | 工作项状态 ID：1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝。项目自定义状态以状态配置/工作流接口返回为准。 |
-| `assigned_id` | 否 | `string` |  | 处理人 ID，用于定位对应的 CodeArts 资源。 |
-| `developer_id` | 否 | `string` |  | 开发人员 ID，用于定位对应的 CodeArts 资源。 |
-| `done_ratio` | 否 | `integer` |  | 完成百分比，通常为 0 到 100 的整数，用于表示工作项或任务完成进度。 |
-| `expected_work_hours` | 否 | `integer` |  | 预计工时，表示完成工作项或任务预计需要投入的小时数。 |
-| `start_date` | 否 | `integer` |  | 开始日期，通常使用 yyyy-MM-dd 或接口要求的日期格式。 |
-| `due_date` | 否 | `integer` |  | 截止日期，表示工作项、计划或任务期望完成时间。 |
+| `project_id` | 是 | `string` |  | 参数解释：<br>项目的 32 位 UUID，项目唯一标识。可通过查询项目列表接口获取，响应消息体中的 project_id 字段值就是项目 ID。<br>约束限制：<br>正则表达式：[A-Za-z0-9]{32}。<br>取值范围：<br>不涉及。<br>默认取值：<br>不涉及。 |
+| `plan_id` | 是 | `string` |  | 参数解释：<br>计划 ID，用于指定本次创建的工作项归属到哪个计划。可通过计划列表接口获取。<br>约束限制：<br>创建计划工作项时必填；正则表达式：\d+。<br>取值范围：<br>最小值 0。<br>默认取值：<br>不涉及。 |
+| `title` | 是 | `string` |  | 参数解释：<br>工作项标题。MCP 字段 title 会映射到 CodeArts 创建工作项 API 的 name 字段。<br>约束限制：<br>创建工作项时必填；工具侧要求不能为空。建议用一句话说明要处理的问题或需求。<br>取值范围：<br>字符串。<br>默认取值：<br>不涉及。 |
+| `work_item_type` | 是 | `string` |  | 参数解释：<br>工作项类型。MCP 字段 work_item_type 会映射到 CodeArts 创建工作项 API 的 tracker_id 字段；可填写类型名称或数字 ID，工具会自动转换为 tracker_id。<br>约束限制：<br>创建子工作项时父子类型需符合层级关系：Epic 只能作为 Feature 的父工作项类型；Feature 只能作为 Story 的父工作项类型；Story 只能作为任务/Task、缺陷/Bug 的父工作项类型。<br>取值范围：<br>2（任务/Task，可填 task 或 2）；<br>3（缺陷/Bug，可填 bug 或 3）；<br>5（Epic，可填 epic 或 5）；<br>6（Feature，可填 feature 或 6）；<br>7（Story，可填 story 或 7）。<br>默认取值：<br>不涉及。 |
+| `parent_work_item_id` | 否 | `string` |  | 参数解释：<br>父工作项 ID。MCP 字段 parent_work_item_id 会映射到 CodeArts 创建工作项 API 的 parent_issue_id 字段。<br>约束限制：<br>创建子工作项时必填；父工作项类型 tracker_id 不能为 2（任务/Task）或 3（缺陷/Bug）。<br>取值范围：<br>最小值 0。<br>默认取值：<br>不涉及。 |
+| `description` | 否 | `string` |  | 参数解释：<br>工作项描述，用于补充需求背景、问题现象、验收标准或处理说明。<br>约束限制：<br>可以为空。<br>取值范围：<br>最小长度 0。<br>默认取值：<br>不涉及。 |
+| `iteration_id` | 否 | `string` |  | 参数解释：<br>迭代 ID，用于指定工作项关联的迭代。可通过获取指定项目的迭代列表接口获取。<br>约束限制：<br>正则表达式：\d+。<br>取值范围：<br>最小值 0。<br>默认取值：<br>不涉及。 |
+| `module_id` | 否 | `string` |  | 参数解释：<br>模块 ID，可在“设置 - 工作项设置 - 模块设置”中创建或查看模块。<br>约束限制：<br>正则表达式：\d+。<br>取值范围：<br>最小值 0。<br>默认取值：<br>不涉及。 |
+| `priority_id` | 否 | `integer` |  | 参数解释：<br>工作项优先级。<br>约束限制：<br>正则表达式：\d+。<br>取值范围：<br>1（低）；2（中）；3（高）。<br>默认取值：<br>不涉及。 |
+| `severity_id` | 否 | `integer` |  | 参数解释：<br>重要程度。通常用于缺陷、问题等级等场景。<br>约束限制：<br>正则表达式：\d+。<br>取值范围：<br>10（关键）；<br>11（重要）；<br>12（一般）；<br>13（提示）。<br>默认取值：<br>不涉及。 |
+| `status_id` | 否 | `integer` |  | 参数解释：<br>工作项状态 ID。<br>约束限制：<br>正则表达式：\d+。<br>取值范围：<br>1（新建）；<br>2（进行中）；<br>3（已解决）；<br>4（测试中）；<br>5（已关闭）；<br>6（已拒绝）。<br>默认取值：<br>不涉及。 |
+| `assigned_id` | 否 | `string` |  | 参数解释：<br>处理人数字 ID，可通过获取指定项目的成员用户列表接口获取项目成员的用户数字 ID。<br>约束限制：<br>正则表达式：\d+。<br>取值范围：<br>最小值 0。<br>默认取值：<br>不涉及。 |
+| `developer_id` | 否 | `string` |  | 参数解释：<br>开发人员数字 ID，可通过获取指定项目的成员用户列表接口获取项目成员的用户数字 ID。<br>约束限制：<br>正则表达式：\d+。<br>取值范围：<br>最小值 0。<br>默认取值：<br>不涉及。 |
+| `done_ratio` | 否 | `integer` |  | 参数解释：<br>工作项完成度。<br>约束限制：<br>输入 0 表示完成度为 0%，输入 100 表示完成度为 100%。<br>取值范围：<br>最小值 0，最大值 100。<br>默认取值：<br>不涉及。 |
+| `expected_work_hours` | 否 | `integer` |  | 参数解释：<br>预计工时。<br>约束限制：<br>可以为空。<br>取值范围：<br>最小值 0。<br>默认取值：<br>不涉及。 |
+| `start_date` | 否 | `integer` |  | 参数解释：<br>开始时间。对应 CodeArts 创建工作项文档中的开始时间语义。<br>约束限制：<br>工具侧当前接收时间戳整数并按 start_date 字段提交。<br>取值范围：<br>正整数时间戳。<br>默认取值：<br>不涉及。 |
+| `due_date` | 否 | `integer` |  | 参数解释：<br>结束时间。对应 CodeArts 创建工作项文档中的结束时间语义。<br>约束限制：<br>工具侧当前接收时间戳整数并按 due_date 字段提交。<br>取值范围：<br>正整数时间戳。<br>默认取值：<br>不涉及。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -18380,21 +18380,21 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
-| `title` | 是 | `string` |  | 标题，用于工作项、合并请求、计划等资源的主显示名称。建议简洁说明要做什么。 |
-| `work_item_type` | 是 | `string` |  | 参数解释：<br>工作项类型，用于指定创建或更新的 CodeArts Scrum 工作项类型。工具会把填写的类型名称或数字 ID 自动转换为 CodeArts 需要的 tracker_id。<br>约束限制：<br>创建子工作项时，父子类型需符合层级关系：Epic 只能作为 Feature 的父工作项类型；Feature 只能作为 Story 的父工作项类型；Story 只能作为 Task/任务、Bug/缺陷的父工作项类型。未创建子工作项时不涉及该限制。<br>取值范围：<br>2（任务/Task，可填 task 或 2）；<br>3（缺陷/Bug，可填 bug 或 3）；<br>5（Epic，可填 epic 或 5）；<br>6（Feature，可填 feature 或 6）；<br>7（Story，可填 story 或 7）。<br>默认取值：<br>不涉及。创建类接口必填；更新接口不传则不修改工作项类型。 |
-| `parent_work_item_id` | 否 | `string` |  | 父工作项 ID，用于定位对应的 CodeArts 资源。 |
-| `description` | 否 | `string` |  | 描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
-| `priority_id` | 否 | `integer` |  | 工作项优先级 ID。创建工作项未传时默认使用 2；具体优先级名称和可选值以项目字段配置/优先级选项接口返回为准。 |
-| `iteration_id` | 否 | `string` |  | 迭代 ID，用于定位对应的 CodeArts 资源。 |
-| `module_id` | 否 | `string` |  | 模块 ID，用于定位对应的 CodeArts 资源。 |
-| `severity_id` | 否 | `integer` |  | 严重程度 ID。通常用于缺陷或问题等级；可通过 req_list_issue_severities 查询当前可用严重程度。 |
-| `assigned_id` | 否 | `string` |  | 处理人 ID，用于定位对应的 CodeArts 资源。 |
-| `developer_id` | 否 | `string` |  | 开发人员 ID，用于定位对应的 CodeArts 资源。 |
-| `done_ratio` | 否 | `integer` |  | 完成百分比，通常为 0 到 100 的整数，用于表示工作项或任务完成进度。 |
-| `expected_work_hours` | 否 | `integer` |  | 预计工时，表示完成工作项或任务预计需要投入的小时数。 |
-| `start_date` | 否 | `integer` |  | 开始日期，通常使用 yyyy-MM-dd 或接口要求的日期格式。 |
-| `due_date` | 否 | `integer` |  | 截止日期，表示工作项、计划或任务期望完成时间。 |
+| `project_id` | 是 | `string` |  | 参数解释：<br>项目的 32 位 UUID，项目唯一标识。可通过查询项目列表接口获取，响应消息体中的 project_id 字段值就是项目 ID。<br>约束限制：<br>正则表达式：[A-Za-z0-9]{32}。<br>取值范围：<br>不涉及。<br>默认取值：<br>不涉及。 |
+| `title` | 是 | `string` |  | 参数解释：<br>工作项标题。MCP 字段 title 会映射到 CodeArts 创建工作项 API 的 name 字段。<br>约束限制：<br>创建工作项时必填；工具侧要求不能为空。建议用一句话说明要处理的问题或需求。<br>取值范围：<br>字符串。<br>默认取值：<br>不涉及。 |
+| `work_item_type` | 是 | `string` |  | 参数解释：<br>工作项类型。MCP 字段 work_item_type 会映射到 CodeArts 创建工作项 API 的 tracker_id 字段；可填写类型名称或数字 ID，工具会自动转换为 tracker_id。<br>约束限制：<br>创建子工作项时父子类型需符合层级关系：Epic 只能作为 Feature 的父工作项类型；Feature 只能作为 Story 的父工作项类型；Story 只能作为任务/Task、缺陷/Bug 的父工作项类型。<br>取值范围：<br>2（任务/Task，可填 task 或 2）；<br>3（缺陷/Bug，可填 bug 或 3）；<br>5（Epic，可填 epic 或 5）；<br>6（Feature，可填 feature 或 6）；<br>7（Story，可填 story 或 7）。<br>默认取值：<br>不涉及。 |
+| `parent_work_item_id` | 否 | `string` |  | 参数解释：<br>父工作项 ID。MCP 字段 parent_work_item_id 会映射到 CodeArts 创建工作项 API 的 parent_issue_id 字段。<br>约束限制：<br>创建子工作项时必填；父工作项类型 tracker_id 不能为 2（任务/Task）或 3（缺陷/Bug）。<br>取值范围：<br>最小值 0。<br>默认取值：<br>不涉及。 |
+| `description` | 否 | `string` |  | 参数解释：<br>工作项描述，用于补充需求背景、问题现象、验收标准或处理说明。<br>约束限制：<br>可以为空。<br>取值范围：<br>最小长度 0。<br>默认取值：<br>不涉及。 |
+| `priority_id` | 否 | `integer` |  | 参数解释：<br>工作项优先级。<br>约束限制：<br>正则表达式：\d+。<br>取值范围：<br>1（低）；2（中）；3（高）。<br>默认取值：<br>不涉及。 |
+| `iteration_id` | 否 | `string` |  | 参数解释：<br>迭代 ID，可通过获取指定项目的迭代列表接口获取。<br>约束限制：<br>正则表达式：\d+。<br>取值范围：<br>最小值 0。<br>默认取值：<br>不涉及。 |
+| `module_id` | 否 | `string` |  | 参数解释：<br>模块 ID，可在“设置 - 工作项设置 - 模块设置”中创建或查看模块。<br>约束限制：<br>正则表达式：\d+。<br>取值范围：<br>最小值 0。<br>默认取值：<br>不涉及。 |
+| `severity_id` | 否 | `integer` |  | 参数解释：<br>重要程度。通常用于缺陷、问题等级等场景。<br>约束限制：<br>正则表达式：\d+。<br>取值范围：<br>10（关键）；<br>11（重要）；<br>12（一般）；<br>13（提示）。<br>默认取值：<br>不涉及。 |
+| `assigned_id` | 否 | `string` |  | 参数解释：<br>处理人数字 ID，可通过获取指定项目的成员用户列表接口获取项目成员的用户数字 ID。<br>约束限制：<br>正则表达式：\d+。<br>取值范围：<br>最小值 0。<br>默认取值：<br>不涉及。 |
+| `developer_id` | 否 | `string` |  | 参数解释：<br>开发人员数字 ID，可通过获取指定项目的成员用户列表接口获取项目成员的用户数字 ID。<br>约束限制：<br>正则表达式：\d+。<br>取值范围：<br>最小值 0。<br>默认取值：<br>不涉及。 |
+| `done_ratio` | 否 | `integer` |  | 参数解释：<br>工作项完成度。<br>约束限制：<br>输入 0 表示完成度为 0%，输入 100 表示完成度为 100%。<br>取值范围：<br>最小值 0，最大值 100。<br>默认取值：<br>不涉及。 |
+| `expected_work_hours` | 否 | `integer` |  | 参数解释：<br>预计工时。<br>约束限制：<br>可以为空。<br>取值范围：<br>最小值 0。<br>默认取值：<br>不涉及。 |
+| `start_date` | 否 | `integer` |  | 参数解释：<br>开始时间。对应 CodeArts 创建工作项文档中的开始时间语义。<br>约束限制：<br>工具侧当前接收时间戳整数并按 start_date 字段提交。<br>取值范围：<br>正整数时间戳。<br>默认取值：<br>不涉及。 |
+| `due_date` | 否 | `integer` |  | 参数解释：<br>结束时间。对应 CodeArts 创建工作项文档中的结束时间语义。<br>约束限制：<br>工具侧当前接收时间戳整数并按 due_date 字段提交。<br>取值范围：<br>正整数时间戳。<br>默认取值：<br>不涉及。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -27922,22 +27922,22 @@
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `project_id` | 是 | `string` |  | CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
-| `work_item_id` | 是 | `string` |  | 工作项 ID，用于定位对应的 CodeArts 资源。 |
-| `title` | 否 | `string` |  | 标题，用于工作项、合并请求、计划等资源的主显示名称。建议简洁说明要做什么。 |
-| `work_item_type` | 否 | `string` |  | 参数解释：<br>工作项类型，用于指定创建或更新的 CodeArts Scrum 工作项类型。工具会把填写的类型名称或数字 ID 自动转换为 CodeArts 需要的 tracker_id。<br>约束限制：<br>创建子工作项时，父子类型需符合层级关系：Epic 只能作为 Feature 的父工作项类型；Feature 只能作为 Story 的父工作项类型；Story 只能作为 Task/任务、Bug/缺陷的父工作项类型。未创建子工作项时不涉及该限制。<br>取值范围：<br>2（任务/Task，可填 task 或 2）；<br>3（缺陷/Bug，可填 bug 或 3）；<br>5（Epic，可填 epic 或 5）；<br>6（Feature，可填 feature 或 6）；<br>7（Story，可填 story 或 7）。<br>默认取值：<br>不涉及。创建类接口必填；更新接口不传则不修改工作项类型。 |
-| `description` | 否 | `string` |  | 描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
-| `status_id` | 否 | `integer` |  | 工作项状态 ID：1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝。项目自定义状态以状态配置/工作流接口返回为准。 |
-| `priority_id` | 否 | `integer` |  | 工作项优先级 ID。创建工作项未传时默认使用 2；具体优先级名称和可选值以项目字段配置/优先级选项接口返回为准。 |
-| `iteration_id` | 否 | `string` |  | 迭代 ID，用于定位对应的 CodeArts 资源。 |
-| `module_id` | 否 | `string` |  | 模块 ID，用于定位对应的 CodeArts 资源。 |
-| `severity_id` | 否 | `integer` |  | 严重程度 ID。通常用于缺陷或问题等级；可通过 req_list_issue_severities 查询当前可用严重程度。 |
-| `assigned_id` | 否 | `string` |  | 处理人 ID，用于定位对应的 CodeArts 资源。 |
-| `developer_id` | 否 | `string` |  | 开发人员 ID，用于定位对应的 CodeArts 资源。 |
-| `done_ratio` | 否 | `integer` |  | 完成百分比，通常为 0 到 100 的整数，用于表示工作项或任务完成进度。 |
-| `expected_work_hours` | 否 | `integer` |  | 预计工时，表示完成工作项或任务预计需要投入的小时数。 |
-| `start_date` | 否 | `integer` |  | 开始日期，通常使用 yyyy-MM-dd 或接口要求的日期格式。 |
-| `due_date` | 否 | `integer` |  | 截止日期，表示工作项、计划或任务期望完成时间。 |
+| `project_id` | 是 | `string` |  | 参数解释：<br>项目的 32 位 UUID，项目唯一标识。可通过查询项目列表接口获取，响应消息体中的 project_id 字段值就是项目 ID。<br>约束限制：<br>正则表达式：[A-Za-z0-9]{32}。<br>取值范围：<br>不涉及。<br>默认取值：<br>不涉及。 |
+| `work_item_id` | 是 | `string` |  | 参数解释：<br>工作项 ID。MCP 字段 work_item_id 会映射到 CodeArts 更新工作项 API 路径参数 issue_id。可通过高级查询工作项接口获取，响应消息体中的 id 字段值就是工作项 ID。<br>约束限制：<br>长度在 1 位到 10 位之间的纯数字。<br>取值范围：<br>最小长度：1，最大长度：10。<br>默认取值：<br>不涉及。 |
+| `title` | 否 | `string` |  | 参数解释：<br>工作项标题。MCP 字段 title 会映射到 CodeArts 更新工作项 API 的 name 字段。<br>约束限制：<br>更新时可选；不传则不修改标题。<br>取值范围：<br>字符串。<br>默认取值：<br>不涉及。 |
+| `work_item_type` | 否 | `string` |  | 参数解释：<br>工作项类型。MCP 字段 work_item_type 会映射到 CodeArts 更新工作项 API 的 tracker_id 字段；可填写类型名称或数字 ID，工具会自动转换为 tracker_id。<br>约束限制：<br>正则表达式：\d+。更新时可选；不传则不修改工作项类型。<br>取值范围：<br>2（任务/Task，可填 task 或 2）；<br>3（缺陷/Bug，可填 bug 或 3）；<br>5（Epic，可填 epic 或 5）；<br>6（Feature，可填 feature 或 6）；<br>7（Story，可填 story 或 7）。<br>默认取值：<br>不涉及。 |
+| `description` | 否 | `string` |  | 参数解释：<br>工作项描述信息。<br>约束限制：<br>更新时可选；不传则不修改描述。<br>取值范围：<br>字符串。<br>默认取值：<br>不涉及。 |
+| `status_id` | 否 | `integer` |  | 参数解释：<br>工作项状态 ID。<br>约束限制：<br>正则表达式：\d+。<br>取值范围：<br>1（新建）；<br>2（进行中）；<br>3（已解决）；<br>4（测试中）；<br>5（已关闭）；<br>6（已拒绝）。<br>默认取值：<br>不涉及。 |
+| `priority_id` | 否 | `integer` |  | 参数解释：<br>工作项优先级。<br>约束限制：<br>正则表达式：\d+。<br>取值范围：<br>1（低）；<br>2（中）；<br>3（高）。<br>默认取值：<br>不涉及。 |
+| `iteration_id` | 否 | `string` |  | 参数解释：<br>迭代 ID。<br>约束限制：<br>正则表达式：\d+。<br>取值范围：<br>最小值 0。<br>默认取值：<br>不涉及。 |
+| `module_id` | 否 | `string` |  | 参数解释：<br>模块 ID。<br>约束限制：<br>正则表达式：\d+。<br>取值范围：<br>最小值 0。<br>默认取值：<br>不涉及。 |
+| `severity_id` | 否 | `integer` |  | 参数解释：<br>重要程度。<br>约束限制：<br>正则表达式：\d+。<br>取值范围：<br>10（关键）；<br>11（重要）；<br>12（一般）；<br>13（提示）。<br>默认取值：<br>不涉及。 |
+| `assigned_id` | 否 | `string` |  | 参数解释：<br>处理人数字 ID，可通过获取指定项目的成员用户列表接口获取项目成员的用户数字 ID。<br>约束限制：<br>正则表达式：\d+。<br>取值范围：<br>最小值 0。<br>默认取值：<br>不涉及。 |
+| `developer_id` | 否 | `string` |  | 参数解释：<br>开发者数字 ID。<br>约束限制：<br>正则表达式：\d+。<br>取值范围：<br>最小值 0。<br>默认取值：<br>不涉及。 |
+| `done_ratio` | 否 | `integer` |  | 参数解释：<br>工作项完成度。例如输入 20，表示完成度为 20%。<br>约束限制：<br>正则表达式：(100\|[1-9]?\d)。<br>取值范围：<br>最小值 0，最大值 100。<br>默认取值：<br>不涉及。 |
+| `expected_work_hours` | 否 | `integer` |  | 参数解释：<br>预计工时。<br>约束限制：<br>不涉及。<br>取值范围：<br>最小值 0。<br>默认取值：<br>不涉及。 |
+| `start_date` | 否 | `integer` |  | 参数解释：<br>开始时间。对应 CodeArts 更新工作项文档中的开始时间语义。<br>约束限制：<br>工具侧当前接收时间戳整数并按 start_date 字段提交；不传则不修改开始时间。<br>取值范围：<br>正整数时间戳。<br>默认取值：<br>不涉及。 |
+| `due_date` | 否 | `integer` |  | 参数解释：<br>结束时间。对应 CodeArts 更新工作项文档中的结束时间语义。<br>约束限制：<br>工具侧当前接收时间戳整数并按 due_date 字段提交；不传则不修改结束时间。<br>取值范围：<br>正整数时间戳。<br>默认取值：<br>不涉及。 |
 | `dry_run` | 否 | `boolean` | true | 为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：

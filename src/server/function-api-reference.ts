@@ -311,6 +311,258 @@ function describeToolInChinese(toolName: string) {
   return `${actionLabel}${moduleLabel}的${resourceLabel}。`;
 }
 
+function formatParameterDoc(sections: Array<[string, string]>) {
+  return sections.map(([title, body]) => `${title}：<br>${body}`).join("<br>");
+}
+
+function describeToolParameter(toolName: string, name: string) {
+  const reqCreateWorkItemDescriptions: Record<string, string> = {
+    project_id: formatParameterDoc([
+      [
+        "参数解释",
+        "项目的 32 位 UUID，项目唯一标识。可通过查询项目列表接口获取，响应消息体中的 project_id 字段值就是项目 ID。"
+      ],
+      ["约束限制", "正则表达式：[A-Za-z0-9]{32}。"],
+      ["取值范围", "不涉及。"],
+      ["默认取值", "不涉及。"]
+    ]),
+    title: formatParameterDoc([
+      ["参数解释", "工作项标题。MCP 字段 title 会映射到 CodeArts 创建工作项 API 的 name 字段。"],
+      ["约束限制", "创建工作项时必填；工具侧要求不能为空。建议用一句话说明要处理的问题或需求。"],
+      ["取值范围", "字符串。"],
+      ["默认取值", "不涉及。"]
+    ]),
+    work_item_type: formatParameterDoc([
+      [
+        "参数解释",
+        "工作项类型。MCP 字段 work_item_type 会映射到 CodeArts 创建工作项 API 的 tracker_id 字段；可填写类型名称或数字 ID，工具会自动转换为 tracker_id。"
+      ],
+      [
+        "约束限制",
+        "创建子工作项时父子类型需符合层级关系：Epic 只能作为 Feature 的父工作项类型；Feature 只能作为 Story 的父工作项类型；Story 只能作为任务/Task、缺陷/Bug 的父工作项类型。"
+      ],
+      [
+        "取值范围",
+        "2（任务/Task，可填 task 或 2）；<br>3（缺陷/Bug，可填 bug 或 3）；<br>5（Epic，可填 epic 或 5）；<br>6（Feature，可填 feature 或 6）；<br>7（Story，可填 story 或 7）。"
+      ],
+      ["默认取值", "不涉及。"]
+    ]),
+    parent_work_item_id: formatParameterDoc([
+      [
+        "参数解释",
+        "父工作项 ID。MCP 字段 parent_work_item_id 会映射到 CodeArts 创建工作项 API 的 parent_issue_id 字段。"
+      ],
+      ["约束限制", "创建子工作项时必填；父工作项类型 tracker_id 不能为 2（任务/Task）或 3（缺陷/Bug）。"],
+      ["取值范围", "最小值 0。"],
+      ["默认取值", "不涉及。"]
+    ]),
+    description: formatParameterDoc([
+      ["参数解释", "工作项描述，用于补充需求背景、问题现象、验收标准或处理说明。"],
+      ["约束限制", "可以为空。"],
+      ["取值范围", "最小长度 0。"],
+      ["默认取值", "不涉及。"]
+    ]),
+    priority_id: formatParameterDoc([
+      ["参数解释", "工作项优先级。"],
+      ["约束限制", "正则表达式：\\d+。"],
+      ["取值范围", "1（低）；2（中）；3（高）。"],
+      ["默认取值", "不涉及。"]
+    ]),
+    iteration_id: formatParameterDoc([
+      ["参数解释", "迭代 ID，可通过获取指定项目的迭代列表接口获取。"],
+      ["约束限制", "正则表达式：\\d+。"],
+      ["取值范围", "最小值 0。"],
+      ["默认取值", "不涉及。"]
+    ]),
+    module_id: formatParameterDoc([
+      ["参数解释", "模块 ID，可在“设置 - 工作项设置 - 模块设置”中创建或查看模块。"],
+      ["约束限制", "正则表达式：\\d+。"],
+      ["取值范围", "最小值 0。"],
+      ["默认取值", "不涉及。"]
+    ]),
+    severity_id: formatParameterDoc([
+      ["参数解释", "重要程度。通常用于缺陷、问题等级等场景。"],
+      ["约束限制", "正则表达式：\\d+。"],
+      ["取值范围", "10（关键）；<br>11（重要）；<br>12（一般）；<br>13（提示）。"],
+      ["默认取值", "不涉及。"]
+    ]),
+    assigned_id: formatParameterDoc([
+      ["参数解释", "处理人数字 ID，可通过获取指定项目的成员用户列表接口获取项目成员的用户数字 ID。"],
+      ["约束限制", "正则表达式：\\d+。"],
+      ["取值范围", "最小值 0。"],
+      ["默认取值", "不涉及。"]
+    ]),
+    developer_id: formatParameterDoc([
+      ["参数解释", "开发人员数字 ID，可通过获取指定项目的成员用户列表接口获取项目成员的用户数字 ID。"],
+      ["约束限制", "正则表达式：\\d+。"],
+      ["取值范围", "最小值 0。"],
+      ["默认取值", "不涉及。"]
+    ]),
+    done_ratio: formatParameterDoc([
+      ["参数解释", "工作项完成度。"],
+      ["约束限制", "输入 0 表示完成度为 0%，输入 100 表示完成度为 100%。"],
+      ["取值范围", "最小值 0，最大值 100。"],
+      ["默认取值", "不涉及。"]
+    ]),
+    expected_work_hours: formatParameterDoc([
+      ["参数解释", "预计工时。"],
+      ["约束限制", "可以为空。"],
+      ["取值范围", "最小值 0。"],
+      ["默认取值", "不涉及。"]
+    ]),
+    start_date: formatParameterDoc([
+      ["参数解释", "开始时间。对应 CodeArts 创建工作项文档中的开始时间语义。"],
+      ["约束限制", "工具侧当前接收时间戳整数并按 start_date 字段提交。"],
+      ["取值范围", "正整数时间戳。"],
+      ["默认取值", "不涉及。"]
+    ]),
+    due_date: formatParameterDoc([
+      ["参数解释", "结束时间。对应 CodeArts 创建工作项文档中的结束时间语义。"],
+      ["约束限制", "工具侧当前接收时间戳整数并按 due_date 字段提交。"],
+      ["取值范围", "正整数时间戳。"],
+      ["默认取值", "不涉及。"]
+    ])
+  };
+
+  const reqCreateIterationWorkItemDescriptions: Record<string, string> = {
+    ...reqCreateWorkItemDescriptions,
+    iteration_id: formatParameterDoc([
+      ["参数解释", "迭代 ID，用于指定本次创建的工作项归属到哪个迭代。可通过获取指定项目的迭代列表接口获取。"],
+      ["约束限制", "创建迭代工作项时必填；正则表达式：\\d+。"],
+      ["取值范围", "最小值 0。"],
+      ["默认取值", "不涉及。"]
+    ])
+  };
+
+  const reqCreatePlanWorkItemDescriptions: Record<string, string> = {
+    ...reqCreateWorkItemDescriptions,
+    plan_id: formatParameterDoc([
+      ["参数解释", "计划 ID，用于指定本次创建的工作项归属到哪个计划。可通过计划列表接口获取。"],
+      ["约束限制", "创建计划工作项时必填；正则表达式：\\d+。"],
+      ["取值范围", "最小值 0。"],
+      ["默认取值", "不涉及。"]
+    ]),
+    iteration_id: formatParameterDoc([
+      ["参数解释", "迭代 ID，用于指定工作项关联的迭代。可通过获取指定项目的迭代列表接口获取。"],
+      ["约束限制", "正则表达式：\\d+。"],
+      ["取值范围", "最小值 0。"],
+      ["默认取值", "不涉及。"]
+    ]),
+    status_id: formatParameterDoc([
+      ["参数解释", "工作项状态 ID。"],
+      ["约束限制", "正则表达式：\\d+。"],
+      ["取值范围", "1（新建）；<br>2（进行中）；<br>3（已解决）；<br>4（测试中）；<br>5（已关闭）；<br>6（已拒绝）。"],
+      ["默认取值", "不涉及。"]
+    ])
+  };
+
+  const reqUpdateWorkItemDescriptions: Record<string, string> = {
+    project_id: reqCreateWorkItemDescriptions.project_id,
+    work_item_id: formatParameterDoc([
+      ["参数解释", "工作项 ID。MCP 字段 work_item_id 会映射到 CodeArts 更新工作项 API 路径参数 issue_id。可通过高级查询工作项接口获取，响应消息体中的 id 字段值就是工作项 ID。"],
+      ["约束限制", "长度在 1 位到 10 位之间的纯数字。"],
+      ["取值范围", "最小长度：1，最大长度：10。"],
+      ["默认取值", "不涉及。"]
+    ]),
+    title: formatParameterDoc([
+      ["参数解释", "工作项标题。MCP 字段 title 会映射到 CodeArts 更新工作项 API 的 name 字段。"],
+      ["约束限制", "更新时可选；不传则不修改标题。"],
+      ["取值范围", "字符串。"],
+      ["默认取值", "不涉及。"]
+    ]),
+    work_item_type: formatParameterDoc([
+      [
+        "参数解释",
+        "工作项类型。MCP 字段 work_item_type 会映射到 CodeArts 更新工作项 API 的 tracker_id 字段；可填写类型名称或数字 ID，工具会自动转换为 tracker_id。"
+      ],
+      ["约束限制", "正则表达式：\\d+。更新时可选；不传则不修改工作项类型。"],
+      ["取值范围", "2（任务/Task，可填 task 或 2）；<br>3（缺陷/Bug，可填 bug 或 3）；<br>5（Epic，可填 epic 或 5）；<br>6（Feature，可填 feature 或 6）；<br>7（Story，可填 story 或 7）。"],
+      ["默认取值", "不涉及。"]
+    ]),
+    description: formatParameterDoc([
+      ["参数解释", "工作项描述信息。"],
+      ["约束限制", "更新时可选；不传则不修改描述。"],
+      ["取值范围", "字符串。"],
+      ["默认取值", "不涉及。"]
+    ]),
+    status_id: formatParameterDoc([
+      ["参数解释", "工作项状态 ID。"],
+      ["约束限制", "正则表达式：\\d+。"],
+      ["取值范围", "1（新建）；<br>2（进行中）；<br>3（已解决）；<br>4（测试中）；<br>5（已关闭）；<br>6（已拒绝）。"],
+      ["默认取值", "不涉及。"]
+    ]),
+    priority_id: formatParameterDoc([
+      ["参数解释", "工作项优先级。"],
+      ["约束限制", "正则表达式：\\d+。"],
+      ["取值范围", "1（低）；<br>2（中）；<br>3（高）。"],
+      ["默认取值", "不涉及。"]
+    ]),
+    iteration_id: formatParameterDoc([
+      ["参数解释", "迭代 ID。"],
+      ["约束限制", "正则表达式：\\d+。"],
+      ["取值范围", "最小值 0。"],
+      ["默认取值", "不涉及。"]
+    ]),
+    module_id: formatParameterDoc([
+      ["参数解释", "模块 ID。"],
+      ["约束限制", "正则表达式：\\d+。"],
+      ["取值范围", "最小值 0。"],
+      ["默认取值", "不涉及。"]
+    ]),
+    severity_id: formatParameterDoc([
+      ["参数解释", "重要程度。"],
+      ["约束限制", "正则表达式：\\d+。"],
+      ["取值范围", "10（关键）；<br>11（重要）；<br>12（一般）；<br>13（提示）。"],
+      ["默认取值", "不涉及。"]
+    ]),
+    assigned_id: formatParameterDoc([
+      ["参数解释", "处理人数字 ID，可通过获取指定项目的成员用户列表接口获取项目成员的用户数字 ID。"],
+      ["约束限制", "正则表达式：\\d+。"],
+      ["取值范围", "最小值 0。"],
+      ["默认取值", "不涉及。"]
+    ]),
+    developer_id: formatParameterDoc([
+      ["参数解释", "开发者数字 ID。"],
+      ["约束限制", "正则表达式：\\d+。"],
+      ["取值范围", "最小值 0。"],
+      ["默认取值", "不涉及。"]
+    ]),
+    done_ratio: formatParameterDoc([
+      ["参数解释", "工作项完成度。例如输入 20，表示完成度为 20%。"],
+      ["约束限制", "正则表达式：(100|[1-9]?\\d)。"],
+      ["取值范围", "最小值 0，最大值 100。"],
+      ["默认取值", "不涉及。"]
+    ]),
+    expected_work_hours: formatParameterDoc([
+      ["参数解释", "预计工时。"],
+      ["约束限制", "不涉及。"],
+      ["取值范围", "最小值 0。"],
+      ["默认取值", "不涉及。"]
+    ]),
+    start_date: formatParameterDoc([
+      ["参数解释", "开始时间。对应 CodeArts 更新工作项文档中的开始时间语义。"],
+      ["约束限制", "工具侧当前接收时间戳整数并按 start_date 字段提交；不传则不修改开始时间。"],
+      ["取值范围", "正整数时间戳。"],
+      ["默认取值", "不涉及。"]
+    ]),
+    due_date: formatParameterDoc([
+      ["参数解释", "结束时间。对应 CodeArts 更新工作项文档中的结束时间语义。"],
+      ["约束限制", "工具侧当前接收时间戳整数并按 due_date 字段提交；不传则不修改结束时间。"],
+      ["取值范围", "正整数时间戳。"],
+      ["默认取值", "不涉及。"]
+    ])
+  };
+
+  const toolDescriptions: Record<string, Record<string, string>> = {
+    req_create_work_item: reqCreateWorkItemDescriptions,
+    req_create_iteration_work_item: reqCreateIterationWorkItemDescriptions,
+    req_create_plan_work_item: reqCreatePlanWorkItemDescriptions,
+    req_update_work_item: reqUpdateWorkItemDescriptions
+  };
+
+  return toolDescriptions[toolName]?.[name];
+}
+
 function describeParameter(name: string) {
   const exactDescriptions: Record<string, string> = {
     access_key: "华为云访问密钥 ID，用于当前 MCP 会话鉴权。",
@@ -783,10 +1035,17 @@ function renderEnumValues(schema: JsonSchemaObject): string | undefined {
   return undefined;
 }
 
-function describeSchemaParameter(name: string, schema: JsonSchemaObject, originalSchema: JsonSchemaObject) {
-  const baseDescription = hasKnownParameterDescription(name)
-    ? describeParameter(name)
-    : schema.description ?? originalSchema.description ?? describeParameter(name);
+function describeSchemaParameter(
+  toolName: string,
+  name: string,
+  schema: JsonSchemaObject,
+  originalSchema: JsonSchemaObject
+) {
+  const toolDescription = describeToolParameter(toolName, name);
+  const baseDescription = toolDescription ??
+    (hasKnownParameterDescription(name)
+      ? describeParameter(name)
+      : schema.description ?? originalSchema.description ?? describeParameter(name));
   const enumValues = renderEnumValues(schema);
 
   if (!enumValues || baseDescription.includes("可选值")) {
@@ -805,7 +1064,7 @@ function resolveLocalSchemaRef(schema: JsonSchemaObject, root: JsonSchemaObject)
   return root.properties?.[propertyName] ?? schema;
 }
 
-function renderParameterTable(inputSchema: unknown) {
+function renderParameterTable(toolName: string, inputSchema: unknown) {
   const schema = asJsonSchemaObject(inputSchema);
   const properties = schema.properties ?? {};
   const entries = Object.entries(properties);
@@ -822,7 +1081,7 @@ function renderParameterTable(inputSchema: unknown) {
 
   for (const [name, propertySchema] of entries) {
     const resolvedSchema = resolveLocalSchemaRef(propertySchema, schema);
-    const description = describeSchemaParameter(name, resolvedSchema, propertySchema);
+    const description = describeSchemaParameter(toolName, name, resolvedSchema, propertySchema);
     lines.push(
       `| \`${name}\` | ${required.has(name) ? "是" : "否"} | \`${escapeMarkdownCell(getSchemaType(resolvedSchema))}\` | ${escapeMarkdownCell(renderDefaultValue(resolvedSchema.default ?? propertySchema.default))} | ${escapeMarkdownCell(description)} |`
     );
@@ -960,7 +1219,7 @@ export function renderFunctionApiReference(tools: ToolDefinition[]) {
       "",
       "参数：",
       "",
-      ...renderParameterTable(tool.inputSchema),
+      ...renderParameterTable(tool.name, tool.inputSchema),
       "",
       "输入 JSON Schema：",
       "",
