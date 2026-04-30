@@ -7,6 +7,8 @@ import {
 } from "./tool-manifest.js";
 
 const FUNCTION_API_REFERENCE_PATH = "docs/wiki/Function-API-Reference.md";
+const FUNCTION_API_REFERENCE_DETAIL_DIR = "docs/wiki";
+const FUNCTION_API_REFERENCE_DETAIL_PREFIX = "Function-API-Reference";
 
 type ToolDefinition = {
   name: string;
@@ -35,6 +37,32 @@ type JsonSchemaObject = {
 
 function getModuleLabel(toolName: string) {
   return findToolManifestEntry(toolName)?.module ?? "Other";
+}
+
+function getModuleSlug(module: string) {
+  const moduleSlugs: Record<string, string> = {
+    Artifact: "Artifact",
+    "Auth / Session": "Auth-Session",
+    Build: "Build",
+    Check: "Check",
+    Deploy: "Deploy",
+    Pipeline: "Pipeline",
+    Repo: "Repo",
+    Req: "Req",
+    TestPlan: "TestPlan",
+    Other: "Other"
+  };
+  const slug = moduleSlugs[module] ?? module.replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+  return slug || "Other";
+}
+
+function getModuleReferenceFilename(module: string) {
+  return `${FUNCTION_API_REFERENCE_DETAIL_PREFIX}-${getModuleSlug(module)}.md`;
+}
+
+function getModuleReferencePath(module: string) {
+  return `${FUNCTION_API_REFERENCE_DETAIL_DIR}/${getModuleReferenceFilename(module)}`;
 }
 
 function sortTools(tools: ToolDefinition[]) {
@@ -1307,18 +1335,65 @@ export async function collectHttpToolDefinitions(): Promise<ToolDefinition[]> {
   return tools;
 }
 
-export function renderFunctionApiReference(tools: ToolDefinition[]) {
+function groupToolsByModule(tools: ToolDefinition[]) {
   const sortedTools = sortTools(tools);
-  const moduleCounts = new Map<string, number>();
+  const moduleTools = new Map<string, ToolDefinition[]>();
 
   for (const tool of sortedTools) {
-    moduleCounts.set(getModuleLabel(tool.name), (moduleCounts.get(getModuleLabel(tool.name)) ?? 0) + 1);
+    const module = getModuleLabel(tool.name);
+
+    moduleTools.set(module, [...(moduleTools.get(module) ?? []), tool]);
   }
 
+  return moduleTools;
+}
+
+function renderToolReferenceSection(tool: ToolDefinition) {
+  const exampleArguments = buildExampleArguments(tool.inputSchema);
+
+  return [
+    `### ${tool.name}`,
+    "",
+    `所属模块：\`${getChineseModuleLabel(getModuleLabel(tool.name))}\``,
+    "",
+    `说明：${describeToolInChinese(tool.name)}`,
+    "",
+    "调用示例：",
+    "",
+    "```json",
+    renderJson({
+      jsonrpc: "2.0",
+      id: 1,
+      method: "tools/call",
+      params: {
+        name: tool.name,
+        arguments: exampleArguments
+      }
+    }),
+    "```",
+    "",
+    "参数：",
+    "",
+    ...renderParameterTable(tool.name, tool.inputSchema),
+    "",
+    "输入 JSON Schema：",
+    "",
+    "```json",
+    renderJson(tool.inputSchema),
+    "```",
+    ""
+  ];
+}
+
+export function renderFunctionApiReferenceIndex(tools: ToolDefinition[]) {
+  const sortedTools = sortTools(tools);
+  const moduleTools = groupToolsByModule(sortedTools);
   const lines = [
     "# CodeArts MCP 函数 API 参考",
     "",
     "本文档由通过 ToolManifest 校验的 HTTP MCP `tools/list` 注册表生成。不要手工编辑工具条目。",
+    "",
+    "为避免单页过大，完整参数表和 JSON Schema 已按模块拆分到子页面。本页只保留通用调用结构、模块目录和工具索引。",
     "",
     "所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。",
     "",
@@ -1338,59 +1413,82 @@ export function renderFunctionApiReference(tools: ToolDefinition[]) {
     "",
     "## 模块目录",
     "",
-    "| 模块 | API 数量 |",
-    "| --- | ---: |",
-    ...Array.from(moduleCounts.entries()).map(
-      ([module, count]) => `| ${getChineseModuleLabel(module)} | ${count} |`
+    "| 模块 | API 数量 | 明细文档 |",
+    "| --- | ---: | --- |",
+    ...Array.from(moduleTools.entries()).map(
+      ([module, moduleToolList]) =>
+        `| ${getChineseModuleLabel(module)} | ${moduleToolList.length} | [${getModuleReferenceFilename(module)}](./${getModuleReferenceFilename(module)}) |`
     ),
-    `| **总计** | **${sortedTools.length}** |`,
+    `| **总计** | **${sortedTools.length}** | |`,
+    "",
+    "## 字段对应",
+    "",
+    "各模块明细文档的参数表都包含“字段对应”说明，用来标明 MCP 字段和原始 CodeArts API 字段的关系。字段可能是同名透传，也可能是 MCP 为易用性做过改名或封装后的字段。",
     "",
     "## API 清单",
+    "",
+    "| 工具 | 模块 | 明细文档 |",
+    "| --- | --- | --- |",
+    ...sortedTools.map((tool) => {
+      const module = getModuleLabel(tool.name);
+
+      return `| \`${tool.name}\` | ${getChineseModuleLabel(module)} | [查看](./${getModuleReferenceFilename(module)}#${tool.name}) |`;
+    }),
     ""
   ];
-
-  for (const tool of sortedTools) {
-    const exampleArguments = buildExampleArguments(tool.inputSchema);
-
-    lines.push(
-      `### ${tool.name}`,
-      "",
-      `所属模块：\`${getChineseModuleLabel(getModuleLabel(tool.name))}\``,
-      "",
-      `说明：${describeToolInChinese(tool.name)}`,
-      "",
-      "调用示例：",
-      "",
-      "```json",
-      renderJson({
-        jsonrpc: "2.0",
-        id: 1,
-        method: "tools/call",
-        params: {
-          name: tool.name,
-          arguments: exampleArguments
-        }
-      }),
-      "```",
-      "",
-      "参数：",
-      "",
-      ...renderParameterTable(tool.name, tool.inputSchema),
-      "",
-      "输入 JSON Schema：",
-      "",
-      "```json",
-      renderJson(tool.inputSchema),
-      "```",
-      ""
-    );
-  }
 
   return `${lines.join("\n").replace(/\r\n/g, "\n")}\n`;
 }
 
+export function renderFunctionApiReferenceModule(module: string, tools: ToolDefinition[]) {
+  const sortedTools = sortTools(tools);
+  const lines = [
+    `# CodeArts MCP 函数 API 参考 - ${getChineseModuleLabel(module)}`,
+    "",
+    "本文档由通过 ToolManifest 校验的 HTTP MCP `tools/list` 注册表生成。不要手工编辑工具条目。",
+    "",
+    `[返回函数 API 总目录](./${FUNCTION_API_REFERENCE_PATH.split("/").at(-1)})`,
+    "",
+    `模块：\`${getChineseModuleLabel(module)}\``,
+    "",
+    `API 数量：\`${sortedTools.length}\``,
+    "",
+    "所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。",
+    "",
+    "## API 清单",
+    "",
+    ...sortedTools.flatMap(renderToolReferenceSection)
+  ];
+
+  return `${lines.join("\n").replace(/\r\n/g, "\n")}\n`;
+}
+
+export function renderFunctionApiReferenceFiles(tools: ToolDefinition[]) {
+  const sortedTools = sortTools(tools);
+  const moduleTools = groupToolsByModule(sortedTools);
+
+  return [
+    {
+      path: FUNCTION_API_REFERENCE_PATH,
+      content: renderFunctionApiReferenceIndex(sortedTools)
+    },
+    ...Array.from(moduleTools.entries()).map(([module, moduleToolList]) => ({
+      path: getModuleReferencePath(module),
+      content: renderFunctionApiReferenceModule(module, moduleToolList)
+    }))
+  ];
+}
+
+export function renderFunctionApiReference(tools: ToolDefinition[]) {
+  return renderFunctionApiReferenceIndex(tools);
+}
+
 export async function renderCurrentFunctionApiReference() {
   return renderFunctionApiReference(await collectHttpToolDefinitions());
+}
+
+export async function renderCurrentFunctionApiReferenceFiles() {
+  return renderFunctionApiReferenceFiles(await collectHttpToolDefinitions());
 }
 
 export function loadFunctionApiReference(path = FUNCTION_API_REFERENCE_PATH) {

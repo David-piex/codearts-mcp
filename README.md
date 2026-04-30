@@ -219,7 +219,7 @@ node dist/src/server/index.js
 | 文档 | 用途 |
 | --- | --- |
 | [HTTP MCP Interface](docs/wiki/HTTP-MCP-Interface.md) | HTTP 端点、MCP JSON-RPC、鉴权会话、请求响应和接入示例 |
-| [Function API Reference](docs/wiki/Function-API-Reference.md) | 412 个 MCP 功能 API 的工具名、参数表、调用示例和 JSON Schema |
+| [Function API Reference](docs/wiki/Function-API-Reference.md) | 419 个 MCP 功能 API 的总目录；完整参数表、字段对应和 JSON Schema 按模块拆分到明细页 |
 | [CodeArts MCP API Reference](docs/wiki/API-Reference.md) | 8 个 CodeArts 服务的 MCP API 总览、基础 URL、工具清单和 live 边界 |
 | [Req MCP API Reference](docs/wiki/Req-API-Reference.md) | Req 深度 API 文档，包含 Scrum、需求池、IPD、写入 gate 和 smoke 样本缺口 |
 | [Module Functions Overview](docs/wiki/Module-Functions-Overview.md) | 按模块解释每个服务能做什么、适合什么场景 |

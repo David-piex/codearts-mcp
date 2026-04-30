@@ -64,7 +64,7 @@
 | [Testing-and-Live-Ops](./Testing-and-Live-Ops.md) | 测试分层、AK/SK live 联调、线上排查和执行型变量 |
 | [Official-API-Alignment](./Official-API-Alignment.md) | 8 个官方 PDF 维度下的 MCP 化现状 |
 | [HTTP-MCP-Interface](./HTTP-MCP-Interface.md) | HTTP 端点、MCP JSON-RPC、鉴权会话、请求响应和接入示例 |
-| [Function-API-Reference](./Function-API-Reference.md) | 412 个 MCP 功能 API 的工具名、参数表、调用示例和 JSON Schema |
+| [Function-API-Reference](./Function-API-Reference.md) | 419 个 MCP 功能 API 的总目录；完整参数表、字段对应和 JSON Schema 按模块拆分到明细页 |
 | [API-Reference](./API-Reference.md) | 8 个 CodeArts 服务的 MCP API 总览、基础 URL、工具清单和 live 边界 |
 | [Req-API-Reference](./Req-API-Reference.md) | Req MCP API 工具、写入 gate、真实 smoke 和剩余样本缺口 |
 | [Troubleshooting](./Troubleshooting.md) | 常见问题、排查顺序和修复建议 |

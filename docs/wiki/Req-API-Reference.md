@@ -77,7 +77,7 @@ Req 写工具遵循两个层面的安全策略：
 
 ## 字段对应说明
 
-完整字段表以 [Function-API-Reference](./Function-API-Reference.md) 为准。那份文档已经给每个 Req MCP 工具参数补上“字段对应”，用于把 MCP 字段和原始 CodeArts Req/PDF API 字段一一对上。
+完整字段表以 [Function-API-Reference-Req](./Function-API-Reference-Req.md) 为准；也可以从 [Function-API-Reference](./Function-API-Reference.md) 总目录进入。那份模块明细已经给每个 Req MCP 工具参数补上“字段对应”，用于把 MCP 字段和原始 CodeArts Req/PDF API 字段一一对上。
 
 常见对应关系：
 

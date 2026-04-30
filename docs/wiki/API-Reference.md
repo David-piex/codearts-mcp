@@ -1,6 +1,6 @@
 # CodeArts MCP API 参考
 
-这份文档是全局 API 入口，覆盖当前 MCP Server 暴露的 8 个 CodeArts 服务。Req 的接口面最深，单独维护在 [Req-API-Reference](./Req-API-Reference.md)；每个 MCP 工具的完整参数表和 JSON Schema 请查看 [Function-API-Reference](./Function-API-Reference.md)。本页用于快速了解各服务的工具范围、基础 URL、读写规模和使用边界。
+这份文档是全局 API 入口，覆盖当前 MCP Server 暴露的 8 个 CodeArts 服务。Req 的接口面最深，单独维护在 [Req-API-Reference](./Req-API-Reference.md)；每个 MCP 工具的完整参数表和 JSON Schema 请从 [Function-API-Reference](./Function-API-Reference.md) 进入对应模块明细页查看。本页用于快速了解各服务的工具范围、基础 URL、读写规模和使用边界。
 
 当前规模：
 
@@ -49,7 +49,7 @@ MCP_SERVER_VERSION=0.1.0
 
 ## 字段对应说明
 
-`Function-API-Reference.md` 已按所有 MCP 工具生成完整参数表，每个字段都包含“字段对应”说明，用来标明 MCP 入参和原始 CodeArts API 字段的关系。
+`Function-API-Reference.md` 是函数 API 总目录，完整参数表已按模块拆分到 `Function-API-Reference-*.md` 明细页。每个字段都包含“字段对应”说明，用来标明 MCP 入参和原始 CodeArts API 字段的关系。
 
 阅读规则：
 

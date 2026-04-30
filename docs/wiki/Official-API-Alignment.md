@@ -14,7 +14,7 @@
 字段对齐口径：
 
 - MCP 工具名不强求和官方接口名 1:1，但工具参数必须能追溯到原始 CodeArts API 字段。
-- `Function-API-Reference.md` 是字段对应的最终明细来源，每个参数都包含“字段对应”说明。
+- `Function-API-Reference.md` 是字段对应的总入口，最终参数明细在各模块 `Function-API-Reference-*.md` 页面；每个参数都包含“字段对应”说明。
 - 如果 MCP 字段为了易读做过改名，文档会写明原始字段，例如 `title -> name/subject`、`work_item_type -> tracker_id`、`parent_work_item_id -> parent_issue_id`、`name -> target_repo_name`。
 - 如果 MCP 字段是封装字段或安全字段，文档会说明原始 API 无对应字段，例如 `dry_run`、HTTP 会话鉴权字段。
 
