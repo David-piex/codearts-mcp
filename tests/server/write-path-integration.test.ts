@@ -1668,8 +1668,8 @@ const writePathCases: WritePathCase[] = [
         "\"parent_issue_id\":9001",
         "\"done_ratio\":20",
         "\"expected_work_hours\":8",
-        "\"begin_time\":\"2028-04-14\"",
-        "\"end_time\":\"2028-04-21\""
+        "\"begin_time\":\"2028-04-15\"",
+        "\"end_time\":\"2028-04-22\""
       ]
     }
   },
@@ -1701,8 +1701,8 @@ const writePathCases: WritePathCase[] = [
         "\"assigned_id\":\"user-2\"",
         "\"done_ratio\":20",
         "\"expected_work_hours\":8",
-        "\"begin_time\":\"2028-04-14\"",
-        "\"end_time\":\"2028-04-21\""
+        "\"begin_time\":\"2028-04-15\"",
+        "\"end_time\":\"2028-04-22\""
       ]
     }
   },
@@ -1760,8 +1760,8 @@ const writePathCases: WritePathCase[] = [
         "\"assigned_id\":\"user-2\"",
         "\"done_ratio\":60",
         "\"expected_work_hours\":13",
-        "\"begin_time\":\"2028-04-14\"",
-        "\"end_time\":\"2028-04-21\""
+        "\"begin_time\":\"2028-04-15\"",
+        "\"end_time\":\"2028-04-22\""
       ]
     }
   },

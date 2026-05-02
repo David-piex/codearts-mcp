@@ -382,8 +382,8 @@ function describeToolFieldMapping(toolName: string, name: string) {
     developer_id: "MCP 字段 `developer_id` ↔ PDF/CodeArts 请求体字段 `developer_id`。",
     done_ratio: "MCP 字段 `done_ratio` ↔ PDF/CodeArts 请求体字段 `done_ratio`。",
     expected_work_hours: "MCP 字段 `expected_work_hours` ↔ PDF/CodeArts 请求体字段 `expected_work_hours`。",
-    start_date: "MCP 字段 `start_date` ↔ PDF 中开始时间字段 `begin_time` 的业务语义；当前工具实际按 CodeArts 兼容字段 `start_date` 提交。",
-    due_date: "MCP 字段 `due_date` ↔ PDF 中结束时间字段 `end_time` 的业务语义；当前工具实际按 CodeArts 兼容字段 `due_date` 提交。",
+    start_date: "MCP 字段 `start_date` ↔ PDF/CodeArts 请求体字段 `begin_time`；工具接收毫秒时间戳，并按北京时区日期转换为 `YYYY-MM-DD` 后提交。",
+    due_date: "MCP 字段 `due_date` ↔ PDF/CodeArts 请求体字段 `end_time`；工具接收毫秒时间戳，并按北京时区日期转换为 `YYYY-MM-DD` 后提交。",
     dry_run: "MCP 字段 `dry_run` 是本工具安全开关，PDF/CodeArts 原 API 无对应字段，不会提交给上游。"
   };
 
@@ -594,14 +594,14 @@ function describeToolParameter(toolName: string, name: string) {
     ]),
     start_date: formatParameterDoc([
       ["参数解释", "开始时间。对应 CodeArts 创建工作项文档中的开始时间语义。"],
-      ["约束限制", "工具侧当前接收时间戳整数并按 start_date 字段提交。"],
-      ["取值范围", "正整数时间戳。"],
+      ["约束限制", "工具侧接收毫秒时间戳整数，按北京时区日期转换为 CodeArts `begin_time` 字段（YYYY-MM-DD）提交。"],
+      ["取值范围", "正整数毫秒时间戳。"],
       ["默认取值", "不涉及。"]
     ]),
     due_date: formatParameterDoc([
       ["参数解释", "结束时间。对应 CodeArts 创建工作项文档中的结束时间语义。"],
-      ["约束限制", "工具侧当前接收时间戳整数并按 due_date 字段提交。"],
-      ["取值范围", "正整数时间戳。"],
+      ["约束限制", "工具侧接收毫秒时间戳整数，按北京时区日期转换为 CodeArts `end_time` 字段（YYYY-MM-DD）提交。"],
+      ["取值范围", "正整数毫秒时间戳。"],
       ["默认取值", "不涉及。"]
     ])
   };
@@ -634,6 +634,18 @@ function describeToolParameter(toolName: string, name: string) {
       ["参数解释", "工作项状态 ID。"],
       ["约束限制", "正则表达式：\\d+。"],
       ["取值范围", "1（新建）；<br>2（进行中）；<br>3（已解决）；<br>4（测试中）；<br>5（已关闭）；<br>6（已拒绝）。"],
+      ["默认取值", "不涉及。"]
+    ]),
+    start_date: formatParameterDoc([
+      ["参数解释", "开始时间。对应 CodeArts 规划工作项创建接口中的 start_date 字段。"],
+      ["约束限制", "工具侧接收毫秒时间戳整数，并按 CodeArts `start_date` 字段原样提交。"],
+      ["取值范围", "正整数毫秒时间戳。"],
+      ["默认取值", "不涉及。"]
+    ]),
+    due_date: formatParameterDoc([
+      ["参数解释", "结束时间。对应 CodeArts 规划工作项创建接口中的 due_date 字段。"],
+      ["约束限制", "工具侧接收毫秒时间戳整数，并按 CodeArts `due_date` 字段原样提交。"],
+      ["取值范围", "正整数毫秒时间戳。"],
       ["默认取值", "不涉及。"]
     ])
   };
@@ -723,14 +735,14 @@ function describeToolParameter(toolName: string, name: string) {
     ]),
     start_date: formatParameterDoc([
       ["参数解释", "开始时间。对应 CodeArts 更新工作项文档中的开始时间语义。"],
-      ["约束限制", "工具侧当前接收时间戳整数并按 start_date 字段提交；不传则不修改开始时间。"],
-      ["取值范围", "正整数时间戳。"],
+      ["约束限制", "工具侧接收毫秒时间戳整数，按北京时区日期转换为 CodeArts `begin_time` 字段（YYYY-MM-DD）提交；不传则不修改开始时间。"],
+      ["取值范围", "正整数毫秒时间戳。"],
       ["默认取值", "不涉及。"]
     ]),
     due_date: formatParameterDoc([
       ["参数解释", "结束时间。对应 CodeArts 更新工作项文档中的结束时间语义。"],
-      ["约束限制", "工具侧当前接收时间戳整数并按 due_date 字段提交；不传则不修改结束时间。"],
-      ["取值范围", "正整数时间戳。"],
+      ["约束限制", "工具侧接收毫秒时间戳整数，按北京时区日期转换为 CodeArts `end_time` 字段（YYYY-MM-DD）提交；不传则不修改结束时间。"],
+      ["取值范围", "正整数毫秒时间戳。"],
       ["默认取值", "不涉及。"]
     ])
   };

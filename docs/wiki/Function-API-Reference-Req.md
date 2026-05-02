@@ -2996,8 +2996,8 @@ API 数量：`200`
 | `developer_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `developer_id` ↔ PDF/CodeArts 请求体字段 `developer_id`。<br>参数解释：<br>开发人员数字 ID，可通过获取指定项目的成员用户列表接口获取项目成员的用户数字 ID。<br>约束限制：<br>正则表达式：\d+。<br>取值范围：<br>最小值 0。<br>默认取值：<br>不涉及。 |
 | `done_ratio` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `done_ratio` ↔ PDF/CodeArts 请求体字段 `done_ratio`。<br>参数解释：<br>工作项完成度。<br>约束限制：<br>输入 0 表示完成度为 0%，输入 100 表示完成度为 100%。<br>取值范围：<br>最小值 0，最大值 100。<br>默认取值：<br>不涉及。 |
 | `expected_work_hours` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `expected_work_hours` ↔ PDF/CodeArts 请求体字段 `expected_work_hours`。<br>参数解释：<br>预计工时。<br>约束限制：<br>可以为空。<br>取值范围：<br>最小值 0。<br>默认取值：<br>不涉及。 |
-| `start_date` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `start_date` ↔ PDF 中开始时间字段 `begin_time` 的业务语义；当前工具实际按 CodeArts 兼容字段 `start_date` 提交。<br>参数解释：<br>开始时间。对应 CodeArts 创建工作项文档中的开始时间语义。<br>约束限制：<br>工具侧当前接收时间戳整数并按 start_date 字段提交。<br>取值范围：<br>正整数时间戳。<br>默认取值：<br>不涉及。 |
-| `due_date` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `due_date` ↔ PDF 中结束时间字段 `end_time` 的业务语义；当前工具实际按 CodeArts 兼容字段 `due_date` 提交。<br>参数解释：<br>结束时间。对应 CodeArts 创建工作项文档中的结束时间语义。<br>约束限制：<br>工具侧当前接收时间戳整数并按 due_date 字段提交。<br>取值范围：<br>正整数时间戳。<br>默认取值：<br>不涉及。 |
+| `start_date` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `start_date` ↔ PDF/CodeArts 请求体字段 `begin_time`；工具接收毫秒时间戳，并按北京时区日期转换为 `YYYY-MM-DD` 后提交。<br>参数解释：<br>开始时间。对应 CodeArts 创建工作项文档中的开始时间语义。<br>约束限制：<br>工具侧接收毫秒时间戳整数，按北京时区日期转换为 CodeArts `begin_time` 字段（YYYY-MM-DD）提交。<br>取值范围：<br>正整数毫秒时间戳。<br>默认取值：<br>不涉及。 |
+| `due_date` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `due_date` ↔ PDF/CodeArts 请求体字段 `end_time`；工具接收毫秒时间戳，并按北京时区日期转换为 `YYYY-MM-DD` 后提交。<br>参数解释：<br>结束时间。对应 CodeArts 创建工作项文档中的结束时间语义。<br>约束限制：<br>工具侧接收毫秒时间戳整数，按北京时区日期转换为 CodeArts `end_time` 字段（YYYY-MM-DD）提交。<br>取值范围：<br>正整数毫秒时间戳。<br>默认取值：<br>不涉及。 |
 | `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，PDF/CodeArts 原 API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -3186,8 +3186,8 @@ API 数量：`200`
 | `developer_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `developer_id` ↔ PDF/CodeArts 请求体字段 `developer_id`。<br>参数解释：<br>开发人员数字 ID，可通过获取指定项目的成员用户列表接口获取项目成员的用户数字 ID。<br>约束限制：<br>正则表达式：\d+。<br>取值范围：<br>最小值 0。<br>默认取值：<br>不涉及。 |
 | `done_ratio` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `done_ratio` ↔ PDF/CodeArts 请求体字段 `done_ratio`。<br>参数解释：<br>工作项完成度。<br>约束限制：<br>输入 0 表示完成度为 0%，输入 100 表示完成度为 100%。<br>取值范围：<br>最小值 0，最大值 100。<br>默认取值：<br>不涉及。 |
 | `expected_work_hours` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `expected_work_hours` ↔ PDF/CodeArts 请求体字段 `expected_work_hours`。<br>参数解释：<br>预计工时。<br>约束限制：<br>可以为空。<br>取值范围：<br>最小值 0。<br>默认取值：<br>不涉及。 |
-| `start_date` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `start_date` ↔ CodeArts 请求体字段 `start_date`。<br>参数解释：<br>开始时间。对应 CodeArts 创建工作项文档中的开始时间语义。<br>约束限制：<br>工具侧当前接收时间戳整数并按 start_date 字段提交。<br>取值范围：<br>正整数时间戳。<br>默认取值：<br>不涉及。 |
-| `due_date` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `due_date` ↔ CodeArts 请求体字段 `due_date`。<br>参数解释：<br>结束时间。对应 CodeArts 创建工作项文档中的结束时间语义。<br>约束限制：<br>工具侧当前接收时间戳整数并按 due_date 字段提交。<br>取值范围：<br>正整数时间戳。<br>默认取值：<br>不涉及。 |
+| `start_date` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `start_date` ↔ CodeArts 请求体字段 `start_date`。<br>参数解释：<br>开始时间。对应 CodeArts 规划工作项创建接口中的 start_date 字段。<br>约束限制：<br>工具侧接收毫秒时间戳整数，并按 CodeArts `start_date` 字段原样提交。<br>取值范围：<br>正整数毫秒时间戳。<br>默认取值：<br>不涉及。 |
+| `due_date` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `due_date` ↔ CodeArts 请求体字段 `due_date`。<br>参数解释：<br>结束时间。对应 CodeArts 规划工作项创建接口中的 due_date 字段。<br>约束限制：<br>工具侧接收毫秒时间戳整数，并按 CodeArts `due_date` 字段原样提交。<br>取值范围：<br>正整数毫秒时间戳。<br>默认取值：<br>不涉及。 |
 | `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，PDF/CodeArts 原 API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -3684,8 +3684,8 @@ API 数量：`200`
 | `developer_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `developer_id` ↔ PDF/CodeArts 请求体字段 `developer_id`。<br>参数解释：<br>开发人员数字 ID，可通过获取指定项目的成员用户列表接口获取项目成员的用户数字 ID。<br>约束限制：<br>正则表达式：\d+。<br>取值范围：<br>最小值 0。<br>默认取值：<br>不涉及。 |
 | `done_ratio` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `done_ratio` ↔ PDF/CodeArts 请求体字段 `done_ratio`。<br>参数解释：<br>工作项完成度。<br>约束限制：<br>输入 0 表示完成度为 0%，输入 100 表示完成度为 100%。<br>取值范围：<br>最小值 0，最大值 100。<br>默认取值：<br>不涉及。 |
 | `expected_work_hours` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `expected_work_hours` ↔ PDF/CodeArts 请求体字段 `expected_work_hours`。<br>参数解释：<br>预计工时。<br>约束限制：<br>可以为空。<br>取值范围：<br>最小值 0。<br>默认取值：<br>不涉及。 |
-| `start_date` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `start_date` ↔ PDF 中开始时间字段 `begin_time` 的业务语义；当前工具实际按 CodeArts 兼容字段 `start_date` 提交。<br>参数解释：<br>开始时间。对应 CodeArts 创建工作项文档中的开始时间语义。<br>约束限制：<br>工具侧当前接收时间戳整数并按 start_date 字段提交。<br>取值范围：<br>正整数时间戳。<br>默认取值：<br>不涉及。 |
-| `due_date` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `due_date` ↔ PDF 中结束时间字段 `end_time` 的业务语义；当前工具实际按 CodeArts 兼容字段 `due_date` 提交。<br>参数解释：<br>结束时间。对应 CodeArts 创建工作项文档中的结束时间语义。<br>约束限制：<br>工具侧当前接收时间戳整数并按 due_date 字段提交。<br>取值范围：<br>正整数时间戳。<br>默认取值：<br>不涉及。 |
+| `start_date` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `start_date` ↔ PDF/CodeArts 请求体字段 `begin_time`；工具接收毫秒时间戳，并按北京时区日期转换为 `YYYY-MM-DD` 后提交。<br>参数解释：<br>开始时间。对应 CodeArts 创建工作项文档中的开始时间语义。<br>约束限制：<br>工具侧接收毫秒时间戳整数，按北京时区日期转换为 CodeArts `begin_time` 字段（YYYY-MM-DD）提交。<br>取值范围：<br>正整数毫秒时间戳。<br>默认取值：<br>不涉及。 |
+| `due_date` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `due_date` ↔ PDF/CodeArts 请求体字段 `end_time`；工具接收毫秒时间戳，并按北京时区日期转换为 `YYYY-MM-DD` 后提交。<br>参数解释：<br>结束时间。对应 CodeArts 创建工作项文档中的结束时间语义。<br>约束限制：<br>工具侧接收毫秒时间戳整数，按北京时区日期转换为 CodeArts `end_time` 字段（YYYY-MM-DD）提交。<br>取值范围：<br>正整数毫秒时间戳。<br>默认取值：<br>不涉及。 |
 | `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，PDF/CodeArts 原 API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -13779,8 +13779,8 @@ API 数量：`200`
 | `developer_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `developer_id` ↔ PDF/CodeArts 请求体字段 `developer_id`。<br>参数解释：<br>开发者数字 ID。<br>约束限制：<br>正则表达式：\d+。<br>取值范围：<br>最小值 0。<br>默认取值：<br>不涉及。 |
 | `done_ratio` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `done_ratio` ↔ PDF/CodeArts 请求体字段 `done_ratio`。<br>参数解释：<br>工作项完成度。例如输入 20，表示完成度为 20%。<br>约束限制：<br>正则表达式：(100\|[1-9]?\d)。<br>取值范围：<br>最小值 0，最大值 100。<br>默认取值：<br>不涉及。 |
 | `expected_work_hours` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `expected_work_hours` ↔ PDF/CodeArts 请求体字段 `expected_work_hours`。<br>参数解释：<br>预计工时。<br>约束限制：<br>不涉及。<br>取值范围：<br>最小值 0。<br>默认取值：<br>不涉及。 |
-| `start_date` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `start_date` ↔ PDF 中开始时间字段 `begin_time` 的业务语义；当前工具实际按 CodeArts 兼容字段 `start_date` 提交。<br>参数解释：<br>开始时间。对应 CodeArts 更新工作项文档中的开始时间语义。<br>约束限制：<br>工具侧当前接收时间戳整数并按 start_date 字段提交；不传则不修改开始时间。<br>取值范围：<br>正整数时间戳。<br>默认取值：<br>不涉及。 |
-| `due_date` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `due_date` ↔ PDF 中结束时间字段 `end_time` 的业务语义；当前工具实际按 CodeArts 兼容字段 `due_date` 提交。<br>参数解释：<br>结束时间。对应 CodeArts 更新工作项文档中的结束时间语义。<br>约束限制：<br>工具侧当前接收时间戳整数并按 due_date 字段提交；不传则不修改结束时间。<br>取值范围：<br>正整数时间戳。<br>默认取值：<br>不涉及。 |
+| `start_date` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `start_date` ↔ PDF/CodeArts 请求体字段 `begin_time`；工具接收毫秒时间戳，并按北京时区日期转换为 `YYYY-MM-DD` 后提交。<br>参数解释：<br>开始时间。对应 CodeArts 更新工作项文档中的开始时间语义。<br>约束限制：<br>工具侧接收毫秒时间戳整数，按北京时区日期转换为 CodeArts `begin_time` 字段（YYYY-MM-DD）提交；不传则不修改开始时间。<br>取值范围：<br>正整数毫秒时间戳。<br>默认取值：<br>不涉及。 |
+| `due_date` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `due_date` ↔ PDF/CodeArts 请求体字段 `end_time`；工具接收毫秒时间戳，并按北京时区日期转换为 `YYYY-MM-DD` 后提交。<br>参数解释：<br>结束时间。对应 CodeArts 更新工作项文档中的结束时间语义。<br>约束限制：<br>工具侧接收毫秒时间戳整数，按北京时区日期转换为 CodeArts `end_time` 字段（YYYY-MM-DD）提交；不传则不修改结束时间。<br>取值范围：<br>正整数毫秒时间戳。<br>默认取值：<br>不涉及。 |
 | `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，PDF/CodeArts 原 API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：

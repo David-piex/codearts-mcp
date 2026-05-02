@@ -2266,7 +2266,10 @@ function toReqWorkItemDate(value?: number): string | undefined {
     return undefined;
   }
 
-  return new Date(value).toISOString().slice(0, 10);
+  const date = new Date(value);
+  const chinaOffsetMs = 8 * 60 * 60 * 1000;
+
+  return new Date(date.getTime() + chinaOffsetMs).toISOString().slice(0, 10);
 }
 
 function assertReqMutationSucceeded(action: string, status?: string) {
