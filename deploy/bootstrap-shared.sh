@@ -56,7 +56,7 @@ Next steps:
 2. Start the shared server:
    docker compose up -d --build
 3. Check health:
-   curl http://127.0.0.1:8080/health
+   curl http://127.0.0.1/health
 4. Check container status:
    docker compose ps
 5. Let users connect to /mcp and call auth_configure_session once.
