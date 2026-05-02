@@ -95,7 +95,7 @@ cmd_ps() {
 
 cmd_health() {
   if command -v curl >/dev/null 2>&1; then
-    curl -fsS http://127.0.0.1/health
+    curl -fsS http://127.0.0.1:8080/health
     echo
     return
   fi

@@ -94,7 +94,7 @@ bash deploy/manage-shared.sh start
 ### 第三步: 检查服务
 
 ```bash
-curl http://127.0.0.1/health
+curl http://127.0.0.1:8080/health
 ```
 
 期望返回：
@@ -110,6 +110,8 @@ docker compose ps
 ```
 
 期望 `codearts-mcp` 服务状态为 `healthy`。
+
+默认 Docker Compose 会把 nginx 容器内的 `80` 映射到宿主机 `8080`，避免占用宿主机 `80`。如果启用 HTTPS 覆盖文件，宿主机 `443` 仍会映射到 nginx 的 `443`。
 
 ### 第四步: 持久化检查
 
@@ -227,6 +229,8 @@ bash deploy/manage-shared-pm2.sh health
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.ssl.yml up -d --build
 ```
+
+HTTPS 模式下，宿主机 `443` 对外提供 HTTPS；宿主机 `8080` 会进入 nginx 的 HTTP 入口并跳转到 HTTPS。
 
 或者使用统一管理脚本：
 
