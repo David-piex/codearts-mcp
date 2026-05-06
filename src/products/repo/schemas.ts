@@ -38,8 +38,82 @@ export const repoListRepositoryLabelsInput = pagingSchema.extend({
   repository_id: idSchema
 });
 
+export const repoListRepositoryDeployKeysInput = pagingSchema.extend({
+  repository_id: idSchema,
+  page_size: z.number().int().positive().max(100).default(20)
+});
+
+export const repoCheckRepositoryDeployKeyInput = z.object({
+  repository_id: idSchema,
+  key: z.string().min(1).max(5000),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoRemoveRepositoryDeployKeyInput = z.object({
+  repository_id: idSchema,
+  key_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
 export const repoListEventsInput = pagingSchema.extend({
   repository_id: idSchema
+});
+
+export const repoListRepositoryWebhooksInput = pagingSchema.extend({
+  repository_id: idSchema,
+  include_system: z.boolean().optional()
+});
+
+const repoRepositoryWebhookPayloadInput = z.object({
+  url: z.string().min(1),
+  name: z.string().min(1).optional(),
+  description: z.string().optional(),
+  token: z.string().min(1).optional(),
+  token_type: z.string().min(1).optional(),
+  push_events: z.boolean().optional(),
+  tag_push_events: z.boolean().optional(),
+  merge_requests_events: z.boolean().optional(),
+  issues_events: z.boolean().optional(),
+  note_events: z.boolean().optional(),
+  job_events: z.boolean().optional(),
+  pipeline_events: z.boolean().optional(),
+  wiki_page_events: z.boolean().optional(),
+  enable_ssl_verification: z.boolean().optional(),
+  branch_filter_strategy: z.string().min(1).optional(),
+  push_events_branch_regex_filter: z.string().min(1).optional()
+});
+
+export const repoCreateRepositoryWebhookInput = repoRepositoryWebhookPayloadInput.extend({
+  repository_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoGetRepositoryWebhookInput = z.object({
+  repository_id: idSchema,
+  hook_id: idSchema
+});
+
+export const repoUpdateRepositoryWebhookInput = repoRepositoryWebhookPayloadInput.partial().extend({
+  repository_id: idSchema,
+  hook_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoDeleteRepositoryWebhookInput = z.object({
+  repository_id: idSchema,
+  hook_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoListRepositoryWebhookLogsInput = pagingSchema.extend({
+  repository_id: idSchema,
+  hook_id: idSchema
+});
+
+export const repoGetRepositoryWebhookLogInput = z.object({
+  repository_id: idSchema,
+  hook_id: idSchema,
+  log_id: idSchema
 });
 
 export const repoListTagsInput = pagingSchema.extend({

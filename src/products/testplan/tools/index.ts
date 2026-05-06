@@ -5,5 +5,6 @@ export const testPlanToolNames = [
   "testplan_list_cases",
   "testplan_list_issues",
   "testplan_list_runs",
-  "testplan_run_cases"
+  "testplan_run_cases",
+  "testplan_request_official_api"
 ];

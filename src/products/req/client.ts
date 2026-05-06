@@ -3,8 +3,10 @@ import { DEFAULT_READ_CACHE_TTLS } from "../../core/cache/read-cache-ttl.js";
 import { AppError } from "../../core/errors/app-error.js";
 import { recordRequestCacheHit } from "../../server/request-context.js";
 import type { ReturnTypeCreateHttpClient } from "../types.js";
+import { createOfficialApiRequester, type OfficialApiRequestInput, type OfficialApiRequestResult } from "../official-api.js";
 
 export type ReqClient = {
+  requestOfficialApi: (input: OfficialApiRequestInput) => Promise<OfficialApiRequestResult>;
   getCurrentUserInfo: (input: {}) => Promise<{
     domain_id?: string;
     domain_name?: string;
@@ -2952,6 +2954,11 @@ export function createReqClient(
   }
 
   return {
+    ...createOfficialApiRequester({
+      product: "Req",
+      http: _http,
+      allowedPrefixes: ["/v1/", "/v2/", "/v3/", "/v4/", "/v5/", "/v6/", "/ipdprojectservice/", "/planservice/"]
+    }),
     async getCurrentUserInfo() {
       const response = (await _http.get("/v4/user")) as {
         domain_id?: string;

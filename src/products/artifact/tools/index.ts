@@ -10,5 +10,6 @@ export const artifactToolNames = [
   "artifact_list_latest_version_files",
   "artifact_list_versions",
   "artifact_search_artifacts",
-  "artifact_show_audit"
+  "artifact_show_audit",
+  "artifact_request_official_api"
 ];

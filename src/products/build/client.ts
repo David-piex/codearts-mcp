@@ -1,10 +1,12 @@
 import { createReadThroughCache } from "../../core/cache/read-through-cache.js";
 import { DEFAULT_READ_CACHE_TTLS } from "../../core/cache/read-cache-ttl.js";
 import type { ReturnTypeCreateHttpClient } from "../types.js";
+import { createOfficialApiRequester, type OfficialApiRequestInput, type OfficialApiRequestResult } from "../official-api.js";
 import { normalizeProviderError } from "../../core/errors/app-error.js";
 import { recordRequestCacheHit } from "../../server/request-context.js";
 
 export type BuildClient = {
+  requestOfficialApi: (input: OfficialApiRequestInput) => Promise<OfficialApiRequestResult>;
   previewAppendJobStep: (input: {
     job_id: string;
     step_name: string;
@@ -715,6 +717,11 @@ export function createBuildClient(
   }
 
   return {
+    ...createOfficialApiRequester({
+      product: "Build",
+      http: _http,
+      allowedPrefixes: ["/v1/", "/v2/", "/v3/"]
+    }),
     async previewAppendJobStep(input) {
       const response = (await _http.get(`/v1/job/${encodeURIComponent(input.job_id)}/config`)) as {
         result?: RawBuildJobConfig;

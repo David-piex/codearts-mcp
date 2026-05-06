@@ -1,4 +1,5 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { officialApiRequestInput } from "../products/official-api.js";
 import { createReqClient } from "../products/req/client.js";
 import {
   reqAddIterationWorkItemsInput,
@@ -406,6 +407,7 @@ import {
   createReqUploadIpdIssueAttachmentHandler,
   createReqUploadIpdIssueImageHandler
 } from "../products/req/tools/ipd-write-tools.js";
+import { createOfficialApiRequestHandler } from "../products/shared-tools/request-official-api.js";
 import { defineProductTool, registerDefinedTool } from "./product-tool-registry.js";
 import type { RateLimiter } from "./rate-limiter.js";
 import type { SessionCredentialStore } from "./session-store.js";
@@ -414,6 +416,12 @@ type RegisterableServer = Pick<McpServer, "registerTool">;
 type ReqStdioClient = ReturnType<typeof createReqClient>;
 
 const reqToolDefinitions = {
+  "req_request_official_api": defineProductTool({
+    description: "Request a documented CodeArts Req API path that does not yet have a dedicated typed MCP tool",
+    inputSchema: officialApiRequestInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createOfficialApiRequestHandler>[0] }) => clients.reqClient,
+    createProductHandler: createOfficialApiRequestHandler
+  }),
   "req_add_iteration_work_items": defineProductTool({
     description: "Add work items to a CodeArts Req iteration",
     inputSchema: reqAddIterationWorkItemsInput,

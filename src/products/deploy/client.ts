@@ -1,4 +1,5 @@
 import type { ReturnTypeCreateHttpClient } from "../types.js";
+import { createOfficialApiRequester, type OfficialApiRequestInput, type OfficialApiRequestResult } from "../official-api.js";
 import { AppError } from "../../core/errors/app-error.js";
 
 type DeployStepState = {
@@ -214,6 +215,7 @@ function asObjectRecord<T extends Record<string, unknown>>(value: unknown): T | 
 }
 
 export type DeployClient = {
+  requestOfficialApi: (input: OfficialApiRequestInput) => Promise<OfficialApiRequestResult>;
   listAppHostGroups: (input: {
     application_id: string;
     project_id: string;
@@ -1075,6 +1077,11 @@ function asArray<T>(input: unknown): T[] {
 
 export function createDeployClient(_http: ReturnTypeCreateHttpClient): DeployClient {
   return {
+    ...createOfficialApiRequester({
+      product: "Deploy",
+      http: _http,
+      allowedPrefixes: ["/v1/", "/v2/", "/v3/", "/v4/"]
+    }),
     async listAppHostGroups(input) {
       const query = new URLSearchParams({
         project_uuid: input.project_id,

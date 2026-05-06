@@ -1,4 +1,5 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { officialApiRequestInput } from "../products/official-api.js";
 import { createPipelineClient } from "../products/pipeline/client.js";
 import {
   pipelineApproveRunInput,
@@ -156,6 +157,7 @@ import { createPipelineCreateStrategyHandler } from "../products/pipeline/tools/
 import { createPipelineUpdateStrategyHandler } from "../products/pipeline/tools/update-strategy.js";
 import { createPipelineUpdateTagHandler } from "../products/pipeline/tools/update-tag.js";
 import { createPipelineUpdateVariableGroupHandler } from "../products/pipeline/tools/update-variable-group.js";
+import { createOfficialApiRequestHandler } from "../products/shared-tools/request-official-api.js";
 import { defineProductTool, registerDefinedTool } from "./product-tool-registry.js";
 import type { RateLimiter } from "./rate-limiter.js";
 import type { SessionCredentialStore } from "./session-store.js";
@@ -164,6 +166,12 @@ type RegisterableServer = Pick<McpServer, "registerTool">;
 type PipelineStdioClient = ReturnType<typeof createPipelineClient>;
 
 const pipelineToolDefinitions = {
+  "pipeline_request_official_api": defineProductTool({
+    description: "Request a documented CodeArts Pipeline API path that does not yet have a dedicated typed MCP tool",
+    inputSchema: officialApiRequestInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createOfficialApiRequestHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createOfficialApiRequestHandler
+  }),
   "pipeline_list_publishers": defineProductTool({
     description: "List CodeArts Pipeline publishers",
     inputSchema: pipelineListPublishersInput,

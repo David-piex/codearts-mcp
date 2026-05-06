@@ -1,12 +1,15 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { officialApiRequestInput } from "../products/official-api.js";
 import { createRepoClient } from "../products/repo/client.js";
 import {
   repoAssociateRemoteMirrorInput,
+  repoCheckRepositoryDeployKeyInput,
   repoCompareRefsInput,
   repoCloseMergeRequestInput,
   repoCreateMergeRequestDiscussionInput,
   repoCreateMergeRequestInput,
   repoCreateRepositoryInput,
+  repoCreateRepositoryWebhookInput,
   repoImportRepositoryInput,
   repoGetBranchInput,
   repoGetCommitInput,
@@ -14,12 +17,18 @@ import {
   repoGetMergeRequestInput,
   repoGetRemoteMirrorInput,
   repoGetRepositoryInput,
+  repoGetRepositoryWebhookInput,
+  repoGetRepositoryWebhookLogInput,
   repoGetTagInput,
   repoCreateTagInput,
+  repoDeleteRepositoryWebhookInput,
   repoDeleteTagInput,
   repoListEventsInput,
   repoListImpersonationTokensInput,
   repoListPersonalRepositoryImportRecordsInput,
+  repoListRepositoryDeployKeysInput,
+  repoListRepositoryWebhookLogsInput,
+  repoListRepositoryWebhooksInput,
   repoListTagsInput,
   repoListBranchesInput,
   repoListCommitsInput,
@@ -30,16 +39,21 @@ import {
   repoListMergeRequestsInput,
   repoMergeMergeRequestInput,
   repoListRepositoriesInput,
+  repoRemoveRepositoryDeployKeyInput,
   repoReviewMergeRequestInput,
   repoStartRemoteMirrorSynchronizationInput,
+  repoUpdateRepositoryWebhookInput,
   repoUpdateRemoteMirrorInput
 } from "../products/repo/schemas.js";
 import { createRepoAssociateRemoteMirrorHandler } from "../products/repo/tools/associate-remote-mirror.js";
+import { createRepoCheckRepositoryDeployKeyHandler } from "../products/repo/tools/check-repository-deploy-key.js";
 import { createRepoCloseMergeRequestHandler } from "../products/repo/tools/close-merge-request.js";
 import { createRepoCompareRefsHandler } from "../products/repo/tools/compare-refs.js";
 import { createRepoCreateMergeRequestDiscussionHandler } from "../products/repo/tools/create-merge-request-discussion.js";
 import { createRepoCreateMergeRequestHandler } from "../products/repo/tools/create-merge-request.js";
 import { createRepoCreateRepositoryHandler } from "../products/repo/tools/create-repository.js";
+import { createRepoCreateRepositoryWebhookHandler } from "../products/repo/tools/create-repository-webhook.js";
+import { createRepoDeleteRepositoryWebhookHandler } from "../products/repo/tools/delete-repository-webhook.js";
 import { createRepoImportRepositoryHandler } from "../products/repo/tools/import-repository.js";
 import { createRepoGetBranchHandler } from "../products/repo/tools/get-branch.js";
 import { createRepoGetCommitHandler } from "../products/repo/tools/get-commit.js";
@@ -47,6 +61,8 @@ import { createRepoGetFileHandler } from "../products/repo/tools/get-file.js";
 import { createRepoGetMergeRequestHandler } from "../products/repo/tools/get-merge-request.js";
 import { createRepoGetRemoteMirrorHandler } from "../products/repo/tools/get-remote-mirror.js";
 import { createRepoGetRepositoryHandler } from "../products/repo/tools/get-repository.js";
+import { createRepoGetRepositoryWebhookHandler } from "../products/repo/tools/get-repository-webhook.js";
+import { createRepoGetRepositoryWebhookLogHandler } from "../products/repo/tools/get-repository-webhook-log.js";
 import { createRepoGetTagHandler } from "../products/repo/tools/get-tag.js";
 import { createRepoListBranchesHandler } from "../products/repo/tools/list-branches.js";
 import { createRepoListCommitsHandler } from "../products/repo/tools/list-commits.js";
@@ -58,14 +74,20 @@ import { createRepoListMergeRequestsHandler } from "../products/repo/tools/list-
 import { createRepoListPersonalRepositoryImportRecordsHandler } from "../products/repo/tools/list-personal-repository-import-records.js";
 import { createRepoListProtectedBranchesHandler } from "../products/repo/tools/list-protected-branches.js";
 import { createRepoListRepositoriesHandler } from "../products/repo/tools/list-repositories.js";
+import { createRepoListRepositoryDeployKeysHandler } from "../products/repo/tools/list-repository-deploy-keys.js";
+import { createRepoListRepositoryWebhookLogsHandler } from "../products/repo/tools/list-repository-webhook-logs.js";
+import { createRepoListRepositoryWebhooksHandler } from "../products/repo/tools/list-repository-webhooks.js";
 import { createRepoListRepositoryLabelsHandler } from "../products/repo/tools/list-repository-labels.js";
 import { createRepoListTagsHandler } from "../products/repo/tools/list-tags.js";
 import { createRepoMergeMergeRequestHandler } from "../products/repo/tools/merge-merge-request.js";
 import { createRepoCreateTagHandler } from "../products/repo/tools/create-tag.js";
 import { createRepoDeleteTagHandler } from "../products/repo/tools/delete-tag.js";
+import { createRepoRemoveRepositoryDeployKeyHandler } from "../products/repo/tools/remove-repository-deploy-key.js";
 import { createRepoReviewMergeRequestHandler } from "../products/repo/tools/review-merge-request.js";
 import { createRepoStartRemoteMirrorSynchronizationHandler } from "../products/repo/tools/start-remote-mirror-synchronization.js";
+import { createRepoUpdateRepositoryWebhookHandler } from "../products/repo/tools/update-repository-webhook.js";
 import { createRepoUpdateRemoteMirrorHandler } from "../products/repo/tools/update-remote-mirror.js";
+import { createOfficialApiRequestHandler } from "../products/shared-tools/request-official-api.js";
 import { defineProductTool, registerDefinedTool } from "./product-tool-registry.js";
 import type { RateLimiter } from "./rate-limiter.js";
 import type { SessionCredentialStore } from "./session-store.js";
@@ -74,6 +96,12 @@ type RegisterableServer = Pick<McpServer, "registerTool">;
 type RepoStdioClient = ReturnType<typeof createRepoClient>;
 
 const repoToolDefinitions = {
+  "repo_request_official_api": defineProductTool({
+    description: "Request a documented CodeArts Repo API path that does not yet have a dedicated typed MCP tool",
+    inputSchema: officialApiRequestInput,
+    selectHttpClient: (clients: { repoClient: Parameters<typeof createOfficialApiRequestHandler>[0] }) => clients.repoClient,
+    createProductHandler: createOfficialApiRequestHandler
+  }),
   "repo_list_repositories": defineProductTool({ description: "List CodeArts Repo repositories", inputSchema: repoListRepositoriesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoriesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoriesHandler }),
   "repo_get_repository": defineProductTool({ description: "Get CodeArts Repo repository detail", inputSchema: repoGetRepositoryInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoGetRepositoryHandler>[0] }) => clients.repoClient, createProductHandler: createRepoGetRepositoryHandler }),
   "repo_create_repository": defineProductTool({ description: "Create CodeArts Repo repository", inputSchema: repoCreateRepositoryInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCreateRepositoryHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCreateRepositoryHandler }),
@@ -84,6 +112,16 @@ const repoToolDefinitions = {
   "repo_start_remote_mirror_synchronization": defineProductTool({ description: "Start CodeArts Repo remote mirror synchronization", inputSchema: repoStartRemoteMirrorSynchronizationInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoStartRemoteMirrorSynchronizationHandler>[0] }) => clients.repoClient, createProductHandler: createRepoStartRemoteMirrorSynchronizationHandler }),
   "repo_get_remote_mirror": defineProductTool({ description: "Get CodeArts Repo remote mirror detail", inputSchema: repoGetRemoteMirrorInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoGetRemoteMirrorHandler>[0] }) => clients.repoClient, createProductHandler: createRepoGetRemoteMirrorHandler }),
   "repo_update_remote_mirror": defineProductTool({ description: "Update CodeArts Repo remote mirror", inputSchema: repoUpdateRemoteMirrorInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoUpdateRemoteMirrorHandler>[0] }) => clients.repoClient, createProductHandler: createRepoUpdateRemoteMirrorHandler }),
+  "repo_list_repository_deploy_keys": defineProductTool({ description: "List CodeArts Repo repository deploy keys", inputSchema: repoListRepositoryDeployKeysInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoryDeployKeysHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoryDeployKeysHandler }),
+  "repo_check_repository_deploy_key": defineProductTool({ description: "Check whether a CodeArts Repo repository deploy key already exists upstream", inputSchema: repoCheckRepositoryDeployKeyInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCheckRepositoryDeployKeyHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCheckRepositoryDeployKeyHandler }),
+  "repo_remove_repository_deploy_key": defineProductTool({ description: "Remove a CodeArts Repo repository deploy key", inputSchema: repoRemoveRepositoryDeployKeyInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoRemoveRepositoryDeployKeyHandler>[0] }) => clients.repoClient, createProductHandler: createRepoRemoveRepositoryDeployKeyHandler }),
+  "repo_list_repository_webhooks": defineProductTool({ description: "List CodeArts Repo repository webhooks", inputSchema: repoListRepositoryWebhooksInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoryWebhooksHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoryWebhooksHandler }),
+  "repo_create_repository_webhook": defineProductTool({ description: "Create CodeArts Repo repository webhook", inputSchema: repoCreateRepositoryWebhookInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCreateRepositoryWebhookHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCreateRepositoryWebhookHandler }),
+  "repo_get_repository_webhook": defineProductTool({ description: "Get CodeArts Repo repository webhook detail", inputSchema: repoGetRepositoryWebhookInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoGetRepositoryWebhookHandler>[0] }) => clients.repoClient, createProductHandler: createRepoGetRepositoryWebhookHandler }),
+  "repo_update_repository_webhook": defineProductTool({ description: "Update CodeArts Repo repository webhook", inputSchema: repoUpdateRepositoryWebhookInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoUpdateRepositoryWebhookHandler>[0] }) => clients.repoClient, createProductHandler: createRepoUpdateRepositoryWebhookHandler }),
+  "repo_delete_repository_webhook": defineProductTool({ description: "Delete CodeArts Repo repository webhook", inputSchema: repoDeleteRepositoryWebhookInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoDeleteRepositoryWebhookHandler>[0] }) => clients.repoClient, createProductHandler: createRepoDeleteRepositoryWebhookHandler }),
+  "repo_list_repository_webhook_logs": defineProductTool({ description: "List CodeArts Repo repository webhook delivery logs", inputSchema: repoListRepositoryWebhookLogsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoryWebhookLogsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoryWebhookLogsHandler }),
+  "repo_get_repository_webhook_log": defineProductTool({ description: "Get CodeArts Repo repository webhook delivery log detail", inputSchema: repoGetRepositoryWebhookLogInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoGetRepositoryWebhookLogHandler>[0] }) => clients.repoClient, createProductHandler: createRepoGetRepositoryWebhookLogHandler }),
   "repo_create_merge_request": defineProductTool({ description: "Create CodeArts Repo merge request", inputSchema: repoCreateMergeRequestInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCreateMergeRequestHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCreateMergeRequestHandler }),
   "repo_create_merge_request_discussion": defineProductTool({ description: "Create CodeArts Repo merge request discussion", inputSchema: repoCreateMergeRequestDiscussionInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCreateMergeRequestDiscussionHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCreateMergeRequestDiscussionHandler }),
   "repo_close_merge_request": defineProductTool({ description: "Close CodeArts Repo merge request", inputSchema: repoCloseMergeRequestInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCloseMergeRequestHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCloseMergeRequestHandler }),

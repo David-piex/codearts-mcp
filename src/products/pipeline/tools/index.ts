@@ -75,5 +75,6 @@ export const pipelineToolNames = [
   "pipeline_approve_run",
   "pipeline_stop_run",
   "pipeline_run_pipeline",
-  "pipeline_list_templates"
+  "pipeline_list_templates",
+  "pipeline_request_official_api"
 ];

@@ -20,5 +20,6 @@ export const buildToolNames = [
   "build_list_records",
   "build_run_job",
   "build_stop_job",
-  "build_update_job_step"
+  "build_update_job_step",
+  "build_request_official_api"
 ];

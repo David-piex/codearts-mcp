@@ -55,6 +55,7 @@ const coveredDeployToolNames = [
   "deploy_pass_v4_manual_check",
   "deploy_query_variables",
   "deploy_refuse_v4_manual_check",
+  "deploy_request_official_api",
   "deploy_rerun_v4_deploy_record",
   "deploy_retry_v4_deploy_record",
   "deploy_rollback_app",

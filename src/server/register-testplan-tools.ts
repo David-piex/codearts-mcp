@@ -1,4 +1,5 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { officialApiRequestInput } from "../products/official-api.js";
 import { createTestPlanClient } from "../products/testplan/client.js";
 import {
   testPlanGetCaseInput,
@@ -16,6 +17,7 @@ import { createTestPlanListIssuesHandler } from "../products/testplan/tools/list
 import { createTestPlanListPlansHandler } from "../products/testplan/tools/list-plans.js";
 import { createTestPlanListRunsHandler } from "../products/testplan/tools/list-runs.js";
 import { createTestPlanRunCasesHandler } from "../products/testplan/tools/run-cases.js";
+import { createOfficialApiRequestHandler } from "../products/shared-tools/request-official-api.js";
 import { defineProductTool, registerDefinedTool } from "./product-tool-registry.js";
 import type { RateLimiter } from "./rate-limiter.js";
 import type { SessionCredentialStore } from "./session-store.js";
@@ -24,6 +26,12 @@ type RegisterableServer = Pick<McpServer, "registerTool">;
 type TestPlanStdioClient = ReturnType<typeof createTestPlanClient>;
 
 const testPlanToolDefinitions = {
+  "testplan_request_official_api": defineProductTool({
+    description: "Request a documented CodeArts TestPlan API path that does not yet have a dedicated typed MCP tool",
+    inputSchema: officialApiRequestInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createOfficialApiRequestHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createOfficialApiRequestHandler
+  }),
   "testplan_list_plans": defineProductTool({
     description: "List CodeArts TestPlan plans",
     inputSchema: testPlanListPlansInput,

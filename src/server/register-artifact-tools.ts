@@ -1,4 +1,5 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { officialApiRequestInput } from "../products/official-api.js";
 import { createArtifactClient } from "../products/artifact/client.js";
 import {
   artifactDeleteFileInput,
@@ -26,6 +27,7 @@ import { createArtifactListRepositoriesHandler } from "../products/artifact/tool
 import { createArtifactListVersionsHandler } from "../products/artifact/tools/list-versions.js";
 import { createArtifactSearchArtifactsHandler } from "../products/artifact/tools/search-artifacts.js";
 import { createArtifactShowAuditHandler } from "../products/artifact/tools/show-audit.js";
+import { createOfficialApiRequestHandler } from "../products/shared-tools/request-official-api.js";
 import { defineProductTool, registerDefinedTool } from "./product-tool-registry.js";
 import type { RateLimiter } from "./rate-limiter.js";
 import type { SessionCredentialStore } from "./session-store.js";
@@ -34,6 +36,12 @@ type RegisterableServer = Pick<McpServer, "registerTool">;
 type ArtifactStdioClient = ReturnType<typeof createArtifactClient>;
 
 const artifactToolDefinitions = {
+  "artifact_request_official_api": defineProductTool({
+    description: "Request a documented CodeArts Artifact API path that does not yet have a dedicated typed MCP tool",
+    inputSchema: officialApiRequestInput,
+    selectHttpClient: (clients: { artifactClient: Parameters<typeof createOfficialApiRequestHandler>[0] }) => clients.artifactClient,
+    createProductHandler: createOfficialApiRequestHandler
+  }),
   "artifact_list_repositories": defineProductTool({
     description: "List CodeArts Artifact repositories",
     inputSchema: artifactListRepositoriesInput,

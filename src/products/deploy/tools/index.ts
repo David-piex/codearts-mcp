@@ -57,5 +57,6 @@ export const deployToolNames = [
   "deploy_rerun_v4_deploy_record",
   "deploy_retry_v4_deploy_record",
   "deploy_stop_app",
-  "deploy_start_app"
+  "deploy_start_app",
+  "deploy_request_official_api"
 ];

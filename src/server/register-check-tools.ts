@@ -1,4 +1,5 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { officialApiRequestInput } from "../products/official-api.js";
 import { createCheckClient } from "../products/check/client.js";
 import {
   checkCreateTaskInput,
@@ -18,6 +19,7 @@ import { createCheckListTaskIssuesHandler } from "../products/check/tools/list-t
 import { createCheckListTasksHandler } from "../products/check/tools/list-tasks.js";
 import { createCheckRunTaskHandler } from "../products/check/tools/run-task.js";
 import { createCheckStopTaskHandler } from "../products/check/tools/stop-task.js";
+import { createOfficialApiRequestHandler } from "../products/shared-tools/request-official-api.js";
 import { defineProductTool, registerDefinedTool } from "./product-tool-registry.js";
 import type { RateLimiter } from "./rate-limiter.js";
 import type { SessionCredentialStore } from "./session-store.js";
@@ -26,6 +28,12 @@ type RegisterableServer = Pick<McpServer, "registerTool">;
 type CheckStdioClient = ReturnType<typeof createCheckClient>;
 
 const checkToolDefinitions = {
+  "check_request_official_api": defineProductTool({
+    description: "Request a documented CodeArts Check API path that does not yet have a dedicated typed MCP tool",
+    inputSchema: officialApiRequestInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createOfficialApiRequestHandler>[0] }) => clients.checkClient,
+    createProductHandler: createOfficialApiRequestHandler
+  }),
   "check_list_tasks": defineProductTool({
     description: "List CodeArts Check tasks",
     inputSchema: checkListTasksInput,

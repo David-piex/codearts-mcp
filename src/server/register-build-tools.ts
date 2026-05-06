@@ -1,4 +1,5 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { officialApiRequestInput } from "../products/official-api.js";
 import { createBuildClient } from "../products/build/client.js";
 import {
   buildAppendReleaseUploadStepInput,
@@ -46,6 +47,7 @@ import { createBuildListRecordsHandler } from "../products/build/tools/list-reco
 import { createBuildRunJobHandler } from "../products/build/tools/run-job.js";
 import { createBuildStopJobHandler } from "../products/build/tools/stop-job.js";
 import { createBuildUpdateJobStepHandler } from "../products/build/tools/update-job-step.js";
+import { createOfficialApiRequestHandler } from "../products/shared-tools/request-official-api.js";
 import { defineProductTool, registerDefinedTool } from "./product-tool-registry.js";
 import type { RateLimiter } from "./rate-limiter.js";
 import type { SessionCredentialStore } from "./session-store.js";
@@ -54,6 +56,12 @@ type RegisterableServer = Pick<McpServer, "registerTool">;
 type BuildStdioClient = ReturnType<typeof createBuildClient>;
 
 const buildToolDefinitions = {
+  "build_request_official_api": defineProductTool({
+    description: "Request a documented CodeArts Build API path that does not yet have a dedicated typed MCP tool",
+    inputSchema: officialApiRequestInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createOfficialApiRequestHandler>[0] }) => clients.buildClient,
+    createProductHandler: createOfficialApiRequestHandler
+  }),
   "build_list_jobs": defineProductTool({
     description: "List CodeArts Build jobs",
     inputSchema: buildListJobsInput,

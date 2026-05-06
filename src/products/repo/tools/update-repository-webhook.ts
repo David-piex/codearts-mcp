@@ -1,0 +1,50 @@
+import { asItemResult } from "../../../contracts/tool-result.js";
+import type { RepoRepositoryWebhook } from "../client.js";
+import { repoUpdateRepositoryWebhookInput } from "../schemas.js";
+import { mapRepositoryWebhook, webhookPreview } from "./repository-webhook-result.js";
+
+type RepoUpdateRepositoryWebhookClient = {
+  updateRepositoryWebhook: (input: {
+    repository_id: string;
+    hook_id: string;
+    url?: string;
+    name?: string;
+    description?: string;
+    token?: string;
+    token_type?: string;
+    push_events?: boolean;
+    tag_push_events?: boolean;
+    merge_requests_events?: boolean;
+    issues_events?: boolean;
+    note_events?: boolean;
+    job_events?: boolean;
+    pipeline_events?: boolean;
+    wiki_page_events?: boolean;
+    enable_ssl_verification?: boolean;
+    branch_filter_strategy?: string;
+    push_events_branch_regex_filter?: string;
+  }) => Promise<RepoRepositoryWebhook>;
+};
+
+export function createRepoUpdateRepositoryWebhookHandler(client: RepoUpdateRepositoryWebhookClient) {
+  return async (input: unknown) => {
+    const parsed = repoUpdateRepositoryWebhookInput.parse(input);
+
+    if (parsed.dry_run) {
+      const result = asItemResult("Dry run: update repository webhook", webhookPreview(parsed));
+
+      return {
+        content: [{ type: "text" as const, text: result.summary }],
+        structuredContent: result
+      };
+    }
+
+    const response = await client.updateRepositoryWebhook(parsed);
+    const result = mapRepositoryWebhook("Updated repository webhook", response);
+
+    return {
+      content: [{ type: "text" as const, text: result.summary }],
+      structuredContent: result
+    };
+  };
+}

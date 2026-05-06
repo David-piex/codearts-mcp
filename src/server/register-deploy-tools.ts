@@ -1,4 +1,5 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { officialApiRequestInput } from "../products/official-api.js";
 import type { SessionCredentialStore } from "./session-store.js";
 import { createSessionAwareProductToolHandler } from "./session-aware-handler.js";
 import { createDeployClient } from "../products/deploy/client.js";
@@ -122,6 +123,7 @@ import { createDeployRerunV4DeployRecordHandler } from "../products/deploy/tools
 import { createDeployRetryV4DeployRecordHandler } from "../products/deploy/tools/retry-v4-deploy-record.js";
 import { createDeployStartAppHandler } from "../products/deploy/tools/start-app.js";
 import { createDeployStopAppHandler } from "../products/deploy/tools/stop-app.js";
+import { createOfficialApiRequestHandler } from "../products/shared-tools/request-official-api.js";
 import { defineProductTool, registerDefinedTool } from "./product-tool-registry.js";
 import type { RateLimiter } from "./rate-limiter.js";
 
@@ -130,6 +132,12 @@ type RegisterableServer = Pick<McpServer, "registerTool">;
 type DeployStdioClient = ReturnType<typeof createDeployClient>;
 
 const deployToolDefinitions = {
+  "deploy_request_official_api": defineProductTool({
+    description: "Request a documented CodeArts Deploy API path that does not yet have a dedicated typed MCP tool",
+    inputSchema: officialApiRequestInput,
+    selectHttpClient: (clients: { deployClient: Parameters<typeof createOfficialApiRequestHandler>[0] }) => clients.deployClient,
+    createProductHandler: createOfficialApiRequestHandler
+  }),
   "deploy_list_apps": defineProductTool({ description: "List CodeArts Deploy applications", inputSchema: deployListAppsInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployListAppsHandler>[0] }) => clients.deployClient, createProductHandler: createDeployListAppsHandler }),
   "deploy_list_v4_applications": defineProductTool({ description: "List CodeArts Deploy v4 applications", inputSchema: deployListV4ApplicationsInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployListV4ApplicationsHandler>[0] }) => clients.deployClient, createProductHandler: createDeployListV4ApplicationsHandler }),
   "deploy_list_v4_clusters": defineProductTool({ description: "List CodeArts Deploy v4 clusters", inputSchema: deployListV4ClustersInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployListV4ClustersHandler>[0] }) => clients.deployClient, createProductHandler: createDeployListV4ClustersHandler }),

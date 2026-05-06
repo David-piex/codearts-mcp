@@ -1,6 +1,8 @@
 import type { ReturnTypeCreateHttpClient } from "../types.js";
+import { createOfficialApiRequester, type OfficialApiRequestInput, type OfficialApiRequestResult } from "../official-api.js";
 
 export type CheckClient = {
+  requestOfficialApi: (input: OfficialApiRequestInput) => Promise<OfficialApiRequestResult>;
   createTask: (input: {
     project_id: string;
     task_name: string;
@@ -106,6 +108,11 @@ export type CheckClient = {
 
 export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClient {
   return {
+    ...createOfficialApiRequester({
+      product: "Check",
+      http: _http,
+      allowedPrefixes: ["/v1/","/v2/","/v3/"]
+    }),
     async createTask(input) {
       const taskType = input.task_type === "incremental" ? "inc" : input.task_type;
       const payloadBase = {

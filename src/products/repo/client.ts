@@ -3,6 +3,7 @@ import { DEFAULT_READ_CACHE_TTLS } from "../../core/cache/read-cache-ttl.js";
 import { normalizeProviderError } from "../../core/errors/app-error.js";
 import { recordRequestCacheHit } from "../../server/request-context.js";
 import type { ReturnTypeCreateHttpClient } from "../types.js";
+import { createOfficialApiRequester, type OfficialApiRequestInput, type OfficialApiRequestResult } from "../official-api.js";
 
 type RepoRemoteMirror = {
   id?: number | string;
@@ -49,7 +50,68 @@ type RepoImpersonationToken = {
   description?: string | null;
 };
 
+export type RepoRepositoryWebhook = {
+  id: number | string;
+  url?: string;
+  name?: string;
+  description?: string;
+  push_events?: boolean;
+  tag_push_events?: boolean;
+  merge_requests_events?: boolean;
+  issues_events?: boolean;
+  note_events?: boolean;
+  job_events?: boolean;
+  pipeline_events?: boolean;
+  wiki_page_events?: boolean;
+  enable_ssl_verification?: boolean;
+  branch_filter_strategy?: string;
+  push_events_branch_regex_filter?: string;
+  created_at?: string;
+  updated_at?: string;
+};
+
+type RepoRepositoryWebhookMutationInput = {
+  repository_id: string;
+  url?: string;
+  name?: string;
+  description?: string;
+  token?: string;
+  token_type?: string;
+  push_events?: boolean;
+  tag_push_events?: boolean;
+  merge_requests_events?: boolean;
+  issues_events?: boolean;
+  note_events?: boolean;
+  job_events?: boolean;
+  pipeline_events?: boolean;
+  wiki_page_events?: boolean;
+  enable_ssl_verification?: boolean;
+  branch_filter_strategy?: string;
+  push_events_branch_regex_filter?: string;
+};
+
+export type RepoRepositoryWebhookLog = {
+  id: number | string;
+  trigger?: string;
+  url?: string;
+  request_headers?: Record<string, unknown>;
+  request_data?: unknown;
+  response_headers?: Record<string, unknown>;
+  response_body?: unknown;
+  response_status?: string;
+  execution_duration?: number;
+  created_at?: string;
+};
+
+export type RepoRepositoryDeployKey = {
+  id: number | string;
+  title?: string;
+  fingerprint?: string;
+  created_at?: string;
+};
+
 export type RepoClient = {
+  requestOfficialApi: (input: OfficialApiRequestInput) => Promise<OfficialApiRequestResult>;
   getBranch: (input: { repository_id: string; branch_name: string }) => Promise<{
     name: string;
     protected?: boolean;
@@ -119,6 +181,67 @@ export type RepoClient = {
     }>;
     total?: number;
   }>;
+  listRepositoryDeployKeys: (input: {
+    repository_id: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    keys: RepoRepositoryDeployKey[];
+    total?: number;
+  }>;
+  checkRepositoryDeployKey: (input: {
+    repository_id: string;
+    key: string;
+  }) => Promise<{
+    exists: boolean;
+  }>;
+  removeRepositoryDeployKey: (input: {
+    repository_id: string;
+    key_id: string;
+  }) => Promise<{
+    key_id: string;
+    removed: boolean;
+  }>;
+  listRepositoryWebhooks: (input: {
+    repository_id: string;
+    page: number;
+    page_size: number;
+    include_system?: boolean;
+  }) => Promise<{
+    hooks: RepoRepositoryWebhook[];
+    total?: number;
+  }>;
+  createRepositoryWebhook: (input: RepoRepositoryWebhookMutationInput & {
+    url: string;
+  }) => Promise<RepoRepositoryWebhook>;
+  getRepositoryWebhook: (input: {
+    repository_id: string;
+    hook_id: string;
+  }) => Promise<RepoRepositoryWebhook>;
+  updateRepositoryWebhook: (input: RepoRepositoryWebhookMutationInput & {
+    hook_id: string;
+  }) => Promise<RepoRepositoryWebhook>;
+  deleteRepositoryWebhook: (input: {
+    repository_id: string;
+    hook_id: string;
+  }) => Promise<{
+    hook_id: string;
+    deleted: boolean;
+  }>;
+  listRepositoryWebhookLogs: (input: {
+    repository_id: string;
+    hook_id: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    logs: RepoRepositoryWebhookLog[];
+    total?: number;
+  }>;
+  getRepositoryWebhookLog: (input: {
+    repository_id: string;
+    hook_id: string;
+    log_id: string;
+  }) => Promise<RepoRepositoryWebhookLog>;
   listTags: (input: {
     repository_id: string;
     page: number;
@@ -549,6 +672,27 @@ function appendOptionalQuery(
   }
 }
 
+function buildRepositoryWebhookPayload(input: RepoRepositoryWebhookMutationInput) {
+  return omitUndefinedFields({
+    url: input.url,
+    name: input.name,
+    description: input.description,
+    token: input.token,
+    token_type: input.token_type,
+    push_events: input.push_events,
+    tag_push_events: input.tag_push_events,
+    merge_requests_events: input.merge_requests_events,
+    issues_events: input.issues_events,
+    note_events: input.note_events,
+    job_events: input.job_events,
+    pipeline_events: input.pipeline_events,
+    wiki_page_events: input.wiki_page_events,
+    enable_ssl_verification: input.enable_ssl_verification,
+    branch_filter_strategy: input.branch_filter_strategy,
+    push_events_branch_regex_filter: input.push_events_branch_regex_filter
+  });
+}
+
 type RepoClientOptions = {
   listCacheTtlMs?: number;
   now?: () => number;
@@ -582,6 +726,11 @@ export function createRepoClient(
   }
 
   return {
+    ...createOfficialApiRequester({
+      product: "Repo",
+      http: _http,
+      allowedPrefixes: ["/v1/","/v2/","/v4/"]
+    }),
     async getBranch(input) {
       const query = new URLSearchParams({
         branch_name: input.branch_name
@@ -720,6 +869,172 @@ export function createRepoClient(
           created_at: item.created_at
         })),
         total: response.total
+      };
+    },
+    async listRepositoryDeployKeys(input) {
+      const offset = (input.page - 1) * input.page_size;
+      const query = new URLSearchParams({
+        offset: String(offset),
+        limit: String(input.page_size)
+      });
+
+      const rawResponse = (await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/deploy-keys?${query.toString()}`
+      )) as
+        | RepoRepositoryDeployKey[]
+        | {
+          deploy_keys?: RepoRepositoryDeployKey[];
+          keys?: RepoRepositoryDeployKey[];
+          total?: number;
+          result?: {
+            deploy_keys?: RepoRepositoryDeployKey[];
+            keys?: RepoRepositoryDeployKey[];
+            total?: number;
+          };
+        };
+      const response = unwrapRepoPayload(rawResponse);
+      const keys = Array.isArray(response)
+        ? response
+        : response.result?.deploy_keys ?? response.result?.keys ?? response.deploy_keys ?? response.keys ?? [];
+
+      return {
+        keys,
+        total: Array.isArray(response) ? keys.length : response.result?.total ?? response.total ?? keys.length
+      };
+    },
+    async checkRepositoryDeployKey(input) {
+      const rawResponse = (await _http.post(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/deploy-keys/check-key`,
+        { key: input.key }
+      )) as {
+        exists?: boolean;
+        result?: {
+          exists?: boolean;
+        };
+      };
+      const response = unwrapRepoPayload(rawResponse);
+
+      return {
+        exists: Boolean(response.result?.exists ?? response.exists)
+      };
+    },
+    async removeRepositoryDeployKey(input) {
+      await _http.delete?.(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/deploy-keys/${encodeURIComponent(input.key_id)}`
+      );
+
+      return {
+        key_id: input.key_id,
+        removed: true
+      };
+    },
+    async listRepositoryWebhooks(input) {
+      const query = new URLSearchParams({
+        page: String(input.page),
+        per_page: String(input.page_size)
+      });
+      appendOptionalQuery(query, input, ["include_system"]);
+
+      const rawResponse = (await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/hooks?${query.toString()}`
+      )) as
+        | RepoRepositoryWebhook[]
+        | {
+          hooks?: RepoRepositoryWebhook[];
+          total?: number;
+          result?: {
+            hooks?: RepoRepositoryWebhook[];
+            total?: number;
+          };
+        };
+      const response = unwrapRepoPayload(rawResponse);
+      const hooks = Array.isArray(response) ? response : response.result?.hooks ?? response.hooks ?? [];
+
+      return {
+        hooks,
+        total: Array.isArray(response) ? hooks.length : response.result?.total ?? response.total ?? hooks.length
+      };
+    },
+    async createRepositoryWebhook(input) {
+      const rawResponse = (await _http.post(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/hooks`,
+        buildRepositoryWebhookPayload(input)
+      )) as RepoRepositoryWebhook;
+      const response = unwrapRepoPayload(rawResponse);
+
+      return {
+        ...response,
+        id: response.id ?? ""
+      };
+    },
+    async getRepositoryWebhook(input) {
+      const rawResponse = (await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/hooks/${encodeURIComponent(input.hook_id)}`
+      )) as RepoRepositoryWebhook;
+      const response = unwrapRepoPayload(rawResponse);
+
+      return {
+        ...response,
+        id: response.id ?? input.hook_id
+      };
+    },
+    async updateRepositoryWebhook(input) {
+      const rawResponse = (await _http.put(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/hooks/${encodeURIComponent(input.hook_id)}`,
+        buildRepositoryWebhookPayload(input)
+      )) as RepoRepositoryWebhook;
+      const response = unwrapRepoPayload(rawResponse);
+
+      return {
+        ...response,
+        id: response.id ?? input.hook_id
+      };
+    },
+    async deleteRepositoryWebhook(input) {
+      await _http.delete?.(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/hooks/${encodeURIComponent(input.hook_id)}`
+      );
+
+      return {
+        hook_id: input.hook_id,
+        deleted: true
+      };
+    },
+    async listRepositoryWebhookLogs(input) {
+      const query = new URLSearchParams({
+        page: String(input.page),
+        per_page: String(input.page_size)
+      });
+
+      const rawResponse = (await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/hooks/${encodeURIComponent(input.hook_id)}/logs?${query.toString()}`
+      )) as
+        | RepoRepositoryWebhookLog[]
+        | {
+          logs?: RepoRepositoryWebhookLog[];
+          total?: number;
+          result?: {
+            logs?: RepoRepositoryWebhookLog[];
+            total?: number;
+          };
+        };
+      const response = unwrapRepoPayload(rawResponse);
+      const logs = Array.isArray(response) ? response : response.result?.logs ?? response.logs ?? [];
+
+      return {
+        logs,
+        total: Array.isArray(response) ? logs.length : response.result?.total ?? response.total ?? logs.length
+      };
+    },
+    async getRepositoryWebhookLog(input) {
+      const rawResponse = (await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/hooks/${encodeURIComponent(input.hook_id)}/logs/${encodeURIComponent(input.log_id)}`
+      )) as RepoRepositoryWebhookLog;
+      const response = unwrapRepoPayload(rawResponse);
+
+      return {
+        ...response,
+        id: response.id ?? input.log_id
       };
     },
     async listTags(input) {

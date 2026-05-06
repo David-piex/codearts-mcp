@@ -7,11 +7,11 @@
 <!-- GENERATED:req-api-reference-scale:start -->
 | 范围 | 数量 |
 | --- | ---: |
-| Req MCP 工具 | 200 |
+| Req MCP 工具 | 201 |
 | 读工具 | 117 |
-| 写工具 | 83 |
-| 产品工具总数 | 417 |
-| 含鉴权的共享 HTTP 工具 | 419 |
+| 写工具 | 84 |
+| 产品工具总数 | 435 |
+| 含鉴权的共享 HTTP 工具 | 437 |
 <!-- GENERATED:req-api-reference-scale:end -->
 
 2026-04-27 覆盖增量：

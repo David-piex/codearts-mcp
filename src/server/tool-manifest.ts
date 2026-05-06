@@ -89,6 +89,7 @@ const WRITE_ACTIONS = new Set([
   "prepare",
   "refuse",
   "reject",
+  "request",
   "retry",
   "review",
   "rollback",

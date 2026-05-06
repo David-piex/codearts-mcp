@@ -1,6 +1,8 @@
 import type { ReturnTypeCreateHttpClient } from "../types.js";
+import { createOfficialApiRequester, type OfficialApiRequestInput, type OfficialApiRequestResult } from "../official-api.js";
 
 export type ArtifactClient = {
+  requestOfficialApi: (input: OfficialApiRequestInput) => Promise<OfficialApiRequestResult>;
   listVersions: (input: {
     project_id: string;
     page: number;
@@ -214,6 +216,11 @@ function readOptionalNumber(input: unknown) {
 
 export function createArtifactClient(_http: ReturnTypeCreateHttpClient): ArtifactClient {
   return {
+    ...createOfficialApiRequester({
+      product: "Artifact",
+      http: _http,
+      allowedPrefixes: ["/cloudartifact/", "/devreposerver/", "/v5/", "/v2/release/", "/v3/release/"]
+    }),
     async listVersions(input) {
       const offset = (input.page - 1) * input.page_size;
       const query = new URLSearchParams({

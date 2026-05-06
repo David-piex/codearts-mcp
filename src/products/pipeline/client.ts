@@ -1,6 +1,7 @@
 import { createReadThroughCache } from "../../core/cache/read-through-cache.js";
 import { DEFAULT_READ_CACHE_TTLS } from "../../core/cache/read-cache-ttl.js";
 import type { ReturnTypeCreateHttpClient } from "../types.js";
+import { createOfficialApiRequester, type OfficialApiRequestInput, type OfficialApiRequestResult } from "../official-api.js";
 import { normalizeProviderError } from "../../core/errors/app-error.js";
 import { recordRequestCacheHit } from "../../server/request-context.js";
 
@@ -242,6 +243,7 @@ type PipelinePluginVersion = {
 };
 
 export type PipelineClient = {
+  requestOfficialApi: (input: OfficialApiRequestInput) => Promise<OfficialApiRequestResult>;
   getRunParameters: (input: {
     project_id: string;
     pipeline_id: string;
@@ -1086,6 +1088,11 @@ export function createPipelineClient(
   }
 
   return {
+    ...createOfficialApiRequester({
+      product: "Pipeline",
+      http: _http,
+      allowedPrefixes: ["/v1/", "/v2/", "/v3/", "/v5/", "/v6/"]
+    }),
     async getRunParameters(input) {
       try {
         const response = (await _http.get(

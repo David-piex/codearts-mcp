@@ -1,6 +1,8 @@
 import type { ReturnTypeCreateHttpClient } from "../types.js";
+import { createOfficialApiRequester, type OfficialApiRequestInput, type OfficialApiRequestResult } from "../official-api.js";
 
 export type TestPlanClient = {
+  requestOfficialApi: (input: OfficialApiRequestInput) => Promise<OfficialApiRequestResult>;
   listIssues: (input: {
     project_id: string;
     plan_id: string;
@@ -113,6 +115,11 @@ export type TestPlanClient = {
 
 export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPlanClient {
   return {
+    ...createOfficialApiRequester({
+      product: "TestPlan",
+      http: _http,
+      allowedPrefixes: ["/v1/","/v2/","/v3/","/v4/","/GT3KServer/","/attask/","/dynamic-global-variable/","/testrelation/","/testreport/"]
+    }),
     async listIssues(input) {
       const offset = (input.page - 1) * input.page_size;
       const query = new URLSearchParams({
