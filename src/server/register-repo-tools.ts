@@ -74,6 +74,20 @@ import {
   repoReviewMergeRequestInput,
   repoShowGroupE2eSettingInput,
   repoShowProjectE2eSettingInput,
+  repoShowTenantDevelopModeInput,
+  repoShowTenantRepoEncryptionSettingInput,
+  repoListTenantRepositoriesInput,
+  repoListTenantCMKsInput,
+  repoListTenantEncryptedRepositoriesInput,
+  repoShowTenantKMSGrantInput,
+  repoShowProjectTenantSettingsInput,
+  repoListTenantTrustedIpAddressesInput,
+  repoExportTenantRepositoriesInput,
+  repoUpdateTenantRepoEncryptionSettingInput,
+  repoCreateTenantKMSGrantInput,
+  repoAddTenantTrustedIpAddressInput,
+  repoUpdateTenantTrustedIpAddressInput,
+  repoDeleteTenantTrustedIpAddressInput,
   repoShowProjectGeneralPolicyInput,
   repoShowProjectMemberSettingInput,
   repoShowProjectSettingsInheritCfgInput,
@@ -151,6 +165,20 @@ import { createRepoRemoveRepositoryDeployKeyHandler } from "../products/repo/too
 import { createRepoReviewMergeRequestHandler } from "../products/repo/tools/review-merge-request.js";
 import { createRepoShowGroupE2eSettingHandler } from "../products/repo/tools/show-group-e2e-setting.js";
 import { createRepoShowProjectE2eSettingHandler } from "../products/repo/tools/show-project-e2e-setting.js";
+import { createRepoShowTenantDevelopModeHandler } from "../products/repo/tools/show-tenant-develop-mode.js";
+import { createRepoShowTenantRepoEncryptionSettingHandler } from "../products/repo/tools/show-tenant-repo-encryption-setting.js";
+import { createRepoListTenantRepositoriesHandler } from "../products/repo/tools/list-tenant-repositories.js";
+import { createRepoListTenantCMKsHandler } from "../products/repo/tools/list-tenant-cmks.js";
+import { createRepoListTenantEncryptedRepositoriesHandler } from "../products/repo/tools/list-tenant-encrypted-repositories.js";
+import { createRepoShowTenantKmsGrantHandler } from "../products/repo/tools/show-tenant-kms-grant.js";
+import { createRepoShowProjectTenantSettingsHandler } from "../products/repo/tools/show-project-tenant-settings.js";
+import { createRepoListTenantTrustedIpAddressesHandler } from "../products/repo/tools/list-tenant-trusted-ip-addresses.js";
+import { createRepoExportTenantRepositoriesHandler } from "../products/repo/tools/export-tenant-repositories.js";
+import { createRepoUpdateTenantRepoEncryptionSettingHandler } from "../products/repo/tools/update-tenant-repo-encryption-setting.js";
+import { createRepoCreateTenantKmsGrantHandler } from "../products/repo/tools/create-tenant-kms-grant.js";
+import { createRepoAddTenantTrustedIpAddressHandler } from "../products/repo/tools/add-tenant-trusted-ip-address.js";
+import { createRepoUpdateTenantTrustedIpAddressHandler } from "../products/repo/tools/update-tenant-trusted-ip-address.js";
+import { createRepoDeleteTenantTrustedIpAddressHandler } from "../products/repo/tools/delete-tenant-trusted-ip-address.js";
 import { createRepoShowProjectGeneralPolicyHandler } from "../products/repo/tools/show-project-general-policy.js";
 import { createRepoShowProjectMemberSettingHandler } from "../products/repo/tools/show-project-member-setting.js";
 import { createRepoShowProjectSettingsInheritCfgHandler } from "../products/repo/tools/show-project-settings-inherit-cfg.js";
@@ -241,6 +269,20 @@ const repoToolDefinitions = {
   "repo_show_repository_e2e_setting": defineProductTool({ description: "Show CodeArts Repo repository E2E setting", inputSchema: repoShowRepositoryE2eSettingInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowRepositoryE2eSettingHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowRepositoryE2eSettingHandler }),
   "repo_show_group_e2e_setting": defineProductTool({ description: "Show CodeArts Repo group E2E setting", inputSchema: repoShowGroupE2eSettingInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowGroupE2eSettingHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowGroupE2eSettingHandler }),
   "repo_show_project_e2e_setting": defineProductTool({ description: "Show CodeArts Repo project E2E setting", inputSchema: repoShowProjectE2eSettingInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowProjectE2eSettingHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowProjectE2eSettingHandler }),
+  "repo_list_tenant_repositories": defineProductTool({ description: "List CodeArts Repo tenant repositories", inputSchema: repoListTenantRepositoriesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListTenantRepositoriesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListTenantRepositoriesHandler }),
+  "repo_show_tenant_develop_mode": defineProductTool({ description: "Show CodeArts Repo tenant develop mode status", inputSchema: repoShowTenantDevelopModeInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowTenantDevelopModeHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowTenantDevelopModeHandler }),
+  "repo_show_tenant_repo_encryption_setting": defineProductTool({ description: "Show CodeArts Repo tenant repo encryption setting", inputSchema: repoShowTenantRepoEncryptionSettingInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowTenantRepoEncryptionSettingHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowTenantRepoEncryptionSettingHandler }),
+  "repo_list_tenant_cmks": defineProductTool({ description: "List CodeArts Repo tenant KMS CMKs", inputSchema: repoListTenantCMKsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListTenantCMKsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListTenantCMKsHandler }),
+  "repo_list_tenant_encrypted_repositories": defineProductTool({ description: "List CodeArts Repo tenant encrypted repositories", inputSchema: repoListTenantEncryptedRepositoriesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListTenantEncryptedRepositoriesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListTenantEncryptedRepositoriesHandler }),
+  "repo_show_tenant_kms_grant": defineProductTool({ description: "Show CodeArts Repo tenant KMS grant status", inputSchema: repoShowTenantKMSGrantInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowTenantKmsGrantHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowTenantKmsGrantHandler }),
+  "repo_show_project_tenant_settings": defineProductTool({ description: "Show CodeArts Repo tenant settings", inputSchema: repoShowProjectTenantSettingsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowProjectTenantSettingsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowProjectTenantSettingsHandler }),
+  "repo_list_tenant_trusted_ip_addresses": defineProductTool({ description: "List CodeArts Repo tenant trusted IP addresses", inputSchema: repoListTenantTrustedIpAddressesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListTenantTrustedIpAddressesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListTenantTrustedIpAddressesHandler }),
+  "repo_export_tenant_repositories": defineProductTool({ description: "Export CodeArts Repo tenant repositories", inputSchema: repoExportTenantRepositoriesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoExportTenantRepositoriesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoExportTenantRepositoriesHandler }),
+  "repo_update_tenant_repo_encryption_setting": defineProductTool({ description: "Update CodeArts Repo tenant repo encryption setting", inputSchema: repoUpdateTenantRepoEncryptionSettingInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoUpdateTenantRepoEncryptionSettingHandler>[0] }) => clients.repoClient, createProductHandler: createRepoUpdateTenantRepoEncryptionSettingHandler }),
+  "repo_create_tenant_kms_grant": defineProductTool({ description: "Create CodeArts Repo tenant KMS grant", inputSchema: repoCreateTenantKMSGrantInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCreateTenantKmsGrantHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCreateTenantKmsGrantHandler }),
+  "repo_add_tenant_trusted_ip_address": defineProductTool({ description: "Add CodeArts Repo tenant trusted IP address", inputSchema: repoAddTenantTrustedIpAddressInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoAddTenantTrustedIpAddressHandler>[0] }) => clients.repoClient, createProductHandler: createRepoAddTenantTrustedIpAddressHandler }),
+  "repo_update_tenant_trusted_ip_address": defineProductTool({ description: "Update CodeArts Repo tenant trusted IP address", inputSchema: repoUpdateTenantTrustedIpAddressInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoUpdateTenantTrustedIpAddressHandler>[0] }) => clients.repoClient, createProductHandler: createRepoUpdateTenantTrustedIpAddressHandler }),
+  "repo_delete_tenant_trusted_ip_address": defineProductTool({ description: "Delete CodeArts Repo tenant trusted IP address", inputSchema: repoDeleteTenantTrustedIpAddressInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoDeleteTenantTrustedIpAddressHandler>[0] }) => clients.repoClient, createProductHandler: createRepoDeleteTenantTrustedIpAddressHandler }),
   "repo_list_repository_webhooks": defineProductTool({ description: "List CodeArts Repo repository webhooks", inputSchema: repoListRepositoryWebhooksInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoryWebhooksHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoryWebhooksHandler }),
   "repo_create_repository_webhook": defineProductTool({ description: "Create CodeArts Repo repository webhook", inputSchema: repoCreateRepositoryWebhookInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCreateRepositoryWebhookHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCreateRepositoryWebhookHandler }),
   "repo_get_repository_webhook": defineProductTool({ description: "Get CodeArts Repo repository webhook detail", inputSchema: repoGetRepositoryWebhookInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoGetRepositoryWebhookHandler>[0] }) => clients.repoClient, createProductHandler: createRepoGetRepositoryWebhookHandler }),

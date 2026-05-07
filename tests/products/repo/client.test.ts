@@ -964,4 +964,155 @@ describe("createRepoClient", () => {
     ]);
   });
 
+  it("uses tenant repository, encryption and trusted IP endpoints", async () => {
+    const calls: string[] = [];
+    const client = createRepoClient({
+      get: async (path: string) => {
+        calls.push(path);
+
+        if (path.startsWith("/v4/tenant/repositories?")) {
+          return {
+            repositories: [
+              {
+                owner: "owner-a",
+                capacity: 12,
+                status: 3,
+                moderation_result: 0,
+                create_time: "2026-05-01T00:00:00Z",
+                member_number: 7,
+                repository_id: 101,
+                repository_name: "repo-a",
+                project_name: "project-a",
+                project_id: "project-1",
+                locked: false
+              }
+            ],
+            total: 1
+          };
+        }
+
+        if (path === "/v4/tenant/develop-mode") {
+          return { cr_enable: true, repo_encryption_enabled: false };
+        }
+
+        if (path === "/v4/tenants/tenant-1/repo-encryption/setting") {
+          return {
+            id: 1,
+            tenant_id: "tenant-1",
+            encryption_type: "KMS",
+            default_encryption_enabled: true,
+            cmk_key_name: "cmk-a",
+            cmk_key_id: "cmk-1",
+            key_state: 2,
+            region: "cn-north-4",
+            region_type: "public"
+          };
+        }
+
+        if (path.startsWith("/v4/tenants/tenant-1/repo-encryption/cmks?")) {
+          return [{ cmk_key_name: "cmk-a", cmk_key_id: "cmk-1", key_state: 2 }];
+        }
+
+        if (path.startsWith("/v4/tenants/tenant-1/repo-encryption/repositories?")) {
+          return [
+            {
+              repo_id: 201,
+              repo_name: "repo-b",
+              full_path: "project-a/repo-b",
+              project_id: "project-1",
+              project_name: "project-a",
+              owner_id: 301,
+              owner_iam_id: "iam-1",
+              owner_tenant_name: "tenant-a",
+              owner_nick_name: "nick-a",
+              owner_name: "owner-a"
+            }
+          ];
+        }
+
+        if (path === "/v4/tenants/tenant-1/repo-encryption/kms-grant") {
+          return { tenant_id: "tenant-1", assumed: true };
+        }
+
+        if (path === "/v4/tenant/setting?project_id=project-1") {
+          return {
+            default_encryption_enabled: false,
+            encryption_type: "normal",
+            permit_public: "allow"
+          };
+        }
+
+        if (path.startsWith("/v4/tenant/trusted-ip-addresses?")) {
+          return {
+            ip_addresses: [
+              {
+                id: 1,
+                user_id: 2,
+                domain_id: "tenant-1",
+                ip_range: "1.1.1.1",
+                ip_type: 0,
+                ip_start: "1.1.1.1",
+                ip_end: "1.1.1.1",
+                view_flag: 1,
+                download_flag: 1,
+                upload_flag: 1,
+                remark: "office",
+                created_at: "2026-05-01T00:00:00Z",
+                updated_at: "2026-05-02T00:00:00Z",
+                order_flag: 0
+              }
+            ],
+            total: 1
+          };
+        }
+
+        throw new Error(`unexpected path: ${path}`);
+      }
+    } as never);
+
+    const repositories = await client.listTenantRepositories({
+      repository_name: "repo-a",
+      member_number: 7,
+      status: 3,
+      owner: "owner-a",
+      created_after: "2026-05-01T00:00:00Z",
+      created_before: "2026-05-31T23:59:59Z",
+      sort: "asc",
+      sort_field: "owner",
+      locked: false,
+      offset: 40,
+      limit: 10
+    });
+    const developMode = await client.showTenantDevelopMode();
+    const repoEncryptionSetting = await client.showTenantRepoEncryptionSetting({ tenant_id: "tenant-1" });
+    const cmks = await client.listTenantCMKs({ tenant_id: "tenant-1", offset: 0, limit: 20 });
+    const encryptedRepositories = await client.listTenantEncryptedRepositories({
+      tenant_id: "tenant-1",
+      offset: 10,
+      limit: 10
+    });
+    const kmsGrant = await client.showTenantKMSGrant({ tenant_id: "tenant-1" });
+    const tenantSettings = await client.showProjectTenantSettings({ project_id: "project-1" });
+    const trustedIpAddresses = await client.listTenantTrustedIpAddresses({ offset: 20, limit: 10 });
+
+    expect(repositories.repositories[0]?.repository_name).toBe("repo-a");
+    expect(developMode.cr_enable).toBe(true);
+    expect(repoEncryptionSetting.encryption_type).toBe("KMS");
+    expect(cmks.cmks[0]?.cmk_key_id).toBe("cmk-1");
+    expect(encryptedRepositories.repositories[0]?.repo_name).toBe("repo-b");
+    expect(kmsGrant.assumed).toBe(true);
+    expect(tenantSettings.permit_public).toBe("allow");
+    expect(trustedIpAddresses.ip_addresses[0]?.ip_range).toBe("1.1.1.1");
+    expect(calls).toEqual([
+      "/v4/tenant/repositories?offset=40&limit=10&repository_name=repo-a&member_number=7&status=3&owner=owner-a&created_after=2026-05-01T00%3A00%3A00Z&created_before=2026-05-31T23%3A59%3A59Z&sort=asc&sort_field=owner&locked=false",
+      "/v4/tenant/develop-mode",
+      "/v4/tenants/tenant-1/repo-encryption/setting",
+      "/v4/tenants/tenant-1/repo-encryption/cmks?offset=0&limit=20",
+      "/v4/tenants/tenant-1/repo-encryption/repositories?offset=10&limit=10",
+      "/v4/tenants/tenant-1/repo-encryption/kms-grant",
+      "/v4/tenant/setting?project_id=project-1",
+      "/v4/tenant/trusted-ip-addresses?offset=20&limit=10"
+    ]);
+  });
+
 });

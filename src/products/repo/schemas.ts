@@ -424,6 +424,98 @@ export const repoShowProjectE2eSettingInput = z.object({
   project_id: idSchema
 });
 
+const tenantPagingSchema = z.object({
+  offset: z.number().int().min(0).default(0),
+  limit: z.number().int().positive().max(100).default(20)
+});
+
+const tenantRepositoryStatusSchema = z.union([z.literal(0), z.literal(3), z.literal(4), z.literal(5), z.literal(7)]);
+const tenantRepositorySortFieldSchema = z.enum([
+  "owner",
+  "capacity",
+  "status",
+  "create_time",
+  "member_number",
+  "repository_name"
+]);
+
+export const repoListTenantRepositoriesInput = tenantPagingSchema.extend({
+  repository_name: z.string().min(1).max(128).optional(),
+  member_number: z.number().int().nonnegative().optional(),
+  status: tenantRepositoryStatusSchema.optional(),
+  owner: z.string().min(1).max(128).optional(),
+  created_after: z.string().min(1).optional(),
+  created_before: z.string().min(1).optional(),
+  sort: z.enum(["asc", "desc"]).default("desc"),
+  sort_field: tenantRepositorySortFieldSchema.default("create_time"),
+  locked: z.boolean().optional()
+});
+
+export const repoShowTenantDevelopModeInput = z.object({}).default({});
+
+export const repoShowTenantRepoEncryptionSettingInput = z.object({
+  tenant_id: idSchema
+});
+
+export const repoListTenantCMKsInput = tenantPagingSchema.extend({
+  tenant_id: idSchema
+});
+
+export const repoListTenantEncryptedRepositoriesInput = tenantPagingSchema.extend({
+  tenant_id: idSchema
+});
+
+export const repoShowTenantKMSGrantInput = z.object({
+  tenant_id: idSchema
+});
+
+export const repoShowProjectTenantSettingsInput = z.object({
+  project_id: idSchema.optional()
+});
+
+export const repoListTenantTrustedIpAddressesInput = tenantPagingSchema;
+
+export const repoExportTenantRepositoriesInput = z.object({
+  repository_ids: z.array(z.union([z.string().min(1), z.number().int().positive()])).min(1).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoUpdateTenantRepoEncryptionSettingInput = z.object({
+  tenant_id: idSchema,
+  encryption_type: z.string().min(1).optional(),
+  default_encryption_enabled: z.boolean().optional(),
+  cmk_key_name: z.string().min(1).optional(),
+  cmk_key_id: z.string().min(1).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoCreateTenantKMSGrantInput = z.object({
+  tenant_id: idSchema,
+  key: z.union([z.string(), z.null()]).optional(),
+  title: z.union([z.string(), z.number()]).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoAddTenantTrustedIpAddressInput = z.object({
+  ip_type: z.union([z.literal(0), z.literal(1), z.literal(2)]).optional(),
+  ip_start: z.string().min(1).optional(),
+  ip_end: z.string().min(1).optional(),
+  view_flag: z.union([z.literal(0), z.literal(1)]).optional(),
+  download_flag: z.union([z.literal(0), z.literal(1)]).optional(),
+  upload_flag: z.union([z.literal(0), z.literal(1)]).optional(),
+  remark: z.string().max(200).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoUpdateTenantTrustedIpAddressInput = repoAddTenantTrustedIpAddressInput.extend({
+  ip_id: idSchema
+});
+
+export const repoDeleteTenantTrustedIpAddressInput = z.object({
+  ip_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
 export const repoListEventsInput = pagingSchema.extend({
   repository_id: idSchema
 });

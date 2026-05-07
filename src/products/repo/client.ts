@@ -147,6 +147,94 @@ export type RepoE2eSetting = {
   };
 };
 
+export type RepoTenantRepository = {
+  owner?: string;
+  capacity?: number;
+  status?: number;
+  moderation_result?: number;
+  create_time?: string;
+  member_number?: number;
+  repository_id?: number | string;
+  repository_name?: string;
+  project_name?: string;
+  project_id?: string;
+  locked?: boolean;
+};
+
+export type RepoTenantDevelopMode = {
+  cr_enable?: boolean;
+  repo_encryption_enabled?: boolean;
+};
+
+export type RepoTenantRepoEncryptionSetting = {
+  id?: number | string;
+  tenant_id?: string;
+  encryption_type?: string;
+  default_encryption_enabled?: boolean;
+  cmk_key_name?: string;
+  cmk_key_id?: string;
+  key_state?: number;
+  region?: string;
+  region_type?: string;
+};
+
+export type RepoTenantKmsGrant = {
+  tenant_id?: string;
+  assumed?: boolean;
+};
+
+export type RepoProjectTenantSettings = {
+  default_encryption_enabled?: boolean;
+  encryption_type?: string;
+  permit_public?: string;
+};
+
+export type RepoTenantCMK = {
+  cmk_key_name?: string;
+  cmk_key_id?: string;
+  key_state?: number;
+};
+
+export type RepoTenantEncryptedRepository = {
+  repo_id?: number | string;
+  repo_name?: string;
+  full_path?: string;
+  project_id?: string;
+  project_name?: string;
+  owner_id?: number | string;
+  owner_iam_id?: string | null;
+  owner_tenant_name?: string;
+  owner_nick_name?: string;
+  owner_name?: string;
+};
+
+export type RepoTenantTrustedIpAddress = {
+  id?: number | string;
+  user_id?: number | string;
+  domain_id?: string;
+  ip_range?: string;
+  ip_type?: number;
+  ip_start?: string;
+  ip_end?: string;
+  view_flag?: number;
+  download_flag?: number;
+  upload_flag?: number;
+  remark?: string;
+  created_at?: string;
+  updated_at?: string;
+  order_flag?: number;
+};
+
+type RepoTenantTrustedIpAddressMutationInput = {
+  ip_type?: 0 | 1 | 2;
+  ip_start?: string;
+  ip_end?: string;
+  view_flag?: 0 | 1;
+  download_flag?: 0 | 1;
+  upload_flag?: 0 | 1;
+  remark?: string;
+};
+
 export type RepoRepositoryFilePushPermissionAction = RepoProtectedTagAction & {
   action?: "push" | string;
 };
@@ -1090,6 +1178,79 @@ export type RepoClient = {
     repositories: Array<{ id: number | string; name: string; ssh_url?: string; http_url?: string }>;
     total?: number;
   }>;
+  listTenantRepositories: (input: {
+    repository_name?: string;
+    member_number?: number;
+    status?: 0 | 3 | 4 | 5 | 7;
+    owner?: string;
+    created_after?: string;
+    created_before?: string;
+    sort?: "asc" | "desc";
+    sort_field?: "owner" | "capacity" | "status" | "create_time" | "member_number" | "repository_name";
+    locked?: boolean;
+    offset: number;
+    limit: number;
+  }) => Promise<{
+    repositories: RepoTenantRepository[];
+    total?: number;
+  }>;
+  showTenantDevelopMode: () => Promise<RepoTenantDevelopMode>;
+  showTenantRepoEncryptionSetting: (input: {
+    tenant_id: string;
+  }) => Promise<RepoTenantRepoEncryptionSetting>;
+  listTenantCMKs: (input: {
+    tenant_id: string;
+    offset: number;
+    limit: number;
+  }) => Promise<{
+    cmks: RepoTenantCMK[];
+    total?: number;
+  }>;
+  listTenantEncryptedRepositories: (input: {
+    tenant_id: string;
+    offset: number;
+    limit: number;
+  }) => Promise<{
+    repositories: RepoTenantEncryptedRepository[];
+    total?: number;
+  }>;
+  showTenantKMSGrant: (input: {
+    tenant_id: string;
+  }) => Promise<RepoTenantKmsGrant>;
+  showProjectTenantSettings: (input: {
+    project_id?: string;
+  }) => Promise<RepoProjectTenantSettings>;
+  listTenantTrustedIpAddresses: (input: {
+    offset: number;
+    limit: number;
+  }) => Promise<{
+    ip_addresses: RepoTenantTrustedIpAddress[];
+    total?: number;
+  }>;
+  exportTenantRepositories: (input: {
+    repository_ids?: Array<string | number>;
+  }) => Promise<{
+    status?: string;
+  }>;
+  updateTenantRepoEncryptionSetting: (input: {
+    tenant_id: string;
+    encryption_type?: string;
+    default_encryption_enabled?: boolean;
+    cmk_key_name?: string;
+    cmk_key_id?: string;
+  }) => Promise<RepoTenantRepoEncryptionSetting>;
+  createTenantKMSGrant: (input: {
+    tenant_id: string;
+    key?: string | null;
+    title?: string | number;
+  }) => Promise<RepoTenantKmsGrant>;
+  addTenantTrustedIpAddress: (input: RepoTenantTrustedIpAddressMutationInput) => Promise<RepoTenantTrustedIpAddress>;
+  updateTenantTrustedIpAddress: (input: RepoTenantTrustedIpAddressMutationInput & { ip_id: string }) => Promise<RepoTenantTrustedIpAddress>;
+  deleteTenantTrustedIpAddress: (input: {
+    ip_id: string;
+  }) => Promise<{
+    status?: string;
+  }>;
   listMergeRequests: (input: {
     repository_id: string;
     page: number;
@@ -1313,6 +1474,175 @@ function buildOffsetLimitQuery(input: {
   });
   appendOptionalQuery(query, input, ["search", "user_actions", "view"]);
   return query;
+}
+
+function buildTenantOffsetLimitQuery(input: { offset: number; limit: number }) {
+  return new URLSearchParams({
+    offset: String(input.offset),
+    limit: String(input.limit)
+  });
+}
+
+function extractTenantRepositoriesResponse(
+  response:
+    | RepoTenantRepository[]
+    | {
+        repositories?: RepoTenantRepository[];
+        total?: number;
+        result?: {
+          repositories?: RepoTenantRepository[];
+          total?: number;
+        };
+      }
+) {
+  const payload = unwrapRepoPayload(response);
+  const repositories = Array.isArray(payload) ? payload : payload.result?.repositories ?? payload.repositories ?? [];
+
+  return {
+    repositories,
+    total: Array.isArray(payload) ? payload.length : payload.result?.total ?? payload.total
+  };
+}
+
+function extractTenantCMKsResponse(
+  response:
+    | RepoTenantCMK[]
+    | {
+        cmks?: RepoTenantCMK[];
+        total?: number;
+        result?: {
+          cmks?: RepoTenantCMK[];
+          total?: number;
+        };
+      }
+) {
+  const payload = unwrapRepoPayload(response);
+  const cmks = Array.isArray(payload) ? payload : payload.result?.cmks ?? payload.cmks ?? [];
+
+  return {
+    cmks,
+    total: Array.isArray(payload) ? payload.length : payload.result?.total ?? payload.total
+  };
+}
+
+function extractTenantEncryptedRepositoriesResponse(
+  response:
+    | RepoTenantEncryptedRepository[]
+    | {
+        repositories?: RepoTenantEncryptedRepository[];
+        total?: number;
+        result?: {
+          repositories?: RepoTenantEncryptedRepository[];
+          total?: number;
+        };
+      }
+) {
+  const payload = unwrapRepoPayload(response);
+  const repositories = Array.isArray(payload) ? payload : payload.result?.repositories ?? payload.repositories ?? [];
+
+  return {
+    repositories,
+    total: Array.isArray(payload) ? payload.length : payload.result?.total ?? payload.total
+  };
+}
+
+function extractTenantTrustedIpAddressesResponse(
+  response:
+    | RepoTenantTrustedIpAddress[]
+    | {
+        ip_addresses?: RepoTenantTrustedIpAddress[];
+        trusted_ip_addresses?: RepoTenantTrustedIpAddress[];
+        total?: number;
+        result?: {
+          ip_addresses?: RepoTenantTrustedIpAddress[];
+          trusted_ip_addresses?: RepoTenantTrustedIpAddress[];
+          total?: number;
+        };
+      }
+) {
+  const payload = unwrapRepoPayload(response);
+  const ipAddresses = Array.isArray(payload)
+    ? payload
+    : payload.result?.ip_addresses ?? payload.result?.trusted_ip_addresses ?? payload.ip_addresses ?? payload.trusted_ip_addresses ?? [];
+
+  return {
+    ip_addresses: ipAddresses,
+    total: Array.isArray(payload) ? payload.length : payload.result?.total ?? payload.total
+  };
+}
+
+function extractTenantTrustedIpAddressResponse(
+  response: RepoTenantTrustedIpAddress | { result?: RepoTenantTrustedIpAddress }
+) {
+  const payload = unwrapRepoPayload(response);
+  const address = ("result" in payload && payload.result ? payload.result : payload) as RepoTenantTrustedIpAddress;
+
+  return {
+    id: address.id,
+    user_id: address.user_id,
+    domain_id: address.domain_id,
+    ip_range: address.ip_range,
+    ip_type: address.ip_type,
+    ip_start: address.ip_start,
+    ip_end: address.ip_end,
+    view_flag: address.view_flag,
+    download_flag: address.download_flag,
+    upload_flag: address.upload_flag,
+    remark: address.remark,
+    created_at: address.created_at,
+    updated_at: address.updated_at,
+    order_flag: address.order_flag
+  };
+}
+
+function extractTenantDevelopMode(response: RepoTenantDevelopMode | { result?: RepoTenantDevelopMode }) {
+  const payload = unwrapRepoPayload(response);
+  const setting = ("result" in payload && payload.result ? payload.result : payload) as RepoTenantDevelopMode;
+
+  return {
+    cr_enable: setting.cr_enable,
+    repo_encryption_enabled: setting.repo_encryption_enabled
+  };
+}
+
+function extractTenantRepoEncryptionSetting(
+  response: RepoTenantRepoEncryptionSetting | { result?: RepoTenantRepoEncryptionSetting }
+) {
+  const payload = unwrapRepoPayload(response);
+  const setting = ("result" in payload && payload.result ? payload.result : payload) as RepoTenantRepoEncryptionSetting;
+
+  return {
+    id: setting.id,
+    tenant_id: setting.tenant_id,
+    encryption_type: setting.encryption_type,
+    default_encryption_enabled: setting.default_encryption_enabled,
+    cmk_key_name: setting.cmk_key_name,
+    cmk_key_id: setting.cmk_key_id,
+    key_state: setting.key_state,
+    region: setting.region,
+    region_type: setting.region_type
+  };
+}
+
+function extractTenantKmsGrant(response: RepoTenantKmsGrant | { result?: RepoTenantKmsGrant }) {
+  const payload = unwrapRepoPayload(response);
+  const grant = ("result" in payload && payload.result ? payload.result : payload) as RepoTenantKmsGrant;
+
+  return {
+    tenant_id: grant.tenant_id,
+    assumed: grant.assumed
+  };
+}
+
+function extractProjectTenantSettings(response: RepoProjectTenantSettings | { result?: RepoProjectTenantSettings }) {
+  const payload = unwrapRepoPayload(response);
+  const setting = ("result" in payload && payload.result ? payload.result : payload) as RepoProjectTenantSettings;
+
+  return {
+    default_encryption_enabled: setting.default_encryption_enabled,
+    encryption_type: setting.encryption_type,
+    permit_public: setting.permit_public
+  };
 }
 
 function extractProtectedBranchesResponse(
@@ -3235,6 +3565,160 @@ export function createRepoClient(
       }
 
       return cached.value;
+    },
+    async listTenantRepositories(input) {
+      const query = buildTenantOffsetLimitQuery(input);
+      appendOptionalQuery(query, input, [
+        "repository_name",
+        "member_number",
+        "status",
+        "owner",
+        "created_after",
+        "created_before",
+        "sort",
+        "sort_field",
+        "locked"
+      ]);
+
+      const rawResponse = (await _http.get(`/v4/tenant/repositories?${query.toString()}`)) as Parameters<
+        typeof extractTenantRepositoriesResponse
+      >[0];
+
+      return extractTenantRepositoriesResponse(rawResponse);
+    },
+    async showTenantDevelopMode() {
+      const rawResponse = (await _http.get("/v4/tenant/develop-mode")) as Parameters<
+        typeof extractTenantDevelopMode
+      >[0];
+
+      return extractTenantDevelopMode(rawResponse);
+    },
+    async showTenantRepoEncryptionSetting(input) {
+      const rawResponse = (await _http.get(
+        `/v4/tenants/${encodeURIComponent(input.tenant_id)}/repo-encryption/setting`
+      )) as Parameters<typeof extractTenantRepoEncryptionSetting>[0];
+
+      return extractTenantRepoEncryptionSetting(rawResponse);
+    },
+    async listTenantCMKs(input) {
+      const query = buildTenantOffsetLimitQuery(input);
+      const rawResponse = (await _http.get(
+        `/v4/tenants/${encodeURIComponent(input.tenant_id)}/repo-encryption/cmks?${query.toString()}`
+      )) as Parameters<typeof extractTenantCMKsResponse>[0];
+
+      return extractTenantCMKsResponse(rawResponse);
+    },
+    async listTenantEncryptedRepositories(input) {
+      const query = buildTenantOffsetLimitQuery(input);
+      const rawResponse = (await _http.get(
+        `/v4/tenants/${encodeURIComponent(input.tenant_id)}/repo-encryption/repositories?${query.toString()}`
+      )) as Parameters<typeof extractTenantEncryptedRepositoriesResponse>[0];
+
+      return extractTenantEncryptedRepositoriesResponse(rawResponse);
+    },
+    async showTenantKMSGrant(input) {
+      const rawResponse = (await _http.get(
+        `/v4/tenants/${encodeURIComponent(input.tenant_id)}/repo-encryption/kms-grant`
+      )) as Parameters<typeof extractTenantKmsGrant>[0];
+
+      return extractTenantKmsGrant(rawResponse);
+    },
+    async showProjectTenantSettings(input) {
+      const query = new URLSearchParams();
+
+      if (input.project_id) {
+        query.set("project_id", input.project_id);
+      }
+
+      const rawResponse = (await _http.get(
+        `/v4/tenant/setting${query.toString() ? `?${query.toString()}` : ""}`
+      )) as Parameters<typeof extractProjectTenantSettings>[0];
+
+      return extractProjectTenantSettings(rawResponse);
+    },
+    async listTenantTrustedIpAddresses(input) {
+      const query = buildTenantOffsetLimitQuery(input);
+      const rawResponse = (await _http.get(
+        `/v4/tenant/trusted-ip-addresses?${query.toString()}`
+      )) as Parameters<typeof extractTenantTrustedIpAddressesResponse>[0];
+
+      return extractTenantTrustedIpAddressesResponse(rawResponse);
+    },
+    async exportTenantRepositories(input) {
+      await _http.post("/v4/tenant/repositories/export", {
+        repository_ids: input.repository_ids
+      });
+
+      return {
+        status: "success"
+      };
+    },
+    async updateTenantRepoEncryptionSetting(input) {
+      const rawResponse = (await _http.put(
+        `/v4/tenants/${encodeURIComponent(input.tenant_id)}/repo-encryption/setting`,
+        omitUndefinedFields({
+          tenant_id: input.tenant_id,
+          encryption_type: input.encryption_type,
+          default_encryption_enabled: input.default_encryption_enabled,
+          cmk_key_name: input.cmk_key_name,
+          cmk_key_id: input.cmk_key_id
+        })
+      )) as Parameters<typeof extractTenantRepoEncryptionSetting>[0];
+
+      return extractTenantRepoEncryptionSetting(rawResponse);
+    },
+    async createTenantKMSGrant(input) {
+      const rawResponse = (await _http.post(
+        `/v4/tenants/${encodeURIComponent(input.tenant_id)}/repo-encryption/kms-grant`,
+        omitUndefinedFields({
+          key: input.key,
+          title: input.title
+        })
+      )) as Parameters<typeof extractTenantKmsGrant>[0];
+
+      return extractTenantKmsGrant(rawResponse);
+    },
+    async addTenantTrustedIpAddress(input) {
+      const rawResponse = (await _http.post(
+        "/v4/tenant/trusted-ip-addresses",
+        omitUndefinedFields({
+          ip_type: input.ip_type,
+          ip_start: input.ip_start,
+          ip_end: input.ip_end,
+          view_flag: input.view_flag,
+          download_flag: input.download_flag,
+          upload_flag: input.upload_flag,
+          remark: input.remark
+        })
+      )) as Parameters<typeof extractTenantTrustedIpAddressResponse>[0];
+
+      return extractTenantTrustedIpAddressResponse(rawResponse);
+    },
+    async updateTenantTrustedIpAddress(input) {
+      const rawResponse = (await _http.put(
+        `/v4/tenant/trusted-ip-addresses/${encodeURIComponent(input.ip_id)}`,
+        omitUndefinedFields({
+          ip_type: input.ip_type,
+          ip_start: input.ip_start,
+          ip_end: input.ip_end,
+          view_flag: input.view_flag,
+          download_flag: input.download_flag,
+          upload_flag: input.upload_flag,
+          remark: input.remark
+        })
+      )) as Parameters<typeof extractTenantTrustedIpAddressResponse>[0];
+
+      return extractTenantTrustedIpAddressResponse(rawResponse);
+    },
+    async deleteTenantTrustedIpAddress(input) {
+      const response = (await _http.delete(
+        `/v4/tenant/trusted-ip-addresses/${encodeURIComponent(input.ip_id)}`
+      )) as { status?: string; result?: { status?: string } };
+      const payload = unwrapRepoPayload(response);
+
+      return {
+        status: payload.result?.status ?? payload.status ?? "success"
+      };
     },
     async listMergeRequests(input) {
       const offset = (input.page - 1) * input.page_size;

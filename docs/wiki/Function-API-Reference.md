@@ -30,10 +30,10 @@
 | 代码检查 | 9 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
 | 部署 | 60 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
 | 流水线 | 78 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
-| 代码仓库 | 92 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
+| 代码仓库 | 106 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 201 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 8 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **486** | |
+| **总计** | **500** | |
 
 ## 字段对应
 
@@ -228,6 +228,7 @@
 | `pipeline_update_strategy` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_update_strategy) |
 | `pipeline_update_tag` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_update_tag) |
 | `pipeline_update_variable_group` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_update_variable_group) |
+| `repo_add_tenant_trusted_ip_address` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_add_tenant_trusted_ip_address) |
 | `repo_associate_remote_mirror` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_associate_remote_mirror) |
 | `repo_batch_create_protected_branches` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_batch_create_protected_branches) |
 | `repo_batch_create_protected_tags` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_batch_create_protected_tags) |
@@ -249,10 +250,13 @@
 | `repo_create_repository` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_create_repository) |
 | `repo_create_repository_webhook` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_create_repository_webhook) |
 | `repo_create_tag` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_create_tag) |
+| `repo_create_tenant_kms_grant` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_create_tenant_kms_grant) |
 | `repo_delete_protected_branch` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_delete_protected_branch) |
 | `repo_delete_protected_tag` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_delete_protected_tag) |
 | `repo_delete_repository_webhook` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_delete_repository_webhook) |
 | `repo_delete_tag` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_delete_tag) |
+| `repo_delete_tenant_trusted_ip_address` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_delete_tenant_trusted_ip_address) |
+| `repo_export_tenant_repositories` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_export_tenant_repositories) |
 | `repo_get_branch` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_get_branch) |
 | `repo_get_commit` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_get_commit) |
 | `repo_get_file` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_get_file) |
@@ -295,6 +299,10 @@
 | `repo_list_repository_webhooks` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_webhooks) |
 | `repo_list_repository_work_items` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_work_items) |
 | `repo_list_tags` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_tags) |
+| `repo_list_tenant_cmks` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_tenant_cmks) |
+| `repo_list_tenant_encrypted_repositories` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_tenant_encrypted_repositories) |
+| `repo_list_tenant_repositories` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_tenant_repositories) |
+| `repo_list_tenant_trusted_ip_addresses` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_tenant_trusted_ip_addresses) |
 | `repo_merge_merge_request` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_merge_merge_request) |
 | `repo_remove_repository_deploy_key` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_remove_repository_deploy_key) |
 | `repo_request_official_api` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_request_official_api) |
@@ -304,11 +312,15 @@
 | `repo_show_project_general_policy` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_project_general_policy) |
 | `repo_show_project_member_setting` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_project_member_setting) |
 | `repo_show_project_settings_inherit_cfg` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_project_settings_inherit_cfg) |
+| `repo_show_project_tenant_settings` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_project_tenant_settings) |
 | `repo_show_project_watermark` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_project_watermark) |
 | `repo_show_projects_general_policy` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_projects_general_policy) |
 | `repo_show_repository_e2e_setting` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_repository_e2e_setting) |
 | `repo_show_repository_permission_inherit_enabled` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_repository_permission_inherit_enabled) |
 | `repo_show_resource_permissions` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_resource_permissions) |
+| `repo_show_tenant_develop_mode` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_tenant_develop_mode) |
+| `repo_show_tenant_kms_grant` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_tenant_kms_grant) |
+| `repo_show_tenant_repo_encryption_setting` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_tenant_repo_encryption_setting) |
 | `repo_start_remote_mirror_synchronization` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_start_remote_mirror_synchronization) |
 | `repo_update_group_resource_permissions` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_update_group_resource_permissions) |
 | `repo_update_project_general_policy` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_update_project_general_policy) |
@@ -320,6 +332,8 @@
 | `repo_update_repository_permission_inherit_enabled` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_update_repository_permission_inherit_enabled) |
 | `repo_update_repository_resource_permissions` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_update_repository_resource_permissions) |
 | `repo_update_repository_webhook` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_update_repository_webhook) |
+| `repo_update_tenant_repo_encryption_setting` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_update_tenant_repo_encryption_setting) |
+| `repo_update_tenant_trusted_ip_address` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_update_tenant_trusted_ip_address) |
 | `req_add_iteration_work_items` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_add_iteration_work_items) |
 | `req_add_plan_work_items` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_add_plan_work_items) |
 | `req_add_project_member` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_add_project_member) |

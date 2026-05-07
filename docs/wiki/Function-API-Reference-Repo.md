@@ -6,11 +6,101 @@
 
 模块：`代码仓库`
 
-API 数量：`92`
+API 数量：`106`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
 ## API 清单
+
+### repo_add_tenant_trusted_ip_address
+
+所属模块：`代码仓库`
+
+说明：添加代码仓库的租户trustedipaddress。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_add_tenant_trusted_ip_address",
+    "arguments": {}
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `ip_type` | 否 | `0 \| 1 \| 2` |  | 字段对应：<br>MCP 字段 `ip_type` ↔ 原始 CodeArts 代码仓库 API 同名字段 `ip_type`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。可选值：`0`、`1`、`2`。 |
+| `ip_start` | 否 | `string` |  | 字段对应：<br>MCP 字段 `ip_start` ↔ 原始 CodeArts 代码仓库 API 同名字段 `ip_start`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `ip_end` | 否 | `string` |  | 字段对应：<br>MCP 字段 `ip_end` ↔ 原始 CodeArts 代码仓库 API 同名字段 `ip_end`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `view_flag` | 否 | `0 \| 1` |  | 字段对应：<br>MCP 字段 `view_flag` ↔ 原始 CodeArts 代码仓库 API 同名字段 `view_flag`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。可选值：`0`、`1`。 |
+| `download_flag` | 否 | `0 \| 1` |  | 字段对应：<br>MCP 字段 `download_flag` ↔ 原始 CodeArts 代码仓库 API 同名字段 `download_flag`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。可选值：`0`、`1`。 |
+| `upload_flag` | 否 | `0 \| 1` |  | 字段对应：<br>MCP 字段 `upload_flag` ↔ 原始 CodeArts 代码仓库 API 同名字段 `upload_flag`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。可选值：`0`、`1`。 |
+| `remark` | 否 | `string` |  | 字段对应：<br>MCP 字段 `remark` ↔ 原始 CodeArts 代码仓库 API 同名字段 `remark`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "ip_type": {
+      "type": "number",
+      "enum": [
+        0,
+        1,
+        2
+      ]
+    },
+    "ip_start": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ip_end": {
+      "type": "string",
+      "minLength": 1
+    },
+    "view_flag": {
+      "type": "number",
+      "enum": [
+        0,
+        1
+      ]
+    },
+    "download_flag": {
+      "type": "number",
+      "enum": [
+        0,
+        1
+      ]
+    },
+    "upload_flag": {
+      "type": "number",
+      "enum": [
+        0,
+        1
+      ]
+    },
+    "remark": {
+      "type": "string",
+      "maxLength": 200
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
 
 ### repo_associate_remote_mirror
 
@@ -2111,6 +2201,72 @@ API 数量：`92`
 }
 ```
 
+### repo_create_tenant_kms_grant
+
+所属模块：`代码仓库`
+
+说明：创建代码仓库的租户kmsgrant。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_create_tenant_kms_grant",
+    "arguments": {
+      "tenant_id": "<tenant_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `tenant_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `tenant_id` ↔ 原始 CodeArts 代码仓库 API 同名字段 `tenant_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>租户 ID 或 CodeArts 租户级项目标识，用于制品仓等服务定位当前租户/项目空间。 |
+| `key` | 否 | `string \| null` |  | 字段对应：<br>MCP 字段 `key` ↔ 原始 CodeArts 代码仓库 API 同名字段 `key`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `title` | 否 | `string \| number` |  | 字段对应：<br>MCP 字段 `title` ↔ 原始 CodeArts 代码仓库 API 中的标题字段，常见原字段名为 `name`、`subject` 或 `title`。<br>标题，用于工作项、合并请求、计划等资源的主显示名称。建议简洁说明要做什么。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "key": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "title": {
+      "type": [
+        "string",
+        "number"
+      ]
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "tenant_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### repo_delete_protected_branch
 
 所属模块：`代码仓库`
@@ -2341,6 +2497,117 @@ API 数量：`92`
     "repository_id",
     "tag_name"
   ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### repo_delete_tenant_trusted_ip_address
+
+所属模块：`代码仓库`
+
+说明：删除代码仓库的租户trustedipaddress。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_delete_tenant_trusted_ip_address",
+    "arguments": {
+      "ip_id": "<ip_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `ip_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `ip_id` ↔ 原始 CodeArts 代码仓库 API 同名字段 `ip_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>ip ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "ip_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "ip_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### repo_export_tenant_repositories
+
+所属模块：`代码仓库`
+
+说明：执行代码仓库的租户仓库。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_export_tenant_repositories",
+    "arguments": {}
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `repository_ids` | 否 | `array<string \| integer>` |  | 字段对应：<br>MCP 字段 `repository_ids` ↔ 原始 CodeArts 代码仓库 API 同名字段 `repository_ids`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>仓库 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "repository_ids": {
+      "type": "array",
+      "items": {
+        "anyOf": [
+          {
+            "type": "string",
+            "minLength": 1
+          },
+          {
+            "type": "integer",
+            "exclusiveMinimum": 0
+          }
+        ]
+      },
+      "minItems": 1
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
 }
@@ -5605,6 +5872,290 @@ API 数量：`92`
 }
 ```
 
+### repo_list_tenant_cmks
+
+所属模块：`代码仓库`
+
+说明：查询代码仓库的租户cmks。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_list_tenant_cmks",
+    "arguments": {
+      "tenant_id": "<tenant_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `offset` | 否 | `integer` | 0 | 字段对应：<br>MCP 字段 `offset` ↔ 原始 CodeArts 代码仓库 API 同名字段 `offset`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>分页偏移量，表示从结果集第几条开始返回，常与 limit 配合使用。 |
+| `limit` | 否 | `integer` | 20 | 字段对应：<br>MCP 字段 `limit` ↔ 原始 CodeArts 代码仓库 API 同名字段 `limit`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>分页数量上限，表示本次最多返回多少条记录。 |
+| `tenant_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `tenant_id` ↔ 原始 CodeArts 代码仓库 API 同名字段 `tenant_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>租户 ID 或 CodeArts 租户级项目标识，用于制品仓等服务定位当前租户/项目空间。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "offset": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0
+    },
+    "limit": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 100,
+      "default": 20
+    },
+    "tenant_id": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "tenant_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### repo_list_tenant_encrypted_repositories
+
+所属模块：`代码仓库`
+
+说明：查询代码仓库的租户encrypted仓库。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_list_tenant_encrypted_repositories",
+    "arguments": {
+      "tenant_id": "<tenant_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `offset` | 否 | `integer` | 0 | 字段对应：<br>MCP 字段 `offset` ↔ 原始 CodeArts 代码仓库 API 同名字段 `offset`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>分页偏移量，表示从结果集第几条开始返回，常与 limit 配合使用。 |
+| `limit` | 否 | `integer` | 20 | 字段对应：<br>MCP 字段 `limit` ↔ 原始 CodeArts 代码仓库 API 同名字段 `limit`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>分页数量上限，表示本次最多返回多少条记录。 |
+| `tenant_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `tenant_id` ↔ 原始 CodeArts 代码仓库 API 同名字段 `tenant_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>租户 ID 或 CodeArts 租户级项目标识，用于制品仓等服务定位当前租户/项目空间。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "offset": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0
+    },
+    "limit": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 100,
+      "default": 20
+    },
+    "tenant_id": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "tenant_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### repo_list_tenant_repositories
+
+所属模块：`代码仓库`
+
+说明：查询代码仓库的租户仓库。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_list_tenant_repositories",
+    "arguments": {}
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `offset` | 否 | `integer` | 0 | 字段对应：<br>MCP 字段 `offset` ↔ 原始 CodeArts 代码仓库 API 同名字段 `offset`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>分页偏移量，表示从结果集第几条开始返回，常与 limit 配合使用。 |
+| `limit` | 否 | `integer` | 20 | 字段对应：<br>MCP 字段 `limit` ↔ 原始 CodeArts 代码仓库 API 同名字段 `limit`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>分页数量上限，表示本次最多返回多少条记录。 |
+| `repository_name` | 否 | `string` |  | 字段对应：<br>MCP 字段 `repository_name` ↔ 原始 CodeArts 代码仓库 API 同名字段 `repository_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>仓库名称。 |
+| `member_number` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `member_number` ↔ 原始 CodeArts 代码仓库 API 同名字段 `member_number`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `status` | 否 | `0 \| 3 \| 4 \| 5 \| 7` |  | 字段对应：<br>MCP 字段 `status` ↔ 原始 CodeArts 代码仓库 API 同名字段 `status`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>状态过滤条件或目标状态。用于列表查询时表示筛选状态，用于更新/流转时表示要变更到的目标状态；具体取值以对应资源的状态字典为准。可选值：`0`、`3`、`4`、`5`、`7`。 |
+| `owner` | 否 | `string` |  | 字段对应：<br>MCP 字段 `owner` ↔ 原始 CodeArts 代码仓库 API 同名字段 `owner`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>拥有者或负责人标识，用于按资源归属过滤或设置归属人。 |
+| `created_after` | 否 | `string` |  | 字段对应：<br>MCP 字段 `created_after` ↔ 原始 CodeArts 代码仓库 API 同名字段 `created_after`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>创建时间下界，通常使用 ISO 8601 时间字符串。 |
+| `created_before` | 否 | `string` |  | 字段对应：<br>MCP 字段 `created_before` ↔ 原始 CodeArts 代码仓库 API 同名字段 `created_before`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>创建时间上界，通常使用 ISO 8601 时间字符串。 |
+| `sort` | 否 | `"asc" \| "desc"` | "desc" | 字段对应：<br>MCP 字段 `sort` ↔ 原始 CodeArts 代码仓库 API 同名字段 `sort`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `sort_field` | 否 | `"owner" \| "capacity" \| "status" \| "create_time" \| "member_number" \| "repository_name"` | "create_time" | 字段对应：<br>MCP 字段 `sort_field` ↔ 原始 CodeArts 代码仓库 API 同名字段 `sort_field`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。可选值：`owner`、`capacity`、`status`、`create_time`、`member_number`、`repository_name`。 |
+| `locked` | 否 | `boolean` |  | 字段对应：<br>MCP 字段 `locked` ↔ 原始 CodeArts 代码仓库 API 同名字段 `locked`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "offset": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0
+    },
+    "limit": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 100,
+      "default": 20
+    },
+    "repository_name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "member_number": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "status": {
+      "type": "number",
+      "enum": [
+        0,
+        3,
+        4,
+        5,
+        7
+      ]
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "created_after": {
+      "type": "string",
+      "minLength": 1
+    },
+    "created_before": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sort": {
+      "type": "string",
+      "enum": [
+        "asc",
+        "desc"
+      ],
+      "default": "desc"
+    },
+    "sort_field": {
+      "type": "string",
+      "enum": [
+        "owner",
+        "capacity",
+        "status",
+        "create_time",
+        "member_number",
+        "repository_name"
+      ],
+      "default": "create_time"
+    },
+    "locked": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### repo_list_tenant_trusted_ip_addresses
+
+所属模块：`代码仓库`
+
+说明：查询代码仓库的租户trustedipaddresses。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_list_tenant_trusted_ip_addresses",
+    "arguments": {}
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `offset` | 否 | `integer` | 0 | 字段对应：<br>MCP 字段 `offset` ↔ 原始 CodeArts 代码仓库 API 同名字段 `offset`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>分页偏移量，表示从结果集第几条开始返回，常与 limit 配合使用。 |
+| `limit` | 否 | `integer` | 20 | 字段对应：<br>MCP 字段 `limit` ↔ 原始 CodeArts 代码仓库 API 同名字段 `limit`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>分页数量上限，表示本次最多返回多少条记录。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "offset": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0
+    },
+    "limit": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 100,
+      "default": 20
+    }
+  },
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### repo_merge_merge_request
 
 所属模块：`代码仓库`
@@ -6180,6 +6731,48 @@ API 数量：`92`
 }
 ```
 
+### repo_show_project_tenant_settings
+
+所属模块：`代码仓库`
+
+说明：执行代码仓库的项目租户settings。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_show_project_tenant_settings",
+    "arguments": {}
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 代码仓库 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### repo_show_project_watermark
 
 所属模块：`代码仓库`
@@ -6448,6 +7041,135 @@ API 数量：`92`
   "required": [
     "group_id",
     "resource_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### repo_show_tenant_develop_mode
+
+所属模块：`代码仓库`
+
+说明：执行代码仓库的租户developmode。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_show_tenant_develop_mode",
+    "arguments": {}
+  }
+}
+```
+
+参数：
+
+无参数。
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### repo_show_tenant_kms_grant
+
+所属模块：`代码仓库`
+
+说明：执行代码仓库的租户kmsgrant。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_show_tenant_kms_grant",
+    "arguments": {
+      "tenant_id": "<tenant_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `tenant_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `tenant_id` ↔ 原始 CodeArts 代码仓库 API 同名字段 `tenant_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>租户 ID 或 CodeArts 租户级项目标识，用于制品仓等服务定位当前租户/项目空间。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "tenant_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### repo_show_tenant_repo_encryption_setting
+
+所属模块：`代码仓库`
+
+说明：执行代码仓库的租户repoencryptionsetting。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_show_tenant_repo_encryption_setting",
+    "arguments": {
+      "tenant_id": "<tenant_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `tenant_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `tenant_id` ↔ 原始 CodeArts 代码仓库 API 同名字段 `tenant_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>租户 ID 或 CodeArts 租户级项目标识，用于制品仓等服务定位当前租户/项目空间。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "tenant_id"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -7472,6 +8194,177 @@ API 数量：`92`
   "required": [
     "repository_id",
     "hook_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### repo_update_tenant_repo_encryption_setting
+
+所属模块：`代码仓库`
+
+说明：更新代码仓库的租户repoencryptionsetting。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_update_tenant_repo_encryption_setting",
+    "arguments": {
+      "tenant_id": "<tenant_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `tenant_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `tenant_id` ↔ 原始 CodeArts 代码仓库 API 同名字段 `tenant_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>租户 ID 或 CodeArts 租户级项目标识，用于制品仓等服务定位当前租户/项目空间。 |
+| `encryption_type` | 否 | `string` |  | 字段对应：<br>MCP 字段 `encryption_type` ↔ 原始 CodeArts 代码仓库 API 同名字段 `encryption_type`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `default_encryption_enabled` | 否 | `boolean` |  | 字段对应：<br>MCP 字段 `default_encryption_enabled` ↔ 原始 CodeArts 代码仓库 API 同名字段 `default_encryption_enabled`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `cmk_key_name` | 否 | `string` |  | 字段对应：<br>MCP 字段 `cmk_key_name` ↔ 原始 CodeArts 代码仓库 API 同名字段 `cmk_key_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>cmkkey名称。 |
+| `cmk_key_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `cmk_key_id` ↔ 原始 CodeArts 代码仓库 API 同名字段 `cmk_key_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>cmkkey ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "encryption_type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "default_encryption_enabled": {
+      "type": "boolean"
+    },
+    "cmk_key_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "cmk_key_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "tenant_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### repo_update_tenant_trusted_ip_address
+
+所属模块：`代码仓库`
+
+说明：更新代码仓库的租户trustedipaddress。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_update_tenant_trusted_ip_address",
+    "arguments": {
+      "ip_id": "<ip_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `ip_type` | 否 | `0 \| 1 \| 2` |  | 字段对应：<br>MCP 字段 `ip_type` ↔ 原始 CodeArts 代码仓库 API 同名字段 `ip_type`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。可选值：`0`、`1`、`2`。 |
+| `ip_start` | 否 | `string` |  | 字段对应：<br>MCP 字段 `ip_start` ↔ 原始 CodeArts 代码仓库 API 同名字段 `ip_start`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `ip_end` | 否 | `string` |  | 字段对应：<br>MCP 字段 `ip_end` ↔ 原始 CodeArts 代码仓库 API 同名字段 `ip_end`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `view_flag` | 否 | `0 \| 1` |  | 字段对应：<br>MCP 字段 `view_flag` ↔ 原始 CodeArts 代码仓库 API 同名字段 `view_flag`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。可选值：`0`、`1`。 |
+| `download_flag` | 否 | `0 \| 1` |  | 字段对应：<br>MCP 字段 `download_flag` ↔ 原始 CodeArts 代码仓库 API 同名字段 `download_flag`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。可选值：`0`、`1`。 |
+| `upload_flag` | 否 | `0 \| 1` |  | 字段对应：<br>MCP 字段 `upload_flag` ↔ 原始 CodeArts 代码仓库 API 同名字段 `upload_flag`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。可选值：`0`、`1`。 |
+| `remark` | 否 | `string` |  | 字段对应：<br>MCP 字段 `remark` ↔ 原始 CodeArts 代码仓库 API 同名字段 `remark`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+| `ip_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `ip_id` ↔ 原始 CodeArts 代码仓库 API 同名字段 `ip_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>ip ID，用于定位对应的 CodeArts 资源。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "ip_type": {
+      "type": "number",
+      "enum": [
+        0,
+        1,
+        2
+      ]
+    },
+    "ip_start": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ip_end": {
+      "type": "string",
+      "minLength": 1
+    },
+    "view_flag": {
+      "type": "number",
+      "enum": [
+        0,
+        1
+      ]
+    },
+    "download_flag": {
+      "type": "number",
+      "enum": [
+        0,
+        1
+      ]
+    },
+    "upload_flag": {
+      "type": "number",
+      "enum": [
+        0,
+        1
+      ]
+    },
+    "remark": {
+      "type": "string",
+      "maxLength": 200
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    },
+    "ip_id": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "ip_id"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
