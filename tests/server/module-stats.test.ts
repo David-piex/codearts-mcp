@@ -25,6 +25,7 @@ describe("classifyToolAccess", () => {
     expect(classifyToolAccess("req_change_release_plan_status")).toBe("write");
     expect(classifyToolAccess("req_leave_project")).toBe("write");
     expect(classifyToolAccess("req_upload_work_item_image")).toBe("write");
+    expect(classifyToolAccess("repo_bulk_delete_protected_branches")).toBe("write");
   });
 });
 
@@ -32,7 +33,7 @@ describe("collectModuleStats", () => {
   it("returns the current per-module tool totals and read/write split", () => {
     expect(collectModuleStats()).toEqual([
       { module: "Req", total: 201, read: 117, write: 84 },
-      { module: "Repo", total: 43, read: 28, write: 15 },
+      { module: "Repo", total: 68, read: 38, write: 30 },
       { module: "Pipeline", total: 78, read: 42, write: 36 },
       { module: "Check", total: 9, read: 5, write: 4 },
       { module: "TestPlan", total: 8, read: 6, write: 2 },
@@ -46,8 +47,8 @@ describe("collectModuleStats", () => {
     expect(collectProductToolStats()).toEqual({
       modules: 8,
       total: collectProductToolManifest().length,
-      read: 266,
-      write: 169
+      read: 276,
+      write: 184
     });
   });
 
@@ -67,7 +68,7 @@ describe("collectModuleStats", () => {
     expect(JSON.parse(renderModuleStatsReportJson())).toEqual({
       modules: [
         { module: "Req", total: 201, read: 117, write: 84 },
-        { module: "Repo", total: 43, read: 28, write: 15 },
+        { module: "Repo", total: 68, read: 38, write: 30 },
         { module: "Pipeline", total: 78, read: 42, write: 36 },
         { module: "Check", total: 9, read: 5, write: 4 },
         { module: "TestPlan", total: 8, read: 6, write: 2 },
@@ -78,8 +79,8 @@ describe("collectModuleStats", () => {
       totals: {
         modules: 8,
         total: collectProductToolManifest().length,
-        read: 266,
-        write: 169,
+        read: 276,
+        write: 184,
         httpTotalWithAuth: collectHttpToolTotal()
       }
     });

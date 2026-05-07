@@ -31,7 +31,171 @@ export const repoListRepositoriesInput = pagingSchema.extend({
 });
 
 export const repoListProtectedBranchesInput = pagingSchema.extend({
+  repository_id: idSchema,
+  page_size: z.number().int().positive().max(100).default(20),
+  search: z.string().min(1).optional()
+});
+
+const protectedBranchActionSchema = z.object({
+  action: z.enum(["push", "merge"]),
+  enable: z.boolean().optional(),
+  user_ids: z.array(z.union([z.string().min(1), z.number().int().positive()])).optional(),
+  user_team_ids: z.array(z.union([z.string().min(1), z.number().int().positive()])).optional(),
+  related_role_ids: z.array(z.string().min(1)).optional(),
+  addition_switchers: z.array(z.object({
+    name: z.enum(["allowed_force_push"]),
+    enable: z.boolean()
+  })).optional()
+});
+
+export const repoListProjectProtectedBranchesInput = pagingSchema.extend({
+  project_id: idSchema,
+  page_size: z.number().int().positive().max(100).default(20),
+  search: z.string().min(1).optional(),
+  user_actions: z.boolean().optional(),
+  view: z.enum(["simple"]).optional()
+});
+
+export const repoCreateProjectProtectedBranchesInput = z.object({
+  project_id: idSchema,
+  name: z.string().min(1).max(1000),
+  actions: z.array(protectedBranchActionSchema).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoListGroupProtectedBranchesInput = pagingSchema.extend({
+  group_id: idSchema,
+  page_size: z.number().int().positive().max(100).default(20),
+  search: z.string().min(1).optional(),
+  user_actions: z.boolean().optional()
+});
+
+export const repoGetProtectedBranchInput = z.object({
+  repository_id: idSchema,
+  branch_name: z.string().min(1)
+});
+
+export const repoBatchCreateProtectedBranchesInput = z.object({
+  repository_id: idSchema,
+  names: z.array(z.string().min(1)).min(1),
+  actions: z.array(protectedBranchActionSchema).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoBatchUpdateProtectedBranchesInput = z.object({
+  repository_id: idSchema,
+  names: z.array(z.string().min(1)).min(1),
+  actions: z.array(protectedBranchActionSchema).min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoBulkDeleteProtectedBranchesInput = z.object({
+  repository_id: idSchema,
+  names: z.array(z.string().min(1)).min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoUpdateProtectedBranchInput = z.object({
+  repository_id: idSchema,
+  branch_name: z.string().min(1),
+  actions: z.array(protectedBranchActionSchema).min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoDeleteProtectedBranchInput = z.object({
+  repository_id: idSchema,
+  branch_name: z.string().min(1),
+  dry_run: z.boolean().default(true)
+});
+
+const protectedTagActionSchema = z.object({
+  action: z.enum(["create"]).default("create"),
+  enable: z.boolean().optional(),
+  user_ids: z.array(z.union([z.string().min(1), z.number().int().positive()])).optional(),
+  user_team_ids: z.array(z.union([z.string().min(1), z.number().int().positive()])).optional(),
+  related_role_ids: z.array(z.string().min(1)).optional()
+});
+
+const projectProtectedTagActionSchema = z.object({
+  action: z.enum(["read", "create-delete", "create"]).default("create"),
+  enable: z.boolean().optional(),
+  user_ids: z.array(z.union([z.string().min(1), z.number().int().positive()])).optional(),
+  user_names: z.array(z.string().min(1)).optional(),
+  user_team_ids: z.array(z.union([z.string().min(1), z.number().int().positive()])).optional(),
+  user_team_names: z.array(z.string().min(1)).optional(),
+  related_role_ids: z.array(z.string().min(1)).optional()
+});
+
+const protectedRefsUserGroupsListInput = pagingSchema.extend({
+  page_size: z.number().int().positive().max(100).default(20),
+  search: z.string().min(1).optional()
+});
+
+export const repoCreateProjectProtectedTagsInput = z.object({
+  project_id: idSchema,
+  name: z.string().min(1).max(1000),
+  actions: z.array(projectProtectedTagActionSchema).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoListProjectProtectedTagsInput = z.object({
+  project_id: idSchema
+});
+
+export const repoListRepositoryProtectedRefsUserGroupsInput = protectedRefsUserGroupsListInput.extend({
   repository_id: idSchema
+});
+
+export const repoListGroupProtectedRefsUserGroupsInput = protectedRefsUserGroupsListInput.extend({
+  group_id: idSchema
+});
+
+export const repoListProjectProtectedRefsUserGroupsInput = protectedRefsUserGroupsListInput.extend({
+  project_id: idSchema
+});
+
+export const repoListProtectedTagsInput = pagingSchema.extend({
+  repository_id: idSchema,
+  page_size: z.number().int().positive().max(100).default(20),
+  search: z.string().min(1).optional()
+});
+
+export const repoGetProtectedTagInput = z.object({
+  repository_id: idSchema,
+  tag_name: z.string().min(1)
+});
+
+export const repoBatchCreateProtectedTagsInput = z.object({
+  repository_id: idSchema,
+  names: z.array(z.string().min(1)).min(1),
+  actions: z.array(protectedTagActionSchema).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoBatchUpdateProtectedTagsInput = z.object({
+  repository_id: idSchema,
+  names: z.array(z.string().min(1)).min(1),
+  actions: z.array(protectedTagActionSchema).min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoBulkDeleteProtectedTagsInput = z.object({
+  repository_id: idSchema,
+  names: z.array(z.string().min(1)).min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoUpdateProtectedTagInput = z.object({
+  repository_id: idSchema,
+  tag_name: z.string().min(1),
+  actions: z.array(protectedTagActionSchema).min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoDeleteProtectedTagInput = z.object({
+  repository_id: idSchema,
+  tag_name: z.string().min(1),
+  dry_run: z.boolean().default(true)
 });
 
 export const repoListRepositoryLabelsInput = pagingSchema.extend({
@@ -41,6 +205,45 @@ export const repoListRepositoryLabelsInput = pagingSchema.extend({
 export const repoListRepositoryDeployKeysInput = pagingSchema.extend({
   repository_id: idSchema,
   page_size: z.number().int().positive().max(100).default(20)
+});
+
+const filePushPermissionActionSchema = z.object({
+  action: z.enum(["push"]).default("push"),
+  enable: z.boolean().optional(),
+  user_ids: z.array(z.union([z.string().min(1), z.number().int().positive()])).optional(),
+  user_team_ids: z.array(z.union([z.string().min(1), z.number().int().positive()])).optional(),
+  related_role_ids: z.array(z.string().min(1)).optional()
+});
+
+const filePushPermissionMutationSchema = z.object({
+  id: z.union([z.string().min(1), z.number().int().positive()]).optional(),
+  path: z.string().min(1).optional(),
+  actions: z.array(filePushPermissionActionSchema).optional()
+});
+
+export const repoListRepositoryFilePushPermissionsInput = pagingSchema.extend({
+  repository_id: idSchema,
+  page_size: z.number().int().positive().max(100).default(20),
+  search: z.string().min(1).optional()
+});
+
+export const repoCreateFilePushPermissionInput = z.object({
+  repository_id: idSchema,
+  path: z.string().min(1),
+  actions: z.array(filePushPermissionActionSchema).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoBatchUpdateRepositoryFilePushPermissionsInput = z.object({
+  repository_id: idSchema,
+  permissions: z.array(filePushPermissionMutationSchema).min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoBatchDeleteRepositoryFilePushPermissionsInput = z.object({
+  repository_id: idSchema,
+  ids: z.array(z.union([z.string().min(1), z.number().int().positive()])).min(1),
+  dry_run: z.boolean().default(true)
 });
 
 export const repoCheckRepositoryDeployKeyInput = z.object({

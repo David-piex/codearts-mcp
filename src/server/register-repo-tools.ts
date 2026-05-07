@@ -3,29 +3,47 @@ import { officialApiRequestInput } from "../products/official-api.js";
 import { createRepoClient } from "../products/repo/client.js";
 import {
   repoAssociateRemoteMirrorInput,
+  repoBatchCreateProtectedBranchesInput,
+  repoBatchCreateProtectedTagsInput,
+  repoBatchDeleteRepositoryFilePushPermissionsInput,
+  repoBatchUpdateProtectedBranchesInput,
+  repoBatchUpdateProtectedTagsInput,
+  repoBatchUpdateRepositoryFilePushPermissionsInput,
+  repoBulkDeleteProtectedBranchesInput,
+  repoBulkDeleteProtectedTagsInput,
   repoCheckRepositoryDeployKeyInput,
   repoCompareRefsInput,
   repoCloseMergeRequestInput,
+  repoCreateFilePushPermissionInput,
+  repoCreateProjectProtectedBranchesInput,
+  repoCreateProjectProtectedTagsInput,
   repoCreateMergeRequestDiscussionInput,
   repoCreateMergeRequestInput,
   repoCreateRepositoryInput,
   repoCreateRepositoryWebhookInput,
   repoImportRepositoryInput,
+  repoDeleteProtectedBranchInput,
   repoGetBranchInput,
   repoGetCommitInput,
   repoGetFileInput,
   repoGetMergeRequestInput,
+  repoGetProtectedBranchInput,
   repoGetRemoteMirrorInput,
+  repoGetProtectedTagInput,
   repoGetRepositoryInput,
   repoGetRepositoryWebhookInput,
   repoGetRepositoryWebhookLogInput,
   repoGetTagInput,
   repoCreateTagInput,
+  repoDeleteProtectedTagInput,
   repoDeleteRepositoryWebhookInput,
   repoDeleteTagInput,
   repoListEventsInput,
+  repoListGroupProtectedBranchesInput,
+  repoListGroupProtectedRefsUserGroupsInput,
   repoListImpersonationTokensInput,
   repoListPersonalRepositoryImportRecordsInput,
+  repoListProtectedTagsInput,
   repoListRepositoryDeployKeysInput,
   repoListRepositoryWebhookLogsInput,
   repoListRepositoryWebhooksInput,
@@ -34,7 +52,12 @@ import {
   repoListCommitsInput,
   repoListMergeRequestChangesInput,
   repoListMergeRequestDiscussionsInput,
+  repoListProjectProtectedBranchesInput,
+  repoListProjectProtectedRefsUserGroupsInput,
+  repoListProjectProtectedTagsInput,
   repoListProtectedBranchesInput,
+  repoListRepositoryProtectedRefsUserGroupsInput,
+  repoListRepositoryFilePushPermissionsInput,
   repoListRepositoryLabelsInput,
   repoListMergeRequestsInput,
   repoMergeMergeRequestInput,
@@ -42,6 +65,8 @@ import {
   repoRemoveRepositoryDeployKeyInput,
   repoReviewMergeRequestInput,
   repoStartRemoteMirrorSynchronizationInput,
+  repoUpdateProtectedBranchInput,
+  repoUpdateProtectedTagInput,
   repoUpdateRepositoryWebhookInput,
   repoUpdateRemoteMirrorInput
 } from "../products/repo/schemas.js";
@@ -49,6 +74,8 @@ import { createRepoAssociateRemoteMirrorHandler } from "../products/repo/tools/a
 import { createRepoCheckRepositoryDeployKeyHandler } from "../products/repo/tools/check-repository-deploy-key.js";
 import { createRepoCloseMergeRequestHandler } from "../products/repo/tools/close-merge-request.js";
 import { createRepoCompareRefsHandler } from "../products/repo/tools/compare-refs.js";
+import { createRepoCreateProjectProtectedBranchesHandler } from "../products/repo/tools/create-project-protected-branches.js";
+import { createRepoCreateProjectProtectedTagsHandler } from "../products/repo/tools/create-project-protected-tags.js";
 import { createRepoCreateMergeRequestDiscussionHandler } from "../products/repo/tools/create-merge-request-discussion.js";
 import { createRepoCreateMergeRequestHandler } from "../products/repo/tools/create-merge-request.js";
 import { createRepoCreateRepositoryHandler } from "../products/repo/tools/create-repository.js";
@@ -67,13 +94,19 @@ import { createRepoGetTagHandler } from "../products/repo/tools/get-tag.js";
 import { createRepoListBranchesHandler } from "../products/repo/tools/list-branches.js";
 import { createRepoListCommitsHandler } from "../products/repo/tools/list-commits.js";
 import { createRepoListEventsHandler } from "../products/repo/tools/list-events.js";
+import { createRepoListGroupProtectedBranchesHandler } from "../products/repo/tools/list-group-protected-branches.js";
+import { createRepoListGroupProtectedRefsUserGroupsHandler } from "../products/repo/tools/list-group-protected-refs-user-groups.js";
 import { createRepoListImpersonationTokensHandler } from "../products/repo/tools/list-impersonation-tokens.js";
 import { createRepoListMergeRequestChangesHandler } from "../products/repo/tools/list-merge-request-changes.js";
 import { createRepoListMergeRequestDiscussionsHandler } from "../products/repo/tools/list-merge-request-discussions.js";
 import { createRepoListMergeRequestsHandler } from "../products/repo/tools/list-merge-requests.js";
 import { createRepoListPersonalRepositoryImportRecordsHandler } from "../products/repo/tools/list-personal-repository-import-records.js";
+import { createRepoListProjectProtectedBranchesHandler } from "../products/repo/tools/list-project-protected-branches.js";
+import { createRepoListProjectProtectedRefsUserGroupsHandler } from "../products/repo/tools/list-project-protected-refs-user-groups.js";
+import { createRepoListProjectProtectedTagsHandler } from "../products/repo/tools/list-project-protected-tags.js";
 import { createRepoListProtectedBranchesHandler } from "../products/repo/tools/list-protected-branches.js";
 import { createRepoListRepositoriesHandler } from "../products/repo/tools/list-repositories.js";
+import { createRepoListRepositoryProtectedRefsUserGroupsHandler } from "../products/repo/tools/list-repository-protected-refs-user-groups.js";
 import { createRepoListRepositoryDeployKeysHandler } from "../products/repo/tools/list-repository-deploy-keys.js";
 import { createRepoListRepositoryWebhookLogsHandler } from "../products/repo/tools/list-repository-webhook-logs.js";
 import { createRepoListRepositoryWebhooksHandler } from "../products/repo/tools/list-repository-webhooks.js";
@@ -91,6 +124,23 @@ import { createOfficialApiRequestHandler } from "../products/shared-tools/reques
 import { defineProductTool, registerDefinedTool } from "./product-tool-registry.js";
 import type { RateLimiter } from "./rate-limiter.js";
 import type { SessionCredentialStore } from "./session-store.js";
+import { createRepoBatchDeleteRepositoryFilePushPermissionsHandler } from "../products/repo/tools/batch-delete-repository-file-push-permissions.js";
+import { createRepoBatchCreateProtectedBranchesHandler } from "../products/repo/tools/batch-create-protected-branches.js";
+import { createRepoBatchCreateProtectedTagsHandler } from "../products/repo/tools/batch-create-protected-tags.js";
+import { createRepoBatchUpdateRepositoryFilePushPermissionsHandler } from "../products/repo/tools/batch-update-repository-file-push-permissions.js";
+import { createRepoBatchUpdateProtectedBranchesHandler } from "../products/repo/tools/batch-update-protected-branches.js";
+import { createRepoBatchUpdateProtectedTagsHandler } from "../products/repo/tools/batch-update-protected-tags.js";
+import { createRepoBulkDeleteProtectedBranchesHandler } from "../products/repo/tools/bulk-delete-protected-branches.js";
+import { createRepoBulkDeleteProtectedTagsHandler } from "../products/repo/tools/bulk-delete-protected-tags.js";
+import { createRepoCreateFilePushPermissionHandler } from "../products/repo/tools/create-file-push-permission.js";
+import { createRepoDeleteProtectedBranchHandler } from "../products/repo/tools/delete-protected-branch.js";
+import { createRepoDeleteProtectedTagHandler } from "../products/repo/tools/delete-protected-tag.js";
+import { createRepoGetProtectedBranchHandler } from "../products/repo/tools/get-protected-branch.js";
+import { createRepoGetProtectedTagHandler } from "../products/repo/tools/get-protected-tag.js";
+import { createRepoListProtectedTagsHandler } from "../products/repo/tools/list-protected-tags.js";
+import { createRepoListRepositoryFilePushPermissionsHandler } from "../products/repo/tools/list-repository-file-push-permissions.js";
+import { createRepoUpdateProtectedBranchHandler } from "../products/repo/tools/update-protected-branch.js";
+import { createRepoUpdateProtectedTagHandler } from "../products/repo/tools/update-protected-tag.js";
 
 type RegisterableServer = Pick<McpServer, "registerTool">;
 type RepoStdioClient = ReturnType<typeof createRepoClient>;
@@ -113,6 +163,10 @@ const repoToolDefinitions = {
   "repo_get_remote_mirror": defineProductTool({ description: "Get CodeArts Repo remote mirror detail", inputSchema: repoGetRemoteMirrorInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoGetRemoteMirrorHandler>[0] }) => clients.repoClient, createProductHandler: createRepoGetRemoteMirrorHandler }),
   "repo_update_remote_mirror": defineProductTool({ description: "Update CodeArts Repo remote mirror", inputSchema: repoUpdateRemoteMirrorInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoUpdateRemoteMirrorHandler>[0] }) => clients.repoClient, createProductHandler: createRepoUpdateRemoteMirrorHandler }),
   "repo_list_repository_deploy_keys": defineProductTool({ description: "List CodeArts Repo repository deploy keys", inputSchema: repoListRepositoryDeployKeysInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoryDeployKeysHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoryDeployKeysHandler }),
+  "repo_list_repository_file_push_permissions": defineProductTool({ description: "List CodeArts Repo repository file push permissions", inputSchema: repoListRepositoryFilePushPermissionsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoryFilePushPermissionsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoryFilePushPermissionsHandler }),
+  "repo_create_file_push_permission": defineProductTool({ description: "Create CodeArts Repo repository file push permission", inputSchema: repoCreateFilePushPermissionInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCreateFilePushPermissionHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCreateFilePushPermissionHandler }),
+  "repo_batch_update_repository_file_push_permissions": defineProductTool({ description: "Batch update CodeArts Repo repository file push permissions", inputSchema: repoBatchUpdateRepositoryFilePushPermissionsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoBatchUpdateRepositoryFilePushPermissionsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoBatchUpdateRepositoryFilePushPermissionsHandler }),
+  "repo_batch_delete_repository_file_push_permissions": defineProductTool({ description: "Batch delete CodeArts Repo repository file push permissions", inputSchema: repoBatchDeleteRepositoryFilePushPermissionsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoBatchDeleteRepositoryFilePushPermissionsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoBatchDeleteRepositoryFilePushPermissionsHandler }),
   "repo_check_repository_deploy_key": defineProductTool({ description: "Check whether a CodeArts Repo repository deploy key already exists upstream", inputSchema: repoCheckRepositoryDeployKeyInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCheckRepositoryDeployKeyHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCheckRepositoryDeployKeyHandler }),
   "repo_remove_repository_deploy_key": defineProductTool({ description: "Remove a CodeArts Repo repository deploy key", inputSchema: repoRemoveRepositoryDeployKeyInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoRemoveRepositoryDeployKeyHandler>[0] }) => clients.repoClient, createProductHandler: createRepoRemoveRepositoryDeployKeyHandler }),
   "repo_list_repository_webhooks": defineProductTool({ description: "List CodeArts Repo repository webhooks", inputSchema: repoListRepositoryWebhooksInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoryWebhooksHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoryWebhooksHandler }),
@@ -127,7 +181,28 @@ const repoToolDefinitions = {
   "repo_close_merge_request": defineProductTool({ description: "Close CodeArts Repo merge request", inputSchema: repoCloseMergeRequestInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCloseMergeRequestHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCloseMergeRequestHandler }),
   "repo_list_merge_request_changes": defineProductTool({ description: "List CodeArts Repo merge request changes", inputSchema: repoListMergeRequestChangesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListMergeRequestChangesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListMergeRequestChangesHandler }),
   "repo_list_merge_request_discussions": defineProductTool({ description: "List CodeArts Repo merge request discussions", inputSchema: repoListMergeRequestDiscussionsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListMergeRequestDiscussionsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListMergeRequestDiscussionsHandler }),
+  "repo_list_project_protected_branches": defineProductTool({ description: "List CodeArts Repo project protected branches", inputSchema: repoListProjectProtectedBranchesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListProjectProtectedBranchesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListProjectProtectedBranchesHandler }),
+  "repo_create_project_protected_branches": defineProductTool({ description: "Create CodeArts Repo project protected branch", inputSchema: repoCreateProjectProtectedBranchesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCreateProjectProtectedBranchesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCreateProjectProtectedBranchesHandler }),
+  "repo_list_group_protected_branches": defineProductTool({ description: "List CodeArts Repo group protected branches", inputSchema: repoListGroupProtectedBranchesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListGroupProtectedBranchesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListGroupProtectedBranchesHandler }),
   "repo_list_protected_branches": defineProductTool({ description: "List CodeArts Repo protected branches", inputSchema: repoListProtectedBranchesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListProtectedBranchesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListProtectedBranchesHandler }),
+  "repo_get_protected_branch": defineProductTool({ description: "Get CodeArts Repo protected branch detail", inputSchema: repoGetProtectedBranchInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoGetProtectedBranchHandler>[0] }) => clients.repoClient, createProductHandler: createRepoGetProtectedBranchHandler }),
+  "repo_batch_create_protected_branches": defineProductTool({ description: "Batch create CodeArts Repo protected branches", inputSchema: repoBatchCreateProtectedBranchesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoBatchCreateProtectedBranchesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoBatchCreateProtectedBranchesHandler }),
+  "repo_batch_update_protected_branches": defineProductTool({ description: "Batch update CodeArts Repo protected branches", inputSchema: repoBatchUpdateProtectedBranchesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoBatchUpdateProtectedBranchesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoBatchUpdateProtectedBranchesHandler }),
+  "repo_bulk_delete_protected_branches": defineProductTool({ description: "Bulk delete CodeArts Repo protected branches", inputSchema: repoBulkDeleteProtectedBranchesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoBulkDeleteProtectedBranchesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoBulkDeleteProtectedBranchesHandler }),
+  "repo_update_protected_branch": defineProductTool({ description: "Update CodeArts Repo protected branch", inputSchema: repoUpdateProtectedBranchInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoUpdateProtectedBranchHandler>[0] }) => clients.repoClient, createProductHandler: createRepoUpdateProtectedBranchHandler }),
+  "repo_delete_protected_branch": defineProductTool({ description: "Delete CodeArts Repo protected branch", inputSchema: repoDeleteProtectedBranchInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoDeleteProtectedBranchHandler>[0] }) => clients.repoClient, createProductHandler: createRepoDeleteProtectedBranchHandler }),
+  "repo_list_protected_tags": defineProductTool({ description: "List CodeArts Repo protected tags", inputSchema: repoListProtectedTagsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListProtectedTagsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListProtectedTagsHandler }),
+  "repo_get_protected_tag": defineProductTool({ description: "Get CodeArts Repo protected tag detail", inputSchema: repoGetProtectedTagInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoGetProtectedTagHandler>[0] }) => clients.repoClient, createProductHandler: createRepoGetProtectedTagHandler }),
+  "repo_batch_create_protected_tags": defineProductTool({ description: "Batch create CodeArts Repo protected tags", inputSchema: repoBatchCreateProtectedTagsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoBatchCreateProtectedTagsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoBatchCreateProtectedTagsHandler }),
+  "repo_batch_update_protected_tags": defineProductTool({ description: "Batch update CodeArts Repo protected tags", inputSchema: repoBatchUpdateProtectedTagsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoBatchUpdateProtectedTagsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoBatchUpdateProtectedTagsHandler }),
+  "repo_bulk_delete_protected_tags": defineProductTool({ description: "Bulk delete CodeArts Repo protected tags", inputSchema: repoBulkDeleteProtectedTagsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoBulkDeleteProtectedTagsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoBulkDeleteProtectedTagsHandler }),
+  "repo_update_protected_tag": defineProductTool({ description: "Update CodeArts Repo protected tag", inputSchema: repoUpdateProtectedTagInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoUpdateProtectedTagHandler>[0] }) => clients.repoClient, createProductHandler: createRepoUpdateProtectedTagHandler }),
+  "repo_delete_protected_tag": defineProductTool({ description: "Delete CodeArts Repo protected tag", inputSchema: repoDeleteProtectedTagInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoDeleteProtectedTagHandler>[0] }) => clients.repoClient, createProductHandler: createRepoDeleteProtectedTagHandler }),
+  "repo_create_project_protected_tags": defineProductTool({ description: "Create CodeArts Repo project protected tag", inputSchema: repoCreateProjectProtectedTagsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCreateProjectProtectedTagsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCreateProjectProtectedTagsHandler }),
+  "repo_list_project_protected_tags": defineProductTool({ description: "List CodeArts Repo project protected tags", inputSchema: repoListProjectProtectedTagsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListProjectProtectedTagsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListProjectProtectedTagsHandler }),
+  "repo_list_repository_protected_refs_user_groups": defineProductTool({ description: "List CodeArts Repo repository protected refs user groups", inputSchema: repoListRepositoryProtectedRefsUserGroupsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoryProtectedRefsUserGroupsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoryProtectedRefsUserGroupsHandler }),
+  "repo_list_group_protected_refs_user_groups": defineProductTool({ description: "List CodeArts Repo group protected refs user groups", inputSchema: repoListGroupProtectedRefsUserGroupsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListGroupProtectedRefsUserGroupsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListGroupProtectedRefsUserGroupsHandler }),
+  "repo_list_project_protected_refs_user_groups": defineProductTool({ description: "List CodeArts Repo project protected refs user groups", inputSchema: repoListProjectProtectedRefsUserGroupsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListProjectProtectedRefsUserGroupsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListProjectProtectedRefsUserGroupsHandler }),
   "repo_list_repository_labels": defineProductTool({ description: "List CodeArts Repo repository labels", inputSchema: repoListRepositoryLabelsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoryLabelsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoryLabelsHandler }),
   "repo_create_tag": defineProductTool({ description: "Create CodeArts Repo tag", inputSchema: repoCreateTagInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCreateTagHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCreateTagHandler }),
   "repo_delete_tag": defineProductTool({ description: "Delete CodeArts Repo tag", inputSchema: repoDeleteTagInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoDeleteTagHandler>[0] }) => clients.repoClient, createProductHandler: createRepoDeleteTagHandler }),

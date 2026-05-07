@@ -35,7 +35,12 @@ export function mapProtectedBranches(
 }
 
 type RepoListProtectedBranchesClient = {
-  listProtectedBranches: (input: { repository_id: string }) => Promise<{
+  listProtectedBranches: (input: {
+    repository_id: string;
+    page: number;
+    page_size: number;
+    search?: string;
+  }) => Promise<{
     branches: Array<{
       id: number | string;
       name?: string;
@@ -54,13 +59,11 @@ export function createRepoListProtectedBranchesHandler(client: RepoListProtected
   return async (input: unknown) => {
     const parsed = repoListProtectedBranchesInput.parse(input);
     const response = await client.listProtectedBranches(parsed);
-    const offset = (parsed.page - 1) * parsed.page_size;
-    const pageItems = response.branches.slice(offset, offset + parsed.page_size);
     const result = mapProtectedBranches(
-      pageItems,
+      response.branches,
       parsed.page,
       parsed.page_size,
-      response.total ?? response.branches.length
+      response.total
     );
 
     return {

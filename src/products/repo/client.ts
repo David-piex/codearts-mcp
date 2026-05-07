@@ -110,6 +110,85 @@ export type RepoRepositoryDeployKey = {
   created_at?: string;
 };
 
+export type RepoRepositoryFilePushPermissionAction = RepoProtectedTagAction & {
+  action?: "push" | string;
+};
+
+export type RepoRepositoryFilePushPermission = {
+  id: number | string;
+  path?: string;
+  actions?: RepoRepositoryFilePushPermissionAction[];
+};
+
+type RepoRepositoryFilePushPermissionActionInput = {
+  action?: "push";
+  enable?: boolean;
+  user_ids?: Array<string | number>;
+  user_team_ids?: Array<string | number>;
+  related_role_ids?: string[];
+};
+
+type RepoRepositoryFilePushPermissionMutationInput = {
+  id?: string | number;
+  path?: string;
+  actions?: RepoRepositoryFilePushPermissionActionInput[];
+};
+
+export type RepoProtectedTagAction = {
+  action?: string;
+  enable?: boolean;
+  users?: Array<{ id?: number | string; name?: string; username?: string; state?: string }>;
+  user_teams?: Array<{ id?: number | string; name?: string }>;
+  roles?: Array<{ id?: number | string; name?: string; related_role_id?: string; chinese_name?: string }>;
+};
+
+export type RepoProtectedTag = {
+  id: number | string;
+  project_id?: string;
+  source?: string | null;
+  updated_at?: string;
+  name?: string;
+  actions?: RepoProtectedTagAction[];
+};
+
+type RepoProtectedTagActionInput = {
+  action?: "create";
+  enable?: boolean;
+  user_ids?: Array<string | number>;
+  user_team_ids?: Array<string | number>;
+  related_role_ids?: string[];
+};
+
+export type RepoProtectedBranchAction = RepoProtectedTagAction & {
+  addition_switchers?: Array<{ name?: string; enable?: boolean }>;
+};
+
+export type RepoProtectedBranch = {
+  id: number | string;
+  name?: string;
+  actions?: RepoProtectedBranchAction[];
+};
+
+type RepoProtectedBranchActionInput = {
+  action: "push" | "merge";
+  enable?: boolean;
+  user_ids?: Array<string | number>;
+  user_team_ids?: Array<string | number>;
+  related_role_ids?: string[];
+  addition_switchers?: Array<{ name: "allowed_force_push"; enable: boolean }>;
+};
+
+type RepoProjectProtectedTagActionInput = RepoProtectedTagActionInput & {
+  action?: "read" | "create-delete" | "create";
+  user_names?: string[];
+  user_team_names?: string[];
+};
+
+type RepoProtectedRefsUserGroup = {
+  id: number | string;
+  name?: string;
+};
+
 export type RepoClient = {
   requestOfficialApi: (input: OfficialApiRequestInput) => Promise<OfficialApiRequestResult>;
   getBranch: (input: { repository_id: string; branch_name: string }) => Promise<{
@@ -188,6 +267,34 @@ export type RepoClient = {
   }) => Promise<{
     keys: RepoRepositoryDeployKey[];
     total?: number;
+  }>;
+  listRepositoryFilePushPermissions: (input: {
+    repository_id: string;
+    page: number;
+    page_size: number;
+    search?: string;
+  }) => Promise<{
+    permissions: RepoRepositoryFilePushPermission[];
+    total?: number;
+  }>;
+  createFilePushPermission: (input: {
+    repository_id: string;
+    path: string;
+    actions?: RepoRepositoryFilePushPermissionActionInput[];
+  }) => Promise<RepoRepositoryFilePushPermission>;
+  batchUpdateRepositoryFilePushPermissions: (input: {
+    repository_id: string;
+    permissions: RepoRepositoryFilePushPermissionMutationInput[];
+  }) => Promise<{
+    permissions: RepoRepositoryFilePushPermission[];
+    total?: number;
+  }>;
+  batchDeleteRepositoryFilePushPermissions: (input: {
+    repository_id: string;
+    ids: Array<string | number>;
+  }) => Promise<{
+    ids: Array<string | number>;
+    deleted: boolean;
   }>;
   checkRepositoryDeployKey: (input: {
     repository_id: string;
@@ -371,18 +478,163 @@ export type RepoClient = {
   }>;
   listProtectedBranches: (input: {
     repository_id: string;
+    page: number;
+    page_size: number;
+    search?: string;
   }) => Promise<{
-    branches: Array<{
-      id: number | string;
-      name?: string;
-      actions?: Array<{
-        action?: string;
-        enable?: boolean;
-        users?: Array<{ id?: number | string }>;
-        roles?: Array<{ id?: number | string }>;
-      }>;
-    }>;
+    branches: RepoProtectedBranch[];
     total?: number;
+  }>;
+  listProjectProtectedBranches: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    search?: string;
+    user_actions?: boolean;
+    view?: "simple";
+  }) => Promise<{
+    branches: RepoProtectedBranch[];
+    total?: number;
+  }>;
+  createProjectProtectedBranches: (input: {
+    project_id: string;
+    name: string;
+    actions?: RepoProtectedBranchActionInput[];
+  }) => Promise<RepoProtectedBranch>;
+  listGroupProtectedBranches: (input: {
+    group_id: string;
+    page: number;
+    page_size: number;
+    search?: string;
+    user_actions?: boolean;
+  }) => Promise<{
+    branches: RepoProtectedBranch[];
+    total?: number;
+  }>;
+  getProtectedBranch: (input: {
+    repository_id: string;
+    branch_name: string;
+  }) => Promise<RepoProtectedBranch>;
+  batchCreateProtectedBranches: (input: {
+    repository_id: string;
+    names: string[];
+    actions?: RepoProtectedBranchActionInput[];
+  }) => Promise<{
+    branches: RepoProtectedBranch[];
+    total?: number;
+  }>;
+  batchUpdateProtectedBranches: (input: {
+    repository_id: string;
+    names: string[];
+    actions: RepoProtectedBranchActionInput[];
+  }) => Promise<{
+    branches: RepoProtectedBranch[];
+    total?: number;
+  }>;
+  bulkDeleteProtectedBranches: (input: {
+    repository_id: string;
+    names: string[];
+  }) => Promise<{
+    names: string[];
+    deleted: boolean;
+  }>;
+  updateProtectedBranch: (input: {
+    repository_id: string;
+    branch_name: string;
+    actions: RepoProtectedBranchActionInput[];
+  }) => Promise<RepoProtectedBranch>;
+  deleteProtectedBranch: (input: {
+    repository_id: string;
+    branch_name: string;
+  }) => Promise<{
+    branch_name: string;
+    deleted: boolean;
+  }>;
+  listProtectedTags: (input: {
+    repository_id: string;
+    page: number;
+    page_size: number;
+    search?: string;
+  }) => Promise<{
+    tags: RepoProtectedTag[];
+    total?: number;
+  }>;
+  createProjectProtectedTags: (input: {
+    project_id: string;
+    name: string;
+    actions?: RepoProjectProtectedTagActionInput[];
+  }) => Promise<RepoProtectedTag>;
+  listProjectProtectedTags: (input: {
+    project_id: string;
+  }) => Promise<{
+    tags: RepoProtectedTag[];
+    total?: number;
+  }>;
+  listRepositoryProtectedRefsUserGroups: (input: {
+    repository_id: string;
+    page: number;
+    page_size: number;
+    search?: string;
+  }) => Promise<{
+    groups: RepoProtectedRefsUserGroup[];
+    total?: number;
+  }>;
+  listGroupProtectedRefsUserGroups: (input: {
+    group_id: string;
+    page: number;
+    page_size: number;
+    search?: string;
+  }) => Promise<{
+    groups: RepoProtectedRefsUserGroup[];
+    total?: number;
+  }>;
+  listProjectProtectedRefsUserGroups: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    search?: string;
+  }) => Promise<{
+    groups: RepoProtectedRefsUserGroup[];
+    total?: number;
+  }>;
+  getProtectedTag: (input: {
+    repository_id: string;
+    tag_name: string;
+  }) => Promise<RepoProtectedTag>;
+  batchCreateProtectedTags: (input: {
+    repository_id: string;
+    names: string[];
+    actions?: RepoProtectedTagActionInput[];
+  }) => Promise<{
+    tags: RepoProtectedTag[];
+    total?: number;
+  }>;
+  batchUpdateProtectedTags: (input: {
+    repository_id: string;
+    names: string[];
+    actions: RepoProtectedTagActionInput[];
+  }) => Promise<{
+    tags: RepoProtectedTag[];
+    total?: number;
+  }>;
+  bulkDeleteProtectedTags: (input: {
+    repository_id: string;
+    names: string[];
+  }) => Promise<{
+    names: string[];
+    deleted: boolean;
+  }>;
+  updateProtectedTag: (input: {
+    repository_id: string;
+    tag_name: string;
+    actions: RepoProtectedTagActionInput[];
+  }) => Promise<RepoProtectedTag>;
+  deleteProtectedTag: (input: {
+    repository_id: string;
+    tag_name: string;
+  }) => Promise<{
+    tag_name: string;
+    deleted: boolean;
   }>;
   listMergeRequestDiscussions: (input: {
     repository_id: string;
@@ -693,6 +945,232 @@ function buildRepositoryWebhookPayload(input: RepoRepositoryWebhookMutationInput
   });
 }
 
+function buildProtectedTagPayload(input: {
+  names: string[];
+  actions?: RepoProtectedTagActionInput[];
+}) {
+  return omitUndefinedFields({
+    names: input.names,
+    actions: input.actions?.map((action) => omitUndefinedFields({
+      action: action.action,
+      enable: action.enable,
+      user_ids: action.user_ids,
+      user_team_ids: action.user_team_ids,
+      related_role_ids: action.related_role_ids
+    }))
+  });
+}
+
+function mapProtectedBranchActions(actions: RepoProtectedBranchActionInput[]) {
+  return actions.map((action) => omitUndefinedFields({
+    action: action.action,
+    enable: action.enable,
+    user_ids: action.user_ids,
+    user_team_ids: action.user_team_ids,
+    related_role_ids: action.related_role_ids,
+    addition_switchers: action.addition_switchers
+  }));
+}
+
+function buildProtectedBranchPayload(input: {
+  names: string[];
+  actions?: RepoProtectedBranchActionInput[];
+}) {
+  return omitUndefinedFields({
+    names: input.names,
+    actions: input.actions ? mapProtectedBranchActions(input.actions) : undefined
+  });
+}
+
+function buildProjectProtectedBranchPayload(input: {
+  name: string;
+  actions?: RepoProtectedBranchActionInput[];
+}) {
+  return omitUndefinedFields({
+    name: input.name,
+    actions: input.actions ? mapProtectedBranchActions(input.actions) : undefined
+  });
+}
+
+function mapProjectProtectedTagActions(actions: RepoProjectProtectedTagActionInput[]) {
+  return actions.map((action) => omitUndefinedFields({
+    action: action.action,
+    enable: action.enable,
+    user_ids: action.user_ids,
+    user_names: action.user_names,
+    user_team_ids: action.user_team_ids,
+    user_team_names: action.user_team_names,
+    related_role_ids: action.related_role_ids
+  }));
+}
+
+function buildProjectProtectedTagPayload(input: {
+  name: string;
+  actions?: RepoProjectProtectedTagActionInput[];
+}) {
+  return omitUndefinedFields({
+    name: input.name,
+    actions: input.actions ? mapProjectProtectedTagActions(input.actions) : undefined
+  });
+}
+
+function buildOffsetLimitQuery(input: {
+  page: number;
+  page_size: number;
+  search?: string;
+  user_actions?: boolean;
+  view?: string;
+}) {
+  const offset = (input.page - 1) * input.page_size;
+  const query = new URLSearchParams({
+    offset: String(offset),
+    limit: String(input.page_size)
+  });
+  appendOptionalQuery(query, input, ["search", "user_actions", "view"]);
+  return query;
+}
+
+function extractProtectedBranchesResponse(
+  response: RepoProtectedBranch[]
+    | {
+      protected_branches?: RepoProtectedBranch[];
+      branches?: RepoProtectedBranch[];
+      total?: number;
+      result?: {
+        protected_branches?: RepoProtectedBranch[];
+        branches?: RepoProtectedBranch[];
+        total?: number;
+      };
+    }
+) {
+  const payload = unwrapRepoPayload(response);
+  const items = Array.isArray(payload)
+    ? payload
+    : payload.result?.protected_branches
+      ?? payload.result?.branches
+      ?? payload.protected_branches
+      ?? payload.branches
+      ?? [];
+
+  return {
+    branches: items.map((item) => ({
+      ...item,
+      id: item.id ?? "",
+      name: item.name,
+      actions: item.actions
+    })),
+    total: Array.isArray(payload) ? items.length : payload.result?.total ?? payload.total ?? items.length
+  };
+}
+
+function extractProtectedTagsResponse(
+  response: RepoProtectedTag[]
+    | {
+      protected_tags?: RepoProtectedTag[];
+      tags?: RepoProtectedTag[];
+      total?: number;
+      result?: {
+        protected_tags?: RepoProtectedTag[];
+        tags?: RepoProtectedTag[];
+        total?: number;
+      };
+    }
+) {
+  const payload = unwrapRepoPayload(response);
+  const tags = Array.isArray(payload)
+    ? payload
+    : payload.result?.protected_tags ?? payload.result?.tags ?? payload.protected_tags ?? payload.tags ?? [];
+
+  return {
+    tags,
+    total: Array.isArray(payload) ? tags.length : payload.result?.total ?? payload.total ?? tags.length
+  };
+}
+
+function extractProtectedRefsUserGroupsResponse(
+  response: RepoProtectedRefsUserGroup[]
+    | {
+      user_groups?: RepoProtectedRefsUserGroup[];
+      groups?: RepoProtectedRefsUserGroup[];
+      total?: number;
+      result?: {
+        user_groups?: RepoProtectedRefsUserGroup[];
+        groups?: RepoProtectedRefsUserGroup[];
+        total?: number;
+      };
+    }
+) {
+  const payload = unwrapRepoPayload(response);
+  const groups = Array.isArray(payload)
+    ? payload
+    : payload.result?.user_groups ?? payload.result?.groups ?? payload.user_groups ?? payload.groups ?? [];
+
+  return {
+    groups,
+    total: Array.isArray(payload) ? groups.length : payload.result?.total ?? payload.total ?? groups.length
+  };
+}
+
+function mapFilePushPermissionActions(actions: RepoRepositoryFilePushPermissionActionInput[] | undefined) {
+  return actions?.map((action) => omitUndefinedFields({
+    action: action.action,
+    enable: action.enable,
+    user_ids: action.user_ids,
+    user_team_ids: action.user_team_ids,
+    related_role_ids: action.related_role_ids
+  }));
+}
+
+function buildFilePushPermissionPayload(input: {
+  path: string;
+  actions?: RepoRepositoryFilePushPermissionActionInput[];
+}) {
+  return omitUndefinedFields({
+    path: input.path,
+    actions: mapFilePushPermissionActions(input.actions)
+  });
+}
+
+function buildFilePushPermissionUpdatePayload(input: {
+  permissions: RepoRepositoryFilePushPermissionMutationInput[];
+}) {
+  return {
+    permissions: input.permissions.map((permission) => omitUndefinedFields({
+      id: permission.id,
+      path: permission.path,
+      actions: mapFilePushPermissionActions(permission.actions)
+    }))
+  };
+}
+
+function extractFilePushPermissionsResponse(
+  response: RepoRepositoryFilePushPermission[]
+    | {
+      permissions?: RepoRepositoryFilePushPermission[];
+      file_push_permissions?: RepoRepositoryFilePushPermission[];
+      total?: number;
+      result?: {
+        permissions?: RepoRepositoryFilePushPermission[];
+        file_push_permissions?: RepoRepositoryFilePushPermission[];
+        total?: number;
+      };
+    }
+) {
+  const payload = unwrapRepoPayload(response);
+  const permissions = Array.isArray(payload)
+    ? payload
+    : payload.result?.permissions
+      ?? payload.result?.file_push_permissions
+      ?? payload.permissions
+      ?? payload.file_push_permissions
+      ?? [];
+
+  return {
+    permissions,
+    total: Array.isArray(payload) ? permissions.length : payload.result?.total ?? payload.total ?? permissions.length
+  };
+}
+
 type RepoClientOptions = {
   listCacheTtlMs?: number;
   now?: () => number;
@@ -900,6 +1378,46 @@ export function createRepoClient(
       return {
         keys,
         total: Array.isArray(response) ? keys.length : response.result?.total ?? response.total ?? keys.length
+      };
+    },
+    async listRepositoryFilePushPermissions(input) {
+      const query = buildOffsetLimitQuery(input);
+      const rawResponse = (await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/file-push-permissions?${query.toString()}`
+      )) as Parameters<typeof extractFilePushPermissionsResponse>[0];
+
+      return extractFilePushPermissionsResponse(rawResponse);
+    },
+    async createFilePushPermission(input) {
+      const rawResponse = (await _http.post(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/file-push-permissions`,
+        buildFilePushPermissionPayload(input)
+      )) as RepoRepositoryFilePushPermission;
+      const response = unwrapRepoPayload(rawResponse);
+
+      return {
+        ...response,
+        id: response.id ?? input.path,
+        path: response.path ?? input.path
+      };
+    },
+    async batchUpdateRepositoryFilePushPermissions(input) {
+      const rawResponse = (await _http.put(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/file-push-permissions`,
+        buildFilePushPermissionUpdatePayload(input)
+      )) as Parameters<typeof extractFilePushPermissionsResponse>[0];
+
+      return extractFilePushPermissionsResponse(rawResponse);
+    },
+    async batchDeleteRepositoryFilePushPermissions(input) {
+      await _http.post(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/file-push-permissions/batch-delete`,
+        { ids: input.ids }
+      );
+
+      return {
+        ids: input.ids,
+        deleted: true
       };
     },
     async checkRepositoryDeployKey(input) {
@@ -1338,28 +1856,262 @@ export function createRepoClient(
       };
     },
     async listProtectedBranches(input) {
-      const response = (await _http.get(
-        `/v4/repositories/${encodeURIComponent(input.repository_id)}/protected-branches`
-      )) as Array<{
-        id?: number | string;
-        name?: string;
-        actions?: Array<{
-          action?: string;
-          enable?: boolean;
-          users?: Array<{ id?: number | string }>;
-          roles?: Array<{ id?: number | string }>;
-        }>;
-      }>;
+      const query = buildOffsetLimitQuery(input);
 
-      const branches = (response ?? []).map((item) => ({
-        id: item.id ?? "",
-        name: item.name,
-        actions: item.actions
-      }));
+      const rawResponse = (await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/protected-branches?${query.toString()}`
+      )) as Parameters<typeof extractProtectedBranchesResponse>[0];
+
+      return extractProtectedBranchesResponse(rawResponse);
+    },
+    async listProjectProtectedBranches(input) {
+      const query = buildOffsetLimitQuery(input);
+      const rawResponse = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/protected-branches?${query.toString()}`
+      )) as Parameters<typeof extractProtectedBranchesResponse>[0];
+
+      return extractProtectedBranchesResponse(rawResponse);
+    },
+    async createProjectProtectedBranches(input) {
+      const rawResponse = (await _http.post(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/protected-branches`,
+        buildProjectProtectedBranchPayload(input)
+      )) as RepoProtectedBranch;
+      const response = unwrapRepoPayload(rawResponse);
+
+      return {
+        ...response,
+        id: response.id ?? input.name,
+        name: response.name ?? input.name
+      };
+    },
+    async listGroupProtectedBranches(input) {
+      const query = buildOffsetLimitQuery(input);
+      const rawResponse = (await _http.get(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/protected-branches?${query.toString()}`
+      )) as Parameters<typeof extractProtectedBranchesResponse>[0];
+
+      return extractProtectedBranchesResponse(rawResponse);
+    },
+    async getProtectedBranch(input) {
+      const query = new URLSearchParams({
+        branch_name: input.branch_name
+      });
+      const rawResponse = (await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/protected-branch?${query.toString()}`
+      )) as RepoProtectedBranch;
+      const response = unwrapRepoPayload(rawResponse);
+
+      return {
+        ...response,
+        id: response.id ?? input.branch_name,
+        name: response.name ?? input.branch_name
+      };
+    },
+    async batchCreateProtectedBranches(input) {
+      const rawResponse = (await _http.post(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/protected-branches`,
+        buildProtectedBranchPayload(input)
+      )) as RepoProtectedBranch[];
+      const response = unwrapRepoPayload(rawResponse);
+      const branches = Array.isArray(response) ? response : [];
 
       return {
         branches,
         total: branches.length
+      };
+    },
+    async batchUpdateProtectedBranches(input) {
+      const rawResponse = (await _http.put(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/protected-branches`,
+        buildProtectedBranchPayload(input)
+      )) as RepoProtectedBranch[];
+      const response = unwrapRepoPayload(rawResponse);
+      const branches = Array.isArray(response) ? response : [];
+
+      return {
+        branches,
+        total: branches.length
+      };
+    },
+    async bulkDeleteProtectedBranches(input) {
+      await _http.post(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/protected-branches/bulk-deletion`,
+        { names: input.names }
+      );
+
+      return {
+        names: input.names,
+        deleted: true
+      };
+    },
+    async updateProtectedBranch(input) {
+      const query = new URLSearchParams({
+        branch_name: input.branch_name
+      });
+      const rawResponse = (await _http.put(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/protected-branch?${query.toString()}`,
+        mapProtectedBranchActions(input.actions)
+      )) as RepoProtectedBranch;
+      const response = unwrapRepoPayload(rawResponse);
+
+      return {
+        ...response,
+        id: response.id ?? input.branch_name,
+        name: response.name ?? input.branch_name
+      };
+    },
+    async deleteProtectedBranch(input) {
+      const query = new URLSearchParams({
+        branch_name: input.branch_name
+      });
+      await _http.delete?.(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/protected-branch?${query.toString()}`
+      );
+
+      return {
+        branch_name: input.branch_name,
+        deleted: true
+      };
+    },
+    async listProtectedTags(input) {
+      const query = buildOffsetLimitQuery(input);
+
+      const rawResponse = (await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/protected-tags?${query.toString()}`
+      )) as Parameters<typeof extractProtectedTagsResponse>[0];
+
+      return extractProtectedTagsResponse(rawResponse);
+    },
+    async createProjectProtectedTags(input) {
+      const rawResponse = (await _http.post(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/protected-tags`,
+        buildProjectProtectedTagPayload(input)
+      )) as RepoProtectedTag;
+      const response = unwrapRepoPayload(rawResponse);
+
+      return {
+        ...response,
+        id: response.id ?? input.name,
+        name: response.name ?? input.name
+      };
+    },
+    async listProjectProtectedTags(input) {
+      const rawResponse = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/protected-tags`
+      )) as Parameters<typeof extractProtectedTagsResponse>[0];
+
+      return extractProtectedTagsResponse(rawResponse);
+    },
+    async listRepositoryProtectedRefsUserGroups(input) {
+      const query = buildOffsetLimitQuery(input);
+      const rawResponse = (await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/protected-refs/user-groups?${query.toString()}`
+      )) as Parameters<typeof extractProtectedRefsUserGroupsResponse>[0];
+
+      return extractProtectedRefsUserGroupsResponse(rawResponse);
+    },
+    async listGroupProtectedRefsUserGroups(input) {
+      const query = buildOffsetLimitQuery(input);
+      const rawResponse = (await _http.get(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/protected-refs/user-groups?${query.toString()}`
+      )) as Parameters<typeof extractProtectedRefsUserGroupsResponse>[0];
+
+      return extractProtectedRefsUserGroupsResponse(rawResponse);
+    },
+    async listProjectProtectedRefsUserGroups(input) {
+      const query = buildOffsetLimitQuery(input);
+      const rawResponse = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/protected-refs/user-groups?${query.toString()}`
+      )) as Parameters<typeof extractProtectedRefsUserGroupsResponse>[0];
+
+      return extractProtectedRefsUserGroupsResponse(rawResponse);
+    },
+    async getProtectedTag(input) {
+      const query = new URLSearchParams({
+        tag_name: input.tag_name
+      });
+      const rawResponse = (await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/protected-tag?${query.toString()}`
+      )) as RepoProtectedTag;
+      const response = unwrapRepoPayload(rawResponse);
+
+      return {
+        ...response,
+        id: response.id ?? input.tag_name,
+        name: response.name ?? input.tag_name
+      };
+    },
+    async batchCreateProtectedTags(input) {
+      const rawResponse = (await _http.post(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/protected-tags`,
+        buildProtectedTagPayload(input)
+      )) as RepoProtectedTag[];
+      const response = unwrapRepoPayload(rawResponse);
+      const tags = Array.isArray(response) ? response : [];
+
+      return {
+        tags,
+        total: tags.length
+      };
+    },
+    async batchUpdateProtectedTags(input) {
+      const rawResponse = (await _http.put(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/protected-tags`,
+        buildProtectedTagPayload(input)
+      )) as RepoProtectedTag[];
+      const response = unwrapRepoPayload(rawResponse);
+      const tags = Array.isArray(response) ? response : [];
+
+      return {
+        tags,
+        total: tags.length
+      };
+    },
+    async bulkDeleteProtectedTags(input) {
+      await _http.post(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/protected-tags/bulk-deletion`,
+        { names: input.names }
+      );
+
+      return {
+        names: input.names,
+        deleted: true
+      };
+    },
+    async updateProtectedTag(input) {
+      const query = new URLSearchParams({
+        tag_name: input.tag_name
+      });
+      const rawResponse = (await _http.put(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/protected-tag?${query.toString()}`,
+        input.actions.map((action) => omitUndefinedFields({
+          action: action.action,
+          enable: action.enable,
+          user_ids: action.user_ids,
+          user_team_ids: action.user_team_ids,
+          related_role_ids: action.related_role_ids
+        }))
+      )) as RepoProtectedTag;
+      const response = unwrapRepoPayload(rawResponse);
+
+      return {
+        ...response,
+        id: response.id ?? input.tag_name,
+        name: response.name ?? input.tag_name
+      };
+    },
+    async deleteProtectedTag(input) {
+      const query = new URLSearchParams({
+        tag_name: input.tag_name
+      });
+      await _http.delete?.(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/protected-tag?${query.toString()}`
+      );
+
+      return {
+        tag_name: input.tag_name,
+        deleted: true
       };
     },
     async listMergeRequestDiscussions(input) {
