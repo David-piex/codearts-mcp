@@ -341,6 +341,35 @@ export const repoUpdateProjectSettingsInheritCfgInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const repoShowProjectMemberSettingInput = pagingSchema.extend({
+  project_id: idSchema,
+  page_size: z.number().int().positive().max(100).default(20)
+});
+
+export const repoShowProjectGeneralPolicyInput = z.object({
+  project_id: idSchema
+});
+
+export const repoShowProjectsGeneralPolicyInput = z.object({
+  project_id: idSchema
+});
+
+export const repoUpdateProjectGeneralPolicyInput = z.object({
+  project_id: idSchema,
+  disable_fork: z.boolean().optional(),
+  branch_name_regex: z.string().optional(),
+  tag_name_regex: z.string().optional(),
+  generate_pre_merge_ref: z.boolean().optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoListItemCommitsInput = pagingSchema.extend({
+  project_id: idSchema,
+  item_id: z.string().min(1).max(128),
+  type: z.enum(["commit", "branch", "mergerequest"]).optional(),
+  page_size: z.number().int().positive().max(100).default(20)
+});
+
 export const repoCheckRepositoryDeployKeyInput = z.object({
   repository_id: idSchema,
   key: z.string().min(1).max(5000),

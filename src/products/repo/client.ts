@@ -193,6 +193,56 @@ export type RepoProjectSettingsInheritCfg = {
   inherit_mod?: string;
 };
 
+export type RepoProjectMemberSettingRoleSync = {
+  id?: number | string;
+  role_id?: string;
+  role_sync_enabled?: boolean;
+  role_name?: string;
+  role_type?: string;
+  role_chinese_name?: string;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type RepoProjectMemberSetting = {
+  product_id?: string;
+  sync_enabled?: boolean;
+  sync_all_role_enabled?: boolean;
+  role_sync?: RepoProjectMemberSettingRoleSync[];
+};
+
+export type RepoProjectGeneralPolicy = {
+  disable_fork?: boolean;
+  forbidden_developer_create_branch?: boolean;
+  forbidden_developer_create_tag?: boolean;
+  forbidden_committer_create_branch?: boolean;
+  branch_name_regex?: string;
+  tag_name_regex?: string;
+  generate_pre_merge_ref?: boolean;
+  forbidden_gitlab_access?: boolean;
+  rebase_disable_trigger_webhook?: boolean;
+  open_gpg_verified?: boolean;
+};
+
+type RepoProjectGeneralPolicyUpdateInput = {
+  project_id: string;
+  disable_fork?: boolean;
+  branch_name_regex?: string;
+  tag_name_regex?: string;
+  generate_pre_merge_ref?: boolean;
+};
+
+export type RepoItemCommit = {
+  id?: string;
+  short_id?: string;
+  title?: string;
+  message?: string;
+  author_name?: string;
+  author_email?: string;
+  committed_date?: string;
+  created_at?: string;
+};
+
 export type RepoProtectedTagAction = {
   action?: string;
   enable?: boolean;
@@ -420,6 +470,28 @@ export type RepoClient = {
     data: RepoProjectSettingsInheritCfg[];
   }) => Promise<{
     settings: RepoProjectSettingsInheritCfg[];
+    total?: number;
+  }>;
+  showProjectMemberSetting: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+  }) => Promise<RepoProjectMemberSetting>;
+  showProjectGeneralPolicy: (input: {
+    project_id: string;
+  }) => Promise<RepoProjectGeneralPolicy>;
+  showProjectsGeneralPolicy: (input: {
+    project_id: string;
+  }) => Promise<RepoProjectGeneralPolicy>;
+  updateProjectGeneralPolicy: (input: RepoProjectGeneralPolicyUpdateInput) => Promise<RepoProjectGeneralPolicy>;
+  listItemCommits: (input: {
+    project_id: string;
+    item_id: string;
+    page: number;
+    page_size: number;
+    type?: "commit" | "branch" | "mergerequest";
+  }) => Promise<{
+    commits: RepoItemCommit[];
     total?: number;
   }>;
   checkRepositoryDeployKey: (input: {
@@ -1425,6 +1497,64 @@ function extractProjectSettingsInheritCfgResponse(
   };
 }
 
+function extractProjectMemberSetting(response: RepoProjectMemberSetting | { result?: RepoProjectMemberSetting }) {
+  const payload = unwrapRepoPayload(response);
+  const setting = ("result" in payload && payload.result ? payload.result : payload) as RepoProjectMemberSetting;
+
+  return {
+    product_id: setting.product_id,
+    sync_enabled: setting.sync_enabled,
+    sync_all_role_enabled: setting.sync_all_role_enabled,
+    role_sync: setting.role_sync ?? []
+  };
+}
+
+function extractProjectGeneralPolicy(response: RepoProjectGeneralPolicy | { result?: RepoProjectGeneralPolicy }) {
+  const payload = unwrapRepoPayload(response);
+  const policy = ("result" in payload && payload.result ? payload.result : payload) as RepoProjectGeneralPolicy;
+
+  return {
+    disable_fork: policy.disable_fork,
+    forbidden_developer_create_branch: policy.forbidden_developer_create_branch,
+    forbidden_developer_create_tag: policy.forbidden_developer_create_tag,
+    forbidden_committer_create_branch: policy.forbidden_committer_create_branch,
+    branch_name_regex: policy.branch_name_regex,
+    tag_name_regex: policy.tag_name_regex,
+    generate_pre_merge_ref: policy.generate_pre_merge_ref,
+    forbidden_gitlab_access: policy.forbidden_gitlab_access,
+    rebase_disable_trigger_webhook: policy.rebase_disable_trigger_webhook,
+    open_gpg_verified: policy.open_gpg_verified
+  };
+}
+
+function extractItemCommitsResponse(
+  response: RepoItemCommit[]
+    | {
+      commits?: RepoItemCommit[];
+      total?: number;
+      result?: {
+        commits?: RepoItemCommit[];
+        total?: number;
+      } | RepoItemCommit[];
+    }
+) {
+  const payload = unwrapRepoPayload(response);
+  const commits = Array.isArray(payload)
+    ? payload
+    : Array.isArray(payload.result)
+      ? payload.result
+      : payload.result?.commits ?? payload.commits ?? [];
+
+  return {
+    commits,
+    total: Array.isArray(payload)
+      ? commits.length
+      : Array.isArray(payload.result)
+        ? payload.result.length
+        : payload.result?.total ?? payload.total ?? commits.length
+  };
+}
+
 type RepoClientOptions = {
   listCacheTtlMs?: number;
   now?: () => number;
@@ -1772,6 +1902,54 @@ export function createRepoClient(
       )) as Parameters<typeof extractProjectSettingsInheritCfgResponse>[0];
 
       return extractProjectSettingsInheritCfgResponse(rawResponse);
+    },
+    async showProjectMemberSetting(input) {
+      const query = buildOffsetLimitQuery(input);
+      const rawResponse = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/member-setting?${query.toString()}`
+      )) as Parameters<typeof extractProjectMemberSetting>[0];
+
+      return extractProjectMemberSetting(rawResponse);
+    },
+    async showProjectGeneralPolicy(input) {
+      const rawResponse = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/policies/general`
+      )) as Parameters<typeof extractProjectGeneralPolicy>[0];
+
+      return extractProjectGeneralPolicy(rawResponse);
+    },
+    async showProjectsGeneralPolicy(input) {
+      const rawResponse = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/general-policy`
+      )) as Parameters<typeof extractProjectGeneralPolicy>[0];
+
+      return extractProjectGeneralPolicy(rawResponse);
+    },
+    async updateProjectGeneralPolicy(input) {
+      const rawResponse = (await _http.put(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/general-policy`,
+        omitUndefinedFields({
+          disable_fork: input.disable_fork,
+          branch_name_regex: input.branch_name_regex,
+          tag_name_regex: input.tag_name_regex,
+          generate_pre_merge_ref: input.generate_pre_merge_ref
+        })
+      )) as Parameters<typeof extractProjectGeneralPolicy>[0];
+
+      return extractProjectGeneralPolicy(rawResponse);
+    },
+    async listItemCommits(input) {
+      const query = buildOffsetLimitQuery(input);
+
+      if (input.type) {
+        query.set("type", input.type);
+      }
+
+      const rawResponse = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/items/${encodeURIComponent(input.item_id)}/commits?${query.toString()}`
+      )) as Parameters<typeof extractItemCommitsResponse>[0];
+
+      return extractItemCommitsResponse(rawResponse);
     },
     async checkRepositoryDeployKey(input) {
       const rawResponse = (await _http.post(

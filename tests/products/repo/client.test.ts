@@ -745,4 +745,114 @@ describe("createRepoClient", () => {
     expect(result.permissions[0]?.role_id).toBe("role-1");
   });
 
+  it("uses project member setting and general policy endpoints", async () => {
+    const calls: Array<{ method: string; path: string; body?: Record<string, unknown> }> = [];
+    const client = createRepoClient({
+      get: async (path: string) => {
+        calls.push({ method: "get", path });
+        if (path.includes("member-setting")) {
+          return {
+            product_id: "repo",
+            sync_enabled: true,
+            sync_all_role_enabled: false,
+            role_sync: [{ id: 1, role_id: "role-1", role_sync_enabled: true }]
+          };
+        }
+        return {
+          disable_fork: true,
+          branch_name_regex: "feature/.*",
+          generate_pre_merge_ref: false
+        };
+      },
+      put: async (path: string, body: Record<string, unknown>) => {
+        calls.push({ method: "put", path, body });
+        return {
+          disable_fork: body.disable_fork as boolean,
+          branch_name_regex: body.branch_name_regex as string,
+          generate_pre_merge_ref: body.generate_pre_merge_ref as boolean
+        };
+      }
+    } as never);
+
+    const memberSetting = await client.showProjectMemberSetting({
+      project_id: "project-uuid-1",
+      page: 2,
+      page_size: 10
+    });
+    const policyFromPoliciesPath = await client.showProjectGeneralPolicy({
+      project_id: "project-uuid-1"
+    });
+    const policyFromGeneralPath = await client.showProjectsGeneralPolicy({
+      project_id: "project-uuid-1"
+    });
+    const updatedPolicy = await client.updateProjectGeneralPolicy({
+      project_id: "project-uuid-1",
+      disable_fork: false,
+      branch_name_regex: "release/.*",
+      generate_pre_merge_ref: true
+    });
+
+    expect(memberSetting.role_sync?.[0]?.role_id).toBe("role-1");
+    expect(policyFromPoliciesPath.disable_fork).toBe(true);
+    expect(policyFromGeneralPath.branch_name_regex).toBe("feature/.*");
+    expect(updatedPolicy.generate_pre_merge_ref).toBe(true);
+    expect(calls).toEqual([
+      {
+        method: "get",
+        path: "/v4/projects/project-uuid-1/member-setting?offset=10&limit=10"
+      },
+      {
+        method: "get",
+        path: "/v4/projects/project-uuid-1/policies/general"
+      },
+      {
+        method: "get",
+        path: "/v4/projects/project-uuid-1/general-policy"
+      },
+      {
+        method: "put",
+        path: "/v4/projects/project-uuid-1/general-policy",
+        body: {
+          disable_fork: false,
+          branch_name_regex: "release/.*",
+          generate_pre_merge_ref: true
+        }
+      }
+    ]);
+  });
+
+  it("uses the project item commits endpoint with type filtering", async () => {
+    let requestedPath = "";
+    const client = createRepoClient({
+      get: async (path: string) => {
+        requestedPath = path;
+        return {
+          commits: [
+            {
+              id: "commit-1",
+              short_id: "c1",
+              title: "Initial commit",
+              author_name: "Dev"
+            }
+          ],
+          total: 1
+        };
+      }
+    } as never);
+
+    const result = await client.listItemCommits({
+      project_id: "project-uuid-1",
+      item_id: "item-1",
+      type: "branch",
+      page: 3,
+      page_size: 5
+    });
+
+    expect(requestedPath).toBe(
+      "/v4/projects/project-uuid-1/items/item-1/commits?offset=10&limit=5&type=branch"
+    );
+    expect(result.commits[0]?.short_id).toBe("c1");
+    expect(result.total).toBe(1);
+  });
+
 });
