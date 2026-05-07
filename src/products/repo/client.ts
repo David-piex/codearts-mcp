@@ -135,6 +135,7 @@ type RepoRepositoryFilePushPermissionMutationInput = {
 };
 
 export type RepoResourcePermissionInfo = {
+  order?: number;
   role_id?: string;
   role_name?: string;
   role_name_cn?: string;
@@ -159,6 +160,37 @@ export type RepoResourcePermissionUpdateResult = {
 
 export type RepoRepositoryPermissionInheritSetting = {
   inherit_parent_permission?: boolean;
+};
+
+export type RepoWatermarkSetting = {
+  watermark?: boolean;
+  can_update?: boolean;
+  view_watermark?: boolean;
+};
+
+export type RepoProjectSubgroupOrRepository = {
+  id?: number | string;
+  name?: string;
+  path?: string;
+  project_id?: string;
+  project_name?: string;
+  full_name?: string;
+  full_path?: string;
+  descendant_type?: string;
+  visibility?: string;
+  visibility_level?: number;
+  archived?: boolean;
+  created_at?: string;
+  updated_at_timestamp?: string | number;
+  subgroup_count?: number;
+  project_count?: number;
+  http_url_to_repo?: string;
+  ssh_url_to_repo?: string;
+};
+
+export type RepoProjectSettingsInheritCfg = {
+  name?: string;
+  inherit_mod?: string;
 };
 
 export type RepoProtectedTagAction = {
@@ -323,6 +355,25 @@ export type RepoClient = {
     ids: Array<string | number>;
     deleted: boolean;
   }>;
+  showProjectWatermark: (input: {
+    project_id: string;
+  }) => Promise<RepoWatermarkSetting>;
+  updateProjectWatermark: (input: {
+    project_id: string;
+    watermark: boolean;
+  }) => Promise<RepoWatermarkSetting>;
+  listProjectSubgroupsAndRepositories: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    filter?: string | number;
+    order_by?: string;
+    sort?: string;
+    archived?: boolean;
+  }) => Promise<{
+    items: RepoProjectSubgroupOrRepository[];
+    total?: number;
+  }>;
   listRepositoryResourcePermissions: (input: {
     repository_id: string;
     resource_name: string;
@@ -342,6 +393,15 @@ export type RepoClient = {
     resource_id: string;
     data: RepoResourcePermissionUpdateInput[];
   }) => Promise<RepoResourcePermissionUpdateResult>;
+  showResourcePermissions: (input: {
+    group_id: string;
+    resource_id: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    permissions: RepoResourcePermissionInfo[];
+    total?: number;
+  }>;
   updateRepositoryPermissionInheritEnabled: (input: {
     repository_id: string;
     inherit_parent_permission: boolean;
@@ -349,6 +409,19 @@ export type RepoClient = {
   showRepositoryPermissionInheritEnabled: (input: {
     repository_id: string;
   }) => Promise<RepoRepositoryPermissionInheritSetting>;
+  showProjectSettingsInheritCfg: (input: {
+    project_id: string;
+  }) => Promise<{
+    settings: RepoProjectSettingsInheritCfg[];
+    total?: number;
+  }>;
+  updateProjectSettingsInheritCfg: (input: {
+    project_id: string;
+    data: RepoProjectSettingsInheritCfg[];
+  }) => Promise<{
+    settings: RepoProjectSettingsInheritCfg[];
+    total?: number;
+  }>;
   checkRepositoryDeployKey: (input: {
     repository_id: string;
     key: string;
@@ -1286,6 +1359,72 @@ function extractRepositoryPermissionInheritSetting(
   };
 }
 
+function extractWatermarkSetting(response: RepoWatermarkSetting) {
+  const payload = unwrapRepoPayload(response);
+
+  return {
+    watermark: payload.watermark,
+    can_update: payload.can_update,
+    view_watermark: payload.view_watermark
+  };
+}
+
+function extractProjectSubgroupsAndRepositoriesResponse(
+  response: RepoProjectSubgroupOrRepository[]
+    | {
+      items?: RepoProjectSubgroupOrRepository[];
+      subgroups_and_repositories?: RepoProjectSubgroupOrRepository[];
+      total?: number;
+      result?: {
+        items?: RepoProjectSubgroupOrRepository[];
+        subgroups_and_repositories?: RepoProjectSubgroupOrRepository[];
+        total?: number;
+      };
+    }
+) {
+  const payload = unwrapRepoPayload(response);
+  const items = Array.isArray(payload)
+    ? payload
+    : payload.result?.items
+      ?? payload.result?.subgroups_and_repositories
+      ?? payload.items
+      ?? payload.subgroups_and_repositories
+      ?? [];
+
+  return {
+    items,
+    total: Array.isArray(payload) ? items.length : payload.result?.total ?? payload.total ?? items.length
+  };
+}
+
+function extractProjectSettingsInheritCfgResponse(
+  response: RepoProjectSettingsInheritCfg[]
+    | {
+      settings?: RepoProjectSettingsInheritCfg[];
+      data?: RepoProjectSettingsInheritCfg[];
+      total?: number;
+      result?: {
+        settings?: RepoProjectSettingsInheritCfg[];
+        data?: RepoProjectSettingsInheritCfg[];
+        total?: number;
+      };
+    }
+) {
+  const payload = unwrapRepoPayload(response);
+  const settings = Array.isArray(payload)
+    ? payload
+    : payload.result?.settings
+      ?? payload.result?.data
+      ?? payload.settings
+      ?? payload.data
+      ?? [];
+
+  return {
+    settings,
+    total: Array.isArray(payload) ? settings.length : payload.result?.total ?? payload.total ?? settings.length
+  };
+}
+
 type RepoClientOptions = {
   listCacheTtlMs?: number;
   now?: () => number;
@@ -1535,6 +1674,43 @@ export function createRepoClient(
         deleted: true
       };
     },
+    async showProjectWatermark(input) {
+      const rawResponse = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/watermark`
+      )) as RepoWatermarkSetting;
+
+      return extractWatermarkSetting(rawResponse);
+    },
+    async updateProjectWatermark(input) {
+      const rawResponse = (await _http.put(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/watermark`,
+        { watermark: input.watermark }
+      )) as RepoWatermarkSetting;
+
+      return extractWatermarkSetting(rawResponse);
+    },
+    async listProjectSubgroupsAndRepositories(input) {
+      const query = buildOffsetLimitQuery(input);
+
+      if (input.filter !== undefined) {
+        query.set("filter", String(input.filter));
+      }
+      if (input.order_by) {
+        query.set("order_by", input.order_by);
+      }
+      if (input.sort) {
+        query.set("sort", input.sort);
+      }
+      if (typeof input.archived !== "undefined") {
+        query.set("archived", String(input.archived));
+      }
+
+      const rawResponse = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/subgroups-and-repositories?${query.toString()}`
+      )) as Parameters<typeof extractProjectSubgroupsAndRepositoriesResponse>[0];
+
+      return extractProjectSubgroupsAndRepositoriesResponse(rawResponse);
+    },
     async listRepositoryResourcePermissions(input) {
       const query = buildOffsetLimitQuery(input);
       const rawResponse = (await _http.get(
@@ -1559,6 +1735,14 @@ export function createRepoClient(
 
       return extractResourcePermissionUpdateResult(rawResponse);
     },
+    async showResourcePermissions(input) {
+      const query = buildOffsetLimitQuery(input);
+      const rawResponse = (await _http.get(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/permissions-resources/${encodeURIComponent(input.resource_id)}?${query.toString()}`
+      )) as Parameters<typeof extractResourcePermissionsResponse>[0];
+
+      return extractResourcePermissionsResponse(rawResponse);
+    },
     async updateRepositoryPermissionInheritEnabled(input) {
       const rawResponse = (await _http.put(
         `/v4/repositories/${encodeURIComponent(input.repository_id)}/permission-inherit-setting`,
@@ -1573,6 +1757,21 @@ export function createRepoClient(
       )) as RepoRepositoryPermissionInheritSetting;
 
       return extractRepositoryPermissionInheritSetting(rawResponse);
+    },
+    async showProjectSettingsInheritCfg(input) {
+      const rawResponse = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/settings-inherit-cfg`
+      )) as Parameters<typeof extractProjectSettingsInheritCfgResponse>[0];
+
+      return extractProjectSettingsInheritCfgResponse(rawResponse);
+    },
+    async updateProjectSettingsInheritCfg(input) {
+      const rawResponse = (await _http.put(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/settings-inherit-cfg`,
+        { data: input.data }
+      )) as Parameters<typeof extractProjectSettingsInheritCfgResponse>[0];
+
+      return extractProjectSettingsInheritCfgResponse(rawResponse);
     },
     async checkRepositoryDeployKey(input) {
       const rawResponse = (await _http.post(

@@ -41,6 +41,7 @@ function mapResourcePermissions(resourcePermissions: unknown) {
 
 export function mapResourcePermission(item: RepoResourcePermissionInfo) {
   return {
+    order: item.order,
     roleId: item.role_id,
     roleName: item.role_name,
     roleNameCn: item.role_name_cn,

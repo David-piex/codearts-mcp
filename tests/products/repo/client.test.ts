@@ -640,4 +640,109 @@ describe("createRepoClient", () => {
     ]);
   });
 
+  it("uses project settings endpoints and normalized bodies", async () => {
+    const calls: Array<{ method: string; path: string; body?: Record<string, unknown> }> = [];
+    const client = createRepoClient({
+      get: async (path: string) => {
+        calls.push({ method: "get", path });
+        if (path.endsWith("/watermark")) {
+          return { watermark: true, can_update: false };
+        }
+        if (path.includes("subgroups-and-repositories")) {
+          return [{ id: 1, name: "demo", descendant_type: "Group" }];
+        }
+        if (path.endsWith("settings-inherit-cfg")) {
+          return [{ name: "watermark", inherit_mod: "inherit" }];
+        }
+        return [];
+      },
+      put: async (path: string, body: Record<string, unknown>) => {
+        calls.push({ method: "put", path, body });
+        if (path.endsWith("/watermark")) {
+          return { watermark: body.watermark as boolean };
+        }
+        return body.data;
+      }
+    } as never);
+
+    const watermark = await client.showProjectWatermark({ project_id: "project-uuid-1" });
+    const updatedWatermark = await client.updateProjectWatermark({
+      project_id: "project-uuid-1",
+      watermark: false
+    });
+    const descendants = await client.listProjectSubgroupsAndRepositories({
+      project_id: "project-uuid-1",
+      page: 2,
+      page_size: 10,
+      filter: "demo",
+      order_by: "name",
+      sort: "asc",
+      archived: false
+    });
+    const settings = await client.showProjectSettingsInheritCfg({ project_id: "project-uuid-1" });
+    const updatedSettings = await client.updateProjectSettingsInheritCfg({
+      project_id: "project-uuid-1",
+      data: [{ name: "watermark", inherit_mod: "inherit" }]
+    });
+
+    expect(watermark.can_update).toBe(false);
+    expect(updatedWatermark.watermark).toBe(false);
+    expect(descendants.items[0]?.name).toBe("demo");
+    expect(settings.settings[0]?.name).toBe("watermark");
+    expect(updatedSettings.settings[0]?.inherit_mod).toBe("inherit");
+    expect(calls).toEqual([
+      {
+        method: "get",
+        path: "/v4/projects/project-uuid-1/watermark"
+      },
+      {
+        method: "put",
+        path: "/v4/projects/project-uuid-1/watermark",
+        body: { watermark: false }
+      },
+      {
+        method: "get",
+        path: "/v4/projects/project-uuid-1/subgroups-and-repositories?offset=10&limit=10&filter=demo&order_by=name&sort=asc&archived=false"
+      },
+      {
+        method: "get",
+        path: "/v4/projects/project-uuid-1/settings-inherit-cfg"
+      },
+      {
+        method: "put",
+        path: "/v4/projects/project-uuid-1/settings-inherit-cfg",
+        body: { data: [{ name: "watermark", inherit_mod: "inherit" }] }
+      }
+    ]);
+  });
+
+  it("uses the group permission-resources endpoint for resource permission lookup", async () => {
+    let requestedPath = "";
+    const client = createRepoClient({
+      get: async (path: string) => {
+        requestedPath = path;
+        return [
+          {
+            order: 1,
+            role_id: "role-1",
+            role_name: "Project manager",
+            resource_permissions: {
+              create: { permission_id: 1, enabled: true, editable: true }
+            }
+          }
+        ];
+      }
+    } as never);
+
+    const result = await client.showResourcePermissions({
+      group_id: "200",
+      resource_id: "300",
+      page: 2,
+      page_size: 5
+    });
+
+    expect(requestedPath).toBe("/v4/groups/200/permissions-resources/300?offset=5&limit=5");
+    expect(result.permissions[0]?.role_id).toBe("role-1");
+  });
+
 });

@@ -222,6 +222,20 @@ const filePushPermissionMutationSchema = z.object({
 });
 
 const repositoryResourceNameSchema = z.enum(["repository", "code", "member", "branch", "tag", "mr", "label"]);
+const projectSettingNameSchema = z.enum([
+  "protected_branches",
+  "protected_tags",
+  "repository_settings",
+  "push_rules",
+  "merge_requests",
+  "e2e_settings",
+  "watermark",
+  "webhook_settings",
+  "mr_branch_policies",
+  "reviews",
+  "deploy_keys"
+]);
+const projectInheritModeSchema = z.string().min(1);
 
 const resourcePermissionDetailSchema = z.object({
   permission_id: z.union([z.string().min(1), z.number().int().positive()]).optional(),
@@ -259,6 +273,25 @@ export const repoBatchDeleteRepositoryFilePushPermissionsInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const repoShowProjectWatermarkInput = z.object({
+  project_id: idSchema
+});
+
+export const repoUpdateProjectWatermarkInput = z.object({
+  project_id: idSchema,
+  watermark: z.boolean(),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoListProjectSubgroupsAndRepositoriesInput = pagingSchema.extend({
+  project_id: idSchema,
+  page_size: z.number().int().positive().max(100).default(20),
+  filter: z.union([z.string().min(1), z.number().int().positive()]).optional(),
+  order_by: z.enum(["id", "name", "created_at", "updated_at"]).optional(),
+  sort: z.enum(["asc", "desc"]).optional(),
+  archived: z.boolean().optional()
+});
+
 export const repoListRepositoryResourcePermissionsInput = pagingSchema.extend({
   repository_id: idSchema,
   resource_name: repositoryResourceNameSchema,
@@ -279,6 +312,12 @@ export const repoUpdateGroupResourcePermissionsInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const repoShowResourcePermissionsInput = pagingSchema.extend({
+  group_id: idSchema,
+  resource_id: idSchema,
+  page_size: z.number().int().positive().max(100).default(20)
+});
+
 export const repoUpdateRepositoryPermissionInheritEnabledInput = z.object({
   repository_id: idSchema,
   inherit_parent_permission: z.boolean(),
@@ -287,6 +326,19 @@ export const repoUpdateRepositoryPermissionInheritEnabledInput = z.object({
 
 export const repoShowRepositoryPermissionInheritEnabledInput = z.object({
   repository_id: idSchema
+});
+
+export const repoShowProjectSettingsInheritCfgInput = z.object({
+  project_id: idSchema
+});
+
+export const repoUpdateProjectSettingsInheritCfgInput = z.object({
+  project_id: idSchema,
+  data: z.array(z.object({
+    name: projectSettingNameSchema,
+    inherit_mod: projectInheritModeSchema
+  })).min(1),
+  dry_run: z.boolean().default(true)
 });
 
 export const repoCheckRepositoryDeployKeyInput = z.object({
