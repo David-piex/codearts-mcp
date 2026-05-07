@@ -110,6 +110,43 @@ export type RepoRepositoryDeployKey = {
   created_at?: string;
 };
 
+export type RepoRelatedWorkItem = {
+  related_id?: number | string;
+  related_url?: string;
+  id?: number | string;
+  subject?: string;
+  title?: string;
+  url?: string;
+};
+
+export type RepoE2eSetting = {
+  e2e_policies?: {
+    auto_extract?: boolean;
+    prefix_symbol?: string;
+    separator?: string;
+    suffix_symbol?: string;
+  };
+  req?: {
+    active?: boolean;
+    branches?: string;
+    branches_type?: string;
+    project_type?: string;
+    categories?: string;
+    category_codes?: string;
+    exclude_statuses?: string;
+    exclude_status_codes?: string;
+  };
+  link?: {
+    active?: boolean;
+    url?: string;
+    app_auth_type?: string;
+    app_ak?: string;
+    app_sk?: string;
+    categories?: string;
+    exclude_statuses?: string;
+  };
+};
+
 export type RepoRepositoryFilePushPermissionAction = RepoProtectedTagAction & {
   action?: "push" | string;
 };
@@ -377,6 +414,22 @@ export type RepoClient = {
     keys: RepoRepositoryDeployKey[];
     total?: number;
   }>;
+  listGroupDeployKeys: (input: {
+    group_id: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    keys: RepoRepositoryDeployKey[];
+    total?: number;
+  }>;
+  listProjectDeployKeys: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    keys: RepoRepositoryDeployKey[];
+    total?: number;
+  }>;
   listRepositoryFilePushPermissions: (input: {
     repository_id: string;
     page: number;
@@ -500,6 +553,12 @@ export type RepoClient = {
   }) => Promise<{
     exists: boolean;
   }>;
+  checkGroupDeployKey: (input: {
+    group_id: string;
+    key: string;
+  }) => Promise<{
+    exists: boolean;
+  }>;
   removeRepositoryDeployKey: (input: {
     repository_id: string;
     key_id: string;
@@ -507,6 +566,34 @@ export type RepoClient = {
     key_id: string;
     removed: boolean;
   }>;
+  listBranchRelatedWorkItems: (input: {
+    repository_id: string;
+    branch_name: string;
+  }) => Promise<{
+    work_items: RepoRelatedWorkItem[];
+    total?: number;
+  }>;
+  listRepositoryWorkItems: (input: {
+    repository_id: string;
+    project_id: string;
+    is_ipd: boolean;
+    page: number;
+    page_size: number;
+    subject?: string;
+  }) => Promise<{
+    work_items: RepoRelatedWorkItem[];
+    total?: number;
+  }>;
+  showRepositoryE2eSetting: (input: {
+    repository_id: string;
+    take_effect?: boolean;
+  }) => Promise<RepoE2eSetting>;
+  showGroupE2eSetting: (input: {
+    group_id: string;
+  }) => Promise<RepoE2eSetting>;
+  showProjectE2eSetting: (input: {
+    project_id: string;
+  }) => Promise<RepoE2eSetting>;
   listRepositoryWebhooks: (input: {
     repository_id: string;
     page: number;
@@ -1555,6 +1642,85 @@ function extractItemCommitsResponse(
   };
 }
 
+function extractDeployKeysResponse(
+  response: RepoRepositoryDeployKey[]
+    | {
+      deploy_keys?: RepoRepositoryDeployKey[];
+      keys?: RepoRepositoryDeployKey[];
+      total?: number;
+      result?: {
+        deploy_keys?: RepoRepositoryDeployKey[];
+        keys?: RepoRepositoryDeployKey[];
+        total?: number;
+      } | RepoRepositoryDeployKey[];
+    }
+) {
+  const payload = unwrapRepoPayload(response);
+  const keys = Array.isArray(payload)
+    ? payload
+    : Array.isArray(payload.result)
+      ? payload.result
+      : payload.result?.deploy_keys ?? payload.result?.keys ?? payload.deploy_keys ?? payload.keys ?? [];
+
+  return {
+    keys,
+    total: Array.isArray(payload)
+      ? keys.length
+      : Array.isArray(payload.result)
+        ? payload.result.length
+        : payload.result?.total ?? payload.total ?? keys.length
+  };
+}
+
+function extractDeployKeyCheckResponse(response: { exists?: boolean; result?: { exists?: boolean } }) {
+  const payload = unwrapRepoPayload(response);
+
+  return {
+    exists: Boolean(payload.result?.exists ?? payload.exists)
+  };
+}
+
+function extractWorkItemsResponse(
+  response: RepoRelatedWorkItem[]
+    | {
+      work_items?: RepoRelatedWorkItem[];
+      items?: RepoRelatedWorkItem[];
+      total?: number;
+      result?: {
+        work_items?: RepoRelatedWorkItem[];
+        items?: RepoRelatedWorkItem[];
+        total?: number;
+      } | RepoRelatedWorkItem[];
+    }
+) {
+  const payload = unwrapRepoPayload(response);
+  const workItems = Array.isArray(payload)
+    ? payload
+    : Array.isArray(payload.result)
+      ? payload.result
+      : payload.result?.work_items ?? payload.result?.items ?? payload.work_items ?? payload.items ?? [];
+
+  return {
+    work_items: workItems,
+    total: Array.isArray(payload)
+      ? workItems.length
+      : Array.isArray(payload.result)
+        ? payload.result.length
+        : payload.result?.total ?? payload.total ?? workItems.length
+  };
+}
+
+function extractE2eSetting(response: RepoE2eSetting | { result?: RepoE2eSetting }) {
+  const payload = unwrapRepoPayload(response);
+  const setting = ("result" in payload && payload.result ? payload.result : payload) as RepoE2eSetting;
+
+  return {
+    e2e_policies: setting.e2e_policies,
+    req: setting.req,
+    link: setting.link
+  };
+}
+
 type RepoClientOptions = {
   listCacheTtlMs?: number;
   now?: () => number;
@@ -1734,35 +1900,29 @@ export function createRepoClient(
       };
     },
     async listRepositoryDeployKeys(input) {
-      const offset = (input.page - 1) * input.page_size;
-      const query = new URLSearchParams({
-        offset: String(offset),
-        limit: String(input.page_size)
-      });
+      const query = buildOffsetLimitQuery(input);
 
       const rawResponse = (await _http.get(
         `/v4/repositories/${encodeURIComponent(input.repository_id)}/deploy-keys?${query.toString()}`
-      )) as
-        | RepoRepositoryDeployKey[]
-        | {
-          deploy_keys?: RepoRepositoryDeployKey[];
-          keys?: RepoRepositoryDeployKey[];
-          total?: number;
-          result?: {
-            deploy_keys?: RepoRepositoryDeployKey[];
-            keys?: RepoRepositoryDeployKey[];
-            total?: number;
-          };
-        };
-      const response = unwrapRepoPayload(rawResponse);
-      const keys = Array.isArray(response)
-        ? response
-        : response.result?.deploy_keys ?? response.result?.keys ?? response.deploy_keys ?? response.keys ?? [];
+      )) as Parameters<typeof extractDeployKeysResponse>[0];
 
-      return {
-        keys,
-        total: Array.isArray(response) ? keys.length : response.result?.total ?? response.total ?? keys.length
-      };
+      return extractDeployKeysResponse(rawResponse);
+    },
+    async listGroupDeployKeys(input) {
+      const query = buildOffsetLimitQuery(input);
+      const rawResponse = (await _http.get(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/deploy-keys?${query.toString()}`
+      )) as Parameters<typeof extractDeployKeysResponse>[0];
+
+      return extractDeployKeysResponse(rawResponse);
+    },
+    async listProjectDeployKeys(input) {
+      const query = buildOffsetLimitQuery(input);
+      const rawResponse = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/deploy-keys?${query.toString()}`
+      )) as Parameters<typeof extractDeployKeysResponse>[0];
+
+      return extractDeployKeysResponse(rawResponse);
     },
     async listRepositoryFilePushPermissions(input) {
       const query = buildOffsetLimitQuery(input);
@@ -1955,17 +2115,17 @@ export function createRepoClient(
       const rawResponse = (await _http.post(
         `/v4/repositories/${encodeURIComponent(input.repository_id)}/deploy-keys/check-key`,
         { key: input.key }
-      )) as {
-        exists?: boolean;
-        result?: {
-          exists?: boolean;
-        };
-      };
-      const response = unwrapRepoPayload(rawResponse);
+      )) as Parameters<typeof extractDeployKeyCheckResponse>[0];
 
-      return {
-        exists: Boolean(response.result?.exists ?? response.exists)
-      };
+      return extractDeployKeyCheckResponse(rawResponse);
+    },
+    async checkGroupDeployKey(input) {
+      const rawResponse = (await _http.post(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/deploy-keys/check-key`,
+        { key: input.key }
+      )) as Parameters<typeof extractDeployKeyCheckResponse>[0];
+
+      return extractDeployKeyCheckResponse(rawResponse);
     },
     async removeRepositoryDeployKey(input) {
       await _http.delete?.(
@@ -1976,6 +2136,59 @@ export function createRepoClient(
         key_id: input.key_id,
         removed: true
       };
+    },
+    async listBranchRelatedWorkItems(input) {
+      const query = new URLSearchParams({
+        branch_name: input.branch_name
+      });
+      const rawResponse = (await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/branch/work-items?${query.toString()}`
+      )) as Parameters<typeof extractWorkItemsResponse>[0];
+
+      return extractWorkItemsResponse(rawResponse);
+    },
+    async listRepositoryWorkItems(input) {
+      const query = buildOffsetLimitQuery(input);
+      query.set("project_id", input.project_id);
+      query.set("is_ipd", String(input.is_ipd));
+
+      if (input.subject) {
+        query.set("subject", input.subject);
+      }
+
+      const rawResponse = (await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/work-items?${query.toString()}`
+      )) as Parameters<typeof extractWorkItemsResponse>[0];
+
+      return extractWorkItemsResponse(rawResponse);
+    },
+    async showRepositoryE2eSetting(input) {
+      const query = new URLSearchParams();
+
+      if (typeof input.take_effect !== "undefined") {
+        query.set("take_effect", String(input.take_effect));
+      }
+
+      const queryString = query.toString();
+      const rawResponse = (await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/e2e-setting${queryString ? `?${queryString}` : ""}`
+      )) as Parameters<typeof extractE2eSetting>[0];
+
+      return extractE2eSetting(rawResponse);
+    },
+    async showGroupE2eSetting(input) {
+      const rawResponse = (await _http.get(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/e2e-setting`
+      )) as Parameters<typeof extractE2eSetting>[0];
+
+      return extractE2eSetting(rawResponse);
+    },
+    async showProjectE2eSetting(input) {
+      const rawResponse = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/e2e-setting`
+      )) as Parameters<typeof extractE2eSetting>[0];
+
+      return extractE2eSetting(rawResponse);
     },
     async listRepositoryWebhooks(input) {
       const query = new URLSearchParams({

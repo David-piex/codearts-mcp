@@ -18,6 +18,18 @@ export function previewCheckRepositoryDeployKey(input: {
   });
 }
 
+export function previewCheckGroupDeployKey(input: {
+  group_id: string;
+  key: string;
+  dry_run: boolean;
+}) {
+  return asItemResult("Dry run: check group deploy key", {
+    groupId: input.group_id,
+    keyFingerprint: fingerprintInputKey(input.key),
+    executed: !input.dry_run
+  });
+}
+
 export function mapRepositoryDeployKeyCheck(input: {
   repository_id: string;
   key: string;
@@ -25,6 +37,19 @@ export function mapRepositoryDeployKeyCheck(input: {
 }) {
   return asItemResult("Checked repository deploy key", {
     repositoryId: input.repository_id,
+    keyFingerprint: fingerprintInputKey(input.key),
+    exists: input.exists,
+    executed: true
+  });
+}
+
+export function mapGroupDeployKeyCheck(input: {
+  group_id: string;
+  key: string;
+  exists: boolean;
+}) {
+  return asItemResult("Checked group deploy key", {
+    groupId: input.group_id,
     keyFingerprint: fingerprintInputKey(input.key),
     exists: input.exists,
     executed: true

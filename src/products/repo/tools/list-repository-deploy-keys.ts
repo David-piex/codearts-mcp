@@ -7,10 +7,11 @@ export function mapRepositoryDeployKeys(
   items: RepoRepositoryDeployKey[],
   page: number,
   pageSize: number,
-  total?: number
+  total?: number,
+  scope = "repository"
 ) {
   return asListResult(
-    `${items.length} repository deploy keys found`,
+    `${items.length} ${scope} deploy keys found`,
     items.map((item) => ({
       id: String(item.id),
       title: item.title,

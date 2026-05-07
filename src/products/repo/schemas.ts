@@ -207,6 +207,16 @@ export const repoListRepositoryDeployKeysInput = pagingSchema.extend({
   page_size: z.number().int().positive().max(100).default(20)
 });
 
+export const repoListGroupDeployKeysInput = pagingSchema.extend({
+  group_id: idSchema,
+  page_size: z.number().int().positive().max(100).default(20)
+});
+
+export const repoListProjectDeployKeysInput = pagingSchema.extend({
+  project_id: idSchema,
+  page_size: z.number().int().positive().max(100).default(20)
+});
+
 const filePushPermissionActionSchema = z.object({
   action: z.enum(["push"]).default("push"),
   enable: z.boolean().optional(),
@@ -376,10 +386,42 @@ export const repoCheckRepositoryDeployKeyInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const repoCheckGroupDeployKeyInput = z.object({
+  group_id: idSchema,
+  key: z.string().min(1).max(5000),
+  dry_run: z.boolean().default(true)
+});
+
 export const repoRemoveRepositoryDeployKeyInput = z.object({
   repository_id: idSchema,
   key_id: idSchema,
   dry_run: z.boolean().default(true)
+});
+
+export const repoListBranchRelatedWorkItemsInput = z.object({
+  repository_id: idSchema,
+  branch_name: z.string().min(1).max(200)
+});
+
+export const repoListRepositoryWorkItemsInput = pagingSchema.extend({
+  repository_id: idSchema,
+  project_id: idSchema,
+  is_ipd: z.boolean(),
+  subject: z.string().min(1).max(200).optional(),
+  page_size: z.number().int().positive().max(100).default(20)
+});
+
+export const repoShowRepositoryE2eSettingInput = z.object({
+  repository_id: idSchema,
+  take_effect: z.boolean().optional()
+});
+
+export const repoShowGroupE2eSettingInput = z.object({
+  group_id: idSchema
+});
+
+export const repoShowProjectE2eSettingInput = z.object({
+  project_id: idSchema
 });
 
 export const repoListEventsInput = pagingSchema.extend({

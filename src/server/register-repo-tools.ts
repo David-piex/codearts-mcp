@@ -11,6 +11,7 @@ import {
   repoBatchUpdateRepositoryFilePushPermissionsInput,
   repoBulkDeleteProtectedBranchesInput,
   repoBulkDeleteProtectedTagsInput,
+  repoCheckGroupDeployKeyInput,
   repoCheckRepositoryDeployKeyInput,
   repoCompareRefsInput,
   repoCloseMergeRequestInput,
@@ -39,6 +40,8 @@ import {
   repoDeleteRepositoryWebhookInput,
   repoDeleteTagInput,
   repoListEventsInput,
+  repoListBranchRelatedWorkItemsInput,
+  repoListGroupDeployKeysInput,
   repoListGroupProtectedBranchesInput,
   repoListGroupProtectedRefsUserGroupsInput,
   repoListImpersonationTokensInput,
@@ -57,21 +60,26 @@ import {
   repoListProjectProtectedBranchesInput,
   repoListProjectProtectedRefsUserGroupsInput,
   repoListProjectProtectedTagsInput,
+  repoListProjectDeployKeysInput,
   repoListProtectedBranchesInput,
   repoListRepositoryProtectedRefsUserGroupsInput,
   repoListRepositoryFilePushPermissionsInput,
   repoListRepositoryLabelsInput,
   repoListRepositoryResourcePermissionsInput,
+  repoListRepositoryWorkItemsInput,
   repoListMergeRequestsInput,
   repoMergeMergeRequestInput,
   repoListRepositoriesInput,
   repoRemoveRepositoryDeployKeyInput,
   repoReviewMergeRequestInput,
+  repoShowGroupE2eSettingInput,
+  repoShowProjectE2eSettingInput,
   repoShowProjectGeneralPolicyInput,
   repoShowProjectMemberSettingInput,
   repoShowProjectSettingsInheritCfgInput,
   repoShowProjectWatermarkInput,
   repoShowProjectsGeneralPolicyInput,
+  repoShowRepositoryE2eSettingInput,
   repoShowRepositoryPermissionInheritEnabledInput,
   repoShowResourcePermissionsInput,
   repoStartRemoteMirrorSynchronizationInput,
@@ -87,6 +95,7 @@ import {
   repoUpdateRemoteMirrorInput
 } from "../products/repo/schemas.js";
 import { createRepoAssociateRemoteMirrorHandler } from "../products/repo/tools/associate-remote-mirror.js";
+import { createRepoCheckGroupDeployKeyHandler } from "../products/repo/tools/check-group-deploy-key.js";
 import { createRepoCheckRepositoryDeployKeyHandler } from "../products/repo/tools/check-repository-deploy-key.js";
 import { createRepoCloseMergeRequestHandler } from "../products/repo/tools/close-merge-request.js";
 import { createRepoCompareRefsHandler } from "../products/repo/tools/compare-refs.js";
@@ -110,6 +119,8 @@ import { createRepoGetTagHandler } from "../products/repo/tools/get-tag.js";
 import { createRepoListBranchesHandler } from "../products/repo/tools/list-branches.js";
 import { createRepoListCommitsHandler } from "../products/repo/tools/list-commits.js";
 import { createRepoListEventsHandler } from "../products/repo/tools/list-events.js";
+import { createRepoListBranchRelatedWorkItemsHandler } from "../products/repo/tools/list-branch-related-work-items.js";
+import { createRepoListGroupDeployKeysHandler } from "../products/repo/tools/list-group-deploy-keys.js";
 import { createRepoListGroupProtectedBranchesHandler } from "../products/repo/tools/list-group-protected-branches.js";
 import { createRepoListGroupProtectedRefsUserGroupsHandler } from "../products/repo/tools/list-group-protected-refs-user-groups.js";
 import { createRepoListImpersonationTokensHandler } from "../products/repo/tools/list-impersonation-tokens.js";
@@ -121,6 +132,7 @@ import { createRepoListPersonalRepositoryImportRecordsHandler } from "../product
 import { createRepoListProjectProtectedBranchesHandler } from "../products/repo/tools/list-project-protected-branches.js";
 import { createRepoListProjectProtectedRefsUserGroupsHandler } from "../products/repo/tools/list-project-protected-refs-user-groups.js";
 import { createRepoListProjectProtectedTagsHandler } from "../products/repo/tools/list-project-protected-tags.js";
+import { createRepoListProjectDeployKeysHandler } from "../products/repo/tools/list-project-deploy-keys.js";
 import { createRepoListProjectSubgroupsAndRepositoriesHandler } from "../products/repo/tools/list-project-subgroups-and-repositories.js";
 import { createRepoListProtectedBranchesHandler } from "../products/repo/tools/list-protected-branches.js";
 import { createRepoListRepositoriesHandler } from "../products/repo/tools/list-repositories.js";
@@ -130,17 +142,21 @@ import { createRepoListRepositoryWebhookLogsHandler } from "../products/repo/too
 import { createRepoListRepositoryWebhooksHandler } from "../products/repo/tools/list-repository-webhooks.js";
 import { createRepoListRepositoryLabelsHandler } from "../products/repo/tools/list-repository-labels.js";
 import { createRepoListRepositoryResourcePermissionsHandler } from "../products/repo/tools/list-repository-resource-permissions.js";
+import { createRepoListRepositoryWorkItemsHandler } from "../products/repo/tools/list-repository-work-items.js";
 import { createRepoListTagsHandler } from "../products/repo/tools/list-tags.js";
 import { createRepoMergeMergeRequestHandler } from "../products/repo/tools/merge-merge-request.js";
 import { createRepoCreateTagHandler } from "../products/repo/tools/create-tag.js";
 import { createRepoDeleteTagHandler } from "../products/repo/tools/delete-tag.js";
 import { createRepoRemoveRepositoryDeployKeyHandler } from "../products/repo/tools/remove-repository-deploy-key.js";
 import { createRepoReviewMergeRequestHandler } from "../products/repo/tools/review-merge-request.js";
+import { createRepoShowGroupE2eSettingHandler } from "../products/repo/tools/show-group-e2e-setting.js";
+import { createRepoShowProjectE2eSettingHandler } from "../products/repo/tools/show-project-e2e-setting.js";
 import { createRepoShowProjectGeneralPolicyHandler } from "../products/repo/tools/show-project-general-policy.js";
 import { createRepoShowProjectMemberSettingHandler } from "../products/repo/tools/show-project-member-setting.js";
 import { createRepoShowProjectSettingsInheritCfgHandler } from "../products/repo/tools/show-project-settings-inherit-cfg.js";
 import { createRepoShowProjectWatermarkHandler } from "../products/repo/tools/show-project-watermark.js";
 import { createRepoShowProjectsGeneralPolicyHandler } from "../products/repo/tools/show-projects-general-policy.js";
+import { createRepoShowRepositoryE2eSettingHandler } from "../products/repo/tools/show-repository-e2e-setting.js";
 import { createRepoShowRepositoryPermissionInheritEnabledHandler } from "../products/repo/tools/show-repository-permission-inherit-enabled.js";
 import { createRepoShowResourcePermissionsHandler } from "../products/repo/tools/show-resource-permissions.js";
 import { createRepoStartRemoteMirrorSynchronizationHandler } from "../products/repo/tools/start-remote-mirror-synchronization.js";
@@ -195,6 +211,8 @@ const repoToolDefinitions = {
   "repo_get_remote_mirror": defineProductTool({ description: "Get CodeArts Repo remote mirror detail", inputSchema: repoGetRemoteMirrorInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoGetRemoteMirrorHandler>[0] }) => clients.repoClient, createProductHandler: createRepoGetRemoteMirrorHandler }),
   "repo_update_remote_mirror": defineProductTool({ description: "Update CodeArts Repo remote mirror", inputSchema: repoUpdateRemoteMirrorInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoUpdateRemoteMirrorHandler>[0] }) => clients.repoClient, createProductHandler: createRepoUpdateRemoteMirrorHandler }),
   "repo_list_repository_deploy_keys": defineProductTool({ description: "List CodeArts Repo repository deploy keys", inputSchema: repoListRepositoryDeployKeysInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoryDeployKeysHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoryDeployKeysHandler }),
+  "repo_list_group_deploy_keys": defineProductTool({ description: "List CodeArts Repo group deploy keys", inputSchema: repoListGroupDeployKeysInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListGroupDeployKeysHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListGroupDeployKeysHandler }),
+  "repo_list_project_deploy_keys": defineProductTool({ description: "List CodeArts Repo project deploy keys", inputSchema: repoListProjectDeployKeysInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListProjectDeployKeysHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListProjectDeployKeysHandler }),
   "repo_list_repository_file_push_permissions": defineProductTool({ description: "List CodeArts Repo repository file push permissions", inputSchema: repoListRepositoryFilePushPermissionsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoryFilePushPermissionsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoryFilePushPermissionsHandler }),
   "repo_create_file_push_permission": defineProductTool({ description: "Create CodeArts Repo repository file push permission", inputSchema: repoCreateFilePushPermissionInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCreateFilePushPermissionHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCreateFilePushPermissionHandler }),
   "repo_batch_update_repository_file_push_permissions": defineProductTool({ description: "Batch update CodeArts Repo repository file push permissions", inputSchema: repoBatchUpdateRepositoryFilePushPermissionsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoBatchUpdateRepositoryFilePushPermissionsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoBatchUpdateRepositoryFilePushPermissionsHandler }),
@@ -216,7 +234,13 @@ const repoToolDefinitions = {
   "repo_update_project_general_policy": defineProductTool({ description: "Update CodeArts Repo project general policy", inputSchema: repoUpdateProjectGeneralPolicyInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoUpdateProjectGeneralPolicyHandler>[0] }) => clients.repoClient, createProductHandler: createRepoUpdateProjectGeneralPolicyHandler }),
   "repo_list_item_commits": defineProductTool({ description: "List CodeArts Repo project item commits", inputSchema: repoListItemCommitsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListItemCommitsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListItemCommitsHandler }),
   "repo_check_repository_deploy_key": defineProductTool({ description: "Check whether a CodeArts Repo repository deploy key already exists upstream", inputSchema: repoCheckRepositoryDeployKeyInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCheckRepositoryDeployKeyHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCheckRepositoryDeployKeyHandler }),
+  "repo_check_group_deploy_key": defineProductTool({ description: "Check whether a CodeArts Repo group deploy key already exists upstream", inputSchema: repoCheckGroupDeployKeyInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCheckGroupDeployKeyHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCheckGroupDeployKeyHandler }),
   "repo_remove_repository_deploy_key": defineProductTool({ description: "Remove a CodeArts Repo repository deploy key", inputSchema: repoRemoveRepositoryDeployKeyInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoRemoveRepositoryDeployKeyHandler>[0] }) => clients.repoClient, createProductHandler: createRepoRemoveRepositoryDeployKeyHandler }),
+  "repo_list_branch_related_work_items": defineProductTool({ description: "List CodeArts Repo branch related work items", inputSchema: repoListBranchRelatedWorkItemsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListBranchRelatedWorkItemsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListBranchRelatedWorkItemsHandler }),
+  "repo_list_repository_work_items": defineProductTool({ description: "List CodeArts Repo repository work items", inputSchema: repoListRepositoryWorkItemsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoryWorkItemsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoryWorkItemsHandler }),
+  "repo_show_repository_e2e_setting": defineProductTool({ description: "Show CodeArts Repo repository E2E setting", inputSchema: repoShowRepositoryE2eSettingInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowRepositoryE2eSettingHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowRepositoryE2eSettingHandler }),
+  "repo_show_group_e2e_setting": defineProductTool({ description: "Show CodeArts Repo group E2E setting", inputSchema: repoShowGroupE2eSettingInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowGroupE2eSettingHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowGroupE2eSettingHandler }),
+  "repo_show_project_e2e_setting": defineProductTool({ description: "Show CodeArts Repo project E2E setting", inputSchema: repoShowProjectE2eSettingInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowProjectE2eSettingHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowProjectE2eSettingHandler }),
   "repo_list_repository_webhooks": defineProductTool({ description: "List CodeArts Repo repository webhooks", inputSchema: repoListRepositoryWebhooksInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoryWebhooksHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoryWebhooksHandler }),
   "repo_create_repository_webhook": defineProductTool({ description: "Create CodeArts Repo repository webhook", inputSchema: repoCreateRepositoryWebhookInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCreateRepositoryWebhookHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCreateRepositoryWebhookHandler }),
   "repo_get_repository_webhook": defineProductTool({ description: "Get CodeArts Repo repository webhook detail", inputSchema: repoGetRepositoryWebhookInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoGetRepositoryWebhookHandler>[0] }) => clients.repoClient, createProductHandler: createRepoGetRepositoryWebhookHandler }),

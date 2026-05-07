@@ -855,4 +855,113 @@ describe("createRepoClient", () => {
     expect(result.total).toBe(1);
   });
 
+  it("uses group and project deploy key endpoints", async () => {
+    const calls: string[] = [];
+    const client = createRepoClient({
+      get: async (path: string) => {
+        calls.push(path);
+        return [{ id: 1, title: "demo", fingerprint: "fp" }];
+      }
+    } as never);
+
+    const groupKeys = await client.listGroupDeployKeys({
+      group_id: "100",
+      page: 2,
+      page_size: 10
+    });
+    const projectKeys = await client.listProjectDeployKeys({
+      project_id: "project-uuid-1",
+      page: 1,
+      page_size: 20
+    });
+
+    expect(groupKeys.keys[0]?.title).toBe("demo");
+    expect(projectKeys.keys[0]?.fingerprint).toBe("fp");
+    expect(calls).toEqual([
+      "/v4/groups/100/deploy-keys?offset=10&limit=10",
+      "/v4/projects/project-uuid-1/deploy-keys?offset=0&limit=20"
+    ]);
+  });
+
+  it("uses group deploy key check endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createRepoClient({
+      post: async (path: string, body: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+        return { exists: true };
+      }
+    } as never);
+
+    const result = await client.checkGroupDeployKey({
+      group_id: "100",
+      key: "ssh-rsa AAAA demo"
+    });
+
+    expect(result.exists).toBe(true);
+    expect(requestedPath).toBe("/v4/groups/100/deploy-keys/check-key");
+    expect(requestedBody).toEqual({ key: "ssh-rsa AAAA demo" });
+  });
+
+  it("uses work item endpoints", async () => {
+    const calls: string[] = [];
+    const client = createRepoClient({
+      get: async (path: string) => {
+        calls.push(path);
+        return [{ related_id: "WI-1", related_url: "https://example.com/WI-1" }];
+      }
+    } as never);
+
+    const branchItems = await client.listBranchRelatedWorkItems({
+      repository_id: "200",
+      branch_name: "feature/demo"
+    });
+    const repoItems = await client.listRepositoryWorkItems({
+      repository_id: "200",
+      project_id: "project-uuid-1",
+      is_ipd: false,
+      subject: "demo",
+      page: 2,
+      page_size: 5
+    });
+
+    expect(branchItems.work_items[0]?.related_id).toBe("WI-1");
+    expect(repoItems.work_items[0]?.related_url).toBe("https://example.com/WI-1");
+    expect(calls).toEqual([
+      "/v4/repositories/200/branch/work-items?branch_name=feature%2Fdemo",
+      "/v4/repositories/200/work-items?offset=5&limit=5&project_id=project-uuid-1&is_ipd=false&subject=demo"
+    ]);
+  });
+
+  it("uses E2E setting endpoints", async () => {
+    const calls: string[] = [];
+    const client = createRepoClient({
+      get: async (path: string) => {
+        calls.push(path);
+        return {
+          e2e_policies: { auto_extract: true },
+          req: { active: true },
+          link: { active: false }
+        };
+      }
+    } as never);
+
+    const repositorySetting = await client.showRepositoryE2eSetting({
+      repository_id: "200",
+      take_effect: true
+    });
+    const groupSetting = await client.showGroupE2eSetting({ group_id: "100" });
+    const projectSetting = await client.showProjectE2eSetting({ project_id: "project-uuid-1" });
+
+    expect(repositorySetting.e2e_policies?.auto_extract).toBe(true);
+    expect(groupSetting.req?.active).toBe(true);
+    expect(projectSetting.link?.active).toBe(false);
+    expect(calls).toEqual([
+      "/v4/repositories/200/e2e-setting?take_effect=true",
+      "/v4/groups/100/e2e-setting",
+      "/v4/projects/project-uuid-1/e2e-setting"
+    ]);
+  });
+
 });
