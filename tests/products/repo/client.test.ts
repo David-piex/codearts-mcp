@@ -521,4 +521,123 @@ describe("createRepoClient", () => {
     ]);
   });
 
+  it("uses official resource permission matrix paths and bodies", async () => {
+    const calls: Array<{ method: string; path: string; body?: Record<string, unknown> }> = [];
+    const client = createRepoClient({
+      get: async (path: string) => {
+        calls.push({ method: "get", path });
+        return [
+          {
+            role_id: "role-1",
+            role_name: "Developer",
+            resource_permissions: {
+              fork: {
+                permission_id: 2,
+                enabled: true
+              }
+            }
+          }
+        ];
+      },
+      put: async (path: string, body: Record<string, unknown>) => {
+        calls.push({ method: "put", path, body });
+        return { status: 200, message: "" };
+      }
+    } as never);
+
+    const listed = await client.listRepositoryResourcePermissions({
+      repository_id: "100",
+      resource_name: "repository",
+      page: 2,
+      page_size: 10
+    });
+    const updated = await client.updateRepositoryResourcePermissions({
+      repository_id: "100",
+      resource_name: "repository",
+      data: [
+        {
+          role_id: "role-1",
+          permissions: [{ permission_id: 2, enabled: false }]
+        }
+      ]
+    });
+    await client.updateGroupResourcePermissions({
+      group_id: "200",
+      resource_id: "300",
+      data: [
+        {
+          role_name: "Maintainer",
+          permissions: [{ permission_id: 3, enabled: true }]
+        }
+      ]
+    });
+
+    expect(listed.permissions[0]?.role_id).toBe("role-1");
+    expect(updated.status).toBe(200);
+    expect(calls).toEqual([
+      {
+        method: "get",
+        path: "/v4/repository/100/permissions/repository?offset=10&limit=10"
+      },
+      {
+        method: "put",
+        path: "/v4/repository/100/permissions/repository",
+        body: {
+          data: [
+            {
+              role_id: "role-1",
+              permissions: [{ permission_id: 2, enabled: false }]
+            }
+          ]
+        }
+      },
+      {
+        method: "put",
+        path: "/v4/groups/200/permissions/300",
+        body: {
+          data: [
+            {
+              role_name: "Maintainer",
+              permissions: [{ permission_id: 3, enabled: true }]
+            }
+          ]
+        }
+      }
+    ]);
+  });
+
+  it("uses repository permission inherit setting endpoints", async () => {
+    const calls: Array<{ method: string; path: string; body?: Record<string, unknown> }> = [];
+    const client = createRepoClient({
+      get: async (path: string) => {
+        calls.push({ method: "get", path });
+        return { inherit_parent_permission: true };
+      },
+      put: async (path: string, body: Record<string, unknown>) => {
+        calls.push({ method: "put", path, body });
+        return { inherit_parent_permission: body.inherit_parent_permission as boolean };
+      }
+    } as never);
+
+    const updated = await client.updateRepositoryPermissionInheritEnabled({
+      repository_id: "100",
+      inherit_parent_permission: false
+    });
+    const shown = await client.showRepositoryPermissionInheritEnabled({ repository_id: "100" });
+
+    expect(updated.inherit_parent_permission).toBe(false);
+    expect(shown.inherit_parent_permission).toBe(true);
+    expect(calls).toEqual([
+      {
+        method: "put",
+        path: "/v4/repositories/100/permission-inherit-setting",
+        body: { inherit_parent_permission: false }
+      },
+      {
+        method: "get",
+        path: "/v4/repositories/100/permission-inherit-setting"
+      }
+    ]);
+  });
+
 });

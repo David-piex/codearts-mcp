@@ -221,6 +221,19 @@ const filePushPermissionMutationSchema = z.object({
   actions: z.array(filePushPermissionActionSchema).optional()
 });
 
+const repositoryResourceNameSchema = z.enum(["repository", "code", "member", "branch", "tag", "mr", "label"]);
+
+const resourcePermissionDetailSchema = z.object({
+  permission_id: z.union([z.string().min(1), z.number().int().positive()]).optional(),
+  enabled: z.boolean().optional()
+});
+
+const resourcePermissionUpdateSchema = z.object({
+  role_id: z.string().min(1).optional(),
+  role_name: z.string().min(1).optional(),
+  permissions: z.array(resourcePermissionDetailSchema).optional()
+});
+
 export const repoListRepositoryFilePushPermissionsInput = pagingSchema.extend({
   repository_id: idSchema,
   page_size: z.number().int().positive().max(100).default(20),
@@ -244,6 +257,36 @@ export const repoBatchDeleteRepositoryFilePushPermissionsInput = z.object({
   repository_id: idSchema,
   ids: z.array(z.union([z.string().min(1), z.number().int().positive()])).min(1),
   dry_run: z.boolean().default(true)
+});
+
+export const repoListRepositoryResourcePermissionsInput = pagingSchema.extend({
+  repository_id: idSchema,
+  resource_name: repositoryResourceNameSchema,
+  page_size: z.number().int().positive().max(100).default(20)
+});
+
+export const repoUpdateRepositoryResourcePermissionsInput = z.object({
+  repository_id: idSchema,
+  resource_name: repositoryResourceNameSchema,
+  data: z.array(resourcePermissionUpdateSchema).min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoUpdateGroupResourcePermissionsInput = z.object({
+  group_id: idSchema,
+  resource_id: idSchema,
+  data: z.array(resourcePermissionUpdateSchema).min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoUpdateRepositoryPermissionInheritEnabledInput = z.object({
+  repository_id: idSchema,
+  inherit_parent_permission: z.boolean(),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoShowRepositoryPermissionInheritEnabledInput = z.object({
+  repository_id: idSchema
 });
 
 export const repoCheckRepositoryDeployKeyInput = z.object({

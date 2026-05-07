@@ -134,6 +134,33 @@ type RepoRepositoryFilePushPermissionMutationInput = {
   actions?: RepoRepositoryFilePushPermissionActionInput[];
 };
 
+export type RepoResourcePermissionInfo = {
+  role_id?: string;
+  role_name?: string;
+  role_name_cn?: string;
+  resource_permissions?: unknown;
+};
+
+type RepoResourcePermissionDetailInput = {
+  permission_id?: string | number;
+  enabled?: boolean;
+};
+
+export type RepoResourcePermissionUpdateInput = {
+  role_id?: string;
+  role_name?: string;
+  permissions?: RepoResourcePermissionDetailInput[];
+};
+
+export type RepoResourcePermissionUpdateResult = {
+  status?: number;
+  message?: string;
+};
+
+export type RepoRepositoryPermissionInheritSetting = {
+  inherit_parent_permission?: boolean;
+};
+
 export type RepoProtectedTagAction = {
   action?: string;
   enable?: boolean;
@@ -296,6 +323,32 @@ export type RepoClient = {
     ids: Array<string | number>;
     deleted: boolean;
   }>;
+  listRepositoryResourcePermissions: (input: {
+    repository_id: string;
+    resource_name: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    permissions: RepoResourcePermissionInfo[];
+    total?: number;
+  }>;
+  updateRepositoryResourcePermissions: (input: {
+    repository_id: string;
+    resource_name: string;
+    data: RepoResourcePermissionUpdateInput[];
+  }) => Promise<RepoResourcePermissionUpdateResult>;
+  updateGroupResourcePermissions: (input: {
+    group_id: string;
+    resource_id: string;
+    data: RepoResourcePermissionUpdateInput[];
+  }) => Promise<RepoResourcePermissionUpdateResult>;
+  updateRepositoryPermissionInheritEnabled: (input: {
+    repository_id: string;
+    inherit_parent_permission: boolean;
+  }) => Promise<RepoRepositoryPermissionInheritSetting>;
+  showRepositoryPermissionInheritEnabled: (input: {
+    repository_id: string;
+  }) => Promise<RepoRepositoryPermissionInheritSetting>;
   checkRepositoryDeployKey: (input: {
     repository_id: string;
     key: string;
@@ -1171,6 +1224,68 @@ function extractFilePushPermissionsResponse(
   };
 }
 
+function buildResourcePermissionPayload(input: {
+  data: RepoResourcePermissionUpdateInput[];
+}) {
+  return {
+    data: input.data.map((item) => omitUndefinedFields({
+      role_id: item.role_id,
+      role_name: item.role_name,
+      permissions: item.permissions?.map((permission) => omitUndefinedFields({
+        permission_id: permission.permission_id,
+        enabled: permission.enabled
+      }))
+    }))
+  };
+}
+
+function extractResourcePermissionsResponse(
+  response: RepoResourcePermissionInfo[]
+    | {
+      permissions?: RepoResourcePermissionInfo[];
+      resource_permissions?: RepoResourcePermissionInfo[];
+      total?: number;
+      result?: {
+        permissions?: RepoResourcePermissionInfo[];
+        resource_permissions?: RepoResourcePermissionInfo[];
+        total?: number;
+      };
+    }
+) {
+  const payload = unwrapRepoPayload(response);
+  const permissions = Array.isArray(payload)
+    ? payload
+    : payload.result?.permissions
+      ?? payload.result?.resource_permissions
+      ?? payload.permissions
+      ?? payload.resource_permissions
+      ?? [];
+
+  return {
+    permissions,
+    total: Array.isArray(payload) ? permissions.length : payload.result?.total ?? payload.total ?? permissions.length
+  };
+}
+
+function extractResourcePermissionUpdateResult(response: RepoResourcePermissionUpdateResult) {
+  const payload = unwrapRepoPayload(response);
+
+  return {
+    status: payload.status,
+    message: payload.message
+  };
+}
+
+function extractRepositoryPermissionInheritSetting(
+  response: RepoRepositoryPermissionInheritSetting
+) {
+  const payload = unwrapRepoPayload(response);
+
+  return {
+    inherit_parent_permission: payload.inherit_parent_permission
+  };
+}
+
 type RepoClientOptions = {
   listCacheTtlMs?: number;
   now?: () => number;
@@ -1419,6 +1534,45 @@ export function createRepoClient(
         ids: input.ids,
         deleted: true
       };
+    },
+    async listRepositoryResourcePermissions(input) {
+      const query = buildOffsetLimitQuery(input);
+      const rawResponse = (await _http.get(
+        `/v4/repository/${encodeURIComponent(input.repository_id)}/permissions/${encodeURIComponent(input.resource_name)}?${query.toString()}`
+      )) as Parameters<typeof extractResourcePermissionsResponse>[0];
+
+      return extractResourcePermissionsResponse(rawResponse);
+    },
+    async updateRepositoryResourcePermissions(input) {
+      const rawResponse = (await _http.put(
+        `/v4/repository/${encodeURIComponent(input.repository_id)}/permissions/${encodeURIComponent(input.resource_name)}`,
+        buildResourcePermissionPayload(input)
+      )) as RepoResourcePermissionUpdateResult;
+
+      return extractResourcePermissionUpdateResult(rawResponse);
+    },
+    async updateGroupResourcePermissions(input) {
+      const rawResponse = (await _http.put(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/permissions/${encodeURIComponent(input.resource_id)}`,
+        buildResourcePermissionPayload(input)
+      )) as RepoResourcePermissionUpdateResult;
+
+      return extractResourcePermissionUpdateResult(rawResponse);
+    },
+    async updateRepositoryPermissionInheritEnabled(input) {
+      const rawResponse = (await _http.put(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/permission-inherit-setting`,
+        { inherit_parent_permission: input.inherit_parent_permission }
+      )) as RepoRepositoryPermissionInheritSetting;
+
+      return extractRepositoryPermissionInheritSetting(rawResponse);
+    },
+    async showRepositoryPermissionInheritEnabled(input) {
+      const rawResponse = (await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/permission-inherit-setting`
+      )) as RepoRepositoryPermissionInheritSetting;
+
+      return extractRepositoryPermissionInheritSetting(rawResponse);
     },
     async checkRepositoryDeployKey(input) {
       const rawResponse = (await _http.post(
