@@ -13,7 +13,13 @@ import {
   artifactListRepositoriesInput,
   artifactListVersionsInput,
   artifactSearchArtifactsInput,
-  artifactShowAuditInput
+  artifactShowAuditInput,
+  artifactShowDomainReleaseRepoStorageInput,
+  artifactShowLatestVersionFilesCountInput,
+  artifactShowPackageDataDetailInput,
+  artifactShowPackageInfoInput,
+  artifactShowProjectStorageInfoInput,
+  artifactShowProjectVersionsCountInput
 } from "../products/artifact/schemas.js";
 import { createArtifactDeleteFileHandler } from "../products/artifact/tools/delete-file.js";
 import { createArtifactGetFileTreeHandler } from "../products/artifact/tools/get-file-tree.js";
@@ -27,6 +33,12 @@ import { createArtifactListRepositoriesHandler } from "../products/artifact/tool
 import { createArtifactListVersionsHandler } from "../products/artifact/tools/list-versions.js";
 import { createArtifactSearchArtifactsHandler } from "../products/artifact/tools/search-artifacts.js";
 import { createArtifactShowAuditHandler } from "../products/artifact/tools/show-audit.js";
+import { createArtifactShowDomainReleaseRepoStorageHandler } from "../products/artifact/tools/show-domain-release-repo-storage.js";
+import { createArtifactShowLatestVersionFilesCountHandler } from "../products/artifact/tools/show-latest-version-files-count.js";
+import { createArtifactShowPackageDataDetailHandler } from "../products/artifact/tools/show-package-data-detail.js";
+import { createArtifactShowPackageInfoHandler } from "../products/artifact/tools/show-package-info.js";
+import { createArtifactShowProjectStorageInfoHandler } from "../products/artifact/tools/show-project-storage-info.js";
+import { createArtifactShowProjectVersionsCountHandler } from "../products/artifact/tools/show-project-versions-count.js";
 import { createOfficialApiRequestHandler } from "../products/shared-tools/request-official-api.js";
 import { defineProductTool, registerDefinedTool } from "./product-tool-registry.js";
 import type { RateLimiter } from "./rate-limiter.js";
@@ -65,6 +77,42 @@ const artifactToolDefinitions = {
     inputSchema: artifactListLatestVersionFilesInput,
     selectHttpClient: (clients: { artifactClient: Parameters<typeof createArtifactListLatestVersionFilesHandler>[0] }) => clients.artifactClient,
     createProductHandler: createArtifactListLatestVersionFilesHandler
+  }),
+  "artifact_show_latest_version_files_count": defineProductTool({
+    description: "Show CodeArts Artifact latest version file count",
+    inputSchema: artifactShowLatestVersionFilesCountInput,
+    selectHttpClient: (clients: { artifactClient: Parameters<typeof createArtifactShowLatestVersionFilesCountHandler>[0] }) => clients.artifactClient,
+    createProductHandler: createArtifactShowLatestVersionFilesCountHandler
+  }),
+  "artifact_show_project_versions_count": defineProductTool({
+    description: "Show CodeArts Artifact project version count",
+    inputSchema: artifactShowProjectVersionsCountInput,
+    selectHttpClient: (clients: { artifactClient: Parameters<typeof createArtifactShowProjectVersionsCountHandler>[0] }) => clients.artifactClient,
+    createProductHandler: createArtifactShowProjectVersionsCountHandler
+  }),
+  "artifact_show_package_data_detail": defineProductTool({
+    description: "Show CodeArts Artifact package data detail",
+    inputSchema: artifactShowPackageDataDetailInput,
+    selectHttpClient: (clients: { artifactClient: Parameters<typeof createArtifactShowPackageDataDetailHandler>[0] }) => clients.artifactClient,
+    createProductHandler: createArtifactShowPackageDataDetailHandler
+  }),
+  "artifact_show_package_info": defineProductTool({
+    description: "Show CodeArts Artifact package info",
+    inputSchema: artifactShowPackageInfoInput,
+    selectHttpClient: (clients: { artifactClient: Parameters<typeof createArtifactShowPackageInfoHandler>[0] }) => clients.artifactClient,
+    createProductHandler: createArtifactShowPackageInfoHandler
+  }),
+  "artifact_show_domain_release_repo_storage": defineProductTool({
+    description: "Show CodeArts Artifact tenant release repository storage",
+    inputSchema: artifactShowDomainReleaseRepoStorageInput,
+    selectHttpClient: (clients: { artifactClient: Parameters<typeof createArtifactShowDomainReleaseRepoStorageHandler>[0] }) => clients.artifactClient,
+    createProductHandler: createArtifactShowDomainReleaseRepoStorageHandler
+  }),
+  "artifact_show_project_storage_info": defineProductTool({
+    description: "Show CodeArts Artifact project storage info",
+    inputSchema: artifactShowProjectStorageInfoInput,
+    selectHttpClient: (clients: { artifactClient: Parameters<typeof createArtifactShowProjectStorageInfoHandler>[0] }) => clients.artifactClient,
+    createProductHandler: createArtifactShowProjectStorageInfoHandler
   }),
   "artifact_get_repository": defineProductTool({
     description: "Get CodeArts Artifact repository detail",

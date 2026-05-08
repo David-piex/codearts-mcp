@@ -8,7 +8,13 @@ export const artifactToolNames = [
   "artifact_delete_file",
   "artifact_list_build_archives",
   "artifact_list_latest_version_files",
+  "artifact_show_latest_version_files_count",
   "artifact_list_versions",
+  "artifact_show_project_versions_count",
+  "artifact_show_package_data_detail",
+  "artifact_show_package_info",
+  "artifact_show_domain_release_repo_storage",
+  "artifact_show_project_storage_info",
   "artifact_search_artifacts",
   "artifact_show_audit",
   "artifact_request_official_api"

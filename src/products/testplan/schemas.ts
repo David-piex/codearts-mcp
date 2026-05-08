@@ -32,6 +32,33 @@ export const testPlanListRunsInput = pagingSchema.extend({
   plan_id: idSchema
 });
 
+export const testPlanListTasksInput = pagingSchema.extend({
+  project_id: idSchema,
+  version_uri: idSchema,
+  keyword: z.string().min(1).optional(),
+  status_codes: z.array(z.number().int()).optional(),
+  executor_ids: z.array(idSchema).optional()
+});
+
+export const testPlanGetTaskInput = z.object({
+  project_id: idSchema,
+  task_uri: idSchema,
+  version_uri: idSchema.optional()
+});
+
+export const testPlanListTaskCasesInput = pagingSchema.extend({
+  project_id: idSchema,
+  task_id: idSchema,
+  status: z.array(z.string().min(1)).optional(),
+  version_uri: idSchema.optional()
+});
+
+export const testPlanListTaskResultsInput = pagingSchema.extend({
+  project_id: idSchema,
+  task_uri: idSchema,
+  iterator_uri: idSchema.optional()
+});
+
 export const testPlanGetCaseInput = z.object({
   project_id: idSchema,
   case_id: idSchema

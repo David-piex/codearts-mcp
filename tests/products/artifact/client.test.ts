@@ -168,6 +168,108 @@ describe("createArtifactClient", () => {
     ]);
   });
 
+  it("uses project version count endpoint with optional filters", async () => {
+    let requestedPath = "";
+    const client = createClient({
+      get: async (path: string) => {
+        requestedPath = path;
+        return {
+          result: {
+            count: 12
+          }
+        };
+      }
+    });
+
+    const result = await client.showProjectVersionsCount({
+      project_id: "project-1",
+      name: "gateway",
+      status: "release"
+    });
+
+    expect(requestedPath).toBe("/v5/project-1/versions/count?name=gateway&status=release");
+    expect(result).toEqual({
+      count: 12,
+      total: 12,
+      raw: {
+        count: 12
+      }
+    });
+  });
+
+  it("uses latest version file count endpoint with optional filters", async () => {
+    let requestedPath = "";
+    const client = createClient({
+      get: async (path: string) => {
+        requestedPath = path;
+        return {
+          total_count: 7
+        };
+      }
+    });
+
+    const result = await client.showLatestVersionFilesCount({
+      project_id: "project-1",
+      name: "gateway"
+    });
+
+    expect(requestedPath).toBe(
+      "/devreposerver/v5/project-1/files/version/count?name=gateway"
+    );
+    expect(result).toEqual({
+      count: 7,
+      total: 7,
+      raw: {
+        total_count: 7
+      }
+    });
+  });
+
+  it("maps package and storage read endpoints", async () => {
+    const requests: string[] = [];
+    const client = createClient({
+      get: async (path: string) => {
+        requests.push(path);
+
+        if (path.startsWith("/devreposerver/v5/data/package/info")) {
+          return { result: { enabled: true } };
+        }
+        if (path.startsWith("/devreposerver/v5/data/package")) {
+          return { result: { package_id: "pkg-1" } };
+        }
+        if (path.startsWith("/devreposerver/v5/project-1/storage")) {
+          return { result: { used_storage: 1024, total_storage: 2048, file_count: 3 } };
+        }
+
+        return { result: { used_size: 4096, capacity: 8192 } };
+      }
+    });
+
+    await expect(client.showPackageDataDetail({ project_id: "project-1" })).resolves.toEqual({
+      raw: { package_id: "pkg-1" }
+    });
+    await expect(client.showPackageInfo({ project_id: "project-1", status: "active" })).resolves.toEqual({
+      raw: { enabled: true }
+    });
+    await expect(client.showDomainReleaseRepoStorage({ package_type: "maven2" })).resolves.toEqual({
+      used: "4096",
+      total: "8192",
+      raw: { used_size: 4096, capacity: 8192 }
+    });
+    await expect(client.showProjectStorageInfo({ project_id: "project-1" })).resolves.toEqual({
+      used: "1024",
+      total: "2048",
+      file_count: 3,
+      raw: { used_storage: 1024, total_storage: 2048, file_count: 3 }
+    });
+    expect(requests).toEqual([
+      "/devreposerver/v5/data/package?project_id=project-1",
+      "/devreposerver/v5/data/package/info?project_id=project-1&status=active",
+      "/devreposerver/v5/storage?package_type=maven2",
+      "/devreposerver/v5/project-1/storage"
+    ]);
+  });
+
   it("maps search artifact responses with nested result", async () => {
     const client = createClient({
       post: async () => ({

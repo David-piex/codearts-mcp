@@ -24,7 +24,7 @@
 
 | 模块 | API 数量 | 明细文档 |
 | --- | ---: | --- |
-| 制品仓 | 13 | [Function-API-Reference-Artifact.md](./Function-API-Reference-Artifact.md) |
+| 制品仓 | 19 | [Function-API-Reference-Artifact.md](./Function-API-Reference-Artifact.md) |
 | 鉴权会话 | 2 | [Function-API-Reference-Auth-Session.md](./Function-API-Reference-Auth-Session.md) |
 | 编译构建 | 23 | [Function-API-Reference-Build.md](./Function-API-Reference-Build.md) |
 | 代码检查 | 9 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
@@ -32,8 +32,8 @@
 | 流水线 | 78 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 106 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 201 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
-| 测试计划 | 8 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **500** | |
+| 测试计划 | 12 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
+| **总计** | **510** | |
 
 ## 字段对应
 
@@ -56,6 +56,12 @@
 | `artifact_request_official_api` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_request_official_api) |
 | `artifact_search_artifacts` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_search_artifacts) |
 | `artifact_show_audit` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_show_audit) |
+| `artifact_show_domain_release_repo_storage` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_show_domain_release_repo_storage) |
+| `artifact_show_latest_version_files_count` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_show_latest_version_files_count) |
+| `artifact_show_package_data_detail` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_show_package_data_detail) |
+| `artifact_show_package_info` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_show_package_info) |
+| `artifact_show_project_storage_info` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_show_project_storage_info) |
+| `artifact_show_project_versions_count` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_show_project_versions_count) |
 | `auth_clear_session` | 鉴权会话 | [查看](./Function-API-Reference-Auth-Session.md#auth_clear_session) |
 | `auth_configure_session` | 鉴权会话 | [查看](./Function-API-Reference-Auth-Session.md#auth_configure_session) |
 | `build_append_job_step` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_append_job_step) |
@@ -537,10 +543,14 @@
 | `req_validate_module_name` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_validate_module_name) |
 | `testplan_get_case` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_case) |
 | `testplan_get_plan` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_plan) |
+| `testplan_get_task` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_task) |
 | `testplan_list_cases` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_cases) |
 | `testplan_list_issues` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_issues) |
 | `testplan_list_plans` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_plans) |
 | `testplan_list_runs` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_runs) |
+| `testplan_list_task_cases` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_task_cases) |
+| `testplan_list_task_results` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_task_results) |
+| `testplan_list_tasks` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_tasks) |
 | `testplan_request_official_api` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_request_official_api) |
 | `testplan_run_cases` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_run_cases) |
 

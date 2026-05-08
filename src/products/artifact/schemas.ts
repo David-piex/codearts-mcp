@@ -51,6 +51,12 @@ export const artifactListVersionsInput = pagingSchema.extend({
   project_id: idSchema
 });
 
+export const artifactShowProjectVersionsCountInput = z.object({
+  project_id: idSchema,
+  name: z.string().min(1).optional(),
+  status: z.string().min(1).optional()
+});
+
 export const artifactGetFileTreeInput = z.object({
   tenant_id: idSchema,
   project_id: idSchema,
@@ -60,6 +66,32 @@ export const artifactGetFileTreeInput = z.object({
 
 export const artifactListLatestVersionFilesInput = pagingSchema.extend({
   project_id: idSchema
+});
+
+export const artifactShowLatestVersionFilesCountInput = z.object({
+  project_id: idSchema,
+  name: z.string().min(1).optional(),
+  status: z.string().min(1).optional()
+});
+
+export const artifactShowPackageDataDetailInput = z.object({
+  project_id: idSchema.optional(),
+  status: z.string().min(1).optional()
+});
+
+export const artifactShowPackageInfoInput = z.object({
+  project_id: idSchema.optional(),
+  status: z.string().min(1).optional()
+});
+
+export const artifactShowDomainReleaseRepoStorageInput = z.object({
+  status: z.string().min(1).optional(),
+  package_type: z.string().min(1).optional()
+});
+
+export const artifactShowProjectStorageInfoInput = z.object({
+  project_id: idSchema,
+  status: z.string().min(1).optional()
 });
 
 export const artifactSearchArtifactsInput = pagingSchema.extend({

@@ -186,4 +186,206 @@ describe("createTestPlanClient", () => {
       status: "queued"
     });
   });
+
+  it("lists test suite tasks using the v4 batch query endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requestedPath = path;
+        requestedBody = body as Record<string, unknown>;
+        return {
+          result: {
+            tasks: [
+              {
+                uri: "task-1",
+                name: "smoke suite",
+                version_uri: "version-1",
+                status_code: 1,
+                status_name: "running",
+                executor_id: "user-1",
+                executor_name: "alice"
+              }
+            ],
+            total: 1
+          }
+        };
+      }
+    } as never);
+
+    const result = await client.listTasks({
+      project_id: "project-1",
+      version_uri: "version-1",
+      page: 2,
+      page_size: 10,
+      keyword: "smoke",
+      status_codes: [1],
+      executor_ids: ["user-1"]
+    });
+
+    expect(requestedPath).toBe("/v4/project-1/versions/version-1/tasks/batch-query");
+    expect(requestedBody).toEqual({
+      keyword: "smoke",
+      status_codes: [1],
+      executor_ids: ["user-1"],
+      page_no: 2,
+      page_size: 10
+    });
+    expect(result).toEqual({
+      tasks: [
+        {
+          task_id: "task-1",
+          name: "smoke suite",
+          version_uri: "version-1",
+          status_code: 1,
+          status_name: "running",
+          executor_id: "user-1",
+          executor_name: "alice"
+        }
+      ],
+      total: 1
+    });
+  });
+
+  it("gets test suite task detail with an optional version query", async () => {
+    let requestedPath = "";
+    const client = createTestPlanClient({
+      get: async (path: string) => {
+        requestedPath = path;
+        return {
+          result: {
+            uri: "task-1",
+            name: "smoke suite",
+            version_uri: "version-1",
+            status_code: 2,
+            status_name: "done"
+          }
+        };
+      }
+    } as never);
+
+    const result = await client.getTask({
+      project_id: "project-1",
+      task_uri: "task-1",
+      version_uri: "version-1"
+    });
+
+    expect(requestedPath).toBe("/v4/project-1/tasks/task-1?version_uri=version-1");
+    expect(result).toEqual({
+      task_id: "task-1",
+      name: "smoke suite",
+      version_uri: "version-1",
+      status_code: 2,
+      status_name: "done",
+      executor_id: undefined,
+      executor_name: undefined
+    });
+  });
+
+  it("lists task assigned cases through GT3K batch query", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requestedPath = path;
+        requestedBody = body as Record<string, unknown>;
+        return {
+          result: {
+            testcases: [
+              {
+                case_uri: "case-1",
+                name: "login",
+                status: "ready",
+                result: "passed",
+                executor_id: "user-1",
+                executor_name: "alice"
+              }
+            ],
+            total_count: 1
+          }
+        };
+      }
+    } as never);
+
+    const result = await client.listTaskCases({
+      project_id: "project-1",
+      task_id: "task-1",
+      page: 1,
+      page_size: 20,
+      status: ["ready"],
+      version_uri: "version-1"
+    });
+
+    expect(requestedPath).toBe("/GT3KServer/v4/project-1/tasks/task-1/testcases/batch-query");
+    expect(requestedBody).toEqual({
+      page_no: 1,
+      page_size: 20,
+      status: ["ready"],
+      version_uri: "version-1"
+    });
+    expect(result).toEqual({
+      cases: [
+        {
+          case_id: "case-1",
+          name: "login",
+          status: "ready",
+          result: "passed",
+          executor_id: "user-1",
+          executor_name: "alice"
+        }
+      ],
+      total: 1
+    });
+  });
+
+  it("lists task execution results with iterator query", async () => {
+    let requestedPath = "";
+    const client = createTestPlanClient({
+      get: async (path: string) => {
+        requestedPath = path;
+        return {
+          result: {
+            results: [
+              {
+                uri: "result-1",
+                name: "login result",
+                task_uri: "task-1",
+                version_uri: "version-1",
+                executor_id: "user-1",
+                executor_name: "alice",
+                result: "passed"
+              }
+            ],
+            total: 1
+          }
+        };
+      }
+    } as never);
+
+    const result = await client.listTaskResults({
+      project_id: "project-1",
+      task_uri: "task-1",
+      page: 1,
+      page_size: 20,
+      iterator_uri: "version-1"
+    });
+
+    expect(requestedPath).toBe(
+      "/v4/project-1/tasks/task-1/results?page_no=1&page_size=20&iterator_uri=version-1"
+    );
+    expect(result).toEqual({
+      results: [
+        {
+          result_id: "result-1",
+          name: "login result",
+          task_uri: "task-1",
+          version_uri: "version-1",
+          executor_id: "user-1",
+          executor_name: "alice",
+          status: "passed"
+        }
+      ],
+      total: 1
+    });
+  });
 });

@@ -4,18 +4,26 @@ import { createTestPlanClient } from "../products/testplan/client.js";
 import {
   testPlanGetCaseInput,
   testPlanGetPlanInput,
+  testPlanGetTaskInput,
   testPlanListCasesInput,
   testPlanListIssuesInput,
   testPlanListPlansInput,
   testPlanListRunsInput,
+  testPlanListTaskCasesInput,
+  testPlanListTaskResultsInput,
+  testPlanListTasksInput,
   testPlanRunCasesInput
 } from "../products/testplan/schemas.js";
 import { createTestPlanGetCaseHandler } from "../products/testplan/tools/get-case.js";
 import { createTestPlanGetPlanHandler } from "../products/testplan/tools/get-plan.js";
+import { createTestPlanGetTaskHandler } from "../products/testplan/tools/get-task.js";
 import { createTestPlanListCasesHandler } from "../products/testplan/tools/list-cases.js";
 import { createTestPlanListIssuesHandler } from "../products/testplan/tools/list-issues.js";
 import { createTestPlanListPlansHandler } from "../products/testplan/tools/list-plans.js";
 import { createTestPlanListRunsHandler } from "../products/testplan/tools/list-runs.js";
+import { createTestPlanListTaskCasesHandler } from "../products/testplan/tools/list-task-cases.js";
+import { createTestPlanListTaskResultsHandler } from "../products/testplan/tools/list-task-results.js";
+import { createTestPlanListTasksHandler } from "../products/testplan/tools/list-tasks.js";
 import { createTestPlanRunCasesHandler } from "../products/testplan/tools/run-cases.js";
 import { createOfficialApiRequestHandler } from "../products/shared-tools/request-official-api.js";
 import { defineProductTool, registerDefinedTool } from "./product-tool-registry.js";
@@ -67,6 +75,30 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListRunsInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListRunsHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListRunsHandler
+  }),
+  "testplan_list_tasks": defineProductTool({
+    description: "List CodeArts TestPlan test suite tasks",
+    inputSchema: testPlanListTasksInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTasksHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListTasksHandler
+  }),
+  "testplan_get_task": defineProductTool({
+    description: "Get CodeArts TestPlan test suite task detail",
+    inputSchema: testPlanGetTaskInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetTaskHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetTaskHandler
+  }),
+  "testplan_list_task_cases": defineProductTool({
+    description: "List CodeArts TestPlan cases assigned to a test suite task",
+    inputSchema: testPlanListTaskCasesInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTaskCasesHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListTaskCasesHandler
+  }),
+  "testplan_list_task_results": defineProductTool({
+    description: "List CodeArts TestPlan test suite task execution results",
+    inputSchema: testPlanListTaskResultsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTaskResultsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListTaskResultsHandler
   }),
   "testplan_run_cases": defineProductTool({
     description: "Run CodeArts TestPlan cases",

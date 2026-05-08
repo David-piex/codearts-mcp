@@ -21,6 +21,15 @@ export type ArtifactClient = {
     }>;
     total?: number;
   }>;
+  showProjectVersionsCount: (input: {
+    project_id: string;
+    name?: string;
+    status?: string;
+  }) => Promise<{
+    count?: number;
+    total?: number;
+    raw?: unknown;
+  }>;
   getFileTree: (input: {
     tenant_id: string;
     project_id: string;
@@ -48,6 +57,44 @@ export type ArtifactClient = {
       modified_at?: string;
     }>;
     total?: number;
+  }>;
+  showLatestVersionFilesCount: (input: {
+    project_id: string;
+    name?: string;
+    status?: string;
+  }) => Promise<{
+    count?: number;
+    total?: number;
+    raw?: unknown;
+  }>;
+  showPackageDataDetail: (input: {
+    project_id?: string;
+    status?: string;
+  }) => Promise<{
+    raw: unknown;
+  }>;
+  showPackageInfo: (input: {
+    project_id?: string;
+    status?: string;
+  }) => Promise<{
+    raw: unknown;
+  }>;
+  showDomainReleaseRepoStorage: (input: {
+    status?: string;
+    package_type?: string;
+  }) => Promise<{
+    used?: string;
+    total?: string;
+    raw?: unknown;
+  }>;
+  showProjectStorageInfo: (input: {
+    project_id: string;
+    status?: string;
+  }) => Promise<{
+    used?: string;
+    total?: string;
+    file_count?: number;
+    raw?: unknown;
   }>;
   showAudit: (input: {
     tenant_id: string;
@@ -214,6 +261,38 @@ function readOptionalNumber(input: unknown) {
   return typeof input === "number" ? input : undefined;
 }
 
+function readOptionalString(input: unknown) {
+  if (typeof input === "string") {
+    return input;
+  }
+
+  if (typeof input === "number") {
+    return String(input);
+  }
+
+  return undefined;
+}
+
+function readCount(payload: Record<string, unknown>, response: Record<string, unknown>) {
+  return (
+    readOptionalNumber(payload.count) ??
+    readOptionalNumber(payload.total) ??
+    readOptionalNumber(payload.total_count) ??
+    readOptionalNumber(payload.file_count) ??
+    readOptionalNumber(response.count) ??
+    readOptionalNumber(response.total) ??
+    readOptionalNumber(response.total_count)
+  );
+}
+
+function readStoragePayload(input: unknown) {
+  const response = unwrapArtifactPayload(input);
+  const envelope = readEnvelope(response) ?? {};
+  const payload = readEnvelope(envelope.result) ?? envelope;
+
+  return { response: envelope, payload };
+}
+
 export function createArtifactClient(_http: ReturnTypeCreateHttpClient): ArtifactClient {
   return {
     ...createOfficialApiRequester({
@@ -267,6 +346,23 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
           category: item.category
         })),
         total: payload.total ?? payload.total_count
+      };
+    },
+    async showProjectVersionsCount(input) {
+      const query = new URLSearchParams();
+      if (input.name) query.set("name", input.name);
+      if (input.status) query.set("status", input.status);
+
+      const suffix = query.size ? `?${query.toString()}` : "";
+      const { response, payload } = readStoragePayload(
+        await _http.get(`/v5/${encodeURIComponent(input.project_id)}/versions/count${suffix}`)
+      );
+      const count = readCount(payload, response);
+
+      return {
+        count,
+        total: count,
+        raw: payload
       };
     },
     async getFileTree(input) {
@@ -335,6 +431,88 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
           modified_at: file.modified_at
         })),
         total: payload.total ?? payload.total_count
+      };
+    },
+    async showLatestVersionFilesCount(input) {
+      const query = new URLSearchParams();
+      if (input.name) query.set("name", input.name);
+      if (input.status) query.set("status", input.status);
+
+      const suffix = query.size ? `?${query.toString()}` : "";
+      const { response, payload } = readStoragePayload(
+        await _http.get(`/devreposerver/v5/${encodeURIComponent(input.project_id)}/files/version/count${suffix}`)
+      );
+      const count = readCount(payload, response);
+
+      return {
+        count,
+        total: count,
+        raw: payload
+      };
+    },
+    async showPackageDataDetail(input) {
+      const query = new URLSearchParams();
+      if (input.project_id) query.set("project_id", input.project_id);
+      if (input.status) query.set("status", input.status);
+
+      const suffix = query.size ? `?${query.toString()}` : "";
+      const { payload } = readStoragePayload(await _http.get(`/devreposerver/v5/data/package${suffix}`));
+
+      return { raw: payload };
+    },
+    async showPackageInfo(input) {
+      const query = new URLSearchParams();
+      if (input.project_id) query.set("project_id", input.project_id);
+      if (input.status) query.set("status", input.status);
+
+      const suffix = query.size ? `?${query.toString()}` : "";
+      const { payload } = readStoragePayload(await _http.get(`/devreposerver/v5/data/package/info${suffix}`));
+
+      return { raw: payload };
+    },
+    async showDomainReleaseRepoStorage(input) {
+      const query = new URLSearchParams();
+      if (input.status) query.set("status", input.status);
+      if (input.package_type) query.set("package_type", input.package_type);
+
+      const suffix = query.size ? `?${query.toString()}` : "";
+      const { payload } = readStoragePayload(await _http.get(`/devreposerver/v5/storage${suffix}`));
+
+      return {
+        used:
+          readOptionalString(payload.used) ??
+          readOptionalString(payload.used_storage) ??
+          readOptionalString(payload.used_size),
+        total:
+          readOptionalString(payload.total) ??
+          readOptionalString(payload.total_storage) ??
+          readOptionalString(payload.capacity),
+        raw: payload
+      };
+    },
+    async showProjectStorageInfo(input) {
+      const query = new URLSearchParams();
+      if (input.status) query.set("status", input.status);
+
+      const suffix = query.size ? `?${query.toString()}` : "";
+      const { payload } = readStoragePayload(
+        await _http.get(`/devreposerver/v5/${encodeURIComponent(input.project_id)}/storage${suffix}`)
+      );
+
+      return {
+        used:
+          readOptionalString(payload.used) ??
+          readOptionalString(payload.used_storage) ??
+          readOptionalString(payload.used_size),
+        total:
+          readOptionalString(payload.total) ??
+          readOptionalString(payload.total_storage) ??
+          readOptionalString(payload.capacity),
+        file_count:
+          readOptionalNumber(payload.file_count) ??
+          readOptionalNumber(payload.files_count) ??
+          readOptionalNumber(payload.count),
+        raw: payload
       };
     },
     async showAudit(input) {
