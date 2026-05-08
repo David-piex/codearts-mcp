@@ -502,4 +502,127 @@ describe("createTestPlanClient", () => {
       task_uris: ["task-1", "task-2"]
     });
   });
+
+  it("creates task relations through the v5 endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requestedPath = path;
+        requestedBody = body as Record<string, unknown>;
+        return {
+          result: {
+            uri: "task-1",
+            name: "suite with relations",
+            version_uri: "version-1",
+            status_code: 1,
+            status_name: "ready"
+          }
+        };
+      }
+    } as never);
+
+    const result = await client.createTaskRelations({
+      project_id: "project-1",
+      name: "suite with relations",
+      version_uri: "version-1",
+      owner_id: "user-1",
+      service_type: 0,
+      execute_way: 1
+    });
+
+    expect(requestedPath).toBe("/v5/project-1/tasks");
+    expect(requestedBody).toEqual({
+      uri: undefined,
+      name: "suite with relations",
+      stage: undefined,
+      number: undefined,
+      tags: undefined,
+      description: undefined,
+      region: undefined,
+      version_uri: "version-1",
+      owner_id: "user-1",
+      parent_uri: undefined,
+      test_case_condition: undefined,
+      service_type: 0,
+      module_id: undefined,
+      module_name: undefined,
+      release_dev: undefined,
+      status_code: undefined,
+      ext_param: undefined,
+      execute_way: 1
+    });
+    expect(result).toEqual({
+      task_id: "task-1",
+      name: "suite with relations",
+      version_uri: "version-1",
+      status_code: 1,
+      status_name: "ready"
+    });
+  });
+
+  it("initializes and stops task execution through documented endpoints", async () => {
+    const requests: Array<{ method: string; path: string; body?: unknown }> = [];
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requests.push({ method: "POST", path, body });
+        return {
+          total: 1,
+          value: {
+            task_result_vo: {
+              uri: "result-1"
+            }
+          },
+          has_more: false
+        };
+      },
+      delete: async (path: string) => {
+        requests.push({ method: "DELETE", path });
+        return {
+          value: "ok"
+        };
+      }
+    } as never);
+
+    await expect(
+      client.initTaskExecution({
+        project_id: "project-1",
+        task_uri: "task-1",
+        release_dev: "1.0.0",
+        version_uri: "version-1",
+        is_query: true
+      })
+    ).resolves.toEqual({
+      result_id: "result-1",
+      task_uri: "task-1",
+      total: 1,
+      has_more: false
+    });
+    await expect(
+      client.stopTaskExecution({
+        project_id: "project-1",
+        task_uri: "task-1",
+        result_uri: "result-1"
+      })
+    ).resolves.toEqual({
+      result_uri: "result-1",
+      value: "ok",
+      stopped: true
+    });
+    expect(requests).toEqual([
+      {
+        method: "POST",
+        path: "/v4/project-1/tasks/task-1/results/init",
+        body: {
+          release_dev: "1.0.0",
+          version_uri: "version-1",
+          is_query: true
+        }
+      },
+      {
+        method: "DELETE",
+        path: "/v4/project-1/tasks/task-1/results/result-1"
+      }
+    ]);
+  });
 });

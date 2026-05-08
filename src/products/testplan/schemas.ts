@@ -72,6 +72,45 @@ export const testPlanBatchDeleteTasksInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const testPlanCreateTaskRelationsInput = z.object({
+  project_id: idSchema,
+  name: z.string().min(1),
+  uri: idSchema.optional(),
+  stage: z.string().min(1).optional(),
+  number: z.string().min(1).optional(),
+  tags: z.string().min(1).optional(),
+  description: z.string().optional(),
+  region: z.string().min(1).optional(),
+  version_uri: idSchema.optional(),
+  owner_id: idSchema.optional(),
+  parent_uri: idSchema.optional(),
+  test_case_condition: z.string().min(1).optional(),
+  service_type: z.number().int().optional(),
+  module_id: idSchema.optional(),
+  module_name: z.string().min(1).optional(),
+  release_dev: z.string().min(1).optional(),
+  status_code: z.number().int().optional(),
+  ext_param: z.string().min(1).optional(),
+  execute_way: z.number().int().optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanInitTaskExecutionInput = z.object({
+  project_id: idSchema,
+  task_uri: idSchema,
+  release_dev: z.string().min(1).optional(),
+  version_uri: idSchema.optional(),
+  is_query: z.boolean().optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanStopTaskExecutionInput = z.object({
+  project_id: idSchema,
+  task_uri: idSchema,
+  result_uri: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
 export const testPlanListTaskCasesInput = pagingSchema.extend({
   project_id: idSchema,
   task_id: idSchema,

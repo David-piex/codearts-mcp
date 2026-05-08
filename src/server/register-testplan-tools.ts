@@ -4,9 +4,11 @@ import { createTestPlanClient } from "../products/testplan/client.js";
 import {
   testPlanBatchDeleteTasksInput,
   testPlanCreateTaskInput,
+  testPlanCreateTaskRelationsInput,
   testPlanGetCaseInput,
   testPlanGetPlanInput,
   testPlanGetTaskInput,
+  testPlanInitTaskExecutionInput,
   testPlanListCasesInput,
   testPlanListIssuesInput,
   testPlanListPlansInput,
@@ -15,13 +17,16 @@ import {
   testPlanListTaskResultsInput,
   testPlanListTasksInput,
   testPlanRunCasesInput,
+  testPlanStopTaskExecutionInput,
   testPlanUpdateTaskInput
 } from "../products/testplan/schemas.js";
 import { createTestPlanBatchDeleteTasksHandler } from "../products/testplan/tools/batch-delete-tasks.js";
 import { createTestPlanCreateTaskHandler } from "../products/testplan/tools/create-task.js";
+import { createTestPlanCreateTaskRelationsHandler } from "../products/testplan/tools/create-task-relations.js";
 import { createTestPlanGetCaseHandler } from "../products/testplan/tools/get-case.js";
 import { createTestPlanGetPlanHandler } from "../products/testplan/tools/get-plan.js";
 import { createTestPlanGetTaskHandler } from "../products/testplan/tools/get-task.js";
+import { createTestPlanInitTaskExecutionHandler } from "../products/testplan/tools/init-task-execution.js";
 import { createTestPlanListCasesHandler } from "../products/testplan/tools/list-cases.js";
 import { createTestPlanListIssuesHandler } from "../products/testplan/tools/list-issues.js";
 import { createTestPlanListPlansHandler } from "../products/testplan/tools/list-plans.js";
@@ -30,6 +35,7 @@ import { createTestPlanListTaskCasesHandler } from "../products/testplan/tools/l
 import { createTestPlanListTaskResultsHandler } from "../products/testplan/tools/list-task-results.js";
 import { createTestPlanListTasksHandler } from "../products/testplan/tools/list-tasks.js";
 import { createTestPlanRunCasesHandler } from "../products/testplan/tools/run-cases.js";
+import { createTestPlanStopTaskExecutionHandler } from "../products/testplan/tools/stop-task-execution.js";
 import { createTestPlanUpdateTaskHandler } from "../products/testplan/tools/update-task.js";
 import { createOfficialApiRequestHandler } from "../products/shared-tools/request-official-api.js";
 import { defineProductTool, registerDefinedTool } from "./product-tool-registry.js";
@@ -100,6 +106,12 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanCreateTaskHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanCreateTaskHandler
   }),
+  "testplan_create_task_relations": defineProductTool({
+    description: "Create CodeArts TestPlan task and case relations",
+    inputSchema: testPlanCreateTaskRelationsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanCreateTaskRelationsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanCreateTaskRelationsHandler
+  }),
   "testplan_update_task": defineProductTool({
     description: "Update CodeArts TestPlan test suite task",
     inputSchema: testPlanUpdateTaskInput,
@@ -123,6 +135,18 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListTaskResultsInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTaskResultsHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListTaskResultsHandler
+  }),
+  "testplan_init_task_execution": defineProductTool({
+    description: "Initialize CodeArts TestPlan test suite task execution",
+    inputSchema: testPlanInitTaskExecutionInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanInitTaskExecutionHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanInitTaskExecutionHandler
+  }),
+  "testplan_stop_task_execution": defineProductTool({
+    description: "Stop CodeArts TestPlan test suite task execution",
+    inputSchema: testPlanStopTaskExecutionInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanStopTaskExecutionHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanStopTaskExecutionHandler
   }),
   "testplan_run_cases": defineProductTool({
     description: "Run CodeArts TestPlan cases",

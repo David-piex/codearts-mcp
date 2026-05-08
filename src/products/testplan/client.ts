@@ -153,6 +153,54 @@ export type TestPlanClient = {
     deleted_count?: number;
     task_uris: string[];
   }>;
+  createTaskRelations: (input: {
+    project_id: string;
+    name: string;
+    uri?: string;
+    stage?: string;
+    number?: string;
+    tags?: string;
+    description?: string;
+    region?: string;
+    version_uri?: string;
+    owner_id?: string;
+    parent_uri?: string;
+    test_case_condition?: string;
+    service_type?: number;
+    module_id?: string;
+    module_name?: string;
+    release_dev?: string;
+    status_code?: number;
+    ext_param?: string;
+    execute_way?: number;
+  }) => Promise<{
+    task_id: string;
+    name?: string;
+    version_uri?: string;
+    status_code?: number;
+    status_name?: string;
+  }>;
+  initTaskExecution: (input: {
+    project_id: string;
+    task_uri: string;
+    release_dev?: string;
+    version_uri?: string;
+    is_query?: boolean;
+  }) => Promise<{
+    result_id?: string;
+    task_uri: string;
+    total?: number;
+    has_more?: boolean;
+  }>;
+  stopTaskExecution: (input: {
+    project_id: string;
+    task_uri: string;
+    result_uri: string;
+  }) => Promise<{
+    result_uri: string;
+    value?: string;
+    stopped: boolean;
+  }>;
   listTaskCases: (input: {
     project_id: string;
     task_id: string;
@@ -634,6 +682,85 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       return {
         deleted_count: readOptionalNumber(payload.deleted_count) ?? readOptionalNumber(payload.count),
         task_uris: input.task_uris
+      };
+    },
+    async createTaskRelations(input) {
+      const response = await _http.post(
+        `/v5/${encodeURIComponent(input.project_id)}/tasks`,
+        {
+          uri: input.uri,
+          name: input.name,
+          stage: input.stage,
+          number: input.number,
+          tags: input.tags,
+          description: input.description,
+          region: input.region,
+          version_uri: input.version_uri,
+          owner_id: input.owner_id,
+          parent_uri: input.parent_uri,
+          test_case_condition: input.test_case_condition,
+          service_type: input.service_type,
+          module_id: input.module_id,
+          module_name: input.module_name,
+          release_dev: input.release_dev,
+          status_code: input.status_code,
+          ext_param: input.ext_param,
+          execute_way: input.execute_way
+        }
+      );
+      const item = readResultPayload(response) as {
+        uri?: string;
+        id?: string;
+        task_uri?: string;
+        name?: string;
+        version_uri?: string;
+        status_code?: number;
+        status_name?: string;
+      };
+
+      return {
+        task_id: String(item.uri ?? item.task_uri ?? item.id ?? input.uri ?? ""),
+        name: item.name ?? input.name,
+        version_uri: item.version_uri ?? input.version_uri,
+        status_code: item.status_code,
+        status_name: item.status_name
+      };
+    },
+    async initTaskExecution(input) {
+      const response = await _http.post(
+        `/v4/${encodeURIComponent(input.project_id)}/tasks/${encodeURIComponent(input.task_uri)}/results/init`,
+        {
+          release_dev: input.release_dev,
+          version_uri: input.version_uri,
+          is_query: input.is_query
+        }
+      );
+      const payload = readResultPayload(response);
+      const value = readEnvelope(payload.value) ?? payload;
+      const taskResult = readEnvelope(value.task_result_vo) ?? readEnvelope(value.task_result) ?? value;
+
+      return {
+        result_id:
+          typeof taskResult.uri === "string"
+            ? taskResult.uri
+            : typeof value.uri === "string"
+              ? value.uri
+              : undefined,
+        task_uri: input.task_uri,
+        total: readTotal(payload, response),
+        has_more: typeof payload.has_more === "boolean" ? payload.has_more : undefined
+      };
+    },
+    async stopTaskExecution(input) {
+      const response = await _http.delete(
+        `/v4/${encodeURIComponent(input.project_id)}/tasks/${encodeURIComponent(input.task_uri)}/results/${encodeURIComponent(input.result_uri)}`
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        result_uri: input.result_uri,
+        value: typeof payload.value === "string" ? payload.value : undefined,
+        stopped: true
       };
     },
     async listTaskCases(input) {

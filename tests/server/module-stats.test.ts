@@ -36,7 +36,7 @@ describe("collectModuleStats", () => {
       { module: "Repo", total: 106, read: 65, write: 41 },
       { module: "Pipeline", total: 78, read: 42, write: 36 },
       { module: "Check", total: 9, read: 5, write: 4 },
-      { module: "TestPlan", total: 15, read: 10, write: 5 },
+      { module: "TestPlan", total: 18, read: 10, write: 8 },
       { module: "Deploy", total: 60, read: 43, write: 17 },
       { module: "Build", total: 23, read: 14, write: 9 },
       { module: "Artifact", total: 19, read: 17, write: 2 }
@@ -48,7 +48,7 @@ describe("collectModuleStats", () => {
       modules: 8,
       total: collectProductToolManifest().length,
       read: 313,
-      write: 198
+      write: 201
     });
   });
 
@@ -71,7 +71,7 @@ describe("collectModuleStats", () => {
         { module: "Repo", total: 106, read: 65, write: 41 },
         { module: "Pipeline", total: 78, read: 42, write: 36 },
         { module: "Check", total: 9, read: 5, write: 4 },
-        { module: "TestPlan", total: 15, read: 10, write: 5 },
+        { module: "TestPlan", total: 18, read: 10, write: 8 },
         { module: "Deploy", total: 60, read: 43, write: 17 },
         { module: "Build", total: 23, read: 14, write: 9 },
         { module: "Artifact", total: 19, read: 17, write: 2 }
@@ -80,7 +80,7 @@ describe("collectModuleStats", () => {
         modules: 8,
         total: collectProductToolManifest().length,
         read: 313,
-        write: 198,
+        write: 201,
         httpTotalWithAuth: collectHttpToolTotal()
       }
     });
