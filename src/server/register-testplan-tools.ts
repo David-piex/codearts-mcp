@@ -7,13 +7,16 @@ import {
   testPlanCreateTaskRelationsInput,
   testPlanGetCaseInput,
   testPlanGetPlanInput,
+  testPlanGetTaskExecutionParamInput,
   testPlanGetTaskInput,
+  testPlanGetTaskResultDetailInput,
   testPlanInitTaskExecutionInput,
   testPlanListCasesInput,
   testPlanListIssuesInput,
   testPlanListPlansInput,
   testPlanListRunsInput,
   testPlanListTaskCasesInput,
+  testPlanListTaskCasesV4Input,
   testPlanListTaskResultsInput,
   testPlanListTasksInput,
   testPlanRunCasesInput,
@@ -25,13 +28,16 @@ import { createTestPlanCreateTaskHandler } from "../products/testplan/tools/crea
 import { createTestPlanCreateTaskRelationsHandler } from "../products/testplan/tools/create-task-relations.js";
 import { createTestPlanGetCaseHandler } from "../products/testplan/tools/get-case.js";
 import { createTestPlanGetPlanHandler } from "../products/testplan/tools/get-plan.js";
+import { createTestPlanGetTaskExecutionParamHandler } from "../products/testplan/tools/get-task-execution-param.js";
 import { createTestPlanGetTaskHandler } from "../products/testplan/tools/get-task.js";
+import { createTestPlanGetTaskResultDetailHandler } from "../products/testplan/tools/get-task-result-detail.js";
 import { createTestPlanInitTaskExecutionHandler } from "../products/testplan/tools/init-task-execution.js";
 import { createTestPlanListCasesHandler } from "../products/testplan/tools/list-cases.js";
 import { createTestPlanListIssuesHandler } from "../products/testplan/tools/list-issues.js";
 import { createTestPlanListPlansHandler } from "../products/testplan/tools/list-plans.js";
 import { createTestPlanListRunsHandler } from "../products/testplan/tools/list-runs.js";
 import { createTestPlanListTaskCasesHandler } from "../products/testplan/tools/list-task-cases.js";
+import { createTestPlanListTaskCasesV4Handler } from "../products/testplan/tools/list-task-cases-v4.js";
 import { createTestPlanListTaskResultsHandler } from "../products/testplan/tools/list-task-results.js";
 import { createTestPlanListTasksHandler } from "../products/testplan/tools/list-tasks.js";
 import { createTestPlanRunCasesHandler } from "../products/testplan/tools/run-cases.js";
@@ -100,6 +106,18 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetTaskHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetTaskHandler
   }),
+  "testplan_get_task_execution_param": defineProductTool({
+    description: "Get CodeArts TestPlan test suite task execution parameters",
+    inputSchema: testPlanGetTaskExecutionParamInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetTaskExecutionParamHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetTaskExecutionParamHandler
+  }),
+  "testplan_get_task_result_detail": defineProductTool({
+    description: "Get CodeArts TestPlan single test suite execution result detail",
+    inputSchema: testPlanGetTaskResultDetailInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetTaskResultDetailHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetTaskResultDetailHandler
+  }),
   "testplan_create_task": defineProductTool({
     description: "Create CodeArts TestPlan test suite task",
     inputSchema: testPlanCreateTaskInput,
@@ -129,6 +147,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListTaskCasesInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTaskCasesHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListTaskCasesHandler
+  }),
+  "testplan_list_task_cases_v4": defineProductTool({
+    description: "List CodeArts TestPlan v4 cases assigned to a test suite task",
+    inputSchema: testPlanListTaskCasesV4Input,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTaskCasesV4Handler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListTaskCasesV4Handler
   }),
   "testplan_list_task_results": defineProductTool({
     description: "List CodeArts TestPlan test suite task execution results",

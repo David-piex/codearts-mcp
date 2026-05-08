@@ -118,6 +118,26 @@ export type TestPlanClient = {
     executor_id?: string;
     executor_name?: string;
   }>;
+  getTaskExecutionParam: (input: {
+    task_uri: string;
+    project_uuid?: string;
+  }) => Promise<{
+    task_uri: string;
+    parameters: Record<string, unknown>;
+  }>;
+  getTaskResultDetail: (input: {
+    project_id: string;
+    task_uri: string;
+    result_uri: string;
+    page: number;
+    page_size: number;
+    result?: string;
+  }) => Promise<{
+    result_id: string;
+    task_result?: Record<string, unknown>;
+    test_results: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
   createTask: (input: {
     project_id: string;
     name: string;
@@ -208,6 +228,27 @@ export type TestPlanClient = {
     page_size: number;
     status?: string[];
     version_uri?: string;
+  }) => Promise<{
+    cases: Array<{
+      case_id: string;
+      name?: string;
+      status?: string;
+      result?: string;
+      executor_id?: string;
+      executor_name?: string;
+    }>;
+    total?: number;
+  }>;
+  listTaskCasesV4: (input: {
+    project_id: string;
+    task_uri: string;
+    page: number;
+    page_size: number;
+    results?: string[];
+    status?: string[];
+    version_uri?: string;
+    owners?: string[];
+    rank_ids?: string[];
   }) => Promise<{
     cases: Array<{
       case_id: string;
@@ -613,6 +654,52 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         executor_name: item.executor_name
       };
     },
+    async getTaskExecutionParam(input) {
+      const query = new URLSearchParams();
+      if (input.project_uuid) {
+        query.set("project_uuid", input.project_uuid);
+      }
+
+      const suffix = query.size ? `?${query.toString()}` : "";
+      const response = await _http.get(
+        `/v4/tasks/${encodeURIComponent(input.task_uri)}/execution-parameters${suffix}`
+      );
+      const payload = readResultPayload(response);
+      const value = readEnvelope(payload.value) ?? payload;
+
+      return {
+        task_uri: input.task_uri,
+        parameters: value
+      };
+    },
+    async getTaskResultDetail(input) {
+      const query = new URLSearchParams({
+        page_no: String(input.page),
+        page_size: String(input.page_size)
+      });
+      if (input.result) {
+        query.set("result", input.result);
+      }
+
+      const response = await _http.get(
+        `/v4/${encodeURIComponent(input.project_id)}/tasks/${encodeURIComponent(input.task_uri)}/results/${encodeURIComponent(input.result_uri)}?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const taskResult =
+        readEnvelope(payload.task_result) ??
+        readEnvelope(payload.task_result_vo) ??
+        readEnvelope(payload.result);
+      const testResults = readArray<Record<string, unknown>>(
+        payload.test_result_list ?? payload.test_results ?? payload.items ?? payload.list
+      );
+
+      return {
+        result_id: input.result_uri,
+        task_result: taskResult,
+        test_results: testResults,
+        total: readTotal(payload, response, testResults.length)
+      };
+    },
     async createTask(input) {
       const response = await _http.post(
         `/v4/${encodeURIComponent(input.project_id)}/tasks`,
@@ -772,6 +859,44 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       };
       const response = await _http.post(
         `/GT3KServer/v4/${encodeURIComponent(input.project_id)}/tasks/${encodeURIComponent(input.task_id)}/testcases/batch-query`,
+        body
+      );
+      const payload = readResultPayload(response);
+      const cases = readArray<{
+        case_uri?: string;
+        uri?: string;
+        id?: string;
+        name?: string;
+        status?: string;
+        result?: string;
+        executor_id?: string;
+        executor_name?: string;
+      }>(payload.testcases ?? payload.cases ?? payload.items ?? payload.list ?? (Array.isArray(response) ? response : []));
+
+      return {
+        cases: cases.map((item) => ({
+          case_id: String(item.case_uri ?? item.uri ?? item.id ?? ""),
+          name: item.name,
+          status: item.status,
+          result: item.result,
+          executor_id: item.executor_id,
+          executor_name: item.executor_name
+        })),
+        total: readTotal(payload, response, Array.isArray(response) ? response.length : undefined)
+      };
+    },
+    async listTaskCasesV4(input) {
+      const body: Record<string, unknown> = {
+        page_no: input.page,
+        page_size: input.page_size,
+        results: input.results,
+        status: input.status,
+        version_uri: input.version_uri,
+        owners: input.owners,
+        rank_ids: input.rank_ids
+      };
+      const response = await _http.post(
+        `/v4/${encodeURIComponent(input.project_id)}/tasks/${encodeURIComponent(input.task_uri)}/testcases/batch-query`,
         body
       );
       const payload = readResultPayload(response);

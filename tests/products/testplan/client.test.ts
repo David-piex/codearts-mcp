@@ -282,6 +282,88 @@ describe("createTestPlanClient", () => {
     });
   });
 
+  it("gets task execution parameters with an optional project query", async () => {
+    let requestedPath = "";
+    const client = createTestPlanClient({
+      get: async (path: string) => {
+        requestedPath = path;
+        return {
+          value: {
+            task_name_regex: "^[a-z]+$",
+            task_name_message: "invalid"
+          }
+        };
+      }
+    } as never);
+
+    const result = await client.getTaskExecutionParam({
+      task_uri: "task-1",
+      project_uuid: "project-1"
+    });
+
+    expect(requestedPath).toBe(
+      "/v4/tasks/task-1/execution-parameters?project_uuid=project-1"
+    );
+    expect(result).toEqual({
+      task_uri: "task-1",
+      parameters: {
+        task_name_regex: "^[a-z]+$",
+        task_name_message: "invalid"
+      }
+    });
+  });
+
+  it("gets task result detail with paging and result filter", async () => {
+    let requestedPath = "";
+    const client = createTestPlanClient({
+      get: async (path: string) => {
+        requestedPath = path;
+        return {
+          result: {
+            task_result: {
+              uri: "result-1",
+              status: "done"
+            },
+            test_result_list: [
+              {
+                uri: "case-result-1",
+                result: "passed"
+              }
+            ],
+            total_count: 1
+          }
+        };
+      }
+    } as never);
+
+    const result = await client.getTaskResultDetail({
+      project_id: "project-1",
+      task_uri: "task-1",
+      result_uri: "result-1",
+      page: 2,
+      page_size: 10,
+      result: "passed"
+    });
+
+    expect(requestedPath).toBe(
+      "/v4/project-1/tasks/task-1/results/result-1?page_no=2&page_size=10&result=passed"
+    );
+    expect(result).toEqual({
+      result_id: "result-1",
+      task_result: {
+        uri: "result-1",
+        status: "done"
+      },
+      test_results: [
+        {
+          uri: "case-result-1",
+          result: "passed"
+        }
+      ],
+      total: 1
+    });
+  });
+
   it("lists task assigned cases through GT3K batch query", async () => {
     let requestedPath = "";
     let requestedBody: Record<string, unknown> | undefined;
@@ -322,6 +404,68 @@ describe("createTestPlanClient", () => {
       page_size: 20,
       status: ["ready"],
       version_uri: "version-1"
+    });
+    expect(result).toEqual({
+      cases: [
+        {
+          case_id: "case-1",
+          name: "login",
+          status: "ready",
+          result: "passed",
+          executor_id: "user-1",
+          executor_name: "alice"
+        }
+      ],
+      total: 1
+    });
+  });
+
+  it("lists task assigned cases through the v4 batch query endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requestedPath = path;
+        requestedBody = body as Record<string, unknown>;
+        return {
+          result: {
+            testcases: [
+              {
+                uri: "case-1",
+                name: "login",
+                status: "ready",
+                result: "passed",
+                executor_id: "user-1",
+                executor_name: "alice"
+              }
+            ],
+            total: 1
+          }
+        };
+      }
+    } as never);
+
+    const result = await client.listTaskCasesV4({
+      project_id: "project-1",
+      task_uri: "task-1",
+      page: 1,
+      page_size: 15,
+      results: ["passed"],
+      status: ["ready"],
+      version_uri: "version-1",
+      owners: ["user-1"],
+      rank_ids: ["rank-1"]
+    });
+
+    expect(requestedPath).toBe("/v4/project-1/tasks/task-1/testcases/batch-query");
+    expect(requestedBody).toEqual({
+      page_no: 1,
+      page_size: 15,
+      results: ["passed"],
+      status: ["ready"],
+      version_uri: "version-1",
+      owners: ["user-1"],
+      rank_ids: ["rank-1"]
     });
     expect(result).toEqual({
       cases: [
