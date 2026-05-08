@@ -388,4 +388,118 @@ describe("createTestPlanClient", () => {
       total: 1
     });
   });
+
+  it("creates and updates test suite tasks using documented v4 endpoints", async () => {
+    const requests: Array<{ method: string; path: string; body?: unknown }> = [];
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requests.push({ method: "POST", path, body });
+        return {
+          result: {
+            uri: "task-1",
+            name: "smoke suite",
+            version_uri: "version-1",
+            status_code: 1,
+            status_name: "ready"
+          }
+        };
+      },
+      put: async (path: string, body?: unknown) => {
+        requests.push({ method: "PUT", path, body });
+        return {
+          result: {
+            uri: "task-1",
+            name: "smoke suite updated",
+            version_uri: "version-1",
+            status_code: 2,
+            status_name: "done"
+          }
+        };
+      }
+    } as never);
+
+    await expect(
+      client.createTask({
+        project_id: "project-1",
+        name: "smoke suite",
+        description: "daily smoke",
+        version_uri: "version-1"
+      })
+    ).resolves.toEqual({
+      task_id: "task-1",
+      name: "smoke suite",
+      version_uri: "version-1",
+      status_code: 1,
+      status_name: "ready"
+    });
+    await expect(
+      client.updateTask({
+        project_id: "project-1",
+        task_uri: "task-1",
+        name: "smoke suite updated",
+        description: "daily smoke updated",
+        version_uri: "version-1"
+      })
+    ).resolves.toEqual({
+      task_id: "task-1",
+      name: "smoke suite updated",
+      version_uri: "version-1",
+      status_code: 2,
+      status_name: "done"
+    });
+    expect(requests).toEqual([
+      {
+        method: "POST",
+        path: "/v4/project-1/tasks",
+        body: {
+          uri: undefined,
+          name: "smoke suite",
+          description: "daily smoke",
+          version_uri: "version-1"
+        }
+      },
+      {
+        method: "PUT",
+        path: "/v4/project-1/tasks/task-1",
+        body: {
+          uri: undefined,
+          name: "smoke suite updated",
+          description: "daily smoke updated",
+          version_uri: "version-1"
+        }
+      }
+    ]);
+  });
+
+  it("batch deletes test suite tasks with a delete request body", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createTestPlanClient({
+      delete: async (path: string, body?: unknown) => {
+        requestedPath = path;
+        requestedBody = body as Record<string, unknown>;
+        return {
+          result: {
+            deleted_count: 2
+          }
+        };
+      }
+    } as never);
+
+    const result = await client.batchDeleteTasks({
+      project_id: "project-1",
+      task_uris: ["task-1", "task-2"],
+      version_uri: "version-1"
+    });
+
+    expect(requestedPath).toBe("/v4/project-1/tasks/batch-delete");
+    expect(requestedBody).toEqual({
+      version_uri: "version-1",
+      task_uris: ["task-1", "task-2"]
+    });
+    expect(result).toEqual({
+      deleted_count: 2,
+      task_uris: ["task-1", "task-2"]
+    });
+  });
 });

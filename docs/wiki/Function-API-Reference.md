@@ -32,8 +32,8 @@
 | 流水线 | 78 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 106 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 201 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
-| 测试计划 | 12 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **510** | |
+| 测试计划 | 15 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
+| **总计** | **513** | |
 
 ## 字段对应
 
@@ -541,6 +541,8 @@
 | `req_upload_ipd_issue_image` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_upload_ipd_issue_image) |
 | `req_upload_work_item_image` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_upload_work_item_image) |
 | `req_validate_module_name` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_validate_module_name) |
+| `testplan_batch_delete_tasks` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_batch_delete_tasks) |
+| `testplan_create_task` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_create_task) |
 | `testplan_get_case` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_case) |
 | `testplan_get_plan` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_plan) |
 | `testplan_get_task` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_task) |
@@ -553,4 +555,5 @@
 | `testplan_list_tasks` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_tasks) |
 | `testplan_request_official_api` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_request_official_api) |
 | `testplan_run_cases` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_run_cases) |
+| `testplan_update_task` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_update_task) |
 

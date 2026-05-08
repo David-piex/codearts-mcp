@@ -46,6 +46,32 @@ export const testPlanGetTaskInput = z.object({
   version_uri: idSchema.optional()
 });
 
+export const testPlanCreateTaskInput = z.object({
+  project_id: idSchema,
+  name: z.string().min(1),
+  uri: idSchema.optional(),
+  description: z.string().optional(),
+  version_uri: idSchema.optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanUpdateTaskInput = z.object({
+  project_id: idSchema,
+  task_uri: idSchema,
+  name: z.string().min(1),
+  uri: idSchema.optional(),
+  description: z.string().optional(),
+  version_uri: idSchema.optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanBatchDeleteTasksInput = z.object({
+  project_id: idSchema,
+  task_uris: z.array(idSchema).min(1),
+  version_uri: idSchema.optional(),
+  dry_run: z.boolean().default(true)
+});
+
 export const testPlanListTaskCasesInput = pagingSchema.extend({
   project_id: idSchema,
   task_id: idSchema,

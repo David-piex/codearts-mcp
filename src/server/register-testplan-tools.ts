@@ -2,6 +2,8 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { officialApiRequestInput } from "../products/official-api.js";
 import { createTestPlanClient } from "../products/testplan/client.js";
 import {
+  testPlanBatchDeleteTasksInput,
+  testPlanCreateTaskInput,
   testPlanGetCaseInput,
   testPlanGetPlanInput,
   testPlanGetTaskInput,
@@ -12,8 +14,11 @@ import {
   testPlanListTaskCasesInput,
   testPlanListTaskResultsInput,
   testPlanListTasksInput,
-  testPlanRunCasesInput
+  testPlanRunCasesInput,
+  testPlanUpdateTaskInput
 } from "../products/testplan/schemas.js";
+import { createTestPlanBatchDeleteTasksHandler } from "../products/testplan/tools/batch-delete-tasks.js";
+import { createTestPlanCreateTaskHandler } from "../products/testplan/tools/create-task.js";
 import { createTestPlanGetCaseHandler } from "../products/testplan/tools/get-case.js";
 import { createTestPlanGetPlanHandler } from "../products/testplan/tools/get-plan.js";
 import { createTestPlanGetTaskHandler } from "../products/testplan/tools/get-task.js";
@@ -25,6 +30,7 @@ import { createTestPlanListTaskCasesHandler } from "../products/testplan/tools/l
 import { createTestPlanListTaskResultsHandler } from "../products/testplan/tools/list-task-results.js";
 import { createTestPlanListTasksHandler } from "../products/testplan/tools/list-tasks.js";
 import { createTestPlanRunCasesHandler } from "../products/testplan/tools/run-cases.js";
+import { createTestPlanUpdateTaskHandler } from "../products/testplan/tools/update-task.js";
 import { createOfficialApiRequestHandler } from "../products/shared-tools/request-official-api.js";
 import { defineProductTool, registerDefinedTool } from "./product-tool-registry.js";
 import type { RateLimiter } from "./rate-limiter.js";
@@ -87,6 +93,24 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanGetTaskInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetTaskHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetTaskHandler
+  }),
+  "testplan_create_task": defineProductTool({
+    description: "Create CodeArts TestPlan test suite task",
+    inputSchema: testPlanCreateTaskInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanCreateTaskHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanCreateTaskHandler
+  }),
+  "testplan_update_task": defineProductTool({
+    description: "Update CodeArts TestPlan test suite task",
+    inputSchema: testPlanUpdateTaskInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanUpdateTaskHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanUpdateTaskHandler
+  }),
+  "testplan_batch_delete_tasks": defineProductTool({
+    description: "Batch delete CodeArts TestPlan test suite tasks",
+    inputSchema: testPlanBatchDeleteTasksInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanBatchDeleteTasksHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanBatchDeleteTasksHandler
   }),
   "testplan_list_task_cases": defineProductTool({
     description: "List CodeArts TestPlan cases assigned to a test suite task",

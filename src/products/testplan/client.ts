@@ -118,6 +118,41 @@ export type TestPlanClient = {
     executor_id?: string;
     executor_name?: string;
   }>;
+  createTask: (input: {
+    project_id: string;
+    name: string;
+    uri?: string;
+    description?: string;
+    version_uri?: string;
+  }) => Promise<{
+    task_id: string;
+    name?: string;
+    version_uri?: string;
+    status_code?: number;
+    status_name?: string;
+  }>;
+  updateTask: (input: {
+    project_id: string;
+    task_uri: string;
+    name: string;
+    uri?: string;
+    description?: string;
+    version_uri?: string;
+  }) => Promise<{
+    task_id: string;
+    name?: string;
+    version_uri?: string;
+    status_code?: number;
+    status_name?: string;
+  }>;
+  batchDeleteTasks: (input: {
+    project_id: string;
+    task_uris: string[];
+    version_uri?: string;
+  }) => Promise<{
+    deleted_count?: number;
+    task_uris: string[];
+  }>;
   listTaskCases: (input: {
     project_id: string;
     task_id: string;
@@ -528,6 +563,77 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         status_name: item.status_name,
         executor_id: item.executor_id,
         executor_name: item.executor_name
+      };
+    },
+    async createTask(input) {
+      const response = await _http.post(
+        `/v4/${encodeURIComponent(input.project_id)}/tasks`,
+        {
+          uri: input.uri,
+          name: input.name,
+          description: input.description,
+          version_uri: input.version_uri
+        }
+      );
+      const item = readResultPayload(response) as {
+        uri?: string;
+        id?: string;
+        task_uri?: string;
+        name?: string;
+        version_uri?: string;
+        status_code?: number;
+        status_name?: string;
+      };
+
+      return {
+        task_id: String(item.uri ?? item.task_uri ?? item.id ?? input.uri ?? ""),
+        name: item.name ?? input.name,
+        version_uri: item.version_uri ?? input.version_uri,
+        status_code: item.status_code,
+        status_name: item.status_name
+      };
+    },
+    async updateTask(input) {
+      const response = await _http.put(
+        `/v4/${encodeURIComponent(input.project_id)}/tasks/${encodeURIComponent(input.task_uri)}`,
+        {
+          uri: input.uri,
+          name: input.name,
+          description: input.description,
+          version_uri: input.version_uri
+        }
+      );
+      const item = readResultPayload(response) as {
+        uri?: string;
+        id?: string;
+        task_uri?: string;
+        name?: string;
+        version_uri?: string;
+        status_code?: number;
+        status_name?: string;
+      };
+
+      return {
+        task_id: String(item.uri ?? item.task_uri ?? item.id ?? input.task_uri),
+        name: item.name ?? input.name,
+        version_uri: item.version_uri ?? input.version_uri,
+        status_code: item.status_code,
+        status_name: item.status_name
+      };
+    },
+    async batchDeleteTasks(input) {
+      const response = await _http.delete(
+        `/v4/${encodeURIComponent(input.project_id)}/tasks/batch-delete`,
+        {
+          version_uri: input.version_uri,
+          task_uris: input.task_uris
+        }
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        deleted_count: readOptionalNumber(payload.deleted_count) ?? readOptionalNumber(payload.count),
+        task_uris: input.task_uris
       };
     },
     async listTaskCases(input) {
