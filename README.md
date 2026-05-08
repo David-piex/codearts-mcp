@@ -104,7 +104,7 @@ node dist/src/server/index.js
       "disabled": false,
       "timeout": 60,
       "type": "streamableHttp",
-      "url": "http://39.106.183.205/mcp"
+      "url": "https://www.codeartsmcp.top/mcp"
     }
   }
 }
