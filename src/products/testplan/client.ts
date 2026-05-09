@@ -184,6 +184,61 @@ export type TestPlanClient = {
     total?: number;
     has_more?: boolean;
   }>;
+  listCustomReports: (input: {
+    project_id: string;
+    version_uri: string;
+    type: string;
+  }) => Promise<{
+    reports: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getCustomTemplate: (input: {
+    project_id: string;
+    version_uri: string;
+  }) => Promise<{
+    template_id: string;
+    name?: string;
+    raw: Record<string, unknown>;
+  }>;
+  listProgressReports: (input: {
+    project_uuid: string;
+    version_uri: string;
+    type: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    reports: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getCaseTemplate: (input: {
+    project_id: string;
+    template_uri: string;
+  }) => Promise<{
+    template_id: string;
+    name?: string;
+    raw: Record<string, unknown>;
+  }>;
+  listTestcaseFields: (input: {
+    project_id: string;
+  }) => Promise<{
+    fields: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listTestTypes: (input: {
+    project_id: string;
+  }) => Promise<{
+    types: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getTestcaseV4: (input: {
+    project_uuid: string;
+    version_uri: string;
+    case_uri: string;
+  }) => Promise<{
+    case_id: string;
+    name?: string;
+    raw: Record<string, unknown>;
+  }>;
   listTesthubBranches: (input: {
     project_id: string;
     page: number;
@@ -898,6 +953,115 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         attributes,
         total: readTotal(payload, response, attributes.length),
         has_more: typeof payload.has_more === "boolean" ? payload.has_more : undefined
+      };
+    },
+    async listCustomReports(input) {
+      const query = new URLSearchParams();
+      appendQueryValue(query, "type", input.type);
+
+      const response = await _http.get(
+        `/v4/${encodeURIComponent(input.project_id)}/versions/${encodeURIComponent(input.version_uri)}/custom-reports?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const reports = readArray<Record<string, unknown>>(
+        payload.value ?? payload.reports ?? payload.custom_reports ?? payload.items ?? payload.list
+      );
+
+      return {
+        reports,
+        total: readTotal(payload, response, reports.length)
+      };
+    },
+    async getCustomTemplate(input) {
+      const response = await _http.get(
+        `/v4/${encodeURIComponent(input.project_id)}/versions/${encodeURIComponent(input.version_uri)}/custom-template`
+      );
+      const payload = readResultPayload(response);
+      const template = readEnvelope(payload.value) ?? payload;
+
+      return {
+        template_id: String(template.uri ?? template.template_uri ?? template.id ?? input.version_uri),
+        name: typeof template.name === "string" ? template.name : undefined,
+        raw: template
+      };
+    },
+    async listProgressReports(input) {
+      const query = new URLSearchParams({
+        type: input.type,
+        page_no: String(input.page),
+        page_size: String(input.page_size)
+      });
+
+      const response = await _http.get(
+        `/v5/${encodeURIComponent(input.project_uuid)}/versions/${encodeURIComponent(input.version_uri)}/progress-reports?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const reports = readArray<Record<string, unknown>>(
+        payload.value ?? payload.reports ?? payload.progress_reports ?? payload.items ?? payload.list
+      );
+
+      return {
+        reports,
+        total: readTotal(payload, response, reports.length)
+      };
+    },
+    async getCaseTemplate(input) {
+      const response = await _http.get(
+        `/v4/${encodeURIComponent(input.project_id)}/case-templates/${encodeURIComponent(input.template_uri)}`
+      );
+      const payload = readResultPayload(response);
+      const template = readEnvelope(payload.value) ?? payload;
+
+      return {
+        template_id: String(template.uri ?? template.template_uri ?? template.id ?? input.template_uri),
+        name: typeof template.name === "string" ? template.name : undefined,
+        raw: template
+      };
+    },
+    async listTestcaseFields(input) {
+      const response = await _http.get(
+        `/v4/${encodeURIComponent(input.project_id)}/testcase/field/batch-query`
+      );
+      const payload = readResultPayload(response);
+      const fields = readArray<Record<string, unknown>>(
+        payload.value ?? payload.fields ?? payload.testcase_fields ?? payload.items ?? payload.list
+      );
+
+      return {
+        fields,
+        total: readTotal(payload, response, fields.length)
+      };
+    },
+    async listTestTypes(input) {
+      const response = await _http.get(
+        `/v4/${encodeURIComponent(input.project_id)}/test-types`
+      );
+      const payload = readResultPayload(response);
+      const types = readArray<Record<string, unknown>>(
+        payload.value ?? payload.types ?? payload.test_types ?? payload.items ?? payload.list
+      );
+
+      return {
+        types,
+        total: readTotal(payload, response, types.length)
+      };
+    },
+    async getTestcaseV4(input) {
+      const query = new URLSearchParams({
+        version_uri: input.version_uri,
+        project_uuid: input.project_uuid
+      });
+
+      const response = await _http.get(
+        `/v4/testcases/${encodeURIComponent(input.case_uri)}?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const testcase = readEnvelope(payload.value) ?? payload;
+
+      return {
+        case_id: String(testcase.uri ?? testcase.case_uri ?? testcase.id ?? input.case_uri),
+        name: typeof testcase.name === "string" ? testcase.name : undefined,
+        raw: testcase
       };
     },
     async listTesthubBranches(input) {

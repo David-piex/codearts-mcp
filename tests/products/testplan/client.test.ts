@@ -1116,4 +1116,194 @@ describe("createTestPlanClient", () => {
       }
     ]);
   });
+
+  it("lists custom reports and loads custom report templates", async () => {
+    const requests: string[] = [];
+    const client = createTestPlanClient({
+      get: async (path: string) => {
+        requests.push(path);
+        if (path.includes("/custom-reports?")) {
+          return {
+            result: {
+              value: [{ uri: "report-1", name: "quality report" }],
+              total: 1
+            }
+          };
+        }
+
+        return {
+          result: {
+            value: {
+              uri: "template-1",
+              name: "quality template"
+            }
+          }
+        };
+      }
+    } as never);
+
+    await expect(
+      client.listCustomReports({
+        project_id: "project-1",
+        version_uri: "version-1",
+        type: "2"
+      })
+    ).resolves.toEqual({
+      reports: [{ uri: "report-1", name: "quality report" }],
+      total: 1
+    });
+    await expect(
+      client.getCustomTemplate({
+        project_id: "project-1",
+        version_uri: "version-1"
+      })
+    ).resolves.toEqual({
+      template_id: "template-1",
+      name: "quality template",
+      raw: {
+        uri: "template-1",
+        name: "quality template"
+      }
+    });
+    expect(requests).toEqual([
+      "/v4/project-1/versions/version-1/custom-reports?type=2",
+      "/v4/project-1/versions/version-1/custom-template"
+    ]);
+  });
+
+  it("lists progress reports through the v5 endpoint", async () => {
+    let requestedPath = "";
+    const client = createTestPlanClient({
+      get: async (path: string) => {
+        requestedPath = path;
+        return {
+          result: {
+            progress_reports: [{ uri: "progress-1", name: "weekly progress" }],
+            total: 1
+          }
+        };
+      }
+    } as never);
+
+    const result = await client.listProgressReports({
+      project_uuid: "project-1",
+      version_uri: "version-1",
+      type: "1",
+      page: 2,
+      page_size: 10
+    });
+
+    expect(requestedPath).toBe(
+      "/v5/project-1/versions/version-1/progress-reports?type=1&page_no=2&page_size=10"
+    );
+    expect(result).toEqual({
+      reports: [{ uri: "progress-1", name: "weekly progress" }],
+      total: 1
+    });
+  });
+
+  it("loads case templates and testcase v4 detail", async () => {
+    const requests: string[] = [];
+    const client = createTestPlanClient({
+      get: async (path: string) => {
+        requests.push(path);
+        if (path.includes("/case-templates/")) {
+          return {
+            result: {
+              value: {
+                uri: "template-1",
+                name: "manual case"
+              }
+            }
+          };
+        }
+
+        return {
+          result: {
+            value: {
+              uri: "case-1",
+              name: "login case"
+            }
+          }
+        };
+      }
+    } as never);
+
+    await expect(
+      client.getCaseTemplate({
+        project_id: "project-1",
+        template_uri: "template-1"
+      })
+    ).resolves.toEqual({
+      template_id: "template-1",
+      name: "manual case",
+      raw: {
+        uri: "template-1",
+        name: "manual case"
+      }
+    });
+    await expect(
+      client.getTestcaseV4({
+        project_uuid: "project-1",
+        version_uri: "version-1",
+        case_uri: "case-1"
+      })
+    ).resolves.toEqual({
+      case_id: "case-1",
+      name: "login case",
+      raw: {
+        uri: "case-1",
+        name: "login case"
+      }
+    });
+    expect(requests).toEqual([
+      "/v4/project-1/case-templates/template-1",
+      "/v4/testcases/case-1?version_uri=version-1&project_uuid=project-1"
+    ]);
+  });
+
+  it("lists testcase fields and test types", async () => {
+    const requests: string[] = [];
+    const client = createTestPlanClient({
+      get: async (path: string) => {
+        requests.push(path);
+        if (path.includes("/field/batch-query")) {
+          return {
+            result: {
+              fields: [{ id: "field-1", name: "priority" }],
+              total: 1
+            }
+          };
+        }
+
+        return {
+          result: {
+            value: [{ code: "manual", name: "Manual" }],
+            total: 1
+          }
+        };
+      }
+    } as never);
+
+    await expect(
+      client.listTestcaseFields({
+        project_id: "project-1"
+      })
+    ).resolves.toEqual({
+      fields: [{ id: "field-1", name: "priority" }],
+      total: 1
+    });
+    await expect(
+      client.listTestTypes({
+        project_id: "project-1"
+      })
+    ).resolves.toEqual({
+      types: [{ code: "manual", name: "Manual" }],
+      total: 1
+    });
+    expect(requests).toEqual([
+      "/v4/project-1/testcase/field/batch-query",
+      "/v4/project-1/test-types"
+    ]);
+  });
 });

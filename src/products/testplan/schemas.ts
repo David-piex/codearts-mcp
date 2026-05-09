@@ -93,6 +93,42 @@ export const testPlanListTestReportQualityAttributesInput = z.object({
   report_uri: idSchema
 });
 
+export const testPlanListCustomReportsInput = z.object({
+  project_id: idSchema,
+  version_uri: idSchema,
+  type: z.string().min(1)
+});
+
+export const testPlanGetCustomTemplateInput = z.object({
+  project_id: idSchema,
+  version_uri: idSchema
+});
+
+export const testPlanListProgressReportsInput = pagingSchema.extend({
+  project_uuid: idSchema,
+  version_uri: idSchema,
+  type: z.string().min(1)
+});
+
+export const testPlanGetCaseTemplateInput = z.object({
+  project_id: idSchema,
+  template_uri: idSchema
+});
+
+export const testPlanListTestcaseFieldsInput = z.object({
+  project_id: idSchema
+});
+
+export const testPlanListTestTypesInput = z.object({
+  project_id: idSchema
+});
+
+export const testPlanGetTestcaseV4Input = z.object({
+  project_uuid: idSchema,
+  version_uri: idSchema,
+  case_uri: idSchema
+});
+
 export const testPlanListTesthubBranchesInput = pagingSchema.extend({
   project_id: idSchema,
   sort_field: z.string().min(1).optional(),

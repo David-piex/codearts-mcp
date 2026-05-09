@@ -229,9 +229,9 @@ node dist/src/server/index.js
 
 <!-- GENERATED:readme-exposure-summary:start -->
 - `8` product modules
-- `526` product tools
+- `533` product tools
 - `2` session/auth tools for shared `http` mode
-- `528` total MCP tools in shared `http` mode
+- `535` total MCP tools in shared `http` mode
 <!-- GENERATED:readme-exposure-summary:end -->
 
 工具读写分布：读操作 177 (63.7%) / 写操作 101 (36.3%)
@@ -243,7 +243,7 @@ node dist/src/server/index.js
 | Repo | 106 | Partial | `25 Full / 0 Reachable / 0 Unpublished / 6 Code` |
 | Pipeline | 78 | Partial | `16 Full / 0 Reachable / 0 Unpublished / 51 Code` |
 | Check | 9 | Validated | `8 Full` |
-| TestPlan | 30 | Partial | `1 Full / 2 Reachable / 4 Unpublished / 0 Code` |
+| TestPlan | 37 | Partial | `1 Full / 2 Reachable / 4 Unpublished / 0 Code` |
 | Deploy | 60 | Partial | Expanded v4 surface with partial live closure; see `docs/wiki/Module-Live-Readiness.md` |
 | Build | 23 | Validated | `22 Full / 0 Reachable / 0 Unpublished / 0 Code` |
 | Artifact | 19 | Partial | `5 Full / 0 Reachable / 7 Unpublished / 0 Code` |
