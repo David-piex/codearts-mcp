@@ -1,6 +1,13 @@
 import { z } from "zod";
 import { idSchema, pagingSchema } from "../../contracts/common-schemas.js";
 
+const queryValueSchema = z.union([
+  z.string(),
+  z.number(),
+  z.boolean(),
+  z.array(z.string())
+]);
+
 export const testPlanListPlansInput = pagingSchema.extend({
   project_id: idSchema
 });
@@ -56,6 +63,34 @@ export const testPlanGetTaskResultDetailInput = pagingSchema.extend({
   task_uri: idSchema,
   result_uri: idSchema,
   result: z.string().min(1).optional()
+});
+
+export const testPlanGetTestReportInput = z.object({
+  project_id: idSchema,
+  version_uri: idSchema,
+  report_uri: idSchema
+});
+
+export const testPlanListTestReportIssuesInput = pagingSchema.extend({
+  project_id: idSchema,
+  version_uri: idSchema,
+  report_uri: idSchema,
+  completed: z.boolean().optional(),
+  query: z.record(z.string(), queryValueSchema).optional()
+});
+
+export const testPlanListTestReportDefectsInput = pagingSchema.extend({
+  project_id: idSchema,
+  version_uri: idSchema,
+  report_uri: idSchema,
+  resolved: z.boolean().optional(),
+  query: z.record(z.string(), queryValueSchema).optional()
+});
+
+export const testPlanListTestReportQualityAttributesInput = z.object({
+  project_id: idSchema,
+  version_uri: idSchema,
+  report_uri: idSchema
 });
 
 export const testPlanCreateTaskInput = z.object({

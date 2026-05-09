@@ -364,6 +364,176 @@ describe("createTestPlanClient", () => {
     });
   });
 
+  it("gets a test report overview", async () => {
+    let requestedPath = "";
+    const client = createTestPlanClient({
+      get: async (path: string) => {
+        requestedPath = path;
+        return {
+          value: {
+            uri: "report-1",
+            name: "quality report",
+            creator: "alice",
+            version_uri: "version-1"
+          }
+        };
+      }
+    } as never);
+
+    const result = await client.getTestReport({
+      project_id: "project-1",
+      version_uri: "version-1",
+      report_uri: "report-1"
+    });
+
+    expect(requestedPath).toBe(
+      "/v4/project-1/versions/version-1/test-reports/report-1"
+    );
+    expect(result).toEqual({
+      report_id: "report-1",
+      name: "quality report",
+      creator: "alice",
+      version_uri: "version-1",
+      raw: {
+        uri: "report-1",
+        name: "quality report",
+        creator: "alice",
+        version_uri: "version-1"
+      }
+    });
+  });
+
+  it("lists test report issue details with filters", async () => {
+    let requestedPath = "";
+    const client = createTestPlanClient({
+      get: async (path: string) => {
+        requestedPath = path;
+        return {
+          total: 1,
+          value: [
+            {
+              uri: "issue-detail-1",
+              name: "login requirement",
+              sequence_id: "REQ-1"
+            }
+          ]
+        };
+      }
+    } as never);
+
+    const result = await client.listTestReportIssues({
+      project_id: "project-1",
+      version_uri: "version-1",
+      report_uri: "report-1",
+      page: 2,
+      page_size: 10,
+      keyword: "login",
+      completed: false,
+      query: {
+        custom_filter: "owner"
+      }
+    });
+
+    expect(requestedPath).toBe(
+      "/v4/project-1/versions/version-1/test-reports/report-1/issues?page_no=2&page_size=10&key_word=login&completed=false&custom_filter=owner"
+    );
+    expect(result).toEqual({
+      issues: [
+        {
+          uri: "issue-detail-1",
+          name: "login requirement",
+          sequence_id: "REQ-1"
+        }
+      ],
+      total: 1
+    });
+  });
+
+  it("lists test report defect details with filters", async () => {
+    let requestedPath = "";
+    const client = createTestPlanClient({
+      get: async (path: string) => {
+        requestedPath = path;
+        return {
+          result: [
+            {
+              workitem_id: "defect-1",
+              name: "login defect",
+              status_name: "closed",
+              owner_name: "alice"
+            }
+          ]
+        };
+      }
+    } as never);
+
+    const result = await client.listTestReportDefects({
+      project_id: "project-1",
+      version_uri: "version-1",
+      report_uri: "report-1",
+      page: 1,
+      page_size: 20,
+      keyword: "login",
+      resolved: true
+    });
+
+    expect(requestedPath).toBe(
+      "/v4/project-1/versions/version-1/test-reports/report-1/defects?page_no=1&page_size=20&key_word=login&resolved=true"
+    );
+    expect(result).toEqual({
+      defects: [
+        {
+          workitem_id: "defect-1",
+          name: "login defect",
+          status_name: "closed",
+          owner_name: "alice"
+        }
+      ],
+      total: 1
+    });
+  });
+
+  it("lists test report quality attributes", async () => {
+    let requestedPath = "";
+    const client = createTestPlanClient({
+      get: async (path: string) => {
+        requestedPath = path;
+        return {
+          total: 1,
+          has_more: false,
+          value: [
+            {
+              uri: "attribute-1",
+              test_report_uri: "report-1",
+              test_type: 1
+            }
+          ]
+        };
+      }
+    } as never);
+
+    const result = await client.listTestReportQualityAttributes({
+      project_id: "project-1",
+      version_uri: "version-1",
+      report_uri: "report-1"
+    });
+
+    expect(requestedPath).toBe(
+      "/v4/project-1/versions/version-1/test-reports/report-1/quality-attributes"
+    );
+    expect(result).toEqual({
+      attributes: [
+        {
+          uri: "attribute-1",
+          test_report_uri: "report-1",
+          test_type: 1
+        }
+      ],
+      total: 1,
+      has_more: false
+    });
+  });
+
   it("lists task assigned cases through GT3K batch query", async () => {
     let requestedPath = "";
     let requestedBody: Record<string, unknown> | undefined;

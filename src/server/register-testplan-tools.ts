@@ -7,6 +7,7 @@ import {
   testPlanCreateTaskRelationsInput,
   testPlanGetCaseInput,
   testPlanGetPlanInput,
+  testPlanGetTestReportInput,
   testPlanGetTaskExecutionParamInput,
   testPlanGetTaskInput,
   testPlanGetTaskResultDetailInput,
@@ -19,6 +20,9 @@ import {
   testPlanListTaskCasesV4Input,
   testPlanListTaskResultsInput,
   testPlanListTasksInput,
+  testPlanListTestReportDefectsInput,
+  testPlanListTestReportIssuesInput,
+  testPlanListTestReportQualityAttributesInput,
   testPlanRunCasesInput,
   testPlanStopTaskExecutionInput,
   testPlanUpdateTaskInput
@@ -28,6 +32,7 @@ import { createTestPlanCreateTaskHandler } from "../products/testplan/tools/crea
 import { createTestPlanCreateTaskRelationsHandler } from "../products/testplan/tools/create-task-relations.js";
 import { createTestPlanGetCaseHandler } from "../products/testplan/tools/get-case.js";
 import { createTestPlanGetPlanHandler } from "../products/testplan/tools/get-plan.js";
+import { createTestPlanGetTestReportHandler } from "../products/testplan/tools/get-test-report.js";
 import { createTestPlanGetTaskExecutionParamHandler } from "../products/testplan/tools/get-task-execution-param.js";
 import { createTestPlanGetTaskHandler } from "../products/testplan/tools/get-task.js";
 import { createTestPlanGetTaskResultDetailHandler } from "../products/testplan/tools/get-task-result-detail.js";
@@ -40,6 +45,9 @@ import { createTestPlanListTaskCasesHandler } from "../products/testplan/tools/l
 import { createTestPlanListTaskCasesV4Handler } from "../products/testplan/tools/list-task-cases-v4.js";
 import { createTestPlanListTaskResultsHandler } from "../products/testplan/tools/list-task-results.js";
 import { createTestPlanListTasksHandler } from "../products/testplan/tools/list-tasks.js";
+import { createTestPlanListTestReportDefectsHandler } from "../products/testplan/tools/list-test-report-defects.js";
+import { createTestPlanListTestReportIssuesHandler } from "../products/testplan/tools/list-test-report-issues.js";
+import { createTestPlanListTestReportQualityAttributesHandler } from "../products/testplan/tools/list-test-report-quality-attributes.js";
 import { createTestPlanRunCasesHandler } from "../products/testplan/tools/run-cases.js";
 import { createTestPlanStopTaskExecutionHandler } from "../products/testplan/tools/stop-task-execution.js";
 import { createTestPlanUpdateTaskHandler } from "../products/testplan/tools/update-task.js";
@@ -118,6 +126,12 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetTaskResultDetailHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetTaskResultDetailHandler
   }),
+  "testplan_get_test_report": defineProductTool({
+    description: "Get CodeArts TestPlan test report overview",
+    inputSchema: testPlanGetTestReportInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetTestReportHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetTestReportHandler
+  }),
   "testplan_create_task": defineProductTool({
     description: "Create CodeArts TestPlan test suite task",
     inputSchema: testPlanCreateTaskInput,
@@ -159,6 +173,24 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListTaskResultsInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTaskResultsHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListTaskResultsHandler
+  }),
+  "testplan_list_test_report_issues": defineProductTool({
+    description: "List CodeArts TestPlan test report requirement issue details",
+    inputSchema: testPlanListTestReportIssuesInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTestReportIssuesHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListTestReportIssuesHandler
+  }),
+  "testplan_list_test_report_defects": defineProductTool({
+    description: "List CodeArts TestPlan test report defect details",
+    inputSchema: testPlanListTestReportDefectsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTestReportDefectsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListTestReportDefectsHandler
+  }),
+  "testplan_list_test_report_quality_attributes": defineProductTool({
+    description: "List CodeArts TestPlan test report quality attributes",
+    inputSchema: testPlanListTestReportQualityAttributesInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTestReportQualityAttributesHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListTestReportQualityAttributesHandler
   }),
   "testplan_init_task_execution": defineProductTool({
     description: "Initialize CodeArts TestPlan test suite task execution",

@@ -138,6 +138,52 @@ export type TestPlanClient = {
     test_results: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  getTestReport: (input: {
+    project_id: string;
+    version_uri: string;
+    report_uri: string;
+  }) => Promise<{
+    report_id: string;
+    name?: string;
+    creator?: string;
+    version_uri?: string;
+    raw: Record<string, unknown>;
+  }>;
+  listTestReportIssues: (input: {
+    project_id: string;
+    version_uri: string;
+    report_uri: string;
+    page: number;
+    page_size: number;
+    keyword?: string;
+    completed?: boolean;
+    query?: Record<string, string | number | boolean | string[]>;
+  }) => Promise<{
+    issues: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listTestReportDefects: (input: {
+    project_id: string;
+    version_uri: string;
+    report_uri: string;
+    page: number;
+    page_size: number;
+    keyword?: string;
+    resolved?: boolean;
+    query?: Record<string, string | number | boolean | string[]>;
+  }) => Promise<{
+    defects: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listTestReportQualityAttributes: (input: {
+    project_id: string;
+    version_uri: string;
+    report_uri: string;
+  }) => Promise<{
+    attributes: Array<Record<string, unknown>>;
+    total?: number;
+    has_more?: boolean;
+  }>;
   createTask: (input: {
     project_id: string;
     name: string;
@@ -337,6 +383,25 @@ function readTotal(payload: Record<string, unknown>, response: unknown, fallback
     readOptionalNumber(envelope.total_count) ??
     fallback
   );
+}
+
+function appendQueryValue(
+  query: URLSearchParams,
+  key: string,
+  value: string | number | boolean | string[] | undefined
+) {
+  if (value === undefined) {
+    return;
+  }
+
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      query.append(key, item);
+    }
+    return;
+  }
+
+  query.set(key, String(value));
 }
 
 export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPlanClient {
@@ -698,6 +763,89 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         task_result: taskResult,
         test_results: testResults,
         total: readTotal(payload, response, testResults.length)
+      };
+    },
+    async getTestReport(input) {
+      const response = await _http.get(
+        `/v4/${encodeURIComponent(input.project_id)}/versions/${encodeURIComponent(input.version_uri)}/test-reports/${encodeURIComponent(input.report_uri)}`
+      );
+      const payload = readResultPayload(response);
+      const report = readEnvelope(payload.value) ?? payload;
+
+      return {
+        report_id: String(report.uri ?? report.report_uri ?? report.id ?? input.report_uri),
+        name: typeof report.name === "string" ? report.name : undefined,
+        creator: typeof report.creator === "string" ? report.creator : undefined,
+        version_uri:
+          typeof report.version_uri === "string" ? report.version_uri : input.version_uri,
+        raw: report
+      };
+    },
+    async listTestReportIssues(input) {
+      const query = new URLSearchParams({
+        page_no: String(input.page),
+        page_size: String(input.page_size)
+      });
+      appendQueryValue(query, "key_word", input.keyword);
+      appendQueryValue(query, "completed", input.completed);
+      if (input.query) {
+        for (const [key, value] of Object.entries(input.query)) {
+          appendQueryValue(query, key, value);
+        }
+      }
+
+      const response = await _http.get(
+        `/v4/${encodeURIComponent(input.project_id)}/versions/${encodeURIComponent(input.version_uri)}/test-reports/${encodeURIComponent(input.report_uri)}/issues?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const issues = readArray<Record<string, unknown>>(
+        payload.value ?? payload.issues ?? payload.result ?? payload.items ?? payload.list
+      );
+
+      return {
+        issues,
+        total: readTotal(payload, response, issues.length)
+      };
+    },
+    async listTestReportDefects(input) {
+      const query = new URLSearchParams({
+        page_no: String(input.page),
+        page_size: String(input.page_size)
+      });
+      appendQueryValue(query, "key_word", input.keyword);
+      appendQueryValue(query, "resolved", input.resolved);
+      if (input.query) {
+        for (const [key, value] of Object.entries(input.query)) {
+          appendQueryValue(query, key, value);
+        }
+      }
+
+      const response = await _http.get(
+        `/v4/${encodeURIComponent(input.project_id)}/versions/${encodeURIComponent(input.version_uri)}/test-reports/${encodeURIComponent(input.report_uri)}/defects?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const defects = readArray<Record<string, unknown>>(
+        payload.result ?? payload.value ?? payload.defects ?? payload.items ?? payload.list
+      );
+
+      return {
+        defects,
+        total: readTotal(payload, response, defects.length)
+      };
+    },
+    async listTestReportQualityAttributes(input) {
+      const response = await _http.get(
+        `/v4/${encodeURIComponent(input.project_id)}/versions/${encodeURIComponent(input.version_uri)}/test-reports/${encodeURIComponent(input.report_uri)}/quality-attributes`
+      );
+      const payload = readResultPayload(response);
+      const attributes = readArray<Record<string, unknown>>(
+        payload.value ?? payload.attributes ?? payload.items ?? payload.list
+      );
+
+      return {
+        attributes,
+        total: readTotal(payload, response, attributes.length),
+        has_more: typeof payload.has_more === "boolean" ? payload.has_more : undefined
       };
     },
     async createTask(input) {
