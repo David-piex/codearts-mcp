@@ -129,6 +129,29 @@ export const testPlanGetTestcaseV4Input = z.object({
   case_uri: idSchema
 });
 
+export const testPlanListTesthubServicesInput = z.object({});
+
+export const testPlanGetTesthubCaseInput = z.object({
+  project_id: idSchema,
+  case_uri: idSchema
+});
+
+export const testPlanGetTesthubCaseByNumberInput = z.object({
+  project_id: idSchema,
+  testcase_number: z.string().min(1),
+  version_uri: idSchema.optional()
+});
+
+export const testPlanListAttachmentsInput = z.object({
+  project_id: idSchema,
+  resource_uri: idSchema,
+  resource_type: z.string().min(1)
+});
+
+export const testPlanListProjectFieldConfigsInput = z.object({
+  project_id: idSchema
+});
+
 export const testPlanListTesthubBranchesInput = pagingSchema.extend({
   project_id: idSchema,
   sort_field: z.string().min(1).optional(),

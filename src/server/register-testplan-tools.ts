@@ -11,17 +11,21 @@ import {
   testPlanGetPlanInput,
   testPlanGetTestReportInput,
   testPlanGetTestcaseV4Input,
+  testPlanGetTesthubCaseByNumberInput,
+  testPlanGetTesthubCaseInput,
   testPlanGetTaskExecutionParamInput,
   testPlanGetTaskInput,
   testPlanGetTaskResultDetailInput,
   testPlanGetTaskSuccessTestCasesCountInput,
   testPlanInitTaskExecutionInput,
+  testPlanListAttachmentsInput,
   testPlanListCustomReportsInput,
   testPlanListIteratorHistoriesInput,
   testPlanListIteratorIssuesInput,
   testPlanListCasesInput,
   testPlanListIssuesInput,
   testPlanListPlansInput,
+  testPlanListProjectFieldConfigsInput,
   testPlanListProgressReportsInput,
   testPlanListRunsInput,
   testPlanListTaskCasesInput,
@@ -35,6 +39,7 @@ import {
   testPlanListTestcaseFieldsInput,
   testPlanListTesthubBranchesInput,
   testPlanListTesthubIteratorsInput,
+  testPlanListTesthubServicesInput,
   testPlanRunCasesInput,
   testPlanStopTaskExecutionInput,
   testPlanUpdateTaskInput
@@ -48,17 +53,21 @@ import { createTestPlanGetCustomTemplateHandler } from "../products/testplan/too
 import { createTestPlanGetPlanHandler } from "../products/testplan/tools/get-plan.js";
 import { createTestPlanGetTestReportHandler } from "../products/testplan/tools/get-test-report.js";
 import { createTestPlanGetTestcaseV4Handler } from "../products/testplan/tools/get-testcase-v4.js";
+import { createTestPlanGetTesthubCaseByNumberHandler } from "../products/testplan/tools/get-testhub-case-by-number.js";
+import { createTestPlanGetTesthubCaseHandler } from "../products/testplan/tools/get-testhub-case.js";
 import { createTestPlanGetTaskExecutionParamHandler } from "../products/testplan/tools/get-task-execution-param.js";
 import { createTestPlanGetTaskHandler } from "../products/testplan/tools/get-task.js";
 import { createTestPlanGetTaskResultDetailHandler } from "../products/testplan/tools/get-task-result-detail.js";
 import { createTestPlanGetTaskSuccessTestCasesCountHandler } from "../products/testplan/tools/get-task-success-testcases-count.js";
 import { createTestPlanInitTaskExecutionHandler } from "../products/testplan/tools/init-task-execution.js";
+import { createTestPlanListAttachmentsHandler } from "../products/testplan/tools/list-attachments.js";
 import { createTestPlanListCustomReportsHandler } from "../products/testplan/tools/list-custom-reports.js";
 import { createTestPlanListIteratorHistoriesHandler } from "../products/testplan/tools/list-iterator-histories.js";
 import { createTestPlanListIteratorIssuesHandler } from "../products/testplan/tools/list-iterator-issues.js";
 import { createTestPlanListCasesHandler } from "../products/testplan/tools/list-cases.js";
 import { createTestPlanListIssuesHandler } from "../products/testplan/tools/list-issues.js";
 import { createTestPlanListPlansHandler } from "../products/testplan/tools/list-plans.js";
+import { createTestPlanListProjectFieldConfigsHandler } from "../products/testplan/tools/list-project-field-configs.js";
 import { createTestPlanListProgressReportsHandler } from "../products/testplan/tools/list-progress-reports.js";
 import { createTestPlanListRunsHandler } from "../products/testplan/tools/list-runs.js";
 import { createTestPlanListTaskCasesHandler } from "../products/testplan/tools/list-task-cases.js";
@@ -72,6 +81,7 @@ import { createTestPlanListTestReportQualityAttributesHandler } from "../product
 import { createTestPlanListTestcaseFieldsHandler } from "../products/testplan/tools/list-testcase-fields.js";
 import { createTestPlanListTesthubBranchesHandler } from "../products/testplan/tools/list-testhub-branches.js";
 import { createTestPlanListTesthubIteratorsHandler } from "../products/testplan/tools/list-testhub-iterators.js";
+import { createTestPlanListTesthubServicesHandler } from "../products/testplan/tools/list-testhub-services.js";
 import { createTestPlanRunCasesHandler } from "../products/testplan/tools/run-cases.js";
 import { createTestPlanStopTaskExecutionHandler } from "../products/testplan/tools/stop-task-execution.js";
 import { createTestPlanUpdateTaskHandler } from "../products/testplan/tools/update-task.js";
@@ -114,6 +124,18 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetTestcaseV4Handler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetTestcaseV4Handler
   }),
+  "testplan_get_testhub_case": defineProductTool({
+    description: "Get CodeArts TestPlan TestHub testcase detail",
+    inputSchema: testPlanGetTesthubCaseInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetTesthubCaseHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetTesthubCaseHandler
+  }),
+  "testplan_get_testhub_case_by_number": defineProductTool({
+    description: "Get CodeArts TestPlan TestHub testcase detail by testcase number",
+    inputSchema: testPlanGetTesthubCaseByNumberInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetTesthubCaseByNumberHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetTesthubCaseByNumberHandler
+  }),
   "testplan_get_case_template": defineProductTool({
     description: "Get CodeArts TestPlan case template detail",
     inputSchema: testPlanGetCaseTemplateInput,
@@ -137,6 +159,18 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListRunsInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListRunsHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListRunsHandler
+  }),
+  "testplan_list_attachments": defineProductTool({
+    description: "List CodeArts TestPlan resource attachments",
+    inputSchema: testPlanListAttachmentsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListAttachmentsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListAttachmentsHandler
+  }),
+  "testplan_list_project_field_configs": defineProductTool({
+    description: "List CodeArts TestPlan project field configurations",
+    inputSchema: testPlanListProjectFieldConfigsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListProjectFieldConfigsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListProjectFieldConfigsHandler
   }),
   "testplan_list_tasks": defineProductTool({
     description: "List CodeArts TestPlan test suite tasks",
@@ -245,6 +279,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListTesthubIteratorsInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTesthubIteratorsHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListTesthubIteratorsHandler
+  }),
+  "testplan_list_testhub_services": defineProductTool({
+    description: "List CodeArts TestPlan TestHub registered services",
+    inputSchema: testPlanListTesthubServicesInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTesthubServicesHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListTesthubServicesHandler
   }),
   "testplan_list_iterator_issues": defineProductTool({
     description: "List CodeArts TestPlan issues under a TestHub iterator",

@@ -1306,4 +1306,122 @@ describe("createTestPlanClient", () => {
       "/v4/project-1/test-types"
     ]);
   });
+
+  it("lists TestHub services and loads TestHub testcase details", async () => {
+    const requests: string[] = [];
+    const client = createTestPlanClient({
+      get: async (path: string) => {
+        requests.push(path);
+        if (path === "/v4/testhub/services") {
+          return {
+            result: {
+              value: [{ service_id: 1, name: "manual" }],
+              total: 1
+            }
+          };
+        }
+        if (path.includes("/testcases/")) {
+          return {
+            result: {
+              value: {
+                testcase_id: "case-1",
+                name: "login case"
+              }
+            }
+          };
+        }
+
+        return {
+          result: {
+            testcase_id: "case-2",
+            name: "logout case"
+          }
+        };
+      }
+    } as never);
+
+    await expect(client.listTesthubServices()).resolves.toEqual({
+      services: [{ service_id: 1, name: "manual" }],
+      total: 1
+    });
+    await expect(
+      client.getTesthubCase({
+        project_id: "project-1",
+        case_uri: "case-1"
+      })
+    ).resolves.toEqual({
+      case_id: "case-1",
+      name: "login case",
+      raw: {
+        testcase_id: "case-1",
+        name: "login case"
+      }
+    });
+    await expect(
+      client.getTesthubCaseByNumber({
+        project_id: "project-1",
+        testcase_number: "TC-001",
+        version_uri: "version-1"
+      })
+    ).resolves.toEqual({
+      case_id: "case-2",
+      name: "logout case",
+      raw: {
+        testcase_id: "case-2",
+        name: "logout case"
+      }
+    });
+    expect(requests).toEqual([
+      "/v4/testhub/services",
+      "/v4/testhub/projects/project-1/testcases/case-1",
+      "/v4/testhub/projects/project-1/testcase?testcase_number=TC-001&version_uri=version-1"
+    ]);
+  });
+
+  it("lists attachments and project field configurations", async () => {
+    const requests: string[] = [];
+    const client = createTestPlanClient({
+      get: async (path: string) => {
+        requests.push(path);
+        if (path.includes("/attachments?")) {
+          return {
+            result: {
+              value: [{ uri: "attachment-1", name: "evidence.png" }],
+              total: 1
+            }
+          };
+        }
+
+        return {
+          result: {
+            value: [{ field_key: "priority", name: "Priority" }],
+            total: 1
+          }
+        };
+      }
+    } as never);
+
+    await expect(
+      client.listAttachments({
+        project_id: "project-1",
+        resource_uri: "case-1",
+        resource_type: "TestCase"
+      })
+    ).resolves.toEqual({
+      attachments: [{ uri: "attachment-1", name: "evidence.png" }],
+      total: 1
+    });
+    await expect(
+      client.listProjectFieldConfigs({
+        project_id: "project-1"
+      })
+    ).resolves.toEqual({
+      fields: [{ field_key: "priority", name: "Priority" }],
+      total: 1
+    });
+    expect(requests).toEqual([
+      "/GT3KServer/v4/project-1/resources/case-1/attachments?resource_type=TestCase",
+      "/GT3KServer/v4/projects/project-1/field-configs"
+    ]);
+  });
 });

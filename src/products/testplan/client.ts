@@ -239,6 +239,41 @@ export type TestPlanClient = {
     name?: string;
     raw: Record<string, unknown>;
   }>;
+  listTesthubServices: () => Promise<{
+    services: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getTesthubCase: (input: {
+    project_id: string;
+    case_uri: string;
+  }) => Promise<{
+    case_id: string;
+    name?: string;
+    raw: Record<string, unknown>;
+  }>;
+  getTesthubCaseByNumber: (input: {
+    project_id: string;
+    testcase_number: string;
+    version_uri?: string;
+  }) => Promise<{
+    case_id: string;
+    name?: string;
+    raw: Record<string, unknown>;
+  }>;
+  listAttachments: (input: {
+    project_id: string;
+    resource_uri: string;
+    resource_type: string;
+  }) => Promise<{
+    attachments: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listProjectFieldConfigs: (input: {
+    project_id: string;
+  }) => Promise<{
+    fields: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
   listTesthubBranches: (input: {
     project_id: string;
     page: number;
@@ -1062,6 +1097,81 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         case_id: String(testcase.uri ?? testcase.case_uri ?? testcase.id ?? input.case_uri),
         name: typeof testcase.name === "string" ? testcase.name : undefined,
         raw: testcase
+      };
+    },
+    async listTesthubServices() {
+      const response = await _http.get("/v4/testhub/services");
+      const payload = readResultPayload(response);
+      const services = readArray<Record<string, unknown>>(
+        payload.value ?? payload.services ?? payload.items ?? payload.list
+      );
+
+      return {
+        services,
+        total: readTotal(payload, response, services.length)
+      };
+    },
+    async getTesthubCase(input) {
+      const response = await _http.get(
+        `/v4/testhub/projects/${encodeURIComponent(input.project_id)}/testcases/${encodeURIComponent(input.case_uri)}`
+      );
+      const payload = readResultPayload(response);
+      const testcase = readEnvelope(payload.value) ?? payload;
+
+      return {
+        case_id: String(testcase.uri ?? testcase.case_uri ?? testcase.testcase_id ?? testcase.id ?? input.case_uri),
+        name: typeof testcase.name === "string" ? testcase.name : undefined,
+        raw: testcase
+      };
+    },
+    async getTesthubCaseByNumber(input) {
+      const query = new URLSearchParams({
+        testcase_number: input.testcase_number
+      });
+      appendQueryValue(query, "version_uri", input.version_uri);
+
+      const response = await _http.get(
+        `/v4/testhub/projects/${encodeURIComponent(input.project_id)}/testcase?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const testcase = readEnvelope(payload.value) ?? payload;
+
+      return {
+        case_id: String(testcase.uri ?? testcase.case_uri ?? testcase.testcase_id ?? testcase.id ?? input.testcase_number),
+        name: typeof testcase.name === "string" ? testcase.name : undefined,
+        raw: testcase
+      };
+    },
+    async listAttachments(input) {
+      const query = new URLSearchParams({
+        resource_type: input.resource_type
+      });
+
+      const response = await _http.get(
+        `/GT3KServer/v4/${encodeURIComponent(input.project_id)}/resources/${encodeURIComponent(input.resource_uri)}/attachments?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const attachments = readArray<Record<string, unknown>>(
+        payload.value ?? payload.attachments ?? payload.items ?? payload.list
+      );
+
+      return {
+        attachments,
+        total: readTotal(payload, response, attachments.length)
+      };
+    },
+    async listProjectFieldConfigs(input) {
+      const response = await _http.get(
+        `/GT3KServer/v4/projects/${encodeURIComponent(input.project_id)}/field-configs`
+      );
+      const payload = readResultPayload(response);
+      const fields = readArray<Record<string, unknown>>(
+        payload.value ?? payload.fields ?? payload.field_configs ?? payload.items ?? payload.list
+      );
+
+      return {
+        fields,
+        total: readTotal(payload, response, fields.length)
       };
     },
     async listTesthubBranches(input) {
