@@ -93,6 +93,35 @@ export const testPlanListTestReportQualityAttributesInput = z.object({
   report_uri: idSchema
 });
 
+export const testPlanListTesthubBranchesInput = pagingSchema.extend({
+  project_id: idSchema,
+  sort_field: z.string().min(1).optional(),
+  sort_type: z.string().min(1).optional()
+});
+
+export const testPlanListTesthubIteratorsInput = pagingSchema.extend({
+  project_id: idSchema,
+  name: z.string().min(1).optional(),
+  current_stage: z.string().min(1).optional(),
+  branch_uri: idSchema.optional()
+});
+
+export const testPlanListIteratorIssuesInput = pagingSchema.extend({
+  project_id: idSchema,
+  iterator_uri: idSchema
+});
+
+export const testPlanListIteratorHistoriesInput = pagingSchema.extend({
+  project_id: idSchema,
+  iterator_uri: idSchema
+});
+
+export const testPlanGetTaskSuccessTestCasesCountInput = z.object({
+  project_uuid: idSchema,
+  version_uri: idSchema,
+  task_uri: idSchema
+});
+
 export const testPlanCreateTaskInput = z.object({
   project_id: idSchema,
   name: z.string().min(1),

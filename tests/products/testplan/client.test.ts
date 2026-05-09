@@ -534,6 +534,183 @@ describe("createTestPlanClient", () => {
     });
   });
 
+  it("lists testhub branches with offset paging", async () => {
+    let requestedPath = "";
+    const client = createTestPlanClient({
+      get: async (path: string) => {
+        requestedPath = path;
+        return {
+          value: [
+            {
+              uri: "branch-1",
+              name: "main"
+            }
+          ],
+          total: 1
+        };
+      }
+    } as never);
+
+    const result = await client.listTesthubBranches({
+      project_id: "project-1",
+      page: 2,
+      page_size: 10,
+      sort_field: "name",
+      sort_type: "DESC"
+    });
+
+    expect(requestedPath).toBe(
+      "/v4/testhub/projects/project-1/branches?offset=10&limit=10&sort_field=name&sort_type=DESC"
+    );
+    expect(result).toEqual({
+      branches: [
+        {
+          uri: "branch-1",
+          name: "main"
+        }
+      ],
+      total: 1
+    });
+  });
+
+  it("lists testhub iterators with filters", async () => {
+    let requestedPath = "";
+    const client = createTestPlanClient({
+      get: async (path: string) => {
+        requestedPath = path;
+        return {
+          iterators: [
+            {
+              uri: "iterator-1",
+              name: "Sprint 1",
+              current_stage: "open"
+            }
+          ],
+          total_count: 1
+        };
+      }
+    } as never);
+
+    const result = await client.listTesthubIterators({
+      project_id: "project-1",
+      page: 1,
+      page_size: 20,
+      name: "Sprint",
+      current_stage: "open",
+      branch_uri: "branch-1"
+    });
+
+    expect(requestedPath).toBe(
+      "/v4/testhub/projects/project-1/iterators?offset=0&limit=20&name=Sprint&current_stage=open&branch_uri=branch-1"
+    );
+    expect(result).toEqual({
+      iterators: [
+        {
+          uri: "iterator-1",
+          name: "Sprint 1",
+          current_stage: "open"
+        }
+      ],
+      total: 1
+    });
+  });
+
+  it("lists iterator issues and histories", async () => {
+    const requests: string[] = [];
+    const client = createTestPlanClient({
+      get: async (path: string) => {
+        requests.push(path);
+        if (path.includes("/issues?")) {
+          return {
+            issues: [
+              {
+                issue_id: "issue-1",
+                subject: "login requirement"
+              }
+            ],
+            total: 1
+          };
+        }
+
+        return {
+          histories: [
+            {
+              history_id: "history-1",
+              operator: "alice",
+              description: "created"
+            }
+          ],
+          total: 1
+        };
+      }
+    } as never);
+
+    await expect(
+      client.listIteratorIssues({
+        project_id: "project-1",
+        iterator_uri: "iterator-1",
+        page: 2,
+        page_size: 5
+      })
+    ).resolves.toEqual({
+      issues: [
+        {
+          issue_id: "issue-1",
+          subject: "login requirement"
+        }
+      ],
+      total: 1
+    });
+    await expect(
+      client.listIteratorHistories({
+        project_id: "project-1",
+        iterator_uri: "iterator-1",
+        page: 1,
+        page_size: 10
+      })
+    ).resolves.toEqual({
+      histories: [
+        {
+          history_id: "history-1",
+          operator: "alice",
+          description: "created"
+        }
+      ],
+      total: 1
+    });
+    expect(requests).toEqual([
+      "/v4/testhub/projects/project-1/iterators/iterator-1/issues?offset=5&limit=5",
+      "/v4/testhub/projects/project-1/iterators/iterator-1/histories?offset=0&limit=10"
+    ]);
+  });
+
+  it("gets successful testcase count under a task", async () => {
+    let requestedPath = "";
+    const client = createTestPlanClient({
+      get: async (path: string) => {
+        requestedPath = path;
+        return {
+          value: 7
+        };
+      }
+    } as never);
+
+    const result = await client.getTaskSuccessTestCasesCount({
+      project_uuid: "project-1",
+      version_uri: "version-1",
+      task_uri: "task-1"
+    });
+
+    expect(requestedPath).toBe(
+      "/v4/project-1/versions/version-1/tasks/task-1/testcases-count"
+    );
+    expect(result).toEqual({
+      task_uri: "task-1",
+      success_count: 7,
+      value: 7
+    });
+  });
+
   it("lists task assigned cases through GT3K batch query", async () => {
     let requestedPath = "";
     let requestedBody: Record<string, unknown> | undefined;

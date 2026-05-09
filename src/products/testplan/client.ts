@@ -184,6 +184,54 @@ export type TestPlanClient = {
     total?: number;
     has_more?: boolean;
   }>;
+  listTesthubBranches: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    sort_field?: string;
+    sort_type?: string;
+  }) => Promise<{
+    branches: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listTesthubIterators: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    name?: string;
+    current_stage?: string;
+    branch_uri?: string;
+  }) => Promise<{
+    iterators: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listIteratorIssues: (input: {
+    project_id: string;
+    iterator_uri: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    issues: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listIteratorHistories: (input: {
+    project_id: string;
+    iterator_uri: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    histories: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getTaskSuccessTestCasesCount: (input: {
+    project_uuid: string;
+    version_uri: string;
+    task_uri: string;
+  }) => Promise<{
+    task_uri: string;
+    success_count?: number;
+    value?: unknown;
+  }>;
   createTask: (input: {
     project_id: string;
     name: string;
@@ -402,6 +450,10 @@ function appendQueryValue(
   }
 
   query.set(key, String(value));
+}
+
+function pageToOffset(page: number, pageSize: number) {
+  return (page - 1) * pageSize;
 }
 
 export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPlanClient {
@@ -846,6 +898,100 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         attributes,
         total: readTotal(payload, response, attributes.length),
         has_more: typeof payload.has_more === "boolean" ? payload.has_more : undefined
+      };
+    },
+    async listTesthubBranches(input) {
+      const query = new URLSearchParams({
+        offset: String(pageToOffset(input.page, input.page_size)),
+        limit: String(input.page_size)
+      });
+      appendQueryValue(query, "sort_field", input.sort_field);
+      appendQueryValue(query, "sort_type", input.sort_type);
+
+      const response = await _http.get(
+        `/v4/testhub/projects/${encodeURIComponent(input.project_id)}/branches?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const branches = readArray<Record<string, unknown>>(
+        payload.branches ?? payload.value ?? payload.items ?? payload.list
+      );
+
+      return {
+        branches,
+        total: readTotal(payload, response, branches.length)
+      };
+    },
+    async listTesthubIterators(input) {
+      const query = new URLSearchParams({
+        offset: String(pageToOffset(input.page, input.page_size)),
+        limit: String(input.page_size)
+      });
+      appendQueryValue(query, "name", input.name);
+      appendQueryValue(query, "current_stage", input.current_stage);
+      appendQueryValue(query, "branch_uri", input.branch_uri);
+
+      const response = await _http.get(
+        `/v4/testhub/projects/${encodeURIComponent(input.project_id)}/iterators?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const iterators = readArray<Record<string, unknown>>(
+        payload.iterators ?? payload.value ?? payload.items ?? payload.list
+      );
+
+      return {
+        iterators,
+        total: readTotal(payload, response, iterators.length)
+      };
+    },
+    async listIteratorIssues(input) {
+      const query = new URLSearchParams({
+        offset: String(pageToOffset(input.page, input.page_size)),
+        limit: String(input.page_size)
+      });
+
+      const response = await _http.get(
+        `/v4/testhub/projects/${encodeURIComponent(input.project_id)}/iterators/${encodeURIComponent(input.iterator_uri)}/issues?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const issues = readArray<Record<string, unknown>>(
+        payload.issues ?? payload.value ?? payload.items ?? payload.list
+      );
+
+      return {
+        issues,
+        total: readTotal(payload, response, issues.length)
+      };
+    },
+    async listIteratorHistories(input) {
+      const query = new URLSearchParams({
+        offset: String(pageToOffset(input.page, input.page_size)),
+        limit: String(input.page_size)
+      });
+
+      const response = await _http.get(
+        `/v4/testhub/projects/${encodeURIComponent(input.project_id)}/iterators/${encodeURIComponent(input.iterator_uri)}/histories?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const histories = readArray<Record<string, unknown>>(
+        payload.histories ?? payload.value ?? payload.items ?? payload.list
+      );
+
+      return {
+        histories,
+        total: readTotal(payload, response, histories.length)
+      };
+    },
+    async getTaskSuccessTestCasesCount(input) {
+      const response = await _http.get(
+        `/v4/${encodeURIComponent(input.project_uuid)}/versions/${encodeURIComponent(input.version_uri)}/tasks/${encodeURIComponent(input.task_uri)}/testcases-count`
+      );
+      const payload = readResultPayload(response);
+      const value = payload.value ?? payload.count ?? payload.success_count;
+
+      return {
+        task_uri: input.task_uri,
+        success_count: readOptionalNumber(value),
+        value
       };
     },
     async createTask(input) {
