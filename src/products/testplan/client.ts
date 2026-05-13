@@ -334,6 +334,15 @@ export type TestPlanClient = {
     name?: string;
     raw: Record<string, unknown>;
   }>;
+  getProjectTestcaseByNumber: (input: {
+    project_id: string;
+    testcase_number: string;
+    version_uri?: string;
+  }) => Promise<{
+    case_id: string;
+    name?: string;
+    raw: Record<string, unknown>;
+  }>;
   listTesthubServices: () => Promise<{
     services: Array<Record<string, unknown>>;
     total?: number;
@@ -1997,6 +2006,30 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
             testcase.case_id ??
             testcase.uri ??
             input.testcase_uri
+        ),
+        name: typeof testcase.name === "string" ? testcase.name : undefined,
+        raw: testcase
+      };
+    },
+    async getProjectTestcaseByNumber(input) {
+      const query = new URLSearchParams({
+        testcase_number: input.testcase_number
+      });
+      appendQueryValue(query, "version_uri", input.version_uri);
+
+      const response = await _http.get(
+        `/v1/projects/${encodeURIComponent(input.project_id)}/testcase?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const testcase = readEnvelope(payload.value) ?? payload;
+
+      return {
+        case_id: String(
+          testcase.testcase_id ??
+            testcase.id ??
+            testcase.case_id ??
+            testcase.uri ??
+            input.testcase_number
         ),
         name: typeof testcase.name === "string" ? testcase.name : undefined,
         raw: testcase

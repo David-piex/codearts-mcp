@@ -544,6 +544,7 @@ export const expectedToolNames = [
   "testplan_get_project_service_repo",
   "testplan_get_project_system_config",
   "testplan_get_project_testcase",
+  "testplan_get_project_testcase_by_number",
   "testplan_get_project_testcase_global_config",
   "testplan_get_project_testcase_v4",
   "testplan_get_rule_check_task_report",

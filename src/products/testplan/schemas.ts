@@ -192,6 +192,12 @@ export const testPlanGetProjectTestcaseV4Input = z.object({
   plan_id: idSchema.optional()
 });
 
+export const testPlanGetProjectTestcaseByNumberInput = z.object({
+  project_id: idSchema,
+  testcase_number: z.string().min(1),
+  version_uri: idSchema.optional()
+});
+
 export const testPlanListTesthubServicesInput = z.object({});
 
 export const testPlanGetTesthubCaseInput = z.object({

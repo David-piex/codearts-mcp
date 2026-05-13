@@ -42,6 +42,7 @@ import {
   testPlanGetLicenseSpecificationInput,
   testPlanGetPlanInput,
   testPlanGetProjectTestcaseInput,
+  testPlanGetProjectTestcaseByNumberInput,
   testPlanGetProjectTestcaseV4Input,
   testPlanGetProjectAdvancedFeatureTrialInput,
   testPlanGetProjectAdvancedFeatureTrustedInput,
@@ -189,6 +190,7 @@ import { createTestPlanGetIteratorHandler } from "../products/testplan/tools/get
 import { createTestPlanGetLicenseSpecificationHandler } from "../products/testplan/tools/get-license-specification.js";
 import { createTestPlanGetPlanHandler } from "../products/testplan/tools/get-plan.js";
 import { createTestPlanGetProjectTestcaseHandler } from "../products/testplan/tools/get-project-testcase.js";
+import { createTestPlanGetProjectTestcaseByNumberHandler } from "../products/testplan/tools/get-project-testcase-by-number.js";
 import { createTestPlanGetProjectTestcaseV4Handler } from "../products/testplan/tools/get-project-testcase-v4.js";
 import { createTestPlanGetProjectAdvancedFeatureTrialHandler } from "../products/testplan/tools/get-project-advanced-feature-trial.js";
 import { createTestPlanGetProjectAdvancedFeatureTrustedHandler } from "../products/testplan/tools/get-project-advanced-feature-trusted.js";
@@ -327,6 +329,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanGetProjectTestcaseInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetProjectTestcaseHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetProjectTestcaseHandler
+  }),
+  "testplan_get_project_testcase_by_number": defineProductTool({
+    description: "Get CodeArts TestPlan project testcase detail by testcase number",
+    inputSchema: testPlanGetProjectTestcaseByNumberInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetProjectTestcaseByNumberHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetProjectTestcaseByNumberHandler
   }),
   "testplan_get_project_testcase_v4": defineProductTool({
     description: "Get CodeArts TestPlan v4 project testcase detail",
