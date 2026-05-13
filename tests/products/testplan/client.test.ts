@@ -2102,13 +2102,26 @@ describe("createTestPlanClient", () => {
       reviews: [{ id: "review-1", reviewer: "alice" }],
       total: 1
     });
+    await expect(
+      client.listV4TestcaseReviews({
+        testcase_uri: "case-1",
+        project_uuid: "project-1",
+        version_uri: "version-1",
+        page: 1,
+        page_size: 10
+      })
+    ).resolves.toEqual({
+      reviews: [{ id: "review-1", reviewer: "alice" }],
+      total: 1
+    });
 
     expect(requests).toEqual([
       "/GT3KServer/v4/project-1/versions/version-1/testcases/change-statistics",
       "/v4/project-1/versions/version-2/testcases/change-statistics",
       "/GT3KServer/v4/project-1/testcases/case-1/comments?page_no=1&page_size=10&version_uri=version-1",
       "/v4/project-1/resources/resource-1/exist?version_uri=version-1&type=3",
-      "/GT3KServer/v4/testcases/case-1/review?project_uuid=project-1&version_uri=version-1&page_no=2&page_size=5"
+      "/GT3KServer/v4/testcases/case-1/review?project_uuid=project-1&version_uri=version-1&page_no=2&page_size=5",
+      "/v4/testcases/case-1/review?project_uuid=project-1&version_uri=version-1&page_no=1&page_size=10"
     ]);
   });
 
@@ -2236,7 +2249,15 @@ describe("createTestPlanClient", () => {
       iterators: [{ uri: "iterator-1", name: "Sprint" }],
       total: 1
     });
+    await expect(client.listGt3kIteratorInfos({ project_id: "project-1" })).resolves.toEqual({
+      iterators: [{ uri: "iterator-1", name: "Sprint" }],
+      total: 1
+    });
     await expect(client.listVisibleServices({ project_id: "project-1" })).resolves.toEqual({
+      services: [{ id: "service-1", name: "EchoTest" }],
+      total: 1
+    });
+    await expect(client.listGt3kVisibleServices({ project_id: "project-1" })).resolves.toEqual({
       services: [{ id: "service-1", name: "EchoTest" }],
       total: 1
     });
@@ -2274,7 +2295,9 @@ describe("createTestPlanClient", () => {
       "/v4/service/offering?serviceNames=testplan",
       "/v1/projects/project-1/environments?offset=10&limit=10",
       "/v4/projects/project-1/iterator-infos",
+      "/GT3KServer/v4/projects/project-1/iterator-infos",
       "/v4/project-1/visible-services",
+      "/GT3KServer/v4/project-1/visible-services",
       "/v4/license/specification",
       "/v4/project-1/resource-number-rule",
       "/v4/projects/project-1/testcase/global/config",
@@ -2315,6 +2338,24 @@ describe("createTestPlanClient", () => {
         if (path.includes("dashboard/run-panel")) {
           return { value: { running: 1 } };
         }
+        if (path.includes("testcase/field/batch-query")) {
+          return { value: [{ uri: "field-1", name: "Priority" }], total: 1 };
+        }
+        if (path.includes("testcase/field/field-1")) {
+          return { value: { uri: "field-1", name: "Priority" } };
+        }
+        if (path.includes("issue-ids")) {
+          return { value: ["issue-1"], total: 1 };
+        }
+        if (path.includes("descendant-uris")) {
+          return { value: ["feature-child-1"], total: 1 };
+        }
+        if (path.includes("free-declaration")) {
+          return { value: true };
+        }
+        if (path.includes("/branches/branch-1")) {
+          return { value: { uri: "branch-1", name: "main" } };
+        }
 
         return { value: [] };
       }
@@ -2333,6 +2374,16 @@ describe("createTestPlanClient", () => {
     await expect(
       client.listProjectServiceRepos({
         project_id: "project-1",
+        page: 1,
+        page_size: 20
+      })
+    ).resolves.toEqual({
+      repos: [{ repository_id: "repo-1", name: "repo" }],
+      total: 1
+    });
+    await expect(
+      client.listGt3kProjectServiceRepos({
+        project_uuid: "project-1",
         page: 1,
         page_size: 20
       })
@@ -2364,7 +2415,15 @@ describe("createTestPlanClient", () => {
       pools: [{ id: "pool-1", name: "default" }],
       total: 1
     });
+    await expect(client.listTestexecutorResourcePools({ project_id: "project-1" })).resolves.toEqual({
+      pools: [{ id: "pool-1", name: "default" }],
+      total: 1
+    });
     await expect(client.listDomainUsageInfos({ project_uuid: "project-1" })).resolves.toEqual({
+      usages: [{ id: "usage-1", name: "storage" }],
+      total: 1
+    });
+    await expect(client.listGt3kDomainUsageInfos({ project_uuid: "project-1" })).resolves.toEqual({
       usages: [{ id: "usage-1", name: "storage" }],
       total: 1
     });
@@ -2391,17 +2450,77 @@ describe("createTestPlanClient", () => {
     await expect(client.getDashboardRunPanel({ service_id: "service-1" })).resolves.toEqual({
       raw: { running: 1 }
     });
+    await expect(client.listGt3kTestcaseFields({ project_id: "project-1" })).resolves.toEqual({
+      fields: [{ uri: "field-1", name: "Priority" }],
+      total: 1
+    });
+    await expect(client.getGt3kFreeDeclaration()).resolves.toEqual({
+      value: true,
+      raw: { value: true }
+    });
+    await expect(
+      client.getBranch({
+        branch_uri: "branch-1",
+        project_uuid: "project-1"
+      })
+    ).resolves.toEqual({
+      raw: { uri: "branch-1", name: "main" }
+    });
+    await expect(
+      client.getGt3kBranch({
+        branch_id: "branch-1",
+        project_uuid: "project-1"
+      })
+    ).resolves.toEqual({
+      raw: { uri: "branch-1", name: "main" }
+    });
+    await expect(
+      client.listIteratorIssueIds({
+        project_id: "project-1",
+        iterator_uri: "iterator-1"
+      })
+    ).resolves.toEqual({
+      issue_ids: [{ value: "issue-1" }],
+      total: 1
+    });
+    await expect(
+      client.listFeatureDescendantUris({
+        project_id: "project-1",
+        feature_uri: "feature-1"
+      })
+    ).resolves.toEqual({
+      uris: [{ value: "feature-child-1" }],
+      total: 1
+    });
+    await expect(
+      client.getTestcaseField({
+        project_id: "project-1",
+        uri: "field-1"
+      })
+    ).resolves.toEqual({
+      raw: { uri: "field-1", name: "Priority" }
+    });
 
     expect(requests).toEqual([
       "/v4/project-1/versions/version-1/test-reports/report-1/custom-infos",
       "/v4/projects/project-1/service-repos?page_no=1&page_size=20",
+      "/GT3KServer/v4/projects/project-1/service-repos?page_no=1&page_size=20",
       "/v4/projects/project-1/services/7/repo",
       "/v4/project-1/tasks/task-1/defects/batch-query?page_no=2&page_size=10&version_uri=version-1",
       "/v4/project-1/resource-pools",
+      "/testexecutor/v4/project-1/resource-pools",
       "/v4/domain/usage?project_uuid=project-1",
+      "/GT3KServer/v4/domain/usage?project_uuid=project-1",
       "/v1/projects/service-1/service/config?key=task_clear_config_key&type=ServiceConfig",
       "/v1/projects/service-1/alert-templates?name=default&page_num=3&page_size=15",
-      "/v2/projects/service-1/dashboard/run-panel"
+      "/v2/projects/service-1/dashboard/run-panel",
+      "/GT3KServer/v4/project-1/testcase/field/batch-query",
+      "/GT3KServer/v4/free-declaration",
+      "/v4/branches/branch-1?project_uuid=project-1",
+      "/GT3KServer/v4/branches/branch-1?project_uuid=project-1",
+      "/v4/project-1/iterators/iterator-1/issue-ids",
+      "/v4/project-1/features/feature-1/descendant-uris",
+      "/v4/project-1/testcase/field/field-1"
     ]);
   });
 });

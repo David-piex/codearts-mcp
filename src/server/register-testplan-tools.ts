@@ -13,6 +13,7 @@ import {
   testPlanGetDomainDetailInfoInput,
   testPlanGetDomainFrozenInfoInput,
   testPlanGetDomainNeedPopupInput,
+  testPlanGetBranchInput,
   testPlanGetCaseTemplateInput,
   testPlanGetCaseInput,
   testPlanGetCurrentUserPackagePermissionInput,
@@ -21,7 +22,9 @@ import {
   testPlanGetDashboardRunPanelInput,
   testPlanGetDomainUserCountInput,
   testPlanGetFreeDeclarationInput,
+  testPlanGetGt3kBranchInput,
   testPlanGetGt3kDomainInfoInput,
+  testPlanGetGt3kFreeDeclarationInput,
   testPlanGetGt3kTestcaseChangeStatisticsInput,
   testPlanGetGt3kUserInfoDomainInput,
   testPlanGetImageCapacityWarningInput,
@@ -59,10 +62,17 @@ import {
   testPlanListCurrentUserTestcasesInput,
   testPlanListDomainUsageInfosInput,
   testPlanListEnvironmentsInput,
+  testPlanListFeatureDescendantUrisInput,
   testPlanListGt3kBranchesInput,
   testPlanListGt3kCurrentUserTestcasesInput,
+  testPlanListGt3kDomainUsageInfosInput,
+  testPlanListGt3kIteratorInfosInput,
+  testPlanListGt3kProjectServiceReposInput,
+  testPlanListGt3kTestcaseFieldsInput,
+  testPlanListGt3kVisibleServicesInput,
   testPlanListIteratorInfosInput,
   testPlanListIteratorHistoriesInput,
+  testPlanListIteratorIssueIdsInput,
   testPlanListIteratorIssuesInput,
   testPlanListCasesInput,
   testPlanListIssuesInput,
@@ -89,6 +99,8 @@ import {
   testPlanListTestReportCustomInfosInput,
   testPlanListTestReportIssuesInput,
   testPlanListTestReportQualityAttributesInput,
+  testPlanListTestexecutorResourcePoolsInput,
+  testPlanGetTestcaseFieldInput,
   testPlanListTestcaseFieldsInput,
   testPlanListTestcaseReviewsInput,
   testPlanListTesthubBranchesInput,
@@ -96,6 +108,7 @@ import {
   testPlanListTesthubIteratorsV5Input,
   testPlanListTesthubServicesInput,
   testPlanListV4BranchesInput,
+  testPlanListV4TestcaseReviewsInput,
   testPlanListVisibleServicesInput,
   testPlanListTestReportsInput,
   testPlanGetServiceConfigInput,
@@ -108,6 +121,7 @@ import { createTestPlanCheckProjectMemberExistsHandler } from "../products/testp
 import { createTestPlanCheckResourceExistsHandler } from "../products/testplan/tools/check-resource-exists.js";
 import { createTestPlanCheckUserDefinedConfigUsedHandler } from "../products/testplan/tools/check-user-defined-config-used.js";
 import { createTestPlanBatchDeleteTasksHandler } from "../products/testplan/tools/batch-delete-tasks.js";
+import { createTestPlanGetBranchHandler } from "../products/testplan/tools/get-branch.js";
 import { createTestPlanGetCaseTemplateHandler } from "../products/testplan/tools/get-case-template.js";
 import { createTestPlanCreateTaskHandler } from "../products/testplan/tools/create-task.js";
 import { createTestPlanCreateTaskRelationsHandler } from "../products/testplan/tools/create-task-relations.js";
@@ -122,7 +136,9 @@ import { createTestPlanGetDomainFrozenInfoHandler } from "../products/testplan/t
 import { createTestPlanGetDomainNeedPopupHandler } from "../products/testplan/tools/get-domain-need-popup.js";
 import { createTestPlanGetDomainUserCountHandler } from "../products/testplan/tools/get-domain-user-count.js";
 import { createTestPlanGetFreeDeclarationHandler } from "../products/testplan/tools/get-free-declaration.js";
+import { createTestPlanGetGt3kBranchHandler } from "../products/testplan/tools/get-gt3k-branch.js";
 import { createTestPlanGetGt3kDomainInfoHandler } from "../products/testplan/tools/get-gt3k-domain-info.js";
+import { createTestPlanGetGt3kFreeDeclarationHandler } from "../products/testplan/tools/get-gt3k-free-declaration.js";
 import { createTestPlanGetGt3kTestcaseChangeStatisticsHandler } from "../products/testplan/tools/get-gt3k-testcase-change-statistics.js";
 import { createTestPlanGetGt3kUserInfoDomainHandler } from "../products/testplan/tools/get-gt3k-user-info-domain.js";
 import { createTestPlanGetImageCapacityWarningHandler } from "../products/testplan/tools/get-image-capacity-warning.js";
@@ -149,6 +165,7 @@ import { createTestPlanGetTaskHandler } from "../products/testplan/tools/get-tas
 import { createTestPlanGetTaskResultDetailHandler } from "../products/testplan/tools/get-task-result-detail.js";
 import { createTestPlanGetTaskSuccessTestCasesCountHandler } from "../products/testplan/tools/get-task-success-testcases-count.js";
 import { createTestPlanGetTestcaseChangeStatisticsHandler } from "../products/testplan/tools/get-testcase-change-statistics.js";
+import { createTestPlanGetTestcaseFieldHandler } from "../products/testplan/tools/get-testcase-field.js";
 import { createTestPlanGetUserDisclaimerHandler } from "../products/testplan/tools/get-user-disclaimer.js";
 import { createTestPlanGetUserInfoDomainHandler } from "../products/testplan/tools/get-user-info-domain.js";
 import { createTestPlanGetUserPackagePermissionHandler } from "../products/testplan/tools/get-user-package-permission.js";
@@ -160,10 +177,17 @@ import { createTestPlanListCustomTemplateReportsHandler } from "../products/test
 import { createTestPlanListCurrentUserTestcasesHandler } from "../products/testplan/tools/list-current-user-testcases.js";
 import { createTestPlanListDomainUsageInfosHandler } from "../products/testplan/tools/list-domain-usage-infos.js";
 import { createTestPlanListEnvironmentsHandler } from "../products/testplan/tools/list-environments.js";
+import { createTestPlanListFeatureDescendantUrisHandler } from "../products/testplan/tools/list-feature-descendant-uris.js";
 import { createTestPlanListGt3kBranchesHandler } from "../products/testplan/tools/list-gt3k-branches.js";
 import { createTestPlanListGt3kCurrentUserTestcasesHandler } from "../products/testplan/tools/list-gt3k-current-user-testcases.js";
+import { createTestPlanListGt3kDomainUsageInfosHandler } from "../products/testplan/tools/list-gt3k-domain-usage-infos.js";
+import { createTestPlanListGt3kIteratorInfosHandler } from "../products/testplan/tools/list-gt3k-iterator-infos.js";
+import { createTestPlanListGt3kProjectServiceReposHandler } from "../products/testplan/tools/list-gt3k-project-service-repos.js";
+import { createTestPlanListGt3kTestcaseFieldsHandler } from "../products/testplan/tools/list-gt3k-testcase-fields.js";
+import { createTestPlanListGt3kVisibleServicesHandler } from "../products/testplan/tools/list-gt3k-visible-services.js";
 import { createTestPlanListIteratorInfosHandler } from "../products/testplan/tools/list-iterator-infos.js";
 import { createTestPlanListIteratorHistoriesHandler } from "../products/testplan/tools/list-iterator-histories.js";
+import { createTestPlanListIteratorIssueIdsHandler } from "../products/testplan/tools/list-iterator-issue-ids.js";
 import { createTestPlanListIteratorIssuesHandler } from "../products/testplan/tools/list-iterator-issues.js";
 import { createTestPlanListCasesHandler } from "../products/testplan/tools/list-cases.js";
 import { createTestPlanListIssuesHandler } from "../products/testplan/tools/list-issues.js";
@@ -192,12 +216,14 @@ import { createTestPlanListTestReportQualityAttributesHandler } from "../product
 import { createTestPlanListTestcaseCommentsHandler } from "../products/testplan/tools/list-testcase-comments.js";
 import { createTestPlanListTestcaseFieldsHandler } from "../products/testplan/tools/list-testcase-fields.js";
 import { createTestPlanListTestcaseReviewsHandler } from "../products/testplan/tools/list-testcase-reviews.js";
+import { createTestPlanListTestexecutorResourcePoolsHandler } from "../products/testplan/tools/list-testexecutor-resource-pools.js";
 import { createTestPlanListTesthubBranchesHandler } from "../products/testplan/tools/list-testhub-branches.js";
 import { createTestPlanListTesthubIteratorsHandler } from "../products/testplan/tools/list-testhub-iterators.js";
 import { createTestPlanListTesthubIteratorsV5Handler } from "../products/testplan/tools/list-testhub-iterators-v5.js";
 import { createTestPlanListTesthubServicesHandler } from "../products/testplan/tools/list-testhub-services.js";
 import { createTestPlanListTestReportsHandler } from "../products/testplan/tools/list-test-reports.js";
 import { createTestPlanListV4BranchesHandler } from "../products/testplan/tools/list-v4-branches.js";
+import { createTestPlanListV4TestcaseReviewsHandler } from "../products/testplan/tools/list-v4-testcase-reviews.js";
 import { createTestPlanListVisibleServicesHandler } from "../products/testplan/tools/list-visible-services.js";
 import { createTestPlanGetServiceConfigHandler } from "../products/testplan/tools/get-service-config.js";
 import { createTestPlanRunCasesHandler } from "../products/testplan/tools/run-cases.js";
@@ -344,11 +370,23 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListIteratorInfosHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListIteratorInfosHandler
   }),
+  "testplan_list_gt3k_iterator_infos": defineProductTool({
+    description: "List CodeArts TestPlan GT3K iterator information",
+    inputSchema: testPlanListGt3kIteratorInfosInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListGt3kIteratorInfosHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListGt3kIteratorInfosHandler
+  }),
   "testplan_list_visible_services": defineProductTool({
     description: "List CodeArts TestPlan visible third-party services",
     inputSchema: testPlanListVisibleServicesInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListVisibleServicesHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListVisibleServicesHandler
+  }),
+  "testplan_list_gt3k_visible_services": defineProductTool({
+    description: "List CodeArts TestPlan GT3K visible third-party services",
+    inputSchema: testPlanListGt3kVisibleServicesInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListGt3kVisibleServicesHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListGt3kVisibleServicesHandler
   }),
   "testplan_get_license_specification": defineProductTool({
     description: "Get CodeArts TestPlan license specification",
@@ -392,6 +430,12 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListProjectServiceReposHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListProjectServiceReposHandler
   }),
+  "testplan_list_gt3k_project_service_repos": defineProductTool({
+    description: "List CodeArts TestPlan GT3K project service repository information",
+    inputSchema: testPlanListGt3kProjectServiceReposInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListGt3kProjectServiceReposHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListGt3kProjectServiceReposHandler
+  }),
   "testplan_get_project_service_repo": defineProductTool({
     description: "Get CodeArts TestPlan project service repository information",
     inputSchema: testPlanGetProjectServiceRepoInput,
@@ -410,11 +454,23 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListResourcePoolsHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListResourcePoolsHandler
   }),
+  "testplan_list_testexecutor_resource_pools": defineProductTool({
+    description: "List CodeArts TestPlan TestExecutor resource pools",
+    inputSchema: testPlanListTestexecutorResourcePoolsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTestexecutorResourcePoolsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListTestexecutorResourcePoolsHandler
+  }),
   "testplan_list_domain_usage_infos": defineProductTool({
     description: "List CodeArts TestPlan domain usage warning information",
     inputSchema: testPlanListDomainUsageInfosInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListDomainUsageInfosHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListDomainUsageInfosHandler
+  }),
+  "testplan_list_gt3k_domain_usage_infos": defineProductTool({
+    description: "List CodeArts TestPlan GT3K domain usage warning information",
+    inputSchema: testPlanListGt3kDomainUsageInfosInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListGt3kDomainUsageInfosHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListGt3kDomainUsageInfosHandler
   }),
   "testplan_get_service_config": defineProductTool({
     description: "Get CodeArts TestPlan service configuration by key",
@@ -446,6 +502,12 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetFreeDeclarationHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetFreeDeclarationHandler
   }),
+  "testplan_get_gt3k_free_declaration": defineProductTool({
+    description: "Get CodeArts TestPlan GT3K free declaration record for the current user",
+    inputSchema: testPlanGetGt3kFreeDeclarationInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetGt3kFreeDeclarationHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetGt3kFreeDeclarationHandler
+  }),
   "testplan_get_gt3k_user_info_domain": defineProductTool({
     description: "Get CodeArts TestPlan GT3K encrypted user domain information",
     inputSchema: testPlanGetGt3kUserInfoDomainInput,
@@ -464,11 +526,23 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListGt3kBranchesHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListGt3kBranchesHandler
   }),
+  "testplan_get_gt3k_branch": defineProductTool({
+    description: "Get CodeArts TestPlan GT3K branch detail",
+    inputSchema: testPlanGetGt3kBranchInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetGt3kBranchHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetGt3kBranchHandler
+  }),
   "testplan_list_v4_branches": defineProductTool({
     description: "List CodeArts TestPlan v4 branches",
     inputSchema: testPlanListV4BranchesInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListV4BranchesHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListV4BranchesHandler
+  }),
+  "testplan_get_branch": defineProductTool({
+    description: "Get CodeArts TestPlan branch detail",
+    inputSchema: testPlanGetBranchInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetBranchHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetBranchHandler
   }),
   "testplan_get_gt3k_domain_info": defineProductTool({
     description: "Get CodeArts TestPlan GT3K domain order information",
@@ -517,6 +591,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListTestcaseReviewsInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTestcaseReviewsHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListTestcaseReviewsHandler
+  }),
+  "testplan_list_v4_testcase_reviews": defineProductTool({
+    description: "List CodeArts TestPlan v4 testcase review records",
+    inputSchema: testPlanListV4TestcaseReviewsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListV4TestcaseReviewsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListV4TestcaseReviewsHandler
   }),
   "testplan_list_release_versions": defineProductTool({
     description: "List CodeArts TestPlan release versions for testcase or task resources",
@@ -764,6 +844,12 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListIteratorIssuesHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListIteratorIssuesHandler
   }),
+  "testplan_list_iterator_issue_ids": defineProductTool({
+    description: "List CodeArts TestPlan issue IDs under an iterator",
+    inputSchema: testPlanListIteratorIssueIdsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListIteratorIssueIdsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListIteratorIssueIdsHandler
+  }),
   "testplan_list_iterator_histories": defineProductTool({
     description: "List CodeArts TestPlan operation histories under a TestHub iterator",
     inputSchema: testPlanListIteratorHistoriesInput,
@@ -793,6 +879,24 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListTestcaseFieldsInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTestcaseFieldsHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListTestcaseFieldsHandler
+  }),
+  "testplan_list_gt3k_testcase_fields": defineProductTool({
+    description: "List CodeArts TestPlan GT3K testcase fields",
+    inputSchema: testPlanListGt3kTestcaseFieldsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListGt3kTestcaseFieldsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListGt3kTestcaseFieldsHandler
+  }),
+  "testplan_get_testcase_field": defineProductTool({
+    description: "Get CodeArts TestPlan testcase field detail",
+    inputSchema: testPlanGetTestcaseFieldInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetTestcaseFieldHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetTestcaseFieldHandler
+  }),
+  "testplan_list_feature_descendant_uris": defineProductTool({
+    description: "List CodeArts TestPlan feature descendant URIs",
+    inputSchema: testPlanListFeatureDescendantUrisInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListFeatureDescendantUrisHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListFeatureDescendantUrisHandler
   }),
   "testplan_list_test_types": defineProductTool({
     description: "List CodeArts TestPlan test types",

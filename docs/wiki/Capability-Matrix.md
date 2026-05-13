@@ -14,7 +14,7 @@
 | Repo | 65 | 41 | Partial | The original 25 Repo collaboration tools have real AK/SK validation; the 6 repository import / remote mirror tools are implemented and unit-tested, but still need dedicated live samples |
 | Pipeline | 42 | 36 | Partial | The original execution surface is live-validated, but the 51 newly added extension-endpoint/group/variable-group/rule-management/tag-management/tenant-strategy/project-strategy tools still need real AK/SK validation |
 | Check | 5 | 4 | Validated | Tool-level live closure is complete |
-| TestPlan | 93 | 8 | Partial | `get_plan / list_runs / get_case / run_cases` are unpublished in Beijing 4 |
+| TestPlan | 106 | 8 | Partial | `get_plan / list_runs / get_case / run_cases` are unpublished in Beijing 4 |
 | Deploy | 43 | 17 | Partial | Expanded Deploy v4 environment/record/variable surface is implemented, but execute-class write paths still require dedicated runtime samples |
 | Build | 14 | 9 | Validated | All 22 tools are now fully live-validated, including the 3 helper/configuration tools via real dry-run previews |
 | Artifact | 17 | 2 | Partial | 5 tools are fully live-validated, and 7 routes are now re-confirmed by live smoke as unpublished in Beijing 4 |

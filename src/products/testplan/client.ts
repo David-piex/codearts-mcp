@@ -662,6 +662,80 @@ export type TestPlanClient = {
   getDashboardRunPanel: (input: { service_id: string }) => Promise<{
     raw: Record<string, unknown>;
   }>;
+  listGt3kProjectServiceRepos: (input: {
+    project_uuid: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    repos: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listGt3kIteratorInfos: (input: { project_id: string }) => Promise<{
+    iterators: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listGt3kVisibleServices: (input: { project_id: string }) => Promise<{
+    services: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listGt3kDomainUsageInfos: (input: { project_uuid: string }) => Promise<{
+    usages: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listGt3kTestcaseFields: (input: { project_id: string }) => Promise<{
+    fields: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getGt3kFreeDeclaration: () => Promise<{
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  listV4TestcaseReviews: (input: {
+    testcase_uri: string;
+    project_uuid: string;
+    version_uri: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    reviews: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getBranch: (input: {
+    branch_uri: string;
+    project_uuid: string;
+  }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  getGt3kBranch: (input: {
+    branch_id: string;
+    project_uuid: string;
+  }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  listIteratorIssueIds: (input: {
+    project_id: string;
+    iterator_uri: string;
+  }) => Promise<{
+    issue_ids: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listFeatureDescendantUris: (input: {
+    project_id: string;
+    feature_uri: string;
+  }) => Promise<{
+    uris: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getTestcaseField: (input: {
+    project_id: string;
+    uri: string;
+  }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  listTestexecutorResourcePools: (input: { project_id: string }) => Promise<{
+    pools: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
   listTesthubBranches: (input: {
     project_id: string;
     page: number;
@@ -2453,6 +2527,195 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
 
       return {
         raw: panel
+      };
+    },
+    async listGt3kProjectServiceRepos(input) {
+      const query = new URLSearchParams({
+        page_no: String(input.page),
+        page_size: String(input.page_size)
+      });
+
+      const response = await _http.get(
+        `/GT3KServer/v4/projects/${encodeURIComponent(input.project_uuid)}/service-repos?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const repos = readArray<Record<string, unknown>>(
+        payload.value ?? payload.repos ?? payload.items ?? payload.list
+      );
+
+      return {
+        repos,
+        total: readTotal(payload, response, repos.length)
+      };
+    },
+    async listGt3kIteratorInfos(input) {
+      const response = await _http.get(
+        `/GT3KServer/v4/projects/${encodeURIComponent(input.project_id)}/iterator-infos`
+      );
+      const payload = readResultPayload(response);
+      const iterators = readArray<Record<string, unknown>>(
+        payload.value ?? payload.iterators ?? payload.items ?? payload.list
+      );
+
+      return {
+        iterators,
+        total: readTotal(payload, response, iterators.length)
+      };
+    },
+    async listGt3kVisibleServices(input) {
+      const response = await _http.get(
+        `/GT3KServer/v4/${encodeURIComponent(input.project_id)}/visible-services`
+      );
+      const payload = readResultPayload(response);
+      const services = readArray<Record<string, unknown>>(
+        payload.value ?? payload.services ?? payload.items ?? payload.list
+      );
+
+      return {
+        services,
+        total: readTotal(payload, response, services.length)
+      };
+    },
+    async listGt3kDomainUsageInfos(input) {
+      const query = new URLSearchParams({
+        project_uuid: input.project_uuid
+      });
+
+      const response = await _http.get(`/GT3KServer/v4/domain/usage?${query.toString()}`);
+      const payload = readResultPayload(response);
+      const usages = readArray<Record<string, unknown>>(
+        payload.value ?? payload.usages ?? payload.items ?? payload.list
+      );
+
+      return {
+        usages,
+        total: readTotal(payload, response, usages.length)
+      };
+    },
+    async listGt3kTestcaseFields(input) {
+      const response = await _http.get(
+        `/GT3KServer/v4/${encodeURIComponent(input.project_id)}/testcase/field/batch-query`
+      );
+      const payload = readResultPayload(response);
+      const fields = readArray<Record<string, unknown>>(
+        payload.value ?? payload.fields ?? payload.testcase_fields ?? payload.items ?? payload.list
+      );
+
+      return {
+        fields,
+        total: readTotal(payload, response, fields.length)
+      };
+    },
+    async getGt3kFreeDeclaration() {
+      const response = await _http.get("/GT3KServer/v4/free-declaration");
+      const payload = readResultPayload(response);
+      const value = payload.value;
+
+      return {
+        value,
+        raw: payload
+      };
+    },
+    async listV4TestcaseReviews(input) {
+      const query = new URLSearchParams({
+        project_uuid: input.project_uuid,
+        version_uri: input.version_uri,
+        page_no: String(input.page),
+        page_size: String(input.page_size)
+      });
+
+      const response = await _http.get(
+        `/v4/testcases/${encodeURIComponent(input.testcase_uri)}/review?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const reviews = readArray<Record<string, unknown>>(
+        payload.value ?? payload.reviews ?? payload.items ?? payload.list
+      );
+
+      return {
+        reviews,
+        total: readTotal(payload, response, reviews.length)
+      };
+    },
+    async getBranch(input) {
+      const query = new URLSearchParams({
+        project_uuid: input.project_uuid
+      });
+
+      const response = await _http.get(
+        `/v4/branches/${encodeURIComponent(input.branch_uri)}?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const branch = readEnvelope(payload.value) ?? payload;
+
+      return {
+        raw: branch
+      };
+    },
+    async getGt3kBranch(input) {
+      const query = new URLSearchParams({
+        project_uuid: input.project_uuid
+      });
+
+      const response = await _http.get(
+        `/GT3KServer/v4/branches/${encodeURIComponent(input.branch_id)}?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const branch = readEnvelope(payload.value) ?? payload;
+
+      return {
+        raw: branch
+      };
+    },
+    async listIteratorIssueIds(input) {
+      const response = await _http.get(
+        `/v4/${encodeURIComponent(input.project_id)}/iterators/${encodeURIComponent(input.iterator_uri)}/issue-ids`
+      );
+      const payload = readResultPayload(response);
+      const rawIssueIds = readArray<unknown>(payload.value ?? payload.issue_ids ?? payload.items ?? payload.list);
+      const issueIds = rawIssueIds.map((item) => readEnvelope(item) ?? { value: item });
+
+      return {
+        issue_ids: issueIds,
+        total: readTotal(payload, response, issueIds.length)
+      };
+    },
+    async listFeatureDescendantUris(input) {
+      const response = await _http.get(
+        `/v4/${encodeURIComponent(input.project_id)}/features/${encodeURIComponent(input.feature_uri)}/descendant-uris`
+      );
+      const payload = readResultPayload(response);
+      const rawUris = readArray<unknown>(payload.value ?? payload.uris ?? payload.items ?? payload.list);
+      const uris = rawUris.map((item) => readEnvelope(item) ?? { value: item });
+
+      return {
+        uris,
+        total: readTotal(payload, response, uris.length)
+      };
+    },
+    async getTestcaseField(input) {
+      const response = await _http.get(
+        `/v4/${encodeURIComponent(input.project_id)}/testcase/field/${encodeURIComponent(input.uri)}`
+      );
+      const payload = readResultPayload(response);
+      const field = readEnvelope(payload.value) ?? payload;
+
+      return {
+        raw: field
+      };
+    },
+    async listTestexecutorResourcePools(input) {
+      const response = await _http.get(
+        `/testexecutor/v4/${encodeURIComponent(input.project_id)}/resource-pools`
+      );
+      const payload = readResultPayload(response);
+      const pools = readArray<Record<string, unknown>>(
+        payload.value ?? payload.pools ?? payload.items ?? payload.list
+      );
+
+      return {
+        pools,
+        total: readTotal(payload, response, pools.length)
       };
     },
     async listTesthubBranches(input) {

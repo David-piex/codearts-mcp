@@ -419,6 +419,63 @@ export const testPlanGetDashboardRunPanelInput = z.object({
   service_id: idSchema
 });
 
+export const testPlanListGt3kProjectServiceReposInput = pagingSchema.extend({
+  project_uuid: idSchema
+});
+
+export const testPlanListGt3kIteratorInfosInput = z.object({
+  project_id: idSchema
+});
+
+export const testPlanListGt3kVisibleServicesInput = z.object({
+  project_id: idSchema
+});
+
+export const testPlanListGt3kDomainUsageInfosInput = z.object({
+  project_uuid: idSchema
+});
+
+export const testPlanListGt3kTestcaseFieldsInput = z.object({
+  project_id: idSchema
+});
+
+export const testPlanGetGt3kFreeDeclarationInput = z.object({});
+
+export const testPlanListV4TestcaseReviewsInput = pagingSchema.extend({
+  testcase_uri: idSchema,
+  project_uuid: idSchema,
+  version_uri: idSchema
+});
+
+export const testPlanGetBranchInput = z.object({
+  branch_uri: idSchema,
+  project_uuid: idSchema
+});
+
+export const testPlanGetGt3kBranchInput = z.object({
+  branch_id: idSchema,
+  project_uuid: idSchema
+});
+
+export const testPlanListIteratorIssueIdsInput = z.object({
+  project_id: idSchema,
+  iterator_uri: idSchema
+});
+
+export const testPlanListFeatureDescendantUrisInput = z.object({
+  project_id: idSchema,
+  feature_uri: idSchema
+});
+
+export const testPlanGetTestcaseFieldInput = z.object({
+  project_id: idSchema,
+  uri: idSchema
+});
+
+export const testPlanListTestexecutorResourcePoolsInput = z.object({
+  project_id: idSchema
+});
+
 export const testPlanListTesthubBranchesInput = pagingSchema.extend({
   project_id: idSchema,
   sort_field: z.string().min(1).optional(),
