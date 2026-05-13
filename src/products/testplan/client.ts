@@ -210,6 +210,45 @@ export type TestPlanClient = {
     reports: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  listCustomTemplateReports: (input: {
+    project_id: string;
+    version_uri: string;
+    page: number;
+    page_size: number;
+    type?: string;
+  }) => Promise<{
+    reports: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listTestReports: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    keyword?: string;
+    own?: boolean;
+  }) => Promise<{
+    reports: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getRuleCheckTaskReport: (input: {
+    project_id: string;
+    version_uri: string;
+    task_uri: string;
+  }) => Promise<{
+    report_id: string;
+    name?: string;
+    raw: Record<string, unknown>;
+  }>;
+  getRuleCheckTaskSummary: (input: {
+    project_id: string;
+    version_uri: string;
+    task_uri: string;
+    severity?: string;
+    status?: number;
+  }) => Promise<{
+    task_uri: string;
+    raw: Record<string, unknown>;
+  }>;
   getCaseTemplate: (input: {
     project_id: string;
     template_uri: string;
@@ -294,6 +333,27 @@ export type TestPlanClient = {
   }) => Promise<{
     iterators: Array<Record<string, unknown>>;
     total?: number;
+  }>;
+  listTesthubIteratorsV5: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    name?: string;
+    current_stage?: string;
+    branch_uri?: string;
+    fix_version_ids?: string;
+    query_all_version?: boolean;
+  }) => Promise<{
+    iterators: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getIterator: (input: {
+    project_uuid: string;
+    iterator_uri: string;
+  }) => Promise<{
+    iterator_id: string;
+    name?: string;
+    raw: Record<string, unknown>;
   }>;
   listIteratorIssues: (input: {
     project_id: string;
@@ -1040,6 +1100,77 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         total: readTotal(payload, response, reports.length)
       };
     },
+    async listCustomTemplateReports(input) {
+      const query = new URLSearchParams({
+        page_no: String(input.page),
+        page_size: String(input.page_size)
+      });
+      appendQueryValue(query, "type", input.type);
+
+      const response = await _http.get(
+        `/v4/${encodeURIComponent(input.project_id)}/versions/${encodeURIComponent(input.version_uri)}/custom-template-reports?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const reports = readArray<Record<string, unknown>>(
+        payload.value ?? payload.reports ?? payload.custom_template_reports ?? payload.items ?? payload.list
+      );
+
+      return {
+        reports,
+        total: readTotal(payload, response, reports.length)
+      };
+    },
+    async listTestReports(input) {
+      const query = new URLSearchParams({
+        page_no: String(input.page),
+        page_size: String(input.page_size)
+      });
+      appendQueryValue(query, "key_word", input.keyword);
+      appendQueryValue(query, "own", input.own);
+
+      const response = await _http.get(
+        `/testreport/v4/${encodeURIComponent(input.project_id)}/test-reports?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const reports = readArray<Record<string, unknown>>(
+        payload.value ?? payload.reports ?? payload.test_reports ?? payload.items ?? payload.list
+      );
+
+      return {
+        reports,
+        total: readTotal(payload, response, reports.length)
+      };
+    },
+    async getRuleCheckTaskReport(input) {
+      const response = await _http.get(
+        `/v4/${encodeURIComponent(input.project_id)}/versions/${encodeURIComponent(input.version_uri)}/rule-check/tasks/${encodeURIComponent(input.task_uri)}`
+      );
+      const payload = readResultPayload(response);
+      const report = readEnvelope(payload.value) ?? payload;
+
+      return {
+        report_id: String(report.uri ?? report.id ?? input.task_uri),
+        name: typeof report.name === "string" ? report.name : undefined,
+        raw: report
+      };
+    },
+    async getRuleCheckTaskSummary(input) {
+      const query = new URLSearchParams();
+      appendQueryValue(query, "severity", input.severity);
+      appendQueryValue(query, "status", input.status);
+
+      const suffix = query.size ? `?${query.toString()}` : "";
+      const response = await _http.get(
+        `/v4/${encodeURIComponent(input.project_id)}/versions/${encodeURIComponent(input.version_uri)}/rule-check/tasks/${encodeURIComponent(input.task_uri)}/summary${suffix}`
+      );
+      const payload = readResultPayload(response);
+      const summary = readEnvelope(payload.value) ?? payload;
+
+      return {
+        task_uri: input.task_uri,
+        raw: summary
+      };
+    },
     async getCaseTemplate(input) {
       const response = await _http.get(
         `/v4/${encodeURIComponent(input.project_id)}/case-templates/${encodeURIComponent(input.template_uri)}`
@@ -1215,6 +1346,47 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       return {
         iterators,
         total: readTotal(payload, response, iterators.length)
+      };
+    },
+    async listTesthubIteratorsV5(input) {
+      const query = new URLSearchParams({
+        offset: String(pageToOffset(input.page, input.page_size)),
+        limit: String(input.page_size)
+      });
+      appendQueryValue(query, "name", input.name);
+      appendQueryValue(query, "current_stage", input.current_stage);
+      appendQueryValue(query, "branch_uri", input.branch_uri);
+      appendQueryValue(query, "fix_version_ids", input.fix_version_ids);
+      appendQueryValue(query, "query_all_version", input.query_all_version);
+
+      const response = await _http.get(
+        `/v5/testhub/projects/${encodeURIComponent(input.project_id)}/iterators?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const iterators = readArray<Record<string, unknown>>(
+        payload.iterators ?? payload.value ?? payload.items ?? payload.list ?? (Array.isArray(response) ? response : [])
+      );
+
+      return {
+        iterators,
+        total: readTotal(payload, response, iterators.length)
+      };
+    },
+    async getIterator(input) {
+      const query = new URLSearchParams({
+        project_uuid: input.project_uuid
+      });
+
+      const response = await _http.get(
+        `/v4/iterators/${encodeURIComponent(input.iterator_uri)}?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const iterator = readEnvelope(payload.value) ?? payload;
+
+      return {
+        iterator_id: String(iterator.uri ?? iterator.plan_id ?? iterator.id ?? input.iterator_uri),
+        name: typeof iterator.name === "string" ? iterator.name : undefined,
+        raw: iterator
       };
     },
     async listIteratorIssues(input) {

@@ -110,6 +110,32 @@ export const testPlanListProgressReportsInput = pagingSchema.extend({
   type: z.string().min(1)
 });
 
+export const testPlanListCustomTemplateReportsInput = pagingSchema.extend({
+  project_id: idSchema,
+  version_uri: idSchema,
+  type: z.string().min(1).optional()
+});
+
+export const testPlanListTestReportsInput = pagingSchema.extend({
+  project_id: idSchema,
+  keyword: z.string().min(1).optional(),
+  own: z.boolean().optional()
+});
+
+export const testPlanGetRuleCheckTaskReportInput = z.object({
+  project_id: idSchema,
+  version_uri: idSchema,
+  task_uri: idSchema
+});
+
+export const testPlanGetRuleCheckTaskSummaryInput = z.object({
+  project_id: idSchema,
+  version_uri: idSchema,
+  task_uri: idSchema,
+  severity: z.string().min(1).optional(),
+  status: z.number().int().optional()
+});
+
 export const testPlanGetCaseTemplateInput = z.object({
   project_id: idSchema,
   template_uri: idSchema
@@ -163,6 +189,20 @@ export const testPlanListTesthubIteratorsInput = pagingSchema.extend({
   name: z.string().min(1).optional(),
   current_stage: z.string().min(1).optional(),
   branch_uri: idSchema.optional()
+});
+
+export const testPlanListTesthubIteratorsV5Input = pagingSchema.extend({
+  project_id: idSchema,
+  name: z.string().min(1).optional(),
+  current_stage: z.string().min(1).optional(),
+  branch_uri: idSchema.optional(),
+  fix_version_ids: z.string().min(1).optional(),
+  query_all_version: z.boolean().optional()
+});
+
+export const testPlanGetIteratorInput = z.object({
+  project_uuid: idSchema,
+  iterator_uri: idSchema
 });
 
 export const testPlanListIteratorIssuesInput = pagingSchema.extend({

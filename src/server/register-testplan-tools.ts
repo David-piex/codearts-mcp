@@ -8,7 +8,10 @@ import {
   testPlanGetCaseTemplateInput,
   testPlanGetCaseInput,
   testPlanGetCustomTemplateInput,
+  testPlanGetIteratorInput,
   testPlanGetPlanInput,
+  testPlanGetRuleCheckTaskReportInput,
+  testPlanGetRuleCheckTaskSummaryInput,
   testPlanGetTestReportInput,
   testPlanGetTestcaseV4Input,
   testPlanGetTesthubCaseByNumberInput,
@@ -20,6 +23,7 @@ import {
   testPlanInitTaskExecutionInput,
   testPlanListAttachmentsInput,
   testPlanListCustomReportsInput,
+  testPlanListCustomTemplateReportsInput,
   testPlanListIteratorHistoriesInput,
   testPlanListIteratorIssuesInput,
   testPlanListCasesInput,
@@ -39,7 +43,9 @@ import {
   testPlanListTestcaseFieldsInput,
   testPlanListTesthubBranchesInput,
   testPlanListTesthubIteratorsInput,
+  testPlanListTesthubIteratorsV5Input,
   testPlanListTesthubServicesInput,
+  testPlanListTestReportsInput,
   testPlanRunCasesInput,
   testPlanStopTaskExecutionInput,
   testPlanUpdateTaskInput
@@ -50,7 +56,10 @@ import { createTestPlanCreateTaskHandler } from "../products/testplan/tools/crea
 import { createTestPlanCreateTaskRelationsHandler } from "../products/testplan/tools/create-task-relations.js";
 import { createTestPlanGetCaseHandler } from "../products/testplan/tools/get-case.js";
 import { createTestPlanGetCustomTemplateHandler } from "../products/testplan/tools/get-custom-template.js";
+import { createTestPlanGetIteratorHandler } from "../products/testplan/tools/get-iterator.js";
 import { createTestPlanGetPlanHandler } from "../products/testplan/tools/get-plan.js";
+import { createTestPlanGetRuleCheckTaskReportHandler } from "../products/testplan/tools/get-rule-check-task-report.js";
+import { createTestPlanGetRuleCheckTaskSummaryHandler } from "../products/testplan/tools/get-rule-check-task-summary.js";
 import { createTestPlanGetTestReportHandler } from "../products/testplan/tools/get-test-report.js";
 import { createTestPlanGetTestcaseV4Handler } from "../products/testplan/tools/get-testcase-v4.js";
 import { createTestPlanGetTesthubCaseByNumberHandler } from "../products/testplan/tools/get-testhub-case-by-number.js";
@@ -62,6 +71,7 @@ import { createTestPlanGetTaskSuccessTestCasesCountHandler } from "../products/t
 import { createTestPlanInitTaskExecutionHandler } from "../products/testplan/tools/init-task-execution.js";
 import { createTestPlanListAttachmentsHandler } from "../products/testplan/tools/list-attachments.js";
 import { createTestPlanListCustomReportsHandler } from "../products/testplan/tools/list-custom-reports.js";
+import { createTestPlanListCustomTemplateReportsHandler } from "../products/testplan/tools/list-custom-template-reports.js";
 import { createTestPlanListIteratorHistoriesHandler } from "../products/testplan/tools/list-iterator-histories.js";
 import { createTestPlanListIteratorIssuesHandler } from "../products/testplan/tools/list-iterator-issues.js";
 import { createTestPlanListCasesHandler } from "../products/testplan/tools/list-cases.js";
@@ -81,7 +91,9 @@ import { createTestPlanListTestReportQualityAttributesHandler } from "../product
 import { createTestPlanListTestcaseFieldsHandler } from "../products/testplan/tools/list-testcase-fields.js";
 import { createTestPlanListTesthubBranchesHandler } from "../products/testplan/tools/list-testhub-branches.js";
 import { createTestPlanListTesthubIteratorsHandler } from "../products/testplan/tools/list-testhub-iterators.js";
+import { createTestPlanListTesthubIteratorsV5Handler } from "../products/testplan/tools/list-testhub-iterators-v5.js";
 import { createTestPlanListTesthubServicesHandler } from "../products/testplan/tools/list-testhub-services.js";
+import { createTestPlanListTestReportsHandler } from "../products/testplan/tools/list-test-reports.js";
 import { createTestPlanRunCasesHandler } from "../products/testplan/tools/run-cases.js";
 import { createTestPlanStopTaskExecutionHandler } from "../products/testplan/tools/stop-task-execution.js";
 import { createTestPlanUpdateTaskHandler } from "../products/testplan/tools/update-task.js";
@@ -111,6 +123,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanGetPlanInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetPlanHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetPlanHandler
+  }),
+  "testplan_get_iterator": defineProductTool({
+    description: "Get CodeArts TestPlan iterator detail with summary statistics",
+    inputSchema: testPlanGetIteratorInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetIteratorHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetIteratorHandler
   }),
   "testplan_get_case": defineProductTool({
     description: "Get CodeArts TestPlan case detail",
@@ -202,6 +220,18 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetTaskSuccessTestCasesCountHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetTaskSuccessTestCasesCountHandler
   }),
+  "testplan_get_rule_check_task_report": defineProductTool({
+    description: "Get CodeArts TestPlan rule check task report",
+    inputSchema: testPlanGetRuleCheckTaskReportInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetRuleCheckTaskReportHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetRuleCheckTaskReportHandler
+  }),
+  "testplan_get_rule_check_task_summary": defineProductTool({
+    description: "Get CodeArts TestPlan rule check task summary",
+    inputSchema: testPlanGetRuleCheckTaskSummaryInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetRuleCheckTaskSummaryHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetRuleCheckTaskSummaryHandler
+  }),
   "testplan_get_test_report": defineProductTool({
     description: "Get CodeArts TestPlan test report overview",
     inputSchema: testPlanGetTestReportInput,
@@ -219,6 +249,18 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListCustomReportsInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListCustomReportsHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListCustomReportsHandler
+  }),
+  "testplan_list_custom_template_reports": defineProductTool({
+    description: "List CodeArts TestPlan custom template reports",
+    inputSchema: testPlanListCustomTemplateReportsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListCustomTemplateReportsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListCustomTemplateReportsHandler
+  }),
+  "testplan_list_test_reports": defineProductTool({
+    description: "List CodeArts TestPlan test reports",
+    inputSchema: testPlanListTestReportsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTestReportsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListTestReportsHandler
   }),
   "testplan_list_progress_reports": defineProductTool({
     description: "List CodeArts TestPlan progress reports",
@@ -279,6 +321,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListTesthubIteratorsInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTesthubIteratorsHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListTesthubIteratorsHandler
+  }),
+  "testplan_list_testhub_iterators_v5": defineProductTool({
+    description: "List CodeArts TestPlan TestHub v5 iterators",
+    inputSchema: testPlanListTesthubIteratorsV5Input,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTesthubIteratorsV5Handler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListTesthubIteratorsV5Handler
   }),
   "testplan_list_testhub_services": defineProductTool({
     description: "List CodeArts TestPlan TestHub registered services",

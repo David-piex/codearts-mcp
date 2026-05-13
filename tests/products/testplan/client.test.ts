@@ -1202,6 +1202,113 @@ describe("createTestPlanClient", () => {
     });
   });
 
+  it("lists custom template reports and test reports", async () => {
+    const requests: string[] = [];
+    const client = createTestPlanClient({
+      get: async (path: string) => {
+        requests.push(path);
+        if (path.includes("/custom-template-reports?")) {
+          return {
+            result: {
+              value: [{ uri: "template-report-1", name: "template report" }],
+              total: 1
+            }
+          };
+        }
+
+        return {
+          value: [{ uri: "report-1", name: "release report" }],
+          total: 1
+        };
+      }
+    } as never);
+
+    await expect(
+      client.listCustomTemplateReports({
+        project_id: "project-1",
+        version_uri: "version-1",
+        type: "2",
+        page: 1,
+        page_size: 10
+      })
+    ).resolves.toEqual({
+      reports: [{ uri: "template-report-1", name: "template report" }],
+      total: 1
+    });
+    await expect(
+      client.listTestReports({
+        project_id: "project-1",
+        keyword: "release",
+        own: true,
+        page: 2,
+        page_size: 20
+      })
+    ).resolves.toEqual({
+      reports: [{ uri: "report-1", name: "release report" }],
+      total: 1
+    });
+    expect(requests).toEqual([
+      "/v4/project-1/versions/version-1/custom-template-reports?page_no=1&page_size=10&type=2",
+      "/testreport/v4/project-1/test-reports?page_no=2&page_size=20&key_word=release&own=true"
+    ]);
+  });
+
+  it("loads rule check task report and summary", async () => {
+    const requests: string[] = [];
+    const client = createTestPlanClient({
+      get: async (path: string) => {
+        requests.push(path);
+        if (path.endsWith("/summary?severity=2&status=0")) {
+          return {
+            result: {
+              severity_list: [{ severity: "2", count: 3 }]
+            }
+          };
+        }
+
+        return {
+          value: {
+            uri: "rule-report-1",
+            name: "rule check"
+          }
+        };
+      }
+    } as never);
+
+    await expect(
+      client.getRuleCheckTaskReport({
+        project_id: "project-1",
+        version_uri: "version-1",
+        task_uri: "task-1"
+      })
+    ).resolves.toEqual({
+      report_id: "rule-report-1",
+      name: "rule check",
+      raw: {
+        uri: "rule-report-1",
+        name: "rule check"
+      }
+    });
+    await expect(
+      client.getRuleCheckTaskSummary({
+        project_id: "project-1",
+        version_uri: "version-1",
+        task_uri: "task-1",
+        severity: "2",
+        status: 0
+      })
+    ).resolves.toEqual({
+      task_uri: "task-1",
+      raw: {
+        severity_list: [{ severity: "2", count: 3 }]
+      }
+    });
+    expect(requests).toEqual([
+      "/v4/project-1/versions/version-1/rule-check/tasks/task-1",
+      "/v4/project-1/versions/version-1/rule-check/tasks/task-1/summary?severity=2&status=0"
+    ]);
+  });
+
   it("loads case templates and testcase v4 detail", async () => {
     const requests: string[] = [];
     const client = createTestPlanClient({
@@ -1375,6 +1482,68 @@ describe("createTestPlanClient", () => {
       "/v4/testhub/services",
       "/v4/testhub/projects/project-1/testcases/case-1",
       "/v4/testhub/projects/project-1/testcase?testcase_number=TC-001&version_uri=version-1"
+    ]);
+  });
+
+  it("lists TestHub v5 iterators and loads iterator detail", async () => {
+    const requests: string[] = [];
+    const client = createTestPlanClient({
+      get: async (path: string) => {
+        requests.push(path);
+        if (path.includes("/v5/testhub/projects/")) {
+          return [
+            {
+              plan_id: "iterator-1",
+              name: "sprint 1"
+            }
+          ];
+        }
+
+        return {
+          value: {
+            uri: "iterator-1",
+            name: "sprint 1"
+          }
+        };
+      }
+    } as never);
+
+    await expect(
+      client.listTesthubIteratorsV5({
+        project_id: "project-1",
+        page: 2,
+        page_size: 10,
+        name: "sprint",
+        current_stage: "execute",
+        branch_uri: "master",
+        fix_version_ids: "fix-1",
+        query_all_version: true
+      })
+    ).resolves.toEqual({
+      iterators: [
+        {
+          plan_id: "iterator-1",
+          name: "sprint 1"
+        }
+      ],
+      total: 1
+    });
+    await expect(
+      client.getIterator({
+        project_uuid: "project-1",
+        iterator_uri: "iterator-1"
+      })
+    ).resolves.toEqual({
+      iterator_id: "iterator-1",
+      name: "sprint 1",
+      raw: {
+        uri: "iterator-1",
+        name: "sprint 1"
+      }
+    });
+    expect(requests).toEqual([
+      "/v5/testhub/projects/project-1/iterators?offset=10&limit=10&name=sprint&current_stage=execute&branch_uri=master&fix_version_ids=fix-1&query_all_version=true",
+      "/v4/iterators/iterator-1?project_uuid=project-1"
     ]);
   });
 
