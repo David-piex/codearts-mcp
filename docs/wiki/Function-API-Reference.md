@@ -32,8 +32,8 @@
 | 流水线 | 78 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 106 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 201 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
-| 测试计划 | 145 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **643** | |
+| 测试计划 | 146 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
+| **总计** | **644** | |
 
 ## 字段对应
 
@@ -589,6 +589,7 @@
 | `testplan_get_project_message_notices` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_project_message_notices) |
 | `testplan_get_project_service_repo` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_project_service_repo) |
 | `testplan_get_project_system_config` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_project_system_config) |
+| `testplan_get_project_testcase` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_project_testcase) |
 | `testplan_get_project_testcase_global_config` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_project_testcase_global_config) |
 | `testplan_get_rule_check_task_report` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_rule_check_task_report) |
 | `testplan_get_rule_check_task_summary` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_rule_check_task_summary) |

@@ -41,6 +41,7 @@ import {
   testPlanGetIteratorInput,
   testPlanGetLicenseSpecificationInput,
   testPlanGetPlanInput,
+  testPlanGetProjectTestcaseInput,
   testPlanGetProjectAdvancedFeatureTrialInput,
   testPlanGetProjectAdvancedFeatureTrustedInput,
   testPlanGetProjectDomainDetailInfoInput,
@@ -186,6 +187,7 @@ import { createTestPlanGetImageCapacityWarningHandler } from "../products/testpl
 import { createTestPlanGetIteratorHandler } from "../products/testplan/tools/get-iterator.js";
 import { createTestPlanGetLicenseSpecificationHandler } from "../products/testplan/tools/get-license-specification.js";
 import { createTestPlanGetPlanHandler } from "../products/testplan/tools/get-plan.js";
+import { createTestPlanGetProjectTestcaseHandler } from "../products/testplan/tools/get-project-testcase.js";
 import { createTestPlanGetProjectAdvancedFeatureTrialHandler } from "../products/testplan/tools/get-project-advanced-feature-trial.js";
 import { createTestPlanGetProjectAdvancedFeatureTrustedHandler } from "../products/testplan/tools/get-project-advanced-feature-trusted.js";
 import { createTestPlanGetProjectDomainDetailInfoHandler } from "../products/testplan/tools/get-project-domain-detail-info.js";
@@ -317,6 +319,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanGetPlanInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetPlanHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetPlanHandler
+  }),
+  "testplan_get_project_testcase": defineProductTool({
+    description: "Get CodeArts TestPlan project testcase detail",
+    inputSchema: testPlanGetProjectTestcaseInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetProjectTestcaseHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetProjectTestcaseHandler
   }),
   "testplan_get_iterator": defineProductTool({
     description: "Get CodeArts TestPlan iterator detail with summary statistics",

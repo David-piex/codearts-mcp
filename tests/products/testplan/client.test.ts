@@ -1314,6 +1314,16 @@ describe("createTestPlanClient", () => {
     const client = createTestPlanClient({
       get: async (path: string) => {
         requests.push(path);
+        if (path.startsWith("/v1/projects/")) {
+          return {
+            result: {
+              value: {
+                testcase_id: "case-project-1",
+                name: "project case"
+              }
+            }
+          };
+        }
         if (path.includes("/case-templates/")) {
           return {
             result: {
@@ -1363,9 +1373,23 @@ describe("createTestPlanClient", () => {
         name: "login case"
       }
     });
+    await expect(
+      client.getProjectTestcase({
+        project_id: "project-1",
+        testcase_id: "case-project-1"
+      })
+    ).resolves.toEqual({
+      case_id: "case-project-1",
+      name: "project case",
+      raw: {
+        testcase_id: "case-project-1",
+        name: "project case"
+      }
+    });
     expect(requests).toEqual([
       "/v4/project-1/case-templates/template-1",
-      "/v4/testcases/case-1?version_uri=version-1&project_uuid=project-1"
+      "/v4/testcases/case-1?version_uri=version-1&project_uuid=project-1",
+      "/v1/projects/project-1/testcases/case-project-1"
     ]);
   });
 

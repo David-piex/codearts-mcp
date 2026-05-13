@@ -38,6 +38,7 @@ export const testPlanToolNames = [
   "testplan_get_iterator",
   "testplan_get_license_specification",
   "testplan_get_plan",
+  "testplan_get_project_testcase",
   "testplan_get_project_advanced_feature_trial",
   "testplan_get_project_advanced_feature_trusted",
   "testplan_get_project_domain_detail_info",

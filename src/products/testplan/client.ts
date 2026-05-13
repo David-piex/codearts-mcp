@@ -317,6 +317,14 @@ export type TestPlanClient = {
     name?: string;
     raw: Record<string, unknown>;
   }>;
+  getProjectTestcase: (input: {
+    project_id: string;
+    testcase_id: string;
+  }) => Promise<{
+    case_id: string;
+    name?: string;
+    raw: Record<string, unknown>;
+  }>;
   listTesthubServices: () => Promise<{
     services: Array<Record<string, unknown>>;
     total?: number;
@@ -1941,6 +1949,21 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
 
       return {
         case_id: String(testcase.uri ?? testcase.case_uri ?? testcase.id ?? input.case_uri),
+        name: typeof testcase.name === "string" ? testcase.name : undefined,
+        raw: testcase
+      };
+    },
+    async getProjectTestcase(input) {
+      const response = await _http.get(
+        `/v1/projects/${encodeURIComponent(input.project_id)}/testcases/${encodeURIComponent(input.testcase_id)}`
+      );
+      const payload = readResultPayload(response);
+      const testcase = readEnvelope(payload.value) ?? payload;
+
+      return {
+        case_id: String(
+          testcase.testcase_id ?? testcase.case_id ?? testcase.uri ?? testcase.id ?? input.testcase_id
+        ),
         name: typeof testcase.name === "string" ? testcase.name : undefined,
         raw: testcase
       };
