@@ -2180,4 +2180,228 @@ describe("createTestPlanClient", () => {
       "/v4/projects/project-1/user-defined-configs/config-1/used?type=1"
     ]);
   });
+
+  it("gets TestPlan service, environment, iterator, license, and configuration endpoints", async () => {
+    const requests: string[] = [];
+    const client = createTestPlanClient({
+      get: async (path: string) => {
+        requests.push(path);
+        if (path.startsWith("/v4/service/offering")) {
+          return [{ id: "offering-1", name: "TestPlan" }];
+        }
+        if (path.includes("/environments")) {
+          return { environments: [{ id: "env-1", name: "dev" }], total_count: 1 };
+        }
+        if (path.includes("/iterator-infos")) {
+          return { value: [{ uri: "iterator-1", name: "Sprint" }], total: 1 };
+        }
+        if (path.includes("/visible-services")) {
+          return { value: [{ id: "service-1", name: "EchoTest" }], total: 1 };
+        }
+        if (path.includes("/resource-number-rule")) {
+          return { value: [{ id: "rule-1", name: "case-rule" }], total: 1 };
+        }
+        if (path.includes("/testcase/global/config")) {
+          return { value: { display: true } };
+        }
+        if (path.includes("/system-config")) {
+          return { value: true };
+        }
+        if (path.includes("/projects/member/exist")) {
+          return { value: true };
+        }
+        if (path.includes("/license/specification")) {
+          return { value: "small" };
+        }
+
+        return { value: [] };
+      }
+    } as never);
+
+    await expect(client.listServiceOfferings({ serviceNames: "testplan" })).resolves.toEqual({
+      offerings: [{ id: "offering-1", name: "TestPlan" }],
+      total: 1
+    });
+    await expect(
+      client.listEnvironments({
+        project_id: "project-1",
+        page: 2,
+        page_size: 10
+      })
+    ).resolves.toEqual({
+      environments: [{ id: "env-1", name: "dev" }],
+      total: 1
+    });
+    await expect(client.listIteratorInfos({ project_id: "project-1" })).resolves.toEqual({
+      iterators: [{ uri: "iterator-1", name: "Sprint" }],
+      total: 1
+    });
+    await expect(client.listVisibleServices({ project_id: "project-1" })).resolves.toEqual({
+      services: [{ id: "service-1", name: "EchoTest" }],
+      total: 1
+    });
+    await expect(client.getLicenseSpecification()).resolves.toEqual({
+      value: "small",
+      raw: { value: "small" }
+    });
+    await expect(client.listResourceNumberRules({ project_id: "project-1" })).resolves.toEqual({
+      rules: [{ id: "rule-1", name: "case-rule" }],
+      total: 1
+    });
+    await expect(
+      client.getProjectTestcaseGlobalConfig({
+        project_id: "project-1"
+      })
+    ).resolves.toEqual({
+      raw: { display: true }
+    });
+    await expect(
+      client.getProjectSystemConfig({
+        project_uuid: "project-1",
+        owner_id: "user-1",
+        feature_name: "DisplayOldFunctionTest"
+      })
+    ).resolves.toEqual({
+      value: true,
+      raw: { value: true }
+    });
+    await expect(client.checkProjectMemberExists()).resolves.toEqual({
+      value: true,
+      raw: { value: true }
+    });
+
+    expect(requests).toEqual([
+      "/v4/service/offering?serviceNames=testplan",
+      "/v1/projects/project-1/environments?offset=10&limit=10",
+      "/v4/projects/project-1/iterator-infos",
+      "/v4/project-1/visible-services",
+      "/v4/license/specification",
+      "/v4/project-1/resource-number-rule",
+      "/v4/projects/project-1/testcase/global/config",
+      "/v4/projects/project-1/system-config?owner_id=user-1&feature_name=DisplayOldFunctionTest",
+      "/v4/projects/member/exist"
+    ]);
+  });
+
+  it("gets TestPlan report, repo, task, resource, usage, alert, and dashboard endpoints", async () => {
+    const requests: string[] = [];
+    const client = createTestPlanClient({
+      get: async (path: string) => {
+        requests.push(path);
+        if (path.includes("custom-infos")) {
+          return { value: [{ uri: "info-1", name: "summary" }], total: 1 };
+        }
+        if (path.includes("service-repos?")) {
+          return { value: [{ repository_id: "repo-1", name: "repo" }], total: 1 };
+        }
+        if (path.endsWith("/repo")) {
+          return { value: { repository_id: "repo-1", branch: "main" } };
+        }
+        if (path.includes("defects/batch-query")) {
+          return { value: [{ id: "defect-1", name: "bug" }], total: 1 };
+        }
+        if (path.includes("resource-pools")) {
+          return { value: [{ id: "pool-1", name: "default" }], total: 1 };
+        }
+        if (path.includes("domain/usage")) {
+          return { value: [{ id: "usage-1", name: "storage" }], total: 1 };
+        }
+        if (path.includes("service/config")) {
+          return { value: { config_key: "task_clear_config_key" } };
+        }
+        if (path.includes("alert-templates")) {
+          return { list: [{ id: "template-1", name: "default" }], total: 1 };
+        }
+        if (path.includes("dashboard/run-panel")) {
+          return { value: { running: 1 } };
+        }
+
+        return { value: [] };
+      }
+    } as never);
+
+    await expect(
+      client.listTestReportCustomInfos({
+        project_id: "project-1",
+        version_uri: "version-1",
+        report_uri: "report-1"
+      })
+    ).resolves.toEqual({
+      infos: [{ uri: "info-1", name: "summary" }],
+      total: 1
+    });
+    await expect(
+      client.listProjectServiceRepos({
+        project_id: "project-1",
+        page: 1,
+        page_size: 20
+      })
+    ).resolves.toEqual({
+      repos: [{ repository_id: "repo-1", name: "repo" }],
+      total: 1
+    });
+    await expect(
+      client.getProjectServiceRepo({
+        project_id: "project-1",
+        service_id: 7
+      })
+    ).resolves.toEqual({
+      raw: { repository_id: "repo-1", branch: "main" }
+    });
+    await expect(
+      client.listTaskDefects({
+        project_id: "project-1",
+        task_uri: "task-1",
+        page: 2,
+        page_size: 10,
+        version_uri: "version-1"
+      })
+    ).resolves.toEqual({
+      defects: [{ id: "defect-1", name: "bug" }],
+      total: 1
+    });
+    await expect(client.listResourcePools({ project_id: "project-1" })).resolves.toEqual({
+      pools: [{ id: "pool-1", name: "default" }],
+      total: 1
+    });
+    await expect(client.listDomainUsageInfos({ project_uuid: "project-1" })).resolves.toEqual({
+      usages: [{ id: "usage-1", name: "storage" }],
+      total: 1
+    });
+    await expect(
+      client.getServiceConfig({
+        service_id: "service-1",
+        key: "task_clear_config_key",
+        type: "ServiceConfig"
+      })
+    ).resolves.toEqual({
+      raw: { config_key: "task_clear_config_key" }
+    });
+    await expect(
+      client.listAlertTemplates({
+        service_id: "service-1",
+        page: 3,
+        page_size: 15,
+        name: "default"
+      })
+    ).resolves.toEqual({
+      templates: [{ id: "template-1", name: "default" }],
+      total: 1
+    });
+    await expect(client.getDashboardRunPanel({ service_id: "service-1" })).resolves.toEqual({
+      raw: { running: 1 }
+    });
+
+    expect(requests).toEqual([
+      "/v4/project-1/versions/version-1/test-reports/report-1/custom-infos",
+      "/v4/projects/project-1/service-repos?page_no=1&page_size=20",
+      "/v4/projects/project-1/services/7/repo",
+      "/v4/project-1/tasks/task-1/defects/batch-query?page_no=2&page_size=10&version_uri=version-1",
+      "/v4/project-1/resource-pools",
+      "/v4/domain/usage?project_uuid=project-1",
+      "/v1/projects/service-1/service/config?key=task_clear_config_key&type=ServiceConfig",
+      "/v1/projects/service-1/alert-templates?name=default&page_num=3&page_size=15",
+      "/v2/projects/service-1/dashboard/run-panel"
+    ]);
+  });
 });

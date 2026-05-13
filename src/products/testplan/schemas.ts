@@ -341,6 +341,84 @@ export const testPlanCheckUserDefinedConfigUsedInput = z.object({
   type: z.string().min(1)
 });
 
+export const testPlanListServiceOfferingsInput = z.object({
+  serviceNames: z.string().min(1).optional()
+});
+
+export const testPlanListEnvironmentsInput = pagingSchema.extend({
+  project_id: idSchema
+});
+
+export const testPlanListIteratorInfosInput = z.object({
+  project_id: idSchema
+});
+
+export const testPlanListVisibleServicesInput = z.object({
+  project_id: idSchema
+});
+
+export const testPlanGetLicenseSpecificationInput = z.object({});
+
+export const testPlanListResourceNumberRulesInput = z.object({
+  project_id: idSchema
+});
+
+export const testPlanGetProjectTestcaseGlobalConfigInput = z.object({
+  project_id: idSchema
+});
+
+export const testPlanGetProjectSystemConfigInput = z.object({
+  project_uuid: idSchema,
+  owner_id: idSchema,
+  feature_name: z.string().min(1)
+});
+
+export const testPlanCheckProjectMemberExistsInput = z.object({});
+
+export const testPlanListTestReportCustomInfosInput = z.object({
+  project_id: idSchema,
+  version_uri: idSchema,
+  report_uri: idSchema
+});
+
+export const testPlanListProjectServiceReposInput = pagingSchema.extend({
+  project_id: idSchema
+});
+
+export const testPlanGetProjectServiceRepoInput = z.object({
+  project_id: idSchema,
+  service_id: z.union([idSchema, z.number().int()])
+});
+
+export const testPlanListTaskDefectsInput = pagingSchema.extend({
+  project_id: idSchema,
+  task_uri: idSchema,
+  version_uri: idSchema.optional()
+});
+
+export const testPlanListResourcePoolsInput = z.object({
+  project_id: idSchema
+});
+
+export const testPlanListDomainUsageInfosInput = z.object({
+  project_uuid: idSchema
+});
+
+export const testPlanGetServiceConfigInput = z.object({
+  service_id: idSchema,
+  key: z.string().min(1),
+  type: z.string().min(1)
+});
+
+export const testPlanListAlertTemplatesInput = pagingSchema.extend({
+  service_id: idSchema,
+  name: z.string().min(1).optional()
+});
+
+export const testPlanGetDashboardRunPanelInput = z.object({
+  service_id: idSchema
+});
+
 export const testPlanListTesthubBranchesInput = pagingSchema.extend({
   project_id: idSchema,
   sort_field: z.string().min(1).optional(),

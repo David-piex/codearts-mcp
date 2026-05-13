@@ -3,6 +3,7 @@ import { officialApiRequestInput } from "../products/official-api.js";
 import { createTestPlanClient } from "../products/testplan/client.js";
 import {
   testPlanBatchDeleteTasksInput,
+  testPlanCheckProjectMemberExistsInput,
   testPlanCheckResourceExistsInput,
   testPlanCheckUserDefinedConfigUsedInput,
   testPlanCheckUserExistsInput,
@@ -17,6 +18,7 @@ import {
   testPlanGetCurrentUserPackagePermissionInput,
   testPlanGetCustomTemplateInput,
   testPlanGetCustomizedColumnsInput,
+  testPlanGetDashboardRunPanelInput,
   testPlanGetDomainUserCountInput,
   testPlanGetFreeDeclarationInput,
   testPlanGetGt3kDomainInfoInput,
@@ -24,6 +26,7 @@ import {
   testPlanGetGt3kUserInfoDomainInput,
   testPlanGetImageCapacityWarningInput,
   testPlanGetIteratorInput,
+  testPlanGetLicenseSpecificationInput,
   testPlanGetPlanInput,
   testPlanGetProjectAdvancedFeatureTrialInput,
   testPlanGetProjectAdvancedFeatureTrustedInput,
@@ -31,6 +34,9 @@ import {
   testPlanGetProjectIssueUpdateNotificationInput,
   testPlanGetProjectMasterVersionInput,
   testPlanGetProjectMessageNoticesInput,
+  testPlanGetProjectServiceRepoInput,
+  testPlanGetProjectSystemConfigInput,
+  testPlanGetProjectTestcaseGlobalConfigInput,
   testPlanGetRuleCheckTaskReportInput,
   testPlanGetRuleCheckTaskSummaryInput,
   testPlanGetTestReportInput,
@@ -47,30 +53,40 @@ import {
   testPlanGetUserPackagePermissionInput,
   testPlanInitTaskExecutionInput,
   testPlanListAttachmentsInput,
+  testPlanListAlertTemplatesInput,
   testPlanListCustomReportsInput,
   testPlanListCustomTemplateReportsInput,
   testPlanListCurrentUserTestcasesInput,
+  testPlanListDomainUsageInfosInput,
+  testPlanListEnvironmentsInput,
   testPlanListGt3kBranchesInput,
   testPlanListGt3kCurrentUserTestcasesInput,
+  testPlanListIteratorInfosInput,
   testPlanListIteratorHistoriesInput,
   testPlanListIteratorIssuesInput,
   testPlanListCasesInput,
   testPlanListIssuesInput,
   testPlanListPlansInput,
   testPlanListProjectFieldConfigsInput,
+  testPlanListProjectServiceReposInput,
   testPlanListProjectTagsInput,
   testPlanListProjectUsersInput,
   testPlanListProgressReportsInput,
   testPlanListRegisteredServicesInput,
   testPlanListReleaseVersionsInput,
+  testPlanListResourceNumberRulesInput,
+  testPlanListResourcePoolsInput,
   testPlanListRunsInput,
+  testPlanListServiceOfferingsInput,
   testPlanListTaskCasesInput,
   testPlanListTaskCasesV4Input,
+  testPlanListTaskDefectsInput,
   testPlanListTaskResultsInput,
   testPlanListTasksInput,
   testPlanListTestcaseCommentsInput,
   testPlanListTestTypesInput,
   testPlanListTestReportDefectsInput,
+  testPlanListTestReportCustomInfosInput,
   testPlanListTestReportIssuesInput,
   testPlanListTestReportQualityAttributesInput,
   testPlanListTestcaseFieldsInput,
@@ -80,12 +96,15 @@ import {
   testPlanListTesthubIteratorsV5Input,
   testPlanListTesthubServicesInput,
   testPlanListV4BranchesInput,
+  testPlanListVisibleServicesInput,
   testPlanListTestReportsInput,
+  testPlanGetServiceConfigInput,
   testPlanRunCasesInput,
   testPlanStopTaskExecutionInput,
   testPlanUpdateTaskInput
 } from "../products/testplan/schemas.js";
 import { createTestPlanCheckUserExistsHandler } from "../products/testplan/tools/check-user-exists.js";
+import { createTestPlanCheckProjectMemberExistsHandler } from "../products/testplan/tools/check-project-member-exists.js";
 import { createTestPlanCheckResourceExistsHandler } from "../products/testplan/tools/check-resource-exists.js";
 import { createTestPlanCheckUserDefinedConfigUsedHandler } from "../products/testplan/tools/check-user-defined-config-used.js";
 import { createTestPlanBatchDeleteTasksHandler } from "../products/testplan/tools/batch-delete-tasks.js";
@@ -96,6 +115,7 @@ import { createTestPlanGetCaseHandler } from "../products/testplan/tools/get-cas
 import { createTestPlanGetCustomTemplateHandler } from "../products/testplan/tools/get-custom-template.js";
 import { createTestPlanGetCurrentUserPackagePermissionHandler } from "../products/testplan/tools/get-current-user-package-permission.js";
 import { createTestPlanGetCustomizedColumnsHandler } from "../products/testplan/tools/get-customized-columns.js";
+import { createTestPlanGetDashboardRunPanelHandler } from "../products/testplan/tools/get-dashboard-run-panel.js";
 import { createTestPlanGetDomainAccessInfoHandler } from "../products/testplan/tools/get-domain-access-info.js";
 import { createTestPlanGetDomainDetailInfoHandler } from "../products/testplan/tools/get-domain-detail-info.js";
 import { createTestPlanGetDomainFrozenInfoHandler } from "../products/testplan/tools/get-domain-frozen-info.js";
@@ -107,6 +127,7 @@ import { createTestPlanGetGt3kTestcaseChangeStatisticsHandler } from "../product
 import { createTestPlanGetGt3kUserInfoDomainHandler } from "../products/testplan/tools/get-gt3k-user-info-domain.js";
 import { createTestPlanGetImageCapacityWarningHandler } from "../products/testplan/tools/get-image-capacity-warning.js";
 import { createTestPlanGetIteratorHandler } from "../products/testplan/tools/get-iterator.js";
+import { createTestPlanGetLicenseSpecificationHandler } from "../products/testplan/tools/get-license-specification.js";
 import { createTestPlanGetPlanHandler } from "../products/testplan/tools/get-plan.js";
 import { createTestPlanGetProjectAdvancedFeatureTrialHandler } from "../products/testplan/tools/get-project-advanced-feature-trial.js";
 import { createTestPlanGetProjectAdvancedFeatureTrustedHandler } from "../products/testplan/tools/get-project-advanced-feature-trusted.js";
@@ -114,6 +135,9 @@ import { createTestPlanGetProjectDomainDetailInfoHandler } from "../products/tes
 import { createTestPlanGetProjectIssueUpdateNotificationHandler } from "../products/testplan/tools/get-project-issue-update-notification.js";
 import { createTestPlanGetProjectMasterVersionHandler } from "../products/testplan/tools/get-project-master-version.js";
 import { createTestPlanGetProjectMessageNoticesHandler } from "../products/testplan/tools/get-project-message-notices.js";
+import { createTestPlanGetProjectServiceRepoHandler } from "../products/testplan/tools/get-project-service-repo.js";
+import { createTestPlanGetProjectSystemConfigHandler } from "../products/testplan/tools/get-project-system-config.js";
+import { createTestPlanGetProjectTestcaseGlobalConfigHandler } from "../products/testplan/tools/get-project-testcase-global-config.js";
 import { createTestPlanGetRuleCheckTaskReportHandler } from "../products/testplan/tools/get-rule-check-task-report.js";
 import { createTestPlanGetRuleCheckTaskSummaryHandler } from "../products/testplan/tools/get-rule-check-task-summary.js";
 import { createTestPlanGetTestReportHandler } from "../products/testplan/tools/get-test-report.js";
@@ -129,30 +153,40 @@ import { createTestPlanGetUserDisclaimerHandler } from "../products/testplan/too
 import { createTestPlanGetUserInfoDomainHandler } from "../products/testplan/tools/get-user-info-domain.js";
 import { createTestPlanGetUserPackagePermissionHandler } from "../products/testplan/tools/get-user-package-permission.js";
 import { createTestPlanInitTaskExecutionHandler } from "../products/testplan/tools/init-task-execution.js";
+import { createTestPlanListAlertTemplatesHandler } from "../products/testplan/tools/list-alert-templates.js";
 import { createTestPlanListAttachmentsHandler } from "../products/testplan/tools/list-attachments.js";
 import { createTestPlanListCustomReportsHandler } from "../products/testplan/tools/list-custom-reports.js";
 import { createTestPlanListCustomTemplateReportsHandler } from "../products/testplan/tools/list-custom-template-reports.js";
 import { createTestPlanListCurrentUserTestcasesHandler } from "../products/testplan/tools/list-current-user-testcases.js";
+import { createTestPlanListDomainUsageInfosHandler } from "../products/testplan/tools/list-domain-usage-infos.js";
+import { createTestPlanListEnvironmentsHandler } from "../products/testplan/tools/list-environments.js";
 import { createTestPlanListGt3kBranchesHandler } from "../products/testplan/tools/list-gt3k-branches.js";
 import { createTestPlanListGt3kCurrentUserTestcasesHandler } from "../products/testplan/tools/list-gt3k-current-user-testcases.js";
+import { createTestPlanListIteratorInfosHandler } from "../products/testplan/tools/list-iterator-infos.js";
 import { createTestPlanListIteratorHistoriesHandler } from "../products/testplan/tools/list-iterator-histories.js";
 import { createTestPlanListIteratorIssuesHandler } from "../products/testplan/tools/list-iterator-issues.js";
 import { createTestPlanListCasesHandler } from "../products/testplan/tools/list-cases.js";
 import { createTestPlanListIssuesHandler } from "../products/testplan/tools/list-issues.js";
 import { createTestPlanListPlansHandler } from "../products/testplan/tools/list-plans.js";
 import { createTestPlanListProjectFieldConfigsHandler } from "../products/testplan/tools/list-project-field-configs.js";
+import { createTestPlanListProjectServiceReposHandler } from "../products/testplan/tools/list-project-service-repos.js";
 import { createTestPlanListProjectTagsHandler } from "../products/testplan/tools/list-project-tags.js";
 import { createTestPlanListProjectUsersHandler } from "../products/testplan/tools/list-project-users.js";
 import { createTestPlanListProgressReportsHandler } from "../products/testplan/tools/list-progress-reports.js";
 import { createTestPlanListRegisteredServicesHandler } from "../products/testplan/tools/list-registered-services.js";
 import { createTestPlanListReleaseVersionsHandler } from "../products/testplan/tools/list-release-versions.js";
+import { createTestPlanListResourceNumberRulesHandler } from "../products/testplan/tools/list-resource-number-rules.js";
+import { createTestPlanListResourcePoolsHandler } from "../products/testplan/tools/list-resource-pools.js";
 import { createTestPlanListRunsHandler } from "../products/testplan/tools/list-runs.js";
+import { createTestPlanListServiceOfferingsHandler } from "../products/testplan/tools/list-service-offerings.js";
 import { createTestPlanListTaskCasesHandler } from "../products/testplan/tools/list-task-cases.js";
 import { createTestPlanListTaskCasesV4Handler } from "../products/testplan/tools/list-task-cases-v4.js";
+import { createTestPlanListTaskDefectsHandler } from "../products/testplan/tools/list-task-defects.js";
 import { createTestPlanListTaskResultsHandler } from "../products/testplan/tools/list-task-results.js";
 import { createTestPlanListTasksHandler } from "../products/testplan/tools/list-tasks.js";
 import { createTestPlanListTestTypesHandler } from "../products/testplan/tools/list-test-types.js";
 import { createTestPlanListTestReportDefectsHandler } from "../products/testplan/tools/list-test-report-defects.js";
+import { createTestPlanListTestReportCustomInfosHandler } from "../products/testplan/tools/list-test-report-custom-infos.js";
 import { createTestPlanListTestReportIssuesHandler } from "../products/testplan/tools/list-test-report-issues.js";
 import { createTestPlanListTestReportQualityAttributesHandler } from "../products/testplan/tools/list-test-report-quality-attributes.js";
 import { createTestPlanListTestcaseCommentsHandler } from "../products/testplan/tools/list-testcase-comments.js";
@@ -164,6 +198,8 @@ import { createTestPlanListTesthubIteratorsV5Handler } from "../products/testpla
 import { createTestPlanListTesthubServicesHandler } from "../products/testplan/tools/list-testhub-services.js";
 import { createTestPlanListTestReportsHandler } from "../products/testplan/tools/list-test-reports.js";
 import { createTestPlanListV4BranchesHandler } from "../products/testplan/tools/list-v4-branches.js";
+import { createTestPlanListVisibleServicesHandler } from "../products/testplan/tools/list-visible-services.js";
+import { createTestPlanGetServiceConfigHandler } from "../products/testplan/tools/get-service-config.js";
 import { createTestPlanRunCasesHandler } from "../products/testplan/tools/run-cases.js";
 import { createTestPlanStopTaskExecutionHandler } from "../products/testplan/tools/stop-task-execution.js";
 import { createTestPlanUpdateTaskHandler } from "../products/testplan/tools/update-task.js";
@@ -289,6 +325,114 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanCheckUserExistsInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanCheckUserExistsHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanCheckUserExistsHandler
+  }),
+  "testplan_list_service_offerings": defineProductTool({
+    description: "List CodeArts TestPlan service offering information",
+    inputSchema: testPlanListServiceOfferingsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListServiceOfferingsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListServiceOfferingsHandler
+  }),
+  "testplan_list_environments": defineProductTool({
+    description: "List CodeArts TestPlan environment parameter groups",
+    inputSchema: testPlanListEnvironmentsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListEnvironmentsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListEnvironmentsHandler
+  }),
+  "testplan_list_iterator_infos": defineProductTool({
+    description: "List CodeArts TestPlan iterator information",
+    inputSchema: testPlanListIteratorInfosInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListIteratorInfosHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListIteratorInfosHandler
+  }),
+  "testplan_list_visible_services": defineProductTool({
+    description: "List CodeArts TestPlan visible third-party services",
+    inputSchema: testPlanListVisibleServicesInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListVisibleServicesHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListVisibleServicesHandler
+  }),
+  "testplan_get_license_specification": defineProductTool({
+    description: "Get CodeArts TestPlan license specification",
+    inputSchema: testPlanGetLicenseSpecificationInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetLicenseSpecificationHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetLicenseSpecificationHandler
+  }),
+  "testplan_list_resource_number_rules": defineProductTool({
+    description: "List CodeArts TestPlan resource number rules",
+    inputSchema: testPlanListResourceNumberRulesInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListResourceNumberRulesHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListResourceNumberRulesHandler
+  }),
+  "testplan_get_project_testcase_global_config": defineProductTool({
+    description: "Get CodeArts TestPlan project testcase global configuration",
+    inputSchema: testPlanGetProjectTestcaseGlobalConfigInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetProjectTestcaseGlobalConfigHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetProjectTestcaseGlobalConfigHandler
+  }),
+  "testplan_get_project_system_config": defineProductTool({
+    description: "Get CodeArts TestPlan project feature switch status",
+    inputSchema: testPlanGetProjectSystemConfigInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetProjectSystemConfigHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetProjectSystemConfigHandler
+  }),
+  "testplan_check_project_member_exists": defineProductTool({
+    description: "Check whether the current user is a CodeArts TestPlan project member",
+    inputSchema: testPlanCheckProjectMemberExistsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanCheckProjectMemberExistsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanCheckProjectMemberExistsHandler
+  }),
+  "testplan_list_test_report_custom_infos": defineProductTool({
+    description: "List CodeArts TestPlan test report custom modules",
+    inputSchema: testPlanListTestReportCustomInfosInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTestReportCustomInfosHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListTestReportCustomInfosHandler
+  }),
+  "testplan_list_project_service_repos": defineProductTool({
+    description: "List CodeArts TestPlan project service repository information",
+    inputSchema: testPlanListProjectServiceReposInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListProjectServiceReposHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListProjectServiceReposHandler
+  }),
+  "testplan_get_project_service_repo": defineProductTool({
+    description: "Get CodeArts TestPlan project service repository information",
+    inputSchema: testPlanGetProjectServiceRepoInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetProjectServiceRepoHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetProjectServiceRepoHandler
+  }),
+  "testplan_list_task_defects": defineProductTool({
+    description: "List CodeArts TestPlan defects under a test suite task",
+    inputSchema: testPlanListTaskDefectsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTaskDefectsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListTaskDefectsHandler
+  }),
+  "testplan_list_resource_pools": defineProductTool({
+    description: "List CodeArts TestPlan resource pools",
+    inputSchema: testPlanListResourcePoolsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListResourcePoolsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListResourcePoolsHandler
+  }),
+  "testplan_list_domain_usage_infos": defineProductTool({
+    description: "List CodeArts TestPlan domain usage warning information",
+    inputSchema: testPlanListDomainUsageInfosInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListDomainUsageInfosHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListDomainUsageInfosHandler
+  }),
+  "testplan_get_service_config": defineProductTool({
+    description: "Get CodeArts TestPlan service configuration by key",
+    inputSchema: testPlanGetServiceConfigInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetServiceConfigHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetServiceConfigHandler
+  }),
+  "testplan_list_alert_templates": defineProductTool({
+    description: "List CodeArts TestPlan alert templates",
+    inputSchema: testPlanListAlertTemplatesInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListAlertTemplatesHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListAlertTemplatesHandler
+  }),
+  "testplan_get_dashboard_run_panel": defineProductTool({
+    description: "Get CodeArts TestPlan dashboard run panel information",
+    inputSchema: testPlanGetDashboardRunPanelInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetDashboardRunPanelHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetDashboardRunPanelHandler
   }),
   "testplan_get_domain_detail_info": defineProductTool({
     description: "Get CodeArts TestPlan domain detail information",

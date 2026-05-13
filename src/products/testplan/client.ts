@@ -560,6 +560,108 @@ export type TestPlanClient = {
     value?: unknown;
     raw: Record<string, unknown>;
   }>;
+  listServiceOfferings: (input: { serviceNames?: string }) => Promise<{
+    offerings: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listEnvironments: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    environments: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listIteratorInfos: (input: { project_id: string }) => Promise<{
+    iterators: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listVisibleServices: (input: { project_id: string }) => Promise<{
+    services: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getLicenseSpecification: () => Promise<{
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  listResourceNumberRules: (input: { project_id: string }) => Promise<{
+    rules: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getProjectTestcaseGlobalConfig: (input: { project_id: string }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  getProjectSystemConfig: (input: {
+    project_uuid: string;
+    owner_id: string;
+    feature_name: string;
+  }) => Promise<{
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  checkProjectMemberExists: () => Promise<{
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  listTestReportCustomInfos: (input: {
+    project_id: string;
+    version_uri: string;
+    report_uri: string;
+  }) => Promise<{
+    infos: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listProjectServiceRepos: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    repos: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getProjectServiceRepo: (input: {
+    project_id: string;
+    service_id: string | number;
+  }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  listTaskDefects: (input: {
+    project_id: string;
+    task_uri: string;
+    page: number;
+    page_size: number;
+    version_uri?: string;
+  }) => Promise<{
+    defects: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listResourcePools: (input: { project_id: string }) => Promise<{
+    pools: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listDomainUsageInfos: (input: { project_uuid: string }) => Promise<{
+    usages: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getServiceConfig: (input: {
+    service_id: string;
+    key: string;
+    type: string;
+  }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  listAlertTemplates: (input: {
+    service_id: string;
+    page: number;
+    page_size: number;
+    name?: string;
+  }) => Promise<{
+    templates: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getDashboardRunPanel: (input: { service_id: string }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
   listTesthubBranches: (input: {
     project_id: string;
     page: number;
@@ -2084,6 +2186,273 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       return {
         value,
         raw: payload
+      };
+    },
+    async listServiceOfferings(input) {
+      const query = new URLSearchParams();
+      appendQueryValue(query, "serviceNames", input.serviceNames);
+      const suffix = query.size ? `?${query.toString()}` : "";
+
+      const response = await _http.get(`/v4/service/offering${suffix}`);
+      const payload = readResultPayload(response);
+      const offerings = readArray<Record<string, unknown>>(
+        Array.isArray(response)
+          ? response
+          : payload.value ?? payload.offerings ?? payload.items ?? payload.list
+      );
+
+      return {
+        offerings,
+        total: readTotal(payload, response, offerings.length)
+      };
+    },
+    async listEnvironments(input) {
+      const query = new URLSearchParams({
+        offset: String(pageToOffset(input.page, input.page_size)),
+        limit: String(input.page_size)
+      });
+
+      const response = await _http.get(
+        `/v1/projects/${encodeURIComponent(input.project_id)}/environments?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const environments = readArray<Record<string, unknown>>(
+        payload.environments ?? payload.value ?? payload.items ?? payload.list
+      );
+
+      return {
+        environments,
+        total: readTotal(payload, response, environments.length)
+      };
+    },
+    async listIteratorInfos(input) {
+      const response = await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/iterator-infos`
+      );
+      const payload = readResultPayload(response);
+      const iterators = readArray<Record<string, unknown>>(
+        payload.value ?? payload.iterators ?? payload.items ?? payload.list
+      );
+
+      return {
+        iterators,
+        total: readTotal(payload, response, iterators.length)
+      };
+    },
+    async listVisibleServices(input) {
+      const response = await _http.get(
+        `/v4/${encodeURIComponent(input.project_id)}/visible-services`
+      );
+      const payload = readResultPayload(response);
+      const services = readArray<Record<string, unknown>>(
+        payload.value ?? payload.services ?? payload.items ?? payload.list
+      );
+
+      return {
+        services,
+        total: readTotal(payload, response, services.length)
+      };
+    },
+    async getLicenseSpecification() {
+      const response = await _http.get("/v4/license/specification");
+      const payload = readResultPayload(response);
+      const value = payload.value;
+
+      return {
+        value,
+        raw: payload
+      };
+    },
+    async listResourceNumberRules(input) {
+      const response = await _http.get(
+        `/v4/${encodeURIComponent(input.project_id)}/resource-number-rule`
+      );
+      const payload = readResultPayload(response);
+      const rules = readArray<Record<string, unknown>>(
+        payload.value ?? payload.rules ?? payload.items ?? payload.list
+      );
+
+      return {
+        rules,
+        total: readTotal(payload, response, rules.length)
+      };
+    },
+    async getProjectTestcaseGlobalConfig(input) {
+      const response = await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/testcase/global/config`
+      );
+      const payload = readResultPayload(response);
+      const config = readEnvelope(payload.value) ?? payload;
+
+      return {
+        raw: config
+      };
+    },
+    async getProjectSystemConfig(input) {
+      const query = new URLSearchParams({
+        owner_id: input.owner_id,
+        feature_name: input.feature_name
+      });
+
+      const response = await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_uuid)}/system-config?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const value = payload.value;
+
+      return {
+        value,
+        raw: payload
+      };
+    },
+    async checkProjectMemberExists() {
+      const response = await _http.get("/v4/projects/member/exist");
+      const payload = readResultPayload(response);
+      const value = payload.value;
+
+      return {
+        value,
+        raw: payload
+      };
+    },
+    async listTestReportCustomInfos(input) {
+      const response = await _http.get(
+        `/v4/${encodeURIComponent(input.project_id)}/versions/${encodeURIComponent(input.version_uri)}/test-reports/${encodeURIComponent(input.report_uri)}/custom-infos`
+      );
+      const payload = readResultPayload(response);
+      const infos = readArray<Record<string, unknown>>(
+        payload.value ?? payload.infos ?? payload.items ?? payload.list
+      );
+
+      return {
+        infos,
+        total: readTotal(payload, response, infos.length)
+      };
+    },
+    async listProjectServiceRepos(input) {
+      const query = new URLSearchParams({
+        page_no: String(input.page),
+        page_size: String(input.page_size)
+      });
+
+      const response = await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/service-repos?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const repos = readArray<Record<string, unknown>>(
+        payload.value ?? payload.repos ?? payload.items ?? payload.list
+      );
+
+      return {
+        repos,
+        total: readTotal(payload, response, repos.length)
+      };
+    },
+    async getProjectServiceRepo(input) {
+      const response = await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/services/${encodeURIComponent(String(input.service_id))}/repo`
+      );
+      const payload = readResultPayload(response);
+      const repo = readEnvelope(payload.value) ?? payload;
+
+      return {
+        raw: repo
+      };
+    },
+    async listTaskDefects(input) {
+      const query = new URLSearchParams({
+        page_no: String(input.page),
+        page_size: String(input.page_size)
+      });
+      appendQueryValue(query, "version_uri", input.version_uri);
+
+      const response = await _http.get(
+        `/v4/${encodeURIComponent(input.project_id)}/tasks/${encodeURIComponent(input.task_uri)}/defects/batch-query?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const defects = readArray<Record<string, unknown>>(
+        payload.value ?? payload.defects ?? payload.items ?? payload.list
+      );
+
+      return {
+        defects,
+        total: readTotal(payload, response, defects.length)
+      };
+    },
+    async listResourcePools(input) {
+      const response = await _http.get(
+        `/v4/${encodeURIComponent(input.project_id)}/resource-pools`
+      );
+      const payload = readResultPayload(response);
+      const pools = readArray<Record<string, unknown>>(
+        payload.value ?? payload.pools ?? payload.items ?? payload.list
+      );
+
+      return {
+        pools,
+        total: readTotal(payload, response, pools.length)
+      };
+    },
+    async listDomainUsageInfos(input) {
+      const query = new URLSearchParams({
+        project_uuid: input.project_uuid
+      });
+
+      const response = await _http.get(`/v4/domain/usage?${query.toString()}`);
+      const payload = readResultPayload(response);
+      const usages = readArray<Record<string, unknown>>(
+        payload.value ?? payload.usages ?? payload.items ?? payload.list
+      );
+
+      return {
+        usages,
+        total: readTotal(payload, response, usages.length)
+      };
+    },
+    async getServiceConfig(input) {
+      const query = new URLSearchParams({
+        key: input.key,
+        type: input.type
+      });
+
+      const response = await _http.get(
+        `/v1/projects/${encodeURIComponent(input.service_id)}/service/config?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const config = readEnvelope(payload.value) ?? payload;
+
+      return {
+        raw: config
+      };
+    },
+    async listAlertTemplates(input) {
+      const query = new URLSearchParams();
+      appendQueryValue(query, "name", input.name);
+      appendQueryValue(query, "page_num", input.page);
+      appendQueryValue(query, "page_size", input.page_size);
+
+      const response = await _http.get(
+        `/v1/projects/${encodeURIComponent(input.service_id)}/alert-templates?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const templates = readArray<Record<string, unknown>>(
+        payload.list ?? payload.value ?? payload.templates ?? payload.items
+      );
+
+      return {
+        templates,
+        total: readTotal(payload, response, templates.length)
+      };
+    },
+    async getDashboardRunPanel(input) {
+      const response = await _http.get(
+        `/v2/projects/${encodeURIComponent(input.service_id)}/dashboard/run-panel`
+      );
+      const payload = readResultPayload(response);
+      const panel = readEnvelope(payload.value) ?? payload;
+
+      return {
+        raw: panel
       };
     },
     async listTesthubBranches(input) {
