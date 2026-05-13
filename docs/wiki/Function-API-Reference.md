@@ -32,8 +32,8 @@
 | 流水线 | 78 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 106 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 201 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
-| 测试计划 | 114 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **612** | |
+| 测试计划 | 124 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
+| **总计** | **622** | |
 
 ## 字段对应
 
@@ -548,6 +548,10 @@
 | `testplan_check_user_exists` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_check_user_exists) |
 | `testplan_create_task` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_create_task) |
 | `testplan_create_task_relations` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_create_task_relations) |
+| `testplan_get_api_test_debug_log` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_api_test_debug_log) |
+| `testplan_get_api_test_package_charge_message` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_api_test_package_charge_message) |
+| `testplan_get_api_test_package_charge_popup` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_api_test_package_charge_popup) |
+| `testplan_get_api_test_task_status` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_api_test_task_status) |
 | `testplan_get_branch` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_branch) |
 | `testplan_get_case` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_case) |
 | `testplan_get_case_template` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_case_template) |
@@ -564,6 +568,7 @@
 | `testplan_get_gt3k_branch` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_gt3k_branch) |
 | `testplan_get_gt3k_domain_info` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_gt3k_domain_info) |
 | `testplan_get_gt3k_free_declaration` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_gt3k_free_declaration) |
+| `testplan_get_gt3k_progress` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_gt3k_progress) |
 | `testplan_get_gt3k_testcase_change_statistics` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_gt3k_testcase_change_statistics) |
 | `testplan_get_gt3k_user_info_domain` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_gt3k_user_info_domain) |
 | `testplan_get_image_capacity_warning` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_image_capacity_warning) |
@@ -582,6 +587,7 @@
 | `testplan_get_rule_check_task_report` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_rule_check_task_report) |
 | `testplan_get_rule_check_task_summary` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_rule_check_task_summary) |
 | `testplan_get_service_config` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_service_config) |
+| `testplan_get_suite_info_page_url` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_suite_info_page_url) |
 | `testplan_get_task` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_task) |
 | `testplan_get_task_execution_param` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_task_execution_param) |
 | `testplan_get_task_result_detail` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_task_result_detail) |
@@ -592,21 +598,25 @@
 | `testplan_get_testcase_v4` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_testcase_v4) |
 | `testplan_get_testhub_case` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_testhub_case) |
 | `testplan_get_testhub_case_by_number` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_testhub_case_by_number) |
+| `testplan_get_testhub_task` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_testhub_task) |
 | `testplan_get_user_disclaimer` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_user_disclaimer) |
 | `testplan_get_user_info_domain` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_user_info_domain) |
 | `testplan_get_user_package_permission` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_user_package_permission) |
 | `testplan_init_task_execution` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_init_task_execution) |
 | `testplan_list_alert_templates` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_alert_templates) |
+| `testplan_list_api_test_package_usage` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_api_test_package_usage) |
 | `testplan_list_attachments` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_attachments) |
 | `testplan_list_cases` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_cases) |
 | `testplan_list_current_user_testcases` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_current_user_testcases) |
 | `testplan_list_custom_reports` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_custom_reports) |
 | `testplan_list_custom_template_reports` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_custom_template_reports) |
+| `testplan_list_defect_iterators` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_defect_iterators) |
 | `testplan_list_domain_usage_infos` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_domain_usage_infos) |
 | `testplan_list_environments` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_environments) |
 | `testplan_list_feature_descendant_uris` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_feature_descendant_uris) |
 | `testplan_list_gt3k_branches` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_gt3k_branches) |
 | `testplan_list_gt3k_current_user_testcases` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_gt3k_current_user_testcases) |
+| `testplan_list_gt3k_defect_iterators` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_gt3k_defect_iterators) |
 | `testplan_list_gt3k_domain_usage_infos` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_gt3k_domain_usage_infos) |
 | `testplan_list_gt3k_iterator_infos` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_gt3k_iterator_infos) |
 | `testplan_list_gt3k_project_service_repos` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_gt3k_project_service_repos) |

@@ -118,6 +118,23 @@ export type TestPlanClient = {
     executor_id?: string;
     executor_name?: string;
   }>;
+  getTesthubTask: (input: {
+    project_id: string;
+    task_uri: string;
+    version_uri?: string;
+  }) => Promise<{
+    task_id: string;
+    name?: string;
+    raw: Record<string, unknown>;
+  }>;
+  getApiTestTaskStatus: (input: {
+    project_id: string;
+    task_id: string;
+  }) => Promise<{
+    task_id: string;
+    status?: string;
+    raw: Record<string, unknown>;
+  }>;
   getTaskExecutionParam: (input: {
     task_uri: string;
     project_uuid?: string;
@@ -173,6 +190,20 @@ export type TestPlanClient = {
     query?: Record<string, string | number | boolean | string[]>;
   }) => Promise<{
     defects: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listGt3kDefectIterators: (input: {
+    project_id: string;
+    defect_id: string;
+  }) => Promise<{
+    iterators: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listDefectIterators: (input: {
+    project_id: string;
+    defect_id: string;
+  }) => Promise<{
+    iterators: Array<Record<string, unknown>>;
     total?: number;
   }>;
   listTestReportQualityAttributes: (input: {
@@ -643,6 +674,12 @@ export type TestPlanClient = {
     usages: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  getGt3kProgress: (input: {
+    operation_uri: string;
+    project_uuid: string;
+  }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
   getServiceConfig: (input: {
     service_id: string;
     key: string;
@@ -660,6 +697,30 @@ export type TestPlanClient = {
     total?: number;
   }>;
   getDashboardRunPanel: (input: { service_id: string }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  getApiTestPackageChargePopup: (input: { project_id: string }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  listApiTestPackageUsage: (input: { project_id: string }) => Promise<{
+    usages: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getApiTestPackageChargeMessage: (input: { project_id: string }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  getSuiteInfoPageUrl: (input: {
+    testServiceId: string;
+    suiteId: string;
+  }) => Promise<{
+    page_url?: string;
+    raw: Record<string, unknown>;
+  }>;
+  getApiTestDebugLog: (input: {
+    project_id: string;
+    case_id: string;
+    task_id: string;
+  }) => Promise<{
     raw: Record<string, unknown>;
   }>;
   listGt3kProjectServiceRepos: (input: {
@@ -1344,6 +1405,35 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         executor_name: item.executor_name
       };
     },
+    async getTesthubTask(input) {
+      const query = new URLSearchParams();
+      appendQueryValue(query, "version_uri", input.version_uri);
+      const suffix = query.size ? `?${query.toString()}` : "";
+      const response = await _http.get(
+        `/v4/testhub/projects/${encodeURIComponent(input.project_id)}/tasks/${encodeURIComponent(input.task_uri)}${suffix}`
+      );
+      const payload = readResultPayload(response);
+      const task = readEnvelope(payload.value) ?? payload;
+
+      return {
+        task_id: String(task.uri ?? task.task_uri ?? task.id ?? input.task_uri),
+        name: typeof task.name === "string" ? task.name : undefined,
+        raw: task
+      };
+    },
+    async getApiTestTaskStatus(input) {
+      const response = await _http.get(
+        `/v1/${encodeURIComponent(input.project_id)}/task/${encodeURIComponent(input.task_id)}`
+      );
+      const payload = readResultPayload(response);
+      const task = readEnvelope(payload.value) ?? payload;
+
+      return {
+        task_id: String(task.uri ?? task.task_uri ?? task.id ?? input.task_id),
+        status: typeof task.status === "string" ? task.status : undefined,
+        raw: task
+      };
+    },
     async getTaskExecutionParam(input) {
       const query = new URLSearchParams();
       if (input.project_uuid) {
@@ -1456,6 +1546,34 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       return {
         defects,
         total: readTotal(payload, response, defects.length)
+      };
+    },
+    async listGt3kDefectIterators(input) {
+      const response = await _http.get(
+        `/GT3KServer/v4/${encodeURIComponent(input.project_id)}/defects/${encodeURIComponent(input.defect_id)}/iterators`
+      );
+      const payload = readResultPayload(response);
+      const iterators = readArray<Record<string, unknown>>(
+        payload.value ?? payload.iterators ?? payload.items ?? payload.list
+      );
+
+      return {
+        iterators,
+        total: readTotal(payload, response, iterators.length)
+      };
+    },
+    async listDefectIterators(input) {
+      const response = await _http.get(
+        `/v4/${encodeURIComponent(input.project_id)}/defects/${encodeURIComponent(input.defect_id)}/iterators`
+      );
+      const payload = readResultPayload(response);
+      const iterators = readArray<Record<string, unknown>>(
+        payload.value ?? payload.iterators ?? payload.items ?? payload.list
+      );
+
+      return {
+        iterators,
+        total: readTotal(payload, response, iterators.length)
       };
     },
     async listTestReportQualityAttributes(input) {
@@ -2483,6 +2601,20 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         total: readTotal(payload, response, usages.length)
       };
     },
+    async getGt3kProgress(input) {
+      const query = new URLSearchParams({
+        project_uuid: input.project_uuid
+      });
+      const response = await _http.get(
+        `/GT3KServer/v4/progress/${encodeURIComponent(input.operation_uri)}?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const progress = readEnvelope(payload.value) ?? payload;
+
+      return {
+        raw: progress
+      };
+    },
     async getServiceConfig(input) {
       const query = new URLSearchParams({
         key: input.key,
@@ -2527,6 +2659,65 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
 
       return {
         raw: panel
+      };
+    },
+    async getApiTestPackageChargePopup(input) {
+      const response = await _http.get(
+        `/v1/projects/${encodeURIComponent(input.project_id)}/package-charge/popup`
+      );
+      const payload = readResultPayload(response);
+      const popup = readEnvelope(payload.value) ?? payload;
+
+      return {
+        raw: popup
+      };
+    },
+    async listApiTestPackageUsage(input) {
+      const response = await _http.get(
+        `/v1/projects/${encodeURIComponent(input.project_id)}/package-usage`
+      );
+      const payload = readResultPayload(response);
+      const usages = readArray<Record<string, unknown>>(
+        payload.value ?? payload.result ?? payload.usages ?? payload.items ?? payload.list
+      );
+
+      return {
+        usages,
+        total: readTotal(payload, response, usages.length)
+      };
+    },
+    async getApiTestPackageChargeMessage(input) {
+      const response = await _http.get(
+        `/v1/projects/${encodeURIComponent(input.project_id)}/package-charge/message`
+      );
+      const payload = readResultPayload(response);
+      const message = readEnvelope(payload.value) ?? payload;
+
+      return {
+        raw: message
+      };
+    },
+    async getSuiteInfoPageUrl(input) {
+      const response = await _http.get(
+        `/v2/getSuiteInfoPageUrl/${encodeURIComponent(input.testServiceId)}/${encodeURIComponent(input.suiteId)}`
+      );
+      const payload = readResultPayload(response);
+      const pageUrl = typeof payload.pageUrl === "string" ? payload.pageUrl : undefined;
+
+      return {
+        page_url: pageUrl,
+        raw: payload
+      };
+    },
+    async getApiTestDebugLog(input) {
+      const response = await _http.get(
+        `/v1/projects/${encodeURIComponent(input.project_id)}/testcases/${encodeURIComponent(input.case_id)}/task/${encodeURIComponent(input.task_id)}/debug-log`
+      );
+      const payload = readResultPayload(response);
+      const debugLog = readEnvelope(payload.value) ?? payload;
+
+      return {
+        raw: debugLog
       };
     },
     async listGt3kProjectServiceRepos(input) {

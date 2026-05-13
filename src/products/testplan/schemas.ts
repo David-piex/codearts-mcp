@@ -53,6 +53,17 @@ export const testPlanGetTaskInput = z.object({
   version_uri: idSchema.optional()
 });
 
+export const testPlanGetTesthubTaskInput = z.object({
+  project_id: idSchema,
+  task_uri: idSchema,
+  version_uri: idSchema.optional()
+});
+
+export const testPlanGetApiTestTaskStatusInput = z.object({
+  project_id: idSchema,
+  task_id: idSchema
+});
+
 export const testPlanGetTaskExecutionParamInput = z.object({
   task_uri: idSchema,
   project_uuid: idSchema.optional()
@@ -85,6 +96,16 @@ export const testPlanListTestReportDefectsInput = pagingSchema.extend({
   report_uri: idSchema,
   resolved: z.boolean().optional(),
   query: z.record(z.string(), queryValueSchema).optional()
+});
+
+export const testPlanListGt3kDefectIteratorsInput = z.object({
+  project_id: idSchema,
+  defect_id: idSchema
+});
+
+export const testPlanListDefectIteratorsInput = z.object({
+  project_id: idSchema,
+  defect_id: idSchema
 });
 
 export const testPlanListTestReportQualityAttributesInput = z.object({
@@ -404,6 +425,11 @@ export const testPlanListDomainUsageInfosInput = z.object({
   project_uuid: idSchema
 });
 
+export const testPlanGetGt3kProgressInput = z.object({
+  operation_uri: idSchema,
+  project_uuid: idSchema
+});
+
 export const testPlanGetServiceConfigInput = z.object({
   service_id: idSchema,
   key: z.string().min(1),
@@ -417,6 +443,29 @@ export const testPlanListAlertTemplatesInput = pagingSchema.extend({
 
 export const testPlanGetDashboardRunPanelInput = z.object({
   service_id: idSchema
+});
+
+export const testPlanGetApiTestPackageChargePopupInput = z.object({
+  project_id: idSchema
+});
+
+export const testPlanListApiTestPackageUsageInput = z.object({
+  project_id: idSchema
+});
+
+export const testPlanGetApiTestPackageChargeMessageInput = z.object({
+  project_id: idSchema
+});
+
+export const testPlanGetSuiteInfoPageUrlInput = z.object({
+  testServiceId: idSchema,
+  suiteId: idSchema
+});
+
+export const testPlanGetApiTestDebugLogInput = z.object({
+  project_id: idSchema,
+  case_id: idSchema,
+  task_id: idSchema
 });
 
 export const testPlanListGt3kProjectServiceReposInput = pagingSchema.extend({

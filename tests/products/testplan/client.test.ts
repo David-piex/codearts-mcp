@@ -2523,4 +2523,143 @@ describe("createTestPlanClient", () => {
       "/v4/project-1/testcase/field/field-1"
     ]);
   });
+
+  it("gets TestPlan TestHub, defect iterator, progress, and API test read endpoints", async () => {
+    const requests: string[] = [];
+    const client = createTestPlanClient({
+      get: async (path: string) => {
+        requests.push(path);
+        if (path.includes("/testhub/projects/") && path.includes("/tasks/")) {
+          return { result: { uri: "task-1", name: "API suite" } };
+        }
+        if (path.includes("/defects/defect-1/iterators")) {
+          return { value: [{ uri: "iterator-1", name: "Sprint" }], total: 1 };
+        }
+        if (path.includes("/progress/operation-1")) {
+          return { uri: "operation-1", completed: true };
+        }
+        if (path.includes("/package-charge/popup")) {
+          return { result: { popup: false, time_limit: 0 } };
+        }
+        if (path.includes("/package-usage")) {
+          return { result: [{ name: "test_duration", used_percent: 0 }] };
+        }
+        if (path.includes("/package-charge/message")) {
+          return { result: { message: "ok" } };
+        }
+        if (path === "/v1/project-1/task/task-1") {
+          return { result: { id: "task-1", status: "success" } };
+        }
+        if (path.includes("/getSuiteInfoPageUrl/")) {
+          return { pageUrl: "https://example.com/suite" };
+        }
+        if (path.includes("/debug-log")) {
+          return { status: "success", result: null, error: null };
+        }
+
+        return { value: {} };
+      }
+    } as never);
+
+    await expect(
+      client.getTesthubTask({
+        project_id: "project-1",
+        task_uri: "task-1",
+        version_uri: "version-1"
+      })
+    ).resolves.toEqual({
+      task_id: "task-1",
+      name: "API suite",
+      raw: { uri: "task-1", name: "API suite" }
+    });
+    await expect(
+      client.listGt3kDefectIterators({
+        project_id: "project-1",
+        defect_id: "defect-1"
+      })
+    ).resolves.toEqual({
+      iterators: [{ uri: "iterator-1", name: "Sprint" }],
+      total: 1
+    });
+    await expect(
+      client.listDefectIterators({
+        project_id: "project-1",
+        defect_id: "defect-1"
+      })
+    ).resolves.toEqual({
+      iterators: [{ uri: "iterator-1", name: "Sprint" }],
+      total: 1
+    });
+    await expect(
+      client.getGt3kProgress({
+        operation_uri: "operation-1",
+        project_uuid: "project-1"
+      })
+    ).resolves.toEqual({
+      raw: { uri: "operation-1", completed: true }
+    });
+    await expect(
+      client.getApiTestPackageChargePopup({
+        project_id: "project-1"
+      })
+    ).resolves.toEqual({
+      raw: { popup: false, time_limit: 0 }
+    });
+    await expect(
+      client.listApiTestPackageUsage({
+        project_id: "project-1"
+      })
+    ).resolves.toEqual({
+      usages: [{ name: "test_duration", used_percent: 0 }],
+      total: 1
+    });
+    await expect(
+      client.getApiTestPackageChargeMessage({
+        project_id: "project-1"
+      })
+    ).resolves.toEqual({
+      raw: { message: "ok" }
+    });
+    await expect(
+      client.getApiTestTaskStatus({
+        project_id: "project-1",
+        task_id: "task-1"
+      })
+    ).resolves.toEqual({
+      task_id: "task-1",
+      status: "success",
+      raw: { id: "task-1", status: "success" }
+    });
+    await expect(
+      client.getSuiteInfoPageUrl({
+        testServiceId: "service-1",
+        suiteId: "suite-1"
+      })
+    ).resolves.toEqual({
+      page_url: "https://example.com/suite",
+      raw: { pageUrl: "https://example.com/suite" }
+    });
+    await expect(
+      client.getApiTestDebugLog({
+        project_id: "project-1",
+        case_id: "case-1",
+        task_id: "task-1"
+      })
+    ).resolves.toEqual({
+      raw: { status: "success", result: null, error: null }
+    });
+
+    expect(requests).toEqual([
+      "/v4/testhub/projects/project-1/tasks/task-1?version_uri=version-1",
+      "/GT3KServer/v4/project-1/defects/defect-1/iterators",
+      "/v4/project-1/defects/defect-1/iterators",
+      "/GT3KServer/v4/progress/operation-1?project_uuid=project-1",
+      "/v1/projects/project-1/package-charge/popup",
+      "/v1/projects/project-1/package-usage",
+      "/v1/projects/project-1/package-charge/message",
+      "/v1/project-1/task/task-1",
+      "/v2/getSuiteInfoPageUrl/service-1/suite-1",
+      "/v1/projects/project-1/testcases/case-1/task/task-1/debug-log"
+    ]);
+  });
 });
