@@ -178,6 +178,37 @@ export const testPlanListProjectFieldConfigsInput = z.object({
   project_id: idSchema
 });
 
+export const testPlanListProjectUsersInput = pagingSchema.extend({
+  project_id: idSchema,
+  keyword: z.string().min(1).optional()
+});
+
+export const testPlanGetCurrentUserPackagePermissionInput = z.object({
+  project_id: idSchema,
+  package_type: z.string().min(1)
+});
+
+export const testPlanGetUserPackagePermissionInput = z.object({
+  project_id: idSchema,
+  user_id: idSchema,
+  package_type: z.string().min(1)
+});
+
+export const testPlanGetDomainUserCountInput = z.object({
+  project_id: idSchema
+});
+
+export const testPlanListProjectTagsInput = z.object({
+  project_id: idSchema,
+  resource_type: z.string().min(1)
+});
+
+export const testPlanGetCustomizedColumnsInput = z.object({
+  project_id: idSchema,
+  service_type: z.number().int(),
+  stage_type: z.number().int()
+});
+
 export const testPlanListTesthubBranchesInput = pagingSchema.extend({
   project_id: idSchema,
   sort_field: z.string().min(1).optional(),

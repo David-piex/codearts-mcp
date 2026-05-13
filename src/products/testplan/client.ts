@@ -313,6 +313,54 @@ export type TestPlanClient = {
     fields: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  listProjectUsers: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    keyword?: string;
+  }) => Promise<{
+    users: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getCurrentUserPackagePermission: (input: {
+    project_id: string;
+    package_type: string;
+  }) => Promise<{
+    project_id: string;
+    package_type: string;
+    raw: Record<string, unknown>;
+  }>;
+  getUserPackagePermission: (input: {
+    project_id: string;
+    user_id: string;
+    package_type: string;
+  }) => Promise<{
+    user_id: string;
+    package_type: string;
+    raw: Record<string, unknown>;
+  }>;
+  getDomainUserCount: (input: {
+    project_id: string;
+  }) => Promise<{
+    project_id: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  listProjectTags: (input: {
+    project_id: string;
+    resource_type: string;
+  }) => Promise<{
+    tags: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getCustomizedColumns: (input: {
+    project_id: string;
+    service_type: number;
+    stage_type: number;
+  }) => Promise<{
+    project_id: string;
+    raw: Record<string, unknown>;
+  }>;
   listTesthubBranches: (input: {
     project_id: string;
     page: number;
@@ -1303,6 +1351,108 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       return {
         fields,
         total: readTotal(payload, response, fields.length)
+      };
+    },
+    async listProjectUsers(input) {
+      const query = new URLSearchParams({
+        page_no: String(input.page),
+        page_size: String(input.page_size)
+      });
+      appendQueryValue(query, "key_word", input.keyword);
+
+      const response = await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/users?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const users = readArray<Record<string, unknown>>(
+        payload.value ?? payload.users ?? payload.items ?? payload.list
+      );
+
+      return {
+        users,
+        total: readTotal(payload, response, users.length)
+      };
+    },
+    async getCurrentUserPackagePermission(input) {
+      const query = new URLSearchParams({
+        package_type: input.package_type
+      });
+
+      const response = await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/current-user/package-permission?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const permission = readEnvelope(payload.value) ?? payload;
+
+      return {
+        project_id: input.project_id,
+        package_type: input.package_type,
+        raw: permission
+      };
+    },
+    async getUserPackagePermission(input) {
+      const query = new URLSearchParams({
+        package_type: input.package_type
+      });
+
+      const response = await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/users/${encodeURIComponent(input.user_id)}/package-permission?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const permission = readEnvelope(payload.value) ?? payload;
+
+      return {
+        user_id: input.user_id,
+        package_type: input.package_type,
+        raw: permission
+      };
+    },
+    async getDomainUserCount(input) {
+      const response = await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/domain-user-count`
+      );
+      const payload = readResultPayload(response);
+      const value = payload.value ?? payload.count ?? payload.total;
+
+      return {
+        project_id: input.project_id,
+        value,
+        raw: payload
+      };
+    },
+    async listProjectTags(input) {
+      const query = new URLSearchParams({
+        resource_type: input.resource_type
+      });
+
+      const response = await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/tags?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const tags = readArray<Record<string, unknown>>(
+        payload.value ?? payload.tags ?? payload.items ?? payload.list
+      );
+
+      return {
+        tags,
+        total: readTotal(payload, response, tags.length)
+      };
+    },
+    async getCustomizedColumns(input) {
+      const query = new URLSearchParams({
+        service_type: String(input.service_type),
+        stage_type: String(input.stage_type)
+      });
+
+      const response = await _http.get(
+        `/GT3KServer/v4/projects/${encodeURIComponent(input.project_id)}/customized-columns?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const columns = readEnvelope(payload.value) ?? payload;
+
+      return {
+        project_id: input.project_id,
+        raw: columns
       };
     },
     async listTesthubBranches(input) {

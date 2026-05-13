@@ -1593,4 +1593,137 @@ describe("createTestPlanClient", () => {
       "/GT3KServer/v4/projects/project-1/field-configs"
     ]);
   });
+
+  it("loads project users and metadata configuration endpoints", async () => {
+    const requests: string[] = [];
+    const client = createTestPlanClient({
+      get: async (path: string) => {
+        requests.push(path);
+        if (path.includes("/users?")) {
+          return {
+            value: [{ user_id: "user-1", user_name: "alice" }],
+            total: 1
+          };
+        }
+        if (path.includes("/current-user/package-permission?")) {
+          return {
+            result: {
+              value: {
+                has_package_permission: true
+              }
+            }
+          };
+        }
+        if (path.includes("/users/user-1/package-permission?")) {
+          return {
+            value: {
+              has_package_permission: false
+            }
+          };
+        }
+        if (path.endsWith("/domain-user-count")) {
+          return {
+            result: {
+              value: 12
+            }
+          };
+        }
+        if (path.includes("/tags?")) {
+          return {
+            result: {
+              value: [{ label_id: "tag-1", label_name: "smoke" }],
+              total: 1
+            }
+          };
+        }
+
+        return {
+          result: {
+            value: {
+              display: [{ field_key: "name" }],
+              hidden: [{ field_key: "owner" }]
+            }
+          }
+        };
+      }
+    } as never);
+
+    await expect(
+      client.listProjectUsers({
+        project_id: "project-1",
+        page: 2,
+        page_size: 20,
+        keyword: "ali"
+      })
+    ).resolves.toEqual({
+      users: [{ user_id: "user-1", user_name: "alice" }],
+      total: 1
+    });
+    await expect(
+      client.getCurrentUserPackagePermission({
+        project_id: "project-1",
+        package_type: "TEST_PLAN"
+      })
+    ).resolves.toEqual({
+      project_id: "project-1",
+      package_type: "TEST_PLAN",
+      raw: {
+        has_package_permission: true
+      }
+    });
+    await expect(
+      client.getUserPackagePermission({
+        project_id: "project-1",
+        user_id: "user-1",
+        package_type: "TEST_PLAN"
+      })
+    ).resolves.toEqual({
+      user_id: "user-1",
+      package_type: "TEST_PLAN",
+      raw: {
+        has_package_permission: false
+      }
+    });
+    await expect(
+      client.getDomainUserCount({
+        project_id: "project-1"
+      })
+    ).resolves.toEqual({
+      project_id: "project-1",
+      value: 12,
+      raw: {
+        value: 12
+      }
+    });
+    await expect(
+      client.listProjectTags({
+        project_id: "project-1",
+        resource_type: "TestCase"
+      })
+    ).resolves.toEqual({
+      tags: [{ label_id: "tag-1", label_name: "smoke" }],
+      total: 1
+    });
+    await expect(
+      client.getCustomizedColumns({
+        project_id: "project-1",
+        service_type: 1,
+        stage_type: 2
+      })
+    ).resolves.toEqual({
+      project_id: "project-1",
+      raw: {
+        display: [{ field_key: "name" }],
+        hidden: [{ field_key: "owner" }]
+      }
+    });
+    expect(requests).toEqual([
+      "/v4/projects/project-1/users?page_no=2&page_size=20&key_word=ali",
+      "/v4/projects/project-1/current-user/package-permission?package_type=TEST_PLAN",
+      "/v4/projects/project-1/users/user-1/package-permission?package_type=TEST_PLAN",
+      "/v4/projects/project-1/domain-user-count",
+      "/v4/projects/project-1/tags?resource_type=TestCase",
+      "/GT3KServer/v4/projects/project-1/customized-columns?service_type=1&stage_type=2"
+    ]);
+  });
 });

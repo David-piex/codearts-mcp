@@ -7,7 +7,10 @@ import {
   testPlanCreateTaskRelationsInput,
   testPlanGetCaseTemplateInput,
   testPlanGetCaseInput,
+  testPlanGetCurrentUserPackagePermissionInput,
   testPlanGetCustomTemplateInput,
+  testPlanGetCustomizedColumnsInput,
+  testPlanGetDomainUserCountInput,
   testPlanGetIteratorInput,
   testPlanGetPlanInput,
   testPlanGetRuleCheckTaskReportInput,
@@ -20,6 +23,7 @@ import {
   testPlanGetTaskInput,
   testPlanGetTaskResultDetailInput,
   testPlanGetTaskSuccessTestCasesCountInput,
+  testPlanGetUserPackagePermissionInput,
   testPlanInitTaskExecutionInput,
   testPlanListAttachmentsInput,
   testPlanListCustomReportsInput,
@@ -30,6 +34,8 @@ import {
   testPlanListIssuesInput,
   testPlanListPlansInput,
   testPlanListProjectFieldConfigsInput,
+  testPlanListProjectTagsInput,
+  testPlanListProjectUsersInput,
   testPlanListProgressReportsInput,
   testPlanListRunsInput,
   testPlanListTaskCasesInput,
@@ -56,6 +62,9 @@ import { createTestPlanCreateTaskHandler } from "../products/testplan/tools/crea
 import { createTestPlanCreateTaskRelationsHandler } from "../products/testplan/tools/create-task-relations.js";
 import { createTestPlanGetCaseHandler } from "../products/testplan/tools/get-case.js";
 import { createTestPlanGetCustomTemplateHandler } from "../products/testplan/tools/get-custom-template.js";
+import { createTestPlanGetCurrentUserPackagePermissionHandler } from "../products/testplan/tools/get-current-user-package-permission.js";
+import { createTestPlanGetCustomizedColumnsHandler } from "../products/testplan/tools/get-customized-columns.js";
+import { createTestPlanGetDomainUserCountHandler } from "../products/testplan/tools/get-domain-user-count.js";
 import { createTestPlanGetIteratorHandler } from "../products/testplan/tools/get-iterator.js";
 import { createTestPlanGetPlanHandler } from "../products/testplan/tools/get-plan.js";
 import { createTestPlanGetRuleCheckTaskReportHandler } from "../products/testplan/tools/get-rule-check-task-report.js";
@@ -68,6 +77,7 @@ import { createTestPlanGetTaskExecutionParamHandler } from "../products/testplan
 import { createTestPlanGetTaskHandler } from "../products/testplan/tools/get-task.js";
 import { createTestPlanGetTaskResultDetailHandler } from "../products/testplan/tools/get-task-result-detail.js";
 import { createTestPlanGetTaskSuccessTestCasesCountHandler } from "../products/testplan/tools/get-task-success-testcases-count.js";
+import { createTestPlanGetUserPackagePermissionHandler } from "../products/testplan/tools/get-user-package-permission.js";
 import { createTestPlanInitTaskExecutionHandler } from "../products/testplan/tools/init-task-execution.js";
 import { createTestPlanListAttachmentsHandler } from "../products/testplan/tools/list-attachments.js";
 import { createTestPlanListCustomReportsHandler } from "../products/testplan/tools/list-custom-reports.js";
@@ -78,6 +88,8 @@ import { createTestPlanListCasesHandler } from "../products/testplan/tools/list-
 import { createTestPlanListIssuesHandler } from "../products/testplan/tools/list-issues.js";
 import { createTestPlanListPlansHandler } from "../products/testplan/tools/list-plans.js";
 import { createTestPlanListProjectFieldConfigsHandler } from "../products/testplan/tools/list-project-field-configs.js";
+import { createTestPlanListProjectTagsHandler } from "../products/testplan/tools/list-project-tags.js";
+import { createTestPlanListProjectUsersHandler } from "../products/testplan/tools/list-project-users.js";
 import { createTestPlanListProgressReportsHandler } from "../products/testplan/tools/list-progress-reports.js";
 import { createTestPlanListRunsHandler } from "../products/testplan/tools/list-runs.js";
 import { createTestPlanListTaskCasesHandler } from "../products/testplan/tools/list-task-cases.js";
@@ -154,6 +166,30 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetTesthubCaseByNumberHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetTesthubCaseByNumberHandler
   }),
+  "testplan_get_current_user_package_permission": defineProductTool({
+    description: "Get CodeArts TestPlan package permission for the current user",
+    inputSchema: testPlanGetCurrentUserPackagePermissionInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetCurrentUserPackagePermissionHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetCurrentUserPackagePermissionHandler
+  }),
+  "testplan_get_user_package_permission": defineProductTool({
+    description: "Get CodeArts TestPlan package permission for a project user",
+    inputSchema: testPlanGetUserPackagePermissionInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetUserPackagePermissionHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetUserPackagePermissionHandler
+  }),
+  "testplan_get_domain_user_count": defineProductTool({
+    description: "Get CodeArts TestPlan domain user count for a project",
+    inputSchema: testPlanGetDomainUserCountInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetDomainUserCountHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetDomainUserCountHandler
+  }),
+  "testplan_get_customized_columns": defineProductTool({
+    description: "Get CodeArts TestPlan customized column configuration",
+    inputSchema: testPlanGetCustomizedColumnsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetCustomizedColumnsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetCustomizedColumnsHandler
+  }),
   "testplan_get_case_template": defineProductTool({
     description: "Get CodeArts TestPlan case template detail",
     inputSchema: testPlanGetCaseTemplateInput,
@@ -189,6 +225,18 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListProjectFieldConfigsInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListProjectFieldConfigsHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListProjectFieldConfigsHandler
+  }),
+  "testplan_list_project_users": defineProductTool({
+    description: "List CodeArts TestPlan project users",
+    inputSchema: testPlanListProjectUsersInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListProjectUsersHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListProjectUsersHandler
+  }),
+  "testplan_list_project_tags": defineProductTool({
+    description: "List CodeArts TestPlan project tags by resource type",
+    inputSchema: testPlanListProjectTagsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListProjectTagsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListProjectTagsHandler
   }),
   "testplan_list_tasks": defineProductTool({
     description: "List CodeArts TestPlan test suite tasks",
