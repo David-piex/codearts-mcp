@@ -135,6 +135,14 @@ export type TestPlanClient = {
     status?: string;
     raw: Record<string, unknown>;
   }>;
+  getApiTestTaskStatusV2: (input: {
+    project_id: string;
+    task_id: string;
+  }) => Promise<{
+    task_id: string;
+    status?: string;
+    raw: Record<string, unknown>;
+  }>;
   getTaskExecutionParam: (input: {
     task_uri: string;
     project_uuid?: string;
@@ -721,6 +729,58 @@ export type TestPlanClient = {
     case_id: string;
     task_id: string;
   }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  listApiTestcaseExecuteHistories: (input: {
+    project_id: string;
+    testcase_id: string;
+    page: number;
+    page_size: number;
+    plan_id?: string;
+  }) => Promise<{
+    histories: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listApiTestcaseHistory: (input: {
+    project_id: string;
+    plan_id?: string;
+  }) => Promise<{
+    histories: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getFreeTestTime: (input: { testServiceId: string }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  listApiTestsuiteHistory: (input: {
+    project_id: string;
+    plan_id?: string;
+  }) => Promise<{
+    histories: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getApiTestDnsMapping: (input: { project_id: string }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  listApiTestVariables: (input: {
+    project_id: string;
+    group_id: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    variables: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getApiTestBasicAwV3: (input: {
+    project_id: string;
+    aw_id: string;
+  }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  listPublicAwLibAndAws: (input: { project_id: string }) => Promise<{
+    aws: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getApiTestAvailableConfig: (input: { project_id: string }) => Promise<{
     raw: Record<string, unknown>;
   }>;
   listGt3kProjectServiceRepos: (input: {
@@ -1424,6 +1484,19 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
     async getApiTestTaskStatus(input) {
       const response = await _http.get(
         `/v1/${encodeURIComponent(input.project_id)}/task/${encodeURIComponent(input.task_id)}`
+      );
+      const payload = readResultPayload(response);
+      const task = readEnvelope(payload.value) ?? payload;
+
+      return {
+        task_id: String(task.uri ?? task.task_uri ?? task.id ?? input.task_id),
+        status: typeof task.status === "string" ? task.status : undefined,
+        raw: task
+      };
+    },
+    async getApiTestTaskStatusV2(input) {
+      const response = await _http.get(
+        `/v2/${encodeURIComponent(input.project_id)}/task/${encodeURIComponent(input.task_id)}`
       );
       const payload = readResultPayload(response);
       const task = readEnvelope(payload.value) ?? payload;
@@ -2718,6 +2791,146 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
 
       return {
         raw: debugLog
+      };
+    },
+    async listApiTestcaseExecuteHistories(input) {
+      const query = new URLSearchParams({
+        offset: String(pageToOffset(input.page, input.page_size) + 1),
+        limit: String(input.page_size)
+      });
+      appendQueryValue(query, "plan_id", input.plan_id);
+      const response = await _http.get(
+        `/v1/${encodeURIComponent(input.project_id)}/api-testcases/${encodeURIComponent(input.testcase_id)}/execute-histories?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const histories = readArray<Record<string, unknown>>(
+        payload.value ?? payload.histories ?? payload.execute_histories ?? payload.items ?? payload.list
+      );
+
+      return {
+        histories,
+        total: readTotal(payload, response, histories.length)
+      };
+    },
+    async listApiTestcaseHistory(input) {
+      const query = new URLSearchParams();
+      appendQueryValue(query, "plan_id", input.plan_id);
+      const suffix = query.size ? `?${query.toString()}` : "";
+      const response = await _http.get(
+        `/v2/projects/${encodeURIComponent(input.project_id)}/testcase-history${suffix}`
+      );
+      const payload = readResultPayload(response);
+      const result = readEnvelope(payload.result) ?? payload;
+      const histories = readArray<Record<string, unknown>>(
+        result.testcase_execution_history ??
+          result.testcase_history ??
+          result.histories ??
+          result.value ??
+          result.items ??
+          result.list
+      );
+
+      return {
+        histories,
+        total: readTotal(result, response, histories.length)
+      };
+    },
+    async getFreeTestTime(input) {
+      const response = await _http.get(
+        `/v2/queryFreeTestTime/${encodeURIComponent(input.testServiceId)}`
+      );
+      const payload = readResultPayload(response);
+      const freeTime = readEnvelope(payload.value) ?? payload;
+
+      return {
+        raw: freeTime
+      };
+    },
+    async listApiTestsuiteHistory(input) {
+      const query = new URLSearchParams();
+      appendQueryValue(query, "plan_id", input.plan_id);
+      const suffix = query.size ? `?${query.toString()}` : "";
+      const response = await _http.get(
+        `/v2/projects/${encodeURIComponent(input.project_id)}/testsuite-history${suffix}`
+      );
+      const payload = readResultPayload(response);
+      const result = readEnvelope(payload.result) ?? payload;
+      const histories = readArray<Record<string, unknown>>(
+        result.suite_execution_history ??
+          result.testsuite_history ??
+          result.histories ??
+          result.value ??
+          result.items ??
+          result.list
+      );
+
+      return {
+        histories,
+        total: readTotal(result, response, histories.length)
+      };
+    },
+    async getApiTestDnsMapping(input) {
+      const response = await _http.get(`/v1/${encodeURIComponent(input.project_id)}/dns-mapping`);
+      const payload = readResultPayload(response);
+      const mapping = readEnvelope(payload.value) ?? payload;
+
+      return {
+        raw: mapping
+      };
+    },
+    async listApiTestVariables(input) {
+      const query = new URLSearchParams({
+        group_id: input.group_id,
+        page_no: String(input.page),
+        page_size: String(input.page_size)
+      });
+      const response = await _http.get(
+        `/v4/${encodeURIComponent(input.project_id)}/variables?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const variables = readArray<Record<string, unknown>>(
+        payload.value ?? payload.variables ?? payload.items ?? payload.list
+      );
+
+      return {
+        variables,
+        total: readTotal(payload, response, variables.length)
+      };
+    },
+    async getApiTestBasicAwV3(input) {
+      const response = await _http.get(
+        `/v3/${encodeURIComponent(input.project_id)}/basic-aw/${encodeURIComponent(input.aw_id)}`
+      );
+      const payload = readResultPayload(response);
+      const aw = readEnvelope(payload.value) ?? payload;
+
+      return {
+        raw: aw
+      };
+    },
+    async listPublicAwLibAndAws(input) {
+      const response = await _http.get(
+        `/v1/project/${encodeURIComponent(input.project_id)}/public_aw_lib_and_aws`
+      );
+      const payload = readResultPayload(response);
+      const aws = readArray<Record<string, unknown>>(
+        payload.value ?? payload.result ?? payload.aws ?? payload.items ?? payload.list
+      );
+
+      return {
+        aws,
+        total: readTotal(payload, response, aws.length)
+      };
+    },
+    async getApiTestAvailableConfig(input) {
+      const response = await _http.get(
+        `/v1/${encodeURIComponent(input.project_id)}/available/config`
+      );
+      const payload = readResultPayload(response);
+      const config = readEnvelope(payload.value) ?? payload;
+
+      return {
+        raw: config
       };
     },
     async listGt3kProjectServiceRepos(input) {

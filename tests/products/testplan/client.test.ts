@@ -2662,4 +2662,135 @@ describe("createTestPlanClient", () => {
       "/v1/projects/project-1/testcases/case-1/task/task-1/debug-log"
     ]);
   });
+
+  it("gets TestPlan API test histories, variables, AWs, and configuration endpoints", async () => {
+    const requests: string[] = [];
+    const client = createTestPlanClient({
+      get: async (path: string) => {
+        requests.push(path);
+        if (path.includes("execute-histories")) {
+          return { value: [{ id: "history-1", result: "success" }], total: 1 };
+        }
+        if (path.includes("testcase-history")) {
+          return { result: { testcase_execution_history: [{ id: "case-history-1" }] } };
+        }
+        if (path.includes("queryFreeTestTime")) {
+          return { result: { freeQuota: 1, needPopup: false } };
+        }
+        if (path.includes("testsuite-history")) {
+          return { result: { suite_execution_history: [{ suite_id: "suite-1" }] } };
+        }
+        if (path === "/v2/project-1/task/task-2") {
+          return { result: { id: "task-2", status: "success" } };
+        }
+        if (path.includes("dns-mapping")) {
+          return { result: { host: "example.com" } };
+        }
+        if (path.includes("/variables?")) {
+          return { value: [{ id: "var-1", name: "base_url" }], total: 1 };
+        }
+        if (path.includes("basic-aw")) {
+          return { result: { aw_id: "aw-1", name: "login" } };
+        }
+        if (path.includes("public_aw_lib_and_aws")) {
+          return { result: [{ id: "aw-lib-1", name: "public" }] };
+        }
+        if (path.includes("available/config")) {
+          return { result: { custom_aw_available: true } };
+        }
+
+        return { value: {} };
+      }
+    } as never);
+
+    await expect(
+      client.listApiTestcaseExecuteHistories({
+        project_id: "project-1",
+        testcase_id: "case-1",
+        page: 2,
+        page_size: 10,
+        plan_id: "plan-1"
+      })
+    ).resolves.toEqual({
+      histories: [{ id: "history-1", result: "success" }],
+      total: 1
+    });
+    await expect(
+      client.listApiTestcaseHistory({
+        project_id: "project-1",
+        plan_id: "plan-1"
+      })
+    ).resolves.toEqual({
+      histories: [{ id: "case-history-1" }],
+      total: 1
+    });
+    await expect(client.getFreeTestTime({ testServiceId: "service-1" })).resolves.toEqual({
+      raw: { freeQuota: 1, needPopup: false }
+    });
+    await expect(
+      client.listApiTestsuiteHistory({
+        project_id: "project-1",
+        plan_id: "plan-1"
+      })
+    ).resolves.toEqual({
+      histories: [{ suite_id: "suite-1" }],
+      total: 1
+    });
+    await expect(
+      client.getApiTestTaskStatusV2({
+        project_id: "project-1",
+        task_id: "task-2"
+      })
+    ).resolves.toEqual({
+      task_id: "task-2",
+      status: "success",
+      raw: { id: "task-2", status: "success" }
+    });
+    await expect(client.getApiTestDnsMapping({ project_id: "project-1" })).resolves.toEqual({
+      raw: { host: "example.com" }
+    });
+    await expect(
+      client.listApiTestVariables({
+        project_id: "project-1",
+        group_id: "group-1",
+        page: 1,
+        page_size: 20
+      })
+    ).resolves.toEqual({
+      variables: [{ id: "var-1", name: "base_url" }],
+      total: 1
+    });
+    await expect(
+      client.getApiTestBasicAwV3({
+        project_id: "project-1",
+        aw_id: "aw-1"
+      })
+    ).resolves.toEqual({
+      raw: { aw_id: "aw-1", name: "login" }
+    });
+    await expect(client.listPublicAwLibAndAws({ project_id: "project-1" })).resolves.toEqual({
+      aws: [{ id: "aw-lib-1", name: "public" }],
+      total: 1
+    });
+    await expect(
+      client.getApiTestAvailableConfig({
+        project_id: "project-1"
+      })
+    ).resolves.toEqual({
+      raw: { custom_aw_available: true }
+    });
+
+    expect(requests).toEqual([
+      "/v1/project-1/api-testcases/case-1/execute-histories?offset=11&limit=10&plan_id=plan-1",
+      "/v2/projects/project-1/testcase-history?plan_id=plan-1",
+      "/v2/queryFreeTestTime/service-1",
+      "/v2/projects/project-1/testsuite-history?plan_id=plan-1",
+      "/v2/project-1/task/task-2",
+      "/v1/project-1/dns-mapping",
+      "/v4/project-1/variables?group_id=group-1&page_no=1&page_size=20",
+      "/v3/project-1/basic-aw/aw-1",
+      "/v1/project/project-1/public_aw_lib_and_aws",
+      "/v1/project-1/available/config"
+    ]);
+  });
 });

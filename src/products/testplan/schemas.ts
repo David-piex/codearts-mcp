@@ -64,6 +64,11 @@ export const testPlanGetApiTestTaskStatusInput = z.object({
   task_id: idSchema
 });
 
+export const testPlanGetApiTestTaskStatusV2Input = z.object({
+  project_id: idSchema,
+  task_id: idSchema
+});
+
 export const testPlanGetTaskExecutionParamInput = z.object({
   task_uri: idSchema,
   project_uuid: idSchema.optional()
@@ -466,6 +471,48 @@ export const testPlanGetApiTestDebugLogInput = z.object({
   project_id: idSchema,
   case_id: idSchema,
   task_id: idSchema
+});
+
+export const testPlanListApiTestcaseExecuteHistoriesInput = pagingSchema.extend({
+  project_id: idSchema,
+  testcase_id: idSchema,
+  plan_id: idSchema.optional()
+});
+
+export const testPlanListApiTestcaseHistoryInput = z.object({
+  project_id: idSchema,
+  plan_id: idSchema.optional()
+});
+
+export const testPlanGetFreeTestTimeInput = z.object({
+  testServiceId: idSchema
+});
+
+export const testPlanListApiTestsuiteHistoryInput = z.object({
+  project_id: idSchema,
+  plan_id: idSchema.optional()
+});
+
+export const testPlanGetApiTestDnsMappingInput = z.object({
+  project_id: idSchema
+});
+
+export const testPlanListApiTestVariablesInput = pagingSchema.extend({
+  project_id: idSchema,
+  group_id: idSchema
+});
+
+export const testPlanGetApiTestBasicAwV3Input = z.object({
+  project_id: idSchema,
+  aw_id: idSchema
+});
+
+export const testPlanListPublicAwLibAndAwsInput = z.object({
+  project_id: idSchema
+});
+
+export const testPlanGetApiTestAvailableConfigInput = z.object({
+  project_id: idSchema
 });
 
 export const testPlanListGt3kProjectServiceReposInput = pagingSchema.extend({
