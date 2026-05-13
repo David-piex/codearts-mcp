@@ -825,6 +825,41 @@ export type TestPlanClient = {
     settings: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  listVariablesV3: (input: {
+    project_id: string;
+    group_id?: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    variables: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listVariablesByGroup: (input: {
+    project_id: string;
+    group_id?: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    variables: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getVariableSynchronizationV2: (input: {
+    project_id: string;
+    variable_name: string;
+    group_id?: string;
+  }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  getVariableSynchronization: (input: {
+    project_id: string;
+    variable_name: string;
+    group_id?: string;
+  }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  getProgress: (input: { id: string; project_id?: string }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
   listGt3kProjectServiceRepos: (input: {
     project_uuid: string;
     page: number;
@@ -1188,6 +1223,28 @@ function appendQueryValue(
   }
 
   query.set(key, String(value));
+}
+
+function redactSensitiveVariable(variable: Record<string, unknown>) {
+  if (variable.isSensitiveInfo !== true) {
+    return variable;
+  }
+
+  const redacted = { ...variable };
+  for (const key of [
+    "property",
+    "functionParams",
+    "value",
+    "defaultValue",
+    "paramValue",
+    "sensitiveValue"
+  ]) {
+    if (key in redacted) {
+      redacted[key] = "[REDACTED]";
+    }
+  }
+
+  return redacted;
 }
 
 function pageToOffset(page: number, pageSize: number) {
@@ -3065,6 +3122,85 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       return {
         settings,
         total: readTotal(payload, response, settings.length)
+      };
+    },
+    async listVariablesV3(input) {
+      const query = new URLSearchParams({
+        page_no: String(input.page),
+        page_size: String(input.page_size)
+      });
+      appendQueryValue(query, "group_id", input.group_id);
+      const response = await _http.get(
+        `/v3/${encodeURIComponent(input.project_id)}/variables?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const variables = readArray<Record<string, unknown>>(
+        payload.value ?? payload.result ?? payload.variables ?? payload.items ?? payload.list
+      ).map(redactSensitiveVariable);
+
+      return {
+        variables,
+        total: readTotal(payload, response, variables.length)
+      };
+    },
+    async listVariablesByGroup(input) {
+      const query = new URLSearchParams({
+        project_id: input.project_id,
+        page_no: String(input.page),
+        page_size: String(input.page_size)
+      });
+      appendQueryValue(query, "group_id", input.group_id);
+      const response = await _http.get(`/v1/variables/getVarbyGroup?${query.toString()}`);
+      const payload = readResultPayload(response);
+      const variables = readArray<Record<string, unknown>>(
+        payload.value ?? payload.result ?? payload.variables ?? payload.items ?? payload.list
+      ).map(redactSensitiveVariable);
+
+      return {
+        variables,
+        total: readTotal(payload, response, variables.length)
+      };
+    },
+    async getVariableSynchronizationV2(input) {
+      const query = new URLSearchParams({
+        variable_name: input.variable_name
+      });
+      appendQueryValue(query, "group_id", input.group_id);
+      const response = await _http.get(
+        `/v2/${encodeURIComponent(input.project_id)}/variable-synchronization?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const synchronization = readEnvelope(payload.value) ?? payload;
+
+      return {
+        raw: synchronization
+      };
+    },
+    async getVariableSynchronization(input) {
+      const query = new URLSearchParams({
+        variable_name: input.variable_name
+      });
+      appendQueryValue(query, "group_id", input.group_id);
+      const response = await _http.get(
+        `/v1/${encodeURIComponent(input.project_id)}/variable-synchronization?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const synchronization = readEnvelope(payload.value) ?? payload;
+
+      return {
+        raw: synchronization
+      };
+    },
+    async getProgress(input) {
+      const query = new URLSearchParams();
+      appendQueryValue(query, "project_id", input.project_id);
+      const suffix = query.size ? `?${query.toString()}` : "";
+      const response = await _http.get(`/v1/progress/${encodeURIComponent(input.id)}${suffix}`);
+      const payload = readResultPayload(response);
+      const progress = readEnvelope(payload.value) ?? payload;
+
+      return {
+        raw: progress
       };
     },
     async listGt3kProjectServiceRepos(input) {

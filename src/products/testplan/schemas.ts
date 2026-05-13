@@ -544,6 +544,33 @@ export const testPlanListTimeoutSettingsInput = z.object({
   project_id: idSchema
 });
 
+export const testPlanListVariablesV3Input = pagingSchema.extend({
+  project_id: idSchema,
+  group_id: idSchema.optional()
+});
+
+export const testPlanListVariablesByGroupInput = pagingSchema.extend({
+  project_id: idSchema,
+  group_id: idSchema.optional()
+});
+
+export const testPlanGetVariableSynchronizationV2Input = z.object({
+  project_id: idSchema,
+  variable_name: z.string().min(1),
+  group_id: idSchema.optional()
+});
+
+export const testPlanGetVariableSynchronizationInput = z.object({
+  project_id: idSchema,
+  variable_name: z.string().min(1),
+  group_id: idSchema.optional()
+});
+
+export const testPlanGetProgressInput = z.object({
+  id: idSchema,
+  project_id: idSchema.optional()
+});
+
 export const testPlanListGt3kProjectServiceReposInput = pagingSchema.extend({
   project_uuid: idSchema
 });

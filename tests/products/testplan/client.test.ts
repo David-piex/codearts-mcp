@@ -2686,9 +2686,6 @@ describe("createTestPlanClient", () => {
         if (path.includes("dns-mapping")) {
           return { result: { host: "example.com" } };
         }
-        if (path.includes("/variables?")) {
-          return { value: [{ id: "var-1", name: "base_url" }], total: 1 };
-        }
         if (path.includes("basic-aw")) {
           return { result: { aw_id: "aw-1", name: "login" } };
         }
@@ -2715,6 +2712,51 @@ describe("createTestPlanClient", () => {
         }
         if (path.includes("get_timeOut_view")) {
           return { result: [{ id: "timeout-1", time_out: "10000" }] };
+        }
+        if (path === "/v3/project-1/variables?page_no=1&page_size=5&group_id=group-1") {
+          return {
+            result: [
+              {
+                id: "var-v3-1",
+                name: "secret",
+                isSensitiveInfo: true,
+                property: "hidden",
+                functionParams: "hidden"
+              }
+            ]
+          };
+        }
+        if (path.includes("/variables?")) {
+          return { value: [{ id: "var-1", name: "base_url" }], total: 1 };
+        }
+        if (
+          path ===
+          "/v1/variables/getVarbyGroup?project_id=project-1&page_no=2&page_size=5&group_id=group-1"
+        ) {
+          return {
+            result: [
+              {
+                id: "var-group-1",
+                name: "plain",
+                isSensitiveInfo: false,
+                property: "visible"
+              }
+            ]
+          };
+        }
+        if (
+          path ===
+          "/v2/project-1/variable-synchronization?variable_name=base_url&group_id=group-1"
+        ) {
+          return { result: { syncable: [{ id: "group-1", name: "Default" }] } };
+        }
+        if (
+          path === "/v1/project-1/variable-synchronization?variable_name=base_url&group_id=group-1"
+        ) {
+          return { result: { syncable: [{ id: "group-2", name: "Env" }], conflict: [] } };
+        }
+        if (path === "/v1/progress/progress-1?project_id=project-1") {
+          return { result: { id: "progress-1", rate: 100 } };
         }
 
         return { value: {} };
@@ -2847,6 +2889,69 @@ describe("createTestPlanClient", () => {
       settings: [{ id: "timeout-1", time_out: "10000" }],
       total: 1
     });
+    await expect(
+      client.listVariablesV3({
+        project_id: "project-1",
+        group_id: "group-1",
+        page: 1,
+        page_size: 5
+      })
+    ).resolves.toEqual({
+      variables: [
+        {
+          id: "var-v3-1",
+          name: "secret",
+          isSensitiveInfo: true,
+          property: "[REDACTED]",
+          functionParams: "[REDACTED]"
+        }
+      ],
+      total: 1
+    });
+    await expect(
+      client.listVariablesByGroup({
+        project_id: "project-1",
+        group_id: "group-1",
+        page: 2,
+        page_size: 5
+      })
+    ).resolves.toEqual({
+      variables: [
+        {
+          id: "var-group-1",
+          name: "plain",
+          isSensitiveInfo: false,
+          property: "visible"
+        }
+      ],
+      total: 1
+    });
+    await expect(
+      client.getVariableSynchronizationV2({
+        project_id: "project-1",
+        variable_name: "base_url",
+        group_id: "group-1"
+      })
+    ).resolves.toEqual({
+      raw: { syncable: [{ id: "group-1", name: "Default" }] }
+    });
+    await expect(
+      client.getVariableSynchronization({
+        project_id: "project-1",
+        variable_name: "base_url",
+        group_id: "group-1"
+      })
+    ).resolves.toEqual({
+      raw: { syncable: [{ id: "group-2", name: "Env" }], conflict: [] }
+    });
+    await expect(
+      client.getProgress({
+        id: "progress-1",
+        project_id: "project-1"
+      })
+    ).resolves.toEqual({
+      raw: { id: "progress-1", rate: 100 }
+    });
 
     expect(requests).toEqual([
       "/v1/project-1/api-testcases/case-1/execute-histories?offset=11&limit=10&plan_id=plan-1",
@@ -2864,7 +2969,12 @@ describe("createTestPlanClient", () => {
       "/v4/project-1/testcase/case-1?task_id=task-1",
       "/v1/variables/getVarGroupList?project_id=project-1&page_no=1&page_size=10",
       "/v1/project-1/notice_config/notice_config_list",
-      "/v1/project-1/get_timeOut_view"
+      "/v1/project-1/get_timeOut_view",
+      "/v3/project-1/variables?page_no=1&page_size=5&group_id=group-1",
+      "/v1/variables/getVarbyGroup?project_id=project-1&page_no=2&page_size=5&group_id=group-1",
+      "/v2/project-1/variable-synchronization?variable_name=base_url&group_id=group-1",
+      "/v1/project-1/variable-synchronization?variable_name=base_url&group_id=group-1",
+      "/v1/progress/progress-1?project_id=project-1"
     ]);
   });
 });

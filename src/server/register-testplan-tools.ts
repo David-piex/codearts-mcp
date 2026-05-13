@@ -47,6 +47,7 @@ import {
   testPlanGetProjectIssueUpdateNotificationInput,
   testPlanGetProjectMasterVersionInput,
   testPlanGetProjectMessageNoticesInput,
+  testPlanGetProgressInput,
   testPlanGetProjectServiceRepoInput,
   testPlanGetProjectSystemConfigInput,
   testPlanGetProjectTestcaseGlobalConfigInput,
@@ -68,6 +69,8 @@ import {
   testPlanGetUserDisclaimerInput,
   testPlanGetUserInfoDomainInput,
   testPlanGetUserPackagePermissionInput,
+  testPlanGetVariableSynchronizationInput,
+  testPlanGetVariableSynchronizationV2Input,
   testPlanGetSuiteInfoPageUrlInput,
   testPlanInitTaskExecutionInput,
   testPlanListApiTestPackageUsageInput,
@@ -135,6 +138,8 @@ import {
   testPlanListV4BranchesInput,
   testPlanListV4TestcaseReviewsInput,
   testPlanListVariableGroupsInput,
+  testPlanListVariablesByGroupInput,
+  testPlanListVariablesV3Input,
   testPlanListVisibleServicesInput,
   testPlanListTestReportsInput,
   testPlanGetServiceConfigInput,
@@ -187,6 +192,7 @@ import { createTestPlanGetProjectDomainDetailInfoHandler } from "../products/tes
 import { createTestPlanGetProjectIssueUpdateNotificationHandler } from "../products/testplan/tools/get-project-issue-update-notification.js";
 import { createTestPlanGetProjectMasterVersionHandler } from "../products/testplan/tools/get-project-master-version.js";
 import { createTestPlanGetProjectMessageNoticesHandler } from "../products/testplan/tools/get-project-message-notices.js";
+import { createTestPlanGetProgressHandler } from "../products/testplan/tools/get-progress.js";
 import { createTestPlanGetProjectServiceRepoHandler } from "../products/testplan/tools/get-project-service-repo.js";
 import { createTestPlanGetProjectSystemConfigHandler } from "../products/testplan/tools/get-project-system-config.js";
 import { createTestPlanGetProjectTestcaseGlobalConfigHandler } from "../products/testplan/tools/get-project-testcase-global-config.js";
@@ -209,6 +215,8 @@ import { createTestPlanGetTestcaseScriptDetailV4Handler } from "../products/test
 import { createTestPlanGetUserDisclaimerHandler } from "../products/testplan/tools/get-user-disclaimer.js";
 import { createTestPlanGetUserInfoDomainHandler } from "../products/testplan/tools/get-user-info-domain.js";
 import { createTestPlanGetUserPackagePermissionHandler } from "../products/testplan/tools/get-user-package-permission.js";
+import { createTestPlanGetVariableSynchronizationHandler } from "../products/testplan/tools/get-variable-synchronization.js";
+import { createTestPlanGetVariableSynchronizationV2Handler } from "../products/testplan/tools/get-variable-synchronization-v2.js";
 import { createTestPlanGetSuiteInfoPageUrlHandler } from "../products/testplan/tools/get-suite-info-page-url.js";
 import { createTestPlanInitTaskExecutionHandler } from "../products/testplan/tools/init-task-execution.js";
 import { createTestPlanListAlertTemplatesHandler } from "../products/testplan/tools/list-alert-templates.js";
@@ -276,6 +284,8 @@ import { createTestPlanListTestReportsHandler } from "../products/testplan/tools
 import { createTestPlanListV4BranchesHandler } from "../products/testplan/tools/list-v4-branches.js";
 import { createTestPlanListV4TestcaseReviewsHandler } from "../products/testplan/tools/list-v4-testcase-reviews.js";
 import { createTestPlanListVariableGroupsHandler } from "../products/testplan/tools/list-variable-groups.js";
+import { createTestPlanListVariablesByGroupHandler } from "../products/testplan/tools/list-variables-by-group.js";
+import { createTestPlanListVariablesV3Handler } from "../products/testplan/tools/list-variables-v3.js";
 import { createTestPlanListVisibleServicesHandler } from "../products/testplan/tools/list-visible-services.js";
 import { createTestPlanGetServiceConfigHandler } from "../products/testplan/tools/get-service-config.js";
 import { createTestPlanRunCasesHandler } from "../products/testplan/tools/run-cases.js";
@@ -613,6 +623,36 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListTimeoutSettingsInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTimeoutSettingsHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListTimeoutSettingsHandler
+  }),
+  "testplan_list_variables_v3": defineProductTool({
+    description: "List CodeArts TestPlan v3 variables with sensitive values redacted",
+    inputSchema: testPlanListVariablesV3Input,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListVariablesV3Handler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListVariablesV3Handler
+  }),
+  "testplan_list_variables_by_group": defineProductTool({
+    description: "List CodeArts TestPlan variables by group with sensitive values redacted",
+    inputSchema: testPlanListVariablesByGroupInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListVariablesByGroupHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListVariablesByGroupHandler
+  }),
+  "testplan_get_variable_synchronization_v2": defineProductTool({
+    description: "Get CodeArts TestPlan v2 variable synchronization information",
+    inputSchema: testPlanGetVariableSynchronizationV2Input,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetVariableSynchronizationV2Handler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetVariableSynchronizationV2Handler
+  }),
+  "testplan_get_variable_synchronization": defineProductTool({
+    description: "Get CodeArts TestPlan variable synchronization information",
+    inputSchema: testPlanGetVariableSynchronizationInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetVariableSynchronizationHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetVariableSynchronizationHandler
+  }),
+  "testplan_get_progress": defineProductTool({
+    description: "Get CodeArts TestPlan async progress",
+    inputSchema: testPlanGetProgressInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetProgressHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetProgressHandler
   }),
   "testplan_list_project_service_repos": defineProductTool({
     description: "List CodeArts TestPlan project service repository information",
