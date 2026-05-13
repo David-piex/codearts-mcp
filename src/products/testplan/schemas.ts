@@ -249,6 +249,98 @@ export const testPlanGetProjectMasterVersionInput = z.object({
 
 export const testPlanCheckUserExistsInput = z.object({});
 
+export const testPlanGetDomainDetailInfoInput = z.object({
+  domain_id: idSchema.optional(),
+  region: z.string().min(1).optional(),
+  order_query_type: z.string().min(1).optional()
+});
+
+export const testPlanGetFreeDeclarationInput = z.object({});
+
+export const testPlanGetGt3kUserInfoDomainInput = z.object({});
+
+export const testPlanGetUserInfoDomainInput = z.object({});
+
+export const testPlanListGt3kBranchesInput = z.object({
+  project_uuid: idSchema,
+  sort_field: z.string().min(1).optional(),
+  sort_type: z.string().min(1).optional()
+});
+
+export const testPlanListV4BranchesInput = z.object({
+  project_uuid: idSchema,
+  sort_field: z.string().min(1).optional(),
+  sort_type: z.string().min(1).optional()
+});
+
+export const testPlanGetGt3kDomainInfoInput = z.object({
+  project_uuid: idSchema.optional()
+});
+
+export const testPlanListGt3kCurrentUserTestcasesInput = pagingSchema.extend({
+  sort_field: z.string().min(1).optional(),
+  sort_type: z.string().min(1).optional(),
+  keyword: z.string().min(1).optional()
+});
+
+export const testPlanListCurrentUserTestcasesInput = pagingSchema.extend({
+  sort_field: z.string().min(1).optional(),
+  sort_type: z.string().min(1).optional(),
+  keyword: z.string().min(1).optional()
+});
+
+export const testPlanGetGt3kTestcaseChangeStatisticsInput = z.object({
+  project_id: idSchema,
+  version_id: idSchema
+});
+
+export const testPlanGetTestcaseChangeStatisticsInput = z.object({
+  project_id: idSchema,
+  version_uri: idSchema
+});
+
+export const testPlanListTestcaseCommentsInput = pagingSchema.extend({
+  project_id: idSchema,
+  testcase_id: idSchema,
+  version_uri: idSchema.optional()
+});
+
+export const testPlanCheckResourceExistsInput = z.object({
+  project_id: idSchema,
+  resource_uri: idSchema,
+  version_uri: idSchema,
+  type: z.number().int()
+});
+
+export const testPlanListTestcaseReviewsInput = pagingSchema.extend({
+  testcase_uri: idSchema,
+  project_uuid: idSchema,
+  version_uri: idSchema
+});
+
+export const testPlanListReleaseVersionsInput = z.object({
+  project_id: idSchema,
+  resource_type: z.string().min(1),
+  version_uri: idSchema.optional(),
+  limit: z.number().int().positive().optional()
+});
+
+export const testPlanGetDomainAccessInfoInput = z.object({
+  project_uuid: idSchema
+});
+
+export const testPlanListRegisteredServicesInput = z.object({});
+
+export const testPlanGetImageCapacityWarningInput = z.object({
+  project_id: idSchema
+});
+
+export const testPlanCheckUserDefinedConfigUsedInput = z.object({
+  project_id: idSchema,
+  config_id: idSchema,
+  type: z.string().min(1)
+});
+
 export const testPlanListTesthubBranchesInput = pagingSchema.extend({
   project_id: idSchema,
   sort_field: z.string().min(1).optional(),

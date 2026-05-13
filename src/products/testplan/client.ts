@@ -426,6 +426,140 @@ export type TestPlanClient = {
     value?: unknown;
     raw: Record<string, unknown>;
   }>;
+  getDomainDetailInfo: (input: {
+    domain_id?: string;
+    region?: string;
+    order_query_type?: string;
+  }) => Promise<{
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  getFreeDeclaration: () => Promise<{
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  getGt3kUserInfoDomain: () => Promise<{
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  getUserInfoDomain: () => Promise<{
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  listGt3kBranches: (input: {
+    project_uuid: string;
+    sort_field?: string;
+    sort_type?: string;
+  }) => Promise<{
+    branches: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listV4Branches: (input: {
+    project_uuid: string;
+    sort_field?: string;
+    sort_type?: string;
+  }) => Promise<{
+    branches: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getGt3kDomainInfo: (input: {
+    project_uuid?: string;
+  }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  listGt3kCurrentUserTestcases: (input: {
+    page: number;
+    page_size: number;
+    sort_field?: string;
+    sort_type?: string;
+    keyword?: string;
+  }) => Promise<{
+    testcases: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listCurrentUserTestcases: (input: {
+    page: number;
+    page_size: number;
+    sort_field?: string;
+    sort_type?: string;
+    keyword?: string;
+  }) => Promise<{
+    testcases: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getGt3kTestcaseChangeStatistics: (input: {
+    project_id: string;
+    version_id: string;
+  }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  getTestcaseChangeStatistics: (input: {
+    project_id: string;
+    version_uri: string;
+  }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  listTestcaseComments: (input: {
+    project_id: string;
+    testcase_id: string;
+    page: number;
+    page_size: number;
+    version_uri?: string;
+  }) => Promise<{
+    comments: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  checkResourceExists: (input: {
+    project_id: string;
+    resource_uri: string;
+    version_uri: string;
+    type: number;
+  }) => Promise<{
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  listTestcaseReviews: (input: {
+    testcase_uri: string;
+    project_uuid: string;
+    version_uri: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    reviews: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listReleaseVersions: (input: {
+    project_id: string;
+    resource_type: string;
+    version_uri?: string;
+    limit?: number;
+  }) => Promise<{
+    versions: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getDomainAccessInfo: (input: {
+    project_uuid: string;
+  }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  listRegisteredServices: () => Promise<{
+    services: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getImageCapacityWarning: (input: {
+    project_id: string;
+  }) => Promise<{
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  checkUserDefinedConfigUsed: (input: {
+    project_id: string;
+    config_id: string;
+    type: string;
+  }) => Promise<{
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
   listTesthubBranches: (input: {
     project_id: string;
     page: number;
@@ -1651,6 +1785,299 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
     },
     async checkUserExists() {
       const response = await _http.get("/v4/user/exist");
+      const payload = readResultPayload(response);
+      const value = payload.value;
+
+      return {
+        value,
+        raw: payload
+      };
+    },
+    async getDomainDetailInfo(input) {
+      const query = new URLSearchParams();
+      appendQueryValue(query, "domain_id", input.domain_id);
+      appendQueryValue(query, "region", input.region);
+      appendQueryValue(query, "order_query_type", input.order_query_type);
+      const suffix = query.size ? `?${query.toString()}` : "";
+
+      const response = await _http.get(`/v4/domain/detail-info${suffix}`);
+      const payload = readResultPayload(response);
+      const value = payload.value;
+
+      return {
+        value,
+        raw: payload
+      };
+    },
+    async getFreeDeclaration() {
+      const response = await _http.get("/v4/free-declaration");
+      const payload = readResultPayload(response);
+      const value = payload.value;
+
+      return {
+        value,
+        raw: payload
+      };
+    },
+    async getGt3kUserInfoDomain() {
+      const response = await _http.get("/GT3KServer/v4/user-info/domain");
+      const payload = readResultPayload(response);
+      const value = payload.value;
+
+      return {
+        value,
+        raw: payload
+      };
+    },
+    async getUserInfoDomain() {
+      const response = await _http.get("/v4/user-info/domain");
+      const payload = readResultPayload(response);
+      const value = payload.value;
+
+      return {
+        value,
+        raw: payload
+      };
+    },
+    async listGt3kBranches(input) {
+      const query = new URLSearchParams({
+        project_uuid: input.project_uuid
+      });
+      appendQueryValue(query, "sort_field", input.sort_field);
+      appendQueryValue(query, "sort_type", input.sort_type);
+
+      const response = await _http.get(`/GT3KServer/v4/branches?${query.toString()}`);
+      const payload = readResultPayload(response);
+      const branches = readArray<Record<string, unknown>>(
+        payload.value ?? payload.branches ?? payload.items ?? payload.list
+      );
+
+      return {
+        branches,
+        total: readTotal(payload, response, branches.length)
+      };
+    },
+    async listV4Branches(input) {
+      const query = new URLSearchParams({
+        project_uuid: input.project_uuid
+      });
+      appendQueryValue(query, "sort_field", input.sort_field);
+      appendQueryValue(query, "sort_type", input.sort_type);
+
+      const response = await _http.get(`/v4/branches?${query.toString()}`);
+      const payload = readResultPayload(response);
+      const branches = readArray<Record<string, unknown>>(
+        payload.value ?? payload.branches ?? payload.items ?? payload.list
+      );
+
+      return {
+        branches,
+        total: readTotal(payload, response, branches.length)
+      };
+    },
+    async getGt3kDomainInfo(input) {
+      const query = new URLSearchParams();
+      appendQueryValue(query, "project_uuid", input.project_uuid);
+      const suffix = query.size ? `?${query.toString()}` : "";
+
+      const response = await _http.get(`/GT3KServer/v4/domain/info${suffix}`);
+      const payload = readResultPayload(response);
+      const info = readEnvelope(payload.value) ?? payload;
+
+      return {
+        raw: info
+      };
+    },
+    async listGt3kCurrentUserTestcases(input) {
+      const query = new URLSearchParams({
+        page_no: String(input.page),
+        page_size: String(input.page_size)
+      });
+      appendQueryValue(query, "sort_field", input.sort_field);
+      appendQueryValue(query, "sort_type", input.sort_type);
+      appendQueryValue(query, "keyword", input.keyword);
+
+      const response = await _http.get(
+        `/GT3KServer/v4/current-user/testcases?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const testcases = readArray<Record<string, unknown>>(
+        payload.value ?? payload.testcases ?? payload.items ?? payload.list
+      );
+
+      return {
+        testcases,
+        total: readTotal(payload, response, testcases.length)
+      };
+    },
+    async listCurrentUserTestcases(input) {
+      const query = new URLSearchParams({
+        page_no: String(input.page),
+        page_size: String(input.page_size)
+      });
+      appendQueryValue(query, "sort_field", input.sort_field);
+      appendQueryValue(query, "sort_type", input.sort_type);
+      appendQueryValue(query, "keyword", input.keyword);
+
+      const response = await _http.get(`/v4/current-user/testcases?${query.toString()}`);
+      const payload = readResultPayload(response);
+      const testcases = readArray<Record<string, unknown>>(
+        payload.value ?? payload.testcases ?? payload.items ?? payload.list
+      );
+
+      return {
+        testcases,
+        total: readTotal(payload, response, testcases.length)
+      };
+    },
+    async getGt3kTestcaseChangeStatistics(input) {
+      const response = await _http.get(
+        `/GT3KServer/v4/${encodeURIComponent(input.project_id)}/versions/${encodeURIComponent(input.version_id)}/testcases/change-statistics`
+      );
+      const payload = readResultPayload(response);
+      const statistics = readEnvelope(payload.value) ?? payload;
+
+      return {
+        raw: statistics
+      };
+    },
+    async getTestcaseChangeStatistics(input) {
+      const response = await _http.get(
+        `/v4/${encodeURIComponent(input.project_id)}/versions/${encodeURIComponent(input.version_uri)}/testcases/change-statistics`
+      );
+      const payload = readResultPayload(response);
+      const statistics = readEnvelope(payload.value) ?? payload;
+
+      return {
+        raw: statistics
+      };
+    },
+    async listTestcaseComments(input) {
+      const query = new URLSearchParams({
+        page_no: String(input.page),
+        page_size: String(input.page_size)
+      });
+      appendQueryValue(query, "version_uri", input.version_uri);
+
+      const response = await _http.get(
+        `/GT3KServer/v4/${encodeURIComponent(input.project_id)}/testcases/${encodeURIComponent(input.testcase_id)}/comments?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const comments = readArray<Record<string, unknown>>(
+        payload.value ?? payload.comments ?? payload.items ?? payload.list
+      );
+
+      return {
+        comments,
+        total: readTotal(payload, response, comments.length)
+      };
+    },
+    async checkResourceExists(input) {
+      const query = new URLSearchParams({
+        version_uri: input.version_uri,
+        type: String(input.type)
+      });
+
+      const response = await _http.get(
+        `/v4/${encodeURIComponent(input.project_id)}/resources/${encodeURIComponent(input.resource_uri)}/exist?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const value = payload.value;
+
+      return {
+        value,
+        raw: payload
+      };
+    },
+    async listTestcaseReviews(input) {
+      const query = new URLSearchParams({
+        project_uuid: input.project_uuid,
+        version_uri: input.version_uri,
+        page_no: String(input.page),
+        page_size: String(input.page_size)
+      });
+
+      const response = await _http.get(
+        `/GT3KServer/v4/testcases/${encodeURIComponent(input.testcase_uri)}/review?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const reviews = readArray<Record<string, unknown>>(
+        payload.value ?? payload.reviews ?? payload.items ?? payload.list
+      );
+
+      return {
+        reviews,
+        total: readTotal(payload, response, reviews.length)
+      };
+    },
+    async listReleaseVersions(input) {
+      const query = new URLSearchParams({
+        resource_type: input.resource_type
+      });
+      appendQueryValue(query, "version_uri", input.version_uri);
+      appendQueryValue(query, "limit", input.limit);
+
+      const response = await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/release-versions?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const rawVersions = readArray<unknown>(
+        payload.value ?? payload.versions ?? payload.release_versions ?? payload.items ?? payload.list
+      );
+      const versions = rawVersions.map((item) =>
+        readEnvelope(item) ?? { value: item }
+      );
+
+      return {
+        versions,
+        total: readTotal(payload, response, versions.length)
+      };
+    },
+    async getDomainAccessInfo(input) {
+      const query = new URLSearchParams({
+        project_uuid: input.project_uuid
+      });
+
+      const response = await _http.get(`/v4/domain/access-info?${query.toString()}`);
+      const payload = readResultPayload(response);
+      const accessInfo = readEnvelope(payload.value) ?? payload;
+
+      return {
+        raw: accessInfo
+      };
+    },
+    async listRegisteredServices() {
+      const response = await _http.get("/v1/services");
+      const payload = readResultPayload(response);
+      const services = readArray<Record<string, unknown>>(
+        payload.services ?? payload.value ?? payload.items ?? payload.list
+      );
+
+      return {
+        services,
+        total: readTotal(payload, response, services.length)
+      };
+    },
+    async getImageCapacityWarning(input) {
+      const response = await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/image/capacity/warning`
+      );
+      const payload = readResultPayload(response);
+      const value = payload.value;
+
+      return {
+        value,
+        raw: payload
+      };
+    },
+    async checkUserDefinedConfigUsed(input) {
+      const query = new URLSearchParams({
+        type: input.type
+      });
+
+      const response = await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/user-defined-configs/${encodeURIComponent(input.config_id)}/used?${query.toString()}`
+      );
       const payload = readResultPayload(response);
       const value = payload.value;
 

@@ -1919,4 +1919,265 @@ describe("createTestPlanClient", () => {
       "/v4/user/exist"
     ]);
   });
+
+  it("gets TestPlan domain, declaration, branch, and own testcase read endpoints", async () => {
+    const requests: string[] = [];
+    const client = createTestPlanClient({
+      get: async (path: string) => {
+        requests.push(path);
+        if (path.startsWith("/GT3KServer/v4/branches")) {
+          return { value: [{ uri: "branch-1", name: "main" }], total: 1 };
+        }
+        if (path.startsWith("/v4/branches")) {
+          return { result: { value: [{ uri: "branch-2", name: "dev" }], total: 1 } };
+        }
+        if (path.startsWith("/GT3KServer/v4/current-user/testcases")) {
+          return { value: [{ uri: "case-1", name: "GT3K case" }], total: 1 };
+        }
+        if (path.startsWith("/v4/current-user/testcases")) {
+          return { value: [{ uri: "case-2", name: "v4 case" }], total: 1 };
+        }
+        if (path.startsWith("/GT3KServer/v4/domain/info")) {
+          return { value: { access: "trial" } };
+        }
+
+        return { value: true };
+      }
+    } as never);
+
+    await expect(
+      client.getDomainDetailInfo({
+        domain_id: "domain-1",
+        region: "cn-north-4",
+        order_query_type: "mix"
+      })
+    ).resolves.toEqual({
+      value: true,
+      raw: { value: true }
+    });
+    await expect(client.getFreeDeclaration()).resolves.toEqual({
+      value: true,
+      raw: { value: true }
+    });
+    await expect(client.getGt3kUserInfoDomain()).resolves.toEqual({
+      value: true,
+      raw: { value: true }
+    });
+    await expect(client.getUserInfoDomain()).resolves.toEqual({
+      value: true,
+      raw: { value: true }
+    });
+    await expect(
+      client.listGt3kBranches({
+        project_uuid: "project-1",
+        sort_field: "name",
+        sort_type: "ASC"
+      })
+    ).resolves.toEqual({
+      branches: [{ uri: "branch-1", name: "main" }],
+      total: 1
+    });
+    await expect(
+      client.listV4Branches({
+        project_uuid: "project-1",
+        sort_field: "name",
+        sort_type: "DESC"
+      })
+    ).resolves.toEqual({
+      branches: [{ uri: "branch-2", name: "dev" }],
+      total: 1
+    });
+    await expect(
+      client.getGt3kDomainInfo({
+        project_uuid: "project-1"
+      })
+    ).resolves.toEqual({
+      raw: { access: "trial" }
+    });
+    await expect(
+      client.listGt3kCurrentUserTestcases({
+        page: 2,
+        page_size: 20,
+        sort_field: "name",
+        sort_type: "ASC",
+        keyword: "login"
+      })
+    ).resolves.toEqual({
+      testcases: [{ uri: "case-1", name: "GT3K case" }],
+      total: 1
+    });
+    await expect(
+      client.listCurrentUserTestcases({
+        page: 1,
+        page_size: 10,
+        sort_field: "name",
+        sort_type: "DESC",
+        keyword: "smoke"
+      })
+    ).resolves.toEqual({
+      testcases: [{ uri: "case-2", name: "v4 case" }],
+      total: 1
+    });
+
+    expect(requests).toEqual([
+      "/v4/domain/detail-info?domain_id=domain-1&region=cn-north-4&order_query_type=mix",
+      "/v4/free-declaration",
+      "/GT3KServer/v4/user-info/domain",
+      "/v4/user-info/domain",
+      "/GT3KServer/v4/branches?project_uuid=project-1&sort_field=name&sort_type=ASC",
+      "/v4/branches?project_uuid=project-1&sort_field=name&sort_type=DESC",
+      "/GT3KServer/v4/domain/info?project_uuid=project-1",
+      "/GT3KServer/v4/current-user/testcases?page_no=2&page_size=20&sort_field=name&sort_type=ASC&keyword=login",
+      "/v4/current-user/testcases?page_no=1&page_size=10&sort_field=name&sort_type=DESC&keyword=smoke"
+    ]);
+  });
+
+  it("gets TestPlan testcase statistics, comments, reviews, and resource checks", async () => {
+    const requests: string[] = [];
+    const client = createTestPlanClient({
+      get: async (path: string) => {
+        requests.push(path);
+        if (path.includes("comments")) {
+          return { value: [{ id: "comment-1", content: "ok" }], total: 1 };
+        }
+        if (path.includes("review")) {
+          return { value: [{ id: "review-1", reviewer: "alice" }], total: 1 };
+        }
+        if (path.includes("change-statistics")) {
+          return { result: { add_testcases_number: 1 } };
+        }
+
+        return { value: 1 };
+      }
+    } as never);
+
+    await expect(
+      client.getGt3kTestcaseChangeStatistics({
+        project_id: "project-1",
+        version_id: "version-1"
+      })
+    ).resolves.toEqual({
+      raw: { add_testcases_number: 1 }
+    });
+    await expect(
+      client.getTestcaseChangeStatistics({
+        project_id: "project-1",
+        version_uri: "version-2"
+      })
+    ).resolves.toEqual({
+      raw: { add_testcases_number: 1 }
+    });
+    await expect(
+      client.listTestcaseComments({
+        project_id: "project-1",
+        testcase_id: "case-1",
+        page: 1,
+        page_size: 10,
+        version_uri: "version-1"
+      })
+    ).resolves.toEqual({
+      comments: [{ id: "comment-1", content: "ok" }],
+      total: 1
+    });
+    await expect(
+      client.checkResourceExists({
+        project_id: "project-1",
+        resource_uri: "resource-1",
+        version_uri: "version-1",
+        type: 3
+      })
+    ).resolves.toEqual({
+      value: 1,
+      raw: { value: 1 }
+    });
+    await expect(
+      client.listTestcaseReviews({
+        testcase_uri: "case-1",
+        project_uuid: "project-1",
+        version_uri: "version-1",
+        page: 2,
+        page_size: 5
+      })
+    ).resolves.toEqual({
+      reviews: [{ id: "review-1", reviewer: "alice" }],
+      total: 1
+    });
+
+    expect(requests).toEqual([
+      "/GT3KServer/v4/project-1/versions/version-1/testcases/change-statistics",
+      "/v4/project-1/versions/version-2/testcases/change-statistics",
+      "/GT3KServer/v4/project-1/testcases/case-1/comments?page_no=1&page_size=10&version_uri=version-1",
+      "/v4/project-1/resources/resource-1/exist?version_uri=version-1&type=3",
+      "/GT3KServer/v4/testcases/case-1/review?project_uuid=project-1&version_uri=version-1&page_no=2&page_size=5"
+    ]);
+  });
+
+  it("gets TestPlan release, access, service, image, and user config read endpoints", async () => {
+    const requests: string[] = [];
+    const client = createTestPlanClient({
+      get: async (path: string) => {
+        requests.push(path);
+        if (path.includes("release-versions")) {
+          return { value: ["v1", "v2"], total: 2 };
+        }
+        if (path === "/v1/services") {
+          return { services: [{ id: "service-1", name: "local" }], total: 1 };
+        }
+        if (path.includes("access-info")) {
+          return { value: { quota: 10 } };
+        }
+
+        return { value: 1 };
+      }
+    } as never);
+
+    await expect(
+      client.listReleaseVersions({
+        project_id: "project-1",
+        resource_type: "1",
+        version_uri: "version-1",
+        limit: 2
+      })
+    ).resolves.toEqual({
+      versions: [{ value: "v1" }, { value: "v2" }],
+      total: 2
+    });
+    await expect(
+      client.getDomainAccessInfo({
+        project_uuid: "project-1"
+      })
+    ).resolves.toEqual({
+      raw: { quota: 10 }
+    });
+    await expect(client.listRegisteredServices()).resolves.toEqual({
+      services: [{ id: "service-1", name: "local" }],
+      total: 1
+    });
+    await expect(
+      client.getImageCapacityWarning({
+        project_id: "project-1"
+      })
+    ).resolves.toEqual({
+      value: 1,
+      raw: { value: 1 }
+    });
+    await expect(
+      client.checkUserDefinedConfigUsed({
+        project_id: "project-1",
+        config_id: "config-1",
+        type: "1"
+      })
+    ).resolves.toEqual({
+      value: 1,
+      raw: { value: 1 }
+    });
+
+    expect(requests).toEqual([
+      "/v4/projects/project-1/release-versions?resource_type=1&version_uri=version-1&limit=2",
+      "/v4/domain/access-info?project_uuid=project-1",
+      "/v1/services",
+      "/v4/projects/project-1/image/capacity/warning",
+      "/v4/projects/project-1/user-defined-configs/config-1/used?type=1"
+    ]);
+  });
 });
