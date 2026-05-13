@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { toJsonSchemaCompat } from "@modelcontextprotocol/sdk/server/zod-json-schema-compat.js";
 import {
@@ -11,7 +12,7 @@ import { loadEnvConfig } from "../core/config/env.js";
 import { createServer, readRegisteredTools, type RegisteredToolInfo } from "./create-server.js";
 import { findToolManifestEntry } from "./tool-manifest.js";
 
-type CliOutputFormat = "json" | "text";
+type CliOutputFormat = "json" | "text" | "table";
 type CliTransport = "local" | "http";
 
 export type CliRunOptions = {
@@ -31,6 +32,25 @@ type ParsedGlobalOptions = {
   transport: CliTransport;
   endpoint?: string;
   token?: string;
+  profile?: string;
+  config?: string;
+};
+
+type CliProfile = {
+  transport?: CliTransport;
+  endpoint?: string;
+  token?: string;
+  region?: string;
+  access_key?: string;
+  secret_key?: string;
+  server_name?: string;
+  server_version?: string;
+  format?: CliOutputFormat;
+};
+
+type CliConfigFile = {
+  default_profile?: string;
+  profiles?: Record<string, CliProfile>;
 };
 
 type HttpJsonRpcResponse = {
@@ -57,13 +77,69 @@ function printJson(value: unknown, pretty: boolean) {
   return `${JSON.stringify(value, null, pretty ? 2 : 0)}\n`;
 }
 
+function defaultConfigPath(env: Record<string, string | undefined>) {
+  return env.CODEARTS_CLI_CONFIG ?? join(env.USERPROFILE ?? env.HOME ?? ".", ".codearts-mcp-cli.json");
+}
+
+function readCliConfig(path: string): CliConfigFile {
+  if (!existsSync(path)) {
+    return {};
+  }
+
+  try {
+    return JSON.parse(readFileSync(path, "utf8")) as CliConfigFile;
+  } catch (error) {
+    throw new CliError(`Failed to read CLI config ${path}: ${(error as Error).message}`);
+  }
+}
+
+function applyProfile(
+  parsed: ParsedGlobalOptions,
+  env: Record<string, string | undefined>
+) {
+  const configPath = parsed.config ?? defaultConfigPath(env);
+  const config = readCliConfig(configPath);
+  const profileName = parsed.profile ?? env.CODEARTS_CLI_PROFILE ?? config.default_profile;
+
+  if (!profileName) {
+    return env;
+  }
+
+  const profile = config.profiles?.[profileName];
+
+  if (!profile) {
+    throw new CliError(`CLI profile not found: ${profileName}`);
+  }
+
+  if (profile.transport && parsed.transport === "local" && !env.CODEARTS_CLI_TRANSPORT) {
+    parsed.transport = profile.transport;
+  }
+  parsed.endpoint ??= profile.endpoint;
+  parsed.token ??= profile.token;
+
+  if (profile.format && parsed.format === "json" && !env.CODEARTS_CLI_FORMAT) {
+    parsed.format = profile.format;
+  }
+
+  return {
+    ...env,
+    HUAWEICLOUD_REGION: env.HUAWEICLOUD_REGION ?? profile.region,
+    HUAWEICLOUD_AK: env.HUAWEICLOUD_AK ?? profile.access_key,
+    HUAWEICLOUD_SK: env.HUAWEICLOUD_SK ?? profile.secret_key,
+    MCP_SERVER_NAME: env.MCP_SERVER_NAME ?? profile.server_name ?? "codearts-mcp",
+    MCP_SERVER_VERSION: env.MCP_SERVER_VERSION ?? profile.server_version ?? "0.1.0"
+  };
+}
+
 function parseGlobalOptions(argv: string[], env: Record<string, string | undefined>): ParsedGlobalOptions {
   const args = [...argv];
-  let format: CliOutputFormat = "json";
+  let format: CliOutputFormat = parseOutputFormat(env.CODEARTS_CLI_FORMAT ?? "json");
   let pretty = false;
   let transport: CliTransport = env.CODEARTS_CLI_TRANSPORT === "http" ? "http" : "local";
   let endpoint = env.CODEARTS_MCP_URL ?? env.MCP_HTTP_URL;
   let token = env.CODEARTS_MCP_AUTH_TOKEN ?? env.MCP_AUTH_TOKEN;
+  let profile = env.CODEARTS_CLI_PROFILE;
+  let config = env.CODEARTS_CLI_CONFIG;
 
   while (args[0]?.startsWith("--")) {
     const option = args.shift();
@@ -85,9 +161,15 @@ function parseGlobalOptions(argv: string[], env: Record<string, string | undefin
       case "--token":
         token = readRequiredOptionValue(args, option);
         break;
+      case "--profile":
+        profile = readRequiredOptionValue(args, option);
+        break;
+      case "--config":
+        config = readRequiredOptionValue(args, option);
+        break;
       case "--help":
       case "-h":
-        return { command: "help", args: [], format, pretty, transport, endpoint, token };
+        return { command: "help", args: [], format, pretty, transport, endpoint, token, profile, config };
       default:
         throw new CliError(`Unknown global option: ${option}`);
     }
@@ -100,7 +182,9 @@ function parseGlobalOptions(argv: string[], env: Record<string, string | undefin
     pretty,
     transport,
     endpoint,
-    token
+    token,
+    profile,
+    config
   };
 }
 
@@ -127,6 +211,12 @@ function consumeSharedOptions(args: string[], parsed: ParsedGlobalOptions) {
       case "--token":
         parsed.token = readRequiredOptionValue(args, option);
         break;
+      case "--profile":
+        parsed.profile = readRequiredOptionValue(args, option);
+        break;
+      case "--config":
+        parsed.config = readRequiredOptionValue(args, option);
+        break;
       default:
         remaining.push(option);
     }
@@ -146,7 +236,7 @@ function readRequiredOptionValue(args: string[], option: string) {
 }
 
 function parseOutputFormat(value: string): CliOutputFormat {
-  if (value === "json" || value === "text") {
+  if (value === "json" || value === "text" || value === "table") {
     return value;
   }
 
@@ -220,6 +310,70 @@ function toolToListEntry(tool: RegisteredToolInfo) {
     supports_dry_run: manifest?.supportsDryRun,
     live_status: manifest?.liveStatus
   };
+}
+
+function scalarToText(value: unknown) {
+  if (value === undefined || value === null) {
+    return "";
+  }
+
+  if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+    return String(value);
+  }
+
+  return JSON.stringify(value);
+}
+
+function truncateCell(value: string, maxWidth = 80) {
+  if (value.length <= maxWidth) {
+    return value;
+  }
+
+  return `${value.slice(0, maxWidth - 3)}...`;
+}
+
+function renderTable(rows: Array<Record<string, unknown>>, columns?: string[]) {
+  if (rows.length === 0) {
+    return "\n";
+  }
+
+  const resolvedColumns = columns ?? Object.keys(rows[0] ?? {});
+  const cellRows = rows.map((row) =>
+    resolvedColumns.map((column) => truncateCell(scalarToText(row[column])))
+  );
+  const widths = resolvedColumns.map((column, index) =>
+    Math.max(
+      column.length,
+      ...cellRows.map((row) => row[index]?.length ?? 0)
+    )
+  );
+  const line = (values: string[]) =>
+    `| ${values.map((value, index) => value.padEnd(widths[index] ?? 0)).join(" | ")} |`;
+  const separator = `| ${widths.map((width) => "-".repeat(width)).join(" | ")} |`;
+
+  return `${[line(resolvedColumns), separator, ...cellRows.map(line)].join("\n")}\n`;
+}
+
+function tableRowsFromResult(result: unknown) {
+  const json = jsonFromMcpResult(result);
+
+  if (!json || typeof json !== "object") {
+    return [{ value: json }];
+  }
+
+  const candidate = json as { items?: unknown; item?: unknown };
+
+  if (Array.isArray(candidate.items)) {
+    return candidate.items.map((item) =>
+      item && typeof item === "object" ? (item as Record<string, unknown>) : { value: item }
+    );
+  }
+
+  if (candidate.item && typeof candidate.item === "object") {
+    return [candidate.item as Record<string, unknown>];
+  }
+
+  return [json as Record<string, unknown>];
 }
 
 function parseToolInput(args: string[], stdin: string | undefined) {
@@ -367,16 +521,52 @@ function renderHelp() {
     "  codearts tools [--format json|text] [--pretty]",
     "  codearts schema <tool> [--pretty]",
     "  codearts call <tool> [--input JSON | --file path | --stdin] [--format json|text] [--pretty]",
+    "  codearts completion powershell|bash|zsh",
     "",
     "Global options:",
     "  --transport local|http",
     "  --endpoint URL",
     "  --token TOKEN",
-    "  --format json|text",
+    "  --profile NAME",
+    "  --config PATH",
+    "  --format json|text|table",
     "  --pretty",
     "",
     "Local mode uses HUAWEICLOUD_AK, HUAWEICLOUD_SK, HUAWEICLOUD_REGION, MCP_SERVER_NAME and MCP_SERVER_VERSION."
   ].join("\n");
+}
+
+function renderCompletion(shell: string) {
+  const commands = "tools schema call completion help";
+  const globalOptions = "--transport --endpoint --url --token --profile --config --format --pretty --help";
+
+  switch (shell) {
+    case "powershell":
+      return [
+        "Register-ArgumentCompleter -Native -CommandName codearts,codearts-mcp -ScriptBlock {",
+        "  param($wordToComplete, $commandAst, $cursorPosition)",
+        `  $values = '${commands} ${globalOptions} json text table local http'.Split(' ')`,
+        "  $values | Where-Object { $_ -like \"$wordToComplete*\" } | ForEach-Object {",
+        "    [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_)",
+        "  }",
+        "}"
+      ].join("\n");
+    case "bash":
+      return [
+        "_codearts_complete() {",
+        `  local words=\"${commands} ${globalOptions} json text table local http\"`,
+        "  COMPREPLY=( $(compgen -W \"$words\" -- \"${COMP_WORDS[COMP_CWORD]}\") )",
+        "}",
+        "complete -F _codearts_complete codearts codearts-mcp"
+      ].join("\n");
+    case "zsh":
+      return [
+        "#compdef codearts codearts-mcp",
+        `_arguments '*: :(${commands} ${globalOptions} json text table local http)'`
+      ].join("\n");
+    default:
+      throw new CliError(`Unsupported completion shell: ${shell}`);
+  }
 }
 
 export async function runCli(options: CliRunOptions = {}) {
@@ -387,6 +577,7 @@ export async function runCli(options: CliRunOptions = {}) {
 
   try {
     const parsed = parseGlobalOptions(argv, env);
+    const effectiveEnv = applyProfile(parsed, env);
 
     switch (parsed.command) {
       case undefined:
@@ -395,8 +586,19 @@ export async function runCli(options: CliRunOptions = {}) {
       case "-h":
         stdout(`${renderHelp()}\n`);
         return 0;
+      case "completion": {
+        const shell = parsed.args.shift();
+
+        if (!shell) {
+          throw new CliError("completion requires a shell: powershell, bash, or zsh.");
+        }
+
+        stdout(`${renderCompletion(shell)}\n`);
+        return 0;
+      }
       case "tools": {
         consumeSharedOptions(parsed.args, parsed);
+        const commandEnv = applyProfile(parsed, effectiveEnv);
         const tools =
           parsed.transport === "http"
             ? await listHttpTools({
@@ -404,7 +606,7 @@ export async function runCli(options: CliRunOptions = {}) {
                 token: parsed.token,
                 fetch: options.fetch ?? fetch
               })
-            : getLocalTools(env).map(toolToListEntry);
+            : getLocalTools(commandEnv).map(toolToListEntry);
         if (parsed.format === "text") {
           stdout(
             `${tools
@@ -416,6 +618,14 @@ export async function runCli(options: CliRunOptions = {}) {
               .filter(Boolean)
               .join("\n")}\n`
           );
+        } else if (parsed.format === "table") {
+          stdout(renderTable(tools as Array<Record<string, unknown>>, [
+            "name",
+            "module",
+            "access",
+            "risk_level",
+            "live_status"
+          ]));
         } else {
           stdout(printJson({ tools }, parsed.pretty));
         }
@@ -423,6 +633,7 @@ export async function runCli(options: CliRunOptions = {}) {
       }
       case "schema": {
         consumeSharedOptions(parsed.args, parsed);
+        const commandEnv = applyProfile(parsed, effectiveEnv);
         const toolName = parsed.args.shift();
 
         if (!toolName) {
@@ -460,7 +671,7 @@ export async function runCli(options: CliRunOptions = {}) {
           return 0;
         }
 
-        const tool = findLocalTool(toolName, env);
+        const tool = findLocalTool(toolName, commandEnv);
         stdout(
           printJson(
             {
@@ -475,6 +686,7 @@ export async function runCli(options: CliRunOptions = {}) {
       }
       case "call": {
         consumeSharedOptions(parsed.args, parsed);
+        const commandEnv = applyProfile(parsed, effectiveEnv);
         const toolName = parsed.args.shift();
 
         if (!toolName) {
@@ -493,12 +705,14 @@ export async function runCli(options: CliRunOptions = {}) {
             fetch: options.fetch ?? fetch
           });
         } else {
-          const tool = findLocalTool(toolName, env);
+          const tool = findLocalTool(toolName, commandEnv);
           result = await tool.handler(input, {});
         }
 
         if (parsed.format === "text") {
           stdout(`${textFromMcpResult(result)}\n`);
+        } else if (parsed.format === "table") {
+          stdout(renderTable(tableRowsFromResult(result)));
         } else {
           stdout(printJson(jsonFromMcpResult(result), parsed.pretty));
         }

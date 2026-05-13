@@ -115,6 +115,7 @@ CLI 复用同一批 MCP 工具注册和 handler，适合脚本、CI、临时排�
 npm run cli -- tools --format text
 npm run cli -- schema req_list_projects
 npm run cli -- call req_list_projects --input '{"page":1,"page_size":20}' --pretty
+npm run cli -- call req_list_projects --input '{"page":1}' --format table
 ```
 
 输入可以来自 JSON 字符串、文件或 stdin：
@@ -143,6 +144,49 @@ npm run cli -- call req_list_projects \
 CODEARTS_CLI_TRANSPORT=http
 CODEARTS_MCP_URL=http://your-server-ip/mcp
 CODEARTS_MCP_AUTH_TOKEN=replace-with-auth-token
+```
+
+### 3. Profile、表格输出和补全
+
+CLI 支持 `--format table`，适合人工查看列表结果：
+
+```bash
+npm run cli -- tools --format table
+npm run cli -- call req_list_projects --input '{"page":1}' --format table
+```
+
+默认 profile 配置文件路径为 `~/.codearts-mcp-cli.json`，也可以用 `--config` 指定：
+
+```json
+{
+  "default_profile": "shared",
+  "profiles": {
+    "shared": {
+      "transport": "http",
+      "endpoint": "http://your-server-ip/mcp",
+      "token": "replace-with-auth-token"
+    },
+    "local": {
+      "transport": "local",
+      "region": "cn-north-4",
+      "access_key": "your-ak",
+      "secret_key": "your-sk"
+    }
+  }
+}
+```
+
+```bash
+npm run cli -- --profile shared tools --format table
+npm run cli -- --config ./profiles.json --profile local call req_list_projects --input '{"page":1}' --pretty
+```
+
+补全脚本按 shell 生成：
+
+```bash
+npm run cli -- completion powershell
+npm run cli -- completion bash
+npm run cli -- completion zsh
 ```
 
 ## 标准区域默认地址

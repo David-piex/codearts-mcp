@@ -1,4 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
+import { tmpdir } from "node:os";
 import { runCli } from "../../src/server/cli.js";
 
 const baseEnv = {
@@ -168,5 +171,129 @@ describe("CLI", () => {
     ).resolves.toBe(0);
 
     expect(output.stdout.join("")).toBe("req_list_projects\n");
+  });
+
+  it("renders tools as a table", async () => {
+    const output = createOutputCapture();
+
+    await expect(
+      runCli({
+        argv: ["tools", "--format", "table"],
+        env: baseEnv,
+        stdout: output.writeStdout,
+        stderr: output.writeStderr
+      })
+    ).resolves.toBe(0);
+
+    expect(output.stdout.join("")).toContain("| name");
+    expect(output.stdout.join("")).toContain("req_list_projects");
+  });
+
+  it("renders call result items as a table", async () => {
+    const output = createOutputCapture();
+    const fetchMock = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        result: {
+          structuredContent: {
+            summary: "1 project found",
+            items: [{ id: "project-1", name: "Demo" }]
+          }
+        }
+      })
+    })) as unknown as typeof fetch;
+
+    await expect(
+      runCli({
+        argv: [
+          "call",
+          "req_list_projects",
+          "--transport",
+          "http",
+          "--endpoint",
+          "https://example.test/mcp",
+          "--input",
+          "{\"page\":1}",
+          "--format",
+          "table"
+        ],
+        env: baseEnv,
+        fetch: fetchMock,
+        stdout: output.writeStdout,
+        stderr: output.writeStderr
+      })
+    ).resolves.toBe(0);
+
+    expect(output.stdout.join("")).toContain("| id");
+    expect(output.stdout.join("")).toContain("project-1");
+  });
+
+  it("loads HTTP defaults from a profile", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "codearts-cli-"));
+    const configPath = join(dir, "profiles.json");
+    const output = createOutputCapture();
+    const fetchMock = vi.fn(async (url: string | URL | Request, init?: RequestInit) => {
+      expect(String(url)).toBe("https://profile.example/mcp");
+      expect(init?.headers).toMatchObject({
+        authorization: "Bearer profile-token"
+      });
+
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({
+          result: {
+            tools: [{ name: "req_list_projects" }]
+          }
+        })
+      } as Response;
+    });
+
+    writeFileSync(
+      configPath,
+      JSON.stringify({
+        default_profile: "shared",
+        profiles: {
+          shared: {
+            transport: "http",
+            endpoint: "https://profile.example/mcp",
+            token: "profile-token"
+          }
+        }
+      })
+    );
+
+    try {
+      await expect(
+        runCli({
+          argv: ["tools", "--config", configPath, "--format", "text"],
+          env: {},
+          fetch: fetchMock as unknown as typeof fetch,
+          stdout: output.writeStdout,
+          stderr: output.writeStderr
+        })
+      ).resolves.toBe(0);
+
+      expect(output.stdout.join("")).toBe("req_list_projects\n");
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("prints shell completion scripts", async () => {
+    const output = createOutputCapture();
+
+    await expect(
+      runCli({
+        argv: ["completion", "powershell"],
+        env: baseEnv,
+        stdout: output.writeStdout,
+        stderr: output.writeStderr
+      })
+    ).resolves.toBe(0);
+
+    expect(output.stdout.join("")).toContain("Register-ArgumentCompleter");
+    expect(output.stdout.join("")).toContain("codearts");
   });
 });

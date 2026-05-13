@@ -223,6 +223,7 @@ CLI 与本地 `stdio` 模式使用同一组环境变量和工具注册，不需�
 npm run cli -- tools --format text
 npm run cli -- schema repo_list_repositories
 npm run cli -- call req_list_projects --input '{"page":1,"page_size":20}' --pretty
+npm run cli -- call req_list_projects --input '{"page":1}' --format table
 ```
 
 构建后也可以直接使用 bin 入口：
@@ -241,6 +242,43 @@ npm run cli -- call req_list_projects \
   --token replace-with-auth-token \
   --input '{"page":1}' \
   --pretty
+```
+
+也可以使用 profile 配置文件，默认路径为 `~/.codearts-mcp-cli.json`：
+
+```json
+{
+  "default_profile": "shared",
+  "profiles": {
+    "shared": {
+      "transport": "http",
+      "endpoint": "https://your-domain.example/mcp",
+      "token": "replace-with-auth-token",
+      "format": "table"
+    },
+    "local": {
+      "transport": "local",
+      "region": "cn-north-4",
+      "access_key": "your-ak",
+      "secret_key": "your-sk"
+    }
+  }
+}
+```
+
+指定 profile：
+
+```bash
+npm run cli -- --profile shared tools --format table
+npm run cli -- --profile local call req_list_projects --input '{"page":1}' --pretty
+```
+
+生成 shell 自动补全脚本：
+
+```bash
+npm run cli -- completion powershell
+npm run cli -- completion bash
+npm run cli -- completion zsh
 ```
 
 ## API 文档入口
@@ -310,6 +348,9 @@ Live 状态说明：
 | `CODEARTS_CLI_TRANSPORT` | CLI 默认调用模式：`local` 或 `http` | `local` |
 | `CODEARTS_MCP_URL` | CLI 远程 HTTP MCP 入口 | — |
 | `CODEARTS_MCP_AUTH_TOKEN` | CLI 远程调用使用的 Bearer token | — |
+| `CODEARTS_CLI_PROFILE` | CLI 默认 profile 名称 | — |
+| `CODEARTS_CLI_CONFIG` | CLI profile 配置文件路径 | `~/.codearts-mcp-cli.json` |
+| `CODEARTS_CLI_FORMAT` | CLI 默认输出格式：`json`、`text` 或 `table` | `json` |
 | `HUAWEICLOUD_AK` | 默认 AK（stdio 模式） | — |
 | `HUAWEICLOUD_SK` | 默认 SK（stdio 模式） | — |
 | `HUAWEICLOUD_REGION` | 默认区域（stdio 模式） | — |
@@ -338,6 +379,7 @@ Live 状态说明：
 | `npm run cli -- tools` | 列出 CLI 可调用工具 |
 | `npm run cli -- schema <tool>` | 输出某个工具的输入/输出 JSON Schema |
 | `npm run cli -- call <tool> --input <json>` | CLI 直接调用 MCP 工具并输出 JSON |
+| `npm run cli -- completion <shell>` | 生成 PowerShell、Bash 或 Zsh 补全脚本 |
 | `npm run build` | TypeScript 编译 |
 | `npm run check` | 本地完整检查：lint、类型、ToolManifest、文档同步、测试、构建 |
 | `npm test` | 运行测试 |

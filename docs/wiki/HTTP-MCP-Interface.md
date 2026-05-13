@@ -225,6 +225,27 @@ npm run cli -- call req_list_projects \
 
 CLI 的 HTTP 模式发送的仍然是标准 MCP JSON-RPC `tools/list` 和 `tools/call` 请求；`--token` 会写入 `Authorization: Bearer <token>`。
 
+如果经常访问同一个共享入口，可以把连接信息写入 profile：
+
+```json
+{
+  "default_profile": "shared",
+  "profiles": {
+    "shared": {
+      "transport": "http",
+      "endpoint": "http://127.0.0.1:3000/mcp",
+      "token": "replace-with-auth-token",
+      "format": "table"
+    }
+  }
+}
+```
+
+```bash
+npm run cli -- --profile shared tools
+npm run cli -- --profile shared call req_list_projects --input '{"page":1}'
+```
+
 ## 4. 鉴权与会话
 
 HTTP 模式下有两个共享鉴权工具：
