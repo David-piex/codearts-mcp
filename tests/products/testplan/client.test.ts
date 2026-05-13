@@ -1726,4 +1726,197 @@ describe("createTestPlanClient", () => {
       "/GT3KServer/v4/projects/project-1/customized-columns?service_type=1&stage_type=2"
     ]);
   });
+
+  it("loads project and domain configuration read endpoints", async () => {
+    const requests: string[] = [];
+    const client = createTestPlanClient({
+      get: async (path: string) => {
+        requests.push(path);
+        if (path.includes("/domain/detail-info")) {
+          return {
+            value: {
+              region: "cn-north-4",
+              status: "normal"
+            }
+          };
+        }
+        if (path.endsWith("/advanced-feature/trial")) {
+          return {
+            result: {
+              value: {
+                trial_use: true,
+                remaining_days: 7
+              }
+            }
+          };
+        }
+        if (path.endsWith("/advanced-feature/trusted")) {
+          return {
+            value: "success"
+          };
+        }
+        if (path.includes("/domain/frozen/info?")) {
+          return {
+            result: {
+              value: {
+                freeze_status: 0
+              }
+            }
+          };
+        }
+        if (path.includes("/domain/need-popup?")) {
+          return {
+            value: false
+          };
+        }
+        if (path.includes("/user/disclaimer?")) {
+          return {
+            result: {
+              value: true
+            }
+          };
+        }
+        if (path.endsWith("/message-notices")) {
+          return {
+            result: {
+              value: [{ id: "notice-1", name: "Requirement update" }],
+              total: 1
+            }
+          };
+        }
+        if (path.includes("/issue-update-notification?")) {
+          return {
+            value: {
+              enabled: true
+            }
+          };
+        }
+        if (path.endsWith("/master")) {
+          return {
+            value: "master-version-1"
+          };
+        }
+
+        return {
+          value: true
+        };
+      }
+    } as never);
+
+    await expect(
+      client.getProjectDomainDetailInfo({
+        project_id: "project-1",
+        order_query_type: "mix"
+      })
+    ).resolves.toEqual({
+      project_id: "project-1",
+      raw: {
+        region: "cn-north-4",
+        status: "normal"
+      }
+    });
+    await expect(
+      client.getProjectAdvancedFeatureTrial({
+        project_id: "project-1"
+      })
+    ).resolves.toEqual({
+      project_id: "project-1",
+      raw: {
+        trial_use: true,
+        remaining_days: 7
+      }
+    });
+    await expect(
+      client.getProjectAdvancedFeatureTrusted({
+        project_id: "project-1"
+      })
+    ).resolves.toEqual({
+      project_id: "project-1",
+      value: "success",
+      raw: {
+        value: "success"
+      }
+    });
+    await expect(
+      client.getDomainFrozenInfo({
+        project_uuid: "project-1"
+      })
+    ).resolves.toEqual({
+      project_uuid: "project-1",
+      raw: {
+        freeze_status: 0
+      }
+    });
+    await expect(
+      client.getDomainNeedPopup({
+        project_uuid: "project-1"
+      })
+    ).resolves.toEqual({
+      project_uuid: "project-1",
+      value: false,
+      raw: {
+        value: false
+      }
+    });
+    await expect(
+      client.getUserDisclaimer({
+        type: "testplan"
+      })
+    ).resolves.toEqual({
+      type: "testplan",
+      value: true,
+      raw: {
+        value: true
+      }
+    });
+    await expect(
+      client.getProjectMessageNotices({
+        project_id: "project-1"
+      })
+    ).resolves.toEqual({
+      notices: [{ id: "notice-1", name: "Requirement update" }],
+      total: 1
+    });
+    await expect(
+      client.getProjectIssueUpdateNotification({
+        project_id: "project-1",
+        owner_id: "user-1"
+      })
+    ).resolves.toEqual({
+      project_id: "project-1",
+      owner_id: "user-1",
+      raw: {
+        enabled: true
+      }
+    });
+    await expect(
+      client.getProjectMasterVersion({
+        project_id: "project-1"
+      })
+    ).resolves.toEqual({
+      project_id: "project-1",
+      value: "master-version-1",
+      raw: {
+        value: "master-version-1"
+      }
+    });
+    await expect(client.checkUserExists()).resolves.toEqual({
+      value: true,
+      raw: {
+        value: true
+      }
+    });
+    expect(requests).toEqual([
+      "/v4/projects/project-1/domain/detail-info?order_query_type=mix",
+      "/v4/projects/project-1/advanced-feature/trial",
+      "/v4/projects/project-1/advanced-feature/trusted",
+      "/v4/domain/frozen/info?project_uuid=project-1",
+      "/v4/domain/need-popup?project_uuid=project-1",
+      "/v4/user/disclaimer?type=testplan",
+      "/v4/projects/project-1/message-notices",
+      "/v4/projects/project-1/issue-update-notification?owner_id=user-1",
+      "/v4/projects/project-1/master",
+      "/v4/user/exist"
+    ]);
+  });
 });

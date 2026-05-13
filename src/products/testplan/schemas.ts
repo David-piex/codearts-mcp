@@ -209,6 +209,46 @@ export const testPlanGetCustomizedColumnsInput = z.object({
   stage_type: z.number().int()
 });
 
+export const testPlanGetProjectDomainDetailInfoInput = z.object({
+  project_id: idSchema,
+  order_query_type: z.string().min(1).optional()
+});
+
+export const testPlanGetProjectAdvancedFeatureTrialInput = z.object({
+  project_id: idSchema
+});
+
+export const testPlanGetProjectAdvancedFeatureTrustedInput = z.object({
+  project_id: idSchema
+});
+
+export const testPlanGetDomainFrozenInfoInput = z.object({
+  project_uuid: idSchema
+});
+
+export const testPlanGetDomainNeedPopupInput = z.object({
+  project_uuid: idSchema.optional()
+});
+
+export const testPlanGetUserDisclaimerInput = z.object({
+  type: z.string().min(1)
+});
+
+export const testPlanGetProjectMessageNoticesInput = z.object({
+  project_id: idSchema
+});
+
+export const testPlanGetProjectIssueUpdateNotificationInput = z.object({
+  project_id: idSchema,
+  owner_id: idSchema
+});
+
+export const testPlanGetProjectMasterVersionInput = z.object({
+  project_id: idSchema
+});
+
+export const testPlanCheckUserExistsInput = z.object({});
+
 export const testPlanListTesthubBranchesInput = pagingSchema.extend({
   project_id: idSchema,
   sort_field: z.string().min(1).optional(),

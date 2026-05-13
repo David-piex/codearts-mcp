@@ -361,6 +361,71 @@ export type TestPlanClient = {
     project_id: string;
     raw: Record<string, unknown>;
   }>;
+  getProjectDomainDetailInfo: (input: {
+    project_id: string;
+    order_query_type?: string;
+  }) => Promise<{
+    project_id: string;
+    raw: Record<string, unknown>;
+  }>;
+  getProjectAdvancedFeatureTrial: (input: {
+    project_id: string;
+  }) => Promise<{
+    project_id: string;
+    raw: Record<string, unknown>;
+  }>;
+  getProjectAdvancedFeatureTrusted: (input: {
+    project_id: string;
+  }) => Promise<{
+    project_id: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  getDomainFrozenInfo: (input: {
+    project_uuid: string;
+  }) => Promise<{
+    project_uuid: string;
+    raw: Record<string, unknown>;
+  }>;
+  getDomainNeedPopup: (input: {
+    project_uuid?: string;
+  }) => Promise<{
+    project_uuid?: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  getUserDisclaimer: (input: {
+    type: string;
+  }) => Promise<{
+    type: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  getProjectMessageNotices: (input: {
+    project_id: string;
+  }) => Promise<{
+    notices: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getProjectIssueUpdateNotification: (input: {
+    project_id: string;
+    owner_id: string;
+  }) => Promise<{
+    project_id: string;
+    owner_id: string;
+    raw: Record<string, unknown>;
+  }>;
+  getProjectMasterVersion: (input: {
+    project_id: string;
+  }) => Promise<{
+    project_id: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  checkUserExists: () => Promise<{
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
   listTesthubBranches: (input: {
     project_id: string;
     page: number;
@@ -1453,6 +1518,145 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       return {
         project_id: input.project_id,
         raw: columns
+      };
+    },
+    async getProjectDomainDetailInfo(input) {
+      const query = new URLSearchParams();
+      appendQueryValue(query, "order_query_type", input.order_query_type);
+      const suffix = query.size ? `?${query.toString()}` : "";
+
+      const response = await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/domain/detail-info${suffix}`
+      );
+      const payload = readResultPayload(response);
+      const detail = readEnvelope(payload.value) ?? payload;
+
+      return {
+        project_id: input.project_id,
+        raw: detail
+      };
+    },
+    async getProjectAdvancedFeatureTrial(input) {
+      const response = await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/advanced-feature/trial`
+      );
+      const payload = readResultPayload(response);
+      const trial = readEnvelope(payload.value) ?? payload;
+
+      return {
+        project_id: input.project_id,
+        raw: trial
+      };
+    },
+    async getProjectAdvancedFeatureTrusted(input) {
+      const response = await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/advanced-feature/trusted`
+      );
+      const payload = readResultPayload(response);
+      const value = payload.value;
+
+      return {
+        project_id: input.project_id,
+        value,
+        raw: payload
+      };
+    },
+    async getDomainFrozenInfo(input) {
+      const query = new URLSearchParams({
+        project_uuid: input.project_uuid
+      });
+
+      const response = await _http.get(`/v4/domain/frozen/info?${query.toString()}`);
+      const payload = readResultPayload(response);
+      const frozenInfo = readEnvelope(payload.value) ?? payload;
+
+      return {
+        project_uuid: input.project_uuid,
+        raw: frozenInfo
+      };
+    },
+    async getDomainNeedPopup(input) {
+      const query = new URLSearchParams();
+      appendQueryValue(query, "project_uuid", input.project_uuid);
+      const suffix = query.size ? `?${query.toString()}` : "";
+
+      const response = await _http.get(`/v4/domain/need-popup${suffix}`);
+      const payload = readResultPayload(response);
+      const value = payload.value;
+
+      return {
+        project_uuid: input.project_uuid,
+        value,
+        raw: payload
+      };
+    },
+    async getUserDisclaimer(input) {
+      const query = new URLSearchParams({
+        type: input.type
+      });
+
+      const response = await _http.get(`/v4/user/disclaimer?${query.toString()}`);
+      const payload = readResultPayload(response);
+      const value = payload.value;
+
+      return {
+        type: input.type,
+        value,
+        raw: payload
+      };
+    },
+    async getProjectMessageNotices(input) {
+      const response = await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/message-notices`
+      );
+      const payload = readResultPayload(response);
+      const notices = readArray<Record<string, unknown>>(
+        payload.value ?? payload.notices ?? payload.items ?? payload.list
+      );
+
+      return {
+        notices,
+        total: readTotal(payload, response, notices.length)
+      };
+    },
+    async getProjectIssueUpdateNotification(input) {
+      const query = new URLSearchParams({
+        owner_id: input.owner_id
+      });
+
+      const response = await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/issue-update-notification?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const notification = readEnvelope(payload.value) ?? payload;
+
+      return {
+        project_id: input.project_id,
+        owner_id: input.owner_id,
+        raw: notification
+      };
+    },
+    async getProjectMasterVersion(input) {
+      const response = await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/master`
+      );
+      const payload = readResultPayload(response);
+      const value = payload.value;
+
+      return {
+        project_id: input.project_id,
+        value,
+        raw: payload
+      };
+    },
+    async checkUserExists() {
+      const response = await _http.get("/v4/user/exist");
+      const payload = readResultPayload(response);
+      const value = payload.value;
+
+      return {
+        value,
+        raw: payload
       };
     },
     async listTesthubBranches(input) {

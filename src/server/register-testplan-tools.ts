@@ -3,8 +3,11 @@ import { officialApiRequestInput } from "../products/official-api.js";
 import { createTestPlanClient } from "../products/testplan/client.js";
 import {
   testPlanBatchDeleteTasksInput,
+  testPlanCheckUserExistsInput,
   testPlanCreateTaskInput,
   testPlanCreateTaskRelationsInput,
+  testPlanGetDomainFrozenInfoInput,
+  testPlanGetDomainNeedPopupInput,
   testPlanGetCaseTemplateInput,
   testPlanGetCaseInput,
   testPlanGetCurrentUserPackagePermissionInput,
@@ -13,6 +16,12 @@ import {
   testPlanGetDomainUserCountInput,
   testPlanGetIteratorInput,
   testPlanGetPlanInput,
+  testPlanGetProjectAdvancedFeatureTrialInput,
+  testPlanGetProjectAdvancedFeatureTrustedInput,
+  testPlanGetProjectDomainDetailInfoInput,
+  testPlanGetProjectIssueUpdateNotificationInput,
+  testPlanGetProjectMasterVersionInput,
+  testPlanGetProjectMessageNoticesInput,
   testPlanGetRuleCheckTaskReportInput,
   testPlanGetRuleCheckTaskSummaryInput,
   testPlanGetTestReportInput,
@@ -23,6 +32,7 @@ import {
   testPlanGetTaskInput,
   testPlanGetTaskResultDetailInput,
   testPlanGetTaskSuccessTestCasesCountInput,
+  testPlanGetUserDisclaimerInput,
   testPlanGetUserPackagePermissionInput,
   testPlanInitTaskExecutionInput,
   testPlanListAttachmentsInput,
@@ -56,6 +66,7 @@ import {
   testPlanStopTaskExecutionInput,
   testPlanUpdateTaskInput
 } from "../products/testplan/schemas.js";
+import { createTestPlanCheckUserExistsHandler } from "../products/testplan/tools/check-user-exists.js";
 import { createTestPlanBatchDeleteTasksHandler } from "../products/testplan/tools/batch-delete-tasks.js";
 import { createTestPlanGetCaseTemplateHandler } from "../products/testplan/tools/get-case-template.js";
 import { createTestPlanCreateTaskHandler } from "../products/testplan/tools/create-task.js";
@@ -64,9 +75,17 @@ import { createTestPlanGetCaseHandler } from "../products/testplan/tools/get-cas
 import { createTestPlanGetCustomTemplateHandler } from "../products/testplan/tools/get-custom-template.js";
 import { createTestPlanGetCurrentUserPackagePermissionHandler } from "../products/testplan/tools/get-current-user-package-permission.js";
 import { createTestPlanGetCustomizedColumnsHandler } from "../products/testplan/tools/get-customized-columns.js";
+import { createTestPlanGetDomainFrozenInfoHandler } from "../products/testplan/tools/get-domain-frozen-info.js";
+import { createTestPlanGetDomainNeedPopupHandler } from "../products/testplan/tools/get-domain-need-popup.js";
 import { createTestPlanGetDomainUserCountHandler } from "../products/testplan/tools/get-domain-user-count.js";
 import { createTestPlanGetIteratorHandler } from "../products/testplan/tools/get-iterator.js";
 import { createTestPlanGetPlanHandler } from "../products/testplan/tools/get-plan.js";
+import { createTestPlanGetProjectAdvancedFeatureTrialHandler } from "../products/testplan/tools/get-project-advanced-feature-trial.js";
+import { createTestPlanGetProjectAdvancedFeatureTrustedHandler } from "../products/testplan/tools/get-project-advanced-feature-trusted.js";
+import { createTestPlanGetProjectDomainDetailInfoHandler } from "../products/testplan/tools/get-project-domain-detail-info.js";
+import { createTestPlanGetProjectIssueUpdateNotificationHandler } from "../products/testplan/tools/get-project-issue-update-notification.js";
+import { createTestPlanGetProjectMasterVersionHandler } from "../products/testplan/tools/get-project-master-version.js";
+import { createTestPlanGetProjectMessageNoticesHandler } from "../products/testplan/tools/get-project-message-notices.js";
 import { createTestPlanGetRuleCheckTaskReportHandler } from "../products/testplan/tools/get-rule-check-task-report.js";
 import { createTestPlanGetRuleCheckTaskSummaryHandler } from "../products/testplan/tools/get-rule-check-task-summary.js";
 import { createTestPlanGetTestReportHandler } from "../products/testplan/tools/get-test-report.js";
@@ -77,6 +96,7 @@ import { createTestPlanGetTaskExecutionParamHandler } from "../products/testplan
 import { createTestPlanGetTaskHandler } from "../products/testplan/tools/get-task.js";
 import { createTestPlanGetTaskResultDetailHandler } from "../products/testplan/tools/get-task-result-detail.js";
 import { createTestPlanGetTaskSuccessTestCasesCountHandler } from "../products/testplan/tools/get-task-success-testcases-count.js";
+import { createTestPlanGetUserDisclaimerHandler } from "../products/testplan/tools/get-user-disclaimer.js";
 import { createTestPlanGetUserPackagePermissionHandler } from "../products/testplan/tools/get-user-package-permission.js";
 import { createTestPlanInitTaskExecutionHandler } from "../products/testplan/tools/init-task-execution.js";
 import { createTestPlanListAttachmentsHandler } from "../products/testplan/tools/list-attachments.js";
@@ -189,6 +209,66 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanGetCustomizedColumnsInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetCustomizedColumnsHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetCustomizedColumnsHandler
+  }),
+  "testplan_get_project_domain_detail_info": defineProductTool({
+    description: "Get CodeArts TestPlan project domain detail information",
+    inputSchema: testPlanGetProjectDomainDetailInfoInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetProjectDomainDetailInfoHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetProjectDomainDetailInfoHandler
+  }),
+  "testplan_get_project_advanced_feature_trial": defineProductTool({
+    description: "Get CodeArts TestPlan project advanced feature trial status",
+    inputSchema: testPlanGetProjectAdvancedFeatureTrialInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetProjectAdvancedFeatureTrialHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetProjectAdvancedFeatureTrialHandler
+  }),
+  "testplan_get_project_advanced_feature_trusted": defineProductTool({
+    description: "Get CodeArts TestPlan project advanced feature trusted status",
+    inputSchema: testPlanGetProjectAdvancedFeatureTrustedInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetProjectAdvancedFeatureTrustedHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetProjectAdvancedFeatureTrustedHandler
+  }),
+  "testplan_get_domain_frozen_info": defineProductTool({
+    description: "Get CodeArts TestPlan domain frozen status information",
+    inputSchema: testPlanGetDomainFrozenInfoInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetDomainFrozenInfoHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetDomainFrozenInfoHandler
+  }),
+  "testplan_get_domain_need_popup": defineProductTool({
+    description: "Get CodeArts TestPlan domain popup reminder status",
+    inputSchema: testPlanGetDomainNeedPopupInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetDomainNeedPopupHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetDomainNeedPopupHandler
+  }),
+  "testplan_get_user_disclaimer": defineProductTool({
+    description: "Get CodeArts TestPlan current user disclaimer record",
+    inputSchema: testPlanGetUserDisclaimerInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetUserDisclaimerHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetUserDisclaimerHandler
+  }),
+  "testplan_check_user_exists": defineProductTool({
+    description: "Check whether the current user has used CodeArts TestPlan",
+    inputSchema: testPlanCheckUserExistsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanCheckUserExistsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanCheckUserExistsHandler
+  }),
+  "testplan_get_project_message_notices": defineProductTool({
+    description: "Get CodeArts TestPlan project message notice configurations",
+    inputSchema: testPlanGetProjectMessageNoticesInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetProjectMessageNoticesHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetProjectMessageNoticesHandler
+  }),
+  "testplan_get_project_issue_update_notification": defineProductTool({
+    description: "Get CodeArts TestPlan project issue update notification setting",
+    inputSchema: testPlanGetProjectIssueUpdateNotificationInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetProjectIssueUpdateNotificationHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetProjectIssueUpdateNotificationHandler
+  }),
+  "testplan_get_project_master_version": defineProductTool({
+    description: "Get CodeArts TestPlan project master version URI",
+    inputSchema: testPlanGetProjectMasterVersionInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetProjectMasterVersionHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetProjectMasterVersionHandler
   }),
   "testplan_get_case_template": defineProductTool({
     description: "Get CodeArts TestPlan case template detail",
