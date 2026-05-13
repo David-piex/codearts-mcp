@@ -5,7 +5,7 @@
 ## 先知道这 4 件事
 
 1. 项目当前收敛到 `8` 个产品模块：Req、Repo、Pipeline、Check、TestPlan、Deploy、Build、Artifact。
-2. 运行模式分两种：个人本地用 `stdio`，团队共享用 `http + session`。
+2. 运行模式分两种：个人本地用 `stdio`，团队共享用 `http + session`；脚本化调用可以使用内置 CLI。
 3. 共享模式不是共享凭证，而是共享入口。每个用户仍然使用自己的 `AK/SK`。
 4. 文档里会明确区分“代码已实现”“真实 live 已验证”“区域未发布 / 租户样本不足”。
 
@@ -74,6 +74,7 @@
 如果你要直接从代码入口开始读，优先看这些文件：
 
 - `src/server/index.ts`
+- `src/server/cli.ts`
 - `src/server/http-app.ts`
 - `src/server/create-server.ts`
 - `src/server/tool-manifest.ts`

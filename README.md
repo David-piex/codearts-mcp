@@ -9,6 +9,7 @@
 - **会话隔离** — 共享模式下每个用户使用自己的 AK/SK，互不干扰
 - **加密持久化** — 凭证经 AES-256-GCM 加密落盘，服务重启后可恢复会话
 - **Cookie / Token 双恢复** — 客户端保留 Cookie 或固定 auth_token 均可无缝重连
+- **CLI 兼容** — 复用同一批 MCP 工具 handler，支持本地 AK/SK 直调和远程 HTTP `/mcp` 调用
 - **速率限制** — 写操作内置 per-session 限流，防止误操作风暴
 - **缓存加速** — 高频读工具带共享缓存与 in-flight dedupe，命中后毫秒级响应
 
@@ -214,6 +215,34 @@ MCP_SERVER_VERSION=0.1.0
 node dist/src/server/index.js
 ```
 
+### 本地 CLI
+
+CLI 与本地 `stdio` 模式使用同一组环境变量和工具注册，不需要额外服务进程：
+
+```bash
+npm run cli -- tools --format text
+npm run cli -- schema repo_list_repositories
+npm run cli -- call req_list_projects --input '{"page":1,"page_size":20}' --pretty
+```
+
+构建后也可以直接使用 bin 入口：
+
+```bash
+node dist/src/server/cli.js tools --format text
+node dist/src/server/cli.js call repo_list_repositories --file params.json --pretty
+```
+
+远程共享入口可以通过 HTTP MCP 调用：
+
+```bash
+npm run cli -- call req_list_projects \
+  --transport http \
+  --endpoint https://your-domain.example/mcp \
+  --token replace-with-auth-token \
+  --input '{"page":1}' \
+  --pretty
+```
+
 ## API 文档入口
 
 | 文档 | 用途 |
@@ -278,6 +307,9 @@ Live 状态说明：
 | `MCP_AUTH_WRITE_RATE_LIMIT_WINDOW_MS` | 鉴权写入限流窗口 | `60000` |
 | `MCP_AUTH_DATA_PATH` | 加密凭证持久化路径 | `.codearts-mcp/auth-store.json` |
 | `MCP_AUTH_COOKIE_SECURE` | HTTPS 环境下设置 Cookie Secure 标志 | `false` |
+| `CODEARTS_CLI_TRANSPORT` | CLI 默认调用模式：`local` 或 `http` | `local` |
+| `CODEARTS_MCP_URL` | CLI 远程 HTTP MCP 入口 | — |
+| `CODEARTS_MCP_AUTH_TOKEN` | CLI 远程调用使用的 Bearer token | — |
 | `HUAWEICLOUD_AK` | 默认 AK（stdio 模式） | — |
 | `HUAWEICLOUD_SK` | 默认 SK（stdio 模式） | — |
 | `HUAWEICLOUD_REGION` | 默认区域（stdio 模式） | — |
@@ -303,6 +335,9 @@ Live 状态说明：
 | --- | --- |
 | `npm run dev` | 开发模式启动（stdio） |
 | `npm run dev:http` | 开发模式启动（http） |
+| `npm run cli -- tools` | 列出 CLI 可调用工具 |
+| `npm run cli -- schema <tool>` | 输出某个工具的输入/输出 JSON Schema |
+| `npm run cli -- call <tool> --input <json>` | CLI 直接调用 MCP 工具并输出 JSON |
 | `npm run build` | TypeScript 编译 |
 | `npm run check` | 本地完整检查：lint、类型、ToolManifest、文档同步、测试、构建 |
 | `npm test` | 运行测试 |

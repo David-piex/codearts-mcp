@@ -86,6 +86,23 @@ type InternalRegisteredTool = {
   }) => void;
 };
 
+export type RegisteredToolInvocationHandler = (
+  input: unknown,
+  extra: Record<string, unknown>
+) => unknown | Promise<unknown>;
+
+export type RegisteredToolInfo = {
+  name: string;
+  title?: string;
+  description?: string;
+  inputSchema?: ToolSchema;
+  outputSchema?: ToolSchema;
+  annotations?: McpRegisteredTool["annotations"];
+  _meta?: Record<string, unknown>;
+  handler: RegisteredToolInvocationHandler;
+  enabled: boolean;
+};
+
 type InternalToolRequestHandlerHost = {
   setRequestHandler?: (
     schema: typeof ListToolsRequestSchema,
@@ -545,4 +562,26 @@ export function createServerFactory(
 
 export function createServer(options: CreateServerOptions) {
   return createServerFactory(options)();
+}
+
+export function readRegisteredTools(server: unknown): RegisteredToolInfo[] {
+  const registryServer = getInternalToolRegistryServer(server);
+
+  if (!registryServer) {
+    return [];
+  }
+
+  return Object.entries(registryServer._registeredTools ?? {})
+    .map(([name, tool]) => ({
+      name,
+      title: tool.title,
+      description: tool.description,
+      inputSchema: tool.inputSchema,
+      outputSchema: tool.outputSchema,
+      annotations: tool.annotations,
+      _meta: tool._meta,
+      handler: tool.handler as RegisteredToolInvocationHandler,
+      enabled: tool.enabled
+    }))
+    .sort((left, right) => left.name.localeCompare(right.name));
 }

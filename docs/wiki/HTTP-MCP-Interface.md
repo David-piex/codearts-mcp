@@ -201,6 +201,30 @@ curl http://127.0.0.1:3000/mcp \
 
 客户端应以 `tools/list` 返回的 `inputSchema` 作为最终参数契约，文档中的样例用于说明常见调用方式。
 
+### 3.4 通过 CLI 访问 HTTP MCP
+
+除 MCP 客户端外，也可以用项目内置 CLI 调用同一个 `/mcp` 入口：
+
+```bash
+npm run cli -- tools \
+  --transport http \
+  --endpoint http://127.0.0.1:3000/mcp \
+  --format text
+```
+
+调用工具：
+
+```bash
+npm run cli -- call req_list_projects \
+  --transport http \
+  --endpoint http://127.0.0.1:3000/mcp \
+  --token replace-with-auth-token \
+  --input '{"page":1,"page_size":20}' \
+  --pretty
+```
+
+CLI 的 HTTP 模式发送的仍然是标准 MCP JSON-RPC `tools/list` 和 `tools/call` 请求；`--token` 会写入 `Authorization: Bearer <token>`。
+
 ## 4. 鉴权与会话
 
 HTTP 模式下有两个共享鉴权工具：

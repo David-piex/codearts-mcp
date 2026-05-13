@@ -103,6 +103,48 @@ node dist/src/server/index.js
 - `pipeline_list_pipelines`
 - `build_list_jobs`
 
+## 方式 3：本地或远程 `CLI`
+
+CLI 复用同一批 MCP 工具注册和 handler，适合脚本、CI、临时排障和不方便接 MCP 客户端的场景。
+
+### 1. 本地直调
+
+本地直调与 `stdio` 使用同一组环境变量：
+
+```bash
+npm run cli -- tools --format text
+npm run cli -- schema req_list_projects
+npm run cli -- call req_list_projects --input '{"page":1,"page_size":20}' --pretty
+```
+
+输入可以来自 JSON 字符串、文件或 stdin：
+
+```bash
+npm run cli -- call repo_list_repositories --file params.json --pretty
+Get-Content -Raw params.json | npm run cli -- call repo_list_repositories --stdin --pretty
+```
+
+### 2. 远程 HTTP MCP 调用
+
+如果已经有共享 HTTP 入口，CLI 可以直接走 `/mcp`：
+
+```bash
+npm run cli -- call req_list_projects \
+  --transport http \
+  --endpoint http://your-server-ip/mcp \
+  --token replace-with-auth-token \
+  --input '{"page":1}' \
+  --pretty
+```
+
+也可以用环境变量固定远程入口：
+
+```env
+CODEARTS_CLI_TRANSPORT=http
+CODEARTS_MCP_URL=http://your-server-ip/mcp
+CODEARTS_MCP_AUTH_TOKEN=replace-with-auth-token
+```
+
 ## 标准区域默认地址
 
 `cn-north-4` 会自动推导为：

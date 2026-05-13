@@ -1,0 +1,172 @@
+import { describe, expect, it, vi } from "vitest";
+import { runCli } from "../../src/server/cli.js";
+
+const baseEnv = {
+  HUAWEICLOUD_AK: "ak-test",
+  HUAWEICLOUD_SK: "sk-test",
+  HUAWEICLOUD_REGION: "cn-north-4",
+  MCP_SERVER_NAME: "codearts-mcp",
+  MCP_SERVER_VERSION: "0.1.0"
+};
+
+function createOutputCapture() {
+  const stdout: string[] = [];
+  const stderr: string[] = [];
+
+  return {
+    stdout,
+    stderr,
+    writeStdout: (text: string) => stdout.push(text),
+    writeStderr: (text: string) => stderr.push(text)
+  };
+}
+
+describe("CLI", () => {
+  it("prints help", async () => {
+    const output = createOutputCapture();
+
+    await expect(
+      runCli({
+        argv: ["help"],
+        env: baseEnv,
+        stdout: output.writeStdout,
+        stderr: output.writeStderr
+      })
+    ).resolves.toBe(0);
+
+    expect(output.stdout.join("")).toContain("CodeArts MCP CLI");
+    expect(output.stderr).toEqual([]);
+  });
+
+  it("lists local tools as text", async () => {
+    const output = createOutputCapture();
+
+    await expect(
+      runCli({
+        argv: ["tools", "--format", "text"],
+        env: baseEnv,
+        stdout: output.writeStdout,
+        stderr: output.writeStderr
+      })
+    ).resolves.toBe(0);
+
+    expect(output.stdout.join("")).toContain("req_list_projects");
+    expect(output.stdout.join("")).toContain("repo_list_repositories");
+  });
+
+  it("prints a local tool schema", async () => {
+    const output = createOutputCapture();
+
+    await expect(
+      runCli({
+        argv: ["schema", "repo_list_repositories"],
+        env: baseEnv,
+        stdout: output.writeStdout,
+        stderr: output.writeStderr
+      })
+    ).resolves.toBe(0);
+
+    const parsed = JSON.parse(output.stdout.join("")) as {
+      name: string;
+      input_schema: { properties: Record<string, unknown> };
+    };
+    expect(parsed.name).toBe("repo_list_repositories");
+    expect(parsed.input_schema.properties).toHaveProperty("project_id");
+  });
+
+  it("returns validation errors for invalid local call input", async () => {
+    const output = createOutputCapture();
+
+    await expect(
+      runCli({
+        argv: ["call", "repo_list_repositories", "--input", "{"],
+        env: baseEnv,
+        stdout: output.writeStdout,
+        stderr: output.writeStderr
+      })
+    ).resolves.toBe(1);
+
+    expect(output.stderr.join("")).toContain("Input must be valid JSON");
+  });
+
+  it("calls HTTP MCP tools", async () => {
+    const output = createOutputCapture();
+    const fetchMock = vi.fn(async (_url: string | URL | Request, init?: RequestInit) => {
+      expect(init?.method).toBe("POST");
+      expect(JSON.parse(String(init?.body))).toMatchObject({
+        method: "tools/call",
+        params: {
+          name: "req_list_projects",
+          arguments: {
+            page: 1
+          }
+        }
+      });
+
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({
+          jsonrpc: "2.0",
+          id: 1,
+          result: {
+            structuredContent: {
+              summary: "1 project found",
+              items: [{ id: "project-1", name: "Demo" }]
+            },
+            content: [{ type: "text", text: "1 project found" }]
+          }
+        })
+      } as Response;
+    });
+
+    await expect(
+      runCli({
+        argv: [
+          "call",
+          "req_list_projects",
+          "--transport",
+          "http",
+          "--endpoint",
+          "https://example.test/mcp",
+          "--input",
+          "{\"page\":1}",
+          "--pretty"
+        ],
+        env: baseEnv,
+        fetch: fetchMock as unknown as typeof fetch,
+        stdout: output.writeStdout,
+        stderr: output.writeStderr
+      })
+    ).resolves.toBe(0);
+
+    expect(JSON.parse(output.stdout.join(""))).toMatchObject({
+      summary: "1 project found"
+    });
+  });
+
+  it("lists HTTP tools", async () => {
+    const output = createOutputCapture();
+    const fetchMock = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        result: {
+          tools: [{ name: "req_list_projects" }]
+        }
+      })
+    })) as unknown as typeof fetch;
+
+    await expect(
+      runCli({
+        argv: ["tools", "--transport", "http", "--endpoint", "https://example.test/mcp", "--format", "text"],
+        env: baseEnv,
+        fetch: fetchMock,
+        stdout: output.writeStdout,
+        stderr: output.writeStderr
+      })
+    ).resolves.toBe(0);
+
+    expect(output.stdout.join("")).toBe("req_list_projects\n");
+  });
+});

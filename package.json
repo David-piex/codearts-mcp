@@ -3,9 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "bin": {
+    "codearts": "dist/src/server/cli.js",
+    "codearts-mcp": "dist/src/server/cli.js"
+  },
   "scripts": {
     "dev": "tsx src/server/index.ts",
     "dev:http": "tsx src/server/index.ts",
+    "cli": "tsx src/server/cli.ts",
     "build": "tsc -p tsconfig.json",
     "check": "npm run lint && tsc --noEmit && npm run tool-manifest:check && npm run function-api:check && npm run stats:check-docs && npm test && npm run build",
     "probe:edge": "tsx src/server/edge-probe.ts",
