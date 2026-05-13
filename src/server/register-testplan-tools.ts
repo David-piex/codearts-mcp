@@ -42,6 +42,7 @@ import {
   testPlanGetLicenseSpecificationInput,
   testPlanGetPlanInput,
   testPlanGetProjectTestcaseInput,
+  testPlanGetProjectTestcaseV4Input,
   testPlanGetProjectAdvancedFeatureTrialInput,
   testPlanGetProjectAdvancedFeatureTrustedInput,
   testPlanGetProjectDomainDetailInfoInput,
@@ -188,6 +189,7 @@ import { createTestPlanGetIteratorHandler } from "../products/testplan/tools/get
 import { createTestPlanGetLicenseSpecificationHandler } from "../products/testplan/tools/get-license-specification.js";
 import { createTestPlanGetPlanHandler } from "../products/testplan/tools/get-plan.js";
 import { createTestPlanGetProjectTestcaseHandler } from "../products/testplan/tools/get-project-testcase.js";
+import { createTestPlanGetProjectTestcaseV4Handler } from "../products/testplan/tools/get-project-testcase-v4.js";
 import { createTestPlanGetProjectAdvancedFeatureTrialHandler } from "../products/testplan/tools/get-project-advanced-feature-trial.js";
 import { createTestPlanGetProjectAdvancedFeatureTrustedHandler } from "../products/testplan/tools/get-project-advanced-feature-trusted.js";
 import { createTestPlanGetProjectDomainDetailInfoHandler } from "../products/testplan/tools/get-project-domain-detail-info.js";
@@ -325,6 +327,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanGetProjectTestcaseInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetProjectTestcaseHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetProjectTestcaseHandler
+  }),
+  "testplan_get_project_testcase_v4": defineProductTool({
+    description: "Get CodeArts TestPlan v4 project testcase detail",
+    inputSchema: testPlanGetProjectTestcaseV4Input,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetProjectTestcaseV4Handler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetProjectTestcaseV4Handler
   }),
   "testplan_get_iterator": defineProductTool({
     description: "Get CodeArts TestPlan iterator detail with summary statistics",

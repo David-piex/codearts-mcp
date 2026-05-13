@@ -1324,6 +1324,16 @@ describe("createTestPlanClient", () => {
             }
           };
         }
+        if (path.startsWith("/v4/projects/")) {
+          return {
+            result: {
+              value: {
+                id: "case-project-v4-1",
+                name: "project case v4"
+              }
+            }
+          };
+        }
         if (path.includes("/case-templates/")) {
           return {
             result: {
@@ -1386,10 +1396,25 @@ describe("createTestPlanClient", () => {
         name: "project case"
       }
     });
+    await expect(
+      client.getProjectTestcaseV4({
+        project_id: "project-1",
+        testcase_uri: "case-project-v4-1",
+        plan_id: "plan-1"
+      })
+    ).resolves.toEqual({
+      case_id: "case-project-v4-1",
+      name: "project case v4",
+      raw: {
+        id: "case-project-v4-1",
+        name: "project case v4"
+      }
+    });
     expect(requests).toEqual([
       "/v4/project-1/case-templates/template-1",
       "/v4/testcases/case-1?version_uri=version-1&project_uuid=project-1",
-      "/v1/projects/project-1/testcases/case-project-1"
+      "/v1/projects/project-1/testcases/case-project-1",
+      "/v4/projects/project-1/testcases/case-project-v4-1?plan_id=plan-1"
     ]);
   });
 
