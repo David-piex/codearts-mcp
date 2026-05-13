@@ -783,6 +783,48 @@ export type TestPlanClient = {
   getApiTestAvailableConfig: (input: { project_id: string }) => Promise<{
     raw: Record<string, unknown>;
   }>;
+  getTestcaseScriptDetailV1: (input: {
+    project_id: string;
+    tmss_case_uri: string;
+  }) => Promise<{
+    case_id: string;
+    name?: string;
+    raw: Record<string, unknown>;
+  }>;
+  getTestcaseScriptDetailV3: (input: {
+    project_id: string;
+    tmss_case_uri: string;
+    task_id?: string;
+  }) => Promise<{
+    case_id: string;
+    name?: string;
+    raw: Record<string, unknown>;
+  }>;
+  getTestcaseScriptDetailV4: (input: {
+    project_id: string;
+    tmss_case_uri: string;
+    task_id?: string;
+  }) => Promise<{
+    case_id: string;
+    name?: string;
+    raw: Record<string, unknown>;
+  }>;
+  listVariableGroups: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    groups: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listNoticeConfigs: (input: { project_id: string }) => Promise<{
+    notices: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listTimeoutSettings: (input: { project_id: string }) => Promise<{
+    settings: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
   listGt3kProjectServiceRepos: (input: {
     project_uuid: string;
     page: number;
@@ -1121,8 +1163,10 @@ function readTotal(payload: Record<string, unknown>, response: unknown, fallback
   return (
     readOptionalNumber(payload.total) ??
     readOptionalNumber(payload.total_count) ??
+    readOptionalNumber(payload.total_size) ??
     readOptionalNumber(envelope.total) ??
     readOptionalNumber(envelope.total_count) ??
+    readOptionalNumber(envelope.total_size) ??
     fallback
   );
 }
@@ -2931,6 +2975,96 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
 
       return {
         raw: config
+      };
+    },
+    async getTestcaseScriptDetailV1(input) {
+      const response = await _http.get(
+        `/v1/${encodeURIComponent(input.project_id)}/testcase/${encodeURIComponent(input.tmss_case_uri)}`
+      );
+      const payload = readResultPayload(response);
+      const testcase = readEnvelope(payload.value) ?? payload;
+
+      return {
+        case_id: String(testcase.tmss_case_uri ?? testcase.uri ?? testcase.id ?? input.tmss_case_uri),
+        name: typeof testcase.name === "string" ? testcase.name : undefined,
+        raw: testcase
+      };
+    },
+    async getTestcaseScriptDetailV3(input) {
+      const query = new URLSearchParams();
+      appendQueryValue(query, "task_id", input.task_id);
+      const suffix = query.size ? `?${query.toString()}` : "";
+      const response = await _http.get(
+        `/v3/${encodeURIComponent(input.project_id)}/testcase/${encodeURIComponent(input.tmss_case_uri)}${suffix}`
+      );
+      const payload = readResultPayload(response);
+      const testcase = readEnvelope(payload.value) ?? payload;
+
+      return {
+        case_id: String(testcase.tmss_case_uri ?? testcase.uri ?? testcase.id ?? input.tmss_case_uri),
+        name: typeof testcase.name === "string" ? testcase.name : undefined,
+        raw: testcase
+      };
+    },
+    async getTestcaseScriptDetailV4(input) {
+      const query = new URLSearchParams();
+      appendQueryValue(query, "task_id", input.task_id);
+      const suffix = query.size ? `?${query.toString()}` : "";
+      const response = await _http.get(
+        `/v4/${encodeURIComponent(input.project_id)}/testcase/${encodeURIComponent(input.tmss_case_uri)}${suffix}`
+      );
+      const payload = readResultPayload(response);
+      const testcase = readEnvelope(payload.value) ?? payload;
+
+      return {
+        case_id: String(testcase.tmss_case_uri ?? testcase.uri ?? testcase.id ?? input.tmss_case_uri),
+        name: typeof testcase.name === "string" ? testcase.name : undefined,
+        raw: testcase
+      };
+    },
+    async listVariableGroups(input) {
+      const query = new URLSearchParams({
+        project_id: input.project_id,
+        page_no: String(input.page),
+        page_size: String(input.page_size)
+      });
+      const response = await _http.get(`/v1/variables/getVarGroupList?${query.toString()}`);
+      const payload = readResultPayload(response);
+      const groups = readArray<Record<string, unknown>>(
+        payload.page_list ?? payload.value ?? payload.groups ?? payload.items ?? payload.list
+      );
+
+      return {
+        groups,
+        total: readTotal(payload, response, groups.length)
+      };
+    },
+    async listNoticeConfigs(input) {
+      const response = await _http.get(
+        `/v1/${encodeURIComponent(input.project_id)}/notice_config/notice_config_list`
+      );
+      const payload = readResultPayload(response);
+      const notices = readArray<Record<string, unknown>>(
+        payload.value ?? payload.result ?? payload.notices ?? payload.items ?? payload.list
+      );
+
+      return {
+        notices,
+        total: readTotal(payload, response, notices.length)
+      };
+    },
+    async listTimeoutSettings(input) {
+      const response = await _http.get(
+        `/v1/${encodeURIComponent(input.project_id)}/get_timeOut_view`
+      );
+      const payload = readResultPayload(response);
+      const settings = readArray<Record<string, unknown>>(
+        payload.value ?? payload.result ?? payload.settings ?? payload.items ?? payload.list
+      );
+
+      return {
+        settings,
+        total: readTotal(payload, response, settings.length)
       };
     },
     async listGt3kProjectServiceRepos(input) {

@@ -515,6 +515,35 @@ export const testPlanGetApiTestAvailableConfigInput = z.object({
   project_id: idSchema
 });
 
+export const testPlanGetTestcaseScriptDetailV1Input = z.object({
+  project_id: idSchema,
+  tmss_case_uri: idSchema
+});
+
+export const testPlanGetTestcaseScriptDetailV3Input = z.object({
+  project_id: idSchema,
+  tmss_case_uri: idSchema,
+  task_id: idSchema.optional()
+});
+
+export const testPlanGetTestcaseScriptDetailV4Input = z.object({
+  project_id: idSchema,
+  tmss_case_uri: idSchema,
+  task_id: idSchema.optional()
+});
+
+export const testPlanListVariableGroupsInput = pagingSchema.extend({
+  project_id: idSchema
+});
+
+export const testPlanListNoticeConfigsInput = z.object({
+  project_id: idSchema
+});
+
+export const testPlanListTimeoutSettingsInput = z.object({
+  project_id: idSchema
+});
+
 export const testPlanListGt3kProjectServiceReposInput = pagingSchema.extend({
   project_uuid: idSchema
 });

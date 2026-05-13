@@ -2698,6 +2698,24 @@ describe("createTestPlanClient", () => {
         if (path.includes("available/config")) {
           return { result: { custom_aw_available: true } };
         }
+        if (path === "/v1/project-1/testcase/case-1") {
+          return { result: { tmss_case_uri: "case-1", name: "API case v1" } };
+        }
+        if (path === "/v3/project-1/testcase/case-1?task_id=task-1") {
+          return { result: { tmss_case_uri: "case-1", name: "API case v3" } };
+        }
+        if (path === "/v4/project-1/testcase/case-1?task_id=task-1") {
+          return { result: { tmss_case_uri: "case-1", name: "API case v4" } };
+        }
+        if (path.includes("getVarGroupList")) {
+          return { result: { page_list: [{ id: "group-1", name: "Default" }], total_size: 1 } };
+        }
+        if (path.includes("notice_config_list")) {
+          return { result: [{ id: "notice-1", name: "case completed" }] };
+        }
+        if (path.includes("get_timeOut_view")) {
+          return { result: [{ id: "timeout-1", time_out: "10000" }] };
+        }
 
         return { value: {} };
       }
@@ -2779,6 +2797,56 @@ describe("createTestPlanClient", () => {
     ).resolves.toEqual({
       raw: { custom_aw_available: true }
     });
+    await expect(
+      client.getTestcaseScriptDetailV1({
+        project_id: "project-1",
+        tmss_case_uri: "case-1"
+      })
+    ).resolves.toEqual({
+      case_id: "case-1",
+      name: "API case v1",
+      raw: { tmss_case_uri: "case-1", name: "API case v1" }
+    });
+    await expect(
+      client.getTestcaseScriptDetailV3({
+        project_id: "project-1",
+        tmss_case_uri: "case-1",
+        task_id: "task-1"
+      })
+    ).resolves.toEqual({
+      case_id: "case-1",
+      name: "API case v3",
+      raw: { tmss_case_uri: "case-1", name: "API case v3" }
+    });
+    await expect(
+      client.getTestcaseScriptDetailV4({
+        project_id: "project-1",
+        tmss_case_uri: "case-1",
+        task_id: "task-1"
+      })
+    ).resolves.toEqual({
+      case_id: "case-1",
+      name: "API case v4",
+      raw: { tmss_case_uri: "case-1", name: "API case v4" }
+    });
+    await expect(
+      client.listVariableGroups({
+        project_id: "project-1",
+        page: 1,
+        page_size: 10
+      })
+    ).resolves.toEqual({
+      groups: [{ id: "group-1", name: "Default" }],
+      total: 1
+    });
+    await expect(client.listNoticeConfigs({ project_id: "project-1" })).resolves.toEqual({
+      notices: [{ id: "notice-1", name: "case completed" }],
+      total: 1
+    });
+    await expect(client.listTimeoutSettings({ project_id: "project-1" })).resolves.toEqual({
+      settings: [{ id: "timeout-1", time_out: "10000" }],
+      total: 1
+    });
 
     expect(requests).toEqual([
       "/v1/project-1/api-testcases/case-1/execute-histories?offset=11&limit=10&plan_id=plan-1",
@@ -2790,7 +2858,13 @@ describe("createTestPlanClient", () => {
       "/v4/project-1/variables?group_id=group-1&page_no=1&page_size=20",
       "/v3/project-1/basic-aw/aw-1",
       "/v1/project/project-1/public_aw_lib_and_aws",
-      "/v1/project-1/available/config"
+      "/v1/project-1/available/config",
+      "/v1/project-1/testcase/case-1",
+      "/v3/project-1/testcase/case-1?task_id=task-1",
+      "/v4/project-1/testcase/case-1?task_id=task-1",
+      "/v1/variables/getVarGroupList?project_id=project-1&page_no=1&page_size=10",
+      "/v1/project-1/notice_config/notice_config_list",
+      "/v1/project-1/get_timeOut_view"
     ]);
   });
 });
