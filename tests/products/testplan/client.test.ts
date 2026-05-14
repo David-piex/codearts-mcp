@@ -3088,11 +3088,47 @@ describe("createTestPlanClient", () => {
         if (path.includes("testsuite-history")) {
           return { result: { suite_execution_history: [{ suite_id: "suite-1" }] } };
         }
+        if (path === "/attask/v1/system/parallel/summary") {
+          return { result: { parallel_limit: 20, parallel_num: 1 } };
+        }
+        if (path === "/v3/hutaf-ticc/package/status") {
+          return {
+            result: {
+              spec_code: "codearts.extension.concurrency.ticc",
+              domain_order_status: "normal",
+              resource_id: "resource-1",
+              has_old_package: true
+            }
+          };
+        }
         if (path === "/v2/project-1/task/task-2") {
           return { result: { id: "task-2", status: "success" } };
         }
         if (path.includes("dns-mapping")) {
           return { result: { host: "example.com" } };
+        }
+        if (path.includes("getGlobalParamNameList")) {
+          return {
+            result: {
+              paramNames: [
+                {
+                  name: "hostURL",
+                  isSensitive: false,
+                  dynamicParamFlag: false,
+                  category: "Static"
+                }
+              ]
+            }
+          };
+        }
+        if (path.includes("child_cata_data")) {
+          return { result: [{ id: "folder-1", name: "Default Folder", cata_type: 4 }] };
+        }
+        if (path.includes("get_awName_view")) {
+          return { result: [{ id: "view-1", name_view: "0" }] };
+        }
+        if (path.includes("param-property")) {
+          return { result: ["hostURL"] };
         }
         if (path.includes("basic-aw")) {
           return { result: { aw_id: "aw-1", name: "login" } };
@@ -3117,6 +3153,14 @@ describe("createTestPlanClient", () => {
         }
         if (path.includes("notice_config_list")) {
           return { result: [{ id: "notice-1", name: "case completed" }] };
+        }
+        if (path === "/v1/project-1/local/desensitization/config") {
+          return {
+            result: {
+              name: "desensitization",
+              value: "[\"zzz\",\"www\",\"www1\"]"
+            }
+          };
         }
         if (path.includes("get_timeOut_view")) {
           return { result: [{ id: "timeout-1", time_out: "10000" }] };
@@ -3204,6 +3248,17 @@ describe("createTestPlanClient", () => {
       histories: [{ suite_id: "suite-1" }],
       total: 1
     });
+    await expect(client.getFunctionalTestParallelSummary()).resolves.toEqual({
+      raw: { parallel_limit: 20, parallel_num: 1 }
+    });
+    await expect(client.getFunctionalTestPackageStatus()).resolves.toEqual({
+      raw: {
+        spec_code: "codearts.extension.concurrency.ticc",
+        domain_order_status: "normal",
+        resource_id: "resource-1",
+        has_old_package: true
+      }
+    });
     await expect(
       client.getApiTestTaskStatusV2({
         project_id: "project-1",
@@ -3216,6 +3271,21 @@ describe("createTestPlanClient", () => {
     });
     await expect(client.getApiTestDnsMapping({ project_id: "project-1" })).resolves.toEqual({
       raw: { host: "example.com" }
+    });
+    await expect(
+      client.listApiTestGlobalParamNames({
+        project_id: "project-1"
+      })
+    ).resolves.toEqual({
+      params: [
+        {
+          name: "hostURL",
+          isSensitive: false,
+          dynamicParamFlag: false,
+          category: "Static"
+        }
+      ],
+      total: 1
     });
     await expect(
       client.listApiTestVariables({
@@ -3235,6 +3305,30 @@ describe("createTestPlanClient", () => {
       })
     ).resolves.toEqual({
       raw: { aw_id: "aw-1", name: "login" }
+    });
+    await expect(
+      client.listApiTestChildBasicAws({
+        project_id: "project-1",
+        parent_id: "TOP",
+        aw_name: "login",
+        source_type: 1
+      })
+    ).resolves.toEqual({
+      aws: [{ id: "folder-1", name: "Default Folder", cata_type: 4 }],
+      total: 1
+    });
+    await expect(client.listApiTestAwNameViews({ project_id: "project-1" })).resolves.toEqual({
+      views: [{ id: "view-1", name_view: "0" }],
+      total: 1
+    });
+    await expect(
+      client.listApiTestBasicAwParamProperties({
+        project_id: "project-1",
+        aw_id: "aw-1"
+      })
+    ).resolves.toEqual({
+      properties: ["hostURL"],
+      total: 1
     });
     await expect(client.listPublicAwLibAndAws({ project_id: "project-1" })).resolves.toEqual({
       aws: [{ id: "aw-lib-1", name: "public" }],
@@ -3296,6 +3390,17 @@ describe("createTestPlanClient", () => {
     await expect(client.listTimeoutSettings({ project_id: "project-1" })).resolves.toEqual({
       settings: [{ id: "timeout-1", time_out: "10000" }],
       total: 1
+    });
+    await expect(
+      client.getProjectLocalConfig({
+        project_id: "project-1",
+        property: "desensitization"
+      })
+    ).resolves.toEqual({
+      raw: {
+        name: "desensitization",
+        value: "[\"zzz\",\"www\",\"www1\"]"
+      }
     });
     await expect(
       client.listVariablesV3({
@@ -3366,10 +3471,16 @@ describe("createTestPlanClient", () => {
       "/v2/projects/project-1/testcase-history?plan_id=plan-1",
       "/v2/queryFreeTestTime/service-1",
       "/v2/projects/project-1/testsuite-history?plan_id=plan-1",
+      "/attask/v1/system/parallel/summary",
+      "/v3/hutaf-ticc/package/status",
       "/v2/project-1/task/task-2",
       "/v1/project-1/dns-mapping",
+      "/v1/project-1/variables/getGlobalParamNameList",
       "/v4/project-1/variables?group_id=group-1&page_no=1&page_size=20",
       "/v3/project-1/basic-aw/aw-1",
+      "/v1/project-1/aw_cata/child_cata_data?parent_id=TOP&is_contain_aw=false&aw_name=login&source_type=1",
+      "/v1/project-1/get_awName_view",
+      "/v1/project-1/basic-aw/aw-1/param-property",
       "/v1/project/project-1/public_aw_lib_and_aws",
       "/v1/project-1/available/config",
       "/v1/project-1/testcase/case-1",
@@ -3378,6 +3489,7 @@ describe("createTestPlanClient", () => {
       "/v1/variables/getVarGroupList?project_id=project-1&page_no=1&page_size=10",
       "/v1/project-1/notice_config/notice_config_list",
       "/v1/project-1/get_timeOut_view",
+      "/v1/project-1/local/desensitization/config",
       "/v3/project-1/variables?page_no=1&page_size=5&group_id=group-1",
       "/v1/variables/getVarbyGroup?project_id=project-1&page_no=2&page_size=5&group_id=group-1",
       "/v2/project-1/variable-synchronization?variable_name=base_url&group_id=group-1",

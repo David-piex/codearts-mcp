@@ -724,6 +724,12 @@ export type TestPlanClient = {
   getProjectTestcaseGlobalConfig: (input: { project_id: string }) => Promise<{
     raw: Record<string, unknown>;
   }>;
+  getProjectLocalConfig: (input: {
+    project_id: string;
+    property: string;
+  }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
   getProjectSystemConfig: (input: {
     project_uuid: string;
     owner_id: string;
@@ -846,6 +852,12 @@ export type TestPlanClient = {
   getApiTestConcurrencyPackageStatus: (input: { test_type?: string }) => Promise<{
     raw: Record<string, unknown>;
   }>;
+  getFunctionalTestParallelSummary: () => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  getFunctionalTestPackageStatus: () => Promise<{
+    raw: Record<string, unknown>;
+  }>;
   checkApiTestTaskName: (input: {
     service_id: string;
     task_name: string;
@@ -908,6 +920,10 @@ export type TestPlanClient = {
   getApiTestDnsMapping: (input: { project_id: string }) => Promise<{
     raw: Record<string, unknown>;
   }>;
+  listApiTestGlobalParamNames: (input: { project_id: string }) => Promise<{
+    params: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
   listApiTestVariables: (input: {
     project_id: string;
     group_id: string;
@@ -922,6 +938,26 @@ export type TestPlanClient = {
     aw_id: string;
   }) => Promise<{
     raw: Record<string, unknown>;
+  }>;
+  listApiTestChildBasicAws: (input: {
+    project_id: string;
+    parent_id: string;
+    aw_name?: string;
+    source_type?: string | number;
+  }) => Promise<{
+    aws: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listApiTestAwNameViews: (input: { project_id: string }) => Promise<{
+    views: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listApiTestBasicAwParamProperties: (input: {
+    project_id: string;
+    aw_id: string;
+  }) => Promise<{
+    properties: string[];
+    total?: number;
   }>;
   listPublicAwLibAndAws: (input: { project_id: string }) => Promise<{
     aws: Array<Record<string, unknown>>;
@@ -3000,6 +3036,17 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         raw: config
       };
     },
+    async getProjectLocalConfig(input) {
+      const response = await _http.get(
+        `/v1/${encodeURIComponent(input.project_id)}/local/${encodeURIComponent(input.property)}/config`
+      );
+      const payload = readResultPayload(response);
+      const config = readEnvelope(payload) ?? ({ value: payload } as Record<string, unknown>);
+
+      return {
+        raw: config
+      };
+    },
     async getProjectSystemConfig(input) {
       const query = new URLSearchParams({
         owner_id: input.owner_id,
@@ -3292,6 +3339,24 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         raw: status
       };
     },
+    async getFunctionalTestParallelSummary() {
+      const response = await _http.get("/attask/v1/system/parallel/summary");
+      const payload = readResultPayload(response);
+      const summary = readEnvelope(payload.value) ?? readEnvelope(payload.result) ?? payload;
+
+      return {
+        raw: summary
+      };
+    },
+    async getFunctionalTestPackageStatus() {
+      const response = await _http.get("/v3/hutaf-ticc/package/status");
+      const payload = readResultPayload(response);
+      const status = readEnvelope(payload.value) ?? readEnvelope(payload.result) ?? payload;
+
+      return {
+        raw: status
+      };
+    },
     async checkApiTestTaskName(input) {
       const query = new URLSearchParams({
         task_name: input.task_name
@@ -3457,6 +3522,20 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         raw: mapping
       };
     },
+    async listApiTestGlobalParamNames(input) {
+      const response = await _http.get(
+        `/v1/${encodeURIComponent(input.project_id)}/variables/getGlobalParamNameList`
+      );
+      const payload = readResultPayload(response);
+      const params = readArray<Record<string, unknown>>(
+        payload.paramNames ?? payload.value ?? payload.params ?? payload.items ?? payload.list
+      );
+
+      return {
+        params,
+        total: readTotal(payload, response, params.length)
+      };
+    },
     async listApiTestVariables(input) {
       const query = new URLSearchParams({
         group_id: input.group_id,
@@ -3485,6 +3564,54 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
 
       return {
         raw: aw
+      };
+    },
+    async listApiTestChildBasicAws(input) {
+      const query = new URLSearchParams({
+        parent_id: input.parent_id,
+        is_contain_aw: "false"
+      });
+      appendQueryValue(query, "aw_name", input.aw_name);
+      appendQueryValue(query, "source_type", input.source_type);
+      const response = await _http.get(
+        `/v1/${encodeURIComponent(input.project_id)}/aw_cata/child_cata_data?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const aws = readArray<Record<string, unknown>>(
+        payload.value ?? payload.result ?? payload.aws ?? payload.items ?? payload.list
+      );
+
+      return {
+        aws,
+        total: readTotal(payload, response, aws.length)
+      };
+    },
+    async listApiTestAwNameViews(input) {
+      const response = await _http.get(
+        `/v1/${encodeURIComponent(input.project_id)}/get_awName_view`
+      );
+      const payload = readResultPayload(response);
+      const views = readArray<Record<string, unknown>>(
+        payload.value ?? payload.result ?? payload.views ?? payload.items ?? payload.list
+      );
+
+      return {
+        views,
+        total: readTotal(payload, response, views.length)
+      };
+    },
+    async listApiTestBasicAwParamProperties(input) {
+      const response = await _http.get(
+        `/v1/${encodeURIComponent(input.project_id)}/basic-aw/${encodeURIComponent(input.aw_id)}/param-property`
+      );
+      const payload = readResultPayload(response);
+      const properties = readArray<string>(
+        payload.value ?? payload.result ?? payload.properties ?? payload.items ?? payload.list
+      );
+
+      return {
+        properties,
+        total: readTotal(payload, response, properties.length)
       };
     },
     async listPublicAwLibAndAws(input) {

@@ -454,6 +454,11 @@ export const testPlanGetProjectTestcaseGlobalConfigInput = z.object({
   project_id: idSchema
 });
 
+export const testPlanGetProjectLocalConfigInput = z.object({
+  project_id: idSchema,
+  property: z.string().min(1)
+});
+
 export const testPlanGetProjectSystemConfigInput = z.object({
   project_uuid: idSchema,
   owner_id: idSchema,
@@ -545,6 +550,10 @@ export const testPlanGetApiTestConcurrencyPackageStatusInput = z.object({
   test_type: z.string().min(1).optional()
 });
 
+export const testPlanGetFunctionalTestParallelSummaryInput = z.object({});
+
+export const testPlanGetFunctionalTestPackageStatusInput = z.object({});
+
 export const testPlanCheckApiTestTaskNameInput = z.object({
   service_id: idSchema,
   task_name: z.string().min(1),
@@ -598,12 +607,32 @@ export const testPlanGetApiTestDnsMappingInput = z.object({
   project_id: idSchema
 });
 
+export const testPlanListApiTestGlobalParamNamesInput = z.object({
+  project_id: idSchema
+});
+
 export const testPlanListApiTestVariablesInput = pagingSchema.extend({
   project_id: idSchema,
   group_id: idSchema
 });
 
 export const testPlanGetApiTestBasicAwV3Input = z.object({
+  project_id: idSchema,
+  aw_id: idSchema
+});
+
+export const testPlanListApiTestChildBasicAwsInput = z.object({
+  project_id: idSchema,
+  parent_id: z.string().min(1),
+  aw_name: z.string().optional(),
+  source_type: z.union([z.string(), z.number().int()]).optional()
+});
+
+export const testPlanListApiTestAwNameViewsInput = z.object({
+  project_id: idSchema
+});
+
+export const testPlanListApiTestBasicAwParamPropertiesInput = z.object({
   project_id: idSchema,
   aw_id: idSchema
 });
