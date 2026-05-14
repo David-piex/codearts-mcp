@@ -507,8 +507,48 @@ export const testPlanListAlertTemplatesInput = pagingSchema.extend({
   name: z.string().min(1).optional()
 });
 
+export const testPlanCheckAlertUserNameInput = z.object({
+  service_id: idSchema,
+  user_name: z.string().min(1),
+  user_id: idSchema.optional()
+});
+
+export const testPlanCheckAlertTemplateNameInput = z.object({
+  service_id: idSchema,
+  name: z.string().min(1),
+  id: idSchema.optional()
+});
+
 export const testPlanGetDashboardRunPanelInput = z.object({
   service_id: idSchema
+});
+
+export const testPlanListDashboardStatisticBlocksInput = pagingSchema.extend({
+  service_id: idSchema,
+  start_time: z.number().int(),
+  end_time: z.number().int(),
+  executor_type: z.string().min(1).optional(),
+  label: z.string().min(1),
+  location_id: idSchema.optional()
+});
+
+export const testPlanListDashboardsInput = pagingSchema.extend({
+  service_id: idSchema,
+  name: z.string().min(1).optional()
+});
+
+export const testPlanListApiTestPackageStatusInput = z.object({
+  service_id: idSchema
+});
+
+export const testPlanGetApiTestConcurrencyPackageStatusInput = z.object({
+  test_type: z.string().min(1).optional()
+});
+
+export const testPlanCheckApiTestTaskNameInput = z.object({
+  service_id: idSchema,
+  task_name: z.string().min(1),
+  task_id: idSchema.optional()
 });
 
 export const testPlanGetApiTestPackageChargePopupInput = z.object({

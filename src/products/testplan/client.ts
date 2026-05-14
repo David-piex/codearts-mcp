@@ -798,7 +798,60 @@ export type TestPlanClient = {
     templates: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  checkAlertUserName: (input: {
+    service_id: string;
+    user_name: string;
+    user_id?: string;
+  }) => Promise<{
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  checkAlertTemplateName: (input: {
+    service_id: string;
+    name: string;
+    id?: string;
+  }) => Promise<{
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
   getDashboardRunPanel: (input: { service_id: string }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  listDashboardStatisticBlocks: (input: {
+    service_id: string;
+    start_time: number;
+    end_time: number;
+    executor_type?: string;
+    label: string;
+    location_id?: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    blocks: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listDashboards: (input: {
+    service_id: string;
+    name?: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    dashboards: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listApiTestPackageStatus: (input: { service_id: string }) => Promise<{
+    statuses: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getApiTestConcurrencyPackageStatus: (input: { test_type?: string }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  checkApiTestTaskName: (input: {
+    service_id: string;
+    task_name: string;
+    task_id?: string;
+  }) => Promise<{
+    value?: unknown;
     raw: Record<string, unknown>;
   }>;
   getApiTestPackageChargePopup: (input: { project_id: string }) => Promise<{
@@ -3117,6 +3170,36 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         total: readTotal(payload, response, templates.length)
       };
     },
+    async checkAlertUserName(input) {
+      const query = new URLSearchParams({
+        user_name: input.user_name
+      });
+      appendQueryValue(query, "user_id", input.user_id);
+      const response = await _http.get(
+        `/v1/projects/${encodeURIComponent(input.service_id)}/alert/user/name?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        value: payload.value ?? payload.result,
+        raw: payload
+      };
+    },
+    async checkAlertTemplateName(input) {
+      const query = new URLSearchParams({
+        name: input.name
+      });
+      appendQueryValue(query, "id", input.id);
+      const response = await _http.get(
+        `/v1/projects/${encodeURIComponent(input.service_id)}/alert-templates/name?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        value: payload.value ?? payload.result,
+        raw: payload
+      };
+    },
     async getDashboardRunPanel(input) {
       const response = await _http.get(
         `/v2/projects/${encodeURIComponent(input.service_id)}/dashboard/run-panel`
@@ -3126,6 +3209,108 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
 
       return {
         raw: panel
+      };
+    },
+    async listDashboardStatisticBlocks(input) {
+      const query = new URLSearchParams({
+        start_time: String(input.start_time),
+        end_time: String(input.end_time),
+        label: input.label,
+        page_num: String(input.page),
+        page_size: String(input.page_size)
+      });
+      appendQueryValue(query, "executor_type", input.executor_type);
+      appendQueryValue(query, "location_id", input.location_id);
+
+      const response = await _http.get(
+        `/v1/projects/${encodeURIComponent(input.service_id)}/dashboard/statistic/block?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const pagePayload = readEnvelope(payload.value) ?? payload;
+      const blocks = readArray<Record<string, unknown>>(
+        pagePayload.pageList ??
+          pagePayload.page_list ??
+          pagePayload.list ??
+          pagePayload.items ??
+          payload.value
+      );
+
+      return {
+        blocks,
+        total: readTotal(pagePayload, response, blocks.length)
+      };
+    },
+    async listDashboards(input) {
+      const query = new URLSearchParams({
+        page_number: String(input.page),
+        page_size: String(input.page_size)
+      });
+      appendQueryValue(query, "name", input.name);
+
+      const response = await _http.get(
+        `/v2/projects/${encodeURIComponent(input.service_id)}/dashboards?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const pagePayload = readEnvelope(payload.value) ?? payload;
+      const dashboards = readArray<Record<string, unknown>>(
+        pagePayload.page_list ??
+          pagePayload.pageList ??
+          pagePayload.dashboards ??
+          pagePayload.items ??
+          pagePayload.list ??
+          payload.value
+      );
+
+      return {
+        dashboards,
+        total: readTotal(pagePayload, response, dashboards.length)
+      };
+    },
+    async listApiTestPackageStatus(input) {
+      const response = await _http.get(
+        `/v1/projects/${encodeURIComponent(input.service_id)}/package/status`
+      );
+      const payload = readResultPayload(response);
+      const statuses = readArray<Record<string, unknown>>(
+        payload.value ?? payload.result ?? payload.statuses ?? payload.items ?? payload.list
+      );
+
+      return {
+        statuses,
+        total: readTotal(payload, response, statuses.length)
+      };
+    },
+    async getApiTestConcurrencyPackageStatus(input) {
+      const query = new URLSearchParams();
+      appendQueryValue(query, "test_type", input.test_type);
+      const suffix = query.size ? `?${query.toString()}` : "";
+      const response = await _http.get(`/v1/echotest/concurrency/status${suffix}`);
+      const payload = readResultPayload(response);
+      const status = readEnvelope(payload.value) ?? readEnvelope(payload.result) ?? payload;
+
+      return {
+        raw: status
+      };
+    },
+    async checkApiTestTaskName(input) {
+      const query = new URLSearchParams({
+        task_name: input.task_name
+      });
+      appendQueryValue(query, "task_id", input.task_id);
+      const response = await _http.get(
+        `/v4/projects/${encodeURIComponent(input.service_id)}/tasks/name?${query.toString()}`
+      );
+      if (!readEnvelope(response)) {
+        return {
+          value: response,
+          raw: { value: response }
+        };
+      }
+      const payload = readResultPayload(response);
+
+      return {
+        value: payload.value ?? payload.result,
+        raw: payload
       };
     },
     async getApiTestPackageChargePopup(input) {

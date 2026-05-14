@@ -2611,11 +2611,33 @@ describe("createTestPlanClient", () => {
         if (path.includes("service/config")) {
           return { value: { config_key: "task_clear_config_key" } };
         }
+        if (path.includes("alert/user/name")) {
+          return { result: "ok" };
+        }
+        if (path.includes("alert-templates/name")) {
+          return { result: false };
+        }
         if (path.includes("alert-templates")) {
           return { list: [{ id: "template-1", name: "default" }], total: 1 };
         }
         if (path.includes("dashboard/run-panel")) {
           return { value: { running: 1 } };
+        }
+        if (path.includes("dashboard/statistic/block")) {
+          return {
+            result: {
+              pageList: [{ id: "block-1", label: "region-a", subtaskcase_overstock_count: 2 }],
+              totalSize: 1
+            }
+          };
+        }
+        if (path.includes("/dashboards")) {
+          return {
+            result: {
+              page_list: [{ id: "dashboard-1", name: "ops" }],
+              total_size: 1
+            }
+          };
         }
         if (path.includes("testcase/field/batch-query")) {
           return { value: [{ uri: "field-1", name: "Priority" }], total: 1 };
@@ -2726,8 +2748,54 @@ describe("createTestPlanClient", () => {
       templates: [{ id: "template-1", name: "default" }],
       total: 1
     });
+    await expect(
+      client.checkAlertUserName({
+        service_id: "service-1",
+        user_name: "alice",
+        user_id: "user-1"
+      })
+    ).resolves.toEqual({
+      value: "ok",
+      raw: { result: "ok" }
+    });
+    await expect(
+      client.checkAlertTemplateName({
+        service_id: "service-1",
+        name: "default",
+        id: "template-1"
+      })
+    ).resolves.toEqual({
+      value: false,
+      raw: { result: false }
+    });
     await expect(client.getDashboardRunPanel({ service_id: "service-1" })).resolves.toEqual({
       raw: { running: 1 }
+    });
+    await expect(
+      client.listDashboardStatisticBlocks({
+        service_id: "service-1",
+        start_time: 1700000000000,
+        end_time: 1700003600000,
+        executor_type: "agent",
+        label: "region-a",
+        location_id: "location-1",
+        page: 2,
+        page_size: 10
+      })
+    ).resolves.toEqual({
+      blocks: [{ id: "block-1", label: "region-a", subtaskcase_overstock_count: 2 }],
+      total: 1
+    });
+    await expect(
+      client.listDashboards({
+        service_id: "service-1",
+        name: "ops",
+        page: 1,
+        page_size: 6
+      })
+    ).resolves.toEqual({
+      dashboards: [{ id: "dashboard-1", name: "ops" }],
+      total: 1
     });
     await expect(client.listGt3kTestcaseFields({ project_id: "project-1" })).resolves.toEqual({
       fields: [{ uri: "field-1", name: "Priority" }],
@@ -2792,7 +2860,11 @@ describe("createTestPlanClient", () => {
       "/GT3KServer/v4/domain/usage?project_uuid=project-1",
       "/v1/projects/service-1/service/config?key=task_clear_config_key&type=ServiceConfig",
       "/v1/projects/service-1/alert-templates?name=default&page_num=3&page_size=15",
+      "/v1/projects/service-1/alert/user/name?user_name=alice&user_id=user-1",
+      "/v1/projects/service-1/alert-templates/name?name=default&id=template-1",
       "/v2/projects/service-1/dashboard/run-panel",
+      "/v1/projects/service-1/dashboard/statistic/block?start_time=1700000000000&end_time=1700003600000&label=region-a&page_num=2&page_size=10&executor_type=agent&location_id=location-1",
+      "/v2/projects/service-1/dashboards?page_number=1&page_size=6&name=ops",
       "/GT3KServer/v4/project-1/testcase/field/batch-query",
       "/GT3KServer/v4/free-declaration",
       "/v4/branches/branch-1?project_uuid=project-1",
@@ -2822,6 +2894,27 @@ describe("createTestPlanClient", () => {
         }
         if (path.includes("/package-usage")) {
           return { result: [{ name: "test_duration", used_percent: 0 }] };
+        }
+        if (path.includes("/package/status")) {
+          return {
+            result: [
+              {
+                spec_code: "codearts.testplan.china.echotest",
+                resource_status: "normal"
+              }
+            ]
+          };
+        }
+        if (path.includes("/concurrency/status")) {
+          return {
+            result: {
+              spec_code: "codearts.testplan.china.apitest.concurrent",
+              domain_order_status: "normal"
+            }
+          };
+        }
+        if (path.includes("/tasks/name")) {
+          return "ok";
         }
         if (path.includes("/package-charge/message")) {
           return { result: { message: "ok" } };
@@ -2893,6 +2986,39 @@ describe("createTestPlanClient", () => {
       total: 1
     });
     await expect(
+      client.listApiTestPackageStatus({
+        service_id: "service-1"
+      })
+    ).resolves.toEqual({
+      statuses: [
+        {
+          spec_code: "codearts.testplan.china.echotest",
+          resource_status: "normal"
+        }
+      ],
+      total: 1
+    });
+    await expect(
+      client.getApiTestConcurrencyPackageStatus({
+        test_type: "apitest"
+      })
+    ).resolves.toEqual({
+      raw: {
+        spec_code: "codearts.testplan.china.apitest.concurrent",
+        domain_order_status: "normal"
+      }
+    });
+    await expect(
+      client.checkApiTestTaskName({
+        service_id: "service-1",
+        task_name: "smoke",
+        task_id: "task-1"
+      })
+    ).resolves.toEqual({
+      value: "ok",
+      raw: { value: "ok" }
+    });
+    await expect(
       client.getApiTestPackageChargeMessage({
         project_id: "project-1"
       })
@@ -2935,6 +3061,9 @@ describe("createTestPlanClient", () => {
       "/GT3KServer/v4/progress/operation-1?project_uuid=project-1",
       "/v1/projects/project-1/package-charge/popup",
       "/v1/projects/project-1/package-usage",
+      "/v1/projects/service-1/package/status",
+      "/v1/echotest/concurrency/status?test_type=apitest",
+      "/v4/projects/service-1/tasks/name?task_name=smoke&task_id=task-1",
       "/v1/projects/project-1/package-charge/message",
       "/v1/project-1/task/task-1",
       "/v2/getSuiteInfoPageUrl/service-1/suite-1",

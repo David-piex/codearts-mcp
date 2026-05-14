@@ -3,6 +3,9 @@ import { officialApiRequestInput } from "../products/official-api.js";
 import { createTestPlanClient } from "../products/testplan/client.js";
 import {
   testPlanBatchDeleteTasksInput,
+  testPlanCheckAlertTemplateNameInput,
+  testPlanCheckAlertUserNameInput,
+  testPlanCheckApiTestTaskNameInput,
   testPlanCheckProjectMemberExistsInput,
   testPlanCheckResourceExistsInput,
   testPlanCheckUserDefinedConfigUsedInput,
@@ -11,6 +14,7 @@ import {
   testPlanCreateTaskRelationsInput,
   testPlanGetApiTestAvailableConfigInput,
   testPlanGetApiTestBasicAwV3Input,
+  testPlanGetApiTestConcurrencyPackageStatusInput,
   testPlanGetApiTestDebugLogInput,
   testPlanGetApiTestDnsMappingInput,
   testPlanGetApiTestPackageChargeMessageInput,
@@ -28,6 +32,8 @@ import {
   testPlanGetCustomTemplateInput,
   testPlanGetCustomizedColumnsInput,
   testPlanGetDashboardRunPanelInput,
+  testPlanListDashboardStatisticBlocksInput,
+  testPlanListDashboardsInput,
   testPlanGetDomainUserCountInput,
   testPlanGetFreeDeclarationInput,
   testPlanGetFreeTestTimeInput,
@@ -84,6 +90,7 @@ import {
   testPlanGetSuiteInfoPageUrlInput,
   testPlanInitTaskExecutionInput,
   testPlanListApiTestPackageUsageInput,
+  testPlanListApiTestPackageStatusInput,
   testPlanListApiTestVariablesInput,
   testPlanListApiTestcaseExecuteHistoriesInput,
   testPlanListApiTestcaseHistoryInput,
@@ -163,9 +170,13 @@ import { createTestPlanCheckUserExistsHandler } from "../products/testplan/tools
 import { createTestPlanCheckProjectMemberExistsHandler } from "../products/testplan/tools/check-project-member-exists.js";
 import { createTestPlanCheckResourceExistsHandler } from "../products/testplan/tools/check-resource-exists.js";
 import { createTestPlanCheckUserDefinedConfigUsedHandler } from "../products/testplan/tools/check-user-defined-config-used.js";
+import { createTestPlanCheckAlertTemplateNameHandler } from "../products/testplan/tools/check-alert-template-name.js";
+import { createTestPlanCheckAlertUserNameHandler } from "../products/testplan/tools/check-alert-user-name.js";
+import { createTestPlanCheckApiTestTaskNameHandler } from "../products/testplan/tools/check-api-test-task-name.js";
 import { createTestPlanBatchDeleteTasksHandler } from "../products/testplan/tools/batch-delete-tasks.js";
 import { createTestPlanGetApiTestAvailableConfigHandler } from "../products/testplan/tools/get-api-test-available-config.js";
 import { createTestPlanGetApiTestBasicAwV3Handler } from "../products/testplan/tools/get-api-test-basic-aw-v3.js";
+import { createTestPlanGetApiTestConcurrencyPackageStatusHandler } from "../products/testplan/tools/get-api-test-concurrency-package-status.js";
 import { createTestPlanGetApiTestDebugLogHandler } from "../products/testplan/tools/get-api-test-debug-log.js";
 import { createTestPlanGetApiTestDnsMappingHandler } from "../products/testplan/tools/get-api-test-dns-mapping.js";
 import { createTestPlanGetApiTestPackageChargeMessageHandler } from "../products/testplan/tools/get-api-test-package-charge-message.js";
@@ -181,6 +192,8 @@ import { createTestPlanGetCustomTemplateHandler } from "../products/testplan/too
 import { createTestPlanGetCurrentUserPackagePermissionHandler } from "../products/testplan/tools/get-current-user-package-permission.js";
 import { createTestPlanGetCustomizedColumnsHandler } from "../products/testplan/tools/get-customized-columns.js";
 import { createTestPlanGetDashboardRunPanelHandler } from "../products/testplan/tools/get-dashboard-run-panel.js";
+import { createTestPlanListDashboardStatisticBlocksHandler } from "../products/testplan/tools/list-dashboard-statistic-blocks.js";
+import { createTestPlanListDashboardsHandler } from "../products/testplan/tools/list-dashboards.js";
 import { createTestPlanGetDomainAccessInfoHandler } from "../products/testplan/tools/get-domain-access-info.js";
 import { createTestPlanGetDomainDetailInfoHandler } from "../products/testplan/tools/get-domain-detail-info.js";
 import { createTestPlanGetDomainFrozenInfoHandler } from "../products/testplan/tools/get-domain-frozen-info.js";
@@ -243,6 +256,7 @@ import { createTestPlanGetSuiteInfoPageUrlHandler } from "../products/testplan/t
 import { createTestPlanInitTaskExecutionHandler } from "../products/testplan/tools/init-task-execution.js";
 import { createTestPlanListAlertTemplatesHandler } from "../products/testplan/tools/list-alert-templates.js";
 import { createTestPlanListApiTestPackageUsageHandler } from "../products/testplan/tools/list-api-test-package-usage.js";
+import { createTestPlanListApiTestPackageStatusHandler } from "../products/testplan/tools/list-api-test-package-status.js";
 import { createTestPlanListApiTestVariablesHandler } from "../products/testplan/tools/list-api-test-variables.js";
 import { createTestPlanListApiTestcaseExecuteHistoriesHandler } from "../products/testplan/tools/list-api-testcase-execute-histories.js";
 import { createTestPlanListApiTestcaseHistoryHandler } from "../products/testplan/tools/list-api-testcase-history.js";
@@ -564,6 +578,18 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanCheckProjectMemberExistsHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanCheckProjectMemberExistsHandler
   }),
+  "testplan_check_alert_user_name": defineProductTool({
+    description: "Check whether a CodeArts TestPlan alert user name is duplicated",
+    inputSchema: testPlanCheckAlertUserNameInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanCheckAlertUserNameHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanCheckAlertUserNameHandler
+  }),
+  "testplan_check_alert_template_name": defineProductTool({
+    description: "Check whether a CodeArts TestPlan alert template name is duplicated",
+    inputSchema: testPlanCheckAlertTemplateNameInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanCheckAlertTemplateNameHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanCheckAlertTemplateNameHandler
+  }),
   "testplan_list_test_report_custom_infos": defineProductTool({
     description: "List CodeArts TestPlan test report custom modules",
     inputSchema: testPlanListTestReportCustomInfosInput,
@@ -581,6 +607,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListApiTestPackageUsageInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListApiTestPackageUsageHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListApiTestPackageUsageHandler
+  }),
+  "testplan_list_api_test_package_status": defineProductTool({
+    description: "List CodeArts TestPlan API test package status information",
+    inputSchema: testPlanListApiTestPackageStatusInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListApiTestPackageStatusHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListApiTestPackageStatusHandler
   }),
   "testplan_list_api_testcase_execute_histories": defineProductTool({
     description: "List CodeArts TestPlan API testcase execution histories",
@@ -677,6 +709,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanGetApiTestAvailableConfigInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetApiTestAvailableConfigHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetApiTestAvailableConfigHandler
+  }),
+  "testplan_get_api_test_concurrency_package_status": defineProductTool({
+    description: "Get CodeArts TestPlan API test concurrency package status",
+    inputSchema: testPlanGetApiTestConcurrencyPackageStatusInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetApiTestConcurrencyPackageStatusHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetApiTestConcurrencyPackageStatusHandler
   }),
   "testplan_get_testcase_script_detail_v1": defineProductTool({
     description: "Get CodeArts TestPlan v1 testcase script detail",
@@ -827,6 +865,24 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanGetDashboardRunPanelInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetDashboardRunPanelHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetDashboardRunPanelHandler
+  }),
+  "testplan_list_dashboard_statistic_blocks": defineProductTool({
+    description: "List CodeArts TestPlan dashboard statistic blocks",
+    inputSchema: testPlanListDashboardStatisticBlocksInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListDashboardStatisticBlocksHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListDashboardStatisticBlocksHandler
+  }),
+  "testplan_list_dashboards": defineProductTool({
+    description: "List CodeArts TestPlan dashboards",
+    inputSchema: testPlanListDashboardsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListDashboardsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListDashboardsHandler
+  }),
+  "testplan_check_api_test_task_name": defineProductTool({
+    description: "Check whether a CodeArts TestPlan API test task name is duplicated",
+    inputSchema: testPlanCheckApiTestTaskNameInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanCheckApiTestTaskNameHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanCheckApiTestTaskNameHandler
   }),
   "testplan_get_domain_detail_info": defineProductTool({
     description: "Get CodeArts TestPlan domain detail information",
