@@ -265,6 +265,27 @@ export const testPlanListProjectFieldConfigsInput = z.object({
   project_id: idSchema
 });
 
+export const testPlanListV4ProjectFieldConfigsInput = z.object({
+  project_id: idSchema
+});
+
+export const testPlanListProjectDefectsInput = pagingSchema.extend({
+  project_id: idSchema,
+  keyword: z.string().min(1).optional(),
+  module_id: idSchema.optional(),
+  iteration_ids: z.string().min(1).optional()
+});
+
+export const testPlanListProjectIssuesInput = pagingSchema.extend({
+  project_id: idSchema,
+  tracker_id: idSchema.optional(),
+  iteration_ids: z.string().min(1).optional(),
+  status_id: idSchema.optional(),
+  module_id: idSchema.optional(),
+  show_page_flag: z.string().min(1).optional(),
+  keyword: z.string().min(1).optional()
+});
+
 export const testPlanListProjectUsersInput = pagingSchema.extend({
   project_id: idSchema,
   keyword: z.string().min(1).optional()
@@ -332,6 +353,19 @@ export const testPlanGetProjectIssueUpdateNotificationInput = z.object({
 
 export const testPlanGetProjectMasterVersionInput = z.object({
   project_id: idSchema
+});
+
+export const testPlanCheckUserInfoInput = z.object({
+  project_id: idSchema
+});
+
+export const testPlanGetMindmapCreatorNameInput = z.object({
+  project_id: idSchema
+});
+
+export const testPlanGetMindmapPermissionInput = z.object({
+  project_id: idSchema,
+  id: idSchema
 });
 
 export const testPlanCheckUserExistsInput = z.object({});
@@ -699,6 +733,16 @@ export const testPlanGetVariableSynchronizationInput = z.object({
 export const testPlanGetProgressInput = z.object({
   id: idSchema,
   project_id: idSchema.optional()
+});
+
+export const testPlanGetProjectProgressInput = z.object({
+  project_id: idSchema,
+  operation_uri: idSchema
+});
+
+export const testPlanGetTesthubProgressInput = z.object({
+  project_uuid: idSchema,
+  operation_uri: idSchema
 });
 
 export const testPlanListGt3kProjectServiceReposInput = pagingSchema.extend({

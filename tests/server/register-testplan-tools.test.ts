@@ -108,6 +108,27 @@ describe("registerTestPlanTool", () => {
     );
   });
 
+  it("registers additional project metadata read tools", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerTestPlanTool({
+      toolName: "testplan_list_project_defects",
+      server: { registerTool },
+      mode: "stdio",
+      stdioClient: {} as never
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "testplan_list_project_defects",
+      expect.objectContaining({
+        title: "testplan_list_project_defects",
+        description: "List CodeArts TestPlan project defects"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("returns false for non-testplan tools", () => {
     const registerTool = vi.fn();
 

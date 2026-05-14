@@ -313,6 +313,118 @@ describe("createTestPlanClient", () => {
     });
   });
 
+  it("reads additional project metadata endpoints from the tmp API docs", async () => {
+    const requests: string[] = [];
+    const client = createTestPlanClient({
+      get: async (path: string) => {
+        requests.push(path);
+        if (path.includes("/defects?")) {
+          return { result: { value: [{ id: "defect-1", subject: "login bug" }], total: 1 } };
+        }
+        if (path.includes("/issues?")) {
+          return { result: { value: [{ id: "issue-1", subject: "login story" }], total: 1 } };
+        }
+        if (path.includes("/field-configs")) {
+          return { result: { value: [{ uri: "field-1", name: "priority" }], total: 1 } };
+        }
+        if (path.includes("/user-info/check")) {
+          return { code: "200", data: "ok", message: "success" };
+        }
+        if (path.includes("/mindmap-creator-name")) {
+          return { code: "200", data: "alice" };
+        }
+        if (path.includes("/permission/")) {
+          return { code: "200", data: "read" };
+        }
+        if (path.includes("/v4/testhub/progress/")) {
+          return { uri: "operation-2", completed: false };
+        }
+
+        return { data: { uri: "operation-1", completed: true } };
+      }
+    } as never);
+
+    await expect(
+      client.listProjectDefects({
+        project_id: "project-1",
+        page: 2,
+        page_size: 10,
+        keyword: "login",
+        module_id: "module-1",
+        iteration_ids: "iteration-1"
+      })
+    ).resolves.toEqual({
+      defects: [{ id: "defect-1", subject: "login bug" }],
+      total: 1
+    });
+    await expect(
+      client.listProjectIssues({
+        project_id: "project-1",
+        page: 1,
+        page_size: 20,
+        tracker_id: "tracker-1",
+        status_id: "status-1",
+        module_id: "module-1",
+        show_page_flag: "true",
+        keyword: "login"
+      })
+    ).resolves.toEqual({
+      issues: [{ id: "issue-1", subject: "login story" }],
+      total: 1
+    });
+    await expect(client.listV4ProjectFieldConfigs({ project_id: "project-1" })).resolves.toEqual({
+      fields: [{ uri: "field-1", name: "priority" }],
+      total: 1
+    });
+    await expect(client.checkUserInfo({ project_id: "project-1" })).resolves.toEqual({
+      project_id: "project-1",
+      value: "ok",
+      raw: { code: "200", data: "ok", message: "success" }
+    });
+    await expect(client.getMindmapCreatorName({ project_id: "project-1" })).resolves.toEqual({
+      project_id: "project-1",
+      value: "alice",
+      raw: { code: "200", data: "alice" }
+    });
+    await expect(
+      client.getMindmapPermission({
+        project_id: "project-1",
+        id: "mindmap-1"
+      })
+    ).resolves.toEqual({
+      id: "mindmap-1",
+      value: "read",
+      raw: { code: "200", data: "read" }
+    });
+    await expect(
+      client.getProjectProgress({
+        project_id: "project-1",
+        operation_uri: "operation-1"
+      })
+    ).resolves.toEqual({
+      raw: { uri: "operation-1", completed: true }
+    });
+    await expect(
+      client.getTesthubProgress({
+        project_uuid: "project-1",
+        operation_uri: "operation-2"
+      })
+    ).resolves.toEqual({
+      raw: { uri: "operation-2", completed: false }
+    });
+
+    expect(requests).toEqual([
+      "/v4/projects/project-1/defects?page_no=2&page_size=10&key_word=login&module_id=module-1&iteration_ids=iteration-1",
+      "/v4/projects/project-1/issues?page_no=1&page_size=20&tracker_id=tracker-1&status_id=status-1&module_id=module-1&show_page_flag=true&key_word=login",
+      "/v4/projects/project-1/field-configs",
+      "/v1/project-1/user-info/check",
+      "/v2/project-1/mindmap-creator-name",
+      "/v1/project-1/permission/mindmap-1",
+      "/v1/project-1/progress/operation-1",
+      "/v4/testhub/progress/operation-2?project_uuid=project-1"
+    ]);
+  });
+
   it("gets task result detail with paging and result filter", async () => {
     let requestedPath = "";
     const client = createTestPlanClient({

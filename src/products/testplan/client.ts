@@ -446,6 +446,37 @@ export type TestPlanClient = {
     fields: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  listV4ProjectFieldConfigs: (input: {
+    project_id: string;
+  }) => Promise<{
+    fields: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listProjectDefects: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    keyword?: string;
+    module_id?: string;
+    iteration_ids?: string;
+  }) => Promise<{
+    defects: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listProjectIssues: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    tracker_id?: string;
+    iteration_ids?: string;
+    status_id?: string;
+    module_id?: string;
+    show_page_flag?: string;
+    keyword?: string;
+  }) => Promise<{
+    issues: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
   listProjectUsers: (input: {
     project_id: string;
     page: number;
@@ -552,6 +583,28 @@ export type TestPlanClient = {
     project_id: string;
   }) => Promise<{
     project_id: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  checkUserInfo: (input: {
+    project_id: string;
+  }) => Promise<{
+    project_id: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  getMindmapCreatorName: (input: {
+    project_id: string;
+  }) => Promise<{
+    project_id: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  getMindmapPermission: (input: {
+    project_id: string;
+    id: string;
+  }) => Promise<{
+    id: string;
     value?: unknown;
     raw: Record<string, unknown>;
   }>;
@@ -1041,6 +1094,12 @@ export type TestPlanClient = {
     raw: Record<string, unknown>;
   }>;
   getProgress: (input: { id: string; project_id?: string }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  getProjectProgress: (input: { project_id: string; operation_uri: string }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  getTesthubProgress: (input: { project_uuid: string; operation_uri: string }) => Promise<{
     raw: Record<string, unknown>;
   }>;
   listGt3kProjectServiceRepos: (input: {
@@ -2402,6 +2461,67 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         total: readTotal(payload, response, fields.length)
       };
     },
+    async listV4ProjectFieldConfigs(input) {
+      const response = await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/field-configs`
+      );
+      const payload = readResultPayload(response);
+      const fields = readArray<Record<string, unknown>>(
+        payload.value ?? payload.fields ?? payload.field_configs ?? payload.items ?? payload.list
+      );
+
+      return {
+        fields,
+        total: readTotal(payload, response, fields.length)
+      };
+    },
+    async listProjectDefects(input) {
+      const query = new URLSearchParams({
+        page_no: String(input.page),
+        page_size: String(input.page_size)
+      });
+      appendQueryValue(query, "key_word", input.keyword);
+      appendQueryValue(query, "module_id", input.module_id);
+      appendQueryValue(query, "iteration_ids", input.iteration_ids);
+
+      const response = await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/defects?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const defects = readArray<Record<string, unknown>>(
+        payload.value ?? payload.defects ?? payload.issues ?? payload.items ?? payload.list
+      );
+
+      return {
+        defects,
+        total: readTotal(payload, response, defects.length)
+      };
+    },
+    async listProjectIssues(input) {
+      const query = new URLSearchParams({
+        page_no: String(input.page),
+        page_size: String(input.page_size)
+      });
+      appendQueryValue(query, "tracker_id", input.tracker_id);
+      appendQueryValue(query, "iteration_ids", input.iteration_ids);
+      appendQueryValue(query, "status_id", input.status_id);
+      appendQueryValue(query, "module_id", input.module_id);
+      appendQueryValue(query, "show_page_flag", input.show_page_flag);
+      appendQueryValue(query, "key_word", input.keyword);
+
+      const response = await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/issues?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const issues = readArray<Record<string, unknown>>(
+        payload.value ?? payload.issues ?? payload.items ?? payload.list
+      );
+
+      return {
+        issues,
+        total: readTotal(payload, response, issues.length)
+      };
+    },
     async listProjectUsers(input) {
       const query = new URLSearchParams({
         page_no: String(input.page),
@@ -2630,6 +2750,42 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       return {
         project_id: input.project_id,
         value,
+        raw: payload
+      };
+    },
+    async checkUserInfo(input) {
+      const response = await _http.get(
+        `/v1/${encodeURIComponent(input.project_id)}/user-info/check`
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        project_id: input.project_id,
+        value: payload.data ?? payload.value,
+        raw: payload
+      };
+    },
+    async getMindmapCreatorName(input) {
+      const response = await _http.get(
+        `/v2/${encodeURIComponent(input.project_id)}/mindmap-creator-name`
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        project_id: input.project_id,
+        value: payload.data ?? payload.value,
+        raw: payload
+      };
+    },
+    async getMindmapPermission(input) {
+      const response = await _http.get(
+        `/v1/${encodeURIComponent(input.project_id)}/permission/${encodeURIComponent(input.id)}`
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        id: input.id,
+        value: payload.data ?? payload.value,
         raw: payload
       };
     },
@@ -3803,6 +3959,31 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       const response = await _http.get(`/v1/progress/${encodeURIComponent(input.id)}${suffix}`);
       const payload = readResultPayload(response);
       const progress = readEnvelope(payload.value) ?? payload;
+
+      return {
+        raw: progress
+      };
+    },
+    async getProjectProgress(input) {
+      const response = await _http.get(
+        `/v1/${encodeURIComponent(input.project_id)}/progress/${encodeURIComponent(input.operation_uri)}`
+      );
+      const payload = readResultPayload(response);
+      const progress = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        raw: progress
+      };
+    },
+    async getTesthubProgress(input) {
+      const query = new URLSearchParams({
+        project_uuid: input.project_uuid
+      });
+      const response = await _http.get(
+        `/v4/testhub/progress/${encodeURIComponent(input.operation_uri)}?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const progress = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
 
       return {
         raw: progress

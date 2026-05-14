@@ -9,6 +9,7 @@ import {
   testPlanCheckProjectMemberExistsInput,
   testPlanCheckResourceExistsInput,
   testPlanCheckUserDefinedConfigUsedInput,
+  testPlanCheckUserInfoInput,
   testPlanCheckUserExistsInput,
   testPlanCreateTaskInput,
   testPlanCreateTaskRelationsInput,
@@ -51,6 +52,8 @@ import {
   testPlanGetLicenseSpecificationInput,
   testPlanGetMindmapInput,
   testPlanGetMindmapBackupInput,
+  testPlanGetMindmapCreatorNameInput,
+  testPlanGetMindmapPermissionInput,
   testPlanGetMindmapRecycleInput,
   testPlanGetMindmapStatisticsInput,
   testPlanGetPlanInput,
@@ -64,6 +67,7 @@ import {
   testPlanGetProjectMasterVersionInput,
   testPlanGetProjectMessageNoticesInput,
   testPlanGetProgressInput,
+  testPlanGetProjectProgressInput,
   testPlanGetProjectServiceRepoInput,
   testPlanGetProjectSystemConfigInput,
   testPlanGetProjectTestcaseGlobalConfigInput,
@@ -79,6 +83,7 @@ import {
   testPlanGetTestcaseV4Input,
   testPlanGetTesthubCaseByNumberInput,
   testPlanGetTesthubCaseInput,
+  testPlanGetTesthubProgressInput,
   testPlanGetTesthubTaskInput,
   testPlanGetTaskExecutionParamInput,
   testPlanGetTaskInput,
@@ -129,7 +134,9 @@ import {
   testPlanListIssuesInput,
   testPlanListNoticeConfigsInput,
   testPlanListPlansInput,
+  testPlanListProjectDefectsInput,
   testPlanListProjectFieldConfigsInput,
+  testPlanListProjectIssuesInput,
   testPlanListProjectServiceReposInput,
   testPlanListProjectTagsInput,
   testPlanListProjectUsersInput,
@@ -162,6 +169,7 @@ import {
   testPlanListTesthubIteratorsV5Input,
   testPlanListTesthubServicesInput,
   testPlanListV4BranchesInput,
+  testPlanListV4ProjectFieldConfigsInput,
   testPlanListV4TestcaseReviewsInput,
   testPlanListVariableGroupsInput,
   testPlanListVariablesByGroupInput,
@@ -177,6 +185,7 @@ import { createTestPlanCheckUserExistsHandler } from "../products/testplan/tools
 import { createTestPlanCheckProjectMemberExistsHandler } from "../products/testplan/tools/check-project-member-exists.js";
 import { createTestPlanCheckResourceExistsHandler } from "../products/testplan/tools/check-resource-exists.js";
 import { createTestPlanCheckUserDefinedConfigUsedHandler } from "../products/testplan/tools/check-user-defined-config-used.js";
+import { createTestPlanCheckUserInfoHandler } from "../products/testplan/tools/check-user-info.js";
 import { createTestPlanCheckAlertTemplateNameHandler } from "../products/testplan/tools/check-alert-template-name.js";
 import { createTestPlanCheckAlertUserNameHandler } from "../products/testplan/tools/check-alert-user-name.js";
 import { createTestPlanCheckApiTestTaskNameHandler } from "../products/testplan/tools/check-api-test-task-name.js";
@@ -222,6 +231,8 @@ import { createTestPlanGetIteratorHandler } from "../products/testplan/tools/get
 import { createTestPlanGetLicenseSpecificationHandler } from "../products/testplan/tools/get-license-specification.js";
 import { createTestPlanGetMindmapHandler } from "../products/testplan/tools/get-mindmap.js";
 import { createTestPlanGetMindmapBackupHandler } from "../products/testplan/tools/get-mindmap-backup.js";
+import { createTestPlanGetMindmapCreatorNameHandler } from "../products/testplan/tools/get-mindmap-creator-name.js";
+import { createTestPlanGetMindmapPermissionHandler } from "../products/testplan/tools/get-mindmap-permission.js";
 import { createTestPlanGetMindmapRecycleHandler } from "../products/testplan/tools/get-mindmap-recycle.js";
 import { createTestPlanGetMindmapStatisticsHandler } from "../products/testplan/tools/get-mindmap-statistics.js";
 import { createTestPlanGetPlanHandler } from "../products/testplan/tools/get-plan.js";
@@ -235,6 +246,7 @@ import { createTestPlanGetProjectIssueUpdateNotificationHandler } from "../produ
 import { createTestPlanGetProjectMasterVersionHandler } from "../products/testplan/tools/get-project-master-version.js";
 import { createTestPlanGetProjectMessageNoticesHandler } from "../products/testplan/tools/get-project-message-notices.js";
 import { createTestPlanGetProgressHandler } from "../products/testplan/tools/get-progress.js";
+import { createTestPlanGetProjectProgressHandler } from "../products/testplan/tools/get-project-progress.js";
 import { createTestPlanGetProjectServiceRepoHandler } from "../products/testplan/tools/get-project-service-repo.js";
 import { createTestPlanGetProjectSystemConfigHandler } from "../products/testplan/tools/get-project-system-config.js";
 import { createTestPlanGetProjectTestcaseGlobalConfigHandler } from "../products/testplan/tools/get-project-testcase-global-config.js";
@@ -247,6 +259,7 @@ import { createTestPlanGetTestDesignTestcaseHandler } from "../products/testplan
 import { createTestPlanGetTestcaseV4Handler } from "../products/testplan/tools/get-testcase-v4.js";
 import { createTestPlanGetTesthubCaseByNumberHandler } from "../products/testplan/tools/get-testhub-case-by-number.js";
 import { createTestPlanGetTesthubCaseHandler } from "../products/testplan/tools/get-testhub-case.js";
+import { createTestPlanGetTesthubProgressHandler } from "../products/testplan/tools/get-testhub-progress.js";
 import { createTestPlanGetTesthubTaskHandler } from "../products/testplan/tools/get-testhub-task.js";
 import { createTestPlanGetTaskExecutionParamHandler } from "../products/testplan/tools/get-task-execution-param.js";
 import { createTestPlanGetTaskHandler } from "../products/testplan/tools/get-task.js";
@@ -301,7 +314,9 @@ import { createTestPlanListCasesHandler } from "../products/testplan/tools/list-
 import { createTestPlanListIssuesHandler } from "../products/testplan/tools/list-issues.js";
 import { createTestPlanListNoticeConfigsHandler } from "../products/testplan/tools/list-notice-configs.js";
 import { createTestPlanListPlansHandler } from "../products/testplan/tools/list-plans.js";
+import { createTestPlanListProjectDefectsHandler } from "../products/testplan/tools/list-project-defects.js";
 import { createTestPlanListProjectFieldConfigsHandler } from "../products/testplan/tools/list-project-field-configs.js";
+import { createTestPlanListProjectIssuesHandler } from "../products/testplan/tools/list-project-issues.js";
 import { createTestPlanListProjectServiceReposHandler } from "../products/testplan/tools/list-project-service-repos.js";
 import { createTestPlanListProjectTagsHandler } from "../products/testplan/tools/list-project-tags.js";
 import { createTestPlanListProjectUsersHandler } from "../products/testplan/tools/list-project-users.js";
@@ -334,6 +349,7 @@ import { createTestPlanListTesthubIteratorsV5Handler } from "../products/testpla
 import { createTestPlanListTesthubServicesHandler } from "../products/testplan/tools/list-testhub-services.js";
 import { createTestPlanListTestReportsHandler } from "../products/testplan/tools/list-test-reports.js";
 import { createTestPlanListV4BranchesHandler } from "../products/testplan/tools/list-v4-branches.js";
+import { createTestPlanListV4ProjectFieldConfigsHandler } from "../products/testplan/tools/list-v4-project-field-configs.js";
 import { createTestPlanListV4TestcaseReviewsHandler } from "../products/testplan/tools/list-v4-testcase-reviews.js";
 import { createTestPlanListVariableGroupsHandler } from "../products/testplan/tools/list-variable-groups.js";
 import { createTestPlanListVariablesByGroupHandler } from "../products/testplan/tools/list-variables-by-group.js";
@@ -375,6 +391,18 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanGetMindmapInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetMindmapHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetMindmapHandler
+  }),
+  "testplan_get_mindmap_creator_name": defineProductTool({
+    description: "Get CodeArts TestPlan mindmap creator name",
+    inputSchema: testPlanGetMindmapCreatorNameInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetMindmapCreatorNameHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetMindmapCreatorNameHandler
+  }),
+  "testplan_get_mindmap_permission": defineProductTool({
+    description: "Get CodeArts TestPlan mindmap permission detail",
+    inputSchema: testPlanGetMindmapPermissionInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetMindmapPermissionHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetMindmapPermissionHandler
   }),
   "testplan_get_mindmap_recycle": defineProductTool({
     description: "Get CodeArts TestPlan recycled mindmap detail",
@@ -459,6 +487,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanGetTesthubTaskInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetTesthubTaskHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetTesthubTaskHandler
+  }),
+  "testplan_get_testhub_progress": defineProductTool({
+    description: "Get CodeArts TestPlan TestHub async progress",
+    inputSchema: testPlanGetTesthubProgressInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetTesthubProgressHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetTesthubProgressHandler
   }),
   "testplan_get_current_user_package_permission": defineProductTool({
     description: "Get CodeArts TestPlan package permission for the current user",
@@ -838,6 +872,12 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetProgressHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetProgressHandler
   }),
+  "testplan_get_project_progress": defineProductTool({
+    description: "Get CodeArts TestPlan project async progress",
+    inputSchema: testPlanGetProjectProgressInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetProjectProgressHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetProjectProgressHandler
+  }),
   "testplan_list_project_service_repos": defineProductTool({
     description: "List CodeArts TestPlan project service repository information",
     inputSchema: testPlanListProjectServiceReposInput,
@@ -1102,6 +1142,12 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetProjectMasterVersionHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetProjectMasterVersionHandler
   }),
+  "testplan_check_user_info": defineProductTool({
+    description: "Check CodeArts TestPlan user info availability for a project",
+    inputSchema: testPlanCheckUserInfoInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanCheckUserInfoHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanCheckUserInfoHandler
+  }),
   "testplan_get_case_template": defineProductTool({
     description: "Get CodeArts TestPlan case template detail",
     inputSchema: testPlanGetCaseTemplateInput,
@@ -1137,6 +1183,24 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListProjectFieldConfigsInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListProjectFieldConfigsHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListProjectFieldConfigsHandler
+  }),
+  "testplan_list_v4_project_field_configs": defineProductTool({
+    description: "List CodeArts TestPlan v4 project field configurations",
+    inputSchema: testPlanListV4ProjectFieldConfigsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListV4ProjectFieldConfigsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListV4ProjectFieldConfigsHandler
+  }),
+  "testplan_list_project_defects": defineProductTool({
+    description: "List CodeArts TestPlan project defects",
+    inputSchema: testPlanListProjectDefectsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListProjectDefectsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListProjectDefectsHandler
+  }),
+  "testplan_list_project_issues": defineProductTool({
+    description: "List CodeArts TestPlan project issues",
+    inputSchema: testPlanListProjectIssuesInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListProjectIssuesHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListProjectIssuesHandler
   }),
   "testplan_list_project_users": defineProductTool({
     description: "List CodeArts TestPlan project users",
