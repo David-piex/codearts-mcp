@@ -351,11 +351,33 @@ export type TestPlanClient = {
     name?: string;
     raw: Record<string, unknown>;
   }>;
+  getMindmapStatistics: (input: {
+    project_id: string;
+    mindmap_id: string;
+  }) => Promise<{
+    mindmap_id: string;
+    raw: Record<string, unknown>;
+  }>;
   listAssets: (input: {
     project_id: string;
   }) => Promise<{
     assets: Array<Record<string, unknown>>;
     total?: number;
+  }>;
+  listAssetTree: (input: {
+    project_id: string;
+    asset_id: string;
+  }) => Promise<{
+    nodes: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getFactor: (input: {
+    project_id: string;
+    id: string;
+  }) => Promise<{
+    factor_id: string;
+    name?: string;
+    raw: Record<string, unknown>;
   }>;
   getTestDesignTemplate: (input: {
     project_id: string;
@@ -2070,6 +2092,18 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         raw: mindmap
       };
     },
+    async getMindmapStatistics(input) {
+      const response = await _http.get(
+        `/v1/${encodeURIComponent(input.project_id)}/statistics/${encodeURIComponent(input.mindmap_id)}`
+      );
+      const payload = readResultPayload(response);
+      const statistics = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        mindmap_id: input.mindmap_id,
+        raw: statistics
+      };
+    },
     async listAssets(input) {
       const response = await _http.get(
         `/v1/${encodeURIComponent(input.project_id)}/asset`
@@ -2082,6 +2116,33 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       return {
         assets,
         total: readTotal(payload, response, assets.length)
+      };
+    },
+    async listAssetTree(input) {
+      const response = await _http.get(
+        `/v1/${encodeURIComponent(input.project_id)}/asset-tree/${encodeURIComponent(input.asset_id)}`
+      );
+      const payload = readResultPayload(response);
+      const nodes = readArray<Record<string, unknown>>(
+        payload.data ?? payload.value ?? payload.nodes ?? payload.items ?? payload.list
+      );
+
+      return {
+        nodes,
+        total: readTotal(payload, response, nodes.length)
+      };
+    },
+    async getFactor(input) {
+      const response = await _http.get(
+        `/v1/${encodeURIComponent(input.project_id)}/factor/${encodeURIComponent(input.id)}`
+      );
+      const payload = readResultPayload(response);
+      const factor = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        factor_id: String(factor.id ?? factor.uri ?? input.id),
+        name: typeof factor.name === "string" ? factor.name : undefined,
+        raw: factor
       };
     },
     async getTestDesignTemplate(input) {

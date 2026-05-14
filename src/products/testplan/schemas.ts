@@ -203,8 +203,23 @@ export const testPlanGetMindmapInput = z.object({
   id: idSchema
 });
 
+export const testPlanGetMindmapStatisticsInput = z.object({
+  project_id: idSchema,
+  mindmap_id: idSchema
+});
+
 export const testPlanListAssetsInput = z.object({
   project_id: idSchema
+});
+
+export const testPlanListAssetTreeInput = z.object({
+  project_id: idSchema,
+  asset_id: idSchema
+});
+
+export const testPlanGetFactorInput = z.object({
+  project_id: idSchema,
+  id: idSchema
 });
 
 export const testPlanGetTestDesignTemplateInput = z.object({

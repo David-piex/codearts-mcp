@@ -1894,7 +1894,7 @@ const writePathCases: WritePathCase[] = [
       bodyIncludes: [
         "\"id\":\"70779173\"",
         "\"notes\":\"First comment\"",
-        "\"project_uuid\":\"project-1\"",
+        "\"projectUUId\":\"project-1\"",
         "\"type\":\"scrum\""
       ]
     }

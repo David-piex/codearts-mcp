@@ -1512,6 +1512,73 @@ describe("createTestPlanClient", () => {
     ]);
   });
 
+  it("loads TestPlan mindmap statistics, asset tree, and factor details", async () => {
+    const requests: string[] = [];
+    const client = createTestPlanClient({
+      get: async (path: string) => {
+        requests.push(path);
+        if (path.includes("/statistics/")) {
+          return {
+            code: "success",
+            data: { testcase_count: 3, factor_count: 2 }
+          };
+        }
+        if (path.includes("/asset-tree/")) {
+          return {
+            code: "success",
+            data: [{ id: "node-1", name: "Root", factor_cnt: 2 }]
+          };
+        }
+
+        return {
+          code: "success",
+          data: {
+            id: "factor-1",
+            name: "Browser"
+          }
+        };
+      }
+    } as never);
+
+    await expect(
+      client.getMindmapStatistics({
+        project_id: "project-1",
+        mindmap_id: "mindmap-1"
+      })
+    ).resolves.toEqual({
+      mindmap_id: "mindmap-1",
+      raw: { testcase_count: 3, factor_count: 2 }
+    });
+    await expect(
+      client.listAssetTree({
+        project_id: "project-1",
+        asset_id: "asset-1"
+      })
+    ).resolves.toEqual({
+      nodes: [{ id: "node-1", name: "Root", factor_cnt: 2 }],
+      total: 1
+    });
+    await expect(
+      client.getFactor({
+        project_id: "project-1",
+        id: "factor-1"
+      })
+    ).resolves.toEqual({
+      factor_id: "factor-1",
+      name: "Browser",
+      raw: {
+        id: "factor-1",
+        name: "Browser"
+      }
+    });
+
+    expect(requests).toEqual([
+      "/v1/project-1/statistics/mindmap-1",
+      "/v1/project-1/asset-tree/asset-1",
+      "/v1/project-1/factor/factor-1"
+    ]);
+  });
+
   it("lists testcase fields and test types", async () => {
     const requests: string[] = [];
     const client = createTestPlanClient({

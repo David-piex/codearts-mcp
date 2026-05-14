@@ -37,10 +37,12 @@ import {
   testPlanGetGt3kProgressInput,
   testPlanGetGt3kTestcaseChangeStatisticsInput,
   testPlanGetGt3kUserInfoDomainInput,
+  testPlanGetFactorInput,
   testPlanGetImageCapacityWarningInput,
   testPlanGetIteratorInput,
   testPlanGetLicenseSpecificationInput,
   testPlanGetMindmapInput,
+  testPlanGetMindmapStatisticsInput,
   testPlanGetPlanInput,
   testPlanGetProjectTestcaseInput,
   testPlanGetProjectTestcaseByNumberInput,
@@ -86,6 +88,7 @@ import {
   testPlanListAttachmentsInput,
   testPlanListAlertTemplatesInput,
   testPlanListAssetsInput,
+  testPlanListAssetTreeInput,
   testPlanListCustomReportsInput,
   testPlanListCustomTemplateReportsInput,
   testPlanListCurrentUserTestcasesInput,
@@ -188,10 +191,12 @@ import { createTestPlanGetGt3kFreeDeclarationHandler } from "../products/testpla
 import { createTestPlanGetGt3kProgressHandler } from "../products/testplan/tools/get-gt3k-progress.js";
 import { createTestPlanGetGt3kTestcaseChangeStatisticsHandler } from "../products/testplan/tools/get-gt3k-testcase-change-statistics.js";
 import { createTestPlanGetGt3kUserInfoDomainHandler } from "../products/testplan/tools/get-gt3k-user-info-domain.js";
+import { createTestPlanGetFactorHandler } from "../products/testplan/tools/get-factor.js";
 import { createTestPlanGetImageCapacityWarningHandler } from "../products/testplan/tools/get-image-capacity-warning.js";
 import { createTestPlanGetIteratorHandler } from "../products/testplan/tools/get-iterator.js";
 import { createTestPlanGetLicenseSpecificationHandler } from "../products/testplan/tools/get-license-specification.js";
 import { createTestPlanGetMindmapHandler } from "../products/testplan/tools/get-mindmap.js";
+import { createTestPlanGetMindmapStatisticsHandler } from "../products/testplan/tools/get-mindmap-statistics.js";
 import { createTestPlanGetPlanHandler } from "../products/testplan/tools/get-plan.js";
 import { createTestPlanGetProjectTestcaseHandler } from "../products/testplan/tools/get-project-testcase.js";
 import { createTestPlanGetProjectTestcaseByNumberHandler } from "../products/testplan/tools/get-project-testcase-by-number.js";
@@ -238,6 +243,7 @@ import { createTestPlanListApiTestcaseHistoryHandler } from "../products/testpla
 import { createTestPlanListApiTestsuiteHistoryHandler } from "../products/testplan/tools/list-api-testsuite-history.js";
 import { createTestPlanListAttachmentsHandler } from "../products/testplan/tools/list-attachments.js";
 import { createTestPlanListAssetsHandler } from "../products/testplan/tools/list-assets.js";
+import { createTestPlanListAssetTreeHandler } from "../products/testplan/tools/list-asset-tree.js";
 import { createTestPlanListCustomReportsHandler } from "../products/testplan/tools/list-custom-reports.js";
 import { createTestPlanListCustomTemplateReportsHandler } from "../products/testplan/tools/list-custom-template-reports.js";
 import { createTestPlanListCurrentUserTestcasesHandler } from "../products/testplan/tools/list-current-user-testcases.js";
@@ -335,6 +341,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanGetMindmapInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetMindmapHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetMindmapHandler
+  }),
+  "testplan_get_mindmap_statistics": defineProductTool({
+    description: "Get CodeArts TestPlan mindmap resource statistics",
+    inputSchema: testPlanGetMindmapStatisticsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetMindmapStatisticsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetMindmapStatisticsHandler
   }),
   "testplan_get_project_testcase": defineProductTool({
     description: "Get CodeArts TestPlan project testcase detail",
@@ -576,6 +588,12 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListAssetsHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListAssetsHandler
   }),
+  "testplan_list_asset_tree": defineProductTool({
+    description: "List CodeArts TestPlan test factor center asset tree nodes",
+    inputSchema: testPlanListAssetTreeInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListAssetTreeHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListAssetTreeHandler
+  }),
   "testplan_get_api_test_package_charge_message": defineProductTool({
     description: "Get CodeArts TestPlan API test package charge message",
     inputSchema: testPlanGetApiTestPackageChargeMessageInput,
@@ -809,6 +827,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanGetGt3kUserInfoDomainInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetGt3kUserInfoDomainHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetGt3kUserInfoDomainHandler
+  }),
+  "testplan_get_factor": defineProductTool({
+    description: "Get CodeArts TestPlan test factor detail",
+    inputSchema: testPlanGetFactorInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetFactorHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetFactorHandler
   }),
   "testplan_get_user_info_domain": defineProductTool({
     description: "Get CodeArts TestPlan encrypted user domain information",

@@ -32,8 +32,8 @@
 | 流水线 | 78 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 106 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 201 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
-| 测试计划 | 151 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **649** | |
+| 测试计划 | 154 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
+| **总计** | **652** | |
 
 ## 字段对应
 
@@ -568,6 +568,7 @@
 | `testplan_get_domain_frozen_info` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_domain_frozen_info) |
 | `testplan_get_domain_need_popup` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_domain_need_popup) |
 | `testplan_get_domain_user_count` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_domain_user_count) |
+| `testplan_get_factor` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_factor) |
 | `testplan_get_free_declaration` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_free_declaration) |
 | `testplan_get_free_test_time` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_free_test_time) |
 | `testplan_get_gt3k_branch` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_gt3k_branch) |
@@ -580,6 +581,7 @@
 | `testplan_get_iterator` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_iterator) |
 | `testplan_get_license_specification` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_license_specification) |
 | `testplan_get_mindmap` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_mindmap) |
+| `testplan_get_mindmap_statistics` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_mindmap_statistics) |
 | `testplan_get_plan` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_plan) |
 | `testplan_get_progress` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_progress) |
 | `testplan_get_project_advanced_feature_trial` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_project_advanced_feature_trial) |
@@ -625,6 +627,7 @@
 | `testplan_list_api_testcase_execute_histories` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_api_testcase_execute_histories) |
 | `testplan_list_api_testcase_history` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_api_testcase_history) |
 | `testplan_list_api_testsuite_history` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_api_testsuite_history) |
+| `testplan_list_asset_tree` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_asset_tree) |
 | `testplan_list_assets` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_assets) |
 | `testplan_list_attachments` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_attachments) |
 | `testplan_list_cases` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_cases) |
