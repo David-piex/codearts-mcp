@@ -13,7 +13,7 @@
 | Check | 18 | 14 | 4 | Validated | Full tool-level live loop completed. |
 | TestPlan | 179 | 171 | 8 | Partial | Two scanned projects now return real plan samples; 4 routes are re-confirmed as unpublished in Beijing 4. |
 | Deploy | 60 | 43 | 17 | Partial | `deploy_create_application`, `deploy_modify_application`, `deploy_start_app`, `deploy_get_execution_params`, `deploy_get_history_detail`, `deploy_get_app_log`, `deploy_stop_app`, and `deploy_rollback_app` already have real AK/SK coverage on at least one healthy path. The remaining practical blocker is the outdated Node.js template runtime (`Node v10.9.0` + `forever`) and the need for dedicated execute-class samples. |
-| Build | 23 | 14 | 9 | Validated | All 22 tools are now AK/SK Full on the current surface, including the 3 helper/configuration tools through real dry-run previews on the live job config. |
+| Build | 38 | 29 | 9 | Validated | Core Build job, record, log, parameter, domain metadata, permission, code-tag, report, and resource-spec tools are covered by live or smoke validation. Git-code endpoint reads are implemented and unit-tested, with endpoint-specific live samples optional. |
 | Artifact | 19 | 17 | 2 | Partial | Five tools are AK/SK Full; the remaining seven are re-confirmed as unpublished in Beijing 4. |
 <!-- GENERATED:module-live-readiness-table:end -->
 
@@ -21,9 +21,9 @@
 
 <!-- GENERATED:module-live-readiness-totals:start -->
 - Product modules implemented: `8`
-- Product tools implemented: `684`
+- Product tools implemented: `699`
 - Auth/session tools implemented: `2`
-- Total MCP tools exposed: `686`
+- Total MCP tools exposed: `701`
 <!-- GENERATED:module-live-readiness-totals:end -->
 
 ## 模块摘要
@@ -37,7 +37,7 @@
 | Check | 18 | `8 Full` | Tool-level closure is complete. |
 | TestPlan | 179 | `1 Full / 2 Reachable / 4 Unpublished / 0 Code` | Real plan samples now exist on two projects, but detail/run routes are still unpublished in Beijing 4. |
 | Deploy | 60 | Expanded v4 surface with partial live closure | The Deploy MCP surface now includes v4 application/environment/cluster/record/variable tools. Read paths and selected write paths are live-validated, while full execute-class coverage still depends on dedicated runtime samples. |
-| Build | 23 | `22 Full / 0 Reachable / 0 Unpublished / 0 Code` | The remote Build surface is now fully live-validated, including the 3 helper/configuration tools via real dry-run previews on the live job config. |
+| Build | 38 | Expanded metadata read surface with live smoke coverage | The Build surface now includes metadata reads for domain status, permissions, code tags, report repositories/branches, resource specs, and optional Git-code repositories/branches. |
 | Artifact | 19 | `5 Full / 0 Reachable / 7 Unpublished / 0 Code` | Five tools are fully validated; seven routes are unpublished in Beijing 4. The current tenant now exposes a real published file sample at `/codearts-mcp/1.0.0/codearts-mcp.tgz`. |
 <!-- GENERATED:module-live-readiness-summary:end -->
 

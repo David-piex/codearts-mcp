@@ -296,9 +296,9 @@ npm run cli -- completion zsh
 
 <!-- GENERATED:readme-exposure-summary:start -->
 - `8` product modules
-- `684` product tools
+- `699` product tools
 - `2` session/auth tools for shared `http` mode
-- `686` total MCP tools in shared `http` mode
+- `701` total MCP tools in shared `http` mode
 <!-- GENERATED:readme-exposure-summary:end -->
 
 工具读写分布：读操作 177 (63.7%) / 写操作 101 (36.3%)
@@ -312,7 +312,7 @@ npm run cli -- completion zsh
 | Check | 18 | Validated | `8 Full` |
 | TestPlan | 179 | Partial | `1 Full / 2 Reachable / 4 Unpublished / 0 Code` |
 | Deploy | 60 | Partial | Expanded v4 surface with partial live closure; see `docs/wiki/Module-Live-Readiness.md` |
-| Build | 23 | Validated | `22 Full / 0 Reachable / 0 Unpublished / 0 Code` |
+| Build | 38 | Validated | Expanded metadata read surface with live smoke coverage |
 | Artifact | 19 | Partial | `5 Full / 0 Reachable / 7 Unpublished / 0 Code` |
 <!-- GENERATED:readme-module-numbers:end -->
 

@@ -16,7 +16,7 @@
 | Check | 14 | 4 | Validated | Tool-level live closure is complete |
 | TestPlan | 171 | 8 | Partial | `get_plan / list_runs / get_case / run_cases` are unpublished in Beijing 4 |
 | Deploy | 43 | 17 | Partial | Expanded Deploy v4 environment/record/variable surface is implemented, but execute-class write paths still require dedicated runtime samples |
-| Build | 14 | 9 | Validated | All 22 tools are now fully live-validated, including the 3 helper/configuration tools via real dry-run previews |
+| Build | 29 | 9 | Validated | Core Build job, record, log, parameter, domain metadata, permission, code-tag, report, and resource-spec tools have live or smoke coverage; optional Git-code endpoint reads need endpoint-specific samples |
 | Artifact | 17 | 2 | Partial | 5 tools are fully live-validated, and 7 routes are now re-confirmed by live smoke as unpublished in Beijing 4 |
 <!-- GENERATED:capability-matrix:end -->
 

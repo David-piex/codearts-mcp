@@ -215,6 +215,66 @@ export type BuildClient = {
     build_no: number;
     parameters: Array<{ name: string; value?: string }>;
   }>;
+  listCodeTags: (input: {
+    scm_type: string;
+    repo_id?: string;
+    search?: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    tags: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listReportBranches: (input: {
+    job_id: string;
+    repository_name: string;
+  }) => Promise<{
+    branches: string[];
+  }>;
+  listReportRepositories: (input: { job_id: string }) => Promise<{
+    latest?: string;
+    repositories: string[];
+    raw: Record<string, unknown>;
+  }>;
+  listGitCodeRepositories: (input: { endpoint_id: string }) => Promise<{
+    repositories: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listGitCodeBranches: (input: {
+    endpoint_id: string;
+    repository_name?: string;
+  }) => Promise<{
+    branches: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listResourceSpecs: (input: { project_id: string; arch: string }) => Promise<{
+    specs: string[];
+  }>;
+  getDomainUserPermission: (input: { project_id: string }) => Promise<{
+    project_id: string;
+    raw: Record<string, unknown>;
+  }>;
+  getDomainPackageQuota: (input: { project_id: string }) => Promise<{
+    project_id: string;
+    raw: Record<string, unknown>;
+  }>;
+  getDomainChargeType: () => Promise<{ raw: Record<string, unknown> }>;
+  getDomainFederation: () => Promise<{ value?: unknown; raw: Record<string, unknown> }>;
+  getDomainStatus: () => Promise<{ raw: Record<string, unknown> }>;
+  getDomainRelatedProjects: () => Promise<{
+    projects: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listJobPermissionRoles: (input: { job_id: string }) => Promise<{
+    roles: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getJobPermissionInternal: () => Promise<{ value?: unknown; raw: Record<string, unknown> }>;
+  getJobPermission: (input: { project_id: string; job_id: string }) => Promise<{
+    project_id: string;
+    job_id: string;
+    raw: Record<string, unknown>;
+  }>;
   getRealTimeLog: (input: {
     job_id: string;
     build_no: number;
@@ -456,6 +516,48 @@ function unwrapBuildPayload<T>(input: T): T {
   }
 
   return input;
+}
+
+function readBuildEnvelope(input: unknown) {
+  return input && typeof input === "object" && !Array.isArray(input)
+    ? (input as Record<string, unknown>)
+    : undefined;
+}
+
+function readBuildPayloadValue(input: unknown) {
+  const unwrapped = unwrapBuildPayload(input);
+  const response = readBuildEnvelope(unwrapped);
+
+  return response && "result" in response ? response.result : unwrapped;
+}
+
+function readBuildPayload(input: unknown) {
+  const response = readBuildEnvelope(unwrapBuildPayload(input)) ?? {};
+  return readBuildEnvelope(response.result) ?? response;
+}
+
+function readBuildRawRecord(input: unknown): Record<string, unknown> {
+  return readBuildEnvelope(input) ?? { value: input };
+}
+
+function readBuildArray<T>(input: unknown): T[] {
+  return Array.isArray(input) ? (input as T[]) : [];
+}
+
+function readBuildNumber(input: unknown) {
+  return typeof input === "number" ? input : undefined;
+}
+
+function readBuildTotal(payload: Record<string, unknown>, response: unknown, fallback?: number) {
+  const envelope = readBuildEnvelope(response) ?? {};
+
+  return (
+    readBuildNumber(payload.total) ??
+    readBuildNumber(payload.total_count) ??
+    readBuildNumber(envelope.total) ??
+    readBuildNumber(envelope.total_count) ??
+    fallback
+  );
 }
 
 function formatBuildQueryTime(date: Date): string {
@@ -1090,6 +1192,197 @@ export function createBuildClient(
           name: parameter.name ?? "",
           value: parameter.value
         }))
+      };
+    },
+    async listCodeTags(input) {
+      const query = new URLSearchParams({
+        scm_type: input.scm_type,
+        page_no: String(input.page),
+        page_size: String(input.page_size)
+      });
+      if (input.repo_id) query.set("repo_id", input.repo_id);
+      if (input.search) query.set("search", input.search);
+
+      const response = await _http.get(`/v1/code/tags?${query.toString()}`);
+      const raw = readBuildPayloadValue(response);
+      const payload = readBuildPayload(response);
+      const tags = readBuildArray<Record<string, unknown>>(
+        payload.tags ?? payload.value ?? payload.items ?? payload.list ?? (Array.isArray(raw) ? raw : [])
+      );
+
+      return {
+        tags,
+        total: readBuildTotal(payload, response, tags.length)
+      };
+    },
+    async listReportBranches(input) {
+      const query = new URLSearchParams({
+        job_id: input.job_id,
+        repository_name: input.repository_name
+      });
+      const response = await _http.get(`/v1/report/branches?${query.toString()}`);
+      const raw = readBuildPayloadValue(response);
+      const payload = readBuildPayload(response);
+      const branches = readBuildArray<string>(
+        payload.branches ?? payload.value ?? payload.items ?? (Array.isArray(raw) ? raw : [])
+      );
+
+      return { branches };
+    },
+    async listReportRepositories(input) {
+      const response = await _http.get(
+        `/v1/report/${encodeURIComponent(input.job_id)}/repositories`
+      );
+      const raw = readBuildPayloadValue(response);
+      const payload = readBuildPayload(response);
+      const repositories = readBuildArray<string>(
+        payload.repositories ?? payload.value ?? payload.items ?? (Array.isArray(raw) ? raw : [])
+      );
+
+      return {
+        latest: typeof payload.latest === "string" ? payload.latest : undefined,
+        repositories,
+        raw: payload
+      };
+    },
+    async listGitCodeRepositories(input) {
+      const response = await _http.get(
+        `/v1/code/git-code/${encodeURIComponent(input.endpoint_id)}/repositories`
+      );
+      const raw = readBuildPayloadValue(response);
+      const payload = readBuildPayload(response);
+      const repositories = readBuildArray<Record<string, unknown>>(
+        payload.repositories ?? payload.value ?? payload.items ?? payload.list ?? (Array.isArray(raw) ? raw : [])
+      );
+
+      return {
+        repositories,
+        total: readBuildTotal(payload, response, repositories.length)
+      };
+    },
+    async listGitCodeBranches(input) {
+      const query = new URLSearchParams();
+      if (input.repository_name) query.set("repository_name", input.repository_name);
+      const suffix = query.size ? `?${query.toString()}` : "";
+      const response = await _http.get(
+        `/v1/code/git-code/${encodeURIComponent(input.endpoint_id)}/branches${suffix}`
+      );
+      const raw = readBuildPayloadValue(response);
+      const payload = readBuildPayload(response);
+      const branches = readBuildArray<Record<string, unknown>>(
+        payload.branches ?? payload.value ?? payload.items ?? payload.list ?? (Array.isArray(raw) ? raw : [])
+      );
+
+      return {
+        branches,
+        total: readBuildTotal(payload, response, branches.length)
+      };
+    },
+    async listResourceSpecs(input) {
+      const query = new URLSearchParams({
+        project_id: input.project_id,
+        arch: input.arch
+      });
+      const response = await _http.get(`/v2/resource/spec?${query.toString()}`);
+      const raw = readBuildPayloadValue(response);
+      const payload = readBuildPayload(response);
+      const specs = readBuildArray<string>(
+        payload.specs ?? payload.value ?? (Array.isArray(raw) ? raw : [])
+      );
+
+      return { specs };
+    },
+    async getDomainUserPermission(input) {
+      const query = new URLSearchParams({ project_id: input.project_id });
+      const response = await _http.get(`/v1/domain/user-permission?${query.toString()}`);
+      const payload = readBuildPayload(response);
+
+      return {
+        project_id: input.project_id,
+        raw: payload
+      };
+    },
+    async getDomainPackageQuota(input) {
+      const query = new URLSearchParams({ project_id: input.project_id });
+      const response = await _http.get(`/v1/domain/package/quota?${query.toString()}`);
+      const payload = readBuildPayload(response);
+
+      return {
+        project_id: input.project_id,
+        raw: payload
+      };
+    },
+    async getDomainChargeType() {
+      const response = await _http.get("/v1/domain/charge-type");
+      const payload = readBuildPayloadValue(response);
+
+      return { raw: readBuildRawRecord(payload) };
+    },
+    async getDomainFederation() {
+      const response = await _http.get("/v1/domain/federation");
+      const payload = readBuildPayloadValue(response);
+      const envelope = readBuildEnvelope(payload);
+
+      return {
+        value: envelope ? envelope.value ?? envelope.result : payload,
+        raw: readBuildRawRecord(payload)
+      };
+    },
+    async getDomainStatus() {
+      const response = await _http.get("/v1/domain/status");
+      const payload = readBuildPayloadValue(response);
+
+      return { raw: readBuildRawRecord(payload) };
+    },
+    async getDomainRelatedProjects() {
+      const response = await _http.get("/v1/domain/project/related");
+      const raw = readBuildPayloadValue(response);
+      const payload = readBuildPayload(response);
+      const projects = readBuildArray<Record<string, unknown>>(
+        payload.projects ?? payload.value ?? payload.items ?? payload.list ?? (Array.isArray(raw) ? raw : [])
+      );
+
+      return {
+        projects,
+        total: readBuildTotal(payload, response, projects.length)
+      };
+    },
+    async listJobPermissionRoles(input) {
+      const query = new URLSearchParams({ job_id: input.job_id });
+      const response = await _http.get(`/v1/job/permission/role?${query.toString()}`);
+      const raw = readBuildPayloadValue(response);
+      const payload = readBuildPayload(response);
+      const roles = readBuildArray<Record<string, unknown>>(
+        payload.roles ?? payload.value ?? payload.items ?? payload.list ?? (Array.isArray(raw) ? raw : [])
+      );
+
+      return {
+        roles,
+        total: readBuildTotal(payload, response, roles.length)
+      };
+    },
+    async getJobPermissionInternal() {
+      const response = await _http.get("/v1/job/permission/internal");
+      const payload = readBuildPayloadValue(response);
+      const envelope = readBuildEnvelope(payload);
+
+      return {
+        value: envelope ? envelope.value ?? envelope.result : payload,
+        raw: readBuildRawRecord(payload)
+      };
+    },
+    async getJobPermission(input) {
+      const query = new URLSearchParams({
+        project_id: input.project_id,
+        job_id: input.job_id
+      });
+      const response = await _http.get(`/v1/job/permission?${query.toString()}`);
+      const payload = readBuildPayload(response);
+
+      return {
+        project_id: input.project_id,
+        job_id: input.job_id,
+        raw: payload
       };
     },
     async getRealTimeLog(input) {

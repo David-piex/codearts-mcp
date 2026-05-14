@@ -26,14 +26,14 @@
 | --- | ---: | --- |
 | 制品仓 | 19 | [Function-API-Reference-Artifact.md](./Function-API-Reference-Artifact.md) |
 | 鉴权会话 | 2 | [Function-API-Reference-Auth-Session.md](./Function-API-Reference-Auth-Session.md) |
-| 编译构建 | 23 | [Function-API-Reference-Build.md](./Function-API-Reference-Build.md) |
+| 编译构建 | 38 | [Function-API-Reference-Build.md](./Function-API-Reference-Build.md) |
 | 代码检查 | 18 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
 | 部署 | 60 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
 | 流水线 | 78 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 106 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 201 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 179 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **686** | |
+| **总计** | **701** | |
 
 ## 字段对应
 
@@ -67,20 +67,35 @@
 | `build_append_job_step` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_append_job_step) |
 | `build_append_release_upload_step` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_append_release_upload_step) |
 | `build_configure_release_upload_step` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_configure_release_upload_step) |
+| `build_get_domain_charge_type` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_domain_charge_type) |
+| `build_get_domain_federation` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_domain_federation) |
+| `build_get_domain_package_quota` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_domain_package_quota) |
+| `build_get_domain_status` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_domain_status) |
+| `build_get_domain_user_permission` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_domain_user_permission) |
 | `build_get_error_log` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_error_log) |
 | `build_get_full_stages` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_full_stages) |
 | `build_get_history_details` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_history_details) |
 | `build_get_info_record` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_info_record) |
 | `build_get_job` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_job) |
+| `build_get_job_permission` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_job_permission) |
+| `build_get_job_permission_internal` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_job_permission_internal) |
 | `build_get_project_record_statistics` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_project_record_statistics) |
 | `build_get_real_time_log` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_real_time_log) |
 | `build_get_record` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_record) |
 | `build_get_record_flow_graph` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_record_flow_graph) |
 | `build_get_record_script` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_record_script) |
 | `build_list_build_parameters` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_list_build_parameters) |
+| `build_list_code_tags` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_list_code_tags) |
+| `build_list_domain_related_projects` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_list_domain_related_projects) |
+| `build_list_git_code_branches` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_list_git_code_branches) |
+| `build_list_git_code_repositories` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_list_git_code_repositories) |
+| `build_list_job_permission_roles` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_list_job_permission_roles) |
 | `build_list_jobs` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_list_jobs) |
 | `build_list_project_records` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_list_project_records) |
 | `build_list_records` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_list_records) |
+| `build_list_report_branches` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_list_report_branches) |
+| `build_list_report_repositories` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_list_report_repositories) |
+| `build_list_resource_specs` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_list_resource_specs) |
 | `build_prepare_deployable_node_app` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_prepare_deployable_node_app) |
 | `build_prepare_node_runtime_bundle` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_prepare_node_runtime_bundle) |
 | `build_request_official_api` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_request_official_api) |

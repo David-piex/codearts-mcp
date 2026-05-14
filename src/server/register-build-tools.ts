@@ -10,6 +10,13 @@ import {
   buildGetFullStagesInput,
   buildGetHistoryDetailsInput,
   buildGetInfoRecordInput,
+  buildGetDomainChargeTypeInput,
+  buildGetDomainFederationInput,
+  buildGetDomainPackageQuotaInput,
+  buildGetDomainStatusInput,
+  buildGetDomainUserPermissionInput,
+  buildGetJobPermissionInput,
+  buildGetJobPermissionInternalInput,
   buildGetProjectRecordStatisticsInput,
   buildPrepareNodeRuntimeBundleInput,
   buildGetRecordFlowGraphInput,
@@ -18,9 +25,17 @@ import {
   buildGetRealTimeLogInput,
   buildGetJobInput,
   buildListBuildParametersInput,
+  buildListCodeTagsInput,
+  buildListDomainRelatedProjectsInput,
+  buildListGitCodeBranchesInput,
+  buildListGitCodeRepositoriesInput,
   buildListJobsInput,
+  buildListJobPermissionRolesInput,
   buildListProjectRecordsInput,
+  buildListReportBranchesInput,
+  buildListReportRepositoriesInput,
   buildListRecordsInput,
+  buildListResourceSpecsInput,
   buildRunJobInput,
   buildStopJobInput,
   buildUpdateJobStepInput
@@ -40,10 +55,25 @@ import { createBuildGetHistoryDetailsHandler } from "../products/build/tools/get
 import { createBuildGetInfoRecordHandler } from "../products/build/tools/get-info-record.js";
 import { createBuildGetRealTimeLogHandler } from "../products/build/tools/get-real-time-log.js";
 import { createBuildGetJobHandler } from "../products/build/tools/get-job.js";
+import { createBuildGetDomainChargeTypeHandler } from "../products/build/tools/get-domain-charge-type.js";
+import { createBuildGetDomainFederationHandler } from "../products/build/tools/get-domain-federation.js";
+import { createBuildGetDomainPackageQuotaHandler } from "../products/build/tools/get-domain-package-quota.js";
+import { createBuildGetDomainStatusHandler } from "../products/build/tools/get-domain-status.js";
+import { createBuildGetDomainUserPermissionHandler } from "../products/build/tools/get-domain-user-permission.js";
+import { createBuildGetJobPermissionHandler } from "../products/build/tools/get-job-permission.js";
+import { createBuildGetJobPermissionInternalHandler } from "../products/build/tools/get-job-permission-internal.js";
 import { createBuildListBuildParametersHandler } from "../products/build/tools/list-build-parameters.js";
+import { createBuildListCodeTagsHandler } from "../products/build/tools/list-code-tags.js";
+import { createBuildListDomainRelatedProjectsHandler } from "../products/build/tools/list-domain-related-projects.js";
+import { createBuildListGitCodeBranchesHandler } from "../products/build/tools/list-git-code-branches.js";
+import { createBuildListGitCodeRepositoriesHandler } from "../products/build/tools/list-git-code-repositories.js";
+import { createBuildListJobPermissionRolesHandler } from "../products/build/tools/list-job-permission-roles.js";
 import { createBuildListJobsHandler } from "../products/build/tools/list-jobs.js";
 import { createBuildListProjectRecordsHandler } from "../products/build/tools/list-project-records.js";
+import { createBuildListReportBranchesHandler } from "../products/build/tools/list-report-branches.js";
+import { createBuildListReportRepositoriesHandler } from "../products/build/tools/list-report-repositories.js";
 import { createBuildListRecordsHandler } from "../products/build/tools/list-records.js";
+import { createBuildListResourceSpecsHandler } from "../products/build/tools/list-resource-specs.js";
 import { createBuildRunJobHandler } from "../products/build/tools/run-job.js";
 import { createBuildStopJobHandler } from "../products/build/tools/stop-job.js";
 import { createBuildUpdateJobStepHandler } from "../products/build/tools/update-job-step.js";
@@ -85,6 +115,96 @@ const buildToolDefinitions = {
     inputSchema: buildGetRecordFlowGraphInput,
     selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetRecordFlowGraphHandler>[0] }) => clients.buildClient,
     createProductHandler: createBuildGetRecordFlowGraphHandler
+  }),
+  "build_list_code_tags": defineProductTool({
+    description: "List CodeArts Build source code tags",
+    inputSchema: buildListCodeTagsInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListCodeTagsHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildListCodeTagsHandler
+  }),
+  "build_list_report_branches": defineProductTool({
+    description: "List CodeArts Build report branches",
+    inputSchema: buildListReportBranchesInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListReportBranchesHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildListReportBranchesHandler
+  }),
+  "build_list_report_repositories": defineProductTool({
+    description: "List CodeArts Build report repositories",
+    inputSchema: buildListReportRepositoriesInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListReportRepositoriesHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildListReportRepositoriesHandler
+  }),
+  "build_list_git_code_repositories": defineProductTool({
+    description: "List CodeArts Build Git code repositories",
+    inputSchema: buildListGitCodeRepositoriesInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListGitCodeRepositoriesHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildListGitCodeRepositoriesHandler
+  }),
+  "build_list_git_code_branches": defineProductTool({
+    description: "List CodeArts Build Git code branches",
+    inputSchema: buildListGitCodeBranchesInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListGitCodeBranchesHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildListGitCodeBranchesHandler
+  }),
+  "build_list_resource_specs": defineProductTool({
+    description: "List CodeArts Build resource specifications",
+    inputSchema: buildListResourceSpecsInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListResourceSpecsHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildListResourceSpecsHandler
+  }),
+  "build_get_domain_user_permission": defineProductTool({
+    description: "Get CodeArts Build domain user permission",
+    inputSchema: buildGetDomainUserPermissionInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetDomainUserPermissionHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildGetDomainUserPermissionHandler
+  }),
+  "build_get_domain_package_quota": defineProductTool({
+    description: "Get CodeArts Build domain package quota",
+    inputSchema: buildGetDomainPackageQuotaInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetDomainPackageQuotaHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildGetDomainPackageQuotaHandler
+  }),
+  "build_get_domain_charge_type": defineProductTool({
+    description: "Get CodeArts Build domain charge type",
+    inputSchema: buildGetDomainChargeTypeInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetDomainChargeTypeHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildGetDomainChargeTypeHandler
+  }),
+  "build_get_domain_federation": defineProductTool({
+    description: "Get CodeArts Build domain federation status",
+    inputSchema: buildGetDomainFederationInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetDomainFederationHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildGetDomainFederationHandler
+  }),
+  "build_get_domain_status": defineProductTool({
+    description: "Get CodeArts Build domain status",
+    inputSchema: buildGetDomainStatusInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetDomainStatusHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildGetDomainStatusHandler
+  }),
+  "build_list_domain_related_projects": defineProductTool({
+    description: "List CodeArts Build domain related projects",
+    inputSchema: buildListDomainRelatedProjectsInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListDomainRelatedProjectsHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildListDomainRelatedProjectsHandler
+  }),
+  "build_list_job_permission_roles": defineProductTool({
+    description: "List CodeArts Build job permission roles",
+    inputSchema: buildListJobPermissionRolesInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListJobPermissionRolesHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildListJobPermissionRolesHandler
+  }),
+  "build_get_job_permission_internal": defineProductTool({
+    description: "Get CodeArts Build internal job permission status",
+    inputSchema: buildGetJobPermissionInternalInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetJobPermissionInternalHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildGetJobPermissionInternalHandler
+  }),
+  "build_get_job_permission": defineProductTool({
+    description: "Get CodeArts Build job permission",
+    inputSchema: buildGetJobPermissionInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetJobPermissionHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildGetJobPermissionHandler
   }),
   "build_get_job": defineProductTool({
     description: "Get CodeArts Build job detail",

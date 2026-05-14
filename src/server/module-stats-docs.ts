@@ -78,7 +78,7 @@ const readWriteMatrixMeta: Record<ModuleName, ReadWriteMatrixMeta> = {
   Build: {
     live: "Validated",
     keyGaps:
-      "All 22 tools are now fully live-validated, including the 3 helper/configuration tools via real dry-run previews"
+      "Core Build job, record, log, parameter, domain metadata, permission, code-tag, report, and resource-spec tools have live or smoke coverage; optional Git-code endpoint reads need endpoint-specific samples"
   },
   Artifact: {
     live: "Partial",
@@ -120,7 +120,7 @@ const implementationStatusMeta: Record<ModuleName, ImplementationStatusMeta> = {
   Build: {
     live: "Validated",
     notes:
-      "All 22 tools are now AK/SK Full on the current surface, including the 3 helper/configuration tools through real dry-run previews on the live job config."
+      "Core Build job, record, log, parameter, domain metadata, permission, code-tag, report, and resource-spec tools are covered by live or smoke validation. Git-code endpoint reads are implemented and unit-tested, with endpoint-specific live samples optional."
   },
   Artifact: {
     live: "Partial",
@@ -161,9 +161,9 @@ const toolStatusSummaryMeta: Record<ModuleName, ToolStatusSummaryMeta> = {
       "The Deploy MCP surface now includes v4 application/environment/cluster/record/variable tools. Read paths and selected write paths are live-validated, while full execute-class coverage still depends on dedicated runtime samples."
   },
   Build: {
-    summary: "`22 Full / 0 Reachable / 0 Unpublished / 0 Code`",
+    summary: "Expanded metadata read surface with live smoke coverage",
     conclusion:
-      "The remote Build surface is now fully live-validated, including the 3 helper/configuration tools via real dry-run previews on the live job config."
+      "The Build surface now includes metadata reads for domain status, permissions, code tags, report repositories/branches, resource specs, and optional Git-code repositories/branches."
   },
   Artifact: {
     summary: "`5 Full / 0 Reachable / 7 Unpublished / 0 Code`",
@@ -200,7 +200,7 @@ const readmeModuleNumbersMeta: Record<ModuleName, ReadmeModuleNumbersMeta> = {
   },
   Build: {
     liveStatus: "Validated",
-    breakdown: "`22 Full / 0 Reachable / 0 Unpublished / 0 Code`"
+    breakdown: "Expanded metadata read surface with live smoke coverage"
   },
   Artifact: {
     liveStatus: "Partial",

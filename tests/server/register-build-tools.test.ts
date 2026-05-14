@@ -45,6 +45,27 @@ describe("registerBuildTool", () => {
     );
   });
 
+  it("registers a Build metadata read tool", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerBuildTool({
+      toolName: "build_list_code_tags",
+      server: { registerTool },
+      mode: "stdio",
+      stdioClient: {} as never
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "build_list_code_tags",
+      expect.objectContaining({
+        title: "build_list_code_tags",
+        description: "List CodeArts Build source code tags"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("returns false for non-build tools", () => {
     const registerTool = vi.fn();
 

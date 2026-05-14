@@ -29,6 +29,62 @@ export const buildListBuildParametersInput = z.object({
   build_no: z.number().int().positive()
 });
 
+export const buildListCodeTagsInput = pagingSchema.extend({
+  scm_type: z.string().min(1),
+  repo_id: idSchema.optional(),
+  search: z.string().min(1).optional()
+});
+
+export const buildListReportBranchesInput = z.object({
+  job_id: idSchema,
+  repository_name: z.string().min(1)
+});
+
+export const buildListReportRepositoriesInput = z.object({
+  job_id: idSchema
+});
+
+export const buildListGitCodeRepositoriesInput = z.object({
+  endpoint_id: idSchema
+});
+
+export const buildListGitCodeBranchesInput = z.object({
+  endpoint_id: idSchema,
+  repository_name: z.string().min(1).optional()
+});
+
+export const buildListResourceSpecsInput = z.object({
+  project_id: idSchema,
+  arch: z.string().min(1).default("x86-64")
+});
+
+export const buildGetDomainUserPermissionInput = z.object({
+  project_id: idSchema
+});
+
+export const buildGetDomainPackageQuotaInput = z.object({
+  project_id: idSchema
+});
+
+export const buildGetDomainChargeTypeInput = z.object({});
+
+export const buildGetDomainFederationInput = z.object({});
+
+export const buildGetDomainStatusInput = z.object({});
+
+export const buildListDomainRelatedProjectsInput = z.object({});
+
+export const buildListJobPermissionRolesInput = z.object({
+  job_id: idSchema
+});
+
+export const buildGetJobPermissionInternalInput = z.object({});
+
+export const buildGetJobPermissionInput = z.object({
+  project_id: idSchema,
+  job_id: idSchema
+});
+
 export const buildGetErrorLogInput = pagingSchema.extend({
   job_id: idSchema,
   build_no: z.number().int().positive()

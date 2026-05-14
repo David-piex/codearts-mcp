@@ -4,6 +4,32 @@ import { loadEnvConfig } from "../../../src/core/config/env.js";
 import { createHttpClient } from "../../../src/core/http/client.js";
 import { createBuildClient } from "../../../src/products/build/client.js";
 
+async function readReachable<T>(operation: () => Promise<T>) {
+  try {
+    return {
+      ok: true as const,
+      value: await operation()
+    };
+  } catch (error: any) {
+    return {
+      ok: false as const,
+      error
+    };
+  }
+}
+
+function expectReachedProvider(result: Awaited<ReturnType<typeof readReachable>>) {
+  if (result.ok) {
+    expect(result.value).toBeDefined();
+    return;
+  }
+
+  expect(result.error).toMatchObject({
+    category: expect.stringMatching(/^(provider_error|not_found)$/),
+    status: expect.any(Number)
+  });
+}
+
 function hasLiveEnv(source: NodeJS.ProcessEnv) {
   return Boolean(
     source.HUAWEICLOUD_BASE_URL &&
@@ -68,6 +94,14 @@ function readStopBuildNo(source: NodeJS.ProcessEnv) {
 
 function readProbeRecordId(source: NodeJS.ProcessEnv) {
   return source.HUAWEICLOUD_BUILD_LIVE_PROBE_RECORD_ID?.trim() || "00000000-0000-0000-0000-000000000000";
+}
+
+function readGitCodeEndpointId(source: NodeJS.ProcessEnv) {
+  return source.HUAWEICLOUD_BUILD_LIVE_GIT_CODE_ENDPOINT_ID?.trim();
+}
+
+function readGitCodeRepositoryName(source: NodeJS.ProcessEnv) {
+  return source.HUAWEICLOUD_BUILD_LIVE_GIT_CODE_REPOSITORY_NAME?.trim();
 }
 
 function createPageInput<T extends Record<string, unknown>>(
@@ -171,6 +205,8 @@ if (hasLiveEnv(process.env)) {
     const historyBuildNo = readHistoryBuildNo(process.env);
     const stopBuildNo = readStopBuildNo(process.env);
     const probeRecordId = readProbeRecordId(process.env);
+    const gitCodeEndpointId = readGitCodeEndpointId(process.env);
+    const gitCodeRepositoryName = readGitCodeRepositoryName(process.env);
 
     it("lists jobs across configured projects and gets the known live job", async () => {
       const [jobLists, job] = await Promise.all([
@@ -281,6 +317,101 @@ if (hasLiveEnv(process.env)) {
           status: 400
         });
       }
+    }, 30000);
+
+    it("gets Build domain and permission metadata", async () => {
+      const [
+        userPermission,
+        packageQuota,
+        chargeType,
+        federation,
+        domainStatus,
+        relatedProjects,
+        permissionRoles,
+        internalPermission,
+        jobPermission
+      ] = await Promise.all([
+        readReachable(() => client.getDomainUserPermission({ project_id: projectId })),
+        readReachable(() => client.getDomainPackageQuota({ project_id: projectId })),
+        readReachable(() => client.getDomainChargeType()),
+        readReachable(() => client.getDomainFederation()),
+        readReachable(() => client.getDomainStatus()),
+        readReachable(() => client.getDomainRelatedProjects()),
+        readReachable(() => client.listJobPermissionRoles({ job_id: jobId })),
+        readReachable(() => client.getJobPermissionInternal()),
+        readReachable(() => client.getJobPermission({ project_id: projectId, job_id: jobId }))
+      ]);
+
+      expectReachedProvider(userPermission);
+      expectReachedProvider(packageQuota);
+      expectReachedProvider(chargeType);
+      expectReachedProvider(federation);
+      expectReachedProvider(domainStatus);
+      expectReachedProvider(relatedProjects);
+      expectReachedProvider(permissionRoles);
+      expectReachedProvider(internalPermission);
+      expectReachedProvider(jobPermission);
+
+      if (userPermission.ok) expect(userPermission.value.project_id).toBe(projectId);
+      if (packageQuota.ok) expect(packageQuota.value.project_id).toBe(projectId);
+      if (chargeType.ok) expect(typeof chargeType.value.raw).toBe("object");
+      if (federation.ok) expect(typeof federation.value.raw).toBe("object");
+      if (domainStatus.ok) expect(typeof domainStatus.value.raw).toBe("object");
+      if (relatedProjects.ok) expect(Array.isArray(relatedProjects.value.projects)).toBe(true);
+      if (permissionRoles.ok) expect(Array.isArray(permissionRoles.value.roles)).toBe(true);
+      if (internalPermission.ok) expect(typeof internalPermission.value.raw).toBe("object");
+      if (jobPermission.ok) expect(jobPermission.value.job_id).toBe(jobId);
+    }, 30000);
+
+    it("gets Build source metadata reads", async () => {
+      const job = await readReachable(() => client.getJob({ job_id: jobId }));
+      const repositoryName =
+        gitCodeRepositoryName ??
+        (job.ok
+          ? job.value.scm_repositories[0]?.repo_name ?? job.value.scm_repositories[0]?.url
+          : undefined) ??
+        "repo";
+      const [tags, reportBranches, reportRepositories, specs] = await Promise.all([
+        readReachable(() => client.listCodeTags({
+          scm_type: "codehub",
+          page: 1,
+          page_size: 20
+        })),
+        readReachable(() => client.listReportBranches({
+          job_id: jobId,
+          repository_name: repositoryName
+        })),
+        readReachable(() => client.listReportRepositories({ job_id: jobId })),
+        readReachable(() => client.listResourceSpecs({
+          project_id: projectId,
+          arch: "x86-64"
+        }))
+      ]);
+
+      expectReachedProvider(tags);
+      expectReachedProvider(reportBranches);
+      expectReachedProvider(reportRepositories);
+      expectReachedProvider(specs);
+
+      if (tags.ok) expect(Array.isArray(tags.value.tags)).toBe(true);
+      if (reportBranches.ok) expect(Array.isArray(reportBranches.value.branches)).toBe(true);
+      if (reportRepositories.ok) expect(Array.isArray(reportRepositories.value.repositories)).toBe(true);
+      if (specs.ok) expect(Array.isArray(specs.value.specs)).toBe(true);
+    }, 30000);
+
+    it.runIf(gitCodeEndpointId)("gets Git code repository and branch metadata", async () => {
+      const [repositories, branches] = await Promise.all([
+        client.listGitCodeRepositories({
+          endpoint_id: gitCodeEndpointId as string
+        }),
+        client.listGitCodeBranches({
+          endpoint_id: gitCodeEndpointId as string,
+          repository_name: gitCodeRepositoryName
+        })
+      ]);
+
+      expect(Array.isArray(repositories.repositories)).toBe(true);
+      expect(Array.isArray(branches.branches)).toBe(true);
     }, 30000);
   });
 } else {
