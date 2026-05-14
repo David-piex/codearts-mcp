@@ -42,6 +42,8 @@ import {
   testPlanGetIteratorInput,
   testPlanGetLicenseSpecificationInput,
   testPlanGetMindmapInput,
+  testPlanGetMindmapBackupInput,
+  testPlanGetMindmapRecycleInput,
   testPlanGetMindmapStatisticsInput,
   testPlanGetPlanInput,
   testPlanGetProjectTestcaseInput,
@@ -61,6 +63,7 @@ import {
   testPlanGetRuleCheckTaskSummaryInput,
   testPlanGetTestReportInput,
   testPlanGetTestDesignTemplateInput,
+  testPlanGetTestDesignTestcaseInput,
   testPlanGetTestcaseScriptDetailV1Input,
   testPlanGetTestcaseScriptDetailV3Input,
   testPlanGetTestcaseScriptDetailV4Input,
@@ -196,6 +199,8 @@ import { createTestPlanGetImageCapacityWarningHandler } from "../products/testpl
 import { createTestPlanGetIteratorHandler } from "../products/testplan/tools/get-iterator.js";
 import { createTestPlanGetLicenseSpecificationHandler } from "../products/testplan/tools/get-license-specification.js";
 import { createTestPlanGetMindmapHandler } from "../products/testplan/tools/get-mindmap.js";
+import { createTestPlanGetMindmapBackupHandler } from "../products/testplan/tools/get-mindmap-backup.js";
+import { createTestPlanGetMindmapRecycleHandler } from "../products/testplan/tools/get-mindmap-recycle.js";
 import { createTestPlanGetMindmapStatisticsHandler } from "../products/testplan/tools/get-mindmap-statistics.js";
 import { createTestPlanGetPlanHandler } from "../products/testplan/tools/get-plan.js";
 import { createTestPlanGetProjectTestcaseHandler } from "../products/testplan/tools/get-project-testcase.js";
@@ -215,6 +220,7 @@ import { createTestPlanGetRuleCheckTaskReportHandler } from "../products/testpla
 import { createTestPlanGetRuleCheckTaskSummaryHandler } from "../products/testplan/tools/get-rule-check-task-summary.js";
 import { createTestPlanGetTestReportHandler } from "../products/testplan/tools/get-test-report.js";
 import { createTestPlanGetTestDesignTemplateHandler } from "../products/testplan/tools/get-test-design-template.js";
+import { createTestPlanGetTestDesignTestcaseHandler } from "../products/testplan/tools/get-test-design-testcase.js";
 import { createTestPlanGetTestcaseV4Handler } from "../products/testplan/tools/get-testcase-v4.js";
 import { createTestPlanGetTesthubCaseByNumberHandler } from "../products/testplan/tools/get-testhub-case-by-number.js";
 import { createTestPlanGetTesthubCaseHandler } from "../products/testplan/tools/get-testhub-case.js";
@@ -342,6 +348,18 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetMindmapHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetMindmapHandler
   }),
+  "testplan_get_mindmap_recycle": defineProductTool({
+    description: "Get CodeArts TestPlan recycled mindmap detail",
+    inputSchema: testPlanGetMindmapRecycleInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetMindmapRecycleHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetMindmapRecycleHandler
+  }),
+  "testplan_get_mindmap_backup": defineProductTool({
+    description: "Get CodeArts TestPlan mindmap backup detail",
+    inputSchema: testPlanGetMindmapBackupInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetMindmapBackupHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetMindmapBackupHandler
+  }),
   "testplan_get_mindmap_statistics": defineProductTool({
     description: "Get CodeArts TestPlan mindmap resource statistics",
     inputSchema: testPlanGetMindmapStatisticsInput,
@@ -389,6 +407,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanGetTestDesignTemplateInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetTestDesignTemplateHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetTestDesignTemplateHandler
+  }),
+  "testplan_get_test_design_testcase": defineProductTool({
+    description: "Get CodeArts TestPlan test design testcase detail",
+    inputSchema: testPlanGetTestDesignTestcaseInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetTestDesignTestcaseHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetTestDesignTestcaseHandler
   }),
   "testplan_get_testhub_case": defineProductTool({
     description: "Get CodeArts TestPlan TestHub testcase detail",

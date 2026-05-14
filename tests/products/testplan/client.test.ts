@@ -1457,6 +1457,33 @@ describe("createTestPlanClient", () => {
             }
           };
         }
+        if (path.includes("/mindmap-recycles/")) {
+          return {
+            code: "success",
+            data: {
+              id: "recycle-1",
+              mindmap_name: "Deleted checkout flow"
+            }
+          };
+        }
+        if (path.includes("/mindmap-backups/")) {
+          return {
+            code: "success",
+            data: {
+              id: "backup-1",
+              bak_name: "Nightly backup"
+            }
+          };
+        }
+        if (path.includes("/testcases/")) {
+          return {
+            code: "success",
+            data: {
+              id: "draft-case-1",
+              case_name: "Draft checkout"
+            }
+          };
+        }
         if (path.endsWith("/asset")) {
           return {
             code: "success",
@@ -1487,6 +1514,45 @@ describe("createTestPlanClient", () => {
         name: "Checkout flow"
       }
     });
+    await expect(
+      client.getMindmapRecycle({
+        project_id: "project-1",
+        id: "recycle-1"
+      })
+    ).resolves.toEqual({
+      recycle_id: "recycle-1",
+      name: "Deleted checkout flow",
+      raw: {
+        id: "recycle-1",
+        mindmap_name: "Deleted checkout flow"
+      }
+    });
+    await expect(
+      client.getMindmapBackup({
+        project_id: "project-1",
+        id: "backup-1"
+      })
+    ).resolves.toEqual({
+      backup_id: "backup-1",
+      name: "Nightly backup",
+      raw: {
+        id: "backup-1",
+        bak_name: "Nightly backup"
+      }
+    });
+    await expect(
+      client.getTestDesignTestcase({
+        project_id: "project-1",
+        id: "draft-case-1"
+      })
+    ).resolves.toEqual({
+      case_id: "draft-case-1",
+      name: "Draft checkout",
+      raw: {
+        id: "draft-case-1",
+        case_name: "Draft checkout"
+      }
+    });
     await expect(client.listAssets({ project_id: "project-1" })).resolves.toEqual({
       assets: [{ id: "asset-1", name: "Common factors" }],
       total: 1
@@ -1507,6 +1573,9 @@ describe("createTestPlanClient", () => {
 
     expect(requests).toEqual([
       "/v1/project-1/mindmaps/mindmap-1",
+      "/v2/project-1/mindmap-recycles/recycle-1",
+      "/v2/project-1/mindmap-backups/backup-1",
+      "/v2/project-1/testcases/draft-case-1",
       "/v1/project-1/asset",
       "/v2/project-1/templates/template-1"
     ]);

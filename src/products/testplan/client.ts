@@ -343,11 +343,35 @@ export type TestPlanClient = {
     name?: string;
     raw: Record<string, unknown>;
   }>;
+  getTestDesignTestcase: (input: {
+    project_id: string;
+    id: string;
+  }) => Promise<{
+    case_id: string;
+    name?: string;
+    raw: Record<string, unknown>;
+  }>;
   getMindmap: (input: {
     project_id: string;
     id: string;
   }) => Promise<{
     mindmap_id: string;
+    name?: string;
+    raw: Record<string, unknown>;
+  }>;
+  getMindmapRecycle: (input: {
+    project_id: string;
+    id: string;
+  }) => Promise<{
+    recycle_id: string;
+    name?: string;
+    raw: Record<string, unknown>;
+  }>;
+  getMindmapBackup: (input: {
+    project_id: string;
+    id: string;
+  }) => Promise<{
+    backup_id: string;
     name?: string;
     raw: Record<string, unknown>;
   }>;
@@ -2079,6 +2103,26 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         raw: testcase
       };
     },
+    async getTestDesignTestcase(input) {
+      const response = await _http.get(
+        `/v2/${encodeURIComponent(input.project_id)}/testcases/${encodeURIComponent(input.id)}`
+      );
+      const payload = readResultPayload(response);
+      const testcase = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        case_id: String(
+          testcase.id ?? testcase.testcase_id ?? testcase.case_id ?? testcase.uri ?? input.id
+        ),
+        name:
+          typeof testcase.case_name === "string"
+            ? testcase.case_name
+            : typeof testcase.name === "string"
+              ? testcase.name
+              : undefined,
+        raw: testcase
+      };
+    },
     async getMindmap(input) {
       const response = await _http.get(
         `/v1/${encodeURIComponent(input.project_id)}/mindmaps/${encodeURIComponent(input.id)}`
@@ -2090,6 +2134,42 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         mindmap_id: String(mindmap.id ?? mindmap.uri ?? input.id),
         name: typeof mindmap.name === "string" ? mindmap.name : undefined,
         raw: mindmap
+      };
+    },
+    async getMindmapRecycle(input) {
+      const response = await _http.get(
+        `/v2/${encodeURIComponent(input.project_id)}/mindmap-recycles/${encodeURIComponent(input.id)}`
+      );
+      const payload = readResultPayload(response);
+      const recycle = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        recycle_id: String(recycle.id ?? recycle.uri ?? input.id),
+        name:
+          typeof recycle.name === "string"
+            ? recycle.name
+            : typeof recycle.mindmap_name === "string"
+              ? recycle.mindmap_name
+              : undefined,
+        raw: recycle
+      };
+    },
+    async getMindmapBackup(input) {
+      const response = await _http.get(
+        `/v2/${encodeURIComponent(input.project_id)}/mindmap-backups/${encodeURIComponent(input.id)}`
+      );
+      const payload = readResultPayload(response);
+      const backup = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        backup_id: String(backup.id ?? backup.uri ?? input.id),
+        name:
+          typeof backup.bak_name === "string"
+            ? backup.bak_name
+            : typeof backup.name === "string"
+              ? backup.name
+              : undefined,
+        raw: backup
       };
     },
     async getMindmapStatistics(input) {
