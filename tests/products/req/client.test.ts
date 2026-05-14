@@ -1830,7 +1830,7 @@ describe("createReqClient", () => {
     expect(requestedBody).toEqual({
       id: "70779173",
       notes: "First comment",
-      project_uuid: "p-1",
+      projectUUId: "p-1",
       type: "scrum"
     });
     expect(result).toEqual({

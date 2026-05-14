@@ -7753,7 +7753,7 @@ export function createReqClient(
       const response = (await _http.post("/v2/issues/update-issue-notes", {
         id: input.work_item_id,
         notes: input.content,
-        project_uuid: input.project_id,
+        projectUUId: input.project_id,
         type: "scrum"
       })) as {
         status?: string;
