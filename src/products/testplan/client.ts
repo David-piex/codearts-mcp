@@ -343,6 +343,28 @@ export type TestPlanClient = {
     name?: string;
     raw: Record<string, unknown>;
   }>;
+  getMindmap: (input: {
+    project_id: string;
+    id: string;
+  }) => Promise<{
+    mindmap_id: string;
+    name?: string;
+    raw: Record<string, unknown>;
+  }>;
+  listAssets: (input: {
+    project_id: string;
+  }) => Promise<{
+    assets: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getTestDesignTemplate: (input: {
+    project_id: string;
+    id: string;
+  }) => Promise<{
+    template_id: string;
+    name?: string;
+    raw: Record<string, unknown>;
+  }>;
   listTesthubServices: () => Promise<{
     services: Array<Record<string, unknown>>;
     total?: number;
@@ -2033,6 +2055,46 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         ),
         name: typeof testcase.name === "string" ? testcase.name : undefined,
         raw: testcase
+      };
+    },
+    async getMindmap(input) {
+      const response = await _http.get(
+        `/v1/${encodeURIComponent(input.project_id)}/mindmaps/${encodeURIComponent(input.id)}`
+      );
+      const payload = readResultPayload(response);
+      const mindmap = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        mindmap_id: String(mindmap.id ?? mindmap.uri ?? input.id),
+        name: typeof mindmap.name === "string" ? mindmap.name : undefined,
+        raw: mindmap
+      };
+    },
+    async listAssets(input) {
+      const response = await _http.get(
+        `/v1/${encodeURIComponent(input.project_id)}/asset`
+      );
+      const payload = readResultPayload(response);
+      const assets = readArray<Record<string, unknown>>(
+        payload.data ?? payload.value ?? payload.assets ?? payload.items ?? payload.list
+      );
+
+      return {
+        assets,
+        total: readTotal(payload, response, assets.length)
+      };
+    },
+    async getTestDesignTemplate(input) {
+      const response = await _http.get(
+        `/v2/${encodeURIComponent(input.project_id)}/templates/${encodeURIComponent(input.id)}`
+      );
+      const payload = readResultPayload(response);
+      const template = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        template_id: String(template.id ?? template.uri ?? input.id),
+        name: typeof template.name === "string" ? template.name : undefined,
+        raw: template
       };
     },
     async listTesthubServices() {

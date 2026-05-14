@@ -198,6 +198,20 @@ export const testPlanGetProjectTestcaseByNumberInput = z.object({
   version_uri: idSchema.optional()
 });
 
+export const testPlanGetMindmapInput = z.object({
+  project_id: idSchema,
+  id: idSchema
+});
+
+export const testPlanListAssetsInput = z.object({
+  project_id: idSchema
+});
+
+export const testPlanGetTestDesignTemplateInput = z.object({
+  project_id: idSchema,
+  id: idSchema
+});
+
 export const testPlanListTesthubServicesInput = z.object({});
 
 export const testPlanGetTesthubCaseInput = z.object({

@@ -1443,6 +1443,75 @@ describe("createTestPlanClient", () => {
     ]);
   });
 
+  it("loads TestPlan mindmap, assets, and test design templates", async () => {
+    const requests: string[] = [];
+    const client = createTestPlanClient({
+      get: async (path: string) => {
+        requests.push(path);
+        if (path.includes("/mindmaps/")) {
+          return {
+            code: "success",
+            data: {
+              id: "mindmap-1",
+              name: "Checkout flow"
+            }
+          };
+        }
+        if (path.endsWith("/asset")) {
+          return {
+            code: "success",
+            data: [{ id: "asset-1", name: "Common factors" }]
+          };
+        }
+
+        return {
+          code: "success",
+          data: {
+            id: "template-1",
+            name: "API design"
+          }
+        };
+      }
+    } as never);
+
+    await expect(
+      client.getMindmap({
+        project_id: "project-1",
+        id: "mindmap-1"
+      })
+    ).resolves.toEqual({
+      mindmap_id: "mindmap-1",
+      name: "Checkout flow",
+      raw: {
+        id: "mindmap-1",
+        name: "Checkout flow"
+      }
+    });
+    await expect(client.listAssets({ project_id: "project-1" })).resolves.toEqual({
+      assets: [{ id: "asset-1", name: "Common factors" }],
+      total: 1
+    });
+    await expect(
+      client.getTestDesignTemplate({
+        project_id: "project-1",
+        id: "template-1"
+      })
+    ).resolves.toEqual({
+      template_id: "template-1",
+      name: "API design",
+      raw: {
+        id: "template-1",
+        name: "API design"
+      }
+    });
+
+    expect(requests).toEqual([
+      "/v1/project-1/mindmaps/mindmap-1",
+      "/v1/project-1/asset",
+      "/v2/project-1/templates/template-1"
+    ]);
+  });
+
   it("lists testcase fields and test types", async () => {
     const requests: string[] = [];
     const client = createTestPlanClient({
