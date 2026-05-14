@@ -5,8 +5,17 @@ import {
   checkCreateTaskInput,
   checkGetMetricsInput,
   checkGetTaskInput,
+  checkGetTaskProgressInput,
+  checkGetTaskResourcePoolInput,
+  checkGetTaskRulesetCheckParametersV2Input,
+  checkGetTaskRulesetCheckParametersV3Input,
+  checkGetTaskSettingsInput,
   checkListRulesetsInput,
+  checkListTaskBranchesInput,
   checkListTaskIssuesInput,
+  checkListTaskJobsInput,
+  checkListTaskRulesetsV2Input,
+  checkListTaskRulesetsV3Input,
   checkListTasksInput,
   checkRunTaskInput,
   checkStopTaskInput
@@ -14,8 +23,17 @@ import {
 import { createCheckCreateTaskHandler } from "../products/check/tools/create-task.js";
 import { createCheckGetMetricsHandler } from "../products/check/tools/get-metrics.js";
 import { createCheckGetTaskHandler } from "../products/check/tools/get-task.js";
+import { createCheckGetTaskProgressHandler } from "../products/check/tools/get-task-progress.js";
+import { createCheckGetTaskResourcePoolHandler } from "../products/check/tools/get-task-resource-pool.js";
+import { createCheckGetTaskRulesetCheckParametersV2Handler } from "../products/check/tools/get-task-ruleset-check-parameters-v2.js";
+import { createCheckGetTaskRulesetCheckParametersV3Handler } from "../products/check/tools/get-task-ruleset-check-parameters-v3.js";
+import { createCheckGetTaskSettingsHandler } from "../products/check/tools/get-task-settings.js";
 import { createCheckListRulesetsHandler } from "../products/check/tools/list-rulesets.js";
+import { createCheckListTaskBranchesHandler } from "../products/check/tools/list-task-branches.js";
 import { createCheckListTaskIssuesHandler } from "../products/check/tools/list-task-issues.js";
+import { createCheckListTaskJobsHandler } from "../products/check/tools/list-task-jobs.js";
+import { createCheckListTaskRulesetsV2Handler } from "../products/check/tools/list-task-rulesets-v2.js";
+import { createCheckListTaskRulesetsV3Handler } from "../products/check/tools/list-task-rulesets-v3.js";
 import { createCheckListTasksHandler } from "../products/check/tools/list-tasks.js";
 import { createCheckRunTaskHandler } from "../products/check/tools/run-task.js";
 import { createCheckStopTaskHandler } from "../products/check/tools/stop-task.js";
@@ -51,6 +69,60 @@ const checkToolDefinitions = {
     inputSchema: checkGetTaskInput,
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetTaskHandler>[0] }) => clients.checkClient,
     createProductHandler: createCheckGetTaskHandler
+  }),
+  "check_get_task_resource_pool": defineProductTool({
+    description: "Get CodeArts Check task resource pool",
+    inputSchema: checkGetTaskResourcePoolInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetTaskResourcePoolHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckGetTaskResourcePoolHandler
+  }),
+  "check_list_task_jobs": defineProductTool({
+    description: "List CodeArts Check task jobs",
+    inputSchema: checkListTaskJobsInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListTaskJobsHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckListTaskJobsHandler
+  }),
+  "check_get_task_progress": defineProductTool({
+    description: "Get CodeArts Check task progress",
+    inputSchema: checkGetTaskProgressInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetTaskProgressHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckGetTaskProgressHandler
+  }),
+  "check_list_task_rulesets_v2": defineProductTool({
+    description: "List CodeArts Check v2 task rulesets",
+    inputSchema: checkListTaskRulesetsV2Input,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListTaskRulesetsV2Handler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckListTaskRulesetsV2Handler
+  }),
+  "check_list_task_rulesets_v3": defineProductTool({
+    description: "List CodeArts Check v3 task rulesets",
+    inputSchema: checkListTaskRulesetsV3Input,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListTaskRulesetsV3Handler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckListTaskRulesetsV3Handler
+  }),
+  "check_get_task_ruleset_check_parameters_v2": defineProductTool({
+    description: "Get CodeArts Check v2 task ruleset check parameters",
+    inputSchema: checkGetTaskRulesetCheckParametersV2Input,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetTaskRulesetCheckParametersV2Handler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckGetTaskRulesetCheckParametersV2Handler
+  }),
+  "check_get_task_ruleset_check_parameters_v3": defineProductTool({
+    description: "Get CodeArts Check v3 task ruleset check parameters",
+    inputSchema: checkGetTaskRulesetCheckParametersV3Input,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetTaskRulesetCheckParametersV3Handler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckGetTaskRulesetCheckParametersV3Handler
+  }),
+  "check_get_task_settings": defineProductTool({
+    description: "Get CodeArts Check task settings",
+    inputSchema: checkGetTaskSettingsInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetTaskSettingsHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckGetTaskSettingsHandler
+  }),
+  "check_list_task_branches": defineProductTool({
+    description: "List CodeArts Check task branches",
+    inputSchema: checkListTaskBranchesInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListTaskBranchesHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckListTaskBranchesHandler
   }),
   "check_list_rulesets": defineProductTool({
     description: "List CodeArts Check rulesets",

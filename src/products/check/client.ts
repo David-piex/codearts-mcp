@@ -61,6 +61,50 @@ export type CheckClient = {
     status?: string;
     last_check_time?: string;
   }>;
+  getTaskResourcePool: (input: { task_id: string }) => Promise<{
+    task_id: string;
+    raw: Record<string, unknown>;
+  }>;
+  listTaskJobs: (input: { task_id: string }) => Promise<{
+    jobs: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getTaskProgress: (input: { task_id: string }) => Promise<{
+    task_id: string;
+    raw: Record<string, unknown>;
+  }>;
+  listTaskRulesetsV2: (input: { project_id: string; task_id: string }) => Promise<{
+    rulesets: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listTaskRulesetsV3: (input: { project_id: string; task_id: string }) => Promise<{
+    rulesets: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getTaskRulesetCheckParametersV2: (input: {
+    project_id: string;
+    task_id: string;
+    ruleset_id: string;
+  }) => Promise<{
+    parameters: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getTaskRulesetCheckParametersV3: (input: {
+    project_id: string;
+    task_id: string;
+    ruleset_id: string;
+  }) => Promise<{
+    parameters: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getTaskSettings: (input: { project_id: string; task_id: string }) => Promise<{
+    task_id: string;
+    raw: Record<string, unknown>;
+  }>;
+  listTaskBranches: (input: { project_id: string; task_id: string }) => Promise<{
+    branches: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
   listTaskIssues: (input: {
     task_id: string;
     page: number;
@@ -105,6 +149,39 @@ export type CheckClient = {
     total?: number;
   }>;
 };
+
+function readEnvelope(input: unknown) {
+  return input && typeof input === "object" && !Array.isArray(input)
+    ? (input as Record<string, unknown>)
+    : undefined;
+}
+
+function readResultPayload(input: unknown) {
+  const envelope = readEnvelope(input) ?? {};
+  return readEnvelope(envelope.result) ?? envelope;
+}
+
+function readArray<T>(input: unknown): T[] {
+  return Array.isArray(input) ? (input as T[]) : [];
+}
+
+function readOptionalNumber(input: unknown) {
+  return typeof input === "number" ? input : undefined;
+}
+
+function readTotal(payload: Record<string, unknown>, response: unknown, fallback?: number) {
+  const envelope = readEnvelope(response) ?? {};
+
+  return (
+    readOptionalNumber(payload.total) ??
+    readOptionalNumber(payload.total_count) ??
+    readOptionalNumber(payload.totalSize) ??
+    readOptionalNumber(envelope.total) ??
+    readOptionalNumber(envelope.total_count) ??
+    readOptionalNumber(envelope.totalSize) ??
+    fallback
+  );
+}
 
 export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClient {
   return {
@@ -319,6 +396,122 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
               : String(summary.task_status)
             : String(response.review_result ?? response.status),
         last_check_time: response.last_check_time ?? info?.lastCheckTime
+      };
+    },
+    async getTaskResourcePool(input) {
+      const response = await _http.get(
+        `/v1/tasks/${encodeURIComponent(input.task_id)}/resource-pool`
+      );
+      const payload = readResultPayload(response);
+      const resourcePool = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        task_id: input.task_id,
+        raw: resourcePool
+      };
+    },
+    async listTaskJobs(input) {
+      const response = await _http.get(`/v4/tasks/${encodeURIComponent(input.task_id)}/jobs`);
+      const payload = readResultPayload(response);
+      const jobs = readArray<Record<string, unknown>>(
+        payload.jobs ?? payload.value ?? payload.items ?? payload.list ?? (Array.isArray(response) ? response : [])
+      );
+
+      return {
+        jobs,
+        total: readTotal(payload, response, jobs.length)
+      };
+    },
+    async getTaskProgress(input) {
+      const response = await _http.get(`/v2/tasks/${encodeURIComponent(input.task_id)}/progress`);
+      const payload = readResultPayload(response);
+      const progress = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        task_id: input.task_id,
+        raw: progress
+      };
+    },
+    async listTaskRulesetsV2(input) {
+      const response = await _http.get(
+        `/v2/${encodeURIComponent(input.project_id)}/tasks/${encodeURIComponent(input.task_id)}/rulesets`
+      );
+      const payload = readResultPayload(response);
+      const rulesets = readArray<Record<string, unknown>>(
+        payload.rulesets ?? payload.value ?? payload.items ?? payload.list ?? (Array.isArray(response) ? response : [])
+      );
+
+      return {
+        rulesets,
+        total: readTotal(payload, response, rulesets.length)
+      };
+    },
+    async listTaskRulesetsV3(input) {
+      const response = await _http.get(
+        `/v3/${encodeURIComponent(input.project_id)}/tasks/${encodeURIComponent(input.task_id)}/rulesets`
+      );
+      const payload = readResultPayload(response);
+      const rulesets = readArray<Record<string, unknown>>(
+        payload.rulesets ?? payload.value ?? payload.items ?? payload.list ?? (Array.isArray(response) ? response : [])
+      );
+
+      return {
+        rulesets,
+        total: readTotal(payload, response, rulesets.length)
+      };
+    },
+    async getTaskRulesetCheckParametersV2(input) {
+      const response = await _http.get(
+        `/v2/${encodeURIComponent(input.project_id)}/tasks/${encodeURIComponent(input.task_id)}/ruleset/${encodeURIComponent(input.ruleset_id)}/check-parameters`
+      );
+      const payload = readResultPayload(response);
+      const parameters = readArray<Record<string, unknown>>(
+        payload.parameters ?? payload.value ?? payload.items ?? payload.list ?? (Array.isArray(response) ? response : [])
+      );
+
+      return {
+        parameters,
+        total: readTotal(payload, response, parameters.length)
+      };
+    },
+    async getTaskRulesetCheckParametersV3(input) {
+      const response = await _http.get(
+        `/v3/${encodeURIComponent(input.project_id)}/tasks/${encodeURIComponent(input.task_id)}/ruleset/${encodeURIComponent(input.ruleset_id)}/check-parameters`
+      );
+      const payload = readResultPayload(response);
+      const parameters = readArray<Record<string, unknown>>(
+        payload.parameters ?? payload.value ?? payload.items ?? payload.list ?? (Array.isArray(response) ? response : [])
+      );
+
+      return {
+        parameters,
+        total: readTotal(payload, response, parameters.length)
+      };
+    },
+    async getTaskSettings(input) {
+      const response = await _http.get(
+        `/v2/${encodeURIComponent(input.project_id)}/tasks/${encodeURIComponent(input.task_id)}/settings`
+      );
+      const payload = readResultPayload(response);
+      const settings = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        task_id: input.task_id,
+        raw: settings
+      };
+    },
+    async listTaskBranches(input) {
+      const response = await _http.get(
+        `/v3/${encodeURIComponent(input.project_id)}/tasks/${encodeURIComponent(input.task_id)}/branches`
+      );
+      const payload = readResultPayload(response);
+      const branches = readArray<Record<string, unknown>>(
+        payload.branches ?? payload.value ?? payload.items ?? payload.list ?? (Array.isArray(response) ? response : [])
+      );
+
+      return {
+        branches,
+        total: readTotal(payload, response, branches.length)
       };
     },
     async listTaskIssues(input) {

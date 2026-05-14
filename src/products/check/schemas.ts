@@ -9,6 +9,50 @@ export const checkGetTaskInput = z.object({
   task_id: idSchema
 });
 
+export const checkGetTaskResourcePoolInput = z.object({
+  task_id: idSchema
+});
+
+export const checkListTaskJobsInput = z.object({
+  task_id: idSchema
+});
+
+export const checkGetTaskProgressInput = z.object({
+  task_id: idSchema
+});
+
+export const checkListTaskRulesetsV2Input = z.object({
+  project_id: idSchema,
+  task_id: idSchema
+});
+
+export const checkListTaskRulesetsV3Input = z.object({
+  project_id: idSchema,
+  task_id: idSchema
+});
+
+export const checkGetTaskRulesetCheckParametersV2Input = z.object({
+  project_id: idSchema,
+  task_id: idSchema,
+  ruleset_id: idSchema
+});
+
+export const checkGetTaskRulesetCheckParametersV3Input = z.object({
+  project_id: idSchema,
+  task_id: idSchema,
+  ruleset_id: idSchema
+});
+
+export const checkGetTaskSettingsInput = z.object({
+  project_id: idSchema,
+  task_id: idSchema
+});
+
+export const checkListTaskBranchesInput = z.object({
+  project_id: idSchema,
+  task_id: idSchema
+});
+
 export const checkCreateTaskInput = z.object({
   project_id: idSchema,
   task_name: z.string().min(1),

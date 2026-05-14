@@ -390,4 +390,94 @@ describe("createCheckClient", () => {
       duplicated_lines: 2
     });
   });
+
+  it("reads additional task metadata endpoints from the Check API docs", async () => {
+    const requests: string[] = [];
+    const client = createClient({
+      get: async (path: string) => {
+        requests.push(path);
+        if (path.endsWith("/resource-pool")) {
+          return { result: { pool_id: "pool-1", pool_name: "default" } };
+        }
+        if (path.endsWith("/jobs")) {
+          return { result: { jobs: [{ job_id: "job-1", status: "done" }], total: 1 } };
+        }
+        if (path.endsWith("/progress")) {
+          return { result: { progress: 100 } };
+        }
+        if (path.endsWith("/rulesets")) {
+          return { result: { value: [{ id: "ruleset-1", name: "Java" }], total: 1 } };
+        }
+        if (path.endsWith("/check-parameters")) {
+          return { result: { parameters: [{ id: "param-1", name: "threshold" }], total: 1 } };
+        }
+        if (path.endsWith("/settings")) {
+          return { result: { value: { language: "java" } } };
+        }
+
+        return { result: { branches: [{ id: "branch-1", name: "main" }], total: 1 } };
+      }
+    });
+
+    await expect(client.getTaskResourcePool(createTaskRefInput())).resolves.toEqual({
+      task_id: "task-1",
+      raw: { pool_id: "pool-1", pool_name: "default" }
+    });
+    await expect(client.listTaskJobs(createTaskRefInput())).resolves.toEqual({
+      jobs: [{ job_id: "job-1", status: "done" }],
+      total: 1
+    });
+    await expect(client.getTaskProgress(createTaskRefInput())).resolves.toEqual({
+      task_id: "task-1",
+      raw: { progress: 100 }
+    });
+    await expect(client.listTaskRulesetsV2(createProjectTaskInput())).resolves.toEqual({
+      rulesets: [{ id: "ruleset-1", name: "Java" }],
+      total: 1
+    });
+    await expect(client.listTaskRulesetsV3(createProjectTaskInput())).resolves.toEqual({
+      rulesets: [{ id: "ruleset-1", name: "Java" }],
+      total: 1
+    });
+    await expect(
+      client.getTaskRulesetCheckParametersV2({
+        project_id: "project-1",
+        task_id: "task-1",
+        ruleset_id: "ruleset-1"
+      })
+    ).resolves.toEqual({
+      parameters: [{ id: "param-1", name: "threshold" }],
+      total: 1
+    });
+    await expect(
+      client.getTaskRulesetCheckParametersV3({
+        project_id: "project-1",
+        task_id: "task-1",
+        ruleset_id: "ruleset-1"
+      })
+    ).resolves.toEqual({
+      parameters: [{ id: "param-1", name: "threshold" }],
+      total: 1
+    });
+    await expect(client.getTaskSettings(createProjectTaskInput())).resolves.toEqual({
+      task_id: "task-1",
+      raw: { language: "java" }
+    });
+    await expect(client.listTaskBranches(createProjectTaskInput())).resolves.toEqual({
+      branches: [{ id: "branch-1", name: "main" }],
+      total: 1
+    });
+
+    expect(requests).toEqual([
+      "/v1/tasks/task-1/resource-pool",
+      "/v4/tasks/task-1/jobs",
+      "/v2/tasks/task-1/progress",
+      "/v2/project-1/tasks/task-1/rulesets",
+      "/v3/project-1/tasks/task-1/rulesets",
+      "/v2/project-1/tasks/task-1/ruleset/ruleset-1/check-parameters",
+      "/v3/project-1/tasks/task-1/ruleset/ruleset-1/check-parameters",
+      "/v2/project-1/tasks/task-1/settings",
+      "/v3/project-1/tasks/task-1/branches"
+    ]);
+  });
 });

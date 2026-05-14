@@ -45,6 +45,27 @@ describe("registerCheckTool", () => {
     );
   });
 
+  it("registers additional check task metadata read tools", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerCheckTool({
+      toolName: "check_get_task_resource_pool",
+      server: { registerTool },
+      mode: "stdio",
+      stdioClient: {} as never
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "check_get_task_resource_pool",
+      expect.objectContaining({
+        title: "check_get_task_resource_pool",
+        description: "Get CodeArts Check task resource pool"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("returns false for non-check tools", () => {
     const registerTool = vi.fn();
 
