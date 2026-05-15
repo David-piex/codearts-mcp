@@ -67,6 +67,7 @@ const WRITE_ACTIONS = new Set([
   "add",
   "append",
   "approve",
+  "associate",
   "batch",
   "bind",
   "bulk",

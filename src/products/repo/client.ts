@@ -661,6 +661,18 @@ export type RepoClient = {
     work_items: RepoRelatedWorkItem[];
     total?: number;
   }>;
+  associateBranchWorkItems: (input: {
+    project_id: string;
+    repository_id: string;
+    branch: string;
+    work_item_ids: string[];
+  }) => Promise<{
+    status?: string;
+    project_id: string;
+    repository_id: string;
+    branch: string;
+    work_item_ids: string[];
+  }>;
   listRepositoryWorkItems: (input: {
     repository_id: string;
     project_id: string;
@@ -2476,6 +2488,25 @@ export function createRepoClient(
       )) as Parameters<typeof extractWorkItemsResponse>[0];
 
       return extractWorkItemsResponse(rawResponse);
+    },
+    async associateBranchWorkItems(input) {
+      const rawResponse = (await _http.post(
+        "/v2/projects/issues",
+        {
+          project_id: input.project_id,
+          branch: input.branch,
+          repo_id: input.repository_id,
+          related_id: input.work_item_ids
+        }
+      )) as { status?: string };
+
+      return {
+        status: rawResponse?.status,
+        project_id: input.project_id,
+        repository_id: input.repository_id,
+        branch: input.branch,
+        work_item_ids: input.work_item_ids
+      };
     },
     async listRepositoryWorkItems(input) {
       const query = buildOffsetLimitQuery(input);

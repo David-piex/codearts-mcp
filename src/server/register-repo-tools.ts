@@ -2,6 +2,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { officialApiRequestInput } from "../products/official-api.js";
 import { createRepoClient } from "../products/repo/client.js";
 import {
+  repoAssociateBranchWorkItemsInput,
   repoAssociateRemoteMirrorInput,
   repoBatchCreateProtectedBranchesInput,
   repoBatchCreateProtectedTagsInput,
@@ -108,6 +109,7 @@ import {
   repoUpdateRepositoryWebhookInput,
   repoUpdateRemoteMirrorInput
 } from "../products/repo/schemas.js";
+import { createRepoAssociateBranchWorkItemsHandler } from "../products/repo/tools/associate-branch-work-items.js";
 import { createRepoAssociateRemoteMirrorHandler } from "../products/repo/tools/associate-remote-mirror.js";
 import { createRepoCheckGroupDeployKeyHandler } from "../products/repo/tools/check-group-deploy-key.js";
 import { createRepoCheckRepositoryDeployKeyHandler } from "../products/repo/tools/check-repository-deploy-key.js";
@@ -264,6 +266,7 @@ const repoToolDefinitions = {
   "repo_check_repository_deploy_key": defineProductTool({ description: "Check whether a CodeArts Repo repository deploy key already exists upstream", inputSchema: repoCheckRepositoryDeployKeyInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCheckRepositoryDeployKeyHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCheckRepositoryDeployKeyHandler }),
   "repo_check_group_deploy_key": defineProductTool({ description: "Check whether a CodeArts Repo group deploy key already exists upstream", inputSchema: repoCheckGroupDeployKeyInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCheckGroupDeployKeyHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCheckGroupDeployKeyHandler }),
   "repo_remove_repository_deploy_key": defineProductTool({ description: "Remove a CodeArts Repo repository deploy key", inputSchema: repoRemoveRepositoryDeployKeyInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoRemoveRepositoryDeployKeyHandler>[0] }) => clients.repoClient, createProductHandler: createRepoRemoveRepositoryDeployKeyHandler }),
+  "repo_associate_branch_work_items": defineProductTool({ description: "Associate CodeArts Repo branch with work items", inputSchema: repoAssociateBranchWorkItemsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoAssociateBranchWorkItemsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoAssociateBranchWorkItemsHandler }),
   "repo_list_branch_related_work_items": defineProductTool({ description: "List CodeArts Repo branch related work items", inputSchema: repoListBranchRelatedWorkItemsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListBranchRelatedWorkItemsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListBranchRelatedWorkItemsHandler }),
   "repo_list_repository_work_items": defineProductTool({ description: "List CodeArts Repo repository work items", inputSchema: repoListRepositoryWorkItemsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoryWorkItemsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoryWorkItemsHandler }),
   "repo_show_repository_e2e_setting": defineProductTool({ description: "Show CodeArts Repo repository E2E setting", inputSchema: repoShowRepositoryE2eSettingInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowRepositoryE2eSettingHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowRepositoryE2eSettingHandler }),

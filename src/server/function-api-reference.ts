@@ -312,6 +312,7 @@ function describeToolInChinese(toolName: string) {
     repo_list_personal_repository_import_records: "查询当前用户的代码仓导入记录。",
     repo_list_impersonation_tokens: "查询当前用户的个人访问令牌元数据，不返回令牌明文。",
     repo_import_repository: "从 GitHub、GitLab、Gitee、Bitbucket、Coding、Codeup 或通用 Git/SVN HTTPS 地址导入仓库到 CodeArts Repo。",
+    repo_associate_branch_work_items: "将 CodeArts Repo 分支关联到一个或多个工作项，用于让分支和 MR 页面显示关联工作项。",
     repo_associate_remote_mirror: "关联代码仓远程镜像地址。",
     repo_start_remote_mirror_synchronization: "启动代码仓远程镜像同步任务。",
     repo_get_remote_mirror: "获取代码仓远程镜像配置和同步状态。",

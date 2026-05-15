@@ -213,6 +213,7 @@ export const expectedToolNames = [
   "pipeline_update_tag",
   "pipeline_update_variable_group",
   "repo_add_tenant_trusted_ip_address",
+  "repo_associate_branch_work_items",
   "repo_associate_remote_mirror",
   "repo_batch_create_protected_branches",
   "repo_batch_create_protected_tags",

@@ -30,10 +30,10 @@
 | 代码检查 | 18 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
 | 部署 | 60 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
 | 流水线 | 78 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
-| 代码仓库 | 106 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
+| 代码仓库 | 107 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 201 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 179 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **701** | |
+| **总计** | **702** | |
 
 ## 字段对应
 
@@ -259,6 +259,7 @@
 | `pipeline_update_tag` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_update_tag) |
 | `pipeline_update_variable_group` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_update_variable_group) |
 | `repo_add_tenant_trusted_ip_address` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_add_tenant_trusted_ip_address) |
+| `repo_associate_branch_work_items` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_associate_branch_work_items) |
 | `repo_associate_remote_mirror` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_associate_remote_mirror) |
 | `repo_batch_create_protected_branches` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_batch_create_protected_branches) |
 | `repo_batch_create_protected_tags` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_batch_create_protected_tags) |

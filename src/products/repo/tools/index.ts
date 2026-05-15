@@ -1,4 +1,5 @@
 export const repoToolNames = [
+  "repo_associate_branch_work_items",
   "repo_associate_remote_mirror",
   "repo_batch_create_protected_branches",
   "repo_batch_create_protected_tags",

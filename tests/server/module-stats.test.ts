@@ -25,6 +25,7 @@ describe("classifyToolAccess", () => {
     expect(classifyToolAccess("req_change_release_plan_status")).toBe("write");
     expect(classifyToolAccess("req_leave_project")).toBe("write");
     expect(classifyToolAccess("req_upload_work_item_image")).toBe("write");
+    expect(classifyToolAccess("repo_associate_branch_work_items")).toBe("write");
     expect(classifyToolAccess("repo_bulk_delete_protected_branches")).toBe("write");
   });
 });
@@ -33,7 +34,7 @@ describe("collectModuleStats", () => {
   it("returns the current per-module tool totals and read/write split", () => {
     expect(collectModuleStats()).toEqual([
       { module: "Req", total: 201, read: 117, write: 84 },
-      { module: "Repo", total: 106, read: 65, write: 41 },
+      { module: "Repo", total: 107, read: 64, write: 43 },
       { module: "Pipeline", total: 78, read: 42, write: 36 },
       { module: "Check", total: 18, read: 14, write: 4 },
       { module: "TestPlan", total: 179, read: 171, write: 8 },
@@ -47,8 +48,8 @@ describe("collectModuleStats", () => {
     expect(collectProductToolStats()).toEqual({
       modules: 8,
       total: collectProductToolManifest().length,
-      read: 498,
-      write: 201
+      read: 497,
+      write: 203
     });
   });
 
@@ -68,7 +69,7 @@ describe("collectModuleStats", () => {
     expect(JSON.parse(renderModuleStatsReportJson())).toEqual({
       modules: [
         { module: "Req", total: 201, read: 117, write: 84 },
-        { module: "Repo", total: 106, read: 65, write: 41 },
+        { module: "Repo", total: 107, read: 64, write: 43 },
         { module: "Pipeline", total: 78, read: 42, write: 36 },
         { module: "Check", total: 18, read: 14, write: 4 },
         { module: "TestPlan", total: 179, read: 171, write: 8 },
@@ -79,8 +80,8 @@ describe("collectModuleStats", () => {
       totals: {
         modules: 8,
         total: collectProductToolManifest().length,
-        read: 498,
-        write: 201,
+        read: 497,
+        write: 203,
         httpTotalWithAuth: collectHttpToolTotal()
       }
     });

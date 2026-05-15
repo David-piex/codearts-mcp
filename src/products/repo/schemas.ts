@@ -403,6 +403,14 @@ export const repoListBranchRelatedWorkItemsInput = z.object({
   branch_name: z.string().min(1).max(200)
 });
 
+export const repoAssociateBranchWorkItemsInput = z.object({
+  project_id: idSchema,
+  repository_id: idSchema,
+  branch: z.string().min(1).max(200),
+  work_item_ids: z.array(idSchema).min(1),
+  dry_run: z.boolean().default(true)
+});
+
 export const repoListRepositoryWorkItemsInput = pagingSchema.extend({
   repository_id: idSchema,
   project_id: idSchema,

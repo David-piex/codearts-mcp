@@ -906,10 +906,16 @@ describe("createRepoClient", () => {
 
   it("uses work item endpoints", async () => {
     const calls: string[] = [];
+    const bodies: unknown[] = [];
     const client = createRepoClient({
       get: async (path: string) => {
         calls.push(path);
         return [{ related_id: "WI-1", related_url: "https://example.com/WI-1" }];
+      },
+      post: async (path: string, body: unknown) => {
+        calls.push(path);
+        bodies.push(body);
+        return { status: "success" };
       }
     } as never);
 
@@ -925,13 +931,27 @@ describe("createRepoClient", () => {
       page: 2,
       page_size: 5
     });
+    const association = await client.associateBranchWorkItems({
+      repository_id: "200",
+      project_id: "project-uuid-1",
+      branch: "feature/demo",
+      work_item_ids: ["WI-1", "WI-2"]
+    });
 
     expect(branchItems.work_items[0]?.related_id).toBe("WI-1");
     expect(repoItems.work_items[0]?.related_url).toBe("https://example.com/WI-1");
+    expect(association.status).toBe("success");
     expect(calls).toEqual([
       "/v4/repositories/200/branch/work-items?branch_name=feature%2Fdemo",
-      "/v4/repositories/200/work-items?offset=5&limit=5&project_id=project-uuid-1&is_ipd=false&subject=demo"
+      "/v4/repositories/200/work-items?offset=5&limit=5&project_id=project-uuid-1&is_ipd=false&subject=demo",
+      "/v2/projects/issues"
     ]);
+    expect(bodies).toEqual([{
+      project_id: "project-uuid-1",
+      branch: "feature/demo",
+      repo_id: "200",
+      related_id: ["WI-1", "WI-2"]
+    }]);
   });
 
   it("uses E2E setting endpoints", async () => {
