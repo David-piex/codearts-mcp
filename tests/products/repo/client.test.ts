@@ -157,6 +157,62 @@ describe("createRepoClient", () => {
     ]);
   });
 
+  it("uses official repository content statistics paths", async () => {
+    const calls: string[] = [];
+    const client = createRepoClient({
+      get: async (path: string) => {
+        calls.push(path);
+        if (path.includes("/repository/submodules?")) {
+          return [{ repo_id: 100, path: "libs/core" }];
+        }
+        if (path.includes("/repository/commit-statistics?")) {
+          return { commits: [{ author_name: "dev" }], total: 1 };
+        }
+        if (path.endsWith("/repository/languages")) {
+          return { languages: [{ label: "TypeScript", value: 100 }], status: "success" };
+        }
+        if (path.includes("/contributors?")) {
+          return [{ name: "dev", commits: 10 }];
+        }
+        if (path.includes("/forks?")) {
+          return [{ id: 101, name: "forked" }];
+        }
+
+        throw new Error(`unexpected path: ${path}`);
+      }
+    } as never);
+
+    await client.listSubmodules({ repository_id: "100", sha: "master", page: 2, page_size: 10 });
+    await client.showCommitStatistics({ repository_id: "100", branch_name: "feature/main" });
+    await client.listRepositoryLanguages({ repository_id: "100" });
+    await client.listRepositoryContributors({
+      repository_id: "100",
+      page: 1,
+      page_size: 20,
+      order_by: "commits",
+      sort: "desc",
+      ref_name: "master",
+      skip_merge: true,
+      author: "dev"
+    });
+    await client.listRepositoryForks({
+      repository_id: "100",
+      page: 1,
+      page_size: 20,
+      order_by: "updated_at",
+      sort: "asc",
+      view: "basic"
+    });
+
+    expect(calls).toEqual([
+      "/v4/repositories/100/repository/submodules?offset=10&limit=10&sha=master",
+      "/v4/repositories/100/repository/commit-statistics?branch_name=feature%2Fmain",
+      "/v4/repositories/100/repository/languages",
+      "/v4/repositories/100/contributors?offset=0&limit=20&order_by=commits&sort=desc&ref_name=master&skip_merge=true&author=dev",
+      "/v4/repositories/100/forks?offset=0&limit=20&view=basic&order_by=updated_at&sort=asc"
+    ]);
+  });
+
   it("supports wrapped tag responses from the live provider", async () => {
     const client = createRepoClient({
       get: async () => ({

@@ -3,6 +3,9 @@ import {
   repoCreateMergeRequestInput,
   repoImportRepositoryInput,
   repoListCommitsInput,
+  repoListRepositoryContributorsInput,
+  repoListRepositoryForksInput,
+  repoListSubmodulesInput,
   repoListPersonalRepositoryImportRecordsInput,
   repoMergeMergeRequestInput,
   repoShowRepoLastStatisticsInput,
@@ -41,6 +44,51 @@ describe("repo schemas", () => {
     ).toEqual({
       repository_id: "100",
       branch_name: "feature/main"
+    });
+  });
+
+  it("accepts repository content read query fields", () => {
+    expect(
+      repoListSubmodulesInput.parse({
+        repository_id: "100",
+        sha: "master",
+        page_size: 100
+      })
+    ).toMatchObject({
+      repository_id: "100",
+      sha: "master",
+      page: 1,
+      page_size: 100
+    });
+
+    expect(
+      repoListRepositoryContributorsInput.parse({
+        repository_id: "100",
+        order_by: "commits",
+        sort: "desc",
+        ref_name: "master",
+        skip_merge: true,
+        author: "dev"
+      })
+    ).toMatchObject({
+      order_by: "commits",
+      sort: "desc",
+      ref_name: "master",
+      skip_merge: true,
+      author: "dev"
+    });
+
+    expect(
+      repoListRepositoryForksInput.parse({
+        repository_id: "100",
+        order_by: "updated_at",
+        sort: "asc",
+        view: "basic"
+      })
+    ).toMatchObject({
+      order_by: "updated_at",
+      sort: "asc",
+      view: "basic"
     });
   });
 

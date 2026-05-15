@@ -189,6 +189,79 @@ export type RepoLastStatistics = {
   all_branch_commits_count?: number;
 };
 
+export type RepoSubmodule = {
+  repo_id?: number | string;
+  branch?: string;
+  path?: string;
+  git_url?: string;
+  submodule_branch?: string;
+  namespace_uuid?: string;
+  submodule_repo_id?: number | string;
+  repo_name?: string;
+  sub_commitId?: string;
+  deployKey_status?: number;
+  status?: number;
+};
+
+export type RepoCommitStatistics = {
+  commits?: Array<{
+    author_name?: string;
+    date?: string;
+    nick_name?: string;
+    tenant_name?: string;
+    user_name?: string;
+    is_merge?: boolean;
+  }>;
+  statistics?: Array<{
+    id?: number | string;
+    project_id?: number | string;
+    branch?: string;
+    user_name?: string;
+    add_lines?: number;
+    delete_lines?: number;
+    commit_count?: number;
+    created_at?: string;
+    updated_at?: string;
+  }>;
+  total?: number;
+};
+
+export type RepoRepositoryLanguages = {
+  languages?: Array<{
+    color?: string;
+    label?: string;
+    value?: number;
+  }>;
+  status?: string;
+};
+
+export type RepoContributor = {
+  name?: string;
+  email?: string;
+  commits?: number;
+  nick_name?: string;
+  tenant_name?: string;
+  user_name?: string;
+};
+
+export type RepoForkRepository = {
+  id?: number | string;
+  name?: string;
+  archived?: boolean;
+  product_id?: string;
+  product_name?: string;
+  path_with_namespace?: string;
+  namespace?: string;
+  path?: string;
+  develop_mode?: string;
+  visibility?: string;
+  security?: string;
+  star_count?: number;
+  forks_count?: number;
+  created_at?: string;
+  updated_at?: string;
+};
+
 export type RepoE2eSetting = {
   e2e_policies?: {
     auto_extract?: boolean;
@@ -1231,6 +1304,41 @@ export type RepoClient = {
   showRepositoryStatisticsSummary: (input: { repository_id: string }) => Promise<RepoRepositoryStatisticsSummary>;
   showRepoStatisticsSummary: (input: { repository_id: string }) => Promise<RepoStatsSummary>;
   showRepoLastStatistics: (input: { repository_id: string; branch_name: string }) => Promise<RepoLastStatistics>;
+  listSubmodules: (input: {
+    repository_id: string;
+    sha: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    submodules: RepoSubmodule[];
+    total?: number;
+  }>;
+  showCommitStatistics: (input: { repository_id: string; branch_name: string }) => Promise<RepoCommitStatistics>;
+  listRepositoryLanguages: (input: { repository_id: string }) => Promise<RepoRepositoryLanguages>;
+  listRepositoryContributors: (input: {
+    repository_id: string;
+    page: number;
+    page_size: number;
+    order_by?: "name" | "email" | "commits";
+    sort?: "asc" | "desc";
+    ref_name?: string;
+    skip_merge?: boolean;
+    author?: string;
+  }) => Promise<{
+    contributors: RepoContributor[];
+    total?: number;
+  }>;
+  listRepositoryForks: (input: {
+    repository_id: string;
+    page: number;
+    page_size: number;
+    order_by?: "created_at" | "updated_at";
+    sort?: "asc" | "desc";
+    view?: "basic" | "least";
+  }) => Promise<{
+    repositories: RepoForkRepository[];
+    total?: number;
+  }>;
   getCommit: (input: { repository_id: string; commit_sha: string }) => Promise<{
     id: string;
     short_id?: string;
@@ -1561,6 +1669,23 @@ function buildOffsetLimitQuery(input: {
   });
   appendOptionalQuery(query, input, ["search", "user_actions", "view"]);
   return query;
+}
+
+function extractArrayWithOptionalTotal<T>(
+  response: T[] | { result?: T[]; items?: T[]; records?: T[]; total?: number } | string
+) {
+  const unwrapped = unwrapRepoPayload(response);
+  if (typeof unwrapped === "string") {
+    return { items: [] as T[], total: undefined };
+  }
+
+  const items = Array.isArray(unwrapped)
+    ? unwrapped
+    : (unwrapped.result ?? unwrapped.items ?? unwrapped.records ?? []);
+  return {
+    items,
+    total: Array.isArray(unwrapped) ? undefined : unwrapped.total
+  };
 }
 
 function buildTenantOffsetLimitQuery(input: { offset: number; limit: number }) {
@@ -3549,6 +3674,59 @@ export function createRepoClient(
       return (await _http.get(
         `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/stats/last-statistics?${query.toString()}`
       )) as RepoLastStatistics;
+    },
+    async listSubmodules(input) {
+      const query = buildOffsetLimitQuery(input);
+      query.set("sha", input.sha);
+      const response = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/submodules?${query.toString()}`
+      );
+      const extracted = extractArrayWithOptionalTotal<RepoSubmodule>(response as RepoSubmodule[]);
+
+      return {
+        submodules: extracted.items,
+        total: extracted.total
+      };
+    },
+    async showCommitStatistics(input) {
+      const query = new URLSearchParams({
+        branch_name: input.branch_name
+      });
+
+      return (await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/commit-statistics?${query.toString()}`
+      )) as RepoCommitStatistics;
+    },
+    async listRepositoryLanguages(input) {
+      return (await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/languages`
+      )) as RepoRepositoryLanguages;
+    },
+    async listRepositoryContributors(input) {
+      const query = buildOffsetLimitQuery(input);
+      appendOptionalQuery(query, input, ["order_by", "sort", "ref_name", "skip_merge", "author"]);
+      const response = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/contributors?${query.toString()}`
+      );
+      const extracted = extractArrayWithOptionalTotal<RepoContributor>(response as RepoContributor[]);
+
+      return {
+        contributors: extracted.items,
+        total: extracted.total
+      };
+    },
+    async listRepositoryForks(input) {
+      const query = buildOffsetLimitQuery(input);
+      appendOptionalQuery(query, input, ["order_by", "sort", "view"]);
+      const response = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/forks?${query.toString()}`
+      );
+      const extracted = extractArrayWithOptionalTotal<RepoForkRepository>(response as RepoForkRepository[]);
+
+      return {
+        repositories: extracted.items,
+        total: extracted.total
+      };
     },
     async getMergeRequest(input) {
       const response = (await _http.get(

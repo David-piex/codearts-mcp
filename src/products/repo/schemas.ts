@@ -807,6 +807,39 @@ export const repoShowRepoLastStatisticsInput = z.object({
   branch_name: z.string().min(1).max(2000)
 });
 
+export const repoListSubmodulesInput = pagingSchema.extend({
+  repository_id: idSchema,
+  sha: z.string().min(1),
+  page_size: z.number().int().positive().max(100).default(20)
+});
+
+export const repoShowCommitStatisticsInput = z.object({
+  repository_id: idSchema,
+  branch_name: z.string().min(1).max(2000)
+});
+
+export const repoListRepositoryLanguagesInput = z.object({
+  repository_id: idSchema
+});
+
+export const repoListRepositoryContributorsInput = pagingSchema.extend({
+  repository_id: idSchema,
+  page_size: z.number().int().positive().max(100).default(20),
+  order_by: z.enum(["name", "email", "commits"]).optional(),
+  sort: z.enum(["asc", "desc"]).optional(),
+  ref_name: z.string().min(1).max(200).optional(),
+  skip_merge: z.boolean().optional(),
+  author: z.string().min(1).optional()
+});
+
+export const repoListRepositoryForksInput = pagingSchema.extend({
+  repository_id: idSchema,
+  page_size: z.number().int().positive().max(100).default(20),
+  order_by: z.enum(["created_at", "updated_at"]).optional(),
+  sort: z.enum(["asc", "desc"]).optional(),
+  view: z.enum(["basic", "least"]).optional()
+});
+
 export const repoListMergeRequestsInput = pagingSchema.extend({
   repository_id: idSchema,
   state: z.enum(["all", "opened", "closed", "merged"]).optional()

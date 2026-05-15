@@ -30,10 +30,10 @@
 | 代码检查 | 18 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
 | 部署 | 60 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
 | 流水线 | 78 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
-| 代码仓库 | 112 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
+| 代码仓库 | 117 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 201 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 179 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **707** | |
+| **总计** | **712** | |
 
 ## 字段对应
 
@@ -321,14 +321,18 @@
 | `repo_list_protected_branches` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_protected_branches) |
 | `repo_list_protected_tags` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_protected_tags) |
 | `repo_list_repositories` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repositories) |
+| `repo_list_repository_contributors` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_contributors) |
 | `repo_list_repository_deploy_keys` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_deploy_keys) |
 | `repo_list_repository_file_push_permissions` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_file_push_permissions) |
+| `repo_list_repository_forks` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_forks) |
 | `repo_list_repository_labels` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_labels) |
+| `repo_list_repository_languages` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_languages) |
 | `repo_list_repository_protected_refs_user_groups` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_protected_refs_user_groups) |
 | `repo_list_repository_resource_permissions` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_resource_permissions) |
 | `repo_list_repository_webhook_logs` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_webhook_logs) |
 | `repo_list_repository_webhooks` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_webhooks) |
 | `repo_list_repository_work_items` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_work_items) |
+| `repo_list_submodules` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_submodules) |
 | `repo_list_tags` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_tags) |
 | `repo_list_tenant_cmks` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_tenant_cmks) |
 | `repo_list_tenant_encrypted_repositories` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_tenant_encrypted_repositories) |
@@ -338,6 +342,7 @@
 | `repo_remove_repository_deploy_key` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_remove_repository_deploy_key) |
 | `repo_request_official_api` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_request_official_api) |
 | `repo_review_merge_request` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_review_merge_request) |
+| `repo_show_commit_statistics` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_commit_statistics) |
 | `repo_show_group_e2e_setting` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_group_e2e_setting) |
 | `repo_show_last_push_event_in_repository` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_last_push_event_in_repository) |
 | `repo_show_project_e2e_setting` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_project_e2e_setting) |

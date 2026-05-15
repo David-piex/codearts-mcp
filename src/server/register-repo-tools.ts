@@ -40,6 +40,8 @@ import {
   repoDeleteProtectedTagInput,
   repoDeleteRepositoryWebhookInput,
   repoDeleteTagInput,
+  repoListSubmodulesInput,
+  repoShowCommitStatisticsInput,
   repoListEventsInput,
   repoListBranchRelatedWorkItemsInput,
   repoListGroupDeployKeysInput,
@@ -64,7 +66,10 @@ import {
   repoListProjectDeployKeysInput,
   repoListProtectedBranchesInput,
   repoListRepositoryProtectedRefsUserGroupsInput,
+  repoListRepositoryContributorsInput,
   repoListRepositoryFilePushPermissionsInput,
+  repoListRepositoryForksInput,
+  repoListRepositoryLanguagesInput,
   repoListRepositoryLabelsInput,
   repoListRepositoryResourcePermissionsInput,
   repoListRepositoryWorkItemsInput,
@@ -157,6 +162,9 @@ import { createRepoListProjectDeployKeysHandler } from "../products/repo/tools/l
 import { createRepoListProjectSubgroupsAndRepositoriesHandler } from "../products/repo/tools/list-project-subgroups-and-repositories.js";
 import { createRepoListProtectedBranchesHandler } from "../products/repo/tools/list-protected-branches.js";
 import { createRepoListRepositoriesHandler } from "../products/repo/tools/list-repositories.js";
+import { createRepoListRepositoryContributorsHandler } from "../products/repo/tools/list-repository-contributors.js";
+import { createRepoListRepositoryForksHandler } from "../products/repo/tools/list-repository-forks.js";
+import { createRepoListRepositoryLanguagesHandler } from "../products/repo/tools/list-repository-languages.js";
 import { createRepoListRepositoryProtectedRefsUserGroupsHandler } from "../products/repo/tools/list-repository-protected-refs-user-groups.js";
 import { createRepoListRepositoryDeployKeysHandler } from "../products/repo/tools/list-repository-deploy-keys.js";
 import { createRepoListRepositoryWebhookLogsHandler } from "../products/repo/tools/list-repository-webhook-logs.js";
@@ -165,7 +173,9 @@ import { createRepoListRepositoryLabelsHandler } from "../products/repo/tools/li
 import { createRepoListRepositoryResourcePermissionsHandler } from "../products/repo/tools/list-repository-resource-permissions.js";
 import { createRepoListRepositoryWorkItemsHandler } from "../products/repo/tools/list-repository-work-items.js";
 import { createRepoListTagsHandler } from "../products/repo/tools/list-tags.js";
+import { createRepoListSubmodulesHandler } from "../products/repo/tools/list-submodules.js";
 import { createRepoMergeMergeRequestHandler } from "../products/repo/tools/merge-merge-request.js";
+import { createRepoShowCommitStatisticsHandler } from "../products/repo/tools/show-commit-statistics.js";
 import { createRepoShowLastPushEventInRepositoryHandler } from "../products/repo/tools/show-last-push-event-in-repository.js";
 import { createRepoShowRepoLastStatisticsHandler } from "../products/repo/tools/show-repo-last-statistics.js";
 import { createRepoShowRepoStatisticsSummaryHandler } from "../products/repo/tools/show-repo-statistics-summary.js";
@@ -335,6 +345,11 @@ const repoToolDefinitions = {
   "repo_delete_tag": defineProductTool({ description: "Delete CodeArts Repo tag", inputSchema: repoDeleteTagInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoDeleteTagHandler>[0] }) => clients.repoClient, createProductHandler: createRepoDeleteTagHandler }),
   "repo_list_tags": defineProductTool({ description: "List CodeArts Repo tags", inputSchema: repoListTagsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListTagsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListTagsHandler }),
   "repo_list_events": defineProductTool({ description: "List CodeArts Repo events", inputSchema: repoListEventsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListEventsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListEventsHandler }),
+  "repo_list_submodules": defineProductTool({ description: "List CodeArts Repo repository submodules", inputSchema: repoListSubmodulesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListSubmodulesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListSubmodulesHandler }),
+  "repo_show_commit_statistics": defineProductTool({ description: "Show CodeArts Repo repository branch commit statistics", inputSchema: repoShowCommitStatisticsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowCommitStatisticsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowCommitStatisticsHandler }),
+  "repo_list_repository_languages": defineProductTool({ description: "List CodeArts Repo repository language statistics", inputSchema: repoListRepositoryLanguagesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoryLanguagesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoryLanguagesHandler }),
+  "repo_list_repository_contributors": defineProductTool({ description: "List CodeArts Repo repository contributors", inputSchema: repoListRepositoryContributorsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoryContributorsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoryContributorsHandler }),
+  "repo_list_repository_forks": defineProductTool({ description: "List CodeArts Repo repository forks", inputSchema: repoListRepositoryForksInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoryForksHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoryForksHandler }),
   "repo_show_repository_statistics_status": defineProductTool({ description: "Show CodeArts Repo repository statistics task status", inputSchema: repoShowRepositoryStatisticsStatusInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowRepositoryStatisticsStatusHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowRepositoryStatisticsStatusHandler }),
   "repo_show_last_push_event_in_repository": defineProductTool({ description: "Show CodeArts Repo repository last push event", inputSchema: repoShowLastPushEventInRepositoryInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowLastPushEventInRepositoryHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowLastPushEventInRepositoryHandler }),
   "repo_show_repository_statistics_summary": defineProductTool({ description: "Show CodeArts Repo repository statistics summary", inputSchema: repoShowRepositoryStatisticsSummaryInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowRepositoryStatisticsSummaryHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowRepositoryStatisticsSummaryHandler }),
