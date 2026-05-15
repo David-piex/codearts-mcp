@@ -30,10 +30,10 @@
 | 代码检查 | 18 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
 | 部署 | 60 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
 | 流水线 | 78 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
-| 代码仓库 | 107 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
+| 代码仓库 | 112 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 201 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 179 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **702** | |
+| **总计** | **707** | |
 
 ## 字段对应
 
@@ -339,6 +339,7 @@
 | `repo_request_official_api` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_request_official_api) |
 | `repo_review_merge_request` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_review_merge_request) |
 | `repo_show_group_e2e_setting` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_group_e2e_setting) |
+| `repo_show_last_push_event_in_repository` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_last_push_event_in_repository) |
 | `repo_show_project_e2e_setting` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_project_e2e_setting) |
 | `repo_show_project_general_policy` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_project_general_policy) |
 | `repo_show_project_member_setting` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_project_member_setting) |
@@ -346,8 +347,12 @@
 | `repo_show_project_tenant_settings` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_project_tenant_settings) |
 | `repo_show_project_watermark` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_project_watermark) |
 | `repo_show_projects_general_policy` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_projects_general_policy) |
+| `repo_show_repo_last_statistics` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_repo_last_statistics) |
+| `repo_show_repo_statistics_summary` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_repo_statistics_summary) |
 | `repo_show_repository_e2e_setting` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_repository_e2e_setting) |
 | `repo_show_repository_permission_inherit_enabled` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_repository_permission_inherit_enabled) |
+| `repo_show_repository_statistics_status` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_repository_statistics_status) |
+| `repo_show_repository_statistics_summary` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_repository_statistics_summary) |
 | `repo_show_resource_permissions` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_resource_permissions) |
 | `repo_show_tenant_develop_mode` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_tenant_develop_mode) |
 | `repo_show_tenant_kms_grant` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_tenant_kms_grant) |

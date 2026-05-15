@@ -117,6 +117,46 @@ describe("createRepoClient", () => {
     expect(result.branches[0]?.name).toBe("master");
   });
 
+  it("uses official repository statistics paths", async () => {
+    const calls: string[] = [];
+    const client = createRepoClient({
+      get: async (path: string) => {
+        calls.push(path);
+        if (path.endsWith("/repository/statistics-status")) {
+          return { can_statistics: true, reason: 0 };
+        }
+        if (path.endsWith("/last-push-event")) {
+          return { ref: "master", repository: { id: 100, name: "demo" } };
+        }
+        if (path.endsWith("/statistics-summary")) {
+          return { branches_count: 2, commits_count: 8 };
+        }
+        if (path.endsWith("/repository/stats/summary")) {
+          return { repo_name: "demo", commit_count: 8 };
+        }
+        if (path.includes("/repository/stats/last-statistics?")) {
+          return { total: 1, statistics: [{ id: 1, branch: "master" }] };
+        }
+
+        throw new Error(`unexpected path: ${path}`);
+      }
+    } as never);
+
+    await client.showRepositoryStatisticsStatus({ repository_id: "100" });
+    await client.showLastPushEventInRepository({ repository_id: "100" });
+    await client.showRepositoryStatisticsSummary({ repository_id: "100" });
+    await client.showRepoStatisticsSummary({ repository_id: "100" });
+    await client.showRepoLastStatistics({ repository_id: "100", branch_name: "feature/main" });
+
+    expect(calls).toEqual([
+      "/v4/repositories/100/repository/statistics-status",
+      "/v4/repositories/100/last-push-event",
+      "/v4/repositories/100/statistics-summary",
+      "/v4/repositories/100/repository/stats/summary",
+      "/v4/repositories/100/repository/stats/last-statistics?branch_name=feature%2Fmain"
+    ]);
+  });
+
   it("supports wrapped tag responses from the live provider", async () => {
     const client = createRepoClient({
       get: async () => ({

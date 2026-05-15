@@ -119,6 +119,76 @@ export type RepoRelatedWorkItem = {
   url?: string;
 };
 
+export type RepoStatisticEvent = {
+  id?: number | string;
+  user_id?: number | string;
+  project_id?: number | string;
+  branch?: string;
+  status?: string;
+  stat_date?: string;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type RepoRepositoryStatisticsStatus = {
+  can_statistics?: boolean;
+  reason?: number;
+  event?: RepoStatisticEvent;
+};
+
+export type RepoLastPushEvent = {
+  ref?: string;
+  created_at?: string;
+  repository?: {
+    id?: number | string;
+    name?: string;
+    path?: string;
+    path_with_namespace?: string;
+    project_name?: string;
+  };
+};
+
+export type RepoRepositoryStatisticsSummary = {
+  branches_count?: number;
+  commits_count?: number;
+  members_count?: number;
+  tags_count?: number;
+  merge_request_count?: number;
+  note_count?: number;
+};
+
+export type RepoStatsSummary = {
+  repo_name?: string;
+  commit_count?: number;
+  repo_size?: string;
+  last_commit_time?: string;
+  code_lines?: number;
+  branch_count?: number;
+};
+
+export type RepoLastStatistics = {
+  event?: RepoStatisticEvent;
+  total?: number;
+  statistics?: Array<{
+    id?: number | string;
+    project_id?: number | string;
+    branch?: string;
+    user_name?: string;
+    add_lines?: number;
+    delete_lines?: number;
+    commit_count?: number;
+    created_at?: string;
+    updated_at?: string;
+  }>;
+  codelines?: Array<{
+    additions?: number;
+    deletions?: number;
+    date?: string;
+  }>;
+  count?: number;
+  all_branch_commits_count?: number;
+};
+
 export type RepoE2eSetting = {
   e2e_policies?: {
     auto_extract?: boolean;
@@ -1156,6 +1226,11 @@ export type RepoClient = {
     project_id?: string;
     project_name?: string;
   }>;
+  showRepositoryStatisticsStatus: (input: { repository_id: string }) => Promise<RepoRepositoryStatisticsStatus>;
+  showLastPushEventInRepository: (input: { repository_id: string }) => Promise<RepoLastPushEvent>;
+  showRepositoryStatisticsSummary: (input: { repository_id: string }) => Promise<RepoRepositoryStatisticsSummary>;
+  showRepoStatisticsSummary: (input: { repository_id: string }) => Promise<RepoStatsSummary>;
+  showRepoLastStatistics: (input: { repository_id: string; branch_name: string }) => Promise<RepoLastStatistics>;
   getCommit: (input: { repository_id: string; commit_sha: string }) => Promise<{
     id: string;
     short_id?: string;
@@ -3445,6 +3520,35 @@ export function createRepoClient(
         project_id: response.project_id,
         project_name: response.project_name
       };
+    },
+    async showRepositoryStatisticsStatus(input) {
+      return (await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/statistics-status`
+      )) as RepoRepositoryStatisticsStatus;
+    },
+    async showLastPushEventInRepository(input) {
+      return (await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/last-push-event`
+      )) as RepoLastPushEvent;
+    },
+    async showRepositoryStatisticsSummary(input) {
+      return (await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/statistics-summary`
+      )) as RepoRepositoryStatisticsSummary;
+    },
+    async showRepoStatisticsSummary(input) {
+      return (await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/stats/summary`
+      )) as RepoStatsSummary;
+    },
+    async showRepoLastStatistics(input) {
+      const query = new URLSearchParams({
+        branch_name: input.branch_name
+      });
+
+      return (await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/stats/last-statistics?${query.toString()}`
+      )) as RepoLastStatistics;
     },
     async getMergeRequest(input) {
       const response = (await _http.get(

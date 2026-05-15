@@ -5,6 +5,7 @@ import {
   repoListCommitsInput,
   repoListPersonalRepositoryImportRecordsInput,
   repoMergeMergeRequestInput,
+  repoShowRepoLastStatisticsInput,
   repoStartRemoteMirrorSynchronizationInput,
   repoUpdateRemoteMirrorInput
 } from "../../../src/products/repo/schemas.js";
@@ -28,6 +29,18 @@ describe("repo schemas", () => {
       with_stats: true,
       page: 1,
       page_size: 20
+    });
+  });
+
+  it("accepts repository last statistics branch query", () => {
+    expect(
+      repoShowRepoLastStatisticsInput.parse({
+        repository_id: "100",
+        branch_name: "feature/main"
+      })
+    ).toEqual({
+      repository_id: "100",
+      branch_name: "feature/main"
     });
   });
 

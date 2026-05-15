@@ -74,6 +74,7 @@ import {
   repoRemoveRepositoryDeployKeyInput,
   repoReviewMergeRequestInput,
   repoShowGroupE2eSettingInput,
+  repoShowLastPushEventInRepositoryInput,
   repoShowProjectE2eSettingInput,
   repoShowTenantDevelopModeInput,
   repoShowTenantRepoEncryptionSettingInput,
@@ -94,8 +95,12 @@ import {
   repoShowProjectSettingsInheritCfgInput,
   repoShowProjectWatermarkInput,
   repoShowProjectsGeneralPolicyInput,
+  repoShowRepoLastStatisticsInput,
+  repoShowRepoStatisticsSummaryInput,
   repoShowRepositoryE2eSettingInput,
   repoShowRepositoryPermissionInheritEnabledInput,
+  repoShowRepositoryStatisticsStatusInput,
+  repoShowRepositoryStatisticsSummaryInput,
   repoShowResourcePermissionsInput,
   repoStartRemoteMirrorSynchronizationInput,
   repoUpdateGroupResourcePermissionsInput,
@@ -161,6 +166,11 @@ import { createRepoListRepositoryResourcePermissionsHandler } from "../products/
 import { createRepoListRepositoryWorkItemsHandler } from "../products/repo/tools/list-repository-work-items.js";
 import { createRepoListTagsHandler } from "../products/repo/tools/list-tags.js";
 import { createRepoMergeMergeRequestHandler } from "../products/repo/tools/merge-merge-request.js";
+import { createRepoShowLastPushEventInRepositoryHandler } from "../products/repo/tools/show-last-push-event-in-repository.js";
+import { createRepoShowRepoLastStatisticsHandler } from "../products/repo/tools/show-repo-last-statistics.js";
+import { createRepoShowRepoStatisticsSummaryHandler } from "../products/repo/tools/show-repo-statistics-summary.js";
+import { createRepoShowRepositoryStatisticsStatusHandler } from "../products/repo/tools/show-repository-statistics-status.js";
+import { createRepoShowRepositoryStatisticsSummaryHandler } from "../products/repo/tools/show-repository-statistics-summary.js";
 import { createRepoCreateTagHandler } from "../products/repo/tools/create-tag.js";
 import { createRepoDeleteTagHandler } from "../products/repo/tools/delete-tag.js";
 import { createRepoRemoveRepositoryDeployKeyHandler } from "../products/repo/tools/remove-repository-deploy-key.js";
@@ -325,6 +335,11 @@ const repoToolDefinitions = {
   "repo_delete_tag": defineProductTool({ description: "Delete CodeArts Repo tag", inputSchema: repoDeleteTagInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoDeleteTagHandler>[0] }) => clients.repoClient, createProductHandler: createRepoDeleteTagHandler }),
   "repo_list_tags": defineProductTool({ description: "List CodeArts Repo tags", inputSchema: repoListTagsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListTagsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListTagsHandler }),
   "repo_list_events": defineProductTool({ description: "List CodeArts Repo events", inputSchema: repoListEventsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListEventsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListEventsHandler }),
+  "repo_show_repository_statistics_status": defineProductTool({ description: "Show CodeArts Repo repository statistics task status", inputSchema: repoShowRepositoryStatisticsStatusInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowRepositoryStatisticsStatusHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowRepositoryStatisticsStatusHandler }),
+  "repo_show_last_push_event_in_repository": defineProductTool({ description: "Show CodeArts Repo repository last push event", inputSchema: repoShowLastPushEventInRepositoryInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowLastPushEventInRepositoryHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowLastPushEventInRepositoryHandler }),
+  "repo_show_repository_statistics_summary": defineProductTool({ description: "Show CodeArts Repo repository statistics summary", inputSchema: repoShowRepositoryStatisticsSummaryInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowRepositoryStatisticsSummaryHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowRepositoryStatisticsSummaryHandler }),
+  "repo_show_repo_statistics_summary": defineProductTool({ description: "Show CodeArts Repo repository statistics overview", inputSchema: repoShowRepoStatisticsSummaryInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowRepoStatisticsSummaryHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowRepoStatisticsSummaryHandler }),
+  "repo_show_repo_last_statistics": defineProductTool({ description: "Show CodeArts Repo repository last commit statistics", inputSchema: repoShowRepoLastStatisticsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowRepoLastStatisticsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowRepoLastStatisticsHandler }),
   "repo_list_merge_requests": defineProductTool({ description: "List CodeArts Repo merge requests", inputSchema: repoListMergeRequestsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListMergeRequestsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListMergeRequestsHandler }),
   "repo_get_branch": defineProductTool({ description: "Get CodeArts Repo branch detail", inputSchema: repoGetBranchInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoGetBranchHandler>[0] }) => clients.repoClient, createProductHandler: createRepoGetBranchHandler }),
   "repo_compare_refs": defineProductTool({ description: "Compare CodeArts Repo refs", inputSchema: repoCompareRefsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCompareRefsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCompareRefsHandler }),

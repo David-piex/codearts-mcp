@@ -786,6 +786,27 @@ export const repoGetRepositoryInput = z.object({
   repository_id: idSchema
 });
 
+export const repoShowRepositoryStatisticsStatusInput = z.object({
+  repository_id: idSchema
+});
+
+export const repoShowLastPushEventInRepositoryInput = z.object({
+  repository_id: idSchema
+});
+
+export const repoShowRepositoryStatisticsSummaryInput = z.object({
+  repository_id: idSchema
+});
+
+export const repoShowRepoStatisticsSummaryInput = z.object({
+  repository_id: idSchema
+});
+
+export const repoShowRepoLastStatisticsInput = z.object({
+  repository_id: idSchema,
+  branch_name: z.string().min(1).max(2000)
+});
+
 export const repoListMergeRequestsInput = pagingSchema.extend({
   repository_id: idSchema,
   state: z.enum(["all", "opened", "closed", "merged"]).optional()
