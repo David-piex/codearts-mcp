@@ -262,6 +262,120 @@ export type RepoForkRepository = {
   updated_at?: string;
 };
 
+export type RepoRepositorySummary = {
+  id?: number | string;
+  name?: string;
+  namespace?: string;
+  path?: string;
+  develop_mode?: string;
+  visibility?: string;
+  security?: string;
+  star_count?: number;
+  forks_count?: number;
+  open_merge_requests_count?: number;
+  starred?: boolean;
+  name_with_namespace?: string;
+  last_activity_at?: string;
+  archived?: boolean;
+  member_count?: number;
+  uuid?: string;
+  description?: string;
+  ssh_url_to_repo?: string;
+  http_url_to_repo?: string;
+  ssh_url?: string;
+  http_url?: string;
+  status?: number | string;
+  project_name?: string;
+  project_id?: string;
+  creator_id?: number | string;
+};
+
+export type RepoRepositoryUserGroup = {
+  user_group_name?: string;
+  user_group_id?: number | string;
+  member_group_name?: string;
+  member_group_id?: number | string;
+  project_id?: string;
+  user_count?: number;
+  member_count?: number;
+  description?: string;
+};
+
+export type RepoRepositoryMember = {
+  user_id?: number | string;
+  user_iam_id?: string;
+  user_name?: string;
+  user_nick_name?: string;
+  tenant_name?: string;
+  tenant_id?: string;
+  is_repo_creator?: boolean;
+  is_group_creator?: boolean;
+  is_Project_admin?: boolean;
+  project_role_name?: string;
+  repository_role_name?: string;
+  repository_role_Id?: string;
+  member_source?: string;
+  member_group_source?: string;
+  member_source_id?: string;
+  service_license_status?: number | string;
+  action_enabled?: boolean;
+};
+
+export type RepoMergeRequestCommit = {
+  id?: string;
+  short_id?: string;
+  title?: string;
+  message?: string;
+  author_name?: string;
+  name?: string;
+  user_name?: string;
+  tenant_name?: string;
+  nick_name?: string;
+  authored_date?: string;
+  committed_date?: string;
+  committer_name?: string;
+  gpg_primary_key_id?: string;
+  open_gpg_verified?: boolean;
+  verification_status?: string;
+  parent_ids?: string[];
+  created_at?: string;
+};
+
+export type RepoMergeRequestVote = {
+  id?: number | string;
+  score?: number;
+  author_name?: string;
+  author_username?: string;
+  created_at?: string;
+  updated_at?: string;
+  last_committed_id?: string;
+  author_id?: number | string;
+  avatar_url?: string;
+  nick_name?: string;
+  tenant_name?: string;
+};
+
+export type RepoMergeRequestVotes = {
+  scores?: number;
+  merge_request_id?: number | string;
+  merge_request_creator?: string;
+  votes?: RepoMergeRequestVote[];
+};
+
+export type RepoMergeRequestStatistic = {
+  id?: number | string;
+  iid?: number | string;
+  title?: string;
+  state?: string;
+  commits_count?: number;
+  changed_files_count?: number;
+  notes_count?: number;
+  changed_lines_count?: number;
+  merge_error?: string;
+  json_merge_error?: unknown;
+  votes?: number;
+};
+
 export type RepoE2eSetting = {
   e2e_policies?: {
     auto_extract?: boolean;
@@ -1374,6 +1488,28 @@ export type RepoClient = {
     }>;
     total?: number;
   }>;
+  listMergeRequestCommits: (input: {
+    repository_id: string;
+    merge_request_iid: string;
+    page: number;
+    page_size: number;
+    view?: "simple";
+  }) => Promise<{
+    commits: RepoMergeRequestCommit[];
+    total?: number;
+  }>;
+  showMergeRequestVotes: (input: {
+    repository_id: string;
+    merge_request_iid: string;
+  }) => Promise<RepoMergeRequestVotes>;
+  showMergeRequestStatistic: (input: {
+    repository_id: string;
+    iids: string;
+    fields?: string;
+  }) => Promise<{
+    statistics: RepoMergeRequestStatistic[];
+    total?: number;
+  }>;
   createMergeRequestDiscussion: (input: {
     repository_id: string;
     merge_request_iid: string;
@@ -1577,6 +1713,52 @@ export type RepoClient = {
   }>;
   listRepositories: (input: { project_id: string; page: number; page_size: number; keyword?: string }) => Promise<{
     repositories: Array<{ id: number | string; name: string; ssh_url?: string; http_url?: string }>;
+    total?: number;
+  }>;
+  listCurrentUserRepositories: (input: {
+    page: number;
+    page_size: number;
+    order_by?: "created_at" | "updated_at";
+    sort?: "asc" | "desc";
+    archived?: boolean;
+    search?: string;
+    starred?: boolean;
+    membership?: boolean;
+    user_created?: boolean;
+    include_abnormal?: boolean;
+  }) => Promise<{
+    repositories: RepoRepositorySummary[];
+    total?: number;
+  }>;
+  listGroupRepositories: (input: {
+    group_id: string;
+    page: number;
+    page_size: number;
+    search?: string;
+    order_by?: "id" | "name" | "created_at" | "updated_at";
+    sort?: "asc" | "desc";
+  }) => Promise<{
+    repositories: RepoRepositorySummary[];
+    total?: number;
+  }>;
+  listRepositoryUserGroups: (input: {
+    repository_id: string;
+    page: number;
+    page_size: number;
+    search?: string;
+  }) => Promise<{
+    groups: RepoRepositoryUserGroup[];
+    total?: number;
+  }>;
+  listRepositoryMembers: (input: {
+    repository_id: string;
+    page: number;
+    page_size: number;
+    search?: string;
+    permission?: "repository" | "code" | "member" | "branch" | "tag" | "mr" | "label";
+    action?: string;
+  }) => Promise<{
+    members: RepoRepositoryMember[];
     total?: number;
   }>;
   listTenantRepositories: (input: {
@@ -1892,6 +2074,38 @@ function extractArrayWithOptionalTotal<T>(
     items,
     total: Array.isArray(unwrapped) ? undefined : unwrapped.total
   };
+}
+
+function extractArrayFromFields<T>(
+  response: T[] | Record<string, unknown> | string,
+  fields: string[]
+) {
+  const unwrapped = unwrapRepoPayload(response);
+  if (typeof unwrapped === "string") {
+    return { items: [] as T[], total: undefined };
+  }
+
+  if (Array.isArray(unwrapped)) {
+    return { items: unwrapped as T[], total: undefined };
+  }
+
+  const payload = unwrapped as Record<string, unknown>;
+  const result = payload.result;
+  const resultObject = result && typeof result === "object" && !Array.isArray(result)
+    ? result as Record<string, unknown>
+    : undefined;
+
+  const items = Array.isArray(result)
+    ? result as T[]
+    : (fields.map((field) => resultObject?.[field] ?? payload[field]).find(Array.isArray) as T[] | undefined) ?? [];
+
+  const total = typeof payload.total === "number"
+    ? payload.total
+    : typeof resultObject?.total === "number"
+      ? resultObject.total
+      : undefined;
+
+  return { items, total };
 }
 
 function buildTenantOffsetLimitQuery(input: { offset: number; limit: number }) {
@@ -3745,6 +3959,71 @@ export function createRepoClient(
         total: response.changes?.length ?? 0
       };
     },
+    async listMergeRequestCommits(input) {
+      const query = buildOffsetLimitQuery(input);
+      appendOptionalQuery(query, input, ["view"]);
+      const response = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/${encodeURIComponent(input.merge_request_iid)}/commits?${query.toString()}`
+      );
+      const extracted = extractArrayFromFields<RepoMergeRequestCommit>(
+        response as RepoMergeRequestCommit[] | Record<string, unknown>,
+        ["commits", "items", "records"]
+      );
+
+      return {
+        commits: extracted.items,
+        total: extracted.total
+      };
+    },
+    async showMergeRequestVotes(input) {
+      const rawResponse = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/${encodeURIComponent(input.merge_request_iid)}/votes`
+      );
+      const response = unwrapRepoPayload(rawResponse) as Record<string, unknown>;
+      const payload = (response.result && typeof response.result === "object"
+        ? response.result
+        : response) as RepoMergeRequestVotes;
+
+      return {
+        scores: payload.scores,
+        merge_request_id: payload.merge_request_id,
+        merge_request_creator: payload.merge_request_creator,
+        votes: payload.votes ?? []
+      };
+    },
+    async showMergeRequestStatistic(input) {
+      const query = new URLSearchParams({ iids: input.iids });
+      appendOptionalQuery(query, input, ["fields"]);
+      const rawResponse = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/statistic?${query.toString()}`
+      );
+      const response = unwrapRepoPayload(rawResponse);
+      if (typeof response === "string") {
+        return { statistics: [], total: undefined };
+      }
+
+      const payload = response as RepoMergeRequestStatistic[] | Record<string, unknown>;
+      const payloadObject = !Array.isArray(payload) ? payload : undefined;
+      const resultValue = payloadObject?.result;
+      const result = Array.isArray(payload)
+        ? payload
+        : Array.isArray(resultValue)
+          ? resultValue as RepoMergeRequestStatistic[]
+          : resultValue && typeof resultValue === "object"
+            ? [resultValue as RepoMergeRequestStatistic]
+            : Array.isArray(payloadObject?.statistics)
+              ? payloadObject.statistics as RepoMergeRequestStatistic[]
+              : [payloadObject as RepoMergeRequestStatistic];
+
+      return {
+        statistics: result,
+        total: Array.isArray(payload)
+          ? result.length
+          : typeof payloadObject?.total === "number"
+            ? payloadObject.total
+            : result.length
+      };
+    },
     async createMergeRequestDiscussion(input) {
       const response = (await _http.post(
         `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/${encodeURIComponent(input.merge_request_iid)}/discussions`,
@@ -4189,6 +4468,76 @@ export function createRepoClient(
       }
 
       return cached.value;
+    },
+    async listCurrentUserRepositories(input) {
+      const query = buildOffsetLimitQuery(input);
+      appendOptionalQuery(query, input, [
+        "order_by",
+        "sort",
+        "archived",
+        "search",
+        "starred",
+        "membership",
+        "user_created",
+        "include_abnormal"
+      ]);
+      const response = await _http.get(`/v4/user/repositories?${query.toString()}`);
+      const extracted = extractArrayFromFields<RepoRepositorySummary>(
+        response as RepoRepositorySummary[] | Record<string, unknown>,
+        ["repositories", "items", "records"]
+      );
+
+      return {
+        repositories: extracted.items,
+        total: extracted.total
+      };
+    },
+    async listGroupRepositories(input) {
+      const query = buildOffsetLimitQuery(input);
+      appendOptionalQuery(query, input, ["search", "order_by", "sort"]);
+      const response = await _http.get(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/repositories?${query.toString()}`
+      );
+      const extracted = extractArrayFromFields<RepoRepositorySummary>(
+        response as RepoRepositorySummary[] | Record<string, unknown>,
+        ["repositories", "items", "records"]
+      );
+
+      return {
+        repositories: extracted.items,
+        total: extracted.total
+      };
+    },
+    async listRepositoryUserGroups(input) {
+      const query = buildOffsetLimitQuery(input);
+      const response = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/user-groups?${query.toString()}`
+      );
+      const extracted = extractArrayFromFields<RepoRepositoryUserGroup>(
+        response as RepoRepositoryUserGroup[] | Record<string, unknown>,
+        ["user_groups", "groups", "items", "records"]
+      );
+
+      return {
+        groups: extracted.items,
+        total: extracted.total
+      };
+    },
+    async listRepositoryMembers(input) {
+      const query = buildOffsetLimitQuery(input);
+      appendOptionalQuery(query, input, ["permission", "action"]);
+      const response = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/members?${query.toString()}`
+      );
+      const extracted = extractArrayFromFields<RepoRepositoryMember>(
+        response as RepoRepositoryMember[] | Record<string, unknown>,
+        ["members", "items", "records"]
+      );
+
+      return {
+        members: extracted.items,
+        total: extracted.total
+      };
     },
     async listTenantRepositories(input) {
       const query = buildTenantOffsetLimitQuery(input);

@@ -3,9 +3,14 @@ import {
   repoCreateMergeRequestInput,
   repoImportRepositoryInput,
   repoListCommitsInput,
+  repoListCurrentUserRepositoriesInput,
+  repoListGroupRepositoriesInput,
+  repoListMergeRequestCommitsInput,
   repoListRepositoryContributorsInput,
   repoListRepositoryCommitRulesInput,
   repoListRepositoryForksInput,
+  repoListRepositoryMembersInput,
+  repoListRepositoryUserGroupsInput,
   repoListSubmodulesInput,
   repoListPersonalRepositoryImportRecordsInput,
   repoListPersonalRecentPushEventsInput,
@@ -13,6 +18,8 @@ import {
   repoMergeMergeRequestInput,
   repoShowNotificationSubscriptionInput,
   repoShowNotificationSubscriptionsStatusInput,
+  repoShowMergeRequestStatisticInput,
+  repoShowMergeRequestVotesInput,
   repoShowRepositoryGeneralCommitRuleInput,
   repoShowRepositoryGeneralPolicyInput,
   repoShowRepositoryInheritSettingInput,
@@ -100,6 +107,65 @@ describe("repo schemas", () => {
       order_by: "updated_at",
       sort: "asc",
       view: "basic"
+    });
+  });
+
+  it("accepts repository list and member read query fields", () => {
+    expect(
+      repoListCurrentUserRepositoriesInput.parse({
+        page_size: 100,
+        order_by: "updated_at",
+        sort: "desc",
+        archived: false,
+        search: "demo",
+        starred: true,
+        membership: true,
+        user_created: false,
+        include_abnormal: true
+      })
+    ).toMatchObject({
+      page: 1,
+      page_size: 100,
+      order_by: "updated_at",
+      sort: "desc",
+      search: "demo"
+    });
+
+    expect(
+      repoListGroupRepositoriesInput.parse({
+        group_id: "group-1",
+        order_by: "name",
+        sort: "asc",
+        search: "demo"
+      })
+    ).toMatchObject({
+      group_id: "group-1",
+      order_by: "name",
+      sort: "asc"
+    });
+
+    expect(
+      repoListRepositoryUserGroupsInput.parse({
+        repository_id: "100",
+        search: "team"
+      })
+    ).toMatchObject({
+      repository_id: "100",
+      search: "team"
+    });
+
+    expect(
+      repoListRepositoryMembersInput.parse({
+        repository_id: "100",
+        permission: "mr",
+        action: "approve",
+        search: "dev"
+      })
+    ).toMatchObject({
+      repository_id: "100",
+      permission: "mr",
+      action: "approve",
+      search: "dev"
     });
   });
 
@@ -270,6 +336,46 @@ describe("repo schemas", () => {
       merge_commit_message: "Merge feature/demo",
       squash_commit_message: "Squash feature/demo",
       should_remove_source_branch: true
+    });
+  });
+
+  it("accepts merge request read query fields", () => {
+    expect(
+      repoListMergeRequestCommitsInput.parse({
+        repository_id: "100",
+        merge_request_iid: "7",
+        view: "simple",
+        page: 2,
+        page_size: 100
+      })
+    ).toMatchObject({
+      repository_id: "100",
+      merge_request_iid: "7",
+      view: "simple",
+      page: 2,
+      page_size: 100
+    });
+
+    expect(
+      repoShowMergeRequestVotesInput.parse({
+        repository_id: "100",
+        merge_request_iid: "7"
+      })
+    ).toEqual({
+      repository_id: "100",
+      merge_request_iid: "7"
+    });
+
+    expect(
+      repoShowMergeRequestStatisticInput.parse({
+        repository_id: "100",
+        iids: "7,8",
+        fields: "commits_count,changed_files_count"
+      })
+    ).toEqual({
+      repository_id: "100",
+      iids: "7,8",
+      fields: "commits_count,changed_files_count"
     });
   });
 

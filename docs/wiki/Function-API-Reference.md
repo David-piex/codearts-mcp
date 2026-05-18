@@ -30,10 +30,10 @@
 | 代码检查 | 18 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
 | 部署 | 60 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
 | 流水线 | 78 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
-| 代码仓库 | 128 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
+| 代码仓库 | 135 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 201 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 179 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **723** | |
+| **总计** | **730** | |
 
 ## 字段对应
 
@@ -303,13 +303,16 @@
 | `repo_list_branch_related_work_items` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_branch_related_work_items) |
 | `repo_list_branches` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_branches) |
 | `repo_list_commits` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_commits) |
+| `repo_list_current_user_repositories` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_current_user_repositories) |
 | `repo_list_events` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_events) |
 | `repo_list_group_deploy_keys` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_group_deploy_keys) |
 | `repo_list_group_protected_branches` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_group_protected_branches) |
 | `repo_list_group_protected_refs_user_groups` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_group_protected_refs_user_groups) |
+| `repo_list_group_repositories` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_group_repositories) |
 | `repo_list_impersonation_tokens` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_impersonation_tokens) |
 | `repo_list_item_commits` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_item_commits) |
 | `repo_list_merge_request_changes` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_merge_request_changes) |
+| `repo_list_merge_request_commits` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_merge_request_commits) |
 | `repo_list_merge_request_discussions` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_merge_request_discussions) |
 | `repo_list_merge_requests` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_merge_requests) |
 | `repo_list_personal_recent_push_events` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_personal_recent_push_events) |
@@ -329,9 +332,11 @@
 | `repo_list_repository_forks` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_forks) |
 | `repo_list_repository_labels` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_labels) |
 | `repo_list_repository_languages` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_languages) |
+| `repo_list_repository_members` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_members) |
 | `repo_list_repository_protected_refs_user_groups` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_protected_refs_user_groups) |
 | `repo_list_repository_resource_permissions` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_resource_permissions) |
 | `repo_list_repository_templates` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_templates) |
+| `repo_list_repository_user_groups` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_user_groups) |
 | `repo_list_repository_webhook_logs` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_webhook_logs) |
 | `repo_list_repository_webhooks` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_webhooks) |
 | `repo_list_repository_work_items` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_work_items) |
@@ -348,6 +353,8 @@
 | `repo_show_commit_statistics` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_commit_statistics) |
 | `repo_show_group_e2e_setting` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_group_e2e_setting) |
 | `repo_show_last_push_event_in_repository` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_last_push_event_in_repository) |
+| `repo_show_merge_request_statistic` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_merge_request_statistic) |
+| `repo_show_merge_request_votes` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_merge_request_votes) |
 | `repo_show_notification_subscription` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_notification_subscription) |
 | `repo_show_notification_subscriptions_status` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_notification_subscriptions_status) |
 | `repo_show_project_e2e_setting` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_project_e2e_setting) |

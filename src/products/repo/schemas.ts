@@ -30,6 +30,40 @@ export const repoListRepositoriesInput = pagingSchema.extend({
   project_id: idSchema
 });
 
+export const repoListCurrentUserRepositoriesInput = pagingSchema.extend({
+  page_size: z.number().int().positive().max(100).default(20),
+  order_by: z.enum(["created_at", "updated_at"]).optional(),
+  sort: z.enum(["asc", "desc"]).optional(),
+  archived: z.boolean().optional(),
+  search: z.string().min(1).max(256).optional(),
+  starred: z.boolean().optional(),
+  membership: z.boolean().optional(),
+  user_created: z.boolean().optional(),
+  include_abnormal: z.boolean().optional()
+});
+
+export const repoListGroupRepositoriesInput = pagingSchema.extend({
+  group_id: idSchema,
+  page_size: z.number().int().positive().max(100).default(20),
+  search: z.string().min(1).max(256).optional(),
+  order_by: z.enum(["id", "name", "created_at", "updated_at"]).optional(),
+  sort: z.enum(["asc", "desc"]).optional()
+});
+
+export const repoListRepositoryUserGroupsInput = pagingSchema.extend({
+  repository_id: idSchema,
+  page_size: z.number().int().positive().max(100).default(20),
+  search: z.string().min(1).max(256).optional()
+});
+
+export const repoListRepositoryMembersInput = pagingSchema.extend({
+  repository_id: idSchema,
+  page_size: z.number().int().positive().max(100).default(20),
+  search: z.string().min(1).max(256).optional(),
+  permission: z.enum(["repository", "code", "member", "branch", "tag", "mr", "label"]).optional(),
+  action: z.string().min(1).max(64).optional()
+});
+
 export const repoListProtectedBranchesInput = pagingSchema.extend({
   repository_id: idSchema,
   page_size: z.number().int().positive().max(100).default(20),
@@ -772,6 +806,24 @@ export const repoCreateMergeRequestInput = z.object({
 export const repoListMergeRequestChangesInput = pagingSchema.extend({
   repository_id: idSchema,
   merge_request_iid: idSchema
+});
+
+export const repoListMergeRequestCommitsInput = pagingSchema.extend({
+  repository_id: idSchema,
+  merge_request_iid: idSchema,
+  page_size: z.number().int().positive().max(100).default(20),
+  view: z.enum(["simple"]).optional()
+});
+
+export const repoShowMergeRequestVotesInput = z.object({
+  repository_id: idSchema,
+  merge_request_iid: idSchema
+});
+
+export const repoShowMergeRequestStatisticInput = z.object({
+  repository_id: idSchema,
+  iids: z.string().min(1).max(2000),
+  fields: z.string().min(1).max(256).optional()
 });
 
 export const repoListMergeRequestDiscussionsInput = pagingSchema.extend({

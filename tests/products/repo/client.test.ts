@@ -278,6 +278,27 @@ describe("createRepoClient", () => {
         if (path.endsWith("/watermark")) {
           return { watermark: false, view_watermark: true };
         }
+        if (path.includes("/merge-requests/7/commits?")) {
+          return [{ id: "abc123", title: "Add feature" }];
+        }
+        if (path.endsWith("/merge-requests/7/votes")) {
+          return { scores: 2, votes: [{ id: 1, score: 2 }] };
+        }
+        if (path.includes("/merge-requests/statistic?")) {
+          return { id: 7, iid: 7, commits_count: 2 };
+        }
+        if (path.startsWith("/v4/user/repositories?")) {
+          return [{ id: 100, name: "current-user-repo" }];
+        }
+        if (path.startsWith("/v4/groups/group-1/repositories?")) {
+          return [{ id: 101, name: "group-repo" }];
+        }
+        if (path.includes("/user-groups?")) {
+          return [{ member_group_id: 7, member_group_name: "maintainers" }];
+        }
+        if (path.includes("/members?")) {
+          return [{ user_id: 9, user_name: "dev" }];
+        }
         if (path.startsWith("/v4/user/recent-push-events?")) {
           return [{ created_at: "2026-05-18T00:00:00Z", push_data: { ref: "master" } }];
         }
@@ -293,6 +314,47 @@ describe("createRepoClient", () => {
     await client.showRepositoryGeneralCommitRule({ repository_id: "100" });
     await client.listRepositoryCommitRules({ repository_id: "100", page: 2, page_size: 10 });
     await client.showRepositoryWatermark({ repository_id: "100" });
+    await client.listMergeRequestCommits({
+      repository_id: "100",
+      merge_request_iid: "7",
+      page: 2,
+      page_size: 10,
+      view: "simple"
+    });
+    await client.showMergeRequestVotes({ repository_id: "100", merge_request_iid: "7" });
+    await client.showMergeRequestStatistic({
+      repository_id: "100",
+      iids: "7",
+      fields: "commits_count,changed_files_count"
+    });
+    await client.listCurrentUserRepositories({
+      page: 2,
+      page_size: 10,
+      order_by: "updated_at",
+      sort: "desc",
+      search: "demo",
+      starred: true,
+      membership: true,
+      user_created: false,
+      include_abnormal: true
+    });
+    await client.listGroupRepositories({
+      group_id: "group-1",
+      page: 2,
+      page_size: 10,
+      order_by: "name",
+      sort: "asc",
+      search: "demo"
+    });
+    await client.listRepositoryUserGroups({ repository_id: "100", page: 2, page_size: 10, search: "team" });
+    await client.listRepositoryMembers({
+      repository_id: "100",
+      page: 2,
+      page_size: 10,
+      permission: "mr",
+      action: "approve",
+      search: "dev"
+    });
     await client.listPersonalRecentPushEvents({ project_id: "project-uuid-1", size: 5 });
     await client.listRepositoryTemplates({
       page: 1,
@@ -312,6 +374,13 @@ describe("createRepoClient", () => {
       "/v4/repositories/100/general-commit-rule",
       "/v4/repositories/100/commit-rules?offset=10&limit=10",
       "/v4/repositories/100/watermark",
+      "/v4/repositories/100/merge-requests/7/commits?offset=10&limit=10&view=simple",
+      "/v4/repositories/100/merge-requests/7/votes",
+      "/v4/repositories/100/merge-requests/statistic?iids=7&fields=commits_count%2Cchanged_files_count",
+      "/v4/user/repositories?offset=10&limit=10&search=demo&order_by=updated_at&sort=desc&starred=true&membership=true&user_created=false&include_abnormal=true",
+      "/v4/groups/group-1/repositories?offset=10&limit=10&search=demo&order_by=name&sort=asc",
+      "/v4/repositories/100/user-groups?offset=10&limit=10&search=team",
+      "/v4/repositories/100/members?offset=10&limit=10&search=dev&permission=mr&action=approve",
       "/v4/user/recent-push-events?project_id=project-uuid-1&size=5",
       "/v4/repository-templates?offset=0&limit=20&search=demo&type=SYSTEM%2CUSER&platform=Web&pipeline=SupportPipeline&enter_type=AI&date_order=down&language=Java&project_id=project-uuid-1"
     ]);
