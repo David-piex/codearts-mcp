@@ -78,6 +78,7 @@ import {
   repoListRepositoriesInput,
   repoRemoveRepositoryDeployKeyInput,
   repoReviewMergeRequestInput,
+  repoShowNotificationSubscriptionInput,
   repoShowGroupE2eSettingInput,
   repoShowLastPushEventInRepositoryInput,
   repoShowProjectE2eSettingInput,
@@ -103,10 +104,14 @@ import {
   repoShowRepoLastStatisticsInput,
   repoShowRepoStatisticsSummaryInput,
   repoShowRepositoryE2eSettingInput,
+  repoShowRepositoryGeneralPolicyInput,
+  repoShowRepositoryInheritSettingInput,
+  repoShowRepositoryInheritSettingSourceInput,
   repoShowRepositoryPermissionInheritEnabledInput,
   repoShowRepositoryStatisticsStatusInput,
   repoShowRepositoryStatisticsSummaryInput,
   repoShowResourcePermissionsInput,
+  repoShowUserRefPermissionInput,
   repoStartRemoteMirrorSynchronizationInput,
   repoUpdateGroupResourcePermissionsInput,
   repoUpdateProjectGeneralPolicyInput,
@@ -177,8 +182,12 @@ import { createRepoListSubmodulesHandler } from "../products/repo/tools/list-sub
 import { createRepoMergeMergeRequestHandler } from "../products/repo/tools/merge-merge-request.js";
 import { createRepoShowCommitStatisticsHandler } from "../products/repo/tools/show-commit-statistics.js";
 import { createRepoShowLastPushEventInRepositoryHandler } from "../products/repo/tools/show-last-push-event-in-repository.js";
+import { createRepoShowNotificationSubscriptionHandler } from "../products/repo/tools/show-notification-subscription.js";
 import { createRepoShowRepoLastStatisticsHandler } from "../products/repo/tools/show-repo-last-statistics.js";
 import { createRepoShowRepoStatisticsSummaryHandler } from "../products/repo/tools/show-repo-statistics-summary.js";
+import { createRepoShowRepositoryGeneralPolicyHandler } from "../products/repo/tools/show-repository-general-policy.js";
+import { createRepoShowRepositoryInheritSettingHandler } from "../products/repo/tools/show-repository-inherit-setting.js";
+import { createRepoShowRepositoryInheritSettingSourceHandler } from "../products/repo/tools/show-repository-inherit-setting-source.js";
 import { createRepoShowRepositoryStatisticsStatusHandler } from "../products/repo/tools/show-repository-statistics-status.js";
 import { createRepoShowRepositoryStatisticsSummaryHandler } from "../products/repo/tools/show-repository-statistics-summary.js";
 import { createRepoCreateTagHandler } from "../products/repo/tools/create-tag.js";
@@ -209,6 +218,7 @@ import { createRepoShowProjectsGeneralPolicyHandler } from "../products/repo/too
 import { createRepoShowRepositoryE2eSettingHandler } from "../products/repo/tools/show-repository-e2e-setting.js";
 import { createRepoShowRepositoryPermissionInheritEnabledHandler } from "../products/repo/tools/show-repository-permission-inherit-enabled.js";
 import { createRepoShowResourcePermissionsHandler } from "../products/repo/tools/show-resource-permissions.js";
+import { createRepoShowUserRefPermissionHandler } from "../products/repo/tools/show-user-ref-permission.js";
 import { createRepoStartRemoteMirrorSynchronizationHandler } from "../products/repo/tools/start-remote-mirror-synchronization.js";
 import { createRepoUpdateGroupResourcePermissionsHandler } from "../products/repo/tools/update-group-resource-permissions.js";
 import { createRepoUpdateProjectGeneralPolicyHandler } from "../products/repo/tools/update-project-general-policy.js";
@@ -355,6 +365,11 @@ const repoToolDefinitions = {
   "repo_show_repository_statistics_summary": defineProductTool({ description: "Show CodeArts Repo repository statistics summary", inputSchema: repoShowRepositoryStatisticsSummaryInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowRepositoryStatisticsSummaryHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowRepositoryStatisticsSummaryHandler }),
   "repo_show_repo_statistics_summary": defineProductTool({ description: "Show CodeArts Repo repository statistics overview", inputSchema: repoShowRepoStatisticsSummaryInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowRepoStatisticsSummaryHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowRepoStatisticsSummaryHandler }),
   "repo_show_repo_last_statistics": defineProductTool({ description: "Show CodeArts Repo repository last commit statistics", inputSchema: repoShowRepoLastStatisticsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowRepoLastStatisticsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowRepoLastStatisticsHandler }),
+  "repo_show_notification_subscription": defineProductTool({ description: "Show CodeArts Repo repository notification subscription", inputSchema: repoShowNotificationSubscriptionInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowNotificationSubscriptionHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowNotificationSubscriptionHandler }),
+  "repo_show_repository_inherit_setting_source": defineProductTool({ description: "Show CodeArts Repo repository inherit setting source", inputSchema: repoShowRepositoryInheritSettingSourceInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowRepositoryInheritSettingSourceHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowRepositoryInheritSettingSourceHandler }),
+  "repo_show_repository_inherit_setting": defineProductTool({ description: "Show CodeArts Repo repository inherit settings", inputSchema: repoShowRepositoryInheritSettingInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowRepositoryInheritSettingHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowRepositoryInheritSettingHandler }),
+  "repo_show_repository_general_policy": defineProductTool({ description: "Show CodeArts Repo repository general policy", inputSchema: repoShowRepositoryGeneralPolicyInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowRepositoryGeneralPolicyHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowRepositoryGeneralPolicyHandler }),
+  "repo_show_user_ref_permission": defineProductTool({ description: "Show CodeArts Repo repository user ref permission", inputSchema: repoShowUserRefPermissionInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowUserRefPermissionHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowUserRefPermissionHandler }),
   "repo_list_merge_requests": defineProductTool({ description: "List CodeArts Repo merge requests", inputSchema: repoListMergeRequestsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListMergeRequestsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListMergeRequestsHandler }),
   "repo_get_branch": defineProductTool({ description: "Get CodeArts Repo branch detail", inputSchema: repoGetBranchInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoGetBranchHandler>[0] }) => clients.repoClient, createProductHandler: createRepoGetBranchHandler }),
   "repo_compare_refs": defineProductTool({ description: "Compare CodeArts Repo refs", inputSchema: repoCompareRefsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCompareRefsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCompareRefsHandler }),

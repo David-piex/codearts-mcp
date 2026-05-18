@@ -430,6 +430,47 @@ export type RepoRepositoryPermissionInheritSetting = {
   inherit_parent_permission?: boolean;
 };
 
+export type RepoNotificationSubscription = {
+  repository_id?: number | string;
+  enabled?: boolean;
+  config_source?: string;
+  webhook_config?: {
+    url?: string;
+    mention_users?: string;
+    mention_phone?: string;
+    has_token?: boolean;
+  };
+  waring_repo_usage_rate?: number;
+  subscript_events?: Array<{
+    resource_type?: string;
+    action?: string;
+    enabled?: boolean;
+    role_ids?: string[] | null;
+    role_names?: string[] | null;
+  }>;
+};
+
+export type RepoRepositoryInheritSettingSource = {
+  source_type?: string;
+  source_id?: string;
+  upward_inherit_editable?: boolean;
+};
+
+export type RepoUserRefPermissionBasic = {
+  has_permission?: boolean;
+  is_protect?: boolean;
+};
+
+export type RepoUserRefPermission = {
+  read?: RepoUserRefPermissionBasic;
+  review?: RepoUserRefPermissionBasic;
+  approval?: RepoUserRefPermissionBasic;
+  create_change?: RepoUserRefPermissionBasic;
+  merge?: RepoUserRefPermissionBasic;
+  create_delete?: RepoUserRefPermissionBasic;
+  push?: RepoUserRefPermissionBasic;
+};
+
 export type RepoWatermarkSetting = {
   watermark?: boolean;
   can_update?: boolean;
@@ -743,6 +784,29 @@ export type RepoClient = {
   showRepositoryPermissionInheritEnabled: (input: {
     repository_id: string;
   }) => Promise<RepoRepositoryPermissionInheritSetting>;
+  showNotificationSubscription: (input: {
+    repository_id: string;
+    type: "internal_message" | "email" | "qyweixin" | "feishu" | "dingding";
+  }) => Promise<RepoNotificationSubscription>;
+  showRepositoryInheritSettingSource: (input: {
+    repository_id: string;
+    name: "protected_branches" | "protected_tags" | "merge_requests";
+  }) => Promise<RepoRepositoryInheritSettingSource>;
+  showRepositoryInheritSetting: (input: {
+    repository_id: string;
+  }) => Promise<{
+    settings: RepoProjectSettingsInheritCfg[];
+    total?: number;
+  }>;
+  showRepositoryGeneralPolicy: (input: {
+    repository_id: string;
+  }) => Promise<RepoProjectGeneralPolicy>;
+  showUserRefPermission: (input: {
+    repository_id: string;
+    target_ref: string;
+    action?: string;
+    change_request_iid?: string | number;
+  }) => Promise<RepoUserRefPermission>;
   showProjectSettingsInheritCfg: (input: {
     project_id: string;
   }) => Promise<{
@@ -2589,6 +2653,46 @@ export function createRepoClient(
       )) as RepoRepositoryPermissionInheritSetting;
 
       return extractRepositoryPermissionInheritSetting(rawResponse);
+    },
+    async showNotificationSubscription(input) {
+      const query = new URLSearchParams({
+        type: input.type
+      });
+      return (await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/notification-subscriptions/subscription?${query.toString()}`
+      )) as RepoNotificationSubscription;
+    },
+    async showRepositoryInheritSettingSource(input) {
+      const query = new URLSearchParams({
+        name: input.name
+      });
+      return (await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/inherit-setting-source?${query.toString()}`
+      )) as RepoRepositoryInheritSettingSource;
+    },
+    async showRepositoryInheritSetting(input) {
+      const rawResponse = (await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/inherit-setting`
+      )) as Parameters<typeof extractProjectSettingsInheritCfgResponse>[0];
+
+      return extractProjectSettingsInheritCfgResponse(rawResponse);
+    },
+    async showRepositoryGeneralPolicy(input) {
+      const rawResponse = (await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/general-policy`
+      )) as Parameters<typeof extractProjectGeneralPolicy>[0];
+
+      return extractProjectGeneralPolicy(rawResponse);
+    },
+    async showUserRefPermission(input) {
+      const query = new URLSearchParams({
+        target_ref: input.target_ref
+      });
+      appendOptionalQuery(query, input, ["action", "change_request_iid"]);
+
+      return (await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/user-ref-permission?${query.toString()}`
+      )) as RepoUserRefPermission;
     },
     async showProjectSettingsInheritCfg(input) {
       const rawResponse = (await _http.get(

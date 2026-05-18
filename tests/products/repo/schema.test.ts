@@ -8,7 +8,12 @@ import {
   repoListSubmodulesInput,
   repoListPersonalRepositoryImportRecordsInput,
   repoMergeMergeRequestInput,
+  repoShowNotificationSubscriptionInput,
+  repoShowRepositoryGeneralPolicyInput,
+  repoShowRepositoryInheritSettingInput,
+  repoShowRepositoryInheritSettingSourceInput,
   repoShowRepoLastStatisticsInput,
+  repoShowUserRefPermissionInput,
   repoStartRemoteMirrorSynchronizationInput,
   repoUpdateRemoteMirrorInput
 } from "../../../src/products/repo/schemas.js";
@@ -90,6 +95,74 @@ describe("repo schemas", () => {
       sort: "asc",
       view: "basic"
     });
+  });
+
+  it("accepts repository setting read query fields", () => {
+    expect(
+      repoShowNotificationSubscriptionInput.parse({
+        repository_id: "100",
+        type: "email"
+      })
+    ).toEqual({
+      repository_id: "100",
+      type: "email"
+    });
+
+    expect(
+      repoShowRepositoryInheritSettingSourceInput.parse({
+        repository_id: "100",
+        name: "merge_requests"
+      })
+    ).toEqual({
+      repository_id: "100",
+      name: "merge_requests"
+    });
+
+    expect(repoShowRepositoryInheritSettingInput.parse({ repository_id: "100" })).toEqual({
+      repository_id: "100"
+    });
+
+    expect(repoShowRepositoryGeneralPolicyInput.parse({ repository_id: "100" })).toEqual({
+      repository_id: "100"
+    });
+
+    expect(
+      repoShowUserRefPermissionInput.parse({
+        repository_id: "100",
+        target_ref: "refs/heads/master",
+        action: "push",
+        change_request_iid: 7
+      })
+    ).toEqual({
+      repository_id: "100",
+      target_ref: "refs/heads/master",
+      action: "push",
+      change_request_iid: 7
+    });
+  });
+
+  it("requires repository setting read discriminators", () => {
+    expect(() =>
+      repoShowNotificationSubscriptionInput.parse({
+        repository_id: "100",
+        type: "sms"
+      })
+    ).toThrow();
+
+    expect(() =>
+      repoShowRepositoryInheritSettingSourceInput.parse({
+        repository_id: "100",
+        name: "branches"
+      })
+    ).toThrow();
+
+    expect(() =>
+      repoShowUserRefPermissionInput.parse({
+        repository_id: "100",
+        target_ref: "refs/heads/master",
+        action: "delete"
+      })
+    ).toThrow();
   });
 
   it("accepts merge request creation optional fields", () => {

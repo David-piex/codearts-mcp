@@ -338,6 +338,31 @@ export const repoShowRepositoryPermissionInheritEnabledInput = z.object({
   repository_id: idSchema
 });
 
+export const repoShowNotificationSubscriptionInput = z.object({
+  repository_id: idSchema,
+  type: z.enum(["internal_message", "email", "qyweixin", "feishu", "dingding"])
+});
+
+export const repoShowRepositoryInheritSettingSourceInput = z.object({
+  repository_id: idSchema,
+  name: z.enum(["protected_branches", "protected_tags", "merge_requests"])
+});
+
+export const repoShowRepositoryInheritSettingInput = z.object({
+  repository_id: idSchema
+});
+
+export const repoShowRepositoryGeneralPolicyInput = z.object({
+  repository_id: idSchema
+});
+
+export const repoShowUserRefPermissionInput = z.object({
+  repository_id: idSchema,
+  target_ref: z.string().min(1).max(210),
+  action: z.enum(["read", "review", "approval", "create-change", "merge", "create-delete", "push"]).optional(),
+  change_request_iid: z.union([z.string().min(1), z.number().int().positive()]).optional()
+});
+
 export const repoShowProjectSettingsInheritCfgInput = z.object({
   project_id: idSchema
 });

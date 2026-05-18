@@ -213,6 +213,54 @@ describe("createRepoClient", () => {
     ]);
   });
 
+  it("uses official repository setting read paths", async () => {
+    const calls: string[] = [];
+    const client = createRepoClient({
+      get: async (path: string) => {
+        calls.push(path);
+        if (path.includes("notification-subscriptions")) {
+          return { repository_id: 100, enabled: true };
+        }
+        if (path.includes("inherit-setting-source")) {
+          return { source_type: "project", source_id: "project-1", upward_inherit_editable: true };
+        }
+        if (path.endsWith("/inherit-setting")) {
+          return [{ name: "merge_requests", inherit_mod: "inherit" }];
+        }
+        if (path.endsWith("/general-policy")) {
+          return { disable_fork: false, generate_pre_merge_ref: true };
+        }
+        if (path.includes("/user-ref-permission?")) {
+          return { push: { has_permission: true, is_protect: true } };
+        }
+
+        throw new Error(`unexpected path: ${path}`);
+      }
+    } as never);
+
+    await client.showNotificationSubscription({ repository_id: "100", type: "email" });
+    await client.showRepositoryInheritSettingSource({
+      repository_id: "100",
+      name: "merge_requests"
+    });
+    await client.showRepositoryInheritSetting({ repository_id: "100" });
+    await client.showRepositoryGeneralPolicy({ repository_id: "100" });
+    await client.showUserRefPermission({
+      repository_id: "100",
+      target_ref: "refs/head/master",
+      action: "push",
+      change_request_iid: 7
+    });
+
+    expect(calls).toEqual([
+      "/v4/repositories/100/notification-subscriptions/subscription?type=email",
+      "/v4/repositories/100/inherit-setting-source?name=merge_requests",
+      "/v4/repositories/100/inherit-setting",
+      "/v4/repositories/100/general-policy",
+      "/v4/repositories/100/user-ref-permission?target_ref=refs%2Fhead%2Fmaster&action=push&change_request_iid=7"
+    ]);
+  });
+
   it("supports wrapped tag responses from the live provider", async () => {
     const client = createRepoClient({
       get: async () => ({

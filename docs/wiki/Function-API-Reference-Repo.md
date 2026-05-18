@@ -6,7 +6,7 @@
 
 模块：`代码仓库`
 
-API 数量：`117`
+API 数量：`122`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
@@ -7030,6 +7030,66 @@ API 数量：`117`
 }
 ```
 
+### repo_show_notification_subscription
+
+所属模块：`代码仓库`
+
+说明：执行代码仓库的notificationsubscription。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_show_notification_subscription",
+    "arguments": {
+      "repository_id": "<repository_id>",
+      "type": "<type>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `repository_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repository_id` ↔ 原始 CodeArts 代码仓库 API 中的仓库 ID 字段，通常位于路径参数或 Query 参数。<br>CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
+| `type` | 是 | `"internal_message" \| "email" \| "qyweixin" \| "feishu" \| "dingding"` |  | 字段对应：<br>MCP 字段 `type` ↔ 原始 CodeArts 代码仓库 API 同名字段 `type`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>类型字段，用于区分资源类别、操作类别或查询类别；具体取值以该接口的业务对象为准。可选值：`internal_message`、`email`、`qyweixin`、`feishu`、`dingding`。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "repository_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "internal_message",
+        "email",
+        "qyweixin",
+        "feishu",
+        "dingding"
+      ]
+    }
+  },
+  "required": [
+    "repository_id",
+    "type"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### repo_show_project_e2e_setting
 
 所属模块：`代码仓库`
@@ -7536,6 +7596,158 @@ API 数量：`117`
 }
 ```
 
+### repo_show_repository_general_policy
+
+所属模块：`代码仓库`
+
+说明：执行代码仓库的仓库generalpolicy。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_show_repository_general_policy",
+    "arguments": {
+      "repository_id": "<repository_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `repository_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repository_id` ↔ 原始 CodeArts 代码仓库 API 中的仓库 ID 字段，通常位于路径参数或 Query 参数。<br>CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "repository_id": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "repository_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### repo_show_repository_inherit_setting
+
+所属模块：`代码仓库`
+
+说明：执行代码仓库的仓库inheritsetting。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_show_repository_inherit_setting",
+    "arguments": {
+      "repository_id": "<repository_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `repository_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repository_id` ↔ 原始 CodeArts 代码仓库 API 中的仓库 ID 字段，通常位于路径参数或 Query 参数。<br>CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "repository_id": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "repository_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### repo_show_repository_inherit_setting_source
+
+所属模块：`代码仓库`
+
+说明：执行代码仓库的仓库inheritsetting来源。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_show_repository_inherit_setting_source",
+    "arguments": {
+      "repository_id": "<repository_id>",
+      "name": "<name>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `repository_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repository_id` ↔ 原始 CodeArts 代码仓库 API 中的仓库 ID 字段，通常位于路径参数或 Query 参数。<br>CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
+| `name` | 是 | `"protected_branches" \| "protected_tags" \| "merge_requests"` |  | 字段对应：<br>MCP 字段 `name` ↔ 原始 CodeArts 代码仓库 API 同名字段 `name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。可选值：`protected_branches`、`protected_tags`、`merge_requests`。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "repository_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "name": {
+      "type": "string",
+      "enum": [
+        "protected_branches",
+        "protected_tags",
+        "merge_requests"
+      ]
+    }
+  },
+  "required": [
+    "repository_id",
+    "name"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### repo_show_repository_permission_inherit_enabled
 
 所属模块：`代码仓库`
@@ -7882,6 +8094,87 @@ API 数量：`117`
   },
   "required": [
     "tenant_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### repo_show_user_ref_permission
+
+所属模块：`代码仓库`
+
+说明：执行代码仓库的用户refpermission。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_show_user_ref_permission",
+    "arguments": {
+      "repository_id": "<repository_id>",
+      "target_ref": "<target_ref>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `repository_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repository_id` ↔ 原始 CodeArts 代码仓库 API 中的仓库 ID 字段，通常位于路径参数或 Query 参数。<br>CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
+| `target_ref` | 是 | `string` |  | 字段对应：<br>MCP 字段 `target_ref` ↔ 原始 CodeArts 代码仓库 API 同名字段 `target_ref`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `action` | 否 | `"read" \| "review" \| "approval" \| "create-change" \| "merge" \| "create-delete" \| "push"` |  | 字段对应：<br>MCP 字段 `action` ↔ 原始 CodeArts 代码仓库 API 同名字段 `action`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。可选值：`read`、`review`、`approval`、`create-change`、`merge`、`create-delete`、`push`。 |
+| `change_request_iid` | 否 | `string \| integer` |  | 字段对应：<br>MCP 字段 `change_request_iid` ↔ 原始 CodeArts 代码仓库 API 同名字段 `change_request_iid`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "repository_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "target_ref": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 210
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "read",
+        "review",
+        "approval",
+        "create-change",
+        "merge",
+        "create-delete",
+        "push"
+      ]
+    },
+    "change_request_iid": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "integer",
+          "exclusiveMinimum": 0
+        }
+      ]
+    }
+  },
+  "required": [
+    "repository_id",
+    "target_ref"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
