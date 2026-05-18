@@ -70,6 +70,7 @@ import {
   repoListProjectProtectedTagsInput,
   repoListProjectDeployKeysInput,
   repoListProtectedBranchesInput,
+  repoListRefsInput,
   repoListRepositoryProtectedRefsUserGroupsInput,
   repoListRepositoryContributorsInput,
   repoListRepositoryFilePushPermissionsInput,
@@ -77,6 +78,7 @@ import {
   repoListRepositoryLanguagesInput,
   repoListRepositoryLabelsInput,
   repoListRepositoryMembersInput,
+  repoListRepositoryNavigationReferencesInput,
   repoListRepositoryResourcePermissionsInput,
   repoListRepositoryTemplatesInput,
   repoListRepositoryUserGroupsInput,
@@ -88,6 +90,8 @@ import {
   repoReviewMergeRequestInput,
   repoShowNotificationSubscriptionInput,
   repoShowNotificationSubscriptionsStatusInput,
+  repoShowBlobsInput,
+  repoShowDiffLinesInput,
   repoShowGroupE2eSettingInput,
   repoShowLastPushEventInRepositoryInput,
   repoShowMergeRequestStatisticInput,
@@ -119,6 +123,9 @@ import {
   repoShowRepositoryGeneralPolicyInput,
   repoShowRepositoryInheritSettingInput,
   repoShowRepositoryInheritSettingSourceInput,
+  repoShowRepositoryNavigationLanguageInput,
+  repoShowRepositoryNavigationOutlineInput,
+  repoShowRepositoryNavigationSchemaInput,
   repoShowRepositoryPermissionInheritEnabledInput,
   repoShowRepositoryStatisticsStatusInput,
   repoShowRepositoryStatisticsSummaryInput,
@@ -183,12 +190,14 @@ import { createRepoListProjectProtectedTagsHandler } from "../products/repo/tool
 import { createRepoListProjectDeployKeysHandler } from "../products/repo/tools/list-project-deploy-keys.js";
 import { createRepoListProjectSubgroupsAndRepositoriesHandler } from "../products/repo/tools/list-project-subgroups-and-repositories.js";
 import { createRepoListProtectedBranchesHandler } from "../products/repo/tools/list-protected-branches.js";
+import { createRepoListRefsHandler } from "../products/repo/tools/list-refs.js";
 import { createRepoListRepositoriesHandler } from "../products/repo/tools/list-repositories.js";
 import { createRepoListRepositoryCommitRulesHandler } from "../products/repo/tools/list-repository-commit-rules.js";
 import { createRepoListRepositoryContributorsHandler } from "../products/repo/tools/list-repository-contributors.js";
 import { createRepoListRepositoryForksHandler } from "../products/repo/tools/list-repository-forks.js";
 import { createRepoListRepositoryLanguagesHandler } from "../products/repo/tools/list-repository-languages.js";
 import { createRepoListRepositoryMembersHandler } from "../products/repo/tools/list-repository-members.js";
+import { createRepoListRepositoryNavigationReferencesHandler } from "../products/repo/tools/list-repository-navigation-references.js";
 import { createRepoListRepositoryProtectedRefsUserGroupsHandler } from "../products/repo/tools/list-repository-protected-refs-user-groups.js";
 import { createRepoListRepositoryDeployKeysHandler } from "../products/repo/tools/list-repository-deploy-keys.js";
 import { createRepoListRepositoryWebhookLogsHandler } from "../products/repo/tools/list-repository-webhook-logs.js";
@@ -201,7 +210,9 @@ import { createRepoListRepositoryWorkItemsHandler } from "../products/repo/tools
 import { createRepoListTagsHandler } from "../products/repo/tools/list-tags.js";
 import { createRepoListSubmodulesHandler } from "../products/repo/tools/list-submodules.js";
 import { createRepoMergeMergeRequestHandler } from "../products/repo/tools/merge-merge-request.js";
+import { createRepoShowBlobsHandler } from "../products/repo/tools/show-blobs.js";
 import { createRepoShowCommitStatisticsHandler } from "../products/repo/tools/show-commit-statistics.js";
+import { createRepoShowDiffLinesHandler } from "../products/repo/tools/show-diff-lines.js";
 import { createRepoShowLastPushEventInRepositoryHandler } from "../products/repo/tools/show-last-push-event-in-repository.js";
 import { createRepoShowMergeRequestStatisticHandler } from "../products/repo/tools/show-merge-request-statistic.js";
 import { createRepoShowMergeRequestVotesHandler } from "../products/repo/tools/show-merge-request-votes.js";
@@ -213,6 +224,9 @@ import { createRepoShowRepositoryGeneralCommitRuleHandler } from "../products/re
 import { createRepoShowRepositoryGeneralPolicyHandler } from "../products/repo/tools/show-repository-general-policy.js";
 import { createRepoShowRepositoryInheritSettingHandler } from "../products/repo/tools/show-repository-inherit-setting.js";
 import { createRepoShowRepositoryInheritSettingSourceHandler } from "../products/repo/tools/show-repository-inherit-setting-source.js";
+import { createRepoShowRepositoryNavigationLanguageHandler } from "../products/repo/tools/show-repository-navigation-language.js";
+import { createRepoShowRepositoryNavigationOutlineHandler } from "../products/repo/tools/show-repository-navigation-outline.js";
+import { createRepoShowRepositoryNavigationSchemaHandler } from "../products/repo/tools/show-repository-navigation-schema.js";
 import { createRepoShowRepositoryStatisticsStatusHandler } from "../products/repo/tools/show-repository-statistics-status.js";
 import { createRepoShowRepositoryStatisticsSummaryHandler } from "../products/repo/tools/show-repository-statistics-summary.js";
 import { createRepoShowRepositoryWatermarkHandler } from "../products/repo/tools/show-repository-watermark.js";
@@ -363,6 +377,7 @@ const repoToolDefinitions = {
   "repo_create_project_protected_branches": defineProductTool({ description: "Create CodeArts Repo project protected branch", inputSchema: repoCreateProjectProtectedBranchesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCreateProjectProtectedBranchesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCreateProjectProtectedBranchesHandler }),
   "repo_list_group_protected_branches": defineProductTool({ description: "List CodeArts Repo group protected branches", inputSchema: repoListGroupProtectedBranchesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListGroupProtectedBranchesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListGroupProtectedBranchesHandler }),
   "repo_list_protected_branches": defineProductTool({ description: "List CodeArts Repo protected branches", inputSchema: repoListProtectedBranchesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListProtectedBranchesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListProtectedBranchesHandler }),
+  "repo_list_refs": defineProductTool({ description: "List CodeArts Repo branch or tag refs", inputSchema: repoListRefsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRefsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRefsHandler }),
   "repo_get_protected_branch": defineProductTool({ description: "Get CodeArts Repo protected branch detail", inputSchema: repoGetProtectedBranchInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoGetProtectedBranchHandler>[0] }) => clients.repoClient, createProductHandler: createRepoGetProtectedBranchHandler }),
   "repo_batch_create_protected_branches": defineProductTool({ description: "Batch create CodeArts Repo protected branches", inputSchema: repoBatchCreateProtectedBranchesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoBatchCreateProtectedBranchesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoBatchCreateProtectedBranchesHandler }),
   "repo_batch_update_protected_branches": defineProductTool({ description: "Batch update CodeArts Repo protected branches", inputSchema: repoBatchUpdateProtectedBranchesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoBatchUpdateProtectedBranchesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoBatchUpdateProtectedBranchesHandler }),
@@ -392,6 +407,12 @@ const repoToolDefinitions = {
   "repo_list_repository_contributors": defineProductTool({ description: "List CodeArts Repo repository contributors", inputSchema: repoListRepositoryContributorsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoryContributorsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoryContributorsHandler }),
   "repo_list_repository_forks": defineProductTool({ description: "List CodeArts Repo repository forks", inputSchema: repoListRepositoryForksInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoryForksHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoryForksHandler }),
   "repo_list_repository_members": defineProductTool({ description: "List CodeArts Repo repository members", inputSchema: repoListRepositoryMembersInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoryMembersHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoryMembersHandler }),
+  "repo_show_blobs": defineProductTool({ description: "Show CodeArts Repo blob content", inputSchema: repoShowBlobsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowBlobsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowBlobsHandler }),
+  "repo_show_diff_lines": defineProductTool({ description: "Show CodeArts Repo file lines at a commit", inputSchema: repoShowDiffLinesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowDiffLinesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowDiffLinesHandler }),
+  "repo_list_repository_navigation_references": defineProductTool({ description: "List CodeArts Repo code navigation references", inputSchema: repoListRepositoryNavigationReferencesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoryNavigationReferencesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoryNavigationReferencesHandler }),
+  "repo_show_repository_navigation_outline": defineProductTool({ description: "Show CodeArts Repo code navigation outline", inputSchema: repoShowRepositoryNavigationOutlineInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowRepositoryNavigationOutlineHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowRepositoryNavigationOutlineHandler }),
+  "repo_show_repository_navigation_schema": defineProductTool({ description: "Show CodeArts Repo code navigation schema", inputSchema: repoShowRepositoryNavigationSchemaInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowRepositoryNavigationSchemaHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowRepositoryNavigationSchemaHandler }),
+  "repo_show_repository_navigation_language": defineProductTool({ description: "Show CodeArts Repo code navigation languages", inputSchema: repoShowRepositoryNavigationLanguageInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowRepositoryNavigationLanguageHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowRepositoryNavigationLanguageHandler }),
   "repo_list_repository_user_groups": defineProductTool({ description: "List CodeArts Repo repository user groups", inputSchema: repoListRepositoryUserGroupsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoryUserGroupsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoryUserGroupsHandler }),
   "repo_list_personal_recent_push_events": defineProductTool({ description: "List CodeArts Repo personal recent push events", inputSchema: repoListPersonalRecentPushEventsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListPersonalRecentPushEventsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListPersonalRecentPushEventsHandler }),
   "repo_list_repository_commit_rules": defineProductTool({ description: "List CodeArts Repo repository commit rules", inputSchema: repoListRepositoryCommitRulesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoryCommitRulesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoryCommitRulesHandler }),

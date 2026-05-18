@@ -299,6 +299,27 @@ describe("createRepoClient", () => {
         if (path.includes("/members?")) {
           return [{ user_id: 9, user_name: "dev" }];
         }
+        if (path.includes("/repository/blobs?")) {
+          return [{ blob_id: "blob-1", encoding: "base64", content: "MTIz" }];
+        }
+        if (path.includes("/diff-lines?")) {
+          return { text: "line 1" };
+        }
+        if (path.includes("/repository/refs?")) {
+          return ["master", "release"];
+        }
+        if (path.includes("/repository/nav/references?")) {
+          return { result: "0", defs: [{ tag_name: "Demo" }], refs: [] };
+        }
+        if (path.includes("/repository/nav/outline?")) {
+          return { result: "0", file_path: "Demo.java", symbols: [] };
+        }
+        if (path.endsWith("/repository/nav/schema")) {
+          return { schema: { version: "VERSION 1.5" } };
+        }
+        if (path.endsWith("/repository/nav/language")) {
+          return { language_list: [{ name: "Java", extension_list: [".java"] }] };
+        }
         if (path.startsWith("/v4/user/recent-push-events?")) {
           return [{ created_at: "2026-05-18T00:00:00Z", push_data: { ref: "master" } }];
         }
@@ -355,6 +376,35 @@ describe("createRepoClient", () => {
       action: "approve",
       search: "dev"
     });
+    await client.showBlobs({ repository_id: "100", blob_id: "blob-1" });
+    await client.showDiffLines({
+      repository_id: "100",
+      file_path: "src/Demo.java",
+      commit_id: "abc123",
+      start: 1,
+      end: 20
+    });
+    await client.listRefs({ repository_id: "100", page: 2, page_size: 10, type: "tag", search: "v1" });
+    await client.listRepositoryNavigationReferences({
+      repository_id: "100",
+      symbol: "Demo",
+      language: "Java",
+      blob: "blob-1",
+      file_path: "src/Demo.java",
+      path: "src/Demo.java",
+      revision: "abc123",
+      ref: "master"
+    });
+    await client.showRepositoryNavigationOutline({
+      repository_id: "100",
+      language: "Java",
+      blob: "blob-1",
+      file_path: "src/Demo.java",
+      revision: "abc123",
+      ref: "master"
+    });
+    await client.showRepositoryNavigationSchema({ repository_id: "100" });
+    await client.showRepositoryNavigationLanguage({ repository_id: "100" });
     await client.listPersonalRecentPushEvents({ project_id: "project-uuid-1", size: 5 });
     await client.listRepositoryTemplates({
       page: 1,
@@ -381,6 +431,13 @@ describe("createRepoClient", () => {
       "/v4/groups/group-1/repositories?offset=10&limit=10&search=demo&order_by=name&sort=asc",
       "/v4/repositories/100/user-groups?offset=10&limit=10&search=team",
       "/v4/repositories/100/members?offset=10&limit=10&search=dev&permission=mr&action=approve",
+      "/v4/repositories/100/repository/blobs?blob_id=blob-1",
+      "/v4/repositories/100/diff-lines?file_path=src%2FDemo.java&commit_id=abc123&start=1&end=20",
+      "/v4/repositories/100/repository/refs?offset=10&limit=10&search=v1&type=tag",
+      "/v4/repositories/100/repository/nav/references?symbol=Demo&language=Java&blob=blob-1&file_path=src%2FDemo.java&path=src%2FDemo.java&revision=abc123&ref=master",
+      "/v4/repositories/100/repository/nav/outline?language=Java&blob=blob-1&file_path=src%2FDemo.java&revision=abc123&ref=master",
+      "/v4/repositories/100/repository/nav/schema",
+      "/v4/repositories/100/repository/nav/language",
       "/v4/user/recent-push-events?project_id=project-uuid-1&size=5",
       "/v4/repository-templates?offset=0&limit=20&search=demo&type=SYSTEM%2CUSER&platform=Web&pipeline=SupportPipeline&enter_type=AI&date_order=down&language=Java&project_id=project-uuid-1"
     ]);

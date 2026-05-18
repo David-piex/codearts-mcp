@@ -64,6 +64,60 @@ export const repoListRepositoryMembersInput = pagingSchema.extend({
   action: z.string().min(1).max(64).optional()
 });
 
+export const repoShowBlobsInput = z.object({
+  repository_id: idSchema,
+  blob_id: z.string().min(1).max(2000)
+});
+
+export const repoShowDiffLinesInput = z.object({
+  repository_id: idSchema,
+  file_path: z.string().min(1).max(10000),
+  commit_id: z.string().min(1).max(40),
+  start: z.number().int().positive(),
+  end: z.number().int().positive()
+}).refine((value) => value.end >= value.start, {
+  message: "end must be greater than or equal to start",
+  path: ["end"]
+}).refine((value) => value.end - value.start + 1 <= 1000, {
+  message: "diff line range must not exceed 1000 lines",
+  path: ["end"]
+});
+
+export const repoListRefsInput = pagingSchema.extend({
+  repository_id: idSchema,
+  page_size: z.number().int().positive().max(100).default(20),
+  type: z.enum(["branch", "tag"]).default("branch"),
+  search: z.string().min(1).max(256).optional()
+});
+
+export const repoListRepositoryNavigationReferencesInput = z.object({
+  repository_id: idSchema,
+  path: z.string().min(1).max(100000).optional(),
+  revision: z.string().min(1).max(2000).optional(),
+  ref: z.string().min(1).max(2000).optional(),
+  symbol: z.string().min(1).max(10000),
+  language: z.enum(["C", "C++", "Go", "Java", "JavaScript", "PHP", "Python", "Ruby", "Rust"]),
+  blob: z.string().min(1).max(2000),
+  file_path: z.string().min(1).max(10000)
+});
+
+export const repoShowRepositoryNavigationOutlineInput = z.object({
+  repository_id: idSchema,
+  revision: z.string().min(1).max(2000).optional(),
+  ref: z.string().min(1).max(2000).optional(),
+  language: z.enum(["C", "C++", "Go", "Java", "JavaScript", "PHP", "Python", "Ruby", "Rust"]),
+  blob: z.string().min(1).max(2000),
+  file_path: z.string().min(1).max(10000)
+});
+
+export const repoShowRepositoryNavigationSchemaInput = z.object({
+  repository_id: idSchema
+});
+
+export const repoShowRepositoryNavigationLanguageInput = z.object({
+  repository_id: idSchema
+});
+
 export const repoListProtectedBranchesInput = pagingSchema.extend({
   repository_id: idSchema,
   page_size: z.number().int().positive().max(100).default(20),

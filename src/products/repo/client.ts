@@ -376,6 +376,74 @@ export type RepoMergeRequestStatistic = {
   votes?: number;
 };
 
+export type RepoBlob = {
+  size?: number;
+  encoding?: string;
+  content?: string;
+  blob_id?: string;
+};
+
+export type RepoDiffLines = {
+  text?: string;
+};
+
+export type RepoNavigationEntry = {
+  tag_name?: string;
+  file_path?: string;
+  blob?: string;
+  line_image?: string;
+  line_number?: number;
+  range?: string;
+  syntax_type?: string;
+  revision?: string;
+  extend?: string;
+};
+
+export type RepoNavigationSymbolNode = {
+  def?: RepoNavigationEntry;
+  children?: RepoNavigationSymbolNode[] | null;
+};
+
+export type RepoNavigationReferences = {
+  result?: string;
+  message?: string;
+  defs?: RepoNavigationEntry[];
+  refs?: RepoNavigationEntry[];
+};
+
+export type RepoNavigationOutline = {
+  result?: string;
+  message?: string;
+  file_path?: string;
+  revision?: string;
+  symbols?: RepoNavigationSymbolNode[];
+};
+
+export type RepoNavigationSchema = {
+  version?: string;
+  maximum_file_size?: number;
+  maximum_line_length?: number;
+  maximum_truncate_line?: number;
+  create_at?: string;
+  update_at?: string;
+  rebuild_at?: string;
+  last_build_at?: string;
+  build_times?: number;
+  query_times?: number;
+  outline_times?: number;
+};
+
+export type RepoNavigationLanguage = {
+  name?: string;
+  extension_list?: string[];
+};
+
+export type RepoNavigationLanguageInfo = {
+  result?: string;
+  message?: string;
+  language_list?: RepoNavigationLanguage[];
+};
+
 export type RepoE2eSetting = {
   e2e_policies?: {
     auto_extract?: boolean;
@@ -1761,6 +1829,47 @@ export type RepoClient = {
     members: RepoRepositoryMember[];
     total?: number;
   }>;
+  showBlobs: (input: { repository_id: string; blob_id: string }) => Promise<{
+    blobs: RepoBlob[];
+    total?: number;
+  }>;
+  showDiffLines: (input: {
+    repository_id: string;
+    file_path: string;
+    commit_id: string;
+    start: number;
+    end: number;
+  }) => Promise<RepoDiffLines>;
+  listRefs: (input: {
+    repository_id: string;
+    page: number;
+    page_size: number;
+    type?: "branch" | "tag";
+    search?: string;
+  }) => Promise<{
+    refs: string[];
+    total?: number;
+  }>;
+  listRepositoryNavigationReferences: (input: {
+    repository_id: string;
+    symbol: string;
+    language: string;
+    blob: string;
+    file_path: string;
+    path?: string;
+    revision?: string;
+    ref?: string;
+  }) => Promise<RepoNavigationReferences>;
+  showRepositoryNavigationOutline: (input: {
+    repository_id: string;
+    language: string;
+    blob: string;
+    file_path: string;
+    revision?: string;
+    ref?: string;
+  }) => Promise<RepoNavigationOutline>;
+  showRepositoryNavigationSchema: (input: { repository_id: string }) => Promise<RepoNavigationSchema>;
+  showRepositoryNavigationLanguage: (input: { repository_id: string }) => Promise<RepoNavigationLanguageInfo>;
   listTenantRepositories: (input: {
     repository_name?: string;
     member_number?: number;
@@ -4537,6 +4646,133 @@ export function createRepoClient(
       return {
         members: extracted.items,
         total: extracted.total
+      };
+    },
+    async showBlobs(input) {
+      const query = new URLSearchParams({ blob_id: input.blob_id });
+      const response = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/blobs?${query.toString()}`
+      );
+      const extracted = extractArrayFromFields<RepoBlob>(response as RepoBlob[] | Record<string, unknown>, [
+        "blobs",
+        "items",
+        "records"
+      ]);
+
+      return {
+        blobs: extracted.items,
+        total: extracted.total
+      };
+    },
+    async showDiffLines(input) {
+      const query = new URLSearchParams({
+        file_path: input.file_path,
+        commit_id: input.commit_id,
+        start: String(input.start),
+        end: String(input.end)
+      });
+      const response = unwrapRepoPayload(await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/diff-lines?${query.toString()}`
+      ));
+
+      if (typeof response === "string") {
+        return { text: response };
+      }
+
+      const payload = response as Record<string, unknown>;
+      const result = payload.result && typeof payload.result === "object"
+        ? payload.result as RepoDiffLines
+        : undefined;
+
+      return {
+        text: typeof payload.text === "string" ? payload.text : result?.text
+      };
+    },
+    async listRefs(input) {
+      const query = buildOffsetLimitQuery(input);
+      appendOptionalQuery(query, input, ["type"]);
+      const response = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/refs?${query.toString()}`
+      );
+      const extracted = extractArrayFromFields<string>(response as string[] | Record<string, unknown>, [
+        "refs",
+        "items",
+        "records"
+      ]);
+
+      return {
+        refs: extracted.items,
+        total: extracted.total
+      };
+    },
+    async listRepositoryNavigationReferences(input) {
+      const query = new URLSearchParams({
+        symbol: input.symbol,
+        language: input.language,
+        blob: input.blob,
+        file_path: input.file_path
+      });
+      appendOptionalQuery(query, input, ["path", "revision", "ref"]);
+      const response = unwrapRepoPayload(await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/nav/references?${query.toString()}`
+      ));
+      const payload = (typeof response === "object" && response && "result" in response && typeof response.result === "object"
+        ? response.result
+        : response) as RepoNavigationReferences;
+
+      return {
+        result: payload.result,
+        message: payload.message,
+        defs: payload.defs ?? [],
+        refs: payload.refs ?? []
+      };
+    },
+    async showRepositoryNavigationOutline(input) {
+      const query = new URLSearchParams({
+        language: input.language,
+        blob: input.blob,
+        file_path: input.file_path
+      });
+      appendOptionalQuery(query, input, ["revision", "ref"]);
+      const response = unwrapRepoPayload(await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/nav/outline?${query.toString()}`
+      ));
+      const payload = (typeof response === "object" && response && "result" in response && typeof response.result === "object"
+        ? response.result
+        : response) as RepoNavigationOutline;
+
+      return {
+        result: payload.result,
+        message: payload.message,
+        file_path: payload.file_path,
+        revision: payload.revision,
+        symbols: payload.symbols ?? []
+      };
+    },
+    async showRepositoryNavigationSchema(input) {
+      const response = unwrapRepoPayload(await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/nav/schema`
+      ));
+      const payload = (typeof response === "object" && response && "schema" in response
+        ? (response as { schema?: RepoNavigationSchema }).schema
+        : typeof response === "object" && response && "result" in response && typeof response.result === "object"
+          ? (response.result as { schema?: RepoNavigationSchema }).schema ?? response.result
+          : response) as RepoNavigationSchema | undefined;
+
+      return payload ?? {};
+    },
+    async showRepositoryNavigationLanguage(input) {
+      const response = unwrapRepoPayload(await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/nav/language`
+      ));
+      const payload = (typeof response === "object" && response && "result" in response && typeof response.result === "object"
+        ? response.result
+        : response) as RepoNavigationLanguageInfo;
+
+      return {
+        result: payload.result,
+        message: payload.message,
+        language_list: payload.language_list ?? []
       };
     },
     async listTenantRepositories(input) {

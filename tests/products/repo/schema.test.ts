@@ -6,10 +6,12 @@ import {
   repoListCurrentUserRepositoriesInput,
   repoListGroupRepositoriesInput,
   repoListMergeRequestCommitsInput,
+  repoListRefsInput,
   repoListRepositoryContributorsInput,
   repoListRepositoryCommitRulesInput,
   repoListRepositoryForksInput,
   repoListRepositoryMembersInput,
+  repoListRepositoryNavigationReferencesInput,
   repoListRepositoryUserGroupsInput,
   repoListSubmodulesInput,
   repoListPersonalRepositoryImportRecordsInput,
@@ -20,10 +22,15 @@ import {
   repoShowNotificationSubscriptionsStatusInput,
   repoShowMergeRequestStatisticInput,
   repoShowMergeRequestVotesInput,
+  repoShowBlobsInput,
+  repoShowDiffLinesInput,
   repoShowRepositoryGeneralCommitRuleInput,
   repoShowRepositoryGeneralPolicyInput,
   repoShowRepositoryInheritSettingInput,
   repoShowRepositoryInheritSettingSourceInput,
+  repoShowRepositoryNavigationLanguageInput,
+  repoShowRepositoryNavigationOutlineInput,
+  repoShowRepositoryNavigationSchemaInput,
   repoShowRepositoryWatermarkInput,
   repoShowRepoLastStatisticsInput,
   repoShowUserRefPermissionInput,
@@ -167,6 +174,100 @@ describe("repo schemas", () => {
       action: "approve",
       search: "dev"
     });
+  });
+
+  it("accepts repository content and navigation read query fields", () => {
+    expect(
+      repoShowBlobsInput.parse({
+        repository_id: "100",
+        blob_id: "63c469b50f8a4f2c2e734c05cab664939ffe5256"
+      })
+    ).toEqual({
+      repository_id: "100",
+      blob_id: "63c469b50f8a4f2c2e734c05cab664939ffe5256"
+    });
+
+    expect(
+      repoShowDiffLinesInput.parse({
+        repository_id: "100",
+        file_path: "src/index.ts",
+        commit_id: "abc123",
+        start: 1,
+        end: 1000
+      })
+    ).toMatchObject({
+      file_path: "src/index.ts",
+      commit_id: "abc123",
+      start: 1,
+      end: 1000
+    });
+
+    expect(
+      repoListRefsInput.parse({
+        repository_id: "100",
+        type: "tag",
+        search: "v1",
+        page: 2,
+        page_size: 50
+      })
+    ).toMatchObject({
+      repository_id: "100",
+      type: "tag",
+      search: "v1",
+      page: 2,
+      page_size: 50
+    });
+
+    expect(
+      repoListRepositoryNavigationReferencesInput.parse({
+        repository_id: "100",
+        symbol: "Demo",
+        language: "Java",
+        blob: "blob-1",
+        file_path: "src/Demo.java",
+        path: "src/Demo.java",
+        revision: "abc123",
+        ref: "master"
+      })
+    ).toMatchObject({
+      symbol: "Demo",
+      language: "Java",
+      blob: "blob-1",
+      file_path: "src/Demo.java"
+    });
+
+    expect(
+      repoShowRepositoryNavigationOutlineInput.parse({
+        repository_id: "100",
+        language: "Go",
+        blob: "blob-1",
+        file_path: "main.go"
+      })
+    ).toMatchObject({
+      repository_id: "100",
+      language: "Go",
+      blob: "blob-1",
+      file_path: "main.go"
+    });
+
+    expect(repoShowRepositoryNavigationSchemaInput.parse({ repository_id: "100" })).toEqual({
+      repository_id: "100"
+    });
+    expect(repoShowRepositoryNavigationLanguageInput.parse({ repository_id: "100" })).toEqual({
+      repository_id: "100"
+    });
+  });
+
+  it("rejects overlarge diff line ranges", () => {
+    expect(() =>
+      repoShowDiffLinesInput.parse({
+        repository_id: "100",
+        file_path: "src/index.ts",
+        commit_id: "abc123",
+        start: 1,
+        end: 1001
+      })
+    ).toThrow("diff line range must not exceed 1000 lines");
   });
 
   it("accepts repository setting read query fields", () => {
