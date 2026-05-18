@@ -387,6 +387,68 @@ export type RepoDiffLines = {
   text?: string;
 };
 
+export type RepoTreeObject = {
+  id?: string;
+  name?: string;
+  type?: string;
+  path?: string;
+  mode?: string;
+  submodule_link?: string;
+  submodule_branch?: string;
+  md5?: string;
+};
+
+export type RepoReadmeFile = {
+  blob_id?: string;
+  content?: string;
+  encoding?: string;
+  file_name?: string;
+  file_path?: string;
+  file_type?: string;
+  size?: number;
+};
+
+export type RepoReviewCategory = {
+  key?: string;
+  name_zh?: string;
+  name_en?: string;
+  sub_categories?: RepoReviewCategory[];
+};
+
+export type RepoRequiredAttribute = {
+  name?: string;
+  is_required?: boolean;
+};
+
+export type RepoReviewModule = {
+  key?: string;
+  name_zh?: string;
+  name_en?: string;
+};
+
+export type RepoReviewSetting = {
+  categories_and_modules_enabled?: boolean;
+  secondary_category_enabled?: boolean;
+  primary_categories?: RepoReviewCategory[];
+  review_default_categories?: RepoReviewCategory[];
+  review_customized_categories?: RepoReviewCategory[];
+  review_modules?: RepoReviewModule[];
+  secondary_category_type?: string;
+  secondary_categories?: RepoReviewCategory[];
+  note_required_attributes?: RepoRequiredAttribute[];
+  codehub_default_categories?: RepoReviewCategory[];
+  hicode_default_categories?: RepoReviewCategory[];
+};
+
+export type RepoNoteRequiredAttributes = {
+  note_required_attributes?: RepoRequiredAttribute[];
+};
+
+export type RepoDefaultReviewCategories = {
+  codehub_default_categories?: RepoReviewCategory[];
+  hicode_default_categories?: RepoReviewCategory[];
+};
+
 export type RepoNavigationEntry = {
   tag_name?: string;
   file_path?: string;
@@ -1850,6 +1912,44 @@ export type RepoClient = {
     refs: string[];
     total?: number;
   }>;
+  listRepositoryTrees: (input: {
+    repository_id: string;
+    page: number;
+    page_size: number;
+    ref?: string;
+    path?: string;
+    recursive?: boolean;
+  }) => Promise<{
+    trees: RepoTreeObject[];
+    total?: number;
+  }>;
+  listRepositoryFileList: (input: {
+    repository_id: string;
+    page: number;
+    page_size: number;
+    ref_name?: string;
+    search?: string;
+  }) => Promise<{
+    files: string[];
+    total?: number;
+  }>;
+  showRepositoryReadmeFile: (input: { repository_id: string }) => Promise<RepoReadmeFile>;
+  listCommitAssociatedRefs: (input: {
+    repository_id: string;
+    sha: string;
+    page: number;
+    page_size: number;
+    type: "branch" | "tag";
+  }) => Promise<{
+    refs: string[];
+    total?: number;
+  }>;
+  showReviewSetting: (input: {
+    repository_id: string;
+    with_default_review_categories?: boolean;
+  }) => Promise<RepoReviewSetting>;
+  showNoteRequiredAttributes: (input: { repository_id: string }) => Promise<RepoNoteRequiredAttributes>;
+  listDefaultReviewCategories: () => Promise<RepoDefaultReviewCategories>;
   listRepositoryNavigationReferences: (input: {
     repository_id: string;
     symbol: string;
@@ -4704,6 +4804,105 @@ export function createRepoClient(
         refs: extracted.items,
         total: extracted.total
       };
+    },
+    async listRepositoryTrees(input) {
+      const query = buildOffsetLimitQuery(input);
+      appendOptionalQuery(query, input, ["ref", "path", "recursive"]);
+      const response = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/trees?${query.toString()}`
+      );
+      const extracted = extractArrayFromFields<RepoTreeObject>(response as RepoTreeObject[] | Record<string, unknown>, [
+        "trees",
+        "items",
+        "records"
+      ]);
+
+      return {
+        trees: extracted.items,
+        total: extracted.total
+      };
+    },
+    async listRepositoryFileList(input) {
+      const query = buildOffsetLimitQuery(input);
+      appendOptionalQuery(query, input, ["ref_name", "search"]);
+      const response = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/file-list?${query.toString()}`
+      );
+      const extracted = extractArrayFromFields<string>(response as string[] | Record<string, unknown>, [
+        "files",
+        "file_list",
+        "items",
+        "records"
+      ]);
+
+      return {
+        files: extracted.items,
+        total: extracted.total
+      };
+    },
+    async showRepositoryReadmeFile(input) {
+      const response = unwrapRepoPayload(await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/readme-file`
+      ));
+      const payload = (typeof response === "object" && response && "result" in response && typeof response.result === "object"
+        ? response.result
+        : response) as RepoReadmeFile | undefined;
+
+      return payload ?? {};
+    },
+    async listCommitAssociatedRefs(input) {
+      const query = buildOffsetLimitQuery(input);
+      query.set("type", input.type);
+      const response = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/commits/${encodeURIComponent(input.sha)}/refs?${query.toString()}`
+      );
+      const extracted = extractArrayFromFields<string>(response as string[] | Record<string, unknown>, [
+        "refs",
+        "branches",
+        "tags",
+        "items",
+        "records"
+      ]);
+
+      return {
+        refs: extracted.items,
+        total: extracted.total
+      };
+    },
+    async showReviewSetting(input) {
+      const query = new URLSearchParams();
+      appendOptionalQuery(query, input, ["with_default_review_categories"]);
+      const queryString = query.toString();
+      const response = unwrapRepoPayload(await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/review-setting${queryString ? `?${queryString}` : ""}`
+      ));
+      const payload = (typeof response === "object" && response && "result" in response && typeof response.result === "object"
+        ? response.result
+        : response) as RepoReviewSetting | undefined;
+
+      return payload ?? {};
+    },
+    async showNoteRequiredAttributes(input) {
+      const response = unwrapRepoPayload(await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/setting/note-required-attributes`
+      ));
+      if (Array.isArray(response)) {
+        return { note_required_attributes: response as RepoRequiredAttribute[] };
+      }
+
+      const payload = (typeof response === "object" && response && "result" in response && typeof response.result === "object"
+        ? response.result
+        : response) as RepoNoteRequiredAttributes | RepoRequiredAttribute[] | undefined;
+
+      return Array.isArray(payload) ? { note_required_attributes: payload } : payload ?? {};
+    },
+    async listDefaultReviewCategories() {
+      const response = unwrapRepoPayload(await _http.get("/v4/default-review-categories"));
+      const payload = (typeof response === "object" && response && "result" in response && typeof response.result === "object"
+        ? response.result
+        : response) as RepoDefaultReviewCategories | undefined;
+
+      return payload ?? {};
     },
     async listRepositoryNavigationReferences(input) {
       const query = new URLSearchParams({

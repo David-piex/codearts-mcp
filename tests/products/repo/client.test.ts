@@ -308,6 +308,27 @@ describe("createRepoClient", () => {
         if (path.includes("/repository/refs?")) {
           return ["master", "release"];
         }
+        if (path.includes("/repository/trees?")) {
+          return [{ id: "1", name: "src", type: "tree", path: "src" }];
+        }
+        if (path.includes("/repository/file-list?")) {
+          return ["src/Demo.java"];
+        }
+        if (path.endsWith("/repository/readme-file")) {
+          return { blob_id: "blob-readme", file_name: "README.md", encoding: "base64" };
+        }
+        if (path.includes("/repository/commits/abc123/refs?")) {
+          return ["master"];
+        }
+        if (path.includes("/review-setting?")) {
+          return { categories_and_modules_enabled: true };
+        }
+        if (path.endsWith("/setting/note-required-attributes")) {
+          return { note_required_attributes: [{ name: "Body", is_required: true }] };
+        }
+        if (path === "/v4/default-review-categories") {
+          return { codehub_default_categories: [{ key: "code_style" }] };
+        }
         if (path.includes("/repository/nav/references?")) {
           return { result: "0", defs: [{ tag_name: "Demo" }], refs: [] };
         }
@@ -385,6 +406,32 @@ describe("createRepoClient", () => {
       end: 20
     });
     await client.listRefs({ repository_id: "100", page: 2, page_size: 10, type: "tag", search: "v1" });
+    await client.listRepositoryTrees({
+      repository_id: "100",
+      page: 2,
+      page_size: 10,
+      ref: "master",
+      path: "src",
+      recursive: true
+    });
+    await client.listRepositoryFileList({
+      repository_id: "100",
+      page: 1,
+      page_size: 20,
+      ref_name: "master",
+      search: "Demo"
+    });
+    await client.showRepositoryReadmeFile({ repository_id: "100" });
+    await client.listCommitAssociatedRefs({
+      repository_id: "100",
+      sha: "abc123",
+      page: 1,
+      page_size: 20,
+      type: "branch"
+    });
+    await client.showReviewSetting({ repository_id: "100", with_default_review_categories: true });
+    await client.showNoteRequiredAttributes({ repository_id: "100" });
+    await client.listDefaultReviewCategories();
     await client.listRepositoryNavigationReferences({
       repository_id: "100",
       symbol: "Demo",
@@ -434,6 +481,13 @@ describe("createRepoClient", () => {
       "/v4/repositories/100/repository/blobs?blob_id=blob-1",
       "/v4/repositories/100/diff-lines?file_path=src%2FDemo.java&commit_id=abc123&start=1&end=20",
       "/v4/repositories/100/repository/refs?offset=10&limit=10&search=v1&type=tag",
+      "/v4/repositories/100/repository/trees?offset=10&limit=10&ref=master&path=src&recursive=true",
+      "/v4/repositories/100/repository/file-list?offset=0&limit=20&search=Demo&ref_name=master",
+      "/v4/repositories/100/repository/readme-file",
+      "/v4/repositories/100/repository/commits/abc123/refs?offset=0&limit=20&type=branch",
+      "/v4/repositories/100/review-setting?with_default_review_categories=true",
+      "/v4/repositories/100/setting/note-required-attributes",
+      "/v4/default-review-categories",
       "/v4/repositories/100/repository/nav/references?symbol=Demo&language=Java&blob=blob-1&file_path=src%2FDemo.java&path=src%2FDemo.java&revision=abc123&ref=master",
       "/v4/repositories/100/repository/nav/outline?language=Java&blob=blob-1&file_path=src%2FDemo.java&revision=abc123&ref=master",
       "/v4/repositories/100/repository/nav/schema",

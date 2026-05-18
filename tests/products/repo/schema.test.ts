@@ -2,16 +2,20 @@ import { describe, expect, it } from "vitest";
 import {
   repoCreateMergeRequestInput,
   repoImportRepositoryInput,
+  repoListCommitAssociatedRefsInput,
   repoListCommitsInput,
   repoListCurrentUserRepositoriesInput,
+  repoListDefaultReviewCategoriesInput,
   repoListGroupRepositoriesInput,
   repoListMergeRequestCommitsInput,
   repoListRefsInput,
   repoListRepositoryContributorsInput,
   repoListRepositoryCommitRulesInput,
+  repoListRepositoryFileListInput,
   repoListRepositoryForksInput,
   repoListRepositoryMembersInput,
   repoListRepositoryNavigationReferencesInput,
+  repoListRepositoryTreesInput,
   repoListRepositoryUserGroupsInput,
   repoListSubmodulesInput,
   repoListPersonalRepositoryImportRecordsInput,
@@ -24,6 +28,8 @@ import {
   repoShowMergeRequestVotesInput,
   repoShowBlobsInput,
   repoShowDiffLinesInput,
+  repoShowNoteRequiredAttributesInput,
+  repoShowReviewSettingInput,
   repoShowRepositoryGeneralCommitRuleInput,
   repoShowRepositoryGeneralPolicyInput,
   repoShowRepositoryInheritSettingInput,
@@ -31,6 +37,7 @@ import {
   repoShowRepositoryNavigationLanguageInput,
   repoShowRepositoryNavigationOutlineInput,
   repoShowRepositoryNavigationSchemaInput,
+  repoShowRepositoryReadmeFileInput,
   repoShowRepositoryWatermarkInput,
   repoShowRepoLastStatisticsInput,
   repoShowUserRefPermissionInput,
@@ -217,6 +224,74 @@ describe("repo schemas", () => {
       page: 2,
       page_size: 50
     });
+
+    expect(
+      repoListRepositoryTreesInput.parse({
+        repository_id: "100",
+        ref: "master",
+        path: "src",
+        recursive: true,
+        page: 2,
+        page_size: 50
+      })
+    ).toMatchObject({
+      repository_id: "100",
+      ref: "master",
+      path: "src",
+      recursive: true,
+      page: 2,
+      page_size: 50
+    });
+
+    expect(
+      repoListRepositoryFileListInput.parse({
+        repository_id: "100",
+        ref_name: "master",
+        search: "index",
+        page_size: 50
+      })
+    ).toMatchObject({
+      repository_id: "100",
+      ref_name: "master",
+      search: "index",
+      page: 1,
+      page_size: 50
+    });
+
+    expect(repoShowRepositoryReadmeFileInput.parse({ repository_id: "100" })).toEqual({
+      repository_id: "100"
+    });
+
+    expect(
+      repoListCommitAssociatedRefsInput.parse({
+        repository_id: "100",
+        sha: "abc123",
+        type: "branch",
+        page_size: 20
+      })
+    ).toMatchObject({
+      repository_id: "100",
+      sha: "abc123",
+      type: "branch",
+      page: 1,
+      page_size: 20
+    });
+
+    expect(
+      repoShowReviewSettingInput.parse({
+        repository_id: "100",
+        with_default_review_categories: true
+      })
+    ).toEqual({
+      repository_id: "100",
+      with_default_review_categories: true
+    });
+
+    expect(repoShowNoteRequiredAttributesInput.parse({ repository_id: "100" })).toEqual({
+      repository_id: "100"
+    });
+
+    expect(repoListDefaultReviewCategoriesInput.parse({})).toEqual({});
 
     expect(
       repoListRepositoryNavigationReferencesInput.parse({

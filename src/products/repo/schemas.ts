@@ -90,6 +90,43 @@ export const repoListRefsInput = pagingSchema.extend({
   search: z.string().min(1).max(256).optional()
 });
 
+export const repoListRepositoryTreesInput = pagingSchema.extend({
+  repository_id: idSchema,
+  page_size: z.number().int().positive().max(100).default(20),
+  ref: z.string().min(1).max(2000).optional(),
+  path: z.string().min(1).max(10000).optional(),
+  recursive: z.boolean().optional()
+});
+
+export const repoListRepositoryFileListInput = pagingSchema.extend({
+  repository_id: idSchema,
+  page_size: z.number().int().positive().max(100).default(20),
+  ref_name: z.string().min(1).max(2000).optional(),
+  search: z.string().min(1).max(256).optional()
+});
+
+export const repoShowRepositoryReadmeFileInput = z.object({
+  repository_id: idSchema
+});
+
+export const repoListCommitAssociatedRefsInput = pagingSchema.extend({
+  repository_id: idSchema,
+  sha: z.string().min(1).max(2000),
+  page_size: z.number().int().positive().max(100).default(20),
+  type: z.enum(["branch", "tag"])
+});
+
+export const repoShowReviewSettingInput = z.object({
+  repository_id: idSchema,
+  with_default_review_categories: z.boolean().optional()
+});
+
+export const repoShowNoteRequiredAttributesInput = z.object({
+  repository_id: idSchema
+});
+
+export const repoListDefaultReviewCategoriesInput = z.object({});
+
 export const repoListRepositoryNavigationReferencesInput = z.object({
   repository_id: idSchema,
   path: z.string().min(1).max(100000).optional(),
