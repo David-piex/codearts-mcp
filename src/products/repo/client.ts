@@ -450,6 +450,19 @@ export type RepoNotificationSubscription = {
   }>;
 };
 
+export type RepoNotificationSubscriptionState = {
+  config_source?: string;
+  enabled?: boolean;
+};
+
+export type RepoNotificationSubscriptionsStatus = {
+  internal_message?: RepoNotificationSubscriptionState;
+  email?: RepoNotificationSubscriptionState;
+  qyweixin?: RepoNotificationSubscriptionState;
+  feishu?: RepoNotificationSubscriptionState;
+  dingding?: RepoNotificationSubscriptionState;
+};
+
 export type RepoRepositoryInheritSettingSource = {
   source_type?: string;
   source_id?: string;
@@ -475,6 +488,96 @@ export type RepoWatermarkSetting = {
   watermark?: boolean;
   can_update?: boolean;
   view_watermark?: boolean;
+};
+
+export type RepoRepositoryGeneralCommitRule = {
+  reject_unsigned_commits?: boolean;
+  reject_not_signed_by_gpg?: boolean;
+  deny_delete_tag?: boolean;
+  prevent_secrets?: boolean;
+  deny_force_push?: boolean;
+};
+
+export type RepoRepositoryCommitRule = {
+  id?: number | string;
+  repository_id?: number | string;
+  commit_message_regex?: string;
+  commit_message_negative_regex?: string;
+  prohibited_file_name_regex?: string;
+  author_email_regex?: string;
+  max_file_size?: number;
+  allowed_max_file_size?: number;
+  effective_date?: string;
+  binary_gate_enabled?: boolean;
+  privileged_users?: Array<{
+    id?: number | string;
+    name?: string;
+    username?: string;
+    state?: string;
+    service_license_status?: number | null;
+    name_cn?: string;
+    nick_name?: string;
+    tenant_name?: string;
+  }>;
+  allowed_modify_binary?: boolean;
+  allowed_binary_file_name_regex?: string;
+  author_regex?: unknown;
+  updated_at?: string;
+  name?: string;
+  branch_name?: string;
+  created_at?: string;
+  skip_rule_check?: boolean;
+  skip_rule_end_date?: string;
+};
+
+export type RepoPersonalRecentPushEvent = {
+  author?: {
+    id?: number | string;
+    username?: string;
+  };
+  repository?: {
+    id?: number | string;
+    description?: string;
+    name?: string;
+    name_with_namespace?: string;
+    path?: string;
+    path_with_namespace?: string;
+    created_at?: string;
+    updated_at?: string;
+    archived?: boolean;
+    ssh_url_to_repo?: string;
+    http_url_to_repo?: string;
+    project_id?: string;
+    project_name?: string;
+    develop_mode?: string;
+    moderation_result?: boolean;
+  };
+  push_data?: {
+    commit_count?: number;
+    action?: string;
+    ref_type?: string;
+    commit_from?: string | null;
+    commit_to?: string | null;
+    ref?: string;
+    commit_title?: string;
+  };
+  created_at?: string;
+};
+
+export type RepoRepositoryTemplate = {
+  repository_id?: number | string;
+  name?: string;
+  system?: boolean;
+  tags?: string[];
+  description?: string;
+  language?: string;
+  repository_name?: string;
+  brief_introduction?: string;
+  created_at?: string;
+  used_times?: number;
+  liked_times?: number;
+  creator_name?: string;
+  https_url?: string;
 };
 
 export type RepoProjectSubgroupOrRepository = {
@@ -788,6 +891,9 @@ export type RepoClient = {
     repository_id: string;
     type: "internal_message" | "email" | "qyweixin" | "feishu" | "dingding";
   }) => Promise<RepoNotificationSubscription>;
+  showNotificationSubscriptionsStatus: (input: {
+    repository_id: string;
+  }) => Promise<RepoNotificationSubscriptionsStatus>;
   showRepositoryInheritSettingSource: (input: {
     repository_id: string;
     name: "protected_branches" | "protected_tags" | "merge_requests";
@@ -801,6 +907,20 @@ export type RepoClient = {
   showRepositoryGeneralPolicy: (input: {
     repository_id: string;
   }) => Promise<RepoProjectGeneralPolicy>;
+  showRepositoryGeneralCommitRule: (input: {
+    repository_id: string;
+  }) => Promise<RepoRepositoryGeneralCommitRule>;
+  listRepositoryCommitRules: (input: {
+    repository_id: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    rules: RepoRepositoryCommitRule[];
+    total?: number;
+  }>;
+  showRepositoryWatermark: (input: {
+    repository_id: string;
+  }) => Promise<RepoWatermarkSetting>;
   showUserRefPermission: (input: {
     repository_id: string;
     target_ref: string;
@@ -1368,6 +1488,28 @@ export type RepoClient = {
   showRepositoryStatisticsSummary: (input: { repository_id: string }) => Promise<RepoRepositoryStatisticsSummary>;
   showRepoStatisticsSummary: (input: { repository_id: string }) => Promise<RepoStatsSummary>;
   showRepoLastStatistics: (input: { repository_id: string; branch_name: string }) => Promise<RepoLastStatistics>;
+  listPersonalRecentPushEvents: (input: {
+    project_id?: string;
+    size?: number;
+  }) => Promise<{
+    events: RepoPersonalRecentPushEvent[];
+    total?: number;
+  }>;
+  listRepositoryTemplates: (input: {
+    page: number;
+    page_size: number;
+    type: "SYSTEM,USER" | "SYSTEM" | "USER";
+    platform?: string;
+    pipeline?: "SupportPipeline" | "UnsupportedPipeline";
+    search?: string;
+    enter_type?: string;
+    date_order?: "up" | "down";
+    language?: string;
+    project_id?: string;
+  }) => Promise<{
+    templates: RepoRepositoryTemplate[];
+    total?: number;
+  }>;
   listSubmodules: (input: {
     repository_id: string;
     sha: string;
@@ -2662,6 +2804,11 @@ export function createRepoClient(
         `/v4/repositories/${encodeURIComponent(input.repository_id)}/notification-subscriptions/subscription?${query.toString()}`
       )) as RepoNotificationSubscription;
     },
+    async showNotificationSubscriptionsStatus(input) {
+      return (await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/notification-subscriptions/status`
+      )) as RepoNotificationSubscriptionsStatus;
+    },
     async showRepositoryInheritSettingSource(input) {
       const query = new URLSearchParams({
         name: input.name
@@ -2683,6 +2830,32 @@ export function createRepoClient(
       )) as Parameters<typeof extractProjectGeneralPolicy>[0];
 
       return extractProjectGeneralPolicy(rawResponse);
+    },
+    async showRepositoryGeneralCommitRule(input) {
+      return (await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/general-commit-rule`
+      )) as RepoRepositoryGeneralCommitRule;
+    },
+    async listRepositoryCommitRules(input) {
+      const query = buildOffsetLimitQuery(input);
+      const response = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/commit-rules?${query.toString()}`
+      );
+      const extracted = extractArrayWithOptionalTotal<RepoRepositoryCommitRule>(
+        response as RepoRepositoryCommitRule[]
+      );
+
+      return {
+        rules: extracted.items,
+        total: extracted.total
+      };
+    },
+    async showRepositoryWatermark(input) {
+      const rawResponse = (await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/watermark`
+      )) as RepoWatermarkSetting;
+
+      return extractWatermarkSetting(rawResponse);
     },
     async showUserRefPermission(input) {
       const query = new URLSearchParams({
@@ -3778,6 +3951,40 @@ export function createRepoClient(
       return (await _http.get(
         `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/stats/last-statistics?${query.toString()}`
       )) as RepoLastStatistics;
+    },
+    async listPersonalRecentPushEvents(input) {
+      const query = new URLSearchParams();
+      appendOptionalQuery(query, input as Record<string, unknown>, ["project_id", "size"]);
+      const queryString = query.toString();
+      const response = await _http.get(`/v4/user/recent-push-events${queryString ? `?${queryString}` : ""}`);
+      const extracted = extractArrayWithOptionalTotal<RepoPersonalRecentPushEvent>(
+        response as RepoPersonalRecentPushEvent[]
+      );
+
+      return {
+        events: extracted.items,
+        total: extracted.total
+      };
+    },
+    async listRepositoryTemplates(input) {
+      const query = buildOffsetLimitQuery(input);
+      query.set("type", input.type);
+      appendOptionalQuery(query, input, [
+        "platform",
+        "pipeline",
+        "search",
+        "enter_type",
+        "date_order",
+        "language",
+        "project_id"
+      ]);
+      const response = await _http.get(`/v4/repository-templates?${query.toString()}`);
+      const extracted = extractArrayWithOptionalTotal<RepoRepositoryTemplate>(response as RepoRepositoryTemplate[]);
+
+      return {
+        templates: extracted.items,
+        total: extracted.total
+      };
     },
     async listSubmodules(input) {
       const query = buildOffsetLimitQuery(input);

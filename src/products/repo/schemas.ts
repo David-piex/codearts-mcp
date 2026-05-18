@@ -343,6 +343,10 @@ export const repoShowNotificationSubscriptionInput = z.object({
   type: z.enum(["internal_message", "email", "qyweixin", "feishu", "dingding"])
 });
 
+export const repoShowNotificationSubscriptionsStatusInput = z.object({
+  repository_id: idSchema
+});
+
 export const repoShowRepositoryInheritSettingSourceInput = z.object({
   repository_id: idSchema,
   name: z.enum(["protected_branches", "protected_tags", "merge_requests"])
@@ -356,11 +360,41 @@ export const repoShowRepositoryGeneralPolicyInput = z.object({
   repository_id: idSchema
 });
 
+export const repoShowRepositoryGeneralCommitRuleInput = z.object({
+  repository_id: idSchema
+});
+
+export const repoListRepositoryCommitRulesInput = pagingSchema.extend({
+  repository_id: idSchema,
+  page_size: z.number().int().positive().max(100).default(20)
+});
+
+export const repoShowRepositoryWatermarkInput = z.object({
+  repository_id: idSchema
+});
+
 export const repoShowUserRefPermissionInput = z.object({
   repository_id: idSchema,
   target_ref: z.string().min(1).max(210),
   action: z.enum(["read", "review", "approval", "create-change", "merge", "create-delete", "push"]).optional(),
   change_request_iid: z.union([z.string().min(1), z.number().int().positive()]).optional()
+});
+
+export const repoListPersonalRecentPushEventsInput = z.object({
+  project_id: idSchema.optional(),
+  size: z.number().int().positive().max(100).optional()
+});
+
+export const repoListRepositoryTemplatesInput = pagingSchema.extend({
+  page_size: z.number().int().positive().max(100).default(20),
+  type: z.enum(["SYSTEM,USER", "SYSTEM", "USER"]).default("SYSTEM,USER"),
+  platform: z.string().min(1).max(64).optional(),
+  pipeline: z.enum(["SupportPipeline", "UnsupportedPipeline"]).optional(),
+  search: z.string().max(50).optional(),
+  enter_type: z.string().min(1).max(64).optional(),
+  date_order: z.enum(["up", "down"]).optional(),
+  language: z.string().min(1).max(64).optional(),
+  project_id: idSchema.optional()
 });
 
 export const repoShowProjectSettingsInheritCfgInput = z.object({

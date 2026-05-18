@@ -261,6 +261,62 @@ describe("createRepoClient", () => {
     ]);
   });
 
+  it("uses official repository rule, watermark, push event and template read paths", async () => {
+    const calls: string[] = [];
+    const client = createRepoClient({
+      get: async (path: string) => {
+        calls.push(path);
+        if (path.endsWith("/notification-subscriptions/status")) {
+          return { email: { enabled: true, config_source: "repo" } };
+        }
+        if (path.endsWith("/general-commit-rule")) {
+          return { reject_unsigned_commits: true, deny_force_push: false };
+        }
+        if (path.includes("/commit-rules?")) {
+          return [{ id: 1, name: "main", repository_id: 100 }];
+        }
+        if (path.endsWith("/watermark")) {
+          return { watermark: false, view_watermark: true };
+        }
+        if (path.startsWith("/v4/user/recent-push-events?")) {
+          return [{ created_at: "2026-05-18T00:00:00Z", push_data: { ref: "master" } }];
+        }
+        if (path.startsWith("/v4/repository-templates?")) {
+          return [{ repository_id: 10, name: "Java Web Demo", system: true }];
+        }
+
+        throw new Error(`unexpected path: ${path}`);
+      }
+    } as never);
+
+    await client.showNotificationSubscriptionsStatus({ repository_id: "100" });
+    await client.showRepositoryGeneralCommitRule({ repository_id: "100" });
+    await client.listRepositoryCommitRules({ repository_id: "100", page: 2, page_size: 10 });
+    await client.showRepositoryWatermark({ repository_id: "100" });
+    await client.listPersonalRecentPushEvents({ project_id: "project-uuid-1", size: 5 });
+    await client.listRepositoryTemplates({
+      page: 1,
+      page_size: 20,
+      type: "SYSTEM,USER",
+      platform: "Web",
+      pipeline: "SupportPipeline",
+      search: "demo",
+      enter_type: "AI",
+      date_order: "down",
+      language: "Java",
+      project_id: "project-uuid-1"
+    });
+
+    expect(calls).toEqual([
+      "/v4/repositories/100/notification-subscriptions/status",
+      "/v4/repositories/100/general-commit-rule",
+      "/v4/repositories/100/commit-rules?offset=10&limit=10",
+      "/v4/repositories/100/watermark",
+      "/v4/user/recent-push-events?project_id=project-uuid-1&size=5",
+      "/v4/repository-templates?offset=0&limit=20&search=demo&type=SYSTEM%2CUSER&platform=Web&pipeline=SupportPipeline&enter_type=AI&date_order=down&language=Java&project_id=project-uuid-1"
+    ]);
+  });
+
   it("supports wrapped tag responses from the live provider", async () => {
     const client = createRepoClient({
       get: async () => ({

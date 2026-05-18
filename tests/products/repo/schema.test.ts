@@ -4,14 +4,20 @@ import {
   repoImportRepositoryInput,
   repoListCommitsInput,
   repoListRepositoryContributorsInput,
+  repoListRepositoryCommitRulesInput,
   repoListRepositoryForksInput,
   repoListSubmodulesInput,
   repoListPersonalRepositoryImportRecordsInput,
+  repoListPersonalRecentPushEventsInput,
+  repoListRepositoryTemplatesInput,
   repoMergeMergeRequestInput,
   repoShowNotificationSubscriptionInput,
+  repoShowNotificationSubscriptionsStatusInput,
+  repoShowRepositoryGeneralCommitRuleInput,
   repoShowRepositoryGeneralPolicyInput,
   repoShowRepositoryInheritSettingInput,
   repoShowRepositoryInheritSettingSourceInput,
+  repoShowRepositoryWatermarkInput,
   repoShowRepoLastStatisticsInput,
   repoShowUserRefPermissionInput,
   repoStartRemoteMirrorSynchronizationInput,
@@ -124,6 +130,60 @@ describe("repo schemas", () => {
 
     expect(repoShowRepositoryGeneralPolicyInput.parse({ repository_id: "100" })).toEqual({
       repository_id: "100"
+    });
+
+    expect(repoShowNotificationSubscriptionsStatusInput.parse({ repository_id: "100" })).toEqual({
+      repository_id: "100"
+    });
+
+    expect(repoShowRepositoryGeneralCommitRuleInput.parse({ repository_id: "100" })).toEqual({
+      repository_id: "100"
+    });
+
+    expect(
+      repoListRepositoryCommitRulesInput.parse({
+        repository_id: "100",
+        page: 2,
+        page_size: 100
+      })
+    ).toMatchObject({
+      repository_id: "100",
+      page: 2,
+      page_size: 100
+    });
+
+    expect(repoShowRepositoryWatermarkInput.parse({ repository_id: "100" })).toEqual({
+      repository_id: "100"
+    });
+
+    expect(
+      repoListPersonalRecentPushEventsInput.parse({
+        project_id: "project-uuid-1",
+        size: 10
+      })
+    ).toEqual({
+      project_id: "project-uuid-1",
+      size: 10
+    });
+
+    expect(
+      repoListRepositoryTemplatesInput.parse({
+        page_size: 100,
+        type: "SYSTEM",
+        platform: "Web",
+        pipeline: "SupportPipeline",
+        search: "demo",
+        enter_type: "AI",
+        date_order: "down",
+        language: "Java",
+        project_id: "project-uuid-1"
+      })
+    ).toMatchObject({
+      page: 1,
+      page_size: 100,
+      type: "SYSTEM",
+      pipeline: "SupportPipeline",
+      date_order: "down"
     });
 
     expect(
