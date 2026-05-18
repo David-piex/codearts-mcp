@@ -4,8 +4,7 @@ import { reqGetWorkItemIssueDetailsInput as reqGetWorkItemIssueDetailsInputFromB
 import { reqGetWorkItemIssueDetailsInput } from "../../../../src/products/req/schemas/work-item.js";
 import {
   createReqGetWorkItemIssueDetailsHandler,
-  mapReqWorkItemIssueDetails,
-  mapReqWorkItemIssueDetailsFallback
+  mapReqWorkItemIssueDetails
 } from "../../../../src/products/req/tools/get-work-item-issue-details.js";
 
 describe("reqGetWorkItemIssueDetailsInput exports", () => {
@@ -27,55 +26,47 @@ describe("reqGetWorkItemIssueDetailsInput exports", () => {
 });
 
 describe("mapReqWorkItemIssueDetails", () => {
-  it("returns normalized deep issue detail data", () => {
+  it("returns normalized aggregated issue detail data", () => {
     const result = mapReqWorkItemIssueDetails({
-      id: "2884248",
-      subject: "33333",
-      description: "<p>story desc</p>",
-      created_on: "1754307805000",
-      updated_on: "1754378971000",
-      status: { id: 1, name: "新建" },
-      tracker: { id: 7, name: "Story" },
-      project: { identifier: "project-1", name: "Project A", id: 10 },
-      module: { id: 8, name: "网关" },
-      parent_issue: { id: 200, name: "Parent story" },
-      custom_fields: [{ name: "业务域", value: "支付" }],
-      accessories_list: [{ attachment_id: 26262, file_name: "demo.json" }],
-      inner_text: "latest comment"
+      workItem: {
+        id: "2884248",
+        subject: "33333",
+        description: "<p>story desc</p>",
+        status: { id: 1, name: "New" },
+        tracker_name: "Story"
+      },
+      comments: [
+        {
+          id: "10",
+          comment: "first comment",
+          created_time: "2026-05-18T08:00:00Z",
+          timestamp: 100,
+          user: {
+            nick_name: "Alice",
+            user_name: "alice",
+            user_num_id: 1
+          }
+        },
+        {
+          id: "11",
+          comment: "latest comment",
+          created_time: "2026-05-18T09:00:00Z",
+          timestamp: 200,
+          user: {
+            nick_name: "Bob",
+            user_name: "bob",
+            user_num_id: 2
+          }
+        }
+      ]
     });
 
     expect(result.item).toEqual({
       id: "2884248",
       title: "33333",
       description: "<p>story desc</p>",
-      createdOn: "1754307805000",
-      updatedOn: "1754378971000",
-      status: { id: 1, name: "新建" },
-      tracker: { id: 7, name: "Story" },
-      project: { identifier: "project-1", name: "Project A", id: 10 },
-      module: { id: 8, name: "网关" },
-      parentIssue: { id: 200, name: "Parent story" },
-      customFields: [{ name: "业务域", value: "支付" }],
-      attachments: [{ attachment_id: 26262, file_name: "demo.json" }],
-      latestComment: "latest comment"
-    });
-  });
-});
-
-describe("mapReqWorkItemIssueDetailsFallback", () => {
-  it("returns normalized fallback issue detail data", () => {
-    const result = mapReqWorkItemIssueDetailsFallback({
-      id: "2884248",
-      subject: "33333",
-      description: "<p>story desc</p>",
-      status: { id: 1, name: "New" },
-      tracker_name: "Story"
-    });
-
-    expect(result.item).toEqual({
-      id: "2884248",
-      title: "33333",
-      description: "<p>story desc</p>",
+      createdOn: undefined,
+      updatedOn: undefined,
       status: { id: 1, name: "New" },
       tracker: { name: "Story" },
       project: undefined,
@@ -83,73 +74,60 @@ describe("mapReqWorkItemIssueDetailsFallback", () => {
       parentIssue: undefined,
       customFields: [],
       attachments: [],
-      latestComment: undefined,
-      fallbackUsed: true
+      latestComment: "latest comment",
+      comments: [
+        {
+          id: "10",
+          content: "first comment",
+          createdTime: "2026-05-18T08:00:00Z",
+          timestamp: 100,
+          author: {
+            nickName: "Alice",
+            userName: "alice",
+            userNumId: 1
+          }
+        },
+        {
+          id: "11",
+          content: "latest comment",
+          createdTime: "2026-05-18T09:00:00Z",
+          timestamp: 200,
+          author: {
+            nickName: "Bob",
+            userName: "bob",
+            userNumId: 2
+          }
+        }
+      ]
     });
   });
 });
 
 describe("createReqGetWorkItemIssueDetailsHandler", () => {
-  it("returns normalized deep issue detail output", async () => {
+  it("returns normalized aggregated issue detail output", async () => {
     const client = {
-      getWorkItem: vi.fn(),
-      getWorkItemIssueDetails: vi.fn(async () => ({
-        id: "2884248",
-        subject: "33333",
-        description: "<p>story desc</p>",
-        created_on: "1754307805000",
-        updated_on: "1754378971000",
-        status: { id: 1, name: "新建" },
-        tracker: { id: 7, name: "Story" },
-        project: { identifier: "project-1", name: "Project A", id: 10 },
-        module: { id: 8, name: "网关" },
-        parent_issue: { id: 200, name: "Parent story" },
-        custom_fields: [{ name: "业务域", value: "支付" }],
-        accessories_list: [{ attachment_id: 26262, file_name: "demo.json" }],
-        inner_text: "latest comment"
-      }))
-    };
-    const handler = createReqGetWorkItemIssueDetailsHandler(client);
-
-    const result = await handler({
-      project_id: "project-1",
-      work_item_id: "2884248"
-    });
-
-    expect(client.getWorkItemIssueDetails).toHaveBeenCalledWith({
-      project_id: "project-1",
-      work_item_id: "2884248",
-      include: "children,parent"
-    });
-    expect(result.content[0]?.text).toContain("Loaded work item issue details 2884248");
-    expect(result.structuredContent.item).toEqual({
-      id: "2884248",
-      title: "33333",
-      description: "<p>story desc</p>",
-      createdOn: "1754307805000",
-      updatedOn: "1754378971000",
-      status: { id: 1, name: "新建" },
-      tracker: { id: 7, name: "Story" },
-      project: { identifier: "project-1", name: "Project A", id: 10 },
-      module: { id: 8, name: "网关" },
-      parentIssue: { id: 200, name: "Parent story" },
-      customFields: [{ name: "业务域", value: "支付" }],
-      attachments: [{ attachment_id: 26262, file_name: "demo.json" }],
-      latestComment: "latest comment"
-    });
-  });
-
-  it("falls back to basic work item details on provider errors", async () => {
-    const client = {
-      getWorkItemIssueDetails: vi.fn(async () => {
-        throw new AppError("provider_error", "网络繁忙，请稍后再试", "DEV_21_50000", "req-1", 400);
-      }),
       getWorkItem: vi.fn(async () => ({
         id: "2884248",
         subject: "33333",
         description: "<p>story desc</p>",
         status: { id: 1, name: "New" },
         tracker_name: "Story"
+      })),
+      listWorkItemComments: vi.fn(async () => ({
+        comments: [
+          {
+            id: "11",
+            comment: "latest comment",
+            created_time: "2026-05-18T09:00:00Z",
+            timestamp: 200,
+            user: {
+              nick_name: "Bob",
+              user_name: "bob",
+              user_num_id: 2
+            }
+          }
+        ],
+        total: 1
       }))
     };
     const handler = createReqGetWorkItemIssueDetailsHandler(client);
@@ -159,20 +137,23 @@ describe("createReqGetWorkItemIssueDetailsHandler", () => {
       work_item_id: "2884248"
     });
 
-    expect(client.getWorkItemIssueDetails).toHaveBeenCalledWith({
-      project_id: "project-1",
-      work_item_id: "2884248",
-      include: "children,parent"
-    });
     expect(client.getWorkItem).toHaveBeenCalledWith({
       project_id: "project-1",
       work_item_id: "2884248"
     });
-    expect(result.content[0]?.text).toContain("Loaded work item issue details 2884248 (fallback)");
+    expect(client.listWorkItemComments).toHaveBeenCalledWith({
+      project_id: "project-1",
+      work_item_id: "2884248",
+      page: 1,
+      page_size: 100
+    });
+    expect(result.content[0]?.text).toContain("Loaded work item issue details 2884248");
     expect(result.structuredContent.item).toEqual({
       id: "2884248",
       title: "33333",
       description: "<p>story desc</p>",
+      createdOn: undefined,
+      updatedOn: undefined,
       status: { id: 1, name: "New" },
       tracker: { name: "Story" },
       project: undefined,
@@ -180,17 +161,29 @@ describe("createReqGetWorkItemIssueDetailsHandler", () => {
       parentIssue: undefined,
       customFields: [],
       attachments: [],
-      latestComment: undefined,
-      fallbackUsed: true
+      latestComment: "latest comment",
+      comments: [
+        {
+          id: "11",
+          content: "latest comment",
+          createdTime: "2026-05-18T09:00:00Z",
+          timestamp: 200,
+          author: {
+            nickName: "Bob",
+            userName: "bob",
+            userNumId: 2
+          }
+        }
+      ]
     });
   });
 
-  it("rethrows non-provider errors", async () => {
+  it("rethrows underlying provider errors from summary reads", async () => {
     const client = {
-      getWorkItemIssueDetails: vi.fn(async () => {
-        throw new AppError("auth_error", "forbidden", "403", "req-2", 403);
+      getWorkItem: vi.fn(async () => {
+        throw new AppError("provider_error", "network busy", "DEV_21_50000", "req-1", 400);
       }),
-      getWorkItem: vi.fn()
+      listWorkItemComments: vi.fn()
     };
     const handler = createReqGetWorkItemIssueDetailsHandler(client);
 
@@ -200,9 +193,11 @@ describe("createReqGetWorkItemIssueDetailsHandler", () => {
         work_item_id: "2884248"
       })
     ).rejects.toMatchObject({
-      category: "auth_error",
-      message: "forbidden"
+      category: "provider_error",
+      message: "network busy",
+      code: "DEV_21_50000",
+      requestId: "req-1",
+      status: 400
     });
-    expect(client.getWorkItem).not.toHaveBeenCalled();
   });
 });

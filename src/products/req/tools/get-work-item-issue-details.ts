@@ -1,98 +1,101 @@
 import { asItemResult } from "../../../contracts/tool-result.js";
-import { AppError } from "../../../core/errors/app-error.js";
 import { reqGetWorkItemIssueDetailsInput } from "../schemas.js";
 
-type ReqWorkItemIssueDetails = {
-  id: number | string;
-  subject?: string;
-  description?: string;
-  created_on?: string;
-  updated_on?: string;
-  status?: Record<string, unknown>;
-  tracker?: Record<string, unknown>;
-  project?: Record<string, unknown>;
-  module?: Record<string, unknown>;
-  parent_issue?: Record<string, unknown>;
-  custom_fields?: Array<Record<string, unknown>>;
-  accessories_list?: Array<Record<string, unknown>>;
-  inner_text?: string;
-};
-
-export function mapReqWorkItemIssueDetails(input: ReqWorkItemIssueDetails) {
-  return asItemResult(`Loaded work item issue details ${input.id}`, {
-    id: String(input.id),
-    title: input.subject,
-    description: input.description,
-    createdOn: input.created_on,
-    updatedOn: input.updated_on,
-    status: input.status,
-    tracker: input.tracker,
-    project: input.project,
-    module: input.module,
-    parentIssue: input.parent_issue,
-    customFields: input.custom_fields ?? [],
-    attachments: input.accessories_list ?? [],
-    latestComment: input.inner_text
-  });
-}
-
-export function mapReqWorkItemIssueDetailsFallback(input: {
+type ReqWorkItemSummary = {
   id: number | string;
   subject: string;
   status?: { id?: number | string; name?: string };
   tracker_name?: string;
   description?: string;
+  start_date?: string | number;
+  due_date?: string | number;
+};
+
+type ReqWorkItemComment = {
+  id: number | string;
+  comment?: string;
+  created_time?: string;
+  timestamp?: number;
+  user?: {
+    nick_name?: string;
+    user_name?: string;
+    user_num_id?: number;
+  };
+};
+
+export function mapReqWorkItemIssueDetails(input: {
+  workItem: ReqWorkItemSummary;
+  comments: ReqWorkItemComment[];
 }) {
-  return asItemResult(`Loaded work item issue details ${input.id} (fallback)`, {
-    id: String(input.id),
-    title: input.subject,
-    description: input.description,
-    status: input.status,
-    tracker: input.tracker_name ? { name: input.tracker_name } : undefined,
+  const latestComment = [...input.comments]
+    .sort((left, right) => {
+      const leftOrder = left.timestamp ?? 0;
+      const rightOrder = right.timestamp ?? 0;
+      return rightOrder - leftOrder;
+    })[0];
+
+  return asItemResult(`Loaded work item issue details ${input.workItem.id}`, {
+    id: String(input.workItem.id),
+    title: input.workItem.subject,
+    description: input.workItem.description,
+    createdOn: undefined,
+    updatedOn: undefined,
+    status: input.workItem.status,
+    tracker: input.workItem.tracker_name ? { name: input.workItem.tracker_name } : undefined,
     project: undefined,
     module: undefined,
     parentIssue: undefined,
     customFields: [],
     attachments: [],
-    latestComment: undefined,
-    fallbackUsed: true
+    latestComment: latestComment?.comment,
+    comments: input.comments.map((comment) => ({
+      id: String(comment.id),
+      content: comment.comment,
+      createdTime: comment.created_time,
+      timestamp: comment.timestamp,
+      author: comment.user
+        ? {
+            nickName: comment.user.nick_name,
+            userName: comment.user.user_name,
+            userNumId: comment.user.user_num_id
+          }
+        : undefined
+    }))
   });
 }
 
 type ReqGetWorkItemIssueDetailsClient = {
-  getWorkItemIssueDetails: (input: {
+  getWorkItem: (input: { project_id: string; work_item_id: string }) => Promise<ReqWorkItemSummary>;
+  listWorkItemComments: (input: {
     project_id: string;
     work_item_id: string;
-    include: string;
-  }) => Promise<ReqWorkItemIssueDetails>;
-  getWorkItem: (input: { project_id: string; work_item_id: string }) => Promise<{
-    id: number | string;
-    subject: string;
-    status?: { id?: number | string; name?: string };
-    tracker_name?: string;
-    description?: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    comments: ReqWorkItemComment[];
+    total?: number;
   }>;
 };
 
 export function createReqGetWorkItemIssueDetailsHandler(client: ReqGetWorkItemIssueDetailsClient) {
   return async (input: unknown) => {
     const parsed = reqGetWorkItemIssueDetailsInput.parse(input);
-    let result;
-
-    try {
-      const response = await client.getWorkItemIssueDetails(parsed);
-      result = mapReqWorkItemIssueDetails(response);
-    } catch (error) {
-      if (!(error instanceof AppError) || error.category !== "provider_error") {
-        throw error;
-      }
-
-      const fallback = await client.getWorkItem({
+    const [workItem, commentResponse] = await Promise.all([
+      client.getWorkItem({
         project_id: parsed.project_id,
         work_item_id: parsed.work_item_id
-      });
-      result = mapReqWorkItemIssueDetailsFallback(fallback);
-    }
+      }),
+      client.listWorkItemComments({
+        project_id: parsed.project_id,
+        work_item_id: parsed.work_item_id,
+        page: 1,
+        page_size: 100
+      })
+    ]);
+    const result = mapReqWorkItemIssueDetails({
+      workItem,
+      comments: commentResponse.comments
+    });
 
     return {
       content: [{ type: "text" as const, text: result.summary }],
