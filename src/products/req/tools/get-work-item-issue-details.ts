@@ -1,4 +1,5 @@
 import { asItemResult } from "../../../contracts/tool-result.js";
+import { AppError } from "../../../core/errors/app-error.js";
 import { reqGetWorkItemIssueDetailsInput } from "../schemas.js";
 
 type ReqWorkItemIssueDetails = {
@@ -35,19 +36,63 @@ export function mapReqWorkItemIssueDetails(input: ReqWorkItemIssueDetails) {
   });
 }
 
+export function mapReqWorkItemIssueDetailsFallback(input: {
+  id: number | string;
+  subject: string;
+  status?: { id?: number | string; name?: string };
+  tracker_name?: string;
+  description?: string;
+}) {
+  return asItemResult(`Loaded work item issue details ${input.id} (fallback)`, {
+    id: String(input.id),
+    title: input.subject,
+    description: input.description,
+    status: input.status,
+    tracker: input.tracker_name ? { name: input.tracker_name } : undefined,
+    project: undefined,
+    module: undefined,
+    parentIssue: undefined,
+    customFields: [],
+    attachments: [],
+    latestComment: undefined,
+    fallbackUsed: true
+  });
+}
+
 type ReqGetWorkItemIssueDetailsClient = {
   getWorkItemIssueDetails: (input: {
     project_id: string;
     work_item_id: string;
     include: string;
   }) => Promise<ReqWorkItemIssueDetails>;
+  getWorkItem: (input: { project_id: string; work_item_id: string }) => Promise<{
+    id: number | string;
+    subject: string;
+    status?: { id?: number | string; name?: string };
+    tracker_name?: string;
+    description?: string;
+  }>;
 };
 
 export function createReqGetWorkItemIssueDetailsHandler(client: ReqGetWorkItemIssueDetailsClient) {
   return async (input: unknown) => {
     const parsed = reqGetWorkItemIssueDetailsInput.parse(input);
-    const response = await client.getWorkItemIssueDetails(parsed);
-    const result = mapReqWorkItemIssueDetails(response);
+    let result;
+
+    try {
+      const response = await client.getWorkItemIssueDetails(parsed);
+      result = mapReqWorkItemIssueDetails(response);
+    } catch (error) {
+      if (!(error instanceof AppError) || error.category !== "provider_error") {
+        throw error;
+      }
+
+      const fallback = await client.getWorkItem({
+        project_id: parsed.project_id,
+        work_item_id: parsed.work_item_id
+      });
+      result = mapReqWorkItemIssueDetailsFallback(fallback);
+    }
 
     return {
       content: [{ type: "text" as const, text: result.summary }],

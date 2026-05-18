@@ -40,7 +40,20 @@ describe("formatToolErrorMessage", () => {
       new AppError("provider_error", "demo boom", undefined, undefined, 500)
     );
 
-    expect(message).toBe("demo boom");
+    expect(message).toContain("demo boom");
+    expect(message).toContain("status=500");
+  });
+
+  it("includes provider status code and request metadata when available", () => {
+    const message = formatToolErrorMessage(
+      "req_get_work_item_issue_details",
+      new AppError("provider_error", "网络繁忙，请稍后再试", "DEV_21_50000", "req-123", 400)
+    );
+
+    expect(message).toContain("网络繁忙，请稍后再试");
+    expect(message).toContain("status=400");
+    expect(message).toContain("code=DEV_21_50000");
+    expect(message).toContain("requestId=req-123");
   });
 
   it("adds a member-role hint for check permission failures", () => {

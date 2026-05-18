@@ -57,20 +57,47 @@ async function readProviderError(response: Response) {
   const requestId = response.headers.get("x-request-id") ?? undefined;
   const contentType = response.headers.get("content-type") ?? "";
 
+  function normalizePayload(payload: {
+    error_code?: string;
+    error_msg?: string;
+    errorCode?: string;
+    errorMsg?: string;
+    error?: {
+      code?: string;
+      reason?: string;
+      message?: string;
+    };
+    status?: string;
+  }) {
+    return {
+      status: response.status,
+      message:
+        payload.error_msg ||
+        payload.errorMsg ||
+        payload.error?.reason ||
+        payload.error?.message ||
+        response.statusText ||
+        "Provider request failed",
+      code: payload.error_code || payload.errorCode || payload.error?.code,
+      requestId
+    };
+  }
+
   if (contentType.includes("application/json")) {
     const payload = (await response.json()) as {
       error_code?: string;
       error_msg?: string;
       errorCode?: string;
       errorMsg?: string;
+      error?: {
+        code?: string;
+        reason?: string;
+        message?: string;
+      };
+      status?: string;
     };
 
-    return {
-      status: response.status,
-      message: payload.error_msg || payload.errorMsg || response.statusText || "Provider request failed",
-      code: payload.error_code || payload.errorCode,
-      requestId
-    };
+    return normalizePayload(payload);
   }
 
   const text = await response.text();
@@ -83,14 +110,15 @@ async function readProviderError(response: Response) {
         error_msg?: string;
         errorCode?: string;
         errorMsg?: string;
+        error?: {
+          code?: string;
+          reason?: string;
+          message?: string;
+        };
+        status?: string;
       };
 
-      return {
-        status: response.status,
-        message: payload.error_msg || payload.errorMsg || response.statusText || "Provider request failed",
-        code: payload.error_code || payload.errorCode,
-        requestId
-      };
+      return normalizePayload(payload);
     } catch {
       // Fall through to raw text when the body only looks like JSON.
     }

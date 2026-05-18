@@ -219,6 +219,34 @@ describe("createHttpClient", () => {
       message: "无执行记录"
     });
   });
+  it("surfaces nested provider error code and reason from json responses", async () => {
+    const fetcher = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          error: { code: "DEV_21_50000", reason: "网络繁忙，请稍后再试" },
+          status: "error"
+        }),
+        {
+          status: 400,
+          headers: {
+            "content-type": "application/json; charset=UTF-8",
+            "x-request-id": "request-4"
+          }
+        }
+      )
+    );
+
+    const client = createClient(fetcher);
+
+    await expect(client.get("/v2/issues/show?issue_id=1&project_uuid=p-1")).rejects.toMatchObject({
+      category: "provider_error",
+      code: "DEV_21_50000",
+      requestId: "request-4",
+      status: 400,
+      message: "网络繁忙，请稍后再试"
+    });
+  });
+
   it("retries a transient GET once before succeeding and records upstream diagnostics", async () => {
     const fetcher = vi
       .fn()

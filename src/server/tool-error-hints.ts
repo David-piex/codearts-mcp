@@ -62,11 +62,18 @@ export function formatToolErrorMessage(toolName: string, error: unknown) {
     return baseMessage;
   }
 
+  const details = [
+    typeof error.status === "number" ? `status=${error.status}` : undefined,
+    error.code ? `code=${error.code}` : undefined,
+    error.requestId ? `requestId=${error.requestId}` : undefined
+  ].filter(Boolean);
+  const header = details.length > 0 ? `${baseMessage}\n\n${details.join("\n")}` : baseMessage;
+
   const hint = buildHint(toolName, error);
 
   if (!hint) {
-    return baseMessage;
+    return header;
   }
 
-  return `${baseMessage}\n\n${hint}`;
+  return `${header}\n\n${hint}`;
 }

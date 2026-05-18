@@ -1,4 +1,5 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { AppError } from "../core/errors/app-error.js";
 import { readHttpAuthRequestInfo } from "./auth-session-tools.js";
 import type { SessionToolExtra } from "./auth-session-runtime.js";
 import type { RateLimiter } from "./rate-limiter.js";
@@ -24,6 +25,8 @@ type ProductToolDefinition<TClient> = {
 };
 
 function createToolErrorResult(toolName: string, error: unknown) {
+  const appError = error instanceof AppError ? error : undefined;
+
   return {
     content: [
       {
@@ -31,7 +34,14 @@ function createToolErrorResult(toolName: string, error: unknown) {
         text: formatToolErrorMessage(toolName, error)
       }
     ],
-    isError: true
+    isError: true,
+    structuredContent: {
+      category: appError?.category ?? "unknown_error",
+      message: appError?.message ?? (error instanceof Error ? error.message : String(error)),
+      code: appError?.code,
+      requestId: appError?.requestId,
+      status: appError?.status
+    }
   };
 }
 
