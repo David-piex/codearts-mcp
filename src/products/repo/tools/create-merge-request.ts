@@ -7,6 +7,7 @@ export function previewCreateMergeRequest(input: {
   target_branch: string;
   title: string;
   dry_run: boolean;
+  work_item_ids?: string[];
   target_project_id?: string;
   assignee_id?: string | number;
   reviewer_ids?: Array<string | number>;
@@ -21,6 +22,7 @@ export function previewCreateMergeRequest(input: {
     sourceBranch: input.source_branch,
     targetBranch: input.target_branch,
     title: input.title,
+    workItemIds: input.work_item_ids,
     targetProjectId: input.target_project_id,
     assigneeId: input.assignee_id,
     reviewerIds: input.reviewer_ids,
@@ -65,6 +67,7 @@ type RepoCreateMergeRequestClient = {
     target_branch: string;
     title: string;
     description?: string;
+    work_item_ids?: string[];
     target_project_id?: string;
     assignee_id?: string | number;
     reviewer_ids?: Array<string | number>;

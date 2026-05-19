@@ -6,7 +6,7 @@
 
 模块：`代码仓库`
 
-API 数量：`159`
+API 数量：`160`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
@@ -1509,6 +1509,7 @@ API 数量：`159`
 | `target_branch` | 是 | `string` |  | 字段对应：<br>MCP 字段 `target_branch` ↔ 原始 CodeArts 代码仓库 API 同名字段 `target_branch`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>目标分支名称。创建合并请求时表示被合入的分支，例如 master、main 或 develop。 |
 | `title` | 是 | `string` |  | 字段对应：<br>MCP 字段 `title` ↔ 原始 CodeArts 代码仓库 API 中的标题字段，常见原字段名为 `name`、`subject` 或 `title`。<br>标题，用于工作项、合并请求、计划等资源的主显示名称。建议简洁说明要做什么。 |
 | `description` | 否 | `string` |  | 字段对应：<br>MCP 字段 `description` ↔ 原始 CodeArts 代码仓库 API 同名字段 `description`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
+| `work_item_ids` | 否 | `array<object>` |  | 字段对应：<br>MCP 字段 `work_item_ids` ↔ 原始 CodeArts 代码仓库 API 中的工作项 ID 集合字段，常见原字段名为 `issue_ids`、`issueIds`、`id`。<br>工作项 ID 列表，用于批量定位对应的 CodeArts 资源。 |
 | `target_project_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `target_project_id` ↔ 原始 CodeArts 代码仓库 API 同名字段 `target_project_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>目标项目 ID，用于跨项目迁移、复制或创建目标资源。 |
 | `assignee_id` | 否 | `string \| integer` |  | 字段对应：<br>MCP 字段 `assignee_id` ↔ 原始 CodeArts 代码仓库 API 同名字段 `assignee_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>负责人用户 ID，用于指定工作项、任务或评审的当前处理人。 |
 | `reviewer_ids` | 否 | `array<string \| integer>` |  | 字段对应：<br>MCP 字段 `reviewer_ids` ↔ 原始 CodeArts 代码仓库 API 同名字段 `reviewer_ids`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>评审人用户 ID 列表。 |
@@ -1543,6 +1544,13 @@ API 数量：`159`
     },
     "description": {
       "type": "string"
+    },
+    "work_item_ids": {
+      "type": "array",
+      "items": {
+        "$ref": "#/properties/repository_id"
+      },
+      "minItems": 1
     },
     "target_project_id": {
       "$ref": "#/properties/repository_id"
@@ -11150,6 +11158,180 @@ API 数量：`159`
     "group_id",
     "resource_id",
     "data"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### repo_update_merge_request
+
+所属模块：`代码仓库`
+
+说明：更新代码仓库的合并请求请求。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_update_merge_request",
+    "arguments": {
+      "repository_id": "<repository_id>",
+      "merge_request_iid": "<merge_request_iid>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `repository_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repository_id` ↔ 原始 CodeArts 代码仓库 API 中的仓库 ID 字段，通常位于路径参数或 Query 参数。<br>CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
+| `merge_request_iid` | 是 | `string` |  | 字段对应：<br>MCP 字段 `merge_request_iid` ↔ 原始 CodeArts 代码仓库 API 同名字段 `merge_request_iid`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>合并请求在当前仓库内的 IID；它不是全局 ID，只在同一个仓库内唯一。 |
+| `title` | 否 | `string` |  | 字段对应：<br>MCP 字段 `title` ↔ 原始 CodeArts 代码仓库 API 中的标题字段，常见原字段名为 `name`、`subject` 或 `title`。<br>标题，用于工作项、合并请求、计划等资源的主显示名称。建议简洁说明要做什么。 |
+| `state_event` | 否 | `string` |  | 字段对应：<br>MCP 字段 `state_event` ↔ 原始 CodeArts 代码仓库 API 同名字段 `state_event`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `assignee_ids` | 否 | `string \| array<string \| integer>` |  | 字段对应：<br>MCP 字段 `assignee_ids` ↔ 原始 CodeArts 代码仓库 API 同名字段 `assignee_ids`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>处理人 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `reviewer_ids` | 否 | `string \| array<string \| integer>` |  | 字段对应：<br>MCP 字段 `reviewer_ids` ↔ 原始 CodeArts 代码仓库 API 同名字段 `reviewer_ids`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>评审人用户 ID 列表。 |
+| `description` | 否 | `string` |  | 字段对应：<br>MCP 字段 `description` ↔ 原始 CodeArts 代码仓库 API 同名字段 `description`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
+| `milestone_id` | 否 | `string \| integer` |  | 字段对应：<br>MCP 字段 `milestone_id` ↔ 原始 CodeArts 代码仓库 API 同名字段 `milestone_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>里程碑 ID。 |
+| `labels` | 否 | `string \| array<string> \| object` |  | 字段对应：<br>MCP 字段 `labels` ↔ 原始 CodeArts 代码仓库 API 同名字段 `labels`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>标签列表或逗号分隔的标签字符串。 |
+| `force_remove_source_branch` | 否 | `boolean` |  | 字段对应：<br>MCP 字段 `force_remove_source_branch` ↔ 原始 CodeArts 代码仓库 API 同名字段 `force_remove_source_branch`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `squash` | 否 | `boolean` |  | 字段对应：<br>MCP 字段 `squash` ↔ 原始 CodeArts 代码仓库 API 同名字段 `squash`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>是否压缩提交。 |
+| `squash_commit_message` | 否 | `string` |  | 字段对应：<br>MCP 字段 `squash_commit_message` ↔ 原始 CodeArts 代码仓库 API 同名字段 `squash_commit_message`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>压缩提交信息。 |
+| `work_item_ids` | 否 | `array<object>` |  | 字段对应：<br>MCP 字段 `work_item_ids` ↔ 原始 CodeArts 代码仓库 API 中的工作项 ID 集合字段，常见原字段名为 `issue_ids`、`issueIds`、`id`。<br>工作项 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "repository_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "merge_request_iid": {
+      "$ref": "#/properties/repository_id"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "state_event": {
+      "type": "string",
+      "minLength": 1
+    },
+    "assignee_ids": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "reviewer_ids": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "description": {
+      "type": "string"
+    },
+    "milestone_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "integer",
+          "exclusiveMinimum": 0
+        }
+      ]
+    },
+    "labels": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": {}
+        }
+      ]
+    },
+    "force_remove_source_branch": {
+      "type": "boolean"
+    },
+    "squash": {
+      "type": "boolean"
+    },
+    "squash_commit_message": {
+      "type": "string",
+      "minLength": 1
+    },
+    "work_item_ids": {
+      "type": "array",
+      "items": {
+        "$ref": "#/properties/repository_id"
+      },
+      "minItems": 1
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "repository_id",
+    "merge_request_iid"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

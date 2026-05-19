@@ -203,6 +203,7 @@ import { createRepoListRepositoryLabelsHandler } from "../products/repo/tools/li
 import { createRepoListTagsHandler } from "../products/repo/tools/list-tags.js";
 import { createRepoMergeMergeRequestHandler } from "../products/repo/tools/merge-merge-request.js";
 import { createRepoReviewMergeRequestHandler } from "../products/repo/tools/review-merge-request.js";
+import { createRepoUpdateMergeRequestHandler } from "../products/repo/tools/update-merge-request.js";
 import { createReqCreateWorkItemHandler } from "../products/req/tools/create-work-item.js";
 import { createReqGetProjectHandler } from "../products/req/tools/get-project.js";
 import { createReqGetWorkItemHandler } from "../products/req/tools/get-work-item.js";
@@ -1493,6 +1494,17 @@ export function createSessionAwareRepoCreateMergeRequestHandler(
     store,
     injectedClient,
     createRepoCreateMergeRequestHandler
+  );
+}
+
+export function createSessionAwareRepoUpdateMergeRequestHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createRepoUpdateMergeRequestHandler>[0]
+) {
+  return createSessionAwareRepoToolHandler(
+    store,
+    injectedClient,
+    createRepoUpdateMergeRequestHandler
   );
 }
 

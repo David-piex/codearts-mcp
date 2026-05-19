@@ -360,6 +360,7 @@ export const expectedToolNames = [
   "repo_show_user_ref_permission",
   "repo_start_remote_mirror_synchronization",
   "repo_update_group_resource_permissions",
+  "repo_update_merge_request",
   "repo_update_project_general_policy",
   "repo_update_project_settings_inherit_cfg",
   "repo_update_project_watermark",

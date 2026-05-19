@@ -30,10 +30,10 @@
 | 代码检查 | 18 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
 | 部署 | 60 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
 | 流水线 | 78 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
-| 代码仓库 | 159 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
+| 代码仓库 | 160 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 201 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 179 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **754** | |
+| **总计** | **755** | |
 
 ## 字段对应
 
@@ -406,6 +406,7 @@
 | `repo_show_user_ref_permission` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_user_ref_permission) |
 | `repo_start_remote_mirror_synchronization` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_start_remote_mirror_synchronization) |
 | `repo_update_group_resource_permissions` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_update_group_resource_permissions) |
+| `repo_update_merge_request` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_update_merge_request) |
 | `repo_update_project_general_policy` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_update_project_general_policy) |
 | `repo_update_project_settings_inherit_cfg` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_update_project_settings_inherit_cfg) |
 | `repo_update_project_watermark` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_update_project_watermark) |

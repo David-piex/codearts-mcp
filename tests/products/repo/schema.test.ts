@@ -48,6 +48,7 @@ import {
   repoShowRepoLastStatisticsInput,
   repoShowUserRefPermissionInput,
   repoStartRemoteMirrorSynchronizationInput,
+  repoUpdateMergeRequestInput,
   repoUpdateRemoteMirrorInput
 } from "../../../src/products/repo/schemas.js";
 
@@ -576,6 +577,7 @@ describe("repo schemas", () => {
       source_branch: "feature/demo",
       target_branch: "main",
       title: "Add demo",
+      work_item_ids: ["70824317"],
       target_project_id: "target-project-1",
       assignee_id: 1001,
       reviewer_ids: [1002, "1003"],
@@ -588,6 +590,7 @@ describe("repo schemas", () => {
 
     expect(parsed).toMatchObject({
       target_project_id: "target-project-1",
+      work_item_ids: ["70824317"],
       assignee_id: 1001,
       reviewer_ids: [1002, "1003"],
       remove_source_branch: true,
@@ -595,6 +598,41 @@ describe("repo schemas", () => {
       draft: false,
       labels: ["feat", "api"],
       milestone_id: 7
+    });
+  });
+
+  it("accepts merge request update optional fields", () => {
+    const parsed = repoUpdateMergeRequestInput.parse({
+      repository_id: "repo-1",
+      merge_request_iid: "2",
+      title: "Update demo",
+      state_event: "reopen",
+      assignee_ids: [1001, "1002"],
+      reviewer_ids: [1003, "1004"],
+      description: "Updated demo",
+      milestone_id: 7,
+      labels: ["feat", "api"],
+      force_remove_source_branch: true,
+      squash: true,
+      squash_commit_message: "Squash demo",
+      work_item_ids: ["70824317"]
+    });
+
+    expect(parsed).toMatchObject({
+      repository_id: "repo-1",
+      merge_request_iid: "2",
+      title: "Update demo",
+      state_event: "reopen",
+      assignee_ids: [1001, "1002"],
+      reviewer_ids: [1003, "1004"],
+      description: "Updated demo",
+      milestone_id: 7,
+      labels: ["feat", "api"],
+      force_remove_source_branch: true,
+      squash: true,
+      squash_commit_message: "Squash demo",
+      work_item_ids: ["70824317"],
+      dry_run: true
     });
   });
 

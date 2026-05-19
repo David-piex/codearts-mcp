@@ -25,6 +25,7 @@ export const repoToolNames = [
   "repo_create_tag",
   "repo_create_merge_request_discussion",
   "repo_create_merge_request",
+  "repo_update_merge_request",
   "repo_get_branch",
   "repo_get_remote_mirror",
   "repo_get_group_webhook",

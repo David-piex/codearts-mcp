@@ -1831,12 +1831,38 @@ export type RepoClient = {
     target_branch?: string;
     web_url?: string;
   }>;
+  updateMergeRequest: (input: {
+    repository_id: string;
+    merge_request_iid: string;
+    title?: string;
+    state_event?: string;
+    assignee_ids?: string | Array<string | number>;
+    reviewer_ids?: string | Array<string | number>;
+    description?: string;
+    milestone_id?: string | number;
+    labels?: string | string[] | Record<string, unknown>;
+    force_remove_source_branch?: boolean;
+    squash?: boolean;
+    squash_commit_message?: string;
+    work_item_ids?: string[];
+  }) => Promise<{
+    id: number | string;
+    iid?: number;
+    repository_id?: number | string;
+    title?: string;
+    description?: string;
+    state?: string;
+    source_branch?: string;
+    target_branch?: string;
+    web_url?: string;
+  }>;
   createMergeRequest: (input: {
     repository_id: string;
     source_branch: string;
     target_branch: string;
     title: string;
     description?: string;
+    work_item_ids?: string[];
     target_project_id?: string;
     assignee_id?: string | number;
     reviewer_ids?: Array<string | number>;
@@ -4594,6 +4620,46 @@ export function createRepoClient(
         web_url: response.web_url
       };
     },
+    async updateMergeRequest(input) {
+      const response = (await _http.put(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/${encodeURIComponent(input.merge_request_iid)}`,
+        {
+          title: input.title,
+          state_event: input.state_event,
+          assignee_ids: Array.isArray(input.assignee_ids) ? input.assignee_ids.join(",") : input.assignee_ids,
+          reviewer_ids: Array.isArray(input.reviewer_ids) ? input.reviewer_ids.join(",") : input.reviewer_ids,
+          description: input.description,
+          milestone_id: input.milestone_id,
+          labels: Array.isArray(input.labels) ? input.labels.join(",") : input.labels,
+          force_remove_source_branch: input.force_remove_source_branch,
+          squash: input.squash,
+          squash_commit_message: input.squash_commit_message,
+          work_item_ids: input.work_item_ids
+        }
+      )) as {
+        id?: number | string;
+        iid?: number;
+        repository_id?: number | string;
+        title?: string;
+        description?: string;
+        state?: string;
+        source_branch?: string;
+        target_branch?: string;
+        web_url?: string;
+      };
+
+      return {
+        id: response.id ?? input.merge_request_iid,
+        iid: response.iid,
+        repository_id: response.repository_id,
+        title: response.title,
+        description: response.description,
+        state: response.state,
+        source_branch: response.source_branch,
+        target_branch: response.target_branch,
+        web_url: response.web_url
+      };
+    },
     async createMergeRequest(input) {
       const response = (await _http.post(
         `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests`,
@@ -4602,6 +4668,7 @@ export function createRepoClient(
           target_branch: input.target_branch,
           title: input.title,
           description: input.description,
+          work_item_ids: input.work_item_ids,
           target_project_id: input.target_project_id,
           assignee_id: input.assignee_id,
           reviewer_ids: input.reviewer_ids,

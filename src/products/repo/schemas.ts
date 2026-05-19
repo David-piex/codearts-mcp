@@ -962,6 +962,7 @@ export const repoCreateMergeRequestInput = z.object({
   target_branch: z.string().min(1),
   title: z.string().min(1),
   description: z.string().optional(),
+  work_item_ids: z.array(idSchema).min(1).optional(),
   target_project_id: idSchema.optional(),
   assignee_id: z.union([z.string().min(1), z.number().int().positive()]).optional(),
   reviewer_ids: z.array(z.union([z.string().min(1), z.number().int().positive()])).optional(),
@@ -970,6 +971,23 @@ export const repoCreateMergeRequestInput = z.object({
   draft: z.boolean().optional(),
   labels: z.union([z.string().min(1), z.array(z.string().min(1))]).optional(),
   milestone_id: z.union([z.string().min(1), z.number().int().positive()]).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoUpdateMergeRequestInput = z.object({
+  repository_id: idSchema,
+  merge_request_iid: idSchema,
+  title: z.string().min(1).optional(),
+  state_event: z.string().min(1).optional(),
+  assignee_ids: z.union([z.string().min(1), z.array(z.union([z.string().min(1), z.number().int().positive()]))]).optional(),
+  reviewer_ids: z.union([z.string().min(1), z.array(z.union([z.string().min(1), z.number().int().positive()]))]).optional(),
+  description: z.string().optional(),
+  milestone_id: z.union([z.string().min(1), z.number().int().positive()]).optional(),
+  labels: z.union([z.string().min(1), z.array(z.string().min(1)), z.record(z.unknown())]).optional(),
+  force_remove_source_branch: z.boolean().optional(),
+  squash: z.boolean().optional(),
+  squash_commit_message: z.string().min(1).optional(),
+  work_item_ids: z.array(idSchema).min(1).optional(),
   dry_run: z.boolean().default(true)
 });
 

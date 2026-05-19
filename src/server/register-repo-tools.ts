@@ -156,6 +156,7 @@ import {
   repoUpdateProjectWatermarkInput,
   repoUpdateProtectedBranchInput,
   repoUpdateProtectedTagInput,
+  repoUpdateMergeRequestInput,
   repoUpdateRepositoryPermissionInheritEnabledInput,
   repoUpdateRepositoryResourcePermissionsInput,
   repoUpdateRepositoryWebhookInput,
@@ -323,6 +324,7 @@ import { createRepoListProtectedTagsHandler } from "../products/repo/tools/list-
 import { createRepoListRepositoryFilePushPermissionsHandler } from "../products/repo/tools/list-repository-file-push-permissions.js";
 import { createRepoUpdateProtectedBranchHandler } from "../products/repo/tools/update-protected-branch.js";
 import { createRepoUpdateProtectedTagHandler } from "../products/repo/tools/update-protected-tag.js";
+import { createRepoUpdateMergeRequestHandler } from "../products/repo/tools/update-merge-request.js";
 
 type RegisterableServer = Pick<McpServer, "registerTool">;
 type RepoStdioClient = ReturnType<typeof createRepoClient>;
@@ -408,6 +410,7 @@ const repoToolDefinitions = {
   "repo_get_project_webhook_log": defineProductTool({ description: "Get CodeArts Repo project webhook delivery log detail", inputSchema: repoGetProjectWebhookLogInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoGetProjectWebhookLogHandler>[0] }) => clients.repoClient, createProductHandler: createRepoGetProjectWebhookLogHandler }),
   "repo_get_group_webhook_log": defineProductTool({ description: "Get CodeArts Repo group webhook delivery log detail", inputSchema: repoGetGroupWebhookLogInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoGetGroupWebhookLogHandler>[0] }) => clients.repoClient, createProductHandler: createRepoGetGroupWebhookLogHandler }),
   "repo_create_merge_request": defineProductTool({ description: "Create CodeArts Repo merge request", inputSchema: repoCreateMergeRequestInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCreateMergeRequestHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCreateMergeRequestHandler }),
+  "repo_update_merge_request": defineProductTool({ description: "Update CodeArts Repo merge request", inputSchema: repoUpdateMergeRequestInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoUpdateMergeRequestHandler>[0] }) => clients.repoClient, createProductHandler: createRepoUpdateMergeRequestHandler }),
   "repo_create_merge_request_discussion": defineProductTool({ description: "Create CodeArts Repo merge request discussion", inputSchema: repoCreateMergeRequestDiscussionInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCreateMergeRequestDiscussionHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCreateMergeRequestDiscussionHandler }),
   "repo_close_merge_request": defineProductTool({ description: "Close CodeArts Repo merge request", inputSchema: repoCloseMergeRequestInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCloseMergeRequestHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCloseMergeRequestHandler }),
   "repo_list_merge_request_changes": defineProductTool({ description: "List CodeArts Repo merge request changes", inputSchema: repoListMergeRequestChangesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListMergeRequestChangesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListMergeRequestChangesHandler }),

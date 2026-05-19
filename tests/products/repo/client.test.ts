@@ -780,6 +780,7 @@ describe("createRepoClient", () => {
       target_branch: "main",
       title: "Add demo",
       description: "Demo",
+      work_item_ids: ["70824317"],
       target_project_id: "target-project-1",
       assignee_id: 1001,
       reviewer_ids: [1002, "1003"],
@@ -795,6 +796,7 @@ describe("createRepoClient", () => {
       target_branch: "main",
       title: "Add demo",
       description: "Demo",
+      work_item_ids: ["70824317"],
       target_project_id: "target-project-1",
       assignee_id: 1001,
       reviewer_ids: [1002, "1003"],
@@ -833,6 +835,49 @@ describe("createRepoClient", () => {
       merge_commit_message: "Merge feature/demo",
       squash_commit_message: "Squash feature/demo",
       should_remove_source_branch: true
+    });
+  });
+
+  it("passes merge request update optional fields", async () => {
+    let requestedPath: string | undefined;
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createRepoClient({
+      put: async (path: string, body: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+        return { id: 1, iid: 2, title: "Update demo" };
+      }
+    } as never);
+
+    await client.updateMergeRequest({
+      repository_id: "repo-1",
+      merge_request_iid: "2",
+      title: "Update demo",
+      state_event: "reopen",
+      assignee_ids: [1001, "1002"],
+      reviewer_ids: [1003, "1004"],
+      description: "Updated demo",
+      milestone_id: 7,
+      labels: ["feat", "api"],
+      force_remove_source_branch: true,
+      squash: true,
+      squash_commit_message: "Squash demo",
+      work_item_ids: ["70824317"]
+    });
+
+    expect(requestedPath).toBe("/v4/repositories/repo-1/merge-requests/2");
+    expect(requestedBody).toEqual({
+      title: "Update demo",
+      state_event: "reopen",
+      assignee_ids: "1001,1002",
+      reviewer_ids: "1003,1004",
+      description: "Updated demo",
+      milestone_id: 7,
+      labels: "feat,api",
+      force_remove_source_branch: true,
+      squash: true,
+      squash_commit_message: "Squash demo",
+      work_item_ids: ["70824317"]
     });
   });
 
