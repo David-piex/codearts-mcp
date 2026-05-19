@@ -7,26 +7,31 @@ export function mapRepositoryWebhooks(
   items: RepoRepositoryWebhook[],
   page: number,
   pageSize: number,
-  total?: number
+  total?: number,
+  scopeLabel = "repository"
 ) {
   return asListResult(
-    `${items.length} repository webhooks found`,
+    `${items.length} ${scopeLabel} webhooks found`,
     items.map((item) => ({
       id: String(item.id),
       name: item.name,
       url: item.url,
       description: item.description,
+      tokenMasked: item.token,
+      tokenType: item.token_type,
       pushEvents: item.push_events,
       tagPushEvents: item.tag_push_events,
       mergeRequestsEvents: item.merge_requests_events,
       issuesEvents: item.issues_events,
       noteEvents: item.note_events,
+      notePlainTextFilter: item.note_plain_text_filter,
       jobEvents: item.job_events,
       pipelineEvents: item.pipeline_events,
       wikiPageEvents: item.wiki_page_events,
       enableSslVerification: item.enable_ssl_verification,
       branchFilterStrategy: item.branch_filter_strategy,
       pushEventsBranchRegexFilter: item.push_events_branch_regex_filter,
+      service: item.service,
       createdAt: item.created_at,
       updatedAt: item.updated_at
     })),

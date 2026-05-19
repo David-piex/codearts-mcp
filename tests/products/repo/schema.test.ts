@@ -7,6 +7,8 @@ import {
   repoListCurrentUserRepositoriesInput,
   repoListDefaultReviewCategoriesInput,
   repoListGroupRepositoriesInput,
+  repoListGroupWebhookLogsInput,
+  repoListGroupWebhooksInput,
   repoListMergeRequestCommitsInput,
   repoListRefsInput,
   repoListRepositoryContributorsInput,
@@ -23,6 +25,8 @@ import {
   repoListPersonalRepositoryImportRecordsInput,
   repoListPersonalRecentPushEventsInput,
   repoListRepositoryTemplatesInput,
+  repoListProjectWebhookLogsInput,
+  repoListProjectWebhooksInput,
   repoMergeMergeRequestInput,
   repoShowNotificationSubscriptionInput,
   repoShowNotificationSubscriptionsStatusInput,
@@ -182,6 +186,51 @@ describe("repo schemas", () => {
       permission: "mr",
       action: "approve",
       search: "dev"
+    });
+  });
+
+  it("accepts project and group webhook read query fields", () => {
+    expect(repoListProjectWebhooksInput.parse({ project_id: "project-uuid" })).toMatchObject({
+      project_id: "project-uuid",
+      page: 1,
+      page_size: 20
+    });
+
+    expect(repoListGroupWebhooksInput.parse({ group_id: "group-1", page: 2, page_size: 100 })).toMatchObject({
+      group_id: "group-1",
+      page: 2,
+      page_size: 100
+    });
+
+    expect(
+      repoListProjectWebhookLogsInput.parse({
+        project_id: "project-uuid",
+        hook_id: "7",
+        repository_id: "100",
+        uuid: "merge-request-1",
+        created_after: "2026-05-01T00:00:00+08:00",
+        created_before: "2026-05-02T00:00:00+08:00"
+      })
+    ).toMatchObject({
+      project_id: "project-uuid",
+      hook_id: "7",
+      repository_id: "100",
+      uuid: "merge-request-1",
+      page: 1,
+      page_size: 20
+    });
+
+    expect(
+      repoListGroupWebhookLogsInput.parse({
+        group_id: "group-1",
+        hook_id: "7",
+        page_size: 100
+      })
+    ).toMatchObject({
+      group_id: "group-1",
+      hook_id: "7",
+      page: 1,
+      page_size: 100
     });
   });
 

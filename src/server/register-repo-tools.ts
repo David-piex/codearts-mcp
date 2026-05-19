@@ -32,6 +32,10 @@ import {
   repoGetProtectedBranchInput,
   repoGetRemoteMirrorInput,
   repoGetProtectedTagInput,
+  repoGetGroupWebhookInput,
+  repoGetGroupWebhookLogInput,
+  repoGetProjectWebhookInput,
+  repoGetProjectWebhookLogInput,
   repoGetRepositoryInput,
   repoGetRepositoryWebhookInput,
   repoGetRepositoryWebhookLogInput,
@@ -57,6 +61,10 @@ import {
   repoListProjectSubgroupsAndRepositoriesInput,
   repoListRepositoryCommitRulesInput,
   repoListRepositoryDeployKeysInput,
+  repoListGroupWebhookLogsInput,
+  repoListGroupWebhooksInput,
+  repoListProjectWebhookLogsInput,
+  repoListProjectWebhooksInput,
   repoListRepositoryWebhookLogsInput,
   repoListRepositoryWebhooksInput,
   repoListTagsInput,
@@ -170,7 +178,11 @@ import { createRepoImportRepositoryHandler } from "../products/repo/tools/import
 import { createRepoGetBranchHandler } from "../products/repo/tools/get-branch.js";
 import { createRepoGetCommitHandler } from "../products/repo/tools/get-commit.js";
 import { createRepoGetFileHandler } from "../products/repo/tools/get-file.js";
+import { createRepoGetGroupWebhookHandler } from "../products/repo/tools/get-group-webhook.js";
+import { createRepoGetGroupWebhookLogHandler } from "../products/repo/tools/get-group-webhook-log.js";
 import { createRepoGetMergeRequestHandler } from "../products/repo/tools/get-merge-request.js";
+import { createRepoGetProjectWebhookHandler } from "../products/repo/tools/get-project-webhook.js";
+import { createRepoGetProjectWebhookLogHandler } from "../products/repo/tools/get-project-webhook-log.js";
 import { createRepoGetRemoteMirrorHandler } from "../products/repo/tools/get-remote-mirror.js";
 import { createRepoGetRepositoryHandler } from "../products/repo/tools/get-repository.js";
 import { createRepoGetRepositoryWebhookHandler } from "../products/repo/tools/get-repository-webhook.js";
@@ -187,6 +199,8 @@ import { createRepoListGroupDeployKeysHandler } from "../products/repo/tools/lis
 import { createRepoListGroupProtectedBranchesHandler } from "../products/repo/tools/list-group-protected-branches.js";
 import { createRepoListGroupProtectedRefsUserGroupsHandler } from "../products/repo/tools/list-group-protected-refs-user-groups.js";
 import { createRepoListGroupRepositoriesHandler } from "../products/repo/tools/list-group-repositories.js";
+import { createRepoListGroupWebhookLogsHandler } from "../products/repo/tools/list-group-webhook-logs.js";
+import { createRepoListGroupWebhooksHandler } from "../products/repo/tools/list-group-webhooks.js";
 import { createRepoListImpersonationTokensHandler } from "../products/repo/tools/list-impersonation-tokens.js";
 import { createRepoListItemCommitsHandler } from "../products/repo/tools/list-item-commits.js";
 import { createRepoListMergeRequestChangesHandler } from "../products/repo/tools/list-merge-request-changes.js";
@@ -200,6 +214,8 @@ import { createRepoListProjectProtectedRefsUserGroupsHandler } from "../products
 import { createRepoListProjectProtectedTagsHandler } from "../products/repo/tools/list-project-protected-tags.js";
 import { createRepoListProjectDeployKeysHandler } from "../products/repo/tools/list-project-deploy-keys.js";
 import { createRepoListProjectSubgroupsAndRepositoriesHandler } from "../products/repo/tools/list-project-subgroups-and-repositories.js";
+import { createRepoListProjectWebhookLogsHandler } from "../products/repo/tools/list-project-webhook-logs.js";
+import { createRepoListProjectWebhooksHandler } from "../products/repo/tools/list-project-webhooks.js";
 import { createRepoListProtectedBranchesHandler } from "../products/repo/tools/list-protected-branches.js";
 import { createRepoListRefsHandler } from "../products/repo/tools/list-refs.js";
 import { createRepoListRepositoriesHandler } from "../products/repo/tools/list-repositories.js";
@@ -377,12 +393,20 @@ const repoToolDefinitions = {
   "repo_update_tenant_trusted_ip_address": defineProductTool({ description: "Update CodeArts Repo tenant trusted IP address", inputSchema: repoUpdateTenantTrustedIpAddressInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoUpdateTenantTrustedIpAddressHandler>[0] }) => clients.repoClient, createProductHandler: createRepoUpdateTenantTrustedIpAddressHandler }),
   "repo_delete_tenant_trusted_ip_address": defineProductTool({ description: "Delete CodeArts Repo tenant trusted IP address", inputSchema: repoDeleteTenantTrustedIpAddressInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoDeleteTenantTrustedIpAddressHandler>[0] }) => clients.repoClient, createProductHandler: createRepoDeleteTenantTrustedIpAddressHandler }),
   "repo_list_repository_webhooks": defineProductTool({ description: "List CodeArts Repo repository webhooks", inputSchema: repoListRepositoryWebhooksInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoryWebhooksHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoryWebhooksHandler }),
+  "repo_list_project_webhooks": defineProductTool({ description: "List CodeArts Repo project webhooks", inputSchema: repoListProjectWebhooksInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListProjectWebhooksHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListProjectWebhooksHandler }),
+  "repo_list_group_webhooks": defineProductTool({ description: "List CodeArts Repo group webhooks", inputSchema: repoListGroupWebhooksInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListGroupWebhooksHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListGroupWebhooksHandler }),
   "repo_create_repository_webhook": defineProductTool({ description: "Create CodeArts Repo repository webhook", inputSchema: repoCreateRepositoryWebhookInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCreateRepositoryWebhookHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCreateRepositoryWebhookHandler }),
   "repo_get_repository_webhook": defineProductTool({ description: "Get CodeArts Repo repository webhook detail", inputSchema: repoGetRepositoryWebhookInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoGetRepositoryWebhookHandler>[0] }) => clients.repoClient, createProductHandler: createRepoGetRepositoryWebhookHandler }),
+  "repo_get_project_webhook": defineProductTool({ description: "Get CodeArts Repo project webhook detail", inputSchema: repoGetProjectWebhookInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoGetProjectWebhookHandler>[0] }) => clients.repoClient, createProductHandler: createRepoGetProjectWebhookHandler }),
+  "repo_get_group_webhook": defineProductTool({ description: "Get CodeArts Repo group webhook detail", inputSchema: repoGetGroupWebhookInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoGetGroupWebhookHandler>[0] }) => clients.repoClient, createProductHandler: createRepoGetGroupWebhookHandler }),
   "repo_update_repository_webhook": defineProductTool({ description: "Update CodeArts Repo repository webhook", inputSchema: repoUpdateRepositoryWebhookInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoUpdateRepositoryWebhookHandler>[0] }) => clients.repoClient, createProductHandler: createRepoUpdateRepositoryWebhookHandler }),
   "repo_delete_repository_webhook": defineProductTool({ description: "Delete CodeArts Repo repository webhook", inputSchema: repoDeleteRepositoryWebhookInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoDeleteRepositoryWebhookHandler>[0] }) => clients.repoClient, createProductHandler: createRepoDeleteRepositoryWebhookHandler }),
   "repo_list_repository_webhook_logs": defineProductTool({ description: "List CodeArts Repo repository webhook delivery logs", inputSchema: repoListRepositoryWebhookLogsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoryWebhookLogsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoryWebhookLogsHandler }),
+  "repo_list_project_webhook_logs": defineProductTool({ description: "List CodeArts Repo project webhook delivery logs", inputSchema: repoListProjectWebhookLogsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListProjectWebhookLogsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListProjectWebhookLogsHandler }),
+  "repo_list_group_webhook_logs": defineProductTool({ description: "List CodeArts Repo group webhook delivery logs", inputSchema: repoListGroupWebhookLogsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListGroupWebhookLogsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListGroupWebhookLogsHandler }),
   "repo_get_repository_webhook_log": defineProductTool({ description: "Get CodeArts Repo repository webhook delivery log detail", inputSchema: repoGetRepositoryWebhookLogInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoGetRepositoryWebhookLogHandler>[0] }) => clients.repoClient, createProductHandler: createRepoGetRepositoryWebhookLogHandler }),
+  "repo_get_project_webhook_log": defineProductTool({ description: "Get CodeArts Repo project webhook delivery log detail", inputSchema: repoGetProjectWebhookLogInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoGetProjectWebhookLogHandler>[0] }) => clients.repoClient, createProductHandler: createRepoGetProjectWebhookLogHandler }),
+  "repo_get_group_webhook_log": defineProductTool({ description: "Get CodeArts Repo group webhook delivery log detail", inputSchema: repoGetGroupWebhookLogInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoGetGroupWebhookLogHandler>[0] }) => clients.repoClient, createProductHandler: createRepoGetGroupWebhookLogHandler }),
   "repo_create_merge_request": defineProductTool({ description: "Create CodeArts Repo merge request", inputSchema: repoCreateMergeRequestInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCreateMergeRequestHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCreateMergeRequestHandler }),
   "repo_create_merge_request_discussion": defineProductTool({ description: "Create CodeArts Repo merge request discussion", inputSchema: repoCreateMergeRequestDiscussionInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCreateMergeRequestDiscussionHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCreateMergeRequestDiscussionHandler }),
   "repo_close_merge_request": defineProductTool({ description: "Close CodeArts Repo merge request", inputSchema: repoCloseMergeRequestInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCloseMergeRequestHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCloseMergeRequestHandler }),

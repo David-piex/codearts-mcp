@@ -747,6 +747,16 @@ export const repoListRepositoryWebhooksInput = pagingSchema.extend({
   include_system: z.boolean().optional()
 });
 
+export const repoListProjectWebhooksInput = pagingSchema.extend({
+  project_id: idSchema,
+  page_size: z.number().int().positive().max(100).default(20)
+});
+
+export const repoListGroupWebhooksInput = pagingSchema.extend({
+  group_id: idSchema,
+  page_size: z.number().int().positive().max(100).default(20)
+});
+
 const repoRepositoryWebhookPayloadInput = z.object({
   url: z.string().min(1),
   name: z.string().min(1).optional(),
@@ -776,6 +786,16 @@ export const repoGetRepositoryWebhookInput = z.object({
   hook_id: idSchema
 });
 
+export const repoGetProjectWebhookInput = z.object({
+  project_id: idSchema,
+  hook_id: idSchema
+});
+
+export const repoGetGroupWebhookInput = z.object({
+  group_id: idSchema,
+  hook_id: idSchema
+});
+
 export const repoUpdateRepositoryWebhookInput = repoRepositoryWebhookPayloadInput.partial().extend({
   repository_id: idSchema,
   hook_id: idSchema,
@@ -793,8 +813,37 @@ export const repoListRepositoryWebhookLogsInput = pagingSchema.extend({
   hook_id: idSchema
 });
 
+const projectOrGroupWebhookLogsQueryInput = pagingSchema.extend({
+  hook_id: idSchema,
+  page_size: z.number().int().positive().max(100).default(20),
+  repository_id: idSchema.optional(),
+  uuid: z.string().min(1).max(100).optional(),
+  created_after: z.string().min(1).optional(),
+  created_before: z.string().min(1).optional()
+});
+
+export const repoListProjectWebhookLogsInput = projectOrGroupWebhookLogsQueryInput.extend({
+  project_id: idSchema
+});
+
+export const repoListGroupWebhookLogsInput = projectOrGroupWebhookLogsQueryInput.extend({
+  group_id: idSchema
+});
+
 export const repoGetRepositoryWebhookLogInput = z.object({
   repository_id: idSchema,
+  hook_id: idSchema,
+  log_id: idSchema
+});
+
+export const repoGetProjectWebhookLogInput = z.object({
+  project_id: idSchema,
+  hook_id: idSchema,
+  log_id: idSchema
+});
+
+export const repoGetGroupWebhookLogInput = z.object({
+  group_id: idSchema,
   hook_id: idSchema,
   log_id: idSchema
 });

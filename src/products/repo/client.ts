@@ -55,17 +55,24 @@ export type RepoRepositoryWebhook = {
   url?: string;
   name?: string;
   description?: string;
+  token?: string;
+  token_type?: string;
   push_events?: boolean;
   tag_push_events?: boolean;
   merge_requests_events?: boolean;
   issues_events?: boolean;
   note_events?: boolean;
+  note_plain_text_filter?: string[];
   job_events?: boolean;
   pipeline_events?: boolean;
   wiki_page_events?: boolean;
   enable_ssl_verification?: boolean;
   branch_filter_strategy?: string;
   push_events_branch_regex_filter?: string;
+  event_cfgs?: Array<Record<string, unknown>>;
+  project_cfgs?: Array<Record<string, unknown>>;
+  branch_cfgs?: Array<Record<string, unknown>>;
+  service?: string;
   created_at?: string;
   updated_at?: string;
 };
@@ -92,6 +99,7 @@ type RepoRepositoryWebhookMutationInput = {
 
 export type RepoRepositoryWebhookLog = {
   id: number | string;
+  web_hook_id?: number | string;
   trigger?: string;
   url?: string;
   request_headers?: Record<string, unknown>;
@@ -100,7 +108,13 @@ export type RepoRepositoryWebhookLog = {
   response_body?: unknown;
   response_status?: string;
   execution_duration?: number;
+  uuid?: string;
   created_at?: string;
+  updated_at?: string;
+  repository?: {
+    id?: number | string;
+    namespace?: string;
+  };
 };
 
 export type RepoRepositoryDeployKey = {
@@ -1349,11 +1363,35 @@ export type RepoClient = {
     hooks: RepoRepositoryWebhook[];
     total?: number;
   }>;
+  listProjectWebhooks: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    hooks: RepoRepositoryWebhook[];
+    total?: number;
+  }>;
+  listGroupWebhooks: (input: {
+    group_id: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    hooks: RepoRepositoryWebhook[];
+    total?: number;
+  }>;
   createRepositoryWebhook: (input: RepoRepositoryWebhookMutationInput & {
     url: string;
   }) => Promise<RepoRepositoryWebhook>;
   getRepositoryWebhook: (input: {
     repository_id: string;
+    hook_id: string;
+  }) => Promise<RepoRepositoryWebhook>;
+  getProjectWebhook: (input: {
+    project_id: string;
+    hook_id: string;
+  }) => Promise<RepoRepositoryWebhook>;
+  getGroupWebhook: (input: {
+    group_id: string;
     hook_id: string;
   }) => Promise<RepoRepositoryWebhook>;
   updateRepositoryWebhook: (input: RepoRepositoryWebhookMutationInput & {
@@ -1375,8 +1413,44 @@ export type RepoClient = {
     logs: RepoRepositoryWebhookLog[];
     total?: number;
   }>;
+  listProjectWebhookLogs: (input: {
+    project_id: string;
+    hook_id: string;
+    page: number;
+    page_size: number;
+    repository_id?: string;
+    uuid?: string;
+    created_after?: string;
+    created_before?: string;
+  }) => Promise<{
+    logs: RepoRepositoryWebhookLog[];
+    total?: number;
+  }>;
+  listGroupWebhookLogs: (input: {
+    group_id: string;
+    hook_id: string;
+    page: number;
+    page_size: number;
+    repository_id?: string;
+    uuid?: string;
+    created_after?: string;
+    created_before?: string;
+  }) => Promise<{
+    logs: RepoRepositoryWebhookLog[];
+    total?: number;
+  }>;
   getRepositoryWebhookLog: (input: {
     repository_id: string;
+    hook_id: string;
+    log_id: string;
+  }) => Promise<RepoRepositoryWebhookLog>;
+  getProjectWebhookLog: (input: {
+    project_id: string;
+    hook_id: string;
+    log_id: string;
+  }) => Promise<RepoRepositoryWebhookLog>;
+  getGroupWebhookLog: (input: {
+    group_id: string;
     hook_id: string;
     log_id: string;
   }) => Promise<RepoRepositoryWebhookLog>;
@@ -2430,6 +2504,48 @@ function buildTenantOffsetLimitQuery(input: { offset: number; limit: number }) {
     offset: String(input.offset),
     limit: String(input.limit)
   });
+}
+
+function extractWebhookListResponse(
+  response:
+    | RepoRepositoryWebhook[]
+    | {
+      hooks?: RepoRepositoryWebhook[];
+      total?: number;
+      result?: {
+        hooks?: RepoRepositoryWebhook[];
+        total?: number;
+      };
+    }
+) {
+  const payload = unwrapRepoPayload(response);
+  const hooks = Array.isArray(payload) ? payload : payload.result?.hooks ?? payload.hooks ?? [];
+
+  return {
+    hooks,
+    total: Array.isArray(payload) ? hooks.length : payload.result?.total ?? payload.total ?? hooks.length
+  };
+}
+
+function extractWebhookLogListResponse(
+  response:
+    | RepoRepositoryWebhookLog[]
+    | {
+      logs?: RepoRepositoryWebhookLog[];
+      total?: number;
+      result?: {
+        logs?: RepoRepositoryWebhookLog[];
+        total?: number;
+      };
+    }
+) {
+  const payload = unwrapRepoPayload(response);
+  const logs = Array.isArray(payload) ? payload : payload.result?.logs ?? payload.logs ?? [];
+
+  return {
+    logs,
+    total: Array.isArray(payload) ? logs.length : payload.result?.total ?? payload.total ?? logs.length
+  };
 }
 
 function extractTenantRepositoriesResponse(
@@ -3568,23 +3684,25 @@ export function createRepoClient(
 
       const rawResponse = (await _http.get(
         `/v4/repositories/${encodeURIComponent(input.repository_id)}/hooks?${query.toString()}`
-      )) as
-        | RepoRepositoryWebhook[]
-        | {
-          hooks?: RepoRepositoryWebhook[];
-          total?: number;
-          result?: {
-            hooks?: RepoRepositoryWebhook[];
-            total?: number;
-          };
-        };
-      const response = unwrapRepoPayload(rawResponse);
-      const hooks = Array.isArray(response) ? response : response.result?.hooks ?? response.hooks ?? [];
+      )) as Parameters<typeof extractWebhookListResponse>[0];
 
-      return {
-        hooks,
-        total: Array.isArray(response) ? hooks.length : response.result?.total ?? response.total ?? hooks.length
-      };
+      return extractWebhookListResponse(rawResponse);
+    },
+    async listProjectWebhooks(input) {
+      const query = buildOffsetLimitQuery(input);
+      const rawResponse = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/hooks?${query.toString()}`
+      )) as Parameters<typeof extractWebhookListResponse>[0];
+
+      return extractWebhookListResponse(rawResponse);
+    },
+    async listGroupWebhooks(input) {
+      const query = buildOffsetLimitQuery(input);
+      const rawResponse = (await _http.get(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/hooks?${query.toString()}`
+      )) as Parameters<typeof extractWebhookListResponse>[0];
+
+      return extractWebhookListResponse(rawResponse);
     },
     async createRepositoryWebhook(input) {
       const rawResponse = (await _http.post(
@@ -3601,6 +3719,28 @@ export function createRepoClient(
     async getRepositoryWebhook(input) {
       const rawResponse = (await _http.get(
         `/v4/repositories/${encodeURIComponent(input.repository_id)}/hooks/${encodeURIComponent(input.hook_id)}`
+      )) as RepoRepositoryWebhook;
+      const response = unwrapRepoPayload(rawResponse);
+
+      return {
+        ...response,
+        id: response.id ?? input.hook_id
+      };
+    },
+    async getProjectWebhook(input) {
+      const rawResponse = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/hooks/${encodeURIComponent(input.hook_id)}`
+      )) as RepoRepositoryWebhook;
+      const response = unwrapRepoPayload(rawResponse);
+
+      return {
+        ...response,
+        id: response.id ?? input.hook_id
+      };
+    },
+    async getGroupWebhook(input) {
+      const rawResponse = (await _http.get(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/hooks/${encodeURIComponent(input.hook_id)}`
       )) as RepoRepositoryWebhook;
       const response = unwrapRepoPayload(rawResponse);
 
@@ -3639,27 +3779,53 @@ export function createRepoClient(
 
       const rawResponse = (await _http.get(
         `/v4/repositories/${encodeURIComponent(input.repository_id)}/hooks/${encodeURIComponent(input.hook_id)}/logs?${query.toString()}`
-      )) as
-        | RepoRepositoryWebhookLog[]
-        | {
-          logs?: RepoRepositoryWebhookLog[];
-          total?: number;
-          result?: {
-            logs?: RepoRepositoryWebhookLog[];
-            total?: number;
-          };
-        };
-      const response = unwrapRepoPayload(rawResponse);
-      const logs = Array.isArray(response) ? response : response.result?.logs ?? response.logs ?? [];
+      )) as Parameters<typeof extractWebhookLogListResponse>[0];
 
-      return {
-        logs,
-        total: Array.isArray(response) ? logs.length : response.result?.total ?? response.total ?? logs.length
-      };
+      return extractWebhookLogListResponse(rawResponse);
+    },
+    async listProjectWebhookLogs(input) {
+      const query = buildOffsetLimitQuery(input);
+      appendOptionalQuery(query, input, ["repository_id", "uuid", "created_after", "created_before"]);
+      const rawResponse = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/hooks/${encodeURIComponent(input.hook_id)}/logs?${query.toString()}`
+      )) as Parameters<typeof extractWebhookLogListResponse>[0];
+
+      return extractWebhookLogListResponse(rawResponse);
+    },
+    async listGroupWebhookLogs(input) {
+      const query = buildOffsetLimitQuery(input);
+      appendOptionalQuery(query, input, ["repository_id", "uuid", "created_after", "created_before"]);
+      const rawResponse = (await _http.get(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/hooks/${encodeURIComponent(input.hook_id)}/logs?${query.toString()}`
+      )) as Parameters<typeof extractWebhookLogListResponse>[0];
+
+      return extractWebhookLogListResponse(rawResponse);
     },
     async getRepositoryWebhookLog(input) {
       const rawResponse = (await _http.get(
         `/v4/repositories/${encodeURIComponent(input.repository_id)}/hooks/${encodeURIComponent(input.hook_id)}/logs/${encodeURIComponent(input.log_id)}`
+      )) as RepoRepositoryWebhookLog;
+      const response = unwrapRepoPayload(rawResponse);
+
+      return {
+        ...response,
+        id: response.id ?? input.log_id
+      };
+    },
+    async getProjectWebhookLog(input) {
+      const rawResponse = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/hooks/${encodeURIComponent(input.hook_id)}/logs/${encodeURIComponent(input.log_id)}`
+      )) as RepoRepositoryWebhookLog;
+      const response = unwrapRepoPayload(rawResponse);
+
+      return {
+        ...response,
+        id: response.id ?? input.log_id
+      };
+    },
+    async getGroupWebhookLog(input) {
+      const rawResponse = (await _http.get(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/hooks/${encodeURIComponent(input.hook_id)}/logs/${encodeURIComponent(input.log_id)}`
       )) as RepoRepositoryWebhookLog;
       const response = unwrapRepoPayload(rawResponse);
 

@@ -545,6 +545,69 @@ describe("createRepoClient", () => {
     });
   });
 
+  it("uses official project and group webhook read paths", async () => {
+    const calls: string[] = [];
+    const client = createRepoClient({
+      get: async (path: string) => {
+        calls.push(path);
+        if (path.includes("/hooks/7/logs/9")) {
+          return {
+            id: 9,
+            web_hook_id: 7,
+            request_data: { ref: "master" },
+            repository: { id: 100, namespace: "group/demo" }
+          };
+        }
+        if (path.endsWith("/hooks/7")) {
+          return { id: 7, name: "audit", token: "******" };
+        }
+        if (path.includes("/hooks/7/logs?")) {
+          return { logs: [{ id: 1, web_hook_id: 7, uuid: "uuid-1" }], total: 1 };
+        }
+        if (path.includes("/hooks?")) {
+          return { hooks: [{ id: 7, name: "audit" }], total: 1 };
+        }
+
+        throw new Error(`unexpected path: ${path}`);
+      }
+    } as never);
+
+    await client.listProjectWebhooks({ project_id: "project-uuid", page: 2, page_size: 10 });
+    await client.getProjectWebhook({ project_id: "project-uuid", hook_id: "7" });
+    await client.listProjectWebhookLogs({
+      project_id: "project-uuid",
+      hook_id: "7",
+      page: 3,
+      page_size: 20,
+      repository_id: "100",
+      uuid: "abc",
+      created_after: "2026-05-01T00:00:00+08:00",
+      created_before: "2026-05-02T00:00:00+08:00"
+    });
+    await client.getProjectWebhookLog({ project_id: "project-uuid", hook_id: "7", log_id: "9" });
+    await client.listGroupWebhooks({ group_id: "group-1", page: 1, page_size: 20 });
+    await client.getGroupWebhook({ group_id: "group-1", hook_id: "7" });
+    await client.listGroupWebhookLogs({
+      group_id: "group-1",
+      hook_id: "7",
+      page: 1,
+      page_size: 20,
+      repository_id: "100"
+    });
+    await client.getGroupWebhookLog({ group_id: "group-1", hook_id: "7", log_id: "9" });
+
+    expect(calls).toEqual([
+      "/v4/projects/project-uuid/hooks?offset=10&limit=10",
+      "/v4/projects/project-uuid/hooks/7",
+      "/v4/projects/project-uuid/hooks/7/logs?offset=40&limit=20&repository_id=100&uuid=abc&created_after=2026-05-01T00%3A00%3A00%2B08%3A00&created_before=2026-05-02T00%3A00%3A00%2B08%3A00",
+      "/v4/projects/project-uuid/hooks/7/logs/9",
+      "/v4/groups/group-1/hooks?offset=0&limit=20",
+      "/v4/groups/group-1/hooks/7",
+      "/v4/groups/group-1/hooks/7/logs?offset=0&limit=20&repository_id=100",
+      "/v4/groups/group-1/hooks/7/logs/9"
+    ]);
+  });
+
   it("supports stringified tag payloads from the live provider", async () => {
     const client = createRepoClient({
       get: async () =>

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { stdin as processStdin } from "node:process";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { toJsonSchemaCompat } from "@modelcontextprotocol/sdk/server/zod-json-schema-compat.js";
 import {
@@ -233,6 +234,17 @@ function readRequiredOptionValue(args: string[], option: string) {
   }
 
   return value;
+}
+
+async function readProcessStdin() {
+  let input = "";
+
+  processStdin.setEncoding("utf8");
+  for await (const chunk of processStdin) {
+    input += chunk;
+  }
+
+  return input;
 }
 
 function parseOutputFormat(value: string): CliOutputFormat {
@@ -730,7 +742,10 @@ export async function runCli(options: CliRunOptions = {}) {
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  process.exitCode = await runCli();
+  const needsStdin = process.argv.includes("--stdin");
+  process.exitCode = await runCli({
+    stdin: needsStdin ? await readProcessStdin() : undefined
+  });
 }
 
 export const cliEntrypointPath = fileURLToPath(import.meta.url);

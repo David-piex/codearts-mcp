@@ -7,17 +7,27 @@ export function mapRepositoryWebhookLogs(
   items: RepoRepositoryWebhookLog[],
   page: number,
   pageSize: number,
-  total?: number
+  total?: number,
+  scopeLabel = "repository"
 ) {
   return asListResult(
-    `${items.length} repository webhook logs found`,
+    `${items.length} ${scopeLabel} webhook logs found`,
     items.map((item) => ({
       id: String(item.id),
+      webHookId: item.web_hook_id === undefined ? undefined : String(item.web_hook_id),
       trigger: item.trigger,
       url: item.url,
       responseStatus: item.response_status,
       executionDuration: item.execution_duration,
-      createdAt: item.created_at
+      uuid: item.uuid,
+      createdAt: item.created_at,
+      updatedAt: item.updated_at,
+      repository: item.repository
+        ? {
+            id: item.repository.id === undefined ? undefined : String(item.repository.id),
+            namespace: item.repository.namespace
+          }
+        : undefined
     })),
     toPageInfo(page, pageSize, total)
   );

@@ -92,6 +92,24 @@ describe("CLI", () => {
     expect(output.stderr.join("")).toContain("Input must be valid JSON");
   });
 
+  it("accepts local call input from stdin", async () => {
+    const output = createOutputCapture();
+
+    await expect(
+      runCli({
+        argv: ["call", "repo_delete_repository_webhook", "--stdin"],
+        env: baseEnv,
+        stdin: "{\"repository_id\":\"1001\",\"hook_id\":\"7\"}",
+        stdout: output.writeStdout,
+        stderr: output.writeStderr
+      })
+    ).resolves.toBe(0);
+
+    expect(output.stdout.join("")).toContain("Dry run: delete repository webhook");
+    expect(output.stdout.join("")).toContain("\"hookId\":\"7\"");
+    expect(output.stderr.join("")).toBe("");
+  });
+
   it("calls HTTP MCP tools", async () => {
     const output = createOutputCapture();
     const fetchMock = vi.fn(async (_url: string | URL | Request, init?: RequestInit) => {
