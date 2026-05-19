@@ -5,6 +5,8 @@ import {
   mapNoteRequiredAttributes,
   mapRepositoryFileList,
   mapRepositoryReadmeFile,
+  mapRepositoryReviewAuthors,
+  mapRepositoryReviews,
   mapRepositoryTrees,
   mapReviewSetting
 } from "../../../../src/products/repo/tools/repository-browse-result.js";
@@ -102,6 +104,51 @@ describe("repository browse result mappers", () => {
     ).toMatchObject({
       codehubDefaultCategories: [{ key: "code_style" }],
       hicodeDefaultCategories: [{ key: "security" }]
+    });
+  });
+
+  it("maps repository reviews and review authors", () => {
+    const reviews = mapRepositoryReviews(
+      [
+        {
+          id: 1399939,
+          body: "test",
+          noteable_type: "MergeRequest",
+          discussion_id: "discussion-1",
+          repository_id: 100,
+          severity: "suggestion",
+          author: { id: 9124, name: "dev", username: "readyrunning" },
+          position: { new_path: "README.md", new_line: 1 }
+        }
+      ],
+      1,
+      20,
+      1
+    ).items ?? [];
+
+    expect(reviews[0]).toMatchObject({
+      id: "1399939",
+      body: "test",
+      noteableType: "MergeRequest",
+      discussionId: "discussion-1",
+      repositoryId: "100",
+      severity: "suggestion",
+      author: { id: "9124", username: "readyrunning" },
+      position: { newPath: "README.md", newLine: 1 }
+    });
+
+    const authors = mapRepositoryReviewAuthors(
+      [{ id: 9124, name: "dev", username: "readyrunning", state: "active" }],
+      1,
+      20,
+      1
+    ).items ?? [];
+
+    expect(authors[0]).toMatchObject({
+      id: "9124",
+      name: "dev",
+      username: "readyrunning",
+      state: "active"
     });
   });
 });

@@ -6,7 +6,7 @@
 
 模块：`代码仓库`
 
-API 数量：`149`
+API 数量：`151`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
@@ -6801,6 +6801,279 @@ API 数量：`149`
   "required": [
     "repository_id",
     "resource_name"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### repo_list_repository_review_authors
+
+所属模块：`代码仓库`
+
+说明：查询代码仓库的仓库评审authors。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_list_repository_review_authors",
+    "arguments": {
+      "repository_id": "<repository_id>",
+      "noteable_type": "<noteable_type>",
+      "resolved_status": "<resolved_status>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 字段对应：<br>MCP 字段 `page` ↔ 原始 CodeArts 代码仓库 API 的分页页码或由 `offset/limit` 换算得到的页码。<br>页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 字段对应：<br>MCP 字段 `page_size` ↔ 原始 CodeArts 代码仓库 API 的分页大小字段，常见原字段名为 `page_size`、`limit` 或 `pageSize`。<br>每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 字段对应：<br>MCP 字段 `keyword` ↔ 原始 CodeArts 代码仓库 API 的搜索关键字字段，常见原字段名为 `keyword`、`search` 或 `name`。<br>搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 字段对应：<br>MCP 字段 `sort_by` ↔ 原始 CodeArts 代码仓库 API 同名字段 `sort_by`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 字段对应：<br>MCP 字段 `sort_order` ↔ 原始 CodeArts 代码仓库 API 同名字段 `sort_order`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `repository_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repository_id` ↔ 原始 CodeArts 代码仓库 API 中的仓库 ID 字段，通常位于路径参数或 Query 参数。<br>CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
+| `noteable_type` | 是 | `"Commit" \| "MergeRequest"` |  | 字段对应：<br>MCP 字段 `noteable_type` ↔ 原始 CodeArts 代码仓库 API 同名字段 `noteable_type`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。可选值：`Commit`、`MergeRequest`。 |
+| `resolved_status` | 是 | `"resolved" \| "unresolved" \| "all"` |  | 字段对应：<br>MCP 字段 `resolved_status` ↔ 原始 CodeArts 代码仓库 API 同名字段 `resolved_status`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。可选值：`resolved`、`unresolved`、`all`。 |
+| `reviewers_filter` | 否 | `string` |  | 字段对应：<br>MCP 字段 `reviewers_filter` ↔ 原始 CodeArts 代码仓库 API 同名字段 `reviewers_filter`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "page": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "default": 1
+    },
+    "page_size": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 100,
+      "default": 20
+    },
+    "keyword": {
+      "type": "string"
+    },
+    "sort_by": {
+      "type": "string"
+    },
+    "sort_order": {
+      "type": "string",
+      "enum": [
+        "asc",
+        "desc"
+      ]
+    },
+    "repository_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "noteable_type": {
+      "type": "string",
+      "enum": [
+        "Commit",
+        "MergeRequest"
+      ]
+    },
+    "resolved_status": {
+      "type": "string",
+      "enum": [
+        "resolved",
+        "unresolved",
+        "all"
+      ]
+    },
+    "reviewers_filter": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    }
+  },
+  "required": [
+    "repository_id",
+    "noteable_type",
+    "resolved_status"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### repo_list_repository_reviews
+
+所属模块：`代码仓库`
+
+说明：查询代码仓库的仓库reviews。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_list_repository_reviews",
+    "arguments": {
+      "repository_id": "<repository_id>",
+      "noteable_type": "<noteable_type>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 字段对应：<br>MCP 字段 `page` ↔ 原始 CodeArts 代码仓库 API 的分页页码或由 `offset/limit` 换算得到的页码。<br>页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 字段对应：<br>MCP 字段 `page_size` ↔ 原始 CodeArts 代码仓库 API 的分页大小字段，常见原字段名为 `page_size`、`limit` 或 `pageSize`。<br>每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 字段对应：<br>MCP 字段 `keyword` ↔ 原始 CodeArts 代码仓库 API 的搜索关键字字段，常见原字段名为 `keyword`、`search` 或 `name`。<br>搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 字段对应：<br>MCP 字段 `sort_by` ↔ 原始 CodeArts 代码仓库 API 同名字段 `sort_by`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 字段对应：<br>MCP 字段 `sort_order` ↔ 原始 CodeArts 代码仓库 API 同名字段 `sort_order`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `repository_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repository_id` ↔ 原始 CodeArts 代码仓库 API 中的仓库 ID 字段，通常位于路径参数或 Query 参数。<br>CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
+| `noteable_type` | 是 | `"Commit" \| "MergeRequest"` |  | 字段对应：<br>MCP 字段 `noteable_type` ↔ 原始 CodeArts 代码仓库 API 同名字段 `noteable_type`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。可选值：`Commit`、`MergeRequest`。 |
+| `search` | 否 | `string` |  | 字段对应：<br>MCP 字段 `search` ↔ 原始 CodeArts 代码仓库 API 同名字段 `search`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>搜索关键字，用于按名称、标题、编号等文本条件过滤列表。 |
+| `start_date` | 否 | `string` |  | 字段对应：<br>MCP 字段 `start_date` ↔ 原始 CodeArts 代码仓库 API 同名字段 `start_date`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>开始日期，通常使用 yyyy-MM-dd 或接口要求的日期格式。 |
+| `end_date` | 否 | `string` |  | 字段对应：<br>MCP 字段 `end_date` ↔ 原始 CodeArts 代码仓库 API 同名字段 `end_date`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>结束日期，通常使用 yyyy-MM-dd 或接口要求的日期格式。 |
+| `only_count` | 否 | `boolean` |  | 字段对应：<br>MCP 字段 `only_count` ↔ 原始 CodeArts 代码仓库 API 同名字段 `only_count`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `review_categories` | 否 | `string` |  | 字段对应：<br>MCP 字段 `review_categories` ↔ 原始 CodeArts 代码仓库 API 同名字段 `review_categories`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `review_modules` | 否 | `string` |  | 字段对应：<br>MCP 字段 `review_modules` ↔ 原始 CodeArts 代码仓库 API 同名字段 `review_modules`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `severity` | 否 | `string` |  | 字段对应：<br>MCP 字段 `severity` ↔ 原始 CodeArts 代码仓库 API 同名字段 `severity`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>严重级别。代码检查场景表示问题严重程度；需求管理场景表示缺陷严重程度。 |
+| `assignee_id` | 否 | `string \| integer` |  | 字段对应：<br>MCP 字段 `assignee_id` ↔ 原始 CodeArts 代码仓库 API 同名字段 `assignee_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>负责人用户 ID，用于指定工作项、任务或评审的当前处理人。 |
+| `proposer_id` | 否 | `string \| integer` |  | 字段对应：<br>MCP 字段 `proposer_id` ↔ 原始 CodeArts 代码仓库 API 同名字段 `proposer_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>proposer ID，用于定位对应的 CodeArts 资源。 |
+| `target_branch` | 否 | `string` |  | 字段对应：<br>MCP 字段 `target_branch` ↔ 原始 CodeArts 代码仓库 API 同名字段 `target_branch`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>目标分支名称。创建合并请求时表示被合入的分支，例如 master、main 或 develop。 |
+| `include_reply` | 否 | `boolean` |  | 字段对应：<br>MCP 字段 `include_reply` ↔ 原始 CodeArts 代码仓库 API 同名字段 `include_reply`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `order_by` | 否 | `"created" \| "updated"` |  | 字段对应：<br>MCP 字段 `order_by` ↔ 原始 CodeArts 代码仓库 API 同名字段 `order_by`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>排序字段，用于选择服务端排序依据。可选值：`created`、`updated`。 |
+| `sort` | 否 | `"asc" \| "desc"` |  | 字段对应：<br>MCP 字段 `sort` ↔ 原始 CodeArts 代码仓库 API 同名字段 `sort`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "page": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "default": 1
+    },
+    "page_size": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 100,
+      "default": 20
+    },
+    "keyword": {
+      "type": "string"
+    },
+    "sort_by": {
+      "type": "string"
+    },
+    "sort_order": {
+      "type": "string",
+      "enum": [
+        "asc",
+        "desc"
+      ]
+    },
+    "repository_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "noteable_type": {
+      "type": "string",
+      "enum": [
+        "Commit",
+        "MergeRequest"
+      ]
+    },
+    "search": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "start_date": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "end_date": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "only_count": {
+      "type": "boolean"
+    },
+    "review_categories": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "review_modules": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "severity": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "assignee_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        {
+          "type": "integer",
+          "exclusiveMinimum": 0
+        }
+      ]
+    },
+    "proposer_id": {
+      "$ref": "#/properties/assignee_id"
+    },
+    "target_branch": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "include_reply": {
+      "type": "boolean"
+    },
+    "order_by": {
+      "type": "string",
+      "enum": [
+        "created",
+        "updated"
+      ]
+    },
+    "sort": {
+      "type": "string",
+      "enum": [
+        "asc",
+        "desc"
+      ]
+    }
+  },
+  "required": [
+    "repository_id",
+    "noteable_type"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

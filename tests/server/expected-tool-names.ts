@@ -294,6 +294,8 @@ export const expectedToolNames = [
   "repo_list_repository_navigation_references",
   "repo_list_repository_protected_refs_user_groups",
   "repo_list_repository_resource_permissions",
+  "repo_list_repository_review_authors",
+  "repo_list_repository_reviews",
   "repo_list_repository_templates",
   "repo_list_repository_trees",
   "repo_list_repository_user_groups",

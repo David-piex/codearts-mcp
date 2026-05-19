@@ -5,6 +5,8 @@ import type {
   RepoNoteRequiredAttributes,
   RepoReadmeFile,
   RepoReviewCategory,
+  RepoRepositoryReview,
+  RepoReviewUserBasic,
   RepoReviewSetting,
   RepoTreeObject
 } from "../client.js";
@@ -35,6 +37,85 @@ function mapRequiredAttribute(input: NonNullable<RepoNoteRequiredAttributes["not
   return {
     name: input.name,
     required: input.is_required
+  };
+}
+
+function mapReviewUser(input?: RepoReviewUserBasic | null) {
+  return input
+    ? {
+        id: input.id !== undefined ? String(input.id) : undefined,
+        name: input.name,
+        username: input.username,
+        state: input.state,
+        serviceLicenseStatus: input.service_license_status,
+        avatarUrl: input.avatar_url,
+        avatarPath: input.avatar_path,
+        email: input.email,
+        nameCn: input.name_cn,
+        webUrl: input.web_url,
+        nickName: input.nick_name,
+        tenantName: input.tenant_name,
+        errorMessage: input.error_message
+      }
+    : undefined;
+}
+
+function mapRepositoryReview(input: RepoRepositoryReview) {
+  return {
+    id: input.id !== undefined ? String(input.id) : input.discussion_id,
+    type: input.type,
+    body: input.body ?? input.note,
+    createdAt: input.created_at,
+    updatedAt: input.updated_at,
+    author: mapReviewUser(input.author),
+    assignee: mapReviewUser(input.assignee),
+    proposer: mapReviewUser(input.proposer),
+    reviewer: mapReviewUser(input.reviewer),
+    resolvedBy: mapReviewUser(input.resolved_by),
+    system: input.system,
+    noteableId: input.noteable_id !== undefined ? String(input.noteable_id) : undefined,
+    noteableType: input.noteable_type,
+    noteableIid: input.noteable_iid !== undefined ? String(input.noteable_iid) : undefined,
+    commitId: input.commit_id,
+    discussionId: input.discussion_id,
+    repository: input.repository ?? input.repository_path,
+    repositoryId: input.repository_id !== undefined ? String(input.repository_id) : undefined,
+    diffFile: input.diff_file,
+    diff: input.diff,
+    archived: input.archived,
+    reviewCategories: input.review_categories,
+    reviewCategoriesCn: input.review_categories_cn,
+    reviewCategoriesEn: input.review_categories_en,
+    reviewModules: input.review_modules,
+    severity: input.severity,
+    severityCn: input.severity_cn,
+    severityEn: input.severity_en,
+    position: input.position
+      ? {
+          baseSha: input.position.base_sha,
+          startSha: input.position.start_sha,
+          headSha: input.position.head_sha,
+          oldPath: input.position.old_path,
+          newPath: input.position.new_path,
+          positionType: input.position.position_type,
+          oldLine: input.position.old_line,
+          newLine: input.position.new_line
+        }
+      : undefined,
+    resolved: input.resolved,
+    resolvedAt: input.resolved_at,
+    resolvable: input.resolvable,
+    reply: input.is_reply,
+    outdated: input.is_outdated,
+    fromRobot: input.from_robot,
+    link: input.link,
+    mergeRequestId: input.merge_request_id !== undefined ? String(input.merge_request_id) : undefined,
+    mergeRequestIid: input.merge_request_iid !== undefined ? String(input.merge_request_iid) : undefined,
+    mergeRequestTitle: input.merge_request_title,
+    mergeRequestState: input.merge_request_state,
+    moderationResult: input.moderation_result,
+    moderationTime: input.moderation_time,
+    moderationStatus: input.moderation_status
   };
 }
 
@@ -110,4 +191,28 @@ export function mapDefaultReviewCategories(input: RepoDefaultReviewCategories) {
     codehubDefaultCategories: codehub.map(mapReviewCategory),
     hicodeDefaultCategories: hicode.map(mapReviewCategory)
   });
+}
+
+export function mapRepositoryReviews(items: RepoRepositoryReview[], page: number, pageSize: number, total?: number) {
+  return asListResult(
+    `${items.length} repository reviews found`,
+    items.map(mapRepositoryReview),
+    toPageInfo(page, pageSize, total)
+  );
+}
+
+export function mapRepositoryReviewAuthors(
+  items: RepoReviewUserBasic[],
+  page: number,
+  pageSize: number,
+  total?: number
+) {
+  return asListResult(
+    `${items.length} repository review authors found`,
+    items.map((item) => ({
+      ...mapReviewUser(item),
+      id: item.id !== undefined ? String(item.id) : item.username
+    })),
+    toPageInfo(page, pageSize, total)
+  );
 }

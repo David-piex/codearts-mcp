@@ -15,6 +15,8 @@ import {
   repoListRepositoryForksInput,
   repoListRepositoryMembersInput,
   repoListRepositoryNavigationReferencesInput,
+  repoListRepositoryReviewAuthorsInput,
+  repoListRepositoryReviewsInput,
   repoListRepositoryTreesInput,
   repoListRepositoryUserGroupsInput,
   repoListSubmodulesInput,
@@ -292,6 +294,58 @@ describe("repo schemas", () => {
     });
 
     expect(repoListDefaultReviewCategoriesInput.parse({})).toEqual({});
+
+    expect(
+      repoListRepositoryReviewsInput.parse({
+        repository_id: "100",
+        noteable_type: "MergeRequest",
+        search: "fix",
+        start_date: "2026-05-01",
+        end_date: "2026-05-19",
+        only_count: false,
+        review_categories: "realize",
+        review_modules: "security",
+        severity: "suggestion",
+        assignee_id: 9124,
+        proposer_id: "9125",
+        target_branch: "master",
+        include_reply: true,
+        order_by: "updated",
+        sort: "desc",
+        page: 2,
+        page_size: 50
+      })
+    ).toMatchObject({
+      repository_id: "100",
+      noteable_type: "MergeRequest",
+      review_categories: "realize",
+      review_modules: "security",
+      assignee_id: 9124,
+      proposer_id: "9125",
+      target_branch: "master",
+      include_reply: true,
+      order_by: "updated",
+      sort: "desc",
+      page: 2,
+      page_size: 50
+    });
+
+    expect(
+      repoListRepositoryReviewAuthorsInput.parse({
+        repository_id: "100",
+        noteable_type: "Commit",
+        resolved_status: "all",
+        reviewers_filter: "dev",
+        page_size: 50
+      })
+    ).toMatchObject({
+      repository_id: "100",
+      noteable_type: "Commit",
+      resolved_status: "all",
+      reviewers_filter: "dev",
+      page: 1,
+      page_size: 50
+    });
 
     expect(
       repoListRepositoryNavigationReferencesInput.parse({

@@ -8,7 +8,7 @@
 | 模块 | 工具数 | 读接口 | 写接口 | 基础 URL 环境变量 |
 | --- | ---: | ---: | ---: | --- |
 | Req | 201 | 117 | 84 | `HUAWEICLOUD_REQ_BASE_URL` |
-| Repo | 149 | 106 | 43 | `HUAWEICLOUD_REPO_BASE_URL` |
+| Repo | 151 | 108 | 43 | `HUAWEICLOUD_REPO_BASE_URL` |
 | Pipeline | 78 | 42 | 36 | `HUAWEICLOUD_PIPELINE_BASE_URL` |
 | Check | 18 | 14 | 4 | `HUAWEICLOUD_CHECK_BASE_URL` |
 | TestPlan | 179 | 171 | 8 | `HUAWEICLOUD_TESTPLAN_BASE_URL` |
@@ -16,7 +16,7 @@
 | Build | 38 | 29 | 9 | `HUAWEICLOUD_BUILD_BASE_URL` |
 | Artifact | 19 | 17 | 2 | `HUAWEICLOUD_ARTIFACT_BASE_URL` |
 
-产品工具合计 `742` 个。HTTP 共享模式额外提供 `auth_configure_session` 和 `auth_clear_session` 两个会话工具，因此 HTTP MCP 总工具数为 `744`。
+产品工具合计 `744` 个。HTTP 共享模式额外提供 `auth_configure_session` 和 `auth_clear_session` 两个会话工具，因此 HTTP MCP 总工具数为 `746`。
 <!-- GENERATED:api-reference-scale:end -->
 
 ## 通用运行环境
@@ -116,7 +116,7 @@ Repo 覆盖 CodeHub 代码仓协作，包括仓库、分支、提交、文件、
 | `repo_get_remote_mirror` | 获取远程镜像配置和同步状态 |
 | `repo_update_remote_mirror` | 更新远程镜像配置 |
 
-当前真实环境状态：Repo 标记为 `Partial`。原有 25 个仓库协作工具已覆盖真实 AK/SK 验证；新增的 5 个仓库导入/远程镜像工具已实现并有单测覆盖，仍需要稳定 live 样本后再标记为 Full。
+当前真实环境状态：Repo 标记为 `Partial`。原有 25 个仓库协作工具已覆盖真实 AK/SK 验证；新增的 6 个仓库导入/远程镜像工具已实现并有单测覆盖，仍需要稳定 live 样本后再标记为 Full。
 
 字段对应重点：
 

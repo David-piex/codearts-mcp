@@ -30,10 +30,10 @@
 | 代码检查 | 18 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
 | 部署 | 60 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
 | 流水线 | 78 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
-| 代码仓库 | 149 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
+| 代码仓库 | 151 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 201 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 179 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **744** | |
+| **总计** | **746** | |
 
 ## 字段对应
 
@@ -340,6 +340,8 @@
 | `repo_list_repository_navigation_references` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_navigation_references) |
 | `repo_list_repository_protected_refs_user_groups` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_protected_refs_user_groups) |
 | `repo_list_repository_resource_permissions` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_resource_permissions) |
+| `repo_list_repository_review_authors` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_review_authors) |
+| `repo_list_repository_reviews` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_reviews) |
 | `repo_list_repository_templates` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_templates) |
 | `repo_list_repository_trees` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_trees) |
 | `repo_list_repository_user_groups` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_user_groups) |

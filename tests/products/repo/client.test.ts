@@ -329,6 +329,12 @@ describe("createRepoClient", () => {
         if (path === "/v4/default-review-categories") {
           return { codehub_default_categories: [{ key: "code_style" }] };
         }
+        if (path.includes("/reviews?")) {
+          return [{ id: 1, body: "please fix", noteable_type: "MergeRequest" }];
+        }
+        if (path.includes("/review-authors?")) {
+          return [{ id: 9124, name: "dev", username: "readyrunning" }];
+        }
         if (path.includes("/repository/nav/references?")) {
           return { result: "0", defs: [{ tag_name: "Demo" }], refs: [] };
         }
@@ -432,6 +438,22 @@ describe("createRepoClient", () => {
     await client.showReviewSetting({ repository_id: "100", with_default_review_categories: true });
     await client.showNoteRequiredAttributes({ repository_id: "100" });
     await client.listDefaultReviewCategories();
+    await client.listRepositoryReviews({
+      repository_id: "100",
+      noteable_type: "MergeRequest",
+      search: "fix",
+      page: 1,
+      page_size: 20,
+      sort: "desc"
+    });
+    await client.listRepositoryReviewAuthors({
+      repository_id: "100",
+      noteable_type: "Commit",
+      resolved_status: "all",
+      reviewers_filter: "dev",
+      page: 2,
+      page_size: 10
+    });
     await client.listRepositoryNavigationReferences({
       repository_id: "100",
       symbol: "Demo",
@@ -488,6 +510,8 @@ describe("createRepoClient", () => {
       "/v4/repositories/100/review-setting?with_default_review_categories=true",
       "/v4/repositories/100/setting/note-required-attributes",
       "/v4/default-review-categories",
+      "/v4/repositories/100/reviews?offset=0&limit=20&search=fix&noteable_type=MergeRequest&sort=desc",
+      "/v4/repositories/100/review-authors?offset=10&limit=10&noteable_type=Commit&resolved_status=all&reviewers_filter=dev",
       "/v4/repositories/100/repository/nav/references?symbol=Demo&language=Java&blob=blob-1&file_path=src%2FDemo.java&path=src%2FDemo.java&revision=abc123&ref=master",
       "/v4/repositories/100/repository/nav/outline?language=Java&blob=blob-1&file_path=src%2FDemo.java&revision=abc123&ref=master",
       "/v4/repositories/100/repository/nav/schema",

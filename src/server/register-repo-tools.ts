@@ -83,6 +83,8 @@ import {
   repoListRepositoryMembersInput,
   repoListRepositoryNavigationReferencesInput,
   repoListRepositoryResourcePermissionsInput,
+  repoListRepositoryReviewAuthorsInput,
+  repoListRepositoryReviewsInput,
   repoListRepositoryTemplatesInput,
   repoListRepositoryTreesInput,
   repoListRepositoryUserGroupsInput,
@@ -209,6 +211,8 @@ import { createRepoListRepositoryLanguagesHandler } from "../products/repo/tools
 import { createRepoListRepositoryMembersHandler } from "../products/repo/tools/list-repository-members.js";
 import { createRepoListRepositoryNavigationReferencesHandler } from "../products/repo/tools/list-repository-navigation-references.js";
 import { createRepoListRepositoryProtectedRefsUserGroupsHandler } from "../products/repo/tools/list-repository-protected-refs-user-groups.js";
+import { createRepoListRepositoryReviewAuthorsHandler } from "../products/repo/tools/list-repository-review-authors.js";
+import { createRepoListRepositoryReviewsHandler } from "../products/repo/tools/list-repository-reviews.js";
 import { createRepoListRepositoryDeployKeysHandler } from "../products/repo/tools/list-repository-deploy-keys.js";
 import { createRepoListRepositoryWebhookLogsHandler } from "../products/repo/tools/list-repository-webhook-logs.js";
 import { createRepoListRepositoryWebhooksHandler } from "../products/repo/tools/list-repository-webhooks.js";
@@ -431,6 +435,8 @@ const repoToolDefinitions = {
   "repo_show_blobs": defineProductTool({ description: "Show CodeArts Repo blob content", inputSchema: repoShowBlobsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowBlobsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowBlobsHandler }),
   "repo_show_diff_lines": defineProductTool({ description: "Show CodeArts Repo file lines at a commit", inputSchema: repoShowDiffLinesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowDiffLinesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowDiffLinesHandler }),
   "repo_list_repository_navigation_references": defineProductTool({ description: "List CodeArts Repo code navigation references", inputSchema: repoListRepositoryNavigationReferencesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoryNavigationReferencesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoryNavigationReferencesHandler }),
+  "repo_list_repository_review_authors": defineProductTool({ description: "List CodeArts Repo repository review authors", inputSchema: repoListRepositoryReviewAuthorsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoryReviewAuthorsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoryReviewAuthorsHandler }),
+  "repo_list_repository_reviews": defineProductTool({ description: "List CodeArts Repo repository reviews", inputSchema: repoListRepositoryReviewsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoryReviewsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoryReviewsHandler }),
   "repo_show_repository_navigation_outline": defineProductTool({ description: "Show CodeArts Repo code navigation outline", inputSchema: repoShowRepositoryNavigationOutlineInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowRepositoryNavigationOutlineHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowRepositoryNavigationOutlineHandler }),
   "repo_show_repository_navigation_schema": defineProductTool({ description: "Show CodeArts Repo code navigation schema", inputSchema: repoShowRepositoryNavigationSchemaInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowRepositoryNavigationSchemaHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowRepositoryNavigationSchemaHandler }),
   "repo_show_repository_navigation_language": defineProductTool({ description: "Show CodeArts Repo code navigation languages", inputSchema: repoShowRepositoryNavigationLanguageInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowRepositoryNavigationLanguageHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowRepositoryNavigationLanguageHandler }),

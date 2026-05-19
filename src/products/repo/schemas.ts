@@ -127,6 +127,36 @@ export const repoShowNoteRequiredAttributesInput = z.object({
 
 export const repoListDefaultReviewCategoriesInput = z.object({});
 
+const repoReviewNoteableTypeSchema = z.enum(["Commit", "MergeRequest"]);
+const repoReviewUserIdSchema = z.union([z.string().min(1).max(64), z.number().int().positive()]);
+
+export const repoListRepositoryReviewsInput = pagingSchema.extend({
+  repository_id: idSchema,
+  page_size: z.number().int().positive().max(100).default(20),
+  noteable_type: repoReviewNoteableTypeSchema,
+  search: z.string().min(1).max(256).optional(),
+  start_date: z.string().min(1).max(64).optional(),
+  end_date: z.string().min(1).max(64).optional(),
+  only_count: z.boolean().optional(),
+  review_categories: z.string().min(1).max(200).optional(),
+  review_modules: z.string().min(1).max(200).optional(),
+  severity: z.string().min(1).max(64).optional(),
+  assignee_id: repoReviewUserIdSchema.optional(),
+  proposer_id: repoReviewUserIdSchema.optional(),
+  target_branch: z.string().min(1).max(2000).optional(),
+  include_reply: z.boolean().optional(),
+  order_by: z.enum(["created", "updated"]).optional(),
+  sort: z.enum(["asc", "desc"]).optional()
+});
+
+export const repoListRepositoryReviewAuthorsInput = pagingSchema.extend({
+  repository_id: idSchema,
+  page_size: z.number().int().positive().max(100).default(20),
+  noteable_type: repoReviewNoteableTypeSchema,
+  resolved_status: z.enum(["resolved", "unresolved", "all"]),
+  reviewers_filter: z.string().min(1).max(256).optional()
+});
+
 export const repoListRepositoryNavigationReferencesInput = z.object({
   repository_id: idSchema,
   path: z.string().min(1).max(100000).optional(),

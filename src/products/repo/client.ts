@@ -449,6 +449,81 @@ export type RepoDefaultReviewCategories = {
   hicode_default_categories?: RepoReviewCategory[];
 };
 
+export type RepoReviewUserBasic = {
+  id?: number | string;
+  name?: string;
+  username?: string;
+  state?: string;
+  service_license_status?: number | null;
+  avatar_url?: string | null;
+  avatar_path?: string | null;
+  email?: string | null;
+  name_cn?: string | null;
+  web_url?: string | null;
+  nick_name?: string | null;
+  tenant_name?: string | null;
+  error_message?: string | null;
+};
+
+export type RepoReviewPosition = {
+  base_sha?: string;
+  start_sha?: string;
+  head_sha?: string;
+  old_path?: string;
+  new_path?: string;
+  position_type?: string;
+  old_line?: number;
+  new_line?: number;
+};
+
+export type RepoRepositoryReview = {
+  id?: number | string;
+  type?: string;
+  body?: string;
+  note?: string;
+  author?: RepoReviewUserBasic | null;
+  assignee?: RepoReviewUserBasic | null;
+  proposer?: RepoReviewUserBasic | null;
+  reviewer?: RepoReviewUserBasic | null;
+  resolved_by?: RepoReviewUserBasic | null;
+  created_at?: string;
+  updated_at?: string;
+  system?: boolean;
+  noteable_id?: number | string;
+  noteable_type?: string;
+  noteable_iid?: number | string;
+  commit_id?: string | null;
+  discussion_id?: string;
+  repository?: string;
+  repository_path?: string;
+  repository_id?: number | string;
+  diff_file?: string;
+  diff?: string;
+  archived?: boolean;
+  review_categories?: string | null;
+  review_categories_cn?: string | null;
+  review_categories_en?: string | null;
+  review_modules?: string | number | null;
+  severity?: string | null;
+  severity_cn?: string | null;
+  severity_en?: string | null;
+  position?: RepoReviewPosition | null;
+  resolved?: boolean;
+  resolved_at?: string | null;
+  resolvable?: boolean;
+  is_reply?: boolean;
+  is_outdated?: boolean;
+  from_robot?: boolean;
+  link?: string;
+  merge_request_id?: number | string;
+  merge_request_iid?: number | string;
+  merge_request_title?: string;
+  merge_request_state?: string;
+  moderation_result?: boolean | null;
+  moderation_time?: number | null;
+  moderation_status?: number | null;
+};
+
 export type RepoNavigationEntry = {
   tag_name?: string;
   file_path?: string;
@@ -1950,6 +2025,39 @@ export type RepoClient = {
   }) => Promise<RepoReviewSetting>;
   showNoteRequiredAttributes: (input: { repository_id: string }) => Promise<RepoNoteRequiredAttributes>;
   listDefaultReviewCategories: () => Promise<RepoDefaultReviewCategories>;
+  listRepositoryReviews: (input: {
+    repository_id: string;
+    page: number;
+    page_size: number;
+    noteable_type: "Commit" | "MergeRequest";
+    search?: string;
+    start_date?: string;
+    end_date?: string;
+    only_count?: boolean;
+    review_categories?: string;
+    review_modules?: string;
+    severity?: string;
+    assignee_id?: string | number;
+    proposer_id?: string | number;
+    target_branch?: string;
+    include_reply?: boolean;
+    order_by?: "created" | "updated";
+    sort?: "asc" | "desc";
+  }) => Promise<{
+    reviews: RepoRepositoryReview[];
+    total?: number;
+  }>;
+  listRepositoryReviewAuthors: (input: {
+    repository_id: string;
+    page: number;
+    page_size: number;
+    noteable_type: "Commit" | "MergeRequest";
+    resolved_status: "resolved" | "unresolved" | "all";
+    reviewers_filter?: string;
+  }) => Promise<{
+    authors: RepoReviewUserBasic[];
+    total?: number;
+  }>;
   listRepositoryNavigationReferences: (input: {
     repository_id: string;
     symbol: string;
@@ -4903,6 +5011,56 @@ export function createRepoClient(
         : response) as RepoDefaultReviewCategories | undefined;
 
       return payload ?? {};
+    },
+    async listRepositoryReviews(input) {
+      const query = buildOffsetLimitQuery(input);
+      appendOptionalQuery(query, input, [
+        "noteable_type",
+        "search",
+        "start_date",
+        "end_date",
+        "only_count",
+        "review_categories",
+        "review_modules",
+        "severity",
+        "assignee_id",
+        "proposer_id",
+        "target_branch",
+        "include_reply",
+        "order_by",
+        "sort"
+      ]);
+      const response = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/reviews?${query.toString()}`
+      );
+      const extracted = extractArrayFromFields<RepoRepositoryReview>(response as RepoRepositoryReview[] | Record<string, unknown>, [
+        "reviews",
+        "items",
+        "records"
+      ]);
+
+      return {
+        reviews: extracted.items,
+        total: extracted.total
+      };
+    },
+    async listRepositoryReviewAuthors(input) {
+      const query = buildOffsetLimitQuery(input);
+      appendOptionalQuery(query, input, ["noteable_type", "resolved_status", "reviewers_filter"]);
+      const response = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/review-authors?${query.toString()}`
+      );
+      const extracted = extractArrayFromFields<RepoReviewUserBasic>(response as RepoReviewUserBasic[] | Record<string, unknown>, [
+        "authors",
+        "users",
+        "items",
+        "records"
+      ]);
+
+      return {
+        authors: extracted.items,
+        total: extracted.total
+      };
     },
     async listRepositoryNavigationReferences(input) {
       const query = new URLSearchParams({
