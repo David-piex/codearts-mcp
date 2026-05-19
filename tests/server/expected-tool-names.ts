@@ -779,6 +779,7 @@ export const expectedToolNames = [
   "testplan_list_visible_services",
   "testplan_request_official_api",
   "testplan_run_cases",
+  "testplan_search_api_test_basic_aw_infos",
   "testplan_stop_task_execution",
   "testplan_update_task"
 ];

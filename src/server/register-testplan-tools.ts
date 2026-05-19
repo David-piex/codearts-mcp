@@ -188,6 +188,7 @@ import {
   testPlanListTestReportsInput,
   testPlanGetServiceConfigInput,
   testPlanRunCasesInput,
+  testPlanSearchApiTestBasicAwInfosInput,
   testPlanStopTaskExecutionInput,
   testPlanUpdateTaskInput
 } from "../products/testplan/schemas.js";
@@ -377,6 +378,7 @@ import { createTestPlanListVariablesV3Handler } from "../products/testplan/tools
 import { createTestPlanListVisibleServicesHandler } from "../products/testplan/tools/list-visible-services.js";
 import { createTestPlanGetServiceConfigHandler } from "../products/testplan/tools/get-service-config.js";
 import { createTestPlanRunCasesHandler } from "../products/testplan/tools/run-cases.js";
+import { createTestPlanSearchApiTestBasicAwInfosHandler } from "../products/testplan/tools/search-api-test-basic-aw-infos.js";
 import { createTestPlanStopTaskExecutionHandler } from "../products/testplan/tools/stop-task-execution.js";
 import { createTestPlanUpdateTaskHandler } from "../products/testplan/tools/update-task.js";
 import { createOfficialApiRequestHandler } from "../products/shared-tools/request-official-api.js";
@@ -1521,6 +1523,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanRunCasesInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanRunCasesHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanRunCasesHandler
+  }),
+  "testplan_search_api_test_basic_aw_infos": defineProductTool({
+    description: "Search CodeArts TestPlan API test v4 basic AW information entries with catalog details",
+    inputSchema: testPlanSearchApiTestBasicAwInfosInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanSearchApiTestBasicAwInfosHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanSearchApiTestBasicAwInfosHandler
   })
 } as const;
 

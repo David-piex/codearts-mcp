@@ -706,6 +706,13 @@ export const testPlanListApiTestBasicAwInfosV2Input = pagingSchema.extend({
   parent_id: z.string().min(1).optional()
 });
 
+export const testPlanSearchApiTestBasicAwInfosInput = pagingSchema.extend({
+  project_id: idSchema,
+  parent_id: z.string().min(1).optional(),
+  search_type: z.string().min(1).optional(),
+  search_value: z.string().min(1).optional()
+});
+
 export const testPlanListApiTestChildBasicAwsInput = z.object({
   project_id: idSchema,
   parent_id: z.string().min(1),

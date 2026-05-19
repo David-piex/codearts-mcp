@@ -32,8 +32,8 @@
 | 流水线 | 78 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 166 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 201 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
-| 测试计划 | 189 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **784** | |
+| 测试计划 | 190 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
+| **总计** | **785** | |
 
 ## 字段对应
 
@@ -825,6 +825,7 @@
 | `testplan_list_visible_services` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_visible_services) |
 | `testplan_request_official_api` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_request_official_api) |
 | `testplan_run_cases` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_run_cases) |
+| `testplan_search_api_test_basic_aw_infos` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_search_api_test_basic_aw_infos) |
 | `testplan_stop_task_execution` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_stop_task_execution) |
 | `testplan_update_task` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_update_task) |
 

@@ -1071,6 +1071,17 @@ export type TestPlanClient = {
     aws: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  searchApiTestBasicAwInfos: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    parent_id?: string;
+    search_type?: string;
+    search_value?: string;
+  }) => Promise<{
+    aws: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
   listApiTestChildBasicAws: (input: {
     project_id: string;
     parent_id: string;
@@ -3981,6 +3992,33 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       appendQueryValue(query, "parent_id", input.parent_id);
       const response = await _http.get(
         `/v2/${encodeURIComponent(input.project_id)}/aw-cata/aw-info-list?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const aws = readArray<Record<string, unknown>>(
+        payload.page_list ?? payload.value ?? payload.result ?? payload.aws ?? payload.items ?? payload.list
+      );
+
+      return {
+        aws,
+        total: readTotal(payload, response, aws.length)
+      };
+    },
+    async searchApiTestBasicAwInfos(input) {
+      const query = new URLSearchParams({
+        page_no: String(input.page),
+        page_size: String(input.page_size)
+      });
+      appendQueryValue(query, "parent_id", input.parent_id);
+      const body: Record<string, unknown> = {};
+      if (input.search_type !== undefined) {
+        body.search_type = input.search_type;
+      }
+      if (input.search_value !== undefined) {
+        body.search_value = input.search_value;
+      }
+      const response = await _http.post(
+        `/v4/${encodeURIComponent(input.project_id)}/aw-cata/aw-info-list?${query.toString()}`,
+        body
       );
       const payload = readResultPayload(response);
       const aws = readArray<Record<string, unknown>>(
