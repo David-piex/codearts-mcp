@@ -126,11 +126,18 @@ export function expectRateLimitResult(result: unknown, actionName: string) {
     isError: true,
     content: [
       {
-        type: "text",
-        text: `Too many ${actionName} requests for this MCP session. Try again later.`
+        type: "text"
       }
-    ]
+    ],
+    structuredContent: {
+      category: "rate_limit",
+      message: `Too many ${actionName} requests for this MCP session. Try again later.`,
+      status: 429
+    }
   });
+  expect((result as { content?: Array<{ text?: string }> }).content?.[0]?.text).toContain(
+    `Too many ${actionName} requests for this MCP session. Try again later.`
+  );
 }
 
 export function jsonResponse(payload: unknown) {

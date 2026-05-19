@@ -94,14 +94,14 @@ export const repoListRepositoryTreesInput = pagingSchema.extend({
   repository_id: idSchema,
   page_size: z.number().int().positive().max(100).default(20),
   ref: z.string().min(1).max(2000).optional(),
-  path: z.string().min(1).max(10000).optional(),
+  path: z.string().min(1).max(100000).optional(),
   recursive: z.boolean().optional()
 });
 
 export const repoListRepositoryFileListInput = pagingSchema.extend({
   repository_id: idSchema,
   page_size: z.number().int().positive().max(100).default(20),
-  ref_name: z.string().min(1).max(2000).optional(),
+  ref_name: z.string().min(1).max(200).optional(),
   search: z.string().min(1).max(256).optional()
 });
 

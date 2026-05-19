@@ -229,7 +229,7 @@ describe("repo schemas", () => {
       repoListRepositoryTreesInput.parse({
         repository_id: "100",
         ref: "master",
-        path: "src",
+        path: "a".repeat(100000),
         recursive: true,
         page: 2,
         page_size: 50
@@ -237,7 +237,7 @@ describe("repo schemas", () => {
     ).toMatchObject({
       repository_id: "100",
       ref: "master",
-      path: "src",
+      path: "a".repeat(100000),
       recursive: true,
       page: 2,
       page_size: 50
@@ -246,13 +246,13 @@ describe("repo schemas", () => {
     expect(
       repoListRepositoryFileListInput.parse({
         repository_id: "100",
-        ref_name: "master",
+        ref_name: "m".repeat(200),
         search: "index",
         page_size: 50
       })
     ).toMatchObject({
       repository_id: "100",
-      ref_name: "master",
+      ref_name: "m".repeat(200),
       search: "index",
       page: 1,
       page_size: 50

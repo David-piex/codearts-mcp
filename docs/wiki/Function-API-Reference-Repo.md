@@ -6108,7 +6108,7 @@ API 数量：`149`
     "ref_name": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 2000
+      "maxLength": 200
     },
     "search": {
       "type": "string",
@@ -7005,7 +7005,7 @@ API 数量：`149`
     "path": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 10000
+      "maxLength": 100000
     },
     "recursive": {
       "type": "boolean"
