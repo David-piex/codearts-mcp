@@ -69,6 +69,26 @@ export type CheckClient = {
     jobs: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  listTaskLastJobs: (input: { task_id: string }) => Promise<{
+    jobs: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getTaskPreCheckScript: (input: { task_id: string }) => Promise<{
+    task_id: string;
+    raw: Record<string, unknown>;
+  }>;
+  getTaskOwnerMatchingSwitch: (input: { task_id: string }) => Promise<{
+    task_id: string;
+    raw: Record<string, unknown>;
+  }>;
+  getTaskCron: (input: { task_id: string }) => Promise<{
+    task_id: string;
+    raw: Record<string, unknown>;
+  }>;
+  listProjectTaskGroups: (input: { project_id: string }) => Promise<{
+    groups: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
   getTaskProgress: (input: { task_id: string }) => Promise<{
     task_id: string;
     raw: Record<string, unknown>;
@@ -420,6 +440,60 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
       return {
         jobs,
         total: readTotal(payload, response, jobs.length)
+      };
+    },
+    async listTaskLastJobs(input) {
+      const response = await _http.get(`/v4/tasks/${encodeURIComponent(input.task_id)}/last-jobs`);
+      const payload = readResultPayload(response);
+      const jobs = readArray<Record<string, unknown>>(
+        payload.jobs ?? payload.value ?? payload.items ?? payload.list ?? (Array.isArray(response) ? response : [])
+      );
+
+      return {
+        jobs,
+        total: readTotal(payload, response, jobs.length)
+      };
+    },
+    async getTaskPreCheckScript(input) {
+      const response = await _http.get(`/v1/tasks/${encodeURIComponent(input.task_id)}/pre-check-script`);
+      const payload = readResultPayload(response);
+      const script = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        task_id: input.task_id,
+        raw: script
+      };
+    },
+    async getTaskOwnerMatchingSwitch(input) {
+      const response = await _http.get(`/v1/tasks/${encodeURIComponent(input.task_id)}/owner-matching-switch`);
+      const payload = readResultPayload(response);
+      const switchState = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        task_id: input.task_id,
+        raw: switchState
+      };
+    },
+    async getTaskCron(input) {
+      const response = await _http.get(`/v1/tasks/${encodeURIComponent(input.task_id)}/taskcron`);
+      const payload = readResultPayload(response);
+      const cron = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        task_id: input.task_id,
+        raw: cron
+      };
+    },
+    async listProjectTaskGroups(input) {
+      const response = await _http.get(`/v4/projects/${encodeURIComponent(input.project_id)}/task-groups`);
+      const payload = readResultPayload(response);
+      const groups = readArray<Record<string, unknown>>(
+        payload.groups ?? payload.value ?? payload.items ?? payload.list ?? (Array.isArray(response) ? response : [])
+      );
+
+      return {
+        groups,
+        total: readTotal(payload, response, groups.length)
       };
     },
     async getTaskProgress(input) {

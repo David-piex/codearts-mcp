@@ -4,16 +4,21 @@ import { createCheckClient } from "../products/check/client.js";
 import {
   checkCreateTaskInput,
   checkGetMetricsInput,
+  checkGetTaskCronInput,
   checkGetTaskInput,
+  checkGetTaskOwnerMatchingSwitchInput,
+  checkGetTaskPreCheckScriptInput,
   checkGetTaskProgressInput,
   checkGetTaskResourcePoolInput,
   checkGetTaskRulesetCheckParametersV2Input,
   checkGetTaskRulesetCheckParametersV3Input,
   checkGetTaskSettingsInput,
+  checkListProjectTaskGroupsInput,
   checkListRulesetsInput,
   checkListTaskBranchesInput,
   checkListTaskIssuesInput,
   checkListTaskJobsInput,
+  checkListTaskLastJobsInput,
   checkListTaskRulesetsV2Input,
   checkListTaskRulesetsV3Input,
   checkListTasksInput,
@@ -23,15 +28,20 @@ import {
 import { createCheckCreateTaskHandler } from "../products/check/tools/create-task.js";
 import { createCheckGetMetricsHandler } from "../products/check/tools/get-metrics.js";
 import { createCheckGetTaskHandler } from "../products/check/tools/get-task.js";
+import { createCheckGetTaskCronHandler } from "../products/check/tools/get-task-cron.js";
+import { createCheckGetTaskOwnerMatchingSwitchHandler } from "../products/check/tools/get-task-owner-matching-switch.js";
+import { createCheckGetTaskPreCheckScriptHandler } from "../products/check/tools/get-task-pre-check-script.js";
 import { createCheckGetTaskProgressHandler } from "../products/check/tools/get-task-progress.js";
 import { createCheckGetTaskResourcePoolHandler } from "../products/check/tools/get-task-resource-pool.js";
 import { createCheckGetTaskRulesetCheckParametersV2Handler } from "../products/check/tools/get-task-ruleset-check-parameters-v2.js";
 import { createCheckGetTaskRulesetCheckParametersV3Handler } from "../products/check/tools/get-task-ruleset-check-parameters-v3.js";
 import { createCheckGetTaskSettingsHandler } from "../products/check/tools/get-task-settings.js";
+import { createCheckListProjectTaskGroupsHandler } from "../products/check/tools/list-project-task-groups.js";
 import { createCheckListRulesetsHandler } from "../products/check/tools/list-rulesets.js";
 import { createCheckListTaskBranchesHandler } from "../products/check/tools/list-task-branches.js";
 import { createCheckListTaskIssuesHandler } from "../products/check/tools/list-task-issues.js";
 import { createCheckListTaskJobsHandler } from "../products/check/tools/list-task-jobs.js";
+import { createCheckListTaskLastJobsHandler } from "../products/check/tools/list-task-last-jobs.js";
 import { createCheckListTaskRulesetsV2Handler } from "../products/check/tools/list-task-rulesets-v2.js";
 import { createCheckListTaskRulesetsV3Handler } from "../products/check/tools/list-task-rulesets-v3.js";
 import { createCheckListTasksHandler } from "../products/check/tools/list-tasks.js";
@@ -81,6 +91,36 @@ const checkToolDefinitions = {
     inputSchema: checkListTaskJobsInput,
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListTaskJobsHandler>[0] }) => clients.checkClient,
     createProductHandler: createCheckListTaskJobsHandler
+  }),
+  "check_list_task_last_jobs": defineProductTool({
+    description: "List CodeArts Check task last jobs",
+    inputSchema: checkListTaskLastJobsInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListTaskLastJobsHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckListTaskLastJobsHandler
+  }),
+  "check_get_task_pre_check_script": defineProductTool({
+    description: "Get CodeArts Check task pre-check script",
+    inputSchema: checkGetTaskPreCheckScriptInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetTaskPreCheckScriptHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckGetTaskPreCheckScriptHandler
+  }),
+  "check_get_task_owner_matching_switch": defineProductTool({
+    description: "Get CodeArts Check task owner matching switch",
+    inputSchema: checkGetTaskOwnerMatchingSwitchInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetTaskOwnerMatchingSwitchHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckGetTaskOwnerMatchingSwitchHandler
+  }),
+  "check_get_task_cron": defineProductTool({
+    description: "Get CodeArts Check task cron",
+    inputSchema: checkGetTaskCronInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetTaskCronHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckGetTaskCronHandler
+  }),
+  "check_list_project_task_groups": defineProductTool({
+    description: "List CodeArts Check project task groups",
+    inputSchema: checkListProjectTaskGroupsInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListProjectTaskGroupsHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckListProjectTaskGroupsHandler
   }),
   "check_get_task_progress": defineProductTool({
     description: "Get CodeArts Check task progress",

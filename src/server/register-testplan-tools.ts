@@ -15,6 +15,7 @@ import {
   testPlanCreateTaskRelationsInput,
   testPlanGetApiTestAvailableConfigInput,
   testPlanGetApiTestBasicAwV3Input,
+  testPlanGetApiTestBasicAwV4Input,
   testPlanGetApiTestConcurrencyPackageStatusInput,
   testPlanGetApiTestDebugLogInput,
   testPlanGetApiTestDnsMappingInput,
@@ -22,6 +23,7 @@ import {
   testPlanGetApiTestPackageChargePopupInput,
   testPlanGetApiTestTaskStatusInput,
   testPlanGetApiTestTaskStatusV2Input,
+  testPlanGetBackgroundInfoInput,
   testPlanGetDomainAccessInfoInput,
   testPlanGetDomainDetailInfoInput,
   testPlanGetDomainFrozenInfoInput,
@@ -40,9 +42,11 @@ import {
   testPlanGetFreeTestTimeInput,
   testPlanGetFunctionalTestPackageStatusInput,
   testPlanGetFunctionalTestParallelSummaryInput,
+  testPlanGetGt3kBackgroundInfoInput,
   testPlanGetGt3kBranchInput,
   testPlanGetGt3kDomainInfoInput,
   testPlanGetGt3kFreeDeclarationInput,
+  testPlanGetGt3kIteratorInput,
   testPlanGetGt3kProgressInput,
   testPlanGetGt3kTestcaseChangeStatisticsInput,
   testPlanGetGt3kUserInfoDomainInput,
@@ -68,6 +72,7 @@ import {
   testPlanGetProjectMessageNoticesInput,
   testPlanGetProgressInput,
   testPlanGetProjectProgressInput,
+  testPlanGetProjectServiceConfigInput,
   testPlanGetProjectServiceRepoInput,
   testPlanGetProjectSystemConfigInput,
   testPlanGetProjectTestcaseGlobalConfigInput,
@@ -133,7 +138,9 @@ import {
   testPlanListCasesInput,
   testPlanListIssuesInput,
   testPlanListNoticeConfigsInput,
+  testPlanListPlanJournalsInput,
   testPlanListPlansInput,
+  testPlanListPlansV2Input,
   testPlanListProjectDefectsInput,
   testPlanListProjectFieldConfigsInput,
   testPlanListProjectIssuesInput,
@@ -168,6 +175,7 @@ import {
   testPlanListTesthubIteratorsInput,
   testPlanListTesthubIteratorsV5Input,
   testPlanListTesthubServicesInput,
+  testPlanListV1BranchesInput,
   testPlanListV4BranchesInput,
   testPlanListV4ProjectFieldConfigsInput,
   testPlanListV4TestcaseReviewsInput,
@@ -192,6 +200,7 @@ import { createTestPlanCheckApiTestTaskNameHandler } from "../products/testplan/
 import { createTestPlanBatchDeleteTasksHandler } from "../products/testplan/tools/batch-delete-tasks.js";
 import { createTestPlanGetApiTestAvailableConfigHandler } from "../products/testplan/tools/get-api-test-available-config.js";
 import { createTestPlanGetApiTestBasicAwV3Handler } from "../products/testplan/tools/get-api-test-basic-aw-v3.js";
+import { createTestPlanGetApiTestBasicAwV4Handler } from "../products/testplan/tools/get-api-test-basic-aw-v4.js";
 import { createTestPlanGetApiTestConcurrencyPackageStatusHandler } from "../products/testplan/tools/get-api-test-concurrency-package-status.js";
 import { createTestPlanGetApiTestDebugLogHandler } from "../products/testplan/tools/get-api-test-debug-log.js";
 import { createTestPlanGetApiTestDnsMappingHandler } from "../products/testplan/tools/get-api-test-dns-mapping.js";
@@ -199,6 +208,7 @@ import { createTestPlanGetApiTestPackageChargeMessageHandler } from "../products
 import { createTestPlanGetApiTestPackageChargePopupHandler } from "../products/testplan/tools/get-api-test-package-charge-popup.js";
 import { createTestPlanGetApiTestTaskStatusHandler } from "../products/testplan/tools/get-api-test-task-status.js";
 import { createTestPlanGetApiTestTaskStatusV2Handler } from "../products/testplan/tools/get-api-test-task-status-v2.js";
+import { createTestPlanGetBackgroundInfoHandler } from "../products/testplan/tools/get-background-info.js";
 import { createTestPlanGetBranchHandler } from "../products/testplan/tools/get-branch.js";
 import { createTestPlanGetCaseTemplateHandler } from "../products/testplan/tools/get-case-template.js";
 import { createTestPlanCreateTaskHandler } from "../products/testplan/tools/create-task.js";
@@ -219,9 +229,11 @@ import { createTestPlanGetFreeDeclarationHandler } from "../products/testplan/to
 import { createTestPlanGetFreeTestTimeHandler } from "../products/testplan/tools/get-free-test-time.js";
 import { createTestPlanGetFunctionalTestPackageStatusHandler } from "../products/testplan/tools/get-functional-test-package-status.js";
 import { createTestPlanGetFunctionalTestParallelSummaryHandler } from "../products/testplan/tools/get-functional-test-parallel-summary.js";
+import { createTestPlanGetGt3kBackgroundInfoHandler } from "../products/testplan/tools/get-gt3k-background-info.js";
 import { createTestPlanGetGt3kBranchHandler } from "../products/testplan/tools/get-gt3k-branch.js";
 import { createTestPlanGetGt3kDomainInfoHandler } from "../products/testplan/tools/get-gt3k-domain-info.js";
 import { createTestPlanGetGt3kFreeDeclarationHandler } from "../products/testplan/tools/get-gt3k-free-declaration.js";
+import { createTestPlanGetGt3kIteratorHandler } from "../products/testplan/tools/get-gt3k-iterator.js";
 import { createTestPlanGetGt3kProgressHandler } from "../products/testplan/tools/get-gt3k-progress.js";
 import { createTestPlanGetGt3kTestcaseChangeStatisticsHandler } from "../products/testplan/tools/get-gt3k-testcase-change-statistics.js";
 import { createTestPlanGetGt3kUserInfoDomainHandler } from "../products/testplan/tools/get-gt3k-user-info-domain.js";
@@ -247,6 +259,7 @@ import { createTestPlanGetProjectMasterVersionHandler } from "../products/testpl
 import { createTestPlanGetProjectMessageNoticesHandler } from "../products/testplan/tools/get-project-message-notices.js";
 import { createTestPlanGetProgressHandler } from "../products/testplan/tools/get-progress.js";
 import { createTestPlanGetProjectProgressHandler } from "../products/testplan/tools/get-project-progress.js";
+import { createTestPlanGetProjectServiceConfigHandler } from "../products/testplan/tools/get-project-service-config.js";
 import { createTestPlanGetProjectServiceRepoHandler } from "../products/testplan/tools/get-project-service-repo.js";
 import { createTestPlanGetProjectSystemConfigHandler } from "../products/testplan/tools/get-project-system-config.js";
 import { createTestPlanGetProjectTestcaseGlobalConfigHandler } from "../products/testplan/tools/get-project-testcase-global-config.js";
@@ -313,7 +326,9 @@ import { createTestPlanListIteratorIssuesHandler } from "../products/testplan/to
 import { createTestPlanListCasesHandler } from "../products/testplan/tools/list-cases.js";
 import { createTestPlanListIssuesHandler } from "../products/testplan/tools/list-issues.js";
 import { createTestPlanListNoticeConfigsHandler } from "../products/testplan/tools/list-notice-configs.js";
+import { createTestPlanListPlanJournalsHandler } from "../products/testplan/tools/list-plan-journals.js";
 import { createTestPlanListPlansHandler } from "../products/testplan/tools/list-plans.js";
+import { createTestPlanListPlansV2Handler } from "../products/testplan/tools/list-plans-v2.js";
 import { createTestPlanListProjectDefectsHandler } from "../products/testplan/tools/list-project-defects.js";
 import { createTestPlanListProjectFieldConfigsHandler } from "../products/testplan/tools/list-project-field-configs.js";
 import { createTestPlanListProjectIssuesHandler } from "../products/testplan/tools/list-project-issues.js";
@@ -348,6 +363,7 @@ import { createTestPlanListTesthubIteratorsHandler } from "../products/testplan/
 import { createTestPlanListTesthubIteratorsV5Handler } from "../products/testplan/tools/list-testhub-iterators-v5.js";
 import { createTestPlanListTesthubServicesHandler } from "../products/testplan/tools/list-testhub-services.js";
 import { createTestPlanListTestReportsHandler } from "../products/testplan/tools/list-test-reports.js";
+import { createTestPlanListV1BranchesHandler } from "../products/testplan/tools/list-v1-branches.js";
 import { createTestPlanListV4BranchesHandler } from "../products/testplan/tools/list-v4-branches.js";
 import { createTestPlanListV4ProjectFieldConfigsHandler } from "../products/testplan/tools/list-v4-project-field-configs.js";
 import { createTestPlanListV4TestcaseReviewsHandler } from "../products/testplan/tools/list-v4-testcase-reviews.js";
@@ -380,11 +396,23 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListPlansHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListPlansHandler
   }),
+  "testplan_list_plans_v2": defineProductTool({
+    description: "List CodeArts TestPlan v2 plans with stage, branch, and version filters",
+    inputSchema: testPlanListPlansV2Input,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListPlansV2Handler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListPlansV2Handler
+  }),
   "testplan_get_plan": defineProductTool({
     description: "Get CodeArts TestPlan plan detail",
     inputSchema: testPlanGetPlanInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetPlanHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetPlanHandler
+  }),
+  "testplan_list_plan_journals": defineProductTool({
+    description: "List CodeArts TestPlan plan operation journals",
+    inputSchema: testPlanListPlanJournalsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListPlanJournalsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListPlanJournalsHandler
   }),
   "testplan_get_mindmap": defineProductTool({
     description: "Get CodeArts TestPlan mindmap detail",
@@ -445,6 +473,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanGetIteratorInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetIteratorHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetIteratorHandler
+  }),
+  "testplan_get_gt3k_iterator": defineProductTool({
+    description: "Get CodeArts TestPlan GT3K iterator detail with summary statistics",
+    inputSchema: testPlanGetGt3kIteratorInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetGt3kIteratorHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetGt3kIteratorHandler
   }),
   "testplan_get_case": defineProductTool({
     description: "Get CodeArts TestPlan case detail",
@@ -656,6 +690,12 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetApiTestPackageChargePopupHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetApiTestPackageChargePopupHandler
   }),
+  "testplan_get_background_info": defineProductTool({
+    description: "Get CodeArts TestPlan background information",
+    inputSchema: testPlanGetBackgroundInfoInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetBackgroundInfoHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetBackgroundInfoHandler
+  }),
   "testplan_list_api_test_package_usage": defineProductTool({
     description: "List CodeArts TestPlan API test package usage information",
     inputSchema: testPlanListApiTestPackageUsageInput,
@@ -757,6 +797,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanGetApiTestBasicAwV3Input,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetApiTestBasicAwV3Handler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetApiTestBasicAwV3Handler
+  }),
+  "testplan_get_api_test_basic_aw_v4": defineProductTool({
+    description: "Get CodeArts TestPlan API test v4 basic AW detail",
+    inputSchema: testPlanGetApiTestBasicAwV4Input,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetApiTestBasicAwV4Handler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetApiTestBasicAwV4Handler
   }),
   "testplan_list_api_test_child_basic_aws": defineProductTool({
     description: "List CodeArts TestPlan API test child basic AW entries without script content",
@@ -950,6 +996,12 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetServiceConfigHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetServiceConfigHandler
   }),
+  "testplan_get_project_service_config": defineProductTool({
+    description: "Get CodeArts TestPlan project service configuration",
+    inputSchema: testPlanGetProjectServiceConfigInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetProjectServiceConfigHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetProjectServiceConfigHandler
+  }),
   "testplan_list_alert_templates": defineProductTool({
     description: "List CodeArts TestPlan alert templates",
     inputSchema: testPlanListAlertTemplatesInput,
@@ -1027,6 +1079,18 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanGetGt3kBranchInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetGt3kBranchHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetGt3kBranchHandler
+  }),
+  "testplan_get_gt3k_background_info": defineProductTool({
+    description: "Get CodeArts TestPlan GT3K background information",
+    inputSchema: testPlanGetGt3kBackgroundInfoInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetGt3kBackgroundInfoHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetGt3kBackgroundInfoHandler
+  }),
+  "testplan_list_v1_branches": defineProductTool({
+    description: "List CodeArts TestPlan v1 branches",
+    inputSchema: testPlanListV1BranchesInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListV1BranchesHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListV1BranchesHandler
   }),
   "testplan_list_v4_branches": defineProductTool({
     description: "List CodeArts TestPlan v4 branches",

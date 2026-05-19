@@ -41,12 +41,41 @@ export type TestPlanClient = {
     }>;
     total?: number;
   }>;
+  listPlansV2: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    keyword?: string;
+    current_stage?: string;
+    fix_version_ids?: string;
+    branch_uri?: string;
+    query_all_version?: boolean;
+  }) => Promise<{
+    plans: Array<{
+      plan_id: string;
+      name: string;
+      owner_name?: string;
+      status?: string;
+      description?: string;
+      raw?: Record<string, unknown>;
+    }>;
+    total?: number;
+  }>;
   getPlan: (input: { project_id: string; plan_id: string }) => Promise<{
     plan_id: string;
     name: string;
     owner_name?: string;
     status?: string;
     description?: string;
+  }>;
+  listPlanJournals: (input: {
+    project_id: string;
+    plan_id: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    journals: Array<Record<string, unknown>>;
+    total?: number;
   }>;
   listCases: (input: {
     project_id: string;
@@ -648,9 +677,25 @@ export type TestPlanClient = {
     branches: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  listV1Branches: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    sort_field?: string;
+    sort_type?: string;
+  }) => Promise<{
+    branches: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
   getGt3kDomainInfo: (input: {
     project_uuid?: string;
   }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  getGt3kBackgroundInfo: (input: { project_id: string }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  getBackgroundInfo: (input: { project_id: string }) => Promise<{
     raw: Record<string, unknown>;
   }>;
   listGt3kCurrentUserTestcases: (input: {
@@ -848,6 +893,13 @@ export type TestPlanClient = {
   }) => Promise<{
     raw: Record<string, unknown>;
   }>;
+  getProjectServiceConfig: (input: {
+    project_id: string;
+    key?: string;
+    type?: string;
+  }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
   listAlertTemplates: (input: {
     service_id: string;
     page: number;
@@ -989,6 +1041,13 @@ export type TestPlanClient = {
   getApiTestBasicAwV3: (input: {
     project_id: string;
     aw_id: string;
+  }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  getApiTestBasicAwV4: (input: {
+    project_id: string;
+    aw_id: string;
+    is_api?: boolean;
   }) => Promise<{
     raw: Record<string, unknown>;
   }>;
@@ -1213,6 +1272,14 @@ export type TestPlanClient = {
   getIterator: (input: {
     project_uuid: string;
     iterator_uri: string;
+  }) => Promise<{
+    iterator_id: string;
+    name?: string;
+    raw: Record<string, unknown>;
+  }>;
+  getGt3kIterator: (input: {
+    project_uuid: string;
+    iterator_id: string;
   }) => Promise<{
     iterator_id: string;
     name?: string;
@@ -1631,6 +1698,56 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         total
       };
     },
+    async listPlansV2(input) {
+      const query = new URLSearchParams({
+        offset: String((input.page - 1) * input.page_size),
+        limit: String(input.page_size)
+      });
+      appendQueryValue(query, "name", input.keyword);
+      appendQueryValue(query, "current_stage", input.current_stage);
+      appendQueryValue(query, "fix_version_ids", input.fix_version_ids);
+      appendQueryValue(query, "branch_uri", input.branch_uri);
+      appendQueryValue(query, "query_all_version", input.query_all_version);
+
+      const response = await _http.get(
+        `/v2/projects/${encodeURIComponent(input.project_id)}/plans?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const plans = readArray<Record<string, unknown>>(
+        Array.isArray(response)
+          ? response
+          : payload.plans ?? payload.value ?? payload.items ?? payload.list
+      );
+
+      return {
+        plans: plans.map((item) => {
+          const owner = readEnvelope(item.owner);
+          const ownerName =
+            typeof item.owner_name === "string"
+              ? item.owner_name
+              : typeof owner?.name === "string"
+                ? owner.name
+                : typeof owner?.user_name === "string"
+                  ? owner.user_name
+                  : undefined;
+
+          return {
+            plan_id: String(item.plan_id ?? item.id ?? item.uri ?? ""),
+            name: typeof item.name === "string" ? item.name : "",
+            owner_name: ownerName,
+            status:
+              typeof item.status === "string"
+                ? item.status
+                : typeof item.current_stage === "string"
+                  ? item.current_stage
+                  : undefined,
+            description: typeof item.description === "string" ? item.description : undefined,
+            raw: item
+          };
+        }),
+        total: readTotal(payload, response, plans.length)
+      };
+    },
     async getPlan(input) {
       const response = (await _http.get(
         `/v1/projects/${encodeURIComponent(input.project_id)}/plans/${encodeURIComponent(input.plan_id)}`
@@ -1650,6 +1767,26 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         owner_name: response.owner_name ?? response.owner,
         status: response.status ?? response.current_stage,
         description: response.description
+      };
+    },
+    async listPlanJournals(input) {
+      const offset = (input.page - 1) * input.page_size;
+      const query = new URLSearchParams({
+        offset: String(offset),
+        limit: String(input.page_size)
+      });
+
+      const response = await _http.get(
+        `/v1/projects/${encodeURIComponent(input.project_id)}/plans/${encodeURIComponent(input.plan_id)}/journals?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const journals = readArray<Record<string, unknown>>(
+        payload.journals ?? payload.value ?? payload.items ?? payload.list ?? (Array.isArray(response) ? response : [])
+      );
+
+      return {
+        journals,
+        total: readTotal(payload, response, journals.length)
       };
     },
     async listCases(input) {
@@ -2881,12 +3018,55 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         total: readTotal(payload, response, branches.length)
       };
     },
+    async listV1Branches(input) {
+      const query = new URLSearchParams({
+        offset: String((input.page - 1) * input.page_size),
+        limit: String(input.page_size)
+      });
+      appendQueryValue(query, "sort_field", input.sort_field);
+      appendQueryValue(query, "sort_type", input.sort_type);
+
+      const response = await _http.get(
+        `/v1/${encodeURIComponent(input.project_id)}/branches?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const branches = readArray<Record<string, unknown>>(
+        payload.value ?? payload.branches ?? payload.items ?? payload.list ?? (Array.isArray(response) ? response : [])
+      );
+
+      return {
+        branches,
+        total: readTotal(payload, response, branches.length)
+      };
+    },
     async getGt3kDomainInfo(input) {
       const query = new URLSearchParams();
       appendQueryValue(query, "project_uuid", input.project_uuid);
       const suffix = query.size ? `?${query.toString()}` : "";
 
       const response = await _http.get(`/GT3KServer/v4/domain/info${suffix}`);
+      const payload = readResultPayload(response);
+      const info = readEnvelope(payload.value) ?? payload;
+
+      return {
+        raw: info
+      };
+    },
+    async getGt3kBackgroundInfo(input) {
+      const response = await _http.get(
+        `/GT3KServer/v4/${encodeURIComponent(input.project_id)}/background`
+      );
+      const payload = readResultPayload(response);
+      const info = readEnvelope(payload.value) ?? payload;
+
+      return {
+        raw: info
+      };
+    },
+    async getBackgroundInfo(input) {
+      const response = await _http.get(
+        `/v4/${encodeURIComponent(input.project_id)}/background`
+      );
       const payload = readResultPayload(response);
       const info = readEnvelope(payload.value) ?? payload;
 
@@ -3354,6 +3534,22 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         raw: config
       };
     },
+    async getProjectServiceConfig(input) {
+      const query = new URLSearchParams();
+      appendQueryValue(query, "key", input.key);
+      appendQueryValue(query, "type", input.type);
+      const suffix = query.size ? `?${query.toString()}` : "";
+
+      const response = await _http.get(
+        `/v1/${encodeURIComponent(input.project_id)}/service/config${suffix}`
+      );
+      const payload = readResultPayload(response);
+      const config = readEnvelope(payload.value) ?? payload;
+
+      return {
+        raw: config
+      };
+    },
     async listAlertTemplates(input) {
       const query = new URLSearchParams();
       appendQueryValue(query, "name", input.name);
@@ -3717,6 +3913,20 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       );
       const payload = readResultPayload(response);
       const aw = readEnvelope(payload.value) ?? payload;
+
+      return {
+        raw: aw
+      };
+    },
+    async getApiTestBasicAwV4(input) {
+      const query = new URLSearchParams();
+      appendQueryValue(query, "is_api", input.is_api);
+      const suffix = query.size ? `?${query.toString()}` : "";
+      const response = await _http.get(
+        `/v4/${encodeURIComponent(input.project_id)}/basic-aw/${encodeURIComponent(input.aw_id)}${suffix}`
+      );
+      const payload = readResultPayload(response);
+      const aw = readEnvelope(payload.result) ?? readEnvelope(payload.value) ?? payload;
 
       return {
         raw: aw
@@ -4258,6 +4468,23 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
 
       return {
         iterator_id: String(iterator.uri ?? iterator.plan_id ?? iterator.id ?? input.iterator_uri),
+        name: typeof iterator.name === "string" ? iterator.name : undefined,
+        raw: iterator
+      };
+    },
+    async getGt3kIterator(input) {
+      const query = new URLSearchParams({
+        project_uuid: input.project_uuid
+      });
+
+      const response = await _http.get(
+        `/GT3KServer/v4/iterators/${encodeURIComponent(input.iterator_id)}?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const iterator = readEnvelope(payload.value) ?? payload;
+
+      return {
+        iterator_id: String(iterator.uri ?? iterator.id ?? input.iterator_id),
         name: typeof iterator.name === "string" ? iterator.name : undefined,
         raw: iterator
       };

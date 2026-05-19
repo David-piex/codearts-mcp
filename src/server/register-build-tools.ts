@@ -10,13 +10,17 @@ import {
   buildGetFullStagesInput,
   buildGetHistoryDetailsInput,
   buildGetInfoRecordInput,
+  buildGetJobCopyNameInput,
+  buildGetJobDisableCheckInput,
   buildGetDomainChargeTypeInput,
   buildGetDomainFederationInput,
   buildGetDomainPackageQuotaInput,
   buildGetDomainStatusInput,
   buildGetDomainUserPermissionInput,
+  buildGetJobNoticeInput,
   buildGetJobPermissionInput,
   buildGetJobPermissionInternalInput,
+  buildGetJobRunningStatusInput,
   buildGetProjectRecordStatisticsInput,
   buildPrepareNodeRuntimeBundleInput,
   buildGetRecordFlowGraphInput,
@@ -26,9 +30,12 @@ import {
   buildGetJobInput,
   buildListBuildParametersInput,
   buildListCodeTagsInput,
+  buildListDefaultParametersInput,
   buildListDomainRelatedProjectsInput,
   buildListGitCodeBranchesInput,
   buildListGitCodeRepositoriesInput,
+  buildListImageTemplatesInput,
+  buildListJobGroupTreeInput,
   buildListJobsInput,
   buildListJobPermissionRolesInput,
   buildListProjectRecordsInput,
@@ -36,6 +43,7 @@ import {
   buildListReportRepositoriesInput,
   buildListRecordsInput,
   buildListResourceSpecsInput,
+  buildListSystemParametersInput,
   buildRunJobInput,
   buildStopJobInput,
   buildUpdateJobStepInput
@@ -55,6 +63,10 @@ import { createBuildGetHistoryDetailsHandler } from "../products/build/tools/get
 import { createBuildGetInfoRecordHandler } from "../products/build/tools/get-info-record.js";
 import { createBuildGetRealTimeLogHandler } from "../products/build/tools/get-real-time-log.js";
 import { createBuildGetJobHandler } from "../products/build/tools/get-job.js";
+import { createBuildGetJobCopyNameHandler } from "../products/build/tools/get-job-copy-name.js";
+import { createBuildGetJobDisableCheckHandler } from "../products/build/tools/get-job-disable-check.js";
+import { createBuildGetJobNoticeHandler } from "../products/build/tools/get-job-notice.js";
+import { createBuildGetJobRunningStatusHandler } from "../products/build/tools/get-job-running-status.js";
 import { createBuildGetDomainChargeTypeHandler } from "../products/build/tools/get-domain-charge-type.js";
 import { createBuildGetDomainFederationHandler } from "../products/build/tools/get-domain-federation.js";
 import { createBuildGetDomainPackageQuotaHandler } from "../products/build/tools/get-domain-package-quota.js";
@@ -64,9 +76,12 @@ import { createBuildGetJobPermissionHandler } from "../products/build/tools/get-
 import { createBuildGetJobPermissionInternalHandler } from "../products/build/tools/get-job-permission-internal.js";
 import { createBuildListBuildParametersHandler } from "../products/build/tools/list-build-parameters.js";
 import { createBuildListCodeTagsHandler } from "../products/build/tools/list-code-tags.js";
+import { createBuildListDefaultParametersHandler } from "../products/build/tools/list-default-parameters.js";
 import { createBuildListDomainRelatedProjectsHandler } from "../products/build/tools/list-domain-related-projects.js";
 import { createBuildListGitCodeBranchesHandler } from "../products/build/tools/list-git-code-branches.js";
 import { createBuildListGitCodeRepositoriesHandler } from "../products/build/tools/list-git-code-repositories.js";
+import { createBuildListImageTemplatesHandler } from "../products/build/tools/list-image-templates.js";
+import { createBuildListJobGroupTreeHandler } from "../products/build/tools/list-job-group-tree.js";
 import { createBuildListJobPermissionRolesHandler } from "../products/build/tools/list-job-permission-roles.js";
 import { createBuildListJobsHandler } from "../products/build/tools/list-jobs.js";
 import { createBuildListProjectRecordsHandler } from "../products/build/tools/list-project-records.js";
@@ -74,6 +89,7 @@ import { createBuildListReportBranchesHandler } from "../products/build/tools/li
 import { createBuildListReportRepositoriesHandler } from "../products/build/tools/list-report-repositories.js";
 import { createBuildListRecordsHandler } from "../products/build/tools/list-records.js";
 import { createBuildListResourceSpecsHandler } from "../products/build/tools/list-resource-specs.js";
+import { createBuildListSystemParametersHandler } from "../products/build/tools/list-system-parameters.js";
 import { createBuildRunJobHandler } from "../products/build/tools/run-job.js";
 import { createBuildStopJobHandler } from "../products/build/tools/stop-job.js";
 import { createBuildUpdateJobStepHandler } from "../products/build/tools/update-job-step.js";
@@ -109,6 +125,12 @@ const buildToolDefinitions = {
     inputSchema: buildGetProjectRecordStatisticsInput,
     selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetProjectRecordStatisticsHandler>[0] }) => clients.buildClient,
     createProductHandler: createBuildGetProjectRecordStatisticsHandler
+  }),
+  "build_list_image_templates": defineProductTool({
+    description: "List CodeArts Build image templates",
+    inputSchema: buildListImageTemplatesInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListImageTemplatesHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildListImageTemplatesHandler
   }),
   "build_get_record_flow_graph": defineProductTool({
     description: "Get CodeArts Build record flow graph",
@@ -206,6 +228,36 @@ const buildToolDefinitions = {
     selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetJobPermissionHandler>[0] }) => clients.buildClient,
     createProductHandler: createBuildGetJobPermissionHandler
   }),
+  "build_get_job_notice": defineProductTool({
+    description: "Get CodeArts Build job notice settings",
+    inputSchema: buildGetJobNoticeInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetJobNoticeHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildGetJobNoticeHandler
+  }),
+  "build_get_job_running_status": defineProductTool({
+    description: "Get CodeArts Build job running status",
+    inputSchema: buildGetJobRunningStatusInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetJobRunningStatusHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildGetJobRunningStatusHandler
+  }),
+  "build_get_job_disable_check": defineProductTool({
+    description: "Get CodeArts Build job disable check status",
+    inputSchema: buildGetJobDisableCheckInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetJobDisableCheckHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildGetJobDisableCheckHandler
+  }),
+  "build_get_job_copy_name": defineProductTool({
+    description: "Get CodeArts Build copied job name",
+    inputSchema: buildGetJobCopyNameInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetJobCopyNameHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildGetJobCopyNameHandler
+  }),
+  "build_list_job_group_tree": defineProductTool({
+    description: "List CodeArts Build job group tree",
+    inputSchema: buildListJobGroupTreeInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListJobGroupTreeHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildListJobGroupTreeHandler
+  }),
   "build_get_job": defineProductTool({
     description: "Get CodeArts Build job detail",
     inputSchema: buildGetJobInput,
@@ -217,6 +269,18 @@ const buildToolDefinitions = {
     inputSchema: buildGetRecordInput,
     selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetRecordHandler>[0] }) => clients.buildClient,
     createProductHandler: createBuildGetRecordHandler
+  }),
+  "build_list_default_parameters": defineProductTool({
+    description: "List CodeArts Build default parameters",
+    inputSchema: buildListDefaultParametersInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListDefaultParametersHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildListDefaultParametersHandler
+  }),
+  "build_list_system_parameters": defineProductTool({
+    description: "List CodeArts Build system parameters",
+    inputSchema: buildListSystemParametersInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListSystemParametersHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildListSystemParametersHandler
   }),
   "build_list_records": defineProductTool({
     description: "List CodeArts Build records",

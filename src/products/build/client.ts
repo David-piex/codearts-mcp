@@ -135,10 +135,22 @@ export type BuildClient = {
       status?: string;
       trigger_type?: string;
       branch?: string;
-      commit_id?: string;
+    commit_id?: string;
       executor?: string;
       start_time?: number;
     }>;
+    total?: number;
+  }>;
+  listImageTemplates: () => Promise<{
+    templates: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listDefaultParameters: () => Promise<{
+    parameters: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listSystemParameters: () => Promise<{
+    parameters: Array<Record<string, unknown>>;
     total?: number;
   }>;
   getRecordScript: (input: { record_id: string }) => Promise<{
@@ -301,6 +313,29 @@ export type BuildClient = {
       is_running?: boolean;
       description?: string;
     }>;
+    total?: number;
+  }>;
+  getJobNotice: (input: { job_id: string }) => Promise<{
+    job_id: string;
+    raw: Record<string, unknown>;
+  }>;
+  getJobRunningStatus: (input: { job_id: string }) => Promise<{
+    job_id: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  getJobDisableCheck: (input: { job_id: string }) => Promise<{
+    job_id: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  getJobCopyName: (input: { job_id: string }) => Promise<{
+    job_id: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  listJobGroupTree: (input: { project_id: string }) => Promise<{
+    groups: Array<Record<string, unknown>>;
     total?: number;
   }>;
   getJob: (input: { job_id: string }) => Promise<{
@@ -918,6 +953,60 @@ export function createBuildClient(
         running: item.running ?? item.running_count
       };
     },
+    async listImageTemplates() {
+      const response = await _http.get("/v1/image/templates");
+      const raw = readBuildPayloadValue(response);
+      const payload = readBuildPayload(response);
+      const templates = readBuildArray<Record<string, unknown>>(
+        payload.image_templates ??
+          payload.templates ??
+          payload.items ??
+          payload.list ??
+          payload.value ??
+          (Array.isArray(raw) ? raw : [])
+      );
+
+      return {
+        templates,
+        total: readBuildTotal(payload, response, templates.length)
+      };
+    },
+    async listDefaultParameters() {
+      const response = await _http.get("/v1/job/default-parameters");
+      const raw = readBuildPayloadValue(response);
+      const payload = readBuildPayload(response);
+      const parameters = readBuildArray<Record<string, unknown>>(
+        payload.parameters ??
+          payload.default_parameters ??
+          payload.items ??
+          payload.list ??
+          payload.value ??
+          (Array.isArray(raw) ? raw : [])
+      );
+
+      return {
+        parameters,
+        total: readBuildTotal(payload, response, parameters.length)
+      };
+    },
+    async listSystemParameters() {
+      const response = await _http.get("/v1/job/system-parameters");
+      const raw = readBuildPayloadValue(response);
+      const payload = readBuildPayload(response);
+      const parameters = readBuildArray<Record<string, unknown>>(
+        payload.parameters ??
+          payload.system_parameters ??
+          payload.items ??
+          payload.list ??
+          payload.value ??
+          (Array.isArray(raw) ? raw : [])
+      );
+
+      return {
+        parameters,
+        total: readBuildTotal(payload, response, parameters.length)
+      };
+    },
     async listProjectRecords(input) {
       const offset = (input.page - 1) * input.page_size;
       const query = new URLSearchParams({
@@ -1490,6 +1579,66 @@ export function createBuildClient(
       }
 
       return cached.value;
+    },
+    async getJobNotice(input) {
+      const response = await _http.get(`/v1/job/${encodeURIComponent(input.job_id)}/notice`);
+      const payload = readBuildPayload(response);
+
+      return {
+        job_id: input.job_id,
+        raw: payload
+      };
+    },
+    async getJobRunningStatus(input) {
+      const response = await _http.get(`/v1/job/${encodeURIComponent(input.job_id)}/running-status`);
+      const payload = readBuildPayloadValue(response);
+      const envelope = readBuildEnvelope(payload);
+
+      return {
+        job_id: input.job_id,
+        value: envelope ? envelope.value ?? envelope.result ?? envelope.status : payload,
+        raw: readBuildRawRecord(payload)
+      };
+    },
+    async getJobDisableCheck(input) {
+      const response = await _http.get(`/v1/job/${encodeURIComponent(input.job_id)}/check/disable`);
+      const payload = readBuildPayloadValue(response);
+      const envelope = readBuildEnvelope(payload);
+
+      return {
+        job_id: input.job_id,
+        value: envelope ? envelope.value ?? envelope.result ?? envelope.disabled : payload,
+        raw: readBuildRawRecord(payload)
+      };
+    },
+    async getJobCopyName(input) {
+      const response = await _http.get(`/v1/job/${encodeURIComponent(input.job_id)}/copy-name`);
+      const payload = readBuildPayloadValue(response);
+      const envelope = readBuildEnvelope(payload);
+
+      return {
+        job_id: input.job_id,
+        value: envelope ? envelope.value ?? envelope.result ?? envelope.name : payload,
+        raw: readBuildRawRecord(payload)
+      };
+    },
+    async listJobGroupTree(input) {
+      const response = await _http.get(`/v1/job/${encodeURIComponent(input.project_id)}/group/tree`);
+      const raw = readBuildPayloadValue(response);
+      const payload = readBuildPayload(response);
+      const groups = readBuildArray<Record<string, unknown>>(
+        payload.groups ??
+          payload.trees ??
+          payload.items ??
+          payload.list ??
+          payload.value ??
+          (Array.isArray(raw) ? raw : [])
+      );
+
+      return {
+        groups,
+        total: readBuildTotal(payload, response, groups.length)
+      };
     },
     async getJob(input) {
       const response = unwrapBuildPayload((await _http.get(

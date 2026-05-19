@@ -34,16 +34,32 @@ function mapRepositorySummary(input: RepoRepositorySummary) {
   };
 }
 
-export function mapCurrentUserRepositories(
+export function mapRepositorySummaryList(
+  summary: string,
   items: RepoRepositorySummary[],
   page: number,
   pageSize: number,
   total?: number
 ) {
   return asListResult(
-    `${items.length} current user repositories found`,
+    summary,
     items.map(mapRepositorySummary),
     toPageInfo(page, pageSize, total)
+  );
+}
+
+export function mapCurrentUserRepositories(
+  items: RepoRepositorySummary[],
+  page: number,
+  pageSize: number,
+  total?: number
+) {
+  return mapRepositorySummaryList(
+    `${items.length} current user repositories found`,
+    items,
+    page,
+    pageSize,
+    total
   );
 }
 
@@ -53,10 +69,12 @@ export function mapGroupRepositories(
   pageSize: number,
   total?: number
 ) {
-  return asListResult(
+  return mapRepositorySummaryList(
     `${items.length} group repositories found`,
-    items.map(mapRepositorySummary),
-    toPageInfo(page, pageSize, total)
+    items,
+    page,
+    pageSize,
+    total
   );
 }
 

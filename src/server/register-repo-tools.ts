@@ -50,9 +50,13 @@ import {
   repoListBranchRelatedWorkItemsInput,
   repoListCurrentUserRepositoriesInput,
   repoListGroupDeployKeysInput,
+  repoListGroupsInput,
+  repoListManageableGroupsInput,
+  repoListGroupMembersInput,
   repoListGroupProtectedBranchesInput,
   repoListGroupProtectedRefsUserGroupsInput,
   repoListGroupRepositoriesInput,
+  repoListGroupUserGroupsInput,
   repoListImpersonationTokensInput,
   repoListItemCommitsInput,
   repoListPersonalRepositoryImportRecordsInput,
@@ -107,6 +111,8 @@ import {
   repoShowBlobsInput,
   repoShowDiffLinesInput,
   repoShowGroupE2eSettingInput,
+  repoShowGroupPermissionInheritEnabledInput,
+  repoShowGroupWatermarkInput,
   repoShowLastPushEventInRepositoryInput,
   repoShowMergeRequestStatisticInput,
   repoShowMergeRequestVotesInput,
@@ -197,9 +203,13 @@ import { createRepoListEventsHandler } from "../products/repo/tools/list-events.
 import { createRepoListBranchRelatedWorkItemsHandler } from "../products/repo/tools/list-branch-related-work-items.js";
 import { createRepoListCurrentUserRepositoriesHandler } from "../products/repo/tools/list-current-user-repositories.js";
 import { createRepoListGroupDeployKeysHandler } from "../products/repo/tools/list-group-deploy-keys.js";
+import { createRepoListGroupsHandler } from "../products/repo/tools/list-groups.js";
+import { createRepoListManageableGroupsHandler } from "../products/repo/tools/list-manageable-groups.js";
+import { createRepoListGroupMembersHandler } from "../products/repo/tools/list-group-members.js";
 import { createRepoListGroupProtectedBranchesHandler } from "../products/repo/tools/list-group-protected-branches.js";
 import { createRepoListGroupProtectedRefsUserGroupsHandler } from "../products/repo/tools/list-group-protected-refs-user-groups.js";
 import { createRepoListGroupRepositoriesHandler } from "../products/repo/tools/list-group-repositories.js";
+import { createRepoListGroupUserGroupsHandler } from "../products/repo/tools/list-group-user-groups.js";
 import { createRepoListGroupWebhookLogsHandler } from "../products/repo/tools/list-group-webhook-logs.js";
 import { createRepoListGroupWebhooksHandler } from "../products/repo/tools/list-group-webhooks.js";
 import { createRepoListImpersonationTokensHandler } from "../products/repo/tools/list-impersonation-tokens.js";
@@ -270,6 +280,8 @@ import { createRepoDeleteTagHandler } from "../products/repo/tools/delete-tag.js
 import { createRepoRemoveRepositoryDeployKeyHandler } from "../products/repo/tools/remove-repository-deploy-key.js";
 import { createRepoReviewMergeRequestHandler } from "../products/repo/tools/review-merge-request.js";
 import { createRepoShowGroupE2eSettingHandler } from "../products/repo/tools/show-group-e2e-setting.js";
+import { createRepoShowGroupPermissionInheritEnabledHandler } from "../products/repo/tools/show-group-permission-inherit-enabled.js";
+import { createRepoShowGroupWatermarkHandler } from "../products/repo/tools/show-group-watermark.js";
 import { createRepoShowProjectE2eSettingHandler } from "../products/repo/tools/show-project-e2e-setting.js";
 import { createRepoShowTenantDevelopModeHandler } from "../products/repo/tools/show-tenant-develop-mode.js";
 import { createRepoShowTenantRepoEncryptionSettingHandler } from "../products/repo/tools/show-tenant-repo-encryption-setting.js";
@@ -343,7 +355,11 @@ const repoToolDefinitions = {
   "repo_list_impersonation_tokens": defineProductTool({ description: "List CodeArts Repo personal access token metadata", inputSchema: repoListImpersonationTokensInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListImpersonationTokensHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListImpersonationTokensHandler }),
   "repo_list_personal_repository_import_records": defineProductTool({ description: "List personal CodeArts Repo repository import records", inputSchema: repoListPersonalRepositoryImportRecordsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListPersonalRepositoryImportRecordsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListPersonalRepositoryImportRecordsHandler }),
   "repo_list_current_user_repositories": defineProductTool({ description: "List CodeArts Repo repositories visible to the current user", inputSchema: repoListCurrentUserRepositoriesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListCurrentUserRepositoriesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListCurrentUserRepositoriesHandler }),
+  "repo_list_groups": defineProductTool({ description: "List CodeArts Repo groups visible to the current user", inputSchema: repoListGroupsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListGroupsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListGroupsHandler }),
+  "repo_list_manageable_groups": defineProductTool({ description: "List CodeArts Repo manageable groups for a project", inputSchema: repoListManageableGroupsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListManageableGroupsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListManageableGroupsHandler }),
   "repo_list_group_repositories": defineProductTool({ description: "List CodeArts Repo repositories in a group", inputSchema: repoListGroupRepositoriesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListGroupRepositoriesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListGroupRepositoriesHandler }),
+  "repo_list_group_members": defineProductTool({ description: "List CodeArts Repo group members", inputSchema: repoListGroupMembersInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListGroupMembersHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListGroupMembersHandler }),
+  "repo_list_group_user_groups": defineProductTool({ description: "List CodeArts Repo group user groups", inputSchema: repoListGroupUserGroupsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListGroupUserGroupsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListGroupUserGroupsHandler }),
   "repo_associate_remote_mirror": defineProductTool({ description: "Associate CodeArts Repo remote mirror", inputSchema: repoAssociateRemoteMirrorInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoAssociateRemoteMirrorHandler>[0] }) => clients.repoClient, createProductHandler: createRepoAssociateRemoteMirrorHandler }),
   "repo_start_remote_mirror_synchronization": defineProductTool({ description: "Start CodeArts Repo remote mirror synchronization", inputSchema: repoStartRemoteMirrorSynchronizationInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoStartRemoteMirrorSynchronizationHandler>[0] }) => clients.repoClient, createProductHandler: createRepoStartRemoteMirrorSynchronizationHandler }),
   "repo_get_remote_mirror": defineProductTool({ description: "Get CodeArts Repo remote mirror detail", inputSchema: repoGetRemoteMirrorInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoGetRemoteMirrorHandler>[0] }) => clients.repoClient, createProductHandler: createRepoGetRemoteMirrorHandler }),
@@ -355,6 +371,7 @@ const repoToolDefinitions = {
   "repo_create_file_push_permission": defineProductTool({ description: "Create CodeArts Repo repository file push permission", inputSchema: repoCreateFilePushPermissionInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCreateFilePushPermissionHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCreateFilePushPermissionHandler }),
   "repo_batch_update_repository_file_push_permissions": defineProductTool({ description: "Batch update CodeArts Repo repository file push permissions", inputSchema: repoBatchUpdateRepositoryFilePushPermissionsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoBatchUpdateRepositoryFilePushPermissionsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoBatchUpdateRepositoryFilePushPermissionsHandler }),
   "repo_batch_delete_repository_file_push_permissions": defineProductTool({ description: "Batch delete CodeArts Repo repository file push permissions", inputSchema: repoBatchDeleteRepositoryFilePushPermissionsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoBatchDeleteRepositoryFilePushPermissionsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoBatchDeleteRepositoryFilePushPermissionsHandler }),
+  "repo_show_group_watermark": defineProductTool({ description: "Show CodeArts Repo group watermark setting", inputSchema: repoShowGroupWatermarkInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowGroupWatermarkHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowGroupWatermarkHandler }),
   "repo_show_project_watermark": defineProductTool({ description: "Show CodeArts Repo project watermark setting", inputSchema: repoShowProjectWatermarkInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowProjectWatermarkHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowProjectWatermarkHandler }),
   "repo_update_project_watermark": defineProductTool({ description: "Update CodeArts Repo project watermark setting", inputSchema: repoUpdateProjectWatermarkInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoUpdateProjectWatermarkHandler>[0] }) => clients.repoClient, createProductHandler: createRepoUpdateProjectWatermarkHandler }),
   "repo_list_project_subgroups_and_repositories": defineProductTool({ description: "List CodeArts Repo project subgroups and repositories", inputSchema: repoListProjectSubgroupsAndRepositoriesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListProjectSubgroupsAndRepositoriesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListProjectSubgroupsAndRepositoriesHandler }),
@@ -364,6 +381,7 @@ const repoToolDefinitions = {
   "repo_show_resource_permissions": defineProductTool({ description: "Show CodeArts Repo group resource permission matrix", inputSchema: repoShowResourcePermissionsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowResourcePermissionsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowResourcePermissionsHandler }),
   "repo_update_repository_permission_inherit_enabled": defineProductTool({ description: "Update CodeArts Repo repository permission inherit setting", inputSchema: repoUpdateRepositoryPermissionInheritEnabledInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoUpdateRepositoryPermissionInheritEnabledHandler>[0] }) => clients.repoClient, createProductHandler: createRepoUpdateRepositoryPermissionInheritEnabledHandler }),
   "repo_show_repository_permission_inherit_enabled": defineProductTool({ description: "Show CodeArts Repo repository permission inherit setting", inputSchema: repoShowRepositoryPermissionInheritEnabledInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowRepositoryPermissionInheritEnabledHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowRepositoryPermissionInheritEnabledHandler }),
+  "repo_show_group_permission_inherit_enabled": defineProductTool({ description: "Show CodeArts Repo group permission inherit setting", inputSchema: repoShowGroupPermissionInheritEnabledInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowGroupPermissionInheritEnabledHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowGroupPermissionInheritEnabledHandler }),
   "repo_show_project_settings_inherit_cfg": defineProductTool({ description: "Show CodeArts Repo project inheritance settings", inputSchema: repoShowProjectSettingsInheritCfgInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowProjectSettingsInheritCfgHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowProjectSettingsInheritCfgHandler }),
   "repo_update_project_settings_inherit_cfg": defineProductTool({ description: "Update CodeArts Repo project inheritance settings", inputSchema: repoUpdateProjectSettingsInheritCfgInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoUpdateProjectSettingsInheritCfgHandler>[0] }) => clients.repoClient, createProductHandler: createRepoUpdateProjectSettingsInheritCfgHandler }),
   "repo_show_project_member_setting": defineProductTool({ description: "Show CodeArts Repo project member synchronization setting", inputSchema: repoShowProjectMemberSettingInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowProjectMemberSettingHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowProjectMemberSettingHandler }),

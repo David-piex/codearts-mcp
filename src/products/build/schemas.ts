@@ -5,8 +5,34 @@ export const buildListJobsInput = pagingSchema.extend({
   project_id: idSchema
 });
 
+export const buildListImageTemplatesInput = z.object({});
+
+export const buildListDefaultParametersInput = z.object({});
+
+export const buildListSystemParametersInput = z.object({});
+
 export const buildGetJobInput = z.object({
   job_id: idSchema
+});
+
+export const buildGetJobNoticeInput = z.object({
+  job_id: idSchema
+});
+
+export const buildGetJobRunningStatusInput = z.object({
+  job_id: idSchema
+});
+
+export const buildGetJobDisableCheckInput = z.object({
+  job_id: idSchema
+});
+
+export const buildGetJobCopyNameInput = z.object({
+  job_id: idSchema
+});
+
+export const buildListJobGroupTreeInput = z.object({
+  project_id: idSchema
 });
 
 export const buildGetRecordInput = z.object({

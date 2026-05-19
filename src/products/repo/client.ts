@@ -1169,6 +1169,9 @@ export type RepoClient = {
   showProjectWatermark: (input: {
     project_id: string;
   }) => Promise<RepoWatermarkSetting>;
+  showGroupWatermark: (input: {
+    group_id: string;
+  }) => Promise<RepoWatermarkSetting>;
   updateProjectWatermark: (input: {
     project_id: string;
     watermark: boolean;
@@ -1219,6 +1222,9 @@ export type RepoClient = {
   }) => Promise<RepoRepositoryPermissionInheritSetting>;
   showRepositoryPermissionInheritEnabled: (input: {
     repository_id: string;
+  }) => Promise<RepoRepositoryPermissionInheritSetting>;
+  showGroupPermissionInheritEnabled: (input: {
+    group_id: string;
   }) => Promise<RepoRepositoryPermissionInheritSetting>;
   showNotificationSubscription: (input: {
     repository_id: string;
@@ -2035,6 +2041,28 @@ export type RepoClient = {
     repositories: RepoRepositorySummary[];
     total?: number;
   }>;
+  listGroups: (input: {
+    page: number;
+    page_size: number;
+    search?: string;
+    all_available?: boolean;
+    order_by?: "id" | "name" | "path" | "created_at" | "updated_at";
+    sort?: "asc" | "desc";
+    starred?: boolean;
+    owned?: boolean;
+  }) => Promise<{
+    groups: RepoRepositorySummary[];
+    total?: number;
+  }>;
+  listManageableGroups: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    scope?: "group" | "repository";
+  }) => Promise<{
+    groups: RepoRepositorySummary[];
+    total?: number;
+  }>;
   listGroupRepositories: (input: {
     group_id: string;
     page: number;
@@ -2044,6 +2072,28 @@ export type RepoClient = {
     sort?: "asc" | "desc";
   }) => Promise<{
     repositories: RepoRepositorySummary[];
+    total?: number;
+  }>;
+  listGroupMembers: (input: {
+    group_id: string;
+    project_id: string;
+    page: number;
+    page_size: number;
+    query?: string;
+    join_way?: "domain" | "normal" | "inherit";
+    access_level?: string | number;
+  }) => Promise<{
+    members: RepoRepositoryMember[];
+    total?: number;
+  }>;
+  listGroupUserGroups: (input: {
+    group_id: string;
+    page: number;
+    page_size: number;
+    search?: string;
+    project_id?: string;
+  }) => Promise<{
+    groups: RepoRepositoryUserGroup[];
     total?: number;
   }>;
   listRepositoryUserGroups: (input: {
@@ -3392,6 +3442,13 @@ export function createRepoClient(
 
       return extractWatermarkSetting(rawResponse);
     },
+    async showGroupWatermark(input) {
+      const rawResponse = (await _http.get(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/watermark`
+      )) as RepoWatermarkSetting;
+
+      return extractWatermarkSetting(rawResponse);
+    },
     async updateProjectWatermark(input) {
       const rawResponse = (await _http.put(
         `/v4/projects/${encodeURIComponent(input.project_id)}/watermark`,
@@ -3465,6 +3522,13 @@ export function createRepoClient(
     async showRepositoryPermissionInheritEnabled(input) {
       const rawResponse = (await _http.get(
         `/v4/repositories/${encodeURIComponent(input.repository_id)}/permission-inherit-setting`
+      )) as RepoRepositoryPermissionInheritSetting;
+
+      return extractRepositoryPermissionInheritSetting(rawResponse);
+    },
+    async showGroupPermissionInheritEnabled(input) {
+      const rawResponse = (await _http.get(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/permission-inherit-enabled`
       )) as RepoRepositoryPermissionInheritSetting;
 
       return extractRepositoryPermissionInheritSetting(rawResponse);
@@ -5042,6 +5106,43 @@ export function createRepoClient(
         total: extracted.total
       };
     },
+    async listGroups(input) {
+      const query = buildOffsetLimitQuery(input);
+      appendOptionalQuery(query, input, [
+        "search",
+        "all_available",
+        "order_by",
+        "sort",
+        "starred",
+        "owned"
+      ]);
+      const response = await _http.get(`/v4/groups/list?${query.toString()}`);
+      const extracted = extractArrayFromFields<RepoRepositorySummary>(
+        response as RepoRepositorySummary[] | Record<string, unknown>,
+        ["groups", "items", "records"]
+      );
+
+      return {
+        groups: extracted.items,
+        total: extracted.total
+      };
+    },
+    async listManageableGroups(input) {
+      const query = buildOffsetLimitQuery(input);
+      appendOptionalQuery(query, input, ["scope"]);
+      const response = await _http.get(
+        `/v4/${encodeURIComponent(input.project_id)}/manageable-groups?${query.toString()}`
+      );
+      const extracted = extractArrayFromFields<RepoRepositorySummary>(
+        response as RepoRepositorySummary[] | Record<string, unknown>,
+        ["groups", "items", "records"]
+      );
+
+      return {
+        groups: extracted.items,
+        total: extracted.total
+      };
+    },
     async listGroupRepositories(input) {
       const query = buildOffsetLimitQuery(input);
       appendOptionalQuery(query, input, ["search", "order_by", "sort"]);
@@ -5055,6 +5156,39 @@ export function createRepoClient(
 
       return {
         repositories: extracted.items,
+        total: extracted.total
+      };
+    },
+    async listGroupMembers(input) {
+      const query = buildOffsetLimitQuery(input);
+      query.set("project_id", input.project_id);
+      appendOptionalQuery(query, input, ["query", "join_way", "access_level"]);
+      const response = await _http.get(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/members/list?${query.toString()}`
+      );
+      const extracted = extractArrayFromFields<RepoRepositoryMember>(
+        response as RepoRepositoryMember[] | Record<string, unknown>,
+        ["members", "items", "records"]
+      );
+
+      return {
+        members: extracted.items,
+        total: extracted.total
+      };
+    },
+    async listGroupUserGroups(input) {
+      const query = buildOffsetLimitQuery(input);
+      appendOptionalQuery(query, input, ["search", "project_id"]);
+      const response = await _http.get(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/user-groups?${query.toString()}`
+      );
+      const extracted = extractArrayFromFields<RepoRepositoryUserGroup>(
+        response as RepoRepositoryUserGroup[] | Record<string, unknown>,
+        ["user_groups", "groups", "items", "records"]
+      );
+
+      return {
+        groups: extracted.items,
         total: extracted.total
       };
     },

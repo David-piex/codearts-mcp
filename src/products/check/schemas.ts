@@ -17,6 +17,26 @@ export const checkListTaskJobsInput = z.object({
   task_id: idSchema
 });
 
+export const checkListTaskLastJobsInput = z.object({
+  task_id: idSchema
+});
+
+export const checkGetTaskPreCheckScriptInput = z.object({
+  task_id: idSchema
+});
+
+export const checkGetTaskOwnerMatchingSwitchInput = z.object({
+  task_id: idSchema
+});
+
+export const checkGetTaskCronInput = z.object({
+  task_id: idSchema
+});
+
+export const checkListProjectTaskGroupsInput = z.object({
+  project_id: idSchema
+});
+
 export const checkGetTaskProgressInput = z.object({
   task_id: idSchema
 });

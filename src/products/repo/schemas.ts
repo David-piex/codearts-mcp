@@ -42,12 +42,44 @@ export const repoListCurrentUserRepositoriesInput = pagingSchema.extend({
   include_abnormal: z.boolean().optional()
 });
 
+export const repoListGroupsInput = pagingSchema.extend({
+  page_size: z.number().int().positive().max(100).default(20),
+  search: z.string().min(1).max(256).optional(),
+  all_available: z.boolean().optional(),
+  order_by: z.enum(["id", "name", "path", "created_at", "updated_at"]).optional(),
+  sort: z.enum(["asc", "desc"]).optional(),
+  starred: z.boolean().optional(),
+  owned: z.boolean().optional()
+});
+
+export const repoListManageableGroupsInput = pagingSchema.extend({
+  project_id: idSchema,
+  page_size: z.number().int().positive().max(100).default(20),
+  scope: z.enum(["group", "repository"]).default("repository")
+});
+
 export const repoListGroupRepositoriesInput = pagingSchema.extend({
   group_id: idSchema,
   page_size: z.number().int().positive().max(100).default(20),
   search: z.string().min(1).max(256).optional(),
   order_by: z.enum(["id", "name", "created_at", "updated_at"]).optional(),
   sort: z.enum(["asc", "desc"]).optional()
+});
+
+export const repoListGroupMembersInput = pagingSchema.extend({
+  group_id: idSchema,
+  project_id: idSchema,
+  page_size: z.number().int().positive().max(100).default(20),
+  query: z.string().min(1).max(256).optional(),
+  join_way: z.enum(["domain", "normal", "inherit"]).optional(),
+  access_level: z.union([z.string().min(1), z.number().int()]).optional()
+});
+
+export const repoListGroupUserGroupsInput = pagingSchema.extend({
+  group_id: idSchema,
+  page_size: z.number().int().positive().max(100).default(20),
+  search: z.string().min(1).max(256).optional(),
+  project_id: idSchema.optional()
 });
 
 export const repoListRepositoryUserGroupsInput = pagingSchema.extend({
@@ -442,6 +474,10 @@ export const repoShowProjectWatermarkInput = z.object({
   project_id: idSchema
 });
 
+export const repoShowGroupWatermarkInput = z.object({
+  group_id: idSchema
+});
+
 export const repoUpdateProjectWatermarkInput = z.object({
   project_id: idSchema,
   watermark: z.boolean(),
@@ -491,6 +527,10 @@ export const repoUpdateRepositoryPermissionInheritEnabledInput = z.object({
 
 export const repoShowRepositoryPermissionInheritEnabledInput = z.object({
   repository_id: idSchema
+});
+
+export const repoShowGroupPermissionInheritEnabledInput = z.object({
+  group_id: idSchema
 });
 
 export const repoShowNotificationSubscriptionInput = z.object({

@@ -12,7 +12,20 @@ export const testPlanListPlansInput = pagingSchema.extend({
   project_id: idSchema
 });
 
+export const testPlanListPlansV2Input = pagingSchema.extend({
+  project_id: idSchema,
+  current_stage: z.string().min(1).optional(),
+  fix_version_ids: z.string().min(1).optional(),
+  branch_uri: z.string().min(1).optional(),
+  query_all_version: z.boolean().optional()
+});
+
 export const testPlanGetPlanInput = z.object({
+  project_id: idSchema,
+  plan_id: idSchema
+});
+
+export const testPlanListPlanJournalsInput = pagingSchema.extend({
   project_id: idSchema,
   plan_id: idSchema
 });
@@ -394,8 +407,22 @@ export const testPlanListV4BranchesInput = z.object({
   sort_type: z.string().min(1).optional()
 });
 
+export const testPlanListV1BranchesInput = pagingSchema.extend({
+  project_id: idSchema,
+  sort_field: z.string().min(1).optional(),
+  sort_type: z.string().min(1).optional()
+});
+
 export const testPlanGetGt3kDomainInfoInput = z.object({
   project_uuid: idSchema.optional()
+});
+
+export const testPlanGetGt3kBackgroundInfoInput = z.object({
+  project_id: idSchema
+});
+
+export const testPlanGetBackgroundInfoInput = z.object({
+  project_id: idSchema
 });
 
 export const testPlanListGt3kCurrentUserTestcasesInput = pagingSchema.extend({
@@ -541,6 +568,12 @@ export const testPlanGetServiceConfigInput = z.object({
   type: z.string().min(1)
 });
 
+export const testPlanGetProjectServiceConfigInput = z.object({
+  project_id: idSchema,
+  key: z.string().min(1).optional(),
+  type: z.string().min(1).optional()
+});
+
 export const testPlanListAlertTemplatesInput = pagingSchema.extend({
   service_id: idSchema,
   name: z.string().min(1).optional()
@@ -653,6 +686,12 @@ export const testPlanListApiTestVariablesInput = pagingSchema.extend({
 export const testPlanGetApiTestBasicAwV3Input = z.object({
   project_id: idSchema,
   aw_id: idSchema
+});
+
+export const testPlanGetApiTestBasicAwV4Input = z.object({
+  project_id: idSchema,
+  aw_id: idSchema,
+  is_api: z.boolean().optional()
 });
 
 export const testPlanListApiTestChildBasicAwsInput = z.object({
@@ -827,6 +866,11 @@ export const testPlanListTesthubIteratorsV5Input = pagingSchema.extend({
 export const testPlanGetIteratorInput = z.object({
   project_uuid: idSchema,
   iterator_uri: idSchema
+});
+
+export const testPlanGetGt3kIteratorInput = z.object({
+  project_uuid: idSchema,
+  iterator_id: idSchema
 });
 
 export const testPlanListIteratorIssuesInput = pagingSchema.extend({
