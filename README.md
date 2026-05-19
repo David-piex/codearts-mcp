@@ -215,76 +215,62 @@ MCP_SERVER_VERSION=0.1.0
 node dist/src/server/index.js
 ```
 
-### 本地 CLI
+### CLI 怎么用
 
-CLI 与本地 `stdio` 模式使用同一组环境变量和工具注册，不需要额外服务进程：
+CLI 就是“用命令行调用 MCP 工具”。它有两种用法：
 
-```bash
-npm run cli -- tools --format text
-npm run cli -- schema repo_list_repositories
-npm run cli -- call req_list_projects --input '{"page":1,"page_size":20}' --pretty
-npm run cli -- call req_list_projects --input '{"page":1}' --format table
+| 你要做什么 | 用哪种模式 | 凭证从哪里来 |
+| --- | --- | --- |
+| 在自己电脑或 CI 里直接调用 CodeArts | 本地模式 | 本机环境变量里的 `HUAWEICLOUD_AK` / `HUAWEICLOUD_SK` |
+| 调用已经部署好的团队共享 MCP 服务 | 远程模式 | 共享服务返回的 `auth_token` |
+
+#### 1. 本地模式：不需要启动服务
+
+先设置 AK/SK：
+
+```powershell
+$env:HUAWEICLOUD_AK="your-ak"
+$env:HUAWEICLOUD_SK="your-sk"
+$env:HUAWEICLOUD_REGION="cn-north-4"
+$env:MCP_SERVER_NAME="codearts-mcp"
+$env:MCP_SERVER_VERSION="0.1.0"
 ```
 
-构建后也可以直接使用 bin 入口：
+然后调用：
 
-```bash
-node dist/src/server/cli.js tools --format text
-node dist/src/server/cli.js call repo_list_repositories --file params.json --pretty
+```powershell
+npm run cli -- tools --format table
+npm run cli -- call req_list_projects --input '{"page":1,"page_size":20}' --format table
 ```
 
-远程共享入口可以通过 HTTP MCP 调用：
+#### 2. 远程模式：调用共享 `/mcp`
 
-```bash
-npm run cli -- call req_list_projects \
-  --transport http \
-  --endpoint https://your-domain.example/mcp \
-  --token replace-with-auth-token \
-  --input '{"page":1}' \
-  --pretty
+```powershell
+npm run cli -- call req_list_projects `
+  --transport http `
+  --endpoint https://your-domain.example/mcp `
+  --token replace-with-auth-token `
+  --input '{"page":1}' `
+  --format table
 ```
 
-也可以使用 profile 配置文件，默认路径为 `~/.codearts-mcp-cli.json`：
+#### 3. 常用命令
 
-```json
-{
-  "default_profile": "shared",
-  "profiles": {
-    "shared": {
-      "transport": "http",
-      "endpoint": "https://your-domain.example/mcp",
-      "token": "replace-with-auth-token",
-      "format": "table"
-    },
-    "local": {
-      "transport": "local",
-      "region": "cn-north-4",
-      "access_key": "your-ak",
-      "secret_key": "your-sk"
-    }
-  }
-}
-```
+| 命令 | 用途 |
+| --- | --- |
+| `npm run cli -- tools --format table` | 查看有哪些工具 |
+| `npm run cli -- schema repo_list_repositories` | 查看某个工具需要哪些参数 |
+| `npm run cli -- call req_list_projects --input '{"page":1}' --format table` | 调用工具 |
+| `npm run cli -- call repo_list_repositories --file params.json --pretty` | 从 JSON 文件读取参数 |
+| `npm run cli -- completion powershell` | 生成 PowerShell 自动补全脚本 |
 
-指定 profile：
-
-```bash
-npm run cli -- --profile shared tools --format table
-npm run cli -- --profile local call req_list_projects --input '{"page":1}' --pretty
-```
-
-生成 shell 自动补全脚本：
-
-```bash
-npm run cli -- completion powershell
-npm run cli -- completion bash
-npm run cli -- completion zsh
-```
+更多 profile、补全、文件输入示例见 [CLI Usage](docs/wiki/CLI-Usage.md)。
 
 ## API 文档入口
 
 | 文档 | 用途 |
 | --- | --- |
+| [CLI Usage](docs/wiki/CLI-Usage.md) | 命令行调用 MCP 工具：本地模式、远程模式、profile、表格输出和补全 |
 | [HTTP MCP Interface](docs/wiki/HTTP-MCP-Interface.md) | HTTP 端点、MCP JSON-RPC、鉴权会话、请求响应和接入示例 |
 | [Function API Reference](docs/wiki/Function-API-Reference.md) | 419 个 MCP 功能 API 的总目录；完整参数表、字段对应和 JSON Schema 按模块拆分到明细页 |
 | [CodeArts MCP API Reference](docs/wiki/API-Reference.md) | 8 个 CodeArts 服务的 MCP API 总览、基础 URL、工具清单和 live 边界 |

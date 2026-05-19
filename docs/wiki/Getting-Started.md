@@ -103,91 +103,61 @@ node dist/src/server/index.js
 - `pipeline_list_pipelines`
 - `build_list_jobs`
 
-## 方式 3：本地或远程 `CLI`
+## 方式 3：命令行 `CLI`
 
-CLI 复用同一批 MCP 工具注册和 handler，适合脚本、CI、临时排障和不方便接 MCP 客户端的场景。
+CLI 适合脚本、CI、临时排障，或者你不想打开 MCP 客户端时使用。
 
-### 1. 本地直调
+先选一种模式：
 
-本地直调与 `stdio` 使用同一组环境变量：
+| 场景 | 命令里要加什么 | 凭证 |
+| --- | --- | --- |
+| 本机直接调用 CodeArts | 什么都不用加 | 本机 `HUAWEICLOUD_AK` / `HUAWEICLOUD_SK` |
+| 调用团队共享服务 | `--transport http --endpoint ... --token ...` | 共享服务的 `auth_token` |
 
-```bash
-npm run cli -- tools --format text
-npm run cli -- schema req_list_projects
-npm run cli -- call req_list_projects --input '{"page":1,"page_size":20}' --pretty
-npm run cli -- call req_list_projects --input '{"page":1}' --format table
-```
+### 本机直接调用
 
-输入可以来自 JSON 字符串、文件或 stdin：
+```powershell
+$env:HUAWEICLOUD_AK="your-ak"
+$env:HUAWEICLOUD_SK="your-sk"
+$env:HUAWEICLOUD_REGION="cn-north-4"
+$env:MCP_SERVER_NAME="codearts-mcp"
+$env:MCP_SERVER_VERSION="0.1.0"
 
-```bash
-npm run cli -- call repo_list_repositories --file params.json --pretty
-Get-Content -Raw params.json | npm run cli -- call repo_list_repositories --stdin --pretty
-```
-
-### 2. 远程 HTTP MCP 调用
-
-如果已经有共享 HTTP 入口，CLI 可以直接走 `/mcp`：
-
-```bash
-npm run cli -- call req_list_projects \
-  --transport http \
-  --endpoint http://your-server-ip/mcp \
-  --token replace-with-auth-token \
-  --input '{"page":1}' \
-  --pretty
-```
-
-也可以用环境变量固定远程入口：
-
-```env
-CODEARTS_CLI_TRANSPORT=http
-CODEARTS_MCP_URL=http://your-server-ip/mcp
-CODEARTS_MCP_AUTH_TOKEN=replace-with-auth-token
-```
-
-### 3. Profile、表格输出和补全
-
-CLI 支持 `--format table`，适合人工查看列表结果：
-
-```bash
 npm run cli -- tools --format table
+npm run cli -- call req_list_projects --input '{"page":1,"page_size":20}' --format table
+```
+
+### 调用共享服务
+
+```powershell
+npm run cli -- call req_list_projects `
+  --transport http `
+  --endpoint http://your-server-ip/mcp `
+  --token replace-with-auth-token `
+  --input '{"page":1}' `
+  --format table
+```
+
+### 最常用的 5 条命令
+
+```powershell
+# 看有哪些工具
+npm run cli -- tools --format table
+
+# 看工具需要什么参数
+npm run cli -- schema repo_list_repositories
+
+# 直接传 JSON 参数
 npm run cli -- call req_list_projects --input '{"page":1}' --format table
-```
 
-默认 profile 配置文件路径为 `~/.codearts-mcp-cli.json`，也可以用 `--config` 指定：
+# 参数多时放到文件里
+npm run cli -- call repo_list_repositories --file params.json --pretty
 
-```json
-{
-  "default_profile": "shared",
-  "profiles": {
-    "shared": {
-      "transport": "http",
-      "endpoint": "http://your-server-ip/mcp",
-      "token": "replace-with-auth-token"
-    },
-    "local": {
-      "transport": "local",
-      "region": "cn-north-4",
-      "access_key": "your-ak",
-      "secret_key": "your-sk"
-    }
-  }
-}
-```
-
-```bash
-npm run cli -- --profile shared tools --format table
-npm run cli -- --config ./profiles.json --profile local call req_list_projects --input '{"page":1}' --pretty
-```
-
-补全脚本按 shell 生成：
-
-```bash
+# 生成 PowerShell 补全脚本
 npm run cli -- completion powershell
-npm run cli -- completion bash
-npm run cli -- completion zsh
 ```
+
+完整 CLI 说明见 [CLI-Usage](./CLI-Usage.md)。
 
 ## 标准区域默认地址
 

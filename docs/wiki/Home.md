@@ -34,7 +34,8 @@
 
 1. [Typical-Workflow-Playbooks](./Typical-Workflow-Playbooks.md)
 2. [Role-Based-Entry-Paths](./Role-Based-Entry-Paths.md)
-3. [Testing-and-Live-Ops](./Testing-and-Live-Ops.md)
+3. [CLI-Usage](./CLI-Usage.md)
+4. [Testing-and-Live-Ops](./Testing-and-Live-Ops.md)
 
 ### 如果你要核对官方 API 对齐情况
 
@@ -55,6 +56,7 @@
 | 页面 | 用途 |
 | --- | --- |
 | [Getting-Started](./Getting-Started.md) | 从 0 到可调用的最短路径 |
+| [CLI-Usage](./CLI-Usage.md) | 命令行调用 MCP 工具：本地模式、远程模式、profile、表格输出和补全 |
 | [Role-Based-Entry-Paths](./Role-Based-Entry-Paths.md) | 按开发、测试、运维、交付、管理、维护者视角给出模块与阅读路径 |
 | [Typical-Workflow-Playbooks](./Typical-Workflow-Playbooks.md) | 按开发排障、测试联动、发布部署、运维排障、制品追踪给出可直接照着跑的工具剧本 |
 | [Module-Functions-Overview](./Module-Functions-Overview.md) | 用中文讲清 8 个模块分别能干什么、适合什么场景 |
