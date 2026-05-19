@@ -104,6 +104,8 @@ import {
   testPlanInitTaskExecutionInput,
   testPlanListApiTestAwNameViewsInput,
   testPlanListApiTestBasicAwParamPropertiesInput,
+  testPlanListApiTestBasicAwInfosInput,
+  testPlanListApiTestBasicAwInfosV2Input,
   testPlanListApiTestChildBasicAwsInput,
   testPlanListApiTestGlobalParamNamesInput,
   testPlanListApiTestPackageUsageInput,
@@ -292,6 +294,8 @@ import { createTestPlanGetSuiteInfoPageUrlHandler } from "../products/testplan/t
 import { createTestPlanInitTaskExecutionHandler } from "../products/testplan/tools/init-task-execution.js";
 import { createTestPlanListApiTestAwNameViewsHandler } from "../products/testplan/tools/list-api-test-aw-name-views.js";
 import { createTestPlanListApiTestBasicAwParamPropertiesHandler } from "../products/testplan/tools/list-api-test-basic-aw-param-properties.js";
+import { createTestPlanListApiTestBasicAwInfosHandler } from "../products/testplan/tools/list-api-test-basic-aw-infos.js";
+import { createTestPlanListApiTestBasicAwInfosV2Handler } from "../products/testplan/tools/list-api-test-basic-aw-infos-v2.js";
 import { createTestPlanListApiTestChildBasicAwsHandler } from "../products/testplan/tools/list-api-test-child-basic-aws.js";
 import { createTestPlanListApiTestGlobalParamNamesHandler } from "../products/testplan/tools/list-api-test-global-param-names.js";
 import { createTestPlanListAlertTemplatesHandler } from "../products/testplan/tools/list-alert-templates.js";
@@ -821,6 +825,18 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListApiTestBasicAwParamPropertiesInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListApiTestBasicAwParamPropertiesHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListApiTestBasicAwParamPropertiesHandler
+  }),
+  "testplan_list_api_test_basic_aw_infos": defineProductTool({
+    description: "List CodeArts TestPlan API test basic AW information entries with catalog details",
+    inputSchema: testPlanListApiTestBasicAwInfosInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListApiTestBasicAwInfosHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListApiTestBasicAwInfosHandler
+  }),
+  "testplan_list_api_test_basic_aw_infos_v2": defineProductTool({
+    description: "List CodeArts TestPlan API test v2 basic AW information entries with catalog details",
+    inputSchema: testPlanListApiTestBasicAwInfosV2Input,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListApiTestBasicAwInfosV2Handler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListApiTestBasicAwInfosV2Handler
   }),
   "testplan_list_public_aw_lib_and_aws": defineProductTool({
     description: "List CodeArts TestPlan public AW libraries and AWs",

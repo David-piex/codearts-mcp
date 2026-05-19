@@ -32,8 +32,8 @@
 | 流水线 | 78 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 166 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 201 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
-| 测试计划 | 187 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **782** | |
+| 测试计划 | 189 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
+| **总计** | **784** | |
 
 ## 字段对应
 
@@ -740,6 +740,8 @@
 | `testplan_init_task_execution` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_init_task_execution) |
 | `testplan_list_alert_templates` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_alert_templates) |
 | `testplan_list_api_test_aw_name_views` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_api_test_aw_name_views) |
+| `testplan_list_api_test_basic_aw_infos` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_api_test_basic_aw_infos) |
+| `testplan_list_api_test_basic_aw_infos_v2` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_api_test_basic_aw_infos_v2) |
 | `testplan_list_api_test_basic_aw_param_properties` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_api_test_basic_aw_param_properties) |
 | `testplan_list_api_test_child_basic_aws` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_api_test_child_basic_aws) |
 | `testplan_list_api_test_global_param_names` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_api_test_global_param_names) |

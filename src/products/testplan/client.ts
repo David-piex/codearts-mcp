@@ -1051,6 +1051,26 @@ export type TestPlanClient = {
   }) => Promise<{
     raw: Record<string, unknown>;
   }>;
+  listApiTestBasicAwInfos: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    aw_name?: string;
+    parent_id?: string;
+  }) => Promise<{
+    aws: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listApiTestBasicAwInfosV2: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    aw_name?: string;
+    parent_id?: string;
+  }) => Promise<{
+    aws: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
   listApiTestChildBasicAws: (input: {
     project_id: string;
     parent_id: string;
@@ -3930,6 +3950,46 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
 
       return {
         raw: aw
+      };
+    },
+    async listApiTestBasicAwInfos(input) {
+      const query = new URLSearchParams({
+        page_no: String(input.page),
+        page_size: String(input.page_size)
+      });
+      appendQueryValue(query, "aw_name", input.aw_name);
+      appendQueryValue(query, "parent_id", input.parent_id);
+      const response = await _http.get(
+        `/v1/${encodeURIComponent(input.project_id)}/aw_cata/aw_info_list?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const aws = readArray<Record<string, unknown>>(
+        payload.page_list ?? payload.value ?? payload.result ?? payload.aws ?? payload.items ?? payload.list
+      );
+
+      return {
+        aws,
+        total: readTotal(payload, response, aws.length)
+      };
+    },
+    async listApiTestBasicAwInfosV2(input) {
+      const query = new URLSearchParams({
+        page_no: String(input.page),
+        page_size: String(input.page_size)
+      });
+      appendQueryValue(query, "aw_name", input.aw_name);
+      appendQueryValue(query, "parent_id", input.parent_id);
+      const response = await _http.get(
+        `/v2/${encodeURIComponent(input.project_id)}/aw-cata/aw-info-list?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const aws = readArray<Record<string, unknown>>(
+        payload.page_list ?? payload.value ?? payload.result ?? payload.aws ?? payload.items ?? payload.list
+      );
+
+      return {
+        aws,
+        total: readTotal(payload, response, aws.length)
       };
     },
     async listApiTestChildBasicAws(input) {

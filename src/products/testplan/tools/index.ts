@@ -102,6 +102,8 @@ export const testPlanToolNames = [
   "testplan_list_alert_templates",
   "testplan_list_api_test_aw_name_views",
   "testplan_list_api_test_basic_aw_param_properties",
+  "testplan_list_api_test_basic_aw_infos",
+  "testplan_list_api_test_basic_aw_infos_v2",
   "testplan_list_api_test_child_basic_aws",
   "testplan_list_api_test_global_param_names",
   "testplan_list_api_test_package_status",

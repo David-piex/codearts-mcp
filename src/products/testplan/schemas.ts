@@ -694,6 +694,18 @@ export const testPlanGetApiTestBasicAwV4Input = z.object({
   is_api: z.boolean().optional()
 });
 
+export const testPlanListApiTestBasicAwInfosInput = pagingSchema.extend({
+  project_id: idSchema,
+  aw_name: z.string().optional(),
+  parent_id: z.string().min(1).optional()
+});
+
+export const testPlanListApiTestBasicAwInfosV2Input = pagingSchema.extend({
+  project_id: idSchema,
+  aw_name: z.string().optional(),
+  parent_id: z.string().min(1).optional()
+});
+
 export const testPlanListApiTestChildBasicAwsInput = z.object({
   project_id: idSchema,
   parent_id: z.string().min(1),
