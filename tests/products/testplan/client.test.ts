@@ -3121,6 +3121,89 @@ describe("createTestPlanClient", () => {
     ]);
   });
 
+  it("lists iterator issue testcase references", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requestedPath = path;
+        requestedBody = body as Record<string, unknown>;
+        return { value: ["case-1", "case-2"] };
+      }
+    } as never);
+
+    await expect(
+      client.listIteratorIssueCases({
+        project_id: "project-1",
+        iterator_uri: "iterator-1",
+        workitem_list: [{ work_item_id: "issue-1", has_child: false, is_open: true }]
+      })
+    ).resolves.toEqual({
+      case_ids: [{ value: "case-1" }, { value: "case-2" }],
+      total: 2
+    });
+    expect(requestedPath).toBe(
+      "/v4/project-1/iterators/iterator-1/issues/cases/batch-query"
+    );
+    expect(requestedBody).toEqual({
+      workitem_list: [{ work_item_id: "issue-1", has_child: false, is_open: true }]
+    });
+  });
+
+  it("lists testcase work item relations", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requestedPath = path;
+        requestedBody = body as Record<string, unknown>;
+        return {
+          value: [
+            {
+              test_case_uri: "case-1",
+              issue_id: "issue-1",
+              title: "login requirement"
+            }
+          ],
+          total: 1
+        };
+      }
+    } as never);
+
+    await expect(
+      client.listTestcaseRelations({
+        project_id: "project-1",
+        test_case_uris: ["case-1"],
+        page: 1,
+        page_size: 10,
+        version_uri: "version-1",
+        relate_type: "requirement",
+        keyWord: "login",
+        ownerContainEmpty: true
+      })
+    ).resolves.toEqual({
+      relations: [
+        {
+          test_case_uri: "case-1",
+          issue_id: "issue-1",
+          title: "login requirement"
+        }
+      ],
+      total: 1
+    });
+    expect(requestedPath).toBe("/v4/testcases/relations/batch-query");
+    expect(requestedBody).toEqual({
+      project_uuid: "project-1",
+      test_case_uris: ["case-1"],
+      page_no: 1,
+      page_size: 10,
+      version_uri: "version-1",
+      relate_type: "requirement",
+      keyWord: "login",
+      ownerContainEmpty: true
+    });
+  });
+
   it("gets TestPlan report, repo, task, resource, usage, alert, and dashboard endpoints", async () => {
     const requests: string[] = [];
     const client = createTestPlanClient({

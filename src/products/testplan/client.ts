@@ -1431,6 +1431,14 @@ export type TestPlanClient = {
     issues: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  listIteratorIssueCases: (input: {
+    project_id: string;
+    iterator_uri: string;
+    workitem_list: Array<Record<string, unknown>>;
+  }) => Promise<{
+    case_ids: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
   listIteratorHistories: (input: {
     project_id: string;
     iterator_uri: string;
@@ -1605,6 +1613,26 @@ export type TestPlanClient = {
     task_uri?: string;
   }) => Promise<{
     counts: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listTestcaseRelations: (input: {
+    project_id: string;
+    test_case_uris: string[];
+    page: number;
+    page_size: number;
+    version_uri?: string;
+    tracker_id?: string;
+    relate_type?: string;
+    owner?: string[];
+    severity?: string[];
+    status?: string[];
+    findReleaseDev?: string[];
+    keyWord?: string;
+    ownerContainEmpty?: boolean;
+    severityContainEmpty?: boolean;
+    statusContainEmpty?: boolean;
+  }) => Promise<{
+    relations: Array<Record<string, unknown>>;
     total?: number;
   }>;
   listTaskResults: (input: {
@@ -5023,6 +5051,20 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         total: readTotal(payload, response, issues.length)
       };
     },
+    async listIteratorIssueCases(input) {
+      const response = await _http.post(
+        `/v4/${encodeURIComponent(input.project_id)}/iterators/${encodeURIComponent(input.iterator_uri)}/issues/cases/batch-query`,
+        { workitem_list: input.workitem_list }
+      );
+      const payload = readResultPayload(response);
+      const rawCaseIds = readArray<unknown>(payload.value ?? payload.case_ids ?? payload.items ?? payload.list);
+      const caseIds = rawCaseIds.map((item) => readEnvelope(item) ?? { value: item });
+
+      return {
+        case_ids: caseIds,
+        total: readTotal(payload, response, caseIds.length)
+      };
+    },
     async listIteratorHistories(input) {
       const query = new URLSearchParams({
         offset: String(pageToOffset(input.page, input.page_size)),
@@ -5364,6 +5406,58 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       return {
         counts,
         total: readTotal(payload, response, counts.length)
+      };
+    },
+    async listTestcaseRelations(input) {
+      const body: Record<string, unknown> = {
+        project_uuid: input.project_id,
+        test_case_uris: input.test_case_uris,
+        page_no: input.page,
+        page_size: input.page_size
+      };
+      if (input.version_uri !== undefined) {
+        body.version_uri = input.version_uri;
+      }
+      if (input.tracker_id !== undefined) {
+        body.tracker_id = input.tracker_id;
+      }
+      if (input.relate_type !== undefined) {
+        body.relate_type = input.relate_type;
+      }
+      if (input.owner !== undefined) {
+        body.owner = input.owner;
+      }
+      if (input.severity !== undefined) {
+        body.severity = input.severity;
+      }
+      if (input.status !== undefined) {
+        body.status = input.status;
+      }
+      if (input.findReleaseDev !== undefined) {
+        body.findReleaseDev = input.findReleaseDev;
+      }
+      if (input.keyWord !== undefined) {
+        body.keyWord = input.keyWord;
+      }
+      if (input.ownerContainEmpty !== undefined) {
+        body.ownerContainEmpty = input.ownerContainEmpty;
+      }
+      if (input.severityContainEmpty !== undefined) {
+        body.severityContainEmpty = input.severityContainEmpty;
+      }
+      if (input.statusContainEmpty !== undefined) {
+        body.statusContainEmpty = input.statusContainEmpty;
+      }
+
+      const response = await _http.post("/v4/testcases/relations/batch-query", body);
+      const payload = readResultPayload(response);
+      const relations = readArray<Record<string, unknown>>(
+        payload.value ?? payload.relations ?? payload.items ?? payload.list
+      );
+
+      return {
+        relations,
+        total: readTotal(payload, response, relations.length)
       };
     },
     async listTaskResults(input) {

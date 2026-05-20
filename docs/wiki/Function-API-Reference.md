@@ -32,8 +32,8 @@
 | 流水线 | 78 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 166 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 201 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
-| 测试计划 | 202 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **797** | |
+| 测试计划 | 204 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
+| **总计** | **799** | |
 
 ## 字段对应
 
@@ -783,6 +783,7 @@
 | `testplan_list_issues` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_issues) |
 | `testplan_list_iterator_histories` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_iterator_histories) |
 | `testplan_list_iterator_infos` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_iterator_infos) |
+| `testplan_list_iterator_issue_cases` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_iterator_issue_cases) |
 | `testplan_list_iterator_issue_ids` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_iterator_issue_ids) |
 | `testplan_list_iterator_issues` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_iterator_issues) |
 | `testplan_list_notice_configs` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_notice_configs) |
@@ -820,6 +821,7 @@
 | `testplan_list_test_types` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_test_types) |
 | `testplan_list_testcase_comments` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_testcase_comments) |
 | `testplan_list_testcase_fields` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_testcase_fields) |
+| `testplan_list_testcase_relations` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_testcase_relations) |
 | `testplan_list_testcase_reviews` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_testcase_reviews) |
 | `testplan_list_testexecutor_resource_pools` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_testexecutor_resource_pools) |
 | `testplan_list_testhub_branches` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_testhub_branches) |

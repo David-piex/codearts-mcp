@@ -140,6 +140,7 @@ import {
   testPlanListGt3kVisibleServicesInput,
   testPlanListIssueCaseCountsInput,
   testPlanListIssueTestcasesInput,
+  testPlanListIteratorIssueCasesInput,
   testPlanListIteratorInfosInput,
   testPlanListIteratorHistoriesInput,
   testPlanListIteratorIssueIdsInput,
@@ -177,6 +178,7 @@ import {
   testPlanListTestReportCustomInfosInput,
   testPlanListTestReportIssuesInput,
   testPlanListTestReportQualityAttributesInput,
+  testPlanListTestcaseRelationsInput,
   testPlanListTestexecutorResourcePoolsInput,
   testPlanListSolutionTemplatesInput,
   testPlanGetTestcaseFieldInput,
@@ -342,6 +344,7 @@ import { createTestPlanListGt3kTestcaseFieldsHandler } from "../products/testpla
 import { createTestPlanListGt3kVisibleServicesHandler } from "../products/testplan/tools/list-gt3k-visible-services.js";
 import { createTestPlanListIssueCaseCountsHandler } from "../products/testplan/tools/list-issue-case-counts.js";
 import { createTestPlanListIssueTestcasesHandler } from "../products/testplan/tools/list-issue-testcases.js";
+import { createTestPlanListIteratorIssueCasesHandler } from "../products/testplan/tools/list-iterator-issue-cases.js";
 import { createTestPlanListIteratorInfosHandler } from "../products/testplan/tools/list-iterator-infos.js";
 import { createTestPlanListIteratorHistoriesHandler } from "../products/testplan/tools/list-iterator-histories.js";
 import { createTestPlanListIteratorIssueIdsHandler } from "../products/testplan/tools/list-iterator-issue-ids.js";
@@ -380,6 +383,7 @@ import { createTestPlanListTestReportDefectsHandler } from "../products/testplan
 import { createTestPlanListTestReportCustomInfosHandler } from "../products/testplan/tools/list-test-report-custom-infos.js";
 import { createTestPlanListTestReportIssuesHandler } from "../products/testplan/tools/list-test-report-issues.js";
 import { createTestPlanListTestReportQualityAttributesHandler } from "../products/testplan/tools/list-test-report-quality-attributes.js";
+import { createTestPlanListTestcaseRelationsHandler } from "../products/testplan/tools/list-testcase-relations.js";
 import { createTestPlanListTestcaseCommentsHandler } from "../products/testplan/tools/list-testcase-comments.js";
 import { createTestPlanListTestcaseFieldsHandler } from "../products/testplan/tools/list-testcase-fields.js";
 import { createTestPlanListTestcaseReviewsHandler } from "../products/testplan/tools/list-testcase-reviews.js";
@@ -663,6 +667,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListIssueTestcasesInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListIssueTestcasesHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListIssueTestcasesHandler
+  }),
+  "testplan_list_iterator_issue_cases": defineProductTool({
+    description: "List CodeArts TestPlan testcase references related to iterator issues",
+    inputSchema: testPlanListIteratorIssueCasesInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListIteratorIssueCasesHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListIteratorIssueCasesHandler
   }),
   "testplan_list_visible_services": defineProductTool({
     description: "List CodeArts TestPlan visible third-party services",
@@ -1569,6 +1579,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListTestcaseFieldsInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTestcaseFieldsHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListTestcaseFieldsHandler
+  }),
+  "testplan_list_testcase_relations": defineProductTool({
+    description: "List CodeArts TestPlan requirement or defect relations for testcases",
+    inputSchema: testPlanListTestcaseRelationsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTestcaseRelationsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListTestcaseRelationsHandler
   }),
   "testplan_list_solution_templates": defineProductTool({
     description: "List CodeArts TestPlan solution templates",

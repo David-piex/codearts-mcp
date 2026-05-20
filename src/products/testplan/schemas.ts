@@ -966,6 +966,12 @@ export const testPlanListIteratorIssuesInput = pagingSchema.extend({
   iterator_uri: idSchema
 });
 
+export const testPlanListIteratorIssueCasesInput = z.object({
+  project_id: idSchema,
+  iterator_uri: idSchema,
+  workitem_list: z.array(z.record(z.string(), z.unknown())).min(1)
+});
+
 export const testPlanListIteratorHistoriesInput = pagingSchema.extend({
   project_id: idSchema,
   iterator_uri: idSchema
@@ -1079,6 +1085,22 @@ export const testPlanListIssueCaseCountsInput = z.object({
   service_types: z.array(z.number().int()).optional(),
   parent_id: idSchema.optional(),
   task_uri: idSchema.optional()
+});
+
+export const testPlanListTestcaseRelationsInput = pagingSchema.extend({
+  project_id: idSchema,
+  test_case_uris: z.array(idSchema).min(1),
+  version_uri: idSchema.optional(),
+  tracker_id: idSchema.optional(),
+  relate_type: z.string().min(1).optional(),
+  owner: z.array(z.string().min(1)).optional(),
+  severity: z.array(z.string().min(1)).optional(),
+  status: z.array(z.string().min(1)).optional(),
+  findReleaseDev: z.array(z.string().min(1)).optional(),
+  keyWord: z.string().optional(),
+  ownerContainEmpty: z.boolean().optional(),
+  severityContainEmpty: z.boolean().optional(),
+  statusContainEmpty: z.boolean().optional()
 });
 
 export const testPlanListTaskResultsInput = pagingSchema.extend({
