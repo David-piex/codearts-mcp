@@ -32,8 +32,8 @@
 | 流水线 | 78 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 166 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 201 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
-| 测试计划 | 197 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **792** | |
+| 测试计划 | 198 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
+| **总计** | **793** | |
 
 ## 字段对应
 
@@ -667,6 +667,7 @@
 | `testplan_get_current_user_package_permission` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_current_user_package_permission) |
 | `testplan_get_custom_template` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_custom_template) |
 | `testplan_get_customized_columns` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_customized_columns) |
+| `testplan_get_customized_columns_v4` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_customized_columns_v4) |
 | `testplan_get_dashboard_run_panel` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_dashboard_run_panel) |
 | `testplan_get_domain_access_info` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_domain_access_info) |
 | `testplan_get_domain_detail_info` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_domain_detail_info) |

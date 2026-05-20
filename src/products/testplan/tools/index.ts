@@ -28,6 +28,7 @@ export const testPlanToolNames = [
   "testplan_get_current_user_package_permission",
   "testplan_get_custom_template",
   "testplan_get_customized_columns",
+  "testplan_get_customized_columns_v4",
   "testplan_get_dashboard_run_panel",
   "testplan_get_domain_access_info",
   "testplan_get_domain_frozen_info",

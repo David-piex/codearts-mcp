@@ -615,6 +615,14 @@ export type TestPlanClient = {
     project_id: string;
     raw: Record<string, unknown>;
   }>;
+  getCustomizedColumnsV4: (input: {
+    project_id: string;
+    service_type: number;
+    stage_type: number;
+  }) => Promise<{
+    project_id: string;
+    raw: Record<string, unknown>;
+  }>;
   getProjectDomainDetailInfo: (input: {
     project_id: string;
     order_query_type?: string;
@@ -3033,6 +3041,23 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
 
       const response = await _http.get(
         `/GT3KServer/v4/projects/${encodeURIComponent(input.project_id)}/customized-columns?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const columns = readEnvelope(payload.value) ?? payload;
+
+      return {
+        project_id: input.project_id,
+        raw: columns
+      };
+    },
+    async getCustomizedColumnsV4(input) {
+      const query = new URLSearchParams({
+        service_type: String(input.service_type),
+        stage_type: String(input.stage_type)
+      });
+
+      const response = await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/customized-columns?${query.toString()}`
       );
       const payload = readResultPayload(response);
       const columns = readEnvelope(payload.value) ?? payload;

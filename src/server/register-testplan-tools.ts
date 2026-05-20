@@ -228,6 +228,7 @@ import { createTestPlanGetCaseHandler } from "../products/testplan/tools/get-cas
 import { createTestPlanGetCustomTemplateHandler } from "../products/testplan/tools/get-custom-template.js";
 import { createTestPlanGetCurrentUserPackagePermissionHandler } from "../products/testplan/tools/get-current-user-package-permission.js";
 import { createTestPlanGetCustomizedColumnsHandler } from "../products/testplan/tools/get-customized-columns.js";
+import { createTestPlanGetCustomizedColumnsV4Handler } from "../products/testplan/tools/get-customized-columns-v4.js";
 import { createTestPlanGetDashboardRunPanelHandler } from "../products/testplan/tools/get-dashboard-run-panel.js";
 import { createTestPlanListDashboardStatisticBlocksHandler } from "../products/testplan/tools/list-dashboard-statistic-blocks.js";
 import { createTestPlanListDashboardsHandler } from "../products/testplan/tools/list-dashboards.js";
@@ -571,6 +572,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanGetCustomizedColumnsInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetCustomizedColumnsHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetCustomizedColumnsHandler
+  }),
+  "testplan_get_customized_columns_v4": defineProductTool({
+    description: "Get CodeArts TestPlan v4 customized column configuration",
+    inputSchema: testPlanGetCustomizedColumnsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetCustomizedColumnsV4Handler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetCustomizedColumnsV4Handler
   }),
   "testplan_get_project_domain_detail_info": defineProductTool({
     description: "Get CodeArts TestPlan project domain detail information",

@@ -2215,6 +2215,16 @@ describe("createTestPlanClient", () => {
             }
           };
         }
+        if (path.startsWith("/v4/projects/project-1/customized-columns")) {
+          return {
+            result: {
+              value: {
+                display: [{ field_key: "name-v4" }],
+                hidden: [{ field_key: "owner-v4" }]
+              }
+            }
+          };
+        }
 
         return {
           result: {
@@ -2296,13 +2306,27 @@ describe("createTestPlanClient", () => {
         hidden: [{ field_key: "owner" }]
       }
     });
+    await expect(
+      client.getCustomizedColumnsV4({
+        project_id: "project-1",
+        service_type: -1,
+        stage_type: 3
+      })
+    ).resolves.toEqual({
+      project_id: "project-1",
+      raw: {
+        display: [{ field_key: "name-v4" }],
+        hidden: [{ field_key: "owner-v4" }]
+      }
+    });
     expect(requests).toEqual([
       "/v4/projects/project-1/users?page_no=2&page_size=20&key_word=ali",
       "/v4/projects/project-1/current-user/package-permission?package_type=TEST_PLAN",
       "/v4/projects/project-1/users/user-1/package-permission?package_type=TEST_PLAN",
       "/v4/projects/project-1/domain-user-count",
       "/v4/projects/project-1/tags?resource_type=TestCase",
-      "/GT3KServer/v4/projects/project-1/customized-columns?service_type=1&stage_type=2"
+      "/GT3KServer/v4/projects/project-1/customized-columns?service_type=1&stage_type=2",
+      "/v4/projects/project-1/customized-columns?service_type=-1&stage_type=3"
     ]);
   });
 
