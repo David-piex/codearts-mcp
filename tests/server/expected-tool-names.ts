@@ -611,6 +611,7 @@ export const expectedToolNames = [
   "testplan_get_api_test_dns_mapping",
   "testplan_get_api_test_package_charge_message",
   "testplan_get_api_test_package_charge_popup",
+  "testplan_get_api_test_project_info",
   "testplan_get_api_test_task_status",
   "testplan_get_api_test_task_status_v2",
   "testplan_get_background_info",

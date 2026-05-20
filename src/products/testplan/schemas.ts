@@ -737,6 +737,11 @@ export const testPlanGetApiTestAvailableConfigInput = z.object({
   project_id: idSchema
 });
 
+export const testPlanGetApiTestProjectInfoInput = z.object({
+  project_id: idSchema,
+  group_id: idSchema.optional()
+});
+
 export const testPlanGetTestcaseScriptDetailV1Input = z.object({
   project_id: idSchema,
   tmss_case_uri: idSchema

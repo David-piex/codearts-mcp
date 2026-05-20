@@ -32,8 +32,8 @@
 | 流水线 | 78 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 166 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 201 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
-| 测试计划 | 190 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **785** | |
+| 测试计划 | 191 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
+| **总计** | **786** | |
 
 ## 字段对应
 
@@ -657,6 +657,7 @@
 | `testplan_get_api_test_dns_mapping` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_api_test_dns_mapping) |
 | `testplan_get_api_test_package_charge_message` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_api_test_package_charge_message) |
 | `testplan_get_api_test_package_charge_popup` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_api_test_package_charge_popup) |
+| `testplan_get_api_test_project_info` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_api_test_project_info) |
 | `testplan_get_api_test_task_status` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_api_test_task_status) |
 | `testplan_get_api_test_task_status_v2` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_api_test_task_status_v2) |
 | `testplan_get_background_info` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_background_info) |

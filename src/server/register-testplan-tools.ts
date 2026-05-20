@@ -21,6 +21,7 @@ import {
   testPlanGetApiTestDnsMappingInput,
   testPlanGetApiTestPackageChargeMessageInput,
   testPlanGetApiTestPackageChargePopupInput,
+  testPlanGetApiTestProjectInfoInput,
   testPlanGetApiTestTaskStatusInput,
   testPlanGetApiTestTaskStatusV2Input,
   testPlanGetBackgroundInfoInput,
@@ -209,6 +210,7 @@ import { createTestPlanGetApiTestDebugLogHandler } from "../products/testplan/to
 import { createTestPlanGetApiTestDnsMappingHandler } from "../products/testplan/tools/get-api-test-dns-mapping.js";
 import { createTestPlanGetApiTestPackageChargeMessageHandler } from "../products/testplan/tools/get-api-test-package-charge-message.js";
 import { createTestPlanGetApiTestPackageChargePopupHandler } from "../products/testplan/tools/get-api-test-package-charge-popup.js";
+import { createTestPlanGetApiTestProjectInfoHandler } from "../products/testplan/tools/get-api-test-project-info.js";
 import { createTestPlanGetApiTestTaskStatusHandler } from "../products/testplan/tools/get-api-test-task-status.js";
 import { createTestPlanGetApiTestTaskStatusV2Handler } from "../products/testplan/tools/get-api-test-task-status-v2.js";
 import { createTestPlanGetBackgroundInfoHandler } from "../products/testplan/tools/get-background-info.js";
@@ -695,6 +697,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanGetApiTestPackageChargePopupInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetApiTestPackageChargePopupHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetApiTestPackageChargePopupHandler
+  }),
+  "testplan_get_api_test_project_info": defineProductTool({
+    description: "Get CodeArts TestPlan API test project information with sensitive fields redacted",
+    inputSchema: testPlanGetApiTestProjectInfoInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetApiTestProjectInfoHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetApiTestProjectInfoHandler
   }),
   "testplan_get_background_info": defineProductTool({
     description: "Get CodeArts TestPlan background information",

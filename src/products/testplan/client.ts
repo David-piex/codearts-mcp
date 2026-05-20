@@ -822,6 +822,12 @@ export type TestPlanClient = {
   getProjectTestcaseGlobalConfig: (input: { project_id: string }) => Promise<{
     raw: Record<string, unknown>;
   }>;
+  getApiTestProjectInfo: (input: {
+    project_id: string;
+    group_id?: string;
+  }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
   getProjectLocalConfig: (input: {
     project_id: string;
     property: string;
@@ -1582,6 +1588,53 @@ function redactSensitiveVariable(variable: Record<string, unknown>) {
     if (key in redacted) {
       redacted[key] = "[REDACTED]";
     }
+  }
+
+  return redacted;
+}
+
+function redactSensitiveProjectInfoValue(key: string, value: unknown): unknown {
+  const lowerKey = key.toLowerCase();
+  const isSensitiveKey =
+    lowerKey.includes("password") ||
+    lowerKey.includes("private_key") ||
+    lowerKey.includes("secret") ||
+    lowerKey.includes("token") ||
+    lowerKey.includes("credential");
+
+  if (isSensitiveKey && value !== undefined && value !== null && value !== "") {
+    return "[REDACTED]";
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((item) => {
+      if (item && typeof item === "object" && !Array.isArray(item)) {
+        return redactSensitiveProjectInfo(item as Record<string, unknown>);
+      }
+
+      return item;
+    });
+  }
+
+  if (value && typeof value === "object") {
+    return redactSensitiveProjectInfo(value as Record<string, unknown>);
+  }
+
+  return value;
+}
+
+function redactSensitiveProjectInfo(projectInfo: Record<string, unknown>) {
+  const redacted: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(projectInfo)) {
+    redacted[key] = redactSensitiveProjectInfoValue(key, value);
+  }
+
+  if (Array.isArray(redacted.variables)) {
+    redacted.variables = redacted.variables.map((item) =>
+      item && typeof item === "object" && !Array.isArray(item)
+        ? redactSensitiveVariable(item as Record<string, unknown>)
+        : item
+    );
   }
 
   return redacted;
@@ -3401,6 +3454,20 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
 
       return {
         raw: config
+      };
+    },
+    async getApiTestProjectInfo(input) {
+      const query = new URLSearchParams();
+      appendQueryValue(query, "group_id", input.group_id);
+      const suffix = query.size ? `?${query.toString()}` : "";
+      const response = await _http.get(
+        `/v1/project/${encodeURIComponent(input.project_id)}${suffix}`
+      );
+      const payload = readResultPayload(response);
+      const projectInfo = readEnvelope(payload.value) ?? readEnvelope(payload.result) ?? payload;
+
+      return {
+        raw: redactSensitiveProjectInfo(projectInfo)
       };
     },
     async getProjectLocalConfig(input) {

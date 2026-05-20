@@ -3251,6 +3251,28 @@ describe("createTestPlanClient", () => {
         if (path.includes("available/config")) {
           return { result: { custom_aw_available: true } };
         }
+        if (path === "/v1/project/project-1?group_id=group-1") {
+          return {
+            result: {
+              id: "project-info-1",
+              name: "API project",
+              repo_password: "secret-password",
+              repo_private_key: "private-key",
+              variables: [
+                {
+                  id: "var-1",
+                  name: "token",
+                  isSensitiveInfo: true,
+                  property: "token-value",
+                  functionParams: "token-value"
+                }
+              ],
+              nested: {
+                accessToken: "nested-token"
+              }
+            }
+          };
+        }
         if (path === "/v1/project-1/testcase/case-1") {
           return { result: { tmss_case_uri: "case-1", name: "API case v1" } };
         }
@@ -3454,6 +3476,31 @@ describe("createTestPlanClient", () => {
       raw: { custom_aw_available: true }
     });
     await expect(
+      client.getApiTestProjectInfo({
+        project_id: "project-1",
+        group_id: "group-1"
+      })
+    ).resolves.toEqual({
+      raw: {
+        id: "project-info-1",
+        name: "API project",
+        repo_password: "[REDACTED]",
+        repo_private_key: "[REDACTED]",
+        variables: [
+          {
+            id: "var-1",
+            name: "token",
+            isSensitiveInfo: true,
+            property: "[REDACTED]",
+            functionParams: "[REDACTED]"
+          }
+        ],
+        nested: {
+          accessToken: "[REDACTED]"
+        }
+      }
+    });
+    await expect(
       client.getTestcaseScriptDetailV1({
         project_id: "project-1",
         tmss_case_uri: "case-1"
@@ -3595,6 +3642,7 @@ describe("createTestPlanClient", () => {
       "/v1/project-1/basic-aw/aw-1/param-property",
       "/v1/project/project-1/public_aw_lib_and_aws",
       "/v1/project-1/available/config",
+      "/v1/project/project-1?group_id=group-1",
       "/v1/project-1/testcase/case-1",
       "/v3/project-1/testcase/case-1?task_id=task-1",
       "/v4/project-1/testcase/case-1?task_id=task-1",
