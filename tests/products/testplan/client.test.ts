@@ -515,6 +515,128 @@ describe("createTestPlanClient", () => {
     });
   });
 
+  it("gets quality report overview statistics", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requestedPath = path;
+        requestedBody = body as Record<string, unknown>;
+        return {
+          result: {
+            is_async_operate: true,
+            async_uri: "operation-1",
+            status: "success"
+          }
+        };
+      }
+    } as never);
+
+    const result = await client.getQualityReportOverview({
+      project_id: "project-1",
+      version_uri: "version-1",
+      module_id: "module-1",
+      fixed_version_id: "fixed-1",
+      owner_id: "user-1",
+      own: true,
+      pi_filter: { all_pi: true }
+    });
+
+    expect(requestedPath).toBe("/v5/projects/project-1/report/overview");
+    expect(requestedBody).toEqual({
+      version_uri: "version-1",
+      module_id: "module-1",
+      fixed_version_id: "fixed-1",
+      owner_id: "user-1",
+      own: true,
+      pi_filter: { all_pi: true }
+    });
+    expect(result).toEqual({
+      raw: {
+        is_async_operate: true,
+        async_uri: "operation-1",
+        status: "success"
+      }
+    });
+  });
+
+  it("gets service type overview statistics", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requestedPath = path;
+        requestedBody = body as Record<string, unknown>;
+        return {
+          result: {
+            is_async_operate: true,
+            async_uri: "operation-2",
+            status: "success"
+          }
+        };
+      }
+    } as never);
+
+    const result = await client.getServiceTypeOverview({
+      project_id: "project-1",
+      version_uri: "version-1"
+    });
+
+    expect(requestedPath).toBe("/v5/projects/project-1/service-types/overview");
+    expect(requestedBody).toEqual({
+      version_uri: "version-1"
+    });
+    expect(result).toEqual({
+      raw: {
+        is_async_operate: true,
+        async_uri: "operation-2",
+        status: "success"
+      }
+    });
+  });
+
+  it("lists requirements overview entries", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requestedPath = path;
+        requestedBody = body as Record<string, unknown>;
+        return {
+          result: {
+            value: {
+              total_number: 1,
+              requirement_overview_list: [{ workitemId: "req-1", name: "login" }]
+            }
+          }
+        };
+      }
+    } as never);
+
+    const result = await client.listRequirementsOverview({
+      project_id: "project-1",
+      version_uri: "version-1",
+      page: 1,
+      page_size: 5,
+      key_word: "login"
+    });
+
+    expect(requestedPath).toBe("/v4/project-1/versions/version-1/requirements/overview");
+    expect(requestedBody).toEqual({
+      page_no: 1,
+      page_size: 5,
+      key_word: "login"
+    });
+    expect(result).toEqual({
+      requirements: [{ workitemId: "req-1", name: "login" }],
+      total: 1,
+      raw: {
+        total_number: 1,
+        requirement_overview_list: [{ workitemId: "req-1", name: "login" }]
+      }
+    });
+  });
+
   it("lists test report issue details with filters", async () => {
     let requestedPath = "";
     const client = createTestPlanClient({

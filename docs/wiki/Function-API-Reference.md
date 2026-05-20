@@ -32,8 +32,8 @@
 | 流水线 | 78 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 166 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 201 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
-| 测试计划 | 192 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **787** | |
+| 测试计划 | 195 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
+| **总计** | **790** | |
 
 ## 字段对应
 
@@ -712,9 +712,11 @@
 | `testplan_get_project_testcase_by_number` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_project_testcase_by_number) |
 | `testplan_get_project_testcase_global_config` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_project_testcase_global_config) |
 | `testplan_get_project_testcase_v4` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_project_testcase_v4) |
+| `testplan_get_quality_report_overview` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_quality_report_overview) |
 | `testplan_get_rule_check_task_report` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_rule_check_task_report) |
 | `testplan_get_rule_check_task_summary` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_rule_check_task_summary) |
 | `testplan_get_service_config` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_service_config) |
+| `testplan_get_service_type_overview` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_service_type_overview) |
 | `testplan_get_suite_info_page_url` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_suite_info_page_url) |
 | `testplan_get_task` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_task) |
 | `testplan_get_task_execution_param` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_task_execution_param) |
@@ -793,6 +795,7 @@
 | `testplan_list_public_aw_lib_and_aws` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_public_aw_lib_and_aws) |
 | `testplan_list_registered_services` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_registered_services) |
 | `testplan_list_release_versions` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_release_versions) |
+| `testplan_list_requirements_overview` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_requirements_overview) |
 | `testplan_list_resource_number_rules` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_resource_number_rules) |
 | `testplan_list_resource_pools` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_resource_pools) |
 | `testplan_list_runs` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_runs) |

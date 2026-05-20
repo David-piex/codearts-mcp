@@ -100,6 +100,43 @@ export const testPlanGetTestReportInput = z.object({
   report_uri: idSchema
 });
 
+const testPlanOverviewPiFilterInput = z
+  .object({
+    all_pi: z.boolean().optional(),
+    pi_sprints: z
+      .array(
+        z.object({
+          pi_id: z.string().optional(),
+          sprints: z.array(z.string()).optional()
+        })
+      )
+      .optional()
+  })
+  .passthrough();
+
+const testPlanOverviewFilterInput = z.object({
+  project_id: idSchema,
+  version_uri: idSchema,
+  module_id: z.string().min(1).optional(),
+  fixed_version_id: z.string().min(1).optional(),
+  owner_id: z.string().min(1).optional(),
+  own: z.boolean().optional(),
+  pi_filter: testPlanOverviewPiFilterInput.optional()
+});
+
+export const testPlanGetServiceTypeOverviewInput = testPlanOverviewFilterInput;
+
+export const testPlanGetQualityReportOverviewInput = testPlanOverviewFilterInput;
+
+export const testPlanListRequirementsOverviewInput = pagingSchema.extend({
+  project_id: idSchema,
+  version_uri: idSchema,
+  fixed_version_id: z.string().min(1).optional(),
+  module_id: z.string().min(1).optional(),
+  key_word: z.string().optional(),
+  pi_filter: testPlanOverviewPiFilterInput.optional()
+});
+
 export const testPlanListTestReportIssuesInput = pagingSchema.extend({
   project_id: idSchema,
   version_uri: idSchema,

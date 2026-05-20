@@ -1,6 +1,37 @@
 import type { ReturnTypeCreateHttpClient } from "../types.js";
 import { createOfficialApiRequester, type OfficialApiRequestInput, type OfficialApiRequestResult } from "../official-api.js";
 
+type TestPlanOverviewPiFilterInput = {
+  all_pi?: boolean;
+  pi_sprints?: Array<{
+    pi_id?: string;
+    sprints?: string[];
+    [key: string]: unknown;
+  }>;
+  [key: string]: unknown;
+};
+
+type TestPlanOverviewFilterInput = {
+  project_id: string;
+  version_uri: string;
+  module_id?: string;
+  fixed_version_id?: string;
+  owner_id?: string;
+  own?: boolean;
+  pi_filter?: TestPlanOverviewPiFilterInput;
+};
+
+type TestPlanRequirementsOverviewInput = {
+  project_id: string;
+  version_uri: string;
+  page: number;
+  page_size: number;
+  fixed_version_id?: string;
+  module_id?: string;
+  key_word?: string;
+  pi_filter?: TestPlanOverviewPiFilterInput;
+};
+
 export type TestPlanClient = {
   requestOfficialApi: (input: OfficialApiRequestInput) => Promise<OfficialApiRequestResult>;
   listIssues: (input: {
@@ -201,6 +232,17 @@ export type TestPlanClient = {
     name?: string;
     creator?: string;
     version_uri?: string;
+    raw: Record<string, unknown>;
+  }>;
+  getServiceTypeOverview: (input: TestPlanOverviewFilterInput) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  getQualityReportOverview: (input: TestPlanOverviewFilterInput) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  listRequirementsOverview: (input: TestPlanRequirementsOverviewInput) => Promise<{
+    requirements: Array<Record<string, unknown>>;
+    total?: number;
     raw: Record<string, unknown>;
   }>;
   listTestReportIssues: (input: {
@@ -1559,6 +1601,29 @@ function readTotal(payload: Record<string, unknown>, response: unknown, fallback
   );
 }
 
+function createOverviewBody(input: TestPlanOverviewFilterInput) {
+  const body: Record<string, unknown> = {
+    version_uri: input.version_uri
+  };
+  if (input.module_id !== undefined) {
+    body.module_id = input.module_id;
+  }
+  if (input.fixed_version_id !== undefined) {
+    body.fixed_version_id = input.fixed_version_id;
+  }
+  if (input.owner_id !== undefined) {
+    body.owner_id = input.owner_id;
+  }
+  if (input.own !== undefined) {
+    body.own = input.own;
+  }
+  if (input.pi_filter !== undefined) {
+    body.pi_filter = input.pi_filter;
+  }
+
+  return body;
+}
+
 function appendQueryValue(
   query: URLSearchParams,
   key: string,
@@ -2138,6 +2203,59 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         version_uri:
           typeof report.version_uri === "string" ? report.version_uri : input.version_uri,
         raw: report
+      };
+    },
+    async getServiceTypeOverview(input) {
+      const response = await _http.post(
+        `/v5/projects/${encodeURIComponent(input.project_id)}/service-types/overview`,
+        createOverviewBody(input)
+      );
+      const payload = readResultPayload(response);
+      return {
+        raw: payload
+      };
+    },
+    async getQualityReportOverview(input) {
+      const response = await _http.post(
+        `/v5/projects/${encodeURIComponent(input.project_id)}/report/overview`,
+        createOverviewBody(input)
+      );
+      const payload = readResultPayload(response);
+      return {
+        raw: payload
+      };
+    },
+    async listRequirementsOverview(input) {
+      const body: Record<string, unknown> = {
+        page_no: input.page,
+        page_size: input.page_size
+      };
+      if (input.fixed_version_id !== undefined) {
+        body.fixed_version_id = input.fixed_version_id;
+      }
+      if (input.module_id !== undefined) {
+        body.module_id = input.module_id;
+      }
+      if (input.key_word !== undefined) {
+        body.key_word = input.key_word;
+      }
+      if (input.pi_filter !== undefined) {
+        body.pi_filter = input.pi_filter;
+      }
+      const response = await _http.post(
+        `/v4/${encodeURIComponent(input.project_id)}/versions/${encodeURIComponent(input.version_uri)}/requirements/overview`,
+        body
+      );
+      const payload = readResultPayload(response);
+      const value = readEnvelope(payload.value) ?? payload;
+      const requirements = readArray<Record<string, unknown>>(
+        value.requirement_overview_list ?? value.requirements ?? value.items ?? value.list
+      );
+
+      return {
+        requirements,
+        total: readTotal(value, response, requirements.length),
+        raw: value
       };
     },
     async listTestReportIssues(input) {

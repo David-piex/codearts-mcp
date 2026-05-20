@@ -78,8 +78,10 @@ import {
   testPlanGetProjectSystemConfigInput,
   testPlanGetProjectTestcaseGlobalConfigInput,
   testPlanGetProjectLocalConfigInput,
+  testPlanGetQualityReportOverviewInput,
   testPlanGetRuleCheckTaskReportInput,
   testPlanGetRuleCheckTaskSummaryInput,
+  testPlanGetServiceTypeOverviewInput,
   testPlanGetTestReportInput,
   testPlanGetTestDesignTemplateInput,
   testPlanGetTestDesignTestcaseInput,
@@ -153,6 +155,7 @@ import {
   testPlanListProjectUsersInput,
   testPlanListPublicAwLibAndAwsInput,
   testPlanListProgressReportsInput,
+  testPlanListRequirementsOverviewInput,
   testPlanListRegisteredServicesInput,
   testPlanListReleaseVersionsInput,
   testPlanListResourceNumberRulesInput,
@@ -270,8 +273,10 @@ import { createTestPlanGetProjectServiceRepoHandler } from "../products/testplan
 import { createTestPlanGetProjectSystemConfigHandler } from "../products/testplan/tools/get-project-system-config.js";
 import { createTestPlanGetProjectTestcaseGlobalConfigHandler } from "../products/testplan/tools/get-project-testcase-global-config.js";
 import { createTestPlanGetProjectLocalConfigHandler } from "../products/testplan/tools/get-project-local-config.js";
+import { createTestPlanGetQualityReportOverviewHandler } from "../products/testplan/tools/get-quality-report-overview.js";
 import { createTestPlanGetRuleCheckTaskReportHandler } from "../products/testplan/tools/get-rule-check-task-report.js";
 import { createTestPlanGetRuleCheckTaskSummaryHandler } from "../products/testplan/tools/get-rule-check-task-summary.js";
+import { createTestPlanGetServiceTypeOverviewHandler } from "../products/testplan/tools/get-service-type-overview.js";
 import { createTestPlanGetTestReportHandler } from "../products/testplan/tools/get-test-report.js";
 import { createTestPlanGetTestDesignTemplateHandler } from "../products/testplan/tools/get-test-design-template.js";
 import { createTestPlanGetTestDesignTestcaseHandler } from "../products/testplan/tools/get-test-design-testcase.js";
@@ -346,6 +351,7 @@ import { createTestPlanListProjectTagsHandler } from "../products/testplan/tools
 import { createTestPlanListProjectUsersHandler } from "../products/testplan/tools/list-project-users.js";
 import { createTestPlanListPublicAwLibAndAwsHandler } from "../products/testplan/tools/list-public-aw-lib-and-aws.js";
 import { createTestPlanListProgressReportsHandler } from "../products/testplan/tools/list-progress-reports.js";
+import { createTestPlanListRequirementsOverviewHandler } from "../products/testplan/tools/list-requirements-overview.js";
 import { createTestPlanListRegisteredServicesHandler } from "../products/testplan/tools/list-registered-services.js";
 import { createTestPlanListReleaseVersionsHandler } from "../products/testplan/tools/list-release-versions.js";
 import { createTestPlanListResourceNumberRulesHandler } from "../products/testplan/tools/list-resource-number-rules.js";
@@ -1354,6 +1360,18 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetRuleCheckTaskSummaryHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetRuleCheckTaskSummaryHandler
   }),
+  "testplan_get_quality_report_overview": defineProductTool({
+    description: "Get CodeArts TestPlan quality report overview statistics",
+    inputSchema: testPlanGetQualityReportOverviewInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetQualityReportOverviewHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetQualityReportOverviewHandler
+  }),
+  "testplan_get_service_type_overview": defineProductTool({
+    description: "Get CodeArts TestPlan quality report overview grouped by service type",
+    inputSchema: testPlanGetServiceTypeOverviewInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetServiceTypeOverviewHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetServiceTypeOverviewHandler
+  }),
   "testplan_get_test_report": defineProductTool({
     description: "Get CodeArts TestPlan test report overview",
     inputSchema: testPlanGetTestReportInput,
@@ -1479,6 +1497,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListTestReportIssuesInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTestReportIssuesHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListTestReportIssuesHandler
+  }),
+  "testplan_list_requirements_overview": defineProductTool({
+    description: "List CodeArts TestPlan quality report requirements overview entries",
+    inputSchema: testPlanListRequirementsOverviewInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListRequirementsOverviewHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListRequirementsOverviewHandler
   }),
   "testplan_list_test_report_defects": defineProductTool({
     description: "List CodeArts TestPlan test report defect details",
