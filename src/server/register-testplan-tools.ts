@@ -31,6 +31,7 @@ import {
   testPlanGetDomainNeedPopupInput,
   testPlanGetBranchInput,
   testPlanGetCaseTemplateInput,
+  testPlanListCaseTemplatesInput,
   testPlanGetCaseInput,
   testPlanGetCurrentUserPackagePermissionInput,
   testPlanGetCustomTemplateInput,
@@ -174,6 +175,7 @@ import {
   testPlanListTestReportIssuesInput,
   testPlanListTestReportQualityAttributesInput,
   testPlanListTestexecutorResourcePoolsInput,
+  testPlanListSolutionTemplatesInput,
   testPlanGetTestcaseFieldInput,
   testPlanListTestcaseFieldsInput,
   testPlanListTestcaseReviewsInput,
@@ -318,6 +320,7 @@ import { createTestPlanListApiTestsuiteHistoryHandler } from "../products/testpl
 import { createTestPlanListAttachmentsHandler } from "../products/testplan/tools/list-attachments.js";
 import { createTestPlanListAssetsHandler } from "../products/testplan/tools/list-assets.js";
 import { createTestPlanListAssetTreeHandler } from "../products/testplan/tools/list-asset-tree.js";
+import { createTestPlanListCaseTemplatesHandler } from "../products/testplan/tools/list-case-templates.js";
 import { createTestPlanListCustomReportsHandler } from "../products/testplan/tools/list-custom-reports.js";
 import { createTestPlanListCustomTemplateReportsHandler } from "../products/testplan/tools/list-custom-template-reports.js";
 import { createTestPlanListCurrentUserTestcasesHandler } from "../products/testplan/tools/list-current-user-testcases.js";
@@ -358,6 +361,7 @@ import { createTestPlanListResourceNumberRulesHandler } from "../products/testpl
 import { createTestPlanListResourcePoolsHandler } from "../products/testplan/tools/list-resource-pools.js";
 import { createTestPlanListRunsHandler } from "../products/testplan/tools/list-runs.js";
 import { createTestPlanListServiceOfferingsHandler } from "../products/testplan/tools/list-service-offerings.js";
+import { createTestPlanListSolutionTemplatesHandler } from "../products/testplan/tools/list-solution-templates.js";
 import { createTestPlanListTaskCasesHandler } from "../products/testplan/tools/list-task-cases.js";
 import { createTestPlanListTaskCasesV4Handler } from "../products/testplan/tools/list-task-cases-v4.js";
 import { createTestPlanListTaskDefectsHandler } from "../products/testplan/tools/list-task-defects.js";
@@ -1258,6 +1262,12 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetCaseTemplateHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetCaseTemplateHandler
   }),
+  "testplan_list_case_templates": defineProductTool({
+    description: "List CodeArts TestPlan case templates",
+    inputSchema: testPlanListCaseTemplatesInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListCaseTemplatesHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListCaseTemplatesHandler
+  }),
   "testplan_list_cases": defineProductTool({
     description: "List CodeArts TestPlan cases",
     inputSchema: testPlanListCasesInput,
@@ -1521,6 +1531,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListTestcaseFieldsInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTestcaseFieldsHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListTestcaseFieldsHandler
+  }),
+  "testplan_list_solution_templates": defineProductTool({
+    description: "List CodeArts TestPlan solution templates",
+    inputSchema: testPlanListSolutionTemplatesInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListSolutionTemplatesHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListSolutionTemplatesHandler
   }),
   "testplan_list_gt3k_testcase_fields": defineProductTool({
     description: "List CodeArts TestPlan GT3K testcase fields",

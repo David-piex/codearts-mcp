@@ -217,6 +217,21 @@ export const testPlanGetCaseTemplateInput = z.object({
   template_uri: idSchema
 });
 
+export const testPlanListCaseTemplatesInput = z.object({
+  project_id: idSchema,
+  name: z.string().optional(),
+  is_default: z.boolean().optional(),
+  is_recommended: z.boolean().optional(),
+  industry_type: z.union([z.string(), z.number().int()]).optional()
+});
+
+export const testPlanListSolutionTemplatesInput = z.object({
+  project_id: idSchema,
+  name: z.string().optional(),
+  is_recommended: z.boolean().optional(),
+  industry_type: z.union([z.string(), z.number().int()]).optional()
+});
+
 export const testPlanListTestcaseFieldsInput = z.object({
   project_id: idSchema
 });

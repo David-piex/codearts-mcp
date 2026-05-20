@@ -1677,6 +1677,72 @@ describe("createTestPlanClient", () => {
     ]);
   });
 
+  it("lists case templates and solution templates", async () => {
+    const requests: Array<{ path: string; body?: unknown }> = [];
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requests.push({ path, body });
+        if (path.includes("solution-templates")) {
+          return {
+            total: 1,
+            value: [{ uri: "solution-template-1", name: "solution" }]
+          };
+        }
+
+        return {
+          result: {
+            value: [{ uri: "case-template-1", name: "case template" }],
+            total: 1
+          }
+        };
+      }
+    } as never);
+
+    await expect(
+      client.listCaseTemplates({
+        project_id: "project-1",
+        name: "case",
+        is_default: true,
+        is_recommended: false,
+        industry_type: 10
+      })
+    ).resolves.toEqual({
+      templates: [{ uri: "case-template-1", name: "case template" }],
+      total: 1
+    });
+    await expect(
+      client.listSolutionTemplates({
+        project_id: "project-1",
+        name: "solution",
+        is_recommended: false,
+        industry_type: 12
+      })
+    ).resolves.toEqual({
+      templates: [{ uri: "solution-template-1", name: "solution" }],
+      total: 1
+    });
+
+    expect(requests).toEqual([
+      {
+        path: "/v4/project-1/case-templates/batch-query",
+        body: {
+          name: "case",
+          is_default: true,
+          is_recommended: false,
+          industry_type: 10
+        }
+      },
+      {
+        path: "/v4/project-1/solution-templates/batch-query",
+        body: {
+          name: "solution",
+          is_recommended: false,
+          industry_type: 12
+        }
+      }
+    ]);
+  });
+
   it("loads TestPlan mindmap, assets, and test design templates", async () => {
     const requests: string[] = [];
     const client = createTestPlanClient({

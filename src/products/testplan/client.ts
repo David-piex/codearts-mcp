@@ -367,6 +367,25 @@ export type TestPlanClient = {
     name?: string;
     raw: Record<string, unknown>;
   }>;
+  listCaseTemplates: (input: {
+    project_id: string;
+    name?: string;
+    is_default?: boolean;
+    is_recommended?: boolean;
+    industry_type?: string | number;
+  }) => Promise<{
+    templates: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listSolutionTemplates: (input: {
+    project_id: string;
+    name?: string;
+    is_recommended?: boolean;
+    industry_type?: string | number;
+  }) => Promise<{
+    templates: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
   listTestcaseFields: (input: {
     project_id: string;
   }) => Promise<{
@@ -2485,6 +2504,59 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         template_id: String(template.uri ?? template.template_uri ?? template.id ?? input.template_uri),
         name: typeof template.name === "string" ? template.name : undefined,
         raw: template
+      };
+    },
+    async listCaseTemplates(input) {
+      const body: Record<string, unknown> = {};
+      if (input.name !== undefined) {
+        body.name = input.name;
+      }
+      if (input.is_default !== undefined) {
+        body.is_default = input.is_default;
+      }
+      if (input.is_recommended !== undefined) {
+        body.is_recommended = input.is_recommended;
+      }
+      if (input.industry_type !== undefined) {
+        body.industry_type = input.industry_type;
+      }
+      const response = await _http.post(
+        `/v4/${encodeURIComponent(input.project_id)}/case-templates/batch-query`,
+        body
+      );
+      const payload = readResultPayload(response);
+      const templates = readArray<Record<string, unknown>>(
+        payload.value ?? payload.templates ?? payload.items ?? payload.list
+      );
+
+      return {
+        templates,
+        total: readTotal(payload, response, templates.length)
+      };
+    },
+    async listSolutionTemplates(input) {
+      const body: Record<string, unknown> = {};
+      if (input.name !== undefined) {
+        body.name = input.name;
+      }
+      if (input.is_recommended !== undefined) {
+        body.is_recommended = input.is_recommended;
+      }
+      if (input.industry_type !== undefined) {
+        body.industry_type = input.industry_type;
+      }
+      const response = await _http.post(
+        `/v4/${encodeURIComponent(input.project_id)}/solution-templates/batch-query`,
+        body
+      );
+      const payload = readResultPayload(response);
+      const templates = readArray<Record<string, unknown>>(
+        payload.value ?? payload.templates ?? payload.items ?? payload.list
+      );
+
+      return {
+        templates,
+        total: readTotal(payload, response, templates.length)
       };
     },
     async listTestcaseFields(input) {
