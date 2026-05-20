@@ -1415,6 +1415,15 @@ export type TestPlanClient = {
     total?: number;
     raw: Record<string, unknown>;
   }>;
+  searchFeaturesByCase: (input: {
+    project_uuid: string;
+    version_uri: string;
+    case_uri: string;
+    service_types: number[];
+  }) => Promise<{
+    feature?: Record<string, unknown>;
+    raw: Record<string, unknown>;
+  }>;
   listFeatureCaseCounts: (input: {
     project_uuid: string;
     version_uri: string;
@@ -5106,6 +5115,21 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       return {
         features,
         total: readTotal(payload, response, features.length),
+        raw: payload
+      };
+    },
+    async searchFeaturesByCase(input) {
+      const response = await _http.post("/v4/features/search-by-case", {
+        version_uri: input.version_uri,
+        project_uuid: input.project_uuid,
+        case_uri: input.case_uri,
+        service_types: input.service_types
+      });
+      const payload = readResultPayload(response);
+      const feature = readEnvelope(payload.value) ?? readEnvelope(payload);
+
+      return {
+        feature,
         raw: payload
       };
     },

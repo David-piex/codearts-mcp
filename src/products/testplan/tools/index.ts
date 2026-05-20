@@ -209,6 +209,7 @@ export const testPlanToolNames = [
   "testplan_run_cases",
   "testplan_search_api_test_basic_aw_infos",
   "testplan_search_features",
+  "testplan_search_features_by_case",
   "testplan_stop_task_execution",
   "testplan_update_task"
 ];

@@ -207,6 +207,7 @@ import {
   testPlanGetServiceConfigInput,
   testPlanRunCasesInput,
   testPlanSearchApiTestBasicAwInfosInput,
+  testPlanSearchFeaturesByCaseInput,
   testPlanSearchFeaturesInput,
   testPlanStopTaskExecutionInput,
   testPlanUpdateTaskInput
@@ -421,6 +422,7 @@ import { createTestPlanListVisibleServicesHandler } from "../products/testplan/t
 import { createTestPlanGetServiceConfigHandler } from "../products/testplan/tools/get-service-config.js";
 import { createTestPlanRunCasesHandler } from "../products/testplan/tools/run-cases.js";
 import { createTestPlanSearchApiTestBasicAwInfosHandler } from "../products/testplan/tools/search-api-test-basic-aw-infos.js";
+import { createTestPlanSearchFeaturesByCaseHandler } from "../products/testplan/tools/search-features-by-case.js";
 import { createTestPlanSearchFeaturesHandler } from "../products/testplan/tools/search-features.js";
 import { createTestPlanStopTaskExecutionHandler } from "../products/testplan/tools/stop-task-execution.js";
 import { createTestPlanUpdateTaskHandler } from "../products/testplan/tools/update-task.js";
@@ -1704,6 +1706,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanSearchFeaturesInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanSearchFeaturesHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanSearchFeaturesHandler
+  }),
+  "testplan_search_features_by_case": defineProductTool({
+    description: "Search CodeArts TestPlan feature tree nodes for a testcase",
+    inputSchema: testPlanSearchFeaturesByCaseInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanSearchFeaturesByCaseHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanSearchFeaturesByCaseHandler
   })
 } as const;
 

@@ -947,6 +947,13 @@ export const testPlanSearchFeaturesInput = pagingSchema.extend({
   parent_uri: z.string().min(1).optional()
 });
 
+export const testPlanSearchFeaturesByCaseInput = z.object({
+  project_uuid: idSchema,
+  version_uri: idSchema,
+  case_uri: idSchema,
+  service_types: z.array(z.number().int()).min(1)
+});
+
 const testPlanSearchConditionSchema = z.object({
   field_name: z.string().min(1).optional(),
   field_value: z.string().optional(),

@@ -6,7 +6,7 @@
 
 模块：`测试计划`
 
-API 数量：`212`
+API 数量：`213`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
@@ -13483,6 +13483,75 @@ API 数量：`212`
     "project_uuid",
     "version_uri",
     "key_word"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### testplan_search_features_by_case
+
+所属模块：`测试计划`
+
+说明：搜索测试计划的特性by用例。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "testplan_search_features_by_case",
+    "arguments": {
+      "project_uuid": "<project_uuid>",
+      "version_uri": "<version_uri>",
+      "case_uri": "<case_uri>",
+      "service_types": "<service_types>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_uuid` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_uuid` ↔ 原始 CodeArts 测试计划 API 中表示项目 UUID 的字段，常见原字段名为 `project_uuid`、`projectUuid` 或 `projectUUId`，以对应接口实际定义为准。<br>CodeArts 项目 UUID，常用于 Repo 仓库创建、仓库查询和项目级资源定位。可通过项目列表或控制台项目详情获取。 |
+| `version_uri` | 是 | `string` |  | 字段对应：<br>MCP 字段 `version_uri` ↔ 原始 CodeArts 测试计划 API 同名字段 `version_uri`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `case_uri` | 是 | `string` |  | 字段对应：<br>MCP 字段 `case_uri` ↔ 原始 CodeArts 测试计划 API 同名字段 `case_uri`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `service_types` | 是 | `array<integer>` |  | 字段对应：<br>MCP 字段 `service_types` ↔ 原始 CodeArts 测试计划 API 同名字段 `service_types`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_uuid": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version_uri": {
+      "$ref": "#/properties/project_uuid"
+    },
+    "case_uri": {
+      "$ref": "#/properties/project_uuid"
+    },
+    "service_types": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      },
+      "minItems": 1
+    }
+  },
+  "required": [
+    "project_uuid",
+    "version_uri",
+    "case_uri",
+    "service_types"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

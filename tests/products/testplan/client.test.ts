@@ -1275,7 +1275,7 @@ describe("createTestPlanClient", () => {
     });
   });
 
-  it("searches features and lists feature testcase counts", async () => {
+  it("searches features, searches feature trees by case, and lists feature testcase counts", async () => {
     const requests: Array<{ path: string; body: unknown }> = [];
     const client = createTestPlanClient({
       post: async (path: string, body?: unknown) => {
@@ -1285,6 +1285,16 @@ describe("createTestPlanClient", () => {
             result: {
               value: [{ uri: "feature-1", name: "login", type: "TestItem" }],
               total: 1
+            }
+          };
+        }
+        if (path === "/v4/features/search-by-case") {
+          return {
+            value: {
+              uri: "feature-root",
+              name: "root",
+              type: "TestVersion",
+              case_total: 1
             }
           };
         }
@@ -1315,6 +1325,29 @@ describe("createTestPlanClient", () => {
       }
     });
     await expect(
+      client.searchFeaturesByCase({
+        project_uuid: "project-1",
+        version_uri: "version-1",
+        case_uri: "case-1",
+        service_types: [0]
+      })
+    ).resolves.toEqual({
+      feature: {
+        uri: "feature-root",
+        name: "root",
+        type: "TestVersion",
+        case_total: 1
+      },
+      raw: {
+        value: {
+          uri: "feature-root",
+          name: "root",
+          type: "TestVersion",
+          case_total: 1
+        }
+      }
+    });
+    await expect(
       client.listFeatureCaseCounts({
         project_uuid: "project-1",
         version_uri: "version-1",
@@ -1340,6 +1373,15 @@ describe("createTestPlanClient", () => {
           page_no: 1,
           page_size: 10,
           parent_uri: "parent-1"
+        }
+      },
+      {
+        path: "/v4/features/search-by-case",
+        body: {
+          version_uri: "version-1",
+          project_uuid: "project-1",
+          case_uri: "case-1",
+          service_types: [0]
         }
       },
       {
