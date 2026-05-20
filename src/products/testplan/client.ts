@@ -32,6 +32,19 @@ type TestPlanRequirementsOverviewInput = {
   pi_filter?: TestPlanOverviewPiFilterInput;
 };
 
+type TestPlanFeatureChildrenInput = {
+  feature_uri: string;
+  project_uuid: string;
+  owner?: string;
+  stage?: string;
+  activity?: string;
+  version_uri?: string;
+  task_uri?: string;
+  service_type?: string;
+  contain_total?: boolean;
+  sort_type?: string;
+};
+
 export type TestPlanClient = {
   requestOfficialApi: (input: OfficialApiRequestInput) => Promise<OfficialApiRequestResult>;
   listIssues: (input: {
@@ -1418,6 +1431,16 @@ export type TestPlanClient = {
     total?: number;
     raw: Record<string, unknown>;
   }>;
+  listFeatureChildren: (input: TestPlanFeatureChildrenInput) => Promise<{
+    children: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
+  listGt3kFeatureChildren: (input: TestPlanFeatureChildrenInput) => Promise<{
+    children: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
   getTestcaseField: (input: {
     project_id: string;
     uri: string;
@@ -1790,6 +1813,38 @@ function createOverviewBody(input: TestPlanOverviewFilterInput) {
   }
   if (input.pi_filter !== undefined) {
     body.pi_filter = input.pi_filter;
+  }
+
+  return body;
+}
+
+function createFeatureChildrenBody(input: TestPlanFeatureChildrenInput) {
+  const body: Record<string, unknown> = {
+    project_uuid: input.project_uuid
+  };
+  if (input.owner !== undefined) {
+    body.owner = input.owner;
+  }
+  if (input.stage !== undefined) {
+    body.stage = input.stage;
+  }
+  if (input.activity !== undefined) {
+    body.activity = input.activity;
+  }
+  if (input.version_uri !== undefined) {
+    body.version_uri = input.version_uri;
+  }
+  if (input.task_uri !== undefined) {
+    body.task_uri = input.task_uri;
+  }
+  if (input.service_type !== undefined) {
+    body.service_type = input.service_type;
+  }
+  if (input.contain_total !== undefined) {
+    body.contain_total = input.contain_total;
+  }
+  if (input.sort_type !== undefined) {
+    body.sort_type = input.sort_type;
   }
 
   return body;
@@ -5083,6 +5138,38 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       return {
         counts,
         total: readTotal(payload, response, counts.length),
+        raw: payload
+      };
+    },
+    async listFeatureChildren(input) {
+      const response = await _http.post(
+        `/v4/features/${encodeURIComponent(input.feature_uri)}/children`,
+        createFeatureChildrenBody(input)
+      );
+      const payload = readResultPayload(response);
+      const children = readArray<Record<string, unknown>>(
+        payload.value ?? payload.children ?? payload.items ?? payload.list
+      );
+
+      return {
+        children,
+        total: readTotal(payload, response, children.length),
+        raw: payload
+      };
+    },
+    async listGt3kFeatureChildren(input) {
+      const response = await _http.post(
+        `/GT3KServer/v4/features/${encodeURIComponent(input.feature_uri)}/children`,
+        createFeatureChildrenBody(input)
+      );
+      const payload = readResultPayload(response);
+      const children = readArray<Record<string, unknown>>(
+        payload.value ?? payload.children ?? payload.items ?? payload.list
+      );
+
+      return {
+        children,
+        total: readTotal(payload, response, children.length),
         raw: payload
       };
     },

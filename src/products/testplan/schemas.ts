@@ -971,6 +971,19 @@ export const testPlanListFeatureCaseCountsInput = z.object({
   upward_recursion: z.boolean().optional()
 });
 
+export const testPlanListFeatureChildrenInput = z.object({
+  feature_uri: idSchema,
+  project_uuid: idSchema,
+  owner: z.string().min(1).optional(),
+  stage: z.string().min(1).optional(),
+  activity: z.string().min(1).optional(),
+  version_uri: idSchema.optional(),
+  task_uri: idSchema.optional(),
+  service_type: z.string().min(1).optional(),
+  contain_total: z.boolean().optional(),
+  sort_type: z.string().min(1).optional()
+});
+
 export const testPlanGetTestcaseFieldInput = z.object({
   project_id: idSchema,
   uri: idSchema

@@ -1355,6 +1355,109 @@ describe("createTestPlanClient", () => {
     ]);
   });
 
+  it("lists feature children from v4 and GT3K feature tree endpoints", async () => {
+    const requests: Array<{ path: string; body: unknown }> = [];
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requests.push({ path, body });
+        return {
+          result: {
+            value: [
+              {
+                uri: "feature-child-1",
+                name: "child",
+                type: "TestItem",
+                case_total: 2,
+                has_child: false
+              }
+            ],
+            total: 1
+          }
+        };
+      }
+    } as never);
+
+    const input = {
+      feature_uri: "feature-1",
+      project_uuid: "project-1",
+      version_uri: "version-1",
+      service_type: "0",
+      contain_total: true,
+      sort_type: "ASC"
+    };
+
+    await expect(client.listFeatureChildren(input)).resolves.toEqual({
+      children: [
+        {
+          uri: "feature-child-1",
+          name: "child",
+          type: "TestItem",
+          case_total: 2,
+          has_child: false
+        }
+      ],
+      total: 1,
+      raw: {
+        value: [
+          {
+            uri: "feature-child-1",
+            name: "child",
+            type: "TestItem",
+            case_total: 2,
+            has_child: false
+          }
+        ],
+        total: 1
+      }
+    });
+    await expect(client.listGt3kFeatureChildren(input)).resolves.toEqual({
+      children: [
+        {
+          uri: "feature-child-1",
+          name: "child",
+          type: "TestItem",
+          case_total: 2,
+          has_child: false
+        }
+      ],
+      total: 1,
+      raw: {
+        value: [
+          {
+            uri: "feature-child-1",
+            name: "child",
+            type: "TestItem",
+            case_total: 2,
+            has_child: false
+          }
+        ],
+        total: 1
+      }
+    });
+    expect(requests).toEqual([
+      {
+        path: "/v4/features/feature-1/children",
+        body: {
+          project_uuid: "project-1",
+          version_uri: "version-1",
+          service_type: "0",
+          contain_total: true,
+          sort_type: "ASC"
+        }
+      },
+      {
+        path: "/GT3KServer/v4/features/feature-1/children",
+        body: {
+          project_uuid: "project-1",
+          version_uri: "version-1",
+          service_type: "0",
+          contain_total: true,
+          sort_type: "ASC"
+        }
+      }
+    ]);
+  });
+
   it("lists task execution results with iterator query", async () => {
     let requestedPath = "";
     const client = createTestPlanClient({
