@@ -373,6 +373,17 @@ export type TestPlanClient = {
     name?: string;
     raw: Record<string, unknown>;
   }>;
+  listRuleCheckTasks: (input: {
+    project_id: string;
+    version_uri: string;
+    page: number;
+    page_size: number;
+    name?: string;
+  }) => Promise<{
+    tasks: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
   getRuleCheckTaskSummary: (input: {
     project_id: string;
     version_uri: string;
@@ -381,6 +392,21 @@ export type TestPlanClient = {
     status?: number;
   }) => Promise<{
     task_uri: string;
+    raw: Record<string, unknown>;
+  }>;
+  listBranchTestcaseDuplicateNumbers: (input: {
+    project_id: string;
+    version_uri: string;
+    numbers?: string[];
+    uri_to_number_list?: Array<{
+      uri?: string;
+      number?: string;
+    }>;
+  }) => Promise<{
+    numbers: string[];
+    total?: number;
+    has_more?: boolean;
+    reason?: string;
     raw: Record<string, unknown>;
   }>;
   getCaseTemplate: (input: {
@@ -2625,6 +2651,30 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         raw: report
       };
     },
+    async listRuleCheckTasks(input) {
+      const body: Record<string, unknown> = {
+        page_no: input.page,
+        page_size: input.page_size
+      };
+      if (input.name !== undefined) {
+        body.name = input.name;
+      }
+
+      const response = await _http.post(
+        `/v4/${encodeURIComponent(input.project_id)}/versions/${encodeURIComponent(input.version_uri)}/rule-check/tasks`,
+        body
+      );
+      const payload = readResultPayload(response);
+      const tasks = readArray<Record<string, unknown>>(
+        payload.value ?? payload.tasks ?? payload.items ?? payload.list
+      );
+
+      return {
+        tasks,
+        total: readTotal(payload, response, tasks.length),
+        raw: payload
+      };
+    },
     async getRuleCheckTaskSummary(input) {
       const query = new URLSearchParams();
       appendQueryValue(query, "severity", input.severity);
@@ -2640,6 +2690,32 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       return {
         task_uri: input.task_uri,
         raw: summary
+      };
+    },
+    async listBranchTestcaseDuplicateNumbers(input) {
+      const body: Record<string, unknown> = {};
+      if (input.numbers !== undefined) {
+        body.numbers = input.numbers;
+      }
+      if (input.uri_to_number_list !== undefined) {
+        body.uri_to_number_list = input.uri_to_number_list;
+      }
+
+      const response = await _http.post(
+        `/v4/${encodeURIComponent(input.project_id)}/versions/${encodeURIComponent(input.version_uri)}/testcases/duplicate-numbers`,
+        body
+      );
+      const payload = readResultPayload(response);
+      const numbers = readArray<string>(payload.value).filter(
+        (value): value is string => typeof value === "string"
+      );
+
+      return {
+        numbers,
+        total: readTotal(payload, response, numbers.length),
+        has_more: typeof payload.has_more === "boolean" ? payload.has_more : undefined,
+        reason: typeof payload.reason === "string" ? payload.reason : undefined,
+        raw: payload
       };
     },
     async getCaseTemplate(input) {

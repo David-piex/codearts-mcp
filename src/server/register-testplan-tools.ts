@@ -80,6 +80,7 @@ import {
   testPlanGetProjectTestcaseGlobalConfigInput,
   testPlanGetProjectLocalConfigInput,
   testPlanGetQualityReportOverviewInput,
+  testPlanListRuleCheckTasksInput,
   testPlanGetRuleCheckTaskReportInput,
   testPlanGetRuleCheckTaskSummaryInput,
   testPlanGetServiceTypeOverviewInput,
@@ -123,6 +124,7 @@ import {
   testPlanListAlertTemplatesInput,
   testPlanListAssetsInput,
   testPlanListAssetTreeInput,
+  testPlanListBranchTestcaseDuplicateNumbersInput,
   testPlanListCustomReportsInput,
   testPlanListCustomTemplateReportsInput,
   testPlanListCurrentUserTestcasesInput,
@@ -282,6 +284,7 @@ import { createTestPlanGetProjectSystemConfigHandler } from "../products/testpla
 import { createTestPlanGetProjectTestcaseGlobalConfigHandler } from "../products/testplan/tools/get-project-testcase-global-config.js";
 import { createTestPlanGetProjectLocalConfigHandler } from "../products/testplan/tools/get-project-local-config.js";
 import { createTestPlanGetQualityReportOverviewHandler } from "../products/testplan/tools/get-quality-report-overview.js";
+import { createTestPlanListRuleCheckTasksHandler } from "../products/testplan/tools/list-rule-check-tasks.js";
 import { createTestPlanGetRuleCheckTaskReportHandler } from "../products/testplan/tools/get-rule-check-task-report.js";
 import { createTestPlanGetRuleCheckTaskSummaryHandler } from "../products/testplan/tools/get-rule-check-task-summary.js";
 import { createTestPlanGetServiceTypeOverviewHandler } from "../products/testplan/tools/get-service-type-overview.js";
@@ -326,6 +329,7 @@ import { createTestPlanListApiTestsuiteHistoryHandler } from "../products/testpl
 import { createTestPlanListAttachmentsHandler } from "../products/testplan/tools/list-attachments.js";
 import { createTestPlanListAssetsHandler } from "../products/testplan/tools/list-assets.js";
 import { createTestPlanListAssetTreeHandler } from "../products/testplan/tools/list-asset-tree.js";
+import { createTestPlanListBranchTestcaseDuplicateNumbersHandler } from "../products/testplan/tools/list-branch-testcase-duplicate-numbers.js";
 import { createTestPlanListCaseTemplatesHandler } from "../products/testplan/tools/list-case-templates.js";
 import { createTestPlanListCustomReportsHandler } from "../products/testplan/tools/list-custom-reports.js";
 import { createTestPlanListCustomTemplateReportsHandler } from "../products/testplan/tools/list-custom-template-reports.js";
@@ -805,6 +809,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListAssetTreeInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListAssetTreeHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListAssetTreeHandler
+  }),
+  "testplan_list_branch_testcase_duplicate_numbers": defineProductTool({
+    description: "List duplicate CodeArts TestPlan testcase numbers under a branch version",
+    inputSchema: testPlanListBranchTestcaseDuplicateNumbersInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListBranchTestcaseDuplicateNumbersHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListBranchTestcaseDuplicateNumbersHandler
   }),
   "testplan_get_api_test_package_charge_message": defineProductTool({
     description: "Get CodeArts TestPlan API test package charge message",
@@ -1399,6 +1409,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanGetRuleCheckTaskReportInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetRuleCheckTaskReportHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetRuleCheckTaskReportHandler
+  }),
+  "testplan_list_rule_check_tasks": defineProductTool({
+    description: "List CodeArts TestPlan version-level testcase rule check tasks",
+    inputSchema: testPlanListRuleCheckTasksInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListRuleCheckTasksHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListRuleCheckTasksHandler
   }),
   "testplan_get_rule_check_task_summary": defineProductTool({
     description: "Get CodeArts TestPlan rule check task summary",

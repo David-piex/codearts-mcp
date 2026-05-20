@@ -205,6 +205,12 @@ export const testPlanListTestReportsInput = pagingSchema.extend({
   own: z.boolean().optional()
 });
 
+export const testPlanListRuleCheckTasksInput = pagingSchema.extend({
+  project_id: idSchema,
+  version_uri: idSchema,
+  name: z.string().min(1).optional()
+});
+
 export const testPlanGetRuleCheckTaskReportInput = z.object({
   project_id: idSchema,
   version_uri: idSchema,
@@ -217,6 +223,20 @@ export const testPlanGetRuleCheckTaskSummaryInput = z.object({
   task_uri: idSchema,
   severity: z.string().min(1).optional(),
   status: z.number().int().optional()
+});
+
+export const testPlanListBranchTestcaseDuplicateNumbersInput = z.object({
+  project_id: idSchema,
+  version_uri: idSchema,
+  numbers: z.array(z.string().min(1)).optional(),
+  uri_to_number_list: z
+    .array(
+      z.object({
+        uri: z.string().min(1).optional(),
+        number: z.string().min(1).optional()
+      })
+    )
+    .optional()
 });
 
 export const testPlanGetCaseTemplateInput = z.object({

@@ -32,8 +32,8 @@
 | 流水线 | 78 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 166 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 201 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
-| 测试计划 | 204 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **799** | |
+| 测试计划 | 206 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
+| **总计** | **801** | |
 
 ## 字段对应
 
@@ -759,6 +759,7 @@
 | `testplan_list_asset_tree` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_asset_tree) |
 | `testplan_list_assets` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_assets) |
 | `testplan_list_attachments` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_attachments) |
+| `testplan_list_branch_testcase_duplicate_numbers` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_branch_testcase_duplicate_numbers) |
 | `testplan_list_case_templates` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_case_templates) |
 | `testplan_list_cases` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_cases) |
 | `testplan_list_current_user_testcases` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_current_user_testcases) |
@@ -805,6 +806,7 @@
 | `testplan_list_requirements_overview_testcases` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_requirements_overview_testcases) |
 | `testplan_list_resource_number_rules` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_resource_number_rules) |
 | `testplan_list_resource_pools` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_resource_pools) |
+| `testplan_list_rule_check_tasks` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_rule_check_tasks) |
 | `testplan_list_runs` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_runs) |
 | `testplan_list_service_offerings` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_service_offerings) |
 | `testplan_list_solution_templates` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_solution_templates) |

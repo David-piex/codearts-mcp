@@ -1699,9 +1699,26 @@ describe("createTestPlanClient", () => {
     ]);
   });
 
-  it("loads rule check task report and summary", async () => {
+  it("lists rule check tasks and loads report and summary", async () => {
     const requests: string[] = [];
     const client = createTestPlanClient({
+      post: async (path: string, body: unknown) => {
+        requests.push(`${path} ${JSON.stringify(body)}`);
+        return {
+          result: {
+            value: [
+              {
+                uri: "task-1",
+                name: "rule check",
+                status: "success"
+              }
+            ],
+            total: 1,
+            page_no: 1,
+            page_size: 10
+          }
+        };
+      },
       get: async (path: string) => {
         requests.push(path);
         if (path.endsWith("/summary?severity=2&status=0")) {
@@ -1721,6 +1738,36 @@ describe("createTestPlanClient", () => {
       }
     } as never);
 
+    await expect(
+      client.listRuleCheckTasks({
+        project_id: "project-1",
+        version_uri: "version-1",
+        page: 1,
+        page_size: 10,
+        name: "rule"
+      })
+    ).resolves.toEqual({
+      tasks: [
+        {
+          uri: "task-1",
+          name: "rule check",
+          status: "success"
+        }
+      ],
+      total: 1,
+      raw: {
+        value: [
+          {
+            uri: "task-1",
+            name: "rule check",
+            status: "success"
+          }
+        ],
+        total: 1,
+        page_no: 1,
+        page_size: 10
+      }
+    });
     await expect(
       client.getRuleCheckTaskReport({
         project_id: "project-1",
@@ -1750,9 +1797,56 @@ describe("createTestPlanClient", () => {
       }
     });
     expect(requests).toEqual([
+      '/v4/project-1/versions/version-1/rule-check/tasks {"page_no":1,"page_size":10,"name":"rule"}',
       "/v4/project-1/versions/version-1/rule-check/tasks/task-1",
       "/v4/project-1/versions/version-1/rule-check/tasks/task-1/summary?severity=2&status=0"
     ]);
+  });
+
+  it("lists branch testcase duplicate numbers", async () => {
+    let requestedPath = "";
+    let requestedBody: unknown;
+    const client = createTestPlanClient({
+      post: async (path: string, body: unknown) => {
+        requestedPath = path;
+        requestedBody = body;
+        return {
+          result: {
+            value: ["TC-1"],
+            total: 1,
+            has_more: false,
+            reason: "duplicate"
+          }
+        };
+      }
+    } as never);
+
+    await expect(
+      client.listBranchTestcaseDuplicateNumbers({
+        project_id: "project-1",
+        version_uri: "version-1",
+        numbers: ["TC-1"],
+        uri_to_number_list: [{ uri: "case-1", number: "TC-2" }]
+      })
+    ).resolves.toEqual({
+      numbers: ["TC-1"],
+      total: 1,
+      has_more: false,
+      reason: "duplicate",
+      raw: {
+        value: ["TC-1"],
+        total: 1,
+        has_more: false,
+        reason: "duplicate"
+      }
+    });
+    expect(requestedPath).toBe(
+      "/v4/project-1/versions/version-1/testcases/duplicate-numbers"
+    );
+    expect(requestedBody).toEqual({
+      numbers: ["TC-1"],
+      uri_to_number_list: [{ uri: "case-1", number: "TC-2" }]
+    });
   });
 
   it("loads case templates and testcase v4 detail", async () => {
