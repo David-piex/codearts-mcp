@@ -3657,4 +3657,30 @@ describe("createTestPlanClient", () => {
       "/v1/progress/progress-1?project_id=project-1"
     ]);
   });
+
+  it("lists API test basic AWs in batch by id", async () => {
+    let requestedPath = "";
+    let requestedBody: unknown;
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requestedPath = path;
+        requestedBody = body;
+        return {
+          result: [{ id: "aw-batch-1", name: "login" }]
+        };
+      }
+    } as never);
+
+    const result = await client.listApiTestBasicAwsBatch({
+      project_id: "project-1",
+      aw_ids: ["aw-batch-1"]
+    });
+
+    expect(requestedPath).toBe("/v1/project-1/basic-aws");
+    expect(requestedBody).toEqual(["aw-batch-1"]);
+    expect(result).toEqual({
+      aws: [{ id: "aw-batch-1", name: "login" }],
+      total: 1
+    });
+  });
 });

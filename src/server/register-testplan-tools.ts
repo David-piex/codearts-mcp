@@ -104,6 +104,7 @@ import {
   testPlanGetSuiteInfoPageUrlInput,
   testPlanInitTaskExecutionInput,
   testPlanListApiTestAwNameViewsInput,
+  testPlanListApiTestBasicAwsBatchInput,
   testPlanListApiTestBasicAwParamPropertiesInput,
   testPlanListApiTestBasicAwInfosInput,
   testPlanListApiTestBasicAwInfosV2Input,
@@ -296,6 +297,7 @@ import { createTestPlanGetVariableSynchronizationV2Handler } from "../products/t
 import { createTestPlanGetSuiteInfoPageUrlHandler } from "../products/testplan/tools/get-suite-info-page-url.js";
 import { createTestPlanInitTaskExecutionHandler } from "../products/testplan/tools/init-task-execution.js";
 import { createTestPlanListApiTestAwNameViewsHandler } from "../products/testplan/tools/list-api-test-aw-name-views.js";
+import { createTestPlanListApiTestBasicAwsBatchHandler } from "../products/testplan/tools/list-api-test-basic-aws-batch.js";
 import { createTestPlanListApiTestBasicAwParamPropertiesHandler } from "../products/testplan/tools/list-api-test-basic-aw-param-properties.js";
 import { createTestPlanListApiTestBasicAwInfosHandler } from "../products/testplan/tools/list-api-test-basic-aw-infos.js";
 import { createTestPlanListApiTestBasicAwInfosV2Handler } from "../products/testplan/tools/list-api-test-basic-aw-infos-v2.js";
@@ -829,6 +831,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListApiTestAwNameViewsInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListApiTestAwNameViewsHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListApiTestAwNameViewsHandler
+  }),
+  "testplan_list_api_test_basic_aws_batch": defineProductTool({
+    description: "Batch list CodeArts TestPlan API test basic AW entries by AW IDs",
+    inputSchema: testPlanListApiTestBasicAwsBatchInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListApiTestBasicAwsBatchHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListApiTestBasicAwsBatchHandler
   }),
   "testplan_list_api_test_basic_aw_param_properties": defineProductTool({
     description: "List CodeArts TestPlan API test basic AW parameter property names",

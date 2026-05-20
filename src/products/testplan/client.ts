@@ -1088,6 +1088,13 @@ export type TestPlanClient = {
     aws: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  listApiTestBasicAwsBatch: (input: {
+    project_id: string;
+    aw_ids: string[];
+  }) => Promise<{
+    aws: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
   listApiTestChildBasicAws: (input: {
     project_id: string;
     parent_id: string;
@@ -4090,6 +4097,21 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       const payload = readResultPayload(response);
       const aws = readArray<Record<string, unknown>>(
         payload.page_list ?? payload.value ?? payload.result ?? payload.aws ?? payload.items ?? payload.list
+      );
+
+      return {
+        aws,
+        total: readTotal(payload, response, aws.length)
+      };
+    },
+    async listApiTestBasicAwsBatch(input) {
+      const response = await _http.post(
+        `/v1/${encodeURIComponent(input.project_id)}/basic-aws`,
+        input.aw_ids
+      );
+      const payload = readResultPayload(response);
+      const aws = readArray<Record<string, unknown>>(
+        payload.value ?? payload.result ?? payload.aws ?? payload.items ?? payload.list
       );
 
       return {

@@ -713,6 +713,11 @@ export const testPlanSearchApiTestBasicAwInfosInput = pagingSchema.extend({
   search_value: z.string().min(1).optional()
 });
 
+export const testPlanListApiTestBasicAwsBatchInput = z.object({
+  project_id: idSchema,
+  aw_ids: z.array(z.string().min(1)).min(1)
+});
+
 export const testPlanListApiTestChildBasicAwsInput = z.object({
   project_id: idSchema,
   parent_id: z.string().min(1),
