@@ -245,6 +245,30 @@ export type TestPlanClient = {
     total?: number;
     raw: Record<string, unknown>;
   }>;
+  listRequirementsOverviewTestcases: (input: {
+    project_id: string;
+    version_uri: string;
+    work_item_id: string;
+    work_item_name?: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    testcases: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
+  listRequirementsOverviewDefects: (input: {
+    project_id: string;
+    version_uri: string;
+    work_item_id: string;
+    work_item_name?: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    defects: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
   listTestReportIssues: (input: {
     project_id: string;
     version_uri: string;
@@ -1651,6 +1675,23 @@ function createOverviewBody(input: TestPlanOverviewFilterInput) {
   return body;
 }
 
+function createRequirementsOverviewDetailsBody(input: {
+  work_item_id: string;
+  work_item_name?: string;
+  page: number;
+  page_size: number;
+}) {
+  const body: Record<string, unknown> = {
+    work_item_id: input.work_item_id,
+    page_no: input.page,
+    page_size: input.page_size
+  };
+  if (input.work_item_name !== undefined) {
+    body.work_item_name = input.work_item_name;
+  }
+  return body;
+}
+
 function appendQueryValue(
   query: URLSearchParams,
   key: string,
@@ -2282,6 +2323,42 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       return {
         requirements,
         total: readTotal(value, response, requirements.length),
+        raw: value
+      };
+    },
+    async listRequirementsOverviewTestcases(input) {
+      const body = createRequirementsOverviewDetailsBody(input);
+      const response = await _http.post(
+        `/v4/${encodeURIComponent(input.project_id)}/versions/${encodeURIComponent(input.version_uri)}/requirements/overview/testcase`,
+        body
+      );
+      const payload = readResultPayload(response);
+      const value = readEnvelope(payload.value) ?? payload;
+      const testcases = readArray<Record<string, unknown>>(
+        value.testcase_list ?? value.testcases ?? value.items ?? value.list
+      );
+
+      return {
+        testcases,
+        total: readTotal(value, response, testcases.length),
+        raw: value
+      };
+    },
+    async listRequirementsOverviewDefects(input) {
+      const body = createRequirementsOverviewDetailsBody(input);
+      const response = await _http.post(
+        `/v4/${encodeURIComponent(input.project_id)}/versions/${encodeURIComponent(input.version_uri)}/requirements/overview/defect`,
+        body
+      );
+      const payload = readResultPayload(response);
+      const value = readEnvelope(payload.value) ?? payload;
+      const defects = readArray<Record<string, unknown>>(
+        value.defect_list ?? value.defects ?? value.items ?? value.list
+      );
+
+      return {
+        defects,
+        total: readTotal(value, response, defects.length),
         raw: value
       };
     },

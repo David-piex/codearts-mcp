@@ -637,6 +637,96 @@ describe("createTestPlanClient", () => {
     });
   });
 
+  it("lists requirements overview testcase details", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requestedPath = path;
+        requestedBody = body as Record<string, unknown>;
+        return {
+          result: {
+            value: {
+              total_number: 1,
+              testcase_list: [{ case_no: "TC-1", case_name: "login succeeds" }]
+            }
+          }
+        };
+      }
+    } as never);
+
+    const result = await client.listRequirementsOverviewTestcases({
+      project_id: "project-1",
+      version_uri: "version-1",
+      work_item_id: "REQ-1",
+      work_item_name: "login",
+      page: 2,
+      page_size: 10
+    });
+
+    expect(requestedPath).toBe(
+      "/v4/project-1/versions/version-1/requirements/overview/testcase"
+    );
+    expect(requestedBody).toEqual({
+      work_item_id: "REQ-1",
+      work_item_name: "login",
+      page_no: 2,
+      page_size: 10
+    });
+    expect(result).toEqual({
+      testcases: [{ case_no: "TC-1", case_name: "login succeeds" }],
+      total: 1,
+      raw: {
+        total_number: 1,
+        testcase_list: [{ case_no: "TC-1", case_name: "login succeeds" }]
+      }
+    });
+  });
+
+  it("lists requirements overview defect details", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requestedPath = path;
+        requestedBody = body as Record<string, unknown>;
+        return {
+          result: {
+            value: {
+              total_number: 1,
+              defect_list: [{ defect_no: "BUG-1", defect_name: "login fails" }]
+            }
+          }
+        };
+      }
+    } as never);
+
+    const result = await client.listRequirementsOverviewDefects({
+      project_id: "project-1",
+      version_uri: "version-1",
+      work_item_id: "REQ-1",
+      page: 1,
+      page_size: 5
+    });
+
+    expect(requestedPath).toBe(
+      "/v4/project-1/versions/version-1/requirements/overview/defect"
+    );
+    expect(requestedBody).toEqual({
+      work_item_id: "REQ-1",
+      page_no: 1,
+      page_size: 5
+    });
+    expect(result).toEqual({
+      defects: [{ defect_no: "BUG-1", defect_name: "login fails" }],
+      total: 1,
+      raw: {
+        total_number: 1,
+        defect_list: [{ defect_no: "BUG-1", defect_name: "login fails" }]
+      }
+    });
+  });
+
   it("lists test report issue details with filters", async () => {
     let requestedPath = "";
     const client = createTestPlanClient({

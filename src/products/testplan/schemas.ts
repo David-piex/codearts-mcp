@@ -137,6 +137,13 @@ export const testPlanListRequirementsOverviewInput = pagingSchema.extend({
   pi_filter: testPlanOverviewPiFilterInput.optional()
 });
 
+export const testPlanListRequirementsOverviewDetailsInput = pagingSchema.extend({
+  project_id: idSchema,
+  version_uri: idSchema,
+  work_item_id: z.string().min(1),
+  work_item_name: z.string().optional()
+});
+
 export const testPlanListTestReportIssuesInput = pagingSchema.extend({
   project_id: idSchema,
   version_uri: idSchema,

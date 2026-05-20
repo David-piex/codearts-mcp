@@ -156,6 +156,7 @@ import {
   testPlanListProjectUsersInput,
   testPlanListPublicAwLibAndAwsInput,
   testPlanListProgressReportsInput,
+  testPlanListRequirementsOverviewDetailsInput,
   testPlanListRequirementsOverviewInput,
   testPlanListRegisteredServicesInput,
   testPlanListReleaseVersionsInput,
@@ -355,7 +356,9 @@ import { createTestPlanListProjectTagsHandler } from "../products/testplan/tools
 import { createTestPlanListProjectUsersHandler } from "../products/testplan/tools/list-project-users.js";
 import { createTestPlanListPublicAwLibAndAwsHandler } from "../products/testplan/tools/list-public-aw-lib-and-aws.js";
 import { createTestPlanListProgressReportsHandler } from "../products/testplan/tools/list-progress-reports.js";
+import { createTestPlanListRequirementsOverviewDefectsHandler } from "../products/testplan/tools/list-requirements-overview-defects.js";
 import { createTestPlanListRequirementsOverviewHandler } from "../products/testplan/tools/list-requirements-overview.js";
+import { createTestPlanListRequirementsOverviewTestcasesHandler } from "../products/testplan/tools/list-requirements-overview-testcases.js";
 import { createTestPlanListRegisteredServicesHandler } from "../products/testplan/tools/list-registered-services.js";
 import { createTestPlanListReleaseVersionsHandler } from "../products/testplan/tools/list-release-versions.js";
 import { createTestPlanListResourceNumberRulesHandler } from "../products/testplan/tools/list-resource-number-rules.js";
@@ -1520,6 +1523,18 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListRequirementsOverviewInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListRequirementsOverviewHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListRequirementsOverviewHandler
+  }),
+  "testplan_list_requirements_overview_defects": defineProductTool({
+    description: "List CodeArts TestPlan quality report requirement overview defect details",
+    inputSchema: testPlanListRequirementsOverviewDetailsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListRequirementsOverviewDefectsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListRequirementsOverviewDefectsHandler
+  }),
+  "testplan_list_requirements_overview_testcases": defineProductTool({
+    description: "List CodeArts TestPlan quality report requirement overview testcase details",
+    inputSchema: testPlanListRequirementsOverviewDetailsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListRequirementsOverviewTestcasesHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListRequirementsOverviewTestcasesHandler
   }),
   "testplan_list_test_report_defects": defineProductTool({
     description: "List CodeArts TestPlan test report defect details",

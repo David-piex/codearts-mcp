@@ -155,6 +155,8 @@ export const testPlanToolNames = [
   "testplan_list_project_users",
   "testplan_list_public_aw_lib_and_aws",
   "testplan_list_requirements_overview",
+  "testplan_list_requirements_overview_defects",
+  "testplan_list_requirements_overview_testcases",
   "testplan_list_notice_configs",
   "testplan_list_registered_services",
   "testplan_list_release_versions",
