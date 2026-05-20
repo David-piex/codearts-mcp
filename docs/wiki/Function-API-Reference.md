@@ -32,8 +32,8 @@
 | 流水线 | 78 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 166 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 201 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
-| 测试计划 | 200 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **795** | |
+| 测试计划 | 202 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
+| **总计** | **797** | |
 
 ## 字段对应
 
@@ -778,6 +778,8 @@
 | `testplan_list_gt3k_project_service_repos` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_gt3k_project_service_repos) |
 | `testplan_list_gt3k_testcase_fields` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_gt3k_testcase_fields) |
 | `testplan_list_gt3k_visible_services` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_gt3k_visible_services) |
+| `testplan_list_issue_case_counts` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_issue_case_counts) |
+| `testplan_list_issue_testcases` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_issue_testcases) |
 | `testplan_list_issues` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_issues) |
 | `testplan_list_iterator_histories` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_iterator_histories) |
 | `testplan_list_iterator_infos` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_iterator_infos) |

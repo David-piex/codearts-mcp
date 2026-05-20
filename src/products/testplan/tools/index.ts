@@ -139,6 +139,8 @@ export const testPlanToolNames = [
   "testplan_list_gt3k_project_service_repos",
   "testplan_list_gt3k_testcase_fields",
   "testplan_list_gt3k_visible_services",
+  "testplan_list_issue_case_counts",
+  "testplan_list_issue_testcases",
   "testplan_list_iterator_infos",
   "testplan_list_iterator_histories",
   "testplan_list_iterator_issue_ids",

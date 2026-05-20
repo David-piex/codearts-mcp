@@ -1153,6 +1153,128 @@ describe("createTestPlanClient", () => {
     });
   });
 
+  it("lists issue related testcases", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requestedPath = path;
+        requestedBody = body as Record<string, unknown>;
+        return {
+          result: {
+            value: {
+              testcases: [
+                {
+                  uri: "case-1",
+                  name: "login",
+                  status: "ready",
+                  result: "passed",
+                  executor_id: "user-1",
+                  executor_name: "alice"
+                }
+              ],
+              total_count: 1
+            }
+          }
+        };
+      }
+    } as never);
+
+    const result = await client.listIssueTestcases({
+      project_id: "project-1",
+      issue_id: "issue-1",
+      page: 2,
+      page_size: 10,
+      version_uri: "version-1",
+      relate_type: "requirement",
+      key_word: "login",
+      sort_field: "name",
+      sort_type: "DESC",
+      rank_ids: ["rank-1"],
+      result_codes: ["0"]
+    });
+
+    expect(requestedPath).toBe("/v4/project-1/issues/issue-1/testcases/batch-query");
+    expect(requestedBody).toEqual({
+      page_no: 2,
+      page_size: 10,
+      version_uri: "version-1",
+      relate_type: "requirement",
+      key_word: "login",
+      sort_field: "name",
+      sort_type: "DESC",
+      rank_ids: ["rank-1"],
+      result_codes: ["0"]
+    });
+    expect(result).toEqual({
+      cases: [
+        {
+          case_id: "case-1",
+          name: "login",
+          status: "ready",
+          result: "passed",
+          executor_id: "user-1",
+          executor_name: "alice"
+        }
+      ],
+      total: 1,
+      raw: {
+        testcases: [
+          {
+            uri: "case-1",
+            name: "login",
+            status: "ready",
+            result: "passed",
+            executor_id: "user-1",
+            executor_name: "alice"
+          }
+        ],
+        total_count: 1
+      }
+    });
+  });
+
+  it("lists issue testcase counts", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requestedPath = path;
+        requestedBody = body as Record<string, unknown>;
+        return {
+          result: {
+            value: [{ issue_id: "issue-1", case_count: 3 }]
+          }
+        };
+      }
+    } as never);
+
+    const result = await client.listIssueCaseCounts({
+      project_id: "project-1",
+      version_uri: "version-1",
+      issue_ids: ["issue-1"],
+      service_type: -1,
+      service_types: [0, 1],
+      parent_id: "parent-1",
+      task_uri: "task-1"
+    });
+
+    expect(requestedPath).toBe("/v4/issues/case-total");
+    expect(requestedBody).toEqual({
+      project_uuid: "project-1",
+      version_uri: "version-1",
+      issue_ids: ["issue-1"],
+      service_type: -1,
+      service_types: [0, 1],
+      parent_id: "parent-1",
+      task_uri: "task-1"
+    });
+    expect(result).toEqual({
+      counts: [{ issue_id: "issue-1", case_count: 3 }],
+      total: 1
+    });
+  });
+
   it("lists task execution results with iterator query", async () => {
     let requestedPath = "";
     const client = createTestPlanClient({

@@ -1571,6 +1571,42 @@ export type TestPlanClient = {
     }>;
     total?: number;
   }>;
+  listIssueTestcases: (input: {
+    project_id: string;
+    issue_id: string;
+    page: number;
+    page_size: number;
+    version_uri?: string;
+    relate_type?: string;
+    key_word?: string;
+    sort_field?: string;
+    sort_type?: string;
+    rank_ids?: string[];
+    result_codes?: string[];
+  }) => Promise<{
+    cases: Array<{
+      case_id: string;
+      name?: string;
+      status?: string;
+      result?: string;
+      executor_id?: string;
+      executor_name?: string;
+    }>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
+  listIssueCaseCounts: (input: {
+    project_id: string;
+    version_uri: string;
+    issue_ids: string[];
+    service_type?: number;
+    service_types?: number[];
+    parent_id?: string;
+    task_uri?: string;
+  }) => Promise<{
+    counts: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
   listTaskResults: (input: {
     project_id: string;
     task_uri: string;
@@ -5240,6 +5276,94 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
           executor_name: item.executor_name
         })),
         total: readTotal(payload, response, Array.isArray(response) ? response.length : undefined)
+      };
+    },
+    async listIssueTestcases(input) {
+      const body: Record<string, unknown> = {
+        page_no: input.page,
+        page_size: input.page_size
+      };
+      if (input.version_uri !== undefined) {
+        body.version_uri = input.version_uri;
+      }
+      if (input.relate_type !== undefined) {
+        body.relate_type = input.relate_type;
+      }
+      if (input.key_word !== undefined) {
+        body.key_word = input.key_word;
+      }
+      if (input.sort_field !== undefined) {
+        body.sort_field = input.sort_field;
+      }
+      if (input.sort_type !== undefined) {
+        body.sort_type = input.sort_type;
+      }
+      if (input.rank_ids !== undefined) {
+        body.rank_ids = input.rank_ids;
+      }
+      if (input.result_codes !== undefined) {
+        body.result_codes = input.result_codes;
+      }
+
+      const response = await _http.post(
+        `/v4/${encodeURIComponent(input.project_id)}/issues/${encodeURIComponent(input.issue_id)}/testcases/batch-query`,
+        body
+      );
+      const payload = readResultPayload(response);
+      const value = readEnvelope(payload.value) ?? payload;
+      const cases = readArray<{
+        case_uri?: string;
+        uri?: string;
+        id?: string;
+        number?: string;
+        name?: string;
+        status?: string;
+        result?: string;
+        executor_id?: string;
+        executor_name?: string;
+      }>(value.testcases ?? value.testcase_list ?? value.cases ?? value.items ?? value.list);
+
+      return {
+        cases: cases.map((item) => ({
+          case_id: String(item.case_uri ?? item.uri ?? item.id ?? item.number ?? ""),
+          name: item.name,
+          status: item.status,
+          result: item.result,
+          executor_id: item.executor_id,
+          executor_name: item.executor_name
+        })),
+        total: readTotal(value, response, cases.length),
+        raw: value
+      };
+    },
+    async listIssueCaseCounts(input) {
+      const body: Record<string, unknown> = {
+        project_uuid: input.project_id,
+        version_uri: input.version_uri,
+        issue_ids: input.issue_ids
+      };
+      if (input.service_type !== undefined) {
+        body.service_type = input.service_type;
+      }
+      if (input.service_types !== undefined) {
+        body.service_types = input.service_types;
+      }
+      if (input.parent_id !== undefined) {
+        body.parent_id = input.parent_id;
+      }
+      if (input.task_uri !== undefined) {
+        body.task_uri = input.task_uri;
+      }
+
+      const response = await _http.post("/v4/issues/case-total", body);
+      const payload = readResultPayload(response);
+      const counts = readArray<Record<string, unknown>>(
+        payload.value ?? payload.counts ?? payload.items ?? payload.list
+      );
+
+      return {
+        counts,
+        total: readTotal(payload, response, counts.length)
       };
     },
     async listTaskResults(input) {

@@ -138,6 +138,8 @@ import {
   testPlanListGt3kProjectServiceReposInput,
   testPlanListGt3kTestcaseFieldsInput,
   testPlanListGt3kVisibleServicesInput,
+  testPlanListIssueCaseCountsInput,
+  testPlanListIssueTestcasesInput,
   testPlanListIteratorInfosInput,
   testPlanListIteratorHistoriesInput,
   testPlanListIteratorIssueIdsInput,
@@ -338,6 +340,8 @@ import { createTestPlanListGt3kIteratorInfosHandler } from "../products/testplan
 import { createTestPlanListGt3kProjectServiceReposHandler } from "../products/testplan/tools/list-gt3k-project-service-repos.js";
 import { createTestPlanListGt3kTestcaseFieldsHandler } from "../products/testplan/tools/list-gt3k-testcase-fields.js";
 import { createTestPlanListGt3kVisibleServicesHandler } from "../products/testplan/tools/list-gt3k-visible-services.js";
+import { createTestPlanListIssueCaseCountsHandler } from "../products/testplan/tools/list-issue-case-counts.js";
+import { createTestPlanListIssueTestcasesHandler } from "../products/testplan/tools/list-issue-testcases.js";
 import { createTestPlanListIteratorInfosHandler } from "../products/testplan/tools/list-iterator-infos.js";
 import { createTestPlanListIteratorHistoriesHandler } from "../products/testplan/tools/list-iterator-histories.js";
 import { createTestPlanListIteratorIssueIdsHandler } from "../products/testplan/tools/list-iterator-issue-ids.js";
@@ -647,6 +651,18 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListGt3kIteratorInfosInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListGt3kIteratorInfosHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListGt3kIteratorInfosHandler
+  }),
+  "testplan_list_issue_case_counts": defineProductTool({
+    description: "List CodeArts TestPlan testcase counts for requirements or issues",
+    inputSchema: testPlanListIssueCaseCountsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListIssueCaseCountsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListIssueCaseCountsHandler
+  }),
+  "testplan_list_issue_testcases": defineProductTool({
+    description: "List CodeArts TestPlan testcases related to a requirement or issue",
+    inputSchema: testPlanListIssueTestcasesInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListIssueTestcasesHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListIssueTestcasesHandler
   }),
   "testplan_list_visible_services": defineProductTool({
     description: "List CodeArts TestPlan visible third-party services",

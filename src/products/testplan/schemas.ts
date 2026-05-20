@@ -1059,6 +1059,28 @@ export const testPlanListTaskCasesV4Input = pagingSchema.extend({
   rank_ids: z.array(idSchema).optional()
 });
 
+export const testPlanListIssueTestcasesInput = pagingSchema.extend({
+  project_id: idSchema,
+  issue_id: idSchema,
+  version_uri: idSchema.optional(),
+  relate_type: z.string().min(1).optional(),
+  key_word: z.string().optional(),
+  sort_field: z.string().min(1).optional(),
+  sort_type: z.string().min(1).optional(),
+  rank_ids: z.array(z.string().min(1)).optional(),
+  result_codes: z.array(z.string().min(1)).optional()
+});
+
+export const testPlanListIssueCaseCountsInput = z.object({
+  project_id: idSchema,
+  version_uri: idSchema,
+  issue_ids: z.array(idSchema).min(1),
+  service_type: z.number().int().optional(),
+  service_types: z.array(z.number().int()).optional(),
+  parent_id: idSchema.optional(),
+  task_uri: idSchema.optional()
+});
+
 export const testPlanListTaskResultsInput = pagingSchema.extend({
   project_id: idSchema,
   task_uri: idSchema,
