@@ -131,6 +131,7 @@ export const testPlanToolNames = [
   "testplan_list_dashboards",
   "testplan_list_domain_usage_infos",
   "testplan_list_environments",
+  "testplan_list_feature_case_counts",
   "testplan_list_feature_descendant_uris",
   "testplan_list_gt3k_branches",
   "testplan_list_gt3k_current_user_testcases",
@@ -203,6 +204,7 @@ export const testPlanToolNames = [
   "testplan_request_official_api",
   "testplan_run_cases",
   "testplan_search_api_test_basic_aw_infos",
+  "testplan_search_features",
   "testplan_stop_task_execution",
   "testplan_update_task"
 ];

@@ -131,6 +131,7 @@ import {
   testPlanListDefectIteratorsInput,
   testPlanListDomainUsageInfosInput,
   testPlanListEnvironmentsInput,
+  testPlanListFeatureCaseCountsInput,
   testPlanListFeatureDescendantUrisInput,
   testPlanListGt3kBranchesInput,
   testPlanListGt3kCurrentUserTestcasesInput,
@@ -203,6 +204,7 @@ import {
   testPlanGetServiceConfigInput,
   testPlanRunCasesInput,
   testPlanSearchApiTestBasicAwInfosInput,
+  testPlanSearchFeaturesInput,
   testPlanStopTaskExecutionInput,
   testPlanUpdateTaskInput
 } from "../products/testplan/schemas.js";
@@ -337,6 +339,7 @@ import { createTestPlanListCurrentUserTestcasesHandler } from "../products/testp
 import { createTestPlanListDefectIteratorsHandler } from "../products/testplan/tools/list-defect-iterators.js";
 import { createTestPlanListDomainUsageInfosHandler } from "../products/testplan/tools/list-domain-usage-infos.js";
 import { createTestPlanListEnvironmentsHandler } from "../products/testplan/tools/list-environments.js";
+import { createTestPlanListFeatureCaseCountsHandler } from "../products/testplan/tools/list-feature-case-counts.js";
 import { createTestPlanListFeatureDescendantUrisHandler } from "../products/testplan/tools/list-feature-descendant-uris.js";
 import { createTestPlanListGt3kBranchesHandler } from "../products/testplan/tools/list-gt3k-branches.js";
 import { createTestPlanListGt3kCurrentUserTestcasesHandler } from "../products/testplan/tools/list-gt3k-current-user-testcases.js";
@@ -409,6 +412,7 @@ import { createTestPlanListVisibleServicesHandler } from "../products/testplan/t
 import { createTestPlanGetServiceConfigHandler } from "../products/testplan/tools/get-service-config.js";
 import { createTestPlanRunCasesHandler } from "../products/testplan/tools/run-cases.js";
 import { createTestPlanSearchApiTestBasicAwInfosHandler } from "../products/testplan/tools/search-api-test-basic-aw-infos.js";
+import { createTestPlanSearchFeaturesHandler } from "../products/testplan/tools/search-features.js";
 import { createTestPlanStopTaskExecutionHandler } from "../products/testplan/tools/stop-task-execution.js";
 import { createTestPlanUpdateTaskHandler } from "../products/testplan/tools/update-task.js";
 import { createOfficialApiRequestHandler } from "../products/shared-tools/request-official-api.js";
@@ -1620,6 +1624,12 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetTestcaseFieldHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetTestcaseFieldHandler
   }),
+  "testplan_list_feature_case_counts": defineProductTool({
+    description: "List CodeArts TestPlan testcase counts grouped by feature",
+    inputSchema: testPlanListFeatureCaseCountsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListFeatureCaseCountsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListFeatureCaseCountsHandler
+  }),
   "testplan_list_feature_descendant_uris": defineProductTool({
     description: "List CodeArts TestPlan feature descendant URIs",
     inputSchema: testPlanListFeatureDescendantUrisInput,
@@ -1655,6 +1665,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanSearchApiTestBasicAwInfosInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanSearchApiTestBasicAwInfosHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanSearchApiTestBasicAwInfosHandler
+  }),
+  "testplan_search_features": defineProductTool({
+    description: "Search CodeArts TestPlan feature tree nodes",
+    inputSchema: testPlanSearchFeaturesInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanSearchFeaturesHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanSearchFeaturesHandler
   })
 } as const;
 

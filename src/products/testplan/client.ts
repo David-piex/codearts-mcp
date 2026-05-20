@@ -1388,6 +1388,36 @@ export type TestPlanClient = {
     uris: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  searchFeatures: (input: {
+    project_uuid: string;
+    version_uri: string;
+    key_word: string;
+    page: number;
+    page_size: number;
+    parent_uri?: string;
+  }) => Promise<{
+    features: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
+  listFeatureCaseCounts: (input: {
+    project_uuid: string;
+    version_uri: string;
+    contain_root?: boolean;
+    contain_child?: boolean;
+    task_uri?: string;
+    filter_child?: boolean;
+    not_in_other_it?: boolean;
+    condition_type?: string;
+    condition_value?: string;
+    test_case_conditions?: Array<Record<string, unknown>>;
+    feature_uris?: string[];
+    upward_recursion?: boolean;
+  }) => Promise<{
+    counts: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
   getTestcaseField: (input: {
     project_id: string;
     uri: string;
@@ -4980,6 +5010,80 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       return {
         uris,
         total: readTotal(payload, response, uris.length)
+      };
+    },
+    async searchFeatures(input) {
+      const body: Record<string, unknown> = {
+        version_uri: input.version_uri,
+        project_uuid: input.project_uuid,
+        key_word: input.key_word,
+        page_no: input.page,
+        page_size: input.page_size
+      };
+      if (input.parent_uri !== undefined) {
+        body.parent_uri = input.parent_uri;
+      }
+
+      const response = await _http.post("/v4/features/search", body);
+      const payload = readResultPayload(response);
+      const features = readArray<Record<string, unknown>>(
+        payload.value ?? payload.features ?? payload.items ?? payload.list
+      );
+
+      return {
+        features,
+        total: readTotal(payload, response, features.length),
+        raw: payload
+      };
+    },
+    async listFeatureCaseCounts(input) {
+      const body: Record<string, unknown> = {
+        project_uuid: input.project_uuid
+      };
+      if (input.contain_root !== undefined) {
+        body.contain_root = input.contain_root;
+      }
+      if (input.contain_child !== undefined) {
+        body.contain_child = input.contain_child;
+      }
+      if (input.task_uri !== undefined) {
+        body.task_uri = input.task_uri;
+      }
+      if (input.filter_child !== undefined) {
+        body.filter_child = input.filter_child;
+      }
+      if (input.not_in_other_it !== undefined) {
+        body.not_in_other_it = input.not_in_other_it;
+      }
+      if (input.condition_type !== undefined) {
+        body.condition_type = input.condition_type;
+      }
+      if (input.condition_value !== undefined) {
+        body.condition_value = input.condition_value;
+      }
+      if (input.test_case_conditions !== undefined) {
+        body.test_case_conditions = input.test_case_conditions;
+      }
+      if (input.feature_uris !== undefined) {
+        body.feature_uris = input.feature_uris;
+      }
+      if (input.upward_recursion !== undefined) {
+        body.upward_recursion = input.upward_recursion;
+      }
+
+      const response = await _http.post(
+        `/v4/versions/${encodeURIComponent(input.version_uri)}/features/case-total`,
+        body
+      );
+      const payload = readResultPayload(response);
+      const counts = readArray<Record<string, unknown>>(
+        payload.value ?? payload.counts ?? payload.items ?? payload.list
+      );
+
+      return {
+        counts,
+        total: readTotal(payload, response, counts.length),
+        raw: payload
       };
     },
     async getTestcaseField(input) {

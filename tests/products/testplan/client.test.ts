@@ -1275,6 +1275,86 @@ describe("createTestPlanClient", () => {
     });
   });
 
+  it("searches features and lists feature testcase counts", async () => {
+    const requests: Array<{ path: string; body: unknown }> = [];
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requests.push({ path, body });
+        if (path === "/v4/features/search") {
+          return {
+            result: {
+              value: [{ uri: "feature-1", name: "login", type: "TestItem" }],
+              total: 1
+            }
+          };
+        }
+
+        return {
+          result: {
+            value: [{ feature_uri: "feature-1", case_count: 3 }]
+          }
+        };
+      }
+    } as never);
+
+    await expect(
+      client.searchFeatures({
+        project_uuid: "project-1",
+        version_uri: "version-1",
+        key_word: "login",
+        page: 1,
+        page_size: 10,
+        parent_uri: "parent-1"
+      })
+    ).resolves.toEqual({
+      features: [{ uri: "feature-1", name: "login", type: "TestItem" }],
+      total: 1,
+      raw: {
+        value: [{ uri: "feature-1", name: "login", type: "TestItem" }],
+        total: 1
+      }
+    });
+    await expect(
+      client.listFeatureCaseCounts({
+        project_uuid: "project-1",
+        version_uri: "version-1",
+        upward_recursion: true,
+        contain_root: true,
+        feature_uris: ["feature-1"],
+        test_case_conditions: []
+      })
+    ).resolves.toEqual({
+      counts: [{ feature_uri: "feature-1", case_count: 3 }],
+      total: 1,
+      raw: {
+        value: [{ feature_uri: "feature-1", case_count: 3 }]
+      }
+    });
+    expect(requests).toEqual([
+      {
+        path: "/v4/features/search",
+        body: {
+          version_uri: "version-1",
+          project_uuid: "project-1",
+          key_word: "login",
+          page_no: 1,
+          page_size: 10,
+          parent_uri: "parent-1"
+        }
+      },
+      {
+        path: "/v4/versions/version-1/features/case-total",
+        body: {
+          project_uuid: "project-1",
+          contain_root: true,
+          test_case_conditions: [],
+          feature_uris: ["feature-1"],
+          upward_recursion: true
+        }
+      }
+    ]);
+  });
+
   it("lists task execution results with iterator query", async () => {
     let requestedPath = "";
     const client = createTestPlanClient({

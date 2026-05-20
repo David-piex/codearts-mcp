@@ -940,6 +940,37 @@ export const testPlanListFeatureDescendantUrisInput = z.object({
   feature_uri: idSchema
 });
 
+export const testPlanSearchFeaturesInput = pagingSchema.extend({
+  project_uuid: idSchema,
+  version_uri: idSchema,
+  key_word: z.string().min(1),
+  parent_uri: z.string().min(1).optional()
+});
+
+const testPlanSearchConditionSchema = z.object({
+  field_name: z.string().min(1).optional(),
+  field_value: z.string().optional(),
+  operator: z.string().min(1).optional(),
+  sour_value: z.string().optional(),
+  tar_value: z.string().optional(),
+  field_type: z.string().min(1).optional()
+});
+
+export const testPlanListFeatureCaseCountsInput = z.object({
+  project_uuid: idSchema,
+  version_uri: idSchema,
+  contain_root: z.boolean().optional(),
+  contain_child: z.boolean().optional(),
+  task_uri: idSchema.optional(),
+  filter_child: z.boolean().optional(),
+  not_in_other_it: z.boolean().optional(),
+  condition_type: z.string().min(1).optional(),
+  condition_value: z.string().optional(),
+  test_case_conditions: z.array(testPlanSearchConditionSchema).optional(),
+  feature_uris: z.array(idSchema).optional(),
+  upward_recursion: z.boolean().optional()
+});
+
 export const testPlanGetTestcaseFieldInput = z.object({
   project_id: idSchema,
   uri: idSchema

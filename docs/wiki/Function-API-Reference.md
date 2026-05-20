@@ -32,8 +32,8 @@
 | 流水线 | 78 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 166 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 201 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
-| 测试计划 | 206 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **801** | |
+| 测试计划 | 208 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
+| **总计** | **803** | |
 
 ## 字段对应
 
@@ -770,6 +770,7 @@
 | `testplan_list_defect_iterators` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_defect_iterators) |
 | `testplan_list_domain_usage_infos` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_domain_usage_infos) |
 | `testplan_list_environments` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_environments) |
+| `testplan_list_feature_case_counts` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_feature_case_counts) |
 | `testplan_list_feature_descendant_uris` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_feature_descendant_uris) |
 | `testplan_list_gt3k_branches` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_gt3k_branches) |
 | `testplan_list_gt3k_current_user_testcases` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_gt3k_current_user_testcases) |
@@ -842,6 +843,7 @@
 | `testplan_request_official_api` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_request_official_api) |
 | `testplan_run_cases` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_run_cases) |
 | `testplan_search_api_test_basic_aw_infos` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_search_api_test_basic_aw_infos) |
+| `testplan_search_features` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_search_features) |
 | `testplan_stop_task_execution` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_stop_task_execution) |
 | `testplan_update_task` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_update_task) |
 
