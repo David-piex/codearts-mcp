@@ -133,7 +133,9 @@ import {
   testPlanListEnvironmentsInput,
   testPlanListFeatureCaseCountsInput,
   testPlanListFeatureChildrenInput,
+  testPlanListFeatureChildrenV5Input,
   testPlanListFeatureDescendantUrisInput,
+  testPlanListGt3kFeatureChildrenV5Input,
   testPlanListGt3kBranchesInput,
   testPlanListGt3kCurrentUserTestcasesInput,
   testPlanListGt3kDefectIteratorsInput,
@@ -343,7 +345,9 @@ import { createTestPlanListEnvironmentsHandler } from "../products/testplan/tool
 import { createTestPlanListFeatureCaseCountsHandler } from "../products/testplan/tools/list-feature-case-counts.js";
 import {
   createTestPlanListFeatureChildrenHandler,
-  createTestPlanListGt3kFeatureChildrenHandler
+  createTestPlanListFeatureChildrenV5Handler,
+  createTestPlanListGt3kFeatureChildrenHandler,
+  createTestPlanListGt3kFeatureChildrenV5Handler
 } from "../products/testplan/tools/feature-children.js";
 import { createTestPlanListFeatureDescendantUrisHandler } from "../products/testplan/tools/list-feature-descendant-uris.js";
 import { createTestPlanListGt3kBranchesHandler } from "../products/testplan/tools/list-gt3k-branches.js";
@@ -1641,11 +1645,23 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListFeatureChildrenHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListFeatureChildrenHandler
   }),
+  "testplan_list_feature_children_v5": defineProductTool({
+    description: "List CodeArts TestPlan v5 feature tree children",
+    inputSchema: testPlanListFeatureChildrenV5Input,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListFeatureChildrenV5Handler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListFeatureChildrenV5Handler
+  }),
   "testplan_list_gt3k_feature_children": defineProductTool({
     description: "List CodeArts TestPlan GT3K feature tree children",
     inputSchema: testPlanListFeatureChildrenInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListGt3kFeatureChildrenHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListGt3kFeatureChildrenHandler
+  }),
+  "testplan_list_gt3k_feature_children_v5": defineProductTool({
+    description: "List CodeArts TestPlan GT3K v5 feature tree children",
+    inputSchema: testPlanListGt3kFeatureChildrenV5Input,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListGt3kFeatureChildrenV5Handler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListGt3kFeatureChildrenV5Handler
   }),
   "testplan_list_feature_descendant_uris": defineProductTool({
     description: "List CodeArts TestPlan feature descendant URIs",

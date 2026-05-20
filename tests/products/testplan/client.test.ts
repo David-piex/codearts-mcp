@@ -1434,6 +1434,60 @@ describe("createTestPlanClient", () => {
         total: 1
       }
     });
+    await expect(client.listFeatureChildrenV5(input)).resolves.toEqual({
+      children: [
+        {
+          uri: "feature-child-1",
+          name: "child",
+          type: "TestItem",
+          case_total: 2,
+          has_child: false
+        }
+      ],
+      total: 1,
+      raw: {
+        value: [
+          {
+            uri: "feature-child-1",
+            name: "child",
+            type: "TestItem",
+            case_total: 2,
+            has_child: false
+          }
+        ],
+        total: 1
+      }
+    });
+    await expect(
+      client.listGt3kFeatureChildrenV5({
+        ...input,
+        page_number: 1,
+        page_size: 10
+      })
+    ).resolves.toEqual({
+      children: [
+        {
+          uri: "feature-child-1",
+          name: "child",
+          type: "TestItem",
+          case_total: 2,
+          has_child: false
+        }
+      ],
+      total: 1,
+      raw: {
+        value: [
+          {
+            uri: "feature-child-1",
+            name: "child",
+            type: "TestItem",
+            case_total: 2,
+            has_child: false
+          }
+        ],
+        total: 1
+      }
+    });
     expect(requests).toEqual([
       {
         path: "/v4/features/feature-1/children",
@@ -1453,6 +1507,28 @@ describe("createTestPlanClient", () => {
           service_type: "0",
           contain_total: true,
           sort_type: "ASC"
+        }
+      },
+      {
+        path: "/v5/features/feature-1/children",
+        body: {
+          project_uuid: "project-1",
+          version_uri: "version-1",
+          service_type: "0",
+          contain_total: true,
+          sort_type: "ASC"
+        }
+      },
+      {
+        path: "/GT3KServer/v5/features/feature-1/children",
+        body: {
+          project_uuid: "project-1",
+          version_uri: "version-1",
+          service_type: "0",
+          contain_total: true,
+          sort_type: "ASC",
+          page_number: 1,
+          page_size: 10
         }
       }
     ]);

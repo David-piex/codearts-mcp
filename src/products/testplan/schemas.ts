@@ -984,6 +984,15 @@ export const testPlanListFeatureChildrenInput = z.object({
   sort_type: z.string().min(1).optional()
 });
 
+export const testPlanListFeatureChildrenV5Input = testPlanListFeatureChildrenInput.extend({
+  version_uri: idSchema
+});
+
+export const testPlanListGt3kFeatureChildrenV5Input = testPlanListFeatureChildrenInput.extend({
+  page_number: z.number().int().positive().optional(),
+  page_size: z.number().int().positive().optional()
+});
+
 export const testPlanGetTestcaseFieldInput = z.object({
   project_id: idSchema,
   uri: idSchema

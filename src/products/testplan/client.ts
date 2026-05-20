@@ -43,6 +43,8 @@ type TestPlanFeatureChildrenInput = {
   service_type?: string;
   contain_total?: boolean;
   sort_type?: string;
+  page_number?: number;
+  page_size?: number;
 };
 
 export type TestPlanClient = {
@@ -1441,6 +1443,16 @@ export type TestPlanClient = {
     total?: number;
     raw: Record<string, unknown>;
   }>;
+  listFeatureChildrenV5: (input: TestPlanFeatureChildrenInput & { version_uri: string }) => Promise<{
+    children: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
+  listGt3kFeatureChildrenV5: (input: TestPlanFeatureChildrenInput) => Promise<{
+    children: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
   getTestcaseField: (input: {
     project_id: string;
     uri: string;
@@ -1845,6 +1857,12 @@ function createFeatureChildrenBody(input: TestPlanFeatureChildrenInput) {
   }
   if (input.sort_type !== undefined) {
     body.sort_type = input.sort_type;
+  }
+  if (input.page_number !== undefined) {
+    body.page_number = input.page_number;
+  }
+  if (input.page_size !== undefined) {
+    body.page_size = input.page_size;
   }
 
   return body;
@@ -5160,6 +5178,38 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
     async listGt3kFeatureChildren(input) {
       const response = await _http.post(
         `/GT3KServer/v4/features/${encodeURIComponent(input.feature_uri)}/children`,
+        createFeatureChildrenBody(input)
+      );
+      const payload = readResultPayload(response);
+      const children = readArray<Record<string, unknown>>(
+        payload.value ?? payload.children ?? payload.items ?? payload.list
+      );
+
+      return {
+        children,
+        total: readTotal(payload, response, children.length),
+        raw: payload
+      };
+    },
+    async listFeatureChildrenV5(input) {
+      const response = await _http.post(
+        `/v5/features/${encodeURIComponent(input.feature_uri)}/children`,
+        createFeatureChildrenBody(input)
+      );
+      const payload = readResultPayload(response);
+      const children = readArray<Record<string, unknown>>(
+        payload.value ?? payload.children ?? payload.items ?? payload.list
+      );
+
+      return {
+        children,
+        total: readTotal(payload, response, children.length),
+        raw: payload
+      };
+    },
+    async listGt3kFeatureChildrenV5(input) {
+      const response = await _http.post(
+        `/GT3KServer/v5/features/${encodeURIComponent(input.feature_uri)}/children`,
         createFeatureChildrenBody(input)
       );
       const payload = readResultPayload(response);
