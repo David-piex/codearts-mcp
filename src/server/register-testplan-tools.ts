@@ -195,6 +195,8 @@ import {
   testPlanListTesthubBranchesInput,
   testPlanListTesthubIteratorsInput,
   testPlanListTesthubIteratorsV5Input,
+  testPlanListTesthubTestcasesInput,
+  testPlanListTesthubTestcasesV5Input,
   testPlanListTesthubServicesInput,
   testPlanListV1BranchesInput,
   testPlanListV4BranchesInput,
@@ -411,6 +413,10 @@ import { createTestPlanListTestexecutorResourcePoolsHandler } from "../products/
 import { createTestPlanListTesthubBranchesHandler } from "../products/testplan/tools/list-testhub-branches.js";
 import { createTestPlanListTesthubIteratorsHandler } from "../products/testplan/tools/list-testhub-iterators.js";
 import { createTestPlanListTesthubIteratorsV5Handler } from "../products/testplan/tools/list-testhub-iterators-v5.js";
+import {
+  createTestPlanListTesthubTestcasesHandler,
+  createTestPlanListTesthubTestcasesV5Handler
+} from "../products/testplan/tools/list-testhub-testcases.js";
 import { createTestPlanListTesthubServicesHandler } from "../products/testplan/tools/list-testhub-services.js";
 import { createTestPlanListTestReportsHandler } from "../products/testplan/tools/list-test-reports.js";
 import { createTestPlanListV1BranchesHandler } from "../products/testplan/tools/list-v1-branches.js";
@@ -1552,6 +1558,18 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListTesthubIteratorsV5Input,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTesthubIteratorsV5Handler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListTesthubIteratorsV5Handler
+  }),
+  "testplan_list_testhub_testcases": defineProductTool({
+    description: "List CodeArts TestPlan TestHub project testcases",
+    inputSchema: testPlanListTesthubTestcasesInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTesthubTestcasesHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListTesthubTestcasesHandler
+  }),
+  "testplan_list_testhub_testcases_v5": defineProductTool({
+    description: "List CodeArts TestPlan TestHub v5 project testcases",
+    inputSchema: testPlanListTesthubTestcasesV5Input,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTesthubTestcasesV5Handler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListTesthubTestcasesV5Handler
   }),
   "testplan_list_testhub_services": defineProductTool({
     description: "List CodeArts TestPlan TestHub registered services",

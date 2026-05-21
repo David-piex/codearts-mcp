@@ -136,6 +136,108 @@ describe("createTestPlanClient", () => {
     });
   });
 
+  it("lists TestHub project testcases from v4 and v5 endpoints", async () => {
+    const requests: Array<{ path: string; body: unknown }> = [];
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requests.push({ path, body });
+        if (path.includes("/v5/testhub/")) {
+          return {
+            result: {
+              total: 1,
+              values: [
+                {
+                  id: "case-v5",
+                  name: "api case",
+                  number: "TC-002",
+                  status: { name: "new" },
+                  result: { name: "success" },
+                  test_type: { name: "api" }
+                }
+              ]
+            }
+          };
+        }
+
+        return {
+          total: 1,
+          data: [
+            {
+              id: "case-v4",
+              name: "manual case",
+              number: "TC-001",
+              status: { name: "new" },
+              result: { name: "success" },
+              test_type: { name: "manual" }
+            }
+          ]
+        };
+      }
+    } as never);
+
+    const v4Result = await client.listTesthubTestcases({
+      project_id: "project-1",
+      page: 2,
+      page_size: 10,
+      plan_id: "version-1",
+      subject: "login",
+      owner_ids: ["user-1"],
+      associate_issue_detail: true
+    });
+    const v5Result = await client.listTesthubTestcasesV5({
+      project_id: "project-1",
+      page: 3,
+      page_size: 5,
+      version_id: "version-1",
+      execution_type_id: 3,
+      useOffset: true
+    });
+
+    expect(v4Result.cases[0]).toMatchObject({
+      case_id: "case-v4",
+      name: "manual case",
+      number: "TC-001",
+      status: "new",
+      result: "success",
+      test_type: "manual"
+    });
+    expect(v4Result.total).toBe(1);
+    expect(v5Result.cases[0]).toMatchObject({
+      case_id: "case-v5",
+      name: "api case",
+      number: "TC-002",
+      status: "new",
+      result: "success",
+      test_type: "api"
+    });
+    expect(v5Result.total).toBe(1);
+    expect(requests).toEqual([
+      {
+        path: "/v4/testhub/projects/project-1/testcases/batch-query",
+        body: {
+          page_number: 2,
+          page_size: 10,
+          plan_id: "version-1",
+          owner_ids: ["user-1"],
+          subject: "login",
+          associate_issue_detail: true
+        }
+      },
+      {
+        path: "/v5/testhub/projects/project-1/testcases/batch-query",
+        body: {
+          offset: 10,
+          limit: 5,
+          page_number: 3,
+          page_size: 5,
+          useOffset: true,
+          version_id: "version-1",
+          execution_type_id: 3
+        }
+      }
+    ]);
+  });
+
   it("maps run case aliases to the execute payload", async () => {
     let requestedPath = "";
     let requestedBody: Record<string, unknown> | undefined;

@@ -11,7 +11,7 @@
 | Repo | 166 | 122 | 44 | Partial | The original 25 Repo collaboration tools are live-validated, including `repo_create_repository` through the HTTP MCP session on the writable sampled project. The 6 repository import / remote mirror tools are implemented and covered by unit regression tests, but still need dedicated live samples before being marked AK/SK Full. |
 | Pipeline | 78 | 42 | 36 | Partial | The original 16-tool execution surface remains live-validated. The newly added delete/enable/disable, extension-endpoint, tag-management, group-management, variable-group, rule-management, tenant-strategy, and project-strategy tools currently have unit regression coverage, but real AK/SK validation is still pending. |
 | Check | 23 | 19 | 4 | Validated | Full tool-level live loop completed. |
-| TestPlan | 214 | 206 | 8 | Partial | Two scanned projects now return real plan samples; 4 routes are re-confirmed as unpublished in Beijing 4. |
+| TestPlan | 216 | 208 | 8 | Partial | Two scanned projects now return real plan samples; 4 routes are re-confirmed as unpublished in Beijing 4. |
 | Deploy | 60 | 43 | 17 | Partial | `deploy_create_application`, `deploy_modify_application`, `deploy_start_app`, `deploy_get_execution_params`, `deploy_get_history_detail`, `deploy_get_app_log`, `deploy_stop_app`, and `deploy_rollback_app` already have real AK/SK coverage on at least one healthy path. The remaining practical blocker is the outdated Node.js template runtime (`Node v10.9.0` + `forever`) and the need for dedicated execute-class samples. |
 | Build | 46 | 37 | 9 | Validated | Core Build job, record, log, parameter, domain metadata, permission, code-tag, report, and resource-spec tools are covered by live or smoke validation. Git-code endpoint reads are implemented and unit-tested, with endpoint-specific live samples optional. |
 | Artifact | 19 | 17 | 2 | Partial | Five tools are AK/SK Full; the remaining seven are re-confirmed as unpublished in Beijing 4. |
@@ -21,9 +21,9 @@
 
 <!-- GENERATED:module-live-readiness-totals:start -->
 - Product modules implemented: `8`
-- Product tools implemented: `807`
+- Product tools implemented: `809`
 - Auth/session tools implemented: `2`
-- Total MCP tools exposed: `809`
+- Total MCP tools exposed: `811`
 <!-- GENERATED:module-live-readiness-totals:end -->
 
 ## 模块摘要
@@ -35,7 +35,7 @@
 | Repo | 166 | `25 Full / 0 Reachable / 0 Unpublished / 6 Code` | `repo_create_repository` remains live-validated with the previous Repo surface. The repository import / remote mirror tools are code-complete and unit-tested, but not yet counted as AK/SK Full. |
 | Pipeline | 78 | `16 Full / 0 Reachable / 0 Unpublished / 51 Code` | Core execution closure remains complete, but the new extension-endpoint/tag/group/variable-group/rule-management/tenant-strategy/project-strategy tools still need live AK/SK validation. |
 | Check | 23 | `8 Full` | Tool-level closure is complete. |
-| TestPlan | 214 | `1 Full / 2 Reachable / 4 Unpublished / 0 Code` | Real plan samples now exist on two projects, but detail/run routes are still unpublished in Beijing 4. |
+| TestPlan | 216 | `1 Full / 2 Reachable / 4 Unpublished / 0 Code` | Real plan samples now exist on two projects, but detail/run routes are still unpublished in Beijing 4. |
 | Deploy | 60 | Expanded v4 surface with partial live closure | The Deploy MCP surface now includes v4 application/environment/cluster/record/variable tools. Read paths and selected write paths are live-validated, while full execute-class coverage still depends on dedicated runtime samples. |
 | Build | 46 | Expanded metadata read surface with live smoke coverage | The Build surface now includes metadata reads for domain status, permissions, code tags, report repositories/branches, resource specs, and optional Git-code repositories/branches. |
 | Artifact | 19 | `5 Full / 0 Reachable / 7 Unpublished / 0 Code` | Five tools are fully validated; seven routes are unpublished in Beijing 4. The current tenant now exposes a real published file sample at `/codearts-mcp/1.0.0/codearts-mcp.tgz`. |

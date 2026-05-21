@@ -47,6 +47,50 @@ type TestPlanFeatureChildrenInput = {
   page_size?: number;
 };
 
+type TestPlanTesthubTestcasesInput = {
+  project_id: string;
+  page: number;
+  page_size: number;
+  useOffset?: boolean;
+  plan_id?: string;
+  case_ids?: string[];
+  owner_ids?: string[];
+  status_ids?: string[];
+  rank_ids?: string[];
+  module_ids?: string[];
+  issue_id?: string;
+  creator_ids?: string[];
+  result_ids?: string[];
+  iteration_ids?: string[];
+  start_time?: string;
+  end_time?: string;
+  associate_issue?: boolean;
+  associated_defects?: boolean;
+  show_children?: boolean;
+  label_ids?: string[];
+  execute_start_time?: string;
+  execute_end_time?: string;
+  executor_ids?: string[];
+  is_keyword?: boolean;
+  issue_tree_search?: boolean;
+  service_id?: number;
+  stage_type?: number;
+  cata_id?: string;
+  subject?: string;
+  sort_field?: string;
+  sort_type?: string;
+  associate_issue_detail?: boolean;
+};
+
+type TestPlanTesthubTestcasesV5Input = {
+  project_id: string;
+  page: number;
+  page_size: number;
+  useOffset?: boolean;
+  version_id?: string;
+  execution_type_id?: number;
+};
+
 export type TestPlanClient = {
   requestOfficialApi: (input: OfficialApiRequestInput) => Promise<OfficialApiRequestResult>;
   listIssues: (input: {
@@ -159,6 +203,32 @@ export type TestPlanClient = {
       executor_name?: string;
     }>;
     total?: number;
+  }>;
+  listTesthubTestcases: (input: TestPlanTesthubTestcasesInput) => Promise<{
+    cases: Array<{
+      case_id: string;
+      name?: string;
+      number?: string;
+      status?: string;
+      result?: string;
+      test_type?: string;
+      case: Record<string, unknown>;
+    }>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
+  listTesthubTestcasesV5: (input: TestPlanTesthubTestcasesV5Input) => Promise<{
+    cases: Array<{
+      case_id: string;
+      name?: string;
+      number?: string;
+      status?: string;
+      result?: string;
+      test_type?: string;
+      case: Record<string, unknown>;
+    }>;
+    total?: number;
+    raw: Record<string, unknown>;
   }>;
   listTasks: (input: {
     project_id: string;
@@ -1912,6 +1982,91 @@ function createRequirementsOverviewDetailsBody(input: {
   return body;
 }
 
+function createTesthubTestcasesBody(input: TestPlanTesthubTestcasesInput) {
+  const body: Record<string, unknown> = {
+    page_number: input.page,
+    page_size: input.page_size
+  };
+  for (const key of [
+    "useOffset",
+    "plan_id",
+    "case_ids",
+    "owner_ids",
+    "status_ids",
+    "rank_ids",
+    "module_ids",
+    "issue_id",
+    "creator_ids",
+    "result_ids",
+    "iteration_ids",
+    "start_time",
+    "end_time",
+    "associate_issue",
+    "associated_defects",
+    "show_children",
+    "label_ids",
+    "execute_start_time",
+    "execute_end_time",
+    "executor_ids",
+    "is_keyword",
+    "issue_tree_search",
+    "service_id",
+    "stage_type",
+    "cata_id",
+    "subject",
+    "sort_field",
+    "sort_type",
+    "associate_issue_detail"
+  ] as const) {
+    const value = input[key];
+    if (value !== undefined) {
+      body[key] = value;
+    }
+  }
+  return body;
+}
+
+function createTesthubTestcasesV5Body(input: TestPlanTesthubTestcasesV5Input) {
+  const body: Record<string, unknown> = {
+    offset: (input.page - 1) * input.page_size,
+    limit: input.page_size,
+    page_number: input.page,
+    page_size: input.page_size
+  };
+  if (input.useOffset !== undefined) {
+    body.useOffset = input.useOffset;
+  }
+  if (input.version_id !== undefined) {
+    body.version_id = input.version_id;
+  }
+  if (input.execution_type_id !== undefined) {
+    body.execution_type_id = input.execution_type_id;
+  }
+  return body;
+}
+
+function readNameFromObject(input: unknown) {
+  const value = readEnvelope(input);
+  return typeof value?.name === "string" ? value.name : undefined;
+}
+
+function mapExternalTestcase(item: Record<string, unknown>) {
+  return {
+    case_id: String(item.id ?? item.case_uri ?? item.uri ?? ""),
+    name: typeof item.name === "string" ? item.name : undefined,
+    number: typeof item.number === "string" ? item.number : undefined,
+    status:
+      typeof item.status === "string" ? item.status : readNameFromObject(item.status),
+    result:
+      typeof item.result === "string" ? item.result : readNameFromObject(item.result),
+    test_type:
+      typeof item.test_type === "string"
+        ? item.test_type
+        : readNameFromObject(item.test_type),
+    case: item
+  };
+}
+
 function appendQueryValue(
   query: URLSearchParams,
   key: string,
@@ -2291,6 +2446,38 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
           test_type: item.test_type
         })),
         total: response.total
+      };
+    },
+    async listTesthubTestcases(input) {
+      const response = await _http.post(
+        `/v4/testhub/projects/${encodeURIComponent(input.project_id)}/testcases/batch-query`,
+        createTesthubTestcasesBody(input)
+      );
+      const payload = readResultPayload(response);
+      const cases = readArray<Record<string, unknown>>(
+        payload.data ?? payload.value ?? payload.items ?? payload.list
+      ).map(mapExternalTestcase);
+
+      return {
+        cases,
+        total: readTotal(payload, response, cases.length),
+        raw: payload
+      };
+    },
+    async listTesthubTestcasesV5(input) {
+      const response = await _http.post(
+        `/v5/testhub/projects/${encodeURIComponent(input.project_id)}/testcases/batch-query`,
+        createTesthubTestcasesV5Body(input)
+      );
+      const payload = readResultPayload(response);
+      const cases = readArray<Record<string, unknown>>(
+        payload.values ?? payload.data ?? payload.value ?? payload.items ?? payload.list
+      ).map(mapExternalTestcase);
+
+      return {
+        cases,
+        total: readTotal(payload, response, cases.length),
+        raw: payload
       };
     },
     async listRuns(input) {

@@ -790,6 +790,8 @@ export const expectedToolNames = [
   "testplan_list_testhub_iterators",
   "testplan_list_testhub_iterators_v5",
   "testplan_list_testhub_services",
+  "testplan_list_testhub_testcases",
+  "testplan_list_testhub_testcases_v5",
   "testplan_list_timeout_settings",
   "testplan_list_v1_branches",
   "testplan_list_v4_branches",

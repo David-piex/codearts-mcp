@@ -32,8 +32,8 @@
 | 流水线 | 78 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 166 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 201 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
-| 测试计划 | 214 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **809** | |
+| 测试计划 | 216 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
+| **总计** | **811** | |
 
 ## 字段对应
 
@@ -836,6 +836,8 @@
 | `testplan_list_testhub_iterators` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_testhub_iterators) |
 | `testplan_list_testhub_iterators_v5` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_testhub_iterators_v5) |
 | `testplan_list_testhub_services` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_testhub_services) |
+| `testplan_list_testhub_testcases` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_testhub_testcases) |
+| `testplan_list_testhub_testcases_v5` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_testhub_testcases_v5) |
 | `testplan_list_timeout_settings` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_timeout_settings) |
 | `testplan_list_v1_branches` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_v1_branches) |
 | `testplan_list_v4_branches` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_v4_branches) |

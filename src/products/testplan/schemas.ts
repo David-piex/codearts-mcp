@@ -522,6 +522,46 @@ export const testPlanListCurrentUserTestcasesInput = pagingSchema.extend({
   keyword: z.string().min(1).optional()
 });
 
+export const testPlanListTesthubTestcasesInput = pagingSchema.extend({
+  project_id: idSchema,
+  useOffset: z.boolean().optional(),
+  plan_id: idSchema.optional(),
+  case_ids: z.array(idSchema).optional(),
+  owner_ids: z.array(idSchema).optional(),
+  status_ids: z.array(idSchema).optional(),
+  rank_ids: z.array(idSchema).optional(),
+  module_ids: z.array(idSchema).optional(),
+  issue_id: idSchema.optional(),
+  creator_ids: z.array(idSchema).optional(),
+  result_ids: z.array(idSchema).optional(),
+  iteration_ids: z.array(idSchema).optional(),
+  start_time: z.string().min(1).optional(),
+  end_time: z.string().min(1).optional(),
+  associate_issue: z.boolean().optional(),
+  associated_defects: z.boolean().optional(),
+  show_children: z.boolean().optional(),
+  label_ids: z.array(idSchema).optional(),
+  execute_start_time: z.string().min(1).optional(),
+  execute_end_time: z.string().min(1).optional(),
+  executor_ids: z.array(idSchema).optional(),
+  is_keyword: z.boolean().optional(),
+  issue_tree_search: z.boolean().optional(),
+  service_id: z.number().int().optional(),
+  stage_type: z.number().int().optional(),
+  cata_id: idSchema.optional(),
+  subject: z.string().min(1).optional(),
+  sort_field: z.string().min(1).optional(),
+  sort_type: z.string().min(1).optional(),
+  associate_issue_detail: z.boolean().optional()
+});
+
+export const testPlanListTesthubTestcasesV5Input = pagingSchema.extend({
+  project_id: idSchema,
+  useOffset: z.boolean().optional(),
+  version_id: idSchema.optional(),
+  execution_type_id: z.number().int().optional()
+});
+
 export const testPlanGetGt3kTestcaseChangeStatisticsInput = z.object({
   project_id: idSchema,
   version_id: idSchema
