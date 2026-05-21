@@ -180,6 +180,24 @@ export type TestPlanClient = {
     }>;
     total?: number;
   }>;
+  listAuthorizedTasks: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    keyword?: string;
+    service_type?: number;
+  }) => Promise<{
+    tasks: Array<{
+      task_id: string;
+      name?: string;
+      version_uri?: string;
+      status_code?: number;
+      status_name?: string;
+      executor_id?: string;
+      executor_name?: string;
+    }>;
+    total?: number;
+  }>;
   getTask: (input: {
     project_id: string;
     task_uri: string;
@@ -2325,6 +2343,48 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         executor_id?: string;
         executor_name?: string;
       }>(payload.tasks ?? payload.items ?? payload.list ?? (Array.isArray(response) ? response : []));
+
+      return {
+        tasks: tasks.map((item) => ({
+          task_id: String(item.uri ?? item.task_uri ?? item.id ?? ""),
+          name: item.name,
+          version_uri: item.version_uri,
+          status_code: item.status_code,
+          status_name: item.status_name,
+          executor_id: item.executor_id,
+          executor_name: item.executor_name
+        })),
+        total: readTotal(payload, response, Array.isArray(response) ? response.length : undefined)
+      };
+    },
+    async listAuthorizedTasks(input) {
+      const body: Record<string, unknown> = {
+        page_no: input.page,
+        page_size: input.page_size
+      };
+      if (input.keyword !== undefined) {
+        body.keyword = input.keyword;
+      }
+      if (input.service_type !== undefined) {
+        body.service_type = input.service_type;
+      }
+
+      const response = await _http.post(
+        `/v4/${encodeURIComponent(input.project_id)}/authorized-tasks/batch-query`,
+        body
+      );
+      const payload = readResultPayload(response);
+      const tasks = readArray<{
+        uri?: string;
+        id?: string;
+        task_uri?: string;
+        name?: string;
+        version_uri?: string;
+        status_code?: number;
+        status_name?: string;
+        executor_id?: string;
+        executor_name?: string;
+      }>(payload.value ?? payload.tasks ?? payload.items ?? payload.list ?? (Array.isArray(response) ? response : []));
 
       return {
         tasks: tasks.map((item) => ({

@@ -32,8 +32,8 @@
 | 流水线 | 78 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 166 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 201 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
-| 测试计划 | 213 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **808** | |
+| 测试计划 | 214 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
+| **总计** | **809** | |
 
 ## 字段对应
 
@@ -759,6 +759,7 @@
 | `testplan_list_asset_tree` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_asset_tree) |
 | `testplan_list_assets` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_assets) |
 | `testplan_list_attachments` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_attachments) |
+| `testplan_list_authorized_tasks` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_authorized_tasks) |
 | `testplan_list_branch_testcase_duplicate_numbers` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_branch_testcase_duplicate_numbers) |
 | `testplan_list_case_templates` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_case_templates) |
 | `testplan_list_cases` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_cases) |

@@ -247,6 +247,61 @@ describe("createTestPlanClient", () => {
     });
   });
 
+  it("lists authorized test suite tasks", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requestedPath = path;
+        requestedBody = body as Record<string, unknown>;
+        return {
+          total: 1,
+          value: [
+            {
+              uri: "task-1",
+              name: "authorized suite",
+              version_uri: "version-1",
+              status_code: 1,
+              status_name: "running",
+              executor_id: "user-1",
+              executor_name: "alice"
+            }
+          ]
+        };
+      }
+    } as never);
+
+    const result = await client.listAuthorizedTasks({
+      project_id: "project-1",
+      page: 2,
+      page_size: 10,
+      keyword: "smoke",
+      service_type: 0
+    });
+
+    expect(requestedPath).toBe("/v4/project-1/authorized-tasks/batch-query");
+    expect(requestedBody).toEqual({
+      page_no: 2,
+      page_size: 10,
+      keyword: "smoke",
+      service_type: 0
+    });
+    expect(result).toEqual({
+      tasks: [
+        {
+          task_id: "task-1",
+          name: "authorized suite",
+          version_uri: "version-1",
+          status_code: 1,
+          status_name: "running",
+          executor_id: "user-1",
+          executor_name: "alice"
+        }
+      ],
+      total: 1
+    });
+  });
+
   it("gets test suite task detail with an optional version query", async () => {
     let requestedPath = "";
     const client = createTestPlanClient({

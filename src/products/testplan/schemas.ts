@@ -60,6 +60,12 @@ export const testPlanListTasksInput = pagingSchema.extend({
   executor_ids: z.array(idSchema).optional()
 });
 
+export const testPlanListAuthorizedTasksInput = pagingSchema.extend({
+  project_id: idSchema,
+  keyword: z.string().min(1).optional(),
+  service_type: z.number().int().optional()
+});
+
 export const testPlanGetTaskInput = z.object({
   project_id: idSchema,
   task_uri: idSchema,

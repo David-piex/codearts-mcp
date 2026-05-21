@@ -124,6 +124,7 @@ import {
   testPlanListAlertTemplatesInput,
   testPlanListAssetsInput,
   testPlanListAssetTreeInput,
+  testPlanListAuthorizedTasksInput,
   testPlanListBranchTestcaseDuplicateNumbersInput,
   testPlanListCustomReportsInput,
   testPlanListCustomTemplateReportsInput,
@@ -335,6 +336,7 @@ import { createTestPlanListApiTestsuiteHistoryHandler } from "../products/testpl
 import { createTestPlanListAttachmentsHandler } from "../products/testplan/tools/list-attachments.js";
 import { createTestPlanListAssetsHandler } from "../products/testplan/tools/list-assets.js";
 import { createTestPlanListAssetTreeHandler } from "../products/testplan/tools/list-asset-tree.js";
+import { createTestPlanListAuthorizedTasksHandler } from "../products/testplan/tools/list-authorized-tasks.js";
 import { createTestPlanListBranchTestcaseDuplicateNumbersHandler } from "../products/testplan/tools/list-branch-testcase-duplicate-numbers.js";
 import { createTestPlanListCaseTemplatesHandler } from "../products/testplan/tools/list-case-templates.js";
 import { createTestPlanListCustomReportsHandler } from "../products/testplan/tools/list-custom-reports.js";
@@ -1394,6 +1396,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListTasksInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTasksHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListTasksHandler
+  }),
+  "testplan_list_authorized_tasks": defineProductTool({
+    description: "List CodeArts TestPlan authorized test suite tasks in a project",
+    inputSchema: testPlanListAuthorizedTasksInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListAuthorizedTasksHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListAuthorizedTasksHandler
   }),
   "testplan_get_task": defineProductTool({
     description: "Get CodeArts TestPlan test suite task detail",

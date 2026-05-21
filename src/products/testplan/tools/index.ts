@@ -120,6 +120,7 @@ export const testPlanToolNames = [
   "testplan_list_assets",
   "testplan_list_asset_tree",
   "testplan_list_attachments",
+  "testplan_list_authorized_tasks",
   "testplan_list_branch_testcase_duplicate_numbers",
   "testplan_list_case_templates",
   "testplan_list_cases",
