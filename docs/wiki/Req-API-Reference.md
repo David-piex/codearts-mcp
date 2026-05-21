@@ -180,8 +180,8 @@ Req 写工具遵循两个层面的安全策略：
 | 工具 | 类型 | 用途 |
 | --- | --- | --- |
 | `req_list_work_items` | 读 | 查询工作项列表 |
-| `req_get_work_item` | 读 | 获取工作项详情 |
-| `req_get_work_item_issue_details` | 读 | 获取聚合工作项详情（基础详情 + 评论） |
+| `req_get_work_item` | 读 | 获取工作项详情，返回结果可直接查看分配人（`assignee` / `assignedToName`） |
+| `req_get_work_item_issue_details` | 读 | 获取聚合工作项详情（基础详情 + 评论），返回结果可直接查看分配人（`assignee` / `assignedToName`） |
 | `req_count_work_item_tree` | 读 | 统计工作项树 |
 | `req_list_work_item_tree` | 读 | 查询工作项树 |
 | `req_list_child_work_items` | 读 | 查询子工作项 |

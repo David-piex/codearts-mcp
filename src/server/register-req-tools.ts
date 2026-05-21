@@ -1663,7 +1663,7 @@ const reqToolDefinitions = {
     createProductHandler: createReqListWorkItemTrackerHandlersHandler
   }),
   "req_get_work_item": defineProductTool({
-    description: "Get CodeArts Req work item detail",
+    description: "Get CodeArts Req work item detail including assignee information when available",
     inputSchema: reqGetWorkItemInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGetWorkItemHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqGetWorkItemHandler
@@ -1677,7 +1677,7 @@ const reqToolDefinitions = {
     createProductHandler: createReqGetWorkItemCompletionRateHandler
   }),
   "req_get_work_item_issue_details": defineProductTool({
-    description: "Get aggregated CodeArts Req work item details from stable work item and comment endpoints",
+    description: "Get aggregated CodeArts Req work item details including assignee information from stable work item and comment endpoints",
     inputSchema: reqGetWorkItemIssueDetailsInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGetWorkItemIssueDetailsHandler>[0] }) =>
       clients.reqClient,
