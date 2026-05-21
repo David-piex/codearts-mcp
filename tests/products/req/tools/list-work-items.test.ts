@@ -7,7 +7,19 @@ import {
 describe("mapReqWorkItems", () => {
   it("returns normalized work items with pagination", () => {
     const result = mapReqWorkItems(
-      [{ id: 9, subject: "Refine login flow", status: { name: "Doing" }, tracker_name: "Story" }],
+      [
+        {
+          id: 9,
+          subject: "Refine login flow",
+          status: { name: "Doing" },
+          tracker_name: "Story",
+          assigned_to: {
+            assigned_user_id: "user-1",
+            assigned_user_num_id: 101,
+            assigned_nick_name: "Alice"
+          }
+        }
+      ],
       1,
       20,
       1
@@ -18,7 +30,16 @@ describe("mapReqWorkItems", () => {
         id: "9",
         title: "Refine login flow",
         status: "Doing",
-        type: "Story"
+        type: "Story",
+        assignee: {
+          id: undefined,
+          userId: "user-1",
+          userNumId: 101,
+          nickName: "Alice",
+          name: undefined,
+          displayName: "Alice"
+        },
+        assignedToName: "Alice"
       }
     ]);
     expect(result.page_info).toEqual({
@@ -45,5 +66,30 @@ describe("mapReqWorkItems", () => {
     expect(result.content[0]?.text).toContain("0 work items found");
     expect(result.content[0]?.text).toContain("If you expected work items here");
     expect(result.content[0]?.text).toContain("project-empty");
+  });
+
+  it("includes assignees in text output", async () => {
+    const handler = createReqListWorkItemsHandler({
+      listWorkItems: async () => ({
+        work_items: [
+          {
+            id: 9,
+            subject: "Refine login flow",
+            status: { name: "Doing" },
+            tracker_name: "Story",
+            assigned_to: { assigned_nick_name: "Alice" }
+          }
+        ],
+        total: 1
+      })
+    });
+
+    const result = await handler({
+      project_id: "project-1",
+      page: 1,
+      page_size: 20
+    });
+
+    expect(result.content[0]?.text).toContain("assignee: Alice");
   });
 });

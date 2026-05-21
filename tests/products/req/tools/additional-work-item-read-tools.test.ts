@@ -114,6 +114,14 @@ describe("mapReqWorkItemTree", () => {
         subject: "Parent story",
         statusName: "新建",
         trackerName: "Story",
+        assignee: {
+          id: undefined,
+          userId: undefined,
+          userNumId: undefined,
+          nickName: undefined,
+          name: "alice",
+          displayName: "alice"
+        },
         assignedToName: "alice",
         hasChildren: true
       }
@@ -163,6 +171,7 @@ describe("createReqListWorkItemTreeHandler", () => {
       tracker_ids: [7, 2]
     });
     expect(result.content[0]?.text).toContain("1 work items found in tree mode");
+    expect(result.content[0]?.text).toContain("assignee: alice");
     expect(result.structuredContent.items).toEqual([
       expect.objectContaining({
         id: "101",

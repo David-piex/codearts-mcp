@@ -3,6 +3,10 @@ import { formatProjectScopedEmptyText } from "../../../contracts/project-scoped-
 import { formatListToolText } from "../../../contracts/tool-result-text.js";
 import { toPageInfo } from "../../../core/pagination/page-info.js";
 import { reqListWorkItemTreeInput } from "../schemas.js";
+import {
+  mapReqWorkItemAssignee,
+  type ReqWorkItemAssignee
+} from "./work-item-assignee.js";
 
 type ReqWorkItemTreeItem = {
   id: number | string;
@@ -18,14 +22,10 @@ type ReqWorkItemTreeItem = {
     name?: string;
   };
   tracker_name?: string;
-  assigned_to?: {
-    id?: number | string;
-    name?: string;
-    assigned_nick_name?: string;
-    assignedNickName?: string;
-    first_name?: string;
-    firstName?: string;
-  };
+  assigned_to?: ReqWorkItemAssignee;
+  assigned_user?: ReqWorkItemAssignee;
+  assigned_id?: string;
+  assigned_to_id?: number | string;
   is_parent?: boolean;
   isParent?: boolean;
 };
@@ -42,19 +42,19 @@ type ReqWorkItemTree = {
 export function mapReqWorkItemTree(input: ReqWorkItemTree) {
   return asListResult(
     `${input.work_items.length} work items found in tree mode`,
-    input.work_items.map((item) => ({
-      id: String(item.id),
-      subject: item.subject ?? item.name ?? "",
-      statusName: item.status?.name ?? item.status_name,
-      trackerName: item.tracker?.name ?? item.tracker_name,
-      assignedToName:
-        item.assigned_to?.assigned_nick_name ??
-        item.assigned_to?.assignedNickName ??
-        item.assigned_to?.first_name ??
-        item.assigned_to?.firstName ??
-        item.assigned_to?.name,
-      hasChildren: item.is_parent ?? item.isParent
-    })),
+    input.work_items.map((item) => {
+      const assignee = mapReqWorkItemAssignee(item);
+
+      return {
+        id: String(item.id),
+        subject: item.subject ?? item.name ?? "",
+        statusName: item.status?.name ?? item.status_name,
+        trackerName: item.tracker?.name ?? item.tracker_name,
+        assignee,
+        assignedToName: assignee?.displayName,
+        hasChildren: item.is_parent ?? item.isParent
+      };
+    }),
     toPageInfo(input.page, input.page_size, input.total)
   );
 }
@@ -79,7 +79,8 @@ export function createReqListWorkItemTreeHandler(client: ReqListWorkItemTreeClie
             { label: "id", get: (item) => (item as { id?: string }).id },
             { label: "subject", get: (item) => (item as { subject?: string }).subject },
             { label: "status", get: (item) => (item as { statusName?: string }).statusName },
-            { label: "tracker", get: (item) => (item as { trackerName?: string }).trackerName }
+            { label: "tracker", get: (item) => (item as { trackerName?: string }).trackerName },
+            { label: "assignee", get: (item) => (item as { assignedToName?: string }).assignedToName }
           ]
         })
       : formatProjectScopedEmptyText({

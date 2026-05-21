@@ -33,7 +33,13 @@ describe("mapReqWorkItemIssueDetails", () => {
         subject: "33333",
         description: "<p>story desc</p>",
         status: { id: 1, name: "New" },
-        tracker_name: "Story"
+        tracker_name: "Story",
+        assigned_to: {
+          id: 16666,
+          identifier: "user-uuid-2",
+          name: "tenant/bob",
+          assigned_nick_name: "Bob"
+        }
       },
       comments: [
         {
@@ -69,6 +75,15 @@ describe("mapReqWorkItemIssueDetails", () => {
       updatedOn: undefined,
       status: { id: 1, name: "New" },
       tracker: { name: "Story" },
+      assignee: {
+        id: "16666",
+        userId: "user-uuid-2",
+        userNumId: undefined,
+        nickName: "Bob",
+        name: "tenant/bob",
+        displayName: "Bob"
+      },
+      assignedToName: "Bob",
       project: undefined,
       module: undefined,
       parentIssue: undefined,
@@ -111,7 +126,13 @@ describe("createReqGetWorkItemIssueDetailsHandler", () => {
         subject: "33333",
         description: "<p>story desc</p>",
         status: { id: 1, name: "New" },
-        tracker_name: "Story"
+        tracker_name: "Story",
+        assigned_to: {
+          id: 16666,
+          identifier: "user-uuid-2",
+          name: "tenant/bob",
+          assigned_nick_name: "Bob"
+        }
       })),
       listWorkItemComments: vi.fn(async () => ({
         comments: [
@@ -156,6 +177,15 @@ describe("createReqGetWorkItemIssueDetailsHandler", () => {
       updatedOn: undefined,
       status: { id: 1, name: "New" },
       tracker: { name: "Story" },
+      assignee: {
+        id: "16666",
+        userId: "user-uuid-2",
+        userNumId: undefined,
+        nickName: "Bob",
+        name: "tenant/bob",
+        displayName: "Bob"
+      },
+      assignedToName: "Bob",
       project: undefined,
       module: undefined,
       parentIssue: undefined,

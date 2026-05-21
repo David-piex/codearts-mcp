@@ -3,6 +3,10 @@ import { formatProjectScopedEmptyText } from "../../../contracts/project-scoped-
 import { formatListToolText } from "../../../contracts/tool-result-text.js";
 import { toPageInfo } from "../../../core/pagination/page-info.js";
 import { reqListWorkItemsInput } from "../schemas.js";
+import {
+  mapReqWorkItemAssignee,
+  type ReqWorkItemAssignee
+} from "./work-item-assignee.js";
 
 export function mapReqWorkItems(
   items: Array<{
@@ -10,6 +14,10 @@ export function mapReqWorkItems(
     subject: string;
     status?: { name?: string };
     tracker_name?: string;
+    assigned_to?: ReqWorkItemAssignee;
+    assigned_user?: ReqWorkItemAssignee;
+    assigned_id?: string;
+    assigned_to_id?: number | string;
   }>,
   page: number,
   pageSize: number,
@@ -18,12 +26,18 @@ export function mapReqWorkItems(
   const summary = total !== undefined ? `${items.length} work items found in this page (total: ${total})` : `${items.length} work items found`;
   return asListResult(
     summary,
-    items.map((item) => ({
-      id: String(item.id),
-      title: item.subject,
-      status: item.status?.name,
-      type: item.tracker_name
-    })),
+    items.map((item) => {
+      const assignee = mapReqWorkItemAssignee(item);
+
+      return {
+        id: String(item.id),
+        title: item.subject,
+        status: item.status?.name,
+        type: item.tracker_name,
+        assignee,
+        assignedToName: assignee?.displayName
+      };
+    }),
     toPageInfo(page, pageSize, total)
   );
 }
@@ -40,6 +54,10 @@ type ReqListWorkItemsClient = {
       subject: string;
       status?: { name?: string };
       tracker_name?: string;
+      assigned_to?: ReqWorkItemAssignee;
+      assigned_user?: ReqWorkItemAssignee;
+      assigned_id?: string;
+      assigned_to_id?: number | string;
     }>;
     total?: number;
   }>;
@@ -56,7 +74,8 @@ export function createReqListWorkItemsHandler(client: ReqListWorkItemsClient) {
             { label: "id", get: (item) => (item as { id?: string }).id },
             { label: "title", get: (item) => (item as { title?: string }).title },
             { label: "status", get: (item) => (item as { status?: string }).status },
-            { label: "type", get: (item) => (item as { type?: string }).type }
+            { label: "type", get: (item) => (item as { type?: string }).type },
+            { label: "assignee", get: (item) => (item as { assignedToName?: string }).assignedToName }
           ]
         })
       : formatProjectScopedEmptyText({

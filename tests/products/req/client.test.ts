@@ -963,7 +963,12 @@ describe("createReqClient", () => {
                 id: 70779173,
                 subject: "mcp-live-smoke",
                 status: { name: "新建" },
-                tracker: { name: "Task" }
+                tracker: { name: "Task" },
+                assigned_to: {
+                  assigned_user_id: "user-1",
+                  assigned_user_num_id: 101,
+                  assigned_nick_name: "Alice"
+                }
               }
             ]
           };
@@ -976,7 +981,13 @@ describe("createReqClient", () => {
           tracker: { name: "Task" },
           description: "temporary live smoke item",
           start_date: "2028-04-12",
-          due_date: "2028-04-19"
+          due_date: "2028-04-19",
+          assigned_to: {
+            id: 16666,
+            identifier: "user-uuid-2",
+            name: "tenant/bob",
+            assigned_nick_name: "Bob"
+          }
         };
       }
     } as never);
@@ -996,7 +1007,12 @@ describe("createReqClient", () => {
           id: 70779173,
           subject: "mcp-live-smoke",
           status: { name: "新建" },
-          tracker_name: "Task"
+          tracker_name: "Task",
+          assigned_to: {
+            assigned_user_id: "user-1",
+            assigned_user_num_id: 101,
+            assigned_nick_name: "Alice"
+          }
         }
       ],
       total: 1
@@ -1008,7 +1024,13 @@ describe("createReqClient", () => {
       tracker_name: "Task",
       description: "temporary live smoke item",
       start_date: "2028-04-12",
-      due_date: "2028-04-19"
+      due_date: "2028-04-19",
+      assigned_to: {
+        id: 16666,
+        identifier: "user-uuid-2",
+        name: "tenant/bob",
+        assigned_nick_name: "Bob"
+      }
     });
   });
 
@@ -1022,7 +1044,12 @@ describe("createReqClient", () => {
               id: 70779181,
               subject: "mcp-live-smoke-updated",
               status: { name: "新建" },
-              tracker: { name: "Task" }
+              tracker: { name: "Task" },
+              assigned_to: {
+                assigned_user_id: "user-1",
+                assigned_user_num_id: 101,
+                assigned_nick_name: "Alice"
+              }
             }
           ]
         })
@@ -1036,7 +1063,12 @@ describe("createReqClient", () => {
           id: 70779181,
           subject: "mcp-live-smoke-updated",
           status: { name: "新建" },
-          tracker_name: "Task"
+          tracker_name: "Task",
+          assigned_to: {
+            assigned_user_id: "user-1",
+            assigned_user_num_id: 101,
+            assigned_nick_name: "Alice"
+          }
         }
       ],
       total: 1
@@ -2798,7 +2830,7 @@ describe("createReqClient", () => {
     });
 
     expect(requestedPath).toBe(
-      "/v2/issues/show?issue_id=2884248&project_uuid=p-1&include=children%2Cparent"
+      "/v2/issues/show?issueId=2884248&projectUUId=p-1&include=children%2Cparent"
     );
     expect(result).toEqual({
       id: "2884248",

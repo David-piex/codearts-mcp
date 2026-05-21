@@ -825,6 +825,9 @@ export type ReqClient = {
       subject: string;
       status?: { name?: string };
       tracker_name?: string;
+      assigned_to?: ReqIssueAssignee;
+      assigned_id?: string;
+      assigned_to_id?: number | string;
     }>;
     total?: number;
   }>;
@@ -943,6 +946,9 @@ export type ReqClient = {
     description?: string;
     start_date?: string | number;
     due_date?: string | number;
+    assigned_to?: ReqIssueAssignee;
+    assigned_id?: string;
+    assigned_to_id?: number | string;
   }>;
   getWorkItemIssueDetails: (input: {
     project_id: string;
@@ -2351,6 +2357,10 @@ type ReqIssueListItem = {
   status?: { name?: string };
   tracker?: { name?: string };
   tracker_name?: string;
+  assigned_to?: ReqIssueAssignee;
+  assigned_user?: ReqIssueAssignee;
+  assigned_id?: string;
+  assigned_to_id?: number | string;
 };
 
 type ReqReleasePlanCreateInput = {
@@ -2439,6 +2449,28 @@ type ReqCopyIssueResponse = {
   is_archived?: boolean;
 };
 
+type ReqIssueAssignee = {
+  id?: number | string;
+  user_id?: string;
+  userId?: string;
+  user_num_id?: number | string;
+  userNumId?: number | string;
+  assigned_user_id?: string;
+  assigned_user_num_id?: number | string;
+  identifier?: string;
+  name?: string;
+  user_name?: string;
+  userName?: string;
+  nick_name?: string;
+  nickName?: string;
+  assigned_nick_name?: string;
+  assignedNickName?: string;
+  first_name?: string;
+  firstName?: string;
+  last_name?: string;
+  lastName?: string;
+};
+
 type ReqDetailedIssueListItem = {
   id: number | string;
   subject?: string;
@@ -2455,6 +2487,10 @@ type ReqDetailedIssueListItem = {
   };
   status_id?: number | string;
   status_name?: string;
+  assigned_to?: ReqIssueAssignee;
+  assigned_user?: ReqIssueAssignee;
+  assigned_id?: string;
+  assigned_to_id?: number | string;
 };
 
 type ReqWorkItemIssueDetails = ReqDetailedIssueListItem & {
@@ -2475,7 +2511,7 @@ type ReqWorkItemIssueDetails = ReqDetailedIssueListItem & {
   story_point?: Record<string, unknown>;
   parent_issue?: Record<string, unknown>;
   author?: Record<string, unknown>;
-  assigned_to?: Record<string, unknown>;
+  assigned_to?: ReqIssueAssignee;
   developer?: Record<string, unknown>;
   assigned_cc_user?: unknown[];
   custom_fields?: Array<Record<string, unknown>>;
@@ -2581,14 +2617,7 @@ type ReqChildWorkItem = ReqDetailedIssueListItem & {
     id?: number | string;
     name?: string;
   };
-  assigned_to?: {
-    id?: number | string;
-    name?: string;
-    assigned_nick_name?: string;
-    assignedNickName?: string;
-    first_name?: string;
-    firstName?: string;
-  };
+  assigned_to?: ReqIssueAssignee;
   is_parent?: boolean;
   isParent?: boolean;
   author?: {
@@ -4835,7 +4864,11 @@ export function createReqClient(
           id: item.id,
           subject: item.subject ?? item.name ?? "",
           status: item.status,
-          tracker_name: item.tracker_name ?? item.tracker?.name
+          tracker_name: item.tracker_name ?? item.tracker?.name,
+          assigned_to: item.assigned_to,
+          assigned_user: item.assigned_user,
+          assigned_id: item.assigned_id,
+          assigned_to_id: item.assigned_to_id
         })),
         total: payload.total
       };
@@ -5041,6 +5074,10 @@ export function createReqClient(
         due_date?: string | number;
         begin_time?: string | number;
         end_time?: string | number;
+        assigned_to?: ReqIssueAssignee;
+        assigned_user?: ReqIssueAssignee;
+        assigned_id?: string;
+        assigned_to_id?: number | string;
       };
 
       return {
@@ -5050,13 +5087,17 @@ export function createReqClient(
         tracker_name: response.tracker_name ?? response.tracker?.name,
         description: response.description,
         start_date: response.start_date ?? response.begin_time,
-        due_date: response.due_date ?? response.end_time
+        due_date: response.due_date ?? response.end_time,
+        assigned_to: response.assigned_to ?? response.assigned_user,
+        assigned_user: response.assigned_user,
+        assigned_id: response.assigned_id,
+        assigned_to_id: response.assigned_to_id
       };
     },
     async getWorkItemIssueDetails(input) {
       const query = new URLSearchParams({
-        issue_id: input.work_item_id,
-        project_uuid: input.project_id,
+        issueId: input.work_item_id,
+        projectUUId: input.project_id,
         include: input.include
       });
       const response = (await _http.get(`/v2/issues/show?${query.toString()}`)) as {

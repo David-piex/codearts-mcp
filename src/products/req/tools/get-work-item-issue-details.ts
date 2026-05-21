@@ -1,5 +1,9 @@
 import { asItemResult } from "../../../contracts/tool-result.js";
 import { reqGetWorkItemIssueDetailsInput } from "../schemas.js";
+import {
+  mapReqWorkItemAssignee,
+  type ReqWorkItemAssignee
+} from "./work-item-assignee.js";
 
 type ReqWorkItemSummary = {
   id: number | string;
@@ -9,6 +13,10 @@ type ReqWorkItemSummary = {
   description?: string;
   start_date?: string | number;
   due_date?: string | number;
+  assigned_to?: ReqWorkItemAssignee;
+  assigned_user?: ReqWorkItemAssignee;
+  assigned_id?: string;
+  assigned_to_id?: number | string;
 };
 
 type ReqWorkItemComment = {
@@ -27,6 +35,7 @@ export function mapReqWorkItemIssueDetails(input: {
   workItem: ReqWorkItemSummary;
   comments: ReqWorkItemComment[];
 }) {
+  const assignee = mapReqWorkItemAssignee(input.workItem);
   const latestComment = [...input.comments]
     .sort((left, right) => {
       const leftOrder = left.timestamp ?? 0;
@@ -42,6 +51,8 @@ export function mapReqWorkItemIssueDetails(input: {
     updatedOn: undefined,
     status: input.workItem.status,
     tracker: input.workItem.tracker_name ? { name: input.workItem.tracker_name } : undefined,
+    assignee,
+    assignedToName: assignee?.displayName,
     project: undefined,
     module: undefined,
     parentIssue: undefined,
