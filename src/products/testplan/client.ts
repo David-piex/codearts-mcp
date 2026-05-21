@@ -368,6 +368,17 @@ export type TestPlanClient = {
     task_uri: string;
     parameters: Record<string, unknown>;
   }>;
+  listTaskParameterTemplates: (input: {
+    project_id: string;
+    serviceId: string;
+    sort_by?: string;
+    sort_direction?: string;
+    name?: string;
+  }) => Promise<{
+    serviceId: string;
+    templates: Array<Record<string, unknown>>;
+    raw: Record<string, unknown>;
+  }>;
   getTaskResultDetail: (input: {
     project_id: string;
     task_uri: string;
@@ -1922,6 +1933,10 @@ export type TestPlanClient = {
     status?: string;
     test_type?: string;
   }>;
+  getTestcaseDatasetSample: (input: { project_id: string }) => Promise<{
+    project_id: string;
+    raw: Record<string, unknown>;
+  }>;
 };
 
 function readArray<T>(input: unknown): T[] {
@@ -2193,6 +2208,15 @@ function appendQueryValue(
   }
 
   query.set(key, String(value));
+}
+
+function toQueryString(values: Record<string, string | number | boolean | string[] | undefined>) {
+  const query = new URLSearchParams();
+  for (const [key, value] of Object.entries(values)) {
+    appendQueryValue(query, key, value);
+  }
+
+  return query.toString();
 }
 
 function redactSensitiveVariable(variable: Record<string, unknown>) {
@@ -2820,6 +2844,29 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       return {
         task_uri: input.task_uri,
         parameters: value
+      };
+    },
+    async listTaskParameterTemplates(input) {
+      const query = toQueryString({
+        serviceId: input.serviceId,
+        sort_by: input.sort_by,
+        sort_direction: input.sort_direction,
+        name: input.name
+      });
+      const response = await _http.get(`/config/v2/systemconfig/tasktemplate?${query}`, {
+        headers: {
+          "x-auth-groups": input.project_id
+        }
+      });
+      const payload = readResultPayload(response);
+      const templates = readArray<Record<string, unknown>>(
+        payload.value ?? payload.values ?? payload.items ?? payload.list ?? payload.result
+      );
+
+      return {
+        serviceId: input.serviceId,
+        templates,
+        raw: payload
       };
     },
     async getTaskResultDetail(input) {
@@ -6281,6 +6328,17 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         result: response.result,
         status: response.status,
         test_type: response.test_type
+      };
+    },
+    async getTestcaseDatasetSample(input) {
+      const response = await _http.get(
+        `/v1/${encodeURIComponent(input.project_id)}/testcase/dataset/simple`
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        project_id: input.project_id,
+        raw: payload
       };
     }
   };

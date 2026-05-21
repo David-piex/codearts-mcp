@@ -380,6 +380,98 @@ describe("createTestPlanClient", () => {
     });
   });
 
+  it("lists task parameter templates", async () => {
+    let requestedPath = "";
+    let requestedOptions: unknown;
+    const client = createTestPlanClient({
+      get: async (path: string, options?: unknown) => {
+        requestedPath = path;
+        requestedOptions = options;
+        return {
+          result: [
+            {
+              id: "template-1",
+              name: "smoke",
+              serviceId: "service-1",
+              value: "{\"env\":\"dev\"}"
+            }
+          ],
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.listTaskParameterTemplates({
+      project_id: "project-1",
+      serviceId: "service-1",
+      sort_by: "createDate",
+      sort_direction: "DESC",
+      name: "smoke"
+    });
+
+    expect(requestedPath).toBe(
+      "/config/v2/systemconfig/tasktemplate?serviceId=service-1&sort_by=createDate&sort_direction=DESC&name=smoke"
+    );
+    expect(requestedOptions).toEqual({
+      headers: {
+        "x-auth-groups": "project-1"
+      }
+    });
+    expect(result).toEqual({
+      serviceId: "service-1",
+      templates: [
+        {
+          id: "template-1",
+          name: "smoke",
+          serviceId: "service-1",
+          value: "{\"env\":\"dev\"}"
+        }
+      ],
+      raw: {
+        result: [
+          {
+            id: "template-1",
+            name: "smoke",
+            serviceId: "service-1",
+            value: "{\"env\":\"dev\"}"
+          }
+        ],
+        status: "success"
+      }
+    });
+  });
+
+  it("gets testcase dataset sample metadata", async () => {
+    let requestedPath = "";
+    const client = createTestPlanClient({
+      get: async (path: string) => {
+        requestedPath = path;
+        return {
+          status: "success",
+          result: {
+            info: {
+              file_name: "Testcase-Dataset-Simple-zh.xlsx"
+            }
+          }
+        };
+      }
+    } as never);
+
+    const result = await client.getTestcaseDatasetSample({
+      project_id: "project-1"
+    });
+
+    expect(requestedPath).toBe("/v1/project-1/testcase/dataset/simple");
+    expect(result).toEqual({
+      project_id: "project-1",
+      raw: {
+        info: {
+          file_name: "Testcase-Dataset-Simple-zh.xlsx"
+        }
+      }
+    });
+  });
+
   it("lists test suite tasks using the v4 batch query endpoint", async () => {
     let requestedPath = "";
     let requestedBody: Record<string, unknown> | undefined;

@@ -177,6 +177,7 @@ import {
   testPlanListTaskCasesInput,
   testPlanListTaskCasesV4Input,
   testPlanListTaskDefectsInput,
+  testPlanListTaskParameterTemplatesInput,
   testPlanListTaskResultsInput,
   testPlanListTasksInput,
   testPlanListTestcaseCommentsInput,
@@ -190,6 +191,7 @@ import {
   testPlanListTestcaseRelationsInput,
   testPlanListTestexecutorResourcePoolsInput,
   testPlanListSolutionTemplatesInput,
+  testPlanGetTestcaseDatasetSampleInput,
   testPlanGetTestcaseFieldInput,
   testPlanListTestcaseFieldsInput,
   testPlanListTestcaseReviewsInput,
@@ -312,6 +314,7 @@ import { createTestPlanGetTaskHandler } from "../products/testplan/tools/get-tas
 import { createTestPlanGetTaskResultDetailHandler } from "../products/testplan/tools/get-task-result-detail.js";
 import { createTestPlanGetTaskSuccessTestCasesCountHandler } from "../products/testplan/tools/get-task-success-testcases-count.js";
 import { createTestPlanGetTestcaseChangeStatisticsHandler } from "../products/testplan/tools/get-testcase-change-statistics.js";
+import { createTestPlanGetTestcaseDatasetSampleHandler } from "../products/testplan/tools/get-testcase-dataset-sample.js";
 import { createTestPlanGetTestcaseFieldHandler } from "../products/testplan/tools/get-testcase-field.js";
 import { createTestPlanGetTestcaseScriptDetailV1Handler } from "../products/testplan/tools/get-testcase-script-detail-v1.js";
 import { createTestPlanGetTestcaseScriptDetailV3Handler } from "../products/testplan/tools/get-testcase-script-detail-v3.js";
@@ -399,6 +402,7 @@ import { createTestPlanListSolutionTemplatesHandler } from "../products/testplan
 import { createTestPlanListTaskCasesHandler } from "../products/testplan/tools/list-task-cases.js";
 import { createTestPlanListTaskCasesV4Handler } from "../products/testplan/tools/list-task-cases-v4.js";
 import { createTestPlanListTaskDefectsHandler } from "../products/testplan/tools/list-task-defects.js";
+import { createTestPlanListTaskParameterTemplatesHandler } from "../products/testplan/tools/list-task-parameter-templates.js";
 import { createTestPlanListTaskResultsHandler } from "../products/testplan/tools/list-task-results.js";
 import { createTestPlanListTasksHandler } from "../products/testplan/tools/list-tasks.js";
 import { createTestPlanListTestTypesHandler } from "../products/testplan/tools/list-test-types.js";
@@ -1065,6 +1069,12 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTaskDefectsHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListTaskDefectsHandler
   }),
+  "testplan_list_task_parameter_templates": defineProductTool({
+    description: "List CodeArts TestPlan task parameter templates",
+    inputSchema: testPlanListTaskParameterTemplatesInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTaskParameterTemplatesHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListTaskParameterTemplatesHandler
+  }),
   "testplan_list_gt3k_defect_iterators": defineProductTool({
     description: "List CodeArts TestPlan GT3K iterators for a defect",
     inputSchema: testPlanListGt3kDefectIteratorsInput,
@@ -1676,6 +1686,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanGetTestcaseFieldInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetTestcaseFieldHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetTestcaseFieldHandler
+  }),
+  "testplan_get_testcase_dataset_sample": defineProductTool({
+    description: "Get CodeArts TestPlan testcase dataset sample metadata",
+    inputSchema: testPlanGetTestcaseDatasetSampleInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetTestcaseDatasetSampleHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetTestcaseDatasetSampleHandler
   }),
   "testplan_list_feature_case_counts": defineProductTool({
     description: "List CodeArts TestPlan testcase counts grouped by feature",

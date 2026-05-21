@@ -14,6 +14,10 @@ type PreparedRequestBody = {
   headers: Record<string, string>;
 };
 
+type RequestOptions = {
+  headers?: Record<string, string>;
+};
+
 type BinaryResponse = {
   body: Uint8Array;
   contentType?: string;
@@ -180,14 +184,23 @@ function shouldRetryReadError(error: unknown) {
 export function createHttpClient(input: HttpClientInput) {
   const fetcher = input.fetcher ?? fetch;
 
-  async function fetchResponse(method: string, path: string, body?: unknown) {
+  async function fetchResponse(
+    method: string,
+    path: string,
+    body?: unknown,
+    options: RequestOptions = {}
+  ) {
     const url = new URL(path, input.baseUrl).toString();
     const prepared = await prepareRequestBody(url, method, body);
+    const requestHeaders = {
+      ...prepared.headers,
+      ...options.headers
+    };
     const headers = await input.authHeaders({
       method,
       url,
       body: prepared.signedBody,
-      headers: prepared.headers
+      headers: requestHeaders
     });
     const maxAttempts = method === "GET" ? READ_REQUEST_RETRY_COUNT + 1 : 1;
 
@@ -234,8 +247,13 @@ export function createHttpClient(input: HttpClientInput) {
     throw new Error(`GET ${path} exhausted retry attempts`);
   }
 
-  async function request(method: string, path: string, body?: unknown) {
-    const response = await fetchResponse(method, path, body);
+  async function request(
+    method: string,
+    path: string,
+    body?: unknown,
+    options: RequestOptions = {}
+  ) {
+    const response = await fetchResponse(method, path, body, options);
 
     if (response.status === 204) {
       return null;
@@ -257,8 +275,13 @@ export function createHttpClient(input: HttpClientInput) {
     return text.trim() === "" ? null : JSON.parse(text);
   }
 
-  async function requestBinary(method: string, path: string, body?: unknown): Promise<BinaryResponse> {
-    const response = await fetchResponse(method, path, body);
+  async function requestBinary(
+    method: string,
+    path: string,
+    body?: unknown,
+    options: RequestOptions = {}
+  ): Promise<BinaryResponse> {
+    const response = await fetchResponse(method, path, body, options);
     const arrayBuffer = await response.arrayBuffer();
 
     return {
@@ -269,9 +292,9 @@ export function createHttpClient(input: HttpClientInput) {
   }
 
   return {
-    get: (path: string) => request("GET", path),
-    getBinary: (path: string) => requestBinary("GET", path),
-    post: (path: string, body?: unknown) => request("POST", path, body),
+    get: (path: string, options?: RequestOptions) => request("GET", path, undefined, options),
+    getBinary: (path: string, options?: RequestOptions) => requestBinary("GET", path, undefined, options),
+    post: (path: string, body?: unknown, options?: RequestOptions) => request("POST", path, body, options),
     postMultipart: (path: string, body: FormData) => request("POST", path, body),
     put: (path: string, body?: unknown) => request("PUT", path, body),
     patch: (path: string, body?: unknown) => request("PATCH", path, body),

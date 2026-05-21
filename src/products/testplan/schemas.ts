@@ -93,6 +93,14 @@ export const testPlanGetTaskExecutionParamInput = z.object({
   project_uuid: idSchema.optional()
 });
 
+export const testPlanListTaskParameterTemplatesInput = z.object({
+  project_id: idSchema,
+  serviceId: idSchema,
+  sort_by: z.string().min(1).optional(),
+  sort_direction: z.string().min(1).optional(),
+  name: z.string().optional()
+});
+
 export const testPlanGetTaskResultDetailInput = pagingSchema.extend({
   project_id: idSchema,
   task_uri: idSchema,
@@ -1283,6 +1291,10 @@ export const testPlanListTaskResultsInput = pagingSchema.extend({
 export const testPlanGetCaseInput = z.object({
   project_id: idSchema,
   case_id: idSchema
+});
+
+export const testPlanGetTestcaseDatasetSampleInput = z.object({
+  project_id: idSchema
 });
 
 export const testPlanListIssuesInput = pagingSchema.extend({
