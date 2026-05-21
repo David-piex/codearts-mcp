@@ -186,6 +186,8 @@ export const testPlanToolNames = [
   "testplan_list_test_report_quality_attributes",
   "testplan_list_test_reports",
   "testplan_list_test_types",
+  "testplan_list_testcase_uri_infos_v5",
+  "testplan_list_testcase_uris_v4",
   "testplan_list_testcase_relations",
   "testplan_list_testexecutor_resource_pools",
   "testplan_list_testcase_fields",

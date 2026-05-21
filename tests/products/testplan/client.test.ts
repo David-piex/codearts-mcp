@@ -238,6 +238,97 @@ describe("createTestPlanClient", () => {
     ]);
   });
 
+  it("lists testcase URI query results from v4 and v5 endpoints", async () => {
+    const requests: Array<{ path: string; body: unknown }> = [];
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requests.push({ path, body });
+        if (path.startsWith("/v5/")) {
+          return {
+            result: {
+              total: 1,
+              value: [
+                {
+                  id: "case-v5",
+                  name: "api case",
+                  type: "manual",
+                  issue_id: "issue-1",
+                  feature_uri: "feature-1"
+                }
+              ]
+            }
+          };
+        }
+
+        return {
+          result: {
+            total: 2,
+            value: ["case-v4-a", "case-v4-b"]
+          }
+        };
+      }
+    } as never);
+
+    const v4Result = await client.listTestcaseUrisV4({
+      project_id: "project-1",
+      page: 1,
+      page_size: 10,
+      version_uri: "version-1",
+      case_uris: ["case-v4-a"],
+      associated_issue: true
+    });
+    const v5Result = await client.listTestcaseUriInfosV5({
+      project_id: "project-1",
+      page: 2,
+      page_size: 5,
+      version_uri: "version-1",
+      keyword: "api",
+      service_types: [1, 2]
+    });
+
+    expect(v4Result).toMatchObject({
+      uris: [
+        { id: "case-v4-a", value: "case-v4-a" },
+        { id: "case-v4-b", value: "case-v4-b" }
+      ],
+      total: 2
+    });
+    expect(v5Result).toMatchObject({
+      cases: [
+        {
+          id: "case-v5",
+          name: "api case",
+          type: "manual",
+          issue_id: "issue-1",
+          feature_uri: "feature-1"
+        }
+      ],
+      total: 1
+    });
+    expect(requests).toEqual([
+      {
+        path: "/v4/project-1/testcases/uris/batch-query",
+        body: {
+          page_no: 1,
+          page_size: 10,
+          version_uri: "version-1",
+          case_uris: ["case-v4-a"],
+          associated_issue: true
+        }
+      },
+      {
+        path: "/v5/project-1/testcases/uris/batch-query",
+        body: {
+          page_no: 2,
+          page_size: 5,
+          keyword: "api",
+          version_uri: "version-1",
+          service_types: [1, 2]
+        }
+      }
+    ]);
+  });
+
   it("maps run case aliases to the execute payload", async () => {
     let requestedPath = "";
     let requestedBody: Record<string, unknown> | undefined;

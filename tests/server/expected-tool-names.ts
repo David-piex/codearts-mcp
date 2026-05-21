@@ -785,6 +785,8 @@ export const expectedToolNames = [
     "testplan_list_testcase_fields",
     "testplan_list_testcase_relations",
     "testplan_list_testcase_reviews",
+    "testplan_list_testcase_uri_infos_v5",
+    "testplan_list_testcase_uris_v4",
   "testplan_list_testexecutor_resource_pools",
   "testplan_list_testhub_branches",
   "testplan_list_testhub_iterators",

@@ -562,6 +562,51 @@ export const testPlanListTesthubTestcasesV5Input = pagingSchema.extend({
   execution_type_id: z.number().int().optional()
 });
 
+export const testPlanListTestcaseUrisV4Input = pagingSchema.extend({
+  project_id: idSchema,
+  keyword: z.string().min(1).optional(),
+  useOffset: z.boolean().optional(),
+  version_uri: idSchema.optional(),
+  case_uris: z.array(idSchema).optional(),
+  owner_ids: z.array(idSchema).optional(),
+  status_codes: z.array(z.number().int()).optional(),
+  rank_ids: z.array(idSchema).optional(),
+  module_ids: z.array(idSchema).optional(),
+  issue_id: idSchema.optional(),
+  creator_ids: z.array(idSchema).optional(),
+  result_codes: z.array(z.number().int()).optional(),
+  iteration_ids: z.array(idSchema).optional(),
+  create_start_time: z.string().min(1).optional(),
+  create_end_time: z.string().min(1).optional(),
+  associated_issue: z.boolean().optional(),
+  associated_defects: z.boolean().optional(),
+  include_sub_issue: z.boolean().optional(),
+  include_sub_feature: z.boolean().optional(),
+  label_ids: z.array(idSchema).optional(),
+  execute_start_time: z.string().min(1).optional(),
+  execute_end_time: z.string().min(1).optional(),
+  executor_ids: z.array(idSchema).optional(),
+  test_types: z.array(z.number().int()).optional(),
+  is_keyword: z.boolean().optional(),
+  issue_tree_search: z.boolean().optional(),
+  service_type: z.number().int().optional(),
+  service_types: z.array(z.number().int()).optional(),
+  stage_type: z.number().int().optional(),
+  feature_uri: idSchema.optional(),
+  sort_field: z.string().min(1).optional(),
+  sort_type: z.string().min(1).optional(),
+  case_type: z.number().int().optional(),
+  custom_field_info: z.record(z.string(), z.unknown()).optional(),
+  task_uri: idSchema.optional(),
+  associate_issue_detail: z.boolean().optional(),
+  not_assign_task: z.boolean().optional(),
+  test_designs: z.array(z.string().min(1)).optional(),
+  review_status: z.number().int().optional(),
+  just_return_id: z.boolean().optional()
+});
+
+export const testPlanListTestcaseUriInfosV5Input = testPlanListTestcaseUrisV4Input;
+
 export const testPlanGetGt3kTestcaseChangeStatisticsInput = z.object({
   project_id: idSchema,
   version_id: idSchema

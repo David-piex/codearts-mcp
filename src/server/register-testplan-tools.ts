@@ -185,6 +185,8 @@ import {
   testPlanListTestReportCustomInfosInput,
   testPlanListTestReportIssuesInput,
   testPlanListTestReportQualityAttributesInput,
+  testPlanListTestcaseUriInfosV5Input,
+  testPlanListTestcaseUrisV4Input,
   testPlanListTestcaseRelationsInput,
   testPlanListTestexecutorResourcePoolsInput,
   testPlanListSolutionTemplatesInput,
@@ -405,6 +407,8 @@ import { createTestPlanListTestReportCustomInfosHandler } from "../products/test
 import { createTestPlanListTestReportIssuesHandler } from "../products/testplan/tools/list-test-report-issues.js";
 import { createTestPlanListTestReportQualityAttributesHandler } from "../products/testplan/tools/list-test-report-quality-attributes.js";
 import { createTestPlanListTestcaseRelationsHandler } from "../products/testplan/tools/list-testcase-relations.js";
+import { createTestPlanListTestcaseUriInfosV5Handler } from "../products/testplan/tools/list-testcase-uri-infos-v5.js";
+import { createTestPlanListTestcaseUrisV4Handler } from "../products/testplan/tools/list-testcase-uris-v4.js";
 import { createTestPlanListTestcaseCommentsHandler } from "../products/testplan/tools/list-testcase-comments.js";
 import { createTestPlanListTestcaseFieldsHandler } from "../products/testplan/tools/list-testcase-fields.js";
 import { createTestPlanListTestcaseReviewsHandler } from "../products/testplan/tools/list-testcase-reviews.js";
@@ -1642,6 +1646,18 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListTestcaseRelationsInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTestcaseRelationsHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListTestcaseRelationsHandler
+  }),
+  "testplan_list_testcase_uri_infos_v5": defineProductTool({
+    description: "List CodeArts TestPlan v5 testcase URI info records",
+    inputSchema: testPlanListTestcaseUriInfosV5Input,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTestcaseUriInfosV5Handler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListTestcaseUriInfosV5Handler
+  }),
+  "testplan_list_testcase_uris_v4": defineProductTool({
+    description: "List CodeArts TestPlan v4 testcase URIs",
+    inputSchema: testPlanListTestcaseUrisV4Input,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTestcaseUrisV4Handler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListTestcaseUrisV4Handler
   }),
   "testplan_list_solution_templates": defineProductTool({
     description: "List CodeArts TestPlan solution templates",

@@ -91,6 +91,51 @@ type TestPlanTesthubTestcasesV5Input = {
   execution_type_id?: number;
 };
 
+type TestPlanTestcaseUrisInput = {
+  project_id: string;
+  page: number;
+  page_size: number;
+  keyword?: string;
+  useOffset?: boolean;
+  version_uri?: string;
+  case_uris?: string[];
+  owner_ids?: string[];
+  status_codes?: number[];
+  rank_ids?: string[];
+  module_ids?: string[];
+  issue_id?: string;
+  creator_ids?: string[];
+  result_codes?: number[];
+  iteration_ids?: string[];
+  create_start_time?: string;
+  create_end_time?: string;
+  associated_issue?: boolean;
+  associated_defects?: boolean;
+  include_sub_issue?: boolean;
+  include_sub_feature?: boolean;
+  label_ids?: string[];
+  execute_start_time?: string;
+  execute_end_time?: string;
+  executor_ids?: string[];
+  test_types?: number[];
+  is_keyword?: boolean;
+  issue_tree_search?: boolean;
+  service_type?: number;
+  service_types?: number[];
+  stage_type?: number;
+  feature_uri?: string;
+  sort_field?: string;
+  sort_type?: string;
+  case_type?: number;
+  custom_field_info?: Record<string, unknown>;
+  task_uri?: string;
+  associate_issue_detail?: boolean;
+  not_assign_task?: boolean;
+  test_designs?: string[];
+  review_status?: number;
+  just_return_id?: boolean;
+};
+
 export type TestPlanClient = {
   requestOfficialApi: (input: OfficialApiRequestInput) => Promise<OfficialApiRequestResult>;
   listIssues: (input: {
@@ -227,6 +272,16 @@ export type TestPlanClient = {
       test_type?: string;
       case: Record<string, unknown>;
     }>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
+  listTestcaseUrisV4: (input: TestPlanTestcaseUrisInput) => Promise<{
+    uris: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
+  listTestcaseUriInfosV5: (input: TestPlanTestcaseUrisInput) => Promise<{
+    cases: Array<Record<string, unknown>>;
     total?: number;
     raw: Record<string, unknown>;
   }>;
@@ -2045,6 +2100,60 @@ function createTesthubTestcasesV5Body(input: TestPlanTesthubTestcasesV5Input) {
   return body;
 }
 
+function createTestcaseUrisBody(input: TestPlanTestcaseUrisInput) {
+  const body: Record<string, unknown> = {
+    page_no: input.page,
+    page_size: input.page_size
+  };
+  for (const key of [
+    "keyword",
+    "useOffset",
+    "version_uri",
+    "case_uris",
+    "owner_ids",
+    "status_codes",
+    "rank_ids",
+    "module_ids",
+    "issue_id",
+    "creator_ids",
+    "result_codes",
+    "iteration_ids",
+    "create_start_time",
+    "create_end_time",
+    "associated_issue",
+    "associated_defects",
+    "include_sub_issue",
+    "include_sub_feature",
+    "label_ids",
+    "execute_start_time",
+    "execute_end_time",
+    "executor_ids",
+    "test_types",
+    "is_keyword",
+    "issue_tree_search",
+    "service_type",
+    "service_types",
+    "stage_type",
+    "feature_uri",
+    "sort_field",
+    "sort_type",
+    "case_type",
+    "custom_field_info",
+    "task_uri",
+    "associate_issue_detail",
+    "not_assign_task",
+    "test_designs",
+    "review_status",
+    "just_return_id"
+  ] as const) {
+    const value = input[key];
+    if (value !== undefined) {
+      body[key] = value;
+    }
+  }
+  return body;
+}
+
 function readNameFromObject(input: unknown) {
   const value = readEnvelope(input);
   return typeof value?.name === "string" ? value.name : undefined;
@@ -2473,6 +2582,41 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       const cases = readArray<Record<string, unknown>>(
         payload.values ?? payload.data ?? payload.value ?? payload.items ?? payload.list
       ).map(mapExternalTestcase);
+
+      return {
+        cases,
+        total: readTotal(payload, response, cases.length),
+        raw: payload
+      };
+    },
+    async listTestcaseUrisV4(input) {
+      const response = await _http.post(
+        `/v4/${encodeURIComponent(input.project_id)}/testcases/uris/batch-query`,
+        createTestcaseUrisBody(input)
+      );
+      const payload = readResultPayload(response);
+      const uris = readArray<string>(payload.value ?? payload.values ?? payload.items ?? payload.list).map(
+        (value) => ({
+          id: value,
+          value
+        })
+      );
+
+      return {
+        uris,
+        total: readTotal(payload, response, uris.length),
+        raw: payload
+      };
+    },
+    async listTestcaseUriInfosV5(input) {
+      const response = await _http.post(
+        `/v5/${encodeURIComponent(input.project_id)}/testcases/uris/batch-query`,
+        createTestcaseUrisBody(input)
+      );
+      const payload = readResultPayload(response);
+      const cases = readArray<Record<string, unknown>>(
+        payload.value ?? payload.values ?? payload.items ?? payload.list
+      );
 
       return {
         cases,
