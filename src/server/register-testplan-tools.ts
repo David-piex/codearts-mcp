@@ -62,6 +62,9 @@ import {
   testPlanGetMindmapPermissionInput,
   testPlanGetMindmapRecycleInput,
   testPlanGetMindmapStatisticsInput,
+  testPlanListMindmapRecyclesInput,
+  testPlanListMindmapsV2Input,
+  testPlanListMindmapsV3Input,
   testPlanGetPlanInput,
   testPlanGetProjectTestcaseInput,
   testPlanGetProjectTestcaseByNumberInput,
@@ -279,6 +282,9 @@ import { createTestPlanGetMindmapCreatorNameHandler } from "../products/testplan
 import { createTestPlanGetMindmapPermissionHandler } from "../products/testplan/tools/get-mindmap-permission.js";
 import { createTestPlanGetMindmapRecycleHandler } from "../products/testplan/tools/get-mindmap-recycle.js";
 import { createTestPlanGetMindmapStatisticsHandler } from "../products/testplan/tools/get-mindmap-statistics.js";
+import { createTestPlanListMindmapsV2Handler } from "../products/testplan/tools/list-mindmaps-v2.js";
+import { createTestPlanListMindmapsV3Handler } from "../products/testplan/tools/list-mindmaps-v3.js";
+import { createTestPlanListMindmapRecyclesHandler } from "../products/testplan/tools/list-mindmap-recycles.js";
 import { createTestPlanGetPlanHandler } from "../products/testplan/tools/get-plan.js";
 import { createTestPlanGetProjectTestcaseHandler } from "../products/testplan/tools/get-project-testcase.js";
 import { createTestPlanGetProjectTestcaseByNumberHandler } from "../products/testplan/tools/get-project-testcase-by-number.js";
@@ -516,6 +522,24 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanGetMindmapStatisticsInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetMindmapStatisticsHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetMindmapStatisticsHandler
+  }),
+  "testplan_list_mindmaps_v2": defineProductTool({
+    description: "List CodeArts TestPlan mindmaps",
+    inputSchema: testPlanListMindmapsV2Input,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListMindmapsV2Handler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListMindmapsV2Handler
+  }),
+  "testplan_list_mindmaps_v3": defineProductTool({
+    description: "List CodeArts TestPlan v3 mindmaps",
+    inputSchema: testPlanListMindmapsV3Input,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListMindmapsV3Handler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListMindmapsV3Handler
+  }),
+  "testplan_list_mindmap_recycles": defineProductTool({
+    description: "List CodeArts TestPlan mindmap recycle entries",
+    inputSchema: testPlanListMindmapRecyclesInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListMindmapRecyclesHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListMindmapRecyclesHandler
   }),
   "testplan_get_project_testcase": defineProductTool({
     description: "Get CodeArts TestPlan project testcase detail",

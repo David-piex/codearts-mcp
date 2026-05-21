@@ -32,8 +32,8 @@
 | 流水线 | 78 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 166 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 201 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
-| 测试计划 | 220 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **815** | |
+| 测试计划 | 223 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
+| **总计** | **818** | |
 
 ## 字段对应
 
@@ -794,6 +794,9 @@
 | `testplan_list_iterator_issue_cases` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_iterator_issue_cases) |
 | `testplan_list_iterator_issue_ids` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_iterator_issue_ids) |
 | `testplan_list_iterator_issues` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_iterator_issues) |
+| `testplan_list_mindmap_recycles` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_mindmap_recycles) |
+| `testplan_list_mindmaps_v2` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_mindmaps_v2) |
+| `testplan_list_mindmaps_v3` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_mindmaps_v3) |
 | `testplan_list_notice_configs` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_notice_configs) |
 | `testplan_list_plan_journals` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_plan_journals) |
 | `testplan_list_plans` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_plans) |

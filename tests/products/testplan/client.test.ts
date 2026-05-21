@@ -765,6 +765,153 @@ describe("createTestPlanClient", () => {
     ]);
   });
 
+  it("lists TestPlan mindmaps and recycle entries", async () => {
+    const requests: Array<{ method: string; path: string; body?: unknown }> = [];
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requests.push({ method: "POST", path, body });
+        if (path.includes("/mindmaps/page")) {
+          return {
+            result: {
+              page_list: [
+                {
+                  id: path.startsWith("/v3/") ? "mindmap-v3-1" : "mindmap-1",
+                  name: path.startsWith("/v3/") ? "Checkout baseline" : "Checkout flow"
+                }
+              ],
+              total: 1
+            }
+          };
+        }
+        if (path.includes("/mindmap-recycles/page")) {
+          return {
+            result: {
+              page_list: [{ id: "recycle-1", mindmap_name: "Deleted checkout flow" }],
+              total: 1
+            }
+          };
+        }
+
+        return { result: { page_list: [], total: 0 } };
+      }
+    } as never);
+
+    await expect(
+      client.listMindmapsV2({
+        project_id: "project-1",
+        page: 2,
+        page_size: 10,
+        name: "Checkout",
+        id_collection: ["mindmap-1"],
+        folder_id_collection: ["folder-1"],
+        folder_root_id: "root-1",
+        creator_name_collection: ["alice"],
+        updater_name_collection: ["bob"]
+      })
+    ).resolves.toEqual({
+      mindmaps: [{ id: "mindmap-1", name: "Checkout flow" }],
+      total: 1,
+      raw: {
+        page_list: [{ id: "mindmap-1", name: "Checkout flow" }],
+        total: 1
+      }
+    });
+    await expect(
+      client.listMindmapRecycles({
+        project_id: "project-1",
+        page: 3,
+        page_size: 5,
+        creator_num: "10001",
+        text: "deleted"
+      })
+    ).resolves.toEqual({
+      recycles: [{ id: "recycle-1", mindmap_name: "Deleted checkout flow" }],
+      total: 1,
+      raw: {
+        page_list: [{ id: "recycle-1", mindmap_name: "Deleted checkout flow" }],
+        total: 1
+      }
+    });
+    await expect(
+      client.listMindmapsV3({
+        project_id: "project-1",
+        page: 1,
+        page_size: 10,
+        name: "Checkout",
+        id_collection: ["mindmap-v3-1"],
+        folder_id_collection: ["folder-1"],
+        folder_root_id: "feature_root_id",
+        creator_name_collection: ["alice"],
+        updater_name_collection: ["bob"],
+        branch_uri: "branch-1",
+        iterator_uri: "iterator-1",
+        is_master: 1,
+        confidentiality_code_collection: ["public"]
+      })
+    ).resolves.toEqual({
+      mindmaps: [{ id: "mindmap-v3-1", name: "Checkout baseline" }],
+      total: 1,
+      raw: {
+        page_list: [{ id: "mindmap-v3-1", name: "Checkout baseline" }],
+        total: 1
+      }
+    });
+
+    expect(requests).toEqual([
+      {
+        method: "POST",
+        path: "/v2/project-1/mindmaps/page",
+        body: {
+          params: {
+            project_id: "project-1",
+            offset: 2,
+            limit: 10,
+            name: "Checkout",
+            id_collection: ["mindmap-1"],
+            folder_id_collection: ["folder-1"],
+            folder_root_id: "root-1",
+            creator_name_collection: ["alice"],
+            updater_name_collection: ["bob"]
+          }
+        }
+      },
+      {
+        method: "POST",
+        path: "/v3/project-1/mindmap-recycles/page",
+        body: {
+          params: {
+            project_id: "project-1",
+            offset: 3,
+            limit: 5,
+            creator_num: "10001",
+            text: "deleted"
+          }
+        }
+      },
+      {
+        method: "POST",
+        path: "/v3/project-1/mindmaps/page",
+        body: {
+          params: {
+            project_id: "project-1",
+            offset: 1,
+            limit: 10,
+            name: "Checkout",
+            id_collection: ["mindmap-v3-1"],
+            folder_id_collection: ["folder-1"],
+            folder_root_id: "feature_root_id",
+            creator_name_collection: ["alice"],
+            updater_name_collection: ["bob"],
+            branch_uri: "branch-1",
+            iterator_uri: "iterator-1",
+            is_master: 1,
+            confidentiality_code_collection: ["public"]
+          }
+        }
+      }
+    ]);
+  });
+
   it("gets task result detail with paging and result filter", async () => {
     let requestedPath = "";
     const client = createTestPlanClient({

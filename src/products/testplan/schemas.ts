@@ -329,6 +329,29 @@ export const testPlanGetMindmapStatisticsInput = z.object({
   mindmap_id: idSchema
 });
 
+export const testPlanListMindmapsV2Input = pagingSchema.extend({
+  project_id: idSchema,
+  name: z.string().min(1).optional(),
+  id_collection: z.array(idSchema).optional(),
+  folder_id_collection: z.array(idSchema).optional(),
+  folder_root_id: idSchema.optional(),
+  creator_name_collection: z.array(z.string().min(1)).optional(),
+  updater_name_collection: z.array(z.string().min(1)).optional()
+});
+
+export const testPlanListMindmapsV3Input = testPlanListMindmapsV2Input.extend({
+  branch_uri: idSchema.optional(),
+  iterator_uri: z.string().optional(),
+  is_master: z.number().int().optional(),
+  confidentiality_code_collection: z.array(z.string().min(1)).optional()
+});
+
+export const testPlanListMindmapRecyclesInput = pagingSchema.extend({
+  project_id: idSchema,
+  creator_num: idSchema.optional(),
+  text: z.string().min(1).optional()
+});
+
 export const testPlanListAssetsInput = z.object({
   project_id: idSchema
 });

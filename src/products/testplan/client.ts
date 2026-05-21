@@ -691,6 +691,51 @@ export type TestPlanClient = {
     mindmap_id: string;
     raw: Record<string, unknown>;
   }>;
+  listMindmapsV2: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    name?: string;
+    id_collection?: string[];
+    folder_id_collection?: string[];
+    folder_root_id?: string;
+    creator_name_collection?: string[];
+    updater_name_collection?: string[];
+  }) => Promise<{
+    mindmaps: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
+  listMindmapsV3: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    name?: string;
+    id_collection?: string[];
+    folder_id_collection?: string[];
+    folder_root_id?: string;
+    creator_name_collection?: string[];
+    updater_name_collection?: string[];
+    branch_uri?: string;
+    iterator_uri?: string;
+    is_master?: number;
+    confidentiality_code_collection?: string[];
+  }) => Promise<{
+    mindmaps: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
+  listMindmapRecycles: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    creator_num?: string;
+    text?: string;
+  }) => Promise<{
+    recycles: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
   listAssets: (input: {
     project_id: string;
   }) => Promise<{
@@ -2050,6 +2095,41 @@ function createRequirementsOverviewDetailsBody(input: {
     body.work_item_name = input.work_item_name;
   }
   return body;
+}
+
+function readPageItems(payload: Record<string, unknown>) {
+  const data = readEnvelope(payload.data);
+  const result = readEnvelope(payload.result);
+
+  return readArray<Record<string, unknown>>(
+    data?.page_list ??
+      data?.items ??
+      data?.list ??
+      data?.value ??
+      result?.page_list ??
+      result?.items ??
+      result?.list ??
+      result?.value ??
+      payload.page_list ??
+      payload.items ??
+      payload.list ??
+      payload.value
+  );
+}
+
+function readPageTotal(payload: Record<string, unknown>, response: unknown, fallback?: number) {
+  const data = readEnvelope(payload.data);
+  const result = readEnvelope(payload.result);
+
+  return (
+    readOptionalNumber(data?.total) ??
+    readOptionalNumber(data?.total_count) ??
+    readOptionalNumber(data?.total_size) ??
+    readOptionalNumber(result?.total) ??
+    readOptionalNumber(result?.total_count) ??
+    readOptionalNumber(result?.total_size) ??
+    readTotal(payload, response, fallback)
+  );
 }
 
 function createTesthubTestcasesBody(input: TestPlanTesthubTestcasesInput) {
@@ -3523,6 +3603,102 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       return {
         mindmap_id: input.mindmap_id,
         raw: statistics
+      };
+    },
+    async listMindmapsV2(input) {
+      const params: Record<string, unknown> = {
+        project_id: input.project_id,
+        offset: input.page,
+        limit: input.page_size
+      };
+      for (const key of [
+        "name",
+        "id_collection",
+        "folder_id_collection",
+        "folder_root_id",
+        "creator_name_collection",
+        "updater_name_collection"
+      ] as const) {
+        const value = input[key];
+        if (value !== undefined) {
+          params[key] = value;
+        }
+      }
+
+      const response = await _http.post(
+        `/v2/${encodeURIComponent(input.project_id)}/mindmaps/page`,
+        { params }
+      );
+      const payload = readResultPayload(response);
+      const mindmaps = readPageItems(payload);
+
+      return {
+        mindmaps,
+        total: readPageTotal(payload, response, mindmaps.length),
+        raw: payload
+      };
+    },
+    async listMindmapsV3(input) {
+      const params: Record<string, unknown> = {
+        project_id: input.project_id,
+        offset: input.page,
+        limit: input.page_size
+      };
+      for (const key of [
+        "name",
+        "id_collection",
+        "folder_id_collection",
+        "folder_root_id",
+        "creator_name_collection",
+        "updater_name_collection",
+        "branch_uri",
+        "iterator_uri",
+        "is_master",
+        "confidentiality_code_collection"
+      ] as const) {
+        const value = input[key];
+        if (value !== undefined) {
+          params[key] = value;
+        }
+      }
+
+      const response = await _http.post(
+        `/v3/${encodeURIComponent(input.project_id)}/mindmaps/page`,
+        { params }
+      );
+      const payload = readResultPayload(response);
+      const mindmaps = readPageItems(payload);
+
+      return {
+        mindmaps,
+        total: readPageTotal(payload, response, mindmaps.length),
+        raw: payload
+      };
+    },
+    async listMindmapRecycles(input) {
+      const params: Record<string, unknown> = {
+        project_id: input.project_id,
+        offset: input.page,
+        limit: input.page_size
+      };
+      if (input.creator_num !== undefined) {
+        params.creator_num = input.creator_num;
+      }
+      if (input.text !== undefined) {
+        params.text = input.text;
+      }
+
+      const response = await _http.post(
+        `/v3/${encodeURIComponent(input.project_id)}/mindmap-recycles/page`,
+        { params }
+      );
+      const payload = readResultPayload(response);
+      const recycles = readPageItems(payload);
+
+      return {
+        recycles,
+        total: readPageTotal(payload, response, recycles.length),
+        raw: payload
       };
     },
     async listAssets(input) {
