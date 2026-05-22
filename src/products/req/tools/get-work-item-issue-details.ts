@@ -6,6 +6,10 @@ type ReqWorkItemIssueDetails = {
   id?: number | string;
   subject?: string;
   description?: string;
+  created_on?: string | number;
+  updated_on?: string | number;
+  start_date?: string | number;
+  due_date?: string | number;
   status?: { id?: number | string; name?: string };
   tracker?: { id?: number | string; name?: string };
   project?: Record<string, unknown>;
@@ -68,6 +72,10 @@ export function mapReqWorkItemIssueDetails(input: ReqWorkItemIssueDetails) {
     id: String(input.id ?? ""),
     title: input.subject ?? "",
     description: input.description,
+    createdOn: input.created_on,
+    updatedOn: input.updated_on,
+    startDate: input.start_date,
+    dueDate: input.due_date,
     status: input.status,
     tracker: input.tracker,
     assignee,

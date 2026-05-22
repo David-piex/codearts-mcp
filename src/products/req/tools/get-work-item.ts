@@ -11,6 +11,10 @@ export function mapReqWorkItem(input: {
   status?: { name?: string };
   tracker_name?: string;
   description?: string;
+  created_on?: string | number;
+  updated_on?: string | number;
+  start_date?: string | number;
+  due_date?: string | number;
   assigned_to?: ReqWorkItemAssignee;
   assigned_user?: ReqWorkItemAssignee;
   assigned_id?: string;
@@ -25,6 +29,10 @@ export function mapReqWorkItem(input: {
     status: input.status?.name,
     type: input.tracker_name,
     description: input.description,
+    createdOn: input.created_on,
+    updatedOn: input.updated_on,
+    startDate: input.start_date,
+    dueDate: input.due_date,
     assignee,
     assignedToName: assignee?.displayName
   });
@@ -37,6 +45,10 @@ type ReqGetWorkItemClient = {
     status?: { name?: string };
     tracker_name?: string;
     description?: string;
+    created_on?: string | number;
+    updated_on?: string | number;
+    start_date?: string | number;
+    due_date?: string | number;
     assigned_to?: ReqWorkItemAssignee;
     assigned_user?: ReqWorkItemAssignee;
     assigned_id?: string;

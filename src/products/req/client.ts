@@ -5083,6 +5083,8 @@ export function createReqClient(
         tracker?: { name?: string };
         tracker_name?: string;
         description?: string;
+        created_on?: string | number;
+        updated_on?: string | number;
         start_date?: string | number;
         due_date?: string | number;
         begin_time?: string | number;
@@ -5099,6 +5101,8 @@ export function createReqClient(
         status: response.status,
         tracker_name: response.tracker_name ?? response.tracker?.name,
         description: response.description,
+        created_on: response.created_on,
+        updated_on: response.updated_on,
         start_date: response.start_date ?? response.begin_time,
         due_date: response.due_date ?? response.end_time,
         assigned_to: response.assigned_to ?? response.assigned_user,

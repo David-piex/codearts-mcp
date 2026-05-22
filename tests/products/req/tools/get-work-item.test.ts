@@ -9,6 +9,10 @@ describe("mapReqWorkItem", () => {
       status: { name: "Doing" },
       tracker_name: "Story",
       description: "Clarify edge cases",
+      created_on: "1779267066000",
+      updated_on: "1779328509000",
+      start_date: "1779379200000",
+      due_date: "1779984000000",
       assigned_to: {
         id: 16666,
         identifier: "user-uuid-2",
@@ -23,6 +27,10 @@ describe("mapReqWorkItem", () => {
       status: "Doing",
       type: "Story",
       description: "Clarify edge cases",
+      createdOn: "1779267066000",
+      updatedOn: "1779328509000",
+      startDate: "1779379200000",
+      dueDate: "1779984000000",
       assignee: {
         id: "16666",
         userId: "user-uuid-2",
