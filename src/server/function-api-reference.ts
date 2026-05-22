@@ -318,7 +318,7 @@ function describeToolInChinese(toolName: string) {
     repo_get_remote_mirror: "获取代码仓远程镜像配置和同步状态。",
     repo_update_remote_mirror: "更新代码仓远程镜像配置。",
     req_get_work_item_issue_details:
-      "获取需求管理的官方 V2 工作项详情，工具会把 `journals` 映射为 `comments`，并保留 `assignee` / `assignedToName` 以便查看处理人。"
+      "获取需求管理的官方 V2 工作项详情。该工具只调用 `IssueDetailsV2 /v2/issues/show`，不会 fallback 到 `req_get_work_item` 或评论列表接口；工具会把 `journals` 映射为 `comments`，并保留 `assignee` / `assignedToName` 以便查看处理人。"
   };
 
   if (exactDescriptions[toolName]) {
@@ -751,7 +751,7 @@ function describeToolParameter(toolName: string, name: string) {
   };
   const reqGetWorkItemIssueDetailsDescriptions: Record<string, string> = {
     include:
-      "兼容旧调用参数；工具会将该值透传给官方原始 `IssueDetailsV2 /v2/issues/show`，默认值为 `children,parent`。"
+      "兼容旧调用参数；工具会将该值透传给官方原始 `IssueDetailsV2 /v2/issues/show`，默认值为 `children,parent`，不会用于其他详情或评论接口。"
   };
 
   const toolDescriptions: Record<string, Record<string, string>> = {
