@@ -53,6 +53,7 @@ export const testPlanToolNames = [
   "testplan_get_iterator",
   "testplan_get_license_specification",
   "testplan_get_mindmap",
+  "testplan_get_dynamic_global_variable",
   "testplan_get_mindmap_creator_name",
   "testplan_get_mindmap_permission",
   "testplan_get_mindmap_recycle",
@@ -215,6 +216,7 @@ export const testPlanToolNames = [
   "testplan_list_variable_groups",
   "testplan_list_variables_by_group",
   "testplan_list_variables_v3",
+  "testplan_list_dynamic_global_variables",
   "testplan_list_service_offerings",
   "testplan_list_solution_templates",
   "testplan_list_visible_services",
@@ -223,6 +225,8 @@ export const testPlanToolNames = [
   "testplan_search_api_test_basic_aw_infos",
   "testplan_search_features",
   "testplan_search_features_by_case",
+  "testplan_update_dynamic_global_variable",
+  "testplan_delete_dynamic_global_variable",
   "testplan_stop_task_execution",
   "testplan_update_task"
 ];

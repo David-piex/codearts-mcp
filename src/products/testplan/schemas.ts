@@ -522,6 +522,34 @@ export const testPlanGetMindmapCreatorNameInput = z.object({
   project_id: idSchema
 });
 
+export const testPlanListDynamicGlobalVariablesInput = z.object({
+  project_id: idSchema,
+  task_id: idSchema
+});
+
+export const testPlanGetDynamicGlobalVariableInput = z.object({
+  project_id: idSchema,
+  task_id: idSchema,
+  key: z.string().min(1)
+});
+
+export const testPlanUpdateDynamicGlobalVariableInput = z.object({
+  project_id: idSchema,
+  task_id: idSchema,
+  key: z.string().min(1),
+  body: z.custom<unknown>((value) => value !== undefined, {
+    message: "body is required"
+  }),
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanDeleteDynamicGlobalVariableInput = z.object({
+  project_id: idSchema,
+  task_id: idSchema,
+  key: z.string().min(1),
+  dry_run: z.boolean().default(true)
+});
+
 export const testPlanGetMindmapPermissionInput = z.object({
   project_id: idSchema,
   id: idSchema

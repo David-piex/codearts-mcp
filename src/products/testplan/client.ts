@@ -1004,6 +1004,48 @@ export type TestPlanClient = {
     value?: unknown;
     raw: Record<string, unknown>;
   }>;
+  listDynamicGlobalVariables: (input: {
+    project_id: string;
+    task_id: string;
+  }) => Promise<{
+    project_id: string;
+    task_id: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  getDynamicGlobalVariable: (input: {
+    project_id: string;
+    task_id: string;
+    key: string;
+  }) => Promise<{
+    project_id: string;
+    task_id: string;
+    key: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  updateDynamicGlobalVariable: (input: {
+    project_id: string;
+    task_id: string;
+    key: string;
+    body: unknown;
+  }) => Promise<{
+    project_id: string;
+    task_id: string;
+    key: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  deleteDynamicGlobalVariable: (input: {
+    project_id: string;
+    task_id: string;
+    key: string;
+  }) => Promise<{
+    project_id: string;
+    task_id: string;
+    key: string;
+    raw: Record<string, unknown>;
+  }>;
   getMindmapPermission: (input: {
     project_id: string;
     id: string;
@@ -4289,6 +4331,61 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       return {
         project_id: input.project_id,
         value: payload.data ?? payload.value,
+        raw: payload
+      };
+    },
+    async listDynamicGlobalVariables(input) {
+      const response = await _http.get(
+        `/dynamic-global-variable/${encodeURIComponent(input.project_id)}/${encodeURIComponent(input.task_id)}`
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        project_id: input.project_id,
+        task_id: input.task_id,
+        value: payload.data ?? payload.value,
+        raw: payload
+      };
+    },
+    async getDynamicGlobalVariable(input) {
+      const response = await _http.get(
+        `/dynamic-global-variable/${encodeURIComponent(input.project_id)}/${encodeURIComponent(input.task_id)}/${encodeURIComponent(input.key)}`
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        project_id: input.project_id,
+        task_id: input.task_id,
+        key: input.key,
+        value: payload.data ?? payload.value ?? payload.result,
+        raw: payload
+      };
+    },
+    async updateDynamicGlobalVariable(input) {
+      const response = await _http.put(
+        `/dynamic-global-variable/${encodeURIComponent(input.project_id)}/${encodeURIComponent(input.task_id)}/${encodeURIComponent(input.key)}`,
+        input.body
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        project_id: input.project_id,
+        task_id: input.task_id,
+        key: input.key,
+        value: payload.data ?? payload.value ?? payload.result,
+        raw: payload
+      };
+    },
+    async deleteDynamicGlobalVariable(input) {
+      const response = await _http.delete(
+        `/dynamic-global-variable/${encodeURIComponent(input.project_id)}/${encodeURIComponent(input.task_id)}/${encodeURIComponent(input.key)}`
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        project_id: input.project_id,
+        task_id: input.task_id,
+        key: input.key,
         raw: payload
       };
     },

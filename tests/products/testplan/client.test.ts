@@ -472,6 +472,162 @@ describe("createTestPlanClient", () => {
     });
   });
 
+  it("lists dynamic global variables for a task", async () => {
+    let requestedPath = "";
+    const client = createTestPlanClient({
+      get: async (path: string) => {
+        requestedPath = path;
+        return {
+          code: "success",
+          data: {
+            variable_a: "alpha",
+            variable_b: "beta"
+          }
+        };
+      }
+    } as never);
+
+    const result = await client.listDynamicGlobalVariables({
+      project_id: "project-1",
+      task_id: "task-1"
+    });
+
+    expect(requestedPath).toBe("/dynamic-global-variable/project-1/task-1");
+    expect(result).toEqual({
+      project_id: "project-1",
+      task_id: "task-1",
+      value: {
+        variable_a: "alpha",
+        variable_b: "beta"
+      },
+      raw: {
+        code: "success",
+        data: {
+          variable_a: "alpha",
+          variable_b: "beta"
+        }
+      }
+    });
+  });
+
+  it("gets a dynamic global variable by key", async () => {
+    let requestedPath = "";
+    const client = createTestPlanClient({
+      get: async (path: string) => {
+        requestedPath = path;
+        return {
+          code: "success",
+          data: "value-1"
+        };
+      }
+    } as never);
+
+    const result = await client.getDynamicGlobalVariable({
+      project_id: "project-1",
+      task_id: "task-1",
+      key: "host"
+    });
+
+    expect(requestedPath).toBe("/dynamic-global-variable/project-1/task-1/host");
+    expect(result).toEqual({
+      project_id: "project-1",
+      task_id: "task-1",
+      key: "host",
+      value: "value-1",
+      raw: {
+        code: "success",
+        data: "value-1"
+      }
+    });
+  });
+
+  it("updates a dynamic global variable by key", async () => {
+    let requestedPath = "";
+    let requestedBody: unknown;
+    const client = createTestPlanClient({
+      put: async (path: string, body: unknown) => {
+        requestedPath = path;
+        requestedBody = body;
+        return {
+          code: "success",
+          data: {
+            updated: true
+          }
+        };
+      }
+    } as never);
+
+    const result = await client.updateDynamicGlobalVariable({
+      project_id: "project-1",
+      task_id: "task-1",
+      key: "host",
+      body: {
+        CreateVariableRequestBody: [
+          {
+            key: "host",
+            value: "127.0.0.1",
+            type: "String"
+          }
+        ]
+      }
+    });
+
+    expect(requestedPath).toBe("/dynamic-global-variable/project-1/task-1/host");
+    expect(requestedBody).toEqual({
+      CreateVariableRequestBody: [
+        {
+          key: "host",
+          value: "127.0.0.1",
+          type: "String"
+        }
+      ]
+    });
+    expect(result).toEqual({
+      project_id: "project-1",
+      task_id: "task-1",
+      key: "host",
+      value: {
+        updated: true
+      },
+      raw: {
+        code: "success",
+        data: {
+          updated: true
+        }
+      }
+    });
+  });
+
+  it("deletes a dynamic global variable by key", async () => {
+    let requestedPath = "";
+    const client = createTestPlanClient({
+      delete: async (path: string) => {
+        requestedPath = path;
+        return {
+          code: "success",
+          data: {}
+        };
+      }
+    } as never);
+
+    const result = await client.deleteDynamicGlobalVariable({
+      project_id: "project-1",
+      task_id: "task-1",
+      key: "host"
+    });
+
+    expect(requestedPath).toBe("/dynamic-global-variable/project-1/task-1/host");
+    expect(result).toEqual({
+      project_id: "project-1",
+      task_id: "task-1",
+      key: "host",
+      raw: {
+        code: "success",
+        data: {}
+      }
+    });
+  });
+
   it("lists test suite tasks using the v4 batch query endpoint", async () => {
     let requestedPath = "";
     let requestedBody: Record<string, unknown> | undefined;

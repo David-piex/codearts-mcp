@@ -6,7 +6,7 @@
 
 模块：`测试计划`
 
-API 数量：`226`
+API 数量：`230`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
@@ -773,6 +773,71 @@ API 数量：`226`
   "required": [
     "project_id",
     "name"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### testplan_delete_dynamic_global_variable
+
+所属模块：`测试计划`
+
+说明：删除测试计划的dynamicglobal变量。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "testplan_delete_dynamic_global_variable",
+    "arguments": {
+      "project_id": "<project_id>",
+      "task_id": "<task_id>",
+      "key": "<key>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 测试计划 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `task_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `task_id` ↔ 原始 CodeArts 测试计划 API 同名字段 `task_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>任务 ID，用于定位对应的 CodeArts 资源。 |
+| `key` | 是 | `string` |  | 字段对应：<br>MCP 字段 `key` ↔ 原始 CodeArts 测试计划 API 同名字段 `key`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "task_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "key": {
+      "type": "string",
+      "minLength": 1
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "project_id",
+    "task_id",
+    "key"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -2042,6 +2107,66 @@ API 数量：`226`
   },
   "required": [
     "project_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### testplan_get_dynamic_global_variable
+
+所属模块：`测试计划`
+
+说明：获取测试计划的dynamicglobal变量。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "testplan_get_dynamic_global_variable",
+    "arguments": {
+      "project_id": "<project_id>",
+      "task_id": "<task_id>",
+      "key": "<key>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 测试计划 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `task_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `task_id` ↔ 原始 CodeArts 测试计划 API 同名字段 `task_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>任务 ID，用于定位对应的 CodeArts 资源。 |
+| `key` | 是 | `string` |  | 字段对应：<br>MCP 字段 `key` ↔ 原始 CodeArts 测试计划 API 同名字段 `key`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "task_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "key": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "project_id",
+    "task_id",
+    "key"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -7678,6 +7803,59 @@ API 数量：`226`
   },
   "required": [
     "project_uuid"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### testplan_list_dynamic_global_variables
+
+所属模块：`测试计划`
+
+说明：查询测试计划的dynamicglobal变量。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "testplan_list_dynamic_global_variables",
+    "arguments": {
+      "project_id": "<project_id>",
+      "task_id": "<task_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 测试计划 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `task_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `task_id` ↔ 原始 CodeArts 测试计划 API 同名字段 `task_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>任务 ID，用于定位对应的 CodeArts 资源。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "task_id": {
+      "$ref": "#/properties/project_id"
+    }
+  },
+  "required": [
+    "project_id",
+    "task_id"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -15299,6 +15477,75 @@ API 数量：`226`
     "project_id",
     "task_uri",
     "result_uri"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### testplan_update_dynamic_global_variable
+
+所属模块：`测试计划`
+
+说明：更新测试计划的dynamicglobal变量。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "testplan_update_dynamic_global_variable",
+    "arguments": {
+      "project_id": "<project_id>",
+      "task_id": "<task_id>",
+      "key": "<key>",
+      "body": "<body>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 测试计划 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `task_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `task_id` ↔ 原始 CodeArts 测试计划 API 同名字段 `task_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>任务 ID，用于定位对应的 CodeArts 资源。 |
+| `key` | 是 | `string` |  | 字段对应：<br>MCP 字段 `key` ↔ 原始 CodeArts 测试计划 API 同名字段 `key`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `body` | 是 | `object` |  | 字段对应：<br>MCP 字段 `body` ↔ 原始 CodeArts 测试计划 API 同名字段 `body`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>请求体或正文内容。复杂接口会把多个业务字段放在 body 中提交。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "task_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "key": {
+      "type": "string",
+      "minLength": 1
+    },
+    "body": {},
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "project_id",
+    "task_id",
+    "key",
+    "body"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

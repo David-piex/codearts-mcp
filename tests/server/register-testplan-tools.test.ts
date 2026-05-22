@@ -129,6 +129,43 @@ describe("registerTestPlanTool", () => {
     );
   });
 
+  it("registers dynamic global variable tools", () => {
+    const registerTool = vi.fn();
+
+    expect(
+      registerTestPlanTool({
+        toolName: "testplan_list_dynamic_global_variables",
+        server: { registerTool },
+        mode: "stdio",
+        stdioClient: {} as never
+      })
+    ).toBe(true);
+    expect(
+      registerTestPlanTool({
+        toolName: "testplan_get_dynamic_global_variable",
+        server: { registerTool },
+        mode: "stdio",
+        stdioClient: {} as never
+      })
+    ).toBe(true);
+    expect(
+      registerTestPlanTool({
+        toolName: "testplan_update_dynamic_global_variable",
+        server: { registerTool },
+        mode: "stdio",
+        stdioClient: {} as never
+      })
+    ).toBe(true);
+    expect(
+      registerTestPlanTool({
+        toolName: "testplan_delete_dynamic_global_variable",
+        server: { registerTool },
+        mode: "stdio",
+        stdioClient: {} as never
+      })
+    ).toBe(true);
+  });
+
   it("returns false for non-testplan tools", () => {
     const registerTool = vi.fn();
 

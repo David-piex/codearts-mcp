@@ -604,6 +604,7 @@ export const expectedToolNames = [
   "testplan_count_mindmaps",
   "testplan_create_task",
   "testplan_create_task_relations",
+  "testplan_delete_dynamic_global_variable",
   "testplan_get_api_test_available_config",
   "testplan_get_api_test_basic_aw_v3",
   "testplan_get_api_test_basic_aw_v4",
@@ -629,6 +630,7 @@ export const expectedToolNames = [
   "testplan_get_domain_frozen_info",
   "testplan_get_domain_need_popup",
   "testplan_get_domain_user_count",
+  "testplan_get_dynamic_global_variable",
   "testplan_get_factor",
   "testplan_get_free_declaration",
   "testplan_get_free_test_time",
@@ -726,6 +728,7 @@ export const expectedToolNames = [
   "testplan_list_dashboards",
   "testplan_list_defect_iterators",
   "testplan_list_domain_usage_infos",
+  "testplan_list_dynamic_global_variables",
   "testplan_list_environments",
   "testplan_list_factors_by_asset",
   "testplan_list_feature_case_counts",
@@ -817,5 +820,6 @@ export const expectedToolNames = [
   "testplan_search_features",
   "testplan_search_features_by_case",
   "testplan_stop_task_execution",
+  "testplan_update_dynamic_global_variable",
   "testplan_update_task"
 ];

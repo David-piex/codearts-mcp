@@ -59,10 +59,14 @@ import {
   testPlanGetLicenseSpecificationInput,
   testPlanGetMindmapInput,
   testPlanGetMindmapBackupInput,
+  testPlanGetDynamicGlobalVariableInput,
   testPlanGetMindmapCreatorNameInput,
+  testPlanListDynamicGlobalVariablesInput,
   testPlanGetMindmapPermissionInput,
   testPlanGetMindmapRecycleInput,
   testPlanGetMindmapStatisticsInput,
+  testPlanUpdateDynamicGlobalVariableInput,
+  testPlanDeleteDynamicGlobalVariableInput,
   testPlanListMindmapBackupsInput,
   testPlanListMindmapRecyclesInput,
   testPlanListMindmapsV2Input,
@@ -282,10 +286,14 @@ import { createTestPlanGetLicenseSpecificationHandler } from "../products/testpl
 import { createTestPlanCountMindmapsHandler } from "../products/testplan/tools/count-mindmaps.js";
 import { createTestPlanGetMindmapHandler } from "../products/testplan/tools/get-mindmap.js";
 import { createTestPlanGetMindmapBackupHandler } from "../products/testplan/tools/get-mindmap-backup.js";
+import { createTestPlanGetDynamicGlobalVariableHandler } from "../products/testplan/tools/get-dynamic-global-variable.js";
 import { createTestPlanGetMindmapCreatorNameHandler } from "../products/testplan/tools/get-mindmap-creator-name.js";
 import { createTestPlanGetMindmapPermissionHandler } from "../products/testplan/tools/get-mindmap-permission.js";
 import { createTestPlanGetMindmapRecycleHandler } from "../products/testplan/tools/get-mindmap-recycle.js";
 import { createTestPlanGetMindmapStatisticsHandler } from "../products/testplan/tools/get-mindmap-statistics.js";
+import { createTestPlanListDynamicGlobalVariablesHandler } from "../products/testplan/tools/list-dynamic-global-variables.js";
+import { createTestPlanUpdateDynamicGlobalVariableHandler } from "../products/testplan/tools/update-dynamic-global-variable.js";
+import { createTestPlanDeleteDynamicGlobalVariableHandler } from "../products/testplan/tools/delete-dynamic-global-variable.js";
 import { createTestPlanListMindmapBackupsHandler } from "../products/testplan/tools/list-mindmap-backups.js";
 import { createTestPlanListMindmapsV2Handler } from "../products/testplan/tools/list-mindmaps-v2.js";
 import { createTestPlanListMindmapsV3Handler } from "../products/testplan/tools/list-mindmaps-v3.js";
@@ -1080,6 +1088,30 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanGetVariableSynchronizationInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetVariableSynchronizationHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetVariableSynchronizationHandler
+  }),
+  "testplan_list_dynamic_global_variables": defineProductTool({
+    description: "List CodeArts TestPlan dynamic global variables for a task",
+    inputSchema: testPlanListDynamicGlobalVariablesInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListDynamicGlobalVariablesHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListDynamicGlobalVariablesHandler
+  }),
+  "testplan_get_dynamic_global_variable": defineProductTool({
+    description: "Get CodeArts TestPlan dynamic global variable by key",
+    inputSchema: testPlanGetDynamicGlobalVariableInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetDynamicGlobalVariableHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetDynamicGlobalVariableHandler
+  }),
+  "testplan_update_dynamic_global_variable": defineProductTool({
+    description: "Update CodeArts TestPlan dynamic global variable by key",
+    inputSchema: testPlanUpdateDynamicGlobalVariableInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanUpdateDynamicGlobalVariableHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanUpdateDynamicGlobalVariableHandler
+  }),
+  "testplan_delete_dynamic_global_variable": defineProductTool({
+    description: "Delete CodeArts TestPlan dynamic global variable by key",
+    inputSchema: testPlanDeleteDynamicGlobalVariableInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanDeleteDynamicGlobalVariableHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanDeleteDynamicGlobalVariableHandler
   }),
   "testplan_get_progress": defineProductTool({
     description: "Get CodeArts TestPlan async progress",

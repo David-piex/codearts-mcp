@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
+  testPlanDeleteDynamicGlobalVariableInput,
+  testPlanGetDynamicGlobalVariableInput,
   testPlanListCasesInput,
   testPlanListIssuesInput,
+  testPlanListDynamicGlobalVariablesInput,
   testPlanRunCasesInput
 } from "../../../src/products/testplan/schemas.js";
 
@@ -87,6 +90,43 @@ describe("testplan schemas", () => {
           description: "batch smoke"
         }
       ],
+      dry_run: true
+    });
+  });
+
+  it("accepts dynamic global variable inputs", () => {
+    expect(
+      testPlanListDynamicGlobalVariablesInput.parse({
+        project_id: "project-1",
+        task_id: "task-1"
+      })
+    ).toMatchObject({
+      project_id: "project-1",
+      task_id: "task-1"
+    });
+
+    expect(
+      testPlanGetDynamicGlobalVariableInput.parse({
+        project_id: "project-1",
+        task_id: "task-1",
+        key: "host"
+      })
+    ).toMatchObject({
+      project_id: "project-1",
+      task_id: "task-1",
+      key: "host"
+    });
+
+    expect(
+      testPlanDeleteDynamicGlobalVariableInput.parse({
+        project_id: "project-1",
+        task_id: "task-1",
+        key: "host"
+      })
+    ).toMatchObject({
+      project_id: "project-1",
+      task_id: "task-1",
+      key: "host",
       dry_run: true
     });
   });
