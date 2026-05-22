@@ -194,7 +194,7 @@ Req 写工具遵循两个层面的安全策略：
 | `req_copy_work_items` | 写 | 复制工作项 |
 | `req_update_work_item_flow` | 写 | 修改工作项状态并联动责任人 |
 
-说明：`req_get_work_item_issue_details` 只调用官方原始 `IssueDetailsV2 /v2/issues/show`，工具默认透传 `include=children,parent`，并把返回里的 `journals` 映射为 `comments`；该工具不会 fallback 到 `req_get_work_item` 或评论列表接口。返回字段会显式包含基础信息、时间、状态类型、优先级/严重程度、人员、项目结构、自定义字段、附件、标签、锁版本、关注/私有/删除状态和评论字段，同时通过 `rawIssue` / `raw` 保留官方 V2 原始 issue 响应。
+说明：`req_get_work_item_issue_details` 只调用官方原始 `IssueDetailsV2 /v2/issues/show`，工具默认透传 `include=children,parent`，并把返回里的 `journals` 映射为 `comments`；该工具不会 fallback 到 `req_get_work_item` 或评论列表接口。返回字段会显式包含基础信息、时间、状态类型、优先级/严重程度、人员、项目结构、自定义字段、附件、标签、锁版本、关注/私有/删除状态和评论字段；时间戳原值会保留，同时追加 `createdOnText`、`updatedOnText`、`startDateText`、`dueDateText` 这类 Asia/Shanghai 可读时间；并通过 `rawIssue` / `raw` 保留官方 V2 原始 issue 响应。
 
 真实 smoke 状态：基础读路径已验证；工作项写闭环需要 `HUAWEICLOUD_REQ_LIVE_WRITE_PROJECT_ID`。状态流转还需要稳定的目标 `status_id` 样本。
 

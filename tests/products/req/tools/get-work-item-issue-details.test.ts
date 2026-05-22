@@ -118,9 +118,13 @@ describe("mapReqWorkItemIssueDetails", () => {
       title: "33333",
       description: "<p>story desc</p>",
       createdOn: "1779267066000",
+      createdOnText: "2026-05-20 16:51:06 Asia/Shanghai",
       updatedOn: "1779328509000",
+      updatedOnText: "2026-05-21 09:55:09 Asia/Shanghai",
       startDate: "1779379200000",
+      startDateText: "2026-05-22 00:00:00 Asia/Shanghai",
       dueDate: "1779984000000",
+      dueDateText: "2026-05-29 00:00:00 Asia/Shanghai",
       doneRatio: 20,
       expectedWorkHours: 8,
       actualWorkHours: 3,
@@ -362,14 +366,25 @@ describe("createReqGetWorkItemIssueDetailsHandler", () => {
       include: "children,parent"
     });
     expect(result.content[0]?.text).toContain("Loaded work item issue details 2884248 (assignee: Bob)");
+    expect(result.content[0]?.text).toContain("title: 33333");
+    expect(result.content[0]?.text).toContain("status: New");
+    expect(result.content[0]?.text).toContain("type: Story");
+    expect(result.content[0]?.text).toContain("assignee: Bob");
+    expect(result.content[0]?.text).toContain("description: <p>story desc</p>");
+    expect(result.content[0]?.text).toContain("createdOn: 2026-05-20 16:51:06 Asia/Shanghai");
+    expect(result.content[0]?.text).toContain("latestComment: latest comment");
     expect(result.structuredContent.item).toEqual({
       id: "2884248",
       title: "33333",
       description: "<p>story desc</p>",
       createdOn: "1779267066000",
+      createdOnText: "2026-05-20 16:51:06 Asia/Shanghai",
       updatedOn: "1779328509000",
+      updatedOnText: "2026-05-21 09:55:09 Asia/Shanghai",
       startDate: "1779379200000",
+      startDateText: "2026-05-22 00:00:00 Asia/Shanghai",
       dueDate: "1779984000000",
+      dueDateText: "2026-05-29 00:00:00 Asia/Shanghai",
       doneRatio: undefined,
       expectedWorkHours: undefined,
       actualWorkHours: undefined,

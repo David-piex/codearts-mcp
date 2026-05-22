@@ -1,4 +1,5 @@
 import { asItemResult } from "../../../contracts/tool-result.js";
+import { formatItemToolText } from "../../../contracts/tool-result-text.js";
 import { reqGetWorkItemIssueDetailsInput } from "../schemas.js";
 import { mapReqWorkItemAssignee, type ReqWorkItemAssignee } from "./work-item-assignee.js";
 
@@ -94,6 +95,22 @@ function mapJournalAuthor(user?: {
   };
 }
 
+function formatReqTimestampText(value?: string | number) {
+  if (typeof value === "undefined" || value === null || value === "") {
+    return undefined;
+  }
+
+  const numeric = typeof value === "number" ? value : Number(value);
+  const date = Number.isFinite(numeric) ? new Date(numeric) : new Date(String(value));
+
+  if (Number.isNaN(date.getTime())) {
+    return undefined;
+  }
+
+  const shanghaiTime = new Date(date.getTime() + 8 * 60 * 60 * 1000);
+  return `${shanghaiTime.toISOString().slice(0, 19).replace("T", " ")} Asia/Shanghai`;
+}
+
 export function mapReqWorkItemIssueDetails(input: ReqWorkItemIssueDetails) {
   const assignee = mapReqWorkItemAssignee(input);
   const comments = (input.journals ?? []).map((journal) => ({
@@ -110,9 +127,13 @@ export function mapReqWorkItemIssueDetails(input: ReqWorkItemIssueDetails) {
     title: input.subject ?? "",
     description: input.description,
     createdOn: input.created_on,
+    createdOnText: formatReqTimestampText(input.created_on),
     updatedOn: input.updated_on,
+    updatedOnText: formatReqTimestampText(input.updated_on),
     startDate: input.start_date,
+    startDateText: formatReqTimestampText(input.start_date),
     dueDate: input.due_date,
+    dueDateText: formatReqTimestampText(input.due_date),
     doneRatio: input.done_ratio,
     expectedWorkHours: input.expected_work_hours,
     actualWorkHours: input.actual_work_hours,
@@ -175,9 +196,28 @@ export function createReqGetWorkItemIssueDetailsHandler(client: ReqGetWorkItemIs
     const parsed = reqGetWorkItemIssueDetailsInput.parse(input);
     const response = await client.getWorkItemIssueDetails(parsed);
     const result = mapReqWorkItemIssueDetails(response);
+    const text = formatItemToolText(result, {
+      fields: [
+        { label: "id", get: (item) => item.id },
+        { label: "title", get: (item) => item.title },
+        { label: "status", get: (item) => item.status?.name },
+        { label: "type", get: (item) => item.tracker?.name },
+        { label: "assignee", get: (item) => item.assignedToName },
+        { label: "description", get: (item) => item.description },
+        { label: "createdOn", get: (item) => item.createdOnText ?? item.createdOn },
+        { label: "updatedOn", get: (item) => item.updatedOnText ?? item.updatedOn },
+        { label: "startDate", get: (item) => item.startDateText ?? item.startDate },
+        { label: "dueDate", get: (item) => item.dueDateText ?? item.dueDate },
+        { label: "doneRatio", get: (item) => item.doneRatio },
+        { label: "expectedWorkHours", get: (item) => item.expectedWorkHours },
+        { label: "actualWorkHours", get: (item) => item.actualWorkHours },
+        { label: "latestComment", get: (item) => item.latestComment },
+        { label: "journalsTotal", get: (item) => item.journalsTotal }
+      ]
+    });
 
     return {
-      content: [{ type: "text" as const, text: result.summary }],
+      content: [{ type: "text" as const, text }],
       structuredContent: result
     };
   };

@@ -1,4 +1,5 @@
 import { asItemResult } from "../../../contracts/tool-result.js";
+import { formatItemToolText } from "../../../contracts/tool-result-text.js";
 import { reqGetWorkItemInput } from "../schemas.js";
 import {
   mapReqWorkItemAssignee,
@@ -61,9 +62,23 @@ export function createReqGetWorkItemHandler(client: ReqGetWorkItemClient) {
     const parsed = reqGetWorkItemInput.parse(input);
     const response = await client.getWorkItem(parsed);
     const result = mapReqWorkItem(response);
+    const text = formatItemToolText(result, {
+      fields: [
+        { label: "id", get: (item) => item.id },
+        { label: "title", get: (item) => item.title },
+        { label: "status", get: (item) => item.status },
+        { label: "type", get: (item) => item.type },
+        { label: "assignee", get: (item) => item.assignedToName },
+        { label: "description", get: (item) => item.description },
+        { label: "createdOn", get: (item) => item.createdOn },
+        { label: "updatedOn", get: (item) => item.updatedOn },
+        { label: "startDate", get: (item) => item.startDate },
+        { label: "dueDate", get: (item) => item.dueDate }
+      ]
+    });
 
     return {
-      content: [{ type: "text" as const, text: result.summary }],
+      content: [{ type: "text" as const, text }],
       structuredContent: result
     };
   };
