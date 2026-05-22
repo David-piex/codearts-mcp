@@ -32,8 +32,8 @@
 | 流水线 | 78 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 166 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 201 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
-| 测试计划 | 225 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **820** | |
+| 测试计划 | 226 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
+| **总计** | **821** | |
 
 ## 字段对应
 
@@ -773,6 +773,7 @@
 | `testplan_list_defect_iterators` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_defect_iterators) |
 | `testplan_list_domain_usage_infos` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_domain_usage_infos) |
 | `testplan_list_environments` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_environments) |
+| `testplan_list_factors_by_asset` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_factors_by_asset) |
 | `testplan_list_feature_case_counts` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_feature_case_counts) |
 | `testplan_list_feature_children` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_feature_children) |
 | `testplan_list_feature_children_v5` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_feature_children_v5) |

@@ -727,6 +727,7 @@ export const expectedToolNames = [
   "testplan_list_defect_iterators",
   "testplan_list_domain_usage_infos",
   "testplan_list_environments",
+  "testplan_list_factors_by_asset",
   "testplan_list_feature_case_counts",
   "testplan_list_feature_children",
   "testplan_list_feature_children_v5",

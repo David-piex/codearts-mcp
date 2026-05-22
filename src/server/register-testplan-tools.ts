@@ -141,6 +141,7 @@ import {
   testPlanListFeatureChildrenInput,
   testPlanListFeatureChildrenV5Input,
   testPlanListFeatureDescendantUrisInput,
+  testPlanListFactorsByAssetInput,
   testPlanListGt3kFeatureChildrenV5Input,
   testPlanListGt3kBranchesInput,
   testPlanListGt3kCurrentUserTestcasesInput,
@@ -353,6 +354,7 @@ import { createTestPlanListApiTestsuiteHistoryHandler } from "../products/testpl
 import { createTestPlanListAttachmentsHandler } from "../products/testplan/tools/list-attachments.js";
 import { createTestPlanListAssetsHandler } from "../products/testplan/tools/list-assets.js";
 import { createTestPlanListAssetTreeHandler } from "../products/testplan/tools/list-asset-tree.js";
+import { createTestPlanListFactorsByAssetHandler } from "../products/testplan/tools/list-factors-by-asset.js";
 import { createTestPlanListAuthorizedTasksHandler } from "../products/testplan/tools/list-authorized-tasks.js";
 import { createTestPlanListBranchTestcaseDuplicateNumbersHandler } from "../products/testplan/tools/list-branch-testcase-duplicate-numbers.js";
 import { createTestPlanListCaseTemplatesHandler } from "../products/testplan/tools/list-case-templates.js";
@@ -880,6 +882,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListAssetTreeInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListAssetTreeHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListAssetTreeHandler
+  }),
+  "testplan_list_factors_by_asset": defineProductTool({
+    description: "List CodeArts TestPlan factors under a test factor center asset",
+    inputSchema: testPlanListFactorsByAssetInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListFactorsByAssetHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListFactorsByAssetHandler
   }),
   "testplan_list_branch_testcase_duplicate_numbers": defineProductTool({
     description: "List duplicate CodeArts TestPlan testcase numbers under a branch version",

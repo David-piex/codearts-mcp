@@ -3062,10 +3062,10 @@ describe("createTestPlanClient", () => {
   });
 
   it("loads TestPlan mindmap statistics, asset tree, and factor details", async () => {
-    const requests: string[] = [];
+    const requests: Array<{ method: string; path: string; body?: unknown }> = [];
     const client = createTestPlanClient({
       get: async (path: string) => {
-        requests.push(path);
+        requests.push({ method: "GET", path });
         if (path.includes("/statistics/")) {
           return {
             code: "success",
@@ -3084,6 +3084,18 @@ describe("createTestPlanClient", () => {
           data: {
             id: "factor-1",
             name: "Browser"
+          }
+        };
+      },
+      post: async (path: string, body?: unknown) => {
+        requests.push({ method: "POST", path, body });
+        return {
+          code: "success",
+          data: {
+            total: 1,
+            list: [{ id: "factor-2", name: "Checkout data" }],
+            offset: 2,
+            limit: 15
           }
         };
       }
@@ -3108,6 +3120,33 @@ describe("createTestPlanClient", () => {
       total: 1
     });
     await expect(
+      client.listFactorsByAsset({
+        project_id: "project-1",
+        asset_id: "asset-1",
+        page: 2,
+        page_size: 15,
+        type: "Data",
+        name: "Checkout",
+        parent_node_ids: ["node-1"],
+        creator_num: "creator-1",
+        mindmap_id: "mindmap-1",
+        testpoint_id: "testpoint-1",
+        mindmap_node_id: "mindmap-node-1"
+      })
+    ).resolves.toEqual({
+      factors: [{ id: "factor-2", name: "Checkout data" }],
+      total: 1,
+      raw: {
+        code: "success",
+        data: {
+          total: 1,
+          list: [{ id: "factor-2", name: "Checkout data" }],
+          offset: 2,
+          limit: 15
+        }
+      }
+    });
+    await expect(
       client.getFactor({
         project_id: "project-1",
         id: "factor-1"
@@ -3122,9 +3161,26 @@ describe("createTestPlanClient", () => {
     });
 
     expect(requests).toEqual([
-      "/v1/project-1/statistics/mindmap-1",
-      "/v1/project-1/asset-tree/asset-1",
-      "/v1/project-1/factor/factor-1"
+      { method: "GET", path: "/v1/project-1/statistics/mindmap-1" },
+      { method: "GET", path: "/v1/project-1/asset-tree/asset-1" },
+      {
+        method: "POST",
+        path: "/v1/project-1/factor/asset-1",
+        body: {
+          params: {
+            offset: 2,
+            limit: 15,
+            type: "Data",
+            name: "Checkout",
+            parent_node_ids: ["node-1"],
+            creator_num: "creator-1",
+            mindmap_id: "mindmap-1",
+            testpoint_id: "testpoint-1",
+            mindmap_node_id: "mindmap-node-1"
+          }
+        }
+      },
+      { method: "GET", path: "/v1/project-1/factor/factor-1" }
     ]);
   });
 

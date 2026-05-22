@@ -774,6 +774,23 @@ export type TestPlanClient = {
     nodes: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  listFactorsByAsset: (input: {
+    project_id: string;
+    asset_id: string;
+    page: number;
+    page_size: number;
+    type?: string;
+    name?: string;
+    parent_node_ids?: string[];
+    creator_num?: string;
+    mindmap_id?: string;
+    testpoint_id?: string;
+    mindmap_node_id?: string;
+  }) => Promise<{
+    factors: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
   getFactor: (input: {
     project_id: string;
     id: string;
@@ -3806,6 +3823,39 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       return {
         nodes,
         total: readTotal(payload, response, nodes.length)
+      };
+    },
+    async listFactorsByAsset(input) {
+      const params: Record<string, unknown> = {
+        offset: input.page,
+        limit: input.page_size
+      };
+      for (const key of [
+        "type",
+        "name",
+        "parent_node_ids",
+        "creator_num",
+        "mindmap_id",
+        "testpoint_id",
+        "mindmap_node_id"
+      ] as const) {
+        const value = input[key];
+        if (value !== undefined) {
+          params[key] = value;
+        }
+      }
+
+      const response = await _http.post(
+        `/v1/${encodeURIComponent(input.project_id)}/factor/${encodeURIComponent(input.asset_id)}`,
+        { params }
+      );
+      const payload = readResultPayload(response);
+      const factors = readPageItems(payload);
+
+      return {
+        factors,
+        total: readPageTotal(payload, response, factors.length),
+        raw: payload
       };
     },
     async getFactor(input) {

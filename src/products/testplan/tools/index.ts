@@ -142,6 +142,7 @@ export const testPlanToolNames = [
   "testplan_list_feature_children",
   "testplan_list_feature_children_v5",
   "testplan_list_feature_descendant_uris",
+  "testplan_list_factors_by_asset",
   "testplan_list_gt3k_branches",
   "testplan_list_gt3k_current_user_testcases",
   "testplan_list_gt3k_defect_iterators",

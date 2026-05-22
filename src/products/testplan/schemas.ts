@@ -379,6 +379,18 @@ export const testPlanListAssetTreeInput = z.object({
   asset_id: idSchema
 });
 
+export const testPlanListFactorsByAssetInput = pagingSchema.extend({
+  project_id: idSchema,
+  asset_id: idSchema,
+  type: z.string().min(1).optional(),
+  name: z.string().min(1).optional(),
+  parent_node_ids: z.array(idSchema).optional(),
+  creator_num: idSchema.optional(),
+  mindmap_id: idSchema.optional(),
+  testpoint_id: idSchema.optional(),
+  mindmap_node_id: idSchema.optional()
+});
+
 export const testPlanGetFactorInput = z.object({
   project_id: idSchema,
   id: idSchema
