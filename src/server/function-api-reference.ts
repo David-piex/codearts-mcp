@@ -316,7 +316,9 @@ function describeToolInChinese(toolName: string) {
     repo_associate_remote_mirror: "关联代码仓远程镜像地址。",
     repo_start_remote_mirror_synchronization: "启动代码仓远程镜像同步任务。",
     repo_get_remote_mirror: "获取代码仓远程镜像配置和同步状态。",
-    repo_update_remote_mirror: "更新代码仓远程镜像配置。"
+    repo_update_remote_mirror: "更新代码仓远程镜像配置。",
+    req_get_work_item_issue_details:
+      "获取需求管理的聚合工作项详情（基础详情 + 评论），返回结果包含 `assignee` / `assignedToName` 以便查看处理人；当前工具不直连官方原始 `IssueDetailsV2 /v2/issues/show`，该 V2 原始接口要求 `X-Auth-Token`。"
   };
 
   if (exactDescriptions[toolName]) {
@@ -747,12 +749,17 @@ function describeToolParameter(toolName: string, name: string) {
       ["默认取值", "不涉及。"]
     ])
   };
+  const reqGetWorkItemIssueDetailsDescriptions: Record<string, string> = {
+    include:
+      "兼容旧调用参数；当前 MCP 聚合实现读取稳定工作项详情和评论端点，不依赖官方原始 `IssueDetailsV2 /v2/issues/show` 的 include 语义。"
+  };
 
   const toolDescriptions: Record<string, Record<string, string>> = {
     req_create_work_item: reqCreateWorkItemDescriptions,
     req_create_iteration_work_item: reqCreateIterationWorkItemDescriptions,
     req_create_plan_work_item: reqCreatePlanWorkItemDescriptions,
-    req_update_work_item: reqUpdateWorkItemDescriptions
+    req_update_work_item: reqUpdateWorkItemDescriptions,
+    req_get_work_item_issue_details: reqGetWorkItemIssueDetailsDescriptions
   };
 
   return toolDescriptions[toolName]?.[name];

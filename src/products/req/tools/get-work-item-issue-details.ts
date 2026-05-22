@@ -36,6 +36,7 @@ export function mapReqWorkItemIssueDetails(input: {
   comments: ReqWorkItemComment[];
 }) {
   const assignee = mapReqWorkItemAssignee(input.workItem);
+  const assigneeText = assignee?.displayName ? ` (assignee: ${assignee.displayName})` : "";
   const latestComment = [...input.comments]
     .sort((left, right) => {
       const leftOrder = left.timestamp ?? 0;
@@ -43,7 +44,7 @@ export function mapReqWorkItemIssueDetails(input: {
       return rightOrder - leftOrder;
     })[0];
 
-  return asItemResult(`Loaded work item issue details ${input.workItem.id}`, {
+  return asItemResult(`Loaded work item issue details ${input.workItem.id}${assigneeText}`, {
     id: String(input.workItem.id),
     title: input.workItem.subject,
     description: input.workItem.description,

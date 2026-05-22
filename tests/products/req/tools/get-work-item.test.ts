@@ -33,5 +33,6 @@ describe("mapReqWorkItem", () => {
       },
       assignedToName: "Bob"
     });
+    expect(result.summary).toBe("Loaded work item 9 (assignee: Bob)");
   });
 });

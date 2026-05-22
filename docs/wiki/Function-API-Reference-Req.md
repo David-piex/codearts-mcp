@@ -6340,7 +6340,7 @@ API 数量：`201`
 
 所属模块：`需求管理`
 
-说明：获取需求管理的工作项工作项详情。
+说明：获取需求管理的聚合工作项详情（基础详情 + 评论），返回结果包含 `assignee` / `assignedToName` 以便查看处理人；当前工具不直连官方原始 `IssueDetailsV2 /v2/issues/show`，该 V2 原始接口要求 `X-Auth-Token`。
 
 调用示例：
 
@@ -6365,7 +6365,7 @@ API 数量：`201`
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 需求管理 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 | `work_item_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `work_item_id` ↔ 原始 CodeArts 需求管理 API 中的工作项 ID 字段，常见原字段名为 `issue_id` 或路径参数中的 issue 标识。<br>工作项 ID，用于定位对应的 CodeArts 资源。 |
-| `include` | 否 | `string` | "children,parent" | 字段对应：<br>MCP 字段 `include` ↔ 原始 CodeArts 需求管理 API 同名字段 `include`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>包含项配置，用于指定接口额外返回哪些关联信息。 |
+| `include` | 否 | `string` | "children,parent" | 字段对应：<br>MCP 字段 `include` ↔ 原始 CodeArts 需求管理 API 同名字段 `include`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>兼容旧调用参数；当前 MCP 聚合实现读取稳定工作项详情和评论端点，不依赖官方原始 `IssueDetailsV2 /v2/issues/show` 的 include 语义。 |
 
 输入 JSON Schema：
 

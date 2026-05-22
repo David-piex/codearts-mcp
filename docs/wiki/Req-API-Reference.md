@@ -194,6 +194,8 @@ Req 写工具遵循两个层面的安全策略：
 | `req_copy_work_items` | 写 | 复制工作项 |
 | `req_update_work_item_flow` | 写 | 修改工作项状态并联动责任人 |
 
+说明：`req_get_work_item_issue_details` 当前走稳定 AK/SK 聚合路径，不直连官方原始 `IssueDetailsV2 /v2/issues/show`。官方该 V2 原始接口要求 `X-Auth-Token`；如只需要查看处理人，优先使用 `req_get_work_item` 或 `req_get_work_item_issue_details` 返回的 `assignee` / `assignedToName`。
+
 真实 smoke 状态：基础读路径已验证；工作项写闭环需要 `HUAWEICLOUD_REQ_LIVE_WRITE_PROJECT_ID`。状态流转还需要稳定的目标 `status_id` 样本。
 
 工作项类型说明：`req_create_work_item`、`req_update_work_item`、`req_create_plan_work_item` 使用入参 `work_item_type`，内部会转换为官方 `tracker_id`。支持传名称或数字字符串：`task`/`"2"` 表示 Task，`bug`/`"3"` 表示 Bug，`epic`/`"5"` 表示 Epic，`feature`/`"6"` 表示 Feature，`story`/`"7"` 表示 Story。也就是说可用 tracker_id 集合是 `2、3、5、6、7`。

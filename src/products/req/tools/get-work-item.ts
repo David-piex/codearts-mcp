@@ -17,8 +17,9 @@ export function mapReqWorkItem(input: {
   assigned_to_id?: number | string;
 }) {
   const assignee = mapReqWorkItemAssignee(input);
+  const assigneeText = assignee?.displayName ? ` (assignee: ${assignee.displayName})` : "";
 
-  return asItemResult(`Loaded work item ${input.id}`, {
+  return asItemResult(`Loaded work item ${input.id}${assigneeText}`, {
     id: String(input.id),
     title: input.subject,
     status: input.status?.name,

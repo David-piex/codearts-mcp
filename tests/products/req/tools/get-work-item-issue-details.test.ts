@@ -115,6 +115,7 @@ describe("mapReqWorkItemIssueDetails", () => {
         }
       ]
     });
+    expect(result.summary).toBe("Loaded work item issue details 2884248 (assignee: Bob)");
   });
 });
 
@@ -168,7 +169,7 @@ describe("createReqGetWorkItemIssueDetailsHandler", () => {
       page: 1,
       page_size: 100
     });
-    expect(result.content[0]?.text).toContain("Loaded work item issue details 2884248");
+    expect(result.content[0]?.text).toContain("Loaded work item issue details 2884248 (assignee: Bob)");
     expect(result.structuredContent.item).toEqual({
       id: "2884248",
       title: "33333",
