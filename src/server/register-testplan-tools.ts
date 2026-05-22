@@ -11,6 +11,7 @@ import {
   testPlanCheckUserDefinedConfigUsedInput,
   testPlanCheckUserInfoInput,
   testPlanCheckUserExistsInput,
+  testPlanCountMindmapsInput,
   testPlanCreateTaskInput,
   testPlanCreateTaskRelationsInput,
   testPlanGetApiTestAvailableConfigInput,
@@ -62,6 +63,7 @@ import {
   testPlanGetMindmapPermissionInput,
   testPlanGetMindmapRecycleInput,
   testPlanGetMindmapStatisticsInput,
+  testPlanListMindmapBackupsInput,
   testPlanListMindmapRecyclesInput,
   testPlanListMindmapsV2Input,
   testPlanListMindmapsV3Input,
@@ -276,12 +278,14 @@ import { createTestPlanGetFactorHandler } from "../products/testplan/tools/get-f
 import { createTestPlanGetImageCapacityWarningHandler } from "../products/testplan/tools/get-image-capacity-warning.js";
 import { createTestPlanGetIteratorHandler } from "../products/testplan/tools/get-iterator.js";
 import { createTestPlanGetLicenseSpecificationHandler } from "../products/testplan/tools/get-license-specification.js";
+import { createTestPlanCountMindmapsHandler } from "../products/testplan/tools/count-mindmaps.js";
 import { createTestPlanGetMindmapHandler } from "../products/testplan/tools/get-mindmap.js";
 import { createTestPlanGetMindmapBackupHandler } from "../products/testplan/tools/get-mindmap-backup.js";
 import { createTestPlanGetMindmapCreatorNameHandler } from "../products/testplan/tools/get-mindmap-creator-name.js";
 import { createTestPlanGetMindmapPermissionHandler } from "../products/testplan/tools/get-mindmap-permission.js";
 import { createTestPlanGetMindmapRecycleHandler } from "../products/testplan/tools/get-mindmap-recycle.js";
 import { createTestPlanGetMindmapStatisticsHandler } from "../products/testplan/tools/get-mindmap-statistics.js";
+import { createTestPlanListMindmapBackupsHandler } from "../products/testplan/tools/list-mindmap-backups.js";
 import { createTestPlanListMindmapsV2Handler } from "../products/testplan/tools/list-mindmaps-v2.js";
 import { createTestPlanListMindmapsV3Handler } from "../products/testplan/tools/list-mindmaps-v3.js";
 import { createTestPlanListMindmapRecyclesHandler } from "../products/testplan/tools/list-mindmap-recycles.js";
@@ -523,6 +527,12 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetMindmapStatisticsHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetMindmapStatisticsHandler
   }),
+  "testplan_count_mindmaps": defineProductTool({
+    description: "Count CodeArts TestPlan mindmaps by folder",
+    inputSchema: testPlanCountMindmapsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanCountMindmapsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanCountMindmapsHandler
+  }),
   "testplan_list_mindmaps_v2": defineProductTool({
     description: "List CodeArts TestPlan mindmaps",
     inputSchema: testPlanListMindmapsV2Input,
@@ -540,6 +550,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListMindmapRecyclesInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListMindmapRecyclesHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListMindmapRecyclesHandler
+  }),
+  "testplan_list_mindmap_backups": defineProductTool({
+    description: "List CodeArts TestPlan mindmap backup entries",
+    inputSchema: testPlanListMindmapBackupsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListMindmapBackupsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListMindmapBackupsHandler
   }),
   "testplan_get_project_testcase": defineProductTool({
     description: "Get CodeArts TestPlan project testcase detail",

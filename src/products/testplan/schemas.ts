@@ -352,6 +352,24 @@ export const testPlanListMindmapRecyclesInput = pagingSchema.extend({
   text: z.string().min(1).optional()
 });
 
+export const testPlanListMindmapBackupsInput = pagingSchema.extend({
+  project_id: idSchema,
+  mindmap_id: idSchema.optional(),
+  bak_name: z.string().min(1).optional(),
+  type: z.string().min(1).optional()
+});
+
+export const testPlanCountMindmapsInput = z.object({
+  project_id: idSchema,
+  parent_folder_id_collection: z.array(idSchema).optional(),
+  project_type: z.string().min(1).optional(),
+  folder_root_id: idSchema.optional(),
+  branch_uri: idSchema.optional(),
+  iterator_uri: z.string().optional(),
+  is_master: z.number().int().optional(),
+  upward_recursion: z.boolean().optional()
+});
+
 export const testPlanListAssetsInput = z.object({
   project_id: idSchema
 });

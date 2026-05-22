@@ -39,7 +39,7 @@ describe("registerReqTool", () => {
       "req_get_work_item",
       expect.objectContaining({
         title: "req_get_work_item",
-        description: "Get CodeArts Req work item detail"
+        description: "Get CodeArts Req work item detail including assignee information when available"
       }),
       expect.any(Function)
     );

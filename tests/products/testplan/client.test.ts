@@ -791,6 +791,23 @@ describe("createTestPlanClient", () => {
             }
           };
         }
+        if (path.includes("/mindmap-backups/page")) {
+          return {
+            result: {
+              page_list: [{ id: "backup-1", bak_name: "Nightly backup" }],
+              total: 1
+            }
+          };
+        }
+        if (path.includes("/mindmaps/mindmap-total")) {
+          return {
+            code: "success",
+            data: {
+              feature_root_id: 15,
+              "-1": 4
+            }
+          };
+        }
 
         return { result: { page_list: [], total: 0 } };
       }
@@ -856,6 +873,47 @@ describe("createTestPlanClient", () => {
         total: 1
       }
     });
+    await expect(
+      client.listMindmapBackups({
+        project_id: "project-1",
+        page: 1,
+        page_size: 10,
+        mindmap_id: "mindmap-v3-1",
+        bak_name: "Nightly",
+        type: "manual"
+      })
+    ).resolves.toEqual({
+      backups: [{ id: "backup-1", bak_name: "Nightly backup" }],
+      total: 1,
+      raw: {
+        page_list: [{ id: "backup-1", bak_name: "Nightly backup" }],
+        total: 1
+      }
+    });
+    await expect(
+      client.countMindmaps({
+        project_id: "project-1",
+        parent_folder_id_collection: ["folder-1"],
+        project_type: "scrum",
+        folder_root_id: "feature_root_id",
+        branch_uri: "branch-1",
+        iterator_uri: "iterator-1",
+        is_master: 1,
+        upward_recursion: false
+      })
+    ).resolves.toEqual({
+      counts: {
+        feature_root_id: 15,
+        "-1": 4
+      },
+      raw: {
+        code: "success",
+        data: {
+          feature_root_id: 15,
+          "-1": 4
+        }
+      }
+    });
 
     expect(requests).toEqual([
       {
@@ -906,6 +964,34 @@ describe("createTestPlanClient", () => {
             iterator_uri: "iterator-1",
             is_master: 1,
             confidentiality_code_collection: ["public"]
+          }
+        }
+      },
+      {
+        method: "POST",
+        path: "/v3/project-1/mindmap-backups/page",
+        body: {
+          params: {
+            offset: 1,
+            limit: 10,
+            mindmap_id: "mindmap-v3-1",
+            bak_name: "Nightly",
+            type: "manual"
+          }
+        }
+      },
+      {
+        method: "POST",
+        path: "/v1/project-1/mindmaps/mindmap-total",
+        body: {
+          params: {
+            parent_folder_id_collection: ["folder-1"],
+            project_type: "scrum",
+            folder_root_id: "feature_root_id",
+            branch_uri: "branch-1",
+            iterator_uri: "iterator-1",
+            is_master: 1,
+            upward_recursion: false
           }
         }
       }

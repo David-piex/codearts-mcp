@@ -32,8 +32,8 @@
 | 流水线 | 78 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 166 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 201 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
-| 测试计划 | 223 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **818** | |
+| 测试计划 | 225 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
+| **总计** | **820** | |
 
 ## 字段对应
 
@@ -647,6 +647,7 @@
 | `testplan_check_user_defined_config_used` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_check_user_defined_config_used) |
 | `testplan_check_user_exists` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_check_user_exists) |
 | `testplan_check_user_info` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_check_user_info) |
+| `testplan_count_mindmaps` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_count_mindmaps) |
 | `testplan_create_task` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_create_task) |
 | `testplan_create_task_relations` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_create_task_relations) |
 | `testplan_get_api_test_available_config` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_api_test_available_config) |
@@ -794,6 +795,7 @@
 | `testplan_list_iterator_issue_cases` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_iterator_issue_cases) |
 | `testplan_list_iterator_issue_ids` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_iterator_issue_ids) |
 | `testplan_list_iterator_issues` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_iterator_issues) |
+| `testplan_list_mindmap_backups` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_mindmap_backups) |
 | `testplan_list_mindmap_recycles` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_mindmap_recycles) |
 | `testplan_list_mindmaps_v2` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_mindmaps_v2) |
 | `testplan_list_mindmaps_v3` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_mindmaps_v3) |

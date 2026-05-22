@@ -736,6 +736,31 @@ export type TestPlanClient = {
     total?: number;
     raw: Record<string, unknown>;
   }>;
+  listMindmapBackups: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    mindmap_id?: string;
+    bak_name?: string;
+    type?: string;
+  }) => Promise<{
+    backups: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
+  countMindmaps: (input: {
+    project_id: string;
+    parent_folder_id_collection?: string[];
+    project_type?: string;
+    folder_root_id?: string;
+    branch_uri?: string;
+    iterator_uri?: string;
+    is_master?: number;
+    upward_recursion?: boolean;
+  }) => Promise<{
+    counts: Record<string, unknown>;
+    raw: Record<string, unknown>;
+  }>;
   listAssets: (input: {
     project_id: string;
   }) => Promise<{
@@ -3698,6 +3723,60 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       return {
         recycles,
         total: readPageTotal(payload, response, recycles.length),
+        raw: payload
+      };
+    },
+    async listMindmapBackups(input) {
+      const params: Record<string, unknown> = {
+        offset: input.page,
+        limit: input.page_size
+      };
+      for (const key of ["mindmap_id", "bak_name", "type"] as const) {
+        const value = input[key];
+        if (value !== undefined) {
+          params[key] = value;
+        }
+      }
+
+      const response = await _http.post(
+        `/v3/${encodeURIComponent(input.project_id)}/mindmap-backups/page`,
+        { params }
+      );
+      const payload = readResultPayload(response);
+      const backups = readPageItems(payload);
+
+      return {
+        backups,
+        total: readPageTotal(payload, response, backups.length),
+        raw: payload
+      };
+    },
+    async countMindmaps(input) {
+      const params: Record<string, unknown> = {};
+      for (const key of [
+        "parent_folder_id_collection",
+        "project_type",
+        "folder_root_id",
+        "branch_uri",
+        "iterator_uri",
+        "is_master",
+        "upward_recursion"
+      ] as const) {
+        const value = input[key];
+        if (value !== undefined) {
+          params[key] = value;
+        }
+      }
+
+      const response = await _http.post(
+        `/v1/${encodeURIComponent(input.project_id)}/mindmaps/mindmap-total`,
+        { params }
+      );
+      const payload = readResultPayload(response);
+      const counts = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        counts,
         raw: payload
       };
     },
