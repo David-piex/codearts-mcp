@@ -94,6 +94,7 @@ import {
   testPlanGetRuleCheckTaskSummaryInput,
   testPlanGetServiceTypeOverviewInput,
   testPlanGetTestReportInput,
+  testPlanDownloadTestDesignTemplateInput,
   testPlanGetTestDesignTemplateInput,
   testPlanGetTestDesignTestcaseInput,
   testPlanGetTestcaseScriptDetailV1Input,
@@ -321,6 +322,7 @@ import { createTestPlanGetRuleCheckTaskReportHandler } from "../products/testpla
 import { createTestPlanGetRuleCheckTaskSummaryHandler } from "../products/testplan/tools/get-rule-check-task-summary.js";
 import { createTestPlanGetServiceTypeOverviewHandler } from "../products/testplan/tools/get-service-type-overview.js";
 import { createTestPlanGetTestReportHandler } from "../products/testplan/tools/get-test-report.js";
+import { createTestPlanDownloadTestDesignTemplateHandler } from "../products/testplan/tools/download-test-design-template.js";
 import { createTestPlanGetTestDesignTemplateHandler } from "../products/testplan/tools/get-test-design-template.js";
 import { createTestPlanGetTestDesignTestcaseHandler } from "../products/testplan/tools/get-test-design-testcase.js";
 import { createTestPlanGetTestcaseV4Handler } from "../products/testplan/tools/get-testcase-v4.js";
@@ -614,6 +616,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanGetTestDesignTemplateInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetTestDesignTemplateHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetTestDesignTemplateHandler
+  }),
+  "testplan_download_test_design_template": defineProductTool({
+    description: "Get CodeArts TestPlan test design template download metadata",
+    inputSchema: testPlanDownloadTestDesignTemplateInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanDownloadTestDesignTemplateHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanDownloadTestDesignTemplateHandler
   }),
   "testplan_get_test_design_testcase": defineProductTool({
     description: "Get CodeArts TestPlan test design testcase detail",

@@ -3126,6 +3126,15 @@ describe("createTestPlanClient", () => {
             data: [{ id: "asset-1", name: "Common factors" }]
           };
         }
+        if (path.startsWith("/v1/project-1/templates")) {
+          return {
+            status: "ok",
+            result: {
+              id: "download-template-1",
+              name: "Download template"
+            }
+          };
+        }
 
         return {
           code: "success",
@@ -3215,6 +3224,38 @@ describe("createTestPlanClient", () => {
       "/v1/project-1/asset",
       "/v2/project-1/templates/template-1"
     ]);
+  });
+
+  it("loads TestPlan test design template download metadata", async () => {
+    const requests: string[] = [];
+    const client = createTestPlanClient({
+      get: async (path: string) => {
+        requests.push(path);
+        return {
+          status: "ok",
+          result: {
+            id: "download-template-1",
+            name: "Download template"
+          }
+        };
+      }
+    } as never);
+
+    await expect(
+      client.downloadTestDesignTemplate({
+        project_id: "project-1",
+        file_name: "template.xlsx"
+      })
+    ).resolves.toEqual({
+      template_id: "download-template-1",
+      name: "Download template",
+      raw: {
+        id: "download-template-1",
+        name: "Download template"
+      }
+    });
+
+    expect(requests).toEqual(["/v1/project-1/templates?file_name=template.xlsx"]);
   });
 
   it("loads TestPlan mindmap statistics, asset tree, and factor details", async () => {

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   testPlanDeleteDynamicGlobalVariableInput,
+  testPlanDownloadTestDesignTemplateInput,
   testPlanGetDynamicGlobalVariableInput,
   testPlanListCasesInput,
   testPlanListIssuesInput,
@@ -42,6 +43,18 @@ describe("testplan schemas", () => {
       },
       page: 1,
       page_size: 20
+    });
+  });
+
+  it("accepts optional test design template download file name", () => {
+    const parsed = testPlanDownloadTestDesignTemplateInput.parse({
+      project_id: "project-1",
+      file_name: "template.xlsx"
+    });
+
+    expect(parsed).toEqual({
+      project_id: "project-1",
+      file_name: "template.xlsx"
     });
   });
 

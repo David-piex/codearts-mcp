@@ -87,6 +87,27 @@ describe("registerTestPlanTool", () => {
     );
   });
 
+  it("registers test design template download metadata tool", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerTestPlanTool({
+      toolName: "testplan_download_test_design_template",
+      server: { registerTool },
+      mode: "stdio",
+      stdioClient: {} as never
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "testplan_download_test_design_template",
+      expect.objectContaining({
+        title: "testplan_download_test_design_template",
+        description: "Get CodeArts TestPlan test design template download metadata"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("registers functional test status read tools", () => {
     const registerTool = vi.fn();
 

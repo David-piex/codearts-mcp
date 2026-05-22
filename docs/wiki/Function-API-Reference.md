@@ -32,8 +32,8 @@
 | 流水线 | 78 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 166 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 201 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
-| 测试计划 | 230 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **825** | |
+| 测试计划 | 231 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
+| **总计** | **826** | |
 
 ## 字段对应
 
@@ -651,6 +651,7 @@
 | `testplan_create_task` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_create_task) |
 | `testplan_create_task_relations` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_create_task_relations) |
 | `testplan_delete_dynamic_global_variable` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_delete_dynamic_global_variable) |
+| `testplan_download_test_design_template` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_download_test_design_template) |
 | `testplan_get_api_test_available_config` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_api_test_available_config) |
 | `testplan_get_api_test_basic_aw_v3` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_api_test_basic_aw_v3) |
 | `testplan_get_api_test_basic_aw_v4` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_api_test_basic_aw_v4) |

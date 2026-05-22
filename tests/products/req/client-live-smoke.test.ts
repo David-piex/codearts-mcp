@@ -949,7 +949,7 @@ if (hasLiveEnv(process.env)) {
     }, 30000);
 
     it("reads official work item issue details with journals mapped to comments", async () => {
-      const sample = liveWorkItemSample;
+      const sample = liveWorkItem;
 
       if (!sample) {
         return;
@@ -962,7 +962,7 @@ if (hasLiveEnv(process.env)) {
       });
 
       expect(String(details.id)).toBe(sample.workItemId);
-      expect(details.subject ?? details.name ?? details.title ?? "").toBeTruthy();
+      expect(details.subject ?? details.name ?? "").toBeTruthy();
     }, 60000);
 
     it("covers status, workflow, template, and public-config reads for a configured project", async () => {

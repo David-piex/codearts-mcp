@@ -807,6 +807,14 @@ export type TestPlanClient = {
     name?: string;
     raw: Record<string, unknown>;
   }>;
+  downloadTestDesignTemplate: (input: {
+    project_id: string;
+    file_name?: string;
+  }) => Promise<{
+    template_id?: string;
+    name?: string;
+    raw: Record<string, unknown>;
+  }>;
   listTesthubServices: () => Promise<{
     services: Array<Record<string, unknown>>;
     total?: number;
@@ -3922,6 +3930,25 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
 
       return {
         template_id: String(template.id ?? template.uri ?? input.id),
+        name: typeof template.name === "string" ? template.name : undefined,
+        raw: template
+      };
+    },
+    async downloadTestDesignTemplate(input) {
+      const query = new URLSearchParams();
+      appendQueryValue(query, "file_name", input.file_name);
+      const suffix = query.size ? `?${query.toString()}` : "";
+      const response = await _http.get(
+        `/v1/${encodeURIComponent(input.project_id)}/templates${suffix}`
+      );
+      const payload = readResultPayload(response);
+      const template = readEnvelope(payload.result) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        template_id:
+          typeof template.id === "string" || typeof template.id === "number"
+            ? String(template.id)
+            : undefined,
         name: typeof template.name === "string" ? template.name : undefined,
         raw: template
       };
