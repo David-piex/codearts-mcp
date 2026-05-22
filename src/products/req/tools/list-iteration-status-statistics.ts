@@ -6,7 +6,7 @@ type ReqListIterationStatusStatisticsInputValue = {
   project_id: string;
   iteration_id: string;
   tracker_id?: number;
-  status_id?: number;
+  status_id: number;
 };
 
 type ReqIterationStatusStatistic = {

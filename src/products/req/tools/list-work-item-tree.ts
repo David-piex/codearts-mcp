@@ -3,12 +3,14 @@ import { formatProjectScopedEmptyText } from "../../../contracts/project-scoped-
 import { formatListToolText } from "../../../contracts/tool-result-text.js";
 import { toPageInfo } from "../../../core/pagination/page-info.js";
 import { reqListWorkItemTreeInput } from "../schemas.js";
+import { formatReqTimestampText } from "./time-format.js";
 import {
   mapReqWorkItemAssignee,
   type ReqWorkItemAssignee
 } from "./work-item-assignee.js";
 
 type ReqWorkItemTreeItem = {
+  [key: string]: unknown;
   id: number | string;
   subject?: string;
   name?: string;
@@ -26,6 +28,14 @@ type ReqWorkItemTreeItem = {
   assigned_user?: ReqWorkItemAssignee;
   assigned_id?: string;
   assigned_to_id?: number | string;
+  created_on?: string | number;
+  created_time?: string | number;
+  updated_on?: string | number;
+  updated_time?: string | number;
+  start_date?: string | number;
+  due_date?: string | number;
+  begin_time?: string | number;
+  end_time?: string | number;
   is_parent?: boolean;
   isParent?: boolean;
 };
@@ -44,18 +54,32 @@ export function mapReqWorkItemTree(input: ReqWorkItemTree) {
     `${input.work_items.length} work items found in tree mode`,
     input.work_items.map((item) => {
       const assignee = mapReqWorkItemAssignee(item);
+      const createdOn = item.created_on ?? item.created_time;
+      const updatedOn = item.updated_on ?? item.updated_time;
+      const startDate = item.start_date ?? item.begin_time;
+      const dueDate = item.due_date ?? item.end_time;
 
       return {
         id: String(item.id),
         subject: item.subject ?? item.name ?? "",
         statusName: item.status?.name ?? item.status_name,
         trackerName: item.tracker?.name ?? item.tracker_name,
+        createdOn,
+        createdOnText: formatReqTimestampText(createdOn),
+        updatedOn,
+        updatedOnText: formatReqTimestampText(updatedOn),
+        startDate,
+        startDateText: formatReqTimestampText(startDate),
+        dueDate,
+        dueDateText: formatReqTimestampText(dueDate),
         assignee,
         assignedToName: assignee?.displayName,
-        hasChildren: item.is_parent ?? item.isParent
+        hasChildren: item.is_parent ?? item.isParent,
+        rawWorkItem: item
       };
     }),
-    toPageInfo(input.page, input.page_size, input.total)
+    toPageInfo(input.page, input.page_size, input.total),
+    { workItems: input.work_items }
   );
 }
 
@@ -80,7 +104,8 @@ export function createReqListWorkItemTreeHandler(client: ReqListWorkItemTreeClie
             { label: "subject", get: (item) => (item as { subject?: string }).subject },
             { label: "status", get: (item) => (item as { statusName?: string }).statusName },
             { label: "tracker", get: (item) => (item as { trackerName?: string }).trackerName },
-            { label: "assignee", get: (item) => (item as { assignedToName?: string }).assignedToName }
+            { label: "assignee", get: (item) => (item as { assignedToName?: string }).assignedToName },
+            { label: "updatedOn", get: (item) => (item as { updatedOnText?: string; updatedOn?: string }).updatedOnText ?? (item as { updatedOn?: string }).updatedOn }
           ]
         })
       : formatProjectScopedEmptyText({

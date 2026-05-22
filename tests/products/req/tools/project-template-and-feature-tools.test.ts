@@ -74,7 +74,8 @@ describe("mapReqUserFeatures", () => {
       features: [
         {
           key: "issue.associate-wiki",
-          control: "show"
+          control: "show",
+          enabled: true
         },
         {
           key: "issue.automation",
@@ -86,12 +87,54 @@ describe("mapReqUserFeatures", () => {
     expect(result.items).toEqual([
       {
         key: "issue.associate-wiki",
-        control: "show"
+        control: "show",
+        enabled: true
       },
       {
         key: "issue.automation",
         control: "show"
       }
+    ]);
+    expect(result.raw).toEqual({
+      project_id: "project-1",
+      features: [
+        {
+          key: "issue.associate-wiki",
+          control: "show",
+          enabled: true
+        },
+        {
+          key: "issue.automation",
+          control: "show"
+        }
+      ]
+    });
+  });
+
+  it("accepts result, data, and dictionary response shapes", () => {
+    expect(
+      mapReqUserFeatures({
+        project_id: "project-1",
+        result: [{ key: "from-result", control: "show" }]
+      }).items
+    ).toEqual([{ key: "from-result", control: "show" }]);
+
+    expect(
+      mapReqUserFeatures({
+        project_id: "project-1",
+        data: [{ key: "from-data", control: "hide" }]
+      }).items
+    ).toEqual([{ key: "from-data", control: "hide" }]);
+
+    expect(
+      mapReqUserFeatures({
+        project_id: "project-1",
+        associateWiki: { key: "issue.associate-wiki", control: "show" },
+        automation: { key: "issue.automation", control: "hide" }
+      }).items
+    ).toEqual([
+      { key: "issue.associate-wiki", control: "show" },
+      { key: "issue.automation", control: "hide" }
     ]);
   });
 });

@@ -98,5 +98,5 @@ export const reqListIterationStatusStatisticsInput = z.object({
   project_id: idSchema,
   iteration_id: idSchema,
   tracker_id: z.number().int().positive().optional(),
-  status_id: z.number().int().positive().optional()
+  status_id: z.number().int().positive()
 });

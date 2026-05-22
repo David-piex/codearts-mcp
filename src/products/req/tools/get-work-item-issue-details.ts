@@ -1,6 +1,7 @@
 import { asItemResult } from "../../../contracts/tool-result.js";
 import { formatItemToolText } from "../../../contracts/tool-result-text.js";
 import { reqGetWorkItemIssueDetailsInput } from "../schemas.js";
+import { formatReqTimestampText } from "./time-format.js";
 import { mapReqWorkItemAssignee, type ReqWorkItemAssignee } from "./work-item-assignee.js";
 
 type ReqWorkItemIssueDetails = {
@@ -93,22 +94,6 @@ function mapJournalAuthor(user?: {
     nickName: [user.first_name, user.last_name].filter(Boolean).join(" ").trim() || undefined,
     userNumId: user.user_num_id
   };
-}
-
-function formatReqTimestampText(value?: string | number) {
-  if (typeof value === "undefined" || value === null || value === "") {
-    return undefined;
-  }
-
-  const numeric = typeof value === "number" ? value : Number(value);
-  const date = Number.isFinite(numeric) ? new Date(numeric) : new Date(String(value));
-
-  if (Number.isNaN(date.getTime())) {
-    return undefined;
-  }
-
-  const shanghaiTime = new Date(date.getTime() + 8 * 60 * 60 * 1000);
-  return `${shanghaiTime.toISOString().slice(0, 19).replace("T", " ")} Asia/Shanghai`;
 }
 
 export function mapReqWorkItemIssueDetails(input: ReqWorkItemIssueDetails) {

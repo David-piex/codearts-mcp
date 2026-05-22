@@ -59,6 +59,17 @@ describe("reqListIterationStatusStatisticsInput exports", () => {
     expect(reqListIterationStatusStatisticsInput.parse(input)).toEqual(input);
     expect(reqListIterationStatusStatisticsInputFromBarrel.parse(input)).toEqual(input);
   });
+
+  it("requires status_id because the upstream query parameter is mandatory", () => {
+    const input = {
+      project_id: "project-1",
+      iteration_id: "iteration-1",
+      tracker_id: 7
+    };
+
+    expect(() => reqListIterationStatusStatisticsInput.parse(input)).toThrow(/status_id/);
+    expect(() => reqListIterationStatusStatisticsInputFromBarrel.parse(input)).toThrow(/status_id/);
+  });
 });
 
 describe("createReqListIterationStatusStatisticsHandler", () => {

@@ -1007,6 +1007,7 @@ describe("createReqClient", () => {
           id: 70779173,
           subject: "mcp-live-smoke",
           status: { name: "新建" },
+          tracker: { name: "Task" },
           tracker_name: "Task",
           assigned_to: {
             assigned_user_id: "user-1",
@@ -1019,8 +1020,10 @@ describe("createReqClient", () => {
     });
     expect(detail).toEqual({
       id: 70779173,
+      name: "mcp-live-smoke-updated",
       subject: "mcp-live-smoke-updated",
       status: { name: "新建" },
+      tracker: { name: "Task" },
       tracker_name: "Task",
       description: "temporary live smoke item",
       start_date: "2028-04-12",
@@ -1063,6 +1066,7 @@ describe("createReqClient", () => {
           id: 70779181,
           subject: "mcp-live-smoke-updated",
           status: { name: "新建" },
+          tracker: { name: "Task" },
           tracker_name: "Task",
           assigned_to: {
             assigned_user_id: "user-1",
@@ -5339,6 +5343,83 @@ describe("createReqClient", () => {
         {
           key: "issue.automation",
           control: "show"
+        }
+      ]
+    });
+  });
+
+  it("normalizes wrapped and dictionary user feature responses while preserving raw fields", async () => {
+    const wrappedClient = createReqClient({
+      get: async () => ({
+        total: 1,
+        result: [
+          {
+            key: "issue.associate-wiki",
+            control: "show",
+            enabled: true
+          }
+        ]
+      })
+    } as never);
+
+    await expect(
+      wrappedClient.listUserFeatures({
+        project_id: "p-1"
+      })
+    ).resolves.toEqual({
+      project_id: "p-1",
+      total: 1,
+      result: [
+        {
+          key: "issue.associate-wiki",
+          control: "show",
+          enabled: true
+        }
+      ],
+      features: [
+        {
+          key: "issue.associate-wiki",
+          control: "show",
+          enabled: true
+        }
+      ]
+    });
+
+    const dictionaryClient = createReqClient({
+      get: async () => ({
+        associateWiki: {
+          key: "issue.associate-wiki",
+          control: "show"
+        },
+        automation: {
+          key: "issue.automation",
+          control: "hide"
+        }
+      })
+    } as never);
+
+    await expect(
+      dictionaryClient.listUserFeatures({
+        project_id: "p-1"
+      })
+    ).resolves.toEqual({
+      project_id: "p-1",
+      associateWiki: {
+        key: "issue.associate-wiki",
+        control: "show"
+      },
+      automation: {
+        key: "issue.automation",
+        control: "hide"
+      },
+      features: [
+        {
+          key: "issue.associate-wiki",
+          control: "show"
+        },
+        {
+          key: "issue.automation",
+          control: "hide"
         }
       ]
     });

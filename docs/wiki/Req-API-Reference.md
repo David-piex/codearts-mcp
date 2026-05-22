@@ -179,13 +179,13 @@ Req 写工具遵循两个层面的安全策略：
 
 | 工具 | 类型 | 用途 |
 | --- | --- | --- |
-| `req_list_work_items` | 读 | 查询工作项列表 |
-| `req_get_work_item` | 读 | 获取工作项详情，返回结果可直接查看分配人（`assignee` / `assignedToName`） |
+| `req_list_work_items` | 读 | 查询工作项列表，保留 `rawWorkItem` 原始字段并补充可读时间 |
+| `req_get_work_item` | 读 | 获取工作项详情，返回结果可直接查看分配人（`assignee` / `assignedToName`），保留 `rawWorkItem` / `raw` 原始字段并补充可读时间 |
 | `req_get_work_item_issue_details` | 读 | 获取官方 V2 工作项详情，工具会把 `journals` 映射为 `comments`，返回结果可直接查看分配人（`assignee` / `assignedToName`），并保留 `rawIssue` 原始响应 |
 | `req_count_work_item_tree` | 读 | 统计工作项树 |
-| `req_list_work_item_tree` | 读 | 查询工作项树 |
+| `req_list_work_item_tree` | 读 | 查询工作项树，保留 `rawWorkItem` 原始字段并补充可读时间 |
 | `req_list_child_work_items` | 读 | 查询子工作项 |
-| `req_list_work_item_records` | 读 | 查询工作项变更记录 |
+| `req_list_work_item_records` | 读 | 查询工作项变更记录，保留 `rawRecord` 原始字段并补充可读时间 |
 | `req_list_project_work_item_records` | 读 | 查询项目级工作项记录 |
 | `req_create_work_item` | 写 | 创建工作项 |
 | `req_update_work_item` | 写 | 更新工作项 |
@@ -193,6 +193,8 @@ Req 写工具遵循两个层面的安全策略：
 | `req_batch_update_work_items` | 写 | 批量更新工作项 |
 | `req_copy_work_items` | 写 | 复制工作项 |
 | `req_update_work_item_flow` | 写 | 修改工作项状态并联动责任人 |
+
+说明：`req_list_work_items`、`req_get_work_item`、`req_list_work_item_tree` 和 `req_list_work_item_records` 会保留官方响应中的原始字段，分别通过 `rawWorkItem` / `rawRecord` 以及顶层 `raw` 返回，避免上游新增字段在 MCP 映射时丢失；时间戳原值会保留，同时追加 `createdOnText`、`updatedOnText`、`startDateText`、`dueDateText` 或 `createdTimeText` 这类 Asia/Shanghai 可读时间。`req_list_user_features` 兼容官方返回数组、`features`/`result`/`data` 包裹数组以及对象字典形态，避免响应形态变化导致读取失败。`req_list_iteration_status_statistics` 的 `status_id` 是上游必填查询参数，MCP schema 也按必填校验。
 
 说明：`req_get_work_item_issue_details` 只调用官方原始 `IssueDetailsV2 /v2/issues/show`，工具默认透传 `include=children,parent`，并把返回里的 `journals` 映射为 `comments`；该工具不会 fallback 到 `req_get_work_item` 或评论列表接口。返回字段会显式包含基础信息、时间、状态类型、优先级/严重程度、人员、项目结构、自定义字段、附件、标签、锁版本、关注/私有/删除状态和评论字段；时间戳原值会保留，同时追加 `createdOnText`、`updatedOnText`、`startDateText`、`dueDateText` 这类 Asia/Shanghai 可读时间；并通过 `rawIssue` / `raw` 保留官方 V2 原始 issue 响应。
 

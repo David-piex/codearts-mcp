@@ -40,6 +40,7 @@ describe("mapReqWorkItemRecords", () => {
       {
         id: "11",
         createdTime: "2026-02-11T10:00:00Z",
+        createdTimeText: "2026-02-11 18:00:00 Asia/Shanghai",
         actor: {
           id: "user-1",
           name: "alice",
@@ -55,9 +56,53 @@ describe("mapReqWorkItemRecords", () => {
             operation: "update",
             property: "status_id"
           }
-        ]
+        ],
+        rawRecord: {
+          id: 11,
+          created_time: "2026-02-11T10:00:00Z",
+          user: {
+            user_id: "user-1",
+            user_name: "alice",
+            user_num_id: 101,
+            nick_name: "Alice"
+          },
+          details: [
+            {
+              id: 91,
+              name: "status",
+              old_value: "New",
+              new_value: "Doing",
+              operation: "update",
+              property: "status_id"
+            }
+          ]
+        }
       }
     ]);
+    expect(result.raw).toEqual({
+      records: [
+        {
+          id: 11,
+          created_time: "2026-02-11T10:00:00Z",
+          user: {
+            user_id: "user-1",
+            user_name: "alice",
+            user_num_id: 101,
+            nick_name: "Alice"
+          },
+          details: [
+            {
+              id: 91,
+              name: "status",
+              old_value: "New",
+              new_value: "Doing",
+              operation: "update",
+              property: "status_id"
+            }
+          ]
+        }
+      ]
+    });
     expect(result.page_info).toEqual({
       page: 2,
       pageSize: 10,
@@ -138,6 +183,7 @@ describe("createReqListWorkItemRecordsHandler", () => {
         {
           id: "11",
           createdTime: "2026-02-11T10:00:00Z",
+          createdTimeText: "2026-02-11 18:00:00 Asia/Shanghai",
           actor: {
             id: "user-1",
             name: "alice",
@@ -153,7 +199,27 @@ describe("createReqListWorkItemRecordsHandler", () => {
               operation: "update",
               property: "status_id"
             }
-          ]
+          ],
+          rawRecord: {
+            id: 11,
+            created_time: "2026-02-11T10:00:00Z",
+            user: {
+              user_id: "user-1",
+              user_name: "alice",
+              user_num_id: 101,
+              nick_name: "Alice"
+            },
+            details: [
+              {
+                id: 91,
+                name: "status",
+                old_value: "New",
+                new_value: "Doing",
+                operation: "update",
+                property: "status_id"
+              }
+            ]
+          }
         }
       ],
       page_info: {
@@ -161,7 +227,30 @@ describe("createReqListWorkItemRecordsHandler", () => {
         pageSize: 20,
         total: 1
       },
-      raw: undefined
+      raw: {
+        records: [
+          {
+            id: 11,
+            created_time: "2026-02-11T10:00:00Z",
+            user: {
+              user_id: "user-1",
+              user_name: "alice",
+              user_num_id: 101,
+              nick_name: "Alice"
+            },
+            details: [
+              {
+                id: 91,
+                name: "status",
+                old_value: "New",
+                new_value: "Doing",
+                operation: "update",
+                property: "status_id"
+              }
+            ]
+          }
+        ]
+      }
     });
   });
 });

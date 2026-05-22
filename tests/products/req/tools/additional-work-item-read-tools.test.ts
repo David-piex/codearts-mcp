@@ -114,6 +114,14 @@ describe("mapReqWorkItemTree", () => {
         subject: "Parent story",
         statusName: "新建",
         trackerName: "Story",
+        createdOn: undefined,
+        createdOnText: undefined,
+        updatedOn: undefined,
+        updatedOnText: undefined,
+        startDate: undefined,
+        startDateText: undefined,
+        dueDate: undefined,
+        dueDateText: undefined,
         assignee: {
           id: undefined,
           userId: undefined,
@@ -123,9 +131,29 @@ describe("mapReqWorkItemTree", () => {
           displayName: "alice"
         },
         assignedToName: "alice",
-        hasChildren: true
+        hasChildren: true,
+        rawWorkItem: {
+          id: 101,
+          subject: "Parent story",
+          status: { name: "新建" },
+          tracker: { name: "Story" },
+          assigned_to: { name: "alice" },
+          isParent: true
+        }
       }
     ]);
+    expect(result.raw).toEqual({
+      workItems: [
+        {
+          id: 101,
+          subject: "Parent story",
+          status: { name: "新建" },
+          tracker: { name: "Story" },
+          assigned_to: { name: "alice" },
+          isParent: true
+        }
+      ]
+    });
     expect(result.page_info).toEqual({
       page: 1,
       pageSize: 20,

@@ -3,22 +3,36 @@ import { formatProjectScopedEmptyText } from "../../../contracts/project-scoped-
 import { formatListToolText } from "../../../contracts/tool-result-text.js";
 import { toPageInfo } from "../../../core/pagination/page-info.js";
 import { reqListWorkItemsInput } from "../schemas.js";
+import { formatReqTimestampText } from "./time-format.js";
 import {
   mapReqWorkItemAssignee,
   type ReqWorkItemAssignee
 } from "./work-item-assignee.js";
 
+type ReqListWorkItem = {
+  [key: string]: unknown;
+  id: number | string;
+  subject?: string;
+  name?: string;
+  status?: { name?: string };
+  tracker?: { name?: string };
+  tracker_name?: string;
+  created_on?: string | number;
+  created_time?: string | number;
+  updated_on?: string | number;
+  updated_time?: string | number;
+  start_date?: string | number;
+  due_date?: string | number;
+  begin_time?: string | number;
+  end_time?: string | number;
+  assigned_to?: ReqWorkItemAssignee;
+  assigned_user?: ReqWorkItemAssignee;
+  assigned_id?: string;
+  assigned_to_id?: number | string;
+};
+
 export function mapReqWorkItems(
-  items: Array<{
-    id: number | string;
-    subject: string;
-    status?: { name?: string };
-    tracker_name?: string;
-    assigned_to?: ReqWorkItemAssignee;
-    assigned_user?: ReqWorkItemAssignee;
-    assigned_id?: string;
-    assigned_to_id?: number | string;
-  }>,
+  items: ReqListWorkItem[],
   page: number,
   pageSize: number,
   total?: number
@@ -28,17 +42,31 @@ export function mapReqWorkItems(
     summary,
     items.map((item) => {
       const assignee = mapReqWorkItemAssignee(item);
+      const createdOn = item.created_on ?? item.created_time;
+      const updatedOn = item.updated_on ?? item.updated_time;
+      const startDate = item.start_date ?? item.begin_time;
+      const dueDate = item.due_date ?? item.end_time;
 
       return {
         id: String(item.id),
-        title: item.subject,
+        title: item.subject ?? item.name ?? "",
         status: item.status?.name,
-        type: item.tracker_name,
+        type: item.tracker_name ?? item.tracker?.name,
+        createdOn,
+        createdOnText: formatReqTimestampText(createdOn),
+        updatedOn,
+        updatedOnText: formatReqTimestampText(updatedOn),
+        startDate,
+        startDateText: formatReqTimestampText(startDate),
+        dueDate,
+        dueDateText: formatReqTimestampText(dueDate),
         assignee,
-        assignedToName: assignee?.displayName
+        assignedToName: assignee?.displayName,
+        rawWorkItem: item
       };
     }),
-    toPageInfo(page, pageSize, total)
+    toPageInfo(page, pageSize, total),
+    { workItems: items }
   );
 }
 
@@ -49,16 +77,7 @@ type ReqListWorkItemsClient = {
     page_size: number;
     keyword?: string;
   }) => Promise<{
-    work_items: Array<{
-      id: number | string;
-      subject: string;
-      status?: { name?: string };
-      tracker_name?: string;
-      assigned_to?: ReqWorkItemAssignee;
-      assigned_user?: ReqWorkItemAssignee;
-      assigned_id?: string;
-      assigned_to_id?: number | string;
-    }>;
+    work_items: ReqListWorkItem[];
     total?: number;
   }>;
 };
@@ -75,7 +94,9 @@ export function createReqListWorkItemsHandler(client: ReqListWorkItemsClient) {
             { label: "title", get: (item) => (item as { title?: string }).title },
             { label: "status", get: (item) => (item as { status?: string }).status },
             { label: "type", get: (item) => (item as { type?: string }).type },
-            { label: "assignee", get: (item) => (item as { assignedToName?: string }).assignedToName }
+            { label: "assignee", get: (item) => (item as { assignedToName?: string }).assignedToName },
+            { label: "createdOn", get: (item) => (item as { createdOnText?: string; createdOn?: string }).createdOnText ?? (item as { createdOn?: string }).createdOn },
+            { label: "updatedOn", get: (item) => (item as { updatedOnText?: string; updatedOn?: string }).updatedOnText ?? (item as { updatedOn?: string }).updatedOn }
           ]
         })
       : formatProjectScopedEmptyText({

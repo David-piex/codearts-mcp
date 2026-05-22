@@ -31,9 +31,13 @@ describe("mapReqWorkItem", () => {
       type: "Story",
       description: "Clarify edge cases",
       createdOn: "1779267066000",
+      createdOnText: "2026-05-20 16:51:06 Asia/Shanghai",
       updatedOn: "1779328509000",
+      updatedOnText: "2026-05-21 09:55:09 Asia/Shanghai",
       startDate: "1779379200000",
+      startDateText: "2026-05-22 00:00:00 Asia/Shanghai",
       dueDate: "1779984000000",
+      dueDateText: "2026-05-29 00:00:00 Asia/Shanghai",
       assignee: {
         id: "16666",
         userId: "user-uuid-2",
@@ -42,8 +46,26 @@ describe("mapReqWorkItem", () => {
         name: "tenant/bob",
         displayName: "Bob"
       },
-      assignedToName: "Bob"
+      assignedToName: "Bob",
+      rawWorkItem: {
+        id: 9,
+        subject: "Refine login flow",
+        status: { name: "Doing" },
+        tracker_name: "Story",
+        description: "Clarify edge cases",
+        created_on: "1779267066000",
+        updated_on: "1779328509000",
+        start_date: "1779379200000",
+        due_date: "1779984000000",
+        assigned_to: {
+          id: 16666,
+          identifier: "user-uuid-2",
+          name: "tenant/bob",
+          assigned_nick_name: "Bob"
+        }
+      }
     });
+    expect(result.raw).toEqual(result.item?.rawWorkItem);
     expect(result.summary).toBe("Loaded work item 9 (assignee: Bob)");
   });
 });

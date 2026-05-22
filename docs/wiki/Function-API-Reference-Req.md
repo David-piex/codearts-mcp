@@ -9210,7 +9210,8 @@ API 数量：`201`
     "name": "req_list_iteration_status_statistics",
     "arguments": {
       "project_id": "<project_id>",
-      "iteration_id": "<iteration_id>"
+      "iteration_id": "<iteration_id>",
+      "status_id": "<status_id>"
     }
   }
 }
@@ -9223,7 +9224,7 @@ API 数量：`201`
 | `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 需求管理 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 | `iteration_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `iteration_id` ↔ 原始 CodeArts 需求管理 API 同名字段 `iteration_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>迭代 ID，用于定位对应的 CodeArts 资源。 |
 | `tracker_id` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `tracker_id` ↔ 原始 CodeArts 需求管理 API 同名字段 `tracker_id`，表示工作项类型 ID。<br>Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
-| `status_id` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `status_id` ↔ 原始 CodeArts 需求管理 API 同名字段 `status_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>工作项状态 ID：1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝。项目自定义状态以状态配置/工作流接口返回为准。 |
+| `status_id` | 是 | `integer` |  | 字段对应：<br>MCP 字段 `status_id` ↔ 原始 CodeArts 需求管理 API 同名字段 `status_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>工作项状态 ID：1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝。项目自定义状态以状态配置/工作流接口返回为准。 |
 
 输入 JSON Schema：
 
@@ -9249,7 +9250,8 @@ API 数量：`201`
   },
   "required": [
     "project_id",
-    "iteration_id"
+    "iteration_id",
+    "status_id"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

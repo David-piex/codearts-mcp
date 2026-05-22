@@ -31,6 +31,14 @@ describe("mapReqWorkItems", () => {
         title: "Refine login flow",
         status: "Doing",
         type: "Story",
+        createdOn: undefined,
+        createdOnText: undefined,
+        updatedOn: undefined,
+        updatedOnText: undefined,
+        startDate: undefined,
+        startDateText: undefined,
+        dueDate: undefined,
+        dueDateText: undefined,
         assignee: {
           id: undefined,
           userId: "user-1",
@@ -39,9 +47,35 @@ describe("mapReqWorkItems", () => {
           name: undefined,
           displayName: "Alice"
         },
-        assignedToName: "Alice"
+        assignedToName: "Alice",
+        rawWorkItem: {
+          id: 9,
+          subject: "Refine login flow",
+          status: { name: "Doing" },
+          tracker_name: "Story",
+          assigned_to: {
+            assigned_user_id: "user-1",
+            assigned_user_num_id: 101,
+            assigned_nick_name: "Alice"
+          }
+        }
       }
     ]);
+    expect(result.raw).toEqual({
+      workItems: [
+        {
+          id: 9,
+          subject: "Refine login flow",
+          status: { name: "Doing" },
+          tracker_name: "Story",
+          assigned_to: {
+            assigned_user_id: "user-1",
+            assigned_user_num_id: 101,
+            assigned_nick_name: "Alice"
+          }
+        }
+      ]
+    });
     expect(result.page_info).toEqual({
       page: 1,
       pageSize: 20,

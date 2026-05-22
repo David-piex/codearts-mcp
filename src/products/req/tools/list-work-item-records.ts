@@ -3,26 +3,31 @@ import { formatProjectScopedEmptyText } from "../../../contracts/project-scoped-
 import { formatListToolText } from "../../../contracts/tool-result-text.js";
 import { toPageInfo } from "../../../core/pagination/page-info.js";
 import { reqListWorkItemRecordsInput } from "../schemas.js";
+import { formatReqTimestampText } from "./time-format.js";
+
+type ReqWorkItemRecord = {
+  [key: string]: unknown;
+  id: number | string;
+  created_time?: string | number;
+  user?: {
+    user_id?: string;
+    user_name?: string;
+    user_num_id?: number;
+    nick_name?: string;
+  };
+  details?: Array<{
+    [key: string]: unknown;
+    id: number | string;
+    name?: string;
+    new_value?: string;
+    old_value?: string;
+    operation?: string;
+    property?: string;
+  }>;
+};
 
 export function mapReqWorkItemRecords(
-  items: Array<{
-    id: number | string;
-    created_time?: string;
-    user?: {
-      user_id?: string;
-      user_name?: string;
-      user_num_id?: number;
-      nick_name?: string;
-    };
-    details?: Array<{
-      id: number | string;
-      name?: string;
-      new_value?: string;
-      old_value?: string;
-      operation?: string;
-      property?: string;
-    }>;
-  }>,
+  items: ReqWorkItemRecord[],
   page: number,
   pageSize: number,
   total?: number
@@ -32,6 +37,7 @@ export function mapReqWorkItemRecords(
     items.map((item) => ({
       id: String(item.id),
       createdTime: item.created_time,
+      createdTimeText: formatReqTimestampText(item.created_time),
       actor: item.user
         ? {
             id: item.user.user_id,
@@ -47,9 +53,11 @@ export function mapReqWorkItemRecords(
         newValue: detail.new_value,
         operation: detail.operation,
         property: detail.property
-      }))
+      })),
+      rawRecord: item
     })),
-    toPageInfo(page, pageSize, total)
+    toPageInfo(page, pageSize, total),
+    { records: items }
   );
 }
 
@@ -61,24 +69,7 @@ type ReqListWorkItemRecordsClient = {
     page_size: number;
     journalized_type?: string;
   }) => Promise<{
-    records: Array<{
-      id: number | string;
-      created_time?: string;
-      user?: {
-        user_id?: string;
-        user_name?: string;
-        user_num_id?: number;
-        nick_name?: string;
-      };
-      details?: Array<{
-        id: number | string;
-        name?: string;
-        new_value?: string;
-        old_value?: string;
-        operation?: string;
-        property?: string;
-      }>;
-    }>;
+    records: ReqWorkItemRecord[];
     total?: number;
   }>;
 };
@@ -92,7 +83,7 @@ export function createReqListWorkItemRecordsHandler(client: ReqListWorkItemRecor
       ? formatListToolText(result, {
           fields: [
             { label: "id", get: (item) => (item as { id?: string }).id },
-            { label: "createdTime", get: (item) => (item as { createdTime?: string }).createdTime },
+            { label: "createdTime", get: (item) => (item as { createdTimeText?: string; createdTime?: string }).createdTimeText ?? (item as { createdTime?: string }).createdTime },
             {
               label: "actor",
               get: (item) => {

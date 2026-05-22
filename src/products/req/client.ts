@@ -28,8 +28,8 @@ export type ReqClient = {
     features: Array<{
       key?: string;
       control?: string;
-    }>;
-  }>;
+    } & Record<string, unknown>>;
+  } & Record<string, unknown>>;
   createProject: (input: {
     name: string;
     description?: string;
@@ -761,7 +761,7 @@ export type ReqClient = {
     project_id: string;
     iteration_id: string;
     tracker_id?: number;
-    status_id?: number;
+    status_id: number;
   }) => Promise<{
     statistics: Array<{
       user?: {
@@ -821,11 +821,22 @@ export type ReqClient = {
   }>;
   listWorkItems: (input: { project_id: string; page: number; page_size: number; keyword?: string }) => Promise<{
     work_items: Array<{
+      [key: string]: unknown;
       id: number | string;
       subject: string;
       status?: { name?: string };
+      tracker?: { name?: string };
       tracker_name?: string;
+      created_on?: string | number;
+      created_time?: string | number;
+      updated_on?: string | number;
+      updated_time?: string | number;
+      start_date?: string | number;
+      due_date?: string | number;
+      begin_time?: string | number;
+      end_time?: string | number;
       assigned_to?: ReqIssueAssignee;
+      assigned_user?: ReqIssueAssignee;
       assigned_id?: string;
       assigned_to_id?: number | string;
     }>;
@@ -939,14 +950,23 @@ export type ReqClient = {
     }>;
   }>;
   getWorkItem: (input: { project_id: string; work_item_id: string }) => Promise<{
+    [key: string]: unknown;
     id: number | string;
     subject: string;
     status?: { name?: string };
+    tracker?: { name?: string };
     tracker_name?: string;
     description?: string;
+    created_on?: string | number;
+    created_time?: string | number;
+    updated_on?: string | number;
+    updated_time?: string | number;
     start_date?: string | number;
     due_date?: string | number;
+    begin_time?: string | number;
+    end_time?: string | number;
     assigned_to?: ReqIssueAssignee;
+    assigned_user?: ReqIssueAssignee;
     assigned_id?: string;
     assigned_to_id?: number | string;
   }>;
@@ -2350,7 +2370,32 @@ function withoutKeys<T extends Record<string, unknown>>(input: T, keys: string[]
   return Object.fromEntries(Object.entries(input).filter(([key]) => !keys.includes(key)));
 }
 
+function isRecord(input: unknown): input is Record<string, unknown> {
+  return typeof input === "object" && input !== null && !Array.isArray(input);
+}
+
+function normalizeReqUserFeatures(input: unknown): Array<{ key?: string; control?: string } & Record<string, unknown>> {
+  const candidate = Array.isArray(input)
+    ? input
+    : isRecord(input) && Array.isArray(input.features)
+      ? input.features
+      : isRecord(input) && Array.isArray(input.result)
+        ? input.result
+        : isRecord(input) && Array.isArray(input.data)
+          ? input.data
+          : isRecord(input)
+            ? Object.values(input)
+            : [];
+
+  return candidate.filter(isRecord).map((item) => ({
+    ...item,
+    key: typeof item.key === "undefined" ? undefined : String(item.key),
+    control: typeof item.control === "undefined" ? undefined : String(item.control)
+  }));
+}
+
 type ReqIssueListItem = {
+  [key: string]: unknown;
   id: number | string;
   subject?: string;
   name?: string;
@@ -2472,6 +2517,7 @@ type ReqIssueAssignee = {
 };
 
 type ReqDetailedIssueListItem = {
+  [key: string]: unknown;
   id: number | string;
   subject?: string;
   name?: string;
@@ -3075,14 +3121,15 @@ export function createReqClient(
     async listUserFeatures(input) {
       const response = (await _http.get(
         `/v1/projects/${encodeURIComponent(input.project_id)}/user/features`
-      )) as Array<{
-        key?: string;
-        control?: string;
-      }>;
+      )) as unknown;
+
+      const features = normalizeReqUserFeatures(response);
+      const rawFields = isRecord(response) && !Array.isArray(response) ? response : {};
 
       return {
+        ...rawFields,
         project_id: input.project_id,
-        features: response ?? []
+        features
       };
     },
     async createProject(input) {
@@ -4897,14 +4944,15 @@ export function createReqClient(
 
       return {
         work_items: items.map((item) => ({
+          ...item,
           id: item.id,
           subject: item.subject ?? item.name ?? "",
           status: item.status,
           tracker_name: item.tracker_name ?? item.tracker?.name,
-          assigned_to: item.assigned_to,
-          assigned_user: item.assigned_user,
-          assigned_id: item.assigned_id,
-          assigned_to_id: item.assigned_to_id
+          ...(item.assigned_to ?? item.assigned_user ? { assigned_to: item.assigned_to ?? item.assigned_user } : {}),
+          ...(item.assigned_user ? { assigned_user: item.assigned_user } : {}),
+          ...(item.assigned_id ? { assigned_id: item.assigned_id } : {}),
+          ...(typeof item.assigned_to_id !== "undefined" ? { assigned_to_id: item.assigned_to_id } : {})
         })),
         total: payload.total
       };
@@ -5107,7 +5155,9 @@ export function createReqClient(
         tracker_name?: string;
         description?: string;
         created_on?: string | number;
+        created_time?: string | number;
         updated_on?: string | number;
+        updated_time?: string | number;
         start_date?: string | number;
         due_date?: string | number;
         begin_time?: string | number;
@@ -5119,19 +5169,28 @@ export function createReqClient(
       };
 
       return {
+        ...response,
         id: response.id ?? input.work_item_id,
         subject: response.subject ?? response.name ?? "",
         status: response.status,
         tracker_name: response.tracker_name ?? response.tracker?.name,
         description: response.description,
-        created_on: response.created_on,
-        updated_on: response.updated_on,
-        start_date: response.start_date ?? response.begin_time,
-        due_date: response.due_date ?? response.end_time,
-        assigned_to: response.assigned_to ?? response.assigned_user,
-        assigned_user: response.assigned_user,
-        assigned_id: response.assigned_id,
-        assigned_to_id: response.assigned_to_id
+        ...(typeof (response.created_on ?? response.created_time) !== "undefined"
+          ? { created_on: response.created_on ?? response.created_time }
+          : {}),
+        ...(typeof (response.updated_on ?? response.updated_time) !== "undefined"
+          ? { updated_on: response.updated_on ?? response.updated_time }
+          : {}),
+        ...(typeof (response.start_date ?? response.begin_time) !== "undefined"
+          ? { start_date: response.start_date ?? response.begin_time }
+          : {}),
+        ...(typeof (response.due_date ?? response.end_time) !== "undefined"
+          ? { due_date: response.due_date ?? response.end_time }
+          : {}),
+        ...(response.assigned_to ?? response.assigned_user ? { assigned_to: response.assigned_to ?? response.assigned_user } : {}),
+        ...(response.assigned_user ? { assigned_user: response.assigned_user } : {}),
+        ...(response.assigned_id ? { assigned_id: response.assigned_id } : {}),
+        ...(typeof response.assigned_to_id !== "undefined" ? { assigned_to_id: response.assigned_to_id } : {})
       };
     },
     async getWorkItemIssueDetails(input) {
