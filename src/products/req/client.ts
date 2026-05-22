@@ -2517,6 +2517,19 @@ type ReqWorkItemIssueDetails = ReqDetailedIssueListItem & {
   custom_fields?: Array<Record<string, unknown>>;
   custom_value_new?: Record<string, unknown>;
   accessories_list?: Array<Record<string, unknown>>;
+  journals?: Array<{
+    id?: number | string;
+    notes?: string;
+    created_on?: string;
+    user?: {
+      id?: number | string;
+      name?: string;
+      first_name?: string;
+      last_name?: string;
+      identifier?: string;
+    };
+  }>;
+  journals_total?: number;
 };
 
 type ReqIssueStatusSummary = {

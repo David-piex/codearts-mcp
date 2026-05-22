@@ -181,7 +181,7 @@ Req 写工具遵循两个层面的安全策略：
 | --- | --- | --- |
 | `req_list_work_items` | 读 | 查询工作项列表 |
 | `req_get_work_item` | 读 | 获取工作项详情，返回结果可直接查看分配人（`assignee` / `assignedToName`） |
-| `req_get_work_item_issue_details` | 读 | 获取聚合工作项详情（基础详情 + 评论），返回结果可直接查看分配人（`assignee` / `assignedToName`） |
+| `req_get_work_item_issue_details` | 读 | 获取官方 V2 工作项详情，工具会把 `journals` 映射为 `comments`，返回结果可直接查看分配人（`assignee` / `assignedToName`） |
 | `req_count_work_item_tree` | 读 | 统计工作项树 |
 | `req_list_work_item_tree` | 读 | 查询工作项树 |
 | `req_list_child_work_items` | 读 | 查询子工作项 |
@@ -194,7 +194,7 @@ Req 写工具遵循两个层面的安全策略：
 | `req_copy_work_items` | 写 | 复制工作项 |
 | `req_update_work_item_flow` | 写 | 修改工作项状态并联动责任人 |
 
-说明：`req_get_work_item_issue_details` 当前走稳定 AK/SK 聚合路径，不直连官方原始 `IssueDetailsV2 /v2/issues/show`。官方该 V2 原始接口要求 `X-Auth-Token`；如只需要查看处理人，优先使用 `req_get_work_item` 或 `req_get_work_item_issue_details` 返回的 `assignee` / `assignedToName`。
+说明：`req_get_work_item_issue_details` 当前走官方原始 `IssueDetailsV2 /v2/issues/show`，工具默认透传 `include=children,parent`，并把返回里的 `journals` 映射为 `comments`；如只需要查看处理人，优先使用 `req_get_work_item` 或 `req_get_work_item_issue_details` 返回的 `assignee` / `assignedToName`。
 
 真实 smoke 状态：基础读路径已验证；工作项写闭环需要 `HUAWEICLOUD_REQ_LIVE_WRITE_PROJECT_ID`。状态流转还需要稳定的目标 `status_id` 样本。
 

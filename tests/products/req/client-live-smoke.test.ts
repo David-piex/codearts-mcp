@@ -948,6 +948,23 @@ if (hasLiveEnv(process.env)) {
       expect(Array.isArray(cacheData.fields)).toBe(true);
     }, 30000);
 
+    it("reads official work item issue details with journals mapped to comments", async () => {
+      const sample = liveWorkItemSample;
+
+      if (!sample) {
+        return;
+      }
+
+      const details = await client.getWorkItemIssueDetails({
+        project_id: sample.projectId,
+        work_item_id: sample.workItemId,
+        include: "children,parent",
+      });
+
+      expect(String(details.id)).toBe(sample.workItemId);
+      expect(details.subject ?? details.name ?? details.title ?? "").toBeTruthy();
+    }, 60000);
+
     it("covers status, workflow, template, and public-config reads for a configured project", async () => {
       const projectId = readableProjectId ?? explicitWritableProjectId;
 

@@ -1677,7 +1677,7 @@ const reqToolDefinitions = {
     createProductHandler: createReqGetWorkItemCompletionRateHandler
   }),
   "req_get_work_item_issue_details": defineProductTool({
-    description: "Get aggregated CodeArts Req work item details including assignee information from stable work item and comment endpoints",
+    description: "Get CodeArts Req work item issue details from the official V2 issue detail endpoint and map journals to comments",
     inputSchema: reqGetWorkItemIssueDetailsInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGetWorkItemIssueDetailsHandler>[0] }) =>
       clients.reqClient,
