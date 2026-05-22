@@ -6340,7 +6340,7 @@ API 数量：`201`
 
 所属模块：`需求管理`
 
-说明：获取需求管理的官方 V2 工作项详情。该工具只调用 `IssueDetailsV2 /v2/issues/show`，不会 fallback 到 `req_get_work_item` 或评论列表接口；工具会把 `journals` 映射为 `comments`，并保留 `assignee` / `assignedToName` 以便查看处理人。
+说明：获取需求管理的官方 V2 工作项详情。该工具只调用 `IssueDetailsV2 /v2/issues/show`，不会 fallback 到 `req_get_work_item` 或评论列表接口；工具会把 `journals` 映射为 `comments`，并保留 `assignee` / `assignedToName` 以便查看处理人。返回结果会显式映射基础信息、时间、状态类型、优先级/严重程度、人员、项目结构、自定义字段、附件、标签、锁版本、关注/私有/删除状态和评论字段，并通过 `rawIssue` / `raw` 保留官方 V2 原始 issue 响应，避免上游新增字段丢失。
 
 调用示例：
 

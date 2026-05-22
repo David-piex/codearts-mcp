@@ -35,18 +35,50 @@ describe("mapReqWorkItemIssueDetails", () => {
       updated_on: "1779328509000",
       start_date: "1779379200000",
       due_date: "1779984000000",
+      done_ratio: 20,
+      expected_work_hours: 8,
+      actual_work_hours: 3,
+      release_dev: "R1",
+      find_release_dev: "R0",
+      inner_text: "latest raw comment",
+      closed_flag: 0,
+      is_archived: false,
+      deleted: false,
+      is_private: false,
+      is_watcher: true,
+      isContainDetailWorkingHours: true,
+      lockVersion: 3,
+      order: "1",
+      position: "2",
+      root_id: 100,
+      assignedImageId: "assigned-image",
+      authorImageId: "author-image",
+      projectAuthorDomainId: "domain-id",
       status: { id: 1, name: "New" },
+      status_attribute: { type: "new" },
       tracker: { id: 7, name: "Story" },
+      priority: { id: 2, name: "Medium" },
+      severity: { id: 12, name: "Normal" },
       project: { identifier: "p-1", name: "Project A" },
       module: { id: 8, name: "Module A" },
+      domain: { id: 14, name: "Performance" },
+      story_point: { id: 3, name: "1" },
+      fixed_version: { id: 4, name: "Sprint 1" },
       parent_issue: { id: 200, name: "Parent story" },
+      children: [{ id: 300, subject: "Child task" }],
+      author: { id: 15533, name: "tenant/alice" },
+      developer: { id: 17777, name: "tenant/dev" },
+      closeder: { id: 19999, name: "tenant/closer" },
       assigned_to: {
         id: 16666,
         identifier: "user-uuid-2",
         name: "tenant/bob",
         assigned_nick_name: "Bob"
       },
+      assigned_cc_user: [{ id: 18888, name: "tenant/cc" }],
       custom_fields: [{ name: "business_area", value: "payment" }],
+      custom_value_new: { field_name: "business_area", value: "payment" },
+      tagList: [{ id: 1, name: "tag-a" }],
       accessories_list: [{ id: 1, file_name: "demo.json" }],
       journals: [
         {
@@ -75,9 +107,12 @@ describe("mapReqWorkItemIssueDetails", () => {
             user_num_id: 2
           }
         }
-      ]
+      ],
+      journals_total: 2,
+      official_extra_field: { keep: true }
     });
 
+    expect(result.raw).toEqual(result.item?.rawIssue);
     expect(result.item).toEqual({
       id: "2884248",
       title: "33333",
@@ -86,8 +121,30 @@ describe("mapReqWorkItemIssueDetails", () => {
       updatedOn: "1779328509000",
       startDate: "1779379200000",
       dueDate: "1779984000000",
+      doneRatio: 20,
+      expectedWorkHours: 8,
+      actualWorkHours: 3,
+      releaseDev: "R1",
+      findReleaseDev: "R0",
+      innerText: "latest raw comment",
+      closedFlag: 0,
+      isArchived: false,
+      deleted: false,
+      isPrivate: false,
+      isWatcher: true,
+      isContainDetailWorkingHours: true,
+      lockVersion: 3,
+      order: "1",
+      position: "2",
+      rootId: 100,
+      assignedImageId: "assigned-image",
+      authorImageId: "author-image",
+      projectAuthorDomainId: "domain-id",
       status: { id: 1, name: "New" },
+      statusAttribute: { type: "new" },
       tracker: { id: 7, name: "Story" },
+      priority: { id: 2, name: "Medium" },
+      severity: { id: 12, name: "Normal" },
       assignee: {
         id: "16666",
         userId: "user-uuid-2",
@@ -97,11 +154,50 @@ describe("mapReqWorkItemIssueDetails", () => {
         displayName: "Bob"
       },
       assignedToName: "Bob",
+      assignedCcUsers: [{ id: 18888, name: "tenant/cc" }],
       project: { identifier: "p-1", name: "Project A" },
       module: { id: 8, name: "Module A" },
+      domain: { id: 14, name: "Performance" },
+      storyPoint: { id: 3, name: "1" },
+      fixedVersion: { id: 4, name: "Sprint 1" },
       parentIssue: { id: 200, name: "Parent story" },
+      children: [{ id: 300, subject: "Child task" }],
+      author: { id: 15533, name: "tenant/alice" },
+      developer: { id: 17777, name: "tenant/dev" },
+      closeder: { id: 19999, name: "tenant/closer" },
       customFields: [{ name: "business_area", value: "payment" }],
+      customValueNew: { field_name: "business_area", value: "payment" },
+      tagList: [{ id: 1, name: "tag-a" }],
       attachments: [{ id: 1, file_name: "demo.json" }],
+      journals: [
+        {
+          id: "10",
+          notes: "first comment",
+          created_on: "2026-05-18T08:00:00Z",
+          user: {
+            id: "1",
+            first_name: "Alice",
+            last_name: "Wang",
+            name: "alice",
+            identifier: "user-1",
+            user_num_id: 1
+          }
+        },
+        {
+          id: "11",
+          notes: "latest comment",
+          created_on: "2026-05-18T09:00:00Z",
+          user: {
+            id: "2",
+            first_name: "Bob",
+            last_name: "Li",
+            name: "bob",
+            identifier: "user-2",
+            user_num_id: 2
+          }
+        }
+      ],
+      journalsTotal: 2,
       latestComment: "latest comment",
       comments: [
         {
@@ -126,7 +222,91 @@ describe("mapReqWorkItemIssueDetails", () => {
             userNumId: 2
           }
         }
-      ]
+      ],
+      rawIssue: {
+        id: "2884248",
+        subject: "33333",
+        description: "<p>story desc</p>",
+        created_on: "1779267066000",
+        updated_on: "1779328509000",
+        start_date: "1779379200000",
+        due_date: "1779984000000",
+        done_ratio: 20,
+        expected_work_hours: 8,
+        actual_work_hours: 3,
+        release_dev: "R1",
+        find_release_dev: "R0",
+        inner_text: "latest raw comment",
+        closed_flag: 0,
+        is_archived: false,
+        deleted: false,
+        is_private: false,
+        is_watcher: true,
+        isContainDetailWorkingHours: true,
+        lockVersion: 3,
+        order: "1",
+        position: "2",
+        root_id: 100,
+        assignedImageId: "assigned-image",
+        authorImageId: "author-image",
+        projectAuthorDomainId: "domain-id",
+        status: { id: 1, name: "New" },
+        status_attribute: { type: "new" },
+        tracker: { id: 7, name: "Story" },
+        priority: { id: 2, name: "Medium" },
+        severity: { id: 12, name: "Normal" },
+        project: { identifier: "p-1", name: "Project A" },
+        module: { id: 8, name: "Module A" },
+        domain: { id: 14, name: "Performance" },
+        story_point: { id: 3, name: "1" },
+        fixed_version: { id: 4, name: "Sprint 1" },
+        parent_issue: { id: 200, name: "Parent story" },
+        children: [{ id: 300, subject: "Child task" }],
+        author: { id: 15533, name: "tenant/alice" },
+        developer: { id: 17777, name: "tenant/dev" },
+        closeder: { id: 19999, name: "tenant/closer" },
+        assigned_to: {
+          id: 16666,
+          identifier: "user-uuid-2",
+          name: "tenant/bob",
+          assigned_nick_name: "Bob"
+        },
+        assigned_cc_user: [{ id: 18888, name: "tenant/cc" }],
+        custom_fields: [{ name: "business_area", value: "payment" }],
+        custom_value_new: { field_name: "business_area", value: "payment" },
+        tagList: [{ id: 1, name: "tag-a" }],
+        accessories_list: [{ id: 1, file_name: "demo.json" }],
+        journals: [
+          {
+            id: "10",
+            notes: "first comment",
+            created_on: "2026-05-18T08:00:00Z",
+            user: {
+              id: "1",
+              first_name: "Alice",
+              last_name: "Wang",
+              name: "alice",
+              identifier: "user-1",
+              user_num_id: 1
+            }
+          },
+          {
+            id: "11",
+            notes: "latest comment",
+            created_on: "2026-05-18T09:00:00Z",
+            user: {
+              id: "2",
+              first_name: "Bob",
+              last_name: "Li",
+              name: "bob",
+              identifier: "user-2",
+              user_num_id: 2
+            }
+          }
+        ],
+        journals_total: 2,
+        official_extra_field: { keep: true }
+      }
     });
     expect(result.summary).toBe("Loaded work item issue details 2884248 (assignee: Bob)");
   });
@@ -190,8 +370,30 @@ describe("createReqGetWorkItemIssueDetailsHandler", () => {
       updatedOn: "1779328509000",
       startDate: "1779379200000",
       dueDate: "1779984000000",
+      doneRatio: undefined,
+      expectedWorkHours: undefined,
+      actualWorkHours: undefined,
+      releaseDev: undefined,
+      findReleaseDev: undefined,
+      innerText: undefined,
+      closedFlag: undefined,
+      isArchived: undefined,
+      deleted: undefined,
+      isPrivate: undefined,
+      isWatcher: undefined,
+      isContainDetailWorkingHours: undefined,
+      lockVersion: undefined,
+      order: undefined,
+      position: undefined,
+      rootId: undefined,
+      assignedImageId: undefined,
+      authorImageId: undefined,
+      projectAuthorDomainId: undefined,
       status: { id: 1, name: "New" },
+      statusAttribute: undefined,
       tracker: { id: 7, name: "Story" },
+      priority: undefined,
+      severity: undefined,
       assignee: {
         id: "16666",
         userId: "user-uuid-2",
@@ -201,11 +403,37 @@ describe("createReqGetWorkItemIssueDetailsHandler", () => {
         displayName: "Bob"
       },
       assignedToName: "Bob",
+      assignedCcUsers: [],
       project: { identifier: "p-1", name: "Project A" },
       module: undefined,
+      domain: undefined,
+      storyPoint: undefined,
+      fixedVersion: undefined,
       parentIssue: undefined,
+      children: [],
+      author: undefined,
+      developer: undefined,
+      closeder: undefined,
       customFields: [],
+      customValueNew: undefined,
+      tagList: [],
       attachments: [],
+      journals: [
+        {
+          id: "11",
+          notes: "latest comment",
+          created_on: "2026-05-18T09:00:00Z",
+          user: {
+            id: "2",
+            first_name: "Bob",
+            last_name: "Li",
+            name: "bob",
+            identifier: "user-2",
+            user_num_id: 2
+          }
+        }
+      ],
+      journalsTotal: undefined,
       latestComment: "latest comment",
       comments: [
         {
@@ -219,7 +447,40 @@ describe("createReqGetWorkItemIssueDetailsHandler", () => {
             userNumId: 2
           }
         }
-      ]
+      ],
+      rawIssue: {
+        id: "2884248",
+        subject: "33333",
+        description: "<p>story desc</p>",
+        created_on: "1779267066000",
+        updated_on: "1779328509000",
+        start_date: "1779379200000",
+        due_date: "1779984000000",
+        status: { id: 1, name: "New" },
+        tracker: { id: 7, name: "Story" },
+        project: { identifier: "p-1", name: "Project A" },
+        assigned_to: {
+          id: 16666,
+          identifier: "user-uuid-2",
+          name: "tenant/bob",
+          assigned_nick_name: "Bob"
+        },
+        journals: [
+          {
+            id: "11",
+            notes: "latest comment",
+            created_on: "2026-05-18T09:00:00Z",
+            user: {
+              id: "2",
+              first_name: "Bob",
+              last_name: "Li",
+              name: "bob",
+              identifier: "user-2",
+              user_num_id: 2
+            }
+          }
+        ]
+      }
     });
   });
 

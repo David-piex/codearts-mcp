@@ -37,7 +37,7 @@
 
 - 当前对齐到官方 Req API 的“Scrum 高频实用层”，并已经补入规划、规划图片更新、计划上下文创建工作项、需求池/项目空间只读面、IPD 读取基础面、IPD 特性集/追溯/状态读取、IPD 模块/标签/特性集写面、工作项状态属性、状态详情、状态配置、可选状态配置和项目公共配置读取能力。
 - 功能面已经覆盖 `project / module / member / iteration / plan / work-item / collaboration / config-read / board-read / cache-read / program-read / requirement-pool-read / ipd-read / ipd-config-write / ipd-work-item-write / ipd-work-hour / ipd-field-config` 十七个资源面，共 `200` 个工具。
-- `IssueDetailsV2 /v2/issues/show` 是 Req 工作项详情的官方原始接口；当前 MCP 的 `req_get_work_item_issue_details` 只调用该 V2 详情接口，并把 `journals` 映射为 `comments`，同时保留 `assignee` / `assignedToName` 便于查看处理人；该工具不会 fallback 到 `req_get_work_item` 或评论列表接口。
+- `IssueDetailsV2 /v2/issues/show` 是 Req 工作项详情的官方原始接口；当前 MCP 的 `req_get_work_item_issue_details` 只调用该 V2 详情接口，并把 `journals` 映射为 `comments`，同时保留 `assignee` / `assignedToName` 便于查看处理人；该工具不会 fallback 到 `req_get_work_item` 或评论列表接口。工具输出会显式映射基础信息、时间、状态类型、优先级/严重程度、人员、项目结构、自定义字段、附件、标签、锁版本、关注/私有/删除状态和评论字段，并通过 `rawIssue` / `raw` 保留官方 V2 原始 issue 响应。
 - `plan` 面现在已经覆盖规划列表、规划详情、创建、更新、删除、规划图片更新、计划上下文创建工作项、规划内工作项查看、当前规划可添加的工作项，以及规划内工作项加入/清空，方便 agent 在迭代与工作项之间补足“规划”这一层上下文，并直接维护规划内工作项集合；其中 `/v3/plan/{project_id}/managements` 并没有新增独立 MCP 工具，而是并入 `req_list_plans` 的增强过滤能力。
 - `config-read` 面现在已经不只是模板、字段和状态规则，还补齐了更靠近真实流转配置的状态配置读面，方便 agent 在执行前理解项目当前状态体系。
 - `board-read` 和 `cache-read` 面已经可用，能够读取看板工作项、状态记录、工作流配置以及字段缓存。

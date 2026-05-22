@@ -2898,6 +2898,7 @@ describe("createReqClient", () => {
         id: 16666,
         assigned_nick_name: "Bob"
       },
+      developer: {},
       assigned_cc_user: [],
       custom_fields: [
         {

@@ -2494,28 +2494,51 @@ type ReqDetailedIssueListItem = {
 };
 
 type ReqWorkItemIssueDetails = ReqDetailedIssueListItem & {
+  [key: string]: unknown;
   description?: string;
   created_on?: string;
   updated_on?: string;
   start_date?: string;
+  due_date?: string;
   done_ratio?: number;
   expected_work_hours?: number;
+  actual_work_hours?: number;
   release_dev?: string;
+  releaseDev?: string;
   find_release_dev?: string;
+  findReleaseDev?: string;
   inner_text?: string;
+  closed_flag?: number | boolean;
+  is_archived?: boolean;
+  deleted?: boolean;
+  is_private?: boolean;
+  is_watcher?: boolean;
+  isContainDetailWorkingHours?: boolean;
+  lockVersion?: number | string;
+  order?: string | number;
+  position?: string | number;
+  root_id?: number | string;
+  assignedImageId?: string;
+  authorImageId?: string;
+  projectAuthorDomainId?: string;
   project?: Record<string, unknown>;
   priority?: Record<string, unknown>;
   severity?: Record<string, unknown>;
   module?: Record<string, unknown>;
   domain?: Record<string, unknown>;
   story_point?: Record<string, unknown>;
+  fixed_version?: Record<string, unknown>;
   parent_issue?: Record<string, unknown>;
+  children?: Array<Record<string, unknown>>;
   author?: Record<string, unknown>;
+  closeder?: Record<string, unknown>;
   assigned_to?: ReqIssueAssignee;
   developer?: Record<string, unknown>;
   assigned_cc_user?: unknown[];
   custom_fields?: Array<Record<string, unknown>>;
   custom_value_new?: Record<string, unknown>;
+  customValueNew?: Record<string, unknown>;
+  tagList?: unknown[];
   accessories_list?: Array<Record<string, unknown>>;
   journals?: Array<{
     id?: number | string;
@@ -5124,10 +5147,9 @@ export function createReqClient(
         issue?: ReqWorkItemIssueDetails;
       };
       const issue = response.result?.issue ?? response.issue;
-      const { developer: _developer, ...issueWithoutTransientDeveloper } = issue ?? {};
 
       return {
-        ...issueWithoutTransientDeveloper,
+        ...(issue ?? {}),
         id: String(issue?.id ?? input.work_item_id)
       };
     },
