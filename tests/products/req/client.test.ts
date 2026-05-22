@@ -3186,7 +3186,7 @@ describe("createReqClient", () => {
       tracker_id: 7
     });
 
-    expect(requestedPath).toBe("/v4/issue-status/tracker-handler-config?project_id=p-1&tracker_id=7");
+    expect(requestedPath).toBe("/v4/issue-status/tracker-handler-config?project_uuid=p-1&tracker_id=7");
     expect(result).toEqual({
       tracker_handlers: [
         {
@@ -5020,7 +5020,7 @@ describe("createReqClient", () => {
       project_id: "p-1"
     });
 
-    expect(requestedPath).toBe("/v4/project/project-configs/after?project_id=p-1");
+    expect(requestedPath).toBe("/v4/project/project-configs/after?projectUUId=p-1");
     expect(result).toEqual({
       project_id: "p-1",
       date_after: 7

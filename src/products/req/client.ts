@@ -5270,7 +5270,7 @@ export function createReqClient(
     },
     async getProjectDueDaysAfter(input) {
       const query = new URLSearchParams({
-        project_id: input.project_id
+        projectUUId: input.project_id
       });
       const response = (await _http.get(
         `/v4/project/project-configs/after?${query.toString()}`
@@ -6438,7 +6438,7 @@ export function createReqClient(
     },
     async listWorkItemTrackerHandlers(input) {
       const query = new URLSearchParams({
-        project_id: input.project_id,
+        project_uuid: input.project_id,
         tracker_id: String(input.tracker_id)
       });
       const response = (await _http.get(
