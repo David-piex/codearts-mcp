@@ -329,6 +329,78 @@ describe("createArtifactClient", () => {
     ]);
   });
 
+  it("maps additional project settings, role permissions, storage, attention, scan, and opensource endpoints", async () => {
+    const requests: string[] = [];
+    const client = createClient({
+      get: async (path: string) => {
+        requests.push(path);
+
+        if (path.includes("/auto-deletion/settings")) {
+          return { result: { enabled: true, keep_days: 30 } };
+        }
+        if (path.includes("/project-role/permissions")) {
+          return { result: { permissions: [{ id: "role-1", name: "developer" }], total: 1 } };
+        }
+        if (path.includes("/storageinfo/statistic")) {
+          return { result: { statistics: [{ date: "2026-05-23", used_size: 1024 }], total: 1 } };
+        }
+        if (path.includes("/attention/artifacts")) {
+          return { result: { artifacts: [{ id: "attention-1", name: "pkg" }], total: 1 } };
+        }
+        if (path.includes("/sec-guard/task/list")) {
+          return { result: { task_list: [{ id: "scan-1", status: "finished" }], total: 1 } };
+        }
+
+        return { result: { enabled: true } };
+      }
+    });
+
+    await expect(client.showAutoDeleteJobSettings({ project_id: "project-1" })).resolves.toEqual({
+      project_id: "project-1",
+      raw: { enabled: true, keep_days: 30 }
+    });
+    await expect(client.listProjectRolePermissions({ project_id: "project-1" })).resolves.toEqual({
+      permissions: [{ id: "role-1", name: "developer" }],
+      total: 1
+    });
+    await expect(client.listStorageStatistics({
+      tenant_id: "tenant-1",
+      project_id: "project-1"
+    })).resolves.toEqual({
+      statistics: [{ date: "2026-05-23", used_size: 1024 }],
+      total: 1
+    });
+    await expect(client.listAttentions({
+      project_id: "project-1",
+      page: 2,
+      page_size: 10
+    })).resolves.toEqual({
+      attentions: [{ id: "attention-1", name: "pkg" }],
+      total: 1
+    });
+    await expect(client.listSecGuardTasks({
+      date: "2026-05-23",
+      page: 3,
+      page_size: 20
+    })).resolves.toEqual({
+      tasks: [{ id: "scan-1", status: "finished" }],
+      total: 1
+    });
+    await expect(client.showOpenSourceEnabled()).resolves.toEqual({
+      value: true,
+      raw: { enabled: true }
+    });
+
+    expect(requests).toEqual([
+      "/devreposerver/v5/release/project-1/auto-deletion/settings",
+      "/devreposerver/v5/project-role/permissions?project_id=project-1",
+      "/cloudartifact/v5/tenant-1/project-1/storageinfo/statistic",
+      "/cloudartifact/v5/attention/artifacts?page_no=2&page_size=10&project_id=project-1",
+      "/cloudartifact/v5/sec-guard/task/list?page_no=3&page_size=20&date=2026-05-23",
+      "/cloudartifact/v5/opensource/enabled"
+    ]);
+  });
+
   it("maps search artifact responses with nested result", async () => {
     const client = createClient({
       post: async () => ({

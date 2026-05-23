@@ -17,7 +17,7 @@
 | TestPlan | 228 | 10 | Partial | `get_plan / list_runs / get_case / run_cases` are unpublished in Beijing 4 |
 | Deploy | 43 | 17 | Partial | Expanded Deploy v4 environment/record/variable surface is implemented, but execute-class write paths still require dedicated runtime samples |
 | Build | 50 | 9 | Validated | Core Build job, record, log, parameter, domain metadata, permission, code-tag, report, and resource-spec tools have live or smoke coverage; optional Git-code endpoint reads need endpoint-specific samples |
-| Artifact | 21 | 2 | Partial | 5 tools are fully live-validated, and 7 routes are now re-confirmed by live smoke as unpublished in Beijing 4 |
+| Artifact | 27 | 2 | Partial | 5 tools are fully live-validated, and 7 routes are now re-confirmed by live smoke as unpublished in Beijing 4 |
 <!-- GENERATED:capability-matrix:end -->
 
 ## 如何阅读这个表

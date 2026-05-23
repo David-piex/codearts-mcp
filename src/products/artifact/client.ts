@@ -99,6 +99,10 @@ export type ArtifactClient = {
   showCapacityNoticeSettings: () => Promise<{
     raw: unknown;
   }>;
+  showAutoDeleteJobSettings: (input: { project_id: string }) => Promise<{
+    project_id: string;
+    raw: unknown;
+  }>;
   showUserPrivileges: (input: { project_id: string }) => Promise<{
     project_id: string;
     raw: unknown;
@@ -107,9 +111,37 @@ export type ArtifactClient = {
     project_id: string;
     raw: unknown;
   }>;
+  listProjectRolePermissions: (input: { project_id: string }) => Promise<{
+    permissions: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
   listChildProxyRepositories: (input: { repo_id: string; type?: string }) => Promise<{
     repositories: Array<Record<string, unknown>>;
     total?: number;
+  }>;
+  listStorageStatistics: (input: { tenant_id: string; project_id: string }) => Promise<{
+    statistics: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listAttentions: (input: {
+    project_id?: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    attentions: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listSecGuardTasks: (input: {
+    date?: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    tasks: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  showOpenSourceEnabled: () => Promise<{
+    value?: unknown;
+    raw: unknown;
   }>;
   showAudit: (input: {
     tenant_id: string;
@@ -535,6 +567,16 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
 
       return { raw: payload };
     },
+    async showAutoDeleteJobSettings(input) {
+      const { payload } = readStoragePayload(
+        await _http.get(`/devreposerver/v5/release/${encodeURIComponent(input.project_id)}/auto-deletion/settings`)
+      );
+
+      return {
+        project_id: input.project_id,
+        raw: payload
+      };
+    },
     async showUserPrivileges(input) {
       const { payload } = readStoragePayload(
         await _http.get(`/v5/user/${encodeURIComponent(input.project_id)}/privileges`)
@@ -554,6 +596,32 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
       return {
         project_id: input.project_id,
         raw: payload
+      };
+    },
+    async listProjectRolePermissions(input) {
+      const query = new URLSearchParams({ project_id: input.project_id });
+      const { response, payload } = readStoragePayload(
+        await _http.get(`/devreposerver/v5/project-role/permissions?${query.toString()}`)
+      );
+      const permissions = readArray<Record<string, unknown>>(
+        payload.permissions ??
+          payload.roles ??
+          payload.role_permissions ??
+          payload.value ??
+          payload.items ??
+          payload.list ??
+          response.result ??
+          (Array.isArray(payload) ? payload : [])
+      );
+
+      return {
+        permissions,
+        total:
+          readOptionalNumber(payload.total) ??
+          readOptionalNumber(payload.total_count) ??
+          readOptionalNumber(response.total) ??
+          readOptionalNumber(response.total_count) ??
+          permissions.length
       };
     },
     async listChildProxyRepositories(input) {
@@ -579,6 +647,99 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
           readOptionalNumber(response.total) ??
           readOptionalNumber(response.total_count) ??
           repositories.length
+      };
+    },
+    async listStorageStatistics(input) {
+      const { response, payload } = readStoragePayload(
+        await _http.get(`/cloudartifact/v5/${encodeURIComponent(input.tenant_id)}/${encodeURIComponent(input.project_id)}/storageinfo/statistic`)
+      );
+      const statistics = readArray<Record<string, unknown>>(
+        payload.statistics ??
+          payload.storage_statistics ??
+          payload.statistic ??
+          payload.value ??
+          payload.items ??
+          payload.list ??
+          response.result ??
+          (Array.isArray(payload) ? payload : [])
+      );
+
+      return {
+        statistics,
+        total:
+          readOptionalNumber(payload.total) ??
+          readOptionalNumber(payload.total_count) ??
+          readOptionalNumber(response.total) ??
+          readOptionalNumber(response.total_count) ??
+          statistics.length
+      };
+    },
+    async listAttentions(input) {
+      const query = new URLSearchParams({
+        page_no: String(input.page),
+        page_size: String(input.page_size)
+      });
+      if (input.project_id) query.set("project_id", input.project_id);
+      const { response, payload } = readStoragePayload(
+        await _http.get(`/cloudartifact/v5/attention/artifacts?${query.toString()}`)
+      );
+      const attentions = readArray<Record<string, unknown>>(
+        payload.attentions ??
+          payload.artifacts ??
+          payload.value ??
+          payload.items ??
+          payload.list ??
+          response.result ??
+          (Array.isArray(payload) ? payload : [])
+      );
+
+      return {
+        attentions,
+        total:
+          readOptionalNumber(payload.total) ??
+          readOptionalNumber(payload.total_count) ??
+          readOptionalNumber(response.total) ??
+          readOptionalNumber(response.total_count) ??
+          attentions.length
+      };
+    },
+    async listSecGuardTasks(input) {
+      const query = new URLSearchParams({
+        page_no: String(input.page),
+        page_size: String(input.page_size)
+      });
+      if (input.date) query.set("date", input.date);
+      const { response, payload } = readStoragePayload(
+        await _http.get(`/cloudartifact/v5/sec-guard/task/list?${query.toString()}`)
+      );
+      const tasks = readArray<Record<string, unknown>>(
+        payload.tasks ??
+          payload.task_list ??
+          payload.sec_guard_tasks ??
+          payload.value ??
+          payload.items ??
+          payload.list ??
+          response.result ??
+          (Array.isArray(payload) ? payload : [])
+      );
+
+      return {
+        tasks,
+        total:
+          readOptionalNumber(payload.total) ??
+          readOptionalNumber(payload.total_count) ??
+          readOptionalNumber(response.total) ??
+          readOptionalNumber(response.total_count) ??
+          tasks.length
+      };
+    },
+    async showOpenSourceEnabled() {
+      const { payload } = readStoragePayload(await _http.get("/cloudartifact/v5/opensource/enabled"));
+      const envelope = readEnvelope(payload);
+
+      return {
+        value: envelope ? envelope.value ?? envelope.enabled ?? envelope.result : payload,
+        raw: payload
       };
     },
     async showAudit(input) {

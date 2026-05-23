@@ -45,6 +45,37 @@ describe("registerArtifactTool", () => {
     );
   });
 
+  it("registers additional read-only artifact tools", () => {
+    const registerTool = vi.fn();
+    const tools = [
+      ["artifact_show_auto_delete_job_settings", "Show CodeArts Artifact auto delete job settings"],
+      ["artifact_list_project_role_permissions", "List CodeArts Artifact project role permissions"],
+      ["artifact_list_storage_statistics", "List CodeArts Artifact storage statistics"],
+      ["artifact_list_attentions", "List CodeArts Artifact attentions"],
+      ["artifact_list_sec_guard_tasks", "List CodeArts Artifact security guard tasks"],
+      ["artifact_show_open_source_enabled", "Show CodeArts Artifact open source enabled status"]
+    ] as const;
+
+    for (const [toolName, description] of tools) {
+      const handled = registerArtifactTool({
+        toolName,
+        server: { registerTool },
+        mode: "stdio",
+        stdioClient: {} as never
+      });
+
+      expect(handled).toBe(true);
+      expect(registerTool).toHaveBeenLastCalledWith(
+        toolName,
+        expect.objectContaining({
+          title: toolName,
+          description
+        }),
+        expect.any(Function)
+      );
+    }
+  });
+
   it("returns false for non-artifact tools", () => {
     const registerTool = vi.fn();
 

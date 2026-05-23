@@ -96,6 +96,10 @@ export const artifactShowProjectStorageInfoInput = z.object({
 
 export const artifactShowCapacityNoticeSettingsInput = z.object({});
 
+export const artifactShowAutoDeleteJobSettingsInput = z.object({
+  project_id: idSchema
+});
+
 export const artifactShowUserPrivilegesInput = z.object({
   project_id: idSchema
 });
@@ -104,10 +108,29 @@ export const artifactShowUserPermissionsInput = z.object({
   project_id: idSchema
 });
 
+export const artifactListProjectRolePermissionsInput = z.object({
+  project_id: idSchema
+});
+
 export const artifactListChildProxyRepositoriesInput = z.object({
   repo_id: idSchema,
   type: z.string().min(1).optional()
 });
+
+export const artifactListStorageStatisticsInput = z.object({
+  tenant_id: idSchema,
+  project_id: idSchema
+});
+
+export const artifactListAttentionsInput = pagingSchema.extend({
+  project_id: idSchema.optional()
+});
+
+export const artifactListSecGuardTasksInput = pagingSchema.extend({
+  date: z.string().min(1).optional()
+});
+
+export const artifactShowOpenSourceEnabledInput = z.object({});
 
 export const artifactSearchArtifactsInput = pagingSchema.extend({
   artifact_name: z.string().min(1),

@@ -8,16 +8,22 @@ import {
   artifactGetDownloadUrlInput,
   artifactGetRepositoryInput,
   artifactListBuildArchivesInput,
+  artifactListAttentionsInput,
   artifactListChildProxyRepositoriesInput,
   artifactListFilesInput,
   artifactListLatestVersionFilesInput,
+  artifactListProjectRolePermissionsInput,
   artifactListRepositoriesInput,
+  artifactListSecGuardTasksInput,
+  artifactListStorageStatisticsInput,
   artifactListVersionsInput,
   artifactSearchArtifactsInput,
   artifactShowAuditInput,
+  artifactShowAutoDeleteJobSettingsInput,
   artifactShowCapacityNoticeSettingsInput,
   artifactShowDomainReleaseRepoStorageInput,
   artifactShowLatestVersionFilesCountInput,
+  artifactShowOpenSourceEnabledInput,
   artifactShowPackageDataDetailInput,
   artifactShowPackageInfoInput,
   artifactShowProjectStorageInfoInput,
@@ -30,17 +36,23 @@ import { createArtifactGetFileTreeHandler } from "../products/artifact/tools/get
 import { createArtifactGetFileHandler } from "../products/artifact/tools/get-file.js";
 import { createArtifactGetDownloadUrlHandler } from "../products/artifact/tools/get-download-url.js";
 import { createArtifactGetRepositoryHandler } from "../products/artifact/tools/get-repository.js";
+import { createArtifactListAttentionsHandler } from "../products/artifact/tools/list-attentions.js";
 import { createArtifactListBuildArchivesHandler } from "../products/artifact/tools/list-build-archives.js";
 import { createArtifactListChildProxyRepositoriesHandler } from "../products/artifact/tools/list-child-proxy-repositories.js";
 import { createArtifactListFilesHandler } from "../products/artifact/tools/list-files.js";
 import { createArtifactListLatestVersionFilesHandler } from "../products/artifact/tools/list-latest-version-files.js";
+import { createArtifactListProjectRolePermissionsHandler } from "../products/artifact/tools/list-project-role-permissions.js";
 import { createArtifactListRepositoriesHandler } from "../products/artifact/tools/list-repositories.js";
+import { createArtifactListSecGuardTasksHandler } from "../products/artifact/tools/list-sec-guard-tasks.js";
+import { createArtifactListStorageStatisticsHandler } from "../products/artifact/tools/list-storage-statistics.js";
 import { createArtifactListVersionsHandler } from "../products/artifact/tools/list-versions.js";
 import { createArtifactSearchArtifactsHandler } from "../products/artifact/tools/search-artifacts.js";
 import { createArtifactShowAuditHandler } from "../products/artifact/tools/show-audit.js";
+import { createArtifactShowAutoDeleteJobSettingsHandler } from "../products/artifact/tools/show-auto-delete-job-settings.js";
 import { createArtifactShowCapacityNoticeSettingsHandler } from "../products/artifact/tools/show-capacity-notice-settings.js";
 import { createArtifactShowDomainReleaseRepoStorageHandler } from "../products/artifact/tools/show-domain-release-repo-storage.js";
 import { createArtifactShowLatestVersionFilesCountHandler } from "../products/artifact/tools/show-latest-version-files-count.js";
+import { createArtifactShowOpenSourceEnabledHandler } from "../products/artifact/tools/show-open-source-enabled.js";
 import { createArtifactShowPackageDataDetailHandler } from "../products/artifact/tools/show-package-data-detail.js";
 import { createArtifactShowPackageInfoHandler } from "../products/artifact/tools/show-package-info.js";
 import { createArtifactShowProjectStorageInfoHandler } from "../products/artifact/tools/show-project-storage-info.js";
@@ -128,6 +140,12 @@ const artifactToolDefinitions = {
     selectHttpClient: (clients: { artifactClient: Parameters<typeof createArtifactShowCapacityNoticeSettingsHandler>[0] }) => clients.artifactClient,
     createProductHandler: createArtifactShowCapacityNoticeSettingsHandler
   }),
+  "artifact_show_auto_delete_job_settings": defineProductTool({
+    description: "Show CodeArts Artifact auto delete job settings",
+    inputSchema: artifactShowAutoDeleteJobSettingsInput,
+    selectHttpClient: (clients: { artifactClient: Parameters<typeof createArtifactShowAutoDeleteJobSettingsHandler>[0] }) => clients.artifactClient,
+    createProductHandler: createArtifactShowAutoDeleteJobSettingsHandler
+  }),
   "artifact_show_user_privileges": defineProductTool({
     description: "Show CodeArts Artifact user privileges",
     inputSchema: artifactShowUserPrivilegesInput,
@@ -140,11 +158,41 @@ const artifactToolDefinitions = {
     selectHttpClient: (clients: { artifactClient: Parameters<typeof createArtifactShowUserPermissionsHandler>[0] }) => clients.artifactClient,
     createProductHandler: createArtifactShowUserPermissionsHandler
   }),
+  "artifact_list_project_role_permissions": defineProductTool({
+    description: "List CodeArts Artifact project role permissions",
+    inputSchema: artifactListProjectRolePermissionsInput,
+    selectHttpClient: (clients: { artifactClient: Parameters<typeof createArtifactListProjectRolePermissionsHandler>[0] }) => clients.artifactClient,
+    createProductHandler: createArtifactListProjectRolePermissionsHandler
+  }),
   "artifact_list_child_proxy_repositories": defineProductTool({
     description: "List CodeArts Artifact child proxy repositories",
     inputSchema: artifactListChildProxyRepositoriesInput,
     selectHttpClient: (clients: { artifactClient: Parameters<typeof createArtifactListChildProxyRepositoriesHandler>[0] }) => clients.artifactClient,
     createProductHandler: createArtifactListChildProxyRepositoriesHandler
+  }),
+  "artifact_list_storage_statistics": defineProductTool({
+    description: "List CodeArts Artifact storage statistics",
+    inputSchema: artifactListStorageStatisticsInput,
+    selectHttpClient: (clients: { artifactClient: Parameters<typeof createArtifactListStorageStatisticsHandler>[0] }) => clients.artifactClient,
+    createProductHandler: createArtifactListStorageStatisticsHandler
+  }),
+  "artifact_list_attentions": defineProductTool({
+    description: "List CodeArts Artifact attentions",
+    inputSchema: artifactListAttentionsInput,
+    selectHttpClient: (clients: { artifactClient: Parameters<typeof createArtifactListAttentionsHandler>[0] }) => clients.artifactClient,
+    createProductHandler: createArtifactListAttentionsHandler
+  }),
+  "artifact_list_sec_guard_tasks": defineProductTool({
+    description: "List CodeArts Artifact security guard tasks",
+    inputSchema: artifactListSecGuardTasksInput,
+    selectHttpClient: (clients: { artifactClient: Parameters<typeof createArtifactListSecGuardTasksHandler>[0] }) => clients.artifactClient,
+    createProductHandler: createArtifactListSecGuardTasksHandler
+  }),
+  "artifact_show_open_source_enabled": defineProductTool({
+    description: "Show CodeArts Artifact open source enabled status",
+    inputSchema: artifactShowOpenSourceEnabledInput,
+    selectHttpClient: (clients: { artifactClient: Parameters<typeof createArtifactShowOpenSourceEnabledHandler>[0] }) => clients.artifactClient,
+    createProductHandler: createArtifactShowOpenSourceEnabledHandler
   }),
   "artifact_get_repository": defineProductTool({
     description: "Get CodeArts Artifact repository detail",
