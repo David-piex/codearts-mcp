@@ -3,9 +3,11 @@ import { officialApiRequestInput } from "../products/official-api.js";
 import { createCheckClient } from "../products/check/client.js";
 import {
   checkCreateTaskInput,
+  checkGetConsoleLogInput,
   checkGetMetricsInput,
   checkGetTaskCronInput,
   checkGetTaskInput,
+  checkGetTaskLogDetailInput,
   checkGetTaskOwnerMatchingSwitchInput,
   checkGetTaskPreCheckScriptInput,
   checkGetTaskProgressInput,
@@ -19,6 +21,7 @@ import {
   checkListTaskIssuesInput,
   checkListTaskJobsInput,
   checkListTaskLastJobsInput,
+  checkListTaskPathTreeInput,
   checkListTaskRulesetsV2Input,
   checkListTaskRulesetsV3Input,
   checkListTasksInput,
@@ -26,9 +29,11 @@ import {
   checkStopTaskInput
 } from "../products/check/schemas.js";
 import { createCheckCreateTaskHandler } from "../products/check/tools/create-task.js";
+import { createCheckGetConsoleLogHandler } from "../products/check/tools/get-console-log.js";
 import { createCheckGetMetricsHandler } from "../products/check/tools/get-metrics.js";
 import { createCheckGetTaskHandler } from "../products/check/tools/get-task.js";
 import { createCheckGetTaskCronHandler } from "../products/check/tools/get-task-cron.js";
+import { createCheckGetTaskLogDetailHandler } from "../products/check/tools/get-task-log-detail.js";
 import { createCheckGetTaskOwnerMatchingSwitchHandler } from "../products/check/tools/get-task-owner-matching-switch.js";
 import { createCheckGetTaskPreCheckScriptHandler } from "../products/check/tools/get-task-pre-check-script.js";
 import { createCheckGetTaskProgressHandler } from "../products/check/tools/get-task-progress.js";
@@ -42,6 +47,7 @@ import { createCheckListTaskBranchesHandler } from "../products/check/tools/list
 import { createCheckListTaskIssuesHandler } from "../products/check/tools/list-task-issues.js";
 import { createCheckListTaskJobsHandler } from "../products/check/tools/list-task-jobs.js";
 import { createCheckListTaskLastJobsHandler } from "../products/check/tools/list-task-last-jobs.js";
+import { createCheckListTaskPathTreeHandler } from "../products/check/tools/list-task-path-tree.js";
 import { createCheckListTaskRulesetsV2Handler } from "../products/check/tools/list-task-rulesets-v2.js";
 import { createCheckListTaskRulesetsV3Handler } from "../products/check/tools/list-task-rulesets-v3.js";
 import { createCheckListTasksHandler } from "../products/check/tools/list-tasks.js";
@@ -127,6 +133,24 @@ const checkToolDefinitions = {
     inputSchema: checkGetTaskProgressInput,
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetTaskProgressHandler>[0] }) => clients.checkClient,
     createProductHandler: createCheckGetTaskProgressHandler
+  }),
+  "check_get_task_log_detail": defineProductTool({
+    description: "Get CodeArts Check task log detail",
+    inputSchema: checkGetTaskLogDetailInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetTaskLogDetailHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckGetTaskLogDetailHandler
+  }),
+  "check_list_task_path_tree": defineProductTool({
+    description: "List CodeArts Check task path tree nodes",
+    inputSchema: checkListTaskPathTreeInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListTaskPathTreeHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckListTaskPathTreeHandler
+  }),
+  "check_get_console_log": defineProductTool({
+    description: "Get CodeArts Check console log",
+    inputSchema: checkGetConsoleLogInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetConsoleLogHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckGetConsoleLogHandler
   }),
   "check_list_task_rulesets_v2": defineProductTool({
     description: "List CodeArts Check v2 task rulesets",

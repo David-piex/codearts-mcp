@@ -6,7 +6,7 @@
 
 模块：`制品仓`
 
-API 数量：`19`
+API 数量：`23`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
@@ -413,6 +413,58 @@ API 数量：`19`
       ]
     }
   },
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### artifact_list_child_proxy_repositories
+
+所属模块：`制品仓`
+
+说明：查询制品仓的子级proxy仓库。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "artifact_list_child_proxy_repositories",
+    "arguments": {
+      "repo_id": "<repo_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `repo_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repo_id` ↔ 原始 CodeArts 制品仓 API 同名字段 `repo_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>repo ID，用于定位对应的 CodeArts 资源。 |
+| `type` | 否 | `string` |  | 字段对应：<br>MCP 字段 `type` ↔ 原始 CodeArts 制品仓 API 同名字段 `type`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>类型字段，用于区分资源类别、操作类别或查询类别；具体取值以该接口的业务对象为准。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "repo_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "type": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "repo_id"
+  ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
 }
@@ -1054,6 +1106,41 @@ API 数量：`19`
 }
 ```
 
+### artifact_show_capacity_notice_settings
+
+所属模块：`制品仓`
+
+说明：执行制品仓的capacitynoticesettings。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "artifact_show_capacity_notice_settings",
+    "arguments": {}
+  }
+}
+```
+
+参数：
+
+无参数。
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### artifact_show_domain_release_repo_storage
 
 所属模块：`制品仓`
@@ -1349,6 +1436,100 @@ API 数量：`19`
       "minLength": 1
     },
     "status": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "project_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### artifact_show_user_permissions
+
+所属模块：`制品仓`
+
+说明：执行制品仓的用户permissions。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "artifact_show_user_permissions",
+    "arguments": {
+      "project_id": "<project_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 制品仓 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "project_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### artifact_show_user_privileges
+
+所属模块：`制品仓`
+
+说明：执行制品仓的用户privileges。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "artifact_show_user_privileges",
+    "arguments": {
+      "project_id": "<project_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 制品仓 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
       "type": "string",
       "minLength": 1
     }

@@ -14,14 +14,18 @@ import {
   buildGetJobDisableCheckInput,
   buildGetDomainChargeTypeInput,
   buildGetDomainFederationInput,
+  buildGetDomainJobSummaryInput,
   buildGetDomainPackageQuotaInput,
   buildGetDomainStatusInput,
   buildGetDomainUserPermissionInput,
+  buildGetDockerfileTemplateInput,
+  buildGetJobBuildSuccessRatioInput,
   buildGetJobNoticeInput,
   buildGetJobPermissionInput,
   buildGetJobPermissionInternalInput,
   buildGetJobRunningStatusInput,
   buildGetProjectRecordStatisticsInput,
+  buildCheckJobNameExistsInput,
   buildPrepareNodeRuntimeBundleInput,
   buildGetRecordFlowGraphInput,
   buildGetRecordInput,
@@ -38,6 +42,7 @@ import {
   buildListJobGroupTreeInput,
   buildListJobsInput,
   buildListJobPermissionRolesInput,
+  buildListPackageSpecStatusesInput,
   buildListProjectRecordsInput,
   buildListReportBranchesInput,
   buildListReportRepositoriesInput,
@@ -69,11 +74,15 @@ import { createBuildGetJobNoticeHandler } from "../products/build/tools/get-job-
 import { createBuildGetJobRunningStatusHandler } from "../products/build/tools/get-job-running-status.js";
 import { createBuildGetDomainChargeTypeHandler } from "../products/build/tools/get-domain-charge-type.js";
 import { createBuildGetDomainFederationHandler } from "../products/build/tools/get-domain-federation.js";
+import { createBuildGetDomainJobSummaryHandler } from "../products/build/tools/get-domain-job-summary.js";
 import { createBuildGetDomainPackageQuotaHandler } from "../products/build/tools/get-domain-package-quota.js";
 import { createBuildGetDomainStatusHandler } from "../products/build/tools/get-domain-status.js";
 import { createBuildGetDomainUserPermissionHandler } from "../products/build/tools/get-domain-user-permission.js";
+import { createBuildGetDockerfileTemplateHandler } from "../products/build/tools/get-dockerfile-template.js";
+import { createBuildGetJobBuildSuccessRatioHandler } from "../products/build/tools/get-job-build-success-ratio.js";
 import { createBuildGetJobPermissionHandler } from "../products/build/tools/get-job-permission.js";
 import { createBuildGetJobPermissionInternalHandler } from "../products/build/tools/get-job-permission-internal.js";
+import { createBuildCheckJobNameExistsHandler } from "../products/build/tools/check-job-name-exists.js";
 import { createBuildListBuildParametersHandler } from "../products/build/tools/list-build-parameters.js";
 import { createBuildListCodeTagsHandler } from "../products/build/tools/list-code-tags.js";
 import { createBuildListDefaultParametersHandler } from "../products/build/tools/list-default-parameters.js";
@@ -84,6 +93,7 @@ import { createBuildListImageTemplatesHandler } from "../products/build/tools/li
 import { createBuildListJobGroupTreeHandler } from "../products/build/tools/list-job-group-tree.js";
 import { createBuildListJobPermissionRolesHandler } from "../products/build/tools/list-job-permission-roles.js";
 import { createBuildListJobsHandler } from "../products/build/tools/list-jobs.js";
+import { createBuildListPackageSpecStatusesHandler } from "../products/build/tools/list-package-spec-statuses.js";
 import { createBuildListProjectRecordsHandler } from "../products/build/tools/list-project-records.js";
 import { createBuildListReportBranchesHandler } from "../products/build/tools/list-report-branches.js";
 import { createBuildListReportRepositoriesHandler } from "../products/build/tools/list-report-repositories.js";
@@ -204,11 +214,41 @@ const buildToolDefinitions = {
     selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetDomainStatusHandler>[0] }) => clients.buildClient,
     createProductHandler: createBuildGetDomainStatusHandler
   }),
+  "build_get_domain_job_summary": defineProductTool({
+    description: "Get CodeArts Build domain job summary",
+    inputSchema: buildGetDomainJobSummaryInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetDomainJobSummaryHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildGetDomainJobSummaryHandler
+  }),
   "build_list_domain_related_projects": defineProductTool({
     description: "List CodeArts Build domain related projects",
     inputSchema: buildListDomainRelatedProjectsInput,
     selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListDomainRelatedProjectsHandler>[0] }) => clients.buildClient,
     createProductHandler: createBuildListDomainRelatedProjectsHandler
+  }),
+  "build_list_package_spec_statuses": defineProductTool({
+    description: "List CodeArts Build package specification statuses",
+    inputSchema: buildListPackageSpecStatusesInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListPackageSpecStatusesHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildListPackageSpecStatusesHandler
+  }),
+  "build_get_dockerfile_template": defineProductTool({
+    description: "Get a CodeArts Build Dockerfile template",
+    inputSchema: buildGetDockerfileTemplateInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetDockerfileTemplateHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildGetDockerfileTemplateHandler
+  }),
+  "build_check_job_name_exists": defineProductTool({
+    description: "Check whether a CodeArts Build job name exists",
+    inputSchema: buildCheckJobNameExistsInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildCheckJobNameExistsHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildCheckJobNameExistsHandler
+  }),
+  "build_get_job_build_success_ratio": defineProductTool({
+    description: "Get CodeArts Build job success ratio",
+    inputSchema: buildGetJobBuildSuccessRatioInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetJobBuildSuccessRatioHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildGetJobBuildSuccessRatioHandler
   }),
   "build_list_job_permission_roles": defineProductTool({
     description: "List CodeArts Build job permission roles",

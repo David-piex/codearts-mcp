@@ -193,4 +193,82 @@ describe("createBuildClient metadata read paths", () => {
       total: 1
     });
   });
+
+  it("loads additional domain, package, Dockerfile, and report metadata", async () => {
+    const paths: string[] = [];
+    const client = createBuildClient({
+      get: async (path: string) => {
+        paths.push(path);
+        if (path.includes("/job-summary")) {
+          return { result: { job_total: 2 } };
+        }
+        if (path.includes("/package-spec/status")) {
+          return { result: [{ resource_id: "res-1", resource_status: "normal" }] };
+        }
+        if (path.includes("/dockerfile-template")) {
+          return "FROM node:20";
+        }
+        if (path.includes("/job/check/exist")) {
+          return { result: true, status: "success" };
+        }
+        return {
+          result: {
+            job_id: "job-1",
+            branch: "main",
+            total_count: 4,
+            total_success_count: 3
+          }
+        };
+      }
+    } as never);
+
+    const summary = await client.getDomainJobSummary();
+    const statuses = await client.listPackageSpecStatuses({
+      project_id: "project-1",
+      status: "normal"
+    });
+    const template = await client.getDockerfileTemplate({ image_id: "image-1" });
+    const exists = await client.checkJobNameExists({
+      project_id: "project-1",
+      job_name: "build-main"
+    });
+    const ratio = await client.getJobBuildSuccessRatio({
+      job_id: "job-1",
+      repository_name: "repo",
+      branch: "main",
+      interval: 7
+    });
+
+    expect(paths).toEqual([
+      "/v1/domain/job-summary",
+      "/v2/resource/package-spec/status?project_id=project-1&status=normal",
+      "/v1/image/dockerfile-template?image_id=image-1",
+      "/v1/job/check/exist?project_id=project-1&job_name=build-main",
+      "/v1/report/ratio?job_id=job-1&repository_name=repo&branch=main&interval=7"
+    ]);
+    expect(summary).toEqual({ raw: { job_total: 2 } });
+    expect(statuses).toEqual({
+      statuses: [{ resource_id: "res-1", resource_status: "normal" }],
+      total: 1
+    });
+    expect(template).toEqual({ image_id: "image-1", template: "FROM node:20" });
+    expect(exists).toEqual({
+      project_id: "project-1",
+      job_name: "build-main",
+      exists: true,
+      raw: { value: true }
+    });
+    expect(ratio).toEqual({
+      job_id: "job-1",
+      repository_name: "repo",
+      branch: "main",
+      interval: 7,
+      raw: {
+        job_id: "job-1",
+        branch: "main",
+        total_count: 4,
+        total_success_count: 3
+      }
+    });
+  });
 });

@@ -94,6 +94,21 @@ export const artifactShowProjectStorageInfoInput = z.object({
   status: z.string().min(1).optional()
 });
 
+export const artifactShowCapacityNoticeSettingsInput = z.object({});
+
+export const artifactShowUserPrivilegesInput = z.object({
+  project_id: idSchema
+});
+
+export const artifactShowUserPermissionsInput = z.object({
+  project_id: idSchema
+});
+
+export const artifactListChildProxyRepositoriesInput = z.object({
+  repo_id: idSchema,
+  type: z.string().min(1).optional()
+});
+
 export const artifactSearchArtifactsInput = pagingSchema.extend({
   artifact_name: z.string().min(1),
   repo_name: z.string().optional(),

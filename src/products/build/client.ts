@@ -273,9 +273,36 @@ export type BuildClient = {
   getDomainChargeType: () => Promise<{ raw: Record<string, unknown> }>;
   getDomainFederation: () => Promise<{ value?: unknown; raw: Record<string, unknown> }>;
   getDomainStatus: () => Promise<{ raw: Record<string, unknown> }>;
+  getDomainJobSummary: () => Promise<{ raw: Record<string, unknown> }>;
   getDomainRelatedProjects: () => Promise<{
     projects: Array<Record<string, unknown>>;
     total?: number;
+  }>;
+  listPackageSpecStatuses: (input: { project_id: string; status: string }) => Promise<{
+    statuses: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getDockerfileTemplate: (input: { image_id: string }) => Promise<{
+    image_id: string;
+    template: string;
+  }>;
+  checkJobNameExists: (input: { project_id: string; job_name: string }) => Promise<{
+    project_id: string;
+    job_name: string;
+    exists?: boolean;
+    raw: Record<string, unknown>;
+  }>;
+  getJobBuildSuccessRatio: (input: {
+    job_id: string;
+    repository_name: string;
+    branch: string;
+    interval: number;
+  }) => Promise<{
+    job_id: string;
+    repository_name: string;
+    branch: string;
+    interval: number;
+    raw: Record<string, unknown>;
   }>;
   listJobPermissionRoles: (input: { job_id: string }) => Promise<{
     roles: Array<Record<string, unknown>>;
@@ -1423,6 +1450,12 @@ export function createBuildClient(
 
       return { raw: readBuildRawRecord(payload) };
     },
+    async getDomainJobSummary() {
+      const response = await _http.get("/v1/domain/job-summary");
+      const payload = readBuildPayloadValue(response);
+
+      return { raw: readBuildRawRecord(payload) };
+    },
     async getDomainRelatedProjects() {
       const response = await _http.get("/v1/domain/project/related");
       const raw = readBuildPayloadValue(response);
@@ -1434,6 +1467,81 @@ export function createBuildClient(
       return {
         projects,
         total: readBuildTotal(payload, response, projects.length)
+      };
+    },
+    async listPackageSpecStatuses(input) {
+      const query = new URLSearchParams({
+        project_id: input.project_id,
+        status: input.status
+      });
+      const response = await _http.get(`/v2/resource/package-spec/status?${query.toString()}`);
+      const raw = readBuildPayloadValue(response);
+      const payload = readBuildPayload(response);
+      const statuses = readBuildArray<Record<string, unknown>>(
+        payload.statuses ??
+          payload.package_spec_statuses ??
+          payload.resources ??
+          payload.value ??
+          payload.items ??
+          payload.list ??
+          (Array.isArray(raw) ? raw : [])
+      );
+
+      return {
+        statuses,
+        total: readBuildTotal(payload, response, statuses.length)
+      };
+    },
+    async getDockerfileTemplate(input) {
+      const query = new URLSearchParams({ image_id: input.image_id });
+      const response = await _http.get(`/v1/image/dockerfile-template?${query.toString()}`);
+      const payload = readBuildPayloadValue(response);
+      const template = typeof payload === "string" ? payload : String(readBuildRawRecord(payload).value ?? "");
+
+      return {
+        image_id: input.image_id,
+        template
+      };
+    },
+    async checkJobNameExists(input) {
+      const query = new URLSearchParams({
+        project_id: input.project_id,
+        job_name: input.job_name
+      });
+      const response = await _http.get(`/v1/job/check/exist?${query.toString()}`);
+      const payload = readBuildPayloadValue(response);
+      const envelope = readBuildEnvelope(payload);
+      const raw = readBuildRawRecord(payload);
+
+      return {
+        project_id: input.project_id,
+        job_name: input.job_name,
+        exists: typeof payload === "boolean"
+          ? payload
+          : typeof envelope?.result === "boolean"
+            ? envelope.result
+            : typeof envelope?.exists === "boolean"
+              ? envelope.exists
+              : undefined,
+        raw
+      };
+    },
+    async getJobBuildSuccessRatio(input) {
+      const query = new URLSearchParams({
+        job_id: input.job_id,
+        repository_name: input.repository_name,
+        branch: input.branch,
+        interval: String(input.interval)
+      });
+      const response = await _http.get(`/v1/report/ratio?${query.toString()}`);
+      const payload = readBuildPayloadValue(response);
+
+      return {
+        job_id: input.job_id,
+        repository_name: input.repository_name,
+        branch: input.branch,
+        interval: input.interval,
+        raw: readBuildRawRecord(payload)
       };
     },
     async listJobPermissionRoles(input) {

@@ -96,6 +96,21 @@ export type ArtifactClient = {
     file_count?: number;
     raw?: unknown;
   }>;
+  showCapacityNoticeSettings: () => Promise<{
+    raw: unknown;
+  }>;
+  showUserPrivileges: (input: { project_id: string }) => Promise<{
+    project_id: string;
+    raw: unknown;
+  }>;
+  showUserPermissions: (input: { project_id: string }) => Promise<{
+    project_id: string;
+    raw: unknown;
+  }>;
+  listChildProxyRepositories: (input: { repo_id: string; type?: string }) => Promise<{
+    repositories: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
   showAudit: (input: {
     tenant_id: string;
     project_id: string;
@@ -513,6 +528,57 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
           readOptionalNumber(payload.files_count) ??
           readOptionalNumber(payload.count),
         raw: payload
+      };
+    },
+    async showCapacityNoticeSettings() {
+      const { payload } = readStoragePayload(await _http.get("/devreposerver/v5/capacity-notice/settings"));
+
+      return { raw: payload };
+    },
+    async showUserPrivileges(input) {
+      const { payload } = readStoragePayload(
+        await _http.get(`/v5/user/${encodeURIComponent(input.project_id)}/privileges`)
+      );
+
+      return {
+        project_id: input.project_id,
+        raw: payload
+      };
+    },
+    async showUserPermissions(input) {
+      const query = new URLSearchParams({ project_id: input.project_id });
+      const { payload } = readStoragePayload(
+        await _http.get(`/devreposerver/v5/user/permissions?${query.toString()}`)
+      );
+
+      return {
+        project_id: input.project_id,
+        raw: payload
+      };
+    },
+    async listChildProxyRepositories(input) {
+      const query = new URLSearchParams({ repo_id: input.repo_id });
+      if (input.type) query.set("type", input.type);
+      const { response, payload } = readStoragePayload(
+        await _http.get(`/cloudartifact/v5/repositories/proxy?${query.toString()}`)
+      );
+      const repositories = readArray<Record<string, unknown>>(
+        payload.repositories ??
+          payload.value ??
+          payload.items ??
+          payload.list ??
+          response.result ??
+          (Array.isArray(payload) ? payload : [])
+      );
+
+      return {
+        repositories,
+        total:
+          readOptionalNumber(payload.total) ??
+          readOptionalNumber(payload.total_count) ??
+          readOptionalNumber(response.total) ??
+          readOptionalNumber(response.total_count) ??
+          repositories.length
       };
     },
     async showAudit(input) {

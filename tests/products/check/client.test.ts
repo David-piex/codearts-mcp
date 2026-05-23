@@ -345,6 +345,61 @@ describe("createCheckClient", () => {
     });
   });
 
+  it("uses documented task log, path tree, and console log endpoints", async () => {
+    const paths: string[] = [];
+    const client = createClient({
+      get: async (path: string) => {
+        paths.push(path);
+        if (path.includes("/log-detail")) {
+          return { result: { log_info: [{ display_name: "compile", level: "error" }] } };
+        }
+        if (path.includes("/listpathtree")) {
+          return {
+            result: {
+              info: [{ file_name: "src", file_path: "/src", is_leaf: false }],
+              total: 1
+            }
+          };
+        }
+        return { result: { log: "scan started", hasMore: false } };
+      }
+    });
+
+    await expect(client.getTaskLogDetail({
+      project_id: "project-1",
+      task_id: "task-1",
+      execute_id: "exec-1"
+    })).resolves.toEqual({
+      task_id: "task-1",
+      raw: { log_info: [{ display_name: "compile", level: "error" }] }
+    });
+    await expect(client.listTaskPathTree({
+      project_id: "project-1",
+      task_id: "task-1",
+      current_path: "/src",
+      page: 2,
+      page_size: 20
+    })).resolves.toEqual({
+      nodes: [{ file_name: "src", file_path: "/src", is_leaf: false }],
+      total: 1
+    });
+    await expect(client.getConsoleLog({
+      job_id: "job-1",
+      start_offset: 0,
+      end_offset: 100,
+      size: 200,
+      sort: "asc"
+    })).resolves.toEqual({
+      job_id: "job-1",
+      raw: { log: "scan started", hasMore: false }
+    });
+    expect(paths).toEqual([
+      "/v2/project-1/tasks/task-1/log-detail?execute_id=exec-1",
+      "/v2/project-1/tasks/task-1/listpathtree?offset=20&limit=20&current_path=%2Fsrc",
+      "/v1/console-log?job_id=job-1&start_offset=0&end_offset=100&size=200&sort=asc"
+    ]);
+  });
+
   it("maps top-level defects summary fields for task detail", async () => {
     const client = createClient({
       get: async () => ({

@@ -62,7 +62,7 @@ describe("module stats doc rendering", () => {
 
     expect(markdown).toContain("| Module | Read | Write | Live | Key Gaps |");
     expect(markdown).toContain("| Deploy | 43 | 17 | Partial |");
-    expect(markdown).toContain("| Build | 37 | 9 | Validated |");
+    expect(markdown).toContain("| Build | 42 | 9 | Validated |");
   });
 
   it("renders API reference scale tables from current module stats", () => {

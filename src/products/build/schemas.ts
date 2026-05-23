@@ -98,7 +98,30 @@ export const buildGetDomainFederationInput = z.object({});
 
 export const buildGetDomainStatusInput = z.object({});
 
+export const buildGetDomainJobSummaryInput = z.object({});
+
 export const buildListDomainRelatedProjectsInput = z.object({});
+
+export const buildListPackageSpecStatusesInput = z.object({
+  project_id: idSchema,
+  status: z.string().min(1)
+});
+
+export const buildGetDockerfileTemplateInput = z.object({
+  image_id: idSchema
+});
+
+export const buildCheckJobNameExistsInput = z.object({
+  project_id: idSchema,
+  job_name: z.string().min(1)
+});
+
+export const buildGetJobBuildSuccessRatioInput = z.object({
+  job_id: idSchema,
+  repository_name: z.string().min(1),
+  branch: z.string().min(1).default("all"),
+  interval: z.number().int().min(1).max(30).default(7)
+});
 
 export const buildListJobPermissionRolesInput = z.object({
   job_id: idSchema

@@ -15,6 +15,10 @@ export const artifactToolNames = [
   "artifact_show_package_info",
   "artifact_show_domain_release_repo_storage",
   "artifact_show_project_storage_info",
+  "artifact_show_capacity_notice_settings",
+  "artifact_show_user_privileges",
+  "artifact_show_user_permissions",
+  "artifact_list_child_proxy_repositories",
   "artifact_search_artifacts",
   "artifact_show_audit",
   "artifact_request_official_api"

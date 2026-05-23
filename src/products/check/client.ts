@@ -93,6 +93,30 @@ export type CheckClient = {
     task_id: string;
     raw: Record<string, unknown>;
   }>;
+  getTaskLogDetail: (input: { project_id: string; task_id: string; execute_id?: string }) => Promise<{
+    task_id: string;
+    raw: Record<string, unknown>;
+  }>;
+  listTaskPathTree: (input: {
+    project_id: string;
+    task_id: string;
+    current_path?: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    nodes: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getConsoleLog: (input: {
+    job_id: string;
+    start_offset?: number;
+    end_offset?: number;
+    size?: number;
+    sort?: "asc" | "desc";
+  }) => Promise<{
+    job_id: string;
+    raw: Record<string, unknown>;
+  }>;
   listTaskRulesetsV2: (input: { project_id: string; task_id: string }) => Promise<{
     rulesets: Array<Record<string, unknown>>;
     total?: number;
@@ -504,6 +528,56 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
       return {
         task_id: input.task_id,
         raw: progress
+      };
+    },
+    async getTaskLogDetail(input) {
+      const query = new URLSearchParams();
+      if (input.execute_id) query.set("execute_id", input.execute_id);
+      const suffix = query.size ? `?${query.toString()}` : "";
+      const response = await _http.get(
+        `/v2/${encodeURIComponent(input.project_id)}/tasks/${encodeURIComponent(input.task_id)}/log-detail${suffix}`
+      );
+      const payload = readResultPayload(response);
+      const detail = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        task_id: input.task_id,
+        raw: detail
+      };
+    },
+    async listTaskPathTree(input) {
+      const offset = (input.page - 1) * input.page_size;
+      const query = new URLSearchParams({
+        offset: String(offset),
+        limit: String(input.page_size)
+      });
+      if (input.current_path) query.set("current_path", input.current_path);
+      const response = await _http.get(
+        `/v2/${encodeURIComponent(input.project_id)}/tasks/${encodeURIComponent(input.task_id)}/listpathtree?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const nodes = readArray<Record<string, unknown>>(
+        payload.info ?? payload.nodes ?? payload.value ?? payload.items ?? payload.list ?? (Array.isArray(response) ? response : [])
+      );
+
+      return {
+        nodes,
+        total: readTotal(payload, response, nodes.length)
+      };
+    },
+    async getConsoleLog(input) {
+      const query = new URLSearchParams({ job_id: input.job_id });
+      if (input.start_offset !== undefined) query.set("start_offset", String(input.start_offset));
+      if (input.end_offset !== undefined) query.set("end_offset", String(input.end_offset));
+      if (input.size !== undefined) query.set("size", String(input.size));
+      if (input.sort) query.set("sort", input.sort);
+      const response = await _http.get(`/v1/console-log?${query.toString()}`);
+      const payload = readResultPayload(response);
+      const log = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        job_id: input.job_id,
+        raw: log
       };
     },
     async listTaskRulesetsV2(input) {

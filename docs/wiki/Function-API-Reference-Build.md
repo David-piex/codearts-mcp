@@ -6,7 +6,7 @@
 
 模块：`编译构建`
 
-API 数量：`46`
+API 数量：`51`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
@@ -215,6 +215,60 @@ API 数量：`46`
 }
 ```
 
+### build_check_job_name_exists
+
+所属模块：`编译构建`
+
+说明：检查编译构建的任务nameexists。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "build_check_job_name_exists",
+    "arguments": {
+      "project_id": "<project_id>",
+      "job_name": "<job_name>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 编译构建 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `job_name` | 是 | `string` |  | 字段对应：<br>MCP 字段 `job_name` ↔ 原始 CodeArts 编译构建 API 同名字段 `job_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>构建任务名称。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "job_name": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "project_id",
+    "job_name"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### build_configure_release_upload_step
 
 所属模块：`编译构建`
@@ -311,6 +365,53 @@ API 数量：`46`
 }
 ```
 
+### build_get_dockerfile_template
+
+所属模块：`编译构建`
+
+说明：获取编译构建的dockerfile模板。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "build_get_dockerfile_template",
+    "arguments": {
+      "image_id": "<image_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `image_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `image_id` ↔ 原始 CodeArts 编译构建 API 同名字段 `image_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>图片 ID，用于定位对应的 CodeArts 资源。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "image_id": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "image_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### build_get_domain_charge_type
 
 所属模块：`编译构建`
@@ -361,6 +462,41 @@ API 数量：`46`
   "method": "tools/call",
   "params": {
     "name": "build_get_domain_federation",
+    "arguments": {}
+  }
+}
+```
+
+参数：
+
+无参数。
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### build_get_domain_job_summary
+
+所属模块：`编译构建`
+
+说明：获取编译构建的领域任务摘要。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "build_get_domain_job_summary",
     "arguments": {}
   }
 }
@@ -794,6 +930,73 @@ API 数量：`46`
   },
   "required": [
     "job_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### build_get_job_build_success_ratio
+
+所属模块：`编译构建`
+
+说明：获取编译构建的任务构建successratio。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "build_get_job_build_success_ratio",
+    "arguments": {
+      "job_id": "<job_id>",
+      "repository_name": "<repository_name>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `job_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `job_id` ↔ 原始 CodeArts 编译构建 API 同名字段 `job_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>构建任务 ID，用于定位对应的 CodeArts 资源。 |
+| `repository_name` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repository_name` ↔ 原始 CodeArts 编译构建 API 同名字段 `repository_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>仓库名称。 |
+| `branch` | 否 | `string` | "all" | 字段对应：<br>MCP 字段 `branch` ↔ 原始 CodeArts 编译构建 API 同名字段 `branch`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>Git 分支名称，用于构建、流水线或代码仓操作时指定代码来源分支。 |
+| `interval` | 否 | `integer` | 7 | 字段对应：<br>MCP 字段 `interval` ↔ 原始 CodeArts 编译构建 API 同名字段 `interval`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "job_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repository_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "branch": {
+      "type": "string",
+      "minLength": 1,
+      "default": "all"
+    },
+    "interval": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 30,
+      "default": 7
+    }
+  },
+  "required": [
+    "job_id",
+    "repository_name"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -1837,6 +2040,60 @@ API 数量：`46`
   },
   "required": [
     "project_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### build_list_package_spec_statuses
+
+所属模块：`编译构建`
+
+说明：查询编译构建的packagespec状态。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "build_list_package_spec_statuses",
+    "arguments": {
+      "project_id": "<project_id>",
+      "status": "<status>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 编译构建 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `status` | 是 | `string` |  | 字段对应：<br>MCP 字段 `status` ↔ 原始 CodeArts 编译构建 API 同名字段 `status`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>状态过滤条件或目标状态。用于列表查询时表示筛选状态，用于更新/流转时表示要变更到的目标状态；具体取值以对应资源的状态字典为准。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "project_id",
+    "status"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

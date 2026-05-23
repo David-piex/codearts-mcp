@@ -49,7 +49,7 @@ describe("registerBuildTool", () => {
     const registerTool = vi.fn();
 
     const handled = registerBuildTool({
-      toolName: "build_list_code_tags",
+      toolName: "build_get_domain_job_summary",
       server: { registerTool },
       mode: "stdio",
       stdioClient: {} as never
@@ -57,10 +57,10 @@ describe("registerBuildTool", () => {
 
     expect(handled).toBe(true);
     expect(registerTool).toHaveBeenCalledWith(
-      "build_list_code_tags",
+      "build_get_domain_job_summary",
       expect.objectContaining({
-        title: "build_list_code_tags",
-        description: "List CodeArts Build source code tags"
+        title: "build_get_domain_job_summary",
+        description: "Get CodeArts Build domain job summary"
       }),
       expect.any(Function)
     );

@@ -41,6 +41,26 @@ export const checkGetTaskProgressInput = z.object({
   task_id: idSchema
 });
 
+export const checkGetTaskLogDetailInput = z.object({
+  project_id: idSchema,
+  task_id: idSchema,
+  execute_id: idSchema.optional()
+});
+
+export const checkListTaskPathTreeInput = pagingSchema.extend({
+  project_id: idSchema,
+  task_id: idSchema,
+  current_path: z.string().min(1).optional()
+});
+
+export const checkGetConsoleLogInput = z.object({
+  job_id: idSchema,
+  start_offset: z.number().int().min(0).optional(),
+  end_offset: z.number().int().min(0).optional(),
+  size: z.number().int().positive().max(5000).optional(),
+  sort: z.enum(["asc", "desc"]).optional()
+});
+
 export const checkListTaskRulesetsV2Input = z.object({
   project_id: idSchema,
   task_id: idSchema

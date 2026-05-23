@@ -270,6 +270,65 @@ describe("createArtifactClient", () => {
     ]);
   });
 
+  it("maps capacity, permission, and child proxy repository endpoints", async () => {
+    const requests: string[] = [];
+    const client = createClient({
+      get: async (path: string) => {
+        requests.push(path);
+
+        if (path.includes("capacity-notice")) {
+          return { result: { capacity_threshold: 80, is_mail_enabled: true } };
+        }
+        if (path.includes("/privileges")) {
+          return { result: { role_name: "developer", operations: ["download"] } };
+        }
+        if (path.includes("/user/permissions")) {
+          return { result: { is_download: true, is_upload: false } };
+        }
+        return {
+          result: [
+            {
+              repository_id: "repo-child-1",
+              repository_name: "npm-proxy",
+              type: "proxy"
+            }
+          ]
+        };
+      }
+    });
+
+    await expect(client.showCapacityNoticeSettings()).resolves.toEqual({
+      raw: { capacity_threshold: 80, is_mail_enabled: true }
+    });
+    await expect(client.showUserPrivileges({ project_id: "project-1" })).resolves.toEqual({
+      project_id: "project-1",
+      raw: { role_name: "developer", operations: ["download"] }
+    });
+    await expect(client.showUserPermissions({ project_id: "project-1" })).resolves.toEqual({
+      project_id: "project-1",
+      raw: { is_download: true, is_upload: false }
+    });
+    await expect(client.listChildProxyRepositories({
+      repo_id: "repo-1",
+      type: "npm"
+    })).resolves.toEqual({
+      repositories: [
+        {
+          repository_id: "repo-child-1",
+          repository_name: "npm-proxy",
+          type: "proxy"
+        }
+      ],
+      total: 1
+    });
+    expect(requests).toEqual([
+      "/devreposerver/v5/capacity-notice/settings",
+      "/v5/user/project-1/privileges",
+      "/devreposerver/v5/user/permissions?project_id=project-1",
+      "/cloudartifact/v5/repositories/proxy?repo_id=repo-1&type=npm"
+    ]);
+  });
+
   it("maps search artifact responses with nested result", async () => {
     const client = createClient({
       post: async () => ({
