@@ -937,11 +937,33 @@ describe("createCheckClient", () => {
             }
           };
         }
-        if (path.includes("/defects/task-statistics")) {
+        if (path.includes("/defects-statistic")) {
           return {
             result: {
               total_defects: 2,
               fixed_defects: 1
+            }
+          };
+        }
+        if (path.includes("/vpcep-authorization")) {
+          return {
+            status: "ok",
+            data: {
+              result: "Allow",
+              config: false
+            }
+          };
+        }
+        if (path.includes("/check-list")) {
+          return {
+            result: {
+              total: 1,
+              list: [
+                {
+                  taskId: "child-task-1",
+                  branchName: "main"
+                }
+              ]
             }
           };
         }
@@ -1105,6 +1127,39 @@ describe("createCheckClient", () => {
         fixed_defects: 1
       }
     });
+    await expect(client.getVpcepAuthorization({
+      task_id: "task-1"
+    })).resolves.toEqual({
+      task_id: "task-1",
+      raw: {
+        result: "Allow",
+        config: false
+      }
+    });
+    await expect(client.listTaskCheckList({
+      task_id: "task-1",
+      check_type: "branch",
+      page: 1,
+      page_size: 10,
+      search: "main"
+    })).resolves.toEqual({
+      checks: [
+        {
+          taskId: "child-task-1",
+          branchName: "main"
+        }
+      ],
+      total: 1,
+      raw: {
+        total: 1,
+        list: [
+          {
+            taskId: "child-task-1",
+            branchName: "main"
+          }
+        ]
+      }
+    });
 
     expect(requests).toEqual([
       "/v2/project-1/ruleset/ruleset-1/rules?offset=10&limit=10&types=1&languages=JAVA&tags=cwe&keyword=security&sort_by=rule_name&sort_order=asc",
@@ -1116,7 +1171,9 @@ describe("createCheckClient", () => {
       "/v2/all-criterionsets?page=2&page_size=20&languages=PYTHON&search=default&my_create=false&project_id=project-1&is_call_status=true&sort_field=last_update_time&sort_order=down&operator=user-1",
       "/v1/criterion-filters?project_id=project-1&language=JAVA&checker_name=java-checker&key=security",
       "/v2/criterions?page=3&page_size=25&languages=JAVA%2CPYTHON&search=bug&keyword=bug&sort_by=name&sort_order=desc",
-      "/v1/defects/task-statistics?task_id=task-1"
+      "/v2/tasks/task-1/defects-statistic",
+      "/v1/vpcep-authorization?task_id=task-1",
+      "/v4/task/task-1/check-list?page=1&page_size=10&check_type=branch&search=main"
     ]);
   });
 });

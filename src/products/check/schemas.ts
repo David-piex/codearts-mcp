@@ -178,6 +178,18 @@ export const checkGetDefectTaskStatisticsInput = z.object({
   task_id: idSchema
 });
 
+export const checkGetVpcepAuthorizationInput = z.object({
+  task_id: idSchema
+});
+
+export const checkListTaskCheckListInput = pagingSchema.extend({
+  task_id: idSchema,
+  check_type: z.enum(["branch", "tag", "cr", "mr"]).default("branch"),
+  search: z.string().min(1).optional(),
+  time_start: z.string().min(1).optional(),
+  time_end: z.string().min(1).optional()
+});
+
 export const checkGetTaskProgressInput = z.object({
   task_id: idSchema
 });

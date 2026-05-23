@@ -487,6 +487,10 @@ export const reqListWorkItemTemplatesInput = z.object({
   tracker_id: reqTrackerIdSchema.optional()
 });
 
+export const reqListWorkSettingTemplatesV2Input = z.object({
+  search: z.string().min(1).optional()
+});
+
 const reqCreateWorkItemTemplateFieldConfigInput = z.object({
   field: z.string().min(1).optional(),
   is_required: z.number().int().nonnegative().optional(),
@@ -522,6 +526,37 @@ export const reqListWorkItemCustomFieldsInput = z.object({
   project_id: idSchema,
   tracker_id: reqTrackerIdSchema.optional()
 });
+
+export const reqListWorkItemCustomFieldsV4Input = z.object({
+  project_id: idSchema,
+  custom_fields: z.array(z.string().min(1)).min(1).optional(),
+  included_not_in_use: z.boolean().optional(),
+  names: z.array(z.string().min(1)).min(1).optional()
+});
+
+export const reqListWorkItemCommentsV2Input = pagingSchema
+  .pick({
+    page: true,
+    page_size: true
+  })
+  .extend({
+    project_id: idSchema,
+    work_item_id: idSchema,
+    type: z.string().min(1).default("scrum"),
+    page_size: z.number().int().positive().max(100).default(10)
+  });
+
+export const reqListWorkItemRecordsV2Input = pagingSchema
+  .pick({
+    page: true,
+    page_size: true
+  })
+  .extend({
+    project_id: idSchema,
+    work_item_id: idSchema,
+    type: z.string().min(1).default("scrum"),
+    page_size: z.number().int().positive().max(1000).default(10)
+  });
 
 export const reqGetWorkItemStatusRuleFlagInput = z.object({
   project_id: idSchema,

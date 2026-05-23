@@ -282,6 +282,23 @@ export type CheckClient = {
     task_id: string;
     raw: Record<string, unknown>;
   }>;
+  getVpcepAuthorization: (input: { task_id: string }) => Promise<{
+    task_id: string;
+    raw: Record<string, unknown>;
+  }>;
+  listTaskCheckList: (input: {
+    task_id: string;
+    check_type?: "branch" | "tag" | "cr" | "mr";
+    page: number;
+    page_size: number;
+    search?: string;
+    time_start?: string;
+    time_end?: string;
+  }) => Promise<{
+    checks: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
   getTaskProgress: (input: { task_id: string }) => Promise<{
     task_id: string;
     raw: Record<string, unknown>;
@@ -1155,14 +1172,46 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
       };
     },
     async getDefectTaskStatistics(input) {
-      const query = new URLSearchParams({ task_id: input.task_id });
-      const response = await _http.get(`/v1/defects/task-statistics?${query.toString()}`);
+      const response = await _http.get(`/v2/tasks/${encodeURIComponent(input.task_id)}/defects-statistic`);
       const payload = readResultPayload(response);
       const statistics = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
 
       return {
         task_id: input.task_id,
         raw: statistics
+      };
+    },
+    async getVpcepAuthorization(input) {
+      const query = new URLSearchParams({ task_id: input.task_id });
+      const response = await _http.get(`/v1/vpcep-authorization?${query.toString()}`);
+      const payload = readResultPayload(response);
+      const authorization = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        task_id: input.task_id,
+        raw: authorization
+      };
+    },
+    async listTaskCheckList(input) {
+      const query = new URLSearchParams({
+        page: String(input.page),
+        page_size: String(input.page_size)
+      });
+      if (input.check_type) query.set("check_type", input.check_type);
+      if (input.search) query.set("search", input.search);
+      if (input.time_start) query.set("time_start", input.time_start);
+      if (input.time_end) query.set("time_end", input.time_end);
+      const response = await _http.get(`/v4/task/${encodeURIComponent(input.task_id)}/check-list?${query.toString()}`);
+      const payload = readResultPayload(response);
+      const listPayload = readEnvelope(payload.result) ?? payload;
+      const checks = readArray<Record<string, unknown>>(
+        listPayload.list ?? listPayload.checks ?? listPayload.data ?? listPayload.value ?? listPayload.items ?? []
+      );
+
+      return {
+        checks,
+        total: readTotal(listPayload, response, checks.length),
+        raw: listPayload
       };
     },
     async getTaskProgress(input) {

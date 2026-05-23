@@ -613,6 +613,50 @@ describe("createReqClient", () => {
     });
   });
 
+  it("maps official V2 module setting queries to the documented endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          result: {
+            total_count: 1,
+            modules: [
+              {
+                id: 885859,
+                name: "Promotion",
+                path_name: "Promotion"
+              }
+            ]
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.listModuleSettingsV2({
+      project_id: "p-1",
+      page: 2,
+      page_size: 10,
+      search: "Promotion"
+    });
+
+    expect(requestedPath).toBe(
+      "/v2/module/modules?project_id=p-1&page_no=2&page_size=10&offset=10&limit=10&search=Promotion"
+    );
+    expect(result).toEqual({
+      modules: [
+        {
+          id: 885859,
+          name: "Promotion",
+          path_name: "Promotion"
+        }
+      ],
+      total: 1
+    });
+  });
+
   it("uses iteration detail, create, update and delete endpoints", async () => {
     const requests: Array<{ method: string; path: string; body?: Record<string, unknown> }> = [];
     const client = createReqClient({
@@ -1225,6 +1269,51 @@ describe("createReqClient", () => {
     });
   });
 
+  it("maps official V2 work item record queries to the documented endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          result: {
+            journals_total: 1,
+            record: [
+              {
+                id: 1,
+                notes: "updated",
+                created_on: "1779267066000"
+              }
+            ]
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.listWorkItemRecordsV2({
+      project_id: "p-1",
+      work_item_id: "70844211",
+      page: 2,
+      page_size: 10,
+      type: "scrum"
+    });
+
+    expect(requestedPath).toBe(
+      "/v2/issues/get-record?project_id=p-1&issue_id=70844211&offset=10&limit=10&type=scrum"
+    );
+    expect(result).toEqual({
+      records: [
+        {
+          id: 1,
+          notes: "updated",
+          created_on: "1779267066000"
+        }
+      ],
+      total: 1
+    });
+  });
+
   it("maps findIterations to the v3 version find endpoint", async () => {
     let requestedPath = "";
     const client = createReqClient({
@@ -1374,6 +1463,51 @@ describe("createReqClient", () => {
             user_name: "alice",
             user_num_id: 1001
           }
+        }
+      ],
+      total: 1
+    });
+  });
+
+  it("maps official V2 work item comment queries to the documented endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          result: {
+            journals_total: 1,
+            comments: [
+              {
+                id: 1,
+                notes: "ok",
+                created_on: "1779267066000"
+              }
+            ]
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.listWorkItemCommentsV2({
+      project_id: "p-1",
+      work_item_id: "70844211",
+      page: 2,
+      page_size: 10,
+      type: "scrum"
+    });
+
+    expect(requestedPath).toBe(
+      "/v2/issues/get-comments?issue_id=70844211&project_uuid=p-1&offset=10&limit=10&type=scrum"
+    );
+    expect(result).toEqual({
+      comments: [
+        {
+          id: 1,
+          notes: "ok",
+          created_on: "1779267066000"
         }
       ],
       total: 1
@@ -1868,6 +2002,48 @@ describe("createReqClient", () => {
           domain_name: "功能"
         }
       ]
+    });
+  });
+
+  it("maps official V2 project domain setting queries to the documented endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          result: {
+            total_count: 1,
+            domains: [
+              {
+                id: 14,
+                name: "Performance",
+                flag: 1
+              }
+            ]
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.listProjectDomainsV2({
+      project_id: "p-1",
+      flag: 1,
+      page: 2,
+      page_size: 10
+    });
+
+    expect(requestedPath).toBe("/v2/domain/domain?project_id=p-1&flag=1&page_no=2&page_size=10&offset=10&limit=10");
+    expect(result).toEqual({
+      domains: [
+        {
+          id: 14,
+          name: "Performance",
+          flag: 1
+        }
+      ],
+      total: 1
     });
   });
 
@@ -2732,6 +2908,42 @@ describe("createReqClient", () => {
     });
   });
 
+  it("maps official V2 work setting template queries to the documented endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          result: {
+            templates: [
+              {
+                name: "Scrum template",
+                description: "Default"
+              }
+            ]
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.listWorkSettingTemplatesV2({
+      search: "Scrum"
+    });
+
+    expect(requestedPath).toBe("/v2/project-template/template?search=Scrum");
+    expect(result).toEqual({
+      templates: [
+        {
+          name: "Scrum template",
+          description: "Default"
+        }
+      ],
+      total: undefined
+    });
+  });
+
   it("maps work item custom field queries to the documented custom-field endpoint", async () => {
     let requestedPath = "";
     const client = createReqClient({
@@ -2785,6 +2997,48 @@ describe("createReqClient", () => {
           created: "2025-06-28 10:00:30",
           modified: "2025-06-28 10:00:30",
           is_delete: false
+        }
+      ]
+    });
+  });
+
+  it("maps official V4 issue custom field queries to the documented endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return {
+          datas: [
+            {
+              custom_field: "custom_field16",
+              name: "Business line",
+              type: "text"
+            }
+          ]
+        };
+      }
+    } as never);
+
+    const result = await client.listWorkItemCustomFieldsV4({
+      project_id: "p-1",
+      included_not_in_use: true,
+      names: ["Business line"]
+    });
+
+    expect(requestedPath).toBe("/v4/projects/p-1/issues/custom-fields");
+    expect(requestedBody).toEqual({
+      included_not_in_use: true,
+      names: ["Business line"]
+    });
+    expect(result).toEqual({
+      custom_fields: [
+        {
+          custom_field: "custom_field16",
+          name: "Business line",
+          type: "text"
         }
       ]
     });

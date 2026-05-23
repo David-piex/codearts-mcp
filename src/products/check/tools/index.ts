@@ -37,6 +37,8 @@ export const checkToolNames = [
   "check_list_criterion_filters",
   "check_list_criterions",
   "check_get_defect_task_statistics",
+  "check_get_vpcep_authorization",
+  "check_list_task_check_list",
   "check_get_task_progress",
   "check_get_task_log_detail",
   "check_list_task_path_tree",

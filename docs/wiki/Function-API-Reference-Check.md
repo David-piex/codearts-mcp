@@ -6,7 +6,7 @@
 
 模块：`代码检查`
 
-API 数量：`53`
+API 数量：`55`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
@@ -1282,6 +1282,53 @@ API 数量：`53`
 }
 ```
 
+### check_get_vpcep_authorization
+
+所属模块：`代码检查`
+
+说明：获取代码检查的vpcepauthorization。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "check_get_vpcep_authorization",
+    "arguments": {
+      "task_id": "<task_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `task_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `task_id` ↔ 原始 CodeArts 代码检查 API 同名字段 `task_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>任务 ID，用于定位对应的 CodeArts 资源。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "task_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### check_list_all_criterionsets
 
 所属模块：`代码检查`
@@ -2239,6 +2286,108 @@ API 数量：`53`
   },
   "required": [
     "project_id",
+    "task_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### check_list_task_check_list
+
+所属模块：`代码检查`
+
+说明：查询代码检查的任务检查list。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "check_list_task_check_list",
+    "arguments": {
+      "task_id": "<task_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 字段对应：<br>MCP 字段 `page` ↔ 原始 CodeArts 代码检查 API 的分页页码或由 `offset/limit` 换算得到的页码。<br>页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 字段对应：<br>MCP 字段 `page_size` ↔ 原始 CodeArts 代码检查 API 的分页大小字段，常见原字段名为 `page_size`、`limit` 或 `pageSize`。<br>每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 字段对应：<br>MCP 字段 `keyword` ↔ 原始 CodeArts 代码检查 API 的搜索关键字字段，常见原字段名为 `keyword`、`search` 或 `name`。<br>搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 字段对应：<br>MCP 字段 `sort_by` ↔ 原始 CodeArts 代码检查 API 同名字段 `sort_by`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 字段对应：<br>MCP 字段 `sort_order` ↔ 原始 CodeArts 代码检查 API 同名字段 `sort_order`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `task_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `task_id` ↔ 原始 CodeArts 代码检查 API 同名字段 `task_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>任务 ID，用于定位对应的 CodeArts 资源。 |
+| `check_type` | 否 | `"branch" \| "tag" \| "cr" \| "mr"` | "branch" | 字段对应：<br>MCP 字段 `check_type` ↔ 原始 CodeArts 代码检查 API 同名字段 `check_type`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。可选值：`branch`、`tag`、`cr`、`mr`。 |
+| `search` | 否 | `string` |  | 字段对应：<br>MCP 字段 `search` ↔ 原始 CodeArts 代码检查 API 同名字段 `search`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>搜索关键字，用于按名称、标题、编号等文本条件过滤列表。 |
+| `time_start` | 否 | `string` |  | 字段对应：<br>MCP 字段 `time_start` ↔ 原始 CodeArts 代码检查 API 同名字段 `time_start`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `time_end` | 否 | `string` |  | 字段对应：<br>MCP 字段 `time_end` ↔ 原始 CodeArts 代码检查 API 同名字段 `time_end`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "page": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "default": 1
+    },
+    "page_size": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 200,
+      "default": 20
+    },
+    "keyword": {
+      "type": "string"
+    },
+    "sort_by": {
+      "type": "string"
+    },
+    "sort_order": {
+      "type": "string",
+      "enum": [
+        "asc",
+        "desc"
+      ]
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "check_type": {
+      "type": "string",
+      "enum": [
+        "branch",
+        "tag",
+        "cr",
+        "mr"
+      ],
+      "default": "branch"
+    },
+    "search": {
+      "type": "string",
+      "minLength": 1
+    },
+    "time_start": {
+      "type": "string",
+      "minLength": 1
+    },
+    "time_end": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
     "task_id"
   ],
   "additionalProperties": false,

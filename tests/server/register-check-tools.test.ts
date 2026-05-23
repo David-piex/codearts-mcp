@@ -95,7 +95,9 @@ describe("registerCheckTool", () => {
       ["check_list_all_criterionsets", "List all CodeArts Check criterionsets"],
       ["check_list_criterion_filters", "List CodeArts Check criterion filters"],
       ["check_list_criterions", "List CodeArts Check criterions"],
-      ["check_get_defect_task_statistics", "Get CodeArts Check defect task statistics"]
+      ["check_get_defect_task_statistics", "Get CodeArts Check defect task statistics"],
+      ["check_get_vpcep_authorization", "Get CodeArts Check VPC endpoint authorization"],
+      ["check_list_task_check_list", "List CodeArts Check task check list"]
     ] as const;
 
     for (const [toolName, description] of tools) {

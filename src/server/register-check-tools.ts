@@ -26,6 +26,7 @@ import {
   checkGetTaskSettingsInput,
   checkGetTaskWebhookInfoInput,
   checkGetTransmissionNotificationInput,
+  checkGetVpcepAuthorizationInput,
   checkListAllCriterionsetsInput,
   checkListCriterionFiltersInput,
   checkListCriterionsInput,
@@ -43,6 +44,7 @@ import {
   checkListTaskAllFilesInput,
   checkListTaskBranchesInput,
   checkListTaskCheckRecordsInput,
+  checkListTaskCheckListInput,
   checkListTaskFilesInput,
   checkListTaskIssuesInput,
   checkListTaskJobsInput,
@@ -79,6 +81,7 @@ import { createCheckGetTaskRulesetCheckParametersV3Handler } from "../products/c
 import { createCheckGetTaskSettingsHandler } from "../products/check/tools/get-task-settings.js";
 import { createCheckGetTaskWebhookInfoHandler } from "../products/check/tools/get-task-webhook-info.js";
 import { createCheckGetTransmissionNotificationHandler } from "../products/check/tools/get-transmission-notification.js";
+import { createCheckGetVpcepAuthorizationHandler } from "../products/check/tools/get-vpcep-authorization.js";
 import { createCheckListAllCriterionsetsHandler } from "../products/check/tools/list-all-criterionsets.js";
 import { createCheckListCriterionFiltersHandler } from "../products/check/tools/list-criterion-filters.js";
 import { createCheckListCriterionsHandler } from "../products/check/tools/list-criterions.js";
@@ -96,6 +99,7 @@ import { createCheckListThirdToolsHandler } from "../products/check/tools/list-t
 import { createCheckListTaskAllFilesHandler } from "../products/check/tools/list-task-all-files.js";
 import { createCheckListTaskBranchesHandler } from "../products/check/tools/list-task-branches.js";
 import { createCheckListTaskCheckRecordsHandler } from "../products/check/tools/list-task-check-records.js";
+import { createCheckListTaskCheckListHandler } from "../products/check/tools/list-task-check-list.js";
 import { createCheckListTaskFilesHandler } from "../products/check/tools/list-task-files.js";
 import { createCheckListTaskIssuesHandler } from "../products/check/tools/list-task-issues.js";
 import { createCheckListTaskJobsHandler } from "../products/check/tools/list-task-jobs.js";
@@ -343,6 +347,18 @@ const checkToolDefinitions = {
     inputSchema: checkGetDefectTaskStatisticsInput,
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetDefectTaskStatisticsHandler>[0] }) => clients.checkClient,
     createProductHandler: createCheckGetDefectTaskStatisticsHandler
+  }),
+  "check_get_vpcep_authorization": defineProductTool({
+    description: "Get CodeArts Check VPC endpoint authorization",
+    inputSchema: checkGetVpcepAuthorizationInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetVpcepAuthorizationHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckGetVpcepAuthorizationHandler
+  }),
+  "check_list_task_check_list": defineProductTool({
+    description: "List CodeArts Check task check list",
+    inputSchema: checkListTaskCheckListInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListTaskCheckListHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckListTaskCheckListHandler
   }),
   "check_get_task_progress": defineProductTool({
     description: "Get CodeArts Check task progress",

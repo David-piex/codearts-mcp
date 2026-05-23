@@ -96,6 +96,17 @@ export const reqListProjectModulesInput = pagingSchema
     page_size: z.number().int().positive().max(1000).default(20)
   });
 
+export const reqListModuleSettingsV2Input = pagingSchema
+  .pick({
+    page: true,
+    page_size: true
+  })
+  .extend({
+    project_id: idSchema,
+    search: z.string().min(1).optional(),
+    page_size: z.number().int().positive().max(1000).default(20)
+  });
+
 export const reqListProjectDomainsInput = pagingSchema
   .pick({
     page: true,
@@ -103,6 +114,17 @@ export const reqListProjectDomainsInput = pagingSchema
   })
   .extend({
     project_id: idSchema,
+    page_size: z.number().int().positive().max(100).default(20)
+  });
+
+export const reqListProjectDomainsV2Input = pagingSchema
+  .pick({
+    page: true,
+    page_size: true
+  })
+  .extend({
+    project_id: idSchema,
+    flag: z.number().int().min(0).max(1),
     page_size: z.number().int().positive().max(100).default(20)
   });
 

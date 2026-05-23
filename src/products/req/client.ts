@@ -221,6 +221,15 @@ export type ReqClient = {
     }>;
     total?: number;
   }>;
+  listModuleSettingsV2: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    search?: string;
+  }) => Promise<{
+    modules: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
   validateModuleName: (input: { project_id: string; module_name: string }) => Promise<{
     exist: boolean;
   }>;
@@ -816,6 +825,15 @@ export type ReqClient = {
     }>;
     total?: number;
   }>;
+  listProjectDomainsV2: (input: {
+    project_id: string;
+    flag: number;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    domains: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
   createProjectDomain: (input: { project_id: string; domain_name: string }) => Promise<{
     domain_id?: string;
     domain_name?: string;
@@ -1095,6 +1113,16 @@ export type ReqClient = {
     }>;
     total?: number;
   }>;
+  listWorkItemRecordsV2: (input: {
+    project_id: string;
+    work_item_id: string;
+    page: number;
+    page_size: number;
+    type?: string;
+  }) => Promise<{
+    records: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
   listWorkItemStayTimes: (input: {
     project_id: string;
     work_item_ids: string[];
@@ -1133,6 +1161,16 @@ export type ReqClient = {
         user_num_id?: number;
       };
     }>;
+    total?: number;
+  }>;
+  listWorkItemCommentsV2: (input: {
+    project_id: string;
+    work_item_id: string;
+    page: number;
+    page_size: number;
+    type?: string;
+  }) => Promise<{
+    comments: Array<Record<string, unknown>>;
     total?: number;
   }>;
   downloadImageFile: (input: {
@@ -1610,6 +1648,10 @@ export type ReqClient = {
       issue_field_config?: string;
     }>;
   }>;
+  listWorkSettingTemplatesV2: (input: { search?: string }) => Promise<{
+    templates: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
   createWorkItemTemplate: (input: {
     project_id: string;
     tracker_id: number;
@@ -1704,6 +1746,14 @@ export type ReqClient = {
       modified?: string;
       is_delete?: boolean;
     }>;
+  }>;
+  listWorkItemCustomFieldsV4: (input: {
+    project_id: string;
+    custom_fields?: string[];
+    included_not_in_use?: boolean;
+    names?: string[];
+  }) => Promise<{
+    custom_fields: Array<Record<string, unknown>>;
   }>;
   getWorkItemStatusRuleFlag: (input: {
     project_id: string;
@@ -2414,6 +2464,44 @@ function unwrapReqPayload<T>(input: T): T {
   }
 
   return input;
+}
+
+function unwrapReqResult(input: unknown): Record<string, unknown> {
+  const payload = unwrapReqPayload(input);
+
+  if (isRecord(payload) && isRecord(payload.result)) {
+    return payload.result;
+  }
+
+  return isRecord(payload) ? payload : {};
+}
+
+function getArrayProperty(input: Record<string, unknown>, keys: string[]): Array<Record<string, unknown>> {
+  for (const key of keys) {
+    const value = input[key];
+
+    if (Array.isArray(value)) {
+      return value.filter(isRecord);
+    }
+  }
+
+  return [];
+}
+
+function getNumberProperty(input: Record<string, unknown>, keys: string[]): number | undefined {
+  for (const key of keys) {
+    const value = input[key];
+
+    if (typeof value === "number") {
+      return value;
+    }
+
+    if (typeof value === "string" && /^\d+$/.test(value)) {
+      return Number(value);
+    }
+  }
+
+  return undefined;
 }
 
 function mapReqCopyIssue(item: ReqCopyIssueResponse) {
@@ -3589,6 +3677,28 @@ export function createReqClient(
       return {
         modules: response.modules ?? [],
         total: response.total
+      };
+    },
+    async listModuleSettingsV2(input) {
+      const offset = (input.page - 1) * input.page_size;
+      const query = new URLSearchParams({
+        project_id: input.project_id,
+        page_no: String(input.page),
+        page_size: String(input.page_size),
+        offset: String(offset),
+        limit: String(input.page_size)
+      });
+
+      if (input.search) {
+        query.set("search", input.search);
+      }
+
+      const response = await _http.get(`/v2/module/modules?${query.toString()}`);
+      const result = unwrapReqResult(response);
+
+      return {
+        modules: getArrayProperty(result, ["modules"]),
+        total: getNumberProperty(result, ["total_count", "total"])
       };
     },
     async validateModuleName(input) {
@@ -5072,6 +5182,25 @@ export function createReqClient(
         total: response.total
       };
     },
+    async listProjectDomainsV2(input) {
+      const offset = (input.page - 1) * input.page_size;
+      const query = new URLSearchParams({
+        project_id: input.project_id,
+        flag: String(input.flag),
+        page_no: String(input.page),
+        page_size: String(input.page_size),
+        offset: String(offset),
+        limit: String(input.page_size)
+      });
+
+      const response = await _http.get(`/v2/domain/domain?${query.toString()}`);
+      const result = unwrapReqResult(response);
+
+      return {
+        domains: getArrayProperty(result, ["domains"]),
+        total: getNumberProperty(result, ["total_count", "total"])
+      };
+    },
     async createProjectDomain(input) {
       const response = (await _http.post(
         `/v4/projects/${encodeURIComponent(input.project_id)}/domain`,
@@ -5694,6 +5823,24 @@ export function createReqClient(
         total: response.total
       };
     },
+    async listWorkItemRecordsV2(input) {
+      const offset = (input.page - 1) * input.page_size;
+      const query = new URLSearchParams({
+        project_id: input.project_id,
+        issue_id: String(toOptionalNumericId(input.work_item_id) ?? input.work_item_id),
+        offset: String(offset),
+        limit: String(input.page_size),
+        type: input.type ?? "scrum"
+      });
+
+      const response = await _http.get(`/v2/issues/get-record?${query.toString()}`);
+      const result = unwrapReqResult(response);
+
+      return {
+        records: getArrayProperty(result, ["record", "records"]),
+        total: getNumberProperty(result, ["journals_total", "total_count", "total"])
+      };
+    },
     async listWorkItemStayTimes(input) {
       const response = (await _http.post("/v4/issues/duration", {
         project_id: input.project_id,
@@ -5764,6 +5911,24 @@ export function createReqClient(
       return {
         comments: response.comments ?? [],
         total: response.total
+      };
+    },
+    async listWorkItemCommentsV2(input) {
+      const offset = (input.page - 1) * input.page_size;
+      const query = new URLSearchParams({
+        issue_id: String(toOptionalNumericId(input.work_item_id) ?? input.work_item_id),
+        project_uuid: input.project_id,
+        offset: String(offset),
+        limit: String(input.page_size),
+        type: input.type ?? "scrum"
+      });
+
+      const response = await _http.get(`/v2/issues/get-comments?${query.toString()}`);
+      const result = unwrapReqResult(response);
+
+      return {
+        comments: getArrayProperty(result, ["comments"]),
+        total: getNumberProperty(result, ["journals_total", "total_count", "total"])
       };
     },
     async downloadImageFile(input) {
@@ -6604,6 +6769,22 @@ export function createReqClient(
         templates: response.templates ?? []
       };
     },
+    async listWorkSettingTemplatesV2(input) {
+      const query = new URLSearchParams();
+
+      if (input.search) {
+        query.set("search", input.search);
+      }
+
+      const suffix = query.size ? `?${query.toString()}` : "";
+      const response = await _http.get(`/v2/project-template/template${suffix}`);
+      const result = unwrapReqResult(response);
+
+      return {
+        templates: getArrayProperty(result, ["templates"]),
+        total: getNumberProperty(result, ["total", "count", "total_count"])
+      };
+    },
     async createWorkItemTemplate(input) {
       const response = (await _http.post("/v2/project/templates", {
         projectUUId: input.project_id,
@@ -6777,6 +6958,33 @@ export function createReqClient(
 
       return {
         custom_field: payload.custom_field ?? []
+      };
+    },
+    async listWorkItemCustomFieldsV4(input) {
+      const body = {
+        ...(input.custom_fields ? { custom_fields: input.custom_fields } : {}),
+        ...(typeof input.included_not_in_use !== "undefined"
+          ? { included_not_in_use: input.included_not_in_use }
+          : {}),
+        ...(input.names ? { names: input.names } : {})
+      };
+
+      const response = await _http.post(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/issues/custom-fields`,
+        body
+      );
+      const payload = unwrapReqPayload(response);
+
+      if (Array.isArray(payload)) {
+        return {
+          custom_fields: payload.filter(isRecord)
+        };
+      }
+
+      const result = unwrapReqResult(payload);
+
+      return {
+        custom_fields: getArrayProperty(result, ["datas", "custom_fields", "custom_field"])
       };
     },
     async getWorkItemStatusRuleFlag(input) {

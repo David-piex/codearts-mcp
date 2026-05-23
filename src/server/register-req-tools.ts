@@ -139,6 +139,7 @@ import {
   reqListProjectBugStatisticsInput,
   reqListProjectDemandStatisticsInput,
   reqListProjectDomainsInput,
+  reqListProjectDomainsV2Input,
   reqListUserFeaturesInput,
   reqListProjectVersionsInput,
   reqListProjectWorkHourTypesInput,
@@ -155,11 +156,14 @@ import {
   reqListIterationsInput,
   reqListNotAddedProjectsInput,
   reqListProjectModulesInput,
+  reqListModuleSettingsV2Input,
   reqListProjectMembersInput,
   reqListProjectsInput,
   reqListRelatedUsersInput,
   reqListWorkItemCustomFieldsInput,
+  reqListWorkItemCustomFieldsV4Input,
   reqListWorkItemCommentsInput,
+  reqListWorkItemCommentsV2Input,
   reqListWorkItemWorkHoursInput,
   reqListWorkItemStatusAttributesInput,
   reqListWorkItemStatusConfigsInput,
@@ -171,8 +175,10 @@ import {
   reqGetWorkItemTemplateConfigInput,
   reqListWorkItemTrackerHandlersInput,
   reqListWorkItemTemplatesInput,
+  reqListWorkSettingTemplatesV2Input,
   reqListWorkItemWorkflowConfigInput,
   reqListWorkItemRecordsInput,
+  reqListWorkItemRecordsV2Input,
   reqListWorkItemStayTimesInput,
   reqListWorkItemsInput,
   reqFindIterationsInput,
@@ -327,6 +333,14 @@ import { createReqListWorkItemWorkflowConfigHandler } from "../products/req/tool
 import { createReqListWorkItemRecordsHandler } from "../products/req/tools/list-work-item-records.js";
 import { createReqListWorkItemStayTimesHandler } from "../products/req/tools/list-work-item-stay-times.js";
 import { createReqListWorkItemWorkHoursHandler } from "../products/req/tools/list-work-item-work-hours.js";
+import {
+  createReqListModuleSettingsV2Handler,
+  createReqListProjectDomainsV2Handler,
+  createReqListWorkItemCommentsV2Handler,
+  createReqListWorkItemCustomFieldsV4Handler,
+  createReqListWorkItemRecordsV2Handler,
+  createReqListWorkSettingTemplatesV2Handler
+} from "../products/req/tools/official-v2-read-tools.js";
 import { createReqFindIterationsHandler } from "../products/req/tools/find-iterations.js";
 import { createReqListWorkItemsHandler } from "../products/req/tools/list-work-items.js";
 import { createReqListRrHistoriesHandler } from "../products/req/tools/list-rr-histories.js";
@@ -886,6 +900,13 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListProjectDomainsHandler>[0] }) =>
       clients.reqClient,
     createProductHandler: createReqListProjectDomainsHandler
+  }),
+  "req_list_project_domains_v2": defineProductTool({
+    description: "List CodeArts Req project domain settings from the official V2 endpoint",
+    inputSchema: reqListProjectDomainsV2Input,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListProjectDomainsV2Handler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListProjectDomainsV2Handler
   }),
   "req_list_programs": defineProductTool({
     description: "List CodeArts Req project spaces / programs",
@@ -1453,6 +1474,13 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqListProjectModulesHandler
   }),
+  "req_list_module_settings_v2": defineProductTool({
+    description: "List CodeArts Req module settings from the official V2 endpoint",
+    inputSchema: reqListModuleSettingsV2Input,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListModuleSettingsV2Handler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListModuleSettingsV2Handler
+  }),
   "req_leave_project": defineProductTool({
     description: "Leave a CodeArts Req project as the current member",
     inputSchema: reqLeaveProjectInput,
@@ -1680,6 +1708,14 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqListWorkItemTemplatesHandler
   }),
+  "req_list_work_setting_templates_v2": defineProductTool({
+    description: "List CodeArts Req work setting templates from the official V2 endpoint",
+    inputSchema: reqListWorkSettingTemplatesV2Input,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqListWorkSettingTemplatesV2Handler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqListWorkSettingTemplatesV2Handler
+  }),
   "req_get_work_item_template_config": defineProductTool({
     description: "Get CodeArts Req work item template config",
     inputSchema: reqGetWorkItemTemplateConfigInput,
@@ -1693,6 +1729,13 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemCustomFieldsHandler>[0] }) =>
       clients.reqClient,
     createProductHandler: createReqListWorkItemCustomFieldsHandler
+  }),
+  "req_list_work_item_custom_fields_v4": defineProductTool({
+    description: "List CodeArts Req work item custom fields from the official V4 endpoint",
+    inputSchema: reqListWorkItemCustomFieldsV4Input,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemCustomFieldsV4Handler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListWorkItemCustomFieldsV4Handler
   }),
   "req_list_work_item_tracker_handlers": defineProductTool({
     description: "List CodeArts Req work item tracker handlers",
@@ -1744,6 +1787,13 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqListWorkItemCommentsHandler
   }),
+  "req_list_work_item_comments_v2": defineProductTool({
+    description: "List CodeArts Req work item comments from the official V2 endpoint",
+    inputSchema: reqListWorkItemCommentsV2Input,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemCommentsV2Handler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListWorkItemCommentsV2Handler
+  }),
   "req_list_work_item_tags": defineProductTool({
     description: "List CodeArts Req work item tags",
     inputSchema: reqListWorkItemTagsInput,
@@ -1785,6 +1835,13 @@ const reqToolDefinitions = {
     inputSchema: reqListWorkItemRecordsInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemRecordsHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqListWorkItemRecordsHandler
+  }),
+  "req_list_work_item_records_v2": defineProductTool({
+    description: "List CodeArts Req work item records from the official V2 endpoint",
+    inputSchema: reqListWorkItemRecordsV2Input,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemRecordsV2Handler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListWorkItemRecordsV2Handler
   }),
   "req_list_work_item_stay_times": defineProductTool({
     description: "List CodeArts Req work item stay time in the current status",
