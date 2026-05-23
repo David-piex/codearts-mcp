@@ -173,6 +173,14 @@ export const buildGetJobPermissionInput = z.object({
   job_id: idSchema
 });
 
+export const buildGetProjectDefaultPermissionInput = z.object({
+  project_id: idSchema
+});
+
+export const buildListOfficialTemplatesInput = pagingSchema.extend({
+  name: z.string().min(1).optional()
+});
+
 export const buildGetErrorLogInput = pagingSchema.extend({
   job_id: idSchema,
   build_no: z.number().int().positive()

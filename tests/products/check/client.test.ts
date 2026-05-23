@@ -599,4 +599,60 @@ describe("createCheckClient", () => {
       "/v2/domain-1/checkers-version"
     ]);
   });
+
+  it("uses documented check record, rules, default ruleset, and language endpoints", async () => {
+    const requests: string[] = [];
+    const client = createClient({
+      get: async (path: string) => {
+        requests.push(path);
+        if (path.includes("/checkrecord")) {
+          return { result: { records: [{ id: "record-1", status: "success" }], total: 1 } };
+        }
+        if (path.includes("/v2/rules")) {
+          return { result: { rules: [{ id: "rule-1", name: "NoBug" }], total: 1 } };
+        }
+        if (path.includes("/get-default-sets")) {
+          return { result: { JAVA: "ruleset-1" } };
+        }
+
+        return { result: ["JAVA", "PYTHON"] };
+      }
+    });
+
+    await expect(client.listTaskCheckRecords({
+      project_id: "project-1",
+      task_id: "task-1",
+      page: 2,
+      page_size: 10,
+      start_time: "2026-05-01T00:00:00Z",
+      end_time: "2026-05-23T00:00:00Z"
+    })).resolves.toEqual({
+      records: [{ id: "record-1", status: "success" }],
+      total: 1
+    });
+    await expect(client.listRules({
+      page: 3,
+      page_size: 20,
+      rule_languages: "JAVA",
+      rule_severity: "MAJOR",
+      keyword: "bug"
+    })).resolves.toEqual({
+      rules: [{ id: "rule-1", name: "NoBug" }],
+      total: 1
+    });
+    await expect(client.listDefaultRulesets({ project_id: "project-1" })).resolves.toEqual({
+      project_id: "project-1",
+      raw: { JAVA: "ruleset-1" }
+    });
+    await expect(client.listSupportedLanguages()).resolves.toEqual({
+      languages: ["JAVA", "PYTHON"]
+    });
+
+    expect(requests).toEqual([
+      "/v2/project-1/tasks/task-1/checkrecord?offset=10&limit=10&start_time=2026-05-01T00%3A00%3A00Z&end_time=2026-05-23T00%3A00%3A00Z",
+      "/v2/rules?offset=40&limit=20&rule_languages=JAVA&rule_severity=MAJOR&name=bug",
+      "/v1/criterionset/get-default-sets?project_id=project-1",
+      "/v2/excute/language/all"
+    ]);
+  });
 });

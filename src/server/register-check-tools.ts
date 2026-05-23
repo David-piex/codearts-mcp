@@ -18,10 +18,14 @@ import {
   checkGetTaskRulesetCheckParametersV3Input,
   checkGetTaskSettingsInput,
   checkListCodehubRepositoriesInput,
+  checkListDefaultRulesetsInput,
   checkListProjectTaskGroupsInput,
+  checkListRulesInput,
   checkListRulesetsInput,
+  checkListSupportedLanguagesInput,
   checkListTaskAllFilesInput,
   checkListTaskBranchesInput,
+  checkListTaskCheckRecordsInput,
   checkListTaskFilesInput,
   checkListTaskIssuesInput,
   checkListTaskJobsInput,
@@ -49,10 +53,14 @@ import { createCheckGetTaskRulesetCheckParametersV2Handler } from "../products/c
 import { createCheckGetTaskRulesetCheckParametersV3Handler } from "../products/check/tools/get-task-ruleset-check-parameters-v3.js";
 import { createCheckGetTaskSettingsHandler } from "../products/check/tools/get-task-settings.js";
 import { createCheckListCodehubRepositoriesHandler } from "../products/check/tools/list-codehub-repositories.js";
+import { createCheckListDefaultRulesetsHandler } from "../products/check/tools/list-default-rulesets.js";
 import { createCheckListProjectTaskGroupsHandler } from "../products/check/tools/list-project-task-groups.js";
+import { createCheckListRulesHandler } from "../products/check/tools/list-rules.js";
 import { createCheckListRulesetsHandler } from "../products/check/tools/list-rulesets.js";
+import { createCheckListSupportedLanguagesHandler } from "../products/check/tools/list-supported-languages.js";
 import { createCheckListTaskAllFilesHandler } from "../products/check/tools/list-task-all-files.js";
 import { createCheckListTaskBranchesHandler } from "../products/check/tools/list-task-branches.js";
+import { createCheckListTaskCheckRecordsHandler } from "../products/check/tools/list-task-check-records.js";
 import { createCheckListTaskFilesHandler } from "../products/check/tools/list-task-files.js";
 import { createCheckListTaskIssuesHandler } from "../products/check/tools/list-task-issues.js";
 import { createCheckListTaskJobsHandler } from "../products/check/tools/list-task-jobs.js";
@@ -167,6 +175,30 @@ const checkToolDefinitions = {
     inputSchema: checkGetDomainCheckersVersionInput,
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetDomainCheckersVersionHandler>[0] }) => clients.checkClient,
     createProductHandler: createCheckGetDomainCheckersVersionHandler
+  }),
+  "check_list_task_check_records": defineProductTool({
+    description: "List CodeArts Check task check records",
+    inputSchema: checkListTaskCheckRecordsInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListTaskCheckRecordsHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckListTaskCheckRecordsHandler
+  }),
+  "check_list_rules": defineProductTool({
+    description: "List CodeArts Check rules",
+    inputSchema: checkListRulesInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListRulesHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckListRulesHandler
+  }),
+  "check_list_default_rulesets": defineProductTool({
+    description: "List CodeArts Check default rulesets",
+    inputSchema: checkListDefaultRulesetsInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListDefaultRulesetsHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckListDefaultRulesetsHandler
+  }),
+  "check_list_supported_languages": defineProductTool({
+    description: "List CodeArts Check supported languages",
+    inputSchema: checkListSupportedLanguagesInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListSupportedLanguagesHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckListSupportedLanguagesHandler
   }),
   "check_get_task_progress": defineProductTool({
     description: "Get CodeArts Check task progress",

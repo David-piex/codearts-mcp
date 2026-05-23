@@ -61,6 +61,24 @@ export const checkGetDomainCheckersVersionInput = z.object({
   domain_id: idSchema
 });
 
+export const checkListTaskCheckRecordsInput = pagingSchema.extend({
+  project_id: idSchema,
+  task_id: idSchema,
+  start_time: z.string().min(1).optional(),
+  end_time: z.string().min(1).optional()
+});
+
+export const checkListRulesInput = pagingSchema.extend({
+  rule_languages: z.string().min(1).optional(),
+  rule_severity: z.string().min(1).optional()
+});
+
+export const checkListDefaultRulesetsInput = z.object({
+  project_id: idSchema
+});
+
+export const checkListSupportedLanguagesInput = z.object({});
+
 export const checkGetTaskProgressInput = z.object({
   task_id: idSchema
 });

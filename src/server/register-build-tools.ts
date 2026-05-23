@@ -27,6 +27,7 @@ import {
   buildGetJobPermissionInput,
   buildGetJobPermissionInternalInput,
   buildGetJobRunningStatusInput,
+  buildGetProjectDefaultPermissionInput,
   buildGetReportSummaryInput,
   buildGetProjectRecordStatisticsInput,
   buildCheckJobNameExistsInput,
@@ -49,6 +50,7 @@ import {
   buildListJobGroupTreeInput,
   buildListJobsInput,
   buildListJobPermissionRolesInput,
+  buildListOfficialTemplatesInput,
   buildListPackageSpecStatusesInput,
   buildListProjectRecordsInput,
   buildListRecyclingJobsInput,
@@ -93,6 +95,7 @@ import { createBuildGetJobBuildSuccessRatioHandler } from "../products/build/too
 import { createBuildGetJobConfigDiffHandler } from "../products/build/tools/get-job-config-diff.js";
 import { createBuildGetJobPermissionHandler } from "../products/build/tools/get-job-permission.js";
 import { createBuildGetJobPermissionInternalHandler } from "../products/build/tools/get-job-permission-internal.js";
+import { createBuildGetProjectDefaultPermissionHandler } from "../products/build/tools/get-project-default-permission.js";
 import { createBuildGetReportSummaryHandler } from "../products/build/tools/get-report-summary.js";
 import { createBuildCheckJobNameExistsHandler } from "../products/build/tools/check-job-name-exists.js";
 import { createBuildCheckJobCountLimitHandler } from "../products/build/tools/check-job-count-limit.js";
@@ -108,6 +111,7 @@ import { createBuildListJunitCoverageSummariesHandler } from "../products/build/
 import { createBuildListJobGroupTreeHandler } from "../products/build/tools/list-job-group-tree.js";
 import { createBuildListJobPermissionRolesHandler } from "../products/build/tools/list-job-permission-roles.js";
 import { createBuildListJobsHandler } from "../products/build/tools/list-jobs.js";
+import { createBuildListOfficialTemplatesHandler } from "../products/build/tools/list-official-templates.js";
 import { createBuildListPackageSpecStatusesHandler } from "../products/build/tools/list-package-spec-statuses.js";
 import { createBuildListProjectRecordsHandler } from "../products/build/tools/list-project-records.js";
 import { createBuildListRecyclingJobsHandler } from "../products/build/tools/list-recycling-jobs.js";
@@ -331,6 +335,18 @@ const buildToolDefinitions = {
     inputSchema: buildGetJobPermissionInput,
     selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetJobPermissionHandler>[0] }) => clients.buildClient,
     createProductHandler: createBuildGetJobPermissionHandler
+  }),
+  "build_get_project_default_permission": defineProductTool({
+    description: "Get CodeArts Build project default permission",
+    inputSchema: buildGetProjectDefaultPermissionInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetProjectDefaultPermissionHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildGetProjectDefaultPermissionHandler
+  }),
+  "build_list_official_templates": defineProductTool({
+    description: "List CodeArts Build official templates",
+    inputSchema: buildListOfficialTemplatesInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListOfficialTemplatesHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildListOfficialTemplatesHandler
   }),
   "build_get_job_notice": defineProductTool({
     description: "Get CodeArts Build job notice settings",

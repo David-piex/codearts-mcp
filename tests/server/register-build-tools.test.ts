@@ -66,6 +66,33 @@ describe("registerBuildTool", () => {
     );
   });
 
+  it("registers additional Build read tools", () => {
+    const registerTool = vi.fn();
+    const tools = [
+      ["build_get_project_default_permission", "Get CodeArts Build project default permission"],
+      ["build_list_official_templates", "List CodeArts Build official templates"]
+    ] as const;
+
+    for (const [toolName, description] of tools) {
+      const handled = registerBuildTool({
+        toolName,
+        server: { registerTool },
+        mode: "stdio",
+        stdioClient: {} as never
+      });
+
+      expect(handled).toBe(true);
+      expect(registerTool).toHaveBeenLastCalledWith(
+        toolName,
+        expect.objectContaining({
+          title: toolName,
+          description
+        }),
+        expect.any(Function)
+      );
+    }
+  });
+
   it("returns false for non-build tools", () => {
     const registerTool = vi.fn();
 

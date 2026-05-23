@@ -440,4 +440,44 @@ describe("createBuildClient metadata read paths", () => {
       }
     });
   });
+
+  it("loads project default permissions and official templates", async () => {
+    const paths: string[] = [];
+    const client = createBuildClient({
+      get: async (path: string) => {
+        paths.push(path);
+        if (path.includes("/default-permission")) {
+          return { result: [{ role_id: 1, role_name: "developer" }] };
+        }
+
+        return {
+          result: {
+            total_size: 1,
+            items: [{ uuid: "template-1", name: "Node.js", language: "javascript" }]
+          }
+        };
+      }
+    } as never);
+
+    const permissions = await client.getProjectDefaultPermission({ project_id: "project-1" });
+    const templates = await client.listOfficialTemplates({
+      page: 2,
+      page_size: 10,
+      name: "Node"
+    });
+
+    expect(paths).toEqual([
+      "/v1/job/project/default-permission?project_id=project-1",
+      "/v1/template/officialtemplates?page=1&page_size=10&name=Node"
+    ]);
+    expect(permissions).toEqual({
+      project_id: "project-1",
+      permissions: [{ role_id: 1, role_name: "developer" }],
+      total: 1
+    });
+    expect(templates).toEqual({
+      templates: [{ uuid: "template-1", name: "Node.js", language: "javascript" }],
+      total: 1
+    });
+  });
 });

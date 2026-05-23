@@ -373,6 +373,19 @@ export type BuildClient = {
     job_id: string;
     raw: Record<string, unknown>;
   }>;
+  getProjectDefaultPermission: (input: { project_id: string }) => Promise<{
+    project_id: string;
+    permissions: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listOfficialTemplates: (input: {
+    page: number;
+    page_size: number;
+    name?: string;
+  }) => Promise<{
+    templates: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
   getRealTimeLog: (input: {
     job_id: string;
     build_no: number;
@@ -1780,6 +1793,50 @@ export function createBuildClient(
         project_id: input.project_id,
         job_id: input.job_id,
         raw: payload
+      };
+    },
+    async getProjectDefaultPermission(input) {
+      const query = new URLSearchParams({ project_id: input.project_id });
+      const response = await _http.get(`/v1/job/project/default-permission?${query.toString()}`);
+      const raw = readBuildPayloadValue(response);
+      const payload = readBuildPayload(response);
+      const permissions = readBuildArray<Record<string, unknown>>(
+        payload.permissions ??
+          payload.roles ??
+          payload.value ??
+          payload.items ??
+          payload.list ??
+          (Array.isArray(raw) ? raw : [])
+      );
+
+      return {
+        project_id: input.project_id,
+        permissions,
+        total: readBuildTotal(payload, response, permissions.length)
+      };
+    },
+    async listOfficialTemplates(input) {
+      const query = new URLSearchParams({
+        page: String(input.page - 1),
+        page_size: String(input.page_size)
+      });
+      if (input.name) {
+        query.set("name", input.name);
+      }
+      const response = await _http.get(`/v1/template/officialtemplates?${query.toString()}`);
+      const raw = readBuildPayloadValue(response);
+      const payload = readBuildPayload(response);
+      const templates = readBuildArray<Record<string, unknown>>(
+        payload.items ??
+          payload.templates ??
+          payload.value ??
+          payload.list ??
+          (Array.isArray(raw) ? raw : [])
+      );
+
+      return {
+        templates,
+        total: readBuildTotal(payload, response, templates.length)
       };
     },
     async getRealTimeLog(input) {

@@ -118,6 +118,34 @@ export type CheckClient = {
     domain_id: string;
     raw: Record<string, unknown>;
   }>;
+  listTaskCheckRecords: (input: {
+    project_id: string;
+    task_id: string;
+    page: number;
+    page_size: number;
+    start_time?: string;
+    end_time?: string;
+  }) => Promise<{
+    records: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listRules: (input: {
+    page: number;
+    page_size: number;
+    rule_languages?: string;
+    rule_severity?: string;
+    keyword?: string;
+  }) => Promise<{
+    rules: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listDefaultRulesets: (input: { project_id: string }) => Promise<{
+    project_id: string;
+    raw: Record<string, unknown>;
+  }>;
+  listSupportedLanguages: () => Promise<{
+    languages: string[];
+  }>;
   getTaskProgress: (input: { task_id: string }) => Promise<{
     task_id: string;
     raw: Record<string, unknown>;
@@ -620,6 +648,72 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
         domain_id: input.domain_id,
         raw: version
       };
+    },
+    async listTaskCheckRecords(input) {
+      const offset = (input.page - 1) * input.page_size;
+      const query = new URLSearchParams({
+        offset: String(offset),
+        limit: String(input.page_size)
+      });
+      if (input.start_time) query.set("start_time", input.start_time);
+      if (input.end_time) query.set("end_time", input.end_time);
+      const response = await _http.get(
+        `/v2/${encodeURIComponent(input.project_id)}/tasks/${encodeURIComponent(input.task_id)}/checkrecord?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const records = readArray<Record<string, unknown>>(
+        payload.records ??
+          payload.check_records ??
+          payload.checkrecords ??
+          payload.value ??
+          payload.items ??
+          payload.list ??
+          (Array.isArray(response) ? response : [])
+      );
+
+      return {
+        records,
+        total: readTotal(payload, response, records.length)
+      };
+    },
+    async listRules(input) {
+      const offset = (input.page - 1) * input.page_size;
+      const query = new URLSearchParams({
+        offset: String(offset),
+        limit: String(input.page_size)
+      });
+      if (input.rule_languages) query.set("rule_languages", input.rule_languages);
+      if (input.rule_severity) query.set("rule_severity", input.rule_severity);
+      if (input.keyword) query.set("name", input.keyword);
+      const response = await _http.get(`/v2/rules?${query.toString()}`);
+      const payload = readResultPayload(response);
+      const rules = readArray<Record<string, unknown>>(
+        payload.rules ?? payload.checkers ?? payload.value ?? payload.items ?? payload.list ?? (Array.isArray(response) ? response : [])
+      );
+
+      return {
+        rules,
+        total: readTotal(payload, response, rules.length)
+      };
+    },
+    async listDefaultRulesets(input) {
+      const query = new URLSearchParams({ project_id: input.project_id });
+      const response = await _http.get(`/v1/criterionset/get-default-sets?${query.toString()}`);
+      const payload = readResultPayload(response);
+      const rulesets = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        project_id: input.project_id,
+        raw: rulesets
+      };
+    },
+    async listSupportedLanguages() {
+      const response = await _http.get("/v2/excute/language/all");
+      const payload = readResultPayload(response);
+      const rawLanguages = payload.result ?? payload.languages ?? payload.supportedLanguages ?? payload.value ?? response;
+      const languages = Array.isArray(rawLanguages) ? rawLanguages.map(String) : [];
+
+      return { languages };
     },
     async getTaskProgress(input) {
       const response = await _http.get(`/v2/tasks/${encodeURIComponent(input.task_id)}/progress`);

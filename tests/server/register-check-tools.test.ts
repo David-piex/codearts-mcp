@@ -73,7 +73,11 @@ describe("registerCheckTool", () => {
       ["check_list_task_all_files", "List CodeArts Check task all files"],
       ["check_detect_task_language", "Detect CodeArts Check task language"],
       ["check_list_codehub_repositories", "List CodeArts Check CodeHub repositories"],
-      ["check_get_domain_checkers_version", "Get CodeArts Check domain checkers version"]
+      ["check_get_domain_checkers_version", "Get CodeArts Check domain checkers version"],
+      ["check_list_task_check_records", "List CodeArts Check task check records"],
+      ["check_list_rules", "List CodeArts Check rules"],
+      ["check_list_default_rulesets", "List CodeArts Check default rulesets"],
+      ["check_list_supported_languages", "List CodeArts Check supported languages"]
     ] as const;
 
     for (const [toolName, description] of tools) {
