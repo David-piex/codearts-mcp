@@ -54,6 +54,10 @@ import {
   testPlanGetGt3kTestcaseChangeStatisticsInput,
   testPlanGetGt3kUserInfoDomainInput,
   testPlanGetFactorInput,
+  testPlanGetHomePageCaseOverviewInput,
+  testPlanGetHomePageDefectSeverityOverviewInput,
+  testPlanGetHomePageDefectStatusOverviewInput,
+  testPlanGetHomePageOverviewV5Input,
   testPlanGetImageCapacityWarningInput,
   testPlanGetIteratorInput,
   testPlanGetLicenseSpecificationInput,
@@ -82,6 +86,7 @@ import {
   testPlanGetProjectMasterVersionInput,
   testPlanGetProjectMessageNoticesInput,
   testPlanGetProgressInput,
+  testPlanGetProjectDataDashboardInput,
   testPlanGetProjectProgressInput,
   testPlanGetProjectServiceConfigInput,
   testPlanGetProjectServiceRepoInput,
@@ -192,6 +197,7 @@ import {
   testPlanListTaskResultsInput,
   testPlanListTasksInput,
   testPlanListTestcaseCommentsInput,
+  testPlanListTestcaseDefectStatisticsInput,
   testPlanListTestTypesInput,
   testPlanListTestReportDefectsInput,
   testPlanListTestReportCustomInfosInput,
@@ -221,6 +227,7 @@ import {
   testPlanListVariablesByGroupInput,
   testPlanListVariablesV3Input,
   testPlanListVisibleServicesInput,
+  testPlanListUserExecuteTestcaseStatisticsInput,
   testPlanListTestReportsInput,
   testPlanGetServiceConfigInput,
   testPlanRunCasesInput,
@@ -310,6 +317,7 @@ import { createTestPlanGetProjectIssueUpdateNotificationHandler } from "../produ
 import { createTestPlanGetProjectMasterVersionHandler } from "../products/testplan/tools/get-project-master-version.js";
 import { createTestPlanGetProjectMessageNoticesHandler } from "../products/testplan/tools/get-project-message-notices.js";
 import { createTestPlanGetProgressHandler } from "../products/testplan/tools/get-progress.js";
+import { createTestPlanGetProjectDataDashboardHandler } from "../products/testplan/tools/get-project-data-dashboard.js";
 import { createTestPlanGetProjectProgressHandler } from "../products/testplan/tools/get-project-progress.js";
 import { createTestPlanGetProjectServiceConfigHandler } from "../products/testplan/tools/get-project-service-config.js";
 import { createTestPlanGetProjectServiceRepoHandler } from "../products/testplan/tools/get-project-service-repo.js";
@@ -321,6 +329,10 @@ import { createTestPlanListRuleCheckTasksHandler } from "../products/testplan/to
 import { createTestPlanGetRuleCheckTaskReportHandler } from "../products/testplan/tools/get-rule-check-task-report.js";
 import { createTestPlanGetRuleCheckTaskSummaryHandler } from "../products/testplan/tools/get-rule-check-task-summary.js";
 import { createTestPlanGetServiceTypeOverviewHandler } from "../products/testplan/tools/get-service-type-overview.js";
+import { createTestPlanGetHomePageCaseOverviewHandler } from "../products/testplan/tools/get-home-page-case-overview.js";
+import { createTestPlanGetHomePageDefectSeverityOverviewHandler } from "../products/testplan/tools/get-home-page-defect-severity-overview.js";
+import { createTestPlanGetHomePageDefectStatusOverviewHandler } from "../products/testplan/tools/get-home-page-defect-status-overview.js";
+import { createTestPlanGetHomePageOverviewV5Handler } from "../products/testplan/tools/get-home-page-overview-v5.js";
 import { createTestPlanGetTestReportHandler } from "../products/testplan/tools/get-test-report.js";
 import { createTestPlanDownloadTestDesignTemplateHandler } from "../products/testplan/tools/download-test-design-template.js";
 import { createTestPlanGetTestDesignTemplateHandler } from "../products/testplan/tools/get-test-design-template.js";
@@ -436,6 +448,7 @@ import { createTestPlanListTestcaseRelationsHandler } from "../products/testplan
 import { createTestPlanListTestcaseUriInfosV5Handler } from "../products/testplan/tools/list-testcase-uri-infos-v5.js";
 import { createTestPlanListTestcaseUrisV4Handler } from "../products/testplan/tools/list-testcase-uris-v4.js";
 import { createTestPlanListTestcaseCommentsHandler } from "../products/testplan/tools/list-testcase-comments.js";
+import { createTestPlanListTestcaseDefectStatisticsHandler } from "../products/testplan/tools/list-testcase-defect-statistics.js";
 import { createTestPlanListTestcaseFieldsHandler } from "../products/testplan/tools/list-testcase-fields.js";
 import { createTestPlanListTestcaseReviewsHandler } from "../products/testplan/tools/list-testcase-reviews.js";
 import { createTestPlanListTimeoutSettingsHandler } from "../products/testplan/tools/list-timeout-settings.js";
@@ -456,6 +469,7 @@ import { createTestPlanListV4TestcaseReviewsHandler } from "../products/testplan
 import { createTestPlanListVariableGroupsHandler } from "../products/testplan/tools/list-variable-groups.js";
 import { createTestPlanListVariablesByGroupHandler } from "../products/testplan/tools/list-variables-by-group.js";
 import { createTestPlanListVariablesV3Handler } from "../products/testplan/tools/list-variables-v3.js";
+import { createTestPlanListUserExecuteTestcaseStatisticsHandler } from "../products/testplan/tools/list-user-execute-testcase-statistics.js";
 import { createTestPlanListVisibleServicesHandler } from "../products/testplan/tools/list-visible-services.js";
 import { createTestPlanGetServiceConfigHandler } from "../products/testplan/tools/get-service-config.js";
 import { createTestPlanRunCasesHandler } from "../products/testplan/tools/run-cases.js";
@@ -1559,6 +1573,30 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetQualityReportOverviewHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetQualityReportOverviewHandler
   }),
+  "testplan_get_home_page_case_overview": defineProductTool({
+    description: "Get CodeArts TestPlan home page case completion and pass rate overview",
+    inputSchema: testPlanGetHomePageCaseOverviewInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetHomePageCaseOverviewHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetHomePageCaseOverviewHandler
+  }),
+  "testplan_get_home_page_defect_severity_overview": defineProductTool({
+    description: "Get CodeArts TestPlan home page defect severity overview",
+    inputSchema: testPlanGetHomePageDefectSeverityOverviewInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetHomePageDefectSeverityOverviewHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetHomePageDefectSeverityOverviewHandler
+  }),
+  "testplan_get_home_page_defect_status_overview": defineProductTool({
+    description: "Get CodeArts TestPlan home page defect status overview",
+    inputSchema: testPlanGetHomePageDefectStatusOverviewInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetHomePageDefectStatusOverviewHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetHomePageDefectStatusOverviewHandler
+  }),
+  "testplan_get_home_page_overview_v5": defineProductTool({
+    description: "Get CodeArts TestPlan v5 home page overview statistics",
+    inputSchema: testPlanGetHomePageOverviewV5Input,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetHomePageOverviewV5Handler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetHomePageOverviewV5Handler
+  }),
   "testplan_get_service_type_overview": defineProductTool({
     description: "Get CodeArts TestPlan quality report overview grouped by service type",
     inputSchema: testPlanGetServiceTypeOverviewInput,
@@ -1594,6 +1632,24 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListTestReportsInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTestReportsHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListTestReportsHandler
+  }),
+  "testplan_list_user_execute_testcase_statistics": defineProductTool({
+    description: "List CodeArts TestPlan testcase execution statistics grouped by user",
+    inputSchema: testPlanListUserExecuteTestcaseStatisticsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListUserExecuteTestcaseStatisticsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListUserExecuteTestcaseStatisticsHandler
+  }),
+  "testplan_list_testcase_defect_statistics": defineProductTool({
+    description: "List CodeArts TestPlan testcase defect association statistics",
+    inputSchema: testPlanListTestcaseDefectStatisticsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTestcaseDefectStatisticsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListTestcaseDefectStatisticsHandler
+  }),
+  "testplan_get_project_data_dashboard": defineProductTool({
+    description: "Get CodeArts TestPlan project data dashboard overview",
+    inputSchema: testPlanGetProjectDataDashboardInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetProjectDataDashboardHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetProjectDataDashboardHandler
   }),
   "testplan_list_progress_reports": defineProductTool({
     description: "List CodeArts TestPlan progress reports",

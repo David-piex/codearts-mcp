@@ -30,10 +30,10 @@
 | 代码检查 | 23 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
 | 部署 | 60 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
 | 流水线 | 78 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
-| 代码仓库 | 166 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
+| 代码仓库 | 176 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 201 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
-| 测试计划 | 231 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **826** | |
+| 测试计划 | 238 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
+| **总计** | **843** | |
 
 ## 字段对应
 
@@ -313,6 +313,8 @@
 | `repo_get_protected_tag` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_get_protected_tag) |
 | `repo_get_remote_mirror` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_get_remote_mirror) |
 | `repo_get_repository` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_get_repository) |
+| `repo_get_repository_blame` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_get_repository_blame) |
+| `repo_get_repository_file_content_v4` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_get_repository_file_content_v4) |
 | `repo_get_repository_webhook` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_get_repository_webhook) |
 | `repo_get_repository_webhook_log` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_get_repository_webhook_log) |
 | `repo_get_tag` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_get_tag) |
@@ -324,11 +326,14 @@
 | `repo_list_current_user_repositories` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_current_user_repositories) |
 | `repo_list_default_review_categories` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_default_review_categories) |
 | `repo_list_events` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_events) |
+| `repo_list_group_addable_members` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_group_addable_members) |
+| `repo_list_group_addable_user_groups` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_group_addable_user_groups) |
 | `repo_list_group_deploy_keys` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_group_deploy_keys) |
 | `repo_list_group_members` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_group_members) |
 | `repo_list_group_protected_branches` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_group_protected_branches) |
 | `repo_list_group_protected_refs_user_groups` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_group_protected_refs_user_groups) |
 | `repo_list_group_repositories` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_group_repositories) |
+| `repo_list_group_subgroups_and_repositories` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_group_subgroups_and_repositories) |
 | `repo_list_group_user_groups` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_group_user_groups) |
 | `repo_list_group_webhook_logs` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_group_webhook_logs) |
 | `repo_list_group_webhooks` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_group_webhooks) |
@@ -343,6 +348,7 @@
 | `repo_list_personal_recent_push_events` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_personal_recent_push_events) |
 | `repo_list_personal_repository_import_records` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_personal_repository_import_records) |
 | `repo_list_project_deploy_keys` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_project_deploy_keys) |
+| `repo_list_project_members` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_project_members) |
 | `repo_list_project_protected_branches` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_project_protected_branches) |
 | `repo_list_project_protected_refs_user_groups` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_project_protected_refs_user_groups) |
 | `repo_list_project_protected_tags` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_project_protected_tags) |
@@ -361,6 +367,7 @@
 | `repo_list_repository_forks` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_forks) |
 | `repo_list_repository_labels` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_labels) |
 | `repo_list_repository_languages` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_languages) |
+| `repo_list_repository_logs_tree` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_logs_tree) |
 | `repo_list_repository_members` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_members) |
 | `repo_list_repository_navigation_references` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_navigation_references) |
 | `repo_list_repository_protected_refs_user_groups` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_protected_refs_user_groups) |
@@ -379,6 +386,8 @@
 | `repo_list_tenant_encrypted_repositories` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_tenant_encrypted_repositories) |
 | `repo_list_tenant_repositories` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_tenant_repositories) |
 | `repo_list_tenant_trusted_ip_addresses` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_tenant_trusted_ip_addresses) |
+| `repo_list_user_gpg_keys` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_user_gpg_keys) |
+| `repo_list_user_ssh_keys` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_user_ssh_keys) |
 | `repo_merge_merge_request` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_merge_merge_request) |
 | `repo_remove_repository_deploy_key` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_remove_repository_deploy_key) |
 | `repo_request_official_api` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_request_official_api) |
@@ -387,6 +396,7 @@
 | `repo_show_commit_statistics` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_commit_statistics) |
 | `repo_show_diff_lines` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_diff_lines) |
 | `repo_show_group_e2e_setting` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_group_e2e_setting) |
+| `repo_show_group_inherit_setting` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_group_inherit_setting) |
 | `repo_show_group_permission_inherit_enabled` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_group_permission_inherit_enabled) |
 | `repo_show_group_watermark` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_group_watermark) |
 | `repo_show_last_push_event_in_repository` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_last_push_event_in_repository) |
@@ -691,6 +701,10 @@
 | `testplan_get_gt3k_progress` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_gt3k_progress) |
 | `testplan_get_gt3k_testcase_change_statistics` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_gt3k_testcase_change_statistics) |
 | `testplan_get_gt3k_user_info_domain` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_gt3k_user_info_domain) |
+| `testplan_get_home_page_case_overview` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_home_page_case_overview) |
+| `testplan_get_home_page_defect_severity_overview` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_home_page_defect_severity_overview) |
+| `testplan_get_home_page_defect_status_overview` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_home_page_defect_status_overview) |
+| `testplan_get_home_page_overview_v5` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_home_page_overview_v5) |
 | `testplan_get_image_capacity_warning` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_image_capacity_warning) |
 | `testplan_get_iterator` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_iterator) |
 | `testplan_get_license_specification` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_license_specification) |
@@ -704,6 +718,7 @@
 | `testplan_get_progress` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_progress) |
 | `testplan_get_project_advanced_feature_trial` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_project_advanced_feature_trial) |
 | `testplan_get_project_advanced_feature_trusted` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_project_advanced_feature_trusted) |
+| `testplan_get_project_data_dashboard` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_project_data_dashboard) |
 | `testplan_get_project_domain_detail_info` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_project_domain_detail_info) |
 | `testplan_get_project_issue_update_notification` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_project_issue_update_notification) |
 | `testplan_get_project_local_config` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_project_local_config) |
@@ -840,6 +855,7 @@
 | `testplan_list_test_reports` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_test_reports) |
 | `testplan_list_test_types` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_test_types) |
 | `testplan_list_testcase_comments` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_testcase_comments) |
+| `testplan_list_testcase_defect_statistics` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_testcase_defect_statistics) |
 | `testplan_list_testcase_fields` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_testcase_fields) |
 | `testplan_list_testcase_relations` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_testcase_relations) |
 | `testplan_list_testcase_reviews` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_testcase_reviews) |
@@ -853,6 +869,7 @@
 | `testplan_list_testhub_testcases` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_testhub_testcases) |
 | `testplan_list_testhub_testcases_v5` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_testhub_testcases_v5) |
 | `testplan_list_timeout_settings` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_timeout_settings) |
+| `testplan_list_user_execute_testcase_statistics` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_user_execute_testcase_statistics) |
 | `testplan_list_v1_branches` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_v1_branches) |
 | `testplan_list_v4_branches` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_v4_branches) |
 | `testplan_list_v4_project_field_configs` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_v4_project_field_configs) |

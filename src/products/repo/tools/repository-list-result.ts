@@ -105,17 +105,19 @@ export function mapRepositoryMembers(
   items: RepoRepositoryMember[],
   page: number,
   pageSize: number,
-  total?: number
+  total?: number,
+  summary = `${items.length} repository members found`
 ) {
   return asListResult(
-    `${items.length} repository members found`,
+    summary,
     items.map((item) => ({
-      userId: item.user_id !== undefined ? String(item.user_id) : undefined,
-      userIamId: item.user_iam_id,
-      userName: item.user_name,
-      userNickName: item.user_nick_name,
+      userId: item.user_id !== undefined ? String(item.user_id) : item.id !== undefined ? String(item.id) : undefined,
+      userIamId: item.user_iam_id ?? item.iam_id ?? item.username,
+      userName: item.user_name ?? item.name,
+      userNickName: item.user_nick_name ?? item.nick_name ?? item.name_cn,
       tenantName: item.tenant_name,
       tenantId: item.tenant_id,
+      email: item.email,
       repoCreator: item.is_repo_creator,
       groupCreator: item.is_group_creator,
       projectAdmin: item.is_Project_admin,

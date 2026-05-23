@@ -32,6 +32,11 @@ type TestPlanRequirementsOverviewInput = {
   pi_filter?: TestPlanOverviewPiFilterInput;
 };
 
+type TestPlanRecordBodyInput = {
+  project_id: string;
+  [key: string]: unknown;
+};
+
 type TestPlanFeatureChildrenInput = {
   feature_uri: string;
   project_uuid: string;
@@ -407,6 +412,31 @@ export type TestPlanClient = {
     raw: Record<string, unknown>;
   }>;
   getQualityReportOverview: (input: TestPlanOverviewFilterInput) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  getHomePageCaseOverview: (input: TestPlanOverviewFilterInput) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  getHomePageDefectSeverityOverview: (input: TestPlanOverviewFilterInput) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  getHomePageDefectStatusOverview: (input: TestPlanOverviewFilterInput) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  getHomePageOverviewV5: (input: TestPlanOverviewFilterInput) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  listUserExecuteTestcaseStatistics: (input: TestPlanRecordBodyInput) => Promise<{
+    statistics: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
+  listTestcaseDefectStatistics: (input: TestPlanRecordBodyInput) => Promise<{
+    statistics: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
+  getProjectDataDashboard: (input: TestPlanRecordBodyInput) => Promise<{
     raw: Record<string, unknown>;
   }>;
   listRequirementsOverview: (input: TestPlanRequirementsOverviewInput) => Promise<{
@@ -2134,6 +2164,11 @@ function createOverviewBody(input: TestPlanOverviewFilterInput) {
   return body;
 }
 
+function createBodyWithoutProjectId(input: TestPlanRecordBodyInput) {
+  const { project_id: _projectId, ...body } = input;
+  return body;
+}
+
 function createFeatureChildrenBody(input: TestPlanFeatureChildrenInput) {
   const body: Record<string, unknown> = {
     project_uuid: input.project_uuid
@@ -3099,6 +3134,86 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       const response = await _http.post(
         `/v5/projects/${encodeURIComponent(input.project_id)}/report/overview`,
         createOverviewBody(input)
+      );
+      const payload = readResultPayload(response);
+      return {
+        raw: payload
+      };
+    },
+    async getHomePageCaseOverview(input) {
+      const response = await _http.post(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/home/overview/case`,
+        createOverviewBody(input)
+      );
+      const payload = readResultPayload(response);
+      return {
+        raw: payload
+      };
+    },
+    async getHomePageDefectSeverityOverview(input) {
+      const response = await _http.post(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/home/overview/defect/severity`,
+        createOverviewBody(input)
+      );
+      const payload = readResultPayload(response);
+      return {
+        raw: payload
+      };
+    },
+    async getHomePageDefectStatusOverview(input) {
+      const response = await _http.post(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/home/overview/defect/status`,
+        createOverviewBody(input)
+      );
+      const payload = readResultPayload(response);
+      return {
+        raw: payload
+      };
+    },
+    async getHomePageOverviewV5(input) {
+      const response = await _http.post(
+        `/v5/projects/${encodeURIComponent(input.project_id)}/home/overview`,
+        createOverviewBody(input)
+      );
+      const payload = readResultPayload(response);
+      return {
+        raw: payload
+      };
+    },
+    async listUserExecuteTestcaseStatistics(input) {
+      const response = await _http.post(
+        `/v1/${encodeURIComponent(input.project_id)}/testcases/execute-info/statistic-by-user`,
+        createBodyWithoutProjectId(input)
+      );
+      const payload = readResultPayload(response);
+      const statistics = readArray<Record<string, unknown>>(
+        payload.values ?? payload.value ?? payload.statistics ?? payload.items ?? payload.list
+      );
+      return {
+        statistics,
+        total: readTotal(payload, response, statistics.length),
+        raw: payload
+      };
+    },
+    async listTestcaseDefectStatistics(input) {
+      const response = await _http.post(
+        `/v1/${encodeURIComponent(input.project_id)}/testcases/defect-info/list-by-creation-time`,
+        createBodyWithoutProjectId(input)
+      );
+      const payload = readResultPayload(response);
+      const statistics = readArray<Record<string, unknown>>(
+        payload.values ?? payload.value ?? payload.statistics ?? payload.items ?? payload.list
+      );
+      return {
+        statistics,
+        total: readTotal(payload, response, statistics.length),
+        raw: payload
+      };
+    },
+    async getProjectDataDashboard(input) {
+      const response = await _http.post(
+        `/v1/${encodeURIComponent(input.project_id)}/data-dashboard/overview`,
+        createBodyWithoutProjectId(input)
       );
       const payload = readResultPayload(response);
       return {

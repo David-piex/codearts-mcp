@@ -6,7 +6,10 @@ import {
   repoListCommitsInput,
   repoListCurrentUserRepositoriesInput,
   repoListDefaultReviewCategoriesInput,
+  repoListGroupAddableMembersInput,
+  repoListGroupAddableUserGroupsInput,
   repoListGroupRepositoriesInput,
+  repoListGroupSubgroupsAndRepositoriesInput,
   repoListGroupWebhookLogsInput,
   repoListGroupWebhooksInput,
   repoListMergeRequestCommitsInput,
@@ -15,6 +18,7 @@ import {
   repoListRepositoryCommitRulesInput,
   repoListRepositoryFileListInput,
   repoListRepositoryForksInput,
+  repoListRepositoryLogsTreeInput,
   repoListRepositoryMembersInput,
   repoListRepositoryNavigationReferencesInput,
   repoListRepositoryReviewAuthorsInput,
@@ -22,14 +26,18 @@ import {
   repoListRepositoryTreesInput,
   repoListRepositoryUserGroupsInput,
   repoListSubmodulesInput,
+  repoListUserGpgKeysInput,
+  repoListUserSshKeysInput,
   repoListPersonalRepositoryImportRecordsInput,
   repoListPersonalRecentPushEventsInput,
   repoListRepositoryTemplatesInput,
   repoListProjectWebhookLogsInput,
   repoListProjectWebhooksInput,
+  repoListProjectMembersInput,
   repoMergeMergeRequestInput,
   repoShowNotificationSubscriptionInput,
   repoShowNotificationSubscriptionsStatusInput,
+  repoShowGroupInheritSettingInput,
   repoShowMergeRequestStatisticInput,
   repoShowMergeRequestVotesInput,
   repoShowBlobsInput,
@@ -47,6 +55,8 @@ import {
   repoShowRepositoryWatermarkInput,
   repoShowRepoLastStatisticsInput,
   repoShowUserRefPermissionInput,
+  repoGetRepositoryBlameInput,
+  repoGetRepositoryFileContentV4Input,
   repoStartRemoteMirrorSynchronizationInput,
   repoUpdateMergeRequestInput,
   repoUpdateRemoteMirrorInput
@@ -187,6 +197,112 @@ describe("repo schemas", () => {
       permission: "mr",
       action: "approve",
       search: "dev"
+    });
+  });
+
+  it("accepts official group, project member and user key read fields", () => {
+    expect(
+      repoListGroupAddableMembersInput.parse({
+        group_id: "9",
+        project_id: "project-uuid",
+        page_size: 100
+      })
+    ).toMatchObject({
+      group_id: "9",
+      project_id: "project-uuid",
+      page: 1,
+      page_size: 100
+    });
+
+    expect(
+      repoListGroupAddableUserGroupsInput.parse({
+        group_id: "9",
+        project_id: "project-uuid"
+      })
+    ).toMatchObject({
+      group_id: "9",
+      project_id: "project-uuid"
+    });
+
+    expect(
+      repoListGroupSubgroupsAndRepositoriesInput.parse({
+        group_id: "9",
+        filter: "service",
+        order_by: "updated_at",
+        sort: "desc",
+        archived: false
+      })
+    ).toMatchObject({
+      group_id: "9",
+      filter: "service",
+      order_by: "updated_at",
+      sort: "desc",
+      archived: false
+    });
+
+    expect(
+      repoShowGroupInheritSettingInput.parse({
+        group_id: "9",
+        setting_type: "merge_requests"
+      })
+    ).toEqual({
+      group_id: "9",
+      setting_type: "merge_requests"
+    });
+
+    expect(
+      repoListProjectMembersInput.parse({
+        project_id: "project-uuid",
+        query: "dev"
+      })
+    ).toMatchObject({
+      project_id: "project-uuid",
+      query: "dev"
+    });
+
+    expect(repoListUserGpgKeysInput.parse({ query: "signing" })).toEqual({ query: "signing" });
+    expect(repoListUserSshKeysInput.parse({ query: "laptop", page_size: 10 })).toMatchObject({
+      page: 1,
+      page_size: 10,
+      query: "laptop"
+    });
+  });
+
+  it("accepts official repository log tree, v4 file content and blame fields", () => {
+    expect(
+      repoListRepositoryLogsTreeInput.parse({
+        repository_id: "100",
+        ref: "feature/main"
+      })
+    ).toMatchObject({
+      repository_id: "100",
+      ref: "feature/main",
+      page: 1,
+      page_size: 20
+    });
+
+    expect(
+      repoGetRepositoryFileContentV4Input.parse({
+        repository_id: "100",
+        file_path: "src/index.ts",
+        sha: "master"
+      })
+    ).toEqual({
+      repository_id: "100",
+      file_path: "src/index.ts",
+      sha: "master"
+    });
+
+    expect(
+      repoGetRepositoryBlameInput.parse({
+        repository_id: "100",
+        file_path: "src/index.ts",
+        sha: "master"
+      })
+    ).toEqual({
+      repository_id: "100",
+      file_path: "src/index.ts",
+      sha: "master"
     });
   });
 

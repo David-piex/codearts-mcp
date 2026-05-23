@@ -49,6 +49,8 @@ import {
   repoListEventsInput,
   repoListBranchRelatedWorkItemsInput,
   repoListCurrentUserRepositoriesInput,
+  repoListGroupAddableMembersInput,
+  repoListGroupAddableUserGroupsInput,
   repoListGroupDeployKeysInput,
   repoListGroupsInput,
   repoListManageableGroupsInput,
@@ -56,6 +58,7 @@ import {
   repoListGroupProtectedBranchesInput,
   repoListGroupProtectedRefsUserGroupsInput,
   repoListGroupRepositoriesInput,
+  repoListGroupSubgroupsAndRepositoriesInput,
   repoListGroupUserGroupsInput,
   repoListImpersonationTokensInput,
   repoListItemCommitsInput,
@@ -81,6 +84,7 @@ import {
   repoListProjectProtectedRefsUserGroupsInput,
   repoListProjectProtectedTagsInput,
   repoListProjectDeployKeysInput,
+  repoListProjectMembersInput,
   repoListProtectedBranchesInput,
   repoListCommitAssociatedRefsInput,
   repoListDefaultReviewCategoriesInput,
@@ -92,6 +96,7 @@ import {
   repoListRepositoryForksInput,
   repoListRepositoryLanguagesInput,
   repoListRepositoryLabelsInput,
+  repoListRepositoryLogsTreeInput,
   repoListRepositoryMembersInput,
   repoListRepositoryNavigationReferencesInput,
   repoListRepositoryResourcePermissionsInput,
@@ -111,6 +116,7 @@ import {
   repoShowBlobsInput,
   repoShowDiffLinesInput,
   repoShowGroupE2eSettingInput,
+  repoShowGroupInheritSettingInput,
   repoShowGroupPermissionInheritEnabledInput,
   repoShowGroupWatermarkInput,
   repoShowLastPushEventInRepositoryInput,
@@ -127,6 +133,8 @@ import {
   repoShowTenantKMSGrantInput,
   repoShowProjectTenantSettingsInput,
   repoListTenantTrustedIpAddressesInput,
+  repoListUserGpgKeysInput,
+  repoListUserSshKeysInput,
   repoExportTenantRepositoriesInput,
   repoUpdateTenantRepoEncryptionSettingInput,
   repoCreateTenantKMSGrantInput,
@@ -153,6 +161,8 @@ import {
   repoShowRepositoryStatisticsStatusInput,
   repoShowRepositoryStatisticsSummaryInput,
   repoShowRepositoryWatermarkInput,
+  repoGetRepositoryBlameInput,
+  repoGetRepositoryFileContentV4Input,
   repoShowResourcePermissionsInput,
   repoShowUserRefPermissionInput,
   repoStartRemoteMirrorSynchronizationInput,
@@ -192,6 +202,8 @@ import { createRepoGetProjectWebhookHandler } from "../products/repo/tools/get-p
 import { createRepoGetProjectWebhookLogHandler } from "../products/repo/tools/get-project-webhook-log.js";
 import { createRepoGetRemoteMirrorHandler } from "../products/repo/tools/get-remote-mirror.js";
 import { createRepoGetRepositoryHandler } from "../products/repo/tools/get-repository.js";
+import { createRepoGetRepositoryBlameHandler } from "../products/repo/tools/get-repository-blame.js";
+import { createRepoGetRepositoryFileContentV4Handler } from "../products/repo/tools/get-repository-file-content-v4.js";
 import { createRepoGetRepositoryWebhookHandler } from "../products/repo/tools/get-repository-webhook.js";
 import { createRepoGetRepositoryWebhookLogHandler } from "../products/repo/tools/get-repository-webhook-log.js";
 import { createRepoGetTagHandler } from "../products/repo/tools/get-tag.js";
@@ -202,6 +214,8 @@ import { createRepoListDefaultReviewCategoriesHandler } from "../products/repo/t
 import { createRepoListEventsHandler } from "../products/repo/tools/list-events.js";
 import { createRepoListBranchRelatedWorkItemsHandler } from "../products/repo/tools/list-branch-related-work-items.js";
 import { createRepoListCurrentUserRepositoriesHandler } from "../products/repo/tools/list-current-user-repositories.js";
+import { createRepoListGroupAddableMembersHandler } from "../products/repo/tools/list-group-addable-members.js";
+import { createRepoListGroupAddableUserGroupsHandler } from "../products/repo/tools/list-group-addable-user-groups.js";
 import { createRepoListGroupDeployKeysHandler } from "../products/repo/tools/list-group-deploy-keys.js";
 import { createRepoListGroupsHandler } from "../products/repo/tools/list-groups.js";
 import { createRepoListManageableGroupsHandler } from "../products/repo/tools/list-manageable-groups.js";
@@ -209,6 +223,7 @@ import { createRepoListGroupMembersHandler } from "../products/repo/tools/list-g
 import { createRepoListGroupProtectedBranchesHandler } from "../products/repo/tools/list-group-protected-branches.js";
 import { createRepoListGroupProtectedRefsUserGroupsHandler } from "../products/repo/tools/list-group-protected-refs-user-groups.js";
 import { createRepoListGroupRepositoriesHandler } from "../products/repo/tools/list-group-repositories.js";
+import { createRepoListGroupSubgroupsAndRepositoriesHandler } from "../products/repo/tools/list-group-subgroups-and-repositories.js";
 import { createRepoListGroupUserGroupsHandler } from "../products/repo/tools/list-group-user-groups.js";
 import { createRepoListGroupWebhookLogsHandler } from "../products/repo/tools/list-group-webhook-logs.js";
 import { createRepoListGroupWebhooksHandler } from "../products/repo/tools/list-group-webhooks.js";
@@ -224,6 +239,7 @@ import { createRepoListProjectProtectedBranchesHandler } from "../products/repo/
 import { createRepoListProjectProtectedRefsUserGroupsHandler } from "../products/repo/tools/list-project-protected-refs-user-groups.js";
 import { createRepoListProjectProtectedTagsHandler } from "../products/repo/tools/list-project-protected-tags.js";
 import { createRepoListProjectDeployKeysHandler } from "../products/repo/tools/list-project-deploy-keys.js";
+import { createRepoListProjectMembersHandler } from "../products/repo/tools/list-project-members.js";
 import { createRepoListProjectSubgroupsAndRepositoriesHandler } from "../products/repo/tools/list-project-subgroups-and-repositories.js";
 import { createRepoListProjectWebhookLogsHandler } from "../products/repo/tools/list-project-webhook-logs.js";
 import { createRepoListProjectWebhooksHandler } from "../products/repo/tools/list-project-webhooks.js";
@@ -235,6 +251,7 @@ import { createRepoListRepositoryContributorsHandler } from "../products/repo/to
 import { createRepoListRepositoryFileListHandler } from "../products/repo/tools/list-repository-file-list.js";
 import { createRepoListRepositoryForksHandler } from "../products/repo/tools/list-repository-forks.js";
 import { createRepoListRepositoryLanguagesHandler } from "../products/repo/tools/list-repository-languages.js";
+import { createRepoListRepositoryLogsTreeHandler } from "../products/repo/tools/list-repository-logs-tree.js";
 import { createRepoListRepositoryMembersHandler } from "../products/repo/tools/list-repository-members.js";
 import { createRepoListRepositoryNavigationReferencesHandler } from "../products/repo/tools/list-repository-navigation-references.js";
 import { createRepoListRepositoryProtectedRefsUserGroupsHandler } from "../products/repo/tools/list-repository-protected-refs-user-groups.js";
@@ -280,6 +297,7 @@ import { createRepoDeleteTagHandler } from "../products/repo/tools/delete-tag.js
 import { createRepoRemoveRepositoryDeployKeyHandler } from "../products/repo/tools/remove-repository-deploy-key.js";
 import { createRepoReviewMergeRequestHandler } from "../products/repo/tools/review-merge-request.js";
 import { createRepoShowGroupE2eSettingHandler } from "../products/repo/tools/show-group-e2e-setting.js";
+import { createRepoShowGroupInheritSettingHandler } from "../products/repo/tools/show-group-inherit-setting.js";
 import { createRepoShowGroupPermissionInheritEnabledHandler } from "../products/repo/tools/show-group-permission-inherit-enabled.js";
 import { createRepoShowGroupWatermarkHandler } from "../products/repo/tools/show-group-watermark.js";
 import { createRepoShowProjectE2eSettingHandler } from "../products/repo/tools/show-project-e2e-setting.js";
@@ -291,6 +309,8 @@ import { createRepoListTenantEncryptedRepositoriesHandler } from "../products/re
 import { createRepoShowTenantKmsGrantHandler } from "../products/repo/tools/show-tenant-kms-grant.js";
 import { createRepoShowProjectTenantSettingsHandler } from "../products/repo/tools/show-project-tenant-settings.js";
 import { createRepoListTenantTrustedIpAddressesHandler } from "../products/repo/tools/list-tenant-trusted-ip-addresses.js";
+import { createRepoListUserGpgKeysHandler } from "../products/repo/tools/list-user-gpg-keys.js";
+import { createRepoListUserSshKeysHandler } from "../products/repo/tools/list-user-ssh-keys.js";
 import { createRepoExportTenantRepositoriesHandler } from "../products/repo/tools/export-tenant-repositories.js";
 import { createRepoUpdateTenantRepoEncryptionSettingHandler } from "../products/repo/tools/update-tenant-repo-encryption-setting.js";
 import { createRepoCreateTenantKmsGrantHandler } from "../products/repo/tools/create-tenant-kms-grant.js";
@@ -359,7 +379,11 @@ const repoToolDefinitions = {
   "repo_list_manageable_groups": defineProductTool({ description: "List CodeArts Repo manageable groups for a project", inputSchema: repoListManageableGroupsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListManageableGroupsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListManageableGroupsHandler }),
   "repo_list_group_repositories": defineProductTool({ description: "List CodeArts Repo repositories in a group", inputSchema: repoListGroupRepositoriesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListGroupRepositoriesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListGroupRepositoriesHandler }),
   "repo_list_group_members": defineProductTool({ description: "List CodeArts Repo group members", inputSchema: repoListGroupMembersInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListGroupMembersHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListGroupMembersHandler }),
+  "repo_list_group_addable_members": defineProductTool({ description: "List CodeArts Repo members addable to a group", inputSchema: repoListGroupAddableMembersInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListGroupAddableMembersHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListGroupAddableMembersHandler }),
   "repo_list_group_user_groups": defineProductTool({ description: "List CodeArts Repo group user groups", inputSchema: repoListGroupUserGroupsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListGroupUserGroupsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListGroupUserGroupsHandler }),
+  "repo_list_group_addable_user_groups": defineProductTool({ description: "List CodeArts Repo user groups addable to a group", inputSchema: repoListGroupAddableUserGroupsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListGroupAddableUserGroupsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListGroupAddableUserGroupsHandler }),
+  "repo_list_group_subgroups_and_repositories": defineProductTool({ description: "List CodeArts Repo subgroups and repositories in a group", inputSchema: repoListGroupSubgroupsAndRepositoriesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListGroupSubgroupsAndRepositoriesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListGroupSubgroupsAndRepositoriesHandler }),
+  "repo_show_group_inherit_setting": defineProductTool({ description: "Show CodeArts Repo group inherit setting", inputSchema: repoShowGroupInheritSettingInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowGroupInheritSettingHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowGroupInheritSettingHandler }),
   "repo_associate_remote_mirror": defineProductTool({ description: "Associate CodeArts Repo remote mirror", inputSchema: repoAssociateRemoteMirrorInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoAssociateRemoteMirrorHandler>[0] }) => clients.repoClient, createProductHandler: createRepoAssociateRemoteMirrorHandler }),
   "repo_start_remote_mirror_synchronization": defineProductTool({ description: "Start CodeArts Repo remote mirror synchronization", inputSchema: repoStartRemoteMirrorSynchronizationInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoStartRemoteMirrorSynchronizationHandler>[0] }) => clients.repoClient, createProductHandler: createRepoStartRemoteMirrorSynchronizationHandler }),
   "repo_get_remote_mirror": defineProductTool({ description: "Get CodeArts Repo remote mirror detail", inputSchema: repoGetRemoteMirrorInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoGetRemoteMirrorHandler>[0] }) => clients.repoClient, createProductHandler: createRepoGetRemoteMirrorHandler }),
@@ -406,6 +430,8 @@ const repoToolDefinitions = {
   "repo_show_tenant_kms_grant": defineProductTool({ description: "Show CodeArts Repo tenant KMS grant status", inputSchema: repoShowTenantKMSGrantInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowTenantKmsGrantHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowTenantKmsGrantHandler }),
   "repo_show_project_tenant_settings": defineProductTool({ description: "Show CodeArts Repo tenant settings", inputSchema: repoShowProjectTenantSettingsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowProjectTenantSettingsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowProjectTenantSettingsHandler }),
   "repo_list_tenant_trusted_ip_addresses": defineProductTool({ description: "List CodeArts Repo tenant trusted IP addresses", inputSchema: repoListTenantTrustedIpAddressesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListTenantTrustedIpAddressesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListTenantTrustedIpAddressesHandler }),
+  "repo_list_user_gpg_keys": defineProductTool({ description: "List CodeArts Repo current user GPG keys", inputSchema: repoListUserGpgKeysInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListUserGpgKeysHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListUserGpgKeysHandler }),
+  "repo_list_user_ssh_keys": defineProductTool({ description: "List CodeArts Repo current user SSH keys", inputSchema: repoListUserSshKeysInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListUserSshKeysHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListUserSshKeysHandler }),
   "repo_export_tenant_repositories": defineProductTool({ description: "Export CodeArts Repo tenant repositories", inputSchema: repoExportTenantRepositoriesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoExportTenantRepositoriesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoExportTenantRepositoriesHandler }),
   "repo_update_tenant_repo_encryption_setting": defineProductTool({ description: "Update CodeArts Repo tenant repo encryption setting", inputSchema: repoUpdateTenantRepoEncryptionSettingInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoUpdateTenantRepoEncryptionSettingHandler>[0] }) => clients.repoClient, createProductHandler: createRepoUpdateTenantRepoEncryptionSettingHandler }),
   "repo_create_tenant_kms_grant": defineProductTool({ description: "Create CodeArts Repo tenant KMS grant", inputSchema: repoCreateTenantKMSGrantInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCreateTenantKmsGrantHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCreateTenantKmsGrantHandler }),
@@ -459,6 +485,7 @@ const repoToolDefinitions = {
   "repo_list_repository_protected_refs_user_groups": defineProductTool({ description: "List CodeArts Repo repository protected refs user groups", inputSchema: repoListRepositoryProtectedRefsUserGroupsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoryProtectedRefsUserGroupsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoryProtectedRefsUserGroupsHandler }),
   "repo_list_group_protected_refs_user_groups": defineProductTool({ description: "List CodeArts Repo group protected refs user groups", inputSchema: repoListGroupProtectedRefsUserGroupsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListGroupProtectedRefsUserGroupsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListGroupProtectedRefsUserGroupsHandler }),
   "repo_list_project_protected_refs_user_groups": defineProductTool({ description: "List CodeArts Repo project protected refs user groups", inputSchema: repoListProjectProtectedRefsUserGroupsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListProjectProtectedRefsUserGroupsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListProjectProtectedRefsUserGroupsHandler }),
+  "repo_list_project_members": defineProductTool({ description: "List CodeArts Repo project members", inputSchema: repoListProjectMembersInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListProjectMembersHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListProjectMembersHandler }),
   "repo_list_repository_labels": defineProductTool({ description: "List CodeArts Repo repository labels", inputSchema: repoListRepositoryLabelsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoryLabelsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoryLabelsHandler }),
   "repo_create_tag": defineProductTool({ description: "Create CodeArts Repo tag", inputSchema: repoCreateTagInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCreateTagHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCreateTagHandler }),
   "repo_delete_tag": defineProductTool({ description: "Delete CodeArts Repo tag", inputSchema: repoDeleteTagInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoDeleteTagHandler>[0] }) => clients.repoClient, createProductHandler: createRepoDeleteTagHandler }),
@@ -471,7 +498,10 @@ const repoToolDefinitions = {
   "repo_list_repository_forks": defineProductTool({ description: "List CodeArts Repo repository forks", inputSchema: repoListRepositoryForksInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoryForksHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoryForksHandler }),
   "repo_list_repository_members": defineProductTool({ description: "List CodeArts Repo repository members", inputSchema: repoListRepositoryMembersInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoryMembersHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoryMembersHandler }),
   "repo_list_repository_trees": defineProductTool({ description: "List CodeArts Repo repository tree entries", inputSchema: repoListRepositoryTreesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoryTreesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoryTreesHandler }),
+  "repo_list_repository_logs_tree": defineProductTool({ description: "List CodeArts Repo repository log tree entries", inputSchema: repoListRepositoryLogsTreeInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoryLogsTreeHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoryLogsTreeHandler }),
   "repo_list_repository_file_list": defineProductTool({ description: "List CodeArts Repo repository files", inputSchema: repoListRepositoryFileListInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoryFileListHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoryFileListHandler }),
+  "repo_get_repository_file_content_v4": defineProductTool({ description: "Get CodeArts Repo v4 file content", inputSchema: repoGetRepositoryFileContentV4Input, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoGetRepositoryFileContentV4Handler>[0] }) => clients.repoClient, createProductHandler: createRepoGetRepositoryFileContentV4Handler }),
+  "repo_get_repository_blame": defineProductTool({ description: "Get CodeArts Repo file blame information", inputSchema: repoGetRepositoryBlameInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoGetRepositoryBlameHandler>[0] }) => clients.repoClient, createProductHandler: createRepoGetRepositoryBlameHandler }),
   "repo_show_repository_readme_file": defineProductTool({ description: "Show CodeArts Repo repository README file", inputSchema: repoShowRepositoryReadmeFileInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowRepositoryReadmeFileHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowRepositoryReadmeFileHandler }),
   "repo_list_commit_associated_refs": defineProductTool({ description: "List CodeArts Repo commit associated refs", inputSchema: repoListCommitAssociatedRefsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListCommitAssociatedRefsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListCommitAssociatedRefsHandler }),
   "repo_show_review_setting": defineProductTool({ description: "Show CodeArts Repo repository review setting", inputSchema: repoShowReviewSettingInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowReviewSettingHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowReviewSettingHandler }),

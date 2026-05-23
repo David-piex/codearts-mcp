@@ -1324,6 +1324,199 @@ describe("createTestPlanClient", () => {
     });
   });
 
+  it("gets home page overview statistics from v4 and v5 endpoints", async () => {
+    const requests: Array<{ path: string; body: unknown }> = [];
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requests.push({ path, body });
+        return {
+          result: {
+            value: {
+              completion_rate: "80%",
+              path
+            }
+          }
+        };
+      }
+    } as never);
+
+    const input = {
+      project_id: "project-1",
+      version_uri: "version-1",
+      module_id: "module-1",
+      fixed_version_id: "fixed-1",
+      owner_id: "user-1",
+      own: true,
+      pi_filter: { all_pi: true }
+    };
+
+    await expect(client.getHomePageCaseOverview(input)).resolves.toEqual({
+      raw: {
+        value: {
+          completion_rate: "80%",
+          path: "/v4/projects/project-1/home/overview/case"
+        }
+      }
+    });
+    await client.getHomePageDefectSeverityOverview(input);
+    await client.getHomePageDefectStatusOverview(input);
+    await client.getHomePageOverviewV5(input);
+
+    expect(requests).toEqual([
+      {
+        path: "/v4/projects/project-1/home/overview/case",
+        body: {
+          version_uri: "version-1",
+          module_id: "module-1",
+          fixed_version_id: "fixed-1",
+          owner_id: "user-1",
+          own: true,
+          pi_filter: { all_pi: true }
+        }
+      },
+      {
+        path: "/v4/projects/project-1/home/overview/defect/severity",
+        body: {
+          version_uri: "version-1",
+          module_id: "module-1",
+          fixed_version_id: "fixed-1",
+          owner_id: "user-1",
+          own: true,
+          pi_filter: { all_pi: true }
+        }
+      },
+      {
+        path: "/v4/projects/project-1/home/overview/defect/status",
+        body: {
+          version_uri: "version-1",
+          module_id: "module-1",
+          fixed_version_id: "fixed-1",
+          owner_id: "user-1",
+          own: true,
+          pi_filter: { all_pi: true }
+        }
+      },
+      {
+        path: "/v5/projects/project-1/home/overview",
+        body: {
+          version_uri: "version-1",
+          module_id: "module-1",
+          fixed_version_id: "fixed-1",
+          owner_id: "user-1",
+          own: true,
+          pi_filter: { all_pi: true }
+        }
+      }
+    ]);
+  });
+
+  it("lists testcase statistics and loads the project data dashboard", async () => {
+    const requests: Array<{ path: string; body: unknown }> = [];
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requests.push({ path, body });
+        if (path.includes("execute-info")) {
+          return {
+            total: 1,
+            values: [{ executor: { id: "user-1", name: "alice" }, execute_count: 3 }]
+          };
+        }
+        if (path.includes("defect-info")) {
+          return {
+            total: 1,
+            values: [{ creator: { id: "user-2", name: "bob" }, defect_count: 2 }]
+          };
+        }
+
+        return {
+          defect: { total: 2 },
+          case_pass_rate: { pass_rate: "90%" }
+        };
+      }
+    } as never);
+
+    await expect(
+      client.listUserExecuteTestcaseStatistics({
+        project_id: "project-1",
+        offset: 0,
+        limit: 20,
+        execute_start_time: "2026-05-01T00:00:00+08:00",
+        execute_end_time: "2026-05-23T00:00:00+08:00",
+        service_type: 1
+      })
+    ).resolves.toEqual({
+      statistics: [{ executor: { id: "user-1", name: "alice" }, execute_count: 3 }],
+      total: 1,
+      raw: {
+        total: 1,
+        values: [{ executor: { id: "user-1", name: "alice" }, execute_count: 3 }]
+      }
+    });
+    await expect(
+      client.listTestcaseDefectStatistics({
+        project_id: "project-1",
+        offset: 5,
+        limit: 10,
+        create_testcase_start_time: "2026-05-01T00:00:00+08:00",
+        create_testcase_end_time: "2026-05-23T00:00:00+08:00",
+        branch_id: "branch-1"
+      })
+    ).resolves.toEqual({
+      statistics: [{ creator: { id: "user-2", name: "bob" }, defect_count: 2 }],
+      total: 1,
+      raw: {
+        total: 1,
+        values: [{ creator: { id: "user-2", name: "bob" }, defect_count: 2 }]
+      }
+    });
+    await expect(
+      client.getProjectDataDashboard({
+        project_id: "project-1",
+        plan_id: "plan-1",
+        branch_id: "branch-1",
+        module_id: "module-1",
+        fixed_version_id: "fixed-1"
+      })
+    ).resolves.toEqual({
+      raw: {
+        defect: { total: 2 },
+        case_pass_rate: { pass_rate: "90%" }
+      }
+    });
+
+    expect(requests).toEqual([
+      {
+        path: "/v1/project-1/testcases/execute-info/statistic-by-user",
+        body: {
+          offset: 0,
+          limit: 20,
+          execute_start_time: "2026-05-01T00:00:00+08:00",
+          execute_end_time: "2026-05-23T00:00:00+08:00",
+          service_type: 1
+        }
+      },
+      {
+        path: "/v1/project-1/testcases/defect-info/list-by-creation-time",
+        body: {
+          offset: 5,
+          limit: 10,
+          create_testcase_start_time: "2026-05-01T00:00:00+08:00",
+          create_testcase_end_time: "2026-05-23T00:00:00+08:00",
+          branch_id: "branch-1"
+        }
+      },
+      {
+        path: "/v1/project-1/data-dashboard/overview",
+        body: {
+          plan_id: "plan-1",
+          branch_id: "branch-1",
+          module_id: "module-1",
+          fixed_version_id: "fixed-1"
+        }
+      }
+    ]);
+  });
+
   it("lists requirements overview entries", async () => {
     let requestedPath = "";
     let requestedBody: Record<string, unknown> | undefined;

@@ -75,11 +75,55 @@ export const repoListGroupMembersInput = pagingSchema.extend({
   access_level: z.union([z.string().min(1), z.number().int()]).optional()
 });
 
+export const repoListGroupAddableMembersInput = pagingSchema.extend({
+  group_id: idSchema,
+  project_id: idSchema,
+  page_size: z.number().int().positive().max(100).default(20)
+});
+
 export const repoListGroupUserGroupsInput = pagingSchema.extend({
   group_id: idSchema,
   page_size: z.number().int().positive().max(100).default(20),
   search: z.string().min(1).max(256).optional(),
   project_id: idSchema.optional()
+});
+
+export const repoListGroupAddableUserGroupsInput = pagingSchema.extend({
+  group_id: idSchema,
+  project_id: idSchema,
+  page_size: z.number().int().positive().max(100).default(20)
+});
+
+export const repoListGroupSubgroupsAndRepositoriesInput = pagingSchema.extend({
+  group_id: idSchema,
+  page_size: z.number().int().positive().max(100).default(20),
+  filter: z.union([z.string().min(1), z.number().int().positive()]).optional(),
+  order_by: z.enum(["id", "name", "created_at", "updated_at"]).optional(),
+  sort: z.enum(["asc", "desc"]).optional(),
+  archived: z.boolean().optional()
+});
+
+export const repoShowGroupInheritSettingInput = z.object({
+  group_id: idSchema,
+  setting_type: z.enum([
+    "protected_branches",
+    "protected_tags",
+    "push_rules",
+    "merge_requests",
+    "mr_branch_policies",
+    "reviews",
+    "e2e_settings",
+    "webhook_settings",
+    "deploy_keys",
+    "watermark",
+    "repository_settings"
+  ])
+});
+
+export const repoListProjectMembersInput = pagingSchema.extend({
+  project_id: idSchema,
+  page_size: z.number().int().positive().max(100).default(20),
+  query: z.string().min(1).max(256).optional()
 });
 
 export const repoListRepositoryUserGroupsInput = pagingSchema.extend({
@@ -130,11 +174,29 @@ export const repoListRepositoryTreesInput = pagingSchema.extend({
   recursive: z.boolean().optional()
 });
 
+export const repoListRepositoryLogsTreeInput = pagingSchema.extend({
+  repository_id: idSchema,
+  page_size: z.number().int().positive().max(100).default(20),
+  ref: z.string().min(1).max(2000).optional()
+});
+
 export const repoListRepositoryFileListInput = pagingSchema.extend({
   repository_id: idSchema,
   page_size: z.number().int().positive().max(100).default(20),
   ref_name: z.string().min(1).max(200).optional(),
   search: z.string().min(1).max(256).optional()
+});
+
+export const repoGetRepositoryFileContentV4Input = z.object({
+  repository_id: idSchema,
+  file_path: z.string().min(1).max(10000),
+  sha: z.string().min(1).max(2000)
+});
+
+export const repoGetRepositoryBlameInput = z.object({
+  repository_id: idSchema,
+  file_path: z.string().min(1).max(10000),
+  sha: z.string().min(1).max(2000)
 });
 
 export const repoShowRepositoryReadmeFileInput = z.object({
@@ -736,6 +798,15 @@ export const repoShowProjectTenantSettingsInput = z.object({
 });
 
 export const repoListTenantTrustedIpAddressesInput = tenantPagingSchema;
+
+export const repoListUserGpgKeysInput = z.object({
+  query: z.string().min(1).max(2000).optional()
+});
+
+export const repoListUserSshKeysInput = pagingSchema.extend({
+  page_size: z.number().int().positive().max(100).default(20),
+  query: z.string().min(1).max(2000).optional()
+});
 
 export const repoExportTenantRepositoriesInput = z.object({
   repository_ids: z.array(z.union([z.string().min(1), z.number().int().positive()])).min(1).optional(),

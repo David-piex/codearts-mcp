@@ -142,6 +142,47 @@ export const testPlanGetServiceTypeOverviewInput = testPlanOverviewFilterInput;
 
 export const testPlanGetQualityReportOverviewInput = testPlanOverviewFilterInput;
 
+export const testPlanGetHomePageCaseOverviewInput = testPlanOverviewFilterInput;
+
+export const testPlanGetHomePageDefectSeverityOverviewInput = testPlanOverviewFilterInput;
+
+export const testPlanGetHomePageDefectStatusOverviewInput = testPlanOverviewFilterInput;
+
+export const testPlanGetHomePageOverviewV5Input = testPlanOverviewFilterInput;
+
+export const testPlanListUserExecuteTestcaseStatisticsInput = z
+  .object({
+    project_id: idSchema,
+    offset: z.number().int().min(0).default(0),
+    limit: z.number().int().min(1).max(100).default(20),
+    execute_start_time: z.string().min(1),
+    execute_end_time: z.string().min(1)
+  })
+  .passthrough();
+
+export const testPlanListTestcaseDefectStatisticsInput = z
+  .object({
+    project_id: idSchema,
+    offset: z.number().int().min(0).default(0),
+    limit: z.number().int().min(1).max(100).default(20),
+    create_testcase_start_time: z.string().min(1),
+    create_testcase_end_time: z.string().min(1),
+    branch_id: z.string().min(1).optional(),
+    associate_defect_start_time: z.string().min(1).optional(),
+    associate_defect_end_time: z.string().min(1).optional()
+  })
+  .passthrough();
+
+export const testPlanGetProjectDataDashboardInput = z
+  .object({
+    project_id: idSchema,
+    plan_id: z.string().min(1).optional(),
+    branch_id: z.string().min(1).optional(),
+    module_id: z.string().min(1).optional(),
+    fixed_version_id: z.string().min(1).optional()
+  })
+  .passthrough();
+
 export const testPlanListRequirementsOverviewInput = pagingSchema.extend({
   project_id: idSchema,
   version_uri: idSchema,

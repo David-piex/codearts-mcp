@@ -3,9 +3,13 @@ import {
   testPlanDeleteDynamicGlobalVariableInput,
   testPlanDownloadTestDesignTemplateInput,
   testPlanGetDynamicGlobalVariableInput,
+  testPlanGetHomePageCaseOverviewInput,
+  testPlanGetProjectDataDashboardInput,
   testPlanListCasesInput,
   testPlanListIssuesInput,
   testPlanListDynamicGlobalVariablesInput,
+  testPlanListTestcaseDefectStatisticsInput,
+  testPlanListUserExecuteTestcaseStatisticsInput,
   testPlanRunCasesInput
 } from "../../../src/products/testplan/schemas.js";
 
@@ -141,6 +145,86 @@ describe("testplan schemas", () => {
       task_id: "task-1",
       key: "host",
       dry_run: true
+    });
+  });
+
+  it("accepts home page overview filters", () => {
+    const parsed = testPlanGetHomePageCaseOverviewInput.parse({
+      project_id: "project-1",
+      version_uri: "version-1",
+      module_id: "module-1",
+      fixed_version_id: "fixed-1",
+      owner_id: "user-1",
+      own: true,
+      pi_filter: {
+        all_pi: true,
+        pi_sprints: [{ pi_id: "pi-1", sprints: ["sprint-1"] }]
+      }
+    });
+
+    expect(parsed).toMatchObject({
+      project_id: "project-1",
+      version_uri: "version-1",
+      module_id: "module-1",
+      fixed_version_id: "fixed-1",
+      owner_id: "user-1",
+      own: true
+    });
+  });
+
+  it("accepts statistics query bodies with passthrough fields", () => {
+    expect(
+      testPlanListUserExecuteTestcaseStatisticsInput.parse({
+        project_id: "project-1",
+        offset: 10,
+        limit: 50,
+        execute_start_time: "2026-05-01T00:00:00+08:00",
+        execute_end_time: "2026-05-23T00:00:00+08:00",
+        service_type: 1
+      })
+    ).toMatchObject({
+      project_id: "project-1",
+      offset: 10,
+      limit: 50,
+      execute_start_time: "2026-05-01T00:00:00+08:00",
+      execute_end_time: "2026-05-23T00:00:00+08:00",
+      service_type: 1
+    });
+
+    expect(
+      testPlanListTestcaseDefectStatisticsInput.parse({
+        project_id: "project-1",
+        create_testcase_start_time: "2026-05-01T00:00:00+08:00",
+        create_testcase_end_time: "2026-05-23T00:00:00+08:00",
+        branch_id: "branch-1",
+        associate_defect_start_time: "2026-05-02T00:00:00+08:00",
+        associate_defect_end_time: "2026-05-22T00:00:00+08:00"
+      })
+    ).toMatchObject({
+      project_id: "project-1",
+      offset: 0,
+      limit: 20,
+      branch_id: "branch-1"
+    });
+  });
+
+  it("accepts project data dashboard filters", () => {
+    const parsed = testPlanGetProjectDataDashboardInput.parse({
+      project_id: "project-1",
+      plan_id: "plan-1",
+      branch_id: "branch-1",
+      module_id: "module-1",
+      fixed_version_id: "fixed-1",
+      extra_filter: "value"
+    });
+
+    expect(parsed).toMatchObject({
+      project_id: "project-1",
+      plan_id: "plan-1",
+      branch_id: "branch-1",
+      module_id: "module-1",
+      fixed_version_id: "fixed-1",
+      extra_filter: "value"
     });
   });
 });

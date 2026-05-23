@@ -34,10 +34,10 @@ describe("collectModuleStats", () => {
   it("returns the current per-module tool totals and read/write split", () => {
     expect(collectModuleStats()).toEqual([
       { module: "Req", total: 201, read: 117, write: 84 },
-      { module: "Repo", total: 166, read: 122, write: 44 },
+      { module: "Repo", total: 176, read: 132, write: 44 },
       { module: "Pipeline", total: 78, read: 42, write: 36 },
       { module: "Check", total: 23, read: 19, write: 4 },
-      { module: "TestPlan", total: 231, read: 221, write: 10 },
+      { module: "TestPlan", total: 238, read: 228, write: 10 },
       { module: "Deploy", total: 60, read: 43, write: 17 },
       { module: "Build", total: 46, read: 37, write: 9 },
       { module: "Artifact", total: 19, read: 17, write: 2 }
@@ -48,7 +48,7 @@ describe("collectModuleStats", () => {
     expect(collectProductToolStats()).toEqual({
       modules: 8,
       total: collectProductToolManifest().length,
-      read: 618,
+      read: 635,
       write: 206
     });
   });
@@ -69,10 +69,10 @@ describe("collectModuleStats", () => {
     expect(JSON.parse(renderModuleStatsReportJson())).toEqual({
       modules: [
         { module: "Req", total: 201, read: 117, write: 84 },
-        { module: "Repo", total: 166, read: 122, write: 44 },
+        { module: "Repo", total: 176, read: 132, write: 44 },
         { module: "Pipeline", total: 78, read: 42, write: 36 },
         { module: "Check", total: 23, read: 19, write: 4 },
-        { module: "TestPlan", total: 231, read: 221, write: 10 },
+        { module: "TestPlan", total: 238, read: 228, write: 10 },
         { module: "Deploy", total: 60, read: 43, write: 17 },
         { module: "Build", total: 46, read: 37, write: 9 },
         { module: "Artifact", total: 19, read: 17, write: 2 }
@@ -80,7 +80,7 @@ describe("collectModuleStats", () => {
       totals: {
         modules: 8,
         total: collectProductToolManifest().length,
-        read: 618,
+        read: 635,
         write: 206,
         httpTotalWithAuth: collectHttpToolTotal()
       }

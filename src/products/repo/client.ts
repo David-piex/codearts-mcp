@@ -316,6 +316,13 @@ export type RepoRepositoryUserGroup = {
 };
 
 export type RepoRepositoryMember = {
+  id?: number | string;
+  name?: string;
+  name_cn?: string;
+  username?: string;
+  nick_name?: string;
+  email?: string;
+  iam_id?: string;
   user_id?: number | string;
   user_iam_id?: string;
   user_name?: string;
@@ -333,6 +340,13 @@ export type RepoRepositoryMember = {
   member_source_id?: string;
   service_license_status?: number | string;
   action_enabled?: boolean;
+};
+
+export type RepoGroupInheritSetting = {
+  group_id?: number | string;
+  source_setting?: string;
+  project_id?: string;
+  upward_inherit_editable?: boolean;
 };
 
 export type RepoMergeRequestCommit = {
@@ -410,6 +424,36 @@ export type RepoTreeObject = {
   submodule_link?: string;
   submodule_branch?: string;
   md5?: string;
+};
+
+export type RepoLogTreeObject = RepoTreeObject & {
+  commit?: RepoMergeRequestCommit;
+  blob_id?: string;
+  submodule_url?: string;
+  is_limited?: boolean;
+  nick_name?: string;
+  tenant_name?: string;
+  user_name?: string;
+};
+
+export type RepoFileContent = {
+  file_path: string;
+  sha: string;
+  content: string;
+};
+
+export type RepoBlameLine = {
+  lineNO?: number;
+  content?: string;
+};
+
+export type RepoBlame = {
+  commit?: RepoMergeRequestCommit;
+  avatar_url?: string;
+  lines?: RepoBlameLine[];
+  nick_name?: string;
+  tenant_name?: string;
+  user_name?: string;
 };
 
 export type RepoReadmeFile = {
@@ -699,6 +743,31 @@ export type RepoTenantTrustedIpAddress = {
   created_at?: string;
   updated_at?: string;
   order_flag?: number;
+};
+
+export type RepoUserGpgKey = {
+  id?: number | string;
+  created_at?: string;
+  emails_with_verified_status?: Record<string, boolean>;
+  fingerprint?: string;
+  key?: string;
+  description?: string;
+  title?: string;
+  primary_keyid?: string;
+  active?: boolean;
+  subkeys?: Array<{
+    id?: number | string;
+    fingerprint?: string;
+    gpg_key_id?: number | string;
+    keyid?: string;
+  }>;
+};
+
+export type RepoUserSshKey = {
+  id?: number | string;
+  title?: string;
+  key?: string;
+  created_at?: string;
 };
 
 type RepoTenantTrustedIpAddressMutationInput = {
@@ -2086,6 +2155,15 @@ export type RepoClient = {
     members: RepoRepositoryMember[];
     total?: number;
   }>;
+  listGroupAddableMembers: (input: {
+    group_id: string;
+    project_id: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    members: RepoRepositoryMember[];
+    total?: number;
+  }>;
   listGroupUserGroups: (input: {
     group_id: string;
     page: number;
@@ -2094,6 +2172,40 @@ export type RepoClient = {
     project_id?: string;
   }) => Promise<{
     groups: RepoRepositoryUserGroup[];
+    total?: number;
+  }>;
+  listGroupAddableUserGroups: (input: {
+    group_id: string;
+    project_id: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    groups: RepoRepositoryUserGroup[];
+    total?: number;
+  }>;
+  listGroupSubgroupsAndRepositories: (input: {
+    group_id: string;
+    page: number;
+    page_size: number;
+    filter?: string | number;
+    order_by?: string;
+    sort?: string;
+    archived?: boolean;
+  }) => Promise<{
+    items: RepoProjectSubgroupOrRepository[];
+    total?: number;
+  }>;
+  showGroupInheritSetting: (input: {
+    group_id: string;
+    setting_type: string;
+  }) => Promise<RepoGroupInheritSetting>;
+  listProjectMembers: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    query?: string;
+  }) => Promise<{
+    members: RepoRepositoryMember[];
     total?: number;
   }>;
   listRepositoryUserGroups: (input: {
@@ -2148,6 +2260,15 @@ export type RepoClient = {
     trees: RepoTreeObject[];
     total?: number;
   }>;
+  listRepositoryLogsTree: (input: {
+    repository_id: string;
+    page: number;
+    page_size: number;
+    ref?: string;
+  }) => Promise<{
+    trees: RepoLogTreeObject[];
+    total?: number;
+  }>;
   listRepositoryFileList: (input: {
     repository_id: string;
     page: number;
@@ -2156,6 +2277,19 @@ export type RepoClient = {
     search?: string;
   }) => Promise<{
     files: string[];
+    total?: number;
+  }>;
+  getRepositoryFileContentV4: (input: {
+    repository_id: string;
+    file_path: string;
+    sha: string;
+  }) => Promise<RepoFileContent>;
+  getRepositoryBlame: (input: {
+    repository_id: string;
+    file_path: string;
+    sha: string;
+  }) => Promise<{
+    blames: RepoBlame[];
     total?: number;
   }>;
   showRepositoryReadmeFile: (input: { repository_id: string }) => Promise<RepoReadmeFile>;
@@ -2275,6 +2409,20 @@ export type RepoClient = {
     limit: number;
   }) => Promise<{
     ip_addresses: RepoTenantTrustedIpAddress[];
+    total?: number;
+  }>;
+  listUserGpgKeys: (input: {
+    query?: string;
+  }) => Promise<{
+    keys: RepoUserGpgKey[];
+    total?: number;
+  }>;
+  listUserSshKeys: (input: {
+    page: number;
+    page_size: number;
+    query?: string;
+  }) => Promise<{
+    keys: RepoUserSshKey[];
     total?: number;
   }>;
   exportTenantRepositories: (input: {
@@ -2733,6 +2881,53 @@ function extractTenantTrustedIpAddressResponse(
     created_at: address.created_at,
     updated_at: address.updated_at,
     order_flag: address.order_flag
+  };
+}
+
+function extractUserGpgKeysResponse(
+  response:
+    | RepoUserGpgKey
+    | RepoUserGpgKey[]
+    | {
+        keys?: RepoUserGpgKey[];
+        total?: number;
+        result?: RepoUserGpgKey | RepoUserGpgKey[] | { keys?: RepoUserGpgKey[]; total?: number };
+      }
+) {
+  const payload = unwrapRepoPayload(response);
+  const result = !Array.isArray(payload) && "result" in payload && payload.result ? payload.result : payload;
+  const keys = Array.isArray(result)
+    ? result
+    : "keys" in result && Array.isArray(result.keys)
+      ? result.keys
+      : [result as RepoUserGpgKey];
+  const total = Array.isArray(result)
+    ? result.length
+    : "total" in result && typeof result.total === "number"
+      ? result.total
+      : keys.length;
+
+  return { keys, total };
+}
+
+function extractUserSshKeysResponse(
+  response:
+    | RepoUserSshKey[]
+    | {
+        keys?: RepoUserSshKey[];
+        total?: number;
+        result?: {
+          keys?: RepoUserSshKey[];
+          total?: number;
+        };
+      }
+) {
+  const payload = unwrapRepoPayload(response);
+  const keys = Array.isArray(payload) ? payload : payload.result?.keys ?? payload.keys ?? [];
+
+  return {
+    keys,
+    total: Array.isArray(payload) ? payload.length : payload.result?.total ?? payload.total
   };
 }
 
@@ -5176,6 +5371,22 @@ export function createRepoClient(
         total: extracted.total
       };
     },
+    async listGroupAddableMembers(input) {
+      const query = buildOffsetLimitQuery(input);
+      query.set("project_id", input.project_id);
+      const response = await _http.get(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/members/addable-list?${query.toString()}`
+      );
+      const extracted = extractArrayFromFields<RepoRepositoryMember>(
+        response as RepoRepositoryMember[] | Record<string, unknown>,
+        ["members", "users", "items", "records"]
+      );
+
+      return {
+        members: extracted.items,
+        total: extracted.total
+      };
+    },
     async listGroupUserGroups(input) {
       const query = buildOffsetLimitQuery(input);
       appendOptionalQuery(query, input, ["search", "project_id"]);
@@ -5189,6 +5400,56 @@ export function createRepoClient(
 
       return {
         groups: extracted.items,
+        total: extracted.total
+      };
+    },
+    async listGroupAddableUserGroups(input) {
+      const query = buildOffsetLimitQuery(input);
+      query.set("project_id", input.project_id);
+      const response = await _http.get(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/user-groups/addable-list?${query.toString()}`
+      );
+      const extracted = extractArrayFromFields<RepoRepositoryUserGroup>(
+        response as RepoRepositoryUserGroup[] | Record<string, unknown>,
+        ["user_groups", "groups", "items", "records"]
+      );
+
+      return {
+        groups: extracted.items,
+        total: extracted.total
+      };
+    },
+    async listGroupSubgroupsAndRepositories(input) {
+      const query = buildOffsetLimitQuery(input);
+      appendOptionalQuery(query, input, ["filter", "order_by", "sort", "archived"]);
+      const rawResponse = (await _http.get(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/subgroups-and-repositories?${query.toString()}`
+      )) as Parameters<typeof extractProjectSubgroupsAndRepositoriesResponse>[0];
+
+      return extractProjectSubgroupsAndRepositoriesResponse(rawResponse);
+    },
+    async showGroupInheritSetting(input) {
+      const query = new URLSearchParams({
+        setting_type: input.setting_type
+      });
+
+      return (await _http.get(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/inherit?${query.toString()}`
+      )) as RepoGroupInheritSetting;
+    },
+    async listProjectMembers(input) {
+      const query = buildOffsetLimitQuery(input);
+      appendOptionalQuery(query, input, ["query"]);
+      const response = await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/members?${query.toString()}`
+      );
+      const extracted = extractArrayFromFields<RepoRepositoryMember>(
+        response as RepoRepositoryMember[] | Record<string, unknown>,
+        ["members", "users", "items", "records"]
+      );
+
+      return {
+        members: extracted.items,
         total: extracted.total
       };
     },
@@ -5297,6 +5558,19 @@ export function createRepoClient(
         total: extracted.total
       };
     },
+    async listRepositoryLogsTree(input) {
+      const query = buildOffsetLimitQuery(input);
+      appendOptionalQuery(query, input, ["ref"]);
+      const response = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/logs-tree?${query.toString()}`
+      );
+      const extracted = extractArrayWithOptionalTotal<RepoLogTreeObject>(response as RepoLogTreeObject[]);
+
+      return {
+        trees: extracted.items,
+        total: extracted.total
+      };
+    },
     async listRepositoryFileList(input) {
       const query = buildOffsetLimitQuery(input);
       appendOptionalQuery(query, input, ["ref_name", "search"]);
@@ -5312,6 +5586,36 @@ export function createRepoClient(
 
       return {
         files: extracted.items,
+        total: extracted.total
+      };
+    },
+    async getRepositoryFileContentV4(input) {
+      const query = new URLSearchParams({
+        file_path: input.file_path,
+        sha: input.sha
+      });
+      const response = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/file-content?${query.toString()}`
+      );
+
+      return {
+        file_path: input.file_path,
+        sha: input.sha,
+        content: typeof response === "string" ? response : JSON.stringify(response)
+      };
+    },
+    async getRepositoryBlame(input) {
+      const query = new URLSearchParams({
+        file_path: input.file_path,
+        sha: input.sha
+      });
+      const response = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/blame?${query.toString()}`
+      );
+      const extracted = extractArrayWithOptionalTotal<RepoBlame>(response as RepoBlame[]);
+
+      return {
+        blames: extracted.items,
         total: extracted.total
       };
     },
@@ -5576,6 +5880,24 @@ export function createRepoClient(
       )) as Parameters<typeof extractTenantTrustedIpAddressesResponse>[0];
 
       return extractTenantTrustedIpAddressesResponse(rawResponse);
+    },
+    async listUserGpgKeys(input) {
+      const query = new URLSearchParams();
+      appendOptionalQuery(query, input as Record<string, unknown>, ["query"]);
+      const rawResponse = (await _http.get(
+        `/v4/user/gpg-keys${query.toString() ? `?${query.toString()}` : ""}`
+      )) as Parameters<typeof extractUserGpgKeysResponse>[0];
+
+      return extractUserGpgKeysResponse(rawResponse);
+    },
+    async listUserSshKeys(input) {
+      const query = buildOffsetLimitQuery(input);
+      appendOptionalQuery(query, input, ["query"]);
+      const rawResponse = (await _http.get(
+        `/v4/user/keys?${query.toString()}`
+      )) as Parameters<typeof extractUserSshKeysResponse>[0];
+
+      return extractUserSshKeysResponse(rawResponse);
     },
     async exportTenantRepositories(input) {
       await _http.post("/v4/tenant/repositories/export", {

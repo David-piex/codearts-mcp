@@ -2,6 +2,9 @@ import { asItemResult, asListResult } from "../../../contracts/tool-result.js";
 import { toPageInfo } from "../../../core/pagination/page-info.js";
 import type {
   RepoDefaultReviewCategories,
+  RepoBlame,
+  RepoFileContent,
+  RepoLogTreeObject,
   RepoNoteRequiredAttributes,
   RepoReadmeFile,
   RepoReviewCategory,
@@ -127,10 +130,71 @@ export function mapRepositoryTrees(items: RepoTreeObject[], page: number, pageSi
   );
 }
 
+export function mapRepositoryLogsTree(items: RepoLogTreeObject[], page: number, pageSize: number, total?: number) {
+  return asListResult(
+    `${items.length} repository log tree entries found`,
+    items.map((item) => ({
+      ...mapTreeObject(item),
+      blobId: item.blob_id,
+      submoduleUrl: item.submodule_url,
+      limited: item.is_limited,
+      nickName: item.nick_name,
+      tenantName: item.tenant_name,
+      userName: item.user_name,
+      commit: item.commit
+        ? {
+            id: item.commit.id,
+            title: item.commit.title,
+            message: item.commit.message,
+            authorName: item.commit.author_name,
+            authoredDate: item.commit.authored_date,
+            committedDate: item.commit.committed_date
+          }
+        : undefined
+    })),
+    toPageInfo(page, pageSize, total)
+  );
+}
+
 export function mapRepositoryFileList(items: string[], page: number, pageSize: number, total?: number) {
   return asListResult(
     `${items.length} repository files found`,
     items.map((item) => ({ id: item, path: item })),
+    toPageInfo(page, pageSize, total)
+  );
+}
+
+export function mapRepositoryFileContentV4(input: RepoFileContent) {
+  return asItemResult(`Loaded file ${input.file_path}`, {
+    path: input.file_path,
+    sha: input.sha,
+    content: input.content
+  });
+}
+
+export function mapRepositoryBlame(items: RepoBlame[], page: number, pageSize: number, total?: number) {
+  return asListResult(
+    `${items.length} repository blame blocks found`,
+    items.map((item) => ({
+      commit: item.commit
+        ? {
+            id: item.commit.id,
+            title: item.commit.title,
+            message: item.commit.message,
+            authorName: item.commit.author_name,
+            authoredDate: item.commit.authored_date,
+            committedDate: item.commit.committed_date
+          }
+        : undefined,
+      avatarUrl: item.avatar_url,
+      nickName: item.nick_name,
+      tenantName: item.tenant_name,
+      userName: item.user_name,
+      lines: (item.lines ?? []).map((line) => ({
+        lineNo: line.lineNO,
+        content: line.content
+      }))
+    })),
     toPageInfo(page, pageSize, total)
   );
 }

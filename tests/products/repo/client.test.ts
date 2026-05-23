@@ -213,6 +213,125 @@ describe("createRepoClient", () => {
     ]);
   });
 
+  it("uses official group, project member and user key read paths", async () => {
+    const calls: string[] = [];
+    const client = createRepoClient({
+      get: async (path: string) => {
+        calls.push(path);
+        if (path.includes("/members/addable-list?")) {
+          return [{ iam_id: "iam-1", name: "dev", nick_name: "Dev" }];
+        }
+        if (path.includes("/user-groups/addable-list?")) {
+          return [{ id: 7, name: "maintainers", user_group_id: "ug-1" }];
+        }
+        if (path.includes("/subgroups-and-repositories?")) {
+          return [{ id: 11, name: "service", descendant_type: "repository" }];
+        }
+        if (path.includes("/inherit?")) {
+          return { group_id: 9, source_setting: "group", project_id: "project-1" };
+        }
+        if (path.includes("/projects/project-1/members?")) {
+          return [{ id: 17, name: "qa", username: "iam-qa", nick_name: "QA" }];
+        }
+        if (path.includes("/user/gpg-keys")) {
+          return { id: 3, title: "signing", fingerprint: "fp", active: true };
+        }
+        if (path.includes("/user/keys?")) {
+          return { keys: [{ id: 4, title: "laptop", key: "ssh-rsa AAA" }], total: 1 };
+        }
+
+        throw new Error(`unexpected path: ${path}`);
+      }
+    } as never);
+
+    await client.listGroupAddableMembers({
+      group_id: "9",
+      project_id: "project-1",
+      page: 2,
+      page_size: 10
+    });
+    await client.listGroupAddableUserGroups({
+      group_id: "9",
+      project_id: "project-1",
+      page: 1,
+      page_size: 20
+    });
+    await client.listGroupSubgroupsAndRepositories({
+      group_id: "9",
+      page: 1,
+      page_size: 20,
+      filter: "service",
+      order_by: "name",
+      sort: "asc",
+      archived: false
+    });
+    await client.showGroupInheritSetting({
+      group_id: "9",
+      setting_type: "merge_requests"
+    });
+    await client.listProjectMembers({
+      project_id: "project-1",
+      page: 1,
+      page_size: 20,
+      query: "qa"
+    });
+    await client.listUserGpgKeys({ query: "signing" });
+    await client.listUserSshKeys({ page: 2, page_size: 10, query: "laptop" });
+
+    expect(calls).toEqual([
+      "/v4/groups/9/members/addable-list?offset=10&limit=10&project_id=project-1",
+      "/v4/groups/9/user-groups/addable-list?offset=0&limit=20&project_id=project-1",
+      "/v4/groups/9/subgroups-and-repositories?offset=0&limit=20&filter=service&order_by=name&sort=asc&archived=false",
+      "/v4/groups/9/inherit?setting_type=merge_requests",
+      "/v4/projects/project-1/members?offset=0&limit=20&query=qa",
+      "/v4/user/gpg-keys?query=signing",
+      "/v4/user/keys?offset=10&limit=10&query=laptop"
+    ]);
+  });
+
+  it("uses official repository log tree, v4 file content and blame paths", async () => {
+    const calls: string[] = [];
+    const client = createRepoClient({
+      get: async (path: string) => {
+        calls.push(path);
+        if (path.includes("/repository/logs-tree?")) {
+          return [{ name: "src", path: "src", type: "tree", blob_id: "blob-1" }];
+        }
+        if (path.includes("/repository/file-content?")) {
+          return "hello";
+        }
+        if (path.includes("/repository/blame?")) {
+          return [{ commit: { id: "abc123", message: "init" }, lines: [{ lineNO: 1, content: "hello" }] }];
+        }
+
+        throw new Error(`unexpected path: ${path}`);
+      }
+    } as never);
+
+    await client.listRepositoryLogsTree({
+      repository_id: "100",
+      page: 2,
+      page_size: 10,
+      ref: "feature/main"
+    });
+    await client.getRepositoryFileContentV4({
+      repository_id: "100",
+      file_path: "src/index.ts",
+      sha: "feature/main"
+    });
+    await client.getRepositoryBlame({
+      repository_id: "100",
+      file_path: "src/index.ts",
+      sha: "feature/main"
+    });
+
+    expect(calls).toEqual([
+      "/v4/repositories/100/repository/logs-tree?offset=10&limit=10&ref=feature%2Fmain",
+      "/v4/repositories/100/repository/file-content?file_path=src%2Findex.ts&sha=feature%2Fmain",
+      "/v4/repositories/100/repository/blame?file_path=src%2Findex.ts&sha=feature%2Fmain"
+    ]);
+  });
+
   it("uses official repository setting read paths", async () => {
     const calls: string[] = [];
     const client = createRepoClient({
