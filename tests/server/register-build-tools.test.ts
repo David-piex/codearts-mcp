@@ -70,7 +70,8 @@ describe("registerBuildTool", () => {
     const registerTool = vi.fn();
     const tools = [
       ["build_get_project_default_permission", "Get CodeArts Build project default permission"],
-      ["build_list_official_templates", "List CodeArts Build official templates"]
+      ["build_list_official_templates", "List CodeArts Build official templates"],
+      ["build_list_templates", "List CodeArts Build templates"]
     ] as const;
 
     for (const [toolName, description] of tools) {

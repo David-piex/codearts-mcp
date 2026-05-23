@@ -182,6 +182,26 @@ export type ArtifactClient = {
     }>;
     total?: number;
   }>;
+  searchByChecksum: (input: {
+    checksum: string;
+    page: number;
+    page_size: number;
+    format?: string;
+    in_project?: boolean;
+    project_id?: string;
+  }) => Promise<{
+    artifacts: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listMavenProjectRepositories: (input: {
+    page: number;
+    page_size: number;
+    search_name?: string;
+    repo_id?: string;
+  }) => Promise<{
+    repositories: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
   deleteFile: (input: {
     tenant_id: string;
     project_id: string;
@@ -827,6 +847,69 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
           repo_type: item.repo_type ?? item.repoType
         })),
         total: payload.total ?? payload.total_count
+      };
+    },
+    async searchByChecksum(input) {
+      const query = new URLSearchParams({
+        checksum: input.checksum,
+        page_no: String(input.page),
+        page_size: String(input.page_size)
+      });
+      if (input.format) query.set("format", input.format);
+      if (input.in_project !== undefined) query.set("in_project", String(input.in_project));
+      if (input.project_id) query.set("project_id", input.project_id);
+      const { response, payload } = readStoragePayload(
+        await _http.get(`/cloudartifact/v5/search/checksum?${query.toString()}`)
+      );
+      const artifacts = readArray<Record<string, unknown>>(
+        payload.artifacts ??
+          payload.files ??
+          payload.value ??
+          payload.items ??
+          payload.list ??
+          response.result ??
+          (Array.isArray(payload) ? payload : [])
+      );
+
+      return {
+        artifacts,
+        total:
+          readOptionalNumber(payload.total) ??
+          readOptionalNumber(payload.total_count) ??
+          readOptionalNumber(response.total) ??
+          readOptionalNumber(response.total_count) ??
+          artifacts.length
+      };
+    },
+    async listMavenProjectRepositories(input) {
+      const offset = (input.page - 1) * input.page_size;
+      const query = new URLSearchParams({
+        offset: String(offset),
+        limit: String(input.page_size)
+      });
+      if (input.search_name) query.set("search_name", input.search_name);
+      if (input.repo_id) query.set("repo_id", input.repo_id);
+      const { response, payload } = readStoragePayload(
+        await _http.get(`/v5/maven/project/repository?${query.toString()}`)
+      );
+      const repositories = readArray<Record<string, unknown>>(
+        payload.repositories ??
+          payload.repos ??
+          payload.value ??
+          payload.items ??
+          payload.list ??
+          response.result ??
+          (Array.isArray(payload) ? payload : [])
+      );
+
+      return {
+        repositories,
+        total:
+          readOptionalNumber(payload.total) ??
+          readOptionalNumber(payload.total_count) ??
+          readOptionalNumber(response.total) ??
+          readOptionalNumber(response.total_count) ??
+          repositories.length
       };
     },
     async deleteFile(input) {

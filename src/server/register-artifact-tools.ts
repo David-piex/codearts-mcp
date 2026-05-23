@@ -12,12 +12,14 @@ import {
   artifactListChildProxyRepositoriesInput,
   artifactListFilesInput,
   artifactListLatestVersionFilesInput,
+  artifactListMavenProjectRepositoriesInput,
   artifactListProjectRolePermissionsInput,
   artifactListRepositoriesInput,
   artifactListSecGuardTasksInput,
   artifactListStorageStatisticsInput,
   artifactListVersionsInput,
   artifactSearchArtifactsInput,
+  artifactSearchByChecksumInput,
   artifactShowAuditInput,
   artifactShowAutoDeleteJobSettingsInput,
   artifactShowCapacityNoticeSettingsInput,
@@ -41,12 +43,14 @@ import { createArtifactListBuildArchivesHandler } from "../products/artifact/too
 import { createArtifactListChildProxyRepositoriesHandler } from "../products/artifact/tools/list-child-proxy-repositories.js";
 import { createArtifactListFilesHandler } from "../products/artifact/tools/list-files.js";
 import { createArtifactListLatestVersionFilesHandler } from "../products/artifact/tools/list-latest-version-files.js";
+import { createArtifactListMavenProjectRepositoriesHandler } from "../products/artifact/tools/list-maven-project-repositories.js";
 import { createArtifactListProjectRolePermissionsHandler } from "../products/artifact/tools/list-project-role-permissions.js";
 import { createArtifactListRepositoriesHandler } from "../products/artifact/tools/list-repositories.js";
 import { createArtifactListSecGuardTasksHandler } from "../products/artifact/tools/list-sec-guard-tasks.js";
 import { createArtifactListStorageStatisticsHandler } from "../products/artifact/tools/list-storage-statistics.js";
 import { createArtifactListVersionsHandler } from "../products/artifact/tools/list-versions.js";
 import { createArtifactSearchArtifactsHandler } from "../products/artifact/tools/search-artifacts.js";
+import { createArtifactSearchByChecksumHandler } from "../products/artifact/tools/search-by-checksum.js";
 import { createArtifactShowAuditHandler } from "../products/artifact/tools/show-audit.js";
 import { createArtifactShowAutoDeleteJobSettingsHandler } from "../products/artifact/tools/show-auto-delete-job-settings.js";
 import { createArtifactShowCapacityNoticeSettingsHandler } from "../products/artifact/tools/show-capacity-notice-settings.js";
@@ -97,6 +101,12 @@ const artifactToolDefinitions = {
     inputSchema: artifactListLatestVersionFilesInput,
     selectHttpClient: (clients: { artifactClient: Parameters<typeof createArtifactListLatestVersionFilesHandler>[0] }) => clients.artifactClient,
     createProductHandler: createArtifactListLatestVersionFilesHandler
+  }),
+  "artifact_list_maven_project_repositories": defineProductTool({
+    description: "List CodeArts Artifact Maven project repositories",
+    inputSchema: artifactListMavenProjectRepositoriesInput,
+    selectHttpClient: (clients: { artifactClient: Parameters<typeof createArtifactListMavenProjectRepositoriesHandler>[0] }) => clients.artifactClient,
+    createProductHandler: createArtifactListMavenProjectRepositoriesHandler
   }),
   "artifact_show_latest_version_files_count": defineProductTool({
     description: "Show CodeArts Artifact latest version file count",
@@ -235,6 +245,12 @@ const artifactToolDefinitions = {
     inputSchema: artifactSearchArtifactsInput,
     selectHttpClient: (clients: { artifactClient: Parameters<typeof createArtifactSearchArtifactsHandler>[0] }) => clients.artifactClient,
     createProductHandler: createArtifactSearchArtifactsHandler
+  }),
+  "artifact_search_by_checksum": defineProductTool({
+    description: "Search CodeArts Artifact artifacts by checksum",
+    inputSchema: artifactSearchByChecksumInput,
+    selectHttpClient: (clients: { artifactClient: Parameters<typeof createArtifactSearchByChecksumHandler>[0] }) => clients.artifactClient,
+    createProductHandler: createArtifactSearchByChecksumHandler
   }),
   "artifact_show_audit": defineProductTool({
     description: "Show CodeArts Artifact audit logs",

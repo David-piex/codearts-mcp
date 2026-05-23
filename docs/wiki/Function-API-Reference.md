@@ -24,16 +24,16 @@
 
 | 模块 | API 数量 | 明细文档 |
 | --- | ---: | --- |
-| 制品仓 | 29 | [Function-API-Reference-Artifact.md](./Function-API-Reference-Artifact.md) |
+| 制品仓 | 31 | [Function-API-Reference-Artifact.md](./Function-API-Reference-Artifact.md) |
 | 鉴权会话 | 2 | [Function-API-Reference-Auth-Session.md](./Function-API-Reference-Auth-Session.md) |
-| 编译构建 | 61 | [Function-API-Reference-Build.md](./Function-API-Reference-Build.md) |
+| 编译构建 | 62 | [Function-API-Reference-Build.md](./Function-API-Reference-Build.md) |
 | 代码检查 | 47 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
 | 部署 | 60 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
 | 流水线 | 88 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 176 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 201 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 238 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **902** | |
+| **总计** | **905** | |
 
 ## 字段对应
 
@@ -53,6 +53,7 @@
 | `artifact_list_child_proxy_repositories` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_child_proxy_repositories) |
 | `artifact_list_files` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_files) |
 | `artifact_list_latest_version_files` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_latest_version_files) |
+| `artifact_list_maven_project_repositories` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_maven_project_repositories) |
 | `artifact_list_project_role_permissions` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_project_role_permissions) |
 | `artifact_list_repositories` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_repositories) |
 | `artifact_list_sec_guard_tasks` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_sec_guard_tasks) |
@@ -60,6 +61,7 @@
 | `artifact_list_versions` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_versions) |
 | `artifact_request_official_api` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_request_official_api) |
 | `artifact_search_artifacts` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_search_artifacts) |
+| `artifact_search_by_checksum` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_search_by_checksum) |
 | `artifact_show_audit` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_show_audit) |
 | `artifact_show_auto_delete_job_settings` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_show_auto_delete_job_settings) |
 | `artifact_show_capacity_notice_settings` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_show_capacity_notice_settings) |
@@ -129,6 +131,7 @@
 | `build_list_report_repositories` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_list_report_repositories) |
 | `build_list_resource_specs` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_list_resource_specs) |
 | `build_list_system_parameters` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_list_system_parameters) |
+| `build_list_templates` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_list_templates) |
 | `build_prepare_deployable_node_app` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_prepare_deployable_node_app) |
 | `build_prepare_node_runtime_bundle` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_prepare_node_runtime_bundle) |
 | `build_request_official_api` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_request_official_api) |

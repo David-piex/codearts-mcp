@@ -39,6 +39,7 @@ export const buildToolNames = [
   "build_get_job_permission",
   "build_get_project_default_permission",
   "build_list_official_templates",
+  "build_list_templates",
   "build_get_job_notice",
   "build_get_job_running_status",
   "build_get_job_disable_check",

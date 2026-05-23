@@ -59,6 +59,7 @@ import {
   buildListRecordsInput,
   buildListResourceSpecsInput,
   buildListSystemParametersInput,
+  buildListTemplatesInput,
   buildRunJobInput,
   buildStopJobInput,
   buildUpdateJobStepInput
@@ -120,6 +121,7 @@ import { createBuildListReportRepositoriesHandler } from "../products/build/tool
 import { createBuildListRecordsHandler } from "../products/build/tools/list-records.js";
 import { createBuildListResourceSpecsHandler } from "../products/build/tools/list-resource-specs.js";
 import { createBuildListSystemParametersHandler } from "../products/build/tools/list-system-parameters.js";
+import { createBuildListTemplatesHandler } from "../products/build/tools/list-templates.js";
 import { createBuildRunJobHandler } from "../products/build/tools/run-job.js";
 import { createBuildStopJobHandler } from "../products/build/tools/stop-job.js";
 import { createBuildUpdateJobStepHandler } from "../products/build/tools/update-job-step.js";
@@ -347,6 +349,12 @@ const buildToolDefinitions = {
     inputSchema: buildListOfficialTemplatesInput,
     selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListOfficialTemplatesHandler>[0] }) => clients.buildClient,
     createProductHandler: createBuildListOfficialTemplatesHandler
+  }),
+  "build_list_templates": defineProductTool({
+    description: "List CodeArts Build templates",
+    inputSchema: buildListTemplatesInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListTemplatesHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildListTemplatesHandler
   }),
   "build_get_job_notice": defineProductTool({
     description: "Get CodeArts Build job notice settings",

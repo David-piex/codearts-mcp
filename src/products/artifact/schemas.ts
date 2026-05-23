@@ -138,6 +138,18 @@ export const artifactSearchArtifactsInput = pagingSchema.extend({
   project_id: idSchema.optional()
 });
 
+export const artifactSearchByChecksumInput = pagingSchema.extend({
+  checksum: z.string().min(1),
+  format: z.string().min(1).optional(),
+  in_project: z.boolean().optional(),
+  project_id: idSchema.optional()
+});
+
+export const artifactListMavenProjectRepositoriesInput = pagingSchema.extend({
+  search_name: z.string().min(1).optional(),
+  repo_id: idSchema.optional()
+});
+
 export const artifactShowAuditInput = pagingSchema.extend({
   tenant_id: idSchema,
   project_id: idSchema,

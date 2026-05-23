@@ -386,6 +386,14 @@ export type BuildClient = {
     templates: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  listTemplates: (input: {
+    page: number;
+    page_size: number;
+    name?: string;
+  }) => Promise<{
+    templates: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
   getRealTimeLog: (input: {
     job_id: string;
     build_no: number;
@@ -1824,6 +1832,30 @@ export function createBuildClient(
         query.set("name", input.name);
       }
       const response = await _http.get(`/v1/template/officialtemplates?${query.toString()}`);
+      const raw = readBuildPayloadValue(response);
+      const payload = readBuildPayload(response);
+      const templates = readBuildArray<Record<string, unknown>>(
+        payload.items ??
+          payload.templates ??
+          payload.value ??
+          payload.list ??
+          (Array.isArray(raw) ? raw : [])
+      );
+
+      return {
+        templates,
+        total: readBuildTotal(payload, response, templates.length)
+      };
+    },
+    async listTemplates(input) {
+      const query = new URLSearchParams({
+        page: String(input.page),
+        page_size: String(input.page_size)
+      });
+      if (input.name) {
+        query.set("name", input.name);
+      }
+      const response = await _http.get(`/v3/templates/query?${query.toString()}`);
       const raw = readBuildPayloadValue(response);
       const payload = readBuildPayload(response);
       const templates = readBuildArray<Record<string, unknown>>(

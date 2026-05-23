@@ -441,13 +441,21 @@ describe("createBuildClient metadata read paths", () => {
     });
   });
 
-  it("loads project default permissions and official templates", async () => {
+  it("loads project default permissions and templates", async () => {
     const paths: string[] = [];
     const client = createBuildClient({
       get: async (path: string) => {
         paths.push(path);
         if (path.includes("/default-permission")) {
           return { result: [{ role_id: 1, role_name: "developer" }] };
+        }
+        if (path.includes("/v3/templates/query")) {
+          return {
+            result: {
+              total: 1,
+              templates: [{ uuid: "template-2", name: "Maven", language: "java" }]
+            }
+          };
         }
 
         return {
@@ -465,10 +473,16 @@ describe("createBuildClient metadata read paths", () => {
       page_size: 10,
       name: "Node"
     });
+    const v3Templates = await client.listTemplates({
+      page: 3,
+      page_size: 20,
+      name: "Maven"
+    });
 
     expect(paths).toEqual([
       "/v1/job/project/default-permission?project_id=project-1",
-      "/v1/template/officialtemplates?page=1&page_size=10&name=Node"
+      "/v1/template/officialtemplates?page=1&page_size=10&name=Node",
+      "/v3/templates/query?page=3&page_size=20&name=Maven"
     ]);
     expect(permissions).toEqual({
       project_id: "project-1",
@@ -477,6 +491,10 @@ describe("createBuildClient metadata read paths", () => {
     });
     expect(templates).toEqual({
       templates: [{ uuid: "template-1", name: "Node.js", language: "javascript" }],
+      total: 1
+    });
+    expect(v3Templates).toEqual({
+      templates: [{ uuid: "template-2", name: "Maven", language: "java" }],
       total: 1
     });
   });

@@ -439,6 +439,78 @@ describe("createArtifactClient", () => {
     expect(result.total).toBe(1);
   });
 
+  it("uses checksum search and Maven project repository endpoints", async () => {
+    const requests: string[] = [];
+    const client = createClient({
+      get: async (path: string) => {
+        requests.push(path);
+        if (path.includes("/search/checksum")) {
+          return {
+            result: {
+              artifacts: [
+                {
+                  id: "artifact-1",
+                  name: "gateway.jar",
+                  path: "/com/demo/gateway.jar"
+                }
+              ],
+              total: 1
+            }
+          };
+        }
+
+        return {
+          result: {
+            repositories: [
+              {
+                repository_id: "repo-1",
+                repository_name: "libs-release"
+              }
+            ],
+            total_count: 1
+          }
+        };
+      }
+    });
+
+    await expect(client.searchByChecksum({
+      checksum: "abc123",
+      page: 2,
+      page_size: 10,
+      format: "maven2",
+      in_project: true,
+      project_id: "project-1"
+    })).resolves.toEqual({
+      artifacts: [
+        {
+          id: "artifact-1",
+          name: "gateway.jar",
+          path: "/com/demo/gateway.jar"
+        }
+      ],
+      total: 1
+    });
+    await expect(client.listMavenProjectRepositories({
+      page: 3,
+      page_size: 20,
+      search_name: "libs",
+      repo_id: "repo-1"
+    })).resolves.toEqual({
+      repositories: [
+        {
+          repository_id: "repo-1",
+          repository_name: "libs-release"
+        }
+      ],
+      total: 1
+    });
+
+    expect(requests).toEqual([
+      "/cloudartifact/v5/search/checksum?checksum=abc123&page_no=2&page_size=10&format=maven2&in_project=true&project_id=project-1",
+      "/v5/maven/project/repository?offset=40&limit=20&search_name=libs&repo_id=repo-1"
+    ]);
+  });
+
   it("uses tenant and project path when listing repositories", async () => {
     let requestedPath = "";
     const client = createClient({

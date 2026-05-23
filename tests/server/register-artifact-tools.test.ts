@@ -53,7 +53,9 @@ describe("registerArtifactTool", () => {
       ["artifact_list_storage_statistics", "List CodeArts Artifact storage statistics"],
       ["artifact_list_attentions", "List CodeArts Artifact attentions"],
       ["artifact_list_sec_guard_tasks", "List CodeArts Artifact security guard tasks"],
-      ["artifact_show_open_source_enabled", "Show CodeArts Artifact open source enabled status"]
+      ["artifact_show_open_source_enabled", "Show CodeArts Artifact open source enabled status"],
+      ["artifact_search_by_checksum", "Search CodeArts Artifact artifacts by checksum"],
+      ["artifact_list_maven_project_repositories", "List CodeArts Artifact Maven project repositories"]
     ] as const;
 
     for (const [toolName, description] of tools) {
