@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   createReqListWorkItemsHandler,
+  createReqListWorkItemsV3Handler,
   mapReqWorkItems
 } from "../../../../src/products/req/tools/list-work-items.js";
 
@@ -124,6 +125,36 @@ describe("mapReqWorkItems", () => {
       page_size: 20
     });
 
+    expect(result.content[0]?.text).toContain("assignee: Alice");
+  });
+
+  it("returns normalized V3 work item output", async () => {
+    const handler = createReqListWorkItemsV3Handler({
+      listWorkItemsV3: async () => ({
+        work_items: [
+          {
+            id: 10,
+            subject: "V3 story",
+            status: { name: "New" },
+            tracker: { name: "Story" },
+            assigned_to: { assigned_nick_name: "Alice" }
+          }
+        ],
+        total: 1
+      })
+    });
+
+    const result = await handler({
+      project_id: "project-1",
+      page: 1,
+      page_size: 20,
+      tracker_id: "7"
+    });
+
+    expect(result.structuredContent).toMatchObject({
+      summary: "1 work items found in this page (total: 1)"
+    });
+    expect(result.content[0]?.text).toContain("V3 story");
     expect(result.content[0]?.text).toContain("assignee: Alice");
   });
 });

@@ -709,6 +709,47 @@ describe("createReqClient", () => {
     });
   });
 
+  it("maps DevUC project member queries to the documented V3 endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          result: {
+            member_list: [
+              {
+                user_id: "user-1",
+                user_name: "alice",
+                nick_name: "Alice",
+                role_id: 3,
+                role_name: "Member"
+              }
+            ]
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.listDevucProjectMembers({
+      project_id: "p-1"
+    });
+
+    expect(requestedPath).toBe("/v3/projects/p-1/members");
+    expect(result).toEqual({
+      members: [
+        {
+          user_id: "user-1",
+          user_name: "alice",
+          nick_name: "Alice",
+          role_id: 3,
+          role_name: "Member"
+        }
+      ]
+    });
+  });
+
   it("uses iteration detail, create, update and delete endpoints", async () => {
     const requests: Array<{ method: string; path: string; body?: Record<string, unknown> }> = [];
     const client = createReqClient({
@@ -1130,6 +1171,60 @@ describe("createReqClient", () => {
         name: "tenant/bob",
         assigned_nick_name: "Bob"
       }
+    });
+  });
+
+  it("maps official V3 work item list requests to the documented issue-list endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return {
+          result: {
+            total_count: 1,
+            issues: [
+              {
+                id: 70779173,
+                subject: "V3 story",
+                status: { name: "New" },
+                tracker: { name: "Story" },
+                updated_on: "1779328509000"
+              }
+            ]
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.listWorkItemsV3({
+      project_id: "p-1",
+      page: 2,
+      page_size: 10,
+      tracker_id: "7"
+    });
+
+    expect(requestedPath).toBe("/v3/workitem/issue-list");
+    expect(requestedBody).toEqual({
+      page_no: "2",
+      page_size: "10",
+      project_id: "p-1",
+      tracker_id: "7"
+    });
+    expect(result).toEqual({
+      work_items: [
+        {
+          id: 70779173,
+          subject: "V3 story",
+          status: { name: "New" },
+          tracker: { name: "Story" },
+          updated_on: "1779328509000"
+        }
+      ],
+      total: 1
     });
   });
 

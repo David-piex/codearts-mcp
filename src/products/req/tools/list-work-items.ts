@@ -2,7 +2,7 @@ import { asListResult } from "../../../contracts/tool-result.js";
 import { formatProjectScopedEmptyText } from "../../../contracts/project-scoped-empty-text.js";
 import { formatListToolText } from "../../../contracts/tool-result-text.js";
 import { toPageInfo } from "../../../core/pagination/page-info.js";
-import { reqListWorkItemsInput } from "../schemas.js";
+import { reqListWorkItemsInput, reqListWorkItemsV3Input } from "../schemas.js";
 import { formatReqTimestampText } from "./time-format.js";
 import {
   mapReqWorkItemAssignee,
@@ -104,6 +104,49 @@ export function createReqListWorkItemsHandler(client: ReqListWorkItemsClient) {
           page: parsed.page,
           projectId: parsed.project_id,
           resourceLabel: "work items",
+          serviceLabel: "Req / ProjectMan"
+        });
+
+    return {
+      content: [{ type: "text" as const, text }],
+      structuredContent: result
+    };
+  };
+}
+
+export type ReqListWorkItemsV3Client = {
+  listWorkItemsV3: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    tracker_id?: string;
+  }) => Promise<{
+    work_items: ReqListWorkItem[];
+    total?: number;
+  }>;
+};
+
+export function createReqListWorkItemsV3Handler(client: ReqListWorkItemsV3Client) {
+  return async (input: unknown) => {
+    const parsed = reqListWorkItemsV3Input.parse(input);
+    const response = await client.listWorkItemsV3(parsed);
+    const result = mapReqWorkItems(response.work_items, parsed.page, parsed.page_size, response.total);
+    const text = result.items?.length
+      ? formatListToolText(result, {
+          fields: [
+            { label: "id", get: (item) => (item as { id?: string }).id },
+            { label: "title", get: (item) => (item as { title?: string }).title },
+            { label: "status", get: (item) => (item as { status?: string }).status },
+            { label: "type", get: (item) => (item as { type?: string }).type },
+            { label: "assignee", get: (item) => (item as { assignedToName?: string }).assignedToName },
+            { label: "updatedOn", get: (item) => (item as { updatedOnText?: string; updatedOn?: string }).updatedOnText ?? (item as { updatedOn?: string }).updatedOn }
+          ]
+        })
+      : formatProjectScopedEmptyText({
+          summary: result.summary,
+          page: parsed.page,
+          projectId: parsed.project_id,
+          resourceLabel: "V3 work items",
           serviceLabel: "Req / ProjectMan"
         });
 

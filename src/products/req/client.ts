@@ -835,6 +835,9 @@ export type ReqClient = {
     }>;
     total?: number;
   }>;
+  listDevucProjectMembers: (input: { project_id: string }) => Promise<{
+    members: Array<Record<string, unknown>>;
+  }>;
   listProjectDomains: (input: { project_id: string; page: number; page_size: number }) => Promise<{
     domains: Array<{
       domain_id?: string;
@@ -893,6 +896,15 @@ export type ReqClient = {
       assigned_id?: string;
       assigned_to_id?: number | string;
     }>;
+    total?: number;
+  }>;
+  listWorkItemsV3: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    tracker_id?: string;
+  }) => Promise<{
+    work_items: ReqIssueListItem[];
     total?: number;
   }>;
   searchTodoWorkItems: (input: ReqTodoWorkItemSearchInput) => Promise<{
@@ -5286,6 +5298,14 @@ export function createReqClient(
         total: response.total
       };
     },
+    async listDevucProjectMembers(input) {
+      const response = await _http.get(`/v3/projects/${encodeURIComponent(input.project_id)}/members`);
+      const result = unwrapReqResult(response);
+
+      return {
+        members: getArrayProperty(result, ["member_list", "members"])
+      };
+    },
     async listProjectDomains(input) {
       const offset = (input.page - 1) * input.page_size;
       const query = new URLSearchParams({
@@ -5404,6 +5424,20 @@ export function createReqClient(
           ...(typeof item.assigned_to_id !== "undefined" ? { assigned_to_id: item.assigned_to_id } : {})
         })),
         total: payload.total
+      };
+    },
+    async listWorkItemsV3(input) {
+      const response = await _http.post("/v3/workitem/issue-list", {
+        page_no: String(input.page),
+        page_size: String(input.page_size),
+        project_id: input.project_id,
+        ...(input.tracker_id ? { tracker_id: input.tracker_id } : {})
+      });
+      const result = unwrapReqResult(response);
+
+      return {
+        work_items: getArrayProperty(result, ["issues", "work_items"]) as ReqIssueListItem[],
+        total: getNumberProperty(result, ["total_count", "total"])
       };
     },
     async searchTodoWorkItems(input) {

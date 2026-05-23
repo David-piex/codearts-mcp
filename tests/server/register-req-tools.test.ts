@@ -530,6 +530,36 @@ describe("registerReqTool", () => {
 
   it.each([
     {
+      toolName: "req_list_devuc_project_members",
+      description: "List CodeArts Req DevUC project members from the official V3 endpoint"
+    },
+    {
+      toolName: "req_list_work_items_v3",
+      description: "List CodeArts Req work items from the official V3 issue-list endpoint"
+    }
+  ])("registers additional official Req read tool $toolName in http mode", ({ toolName, description }) => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName,
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      toolName,
+      expect.objectContaining({
+        title: toolName,
+        description
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it.each([
+    {
       toolName: "req_list_work_item_queries",
       description: "List CodeArts Req work item saved queries from the official V2 endpoint"
     },

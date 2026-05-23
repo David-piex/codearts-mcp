@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { mapReqProjectMembers } from "../../../../src/products/req/tools/list-project-members.js";
+import {
+  createReqListDevucProjectMembersHandler,
+  mapReqProjectMembers
+} from "../../../../src/products/req/tools/list-project-members.js";
 
 describe("mapReqProjectMembers", () => {
   it("returns normalized project members with pagination", () => {
@@ -42,5 +45,39 @@ describe("mapReqProjectMembers", () => {
       pageSize: 20,
       total: 1
     });
+  });
+
+  it("returns normalized DevUC project member output", async () => {
+    const handler = createReqListDevucProjectMembersHandler({
+      listDevucProjectMembers: async () => ({
+        members: [
+          {
+            user_id: "user-1",
+            user_name: "alice",
+            nick_name: "Alice",
+            role_id: 3,
+            role_name: "Member"
+          }
+        ]
+      })
+    });
+
+    const result = await handler({
+      project_id: "project-1"
+    });
+
+    expect(result.structuredContent).toMatchObject({
+      summary: "1 project members found",
+      items: [
+        {
+          id: "user-1",
+          userName: "alice",
+          nickName: "Alice",
+          roleId: 3,
+          roleName: "Member"
+        }
+      ]
+    });
+    expect(result.content[0]?.text).toBe("1 project members found");
   });
 });

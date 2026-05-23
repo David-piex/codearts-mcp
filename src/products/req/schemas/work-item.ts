@@ -96,6 +96,16 @@ export const reqListWorkItemsInput = pagingSchema.extend({
   project_id: idSchema
 });
 
+export const reqListWorkItemsV3Input = pagingSchema
+  .pick({
+    page: true,
+    page_size: true
+  })
+  .extend({
+    project_id: idSchema,
+    tracker_id: z.string().min(1).optional()
+  });
+
 const reqTodoWorkItemsBaseInput = pagingSchema
   .pick({
     page: true,

@@ -31,9 +31,9 @@
 | 部署 | 63 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
 | 流水线 | 91 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 176 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
-| 需求管理 | 225 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
+| 需求管理 | 227 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 238 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **945** | |
+| **总计** | **947** | |
 
 ## 字段对应
 
@@ -632,6 +632,7 @@
 | `req_list_child_work_items` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_list_child_work_items) |
 | `req_list_child_work_items_direct_v4` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_list_child_work_items_direct_v4) |
 | `req_list_child_work_items_v4` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_list_child_work_items_v4) |
+| `req_list_devuc_project_members` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_list_devuc_project_members) |
 | `req_list_ipd_attached_wikis` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_list_ipd_attached_wikis) |
 | `req_list_ipd_category_statuses` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_list_ipd_category_statuses) |
 | `req_list_ipd_change_review_issue_approvers` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_list_ipd_change_review_issue_approvers) |
@@ -713,6 +714,7 @@
 | `req_list_work_item_work_hours` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_list_work_item_work_hours) |
 | `req_list_work_item_workflow_config` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_list_work_item_workflow_config) |
 | `req_list_work_items` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_list_work_items) |
+| `req_list_work_items_v3` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_list_work_items_v3) |
 | `req_list_work_setting_templates_v2` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_list_work_setting_templates_v2) |
 | `req_query_iteration_immovable_issues` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_query_iteration_immovable_issues) |
 | `req_query_scrum_version_work_items_v2` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_query_scrum_version_work_items_v2) |

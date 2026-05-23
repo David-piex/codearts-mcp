@@ -98,6 +98,7 @@ import {
   reqListIterationWorkItemsInput,
   reqListIterationStatusStatisticsInput,
   reqGetIpdE2EGraphInput,
+  reqListDevucProjectMembersInput,
   reqListIpdCategoryStatusesInput,
   reqListIpdChangeReviewIssueApproversInput,
   reqListIpdAttachedWikisInput,
@@ -188,6 +189,7 @@ import {
   reqListWorkItemRecordsInput,
   reqListWorkItemRecordsV2Input,
   reqListWorkItemStayTimesInput,
+  reqListWorkItemsV3Input,
   reqListWorkItemsInput,
   reqFindIterationsInput,
   reqListRrHistoriesInput,
@@ -323,7 +325,7 @@ import { createReqListProjectMemberWorkHoursHandler } from "../products/req/tool
 import { createReqListProjectWorkItemRecordsHandler } from "../products/req/tools/list-project-work-item-records.js";
 import { createReqListNotAddedProjectsHandler } from "../products/req/tools/list-not-added-projects.js";
 import { createReqListProjectModulesHandler } from "../products/req/tools/list-project-modules.js";
-import { createReqListProjectMembersHandler } from "../products/req/tools/list-project-members.js";
+import { createReqListDevucProjectMembersHandler, createReqListProjectMembersHandler } from "../products/req/tools/list-project-members.js";
 import { createReqListProjectsHandler } from "../products/req/tools/list-projects.js";
 import { createReqListRelatedUsersHandler } from "../products/req/tools/list-related-users.js";
 import { createReqListWorkItemCustomFieldsHandler } from "../products/req/tools/list-work-item-custom-fields.js";
@@ -359,7 +361,7 @@ import {
   createReqListWorkSettingTemplatesV2Handler
 } from "../products/req/tools/official-v2-read-tools.js";
 import { createReqFindIterationsHandler } from "../products/req/tools/find-iterations.js";
-import { createReqListWorkItemsHandler } from "../products/req/tools/list-work-items.js";
+import { createReqListWorkItemsHandler, createReqListWorkItemsV3Handler } from "../products/req/tools/list-work-items.js";
 import { createReqListRrHistoriesHandler } from "../products/req/tools/list-rr-histories.js";
 import { createReqListRrStatusesHandler } from "../products/req/tools/list-rr-statuses.js";
 import { createReqListRrsHandler } from "../products/req/tools/list-rrs.js";
@@ -1625,6 +1627,13 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemsHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqListWorkItemsHandler
   }),
+  "req_list_work_items_v3": defineProductTool({
+    description: "List CodeArts Req work items from the official V3 issue-list endpoint",
+    inputSchema: reqListWorkItemsV3Input,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemsV3Handler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListWorkItemsV3Handler
+  }),
   "req_search_todo_work_items": defineProductTool({
     description: "Search CodeArts Req todo work items across projects",
     inputSchema: reqSearchTodoWorkItemsInput,
@@ -2104,6 +2113,13 @@ const reqToolDefinitions = {
     inputSchema: reqListProjectMembersInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListProjectMembersHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqListProjectMembersHandler
+  }),
+  "req_list_devuc_project_members": defineProductTool({
+    description: "List CodeArts Req DevUC project members from the official V3 endpoint",
+    inputSchema: reqListDevucProjectMembersInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListDevucProjectMembersHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListDevucProjectMembersHandler
   }),
   "req_validate_module_name": defineProductTool({
     description: "Validate whether a CodeArts Req module name already exists",

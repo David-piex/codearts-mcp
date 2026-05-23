@@ -7,6 +7,10 @@ export const reqListProjectMembersInput = pagingSchema.extend({
   project_id: idSchema
 });
 
+export const reqListDevucProjectMembersInput = z.object({
+  project_id: idSchema
+});
+
 export const reqAddProjectMemberInput = z.object({
   project_id: idSchema,
   user_id: idSchema,
