@@ -657,6 +657,33 @@ describe("createReqClient", () => {
     });
   });
 
+  it("maps official V2 work item saved query requests to the documented endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          result: {
+            shared: [{ id: "q-1", name: "Shared query" }],
+            created: [{ id: "q-2", name: "My query" }]
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.listWorkItemQueries({
+      project_id: "p-1"
+    });
+
+    expect(requestedPath).toBe("/v2/query/list-all?projectId=p-1&project_id=p-1");
+    expect(result).toEqual({
+      shared: [{ id: "q-1", name: "Shared query" }],
+      created: [{ id: "q-2", name: "My query" }]
+    });
+  });
+
   it("uses iteration detail, create, update and delete endpoints", async () => {
     const requests: Array<{ method: string; path: string; body?: Record<string, unknown> }> = [];
     const client = createReqClient({
@@ -1314,6 +1341,58 @@ describe("createReqClient", () => {
     });
   });
 
+  it("maps official V4 child work item queries to the documented endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return {
+          result: {
+            "70779173": [
+              {
+                id: 70779174,
+                subject: "Child story",
+                status: { name: "New" },
+                tracker: { name: "Story" }
+              }
+            ]
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.listChildWorkItemsV4({
+      project_id: "p-1",
+      parent_id: "70779173",
+      tracker_id: "5,6,7,2,3",
+      query_type: "basic"
+    });
+
+    expect(requestedPath).toBe("/v4/issues/child-issue-list");
+    expect(requestedBody).toEqual({
+      parent_ids: 70779173,
+      project_id: "p-1",
+      tracker_id: "5,6,7,2,3",
+      queryType: "basic"
+    });
+    expect(result).toEqual({
+      result: {
+        "70779173": [
+          {
+            id: 70779174,
+            subject: "Child story",
+            status: { name: "New" },
+            tracker: { name: "Story" }
+          }
+        ]
+      }
+    });
+  });
+
   it("maps findIterations to the v3 version find endpoint", async () => {
     let requestedPath = "";
     const client = createReqClient({
@@ -1958,6 +2037,49 @@ describe("createReqClient", () => {
           region: "region01"
         }
       ]
+    });
+  });
+
+  it("maps official V5 associated wiki queries to the documented endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          total: 1,
+          data: [
+            {
+              issue_id: "9164403",
+              title: "Wiki A",
+              wiki_id: "wiki-1",
+              type: "Wiki",
+              project: { name: "mall4cloud" },
+              author: { nick_name: "szh" }
+            }
+          ]
+        };
+      }
+    } as never);
+
+    const result = await client.listAssociatedWikisV5({
+      project_id: "p-1",
+      work_item_id: "9164403"
+    });
+
+    expect(requestedPath).toBe("/v5/p-1/issue/attach-wiki?issue_id=9164403");
+    expect(result).toEqual({
+      wikis: [
+        {
+          issue_id: "9164403",
+          title: "Wiki A",
+          wiki_id: "wiki-1",
+          type: "Wiki",
+          project: { name: "mall4cloud" },
+          author: { nick_name: "szh" }
+        }
+      ],
+      total: 1
     });
   });
 
@@ -2941,6 +3063,53 @@ describe("createReqClient", () => {
         }
       ],
       total: undefined
+    });
+  });
+
+  it("maps official V2 associated code queries to the documented endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          result: {
+            total: 1,
+            list: [
+              {
+                relatedId: 70779173,
+                type: "commit",
+                branchName: "main",
+                commitMsg: "fix work item"
+              }
+            ]
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.listAssociatedCodeV2({
+      project_id: "p-1",
+      work_item_id: "70779173",
+      page: 2,
+      page_size: 10,
+      type: "commit"
+    });
+
+    expect(requestedPath).toBe(
+      "/v2/issues/get-commit-list-by-related-id?pageNo=2&pageSize=10&projectUUId=p-1&relatedId=70779173&type=commit"
+    );
+    expect(result).toEqual({
+      items: [
+        {
+          relatedId: 70779173,
+          type: "commit",
+          branchName: "main",
+          commitMsg: "fix work item"
+        }
+      ],
+      total: 1
     });
   });
 

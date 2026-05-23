@@ -528,6 +528,44 @@ describe("registerReqTool", () => {
     );
   });
 
+  it.each([
+    {
+      toolName: "req_list_work_item_queries",
+      description: "List CodeArts Req work item saved queries from the official V2 endpoint"
+    },
+    {
+      toolName: "req_list_associated_code_v2",
+      description: "List CodeArts Req associated code records from the official V2 endpoint"
+    },
+    {
+      toolName: "req_list_associated_wikis_v5",
+      description: "List CodeArts Req associated wikis from the official V5 endpoint"
+    },
+    {
+      toolName: "req_list_child_work_items_v4",
+      description: "List CodeArts Req child work items from the official V4 endpoint"
+    }
+  ])("registers official Req read tool $toolName in http mode", ({ toolName, description }) => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName,
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      toolName,
+      expect.objectContaining({
+        title: toolName,
+        description
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("registers the count work item tree tool in http mode", () => {
     const registerTool = vi.fn();
 

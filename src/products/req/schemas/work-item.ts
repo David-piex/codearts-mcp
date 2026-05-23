@@ -222,6 +222,13 @@ export const reqListChildWorkItemsInput = pagingSchema
     query_type: reqChildWorkItemQueryTypeSchema.default("basic")
   });
 
+export const reqListChildWorkItemsV4Input = z.object({
+  project_id: idSchema,
+  parent_id: idSchema,
+  tracker_id: z.string().min(1).optional(),
+  query_type: reqChildWorkItemQueryTypeSchema.default("basic")
+});
+
 export const reqListBoardWorkItemStatusRecordsInput = pagingSchema
   .extend({
     project_id: idSchema
@@ -385,6 +392,17 @@ export const reqListAssociatedCommitsInput = pagingSchema
     sort_order: true
   });
 
+export const reqListAssociatedCodeV2Input = pagingSchema
+  .pick({
+    page: true,
+    page_size: true
+  })
+  .extend({
+    project_id: idSchema,
+    work_item_id: idSchema,
+    type: z.string().min(1).default("commit")
+  });
+
 export const reqListAssociatedTestCasesInput = pagingSchema
   .extend({
     project_id: idSchema,
@@ -406,6 +424,11 @@ export const reqListAssociatedWikisInput = pagingSchema
     sort_by: true,
     sort_order: true
   });
+
+export const reqListAssociatedWikisV5Input = z.object({
+  project_id: idSchema,
+  work_item_id: idSchema
+});
 
 export const reqListRelatedUsersInput = z.object({
   project_id: idSchema

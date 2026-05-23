@@ -30,6 +30,10 @@ export type ReqClient = {
       control?: string;
     } & Record<string, unknown>>;
   } & Record<string, unknown>>;
+  listWorkItemQueries: (input: { project_id: string }) => Promise<{
+    shared: unknown[];
+    created: unknown[];
+  }>;
   createProject: (input: {
     name: string;
     description?: string;
@@ -1086,6 +1090,14 @@ export type ReqClient = {
     work_items: ReqChildWorkItem[];
     total?: number;
   }>;
+  listChildWorkItemsV4: (input: {
+    project_id: string;
+    parent_id: string;
+    tracker_id?: string;
+    query_type?: string;
+  }) => Promise<{
+    result: Record<string, unknown>;
+  }>;
   listWorkItemRecords: (input: {
     project_id: string;
     work_item_id: string;
@@ -1316,6 +1328,16 @@ export type ReqClient = {
     }>;
     total?: number;
   }>;
+  listAssociatedCodeV2: (input: {
+    project_id: string;
+    work_item_id: string;
+    page: number;
+    page_size: number;
+    type?: string;
+  }) => Promise<{
+    items: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
   listAssociatedTestCases: (input: {
     project_id: string;
     work_item_id: string;
@@ -1375,6 +1397,13 @@ export type ReqClient = {
       wiki_id?: string;
       region?: string;
     }>;
+    total?: number;
+  }>;
+  listAssociatedWikisV5: (input: {
+    project_id: string;
+    work_item_id: string;
+  }) => Promise<{
+    wikis: Array<Record<string, unknown>>;
     total?: number;
   }>;
   listRelatedUsers: (input: { project_id: string }) => Promise<{
@@ -3334,6 +3363,19 @@ export function createReqClient(
         ...rawFields,
         project_id: input.project_id,
         features
+      };
+    },
+    async listWorkItemQueries(input) {
+      const query = new URLSearchParams({
+        projectId: input.project_id,
+        project_id: input.project_id
+      });
+      const response = await _http.get(`/v2/query/list-all?${query.toString()}`);
+      const result = unwrapReqResult(response);
+
+      return {
+        shared: Array.isArray(result.shared) ? result.shared : [],
+        created: Array.isArray(result.created) ? result.created : []
       };
     },
     async createProject(input) {
@@ -5787,6 +5829,19 @@ export function createReqClient(
         total: result.total_count
       };
     },
+    async listChildWorkItemsV4(input) {
+      const response = await _http.post("/v4/issues/child-issue-list", {
+        parent_ids: toOptionalNumericId(input.parent_id),
+        project_id: input.project_id,
+        ...(input.tracker_id ? { tracker_id: input.tracker_id } : {}),
+        queryType: input.query_type ?? "basic"
+      });
+      const result = unwrapReqResult(response);
+
+      return {
+        result
+      };
+    },
     async listWorkItemRecords(input) {
       const offset = (input.page - 1) * input.page_size;
       const query = new URLSearchParams({
@@ -6237,6 +6292,24 @@ export function createReqClient(
         total: response.total
       };
     },
+    async listAssociatedCodeV2(input) {
+      const query = new URLSearchParams({
+        pageNo: String(input.page),
+        pageSize: String(input.page_size),
+        projectUUId: input.project_id,
+        relatedId: String(toOptionalNumericId(input.work_item_id) ?? input.work_item_id),
+        type: input.type ?? "commit"
+      });
+      const response = await _http.get(
+        `/v2/issues/get-commit-list-by-related-id?${query.toString()}`
+      );
+      const result = unwrapReqResult(response);
+
+      return {
+        items: getArrayProperty(result, ["list", "items", "commits"]),
+        total: getNumberProperty(result, ["total", "total_count"])
+      };
+    },
     async listAssociatedTestCases(input) {
       const response = (await _http.get(
         `/v4/projects/${encodeURIComponent(input.project_id)}/issues/${encodeURIComponent(input.work_item_id)}/associate-test-cases`
@@ -6311,6 +6384,22 @@ export function createReqClient(
       return {
         wikis: response.wikis ?? [],
         total: typeof response.total === "number" ? response.total : response.wikis?.length
+      };
+    },
+    async listAssociatedWikisV5(input) {
+      const query = new URLSearchParams({
+        issue_id: String(toOptionalNumericId(input.work_item_id) ?? input.work_item_id)
+      });
+      const response = (await _http.get(
+        `/v5/${encodeURIComponent(input.project_id)}/issue/attach-wiki?${query.toString()}`
+      )) as {
+        data?: Array<Record<string, unknown>>;
+        total?: number | string;
+      };
+
+      return {
+        wikis: response.data ?? [],
+        total: typeof response.total === "number" ? response.total : response.data?.length
       };
     },
     async listRelatedUsers(input) {

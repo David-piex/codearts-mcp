@@ -1,23 +1,35 @@
 import { describe, expect, it, vi } from "vitest";
 import {
+  reqListAssociatedCodeV2Input,
+  reqListAssociatedWikisV5Input,
+  reqListChildWorkItemsV4Input,
   reqListModuleSettingsV2Input,
   reqListProjectDomainsV2Input,
   reqListWorkItemCommentsV2Input,
   reqListWorkItemCustomFieldsV4Input,
+  reqListWorkItemQueriesInput,
   reqListWorkItemRecordsV2Input,
   reqListWorkSettingTemplatesV2Input
 } from "../../../../src/products/req/schemas.js";
 import {
+  createReqListAssociatedCodeV2Handler,
+  createReqListAssociatedWikisV5Handler,
+  createReqListChildWorkItemsV4Handler,
   createReqListModuleSettingsV2Handler,
   createReqListProjectDomainsV2Handler,
   createReqListWorkItemCommentsV2Handler,
   createReqListWorkItemCustomFieldsV4Handler,
+  createReqListWorkItemQueriesHandler,
   createReqListWorkItemRecordsV2Handler,
   createReqListWorkSettingTemplatesV2Handler,
+  mapReqAssociatedCodeV2,
+  mapReqAssociatedWikisV5,
+  mapReqChildWorkItemsV4,
   mapReqModuleSettingsV2,
   mapReqProjectDomainsV2,
   mapReqWorkItemCommentsV2,
   mapReqWorkItemCustomFieldsV4,
+  mapReqWorkItemQueries,
   mapReqWorkItemRecordsV2,
   mapReqWorkSettingTemplatesV2
 } from "../../../../src/products/req/tools/official-v2-read-tools.js";
@@ -140,6 +152,108 @@ describe("official V2/V4 Req read mappers", () => {
       trackerIds: [2, 7]
     });
   });
+
+  it("maps official V2 work item saved queries with source scopes", () => {
+    const result = mapReqWorkItemQueries(
+      [{ id: "q-1", name: "Shared query" }],
+      [{ id: "q-2", name: "My query" }]
+    );
+
+    expect(result.items).toEqual([
+      expect.objectContaining({
+        scope: "shared",
+        name: "Shared query",
+        rawQuery: { id: "q-1", name: "Shared query" }
+      }),
+      expect.objectContaining({
+        scope: "created",
+        name: "My query",
+        rawQuery: { id: "q-2", name: "My query" }
+      })
+    ]);
+    expect(result).toMatchObject({
+      summary: "2 work item queries found",
+      raw: {
+        shared: [{ id: "q-1", name: "Shared query" }],
+        created: [{ id: "q-2", name: "My query" }]
+      }
+    });
+  });
+
+  it("maps official V4 child work item groups", () => {
+    const result = mapReqChildWorkItemsV4({
+      "70779173": [
+        {
+          id: 70779174,
+          subject: "Child story",
+          status: { name: "New" },
+          tracker: { name: "Story" }
+        }
+      ]
+    });
+
+    expect(result.items?.[0]).toMatchObject({
+      parentId: "70779173",
+      id: "70779174",
+      title: "Child story",
+      status: "New",
+      type: "Story"
+    });
+    expect(result.raw).toHaveProperty("result");
+  });
+
+  it("maps official V2 associated code records", () => {
+    const result = mapReqAssociatedCodeV2(
+      [
+        {
+          relatedId: 70779173,
+          type: "commit",
+          branchName: "main",
+          commitMsg: "fix work item",
+          userName: "szh"
+        }
+      ],
+      2,
+      10,
+      1
+    );
+
+    expect(result.items?.[0]).toMatchObject({
+      id: "70779173",
+      type: "commit",
+      branchName: "main",
+      commitMessage: "fix work item",
+      userName: "szh"
+    });
+    expect(result.page_info).toEqual({ page: 2, pageSize: 10, total: 1 });
+  });
+
+  it("maps official V5 associated wiki records", () => {
+    const result = mapReqAssociatedWikisV5(
+      [
+        {
+          issue_id: "9164403",
+          title: "Wiki A",
+          wiki_id: "wiki-1",
+          type: "Wiki",
+          project: { name: "mall4cloud" },
+          author: { nick_name: "szh" },
+          created_date: "2025-08-07 10:08:05"
+        }
+      ],
+      1
+    );
+
+    expect(result.items?.[0]).toMatchObject({
+      issueId: "9164403",
+      title: "Wiki A",
+      wikiId: "wiki-1",
+      type: "Wiki",
+      projectName: "mall4cloud",
+      authorName: "szh"
+    });
+    expect(result.raw).toHaveProperty("data");
+  });
 });
 
 describe("official V2/V4 Req read schemas", () => {
@@ -169,6 +283,25 @@ describe("official V2/V4 Req read schemas", () => {
       project_id: "p-1",
       included_not_in_use: true
     });
+    expect(reqListWorkItemQueriesInput.parse({ project_id: "p-1" })).toEqual({
+      project_id: "p-1"
+    });
+    expect(reqListChildWorkItemsV4Input.parse({ project_id: "p-1", parent_id: "70779173" })).toMatchObject({
+      project_id: "p-1",
+      parent_id: "70779173",
+      query_type: "basic"
+    });
+    expect(reqListAssociatedCodeV2Input.parse({ project_id: "p-1", work_item_id: "70779173", page: 1 })).toMatchObject({
+      project_id: "p-1",
+      work_item_id: "70779173",
+      page: 1,
+      page_size: 20,
+      type: "commit"
+    });
+    expect(reqListAssociatedWikisV5Input.parse({ project_id: "p-1", work_item_id: "70779173" })).toEqual({
+      project_id: "p-1",
+      work_item_id: "70779173"
+    });
   });
 });
 
@@ -192,6 +325,31 @@ describe("official V2/V4 Req read handlers", () => {
     const customFieldsClient = {
       listWorkItemCustomFieldsV4: vi.fn(async () => ({
         custom_fields: [{ custom_field: "custom_field16", name: "Business line" }]
+      }))
+    };
+    const queriesClient = {
+      listWorkItemQueries: vi.fn(async () => ({
+        shared: [{ id: "q-1", name: "Shared query" }],
+        created: []
+      }))
+    };
+    const childWorkItemsClient = {
+      listChildWorkItemsV4: vi.fn(async () => ({
+        result: {
+          "70779173": [{ id: 70779174, subject: "Child story" }]
+        }
+      }))
+    };
+    const associatedCodeClient = {
+      listAssociatedCodeV2: vi.fn(async () => ({
+        items: [{ relatedId: 70779173, type: "commit", branchName: "main" }],
+        total: 1
+      }))
+    };
+    const associatedWikisV5Client = {
+      listAssociatedWikisV5: vi.fn(async () => ({
+        wikis: [{ issue_id: "9164403", title: "Wiki A", wiki_id: "wiki-1" }],
+        total: 1
       }))
     };
 
@@ -223,6 +381,32 @@ describe("official V2/V4 Req read handlers", () => {
     ).resolves.toMatchObject({
       structuredContent: { summary: "1 work item custom fields found from V4" }
     });
+    await expect(createReqListWorkItemQueriesHandler(queriesClient)({ project_id: "p-1" })).resolves.toMatchObject({
+      structuredContent: { summary: "1 work item queries found" }
+    });
+    await expect(
+      createReqListChildWorkItemsV4Handler(childWorkItemsClient)({ project_id: "p-1", parent_id: "70779173" })
+    ).resolves.toMatchObject({
+      structuredContent: { summary: "1 child work items found from V4" }
+    });
+    await expect(
+      createReqListAssociatedCodeV2Handler(associatedCodeClient)({
+        project_id: "p-1",
+        work_item_id: "70779173",
+        page: 2,
+        page_size: 10
+      })
+    ).resolves.toMatchObject({
+      structuredContent: { summary: "1 associated code records found from V2" }
+    });
+    await expect(
+      createReqListAssociatedWikisV5Handler(associatedWikisV5Client)({
+        project_id: "p-1",
+        work_item_id: "9164403"
+      })
+    ).resolves.toMatchObject({
+      structuredContent: { summary: "1 associated wikis found from V5" }
+    });
 
     expect(templatesClient.listWorkSettingTemplatesV2).toHaveBeenCalledWith({ search: "Scrum" });
     expect(modulesClient.listModuleSettingsV2).toHaveBeenCalledWith({ project_id: "p-1", page: 1, page_size: 20 });
@@ -249,6 +433,23 @@ describe("official V2/V4 Req read handlers", () => {
     expect(customFieldsClient.listWorkItemCustomFieldsV4).toHaveBeenCalledWith({
       project_id: "p-1",
       included_not_in_use: true
+    });
+    expect(queriesClient.listWorkItemQueries).toHaveBeenCalledWith({ project_id: "p-1" });
+    expect(childWorkItemsClient.listChildWorkItemsV4).toHaveBeenCalledWith({
+      project_id: "p-1",
+      parent_id: "70779173",
+      query_type: "basic"
+    });
+    expect(associatedCodeClient.listAssociatedCodeV2).toHaveBeenCalledWith({
+      project_id: "p-1",
+      work_item_id: "70779173",
+      page: 2,
+      page_size: 10,
+      type: "commit"
+    });
+    expect(associatedWikisV5Client.listAssociatedWikisV5).toHaveBeenCalledWith({
+      project_id: "p-1",
+      work_item_id: "9164403"
     });
   });
 });

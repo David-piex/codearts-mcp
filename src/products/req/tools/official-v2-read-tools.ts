@@ -3,7 +3,11 @@ import { formatListToolText } from "../../../contracts/tool-result-text.js";
 import { toPageInfo } from "../../../core/pagination/page-info.js";
 import {
   reqListModuleSettingsV2Input,
+  reqListAssociatedCodeV2Input,
+  reqListAssociatedWikisV5Input,
+  reqListChildWorkItemsV4Input,
   reqListProjectDomainsV2Input,
+  reqListWorkItemQueriesInput,
   reqListWorkItemCommentsV2Input,
   reqListWorkItemCustomFieldsV4Input,
   reqListWorkItemRecordsV2Input,
@@ -296,6 +300,224 @@ export function mapReqWorkItemCustomFieldsV4(items: RawItem[]) {
     undefined,
     { customFields: items }
   );
+}
+
+export function mapReqWorkItemQueries(shared: unknown[], created: unknown[]) {
+  return asListResult(
+    `${shared.length + created.length} work item queries found`,
+    [
+      ...shared.map((item) => ({
+        scope: "shared",
+        value: item,
+        name: isRawItem(item) ? stringValue(item.name) : stringValue(item),
+        rawQuery: item
+      })),
+      ...created.map((item) => ({
+        scope: "created",
+        value: item,
+        name: isRawItem(item) ? stringValue(item.name) : stringValue(item),
+        rawQuery: item
+      }))
+    ],
+    undefined,
+    { shared, created }
+  );
+}
+
+type ReqListWorkItemQueriesClient = {
+  listWorkItemQueries: (input: { project_id: string }) => Promise<{
+    shared: unknown[];
+    created: unknown[];
+  }>;
+};
+
+export function createReqListWorkItemQueriesHandler(client: ReqListWorkItemQueriesClient) {
+  return async (input: unknown) => {
+    const parsed = reqListWorkItemQueriesInput.parse(input);
+    const response = await client.listWorkItemQueries(parsed);
+    const result = mapReqWorkItemQueries(response.shared, response.created);
+    const text = formatListToolText(result, {
+      fields: [
+        { label: "scope", get: (item) => (item as { scope?: string }).scope },
+        { label: "name", get: (item) => (item as { name?: string }).name }
+      ]
+    });
+
+    return {
+      content: [{ type: "text" as const, text }],
+      structuredContent: result
+    };
+  };
+}
+
+function isRawItem(value: unknown): value is RawItem {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function flattenChildWorkItemGroups(result: Record<string, unknown>) {
+  return Object.entries(result).flatMap(([parentId, value]) => {
+    if (!Array.isArray(value)) {
+      return [];
+    }
+
+    return value.filter(isRawItem).map((item) => ({
+      parentId,
+      id: stringValue(item.id),
+      title: stringValue(item.subject),
+      status:
+        isRawItem(item.status) ? stringValue(item.status.name) : stringValue(item.status_name),
+      type:
+        isRawItem(item.tracker) ? stringValue(item.tracker.name) : stringValue(item.tracker_name),
+      rawWorkItem: item
+    }));
+  });
+}
+
+export function mapReqChildWorkItemsV4(result: Record<string, unknown>) {
+  const items = flattenChildWorkItemGroups(result);
+
+  return asListResult(
+    `${items.length} child work items found from V4`,
+    items,
+    undefined,
+    { result }
+  );
+}
+
+type ReqListChildWorkItemsV4Client = {
+  listChildWorkItemsV4: (input: {
+    project_id: string;
+    parent_id: string;
+    tracker_id?: string;
+    query_type?: string;
+  }) => Promise<{
+    result: Record<string, unknown>;
+  }>;
+};
+
+export function createReqListChildWorkItemsV4Handler(client: ReqListChildWorkItemsV4Client) {
+  return async (input: unknown) => {
+    const parsed = reqListChildWorkItemsV4Input.parse(input);
+    const response = await client.listChildWorkItemsV4(parsed);
+    const result = mapReqChildWorkItemsV4(response.result);
+    const text = formatListToolText(result, {
+      fields: [
+        { label: "parent", get: (item) => (item as { parentId?: string }).parentId },
+        { label: "id", get: (item) => (item as { id?: string }).id },
+        { label: "title", get: (item) => (item as { title?: string }).title },
+        { label: "status", get: (item) => (item as { status?: string }).status }
+      ]
+    });
+
+    return {
+      content: [{ type: "text" as const, text }],
+      structuredContent: result
+    };
+  };
+}
+
+export function mapReqAssociatedCodeV2(items: RawItem[], page: number, pageSize: number, total?: number) {
+  return asListResult(
+    `${items.length} associated code records found from V2`,
+    items.map((item) => ({
+      id: stringValue(item.id) ?? stringValue(item.relatedId),
+      type: stringValue(item.type),
+      branchName: stringValue(item.branchName),
+      commitMessage: stringValue(item.commitMsg),
+      commitUrl: stringValue(item.commitUrl),
+      relatedId: stringValue(item.relatedId),
+      userName: stringValue(item.userName),
+      rawCodeRecord: item
+    })),
+    toPageInfo(page, pageSize, total),
+    { list: items }
+  );
+}
+
+type ReqListAssociatedCodeV2Client = {
+  listAssociatedCodeV2: (input: {
+    project_id: string;
+    work_item_id: string;
+    page: number;
+    page_size: number;
+    type?: string;
+  }) => Promise<{
+    items: RawItem[];
+    total?: number;
+  }>;
+};
+
+export function createReqListAssociatedCodeV2Handler(client: ReqListAssociatedCodeV2Client) {
+  return async (input: unknown) => {
+    const parsed = reqListAssociatedCodeV2Input.parse(input);
+    const response = await client.listAssociatedCodeV2(parsed);
+    const result = mapReqAssociatedCodeV2(response.items, parsed.page, parsed.page_size, response.total);
+    const text = formatListToolText(result, {
+      fields: [
+        { label: "id", get: (item) => (item as { id?: string }).id },
+        { label: "type", get: (item) => (item as { type?: string }).type },
+        { label: "branch", get: (item) => (item as { branchName?: string }).branchName },
+        { label: "commit", get: (item) => (item as { commitMessage?: string }).commitMessage }
+      ]
+    });
+
+    return {
+      content: [{ type: "text" as const, text }],
+      structuredContent: result
+    };
+  };
+}
+
+export function mapReqAssociatedWikisV5(items: RawItem[], total?: number) {
+  return asListResult(
+    `${items.length} associated wikis found from V5`,
+    items.map((item) => ({
+      issueId: stringValue(item.issue_id),
+      title: stringValue(item.title),
+      wikiId: stringValue(item.wiki_id),
+      type: stringValue(item.type),
+      region: stringValue(item.region),
+      createdDate: stringValue(item.created_date),
+      identifier: stringValue(item.identifier),
+      authorName: userDisplayName(item.author),
+      projectName:
+        isRawItem(item.project) ? stringValue(item.project.name) : undefined,
+      rawWiki: item
+    })),
+    typeof total === "undefined" ? undefined : toPageInfo(1, items.length, total),
+    { data: items }
+  );
+}
+
+type ReqListAssociatedWikisV5Client = {
+  listAssociatedWikisV5: (input: {
+    project_id: string;
+    work_item_id: string;
+  }) => Promise<{
+    wikis: RawItem[];
+    total?: number;
+  }>;
+};
+
+export function createReqListAssociatedWikisV5Handler(client: ReqListAssociatedWikisV5Client) {
+  return async (input: unknown) => {
+    const parsed = reqListAssociatedWikisV5Input.parse(input);
+    const response = await client.listAssociatedWikisV5(parsed);
+    const result = mapReqAssociatedWikisV5(response.wikis, response.total);
+    const text = formatListToolText(result, {
+      fields: [
+        { label: "wikiId", get: (item) => (item as { wikiId?: string }).wikiId },
+        { label: "title", get: (item) => (item as { title?: string }).title },
+        { label: "project", get: (item) => (item as { projectName?: string }).projectName },
+        { label: "created", get: (item) => (item as { createdDate?: string }).createdDate }
+      ]
+    });
+
+    return {
+      content: [{ type: "text" as const, text }],
+      structuredContent: result
+    };
+  };
 }
 
 type ReqListWorkItemCustomFieldsV4Client = {

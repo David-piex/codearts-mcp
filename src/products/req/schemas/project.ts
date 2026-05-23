@@ -44,6 +44,10 @@ export const reqListUserFeaturesInput = z.object({
   project_id: idSchema
 });
 
+export const reqListWorkItemQueriesInput = z.object({
+  project_id: idSchema
+});
+
 export const reqListProjectDemandStatisticsInput = z.object({
   project_id: idSchema
 });

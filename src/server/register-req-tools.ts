@@ -149,10 +149,12 @@ import {
   reqQueryIterationImmovableIssuesInput,
   reqGetWorkItemInput,
   reqLeaveProjectInput,
+  reqListAssociatedCodeV2Input,
   reqListAssociatedCommitsInput,
   reqListAssociatedIssuesInput,
   reqListAssociatedTestCasesInput,
   reqListAssociatedWikisInput,
+  reqListAssociatedWikisV5Input,
   reqListIterationsInput,
   reqListNotAddedProjectsInput,
   reqListProjectModulesInput,
@@ -172,9 +174,11 @@ import {
   reqListWorkItemStatusesInput,
   reqListWorkItemTagsInput,
   reqListWorkItemTreeInput,
+  reqListChildWorkItemsV4Input,
   reqGetWorkItemTemplateConfigInput,
   reqListWorkItemTrackerHandlersInput,
   reqListWorkItemTemplatesInput,
+  reqListWorkItemQueriesInput,
   reqListWorkSettingTemplatesV2Input,
   reqListWorkItemWorkflowConfigInput,
   reqListWorkItemRecordsInput,
@@ -334,10 +338,14 @@ import { createReqListWorkItemRecordsHandler } from "../products/req/tools/list-
 import { createReqListWorkItemStayTimesHandler } from "../products/req/tools/list-work-item-stay-times.js";
 import { createReqListWorkItemWorkHoursHandler } from "../products/req/tools/list-work-item-work-hours.js";
 import {
+  createReqListAssociatedCodeV2Handler,
+  createReqListAssociatedWikisV5Handler,
+  createReqListChildWorkItemsV4Handler,
   createReqListModuleSettingsV2Handler,
   createReqListProjectDomainsV2Handler,
   createReqListWorkItemCommentsV2Handler,
   createReqListWorkItemCustomFieldsV4Handler,
+  createReqListWorkItemQueriesHandler,
   createReqListWorkItemRecordsV2Handler,
   createReqListWorkSettingTemplatesV2Handler
 } from "../products/req/tools/official-v2-read-tools.js";
@@ -1481,6 +1489,13 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqListModuleSettingsV2Handler
   }),
+  "req_list_work_item_queries": defineProductTool({
+    description: "List CodeArts Req work item saved queries from the official V2 endpoint",
+    inputSchema: reqListWorkItemQueriesInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemQueriesHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListWorkItemQueriesHandler
+  }),
   "req_leave_project": defineProductTool({
     description: "Leave a CodeArts Req project as the current member",
     inputSchema: reqLeaveProjectInput,
@@ -1628,6 +1643,13 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqListAssociatedCommitsHandler
   }),
+  "req_list_associated_code_v2": defineProductTool({
+    description: "List CodeArts Req associated code records from the official V2 endpoint",
+    inputSchema: reqListAssociatedCodeV2Input,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListAssociatedCodeV2Handler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListAssociatedCodeV2Handler
+  }),
   "req_list_associated_test_cases": defineProductTool({
     description: "List CodeArts Req associated test cases",
     inputSchema: reqListAssociatedTestCasesInput,
@@ -1641,6 +1663,13 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListAssociatedWikisHandler>[0] }) =>
       clients.reqClient,
     createProductHandler: createReqListAssociatedWikisHandler
+  }),
+  "req_list_associated_wikis_v5": defineProductTool({
+    description: "List CodeArts Req associated wikis from the official V5 endpoint",
+    inputSchema: reqListAssociatedWikisV5Input,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListAssociatedWikisV5Handler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListAssociatedWikisV5Handler
   }),
   "req_list_related_users": defineProductTool({
     description: "List CodeArts Req related users",
@@ -1822,6 +1851,14 @@ const reqToolDefinitions = {
       reqClient: Parameters<typeof createReqListChildWorkItemsHandler>[0];
     }) => clients.reqClient,
     createProductHandler: createReqListChildWorkItemsHandler
+  }),
+  "req_list_child_work_items_v4": defineProductTool({
+    description: "List CodeArts Req child work items from the official V4 endpoint",
+    inputSchema: reqListChildWorkItemsV4Input,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqListChildWorkItemsV4Handler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqListChildWorkItemsV4Handler
   }),
   "req_list_work_item_work_hours": defineProductTool({
     description: "List CodeArts Req work hour records for a work item",
