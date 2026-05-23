@@ -66,6 +66,36 @@ describe("registerCheckTool", () => {
     );
   });
 
+  it("registers new read-only check tools", () => {
+    const registerTool = vi.fn();
+    const tools = [
+      ["check_list_task_files", "List CodeArts Check task files"],
+      ["check_list_task_all_files", "List CodeArts Check task all files"],
+      ["check_detect_task_language", "Detect CodeArts Check task language"],
+      ["check_list_codehub_repositories", "List CodeArts Check CodeHub repositories"],
+      ["check_get_domain_checkers_version", "Get CodeArts Check domain checkers version"]
+    ] as const;
+
+    for (const [toolName, description] of tools) {
+      const handled = registerCheckTool({
+        toolName,
+        server: { registerTool },
+        mode: "stdio",
+        stdioClient: {} as never
+      });
+
+      expect(handled).toBe(true);
+      expect(registerTool).toHaveBeenLastCalledWith(
+        toolName,
+        expect.objectContaining({
+          title: toolName,
+          description
+        }),
+        expect.any(Function)
+      );
+    }
+  });
+
   it("returns false for non-check tools", () => {
     const registerTool = vi.fn();
 

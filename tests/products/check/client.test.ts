@@ -535,4 +535,68 @@ describe("createCheckClient", () => {
       "/v3/project-1/tasks/task-1/branches"
     ]);
   });
+
+  it("uses documented file, language, repository, and checker version endpoints", async () => {
+    const requests: string[] = [];
+    const client = createClient({
+      get: async (path: string) => {
+        requests.push(path);
+        if (path.includes("/file-list")) {
+          return { result: { files: [{ id: "file-1", path: "src/App.java" }], total: 1 } };
+        }
+        if (path.includes("/all-files")) {
+          return { result: { value: [{ id: "file-2", path: "src/lib" }], total: 1 } };
+        }
+        if (path.includes("/detect-language")) {
+          return { result: { languages: ["java"] } };
+        }
+        if (path.includes("/repo-list")) {
+          return { result: { repositories: [{ id: "repo-1", name: "demo" }], total: 1 } };
+        }
+
+        return { result: { version: "2026.05", checkers: [{ name: "java" }] } };
+      }
+    });
+
+    await expect(client.listTaskFiles(createTaskRefInput())).resolves.toEqual({
+      files: [{ id: "file-1", path: "src/App.java" }],
+      total: 1
+    });
+    await expect(client.listTaskAllFiles({
+      task_id: "task-1",
+      file_path: "src",
+      get_son: true
+    })).resolves.toEqual({
+      files: [{ id: "file-2", path: "src/lib" }],
+      total: 1
+    });
+    await expect(client.detectTaskLanguage({
+      task_id: "task-1",
+      scan_file: false
+    })).resolves.toEqual({
+      task_id: "task-1",
+      raw: { languages: ["java"] }
+    });
+    await expect(client.listCodehubRepositories({
+      project_id: "project-1",
+      page: 2,
+      page_size: 10,
+      search: "demo"
+    })).resolves.toEqual({
+      repositories: [{ id: "repo-1", name: "demo" }],
+      total: 1
+    });
+    await expect(client.getDomainCheckersVersion({ domain_id: "domain-1" })).resolves.toEqual({
+      domain_id: "domain-1",
+      raw: { version: "2026.05", checkers: [{ name: "java" }] }
+    });
+
+    expect(requests).toEqual([
+      "/v4/tasks/task-1/file-list",
+      "/v4/tasks/task-1/all-files?file_path=src&get_son=true",
+      "/v1/tasks/task-1/detect-language?scan_file=false",
+      "/v4/codehub/repo-list?offset=10&limit=10&project_id=project-1&search=demo",
+      "/v2/domain-1/checkers-version"
+    ]);
+  });
 });

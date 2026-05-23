@@ -37,6 +37,30 @@ export const checkListProjectTaskGroupsInput = z.object({
   project_id: idSchema
 });
 
+export const checkListTaskFilesInput = z.object({
+  task_id: idSchema
+});
+
+export const checkListTaskAllFilesInput = z.object({
+  task_id: idSchema,
+  file_path: z.string().min(1).optional(),
+  get_son: z.boolean().optional()
+});
+
+export const checkDetectTaskLanguageInput = z.object({
+  task_id: idSchema,
+  scan_file: z.boolean().default(true)
+});
+
+export const checkListCodehubRepositoriesInput = pagingSchema.extend({
+  project_id: idSchema.optional(),
+  search: z.string().min(1).optional()
+});
+
+export const checkGetDomainCheckersVersionInput = z.object({
+  domain_id: idSchema
+});
+
 export const checkGetTaskProgressInput = z.object({
   task_id: idSchema
 });

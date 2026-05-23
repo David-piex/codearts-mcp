@@ -278,6 +278,15 @@ export type BuildClient = {
     projects: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  listDomainRelatedProjectsPage: (input: {
+    page: number;
+    page_size: number;
+    search?: string;
+  }) => Promise<{
+    projects: Array<Record<string, unknown>>;
+    total?: number;
+    keep_time?: unknown;
+  }>;
   listPackageSpecStatuses: (input: { project_id: string; status: string }) => Promise<{
     statuses: Array<Record<string, unknown>>;
     total?: number;
@@ -293,6 +302,46 @@ export type BuildClient = {
     raw: Record<string, unknown>;
   }>;
   getJobBuildSuccessRatio: (input: {
+    job_id: string;
+    repository_name: string;
+    branch: string;
+    interval: number;
+  }) => Promise<{
+    job_id: string;
+    repository_name: string;
+    branch: string;
+    interval: number;
+    raw: Record<string, unknown>;
+  }>;
+  getJobConfigDiff: (input: {
+    job_id: string;
+    revisedl_no: number;
+    original_no: number;
+  }) => Promise<{
+    job_id: string;
+    revisedl_no: number;
+    original_no: number;
+    diff: string;
+  }>;
+  listRecyclingJobs: (input: {
+    page: number;
+    page_size: number;
+    search?: string;
+  }) => Promise<{
+    jobs: Array<Record<string, unknown>>;
+    total?: number;
+    keep_time?: unknown;
+  }>;
+  checkJobCountLimit: () => Promise<{
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  getReportSummary: (input: { job_id: string; build_no: number }) => Promise<{
+    job_id: string;
+    build_no: number;
+    raw: Record<string, unknown>;
+  }>;
+  getJobBuildTime: (input: {
     job_id: string;
     repository_name: string;
     branch: string;
@@ -1479,6 +1528,32 @@ export function createBuildClient(
         total: readBuildTotal(payload, response, projects.length)
       };
     },
+    async listDomainRelatedProjectsPage(input) {
+      const query = new URLSearchParams({
+        page_size: String(input.page_size),
+        page_no: String(input.page)
+      });
+      if (input.search) {
+        query.set("search", input.search);
+      }
+      const response = await _http.get(`/v1/domain/project/related-page?${query.toString()}`);
+      const raw = readBuildPayloadValue(response);
+      const payload = readBuildPayload(response);
+      const projects = readBuildArray<Record<string, unknown>>(
+        payload.project_info_list ??
+          payload.projects ??
+          payload.value ??
+          payload.items ??
+          payload.list ??
+          (Array.isArray(raw) ? raw : [])
+      );
+
+      return {
+        projects,
+        total: readBuildTotal(payload, response, projects.length),
+        keep_time: payload.keep_time
+      };
+    },
     async listPackageSpecStatuses(input) {
       const query = new URLSearchParams({
         project_id: input.project_id,
@@ -1544,6 +1619,85 @@ export function createBuildClient(
         interval: String(input.interval)
       });
       const response = await _http.get(`/v1/report/ratio?${query.toString()}`);
+      const payload = readBuildPayloadValue(response);
+
+      return {
+        job_id: input.job_id,
+        repository_name: input.repository_name,
+        branch: input.branch,
+        interval: input.interval,
+        raw: readBuildRawRecord(payload)
+      };
+    },
+    async getJobConfigDiff(input) {
+      const query = new URLSearchParams({
+        revisedl_no: String(input.revisedl_no),
+        original_no: String(input.original_no)
+      });
+      const response = await _http.get(`/v1/job/${encodeURIComponent(input.job_id)}/diff?${query.toString()}`);
+      const payload = readBuildPayloadValue(response);
+      const raw = readBuildRawRecord(payload);
+      const diff = typeof payload === "string"
+        ? payload
+        : String(raw.diff ?? raw.value ?? "");
+
+      return {
+        job_id: input.job_id,
+        revisedl_no: input.revisedl_no,
+        original_no: input.original_no,
+        diff
+      };
+    },
+    async listRecyclingJobs(input) {
+      const query = new URLSearchParams({
+        page_index: String(input.page - 1),
+        page_size: String(input.page_size)
+      });
+      if (input.search) {
+        query.set("search", input.search);
+      }
+      const response = await _http.get(`/v1/job/recycling-jobs?${query.toString()}`);
+      const raw = readBuildPayloadValue(response);
+      const payload = readBuildPayload(response);
+      const jobs = readBuildArray<Record<string, unknown>>(
+        payload.job_list ?? payload.jobs ?? payload.value ?? payload.items ?? payload.list ?? (Array.isArray(raw) ? raw : [])
+      );
+
+      return {
+        jobs,
+        total: readBuildTotal(payload, response, jobs.length),
+        keep_time: payload.keep_time
+      };
+    },
+    async checkJobCountLimit() {
+      const response = await _http.get("/v1/job/check/count");
+      const payload = readBuildPayloadValue(response);
+      const envelope = readBuildEnvelope(payload);
+
+      return {
+        value: envelope ? envelope.value ?? envelope.result : payload,
+        raw: readBuildRawRecord(payload)
+      };
+    },
+    async getReportSummary(input) {
+      const query = new URLSearchParams({ build_no: String(input.build_no) });
+      const response = await _http.get(`/v1/report/${encodeURIComponent(input.job_id)}/summary?${query.toString()}`);
+      const payload = readBuildPayloadValue(response);
+
+      return {
+        job_id: input.job_id,
+        build_no: input.build_no,
+        raw: readBuildRawRecord(payload)
+      };
+    },
+    async getJobBuildTime(input) {
+      const query = new URLSearchParams({
+        job_id: input.job_id,
+        repository_name: input.repository_name,
+        branch: input.branch,
+        interval: String(input.interval)
+      });
+      const response = await _http.get(`/v1/report/time?${query.toString()}`);
       const payload = readBuildPayloadValue(response);
 
       return {

@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
   checkCreateTaskInput,
+  checkDetectTaskLanguageInput,
+  checkListCodehubRepositoriesInput,
+  checkListTaskAllFilesInput,
   checkListTaskIssuesInput,
   checkRunTaskInput
 } from "../../../src/products/check/schemas.js";
@@ -67,6 +70,35 @@ describe("check schemas", () => {
       file_path: "src/App.java",
       status: "open",
       checker: "java",
+      page: 1,
+      page_size: 20
+    });
+  });
+
+  it("accepts new read-only task and repository query schemas", () => {
+    expect(checkListTaskAllFilesInput.parse({
+      task_id: "task-1",
+      file_path: "src",
+      get_son: true
+    })).toEqual({
+      task_id: "task-1",
+      file_path: "src",
+      get_son: true
+    });
+
+    expect(checkDetectTaskLanguageInput.parse({
+      task_id: "task-1"
+    })).toEqual({
+      task_id: "task-1",
+      scan_file: true
+    });
+
+    expect(checkListCodehubRepositoriesInput.parse({
+      project_id: "project-1",
+      search: "demo"
+    })).toMatchObject({
+      project_id: "project-1",
+      search: "demo",
       page: 1,
       page_size: 20
     });

@@ -89,6 +89,35 @@ export type CheckClient = {
     groups: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  listTaskFiles: (input: { task_id: string }) => Promise<{
+    files: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listTaskAllFiles: (input: {
+    task_id: string;
+    file_path?: string;
+    get_son?: boolean;
+  }) => Promise<{
+    files: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  detectTaskLanguage: (input: { task_id: string; scan_file: boolean }) => Promise<{
+    task_id: string;
+    raw: Record<string, unknown>;
+  }>;
+  listCodehubRepositories: (input: {
+    project_id?: string;
+    page: number;
+    page_size: number;
+    search?: string;
+  }) => Promise<{
+    repositories: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getDomainCheckersVersion: (input: { domain_id: string }) => Promise<{
+    domain_id: string;
+    raw: Record<string, unknown>;
+  }>;
   getTaskProgress: (input: { task_id: string }) => Promise<{
     task_id: string;
     raw: Record<string, unknown>;
@@ -232,7 +261,7 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
     ...createOfficialApiRequester({
       product: "Check",
       http: _http,
-      allowedPrefixes: ["/v1/","/v2/","/v3/"]
+      allowedPrefixes: ["/v1/","/v2/","/v3/","/v4/"]
     }),
     async createTask(input) {
       const taskType = input.task_type === "incremental" ? "inc" : input.task_type;
@@ -518,6 +547,78 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
       return {
         groups,
         total: readTotal(payload, response, groups.length)
+      };
+    },
+    async listTaskFiles(input) {
+      const response = await _http.get(`/v4/tasks/${encodeURIComponent(input.task_id)}/file-list`);
+      const payload = readResultPayload(response);
+      const files = readArray<Record<string, unknown>>(
+        payload.files ?? payload.file_list ?? payload.value ?? payload.items ?? payload.list ?? (Array.isArray(response) ? response : [])
+      );
+
+      return {
+        files,
+        total: readTotal(payload, response, files.length)
+      };
+    },
+    async listTaskAllFiles(input) {
+      const query = new URLSearchParams();
+      if (input.file_path) query.set("file_path", input.file_path);
+      if (input.get_son !== undefined) query.set("get_son", String(input.get_son));
+      const suffix = query.size ? `?${query.toString()}` : "";
+      const response = await _http.get(`/v4/tasks/${encodeURIComponent(input.task_id)}/all-files${suffix}`);
+      const payload = readResultPayload(response);
+      const files = readArray<Record<string, unknown>>(
+        payload.files ?? payload.file_list ?? payload.value ?? payload.items ?? payload.list ?? (Array.isArray(response) ? response : [])
+      );
+
+      return {
+        files,
+        total: readTotal(payload, response, files.length)
+      };
+    },
+    async detectTaskLanguage(input) {
+      const query = new URLSearchParams({
+        scan_file: String(input.scan_file)
+      });
+      const response = await _http.get(
+        `/v1/tasks/${encodeURIComponent(input.task_id)}/detect-language?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const detection = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        task_id: input.task_id,
+        raw: detection
+      };
+    },
+    async listCodehubRepositories(input) {
+      const offset = (input.page - 1) * input.page_size;
+      const query = new URLSearchParams({
+        offset: String(offset),
+        limit: String(input.page_size)
+      });
+      if (input.project_id) query.set("project_id", input.project_id);
+      if (input.search) query.set("search", input.search);
+      const response = await _http.get(`/v4/codehub/repo-list?${query.toString()}`);
+      const payload = readResultPayload(response);
+      const repositories = readArray<Record<string, unknown>>(
+        payload.repositories ?? payload.repos ?? payload.repo_list ?? payload.value ?? payload.items ?? payload.list ?? (Array.isArray(response) ? response : [])
+      );
+
+      return {
+        repositories,
+        total: readTotal(payload, response, repositories.length)
+      };
+    },
+    async getDomainCheckersVersion(input) {
+      const response = await _http.get(`/v2/${encodeURIComponent(input.domain_id)}/checkers-version`);
+      const payload = readResultPayload(response);
+      const version = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        domain_id: input.domain_id,
+        raw: version
       };
     },
     async getTaskProgress(input) {

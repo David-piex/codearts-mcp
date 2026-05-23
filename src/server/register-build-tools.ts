@@ -20,13 +20,17 @@ import {
   buildGetDomainUserPermissionInput,
   buildGetDockerfileTemplateInput,
   buildGetJobBuildSuccessRatioInput,
+  buildGetJobBuildTimeInput,
+  buildGetJobConfigDiffInput,
   buildGetCoverageMetricsInput,
   buildGetJobNoticeInput,
   buildGetJobPermissionInput,
   buildGetJobPermissionInternalInput,
   buildGetJobRunningStatusInput,
+  buildGetReportSummaryInput,
   buildGetProjectRecordStatisticsInput,
   buildCheckJobNameExistsInput,
+  buildCheckJobCountLimitInput,
   buildPrepareNodeRuntimeBundleInput,
   buildGetRecordFlowGraphInput,
   buildGetRecordInput,
@@ -37,6 +41,7 @@ import {
   buildListCodeTagsInput,
   buildListDefaultParametersInput,
   buildListDomainRelatedProjectsInput,
+  buildListDomainRelatedProjectsPageInput,
   buildListGitCodeBranchesInput,
   buildListGitCodeRepositoriesInput,
   buildListImageTemplatesInput,
@@ -46,6 +51,7 @@ import {
   buildListJobPermissionRolesInput,
   buildListPackageSpecStatusesInput,
   buildListProjectRecordsInput,
+  buildListRecyclingJobsInput,
   buildListReportBranchesInput,
   buildListReportRepositoriesInput,
   buildListRecordsInput,
@@ -82,14 +88,19 @@ import { createBuildGetDomainStatusHandler } from "../products/build/tools/get-d
 import { createBuildGetDomainUserPermissionHandler } from "../products/build/tools/get-domain-user-permission.js";
 import { createBuildGetDockerfileTemplateHandler } from "../products/build/tools/get-dockerfile-template.js";
 import { createBuildGetCoverageMetricsHandler } from "../products/build/tools/get-coverage-metrics.js";
+import { createBuildGetJobBuildTimeHandler } from "../products/build/tools/get-job-build-time.js";
 import { createBuildGetJobBuildSuccessRatioHandler } from "../products/build/tools/get-job-build-success-ratio.js";
+import { createBuildGetJobConfigDiffHandler } from "../products/build/tools/get-job-config-diff.js";
 import { createBuildGetJobPermissionHandler } from "../products/build/tools/get-job-permission.js";
 import { createBuildGetJobPermissionInternalHandler } from "../products/build/tools/get-job-permission-internal.js";
+import { createBuildGetReportSummaryHandler } from "../products/build/tools/get-report-summary.js";
 import { createBuildCheckJobNameExistsHandler } from "../products/build/tools/check-job-name-exists.js";
+import { createBuildCheckJobCountLimitHandler } from "../products/build/tools/check-job-count-limit.js";
 import { createBuildListBuildParametersHandler } from "../products/build/tools/list-build-parameters.js";
 import { createBuildListCodeTagsHandler } from "../products/build/tools/list-code-tags.js";
 import { createBuildListDefaultParametersHandler } from "../products/build/tools/list-default-parameters.js";
 import { createBuildListDomainRelatedProjectsHandler } from "../products/build/tools/list-domain-related-projects.js";
+import { createBuildListDomainRelatedProjectsPageHandler } from "../products/build/tools/list-domain-related-projects-page.js";
 import { createBuildListGitCodeBranchesHandler } from "../products/build/tools/list-git-code-branches.js";
 import { createBuildListGitCodeRepositoriesHandler } from "../products/build/tools/list-git-code-repositories.js";
 import { createBuildListImageTemplatesHandler } from "../products/build/tools/list-image-templates.js";
@@ -99,6 +110,7 @@ import { createBuildListJobPermissionRolesHandler } from "../products/build/tool
 import { createBuildListJobsHandler } from "../products/build/tools/list-jobs.js";
 import { createBuildListPackageSpecStatusesHandler } from "../products/build/tools/list-package-spec-statuses.js";
 import { createBuildListProjectRecordsHandler } from "../products/build/tools/list-project-records.js";
+import { createBuildListRecyclingJobsHandler } from "../products/build/tools/list-recycling-jobs.js";
 import { createBuildListReportBranchesHandler } from "../products/build/tools/list-report-branches.js";
 import { createBuildListReportRepositoriesHandler } from "../products/build/tools/list-report-repositories.js";
 import { createBuildListRecordsHandler } from "../products/build/tools/list-records.js";
@@ -230,6 +242,12 @@ const buildToolDefinitions = {
     selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListDomainRelatedProjectsHandler>[0] }) => clients.buildClient,
     createProductHandler: createBuildListDomainRelatedProjectsHandler
   }),
+  "build_list_domain_related_projects_page": defineProductTool({
+    description: "List paginated CodeArts Build domain related projects",
+    inputSchema: buildListDomainRelatedProjectsPageInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListDomainRelatedProjectsPageHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildListDomainRelatedProjectsPageHandler
+  }),
   "build_list_package_spec_statuses": defineProductTool({
     description: "List CodeArts Build package specification statuses",
     inputSchema: buildListPackageSpecStatusesInput,
@@ -253,6 +271,36 @@ const buildToolDefinitions = {
     inputSchema: buildGetJobBuildSuccessRatioInput,
     selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetJobBuildSuccessRatioHandler>[0] }) => clients.buildClient,
     createProductHandler: createBuildGetJobBuildSuccessRatioHandler
+  }),
+  "build_get_job_config_diff": defineProductTool({
+    description: "Get CodeArts Build job configuration diff",
+    inputSchema: buildGetJobConfigDiffInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetJobConfigDiffHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildGetJobConfigDiffHandler
+  }),
+  "build_list_recycling_jobs": defineProductTool({
+    description: "List CodeArts Build recycling jobs",
+    inputSchema: buildListRecyclingJobsInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListRecyclingJobsHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildListRecyclingJobsHandler
+  }),
+  "build_check_job_count_limit": defineProductTool({
+    description: "Check whether CodeArts Build job count is below the limit",
+    inputSchema: buildCheckJobCountLimitInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildCheckJobCountLimitHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildCheckJobCountLimitHandler
+  }),
+  "build_get_report_summary": defineProductTool({
+    description: "Get CodeArts Build report summary",
+    inputSchema: buildGetReportSummaryInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetReportSummaryHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildGetReportSummaryHandler
+  }),
+  "build_get_job_build_time": defineProductTool({
+    description: "Get CodeArts Build job build time statistics",
+    inputSchema: buildGetJobBuildTimeInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetJobBuildTimeHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildGetJobBuildTimeHandler
   }),
   "build_list_junit_coverage_summaries": defineProductTool({
     description: "List CodeArts Build Junit coverage summaries",

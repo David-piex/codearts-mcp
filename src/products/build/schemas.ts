@@ -102,6 +102,10 @@ export const buildGetDomainJobSummaryInput = z.object({});
 
 export const buildListDomainRelatedProjectsInput = z.object({});
 
+export const buildListDomainRelatedProjectsPageInput = pagingSchema.extend({
+  search: z.string().min(1).optional()
+});
+
 export const buildListPackageSpecStatusesInput = z.object({
   project_id: idSchema,
   status: z.string().min(1)
@@ -117,6 +121,30 @@ export const buildCheckJobNameExistsInput = z.object({
 });
 
 export const buildGetJobBuildSuccessRatioInput = z.object({
+  job_id: idSchema,
+  repository_name: z.string().min(1),
+  branch: z.string().min(1).default("all"),
+  interval: z.number().int().min(1).max(30).default(7)
+});
+
+export const buildGetJobConfigDiffInput = z.object({
+  job_id: idSchema,
+  revisedl_no: z.number().int().positive(),
+  original_no: z.number().int().positive()
+});
+
+export const buildListRecyclingJobsInput = pagingSchema.extend({
+  search: z.string().min(1).optional()
+});
+
+export const buildCheckJobCountLimitInput = z.object({});
+
+export const buildGetReportSummaryInput = z.object({
+  job_id: idSchema,
+  build_no: z.number().int().positive()
+});
+
+export const buildGetJobBuildTimeInput = z.object({
   job_id: idSchema,
   repository_name: z.string().min(1),
   branch: z.string().min(1).default("all"),

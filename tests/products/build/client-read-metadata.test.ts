@@ -337,4 +337,107 @@ describe("createBuildClient metadata read paths", () => {
       }
     });
   });
+
+  it("loads additional report, diff, recycling, and domain page metadata", async () => {
+    const paths: string[] = [];
+    const client = createBuildClient({
+      get: async (path: string) => {
+        paths.push(path);
+        if (path.includes("/related-page")) {
+          return { result: { total: 1, project_info_list: [{ id: "project-1", name: "demo" }] } };
+        }
+        if (path.includes("/diff")) {
+          return { result: "changed: step image" };
+        }
+        if (path.includes("/recycling-jobs")) {
+          return { result: { keep_time: 30, total: 1, job_list: [{ job_id: "job-1", name: "old" }] } };
+        }
+        if (path.includes("/job/check/count")) {
+          return { result: true };
+        }
+        if (path.includes("/summary")) {
+          return { result: { summary: { success: 2 }, sub_summarys: [] } };
+        }
+        return {
+          result: {
+            job_id: "job-1",
+            avg_build_time: 120,
+            chart: []
+          }
+        };
+      }
+    } as never);
+
+    const projects = await client.listDomainRelatedProjectsPage({
+      page: 2,
+      page_size: 10,
+      search: "demo"
+    });
+    const diff = await client.getJobConfigDiff({
+      job_id: "job-1",
+      revisedl_no: 3,
+      original_no: 1
+    });
+    const recyclingJobs = await client.listRecyclingJobs({
+      page: 3,
+      page_size: 20,
+      search: "old"
+    });
+    const countLimit = await client.checkJobCountLimit();
+    const reportSummary = await client.getReportSummary({
+      job_id: "job-1",
+      build_no: 8
+    });
+    const buildTime = await client.getJobBuildTime({
+      job_id: "job-1",
+      repository_name: "repo",
+      branch: "main",
+      interval: 7
+    });
+
+    expect(paths).toEqual([
+      "/v1/domain/project/related-page?page_size=10&page_no=2&search=demo",
+      "/v1/job/job-1/diff?revisedl_no=3&original_no=1",
+      "/v1/job/recycling-jobs?page_index=2&page_size=20&search=old",
+      "/v1/job/check/count",
+      "/v1/report/job-1/summary?build_no=8",
+      "/v1/report/time?job_id=job-1&repository_name=repo&branch=main&interval=7"
+    ]);
+    expect(projects).toEqual({
+      projects: [{ id: "project-1", name: "demo" }],
+      total: 1,
+      keep_time: undefined
+    });
+    expect(diff).toEqual({
+      job_id: "job-1",
+      revisedl_no: 3,
+      original_no: 1,
+      diff: "changed: step image"
+    });
+    expect(recyclingJobs).toEqual({
+      jobs: [{ job_id: "job-1", name: "old" }],
+      total: 1,
+      keep_time: 30
+    });
+    expect(countLimit).toEqual({
+      value: true,
+      raw: { value: true }
+    });
+    expect(reportSummary).toEqual({
+      job_id: "job-1",
+      build_no: 8,
+      raw: { summary: { success: 2 }, sub_summarys: [] }
+    });
+    expect(buildTime).toEqual({
+      job_id: "job-1",
+      repository_name: "repo",
+      branch: "main",
+      interval: 7,
+      raw: {
+        job_id: "job-1",
+        avg_build_time: 120,
+        chart: []
+      }
+    });
+  });
 });
