@@ -145,6 +145,7 @@ import {
   reqListProjectVersionsInput,
   reqListProjectWorkHourTypesInput,
   reqListProjectWorkHourTypesV5Input,
+  reqListProjectUserWorkHoursInput,
   reqListProjectWorkHoursInput,
   reqListProjectMemberWorkHoursInput,
   reqListProjectWorkItemRecordsInput,
@@ -155,6 +156,7 @@ import {
   reqListAssociatedCodeV2Input,
   reqListAssociatedCommitsInput,
   reqListAssociatedIssuesInput,
+  reqListAssociatedIssuesV4Input,
   reqListAssociatedTestCasesInput,
   reqListAssociatedWikisInput,
   reqListAssociatedWikisV5Input,
@@ -189,7 +191,9 @@ import {
   reqListWorkItemRecordsInput,
   reqListWorkItemRecordsV2Input,
   reqListWorkItemStayTimesInput,
+  reqListQueryIssuesInput,
   reqListWorkItemsV3Input,
+  reqListWorkItemsV4Input,
   reqListWorkItemsInput,
   reqFindIterationsInput,
   reqListRrHistoriesInput,
@@ -291,7 +295,7 @@ import { createReqGetWorkItemIssueDetailsHandler } from "../products/req/tools/g
 import { createReqGetWorkItemIndexCountsHandler } from "../products/req/tools/get-work-item-index-counts.js";
 import { createReqLeaveProjectHandler } from "../products/req/tools/leave-project.js";
 import { createReqListAssociatedCommitsHandler } from "../products/req/tools/list-associated-commits.js";
-import { createReqListAssociatedIssuesHandler } from "../products/req/tools/list-associated-issues.js";
+import { createReqListAssociatedIssuesHandler, createReqListAssociatedIssuesV4Handler } from "../products/req/tools/list-associated-issues.js";
 import { createReqListAssociatedTestCasesHandler } from "../products/req/tools/list-associated-test-cases.js";
 import { createReqListAssociatedWikisHandler } from "../products/req/tools/list-associated-wikis.js";
 import { createReqListBoardWorkItemStatusRecordsHandler } from "../products/req/tools/list-board-work-item-status-records.js";
@@ -320,7 +324,7 @@ import { createReqListProjectDomainsHandler } from "../products/req/tools/list-p
 import { createReqListProjectVersionsHandler } from "../products/req/tools/list-project-versions.js";
 import { createReqListUserFeaturesHandler } from "../products/req/tools/list-user-features.js";
 import { createReqListProjectWorkHourTypesHandler } from "../products/req/tools/list-project-work-hour-types.js";
-import { createReqListProjectWorkHoursHandler } from "../products/req/tools/list-project-work-hours.js";
+import { createReqListProjectUserWorkHoursHandler, createReqListProjectWorkHoursHandler } from "../products/req/tools/list-project-work-hours.js";
 import { createReqListProjectMemberWorkHoursHandler } from "../products/req/tools/list-project-member-work-hours.js";
 import { createReqListProjectWorkItemRecordsHandler } from "../products/req/tools/list-project-work-item-records.js";
 import { createReqListNotAddedProjectsHandler } from "../products/req/tools/list-not-added-projects.js";
@@ -361,7 +365,7 @@ import {
   createReqListWorkSettingTemplatesV2Handler
 } from "../products/req/tools/official-v2-read-tools.js";
 import { createReqFindIterationsHandler } from "../products/req/tools/find-iterations.js";
-import { createReqListWorkItemsHandler, createReqListWorkItemsV3Handler } from "../products/req/tools/list-work-items.js";
+import { createReqListQueryIssuesHandler, createReqListWorkItemsHandler, createReqListWorkItemsV3Handler, createReqListWorkItemsV4Handler } from "../products/req/tools/list-work-items.js";
 import { createReqListRrHistoriesHandler } from "../products/req/tools/list-rr-histories.js";
 import { createReqListRrStatusesHandler } from "../products/req/tools/list-rr-statuses.js";
 import { createReqListRrsHandler } from "../products/req/tools/list-rrs.js";
@@ -1634,6 +1638,20 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqListWorkItemsV3Handler
   }),
+  "req_list_work_items_v4": defineProductTool({
+    description: "List CodeArts Req work items from the official V4 advanced query endpoint",
+    inputSchema: reqListWorkItemsV4Input,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemsV4Handler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListWorkItemsV4Handler
+  }),
+  "req_list_query_issues": defineProductTool({
+    description: "List CodeArts Req issues with the official V2 temporary filter query endpoint",
+    inputSchema: reqListQueryIssuesInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListQueryIssuesHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListQueryIssuesHandler
+  }),
   "req_search_todo_work_items": defineProductTool({
     description: "Search CodeArts Req todo work items across projects",
     inputSchema: reqSearchTodoWorkItemsInput,
@@ -1654,6 +1672,13 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListAssociatedIssuesHandler>[0] }) =>
       clients.reqClient,
     createProductHandler: createReqListAssociatedIssuesHandler
+  }),
+  "req_list_associated_issues_v4": defineProductTool({
+    description: "List CodeArts Req associated issues from the official V4 endpoint",
+    inputSchema: reqListAssociatedIssuesV4Input,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListAssociatedIssuesV4Handler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListAssociatedIssuesV4Handler
   }),
   "req_list_associated_commits": defineProductTool({
     description: "List CodeArts Req associated commits",
@@ -2004,6 +2029,13 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListProjectWorkHoursHandler>[0] }) =>
       clients.reqClient,
     createProductHandler: createReqListProjectWorkHoursHandler
+  }),
+  "req_list_project_user_work_hours": defineProductTool({
+    description: "List CodeArts Req project work hour records by user from the official single-project endpoint",
+    inputSchema: reqListProjectUserWorkHoursInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListProjectUserWorkHoursHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListProjectUserWorkHoursHandler
   }),
   "req_list_project_versions": defineProductTool({
     description: "List CodeArts Req project versions",

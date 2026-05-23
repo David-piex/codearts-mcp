@@ -1,9 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
 import { reqListAssociatedIssuesInput as reqListAssociatedIssuesInputFromBarrel } from "../../../../src/products/req/schemas.js";
-import { reqListAssociatedIssuesInput } from "../../../../src/products/req/schemas/work-item.js";
+import { reqListAssociatedIssuesInput, reqListAssociatedIssuesV4Input } from "../../../../src/products/req/schemas/work-item.js";
 import {
   createReqListAssociatedIssuesHandler,
-  mapReqAssociatedIssues
+  createReqListAssociatedIssuesV4Handler,
+  mapReqAssociatedIssues,
+  mapReqAssociatedIssuesV4
 } from "../../../../src/products/req/tools/list-associated-issues.js";
 
 describe("mapReqAssociatedIssues", () => {
@@ -58,6 +60,56 @@ describe("mapReqAssociatedIssues", () => {
   });
 });
 
+describe("mapReqAssociatedIssuesV4", () => {
+  it("returns normalized V4 associated issues and preserves the raw issue", () => {
+    const result = mapReqAssociatedIssuesV4(
+      [
+        {
+          issue_id: 9132318,
+          subject: "Align acceptance criteria",
+          status: { id: "3", name: "Resolved" },
+          project: { project_id: "p-2", project_name: "Payments" },
+          user: { id: 101, nick_name: "Alice", name: "alice" },
+          relation_type: "relates_to"
+        }
+      ],
+      2,
+      10,
+      12,
+      { status: "success" }
+    );
+
+    expect(result.items).toEqual([
+      {
+        id: "9132318",
+        title: "Align acceptance criteria",
+        statusId: "3",
+        status: "Resolved",
+        projectId: "p-2",
+        projectName: "Payments",
+        assignee: {
+          id: "101",
+          name: "Alice"
+        },
+        rawIssue: {
+          issue_id: 9132318,
+          subject: "Align acceptance criteria",
+          status: { id: "3", name: "Resolved" },
+          project: { project_id: "p-2", project_name: "Payments" },
+          user: { id: 101, nick_name: "Alice", name: "alice" },
+          relation_type: "relates_to"
+        }
+      }
+    ]);
+    expect(result.page_info).toEqual({
+      page: 2,
+      pageSize: 10,
+      total: 12
+    });
+    expect(result.raw).toEqual({ status: "success" });
+  });
+});
+
 describe("reqListAssociatedIssuesInput exports", () => {
   it("keeps the barrel export compatible with the work-item schema module", () => {
     const input = {
@@ -69,6 +121,7 @@ describe("reqListAssociatedIssuesInput exports", () => {
 
     expect(reqListAssociatedIssuesInput.parse(input)).toEqual(input);
     expect(reqListAssociatedIssuesInputFromBarrel.parse(input)).toEqual(input);
+    expect(reqListAssociatedIssuesV4Input.parse(input)).toEqual(input);
   });
 });
 
@@ -139,6 +192,70 @@ describe("createReqListAssociatedIssuesHandler", () => {
         total: 1
       },
       raw: undefined
+    });
+  });
+
+  it("returns content and structured output for official V4 associated issues", async () => {
+    const client = {
+      listAssociatedIssuesV4: vi.fn(async () => ({
+        issues: [
+          {
+            issue_id: 9132318,
+            subject: "Align acceptance criteria",
+            status: { id: "3", name: "Resolved" },
+            project: { project_id: "p-2", project_name: "Payments" },
+            user: { id: 101, nick_name: "Alice", name: "alice" }
+          }
+        ],
+        total: 1,
+        raw: { status: "success" }
+      }))
+    };
+    const handler = createReqListAssociatedIssuesV4Handler(client);
+
+    const result = await handler({
+      project_id: "project-1",
+      work_item_id: "wi-9",
+      page: 1,
+      page_size: 20
+    });
+
+    expect(client.listAssociatedIssuesV4).toHaveBeenCalledWith({
+      project_id: "project-1",
+      work_item_id: "wi-9",
+      page: 1,
+      page_size: 20
+    });
+    expect(result.content[0]?.text).toContain("1 associated issues found from V4");
+    expect(result.structuredContent).toEqual({
+      summary: "1 associated issues found from V4",
+      items: [
+        {
+          id: "9132318",
+          title: "Align acceptance criteria",
+          statusId: "3",
+          status: "Resolved",
+          projectId: "p-2",
+          projectName: "Payments",
+          assignee: {
+            id: "101",
+            name: "Alice"
+          },
+          rawIssue: {
+            issue_id: 9132318,
+            subject: "Align acceptance criteria",
+            status: { id: "3", name: "Resolved" },
+            project: { project_id: "p-2", project_name: "Payments" },
+            user: { id: 101, nick_name: "Alice", name: "alice" }
+          }
+        }
+      ],
+      page_info: {
+        page: 1,
+        pageSize: 20,
+        total: 1
+      },
+      raw: { status: "success" }
     });
   });
 

@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
-import { reqListProjectWorkHoursInput as reqListProjectWorkHoursInputFromBarrel } from "../../../../src/products/req/schemas.js";
+import { reqListProjectUserWorkHoursInput, reqListProjectWorkHoursInput as reqListProjectWorkHoursInputFromBarrel } from "../../../../src/products/req/schemas.js";
 import { reqListProjectWorkHoursInput } from "../../../../src/products/req/schemas/work-item.js";
 import {
+  createReqListProjectUserWorkHoursHandler,
   createReqListProjectWorkHoursHandler,
   mapReqProjectWorkHours
 } from "../../../../src/products/req/tools/list-project-work-hours.js";
@@ -64,6 +65,17 @@ describe("reqListProjectWorkHoursInput exports", () => {
 
     expect(reqListProjectWorkHoursInput.parse(input)).toEqual(input);
     expect(reqListProjectWorkHoursInputFromBarrel.parse(input)).toEqual(input);
+    expect(reqListProjectUserWorkHoursInput.parse({
+      page: 1,
+      page_size: 20,
+      project_id: "project-1",
+      user_id: "user-1"
+    })).toEqual({
+      page: 1,
+      page_size: 20,
+      project_id: "project-1",
+      user_id: "user-1"
+    });
   });
 });
 
@@ -122,5 +134,54 @@ describe("createReqListProjectWorkHoursHandler", () => {
         }
       }
     ]);
+  });
+
+  it("returns normalized single-project user work hour output", async () => {
+    const client = {
+      listProjectUserWorkHours: vi.fn(async () => ({
+        work_hours: [
+          {
+            issue_id: 69813204,
+            issue_type: "Story",
+            subject: "Align acceptance criteria",
+            project_name: "Payments",
+            user_id: "user-1",
+            user_name: "alice",
+            nick_name: "Alice",
+            work_date: "2020-02-19",
+            work_hours_num: "1.0",
+            summary: "Backend development"
+          }
+        ],
+        total: 1
+      }))
+    };
+    const handler = createReqListProjectUserWorkHoursHandler(client);
+
+    const result = await handler({
+      page: 1,
+      page_size: 20,
+      project_id: "project-1",
+      user_id: "user-1",
+      begin_time: "2025-07-01",
+      end_time: "2025-07-31"
+    });
+
+    expect(client.listProjectUserWorkHours).toHaveBeenCalledWith({
+      page: 1,
+      page_size: 20,
+      project_id: "project-1",
+      user_id: "user-1",
+      begin_time: "2025-07-01",
+      end_time: "2025-07-31"
+    });
+    expect(result.content[0]?.text).toContain("1 project work hours found");
+    expect(result.structuredContent.items?.[0]).toEqual(
+      expect.objectContaining({
+        issueId: "69813204",
+        title: "Align acceptance criteria",
+        workHours: "1.0"
+      })
+    );
   });
 });

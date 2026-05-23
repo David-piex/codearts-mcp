@@ -1242,6 +1242,57 @@ describe("registerReqTool", () => {
     );
   });
 
+  it("registers the list associated issues V4 tool in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_list_associated_issues_v4",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_list_associated_issues_v4",
+      expect.objectContaining({
+        title: "req_list_associated_issues_v4",
+        description: "List CodeArts Req associated issues from the official V4 endpoint"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the expanded work item query tools in http mode", () => {
+    for (const [toolName, description] of [
+      ["req_list_work_items_v4", "List CodeArts Req work items from the official V4 advanced query endpoint"],
+      ["req_list_query_issues", "List CodeArts Req issues with the official V2 temporary filter query endpoint"],
+      [
+        "req_list_project_user_work_hours",
+        "List CodeArts Req project work hour records by user from the official single-project endpoint"
+      ]
+    ] as const) {
+      const registerTool = vi.fn();
+
+      const handled = registerReqTool({
+        toolName,
+        server: { registerTool },
+        mode: "http",
+        sessionStore: createSessionCredentialStore()
+      });
+
+      expect(handled).toBe(true);
+      expect(registerTool).toHaveBeenCalledWith(
+        toolName,
+        expect.objectContaining({
+          title: toolName,
+          description
+        }),
+        expect.any(Function)
+      );
+    }
+  });
+
   it("registers the list associated commits tool in http mode", () => {
     const registerTool = vi.fn();
 

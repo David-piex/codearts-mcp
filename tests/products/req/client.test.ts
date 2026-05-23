@@ -1228,6 +1228,94 @@ describe("createReqClient", () => {
     });
   });
 
+  it("maps official V4 advanced work item list requests to the documented project issues endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return {
+          issues: [{ id: 70779173, subject: "Advanced query", status: { name: "Open" } }],
+          total: 1
+        };
+      }
+    } as never);
+
+    const result = await client.listWorkItemsV4({
+      project_id: "p-1",
+      page: 2,
+      page_size: 10,
+      subject: "Advanced",
+      tracker_id: "7",
+      status_id: "1",
+      assigned_id: "user-1",
+      custom_fields: { cf_priority: "P1" }
+    });
+
+    expect(requestedPath).toBe("/v4/projects/p-1/issues");
+    expect(requestedBody).toEqual({
+      offset: 10,
+      limit: 10,
+      subject: "Advanced",
+      tracker_id: "7",
+      status_id: "1",
+      assigned_id: "user-1",
+      custom_fields: { cf_priority: "P1" }
+    });
+    expect(result).toEqual({
+      work_items: [{ id: 70779173, subject: "Advanced query", status: { name: "Open" } }],
+      total: 1
+    });
+  });
+
+  it("maps V2 temporary query issue requests to the documented query-issue endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return {
+          result: {
+            kanbanIssues: {
+              "1": {
+                total_count: "1",
+                issues: [{ id: 70779174, subject: "Temporary filter", status: { name: "Open" } }]
+              }
+            }
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.listQueryIssues({
+      project_id: "p-1",
+      page: 3,
+      page_size: 15,
+      show_type: "kanban",
+      filters: [{ status_id: { values: ["1"], operator: "=" } }],
+      sort: [{ field: "updated_on", asc: false }]
+    });
+
+    expect(requestedPath).toBe("/v2/issues/query-issue");
+    expect(requestedBody).toEqual({
+      pageNo: "3",
+      pageSize: "15",
+      projectUUId: "p-1",
+      showType: "kanban",
+      filters: [{ status_id: { values: ["1"], operator: "=" } }],
+      sort: [{ field: "updated_on", asc: false }]
+    });
+    expect(result).toEqual({
+      work_items: [{ id: 70779174, subject: "Temporary filter", status: { name: "Open" } }],
+      total: 1
+    });
+  });
+
   it("parses stringified issue-list payloads", async () => {
     const client = createReqClient({
       get: async () =>
@@ -2519,6 +2607,72 @@ describe("createReqClient", () => {
     });
   });
 
+  it("maps single-project user work hour queries to the documented v4 project endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return {
+          result: {
+            total: 1,
+            work_hours: [
+              {
+                issue_id: 69813204,
+                issue_type: "Story",
+                subject: "Align acceptance criteria",
+                project_name: "Payments",
+                user_id: "user-1",
+                user_name: "alice",
+                nick_name: "Alice",
+                work_date: "2020-02-19",
+                work_hours_num: "1.0",
+                summary: "Backend development"
+              }
+            ]
+          }
+        };
+      }
+    } as never);
+
+    const result = await client.listProjectUserWorkHours({
+      page: 2,
+      page_size: 10,
+      project_id: "p-1",
+      user_id: "user-1",
+      begin_time: "2025-07-01",
+      end_time: "2025-07-31"
+    });
+
+    expect(requestedPath).toBe("/v4/projects/p-1/work-hours");
+    expect(requestedBody).toEqual({
+      offset: 10,
+      limit: 10,
+      user_id: "user-1",
+      begin_time: "2025-07-01",
+      end_time: "2025-07-31"
+    });
+    expect(result).toEqual({
+      work_hours: [
+        {
+          issue_id: 69813204,
+          issue_type: "Story",
+          subject: "Align acceptance criteria",
+          project_name: "Payments",
+          user_id: "user-1",
+          user_name: "alice",
+          nick_name: "Alice",
+          work_date: "2020-02-19",
+          work_hours_num: "1.0",
+          summary: "Backend development"
+        }
+      ],
+      total: 1
+    });
+  });
+
   it("maps addWorkItemComment to the legacy notes endpoint and synthesizes a stable response", async () => {
     let requestedPath = "";
     let requestedBody: Record<string, unknown> | undefined;
@@ -2702,6 +2856,61 @@ describe("createReqClient", () => {
         }
       ],
       total: 1
+    });
+  });
+
+  it("maps associated issue queries to the official V4 associated-issues endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          issues: [
+            {
+              issue_id: 9132318,
+              subject: "Align acceptance criteria",
+              status: { id: "3", name: "Resolved" },
+              project: { project_id: "p-2", project_name: "Payments" },
+              user: { id: 101, nick_name: "Alice" }
+            }
+          ],
+          total: 1
+        };
+      }
+    } as never);
+
+    const result = await client.listAssociatedIssuesV4({
+      project_id: "p-1",
+      work_item_id: "70779173",
+      page: 2,
+      page_size: 10
+    });
+
+    expect(requestedPath).toBe("/v4/projects/p-1/issues/70779173/associated-issues?offset=10&limit=10");
+    expect(result).toEqual({
+      issues: [
+        {
+          issue_id: 9132318,
+          subject: "Align acceptance criteria",
+          status: { id: "3", name: "Resolved" },
+          project: { project_id: "p-2", project_name: "Payments" },
+          user: { id: 101, nick_name: "Alice" }
+        }
+      ],
+      total: 1,
+      raw: {
+        issues: [
+          {
+            issue_id: 9132318,
+            subject: "Align acceptance criteria",
+            status: { id: "3", name: "Resolved" },
+            project: { project_id: "p-2", project_name: "Payments" },
+            user: { id: 101, nick_name: "Alice" }
+          }
+        ],
+        total: 1
+      }
     });
   });
 

@@ -2,7 +2,7 @@ import { asListResult } from "../../../contracts/tool-result.js";
 import { formatProjectScopedEmptyText } from "../../../contracts/project-scoped-empty-text.js";
 import { formatListToolText } from "../../../contracts/tool-result-text.js";
 import { toPageInfo } from "../../../core/pagination/page-info.js";
-import { reqListWorkItemsInput, reqListWorkItemsV3Input } from "../schemas.js";
+import { reqListQueryIssuesInput, reqListWorkItemsInput, reqListWorkItemsV3Input, reqListWorkItemsV4Input } from "../schemas.js";
 import { formatReqTimestampText } from "./time-format.js";
 import {
   mapReqWorkItemAssignee,
@@ -148,6 +148,100 @@ export function createReqListWorkItemsV3Handler(client: ReqListWorkItemsV3Client
           projectId: parsed.project_id,
           resourceLabel: "V3 work items",
           serviceLabel: "Req / ProjectMan"
+        });
+
+    return {
+      content: [{ type: "text" as const, text }],
+      structuredContent: result
+    };
+  };
+}
+
+export type ReqListWorkItemsV4Client = {
+  listWorkItemsV4: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    subject?: string;
+    tracker_id?: string;
+    status_id?: string;
+    assigned_id?: string;
+    created_on?: string;
+    updated_on?: string;
+    due_date?: string;
+    custom_fields?: Record<string, unknown>;
+  }) => Promise<{
+    work_items: ReqListWorkItem[];
+    total?: number;
+  }>;
+};
+
+export function createReqListWorkItemsV4Handler(client: ReqListWorkItemsV4Client) {
+  return async (input: unknown) => {
+    const parsed = reqListWorkItemsV4Input.parse(input);
+    const response = await client.listWorkItemsV4(parsed);
+    const result = mapReqWorkItems(response.work_items, parsed.page, parsed.page_size, response.total);
+    const text = result.items?.length
+      ? formatListToolText(result, {
+          fields: [
+            { label: "id", get: (item) => (item as { id?: string }).id },
+            { label: "title", get: (item) => (item as { title?: string }).title },
+            { label: "status", get: (item) => (item as { status?: string }).status },
+            { label: "type", get: (item) => (item as { type?: string }).type },
+            { label: "assignee", get: (item) => (item as { assignedToName?: string }).assignedToName },
+            { label: "updatedOn", get: (item) => (item as { updatedOnText?: string; updatedOn?: string }).updatedOnText ?? (item as { updatedOn?: string }).updatedOn }
+          ]
+        })
+      : formatProjectScopedEmptyText({
+          summary: result.summary,
+          page: parsed.page,
+          projectId: parsed.project_id,
+          resourceLabel: "V4 work items",
+          serviceLabel: "Req / ProjectMan"
+        });
+
+    return {
+      content: [{ type: "text" as const, text }],
+      structuredContent: result
+    };
+  };
+}
+
+export type ReqListQueryIssuesClient = {
+  listQueryIssues: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    show_type?: "kanban" | "simpleParam";
+    filters?: Array<Record<string, unknown>>;
+    sort?: Array<Record<string, unknown>>;
+  }) => Promise<{
+    work_items: ReqListWorkItem[];
+    total?: number;
+  }>;
+};
+
+export function createReqListQueryIssuesHandler(client: ReqListQueryIssuesClient) {
+  return async (input: unknown) => {
+    const parsed = reqListQueryIssuesInput.parse(input);
+    const response = await client.listQueryIssues(parsed);
+    const result = mapReqWorkItems(response.work_items, parsed.page, parsed.page_size, response.total);
+    const text = result.items?.length
+      ? formatListToolText(result, {
+          fields: [
+            { label: "id", get: (item) => (item as { id?: string }).id },
+            { label: "title", get: (item) => (item as { title?: string }).title },
+            { label: "status", get: (item) => (item as { status?: string }).status },
+            { label: "type", get: (item) => (item as { type?: string }).type },
+            { label: "assignee", get: (item) => (item as { assignedToName?: string }).assignedToName }
+          ]
+        })
+      : formatProjectScopedEmptyText({
+          summary: result.summary,
+          page: parsed.page,
+          projectId: parsed.project_id,
+          resourceLabel: "query issues",
+          serviceLabel: "Req / ProjectMan V2"
         });
 
     return {

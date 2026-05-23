@@ -907,6 +907,33 @@ export type ReqClient = {
     work_items: ReqIssueListItem[];
     total?: number;
   }>;
+  listWorkItemsV4: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    subject?: string;
+    tracker_id?: string;
+    status_id?: string;
+    assigned_id?: string;
+    created_on?: string;
+    updated_on?: string;
+    due_date?: string;
+    custom_fields?: Record<string, unknown>;
+  }) => Promise<{
+    work_items: ReqIssueListItem[];
+    total?: number;
+  }>;
+  listQueryIssues: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    show_type?: "kanban" | "simpleParam";
+    filters?: Array<Record<string, unknown>>;
+    sort?: Array<Record<string, unknown>>;
+  }) => Promise<{
+    work_items: ReqIssueListItem[];
+    total?: number;
+  }>;
   searchTodoWorkItems: (input: ReqTodoWorkItemSearchInput) => Promise<{
     work_items: ReqIssueListItem[];
     total?: number;
@@ -1300,6 +1327,31 @@ export type ReqClient = {
     }>;
     total?: number;
   }>;
+  listProjectUserWorkHours: (input: {
+    page: number;
+    page_size: number;
+    project_id: string;
+    user_id?: string;
+    user_name?: string;
+    begin_time?: string;
+    end_time?: string;
+    work_hours_dates?: string;
+    work_hours_types?: string;
+  }) => Promise<{
+    work_hours: Array<{
+      issue_id?: number | string;
+      issue_type?: string;
+      subject?: string;
+      project_name?: string;
+      user_id?: string;
+      user_name?: string;
+      nick_name?: string;
+      work_date?: string;
+      work_hours_num?: string | number;
+      summary?: string;
+    }>;
+    total?: number;
+  }>;
   listProjectMemberWorkHours: (input: {
     page: number;
     page_size: number;
@@ -1348,6 +1400,36 @@ export type ReqClient = {
       };
     }>;
     total?: number;
+  }>;
+  listAssociatedIssuesV4: (input: {
+    project_id: string;
+    work_item_id: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    issues: Array<{
+      issue_id?: number | string;
+      id?: number | string;
+      subject?: string;
+      status?: {
+        id?: number | string;
+        name?: string;
+      };
+      user?: {
+        id?: number | string;
+        name?: string;
+        nick_name?: string;
+        first_name?: string;
+        last_name?: string;
+      };
+      project?: {
+        project_id?: string;
+        project_name?: string;
+        name?: string;
+      };
+    } & Record<string, unknown>>;
+    total?: number;
+    raw?: unknown;
   }>;
   listAssociatedCommits: (input: {
     project_id: string;
@@ -5440,6 +5522,50 @@ export function createReqClient(
         total: getNumberProperty(result, ["total_count", "total"])
       };
     },
+    async listWorkItemsV4(input) {
+      const response = await _http.post(`/v4/projects/${encodeURIComponent(input.project_id)}/issues`, {
+        offset: (input.page - 1) * input.page_size,
+        limit: input.page_size,
+        ...(input.subject ? { subject: input.subject } : {}),
+        ...(input.tracker_id ? { tracker_id: input.tracker_id } : {}),
+        ...(input.status_id ? { status_id: input.status_id } : {}),
+        ...(input.assigned_id ? { assigned_id: input.assigned_id } : {}),
+        ...(input.created_on ? { created_on: input.created_on } : {}),
+        ...(input.updated_on ? { updated_on: input.updated_on } : {}),
+        ...(input.due_date ? { due_date: input.due_date } : {}),
+        ...(input.custom_fields ? { custom_fields: input.custom_fields } : {})
+      });
+      const result = unwrapReqResult(response);
+
+      return {
+        work_items: getArrayProperty(result, ["issues", "work_items", "issue_list"]) as ReqIssueListItem[],
+        total: getNumberProperty(result, ["total_count", "total"])
+      };
+    },
+    async listQueryIssues(input) {
+      const response = await _http.post("/v2/issues/query-issue", {
+        pageNo: String(input.page),
+        pageSize: String(input.page_size),
+        projectUUId: input.project_id,
+        showType: input.show_type ?? "kanban",
+        ...(input.filters ? { filters: input.filters } : {}),
+        ...(input.sort ? { sort: input.sort } : {})
+      });
+      const result = unwrapReqResult(response);
+      const kanbanIssues = result.kanbanIssues;
+      const firstBucket =
+        kanbanIssues && typeof kanbanIssues === "object" && !Array.isArray(kanbanIssues)
+          ? Object.values(kanbanIssues as Record<string, unknown>)[0]
+          : undefined;
+      const bucket = firstBucket && typeof firstBucket === "object" && !Array.isArray(firstBucket)
+        ? firstBucket as Record<string, unknown>
+        : result;
+
+      return {
+        work_items: getArrayProperty(bucket, ["issues", "work_items", "issue_list"]) as ReqIssueListItem[],
+        total: getNumberProperty(bucket, ["total_count", "total"])
+      };
+    },
     async searchTodoWorkItems(input) {
       const response = (await _http.post("/v4/issues", {
         offset: (input.page - 1) * input.page_size,
@@ -6303,6 +6429,68 @@ export function createReqClient(
         total: result.total
       };
     },
+    async listProjectUserWorkHours(input) {
+      const offset = (input.page - 1) * input.page_size;
+      const response = (await _http.post(`/v4/projects/${encodeURIComponent(input.project_id)}/work-hours`, {
+        offset,
+        limit: input.page_size,
+        ...(input.user_id ? { user_id: input.user_id } : {}),
+        ...(input.user_name ? { user_name: input.user_name } : {}),
+        ...(input.begin_time ? { begin_time: input.begin_time } : {}),
+        ...(input.end_time ? { end_time: input.end_time } : {}),
+        ...(input.work_hours_dates ? { work_hours_dates: input.work_hours_dates } : {}),
+        ...(input.work_hours_types ? { work_hours_types: input.work_hours_types } : {})
+      })) as {
+        result?: {
+          total?: number;
+          work_hours?: Array<{
+            issue_id?: number | string;
+            issue_type?: string;
+            subject?: string;
+            project_name?: string;
+            user_id?: string;
+            user_name?: string;
+            nick_name?: string;
+            work_date?: string;
+            work_hours_num?: string | number;
+            summary?: string;
+          }>;
+        };
+        total?: number;
+        work_hours?: Array<{
+          issue_id?: number | string;
+          issue_type?: string;
+          subject?: string;
+          project_name?: string;
+          user_id?: string;
+          user_name?: string;
+          nick_name?: string;
+          work_date?: string;
+          work_hours_num?: string | number;
+          summary?: string;
+        }>;
+      };
+      const result = (response.result ?? response) as {
+        work_hours?: Array<{
+          issue_id?: number | string;
+          issue_type?: string;
+          subject?: string;
+          project_name?: string;
+          user_id?: string;
+          user_name?: string;
+          nick_name?: string;
+          work_date?: string;
+          work_hours_num?: string | number;
+          summary?: string;
+        }>;
+        total?: number;
+      };
+
+      return {
+        work_hours: result.work_hours ?? [],
+        total: result.total
+      };
+    },
     async listProjectMemberWorkHours(input) {
       const response = (await _http.post("/v3/work-hours/get-member-work-hours", {
         page_no: String(input.page),
@@ -6413,6 +6601,56 @@ export function createReqClient(
       return {
         issues: associatedIssues?.issues ?? [],
         total: associatedIssues?.total_count
+      };
+    },
+    async listAssociatedIssuesV4(input) {
+      const offset = (input.page - 1) * input.page_size;
+      const query = new URLSearchParams({
+        offset: String(offset),
+        limit: String(input.page_size)
+      });
+      const response = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/issues/${encodeURIComponent(input.work_item_id)}/associated-issues?${query.toString()}`
+      )) as {
+        issues?: Array<{
+          issue_id?: number | string;
+          id?: number | string;
+          subject?: string;
+          status?: { id?: number | string; name?: string };
+          user?: {
+            id?: number | string;
+            name?: string;
+            nick_name?: string;
+            first_name?: string;
+            last_name?: string;
+          };
+          project?: { project_id?: string; project_name?: string; name?: string };
+        } & Record<string, unknown>>;
+        total?: number;
+        result?: {
+          issues?: Array<{
+            issue_id?: number | string;
+            id?: number | string;
+            subject?: string;
+            status?: { id?: number | string; name?: string };
+            user?: {
+              id?: number | string;
+              name?: string;
+              nick_name?: string;
+              first_name?: string;
+              last_name?: string;
+            };
+            project?: { project_id?: string; project_name?: string; name?: string };
+          } & Record<string, unknown>>;
+          total?: number;
+        };
+      };
+      const result = response.result ?? response;
+
+      return {
+        issues: result.issues ?? [],
+        total: result.total,
+        raw: response
       };
     },
     async listAssociatedCommits(input) {

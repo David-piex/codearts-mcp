@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
+  createReqListQueryIssuesHandler,
   createReqListWorkItemsHandler,
   createReqListWorkItemsV3Handler,
+  createReqListWorkItemsV4Handler,
   mapReqWorkItems
 } from "../../../../src/products/req/tools/list-work-items.js";
 
@@ -155,6 +157,68 @@ describe("mapReqWorkItems", () => {
       summary: "1 work items found in this page (total: 1)"
     });
     expect(result.content[0]?.text).toContain("V3 story");
+    expect(result.content[0]?.text).toContain("assignee: Alice");
+  });
+
+  it("returns normalized V4 advanced query work item output", async () => {
+    const handler = createReqListWorkItemsV4Handler({
+      listWorkItemsV4: async () => ({
+        work_items: [
+          {
+            id: 11,
+            subject: "V4 advanced query",
+            status: { name: "Open" },
+            tracker: { name: "Story" },
+            assigned_to: { assigned_nick_name: "Alice" }
+          }
+        ],
+        total: 1
+      })
+    });
+
+    const result = await handler({
+      project_id: "project-1",
+      page: 1,
+      page_size: 20,
+      subject: "advanced",
+      tracker_id: "7"
+    });
+
+    expect(result.structuredContent).toMatchObject({
+      summary: "1 work items found in this page (total: 1)"
+    });
+    expect(result.content[0]?.text).toContain("V4 advanced query");
+    expect(result.content[0]?.text).toContain("assignee: Alice");
+  });
+
+  it("returns normalized V2 temporary query issue output", async () => {
+    const handler = createReqListQueryIssuesHandler({
+      listQueryIssues: async () => ({
+        work_items: [
+          {
+            id: 12,
+            subject: "Temporary filter issue",
+            status: { name: "Open" },
+            tracker: { name: "Task" },
+            assigned_to: { assigned_nick_name: "Alice" }
+          }
+        ],
+        total: 1
+      })
+    });
+
+    const result = await handler({
+      project_id: "project-1",
+      page: 1,
+      page_size: 20,
+      show_type: "kanban",
+      filters: [{ status_id: { values: ["1"] } }]
+    });
+
+    expect(result.structuredContent).toMatchObject({
+      summary: "1 work items found in this page (total: 1)"
+    });
+    expect(result.content[0]?.text).toContain("Temporary filter issue");
     expect(result.content[0]?.text).toContain("assignee: Alice");
   });
 });

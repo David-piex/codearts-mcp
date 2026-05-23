@@ -106,6 +106,35 @@ export const reqListWorkItemsV3Input = pagingSchema
     tracker_id: z.string().min(1).optional()
   });
 
+export const reqListWorkItemsV4Input = pagingSchema
+  .pick({
+    page: true,
+    page_size: true
+  })
+  .extend({
+    project_id: idSchema,
+    subject: z.string().min(1).optional(),
+    tracker_id: z.string().min(1).optional(),
+    status_id: z.string().min(1).optional(),
+    assigned_id: z.string().min(1).optional(),
+    created_on: z.string().min(1).optional(),
+    updated_on: z.string().min(1).optional(),
+    due_date: z.string().min(1).optional(),
+    custom_fields: z.record(z.string(), z.unknown()).optional()
+  });
+
+export const reqListQueryIssuesInput = pagingSchema
+  .pick({
+    page: true,
+    page_size: true
+  })
+  .extend({
+    project_id: idSchema,
+    show_type: z.enum(["kanban", "simpleParam"]).default("kanban"),
+    filters: z.array(z.record(z.string(), z.unknown())).max(200).optional(),
+    sort: z.array(z.record(z.string(), z.unknown())).max(20).optional()
+  });
+
 const reqTodoWorkItemsBaseInput = pagingSchema
   .pick({
     page: true,
@@ -372,6 +401,22 @@ export const reqListProjectWorkHoursInput = pagingSchema
     sort_order: true
   });
 
+export const reqListProjectUserWorkHoursInput = pagingSchema
+  .extend({
+    project_id: idSchema,
+    user_id: idSchema.optional(),
+    user_name: z.string().min(1).optional(),
+    begin_time: z.string().min(1).optional(),
+    end_time: z.string().min(1).optional(),
+    work_hours_dates: z.string().min(1).optional(),
+    work_hours_types: z.string().min(1).optional()
+  })
+  .omit({
+    keyword: true,
+    sort_by: true,
+    sort_order: true
+  });
+
 export const reqListProjectMemberWorkHoursInput = pagingSchema
   .extend({
     project_id: idSchema.optional(),
@@ -403,6 +448,16 @@ export const reqListAssociatedIssuesInput = pagingSchema
     keyword: true,
     sort_by: true,
     sort_order: true
+  });
+
+export const reqListAssociatedIssuesV4Input = pagingSchema
+  .pick({
+    page: true,
+    page_size: true
+  })
+  .extend({
+    project_id: idSchema,
+    work_item_id: idSchema
   });
 
 export const reqListAssociatedCommitsInput = pagingSchema
