@@ -1099,6 +1099,68 @@ describe("createReqClient", () => {
     expect(result.id).toBe(101);
   });
 
+  it("maps quickCreateChildWorkItem to the documented quick-issue endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return {
+          status: "success",
+          result: {
+            issue: {
+              id: 70800001,
+              subject: "Child Story",
+              description: "<p>created</p>",
+              parent_issue_id: 70779173,
+              assigned_to_id: 101,
+              fixed_version_id: "123.0",
+              projectUUId: "p-1",
+              status: { id: 1, name: "New" },
+              tracker: { id: 7, name: "Story" }
+            }
+          }
+        };
+      }
+    } as never);
+
+    const result = await client.quickCreateChildWorkItem({
+      project_id: "p-1",
+      title: "Child Story",
+      parent_issue_id: 70779173,
+      tracker_id: 7,
+      assigned_to_id: 101,
+      fixed_version_id: "123.0"
+    });
+
+    expect(requestedPath).toBe("/v2/issues/quick-issue");
+    expect(requestedBody).toEqual({
+      projectUUId: "p-1",
+      subject: "Child Story",
+      parent_issue_id: 70779173,
+      tracker_id: 7,
+      assigned_to_id: 101,
+      fixed_version_id: "123.0"
+    });
+    expect(result).toMatchObject({
+      id: 70800001,
+      subject: "Child Story",
+      description: "<p>created</p>",
+      project_id: "p-1",
+      parent_issue_id: 70779173,
+      assigned_to_id: 101,
+      fixed_version_id: "123.0",
+      status: { id: 1, name: "New" },
+      tracker: { id: 7, name: "Story" }
+    });
+    expect(result.rawIssue).toMatchObject({
+      id: 70800001,
+      subject: "Child Story"
+    });
+  });
+
   it("maps updateWorkItem to the issue detail endpoint with extended mutable fields", async () => {
     let requestedPath = "";
     let requestedBody: Record<string, unknown> | undefined;

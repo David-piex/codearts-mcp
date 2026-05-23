@@ -228,6 +228,7 @@ export const reqToolNames = [
   "req_upload_ipd_issue_attachment",
   "req_upload_ipd_issue_image",
   "req_upload_work_item_image",
+  "req_quick_create_child_work_item",
   "req_validate_module_name",
   "req_validate_project_template_name",
   "req_request_official_api",

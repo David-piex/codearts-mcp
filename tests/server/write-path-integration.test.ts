@@ -101,6 +101,37 @@ function createReqCreateWorkItemInput<T extends Record<string, unknown>>(
   } & T;
 }
 
+function createReqQuickCreateChildWorkItemInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  title: string;
+  parent_issue_id: number;
+  tracker_id: number;
+  assigned_to_id: number;
+  fixed_version_id: string;
+  dry_run: boolean;
+} & T {
+  return {
+    project_id: "project-1",
+    title: "Child Story",
+    parent_issue_id: 70779173,
+    tracker_id: 7,
+    assigned_to_id: 101,
+    fixed_version_id: "123.0",
+    dry_run: false,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    title: string;
+    parent_issue_id: number;
+    tracker_id: number;
+    assigned_to_id: number;
+    fixed_version_id: string;
+    dry_run: boolean;
+  } & T;
+}
+
 function createReqCreateProjectInput<T extends Record<string, unknown>>(
   overrides?: T
 ): {
@@ -1811,6 +1842,50 @@ const writePathCases: WritePathCase[] = [
     }
   },
   {
+    name: "executes req_quick_create_child_work_item through the registered session-aware runtime client",
+    createHandler: (store: SessionStore) =>
+      readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_quick_create_child_work_item"),
+    input: createReqQuickCreateChildWorkItemInput(),
+    responsePayload: {
+      status: "success",
+      result: {
+        issue: {
+          id: 70800001,
+          subject: "Child Story",
+          description: "<p>created</p>",
+          parent_issue_id: 70779173,
+          assigned_to_id: 101,
+          fixed_version_id: "123.0",
+          projectUUId: "project-1",
+          status: { id: 1, name: "New" },
+          tracker: { id: 7, name: "Story" }
+        }
+      }
+    },
+    expectedItem: {
+      id: "70800001",
+      title: "Child Story",
+      status: "New",
+      type: "Story",
+      projectId: "project-1",
+      parentIssueId: 70779173,
+      assignedToId: 101,
+      fixedVersionId: "123.0",
+      executed: true
+    },
+    expectedRequest: {
+      path: "/v2/issues/quick-issue",
+      bodyIncludes: [
+        "\"projectUUId\":\"project-1\"",
+        "\"subject\":\"Child Story\"",
+        "\"parent_issue_id\":70779173",
+        "\"tracker_id\":7",
+        "\"assigned_to_id\":101",
+        "\"fixed_version_id\":\"123.0\""
+      ]
+    }
+  },
+  {
     name: "executes req_delete_work_item through the registered session-aware runtime client",
     createHandler: (store: SessionStore) =>
       readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_delete_work_item"),
@@ -2501,6 +2576,22 @@ const dryRunCases: DryRunCase[] = [
           position: 1
         }
       ],
+      executed: false
+    }
+  },
+  {
+    name: "short-circuits req_quick_create_child_work_item dry runs without HTTP or rate-limit consumption",
+    toolName: "req_quick_create_child_work_item",
+    input: createReqQuickCreateChildWorkItemInput({
+      dry_run: true
+    }),
+    expectedItem: {
+      projectId: "project-1",
+      title: "Child Story",
+      parentIssueId: 70779173,
+      trackerId: 7,
+      assignedToId: 101,
+      fixedVersionId: "123.0",
       executed: false
     }
   },

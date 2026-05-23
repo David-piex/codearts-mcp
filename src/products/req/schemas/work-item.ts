@@ -22,6 +22,16 @@ export const reqCreateWorkItemInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const reqQuickCreateChildWorkItemInput = z.object({
+  project_id: idSchema,
+  title: z.string().min(1),
+  parent_issue_id: z.number().int().positive(),
+  tracker_id: z.number().int().positive(),
+  assigned_to_id: z.number().int().positive().optional(),
+  fixed_version_id: z.string().min(1).optional(),
+  dry_run: z.boolean().default(true)
+});
+
 export const reqUpdateWorkItemInput = z.object({
   project_id: idSchema,
   work_item_id: idSchema,

@@ -197,6 +197,7 @@ import {
   reqListWorkItemsV3Input,
   reqListWorkItemsV4Input,
   reqListWorkItemsInput,
+  reqQuickCreateChildWorkItemInput,
   reqFindIterationsInput,
   reqListRrHistoriesInput,
   reqListRrsInput,
@@ -396,6 +397,7 @@ import { createReqUpdateWorkItemHandler } from "../products/req/tools/update-wor
 import { createReqUpdateWorkingHoursHandler } from "../products/req/tools/update-working-hours.js";
 import { createReqUploadAttachmentHandler } from "../products/req/tools/upload-attachment.js";
 import { createReqUploadWorkItemImageHandler } from "../products/req/tools/upload-work-item-image.js";
+import { createReqQuickCreateChildWorkItemHandler } from "../products/req/tools/quick-create-child-work-item.js";
 import { createReqValidateModuleNameHandler } from "../products/req/tools/validate-module-name.js";
 import { createReqValidateProjectTemplateNameHandler } from "../products/req/tools/validate-project-template-name.js";
 import {
@@ -1617,6 +1619,14 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqCreateWorkItemHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqCreateWorkItemHandler,
     rateLimitAction: "req_create_work_item"
+  }),
+  "req_quick_create_child_work_item": defineProductTool({
+    description: "Quick create a CodeArts Req child work item from the official V2 endpoint",
+    inputSchema: reqQuickCreateChildWorkItemInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqQuickCreateChildWorkItemHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqQuickCreateChildWorkItemHandler,
+    rateLimitAction: "req_quick_create_child_work_item"
   }),
   "req_add_work_item_comment": defineProductTool({
     description: "Add comment to a CodeArts Req work item",

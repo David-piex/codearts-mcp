@@ -192,6 +192,27 @@ describe("registerReqTool", () => {
     );
   });
 
+  it("registers the quick create child work item tool with rate-limited metadata", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_quick_create_child_work_item",
+      server: { registerTool },
+      mode: "stdio",
+      stdioClient: {} as never
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_quick_create_child_work_item",
+      expect.objectContaining({
+        title: "req_quick_create_child_work_item",
+        description: "Quick create a CodeArts Req child work item from the official V2 endpoint"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("registers the batch delete work items tool with rate-limited metadata", () => {
     const registerTool = vi.fn();
 
@@ -2268,6 +2289,15 @@ describe("registerReqTool", () => {
       toolName: "req_batch_update_child_user_nicknames",
       input: {
         users: [{ user_id: "user-1", nick_name: "Alice" }]
+      }
+    },
+    {
+      toolName: "req_quick_create_child_work_item",
+      input: {
+        project_id: "project-1",
+        title: "Child Story",
+        parent_issue_id: 70779173,
+        tracker_id: 7
       }
     },
     {

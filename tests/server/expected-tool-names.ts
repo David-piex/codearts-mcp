@@ -678,6 +678,7 @@ export const expectedToolNames = [
   "req_list_work_setting_templates_v2",
   "req_query_iteration_immovable_issues",
   "req_query_scrum_version_work_items_v2",
+  "req_quick_create_child_work_item",
   "req_request_official_api",
   "req_search_my_work_items",
   "req_search_todo_work_items",

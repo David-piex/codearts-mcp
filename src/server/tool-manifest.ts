@@ -90,6 +90,7 @@ const WRITE_ACTIONS = new Set([
   "move",
   "pass",
   "prepare",
+  "quick",
   "refuse",
   "reject",
   "request",

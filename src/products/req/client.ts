@@ -67,6 +67,25 @@ export type ReqClient = {
     status?: { id?: number; name?: string };
     tracker?: { id?: number; name?: string };
   }>;
+  quickCreateChildWorkItem: (input: {
+    project_id: string;
+    title: string;
+    parent_issue_id: number;
+    tracker_id: number;
+    assigned_to_id?: number;
+    fixed_version_id?: string;
+  }) => Promise<{
+    id: number | string;
+    subject: string;
+    description?: string;
+    status?: { id?: number | string; name?: string };
+    tracker?: { id?: number | string; name?: string };
+    project_id?: string;
+    parent_issue_id: number;
+    assigned_to_id?: number;
+    fixed_version_id?: string;
+    rawIssue?: Record<string, unknown>;
+  }>;
   getProject: (input: { project_id: string }) => Promise<{
     project_id: string;
     name: string;
@@ -3609,6 +3628,47 @@ export function createReqClient(
         description: response.description,
         status: response.status,
         tracker: response.tracker
+      };
+    },
+    async quickCreateChildWorkItem(input) {
+      const response = (await _http.post("/v2/issues/quick-issue", {
+        projectUUId: input.project_id,
+        subject: input.title,
+        parent_issue_id: input.parent_issue_id,
+        tracker_id: input.tracker_id,
+        ...(typeof input.assigned_to_id !== "undefined" ? { assigned_to_id: input.assigned_to_id } : {}),
+        ...(input.fixed_version_id ? { fixed_version_id: input.fixed_version_id } : {})
+      })) as {
+        status?: string;
+        result?: {
+          issue?: {
+            id?: number | string;
+            subject?: string;
+            description?: string;
+            status?: { id?: number | string; name?: string };
+            tracker?: { id?: number | string; name?: string };
+            projectUUId?: string;
+            project?: { identifier?: string };
+            parent_issue_id?: number;
+            assigned_to_id?: number;
+            fixed_version_id?: string;
+          } & Record<string, unknown>;
+        };
+      };
+      assertReqMutationSucceeded("quick create child work item", response.status);
+      const issue = response.result?.issue ?? {};
+
+      return {
+        id: issue.id ?? "",
+        subject: issue.subject ?? input.title,
+        description: issue.description,
+        status: issue.status,
+        tracker: issue.tracker,
+        project_id: issue.projectUUId ?? issue.project?.identifier ?? input.project_id,
+        parent_issue_id: issue.parent_issue_id ?? input.parent_issue_id,
+        assigned_to_id: issue.assigned_to_id ?? input.assigned_to_id,
+        fixed_version_id: issue.fixed_version_id ?? input.fixed_version_id,
+        rawIssue: issue
       };
     },
     async getProject(input) {

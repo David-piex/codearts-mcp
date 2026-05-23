@@ -31,9 +31,9 @@
 | 部署 | 63 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
 | 流水线 | 91 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 176 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
-| 需求管理 | 234 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
+| 需求管理 | 235 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 238 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **954** | |
+| **总计** | **955** | |
 
 ## 字段对应
 
@@ -724,6 +724,7 @@
 | `req_list_work_setting_templates_v2` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_list_work_setting_templates_v2) |
 | `req_query_iteration_immovable_issues` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_query_iteration_immovable_issues) |
 | `req_query_scrum_version_work_items_v2` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_query_scrum_version_work_items_v2) |
+| `req_quick_create_child_work_item` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_quick_create_child_work_item) |
 | `req_request_official_api` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_request_official_api) |
 | `req_search_my_work_items` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_search_my_work_items) |
 | `req_search_todo_work_items` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_search_todo_work_items) |
