@@ -190,6 +190,30 @@ describe("createHttpClient", () => {
     expect(result.fileName).toBe("report.pdf");
   });
 
+  it("supports binary POST responses", async () => {
+    const fetcher = vi.fn().mockResolvedValue(
+      new Response(new Uint8Array([4, 5, 6]), {
+        status: 200,
+        headers: {
+          "content-type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "content-disposition": "attachment; filename*=UTF-8''work-items.xlsx"
+        }
+      })
+    );
+
+    const client = createClient(fetcher);
+
+    const result = await client.postBinary("/v1/export", { project_id: "p-1" });
+
+    expect(fetcher).toHaveBeenCalledWith("https://example.com/v1/export", expect.objectContaining({
+      method: "POST",
+      body: JSON.stringify({ project_id: "p-1" })
+    }));
+    expect(Array.from(result.body)).toEqual([4, 5, 6]);
+    expect(result.contentType).toBe("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    expect(result.fileName).toBe("work-items.xlsx");
+  });
+
   it("parses json-shaped provider errors even when content-type is text/html", async () => {
     const fetcher = vi.fn().mockResolvedValue(
       new Response(

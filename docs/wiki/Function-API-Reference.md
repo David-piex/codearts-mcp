@@ -31,9 +31,9 @@
 | 部署 | 63 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
 | 流水线 | 91 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 176 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
-| 需求管理 | 235 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
+| 需求管理 | 236 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 238 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **955** | |
+| **总计** | **956** | |
 
 ## 字段对应
 
@@ -587,6 +587,7 @@
 | `req_download_image_file` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_download_image_file) |
 | `req_download_ipd_issue_attachment` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_download_ipd_issue_attachment) |
 | `req_download_ipd_issue_image` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_download_ipd_issue_image) |
+| `req_export_work_items_new_v2` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_export_work_items_new_v2) |
 | `req_find_iterations` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_find_iterations) |
 | `req_get_current_user_info` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_get_current_user_info) |
 | `req_get_current_user_role` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_get_current_user_role) |

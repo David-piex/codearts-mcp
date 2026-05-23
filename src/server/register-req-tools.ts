@@ -83,6 +83,7 @@ import {
   reqDownloadImageFileInput,
   reqDownloadIpdIssueAttachmentInput,
   reqDownloadIpdIssueImageInput,
+  reqExportWorkItemsNewV2Input,
   reqGetProjectPublicConfigInput,
   reqGetProjectSummaryInput,
   reqGetProjectWorkhourConfigInput,
@@ -276,6 +277,7 @@ import { createReqCreateWorkItemHandler } from "../products/req/tools/create-wor
 import { createReqDeleteWorkItemHandler } from "../products/req/tools/delete-work-item.js";
 import { createReqDownloadAttachmentHandler } from "../products/req/tools/download-attachment.js";
 import { createReqDownloadImageFileHandler } from "../products/req/tools/download-image-file.js";
+import { createReqExportWorkItemsNewV2Handler } from "../products/req/tools/export-work-items-new-v2.js";
 import { createReqBatchUpdateWorkItemsHandler } from "../products/req/tools/batch-update-work-items.js";
 import { createReqCountWorkItemTreeHandler } from "../products/req/tools/count-work-item-tree.js";
 import { createReqCreateWorkItemTemplateHandler } from "../products/req/tools/create-work-item-template.js";
@@ -601,6 +603,13 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqDownloadAttachmentHandler>[0] }) =>
       clients.reqClient,
     createProductHandler: createReqDownloadAttachmentHandler
+  }),
+  "req_export_work_items_new_v2": defineProductTool({
+    description: "Export CodeArts Req work items through the official V2 export endpoint",
+    inputSchema: reqExportWorkItemsNewV2Input,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqExportWorkItemsNewV2Handler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqExportWorkItemsNewV2Handler
   }),
   "req_create_project": defineProductTool({
     description: "Create CodeArts Req project",

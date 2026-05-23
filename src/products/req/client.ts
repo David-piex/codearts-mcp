@@ -1,3 +1,4 @@
+import { Buffer } from "node:buffer";
 import { createReadThroughCache } from "../../core/cache/read-through-cache.js";
 import { DEFAULT_READ_CACHE_TTLS } from "../../core/cache/read-cache-ttl.js";
 import { AppError } from "../../core/errors/app-error.js";
@@ -33,6 +34,23 @@ export type ReqClient = {
   listWorkItemQueries: (input: { project_id: string }) => Promise<{
     shared: unknown[];
     created: unknown[];
+  }>;
+  exportWorkItemsNewV2: (input: {
+    project_id: string;
+    fields: string;
+    export_child: boolean;
+    type: "tree" | "list";
+    time_zone: number;
+    page: number;
+    page_size: number;
+    export_all: boolean;
+    tracker_id?: string;
+  }) => Promise<{
+    project_id: string;
+    file_name?: string;
+    content_type?: string;
+    size_bytes: number;
+    content_base64: string;
   }>;
   createProject: (input: {
     name: string;
@@ -5703,6 +5721,27 @@ export function createReqClient(
       return {
         work_items: getArrayProperty(bucket, ["issues", "work_items", "issue_list"]) as ReqIssueListItem[],
         total: getNumberProperty(bucket, ["total_count", "total"])
+      };
+    },
+    async exportWorkItemsNewV2(input) {
+      const response = await _http.postBinary("/v2/issues/export-reqs-new", {
+        projectUUId: input.project_id,
+        fields: input.fields,
+        export_child: input.export_child,
+        type: input.type,
+        time_zone: input.time_zone,
+        page_no: input.page,
+        page_size: input.page_size,
+        export_all: input.export_all,
+        ...(input.tracker_id ? { tracker_id: input.tracker_id } : {})
+      });
+
+      return {
+        project_id: input.project_id,
+        file_name: response.fileName,
+        content_type: response.contentType,
+        size_bytes: response.body.byteLength,
+        content_base64: Buffer.from(response.body).toString("base64")
       };
     },
     async searchTodoWorkItems(input) {

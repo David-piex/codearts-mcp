@@ -2309,6 +2309,55 @@ describe("createReqClient", () => {
     });
   });
 
+  it("maps V2 work item exports to the documented binary POST endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      postBinary: async (path: string, body: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return {
+          body: new Uint8Array([1, 2, 3]),
+          contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          fileName: "work-items.xlsx"
+        };
+      }
+    } as never);
+
+    const result = await client.exportWorkItemsNewV2({
+      project_id: "p-1",
+      fields: "id,subject,status",
+      export_child: true,
+      type: "list",
+      time_zone: 8,
+      page: 2,
+      page_size: 50,
+      export_all: false,
+      tracker_id: "5,6,7"
+    });
+
+    expect(requestedPath).toBe("/v2/issues/export-reqs-new");
+    expect(requestedBody).toEqual({
+      projectUUId: "p-1",
+      fields: "id,subject,status",
+      export_child: true,
+      type: "list",
+      time_zone: 8,
+      page_no: 2,
+      page_size: 50,
+      export_all: false,
+      tracker_id: "5,6,7"
+    });
+    expect(result).toEqual({
+      project_id: "p-1",
+      file_name: "work-items.xlsx",
+      content_type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      size_bytes: 3,
+      content_base64: "AQID"
+    });
+  });
+
   it("maps add work item work hour to the v3 work-hours endpoint", async () => {
     let requestedPath = "";
     let requestedBody: Record<string, unknown> | undefined;

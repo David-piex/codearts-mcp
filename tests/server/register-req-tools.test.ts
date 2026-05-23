@@ -213,6 +213,27 @@ describe("registerReqTool", () => {
     );
   });
 
+  it("registers the V2 work item export tool with the expected metadata", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_export_work_items_new_v2",
+      server: { registerTool },
+      mode: "stdio",
+      stdioClient: {} as never
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_export_work_items_new_v2",
+      expect.objectContaining({
+        title: "req_export_work_items_new_v2",
+        description: "Export CodeArts Req work items through the official V2 export endpoint"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("registers the batch delete work items tool with rate-limited metadata", () => {
     const registerTool = vi.fn();
 

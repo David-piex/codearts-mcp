@@ -12,6 +12,7 @@ export const reqToolNames = [
   "req_download_attachment",
   "req_download_ipd_issue_attachment",
   "req_download_ipd_issue_image",
+  "req_export_work_items_new_v2",
   "req_batch_add_project_members",
   "req_batch_create_tracker_config",
   "req_batch_create_ipd_issues",

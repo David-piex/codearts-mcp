@@ -541,6 +541,7 @@ export const expectedToolNames = [
   "req_download_image_file",
   "req_download_ipd_issue_attachment",
   "req_download_ipd_issue_image",
+  "req_export_work_items_new_v2",
   "req_find_iterations",
   "req_get_current_user_info",
   "req_get_current_user_role",

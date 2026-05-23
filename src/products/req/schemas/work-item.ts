@@ -145,6 +145,24 @@ export const reqListQueryIssuesInput = pagingSchema
     sort: z.array(z.record(z.string(), z.unknown())).max(20).optional()
   });
 
+export const reqExportWorkItemsNewV2Input = pagingSchema
+  .pick({
+    page: true,
+    page_size: true
+  })
+  .extend({
+    project_id: idSchema,
+    fields: z.string().min(1).default(
+      "id,subject,tracker,status,priority,severity,assigned_to,created_on,updated_on,start_date,due_date"
+    ),
+    export_child: z.boolean().default(true),
+    type: z.enum(["tree", "list"]).default("list"),
+    time_zone: z.number().int().default(8),
+    export_all: z.boolean().default(false),
+    tracker_id: z.string().min(1).optional(),
+    dry_run: z.boolean().default(true)
+  });
+
 const reqTodoWorkItemsBaseInput = pagingSchema
   .pick({
     page: true,
