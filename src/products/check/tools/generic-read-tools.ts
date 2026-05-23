@@ -25,8 +25,18 @@ export function mapCheckRecordList(
   return asListResult(
     `${items.length} ${noun} found`,
     items.map((item) => ({
-      id: String(item.id ?? item.uuid ?? item.task_id ?? item.job_id ?? item.name ?? item.value ?? ""),
-      name: typeof item.name === "string" ? item.name : undefined,
+      id: String(
+        item.id ??
+          item.uuid ??
+          item.task_id ??
+          item.job_id ??
+          item.rule_id ??
+          item.ruleId ??
+          item.name ??
+          item.value ??
+          ""
+      ),
+      name: typeof item.name === "string" ? item.name : typeof item.rule_name === "string" ? item.rule_name : undefined,
       [key]: item
     })),
     toPageInfo(1, items.length || total || 1, total)

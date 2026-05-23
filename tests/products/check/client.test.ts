@@ -788,4 +788,165 @@ describe("createCheckClient", () => {
       "/v4/template-tasks?page=1&page_size=15&project_id=project-1&search=Java"
     ]);
   });
+
+  it("uses documented ruleset metadata endpoints", async () => {
+    const requests: string[] = [];
+    const client = createClient({
+      get: async (path: string) => {
+        requests.push(path);
+        if (path.includes("/ruleset/ruleset-1/rules")) {
+          return {
+            info: [
+              {
+                rule_id: "rule-1",
+                rule_name: "NoBug",
+                rule_language: "JAVA"
+              }
+            ],
+            total: 1
+          };
+        }
+        if (path.includes("/criterionsets/language")) {
+          return {
+            result: {
+              criterionSetList: [
+                {
+                  id: "set-1",
+                  name: "Java default",
+                  language: "JAVA"
+                }
+              ],
+              total: 1
+            }
+          };
+        }
+        if (path.includes("/criterion-rule/query")) {
+          return {
+            result: {
+              id: "criterion-1",
+              name: "NoBug",
+              severity: "1"
+            }
+          };
+        }
+        if (path.includes("/all-thirdtools")) {
+          return {
+            result: ["checker01", "checker02"]
+          };
+        }
+        if (path.includes("/criterionsets/set-1")) {
+          return {
+            result: {
+              id: "set-1",
+              name: "Java default"
+            }
+          };
+        }
+
+        return {
+          result: {
+            criterionSetList: [
+              {
+                id: "set-2",
+                name: "Python default",
+                language: "PYTHON"
+              }
+            ],
+            total: 1
+          }
+        };
+      }
+    });
+
+    await expect(client.listRulesetRules({
+      project_id: "project-1",
+      ruleset_id: "ruleset-1",
+      page: 2,
+      page_size: 10,
+      types: "1",
+      languages: "JAVA",
+      tags: "cwe"
+    })).resolves.toEqual({
+      rules: [
+        {
+          rule_id: "rule-1",
+          rule_name: "NoBug",
+          rule_language: "JAVA"
+        }
+      ],
+      total: 1
+    });
+    await expect(client.listCriterionsetsByLanguage({
+      project_id: "project-1",
+      language: "JAVA",
+      page: 3,
+      page_size: 50,
+      search: "default"
+    })).resolves.toEqual({
+      criterionsets: [
+        {
+          id: "set-1",
+          name: "Java default",
+          language: "JAVA"
+        }
+      ],
+      total: 1
+    });
+    await expect(client.getCriterionRule({
+      criterion_rule_id: "criterion-1"
+    })).resolves.toEqual({
+      criterion_rule_id: "criterion-1",
+      raw: {
+        id: "criterion-1",
+        name: "NoBug",
+        severity: "1"
+      }
+    });
+    await expect(client.listThirdTools({
+      rule_type: 3,
+      language: "JAVA"
+    })).resolves.toEqual({
+      tools: ["checker01", "checker02"]
+    });
+    await expect(client.getCriterionset({
+      set_id: "set-1",
+      operator: "user-1"
+    })).resolves.toEqual({
+      set_id: "set-1",
+      raw: {
+        id: "set-1",
+        name: "Java default"
+      }
+    });
+    await expect(client.listAllCriterionsets({
+      page: 2,
+      page_size: 20,
+      languages: "PYTHON",
+      search: "default",
+      my_create: false,
+      project_id: "project-1",
+      is_call_status: true,
+      sort_field: "last_update_time",
+      sort_order: "down",
+      operator: "user-1"
+    })).resolves.toEqual({
+      criterionsets: [
+        {
+          id: "set-2",
+          name: "Python default",
+          language: "PYTHON"
+        }
+      ],
+      total: 1
+    });
+
+    expect(requests).toEqual([
+      "/v2/project-1/ruleset/ruleset-1/rules?offset=10&limit=10&types=1&languages=JAVA&tags=cwe",
+      "/v1/criterionsets/language?project_id=project-1&language=JAVA&page=3&page_size=50&search=default",
+      "/v1/rule/criterion-rule/query/criterion-1",
+      "/v2/excute/all-thirdtools?rule_type=3&language=JAVA",
+      "/v1/criterionsets/set-1?operator=user-1",
+      "/v2/all-criterionsets?page=2&page_size=20&languages=PYTHON&search=default&my_create=false&project_id=project-1&is_call_status=true&sort_field=last_update_time&sort_order=down&operator=user-1"
+    ]);
+  });
 });

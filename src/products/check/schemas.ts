@@ -107,6 +107,45 @@ export const checkListTemplateTasksInput = pagingSchema.extend({
   search: z.string().min(1).optional()
 });
 
+export const checkListRulesetRulesInput = pagingSchema.extend({
+  project_id: idSchema,
+  ruleset_id: idSchema,
+  types: z.string().min(1).optional(),
+  languages: z.string().min(1).optional(),
+  tags: z.string().min(1).optional()
+});
+
+export const checkListCriterionsetsByLanguageInput = pagingSchema.extend({
+  project_id: idSchema,
+  language: z.string().min(1),
+  search: z.string().min(1).optional()
+});
+
+export const checkGetCriterionRuleInput = z.object({
+  criterion_rule_id: idSchema
+});
+
+export const checkListThirdToolsInput = z.object({
+  rule_type: z.union([z.literal(0), z.literal(1), z.literal(3)]),
+  language: z.string().min(1).optional()
+});
+
+export const checkGetCriterionsetInput = z.object({
+  set_id: idSchema,
+  operator: z.string().min(1).optional()
+});
+
+export const checkListAllCriterionsetsInput = pagingSchema.extend({
+  languages: z.string().min(1).optional(),
+  search: z.string().min(1).optional(),
+  my_create: z.boolean().optional(),
+  project_id: idSchema.optional(),
+  is_call_status: z.boolean().optional(),
+  sort_field: z.string().min(1).optional(),
+  sort_order: z.enum(["up", "down"]).optional(),
+  operator: z.string().min(1).optional()
+});
+
 export const checkGetTaskProgressInput = z.object({
   task_id: idSchema
 });

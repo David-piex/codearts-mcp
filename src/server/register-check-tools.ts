@@ -4,6 +4,8 @@ import { createCheckClient } from "../products/check/client.js";
 import {
   checkCreateTaskInput,
   checkDetectTaskLanguageInput,
+  checkGetCriterionRuleInput,
+  checkGetCriterionsetInput,
   checkGetCodeSumMeasuresInput,
   checkGetDomainCheckersVersionInput,
   checkGetConsoleLogInput,
@@ -21,13 +23,17 @@ import {
   checkGetTaskRulesetCheckParametersV3Input,
   checkGetTaskSettingsInput,
   checkGetTransmissionNotificationInput,
+  checkListAllCriterionsetsInput,
+  checkListCriterionsetsByLanguageInput,
   checkListCodehubRepositoriesInput,
   checkListDefaultRulesetsInput,
   checkListProjectTaskGroupsInput,
   checkListRulesInput,
   checkListRulesetsInput,
+  checkListRulesetRulesInput,
   checkListSupportedLanguagesInput,
   checkListTemplateTasksInput,
+  checkListThirdToolsInput,
   checkListTaskAllFilesInput,
   checkListTaskBranchesInput,
   checkListTaskCheckRecordsInput,
@@ -45,6 +51,8 @@ import {
 } from "../products/check/schemas.js";
 import { createCheckCreateTaskHandler } from "../products/check/tools/create-task.js";
 import { createCheckDetectTaskLanguageHandler } from "../products/check/tools/detect-task-language.js";
+import { createCheckGetCriterionRuleHandler } from "../products/check/tools/get-criterion-rule.js";
+import { createCheckGetCriterionsetHandler } from "../products/check/tools/get-criterionset.js";
 import { createCheckGetCodeSumMeasuresHandler } from "../products/check/tools/get-code-sum-measures.js";
 import { createCheckGetDomainCheckersVersionHandler } from "../products/check/tools/get-domain-checkers-version.js";
 import { createCheckGetConsoleLogHandler } from "../products/check/tools/get-console-log.js";
@@ -62,13 +70,17 @@ import { createCheckGetTaskRulesetCheckParametersV2Handler } from "../products/c
 import { createCheckGetTaskRulesetCheckParametersV3Handler } from "../products/check/tools/get-task-ruleset-check-parameters-v3.js";
 import { createCheckGetTaskSettingsHandler } from "../products/check/tools/get-task-settings.js";
 import { createCheckGetTransmissionNotificationHandler } from "../products/check/tools/get-transmission-notification.js";
+import { createCheckListAllCriterionsetsHandler } from "../products/check/tools/list-all-criterionsets.js";
+import { createCheckListCriterionsetsByLanguageHandler } from "../products/check/tools/list-criterionsets-by-language.js";
 import { createCheckListCodehubRepositoriesHandler } from "../products/check/tools/list-codehub-repositories.js";
 import { createCheckListDefaultRulesetsHandler } from "../products/check/tools/list-default-rulesets.js";
 import { createCheckListProjectTaskGroupsHandler } from "../products/check/tools/list-project-task-groups.js";
 import { createCheckListRulesHandler } from "../products/check/tools/list-rules.js";
 import { createCheckListRulesetsHandler } from "../products/check/tools/list-rulesets.js";
+import { createCheckListRulesetRulesHandler } from "../products/check/tools/list-ruleset-rules.js";
 import { createCheckListSupportedLanguagesHandler } from "../products/check/tools/list-supported-languages.js";
 import { createCheckListTemplateTasksHandler } from "../products/check/tools/list-template-tasks.js";
+import { createCheckListThirdToolsHandler } from "../products/check/tools/list-third-tools.js";
 import { createCheckListTaskAllFilesHandler } from "../products/check/tools/list-task-all-files.js";
 import { createCheckListTaskBranchesHandler } from "../products/check/tools/list-task-branches.js";
 import { createCheckListTaskCheckRecordsHandler } from "../products/check/tools/list-task-check-records.js";
@@ -247,6 +259,42 @@ const checkToolDefinitions = {
     inputSchema: checkListTemplateTasksInput,
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListTemplateTasksHandler>[0] }) => clients.checkClient,
     createProductHandler: createCheckListTemplateTasksHandler
+  }),
+  "check_list_ruleset_rules": defineProductTool({
+    description: "List CodeArts Check ruleset rules",
+    inputSchema: checkListRulesetRulesInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListRulesetRulesHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckListRulesetRulesHandler
+  }),
+  "check_list_criterionsets_by_language": defineProductTool({
+    description: "List CodeArts Check criterionsets by language",
+    inputSchema: checkListCriterionsetsByLanguageInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListCriterionsetsByLanguageHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckListCriterionsetsByLanguageHandler
+  }),
+  "check_get_criterion_rule": defineProductTool({
+    description: "Get CodeArts Check criterion rule",
+    inputSchema: checkGetCriterionRuleInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetCriterionRuleHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckGetCriterionRuleHandler
+  }),
+  "check_list_third_tools": defineProductTool({
+    description: "List CodeArts Check third tools",
+    inputSchema: checkListThirdToolsInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListThirdToolsHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckListThirdToolsHandler
+  }),
+  "check_get_criterionset": defineProductTool({
+    description: "Get CodeArts Check criterionset",
+    inputSchema: checkGetCriterionsetInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetCriterionsetHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckGetCriterionsetHandler
+  }),
+  "check_list_all_criterionsets": defineProductTool({
+    description: "List all CodeArts Check criterionsets",
+    inputSchema: checkListAllCriterionsetsInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListAllCriterionsetsHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckListAllCriterionsetsHandler
   }),
   "check_get_task_progress": defineProductTool({
     description: "Get CodeArts Check task progress",

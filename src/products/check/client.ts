@@ -183,6 +183,54 @@ export type CheckClient = {
     tasks: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  listRulesetRules: (input: {
+    project_id: string;
+    ruleset_id: string;
+    page: number;
+    page_size: number;
+    types?: string;
+    languages?: string;
+    tags?: string;
+  }) => Promise<{
+    rules: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listCriterionsetsByLanguage: (input: {
+    project_id: string;
+    language: string;
+    page: number;
+    page_size: number;
+    search?: string;
+  }) => Promise<{
+    criterionsets: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getCriterionRule: (input: { criterion_rule_id: string }) => Promise<{
+    criterion_rule_id: string;
+    raw: Record<string, unknown>;
+  }>;
+  listThirdTools: (input: { rule_type: 0 | 1 | 3; language?: string }) => Promise<{
+    tools: string[];
+  }>;
+  getCriterionset: (input: { set_id: string; operator?: string }) => Promise<{
+    set_id: string;
+    raw: Record<string, unknown>;
+  }>;
+  listAllCriterionsets: (input: {
+    page: number;
+    page_size: number;
+    languages?: string;
+    search?: string;
+    my_create?: boolean;
+    project_id?: string;
+    is_call_status?: boolean;
+    sort_field?: string;
+    sort_order?: "up" | "down";
+    operator?: string;
+  }) => Promise<{
+    criterionsets: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
   getTaskProgress: (input: { task_id: string }) => Promise<{
     task_id: string;
     raw: Record<string, unknown>;
@@ -842,6 +890,110 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
       return {
         tasks,
         total: readTotal(payload, response, tasks.length)
+      };
+    },
+    async listRulesetRules(input) {
+      const offset = (input.page - 1) * input.page_size;
+      const query = new URLSearchParams({
+        offset: String(offset),
+        limit: String(input.page_size)
+      });
+      if (input.types) query.set("types", input.types);
+      if (input.languages) query.set("languages", input.languages);
+      if (input.tags) query.set("tags", input.tags);
+      const response = await _http.get(
+        `/v2/${encodeURIComponent(input.project_id)}/ruleset/${encodeURIComponent(input.ruleset_id)}/rules?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const rules = readArray<Record<string, unknown>>(
+        payload.info ?? payload.rules ?? payload.data ?? payload.value ?? payload.items ?? payload.list ?? (Array.isArray(response) ? response : [])
+      );
+
+      return {
+        rules,
+        total: readTotal(payload, response, rules.length)
+      };
+    },
+    async listCriterionsetsByLanguage(input) {
+      const query = new URLSearchParams({
+        project_id: input.project_id,
+        language: input.language,
+        page: String(input.page),
+        page_size: String(input.page_size)
+      });
+      if (input.search) query.set("search", input.search);
+      const response = await _http.get(`/v1/criterionsets/language?${query.toString()}`);
+      const payload = readResultPayload(response);
+      const listPayload = readEnvelope(payload.result) ?? payload;
+      const criterionsets = readArray<Record<string, unknown>>(
+        listPayload.criterionSetList ?? listPayload.criterionsets ?? listPayload.data ?? listPayload.value ?? listPayload.items ?? listPayload.list ?? []
+      );
+
+      return {
+        criterionsets,
+        total: readTotal(listPayload, response, criterionsets.length)
+      };
+    },
+    async getCriterionRule(input) {
+      const response = await _http.get(
+        `/v1/rule/criterion-rule/query/${encodeURIComponent(input.criterion_rule_id)}`
+      );
+      const payload = readResultPayload(response);
+      const rule = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        criterion_rule_id: input.criterion_rule_id,
+        raw: rule
+      };
+    },
+    async listThirdTools(input) {
+      const query = new URLSearchParams({
+        rule_type: String(input.rule_type)
+      });
+      if (input.language) query.set("language", input.language);
+      const response = await _http.get(`/v2/excute/all-thirdtools?${query.toString()}`);
+      const payload = readResultPayload(response);
+      const rawTools = payload.result ?? payload.tools ?? payload.data ?? payload.value ?? response;
+      const tools = Array.isArray(rawTools) ? rawTools.map(String) : [];
+
+      return { tools };
+    },
+    async getCriterionset(input) {
+      const query = new URLSearchParams();
+      if (input.operator) query.set("operator", input.operator);
+      const suffix = query.size ? `?${query.toString()}` : "";
+      const response = await _http.get(`/v1/criterionsets/${encodeURIComponent(input.set_id)}${suffix}`);
+      const payload = readResultPayload(response);
+      const criterionset = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        set_id: input.set_id,
+        raw: criterionset
+      };
+    },
+    async listAllCriterionsets(input) {
+      const query = new URLSearchParams({
+        page: String(input.page),
+        page_size: String(input.page_size)
+      });
+      if (input.languages) query.set("languages", input.languages);
+      if (input.search) query.set("search", input.search);
+      if (input.my_create !== undefined) query.set("my_create", String(input.my_create));
+      if (input.project_id) query.set("project_id", input.project_id);
+      if (input.is_call_status !== undefined) query.set("is_call_status", String(input.is_call_status));
+      if (input.sort_field) query.set("sort_field", input.sort_field);
+      if (input.sort_order) query.set("sort_order", input.sort_order);
+      if (input.operator) query.set("operator", input.operator);
+      const response = await _http.get(`/v2/all-criterionsets?${query.toString()}`);
+      const payload = readResultPayload(response);
+      const listPayload = readEnvelope(payload.result) ?? payload;
+      const criterionsets = readArray<Record<string, unknown>>(
+        listPayload.criterionSetList ?? listPayload.criterionsets ?? listPayload.data ?? listPayload.value ?? listPayload.items ?? listPayload.list ?? []
+      );
+
+      return {
+        criterionsets,
+        total: readTotal(listPayload, response, criterionsets.length)
       };
     },
     async getTaskProgress(input) {
