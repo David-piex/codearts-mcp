@@ -26,14 +26,14 @@
 | --- | ---: | --- |
 | 制品仓 | 23 | [Function-API-Reference-Artifact.md](./Function-API-Reference-Artifact.md) |
 | 鉴权会话 | 2 | [Function-API-Reference-Auth-Session.md](./Function-API-Reference-Auth-Session.md) |
-| 编译构建 | 51 | [Function-API-Reference-Build.md](./Function-API-Reference-Build.md) |
+| 编译构建 | 53 | [Function-API-Reference-Build.md](./Function-API-Reference-Build.md) |
 | 代码检查 | 26 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
 | 部署 | 60 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
 | 流水线 | 88 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 176 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 201 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 238 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **865** | |
+| **总计** | **867** | |
 
 ## 字段对应
 
@@ -72,6 +72,7 @@
 | `build_append_release_upload_step` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_append_release_upload_step) |
 | `build_check_job_name_exists` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_check_job_name_exists) |
 | `build_configure_release_upload_step` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_configure_release_upload_step) |
+| `build_get_coverage_metrics` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_coverage_metrics) |
 | `build_get_dockerfile_template` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_dockerfile_template) |
 | `build_get_domain_charge_type` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_domain_charge_type) |
 | `build_get_domain_federation` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_domain_federation) |
@@ -106,6 +107,7 @@
 | `build_list_job_group_tree` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_list_job_group_tree) |
 | `build_list_job_permission_roles` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_list_job_permission_roles) |
 | `build_list_jobs` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_list_jobs) |
+| `build_list_junit_coverage_summaries` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_list_junit_coverage_summaries) |
 | `build_list_package_spec_statuses` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_list_package_spec_statuses) |
 | `build_list_project_records` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_list_project_records) |
 | `build_list_records` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_list_records) |

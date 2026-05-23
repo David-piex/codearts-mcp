@@ -20,6 +20,7 @@ import {
   buildGetDomainUserPermissionInput,
   buildGetDockerfileTemplateInput,
   buildGetJobBuildSuccessRatioInput,
+  buildGetCoverageMetricsInput,
   buildGetJobNoticeInput,
   buildGetJobPermissionInput,
   buildGetJobPermissionInternalInput,
@@ -39,6 +40,7 @@ import {
   buildListGitCodeBranchesInput,
   buildListGitCodeRepositoriesInput,
   buildListImageTemplatesInput,
+  buildListJunitCoverageSummariesInput,
   buildListJobGroupTreeInput,
   buildListJobsInput,
   buildListJobPermissionRolesInput,
@@ -79,6 +81,7 @@ import { createBuildGetDomainPackageQuotaHandler } from "../products/build/tools
 import { createBuildGetDomainStatusHandler } from "../products/build/tools/get-domain-status.js";
 import { createBuildGetDomainUserPermissionHandler } from "../products/build/tools/get-domain-user-permission.js";
 import { createBuildGetDockerfileTemplateHandler } from "../products/build/tools/get-dockerfile-template.js";
+import { createBuildGetCoverageMetricsHandler } from "../products/build/tools/get-coverage-metrics.js";
 import { createBuildGetJobBuildSuccessRatioHandler } from "../products/build/tools/get-job-build-success-ratio.js";
 import { createBuildGetJobPermissionHandler } from "../products/build/tools/get-job-permission.js";
 import { createBuildGetJobPermissionInternalHandler } from "../products/build/tools/get-job-permission-internal.js";
@@ -90,6 +93,7 @@ import { createBuildListDomainRelatedProjectsHandler } from "../products/build/t
 import { createBuildListGitCodeBranchesHandler } from "../products/build/tools/list-git-code-branches.js";
 import { createBuildListGitCodeRepositoriesHandler } from "../products/build/tools/list-git-code-repositories.js";
 import { createBuildListImageTemplatesHandler } from "../products/build/tools/list-image-templates.js";
+import { createBuildListJunitCoverageSummariesHandler } from "../products/build/tools/list-junit-coverage-summaries.js";
 import { createBuildListJobGroupTreeHandler } from "../products/build/tools/list-job-group-tree.js";
 import { createBuildListJobPermissionRolesHandler } from "../products/build/tools/list-job-permission-roles.js";
 import { createBuildListJobsHandler } from "../products/build/tools/list-jobs.js";
@@ -249,6 +253,18 @@ const buildToolDefinitions = {
     inputSchema: buildGetJobBuildSuccessRatioInput,
     selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetJobBuildSuccessRatioHandler>[0] }) => clients.buildClient,
     createProductHandler: createBuildGetJobBuildSuccessRatioHandler
+  }),
+  "build_list_junit_coverage_summaries": defineProductTool({
+    description: "List CodeArts Build Junit coverage summaries",
+    inputSchema: buildListJunitCoverageSummariesInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListJunitCoverageSummariesHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildListJunitCoverageSummariesHandler
+  }),
+  "build_get_coverage_metrics": defineProductTool({
+    description: "Get CodeArts Build coverage metrics",
+    inputSchema: buildGetCoverageMetricsInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetCoverageMetricsHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildGetCoverageMetricsHandler
   }),
   "build_list_job_permission_roles": defineProductTool({
     description: "List CodeArts Build job permission roles",

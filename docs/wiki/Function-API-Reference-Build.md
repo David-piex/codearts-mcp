@@ -6,7 +6,7 @@
 
 模块：`编译构建`
 
-API 数量：`51`
+API 数量：`53`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
@@ -359,6 +359,66 @@ API 数量：`51`
   "required": [
     "job_id",
     "file"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### build_get_coverage_metrics
+
+所属模块：`编译构建`
+
+说明：获取编译构建的coveragemetrics。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "build_get_coverage_metrics",
+    "arguments": {
+      "job_id": "<job_id>",
+      "build_no": "<build_no>",
+      "root_id": "<root_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `job_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `job_id` ↔ 原始 CodeArts 编译构建 API 同名字段 `job_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>构建任务 ID，用于定位对应的 CodeArts 资源。 |
+| `build_no` | 是 | `integer` |  | 字段对应：<br>MCP 字段 `build_no` ↔ 原始 CodeArts 编译构建 API 同名字段 `build_no`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>构建编号，用于定位某一次构建执行记录。 |
+| `root_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `root_id` ↔ 原始 CodeArts 编译构建 API 同名字段 `root_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>root ID，用于定位对应的 CodeArts 资源。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "job_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "build_no": {
+      "type": "integer",
+      "exclusiveMinimum": 0
+    },
+    "root_id": {
+      "$ref": "#/properties/job_id"
+    }
+  },
+  "required": [
+    "job_id",
+    "build_no",
+    "root_id"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -2040,6 +2100,60 @@ API 数量：`51`
   },
   "required": [
     "project_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### build_list_junit_coverage_summaries
+
+所属模块：`编译构建`
+
+说明：查询编译构建的junitcoveragesummaries。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "build_list_junit_coverage_summaries",
+    "arguments": {
+      "job_id": "<job_id>",
+      "build_no": "<build_no>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `job_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `job_id` ↔ 原始 CodeArts 编译构建 API 同名字段 `job_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>构建任务 ID，用于定位对应的 CodeArts 资源。 |
+| `build_no` | 是 | `integer` |  | 字段对应：<br>MCP 字段 `build_no` ↔ 原始 CodeArts 编译构建 API 同名字段 `build_no`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>构建编号，用于定位某一次构建执行记录。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "job_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "build_no": {
+      "type": "integer",
+      "exclusiveMinimum": 0
+    }
+  },
+  "required": [
+    "job_id",
+    "build_no"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

@@ -271,4 +271,70 @@ describe("createBuildClient metadata read paths", () => {
       }
     });
   });
+
+  it("loads Junit coverage summaries and metrics", async () => {
+    const paths: string[] = [];
+    const client = createBuildClient({
+      get: async (path: string) => {
+        paths.push(path);
+        if (path.includes("/junit/coverage/list")) {
+          return {
+            result: {
+              unit_summary_list: [
+                {
+                  job_id: "job-1",
+                  build_no: 3,
+                  root_id: "root-1",
+                  stage_name: "stage3"
+                }
+              ]
+            }
+          };
+        }
+        return {
+          result: {
+            lines: 100,
+            covered_lines: 80,
+            coverage: "80%"
+          }
+        };
+      }
+    } as never);
+
+    const summaries = await client.listJunitCoverageSummaries({
+      job_id: "job-1",
+      build_no: 3
+    });
+    const metrics = await client.getCoverageMetrics({
+      job_id: "job-1",
+      build_no: 3,
+      root_id: "root-1"
+    });
+
+    expect(paths).toEqual([
+      "/v1/report/junit/coverage/list?job_id=job-1&build_no=3",
+      "/v1/report/job-1/3/coverage/metrics?root_id=root-1"
+    ]);
+    expect(summaries).toEqual({
+      summaries: [
+        {
+          job_id: "job-1",
+          build_no: 3,
+          root_id: "root-1",
+          stage_name: "stage3"
+        }
+      ],
+      total: 1
+    });
+    expect(metrics).toEqual({
+      job_id: "job-1",
+      build_no: 3,
+      root_id: "root-1",
+      raw: {
+        lines: 100,
+        covered_lines: 80,
+        coverage: "80%"
+      }
+    });
+  });
 });

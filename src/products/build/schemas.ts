@@ -123,6 +123,17 @@ export const buildGetJobBuildSuccessRatioInput = z.object({
   interval: z.number().int().min(1).max(30).default(7)
 });
 
+export const buildListJunitCoverageSummariesInput = z.object({
+  job_id: idSchema,
+  build_no: z.number().int().positive()
+});
+
+export const buildGetCoverageMetricsInput = z.object({
+  job_id: idSchema,
+  build_no: z.number().int().positive(),
+  root_id: idSchema
+});
+
 export const buildListJobPermissionRolesInput = z.object({
   job_id: idSchema
 });

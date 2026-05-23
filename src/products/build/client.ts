@@ -304,6 +304,16 @@ export type BuildClient = {
     interval: number;
     raw: Record<string, unknown>;
   }>;
+  listJunitCoverageSummaries: (input: { job_id: string; build_no: number }) => Promise<{
+    summaries: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getCoverageMetrics: (input: { job_id: string; build_no: number; root_id: string }) => Promise<{
+    job_id: string;
+    build_no: number;
+    root_id: string;
+    raw: Record<string, unknown>;
+  }>;
   listJobPermissionRoles: (input: { job_id: string }) => Promise<{
     roles: Array<Record<string, unknown>>;
     total?: number;
@@ -1541,6 +1551,42 @@ export function createBuildClient(
         repository_name: input.repository_name,
         branch: input.branch,
         interval: input.interval,
+        raw: readBuildRawRecord(payload)
+      };
+    },
+    async listJunitCoverageSummaries(input) {
+      const query = new URLSearchParams({
+        job_id: input.job_id,
+        build_no: String(input.build_no)
+      });
+      const response = await _http.get(`/v1/report/junit/coverage/list?${query.toString()}`);
+      const raw = readBuildPayloadValue(response);
+      const payload = readBuildPayload(response);
+      const summaries = readBuildArray<Record<string, unknown>>(
+        payload.unit_summary_list ??
+          payload.summaries ??
+          payload.value ??
+          payload.items ??
+          payload.list ??
+          (Array.isArray(raw) ? raw : [])
+      );
+
+      return {
+        summaries,
+        total: readBuildTotal(payload, response, summaries.length)
+      };
+    },
+    async getCoverageMetrics(input) {
+      const query = new URLSearchParams({ root_id: input.root_id });
+      const response = await _http.get(
+        `/v1/report/${encodeURIComponent(input.job_id)}/${input.build_no}/coverage/metrics?${query.toString()}`
+      );
+      const payload = readBuildPayloadValue(response);
+
+      return {
+        job_id: input.job_id,
+        build_no: input.build_no,
+        root_id: input.root_id,
         raw: readBuildRawRecord(payload)
       };
     },

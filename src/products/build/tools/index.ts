@@ -26,6 +26,8 @@ export const buildToolNames = [
   "build_get_dockerfile_template",
   "build_check_job_name_exists",
   "build_get_job_build_success_ratio",
+  "build_list_junit_coverage_summaries",
+  "build_get_coverage_metrics",
   "build_list_job_permission_roles",
   "build_get_job_permission_internal",
   "build_get_job_permission",
