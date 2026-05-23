@@ -46,6 +46,18 @@ export const reqUpdateProjectMemberRoleInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const reqBatchUpdateChildUserNicknamesInput = z.object({
+  users: z
+    .array(
+      z.object({
+        user_id: idSchema,
+        nick_name: z.string().min(1).max(128)
+      })
+    )
+    .min(1),
+  dry_run: z.boolean().default(true)
+});
+
 export const reqLeaveProjectInput = z.object({
   project_id: idSchema,
   dry_run: z.boolean().default(true)

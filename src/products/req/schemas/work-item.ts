@@ -708,6 +708,14 @@ export const reqUpdateCacheDataInput = z
     }
   );
 
+export const reqUpdateCacheSettingInput = z
+  .object({
+    project_id: idSchema,
+    type: z.string().min(1).default("backlog"),
+    fields: z.array(z.string().min(1)).min(1),
+    dry_run: z.boolean().default(true)
+  });
+
 export const reqUpdateWorkItemFlowInput = z.object({
   project_id: idSchema,
   work_item_id: idSchema,

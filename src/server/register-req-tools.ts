@@ -16,6 +16,7 @@ import {
   reqBatchDeleteIterationsInput,
   reqBatchDeleteWorkItemsInput,
   reqBatchTransferIpdWorkItemFlowInput,
+  reqBatchUpdateChildUserNicknamesInput,
   reqBatchUpdateIpdIssuesInput,
   reqBatchUpdateReleasePlanBaselineInput,
   reqChangeReleasePlanStatusInput,
@@ -35,6 +36,7 @@ import {
   reqCreatePlanInput,
   reqCreateReleasePlanInput,
   reqCreateIterationInput,
+  reqCreateVersionV2Input,
   reqCreateProjectInput,
   reqCreateProjectDomainInput,
   reqCreateProjectModuleInput,
@@ -215,6 +217,7 @@ import {
   reqUpdateIterationInput,
   reqUpdateIterationStateInput,
   reqUpdateCacheDataInput,
+  reqUpdateCacheSettingInput,
   reqUpdateProjectModuleInput,
   reqUpdateProjectTemplateInput,
   reqUpdateProjectMemberRoleInput,
@@ -244,6 +247,7 @@ import { createReqBatchDeleteReleasePlansHandler } from "../products/req/tools/b
 import { createReqBatchDeleteProjectMembersHandler } from "../products/req/tools/batch-delete-project-members.js";
 import { createReqBatchDeleteIterationsHandler } from "../products/req/tools/batch-delete-iterations.js";
 import { createReqBatchDeleteWorkItemsHandler } from "../products/req/tools/batch-delete-work-items.js";
+import { createReqBatchUpdateChildUserNicknamesHandler } from "../products/req/tools/batch-update-child-user-nicknames.js";
 import { createReqBatchUpdateReleasePlanBaselineHandler } from "../products/req/tools/batch-update-release-plan-baseline.js";
 import { createReqChangeReleasePlanStatusHandler } from "../products/req/tools/change-release-plan-status.js";
 import { createReqCopyWorkItemsHandler } from "../products/req/tools/copy-work-items.js";
@@ -255,6 +259,7 @@ import { createReqCreatePlanWorkItemHandler } from "../products/req/tools/create
 import { createReqCreateReleasePlanHandler } from "../products/req/tools/create-release-plan.js";
 import { createReqCreateIterationHandler } from "../products/req/tools/create-iteration.js";
 import { createReqCreateIterationWorkItemHandler } from "../products/req/tools/create-iteration-work-item.js";
+import { createReqCreateVersionV2Handler } from "../products/req/tools/create-version-v2.js";
 import { createReqCreateProjectHandler } from "../products/req/tools/create-project.js";
 import { createReqCreateProjectDomainHandler } from "../products/req/tools/create-project-domain.js";
 import { createReqCreateProjectModuleHandler } from "../products/req/tools/create-project-module.js";
@@ -378,6 +383,7 @@ import { createReqUpdateReleasePlanHandler } from "../products/req/tools/update-
 import { createReqUpdateIterationHandler } from "../products/req/tools/update-iteration.js";
 import { createReqUpdateIterationStateHandler } from "../products/req/tools/update-iteration-state.js";
 import { createReqUpdateCacheDataHandler } from "../products/req/tools/update-cache-data.js";
+import { createReqUpdateCacheSettingHandler } from "../products/req/tools/update-cache-setting.js";
 import { createReqUpdateProjectDomainHandler } from "../products/req/tools/update-project-domain.js";
 import { createReqUpdateProjectModuleHandler } from "../products/req/tools/update-project-module.js";
 import { createReqUpdateProjectTemplateHandler } from "../products/req/tools/update-project-template.js";
@@ -554,6 +560,15 @@ const reqToolDefinitions = {
     createProductHandler: createReqBatchUpdateIpdIssuesHandler,
     rateLimitAction: "req_batch_update_ipd_issues"
   }),
+  "req_batch_update_child_user_nicknames": defineProductTool({
+    description: "Batch update CodeArts Req child user nicknames from the official V4 domain endpoint",
+    inputSchema: reqBatchUpdateChildUserNicknamesInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqBatchUpdateChildUserNicknamesHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqBatchUpdateChildUserNicknamesHandler,
+    rateLimitAction: "req_batch_update_child_user_nicknames"
+  }),
   "req_batch_delete_ipd_issues": defineProductTool({
     description: "Batch delete CodeArts Req IPD issues",
     inputSchema: reqBatchDeleteIpdIssuesInput,
@@ -621,6 +636,14 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqCreateIterationHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqCreateIterationHandler,
     rateLimitAction: "req_create_iteration"
+  }),
+  "req_create_version_v2": defineProductTool({
+    description: "Create CodeArts Req V2 version from the official V2 endpoint",
+    inputSchema: reqCreateVersionV2Input,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqCreateVersionV2Handler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqCreateVersionV2Handler,
+    rateLimitAction: "req_create_version_v2"
   }),
   "req_create_iteration_work_item": defineProductTool({
     description: "Create CodeArts Req iteration work item",
@@ -1563,6 +1586,14 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqUpdateCacheDataHandler,
     rateLimitAction: "req_update_cache_data"
+  }),
+  "req_update_cache_setting": defineProductTool({
+    description: "Update CodeArts Req cache setting from the official cache-setting endpoint",
+    inputSchema: reqUpdateCacheSettingInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUpdateCacheSettingHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqUpdateCacheSettingHandler,
+    rateLimitAction: "req_update_cache_setting"
   }),
   "req_upload_work_item_image": defineProductTool({
     description: "Upload an image for CodeArts Req work items",

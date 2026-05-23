@@ -87,6 +87,27 @@ describe("registerReqTool", () => {
     );
   });
 
+  it("registers the create V2 version tool with the expected metadata", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_create_version_v2",
+      server: { registerTool },
+      mode: "stdio",
+      stdioClient: {} as never
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_create_version_v2",
+      expect.objectContaining({
+        title: "req_create_version_v2",
+        description: "Create CodeArts Req V2 version from the official V2 endpoint"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("registers the create plan tool with the expected metadata", () => {
     const registerTool = vi.fn();
 
@@ -145,6 +166,27 @@ describe("registerReqTool", () => {
       expect.objectContaining({
         title: "req_add_iteration_work_items",
         description: "Add work items to a CodeArts Req iteration"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers the batch update child user nicknames tool with rate-limited metadata", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_batch_update_child_user_nicknames",
+      server: { registerTool },
+      mode: "stdio",
+      stdioClient: {} as never
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_batch_update_child_user_nicknames",
+      expect.objectContaining({
+        title: "req_batch_update_child_user_nicknames",
+        description: "Batch update CodeArts Req child user nicknames from the official V4 domain endpoint"
       }),
       expect.any(Function)
     );
@@ -1797,6 +1839,27 @@ describe("registerReqTool", () => {
     );
   });
 
+  it("registers the update cache setting tool with rate-limited metadata", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_update_cache_setting",
+      server: { registerTool },
+      mode: "stdio",
+      stdioClient: {} as never
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_update_cache_setting",
+      expect.objectContaining({
+        title: "req_update_cache_setting",
+        description: "Update CodeArts Req cache setting from the official cache-setting endpoint"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("registers the list iteration work items tool in http mode", () => {
     const registerTool = vi.fn();
 
@@ -2202,6 +2265,12 @@ describe("registerReqTool", () => {
       }
     },
     {
+      toolName: "req_batch_update_child_user_nicknames",
+      input: {
+        users: [{ user_id: "user-1", nick_name: "Alice" }]
+      }
+    },
+    {
       toolName: "req_add_iteration_work_items",
       input: {
         project_id: "project-1",
@@ -2292,9 +2361,26 @@ describe("registerReqTool", () => {
       }
     },
     {
+      toolName: "req_create_version_v2",
+      input: {
+        project_id: "project-1",
+        name: "Sprint V2",
+        start_date: 1779379200000,
+        due_date: 1779984000000
+      }
+    },
+    {
       toolName: "req_delete_project_template",
       input: {
         template_id: "template-1"
+      }
+    },
+    {
+      toolName: "req_update_cache_setting",
+      input: {
+        project_id: "project-1",
+        type: "backlog",
+        fields: ["subject", "status"]
       }
     },
     {

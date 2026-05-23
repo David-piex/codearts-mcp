@@ -177,6 +177,12 @@ export type ReqClient = {
     role_id: number;
     updated: true;
   }>;
+  batchUpdateChildUserNicknames: (input: {
+    users: Array<{ user_id: string; nick_name: string }>;
+  }) => Promise<{
+    users: Array<{ user_id: string; nick_name: string }>;
+    updatedCount: number;
+  }>;
   leaveProject: (input: { project_id: string }) => Promise<{
     project_id: string;
     left: true;
@@ -730,6 +736,19 @@ export type ReqClient = {
     begin_time: string;
     end_time: string;
     description?: string;
+  }>;
+  createVersionV2: (input: {
+    project_id: string;
+    name: string;
+    start_date: number;
+    due_date: number;
+  }) => Promise<{
+    id: number | string;
+    project_id: string;
+    name: string;
+    start_date?: string;
+    due_date?: string;
+    status?: string;
   }>;
   updateIteration: (input: {
     project_id: string;
@@ -2015,6 +2034,16 @@ export type ReqClient = {
     cache_id?: number;
     updated_count?: number;
     fields: ReqCacheUpdateField[];
+  }>;
+  updateCacheSetting: (input: {
+    project_id: string;
+    type?: string;
+    fields: string[];
+  }) => Promise<{
+    project_id: string;
+    type?: string;
+    fields: ReqCacheUpdateField[];
+    visible_fields: ReqCacheUpdateField[];
   }>;
   listPrograms: (input: {
     page: number;
@@ -3773,6 +3802,16 @@ export function createReqClient(
         updated: true as const
       };
     },
+    async batchUpdateChildUserNicknames(input) {
+      await _http.put("/v4/domain/child-users", {
+        users: input.users
+      });
+
+      return {
+        users: input.users,
+        updatedCount: input.users.length
+      };
+    },
     async leaveProject(input) {
       await _http.delete(`/v4/projects/${encodeURIComponent(input.project_id)}/quit`);
 
@@ -5006,6 +5045,46 @@ export function createReqClient(
         begin_time: input.begin_time,
         end_time: input.end_time,
         description: input.description
+      };
+    },
+    async createVersionV2(input) {
+      const response = (await _http.get(
+        `/v2/version/create-version?${new URLSearchParams({
+          project_id: input.project_id,
+          name: input.name,
+          start_date: String(input.start_date),
+          due_date: String(input.due_date)
+        }).toString()}`
+      )) as {
+        result?: {
+          version?: {
+            id?: number | string;
+            project_id?: string;
+            name?: string;
+            start_date?: string;
+            due_date?: string;
+            status?: string;
+          };
+        };
+        version?: {
+          id?: number | string;
+          project_id?: string;
+          name?: string;
+          start_date?: string;
+          due_date?: string;
+          status?: string;
+        };
+      };
+      const payload = unwrapReqPayload(response);
+      const version = payload.result?.version ?? payload.version ?? {};
+
+      return {
+        id: version.id ?? "",
+        project_id: version.project_id ?? input.project_id,
+        name: version.name ?? input.name,
+        start_date: version.start_date,
+        due_date: version.due_date,
+        status: version.status
       };
     },
     async updateIteration(input) {
@@ -7611,6 +7690,29 @@ export function createReqClient(
         type: input.type ?? "backlog",
         fields: payload.fields ?? [],
         visible_fields: payload.visibleFields ?? []
+      };
+    },
+    async updateCacheSetting(input) {
+      const response = (await _http.post("/v3/job-cache/cache-setting", {
+        projectUUId: input.project_id,
+        type: input.type ?? "backlog",
+        fields: input.fields
+      })) as {
+        result?: {
+          fields?: ReqCacheUpdateField[];
+          visibleFields?: ReqCacheUpdateField[];
+        };
+        fields?: ReqCacheUpdateField[];
+        visibleFields?: ReqCacheUpdateField[];
+      };
+      const payload = unwrapReqPayload(response);
+      const result = payload.result ?? payload;
+
+      return {
+        project_id: input.project_id,
+        type: input.type ?? "backlog",
+        fields: result.fields ?? [],
+        visible_fields: result.visibleFields ?? []
       };
     },
     async updateCacheData(input) {

@@ -370,6 +370,41 @@ describe("createReqClient", () => {
     });
   });
 
+  it("maps batchUpdateChildUserNicknames to the official domain child-users endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      put: async (path: string, body: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return undefined;
+      }
+    } as never);
+
+    const result = await client.batchUpdateChildUserNicknames({
+      users: [
+        { user_id: "user-1", nick_name: "Alice" },
+        { user_id: "user-2", nick_name: "Bob" }
+      ]
+    });
+
+    expect(requestedPath).toBe("/v4/domain/child-users");
+    expect(requestedBody).toEqual({
+      users: [
+        { user_id: "user-1", nick_name: "Alice" },
+        { user_id: "user-2", nick_name: "Bob" }
+      ]
+    });
+    expect(result).toEqual({
+      users: [
+        { user_id: "user-1", nick_name: "Alice" },
+        { user_id: "user-2", nick_name: "Bob" }
+      ],
+      updatedCount: 2
+    });
+  });
+
   it("maps updateProjectMemberRole to the member role endpoint and wraps user_ids", async () => {
     let requestedPath = "";
     let requestedBody: Record<string, unknown> | undefined;
@@ -870,6 +905,47 @@ describe("createReqClient", () => {
       project_id: "p-1",
       iteration_id: "301",
       deleted: true
+    });
+  });
+
+  it("maps V2 version creation to the documented GET endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          result: {
+            version: {
+              id: 401,
+              project_id: "p-1",
+              name: "Sprint V2",
+              start_date: "1779379200000",
+              due_date: "1779984000000",
+              status: "0"
+            }
+          }
+        };
+      }
+    } as never);
+
+    const result = await client.createVersionV2({
+      project_id: "p-1",
+      name: "Sprint V2",
+      start_date: 1779379200000,
+      due_date: 1779984000000
+    });
+
+    expect(requestedPath).toBe(
+      "/v2/version/create-version?project_id=p-1&name=Sprint+V2&start_date=1779379200000&due_date=1779984000000"
+    );
+    expect(result).toEqual({
+      id: 401,
+      project_id: "p-1",
+      name: "Sprint V2",
+      start_date: "1779379200000",
+      due_date: "1779984000000",
+      status: "0"
     });
   });
 
@@ -4607,6 +4683,44 @@ describe("createReqClient", () => {
           order: 1
         }
       ]
+    });
+  });
+
+  it("maps cache setting updates to the documented cache-setting endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return {
+          result: {
+            fields: [{ field: "subject", name: "Subject", type: "text" }],
+            visibleFields: [{ field: "status", name: "Status", type: "option" }]
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.updateCacheSetting({
+      project_id: "p-1",
+      type: "backlog",
+      fields: ["subject", "status"]
+    });
+
+    expect(requestedPath).toBe("/v3/job-cache/cache-setting");
+    expect(requestedBody).toEqual({
+      projectUUId: "p-1",
+      type: "backlog",
+      fields: ["subject", "status"]
+    });
+    expect(result).toEqual({
+      project_id: "p-1",
+      type: "backlog",
+      fields: [{ field: "subject", name: "Subject", type: "text" }],
+      visible_fields: [{ field: "status", name: "Status", type: "option" }]
     });
   });
 

@@ -35,6 +35,14 @@ export const reqCreateIterationInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const reqCreateVersionV2Input = z.object({
+  project_id: idSchema,
+  name: z.string().min(1),
+  start_date: z.number().int().positive(),
+  due_date: z.number().int().positive(),
+  dry_run: z.boolean().default(true)
+});
+
 export const reqCreateIterationWorkItemInput = z.object({
   project_id: idSchema,
   iteration_id: idSchema,

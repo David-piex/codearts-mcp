@@ -304,6 +304,28 @@ function createReqUpdateCacheDataInput<T extends Record<string, unknown>>(
   } & T;
 }
 
+function createReqUpdateCacheSettingInput<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  type: string;
+  fields: string[];
+  dry_run: boolean;
+} & T {
+  return {
+    project_id: "project-1",
+    type: "backlog",
+    fields: ["subject", "status"],
+    dry_run: false,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    type: string;
+    fields: string[];
+    dry_run: boolean;
+  } & T;
+}
+
 function createReqAddWorkItemCommentInput<T extends Record<string, unknown>>(
   overrides?: T
 ): {
@@ -507,6 +529,31 @@ function createReqCreateIterationInput<T extends Record<string, unknown>>(
     begin_time: string;
     end_time: string;
     description: string;
+    dry_run: boolean;
+  } & T;
+}
+
+function createReqCreateVersionV2Input<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  name: string;
+  start_date: number;
+  due_date: number;
+  dry_run: boolean;
+} & T {
+  return {
+    project_id: "project-1",
+    name: "Sprint V2",
+    start_date: 1779379200000,
+    due_date: 1779984000000,
+    dry_run: false,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    name: string;
+    start_date: number;
+    due_date: number;
     dry_run: boolean;
   } & T;
 }
@@ -1081,6 +1128,32 @@ const writePathCases: WritePathCase[] = [
     }
   },
   {
+    name: "executes req_batch_update_child_user_nicknames through the registered session-aware runtime client",
+    createHandler: (store: SessionStore) =>
+      readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_batch_update_child_user_nicknames"),
+    input: {
+      users: [
+        { user_id: "user-1", nick_name: "Alice" },
+        { user_id: "user-2", nick_name: "Bob" }
+      ],
+      dry_run: false
+    },
+    responsePayload: null,
+    expectedItem: {
+      users: [
+        { user_id: "user-1", nick_name: "Alice" },
+        { user_id: "user-2", nick_name: "Bob" }
+      ],
+      updatedCount: 2,
+      executed: true
+    },
+    expectedRequest: {
+      path: "/v4/domain/child-users",
+      method: "PUT",
+      bodyIncludes: ["\"users\":[", "\"user_id\":\"user-1\"", "\"nick_name\":\"Bob\""]
+    }
+  },
+  {
     name: "executes req_update_project_member_role through the registered session-aware runtime client",
     createHandler: (store: SessionStore) =>
       readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_update_project_member_role"),
@@ -1433,6 +1506,37 @@ const writePathCases: WritePathCase[] = [
         "\"begin_time\":\"2026-04-15\"",
         "\"end_time\":\"2026-04-28\""
       ]
+    }
+  },
+  {
+    name: "executes req_create_version_v2 through the registered session-aware runtime client",
+    createHandler: (store: SessionStore) =>
+      readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_create_version_v2"),
+    input: createReqCreateVersionV2Input(),
+    responsePayload: {
+      result: {
+        version: {
+          id: 401,
+          project_id: "project-1",
+          name: "Sprint V2",
+          start_date: "1779379200000",
+          due_date: "1779984000000",
+          status: "0"
+        }
+      }
+    },
+    expectedItem: {
+      id: "401",
+      projectId: "project-1",
+      name: "Sprint V2",
+      startDate: "1779379200000",
+      dueDate: "1779984000000",
+      status: "0",
+      executed: true
+    },
+    expectedRequest: {
+      path: "/v2/version/create-version",
+      method: "GET"
     }
   },
   {
@@ -1872,6 +1976,34 @@ const writePathCases: WritePathCase[] = [
     }
   },
   {
+    name: "executes req_update_cache_setting through the registered session-aware runtime client",
+    createHandler: (store: SessionStore) =>
+      readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_update_cache_setting"),
+    input: createReqUpdateCacheSettingInput(),
+    responsePayload: {
+      result: {
+        fields: [{ field: "subject", name: "Subject", type: "text" }],
+        visibleFields: [{ field: "status", name: "Status", type: "option" }]
+      },
+      status: "success"
+    },
+    expectedItem: {
+      projectId: "project-1",
+      type: "backlog",
+      fields: [{ field: "subject", name: "Subject", type: "text" }],
+      visibleFields: [{ field: "status", name: "Status", type: "option" }],
+      executed: true
+    },
+    expectedRequest: {
+      path: "/v3/job-cache/cache-setting",
+      bodyIncludes: [
+        "\"projectUUId\":\"project-1\"",
+        "\"type\":\"backlog\"",
+        "\"fields\":[\"subject\",\"status\"]"
+      ]
+    }
+  },
+  {
     name: "executes req_add_work_item_comment through the registered session-aware runtime client",
     createHandler: (store: SessionStore) =>
       readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_add_work_item_comment"),
@@ -2241,6 +2373,19 @@ const dryRunCases: DryRunCase[] = [
     }
   },
   {
+    name: "short-circuits req_batch_update_child_user_nicknames dry runs without HTTP or rate-limit consumption",
+    toolName: "req_batch_update_child_user_nicknames",
+    input: {
+      users: [{ user_id: "user-1", nick_name: "Alice" }],
+      dry_run: true
+    },
+    expectedItem: {
+      users: [{ user_id: "user-1", nick_name: "Alice" }],
+      updatedCount: 0,
+      executed: false
+    }
+  },
+  {
     name: "short-circuits req_update_project_member_role dry runs without HTTP or rate-limit consumption",
     toolName: "req_update_project_member_role",
     input: {
@@ -2407,6 +2552,20 @@ const dryRunCases: DryRunCase[] = [
     }
   },
   {
+    name: "short-circuits req_create_version_v2 dry runs without HTTP or rate-limit consumption",
+    toolName: "req_create_version_v2",
+    input: createReqCreateVersionV2Input({
+      dry_run: true
+    }),
+    expectedItem: {
+      projectId: "project-1",
+      name: "Sprint V2",
+      startDate: 1779379200000,
+      dueDate: 1779984000000,
+      executed: false
+    }
+  },
+  {
     name: "short-circuits req_update_plan dry runs without HTTP or rate-limit consumption",
     toolName: "req_update_plan",
     input: createReqUpdatePlanInput({
@@ -2552,6 +2711,21 @@ const dryRunCases: DryRunCase[] = [
         }
       ],
       updatedCount: 0,
+      executed: false
+    }
+  },
+  {
+    name: "short-circuits req_update_cache_setting dry runs without HTTP or rate-limit consumption",
+    toolName: "req_update_cache_setting",
+    input: createReqUpdateCacheSettingInput({
+      dry_run: true
+    }),
+    expectedItem: {
+      projectId: "project-1",
+      type: "backlog",
+      fieldIds: ["subject", "status"],
+      fields: [],
+      visibleFields: [],
       executed: false
     }
   },
