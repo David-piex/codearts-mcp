@@ -77,7 +77,13 @@ describe("registerCheckTool", () => {
       ["check_list_task_check_records", "List CodeArts Check task check records"],
       ["check_list_rules", "List CodeArts Check rules"],
       ["check_list_default_rulesets", "List CodeArts Check default rulesets"],
-      ["check_list_supported_languages", "List CodeArts Check supported languages"]
+      ["check_list_supported_languages", "List CodeArts Check supported languages"],
+      ["check_get_task_notification", "Get CodeArts Check task notification settings"],
+      ["check_get_code_sum_measures", "Get CodeArts Check tenant code sum measures"],
+      ["check_list_task_repository_branches", "List CodeArts Check task repository branches"],
+      ["check_get_transmission_notification", "Get CodeArts Check transmission notification settings"],
+      ["check_get_tenant_package_status", "Get CodeArts Check tenant package status"],
+      ["check_list_template_tasks", "List CodeArts Check template tasks"]
     ] as const;
 
     for (const [toolName, description] of tools) {

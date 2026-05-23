@@ -4,12 +4,15 @@ import { createCheckClient } from "../products/check/client.js";
 import {
   checkCreateTaskInput,
   checkDetectTaskLanguageInput,
+  checkGetCodeSumMeasuresInput,
   checkGetDomainCheckersVersionInput,
   checkGetConsoleLogInput,
   checkGetMetricsInput,
+  checkGetTenantPackageStatusInput,
   checkGetTaskCronInput,
   checkGetTaskInput,
   checkGetTaskLogDetailInput,
+  checkGetTaskNotificationInput,
   checkGetTaskOwnerMatchingSwitchInput,
   checkGetTaskPreCheckScriptInput,
   checkGetTaskProgressInput,
@@ -17,12 +20,14 @@ import {
   checkGetTaskRulesetCheckParametersV2Input,
   checkGetTaskRulesetCheckParametersV3Input,
   checkGetTaskSettingsInput,
+  checkGetTransmissionNotificationInput,
   checkListCodehubRepositoriesInput,
   checkListDefaultRulesetsInput,
   checkListProjectTaskGroupsInput,
   checkListRulesInput,
   checkListRulesetsInput,
   checkListSupportedLanguagesInput,
+  checkListTemplateTasksInput,
   checkListTaskAllFilesInput,
   checkListTaskBranchesInput,
   checkListTaskCheckRecordsInput,
@@ -31,6 +36,7 @@ import {
   checkListTaskJobsInput,
   checkListTaskLastJobsInput,
   checkListTaskPathTreeInput,
+  checkListTaskRepositoryBranchesInput,
   checkListTaskRulesetsV2Input,
   checkListTaskRulesetsV3Input,
   checkListTasksInput,
@@ -39,12 +45,15 @@ import {
 } from "../products/check/schemas.js";
 import { createCheckCreateTaskHandler } from "../products/check/tools/create-task.js";
 import { createCheckDetectTaskLanguageHandler } from "../products/check/tools/detect-task-language.js";
+import { createCheckGetCodeSumMeasuresHandler } from "../products/check/tools/get-code-sum-measures.js";
 import { createCheckGetDomainCheckersVersionHandler } from "../products/check/tools/get-domain-checkers-version.js";
 import { createCheckGetConsoleLogHandler } from "../products/check/tools/get-console-log.js";
 import { createCheckGetMetricsHandler } from "../products/check/tools/get-metrics.js";
+import { createCheckGetTenantPackageStatusHandler } from "../products/check/tools/get-tenant-package-status.js";
 import { createCheckGetTaskHandler } from "../products/check/tools/get-task.js";
 import { createCheckGetTaskCronHandler } from "../products/check/tools/get-task-cron.js";
 import { createCheckGetTaskLogDetailHandler } from "../products/check/tools/get-task-log-detail.js";
+import { createCheckGetTaskNotificationHandler } from "../products/check/tools/get-task-notification.js";
 import { createCheckGetTaskOwnerMatchingSwitchHandler } from "../products/check/tools/get-task-owner-matching-switch.js";
 import { createCheckGetTaskPreCheckScriptHandler } from "../products/check/tools/get-task-pre-check-script.js";
 import { createCheckGetTaskProgressHandler } from "../products/check/tools/get-task-progress.js";
@@ -52,12 +61,14 @@ import { createCheckGetTaskResourcePoolHandler } from "../products/check/tools/g
 import { createCheckGetTaskRulesetCheckParametersV2Handler } from "../products/check/tools/get-task-ruleset-check-parameters-v2.js";
 import { createCheckGetTaskRulesetCheckParametersV3Handler } from "../products/check/tools/get-task-ruleset-check-parameters-v3.js";
 import { createCheckGetTaskSettingsHandler } from "../products/check/tools/get-task-settings.js";
+import { createCheckGetTransmissionNotificationHandler } from "../products/check/tools/get-transmission-notification.js";
 import { createCheckListCodehubRepositoriesHandler } from "../products/check/tools/list-codehub-repositories.js";
 import { createCheckListDefaultRulesetsHandler } from "../products/check/tools/list-default-rulesets.js";
 import { createCheckListProjectTaskGroupsHandler } from "../products/check/tools/list-project-task-groups.js";
 import { createCheckListRulesHandler } from "../products/check/tools/list-rules.js";
 import { createCheckListRulesetsHandler } from "../products/check/tools/list-rulesets.js";
 import { createCheckListSupportedLanguagesHandler } from "../products/check/tools/list-supported-languages.js";
+import { createCheckListTemplateTasksHandler } from "../products/check/tools/list-template-tasks.js";
 import { createCheckListTaskAllFilesHandler } from "../products/check/tools/list-task-all-files.js";
 import { createCheckListTaskBranchesHandler } from "../products/check/tools/list-task-branches.js";
 import { createCheckListTaskCheckRecordsHandler } from "../products/check/tools/list-task-check-records.js";
@@ -66,6 +77,7 @@ import { createCheckListTaskIssuesHandler } from "../products/check/tools/list-t
 import { createCheckListTaskJobsHandler } from "../products/check/tools/list-task-jobs.js";
 import { createCheckListTaskLastJobsHandler } from "../products/check/tools/list-task-last-jobs.js";
 import { createCheckListTaskPathTreeHandler } from "../products/check/tools/list-task-path-tree.js";
+import { createCheckListTaskRepositoryBranchesHandler } from "../products/check/tools/list-task-repository-branches.js";
 import { createCheckListTaskRulesetsV2Handler } from "../products/check/tools/list-task-rulesets-v2.js";
 import { createCheckListTaskRulesetsV3Handler } from "../products/check/tools/list-task-rulesets-v3.js";
 import { createCheckListTasksHandler } from "../products/check/tools/list-tasks.js";
@@ -199,6 +211,42 @@ const checkToolDefinitions = {
     inputSchema: checkListSupportedLanguagesInput,
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListSupportedLanguagesHandler>[0] }) => clients.checkClient,
     createProductHandler: createCheckListSupportedLanguagesHandler
+  }),
+  "check_get_task_notification": defineProductTool({
+    description: "Get CodeArts Check task notification settings",
+    inputSchema: checkGetTaskNotificationInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetTaskNotificationHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckGetTaskNotificationHandler
+  }),
+  "check_get_code_sum_measures": defineProductTool({
+    description: "Get CodeArts Check tenant code sum measures",
+    inputSchema: checkGetCodeSumMeasuresInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetCodeSumMeasuresHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckGetCodeSumMeasuresHandler
+  }),
+  "check_list_task_repository_branches": defineProductTool({
+    description: "List CodeArts Check task repository branches",
+    inputSchema: checkListTaskRepositoryBranchesInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListTaskRepositoryBranchesHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckListTaskRepositoryBranchesHandler
+  }),
+  "check_get_transmission_notification": defineProductTool({
+    description: "Get CodeArts Check transmission notification settings",
+    inputSchema: checkGetTransmissionNotificationInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetTransmissionNotificationHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckGetTransmissionNotificationHandler
+  }),
+  "check_get_tenant_package_status": defineProductTool({
+    description: "Get CodeArts Check tenant package status",
+    inputSchema: checkGetTenantPackageStatusInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetTenantPackageStatusHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckGetTenantPackageStatusHandler
+  }),
+  "check_list_template_tasks": defineProductTool({
+    description: "List CodeArts Check template tasks",
+    inputSchema: checkListTemplateTasksInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListTemplateTasksHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckListTemplateTasksHandler
   }),
   "check_get_task_progress": defineProductTool({
     description: "Get CodeArts Check task progress",

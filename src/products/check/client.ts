@@ -146,6 +146,43 @@ export type CheckClient = {
   listSupportedLanguages: () => Promise<{
     languages: string[];
   }>;
+  getTaskNotification: (input: { task_id: string }) => Promise<{
+    task_id: string;
+    raw: Record<string, unknown>;
+  }>;
+  getCodeSumMeasures: () => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  listTaskRepositoryBranches: (input: {
+    task_id: string;
+    page: number;
+    page_size: number;
+    is_uncreated_only?: boolean;
+    search?: string;
+    repo_type?: string;
+  }) => Promise<{
+    branches: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getTransmissionNotification: (input: {
+    is_check_project: 0 | 1;
+    domain_id?: string;
+    project_id?: string;
+  }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  getTenantPackageStatus: (input: { project_id?: string }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  listTemplateTasks: (input: {
+    project_id?: string;
+    page: number;
+    page_size: number;
+    search?: string;
+  }) => Promise<{
+    tasks: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
   getTaskProgress: (input: { task_id: string }) => Promise<{
     task_id: string;
     raw: Record<string, unknown>;
@@ -714,6 +751,98 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
       const languages = Array.isArray(rawLanguages) ? rawLanguages.map(String) : [];
 
       return { languages };
+    },
+    async getTaskNotification(input) {
+      const response = await _http.get(`/v1/task/notification/${encodeURIComponent(input.task_id)}`);
+      const payload = readResultPayload(response);
+      const notification = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        task_id: input.task_id,
+        raw: notification
+      };
+    },
+    async getCodeSumMeasures() {
+      const response = await _http.get("/v1/tasks/code-sum-measures");
+      const payload = readResultPayload(response);
+      const measures = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        raw: measures
+      };
+    },
+    async listTaskRepositoryBranches(input) {
+      const query = new URLSearchParams({
+        page: String(input.page),
+        page_size: String(input.page_size)
+      });
+      if (input.is_uncreated_only !== undefined) query.set("is_uncreated_only", String(input.is_uncreated_only));
+      if (input.search) query.set("search", input.search);
+      if (input.repo_type) query.set("repo_type", input.repo_type);
+      const response = await _http.get(
+        `/v4/tasks/${encodeURIComponent(input.task_id)}/branches?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const rawBranches =
+        payload.branch_list ??
+        payload.branches ??
+        payload.data ??
+        payload.value ??
+        payload.items ??
+        payload.list ??
+        (Array.isArray(response) ? response : []);
+      const branches = readArray<unknown>(rawBranches).map((item) =>
+        typeof item === "string" ? { id: item, name: item, branch: item } : (item as Record<string, unknown>)
+      );
+
+      return {
+        branches,
+        total: readTotal(payload, response, branches.length)
+      };
+    },
+    async getTransmissionNotification(input) {
+      const query = new URLSearchParams({
+        is_check_project: String(input.is_check_project)
+      });
+      if (input.domain_id) query.set("domain_id", input.domain_id);
+      if (input.project_id) query.set("project_id", input.project_id);
+      const response = await _http.get(`/v2/transmission/notification?${query.toString()}`);
+      const payload = readResultPayload(response);
+      const notification = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        raw: notification
+      };
+    },
+    async getTenantPackageStatus(input) {
+      const query = new URLSearchParams();
+      if (input.project_id) query.set("project_id", input.project_id);
+      const suffix = query.size ? `?${query.toString()}` : "";
+      const response = await _http.get(`/v4/tenant/tenant-package-status${suffix}`);
+      const payload = readResultPayload(response);
+      const status = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        raw: status
+      };
+    },
+    async listTemplateTasks(input) {
+      const query = new URLSearchParams({
+        page: String(input.page - 1),
+        page_size: String(input.page_size)
+      });
+      if (input.project_id) query.set("project_id", input.project_id);
+      if (input.search) query.set("search", input.search);
+      const response = await _http.get(`/v4/template-tasks?${query.toString()}`);
+      const payload = readResultPayload(response);
+      const tasks = readArray<Record<string, unknown>>(
+        payload.data ?? payload.tasks ?? payload.template_tasks ?? payload.value ?? payload.items ?? payload.list ?? (Array.isArray(response) ? response : [])
+      );
+
+      return {
+        tasks,
+        total: readTotal(payload, response, tasks.length)
+      };
     },
     async getTaskProgress(input) {
       const response = await _http.get(`/v2/tasks/${encodeURIComponent(input.task_id)}/progress`);

@@ -79,6 +79,34 @@ export const checkListDefaultRulesetsInput = z.object({
 
 export const checkListSupportedLanguagesInput = z.object({});
 
+export const checkGetTaskNotificationInput = z.object({
+  task_id: idSchema
+});
+
+export const checkGetCodeSumMeasuresInput = z.object({});
+
+export const checkListTaskRepositoryBranchesInput = pagingSchema.extend({
+  task_id: idSchema,
+  is_uncreated_only: z.boolean().optional(),
+  search: z.string().min(1).optional(),
+  repo_type: z.string().min(1).optional()
+});
+
+export const checkGetTransmissionNotificationInput = z.object({
+  is_check_project: z.union([z.literal(0), z.literal(1)]),
+  domain_id: idSchema.optional(),
+  project_id: idSchema.optional()
+});
+
+export const checkGetTenantPackageStatusInput = z.object({
+  project_id: idSchema.optional()
+});
+
+export const checkListTemplateTasksInput = pagingSchema.extend({
+  project_id: idSchema.optional(),
+  search: z.string().min(1).optional()
+});
+
 export const checkGetTaskProgressInput = z.object({
   task_id: idSchema
 });

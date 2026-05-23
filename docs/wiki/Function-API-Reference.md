@@ -27,13 +27,13 @@
 | 制品仓 | 29 | [Function-API-Reference-Artifact.md](./Function-API-Reference-Artifact.md) |
 | 鉴权会话 | 2 | [Function-API-Reference-Auth-Session.md](./Function-API-Reference-Auth-Session.md) |
 | 编译构建 | 61 | [Function-API-Reference-Build.md](./Function-API-Reference-Build.md) |
-| 代码检查 | 35 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
+| 代码检查 | 41 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
 | 部署 | 60 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
 | 流水线 | 88 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 176 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 201 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 238 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **890** | |
+| **总计** | **896** | |
 
 ## 字段对应
 
@@ -137,12 +137,14 @@
 | `build_update_job_step` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_update_job_step) |
 | `check_create_task` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_create_task) |
 | `check_detect_task_language` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_detect_task_language) |
+| `check_get_code_sum_measures` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_code_sum_measures) |
 | `check_get_console_log` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_console_log) |
 | `check_get_domain_checkers_version` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_domain_checkers_version) |
 | `check_get_metrics` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_metrics) |
 | `check_get_task` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_task) |
 | `check_get_task_cron` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_task_cron) |
 | `check_get_task_log_detail` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_task_log_detail) |
+| `check_get_task_notification` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_task_notification) |
 | `check_get_task_owner_matching_switch` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_task_owner_matching_switch) |
 | `check_get_task_pre_check_script` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_task_pre_check_script) |
 | `check_get_task_progress` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_task_progress) |
@@ -150,6 +152,8 @@
 | `check_get_task_ruleset_check_parameters_v2` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_task_ruleset_check_parameters_v2) |
 | `check_get_task_ruleset_check_parameters_v3` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_task_ruleset_check_parameters_v3) |
 | `check_get_task_settings` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_task_settings) |
+| `check_get_tenant_package_status` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_tenant_package_status) |
+| `check_get_transmission_notification` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_transmission_notification) |
 | `check_list_codehub_repositories` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_codehub_repositories) |
 | `check_list_default_rulesets` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_default_rulesets) |
 | `check_list_project_task_groups` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_project_task_groups) |
@@ -164,9 +168,11 @@
 | `check_list_task_jobs` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_task_jobs) |
 | `check_list_task_last_jobs` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_task_last_jobs) |
 | `check_list_task_path_tree` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_task_path_tree) |
+| `check_list_task_repository_branches` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_task_repository_branches) |
 | `check_list_task_rulesets_v2` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_task_rulesets_v2) |
 | `check_list_task_rulesets_v3` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_task_rulesets_v3) |
 | `check_list_tasks` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_tasks) |
+| `check_list_template_tasks` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_template_tasks) |
 | `check_request_official_api` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_request_official_api) |
 | `check_run_task` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_run_task) |
 | `check_stop_task` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_stop_task) |

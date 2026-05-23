@@ -655,4 +655,137 @@ describe("createCheckClient", () => {
       "/v2/excute/language/all"
     ]);
   });
+
+  it("uses documented notification, measures, branch, tenant, and template task endpoints", async () => {
+    const requests: string[] = [];
+    const client = createClient({
+      get: async (path: string) => {
+        requests.push(path);
+        if (path.includes("/task/notification/")) {
+          return {
+            codeGateFailed: {
+              sendMail: true,
+              sendMessage: true
+            }
+          };
+        }
+        if (path.includes("/code-sum-measures")) {
+          return {
+            codeLineCountSum: 10,
+            defectCountSum: 2
+          };
+        }
+        if (path.includes("/branches")) {
+          return {
+            data: ["main", "dev"],
+            total: 2
+          };
+        }
+        if (path.includes("/transmission/notification")) {
+          return {
+            result: {
+              executeTask: {
+                eventType: "taskExecuteCompleted",
+                sendMail: 1
+              }
+            },
+            status: "success"
+          };
+        }
+        if (path.includes("/tenant-package-status")) {
+          return {
+            result: {
+              charge_type: "free",
+              duration: 120
+            }
+          };
+        }
+
+        return {
+          data: [
+            {
+              id: "template-1",
+              name: "Java template",
+              taskId: "task-1"
+            }
+          ],
+          total: 1
+        };
+      }
+    });
+
+    await expect(client.getTaskNotification(createTaskRefInput())).resolves.toEqual({
+      task_id: "task-1",
+      raw: {
+        codeGateFailed: {
+          sendMail: true,
+          sendMessage: true
+        }
+      }
+    });
+    await expect(client.getCodeSumMeasures()).resolves.toEqual({
+      raw: {
+        codeLineCountSum: 10,
+        defectCountSum: 2
+      }
+    });
+    await expect(client.listTaskRepositoryBranches({
+      task_id: "task-1",
+      page: 2,
+      page_size: 20,
+      is_uncreated_only: true,
+      search: "ma",
+      repo_type: "gitcode"
+    })).resolves.toEqual({
+      branches: [
+        { id: "main", name: "main", branch: "main" },
+        { id: "dev", name: "dev", branch: "dev" }
+      ],
+      total: 2
+    });
+    await expect(client.getTransmissionNotification({
+      is_check_project: 1,
+      domain_id: "domain-1",
+      project_id: "project-1"
+    })).resolves.toEqual({
+      raw: {
+        executeTask: {
+          eventType: "taskExecuteCompleted",
+          sendMail: 1
+        }
+      }
+    });
+    await expect(client.getTenantPackageStatus({
+      project_id: "project-1"
+    })).resolves.toEqual({
+      raw: {
+        charge_type: "free",
+        duration: 120
+      }
+    });
+    await expect(client.listTemplateTasks({
+      project_id: "project-1",
+      page: 2,
+      page_size: 15,
+      search: "Java"
+    })).resolves.toEqual({
+      tasks: [
+        {
+          id: "template-1",
+          name: "Java template",
+          taskId: "task-1"
+        }
+      ],
+      total: 1
+    });
+
+    expect(requests).toEqual([
+      "/v1/task/notification/task-1",
+      "/v1/tasks/code-sum-measures",
+      "/v4/tasks/task-1/branches?page=2&page_size=20&is_uncreated_only=true&search=ma&repo_type=gitcode",
+      "/v2/transmission/notification?is_check_project=1&domain_id=domain-1&project_id=project-1",
+      "/v4/tenant/tenant-package-status?project_id=project-1",
+      "/v4/template-tasks?page=1&page_size=15&project_id=project-1&search=Java"
+    ]);
+  });
 });
