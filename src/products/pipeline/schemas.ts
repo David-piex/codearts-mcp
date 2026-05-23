@@ -152,6 +152,42 @@ export const pipelineGetInput = z.object({
   pipeline_id: idSchema
 });
 
+export const pipelineGetNoticeInput = z.object({
+  project_id: idSchema,
+  pipeline_id: idSchema
+});
+
+export const pipelineGetNoticeDetailInput = z.object({
+  project_id: idSchema,
+  pipeline_id: idSchema,
+  type: z.string().min(1).optional()
+});
+
+export const pipelineGetPermissionInput = z.object({
+  project_id: idSchema,
+  pipeline_id: idSchema
+});
+
+export const pipelineListQueueInput = z.object({
+  project_id: idSchema,
+  pipeline_id: idSchema
+});
+
+export const pipelineListSystemVarsInput = z.object({
+  project_id: idSchema,
+  pipeline_id: idSchema
+});
+
+export const pipelineListTriggerFailedRecordsInput = pagingSchema.extend({
+  project_id: idSchema,
+  pipeline_id: idSchema
+});
+
+export const pipelineListModifyHistoryInput = z.object({
+  project_id: idSchema,
+  pipeline_id: idSchema
+});
+
 export const pipelineListGroupsInput = z.object({
   project_id: idSchema
 });

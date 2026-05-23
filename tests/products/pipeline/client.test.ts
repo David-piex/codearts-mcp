@@ -891,6 +891,118 @@ describe("createPipelineClient", () => {
     ]);
   });
 
+  it("gets pipeline notices and permissions", async () => {
+    const requests: string[] = [];
+    const client = createClient({
+      get: async (path: string) => {
+        requests.push(path);
+        return {
+          result: {
+            id: "notice-1",
+            name: path.includes("permission") ? "permission" : "notice",
+            enabled: true
+          }
+        };
+      }
+    });
+
+    await expect(client.getOfficialNotice(createProjectPipelineInput())).resolves.toEqual({
+      notice: { id: "notice-1", name: "notice", enabled: true }
+    });
+    await expect(client.getNoticeStatus(createProjectPipelineInput())).resolves.toEqual({
+      status: { id: "notice-1", name: "notice", enabled: true }
+    });
+    await expect(
+      client.getNoticeDetail(createProjectPipelineInput({ type: "system" }))
+    ).resolves.toEqual({
+      detail: { id: "notice-1", name: "notice", enabled: true }
+    });
+    await expect(client.getPermissionSwitch(createProjectPipelineInput())).resolves.toEqual({
+      permission_switch: { id: "notice-1", name: "permission", enabled: true }
+    });
+    await expect(client.getRolePermission(createProjectPipelineInput())).resolves.toEqual({
+      role_permission: { id: "notice-1", name: "permission", enabled: true }
+    });
+    await expect(client.getUserPermission(createProjectPipelineInput())).resolves.toEqual({
+      user_permission: { id: "notice-1", name: "permission", enabled: true }
+    });
+
+    expect(requests).toEqual([
+      "/v5/project-1/api/pipeline-notices/pipe-1/notice",
+      "/v5/project-1/api/pipeline-notices/pipe-1/notice/status",
+      "/v5/project-1/api/pipeline-notices/pipe-1/notice/detail?type=system",
+      "/v5/project-1/api/pipeline-permissions/pipe-1/permission-switch",
+      "/v5/project-1/api/pipeline-permissions/pipe-1/role-permission",
+      "/v5/project-1/api/pipeline-permissions/pipe-1/user-permission"
+    ]);
+  });
+
+  it("lists pipeline queue, system variables, trigger failures, and modify history", async () => {
+    const requests: string[] = [];
+    const client = createClient({
+      get: async (path: string) => {
+        requests.push(path);
+        if (path.includes("list-system-vars")) {
+          return {
+            result: {
+              variables: [{ name: "PROJECT_ID", value: "project-1" }],
+              total: 1
+            }
+          };
+        }
+
+        return {
+          result: {
+            records: [{ id: "record-1", name: "queued" }],
+            total: 1
+          }
+        };
+      }
+    });
+
+    await expect(client.listQueue(createProjectPipelineInput())).resolves.toEqual({
+      records: [{ id: "record-1", name: "queued" }],
+      total: 1,
+      raw: {
+        records: [{ id: "record-1", name: "queued" }],
+        total: 1
+      }
+    });
+    await expect(client.listSystemVars(createProjectPipelineInput())).resolves.toEqual({
+      variables: [{ name: "PROJECT_ID", value: "project-1" }],
+      total: 1,
+      raw: {
+        variables: [{ name: "PROJECT_ID", value: "project-1" }],
+        total: 1
+      }
+    });
+    await expect(
+      client.listTriggerFailedRecords(createProjectPipelinePageInput({ page: 2, page_size: 10 }))
+    ).resolves.toEqual({
+      records: [{ id: "record-1", name: "queued" }],
+      total: 1,
+      raw: {
+        records: [{ id: "record-1", name: "queued" }],
+        total: 1
+      }
+    });
+    await expect(client.listModifyHistory(createProjectPipelineInput())).resolves.toEqual({
+      records: [{ id: "record-1", name: "queued" }],
+      total: 1,
+      raw: {
+        records: [{ id: "record-1", name: "queued" }],
+        total: 1
+      }
+    });
+
+    expect(requests).toEqual([
+      "/v5/project-1/api/pipelines/pipe-1/queued-pipeline",
+      "/v5/project-1/api/pipelines/pipe-1/list-system-vars",
+      "/v5/project-1/api/pipelines/pipe-1/trigger-failed-record?offset=10&limit=10",
+      "/v5/project-1/api/pipelines/pipe-1/pipelines-modify-historys"
+    ]);
+  });
+
   it("maps reject manual review responses", async () => {
     const client = createClient({
       post: async () => ({

@@ -22,12 +22,17 @@ import {
   pipelineGetExtensionEndpointInput,
   pipelineGetExtensionModuleInput,
   pipelineGetInput,
+  pipelineGetNoticeDetailInput,
+  pipelineGetNoticeInput,
+  pipelineGetPermissionInput,
   pipelineGetProjectStrategyDetailInput,
   pipelineGetProjectStrategyInput,
   pipelineGetProjectStrategyRelatedInfoInput,
   pipelineListArtifactsInput,
   pipelineListGroupsInput,
+  pipelineListModifyHistoryInput,
   pipelineListProjectStrategiesInput,
+  pipelineListQueueInput,
   pipelineListTagsInput,
   pipelineGetRuleInput,
   pipelineGetRuleRelatedInfoInput,
@@ -59,6 +64,8 @@ import {
   pipelineListStagePluginsInput,
   pipelineListStrategiesInput,
   pipelineListStrategyChildrenInput,
+  pipelineListSystemVarsInput,
+  pipelineListTriggerFailedRecordsInput,
   pipelineSetTagsForPipelinesInput,
   pipelineListVariableGroupsInput,
   pipelineListTemplatesInput,
@@ -99,6 +106,10 @@ import { createPipelineEnablePipelineHandler } from "../products/pipeline/tools/
 import { createPipelineGetExtensionEndpointHandler } from "../products/pipeline/tools/get-extension-endpoint.js";
 import { createPipelineGetExtensionModuleHandler } from "../products/pipeline/tools/get-extension-module.js";
 import { createPipelineGetManualReviewContextHandler } from "../products/pipeline/tools/get-manual-review-context.js";
+import { createPipelineGetNoticeDetailHandler } from "../products/pipeline/tools/get-notice-detail.js";
+import { createPipelineGetNoticeStatusHandler } from "../products/pipeline/tools/get-notice-status.js";
+import { createPipelineGetOfficialNoticeHandler } from "../products/pipeline/tools/get-official-notice.js";
+import { createPipelineGetPermissionSwitchHandler } from "../products/pipeline/tools/get-permission-switch.js";
 import { createPipelineGetPipelineHandler } from "../products/pipeline/tools/get-pipeline.js";
 import { createPipelineGetPluginInputsHandler } from "../products/pipeline/tools/get-plugin-inputs.js";
 import { createPipelineGetPluginOutputsHandler } from "../products/pipeline/tools/get-plugin-outputs.js";
@@ -108,8 +119,10 @@ import { createPipelineGetProjectStrategyHandler } from "../products/pipeline/to
 import { createPipelineGetProjectStrategyRelatedInfoHandler } from "../products/pipeline/tools/get-project-strategy-related-info.js";
 import { createPipelineGetRuleHandler } from "../products/pipeline/tools/get-rule.js";
 import { createPipelineGetRuleRelatedInfoHandler } from "../products/pipeline/tools/get-rule-related-info.js";
+import { createPipelineGetRolePermissionHandler } from "../products/pipeline/tools/get-role-permission.js";
 import { createPipelineGetStrategyHandler } from "../products/pipeline/tools/get-strategy.js";
 import { createPipelineGetStrategyRelatedInfoHandler } from "../products/pipeline/tools/get-strategy-related-info.js";
+import { createPipelineGetUserPermissionHandler } from "../products/pipeline/tools/get-user-permission.js";
 import { createPipelineGetRunDetailHandler } from "../products/pipeline/tools/get-run-detail.js";
 import { createPipelineGetRunLogHandler } from "../products/pipeline/tools/get-run-log.js";
 import { createPipelineGetRunParametersHandler } from "../products/pipeline/tools/get-run-parameters.js";
@@ -122,10 +135,12 @@ import { createPipelineListBasePluginsPagedHandler } from "../products/pipeline/
 import { createPipelineListExtensionEndpointsHandler } from "../products/pipeline/tools/list-extension-endpoints.js";
 import { createPipelineListExtensionModulesHandler } from "../products/pipeline/tools/list-extension-modules.js";
 import { createPipelineListGroupsHandler } from "../products/pipeline/tools/list-groups.js";
+import { createPipelineListModifyHistoryHandler } from "../products/pipeline/tools/list-modify-history.js";
 import { createPipelineListProjectStrategiesHandler } from "../products/pipeline/tools/list-project-strategies.js";
 import { createPipelineListPluginsHandler } from "../products/pipeline/tools/list-plugins.js";
 import { createPipelineListPluginVersionsHandler } from "../products/pipeline/tools/list-plugin-versions.js";
 import { createPipelineListPublishersHandler } from "../products/pipeline/tools/list-publishers.js";
+import { createPipelineListQueueHandler } from "../products/pipeline/tools/list-queue.js";
 import { createPipelineListTagsHandler } from "../products/pipeline/tools/list-tags.js";
 import { createPipelineListStagePluginsHandler } from "../products/pipeline/tools/list-stage-plugins.js";
 import { createPipelineListRuleTypesHandler } from "../products/pipeline/tools/list-rule-types.js";
@@ -139,7 +154,9 @@ import {
   createPipelineListVariableGroupsHandler
 } from "../products/pipeline/tools/list-variable-groups.js";
 import { createPipelineListRunsHandler } from "../products/pipeline/tools/list-runs.js";
+import { createPipelineListSystemVarsHandler } from "../products/pipeline/tools/list-system-vars.js";
 import { createPipelineListTemplatesHandler } from "../products/pipeline/tools/list-templates.js";
+import { createPipelineListTriggerFailedRecordsHandler } from "../products/pipeline/tools/list-trigger-failed-records.js";
 import { createPipelineMovePipelinesToGroupHandler } from "../products/pipeline/tools/move-pipelines-to-group.js";
 import { createPipelineRejectRunHandler } from "../products/pipeline/tools/reject-run.js";
 import { createPipelineRetryRunHandler } from "../products/pipeline/tools/retry-run.js";
@@ -297,6 +314,42 @@ const pipelineToolDefinitions = {
     inputSchema: pipelineGetManualReviewContextInput,
     selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetManualReviewContextHandler>[0] }) => clients.pipelineClient,
     createProductHandler: createPipelineGetManualReviewContextHandler
+  }),
+  "pipeline_get_official_notice": defineProductTool({
+    description: "Get CodeArts Pipeline official notice",
+    inputSchema: pipelineGetNoticeInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetOfficialNoticeHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineGetOfficialNoticeHandler
+  }),
+  "pipeline_get_notice_status": defineProductTool({
+    description: "Get CodeArts Pipeline notice status",
+    inputSchema: pipelineGetNoticeInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetNoticeStatusHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineGetNoticeStatusHandler
+  }),
+  "pipeline_get_notice_detail": defineProductTool({
+    description: "Get CodeArts Pipeline notice detail",
+    inputSchema: pipelineGetNoticeDetailInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetNoticeDetailHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineGetNoticeDetailHandler
+  }),
+  "pipeline_get_permission_switch": defineProductTool({
+    description: "Get CodeArts Pipeline permission switch",
+    inputSchema: pipelineGetPermissionInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetPermissionSwitchHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineGetPermissionSwitchHandler
+  }),
+  "pipeline_get_role_permission": defineProductTool({
+    description: "Get CodeArts Pipeline role permission",
+    inputSchema: pipelineGetPermissionInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetRolePermissionHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineGetRolePermissionHandler
+  }),
+  "pipeline_get_user_permission": defineProductTool({
+    description: "Get CodeArts Pipeline user permission",
+    inputSchema: pipelineGetPermissionInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetUserPermissionHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineGetUserPermissionHandler
   }),
   "pipeline_get_step_outputs": defineProductTool({
     description: "Get CodeArts Pipeline step outputs",
@@ -621,6 +674,30 @@ const pipelineToolDefinitions = {
     inputSchema: pipelineListRuleTypesInput,
     selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineListRuleTypesHandler>[0] }) => clients.pipelineClient,
     createProductHandler: createPipelineListRuleTypesHandler
+  }),
+  "pipeline_list_queue": defineProductTool({
+    description: "List CodeArts Pipeline queued records",
+    inputSchema: pipelineListQueueInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineListQueueHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineListQueueHandler
+  }),
+  "pipeline_list_system_vars": defineProductTool({
+    description: "List CodeArts Pipeline system variables",
+    inputSchema: pipelineListSystemVarsInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineListSystemVarsHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineListSystemVarsHandler
+  }),
+  "pipeline_list_trigger_failed_records": defineProductTool({
+    description: "List CodeArts Pipeline trigger failed records",
+    inputSchema: pipelineListTriggerFailedRecordsInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineListTriggerFailedRecordsHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineListTriggerFailedRecordsHandler
+  }),
+  "pipeline_list_modify_history": defineProductTool({
+    description: "List CodeArts Pipeline modify history records",
+    inputSchema: pipelineListModifyHistoryInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineListModifyHistoryHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineListModifyHistoryHandler
   }),
   "pipeline_run_pipeline": defineProductTool({
     description: "Run CodeArts Pipeline",

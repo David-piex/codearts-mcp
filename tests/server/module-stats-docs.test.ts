@@ -108,7 +108,7 @@ describe("syncModuleStatsDocuments", () => {
     expect(synced["README.md"]).toContain(
       `- \`${collectProductToolStats().total}\` product tools`
     );
-    expect(synced["README.md"]).toContain("| Pipeline | 78 | Partial |");
+    expect(synced["README.md"]).toContain("| Pipeline | 88 | Partial |");
     expect(synced["README.md"]).toContain("| Req | 201 | Partial |");
     expect(synced["docs/wiki/Capability-Matrix.md"]).toContain(
       "| Req | 117 | 84 | Partial |"

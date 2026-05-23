@@ -242,6 +242,8 @@ type PipelinePluginVersion = {
   [key: string]: unknown;
 };
 
+type PipelineRawRecord = Record<string, unknown>;
+
 export type PipelineClient = {
   requestOfficialApi: (input: OfficialApiRequestInput) => Promise<OfficialApiRequestResult>;
   getRunParameters: (input: {
@@ -295,6 +297,53 @@ export type PipelineClient = {
       job_id?: string;
       build_no?: number;
     }>;
+  }>;
+  getOfficialNotice: (input: { project_id: string; pipeline_id: string }) => Promise<{
+    notice: PipelineRawRecord;
+  }>;
+  getNoticeStatus: (input: { project_id: string; pipeline_id: string }) => Promise<{
+    status: PipelineRawRecord;
+  }>;
+  getNoticeDetail: (input: {
+    project_id: string;
+    pipeline_id: string;
+    type?: string;
+  }) => Promise<{
+    detail: PipelineRawRecord;
+  }>;
+  getPermissionSwitch: (input: { project_id: string; pipeline_id: string }) => Promise<{
+    permission_switch: PipelineRawRecord;
+  }>;
+  getRolePermission: (input: { project_id: string; pipeline_id: string }) => Promise<{
+    role_permission: PipelineRawRecord;
+  }>;
+  getUserPermission: (input: { project_id: string; pipeline_id: string }) => Promise<{
+    user_permission: PipelineRawRecord;
+  }>;
+  listQueue: (input: { project_id: string; pipeline_id: string }) => Promise<{
+    records: PipelineRawRecord[];
+    total?: number;
+    raw: PipelineRawRecord;
+  }>;
+  listSystemVars: (input: { project_id: string; pipeline_id: string }) => Promise<{
+    variables: PipelineRawRecord[];
+    total?: number;
+    raw: PipelineRawRecord;
+  }>;
+  listTriggerFailedRecords: (input: {
+    project_id: string;
+    pipeline_id: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    records: PipelineRawRecord[];
+    total?: number;
+    raw: PipelineRawRecord;
+  }>;
+  listModifyHistory: (input: { project_id: string; pipeline_id: string }) => Promise<{
+    records: PipelineRawRecord[];
+    total?: number;
+    raw: PipelineRawRecord;
   }>;
   rejectRun: (input: {
     project_id: string;
@@ -865,6 +914,41 @@ function unwrapPipelinePayload<T>(input: T): T {
   return input;
 }
 
+function asPipelineRecord(input: unknown): PipelineRawRecord {
+  return input && typeof input === "object" && !Array.isArray(input)
+    ? (input as PipelineRawRecord)
+    : {};
+}
+
+function getPipelinePayload(input: unknown): PipelineRawRecord {
+  const response = asPipelineRecord(input);
+  return asPipelineRecord(response.result ?? response.data ?? response.value ?? response);
+}
+
+function readPipelineRecordList(payload: PipelineRawRecord): PipelineRawRecord[] {
+  for (const key of ["records", "items", "list", "data", "values", "variables", "historys"]) {
+    const value = payload[key];
+    if (Array.isArray(value)) {
+      return value.filter((item): item is PipelineRawRecord => (
+        item !== null && typeof item === "object" && !Array.isArray(item)
+      ));
+    }
+  }
+
+  return [];
+}
+
+function readPipelineTotal(payload: PipelineRawRecord, fallback?: number) {
+  for (const key of ["total", "total_count", "count"]) {
+    const value = payload[key];
+    if (typeof value === "number") {
+      return value;
+    }
+  }
+
+  return fallback;
+}
+
 export function createPipelineClient(
   _http: ReturnTypeCreateHttpClient,
   options: PipelineClientOptions = {}
@@ -1234,6 +1318,112 @@ export function createPipelineClient(
 
       return {
         artifacts: response.artifacts ?? response.result?.artifacts ?? []
+      };
+    },
+    async getOfficialNotice(input) {
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipeline-notices/${encodeURIComponent(input.pipeline_id)}/notice`
+      ));
+      return {
+        notice: getPipelinePayload(response)
+      };
+    },
+    async getNoticeStatus(input) {
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipeline-notices/${encodeURIComponent(input.pipeline_id)}/notice/status`
+      ));
+      return {
+        status: getPipelinePayload(response)
+      };
+    },
+    async getNoticeDetail(input) {
+      const query = new URLSearchParams();
+      if (input.type) {
+        query.set("type", input.type);
+      }
+      const suffix = query.size > 0 ? `?${query.toString()}` : "";
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipeline-notices/${encodeURIComponent(input.pipeline_id)}/notice/detail${suffix}`
+      ));
+      return {
+        detail: getPipelinePayload(response)
+      };
+    },
+    async getPermissionSwitch(input) {
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipeline-permissions/${encodeURIComponent(input.pipeline_id)}/permission-switch`
+      ));
+      return {
+        permission_switch: getPipelinePayload(response)
+      };
+    },
+    async getRolePermission(input) {
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipeline-permissions/${encodeURIComponent(input.pipeline_id)}/role-permission`
+      ));
+      return {
+        role_permission: getPipelinePayload(response)
+      };
+    },
+    async getUserPermission(input) {
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipeline-permissions/${encodeURIComponent(input.pipeline_id)}/user-permission`
+      ));
+      return {
+        user_permission: getPipelinePayload(response)
+      };
+    },
+    async listQueue(input) {
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipelines/${encodeURIComponent(input.pipeline_id)}/queued-pipeline`
+      ));
+      const payload = getPipelinePayload(response);
+      const records = readPipelineRecordList(payload);
+      return {
+        records,
+        total: readPipelineTotal(payload, records.length),
+        raw: payload
+      };
+    },
+    async listSystemVars(input) {
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipelines/${encodeURIComponent(input.pipeline_id)}/list-system-vars`
+      ));
+      const payload = getPipelinePayload(response);
+      const variables = readPipelineRecordList(payload);
+      return {
+        variables,
+        total: readPipelineTotal(payload, variables.length),
+        raw: payload
+      };
+    },
+    async listTriggerFailedRecords(input) {
+      const offset = (input.page - 1) * input.page_size;
+      const query = new URLSearchParams({
+        offset: String(offset),
+        limit: String(input.page_size)
+      });
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipelines/${encodeURIComponent(input.pipeline_id)}/trigger-failed-record?${query.toString()}`
+      ));
+      const payload = getPipelinePayload(response);
+      const records = readPipelineRecordList(payload);
+      return {
+        records,
+        total: readPipelineTotal(payload, records.length),
+        raw: payload
+      };
+    },
+    async listModifyHistory(input) {
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipelines/${encodeURIComponent(input.pipeline_id)}/pipelines-modify-historys`
+      ));
+      const payload = getPipelinePayload(response);
+      const records = readPipelineRecordList(payload);
+      return {
+        records,
+        total: readPipelineTotal(payload, records.length),
+        raw: payload
       };
     },
     async rejectRun(input) {
