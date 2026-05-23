@@ -208,6 +208,11 @@ export const reqListProjectWorkHourTypesInput = pagingSchema
     status: z.number().int().positive().optional()
   });
 
+export const reqListProjectWorkHourTypesV5Input = z.object({
+  project_id: idSchema,
+  status: z.number().int().min(0).max(2).optional()
+});
+
 const reqChildWorkItemQueryTypeSchema = z.string().min(1);
 
 export const reqListChildWorkItemsInput = pagingSchema
@@ -227,6 +232,16 @@ export const reqListChildWorkItemsV4Input = z.object({
   parent_id: idSchema,
   tracker_id: z.string().min(1).optional(),
   query_type: reqChildWorkItemQueryTypeSchema.default("basic")
+});
+
+export const reqListChildWorkItemsDirectV4Input = z.object({
+  project_id: idSchema,
+  work_item_id: idSchema
+});
+
+export const reqListWorkItemAssignedStatusConfigsInput = z.object({
+  project_id: idSchema,
+  work_item_id: idSchema
 });
 
 export const reqListBoardWorkItemStatusRecordsInput = pagingSchema

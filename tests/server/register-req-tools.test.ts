@@ -544,6 +544,22 @@ describe("registerReqTool", () => {
     {
       toolName: "req_list_child_work_items_v4",
       description: "List CodeArts Req child work items from the official V4 endpoint"
+    },
+    {
+      toolName: "req_list_child_work_items_direct_v4",
+      description: "List CodeArts Req direct child work items from the official V4 endpoint"
+    },
+    {
+      toolName: "req_list_project_work_hour_types_v5",
+      description: "List CodeArts Req project work hour types from the official V5 endpoint"
+    },
+    {
+      toolName: "req_list_work_item_assigned_status_configs",
+      description: "List CodeArts Req work item assigned status configs from the official V3 endpoint"
+    },
+    {
+      toolName: "req_query_scrum_version_work_items_v2",
+      description: "Query CodeArts Req scrum version work items from the official V2 endpoint"
     }
   ])("registers official Req read tool $toolName in http mode", ({ toolName, description }) => {
     const registerTool = vi.fn();
@@ -561,6 +577,27 @@ describe("registerReqTool", () => {
       expect.objectContaining({
         title: toolName,
         description
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers project template name validation in http mode", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_validate_project_template_name",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_validate_project_template_name",
+      expect.objectContaining({
+        title: "req_validate_project_template_name",
+        description: "Validate whether a CodeArts Req project template name already exists"
       }),
       expect.any(Function)
     );

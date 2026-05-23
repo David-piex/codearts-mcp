@@ -2,31 +2,43 @@ import { describe, expect, it, vi } from "vitest";
 import {
   reqListAssociatedCodeV2Input,
   reqListAssociatedWikisV5Input,
+  reqListChildWorkItemsDirectV4Input,
   reqListChildWorkItemsV4Input,
   reqListModuleSettingsV2Input,
   reqListProjectDomainsV2Input,
+  reqListProjectWorkHourTypesV5Input,
+  reqListWorkItemAssignedStatusConfigsInput,
   reqListWorkItemCommentsV2Input,
   reqListWorkItemCustomFieldsV4Input,
   reqListWorkItemQueriesInput,
   reqListWorkItemRecordsV2Input,
-  reqListWorkSettingTemplatesV2Input
+  reqListWorkSettingTemplatesV2Input,
+  reqQueryScrumVersionWorkItemsV2Input
 } from "../../../../src/products/req/schemas.js";
 import {
   createReqListAssociatedCodeV2Handler,
   createReqListAssociatedWikisV5Handler,
+  createReqListChildWorkItemsDirectV4Handler,
   createReqListChildWorkItemsV4Handler,
   createReqListModuleSettingsV2Handler,
   createReqListProjectDomainsV2Handler,
+  createReqListProjectWorkHourTypesV5Handler,
+  createReqListWorkItemAssignedStatusConfigsHandler,
   createReqListWorkItemCommentsV2Handler,
   createReqListWorkItemCustomFieldsV4Handler,
   createReqListWorkItemQueriesHandler,
   createReqListWorkItemRecordsV2Handler,
   createReqListWorkSettingTemplatesV2Handler,
+  createReqQueryScrumVersionWorkItemsV2Handler,
   mapReqAssociatedCodeV2,
   mapReqAssociatedWikisV5,
+  mapReqChildWorkItemsDirectV4,
   mapReqChildWorkItemsV4,
   mapReqModuleSettingsV2,
   mapReqProjectDomainsV2,
+  mapReqProjectWorkHourTypesV5,
+  mapReqScrumVersionWorkItemsV2,
+  mapReqWorkItemAssignedStatusConfigs,
   mapReqWorkItemCommentsV2,
   mapReqWorkItemCustomFieldsV4,
   mapReqWorkItemQueries,
@@ -254,6 +266,79 @@ describe("official V2/V4 Req read mappers", () => {
     });
     expect(result.raw).toHaveProperty("data");
   });
+
+  it("maps official assigned status configs with raw payloads", () => {
+    const result = mapReqWorkItemAssignedStatusConfigs([
+      {
+        id: 11,
+        name: "In Review",
+        definedName: "In Review",
+        status_id: 3,
+        tracker_id: 7,
+        is_default: false
+      }
+    ]);
+
+    expect(result.items?.[0]).toMatchObject({
+      id: "11",
+      definedName: "In Review"
+    });
+    expect(result.items?.[0]).toHaveProperty("rawConfig");
+  });
+
+  it("maps direct official V4 child work items with parent context", () => {
+    const result = mapReqChildWorkItemsDirectV4([
+      {
+        id: 70779174,
+        subject: "Child story",
+        status: { name: "New" },
+        tracker: { name: "Story" }
+      }
+    ]);
+
+    expect(result.items?.[0]).toMatchObject({
+      id: "70779174",
+      title: "Child story",
+      status: "New",
+      type: "Story"
+    });
+    expect(result.raw).toHaveProperty("issues");
+  });
+
+  it("maps official V5 work hour types", () => {
+    const result = mapReqProjectWorkHourTypesV5([
+      {
+        id: 21,
+        name: "Development",
+        status: 1
+      }
+    ]);
+
+    expect(result.items?.[0]).toMatchObject({
+      id: 21,
+      name: "Development",
+      status: 1
+    });
+    expect(result.raw).toHaveProperty("list");
+  });
+
+  it("maps official V2 scrum version work items", () => {
+    const result = mapReqScrumVersionWorkItemsV2([
+      {
+        id: 70779173,
+        subject: "Version story",
+        status: { name: "Doing" },
+        tracker: { name: "Story" },
+        fixed_version: { id: 301, name: "Sprint 1" }
+      }
+    ]);
+
+    expect(result.items?.[0]).toMatchObject({
+      id: "70779173",
+      title: "Version story"
+    });
+    expect(result.raw).toHaveProperty("issues");
+  });
 });
 
 describe("official V2/V4 Req read schemas", () => {
@@ -301,6 +386,35 @@ describe("official V2/V4 Req read schemas", () => {
     expect(reqListAssociatedWikisV5Input.parse({ project_id: "p-1", work_item_id: "70779173" })).toEqual({
       project_id: "p-1",
       work_item_id: "70779173"
+    });
+    expect(reqListWorkItemAssignedStatusConfigsInput.parse({ project_id: "p-1", work_item_id: "70779173" })).toEqual({
+      project_id: "p-1",
+      work_item_id: "70779173"
+    });
+    expect(reqListChildWorkItemsDirectV4Input.parse({ project_id: "p-1", work_item_id: "70779173" })).toEqual({
+      project_id: "p-1",
+      work_item_id: "70779173"
+    });
+    expect(reqListProjectWorkHourTypesV5Input.parse({ project_id: "p-1", status: 1 })).toEqual({
+      project_id: "p-1",
+      status: 1
+    });
+    expect(
+      reqQueryScrumVersionWorkItemsV2Input.parse({
+        project_id: "p-1",
+        fixed_version_id: "301",
+        subject: "version",
+        tracker_id: "7",
+        display_mode: "tree",
+        issue_query: "assigned_to_id=me"
+      })
+    ).toEqual({
+      project_id: "p-1",
+      fixed_version_id: "301",
+      subject: "version",
+      tracker_id: "7",
+      display_mode: "tree",
+      issue_query: "assigned_to_id=me"
     });
   });
 });
@@ -350,6 +464,26 @@ describe("official V2/V4 Req read handlers", () => {
       listAssociatedWikisV5: vi.fn(async () => ({
         wikis: [{ issue_id: "9164403", title: "Wiki A", wiki_id: "wiki-1" }],
         total: 1
+      }))
+    };
+    const assignedStatusConfigsClient = {
+      listWorkItemAssignedStatusConfigs: vi.fn(async () => ({
+        configs: [{ id: 11, definedName: "In Review" }]
+      }))
+    };
+    const childWorkItemsDirectClient = {
+      listChildWorkItemsDirectV4: vi.fn(async () => ({
+        work_items: [{ id: 70779174, subject: "Child story" }]
+      }))
+    };
+    const workHourTypesV5Client = {
+      listProjectWorkHourTypesV5: vi.fn(async () => ({
+        work_hours_types: [{ id: 21, name: "Development", status: 1 }]
+      }))
+    };
+    const scrumVersionWorkItemsClient = {
+      queryScrumVersionWorkItemsV2: vi.fn(async () => ({
+        issues: [{ id: 70779173, subject: "Version story" }]
       }))
     };
 
@@ -407,6 +541,42 @@ describe("official V2/V4 Req read handlers", () => {
     ).resolves.toMatchObject({
       structuredContent: { summary: "1 associated wikis found from V5" }
     });
+    await expect(
+      createReqListWorkItemAssignedStatusConfigsHandler(assignedStatusConfigsClient)({
+        project_id: "p-1",
+        work_item_id: "70779173"
+      })
+    ).resolves.toMatchObject({
+      structuredContent: { summary: "1 work item assigned status configs found" }
+    });
+    await expect(
+      createReqListChildWorkItemsDirectV4Handler(childWorkItemsDirectClient)({
+        project_id: "p-1",
+        work_item_id: "70779173"
+      })
+    ).resolves.toMatchObject({
+      structuredContent: { summary: "1 direct child work items found from V4" }
+    });
+    await expect(
+      createReqListProjectWorkHourTypesV5Handler(workHourTypesV5Client)({
+        project_id: "p-1",
+        status: 1
+      })
+    ).resolves.toMatchObject({
+      structuredContent: { summary: "1 project work hour types found from V5" }
+    });
+    await expect(
+      createReqQueryScrumVersionWorkItemsV2Handler(scrumVersionWorkItemsClient)({
+        project_id: "p-1",
+        fixed_version_id: "301",
+        subject: "version",
+        tracker_id: "7",
+        display_mode: "tree",
+        issue_query: "assigned_to_id=me"
+      })
+    ).resolves.toMatchObject({
+      structuredContent: { summary: "1 scrum version work items found from V2" }
+    });
 
     expect(templatesClient.listWorkSettingTemplatesV2).toHaveBeenCalledWith({ search: "Scrum" });
     expect(modulesClient.listModuleSettingsV2).toHaveBeenCalledWith({ project_id: "p-1", page: 1, page_size: 20 });
@@ -450,6 +620,26 @@ describe("official V2/V4 Req read handlers", () => {
     expect(associatedWikisV5Client.listAssociatedWikisV5).toHaveBeenCalledWith({
       project_id: "p-1",
       work_item_id: "9164403"
+    });
+    expect(assignedStatusConfigsClient.listWorkItemAssignedStatusConfigs).toHaveBeenCalledWith({
+      project_id: "p-1",
+      work_item_id: "70779173"
+    });
+    expect(childWorkItemsDirectClient.listChildWorkItemsDirectV4).toHaveBeenCalledWith({
+      project_id: "p-1",
+      work_item_id: "70779173"
+    });
+    expect(workHourTypesV5Client.listProjectWorkHourTypesV5).toHaveBeenCalledWith({
+      project_id: "p-1",
+      status: 1
+    });
+    expect(scrumVersionWorkItemsClient.queryScrumVersionWorkItemsV2).toHaveBeenCalledWith({
+      project_id: "p-1",
+      fixed_version_id: "301",
+      subject: "version",
+      tracker_id: "7",
+      display_mode: "tree",
+      issue_query: "assigned_to_id=me"
     });
   });
 });

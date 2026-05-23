@@ -143,10 +143,12 @@ import {
   reqListUserFeaturesInput,
   reqListProjectVersionsInput,
   reqListProjectWorkHourTypesInput,
+  reqListProjectWorkHourTypesV5Input,
   reqListProjectWorkHoursInput,
   reqListProjectMemberWorkHoursInput,
   reqListProjectWorkItemRecordsInput,
   reqQueryIterationImmovableIssuesInput,
+  reqQueryScrumVersionWorkItemsV2Input,
   reqGetWorkItemInput,
   reqLeaveProjectInput,
   reqListAssociatedCodeV2Input,
@@ -155,6 +157,7 @@ import {
   reqListAssociatedTestCasesInput,
   reqListAssociatedWikisInput,
   reqListAssociatedWikisV5Input,
+  reqListChildWorkItemsDirectV4Input,
   reqListIterationsInput,
   reqListNotAddedProjectsInput,
   reqListProjectModulesInput,
@@ -167,6 +170,7 @@ import {
   reqListWorkItemCommentsInput,
   reqListWorkItemCommentsV2Input,
   reqListWorkItemWorkHoursInput,
+  reqListWorkItemAssignedStatusConfigsInput,
   reqListWorkItemStatusAttributesInput,
   reqListWorkItemStatusConfigsInput,
   reqListWorkItemStatusDetailsInput,
@@ -220,7 +224,8 @@ import {
   reqUploadIpdIssueAttachmentInput,
   reqUploadIpdIssueImageInput,
   reqUploadWorkItemImageInput,
-  reqValidateModuleNameInput
+  reqValidateModuleNameInput,
+  reqValidateProjectTemplateNameInput
 } from "../products/req/schemas.js";
 import { createReqAddIterationWorkItemsHandler } from "../products/req/tools/add-iteration-work-items.js";
 import { createReqAddPlanWorkItemsHandler } from "../products/req/tools/add-plan-work-items.js";
@@ -340,13 +345,17 @@ import { createReqListWorkItemWorkHoursHandler } from "../products/req/tools/lis
 import {
   createReqListAssociatedCodeV2Handler,
   createReqListAssociatedWikisV5Handler,
+  createReqListChildWorkItemsDirectV4Handler,
   createReqListChildWorkItemsV4Handler,
   createReqListModuleSettingsV2Handler,
   createReqListProjectDomainsV2Handler,
+  createReqListProjectWorkHourTypesV5Handler,
+  createReqListWorkItemAssignedStatusConfigsHandler,
   createReqListWorkItemCommentsV2Handler,
   createReqListWorkItemCustomFieldsV4Handler,
   createReqListWorkItemQueriesHandler,
   createReqListWorkItemRecordsV2Handler,
+  createReqQueryScrumVersionWorkItemsV2Handler,
   createReqListWorkSettingTemplatesV2Handler
 } from "../products/req/tools/official-v2-read-tools.js";
 import { createReqFindIterationsHandler } from "../products/req/tools/find-iterations.js";
@@ -376,6 +385,7 @@ import { createReqUpdateWorkingHoursHandler } from "../products/req/tools/update
 import { createReqUploadAttachmentHandler } from "../products/req/tools/upload-attachment.js";
 import { createReqUploadWorkItemImageHandler } from "../products/req/tools/upload-work-item-image.js";
 import { createReqValidateModuleNameHandler } from "../products/req/tools/validate-module-name.js";
+import { createReqValidateProjectTemplateNameHandler } from "../products/req/tools/validate-project-template-name.js";
 import {
   createReqDownloadIpdIssueAttachmentHandler,
   createReqDownloadIpdIssueImageHandler,
@@ -1766,6 +1776,14 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqListWorkItemCustomFieldsV4Handler
   }),
+  "req_list_work_item_assigned_status_configs": defineProductTool({
+    description: "List CodeArts Req work item assigned status configs from the official V3 endpoint",
+    inputSchema: reqListWorkItemAssignedStatusConfigsInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqListWorkItemAssignedStatusConfigsHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqListWorkItemAssignedStatusConfigsHandler
+  }),
   "req_list_work_item_tracker_handlers": defineProductTool({
     description: "List CodeArts Req work item tracker handlers",
     inputSchema: reqListWorkItemTrackerHandlersInput,
@@ -1859,6 +1877,14 @@ const reqToolDefinitions = {
       reqClient: Parameters<typeof createReqListChildWorkItemsV4Handler>[0];
     }) => clients.reqClient,
     createProductHandler: createReqListChildWorkItemsV4Handler
+  }),
+  "req_list_child_work_items_direct_v4": defineProductTool({
+    description: "List CodeArts Req direct child work items from the official V4 endpoint",
+    inputSchema: reqListChildWorkItemsDirectV4Input,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqListChildWorkItemsDirectV4Handler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqListChildWorkItemsDirectV4Handler
   }),
   "req_list_work_item_work_hours": defineProductTool({
     description: "List CodeArts Req work hour records for a work item",
@@ -1992,6 +2018,14 @@ const reqToolDefinitions = {
     }) => clients.reqClient,
     createProductHandler: createReqListProjectWorkHourTypesHandler
   }),
+  "req_list_project_work_hour_types_v5": defineProductTool({
+    description: "List CodeArts Req project work hour types from the official V5 endpoint",
+    inputSchema: reqListProjectWorkHourTypesV5Input,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqListProjectWorkHourTypesV5Handler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqListProjectWorkHourTypesV5Handler
+  }),
   "req_list_project_work_item_records": defineProductTool({
     description: "List CodeArts Req project work item records",
     inputSchema: reqListProjectWorkItemRecordsInput,
@@ -2026,6 +2060,14 @@ const reqToolDefinitions = {
     inputSchema: reqQueryIterationImmovableIssuesInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqQueryIterationImmovableIssuesHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqQueryIterationImmovableIssuesHandler
+  }),
+  "req_query_scrum_version_work_items_v2": defineProductTool({
+    description: "Query CodeArts Req scrum version work items from the official V2 endpoint",
+    inputSchema: reqQueryScrumVersionWorkItemsV2Input,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqQueryScrumVersionWorkItemsV2Handler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqQueryScrumVersionWorkItemsV2Handler
   }),
   "req_update_work_item": defineProductTool({
     description: "Update CodeArts Req work item",
@@ -2069,6 +2111,13 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqValidateModuleNameHandler>[0] }) =>
       clients.reqClient,
     createProductHandler: createReqValidateModuleNameHandler
+  }),
+  "req_validate_project_template_name": defineProductTool({
+    description: "Validate whether a CodeArts Req project template name already exists",
+    inputSchema: reqValidateProjectTemplateNameInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqValidateProjectTemplateNameHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqValidateProjectTemplateNameHandler
   })
 } as const;
 

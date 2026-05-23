@@ -237,6 +237,9 @@ export type ReqClient = {
   validateModuleName: (input: { project_id: string; module_name: string }) => Promise<{
     exist: boolean;
   }>;
+  validateProjectTemplateName: (input: { name: string }) => Promise<{
+    exist: boolean;
+  }>;
   createProjectModule: (input: {
     project_id: string;
     module_name: string;
@@ -788,6 +791,16 @@ export type ReqClient = {
       status_name?: string;
     }>;
   }>;
+  queryScrumVersionWorkItemsV2: (input: {
+    project_id: string;
+    fixed_version_id?: string;
+    issue_query?: string;
+    subject?: string;
+    tracker_id?: string;
+    display_mode?: string;
+  }) => Promise<{
+    issues: Array<Record<string, unknown>>;
+  }>;
   listIterationStatusStatistics: (input: {
     project_id: string;
     iteration_id: string;
@@ -1065,6 +1078,13 @@ export type ReqClient = {
       status?: number;
     }>;
   }>;
+  listProjectWorkHourTypesV5: (input: {
+    project_id: string;
+    status?: number;
+  }) => Promise<{
+    total?: number;
+    work_hours_types: Array<Record<string, unknown>>;
+  }>;
   listWorkItemTags: (input: {
     project_id: string;
     page: number;
@@ -1097,6 +1117,19 @@ export type ReqClient = {
     query_type?: string;
   }) => Promise<{
     result: Record<string, unknown>;
+  }>;
+  listChildWorkItemsDirectV4: (input: {
+    project_id: string;
+    work_item_id: string;
+  }) => Promise<{
+    work_items: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listWorkItemAssignedStatusConfigs: (input: {
+    project_id: string;
+    work_item_id: string;
+  }) => Promise<{
+    configs: Array<Record<string, unknown>>;
   }>;
   listWorkItemRecords: (input: {
     project_id: string;
@@ -2505,6 +2538,16 @@ function unwrapReqResult(input: unknown): Record<string, unknown> {
   return isRecord(payload) ? payload : {};
 }
 
+function unwrapReqResultValue(input: unknown): unknown {
+  const payload = unwrapReqPayload(input);
+
+  if (isRecord(payload) && "result" in payload) {
+    return payload.result;
+  }
+
+  return payload;
+}
+
 function getArrayProperty(input: Record<string, unknown>, keys: string[]): Array<Record<string, unknown>> {
   for (const key of keys) {
     const value = input[key];
@@ -2515,6 +2558,16 @@ function getArrayProperty(input: Record<string, unknown>, keys: string[]): Array
   }
 
   return [];
+}
+
+function getReqResultArray(input: unknown, keys: string[]): Array<Record<string, unknown>> {
+  const result = unwrapReqResultValue(input);
+
+  if (Array.isArray(result)) {
+    return result.filter(isRecord);
+  }
+
+  return isRecord(result) ? getArrayProperty(result, keys) : [];
 }
 
 function getNumberProperty(input: Record<string, unknown>, keys: string[]): number | undefined {
@@ -3761,6 +3814,17 @@ export function createReqClient(
         exist: response.result?.exist ?? response.exist ?? false
       };
     },
+    async validateProjectTemplateName(input) {
+      const query = new URLSearchParams({
+        name: input.name
+      });
+      const response = await _http.get(`/v2/project-template/name-validation?${query.toString()}`);
+      const result = unwrapReqResult(response);
+
+      return {
+        exist: Boolean(result.exist)
+      };
+    },
     async createProjectModule(input) {
       const response = (await _http.post(
         `/v4/projects/${encodeURIComponent(input.project_id)}/module`,
@@ -4947,6 +5011,26 @@ export function createReqClient(
           : []
       };
     },
+    async queryScrumVersionWorkItemsV2(input) {
+      const response = await _http.post("/v2/version/query-scrum-version", {
+        projectUUId: input.project_id,
+        ...(input.fixed_version_id ? { fixed_version_id: input.fixed_version_id } : {}),
+        ...(input.issue_query ? { issueQuery: input.issue_query } : {}),
+        ...(input.subject ? { subject: input.subject } : {}),
+        ...(input.tracker_id ? { tracker_id: input.tracker_id } : {}),
+        ...(input.display_mode ? { displayMode: input.display_mode } : {})
+      });
+      const result = unwrapReqResult(response);
+      const groupedIssues = getArrayProperty(result, ["issues"]);
+      const issues = groupedIssues.flatMap((group) => {
+        const nested = getArrayProperty(group, ["data", "issues"]);
+        return nested.length > 0 ? nested : [group];
+      });
+
+      return {
+        issues
+      };
+    },
     async listIterationStatusStatistics(input) {
       const query = new URLSearchParams({
         iteration_id: input.iteration_id
@@ -5774,6 +5858,24 @@ export function createReqClient(
         work_hours_types: response.work_hours_types ?? []
       };
     },
+    async listProjectWorkHourTypesV5(input) {
+      const query = new URLSearchParams();
+
+      if (typeof input.status !== "undefined") {
+        query.set("status", String(input.status));
+      }
+
+      const suffix = query.toString();
+      const response = await _http.get(
+        `/v5/projects/${encodeURIComponent(input.project_id)}/work-hours-type${suffix ? `?${suffix}` : ""}`
+      );
+      const result = unwrapReqResult(response);
+
+      return {
+        total: getNumberProperty(result, ["total_count", "total"]),
+        work_hours_types: getReqResultArray(response, ["list", "work_hours_types"])
+      };
+    },
     async listWorkItemTags(input) {
       const offset = (input.page - 1) * input.page_size;
       const query = new URLSearchParams({
@@ -5840,6 +5942,26 @@ export function createReqClient(
 
       return {
         result
+      };
+    },
+    async listChildWorkItemsDirectV4(input) {
+      const response = await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/issues/${encodeURIComponent(input.work_item_id)}/child`
+      );
+      const result = unwrapReqResult(response);
+
+      return {
+        work_items: getReqResultArray(response, ["issues", "work_items"]),
+        total: getNumberProperty(result, ["total", "total_count"])
+      };
+    },
+    async listWorkItemAssignedStatusConfigs(input) {
+      const response = await _http.get(
+        `/v3/workitem/${encodeURIComponent(input.project_id)}/issue-assigned/${encodeURIComponent(input.work_item_id)}`
+      );
+
+      return {
+        configs: getReqResultArray(response, ["configs"])
       };
     },
     async listWorkItemRecords(input) {

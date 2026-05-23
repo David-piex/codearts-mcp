@@ -180,6 +180,10 @@ export const reqValidateModuleNameInput = z.object({
   module_name: z.string().min(1).max(30)
 });
 
+export const reqValidateProjectTemplateNameInput = z.object({
+  name: z.string().min(1)
+});
+
 export const reqDeleteProjectTemplateInput = z.object({
   template_id: idSchema,
   dry_run: z.boolean().default(true)

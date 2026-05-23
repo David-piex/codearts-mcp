@@ -657,6 +657,31 @@ describe("createReqClient", () => {
     });
   });
 
+  it("maps project template name validation to the documented V2 endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          result: {
+            exist: false
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.validateProjectTemplateName({
+      name: "Scrum Template"
+    });
+
+    expect(requestedPath).toBe("/v2/project-template/name-validation?name=Scrum+Template");
+    expect(result).toEqual({
+      exist: false
+    });
+  });
+
   it("maps official V2 work item saved query requests to the documented endpoint", async () => {
     let requestedPath = "";
     const client = createReqClient({
@@ -1390,6 +1415,76 @@ describe("createReqClient", () => {
           }
         ]
       }
+    });
+  });
+
+  it("maps official assigned status config queries to the documented V3 endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          result: [
+            {
+              id: 11,
+              name: "In Review",
+              status_id: 3
+            }
+          ]
+        };
+      }
+    } as never);
+
+    const result = await client.listWorkItemAssignedStatusConfigs({
+      project_id: "p-1",
+      work_item_id: "70779173"
+    });
+
+    expect(requestedPath).toBe("/v3/workitem/p-1/issue-assigned/70779173");
+    expect(result).toEqual({
+      configs: [
+        {
+          id: 11,
+          name: "In Review",
+          status_id: 3
+        }
+      ]
+    });
+  });
+
+  it("maps direct official V4 child work item queries to the documented project issue child endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          result: [
+            {
+              id: 70779174,
+              subject: "Child story",
+              status: { name: "New" }
+            }
+          ]
+        };
+      }
+    } as never);
+
+    const result = await client.listChildWorkItemsDirectV4({
+      project_id: "p-1",
+      work_item_id: "70779173"
+    });
+
+    expect(requestedPath).toBe("/v4/projects/p-1/issues/70779173/child");
+    expect(result).toEqual({
+      work_items: [
+        {
+          id: 70779174,
+          subject: "Child story",
+          status: { name: "New" }
+        }
+      ]
     });
   });
 
@@ -6025,6 +6120,89 @@ describe("createReqClient", () => {
           status: 1
         }
       ]
+    });
+  });
+
+  it("maps official V5 project work hour type queries to the documented endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          result: [
+            {
+              id: 21,
+              name: "Development",
+              status: 1
+            }
+          ]
+        };
+      }
+    } as never);
+
+    const result = await client.listProjectWorkHourTypesV5({
+      project_id: "p-1",
+      status: 1
+    });
+
+    expect(requestedPath).toBe("/v5/projects/p-1/work-hours-type?status=1");
+    expect(result).toEqual({
+      work_hours_types: [
+        {
+          id: 21,
+          name: "Development",
+          status: 1
+        }
+      ]
+    });
+  });
+
+  it("maps official V2 scrum version work item queries with projectUUId body key", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return {
+          result: {
+            issues: [
+              {
+                id: 70779173,
+                subject: "Version story",
+                fixed_version: { id: 301, name: "Sprint 1" }
+              }
+            ],
+            total_count: 1
+          }
+        };
+      }
+    } as never);
+
+    const result = await client.queryScrumVersionWorkItemsV2({
+      project_id: "p-1",
+      fixed_version_id: "301",
+      subject: "version",
+      tracker_id: "7",
+      display_mode: "tree",
+      issue_query: "assigned_to_id=me"
+    });
+
+    expect(requestedPath).toBe("/v2/version/query-scrum-version");
+    expect(requestedBody).toMatchObject({
+      projectUUId: "p-1"
+    });
+    expect(requestedBody).not.toHaveProperty("project_id");
+    expect(result).toEqual({
+      issues: [
+        {
+          id: 70779173,
+          subject: "Version story",
+          fixed_version: { id: 301, name: "Sprint 1" }
+        }
+      ],
     });
   });
 

@@ -100,6 +100,15 @@ export const reqQueryIterationImmovableIssuesInput = z.object({
   version_id: idSchema
 });
 
+export const reqQueryScrumVersionWorkItemsV2Input = z.object({
+  project_id: idSchema,
+  fixed_version_id: idSchema.optional(),
+  issue_query: z.string().min(1).optional(),
+  subject: z.string().min(1).optional(),
+  tracker_id: z.string().min(1).optional(),
+  display_mode: z.string().min(1).optional()
+});
+
 export const reqListIterationWorkItemsInput = pagingSchema.extend({
   project_id: idSchema,
   iteration_id: idSchema,

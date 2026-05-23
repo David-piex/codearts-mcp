@@ -5,12 +5,16 @@ import {
   reqListModuleSettingsV2Input,
   reqListAssociatedCodeV2Input,
   reqListAssociatedWikisV5Input,
+  reqListChildWorkItemsDirectV4Input,
   reqListChildWorkItemsV4Input,
   reqListProjectDomainsV2Input,
+  reqListProjectWorkHourTypesV5Input,
+  reqListWorkItemAssignedStatusConfigsInput,
   reqListWorkItemQueriesInput,
   reqListWorkItemCommentsV2Input,
   reqListWorkItemCustomFieldsV4Input,
   reqListWorkItemRecordsV2Input,
+  reqQueryScrumVersionWorkItemsV2Input,
   reqListWorkSettingTemplatesV2Input
 } from "../schemas.js";
 import { formatReqTimestampText } from "./time-format.js";
@@ -384,6 +388,55 @@ export function mapReqChildWorkItemsV4(result: Record<string, unknown>) {
   );
 }
 
+export function mapReqChildWorkItemsDirectV4(items: RawItem[], total?: number) {
+  return asListResult(
+    `${items.length} direct child work items found from V4`,
+    items.map((item) => ({
+      id: stringValue(item.id),
+      title: stringValue(item.subject) ?? stringValue(item.name),
+      status:
+        isRawItem(item.status) ? stringValue(item.status.name) : stringValue(item.status_name),
+      type:
+        isRawItem(item.tracker) ? stringValue(item.tracker.name) : stringValue(item.tracker_name),
+      assignedToName: userDisplayName(item.assigned_user) ?? userDisplayName(item.assigned_to),
+      rawWorkItem: item
+    })),
+    typeof total === "undefined" ? undefined : toPageInfo(1, items.length, total),
+    { issues: items }
+  );
+}
+
+type ReqListChildWorkItemsDirectV4Client = {
+  listChildWorkItemsDirectV4: (input: {
+    project_id: string;
+    work_item_id: string;
+  }) => Promise<{
+    work_items: RawItem[];
+    total?: number;
+  }>;
+};
+
+export function createReqListChildWorkItemsDirectV4Handler(client: ReqListChildWorkItemsDirectV4Client) {
+  return async (input: unknown) => {
+    const parsed = reqListChildWorkItemsDirectV4Input.parse(input);
+    const response = await client.listChildWorkItemsDirectV4(parsed);
+    const result = mapReqChildWorkItemsDirectV4(response.work_items, response.total);
+    const text = formatListToolText(result, {
+      fields: [
+        { label: "id", get: (item) => (item as { id?: string }).id },
+        { label: "title", get: (item) => (item as { title?: string }).title },
+        { label: "status", get: (item) => (item as { status?: string }).status },
+        { label: "assignedTo", get: (item) => (item as { assignedToName?: string }).assignedToName }
+      ]
+    });
+
+    return {
+      content: [{ type: "text" as const, text }],
+      structuredContent: result
+    };
+  };
+}
+
 type ReqListChildWorkItemsV4Client = {
   listChildWorkItemsV4: (input: {
     project_id: string;
@@ -510,6 +563,151 @@ export function createReqListAssociatedWikisV5Handler(client: ReqListAssociatedW
         { label: "title", get: (item) => (item as { title?: string }).title },
         { label: "project", get: (item) => (item as { projectName?: string }).projectName },
         { label: "created", get: (item) => (item as { createdDate?: string }).createdDate }
+      ]
+    });
+
+    return {
+      content: [{ type: "text" as const, text }],
+      structuredContent: result
+    };
+  };
+}
+
+export function mapReqProjectWorkHourTypesV5(items: RawItem[], total?: number) {
+  return asListResult(
+    `${items.length} project work hour types found from V5`,
+    items.map((item) => ({
+      id: numberValue(item.id),
+      name: stringValue(item.name),
+      status: numberValue(item.status),
+      inUse: typeof item.in_use === "boolean" ? item.in_use : undefined,
+      created: stringValue(item.created),
+      modified: stringValue(item.modified),
+      rawWorkHourType: item
+    })),
+    typeof total === "undefined" ? undefined : toPageInfo(1, items.length, total),
+    { list: items }
+  );
+}
+
+type ReqListProjectWorkHourTypesV5Client = {
+  listProjectWorkHourTypesV5: (input: {
+    project_id: string;
+    status?: number;
+  }) => Promise<{
+    work_hours_types: RawItem[];
+    total?: number;
+  }>;
+};
+
+export function createReqListProjectWorkHourTypesV5Handler(client: ReqListProjectWorkHourTypesV5Client) {
+  return async (input: unknown) => {
+    const parsed = reqListProjectWorkHourTypesV5Input.parse(input);
+    const response = await client.listProjectWorkHourTypesV5(parsed);
+    const result = mapReqProjectWorkHourTypesV5(response.work_hours_types, response.total);
+    const text = formatListToolText(result, {
+      fields: [
+        { label: "id", get: (item) => (item as { id?: number }).id },
+        { label: "name", get: (item) => (item as { name?: string }).name },
+        { label: "status", get: (item) => (item as { status?: number }).status },
+        { label: "inUse", get: (item) => (item as { inUse?: boolean }).inUse }
+      ]
+    });
+
+    return {
+      content: [{ type: "text" as const, text }],
+      structuredContent: result
+    };
+  };
+}
+
+export function mapReqWorkItemAssignedStatusConfigs(items: RawItem[]) {
+  return asListResult(
+    `${items.length} work item assigned status configs found`,
+    items.map((item) => ({
+      id: stringValue(item.id),
+      definedName: stringValue(item.definedName) ?? stringValue(item.defined_name),
+      description: stringValue(item.description),
+      statusAttribute: numberValue(item.status_attribute),
+      statusAttributeName: stringValue(item.status_attribute_name),
+      isClosed: typeof item.is_closed === "boolean" ? item.is_closed : undefined,
+      isInitial: typeof item.is_initial === "boolean" ? item.is_initial : undefined,
+      rawConfig: item
+    })),
+    undefined,
+    { configs: items }
+  );
+}
+
+type ReqListWorkItemAssignedStatusConfigsClient = {
+  listWorkItemAssignedStatusConfigs: (input: {
+    project_id: string;
+    work_item_id: string;
+  }) => Promise<{
+    configs: RawItem[];
+  }>;
+};
+
+export function createReqListWorkItemAssignedStatusConfigsHandler(client: ReqListWorkItemAssignedStatusConfigsClient) {
+  return async (input: unknown) => {
+    const parsed = reqListWorkItemAssignedStatusConfigsInput.parse(input);
+    const response = await client.listWorkItemAssignedStatusConfigs(parsed);
+    const result = mapReqWorkItemAssignedStatusConfigs(response.configs);
+    const text = formatListToolText(result, {
+      fields: [
+        { label: "id", get: (item) => (item as { id?: string }).id },
+        { label: "name", get: (item) => (item as { definedName?: string }).definedName },
+        { label: "attribute", get: (item) => (item as { statusAttributeName?: string }).statusAttributeName }
+      ]
+    });
+
+    return {
+      content: [{ type: "text" as const, text }],
+      structuredContent: result
+    };
+  };
+}
+
+export function mapReqScrumVersionWorkItemsV2(items: RawItem[]) {
+  return asListResult(
+    `${items.length} scrum version work items found from V2`,
+    items.map((item) => ({
+      id: stringValue(item.id),
+      title: stringValue(item.subject) ?? stringValue(item.name),
+      expectedHours: stringValue(item.expectedHours) ?? stringValue(item.expected_hours),
+      time: stringValue(item.time),
+      userName: userDisplayName(item.user),
+      rawWorkItem: item
+    })),
+    undefined,
+    { issues: items }
+  );
+}
+
+type ReqQueryScrumVersionWorkItemsV2Client = {
+  queryScrumVersionWorkItemsV2: (input: {
+    project_id: string;
+    fixed_version_id?: string;
+    issue_query?: string;
+    subject?: string;
+    tracker_id?: string;
+    display_mode?: string;
+  }) => Promise<{
+    issues: RawItem[];
+  }>;
+};
+
+export function createReqQueryScrumVersionWorkItemsV2Handler(client: ReqQueryScrumVersionWorkItemsV2Client) {
+  return async (input: unknown) => {
+    const parsed = reqQueryScrumVersionWorkItemsV2Input.parse(input);
+    const response = await client.queryScrumVersionWorkItemsV2(parsed);
+    const result = mapReqScrumVersionWorkItemsV2(response.issues);
+    const text = formatListToolText(result, {
+      fields: [
+        { label: "id", get: (item) => (item as { id?: string }).id },
+        { label: "title", get: (item) => (item as { title?: string }).title },
+        { label: "expectedHours", get: (item) => (item as { expectedHours?: string }).expectedHours },
+        { label: "user", get: (item) => (item as { userName?: string }).userName }
       ]
     });
 
