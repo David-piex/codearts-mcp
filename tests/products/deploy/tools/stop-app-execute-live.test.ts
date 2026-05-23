@@ -10,7 +10,6 @@ function hasLiveStopExecuteEnv(source: NodeJS.ProcessEnv) {
     source.HUAWEICLOUD_REGION &&
       source.HUAWEICLOUD_AK &&
       source.HUAWEICLOUD_SK &&
-      source.HUAWEICLOUD_DEPLOY_BASE_URL &&
       source.MCP_SERVER_NAME &&
       source.MCP_SERVER_VERSION &&
       source.HUAWEICLOUD_DEPLOY_LIVE_STOP_EXECUTE_TASK_ID &&

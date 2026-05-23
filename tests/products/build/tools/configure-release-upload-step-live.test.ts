@@ -10,7 +10,6 @@ function hasLiveEnv(source: NodeJS.ProcessEnv) {
     source.HUAWEICLOUD_REGION &&
       source.HUAWEICLOUD_AK &&
       source.HUAWEICLOUD_SK &&
-      source.HUAWEICLOUD_BUILD_BASE_URL &&
       source.MCP_SERVER_NAME &&
       source.MCP_SERVER_VERSION
   );

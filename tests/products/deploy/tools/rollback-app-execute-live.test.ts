@@ -10,7 +10,6 @@ function hasLiveRollbackEnv(source: NodeJS.ProcessEnv) {
     source.HUAWEICLOUD_REGION &&
       source.HUAWEICLOUD_AK &&
       source.HUAWEICLOUD_SK &&
-      source.HUAWEICLOUD_DEPLOY_BASE_URL &&
       source.MCP_SERVER_NAME &&
       source.MCP_SERVER_VERSION &&
       source.HUAWEICLOUD_DEPLOY_LIVE_ROLLBACK_TASK_ID &&

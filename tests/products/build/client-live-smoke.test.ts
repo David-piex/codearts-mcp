@@ -32,11 +32,9 @@ function expectReachedProvider(result: Awaited<ReturnType<typeof readReachable>>
 
 function hasLiveEnv(source: NodeJS.ProcessEnv) {
   return Boolean(
-    source.HUAWEICLOUD_BASE_URL &&
       source.HUAWEICLOUD_REGION &&
       source.HUAWEICLOUD_AK &&
       source.HUAWEICLOUD_SK &&
-      source.HUAWEICLOUD_BUILD_BASE_URL &&
       source.MCP_SERVER_NAME &&
       source.MCP_SERVER_VERSION
   );
