@@ -4,6 +4,8 @@ import { deployToolNames } from "../../../../src/products/deploy/tools/index.js"
 const coveredDeployToolNames = [
   "deploy_add_v4_environment_hosts",
   "deploy_cancel_v4_deploy_record",
+  "deploy_check_application_creatable",
+  "deploy_check_application_exists",
   "deploy_create_application",
   "deploy_create_environment",
   "deploy_create_task_by_template",
@@ -29,6 +31,7 @@ const coveredDeployToolNames = [
   "deploy_get_v4_environment",
   "deploy_get_v4_environment_resource_detail",
   "deploy_import_hosts_to_environment",
+  "deploy_list_application_permissions",
   "deploy_list_app_host_groups",
   "deploy_list_app_operations_log",
   "deploy_list_apps",

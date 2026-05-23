@@ -1518,7 +1518,8 @@ API 数量：`62`
   "params": {
     "name": "build_get_project_default_permission",
     "arguments": {
-      "project_id": "<project_id>"
+      "project_id": "<project_id>",
+      "job_id": "<job_id>"
     }
   }
 }
@@ -1529,6 +1530,7 @@ API 数量：`62`
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 编译构建 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `job_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `job_id` ↔ 原始 CodeArts 编译构建 API 同名字段 `job_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>构建任务 ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
 
@@ -1539,10 +1541,14 @@ API 数量：`62`
     "project_id": {
       "type": "string",
       "minLength": 1
+    },
+    "job_id": {
+      "$ref": "#/properties/project_id"
     }
   },
   "required": [
-    "project_id"
+    "project_id",
+    "job_id"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

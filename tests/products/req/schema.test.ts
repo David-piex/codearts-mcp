@@ -6,18 +6,27 @@ import {
   reqCreateIpdWorkHourInput,
   reqGetIpdStatisticDashboardInput,
   reqCreateWorkItemTemplateInput,
+  reqFindIterationsInput,
+  reqGetVersionDetailV2Input,
+  reqGetWorkHourPermissionInput,
   reqListChildWorkItemsInput,
   reqListIterationWorkItemsInput,
   reqListIpdProjectsInput,
   reqListIrChildrenInput,
   reqListPlansInput,
   reqListPlanWorkItemsInput,
+  reqListParentWorkItemsInput,
   reqListAssociatedCommitsInput,
   reqListProgramsInput,
   reqListProgramFieldsInput,
   reqListProjectWorkHourTypesInput,
+  reqListProjectMemberWorkHoursInput,
+  reqListProjectVersionsInput,
   reqListRrsInput,
   reqListWorkItemStatusDetailsInput,
+  reqListWorkItemStayTimesInput,
+  reqSearchMyWorkItemsInput,
+  reqSearchTodoWorkItemsInput,
   reqUpdateProjectMemberRoleInput,
   reqUpdateIterationInput,
   reqUpdateIterationStateInput,
@@ -292,6 +301,124 @@ describe("req schemas", () => {
       query_type: "tenant-query",
       page: 1,
       page_size: 20
+    });
+  });
+
+  it("validates parent chain and stay time work item inputs", () => {
+    expect(
+      reqListParentWorkItemsInput.parse({
+        project_id: "project-1",
+        work_item_id: "work-item-1"
+      })
+    ).toEqual({
+      project_id: "project-1",
+      work_item_id: "work-item-1"
+    });
+
+    expect(
+      reqListWorkItemStayTimesInput.parse({
+        project_id: "project-1",
+        work_item_ids: ["work-item-1", "work-item-2"]
+      })
+    ).toEqual({
+      project_id: "project-1",
+      work_item_ids: ["work-item-1", "work-item-2"]
+    });
+
+    expect(() =>
+      reqListWorkItemStayTimesInput.parse({
+        project_id: "project-1",
+        work_item_ids: []
+      })
+    ).toThrow();
+  });
+
+  it("validates work hour permission and member work hour inputs", () => {
+    expect(
+      reqGetWorkHourPermissionInput.parse({
+        project_id: "project-1",
+        work_item_id: "work-item-1"
+      })
+    ).toEqual({
+      project_id: "project-1",
+      work_item_id: "work-item-1"
+    });
+
+    expect(
+      reqListProjectMemberWorkHoursInput.parse({
+        page: 1,
+        page_size: 20,
+        project_id: "project-1",
+        staff_id: "user-1"
+      })
+    ).toEqual({
+      page: 1,
+      page_size: 20,
+      project_id: "project-1",
+      staff_id: "user-1"
+    });
+  });
+
+  it("validates find iteration inputs", () => {
+    expect(
+      reqFindIterationsInput.parse({
+        project_id: "project-1",
+        updated_time_interval: "2026-05-01,2026-05-23"
+      })
+    ).toEqual({
+      project_id: "project-1",
+      updated_time_interval: "2026-05-01,2026-05-23"
+    });
+
+    expect(() =>
+      reqFindIterationsInput.parse({
+        project_id: "project-1",
+        updated_time_interval: ""
+      })
+    ).toThrow();
+  });
+
+  it("validates project version read inputs", () => {
+    expect(
+      reqListProjectVersionsInput.parse({
+        project_id: "project-1"
+      })
+    ).toEqual({
+      project_id: "project-1"
+    });
+
+    expect(
+      reqGetVersionDetailV2Input.parse({
+        version_id: "21727203"
+      })
+    ).toEqual({
+      version_id: "21727203"
+    });
+  });
+
+  it("validates todo work item search inputs", () => {
+    expect(
+      reqSearchTodoWorkItemsInput.parse({
+        page: 1,
+        page_size: 15,
+        subject: "demo",
+        status_id: "5"
+      })
+    ).toEqual({
+      page: 1,
+      page_size: 15,
+      subject: "demo",
+      status_id: "5"
+    });
+
+    expect(
+      reqSearchMyWorkItemsInput.parse({
+        page: 1,
+        page_size: 15
+      })
+    ).toEqual({
+      page: 1,
+      page_size: 15
     });
   });
 

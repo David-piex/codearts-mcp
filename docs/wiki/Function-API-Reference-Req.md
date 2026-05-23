@@ -6,7 +6,7 @@
 
 模块：`需求管理`
 
-API 数量：`201`
+API 数量：`210`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
@@ -4911,6 +4911,58 @@ API 数量：`201`
 }
 ```
 
+### req_find_iterations
+
+所属模块：`需求管理`
+
+说明：执行需求管理的迭代。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "req_find_iterations",
+    "arguments": {
+      "project_id": "<project_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 需求管理 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `updated_time_interval` | 否 | `string` |  | 字段对应：<br>MCP 字段 `updated_time_interval` ↔ 原始 CodeArts 需求管理 API 同名字段 `updated_time_interval`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>更新时间范围，用于按最近更新时间过滤列表。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "updated_time_interval": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "project_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### req_get_current_user_info
 
 所属模块：`需求管理`
@@ -6177,6 +6229,106 @@ API 数量：`201`
   "required": [
     "project_id",
     "plan_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### req_get_version_detail_v2
+
+所属模块：`需求管理`
+
+说明：获取需求管理的版本详情v2。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "req_get_version_detail_v2",
+    "arguments": {
+      "version_id": "<version_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `version_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `version_id` ↔ 原始 CodeArts 需求管理 API 同名字段 `version_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>版本 ID，用于定位对应的 CodeArts 资源。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "version_id": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "version_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### req_get_work_hour_permission
+
+所属模块：`需求管理`
+
+说明：获取需求管理的工作工时permission。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "req_get_work_hour_permission",
+    "arguments": {
+      "project_id": "<project_id>",
+      "work_item_id": "<work_item_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 需求管理 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `work_item_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `work_item_id` ↔ 原始 CodeArts 需求管理 API 中的工作项 ID 字段，常见原字段名为 `issue_id` 或路径参数中的 issue 标识。<br>工作项 ID，用于定位对应的 CodeArts 资源。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "work_item_id": {
+      "$ref": "#/properties/project_id"
+    }
+  },
+  "required": [
+    "project_id",
+    "work_item_id"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -9588,6 +9740,59 @@ API 数量：`201`
 }
 ```
 
+### req_list_parent_work_items
+
+所属模块：`需求管理`
+
+说明：查询需求管理的parent工作项。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "req_list_parent_work_items",
+    "arguments": {
+      "project_id": "<project_id>",
+      "work_item_id": "<work_item_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 需求管理 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `work_item_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `work_item_id` ↔ 原始 CodeArts 需求管理 API 中的工作项 ID 字段，常见原字段名为 `issue_id` 或路径参数中的 issue 标识。<br>工作项 ID，用于定位对应的 CodeArts 资源。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "work_item_id": {
+      "$ref": "#/properties/project_id"
+    }
+  },
+  "required": [
+    "project_id",
+    "work_item_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### req_list_plan_addable_work_items
 
 所属模块：`需求管理`
@@ -10113,6 +10318,85 @@ API 数量：`201`
 }
 ```
 
+### req_list_project_member_work_hours
+
+所属模块：`需求管理`
+
+说明：查询需求管理的项目成员工作工时。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "req_list_project_member_work_hours",
+    "arguments": {}
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 字段对应：<br>MCP 字段 `page` ↔ 原始 CodeArts 需求管理 API 的分页页码或由 `offset/limit` 换算得到的页码。<br>页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 字段对应：<br>MCP 字段 `page_size` ↔ 原始 CodeArts 需求管理 API 的分页大小字段，常见原字段名为 `page_size`、`limit` 或 `pageSize`。<br>每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `project_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 需求管理 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `staff_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `staff_id` ↔ 原始 CodeArts 需求管理 API 同名字段 `staff_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>staff ID，用于定位对应的 CodeArts 资源。 |
+| `begin_time` | 否 | `string` |  | 字段对应：<br>MCP 字段 `begin_time` ↔ 原始 CodeArts 需求管理 API 同名字段 `begin_time`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>开始时间，通常使用时间戳或 ISO 8601 时间字符串，具体格式以接口要求为准。 |
+| `end_time` | 否 | `string` |  | 字段对应：<br>MCP 字段 `end_time` ↔ 原始 CodeArts 需求管理 API 同名字段 `end_time`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>结束时间，通常使用时间戳或 ISO 8601 时间字符串，具体格式以接口要求为准。 |
+| `work_hours_dates` | 否 | `string` |  | 字段对应：<br>MCP 字段 `work_hours_dates` ↔ 原始 CodeArts 需求管理 API 同名字段 `work_hours_dates`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>工时日期列表，用于批量登记或查询多个日期的工时。 |
+| `work_hours_types` | 否 | `string` |  | 字段对应：<br>MCP 字段 `work_hours_types` ↔ 原始 CodeArts 需求管理 API 同名字段 `work_hours_types`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>工时类型列表，用于按多个工时分类查询或统计。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "page": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "default": 1
+    },
+    "page_size": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 200,
+      "default": 20
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "staff_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "begin_time": {
+      "type": "string",
+      "minLength": 1
+    },
+    "end_time": {
+      "type": "string",
+      "minLength": 1
+    },
+    "work_hours_dates": {
+      "type": "string",
+      "minLength": 1
+    },
+    "work_hours_types": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### req_list_project_members
 
 所属模块：`需求管理`
@@ -10236,6 +10520,53 @@ API 数量：`201`
       "maximum": 1000,
       "default": 20
     },
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "project_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### req_list_project_versions
+
+所属模块：`需求管理`
+
+说明：查询需求管理的项目版本。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "req_list_project_versions",
+    "arguments": {
+      "project_id": "<project_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 需求管理 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
     "project_id": {
       "type": "string",
       "minLength": 1
@@ -11281,6 +11612,64 @@ API 数量：`201`
 }
 ```
 
+### req_list_work_item_stay_times
+
+所属模块：`需求管理`
+
+说明：查询需求管理的工作项staytimes。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "req_list_work_item_stay_times",
+    "arguments": {
+      "project_id": "<project_id>",
+      "work_item_ids": "<work_item_ids>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 需求管理 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `work_item_ids` | 是 | `array<object>` |  | 字段对应：<br>MCP 字段 `work_item_ids` ↔ 原始 CodeArts 需求管理 API 中的工作项 ID 集合字段，常见原字段名为 `issue_ids`、`issueIds`、`id`。<br>工作项 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "work_item_ids": {
+      "type": "array",
+      "items": {
+        "$ref": "#/properties/project_id"
+      },
+      "minItems": 1,
+      "maxItems": 100
+    }
+  },
+  "required": [
+    "project_id",
+    "work_item_ids"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### req_list_work_item_tags
 
 所属模块：`需求管理`
@@ -11847,6 +12236,218 @@ API 数量：`201`
     "method",
     "path"
   ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### req_search_my_work_items
+
+所属模块：`需求管理`
+
+说明：搜索需求管理的my工作项。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "req_search_my_work_items",
+    "arguments": {}
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 字段对应：<br>MCP 字段 `page` ↔ 原始 CodeArts 需求管理 API 的分页页码或由 `offset/limit` 换算得到的页码。<br>页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 字段对应：<br>MCP 字段 `page_size` ↔ 原始 CodeArts 需求管理 API 的分页大小字段，常见原字段名为 `page_size`、`limit` 或 `pageSize`。<br>每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `subject` | 否 | `string` |  | 字段对应：<br>MCP 字段 `subject` ↔ 原始 CodeArts 需求管理 API 同名字段 `subject`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>主题或摘要，用于工作项、评论、通知等内容的简短说明。 |
+| `created_on` | 否 | `string` |  | 字段对应：<br>MCP 字段 `created_on` ↔ 原始 CodeArts 需求管理 API 同名字段 `created_on`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `updated_on` | 否 | `string` |  | 字段对应：<br>MCP 字段 `updated_on` ↔ 原始 CodeArts 需求管理 API 同名字段 `updated_on`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `closed_on` | 否 | `string` |  | 字段对应：<br>MCP 字段 `closed_on` ↔ 原始 CodeArts 需求管理 API 同名字段 `closed_on`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `start_date` | 否 | `string` |  | 字段对应：<br>MCP 字段 `start_date` ↔ 原始 CodeArts 需求管理 API 同名字段 `start_date`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>开始日期，通常使用 yyyy-MM-dd 或接口要求的日期格式。 |
+| `due_date` | 否 | `string` |  | 字段对应：<br>MCP 字段 `due_date` ↔ 原始 CodeArts 需求管理 API 同名字段 `due_date`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>截止日期，表示工作项、计划或任务期望完成时间。 |
+| `tracker_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `tracker_id` ↔ 原始 CodeArts 需求管理 API 同名字段 `tracker_id`，表示工作项类型 ID。<br>Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
+| `status_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `status_id` ↔ 原始 CodeArts 需求管理 API 同名字段 `status_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>工作项状态 ID：1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝。项目自定义状态以状态配置/工作流接口返回为准。 |
+| `author_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `author_id` ↔ 原始 CodeArts 需求管理 API 同名字段 `author_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>author ID，用于定位对应的 CodeArts 资源。 |
+| `developer_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `developer_id` ↔ 原始 CodeArts 需求管理 API 同名字段 `developer_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>开发人员 ID，用于定位对应的 CodeArts 资源。 |
+| `priority_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `priority_id` ↔ 原始 CodeArts 需求管理 API 同名字段 `priority_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>工作项优先级 ID。创建工作项未传时默认使用 2；具体优先级名称和可选值以项目字段配置/优先级选项接口返回为准。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "page": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "default": 1
+    },
+    "page_size": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 200,
+      "default": 20
+    },
+    "subject": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "created_on": {
+      "type": "string",
+      "minLength": 1
+    },
+    "updated_on": {
+      "type": "string",
+      "minLength": 1
+    },
+    "closed_on": {
+      "type": "string",
+      "minLength": 1
+    },
+    "start_date": {
+      "type": "string",
+      "minLength": 1
+    },
+    "due_date": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tracker_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "author_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "developer_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "priority_id": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### req_search_todo_work_items
+
+所属模块：`需求管理`
+
+说明：搜索需求管理的todo工作项。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "req_search_todo_work_items",
+    "arguments": {}
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 字段对应：<br>MCP 字段 `page` ↔ 原始 CodeArts 需求管理 API 的分页页码或由 `offset/limit` 换算得到的页码。<br>页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 字段对应：<br>MCP 字段 `page_size` ↔ 原始 CodeArts 需求管理 API 的分页大小字段，常见原字段名为 `page_size`、`limit` 或 `pageSize`。<br>每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `subject` | 否 | `string` |  | 字段对应：<br>MCP 字段 `subject` ↔ 原始 CodeArts 需求管理 API 同名字段 `subject`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>主题或摘要，用于工作项、评论、通知等内容的简短说明。 |
+| `created_on` | 否 | `string` |  | 字段对应：<br>MCP 字段 `created_on` ↔ 原始 CodeArts 需求管理 API 同名字段 `created_on`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `updated_on` | 否 | `string` |  | 字段对应：<br>MCP 字段 `updated_on` ↔ 原始 CodeArts 需求管理 API 同名字段 `updated_on`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `closed_on` | 否 | `string` |  | 字段对应：<br>MCP 字段 `closed_on` ↔ 原始 CodeArts 需求管理 API 同名字段 `closed_on`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `start_date` | 否 | `string` |  | 字段对应：<br>MCP 字段 `start_date` ↔ 原始 CodeArts 需求管理 API 同名字段 `start_date`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>开始日期，通常使用 yyyy-MM-dd 或接口要求的日期格式。 |
+| `due_date` | 否 | `string` |  | 字段对应：<br>MCP 字段 `due_date` ↔ 原始 CodeArts 需求管理 API 同名字段 `due_date`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>截止日期，表示工作项、计划或任务期望完成时间。 |
+| `tracker_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `tracker_id` ↔ 原始 CodeArts 需求管理 API 同名字段 `tracker_id`，表示工作项类型 ID。<br>Scrum 工作项类型 ID：2=Task/任务，3=Bug/缺陷，5=Epic，6=Feature，7=Story。 |
+| `status_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `status_id` ↔ 原始 CodeArts 需求管理 API 同名字段 `status_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>工作项状态 ID：1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝。项目自定义状态以状态配置/工作流接口返回为准。 |
+| `author_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `author_id` ↔ 原始 CodeArts 需求管理 API 同名字段 `author_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>author ID，用于定位对应的 CodeArts 资源。 |
+| `developer_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `developer_id` ↔ 原始 CodeArts 需求管理 API 同名字段 `developer_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>开发人员 ID，用于定位对应的 CodeArts 资源。 |
+| `priority_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `priority_id` ↔ 原始 CodeArts 需求管理 API 同名字段 `priority_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>工作项优先级 ID。创建工作项未传时默认使用 2；具体优先级名称和可选值以项目字段配置/优先级选项接口返回为准。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "page": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "default": 1
+    },
+    "page_size": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 200,
+      "default": 20
+    },
+    "subject": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "created_on": {
+      "type": "string",
+      "minLength": 1
+    },
+    "updated_on": {
+      "type": "string",
+      "minLength": 1
+    },
+    "closed_on": {
+      "type": "string",
+      "minLength": 1
+    },
+    "start_date": {
+      "type": "string",
+      "minLength": 1
+    },
+    "due_date": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tracker_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "author_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "developer_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "priority_id": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
 }

@@ -414,6 +414,23 @@ export type ReqClient = {
     }>;
     total?: number;
   }>;
+  listProjectVersions: (input: { project_id: string }) => Promise<{
+    versions: ReqVersionItem[];
+    total?: number;
+  }>;
+  findIterations: (input: { project_id: string; updated_time_interval?: string }) => Promise<{
+    iterations: Array<{
+      id: number | string;
+      name: string;
+      status?: string;
+      begin_time?: string;
+      end_time?: string;
+      description?: string;
+      updated_time?: number;
+      deleted?: boolean;
+    }>;
+    total?: number;
+  }>;
   listIterationWorkItems: (input: {
     project_id: string;
     iteration_id: string;
@@ -442,6 +459,7 @@ export type ReqClient = {
     created_time?: number;
     updated_time?: number;
   }>;
+  getVersionDetailV2: (input: { version_id: string }) => Promise<ReqVersionDetailV2>;
   listPlans: (input: {
     project_id: string;
     page: number;
@@ -842,6 +860,14 @@ export type ReqClient = {
     }>;
     total?: number;
   }>;
+  searchTodoWorkItems: (input: ReqTodoWorkItemSearchInput) => Promise<{
+    work_items: ReqIssueListItem[];
+    total?: number;
+  }>;
+  searchMyWorkItems: (input: ReqTodoWorkItemSearchInput) => Promise<{
+    work_items: ReqIssueListItem[];
+    total?: number;
+  }>;
   countWorkItemTree: (input: {
     project_id: string;
     page: number;
@@ -970,6 +996,10 @@ export type ReqClient = {
     assigned_id?: string;
     assigned_to_id?: number | string;
   }>;
+  listParentWorkItems: (input: { project_id: string; work_item_id: string }) => Promise<{
+    issue?: ReqDetailedIssueListItem;
+    parent_issues: ReqDetailedIssueListItem[];
+  }>;
   getWorkItemIssueDetails: (input: {
     project_id: string;
     work_item_id: string;
@@ -1065,6 +1095,18 @@ export type ReqClient = {
     }>;
     total?: number;
   }>;
+  listWorkItemStayTimes: (input: {
+    project_id: string;
+    work_item_ids: string[];
+  }) => Promise<{
+    data: Array<{
+      id: string;
+      stay_time?: number | string;
+    }>;
+    fails: string[];
+    total?: number;
+    total_stay_time?: number | string;
+  }>;
   listProjectWorkItemRecords: (input: {
     project_id: string;
     page: number;
@@ -1132,6 +1174,14 @@ export type ReqClient = {
     }>;
     total?: number;
   }>;
+  getWorkHourPermission: (input: {
+    project_id: string;
+    work_item_id: string;
+  }) => Promise<{
+    project_id: string;
+    work_item_id: string;
+    is_history_processor?: boolean;
+  }>;
   listProjectWorkHours: (input: {
     page: number;
     page_size: number;
@@ -1146,6 +1196,31 @@ export type ReqClient = {
       issue_type?: string;
       subject?: string;
       project_name?: string;
+      user_id?: string;
+      user_name?: string;
+      nick_name?: string;
+      work_date?: string;
+      work_hours_num?: string | number;
+      summary?: string;
+    }>;
+    total?: number;
+  }>;
+  listProjectMemberWorkHours: (input: {
+    page: number;
+    page_size: number;
+    project_id?: string;
+    staff_id?: string;
+    begin_time?: string;
+    end_time?: string;
+    work_hours_dates?: string;
+    work_hours_types?: string;
+  }) => Promise<{
+    work_hours: Array<{
+      issue_id?: number | string;
+      issue_type?: string;
+      subject?: string;
+      project_name?: string;
+      project_id?: string;
       user_id?: string;
       user_name?: string;
       nick_name?: string;
@@ -2494,6 +2569,31 @@ type ReqCopyIssueResponse = {
   is_archived?: boolean;
 };
 
+export type ReqVersionItem = {
+  id: number | string;
+  name?: string;
+  status?: string;
+  project_id?: string;
+  due_date?: string | number;
+  effective_date?: string | number;
+  created_on?: string | number;
+  updated_on?: string | number;
+  start_date?: string | number;
+  is_current?: string | boolean;
+  program_version_id?: string;
+  done_ratio?: number;
+  [key: string]: unknown;
+};
+
+export type ReqVersionDetailV2 = ReqVersionItem & {
+  projectNumId?: number | string;
+  project?: Record<string, unknown>;
+  opened_count?: number;
+  closed_count?: number;
+  have_task?: boolean;
+  total?: number;
+};
+
 type ReqIssueAssignee = {
   id?: number | string;
   user_id?: string;
@@ -2748,6 +2848,22 @@ type ReqProgramItem = {
   project_count?: number;
   owner?: ReqProgramUser;
   creator?: ReqProgramUser;
+};
+
+type ReqTodoWorkItemSearchInput = {
+  page: number;
+  page_size: number;
+  subject?: string;
+  created_on?: string;
+  updated_on?: string;
+  closed_on?: string;
+  start_date?: string;
+  due_date?: string;
+  tracker_id?: string;
+  status_id?: string;
+  author_id?: string;
+  developer_id?: string;
+  priority_id?: string;
 };
 
 type ReqProgramField = {
@@ -3586,6 +3702,70 @@ export function createReqClient(
         total: response.total ?? response.total_count
       };
     },
+    async listProjectVersions(input) {
+      const response = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/versions`
+      )) as {
+        result?: {
+          versions?: ReqVersionItem[];
+          total_count?: number;
+          total?: number;
+        };
+        versions?: ReqVersionItem[];
+        total_count?: number;
+        total?: number;
+      };
+      const result = response.result ?? response;
+
+      return {
+        versions: result.versions ?? [],
+        total: result.total_count ?? result.total
+      };
+    },
+    async findIterations(input) {
+      const query = new URLSearchParams({
+        projectId: input.project_id
+      });
+
+      if (input.updated_time_interval) {
+        query.set("updated_time_interval", input.updated_time_interval);
+      }
+
+      const response = (await _http.get(`/v3/version/find-version?${query.toString()}`)) as {
+        result?: {
+          versions?: Array<{
+            id: number | string;
+            name: string;
+            status?: string;
+            begin_time?: string;
+            end_time?: string;
+            description?: string;
+            updated_time?: number;
+            deleted?: boolean;
+          }>;
+          total?: number;
+          total_count?: number;
+        };
+        versions?: Array<{
+          id: number | string;
+          name: string;
+          status?: string;
+          begin_time?: string;
+          end_time?: string;
+          description?: string;
+          updated_time?: number;
+          deleted?: boolean;
+        }>;
+        total?: number;
+        total_count?: number;
+      };
+      const result = response.result ?? response;
+
+      return {
+        iterations: result.versions ?? [],
+        total: result.total ?? result.total_count
+      };
+    },
     async listIterationWorkItems(input) {
       const offset = (input.page - 1) * input.page_size;
       const query = new URLSearchParams({
@@ -3664,6 +3844,20 @@ export function createReqClient(
         created_time: response.created_time,
         updated_time: response.updated_time
       };
+    },
+    async getVersionDetailV2(input) {
+      const query = new URLSearchParams({
+        versionId: input.version_id
+      });
+      const response = (await _http.get(`/v2/version/show?${query.toString()}`)) as {
+        result?: {
+          version?: ReqVersionDetailV2;
+        };
+        version?: ReqVersionDetailV2;
+      };
+      const result = response.result ?? response;
+
+      return result.version ?? { id: input.version_id };
     },
     async listPlans(input) {
       if (
@@ -4957,6 +5151,65 @@ export function createReqClient(
         total: payload.total
       };
     },
+    async searchTodoWorkItems(input) {
+      const response = (await _http.post("/v4/issues", {
+        offset: (input.page - 1) * input.page_size,
+        limit: input.page_size,
+        ...(input.subject ? { subject: input.subject } : {}),
+        ...(input.created_on ? { created_on: input.created_on } : {}),
+        ...(input.updated_on ? { updated_on: input.updated_on } : {}),
+        ...(input.closed_on ? { closed_on: input.closed_on } : {}),
+        ...(input.start_date ? { start_date: input.start_date } : {}),
+        ...(input.due_date ? { due_date: input.due_date } : {}),
+        ...(input.tracker_id ? { tracker_id: input.tracker_id } : {}),
+        ...(input.status_id ? { status_id: input.status_id } : {}),
+        ...(input.author_id ? { author_id: input.author_id } : {}),
+        ...(input.developer_id ? { developer_id: input.developer_id } : {}),
+        ...(input.priority_id ? { priority_id: input.priority_id } : {})
+      })) as {
+        issue_list?: ReqIssueListItem[];
+        total?: number;
+      };
+
+      return {
+        work_items: response.issue_list ?? [],
+        total: response.total
+      };
+    },
+    async searchMyWorkItems(input) {
+      const response = (await _http.post("/v3/work-search/my-issues", {
+        pageNo: input.page,
+        pageSize: input.page_size,
+        ...(input.subject ? { subject: input.subject } : {}),
+        ...(input.created_on ? { created_on: input.created_on } : {}),
+        ...(input.updated_on ? { updated_on: input.updated_on } : {}),
+        ...(input.closed_on ? { closed_on: input.closed_on } : {}),
+        ...(input.start_date ? { start_date: input.start_date } : {}),
+        ...(input.due_date ? { due_date: input.due_date } : {}),
+        ...(input.tracker_id ? { tracker_id: input.tracker_id } : {}),
+        ...(input.status_id ? { status_id: input.status_id } : {}),
+        ...(input.author_id ? { author_id: input.author_id } : {}),
+        ...(input.developer_id ? { developer_id: input.developer_id } : {}),
+        ...(input.priority_id ? { priority_id: input.priority_id } : {})
+      })) as {
+        result?: {
+          issueList?: ReqIssueListItem[];
+          issue_list?: ReqIssueListItem[];
+          total?: number;
+        };
+        issueList?: ReqIssueListItem[];
+        issue_list?: ReqIssueListItem[];
+        total?: number;
+        status?: string;
+      };
+      const payload = unwrapReqPayload(response);
+      const result = payload.result ?? payload;
+
+      return {
+        work_items: result.issueList ?? result.issue_list ?? [],
+        total: result.total
+      };
+    },
     async countWorkItemTree(input) {
       const response = (await _http.post(
         `/v4/${encodeURIComponent(input.project_id)}/scrum-issue-tree-count`,
@@ -5193,6 +5446,29 @@ export function createReqClient(
         ...(typeof response.assigned_to_id !== "undefined" ? { assigned_to_id: response.assigned_to_id } : {})
       };
     },
+    async listParentWorkItems(input) {
+      const query = new URLSearchParams({
+        issue_id: input.work_item_id
+      });
+      const response = (await _http.get(
+        `/v4/${encodeURIComponent(input.project_id)}/issue-parent-issues?${query.toString()}`
+      )) as {
+        result?: {
+          issue?: ReqDetailedIssueListItem;
+          parent_issues?: ReqDetailedIssueListItem[];
+        };
+        issue?: ReqDetailedIssueListItem;
+        parent_issues?: ReqDetailedIssueListItem[];
+        status?: string;
+      };
+      const payload = unwrapReqPayload(response);
+      const result = payload.result ?? payload;
+
+      return {
+        issue: result.issue,
+        parent_issues: result.parent_issues ?? []
+      };
+    },
     async getWorkItemIssueDetails(input) {
       const query = new URLSearchParams({
         issueId: input.work_item_id,
@@ -5418,6 +5694,27 @@ export function createReqClient(
         total: response.total
       };
     },
+    async listWorkItemStayTimes(input) {
+      const response = (await _http.post("/v4/issues/duration", {
+        project_id: input.project_id,
+        issue_ids: input.work_item_ids
+      })) as {
+        data?: Array<{
+          id: string;
+          stay_time?: number | string;
+        }>;
+        fails?: string[];
+        total?: number;
+        total_stay_time?: number | string;
+      };
+
+      return {
+        data: response.data ?? [],
+        fails: response.fails ?? [],
+        total: response.total,
+        total_stay_time: response.total_stay_time
+      };
+    },
     async listProjectWorkItemRecords(input) {
       const offset = (input.page - 1) * input.page_size;
       const query = new URLSearchParams({
@@ -5552,6 +5849,23 @@ export function createReqClient(
         total: result.total
       };
     },
+    async getWorkHourPermission(input) {
+      const response = (await _http.get(
+        `/v3/projects/${encodeURIComponent(input.project_id)}/issues/${encodeURIComponent(input.work_item_id)}/history-permission`
+      )) as {
+        result?: {
+          is_history_processor?: boolean;
+        };
+        is_history_processor?: boolean;
+      };
+      const result = response.result ?? response;
+
+      return {
+        project_id: input.project_id,
+        work_item_id: input.work_item_id,
+        is_history_processor: result.is_history_processor
+      };
+    },
     async listProjectWorkHours(input) {
       const offset = (input.page - 1) * input.page_size;
       const response = (await _http.post("/v4/projects/work-hours", {
@@ -5610,6 +5924,81 @@ export function createReqClient(
 
       return {
         work_hours: result.work_hours ?? [],
+        total: result.total
+      };
+    },
+    async listProjectMemberWorkHours(input) {
+      const response = (await _http.post("/v3/work-hours/get-member-work-hours", {
+        page_no: String(input.page),
+        page_size: String(input.page_size),
+        ...(input.project_id ? { project_uuid: input.project_id } : {}),
+        ...(input.staff_id ? { staff_id: input.staff_id } : {}),
+        ...(input.begin_time ? { begin_time: input.begin_time } : {}),
+        ...(input.end_time ? { end_time: input.end_time } : {}),
+        ...(input.work_hours_dates ? { work_hours_dates: input.work_hours_dates } : {}),
+        ...(input.work_hours_types ? { work_hours_types: input.work_hours_types } : {})
+      })) as {
+        result?: {
+          total?: number;
+          work_hours?: Array<{
+            issue_id?: number | string;
+            issue_type?: string;
+            subject?: string;
+            project_name?: string;
+            project_id?: string;
+            user_id?: string;
+            user_name?: string;
+            nick_name?: string;
+            work_date?: string;
+            work_hours_num?: string | number;
+            summary?: string;
+          }>;
+          data?: Array<{
+            issue_id?: number | string;
+            issue_type?: string;
+            subject?: string;
+            project_name?: string;
+            project_id?: string;
+            user_id?: string;
+            user_name?: string;
+            nick_name?: string;
+            work_date?: string;
+            work_hours_num?: string | number;
+            summary?: string;
+          }>;
+        };
+        total?: number;
+        work_hours?: Array<{
+          issue_id?: number | string;
+          issue_type?: string;
+          subject?: string;
+          project_name?: string;
+          project_id?: string;
+          user_id?: string;
+          user_name?: string;
+          nick_name?: string;
+          work_date?: string;
+          work_hours_num?: string | number;
+          summary?: string;
+        }>;
+        data?: Array<{
+          issue_id?: number | string;
+          issue_type?: string;
+          subject?: string;
+          project_name?: string;
+          project_id?: string;
+          user_id?: string;
+          user_name?: string;
+          nick_name?: string;
+          work_date?: string;
+          work_hours_num?: string | number;
+          summary?: string;
+        }>;
+      };
+      const result = response.result ?? response;
+
+      return {
+        work_hours: result.work_hours ?? result.data ?? [],
         total: result.total
       };
     },

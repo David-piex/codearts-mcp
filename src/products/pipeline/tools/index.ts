@@ -77,6 +77,8 @@ export const pipelineToolNames = [
   "pipeline_list_queue",
   "pipeline_list_runs",
   "pipeline_list_system_vars",
+  "pipeline_get_webhook_info",
+  "pipeline_list_pipeline_vars",
   "pipeline_list_trigger_failed_records",
   "pipeline_get_run",
   "pipeline_get_run_detail",
@@ -86,5 +88,6 @@ export const pipelineToolNames = [
   "pipeline_stop_run",
   "pipeline_run_pipeline",
   "pipeline_list_templates",
+  "pipeline_get_template",
   "pipeline_request_official_api"
 ];

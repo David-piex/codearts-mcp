@@ -285,6 +285,24 @@ describe("createArtifactClient", () => {
         if (path.includes("/user/permissions")) {
           return { result: { is_download: true, is_upload: false } };
         }
+        if (path.includes("/repositories/user/info")) {
+          return { result: { username: "repo-user", password: "secret" } };
+        }
+        if (path.includes("/repositories/users")) {
+          return {
+            result: {
+              data: [
+                {
+                  user_id: "user-1",
+                  user_name: "repo-user",
+                  repo_user_name: "domain_user-1",
+                  enabled: "true"
+                }
+              ],
+              total_records: 1
+            }
+          };
+        }
         return {
           result: [
             {
@@ -308,6 +326,25 @@ describe("createArtifactClient", () => {
       project_id: "project-1",
       raw: { is_download: true, is_upload: false }
     });
+    await expect(client.getRepositoryUserInfo()).resolves.toEqual({
+      username: "repo-user",
+      raw: { username: "repo-user", password: "secret" }
+    });
+    await expect(client.listRepositoryUsers({
+      page: 2,
+      page_size: 10,
+      user_name: "repo"
+    })).resolves.toEqual({
+      users: [
+        {
+          user_id: "user-1",
+          user_name: "repo-user",
+          repo_user_name: "domain_user-1",
+          enabled: "true"
+        }
+      ],
+      total: 1
+    });
     await expect(client.listChildProxyRepositories({
       repo_id: "repo-1",
       type: "npm"
@@ -325,6 +362,8 @@ describe("createArtifactClient", () => {
       "/devreposerver/v5/capacity-notice/settings",
       "/v5/user/project-1/privileges",
       "/devreposerver/v5/user/permissions?project_id=project-1",
+      "/cloudartifact/v5/repositories/user/info",
+      "/cloudartifact/v5/repositories/users?page_no=2&page_size=10&user_name=repo",
       "/cloudartifact/v5/repositories/proxy?repo_id=repo-1&type=npm"
     ]);
   });

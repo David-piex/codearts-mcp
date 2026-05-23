@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+﻿import { describe, expect, it } from "vitest";
 import {
   loadEnvConfig,
   loadHttpAuthConfig,
@@ -21,7 +21,7 @@ describe("loadEnvConfig", () => {
     expect(config.reqBaseUrl).toBe("https://projectman-ext.cn-north-4.myhuaweicloud.com");
     expect(config.repoBaseUrl).toBe("https://codehub-ext.cn-north-4.myhuaweicloud.com");
     expect(config.pipelineBaseUrl).toBe("https://cloudpipeline-ext.cn-north-4.myhuaweicloud.com");
-    expect(config.checkBaseUrl).toBe("https://codecheck-ext.cn-north-4.myhuaweicloud.com");
+    expect(config.checkBaseUrl).toBe("https://codearts-check.cn-north-4.myhuaweicloud.com");
     expect(config.testPlanBaseUrl).toBe("https://cloudtest-ext.cn-north-4.myhuaweicloud.com");
     expect(config.deployBaseUrl).toBe("https://codearts-deploy.cn-north-4.myhuaweicloud.com");
     expect(config.buildBaseUrl).toBe("https://cloudbuild-ext.cn-north-4.myhuaweicloud.com");

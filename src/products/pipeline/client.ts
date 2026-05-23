@@ -330,6 +330,18 @@ export type PipelineClient = {
     total?: number;
     raw: PipelineRawRecord;
   }>;
+  getWebhookInfo: (input: { project_id: string; pipeline_id: string }) => Promise<{
+    project_id: string;
+    pipeline_id: string;
+    webhook: PipelineRawRecord;
+  }>;
+  listPipelineVars: (input: { project_id: string; pipeline_id: string }) => Promise<{
+    project_id: string;
+    pipeline_id: string;
+    variables: PipelineRawRecord[];
+    total?: number;
+    raw: PipelineRawRecord;
+  }>;
   listTriggerFailedRecords: (input: {
     project_id: string;
     pipeline_id: string;
@@ -847,6 +859,17 @@ export type PipelineClient = {
       region?: string;
     }>;
     total?: number;
+  }>;
+  getTemplate: (input: { tenant_id: string; template_id: string }) => Promise<{
+    id?: string;
+    name?: string;
+    icon?: string;
+    manifest_version?: string;
+    language?: string;
+    description?: string;
+    is_system?: boolean;
+    region?: string;
+    template: PipelineRawRecord;
   }>;
   getPipeline: (input: { project_id: string; pipeline_id: string }) => Promise<{
     id: string;
@@ -1392,6 +1415,33 @@ export function createPipelineClient(
       const payload = getPipelinePayload(response);
       const variables = readPipelineRecordList(payload);
       return {
+        variables,
+        total: readPipelineTotal(payload, variables.length),
+        raw: payload
+      };
+    },
+    async getWebhookInfo(input) {
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipelines/${encodeURIComponent(input.pipeline_id)}/webhook`
+      ));
+      const payload = getPipelinePayload(response);
+
+      return {
+        project_id: input.project_id,
+        pipeline_id: input.pipeline_id,
+        webhook: payload
+      };
+    },
+    async listPipelineVars(input) {
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipelines/${encodeURIComponent(input.pipeline_id)}/list-pipeline-vars`
+      ));
+      const payload = getPipelinePayload(response);
+      const variables = readPipelineRecordList(payload);
+
+      return {
+        project_id: input.project_id,
+        pipeline_id: input.pipeline_id,
         variables,
         total: readPipelineTotal(payload, variables.length),
         raw: payload
@@ -2620,6 +2670,24 @@ export function createPipelineClient(
       return {
         templates: response.templates ?? [],
         total: response.total
+      };
+    },
+    async getTemplate(input) {
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v5/${encodeURIComponent(input.tenant_id)}/api/pipeline-templates/${encodeURIComponent(input.template_id)}`
+      ));
+      const payload = getPipelinePayload(response);
+
+      return {
+        id: typeof payload.id === "string" ? payload.id : input.template_id,
+        name: typeof payload.name === "string" ? payload.name : undefined,
+        icon: typeof payload.icon === "string" ? payload.icon : undefined,
+        manifest_version: typeof payload.manifest_version === "string" ? payload.manifest_version : undefined,
+        language: typeof payload.language === "string" ? payload.language : undefined,
+        description: typeof payload.description === "string" ? payload.description : undefined,
+        is_system: typeof payload.is_system === "boolean" ? payload.is_system : undefined,
+        region: typeof payload.region === "string" ? payload.region : undefined,
+        template: payload
       };
     },
     async getPipeline(input) {

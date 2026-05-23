@@ -174,7 +174,8 @@ export const buildGetJobPermissionInput = z.object({
 });
 
 export const buildGetProjectDefaultPermissionInput = z.object({
-  project_id: idSchema
+  project_id: idSchema,
+  job_id: idSchema
 });
 
 export const buildListOfficialTemplatesInput = pagingSchema.extend({

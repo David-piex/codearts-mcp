@@ -1225,6 +1225,110 @@ describe("createReqClient", () => {
     });
   });
 
+  it("maps findIterations to the v3 version find endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          result: {
+            versions: [
+              {
+                id: 101,
+                name: "Sprint 1",
+                status: "open",
+                updated_time: 1_779_268_000_000
+              }
+            ],
+            total: 1
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.findIterations({
+      project_id: "p-1",
+      updated_time_interval: "2026-05-01,2026-05-23"
+    });
+
+    expect(requestedPath).toBe(
+      "/v3/version/find-version?projectId=p-1&updated_time_interval=2026-05-01%2C2026-05-23"
+    );
+    expect(result).toEqual({
+      iterations: [
+        {
+          id: 101,
+          name: "Sprint 1",
+          status: "open",
+          updated_time: 1_779_268_000_000
+        }
+      ],
+      total: 1
+    });
+  });
+
+  it("maps listProjectVersions to the official project versions endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          result: {
+            versions: [{ id: 21727203, name: "Sprint 1", status: "1" }],
+            total_count: 1
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.listProjectVersions({
+      project_id: "p-1"
+    });
+
+    expect(requestedPath).toBe("/v4/projects/p-1/versions");
+    expect(result).toEqual({
+      versions: [{ id: 21727203, name: "Sprint 1", status: "1" }],
+      total: 1
+    });
+  });
+
+  it("maps getVersionDetailV2 to the official V2 version detail endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          result: {
+            version: {
+              id: 21727203,
+              name: "Sprint 1",
+              status: "1",
+              total: 3
+            }
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.getVersionDetailV2({
+      version_id: "21727203"
+    });
+
+    expect(requestedPath).toBe("/v2/version/show?versionId=21727203");
+    expect(result).toEqual({
+      id: 21727203,
+      name: "Sprint 1",
+      status: "1",
+      total: 3
+    });
+  });
+
   it("maps listWorkItemComments to the v4 comments endpoint and normalizes payloads", async () => {
     let requestedPath = "";
     const client = createReqClient({
@@ -1324,6 +1428,96 @@ describe("createReqClient", () => {
           work_date_timestamp: "1753372800000",
           work_hours: "1.0",
           region: "example"
+        }
+      ],
+      total: 1
+    });
+  });
+
+  it("maps work hour permission queries to the documented endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          result: {
+            is_history_processor: true
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.getWorkHourPermission({
+      project_id: "p-1",
+      work_item_id: "70779173"
+    });
+
+    expect(requestedPath).toBe("/v3/projects/p-1/issues/70779173/history-permission");
+    expect(result).toEqual({
+      project_id: "p-1",
+      work_item_id: "70779173",
+      is_history_processor: true
+    });
+  });
+
+  it("maps member work hour queries to the v3 member work-hours endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return {
+          result: {
+            total: 1,
+            work_hours: [
+              {
+                issue_id: 70779173,
+                subject: "Story A",
+                project_name: "mall",
+                user_id: "user-1",
+                nick_name: "szh",
+                work_date: "2026-05-23",
+                work_hours_num: "2.0"
+              }
+            ]
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.listProjectMemberWorkHours({
+      page: 2,
+      page_size: 10,
+      project_id: "p-1",
+      staff_id: "user-1",
+      begin_time: "2026-05-01",
+      end_time: "2026-05-23"
+    });
+
+    expect(requestedPath).toBe("/v3/work-hours/get-member-work-hours");
+    expect(requestedBody).toEqual({
+      page_no: "2",
+      page_size: "10",
+      project_uuid: "p-1",
+      staff_id: "user-1",
+      begin_time: "2026-05-01",
+      end_time: "2026-05-23"
+    });
+    expect(result).toEqual({
+      work_hours: [
+        {
+          issue_id: 70779173,
+          subject: "Story A",
+          project_name: "mall",
+          user_id: "user-1",
+          nick_name: "szh",
+          work_date: "2026-05-23",
+          work_hours_num: "2.0"
         }
       ],
       total: 1
@@ -5001,6 +5195,140 @@ describe("createReqClient", () => {
       code_commit_count: 5,
       code_branch_count: 6,
       code_mergerequest_count: 7
+    });
+  });
+
+  it("maps parent work item queries to the documented parent-issues endpoint", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+
+        return {
+          result: {
+            issue: { id: 20, subject: "Child task" },
+            parent_issues: [{ id: 10, subject: "Parent story" }]
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.listParentWorkItems({
+      project_id: "p-1",
+      work_item_id: "20"
+    });
+
+    expect(requestedPath).toBe("/v4/p-1/issue-parent-issues?issue_id=20");
+    expect(result).toEqual({
+      issue: { id: 20, subject: "Child task" },
+      parent_issues: [{ id: 10, subject: "Parent story" }]
+    });
+  });
+
+  it("maps work item stay time queries to the documented duration endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body?: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return {
+          fails: ["1212123"],
+          data: [{ id: "6330741", stay_time: 1238172 }],
+          total_stay_time: 1238172,
+          total: 1
+        };
+      }
+    } as never);
+
+    const result = await client.listWorkItemStayTimes({
+      project_id: "p-1",
+      work_item_ids: ["6330741", "1212123"]
+    });
+
+    expect(requestedPath).toBe("/v4/issues/duration");
+    expect(requestedBody).toEqual({
+      project_id: "p-1",
+      issue_ids: ["6330741", "1212123"]
+    });
+    expect(result).toEqual({
+      fails: ["1212123"],
+      data: [{ id: "6330741", stay_time: 1238172 }],
+      total_stay_time: 1238172,
+      total: 1
+    });
+  });
+
+  it("maps todo work item search to the documented cross-project todo endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body?: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return {
+          issue_list: [{ id: 7220820, subject: "demo_issue" }],
+          total: 1
+        };
+      }
+    } as never);
+
+    const result = await client.searchTodoWorkItems({
+      page: 2,
+      page_size: 15,
+      subject: "demo",
+      status_id: "5",
+      due_date: "1682265600000,1682265600000"
+    });
+
+    expect(requestedPath).toBe("/v4/issues");
+    expect(requestedBody).toEqual({
+      offset: 15,
+      limit: 15,
+      subject: "demo",
+      due_date: "1682265600000,1682265600000",
+      status_id: "5"
+    });
+    expect(result).toEqual({
+      work_items: [{ id: 7220820, subject: "demo_issue" }],
+      total: 1
+    });
+  });
+
+  it("maps personal workbench search to the documented my-issues endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body?: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return {
+          result: {
+            issueList: [{ id: 69880891, subject: "St-001" }],
+            total: 7898
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.searchMyWorkItems({
+      page: 1,
+      page_size: 15
+    });
+
+    expect(requestedPath).toBe("/v3/work-search/my-issues");
+    expect(requestedBody).toEqual({
+      pageNo: 1,
+      pageSize: 15
+    });
+    expect(result).toEqual({
+      work_items: [{ id: 69880891, subject: "St-001" }],
+      total: 7898
     });
   });
 

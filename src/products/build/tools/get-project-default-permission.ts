@@ -2,8 +2,9 @@ import { buildGetProjectDefaultPermissionInput } from "../schemas.js";
 import { formatBuildRecordListText, mapBuildRecordList } from "./generic-read-tools.js";
 
 type Client = {
-  getProjectDefaultPermission: (input: { project_id: string }) => Promise<{
+  getProjectDefaultPermission: (input: { project_id: string; job_id: string }) => Promise<{
     project_id: string;
+    job_id: string;
     permissions: Array<Record<string, unknown>>;
     total?: number;
   }>;

@@ -540,3 +540,19 @@ export const deployGetAppLogInput = z.object({
 });
 
 export const deployListSystemConfigsInput = z.object({});
+
+export const deployCheckApplicationExistsInput = z.object({
+  project_id: idSchema,
+  name: z.string().min(1)
+});
+
+export const deployListApplicationPermissionsInput = z.object({
+  app_id: idSchema.optional(),
+  project_id: idSchema.optional()
+}).refine((input) => Boolean(input.app_id || input.project_id), {
+  message: "app_id or project_id is required"
+});
+
+export const deployCheckApplicationCreatableInput = z.object({
+  project_id: idSchema
+});

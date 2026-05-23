@@ -51,7 +51,10 @@ describe("registerPipelineTool", () => {
     ["pipeline_list_strategies", "List CodeArts Pipeline strategies"],
     ["pipeline_list_project_strategies", "List CodeArts Pipeline project strategies"],
     ["pipeline_list_extension_modules", "List CodeArts Pipeline extension modules"],
-    ["pipeline_list_publishers", "List CodeArts Pipeline publishers"]
+    ["pipeline_list_publishers", "List CodeArts Pipeline publishers"],
+    ["pipeline_get_webhook_info", "Get CodeArts Pipeline webhook info"],
+    ["pipeline_list_pipeline_vars", "List CodeArts Pipeline variables"],
+    ["pipeline_get_template", "Get CodeArts Pipeline template detail"]
   ])("registers %s in http mode", (toolName, description) => {
     expectPipelineToolRegistration({
       toolName,

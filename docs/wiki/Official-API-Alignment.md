@@ -67,8 +67,9 @@
 
 ### Check
 
-- 当前 8 个工具已形成稳定工具面。
-- 适合和 Repo / Build 一起作为质量分析链路使用。
+- 当前已接入 53 个 Check MCP 工具，核心 task / ruleset / metrics / defects 读路径已用北京四 AK/SK 验证。
+- 新增的 `check_list_plugins`、`check_get_task_webhook_info`、`check_get_code_health_svg`、`check_list_criterion_filters`、`check_list_criterions`、`check_get_defect_task_statistics` 已按官方 URI MCP 化，并有单测覆盖；2026-05-23 用北京四 AK/SK 在 `codearts-check.cn-north-4.myhuaweicloud.com` 实测通过，旧 `codecheck-ext` 网关会对这些新路径返回 `APIGW.0101`。
+- 适合和 Repo / Build 一起作为质量分析链路使用；默认 Check endpoint 已切到 `codearts-check`，仍可通过 `HUAWEICLOUD_CHECK_BASE_URL` 覆盖。
 
 ### TestPlan
 

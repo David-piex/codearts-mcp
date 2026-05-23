@@ -61,7 +61,7 @@ describe("module stats doc rendering", () => {
     const markdown = renderReadWriteMatrixMarkdown();
 
     expect(markdown).toContain("| Module | Read | Write | Live | Key Gaps |");
-    expect(markdown).toContain("| Deploy | 43 | 17 | Partial |");
+    expect(markdown).toContain("| Deploy | 46 | 17 | Partial |");
     expect(markdown).toContain("| Build | 53 | 9 | Validated |");
   });
 
@@ -69,7 +69,7 @@ describe("module stats doc rendering", () => {
     expect(renderApiReferenceScaleMarkdown()).toContain(
       `产品工具合计 \`${collectProductToolStats().total}\` 个`
     );
-    expect(renderReqApiReferenceScaleMarkdown()).toContain("| Req MCP 工具 | 201 |");
+    expect(renderReqApiReferenceScaleMarkdown()).toContain("| Req MCP 工具 | 210 |");
     expect(renderReqApiReferenceScaleMarkdown()).toContain(
       `| 含鉴权的共享 HTTP 工具 | ${collectHttpToolTotal()} |`
     );
@@ -108,21 +108,21 @@ describe("syncModuleStatsDocuments", () => {
     expect(synced["README.md"]).toContain(
       `- \`${collectProductToolStats().total}\` product tools`
     );
-    expect(synced["README.md"]).toContain("| Pipeline | 88 | Partial |");
-    expect(synced["README.md"]).toContain("| Req | 201 | Partial |");
+    expect(synced["README.md"]).toContain("| Pipeline | 91 | Partial |");
+    expect(synced["README.md"]).toContain("| Req | 210 | Partial |");
     expect(synced["docs/wiki/Capability-Matrix.md"]).toContain(
-      "| Req | 117 | 84 | Partial |"
+      "| Req | 126 | 84 | Partial |"
     );
     expect(synced["docs/wiki/API-Reference.md"]).toContain(
       `产品工具合计 \`${collectProductToolStats().total}\` 个`
     );
     expect(synced["docs/wiki/Module-Live-Readiness.md"]).toContain(
-      "| Req | 201 | 117 | 84 | Partial |"
+      "| Req | 210 | 126 | 84 | Partial |"
     );
     expect(synced["docs/wiki/Module-Live-Readiness.md"]).toContain(
       `- Total MCP tools exposed: \`${collectHttpToolTotal()}\``
     );
-    expect(synced["docs/wiki/Module-Live-Readiness.md"]).toContain("| Deploy | 60 |");
+    expect(synced["docs/wiki/Module-Live-Readiness.md"]).toContain("| Deploy | 63 |");
     expect(synced["docs/wiki/Req-API-Reference.md"]).toContain(
       `| 含鉴权的共享 HTTP 工具 | ${collectHttpToolTotal()} |`
     );

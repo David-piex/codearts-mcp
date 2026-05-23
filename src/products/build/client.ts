@@ -373,8 +373,9 @@ export type BuildClient = {
     job_id: string;
     raw: Record<string, unknown>;
   }>;
-  getProjectDefaultPermission: (input: { project_id: string }) => Promise<{
+  getProjectDefaultPermission: (input: { project_id: string; job_id: string }) => Promise<{
     project_id: string;
+    job_id: string;
     permissions: Array<Record<string, unknown>>;
     total?: number;
   }>;
@@ -1804,7 +1805,10 @@ export function createBuildClient(
       };
     },
     async getProjectDefaultPermission(input) {
-      const query = new URLSearchParams({ project_id: input.project_id });
+      const query = new URLSearchParams({
+        project_id: input.project_id,
+        job_id: input.job_id
+      });
       const response = await _http.get(`/v1/job/project/default-permission?${query.toString()}`);
       const raw = readBuildPayloadValue(response);
       const payload = readBuildPayload(response);
@@ -1819,6 +1823,7 @@ export function createBuildClient(
 
       return {
         project_id: input.project_id,
+        job_id: input.job_id,
         permissions,
         total: readBuildTotal(payload, response, permissions.length)
       };

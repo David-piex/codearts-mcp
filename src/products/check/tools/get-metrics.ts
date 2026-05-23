@@ -16,7 +16,7 @@ export function mapCheckMetrics(input: {
 }
 
 type CheckGetMetricsClient = {
-  getMetrics: (input: { task_id: string; project_id?: string }) => Promise<{
+  getMetrics: (input: { task_id: string; project_id: string }) => Promise<{
     task_id: string;
     code_lines?: number;
     issues_count?: number;

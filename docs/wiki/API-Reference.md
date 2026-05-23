@@ -7,16 +7,16 @@
 <!-- GENERATED:api-reference-scale:start -->
 | 模块 | 工具数 | 读接口 | 写接口 | 基础 URL 环境变量 |
 | --- | ---: | ---: | ---: | --- |
-| Req | 201 | 117 | 84 | `HUAWEICLOUD_REQ_BASE_URL` |
+| Req | 210 | 126 | 84 | `HUAWEICLOUD_REQ_BASE_URL` |
 | Repo | 176 | 132 | 44 | `HUAWEICLOUD_REPO_BASE_URL` |
-| Pipeline | 88 | 52 | 36 | `HUAWEICLOUD_PIPELINE_BASE_URL` |
-| Check | 47 | 43 | 4 | `HUAWEICLOUD_CHECK_BASE_URL` |
+| Pipeline | 91 | 55 | 36 | `HUAWEICLOUD_PIPELINE_BASE_URL` |
+| Check | 53 | 49 | 4 | `HUAWEICLOUD_CHECK_BASE_URL` |
 | TestPlan | 238 | 228 | 10 | `HUAWEICLOUD_TESTPLAN_BASE_URL` |
-| Deploy | 60 | 43 | 17 | `HUAWEICLOUD_DEPLOY_BASE_URL` |
+| Deploy | 63 | 46 | 17 | `HUAWEICLOUD_DEPLOY_BASE_URL` |
 | Build | 62 | 53 | 9 | `HUAWEICLOUD_BUILD_BASE_URL` |
-| Artifact | 31 | 29 | 2 | `HUAWEICLOUD_ARTIFACT_BASE_URL` |
+| Artifact | 33 | 31 | 2 | `HUAWEICLOUD_ARTIFACT_BASE_URL` |
 
-产品工具合计 `903` 个。HTTP 共享模式额外提供 `auth_configure_session` 和 `auth_clear_session` 两个会话工具，因此 HTTP MCP 总工具数为 `905`。
+产品工具合计 `926` 个。HTTP 共享模式额外提供 `auth_configure_session` 和 `auth_clear_session` 两个会话工具，因此 HTTP MCP 总工具数为 `928`。
 <!-- GENERATED:api-reference-scale:end -->
 
 ## 通用运行环境
@@ -31,7 +31,7 @@ HUAWEICLOUD_BASE_URL=https://codearts.cn-north-4.myhuaweicloud.com
 HUAWEICLOUD_REQ_BASE_URL=https://projectman-ext.cn-north-4.myhuaweicloud.com
 HUAWEICLOUD_REPO_BASE_URL=https://codehub-ext.cn-north-4.myhuaweicloud.com
 HUAWEICLOUD_PIPELINE_BASE_URL=https://cloudpipeline-ext.cn-north-4.myhuaweicloud.com
-HUAWEICLOUD_CHECK_BASE_URL=https://codecheck-ext.cn-north-4.myhuaweicloud.com
+HUAWEICLOUD_CHECK_BASE_URL=https://codearts-check.cn-north-4.myhuaweicloud.com
 HUAWEICLOUD_TESTPLAN_BASE_URL=https://cloudtest-ext.cn-north-4.myhuaweicloud.com
 HUAWEICLOUD_DEPLOY_BASE_URL=https://codearts-deploy.cn-north-4.myhuaweicloud.com
 HUAWEICLOUD_BUILD_BASE_URL=https://cloudbuild-ext.cn-north-4.myhuaweicloud.com

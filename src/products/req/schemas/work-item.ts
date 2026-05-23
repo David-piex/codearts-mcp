@@ -96,6 +96,29 @@ export const reqListWorkItemsInput = pagingSchema.extend({
   project_id: idSchema
 });
 
+const reqTodoWorkItemsBaseInput = pagingSchema
+  .pick({
+    page: true,
+    page_size: true
+  })
+  .extend({
+    subject: z.string().min(1).max(100).optional(),
+    created_on: z.string().min(1).optional(),
+    updated_on: z.string().min(1).optional(),
+    closed_on: z.string().min(1).optional(),
+    start_date: z.string().min(1).optional(),
+    due_date: z.string().min(1).optional(),
+    tracker_id: z.string().min(1).optional(),
+    status_id: z.string().min(1).optional(),
+    author_id: z.string().min(1).optional(),
+    developer_id: z.string().min(1).optional(),
+    priority_id: z.string().min(1).optional()
+  });
+
+export const reqSearchTodoWorkItemsInput = reqTodoWorkItemsBaseInput;
+
+export const reqSearchMyWorkItemsInput = reqTodoWorkItemsBaseInput;
+
 export const reqCountWorkItemTreeInput = pagingSchema
   .pick({
     page: true,
@@ -140,6 +163,16 @@ export const reqListBoardWorkItemsInput = pagingSchema
 export const reqGetWorkItemInput = z.object({
   project_id: idSchema,
   work_item_id: idSchema
+});
+
+export const reqListParentWorkItemsInput = z.object({
+  project_id: idSchema,
+  work_item_id: idSchema
+});
+
+export const reqListWorkItemStayTimesInput = z.object({
+  project_id: idSchema,
+  work_item_ids: z.array(idSchema).min(1).max(100)
 });
 
 export const reqGetWorkItemIssueDetailsInput = z.object({
@@ -227,6 +260,11 @@ export const reqListWorkItemWorkHoursInput = z.object({
   work_item_id: idSchema
 });
 
+export const reqGetWorkHourPermissionInput = z.object({
+  project_id: idSchema,
+  work_item_id: idSchema
+});
+
 export const reqUploadWorkItemImageInput = z.object({
   project_id: idSchema,
   file_path: z.string().min(1),
@@ -291,6 +329,21 @@ export const reqUpdateWorkingHoursInput = z.object({
 export const reqListProjectWorkHoursInput = pagingSchema
   .extend({
     project_ids: z.array(idSchema).min(1),
+    begin_time: z.string().min(1).optional(),
+    end_time: z.string().min(1).optional(),
+    work_hours_dates: z.string().min(1).optional(),
+    work_hours_types: z.string().min(1).optional()
+  })
+  .omit({
+    keyword: true,
+    sort_by: true,
+    sort_order: true
+  });
+
+export const reqListProjectMemberWorkHoursInput = pagingSchema
+  .extend({
+    project_id: idSchema.optional(),
+    staff_id: idSchema.optional(),
     begin_time: z.string().min(1).optional(),
     end_time: z.string().min(1).optional(),
     work_hours_dates: z.string().min(1).optional(),

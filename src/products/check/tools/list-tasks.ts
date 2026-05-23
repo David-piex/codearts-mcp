@@ -37,7 +37,7 @@ type CheckListTasksClient = {
   listTasks: (input: {
     page: number;
     page_size: number;
-    project_id?: string;
+    project_id: string;
     keyword?: string;
   }) => Promise<{
     tasks: Array<{
@@ -60,16 +60,14 @@ export function createCheckListTasksHandler(client: CheckListTasksClient) {
     const result = mapCheckTasks(response.tasks, parsed.page, parsed.page_size, response.total);
     const text = formatListToolText(result, {
       emptyText:
-        parsed.project_id === undefined
-          ? result.summary
-          : formatProjectScopedEmptyText({
-              summary: result.summary,
-              page: parsed.page,
-              keyword: parsed.keyword,
-              projectId: parsed.project_id,
-              resourceLabel: "check tasks",
-              serviceLabel: "Check"
-            }),
+        formatProjectScopedEmptyText({
+          summary: result.summary,
+          page: parsed.page,
+          keyword: parsed.keyword,
+          projectId: parsed.project_id,
+          resourceLabel: "check tasks",
+          serviceLabel: "Check"
+        }),
       fields: [
         { label: "id", get: (item) => (item as { id?: string }).id },
         { label: "name", get: (item) => (item as { name?: string }).name },

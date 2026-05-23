@@ -6,6 +6,8 @@ import { createDeployClient } from "../products/deploy/client.js";
 import {
   deployCreateEnvironmentInput,
   deployCreateApplicationInput,
+  deployCheckApplicationCreatableInput,
+  deployCheckApplicationExistsInput,
   deployModifyApplicationInput,
   deployCreateTaskByTemplateInput,
   deployGetAppInput,
@@ -16,6 +18,7 @@ import {
   deployImportHostsToEnvironmentInput,
   deployListSystemConfigsInput,
   deployListAppOperationsLogInput,
+  deployListApplicationPermissionsInput,
   deployListAppHostGroupsInput,
   deployListEnvironmentsInput,
   deployListEnvironmentHostsInput,
@@ -66,6 +69,8 @@ import {
 } from "../products/deploy/schemas.js";
 import { createDeployCreateEnvironmentHandler } from "../products/deploy/tools/create-environment.js";
 import { createDeployCreateApplicationHandler } from "../products/deploy/tools/create-application.js";
+import { createDeployCheckApplicationCreatableHandler } from "../products/deploy/tools/check-application-creatable.js";
+import { createDeployCheckApplicationExistsHandler } from "../products/deploy/tools/check-application-exists.js";
 import { createDeployModifyApplicationHandler } from "../products/deploy/tools/modify-application.js";
 import { createDeployCreateTaskByTemplateHandler } from "../products/deploy/tools/create-task-by-template.js";
 import { createDeployGetAppHandler } from "../products/deploy/tools/get-app.js";
@@ -80,6 +85,7 @@ import { createDeployGetHistoryDetailHandler } from "../products/deploy/tools/ge
 import { createDeployGetStatusHandler } from "../products/deploy/tools/get-status.js";
 import { createDeployGetRuntimeVariablesHandler } from "../products/deploy/tools/get-runtime-variables.js";
 import { createDeployListSystemConfigsHandler } from "../products/deploy/tools/list-system-configs.js";
+import { createDeployListApplicationPermissionsHandler } from "../products/deploy/tools/list-application-permissions.js";
 import { createDeployListAppOperationsLogHandler } from "../products/deploy/tools/list-app-operations-log.js";
 import { createDeployListAppHostGroupsHandler } from "../products/deploy/tools/list-app-host-groups.js";
 import { createDeployListAppsHandler } from "../products/deploy/tools/list-apps.js";
@@ -163,6 +169,9 @@ const deployToolDefinitions = {
   "deploy_list_host_group_environments": defineProductTool({ description: "List CodeArts Deploy environments linked to a host group", inputSchema: deployListHostGroupEnvironmentsInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployListHostGroupEnvironmentsHandler>[0] }) => clients.deployClient, createProductHandler: createDeployListHostGroupEnvironmentsHandler }),
   "deploy_create_environment": defineProductTool({ description: "Create CodeArts Deploy environment", inputSchema: deployCreateEnvironmentInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployCreateEnvironmentHandler>[0] }) => clients.deployClient, createProductHandler: createDeployCreateEnvironmentHandler, rateLimitAction: "deploy_create_environment" }),
   "deploy_create_application": defineProductTool({ description: "Create CodeArts Deploy application", inputSchema: deployCreateApplicationInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployCreateApplicationHandler>[0] }) => clients.deployClient, createProductHandler: createDeployCreateApplicationHandler, rateLimitAction: "deploy_create_application" }),
+  "deploy_check_application_exists": defineProductTool({ description: "Check whether a CodeArts Deploy application name exists", inputSchema: deployCheckApplicationExistsInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployCheckApplicationExistsHandler>[0] }) => clients.deployClient, createProductHandler: createDeployCheckApplicationExistsHandler }),
+  "deploy_check_application_creatable": defineProductTool({ description: "Check whether CodeArts Deploy application creation is allowed", inputSchema: deployCheckApplicationCreatableInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployCheckApplicationCreatableHandler>[0] }) => clients.deployClient, createProductHandler: createDeployCheckApplicationCreatableHandler }),
+  "deploy_list_application_permissions": defineProductTool({ description: "List CodeArts Deploy application permissions", inputSchema: deployListApplicationPermissionsInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployListApplicationPermissionsHandler>[0] }) => clients.deployClient, createProductHandler: createDeployListApplicationPermissionsHandler }),
   "deploy_modify_application": defineProductTool({ description: "Modify CodeArts Deploy application", inputSchema: deployModifyApplicationInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployModifyApplicationHandler>[0] }) => clients.deployClient, createProductHandler: createDeployModifyApplicationHandler, rateLimitAction: "deploy_modify_application" }),
   "deploy_create_task_by_template": defineProductTool({ description: "Create CodeArts Deploy task from template", inputSchema: deployCreateTaskByTemplateInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployCreateTaskByTemplateHandler>[0] }) => clients.deployClient, createProductHandler: createDeployCreateTaskByTemplateHandler, rateLimitAction: "deploy_create_task_by_template" }),
   "deploy_list_environment_hosts": defineProductTool({ description: "List CodeArts Deploy hosts in an environment", inputSchema: deployListEnvironmentHostsInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployListEnvironmentHostsHandler>[0] }) => clients.deployClient, createProductHandler: createDeployListEnvironmentHostsHandler }),

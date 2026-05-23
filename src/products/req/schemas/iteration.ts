@@ -7,10 +7,23 @@ export const reqListIterationsInput = pagingSchema.extend({
   project_id: idSchema
 });
 
+export const reqListProjectVersionsInput = z.object({
+  project_id: idSchema
+});
+
+export const reqFindIterationsInput = z.object({
+  project_id: idSchema,
+  updated_time_interval: z.string().min(1).optional()
+});
+
 const iterationStatusSchema = z.string().min(1);
 
 export const reqGetIterationInput = z.object({
   iteration_id: idSchema
+});
+
+export const reqGetVersionDetailV2Input = z.object({
+  version_id: idSchema
 });
 
 export const reqCreateIterationInput = z.object({

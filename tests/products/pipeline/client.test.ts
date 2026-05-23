@@ -1003,6 +1003,102 @@ describe("createPipelineClient", () => {
     ]);
   });
 
+  it("reads pipeline webhook info and pipeline variables", async () => {
+    const requests: string[] = [];
+    const client = createClient({
+      get: async (path: string) => {
+        requests.push(path);
+        if (path.includes("/webhook")) {
+          return {
+            result: {
+              id: "webhook-1",
+              name: "default webhook",
+              url: "https://example.invalid/hook"
+            }
+          };
+        }
+
+        return {
+          result: {
+            variables: [{ name: "APP_ENV", value: "prod" }],
+            total: 1
+          }
+        };
+      }
+    });
+
+    await expect(client.getWebhookInfo(createProjectPipelineInput())).resolves.toEqual({
+      project_id: "project-1",
+      pipeline_id: "pipe-1",
+      webhook: {
+        id: "webhook-1",
+        name: "default webhook",
+        url: "https://example.invalid/hook"
+      }
+    });
+    await expect(client.listPipelineVars(createProjectPipelineInput())).resolves.toEqual({
+      project_id: "project-1",
+      pipeline_id: "pipe-1",
+      variables: [{ name: "APP_ENV", value: "prod" }],
+      total: 1,
+      raw: {
+        variables: [{ name: "APP_ENV", value: "prod" }],
+        total: 1
+      }
+    });
+
+    expect(requests).toEqual([
+      "/v5/project-1/api/pipelines/pipe-1/webhook",
+      "/v5/project-1/api/pipelines/pipe-1/list-pipeline-vars"
+    ]);
+  });
+
+  it("gets pipeline template detail", async () => {
+    let requestedPath = "";
+    const client = createClient({
+      get: async (path: string) => {
+        requestedPath = path;
+        return {
+          result: {
+            id: "tpl-1",
+            name: "Node.js",
+            icon: "node",
+            manifest_version: "3.0",
+            language: "nodejs",
+            description: "Node template",
+            is_system: true,
+            region: "cn-north-4"
+          }
+        };
+      }
+    });
+
+    await expect(client.getTemplate({
+      tenant_id: "tenant-1",
+      template_id: "tpl-1"
+    })).resolves.toEqual({
+      id: "tpl-1",
+      name: "Node.js",
+      icon: "node",
+      manifest_version: "3.0",
+      language: "nodejs",
+      description: "Node template",
+      is_system: true,
+      region: "cn-north-4",
+      template: {
+        id: "tpl-1",
+        name: "Node.js",
+        icon: "node",
+        manifest_version: "3.0",
+        language: "nodejs",
+        description: "Node template",
+        is_system: true,
+        region: "cn-north-4"
+      }
+    });
+    expect(requestedPath).toBe("/v5/tenant-1/api/pipeline-templates/tpl-1");
+  });
+
   it("maps reject manual review responses", async () => {
     const client = createClient({
       post: async () => ({

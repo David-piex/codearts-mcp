@@ -168,7 +168,7 @@ npm run cli -- completion powershell
 | Req | `https://projectman-ext.cn-north-4.myhuaweicloud.com` |
 | Repo | `https://codehub-ext.cn-north-4.myhuaweicloud.com` |
 | Pipeline | `https://cloudpipeline-ext.cn-north-4.myhuaweicloud.com` |
-| Check | `https://codecheck-ext.cn-north-4.myhuaweicloud.com` |
+| Check | `https://codearts-check.cn-north-4.myhuaweicloud.com` |
 | TestPlan | `https://cloudtest-ext.cn-north-4.myhuaweicloud.com` |
 | Deploy | `https://codearts-deploy.cn-north-4.myhuaweicloud.com` |
 | Build | `https://cloudbuild-ext.cn-north-4.myhuaweicloud.com` |

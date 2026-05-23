@@ -604,3 +604,18 @@ export const pipelineListTemplatesInput = pagingSchema.extend({
   language: z.string().optional(),
   is_system: z.boolean().optional()
 });
+
+export const pipelineGetWebhookInfoInput = z.object({
+  project_id: idSchema,
+  pipeline_id: idSchema
+});
+
+export const pipelineListPipelineVarsInput = z.object({
+  project_id: idSchema,
+  pipeline_id: idSchema
+});
+
+export const pipelineGetTemplateInput = z.object({
+  tenant_id: idSchema,
+  template_id: idSchema
+});

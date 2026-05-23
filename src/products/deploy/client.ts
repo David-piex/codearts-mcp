@@ -322,6 +322,26 @@ export type DeployClient = {
     name: string;
     task_id?: string;
   }>;
+  checkApplicationExists: (input: { project_id: string; name: string }) => Promise<{
+    project_id: string;
+    name: string;
+    exists: boolean;
+    status?: string;
+    raw: unknown;
+  }>;
+  listApplicationPermissions: (input: { app_id?: string; project_id?: string }) => Promise<{
+    app_id?: string;
+    project_id?: string;
+    permissions: Array<Record<string, unknown>>;
+    status?: string;
+    raw: unknown;
+  }>;
+  checkApplicationCreatable: (input: { project_id: string }) => Promise<{
+    project_id: string;
+    creatable: boolean;
+    status?: string;
+    raw: unknown;
+  }>;
   createTaskByTemplate: (input: {
     project_id: string;
     project_name: string;
@@ -3239,6 +3259,59 @@ export function createDeployClient(_http: ReturnTypeCreateHttpClient): DeployCli
           pipeline_source: item.pipeline_source,
           pipeline_source_type: item.pipeline_source_type
         }))
+      };
+    },
+    async checkApplicationExists(input) {
+      const query = new URLSearchParams({
+        name: input.name,
+        project_id: input.project_id
+      });
+      const response = (await _http.get(`/v1/applications/exist?${query.toString()}`)) as {
+        status?: string;
+        result?: boolean;
+      };
+
+      return {
+        project_id: input.project_id,
+        name: input.name,
+        exists: Boolean(response.result),
+        status: response.status,
+        raw: response.result
+      };
+    },
+    async listApplicationPermissions(input) {
+      const query = new URLSearchParams();
+      if (input.app_id) query.set("app_id", input.app_id);
+      if (input.project_id) query.set("project_id", input.project_id);
+
+      const response = (await _http.get(`/v3/applications/permissions?${query.toString()}`)) as {
+        status?: string;
+        result?: unknown;
+        total?: number;
+      };
+
+      return {
+        app_id: input.app_id,
+        project_id: input.project_id,
+        permissions: asArray<Record<string, unknown>>(response.result),
+        status: response.status,
+        raw: response.result
+      };
+    },
+    async checkApplicationCreatable(input) {
+      const query = new URLSearchParams({ project_id: input.project_id });
+      const response = (await _http.get(`/v1/applications/creatable?${query.toString()}`)) as {
+        status?: string;
+        result?: {
+          creatable?: boolean;
+        };
+      };
+
+      return {
+        project_id: input.project_id,
+        creatable: Boolean(response.result?.creatable),
+        status: response.status,
+        raw: response.result
       };
     },
     async listHistories(input) {

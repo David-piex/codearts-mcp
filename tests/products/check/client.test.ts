@@ -300,6 +300,8 @@ describe("createCheckClient", () => {
         page: 2,
         page_size: 50,
         severity: "1",
+        status_ids: "0,1",
+        delay_status: "0",
         rule_id: "rule-1",
         rule_name: "NullPointer",
         file_path: "src/App.java",
@@ -309,7 +311,7 @@ describe("createCheckClient", () => {
     );
 
     expect(requestedPath).toBe(
-      "/v2/tasks/task-1/defects-detail?offset=50&limit=50&defect_level=1&rule_id=rule-1&rule_name=NullPointer&file_path=src%2FApp.java&status=open&checker=java"
+      "/v2/tasks/task-1/defects-detail?offset=50&limit=50&defect_level=1&rule_id=rule-1&rule_name=NullPointer&file_path=src%2FApp.java&status=open&status_ids=0%2C1&delay_status=0&checker=java"
     );
   });
 
@@ -789,6 +791,72 @@ describe("createCheckClient", () => {
     ]);
   });
 
+  it("uses documented plugin, task webhook, and code health SVG endpoints", async () => {
+    const requests: string[] = [];
+    const client = createClient({
+      get: async (path: string) => {
+        requests.push(path);
+        if (path.includes("/plugins")) {
+          return {
+            plugins: [
+              {
+                id: "plugin-1",
+                name: "CodeHealth",
+                version: "1.0.0",
+                publisher_name: "Huawei"
+              }
+            ],
+            total: 1
+          };
+        }
+        if (path.includes("/task-webhook-info")) {
+          return {
+            result: {
+              enabled: true,
+              url: "https://example.com/hook"
+            }
+          };
+        }
+
+        return "<svg></svg>";
+      }
+    });
+
+    await expect(client.listPlugins({
+      id: "plugin-1",
+      name: "CodeHealth",
+      version: "1.0.0",
+      publisher_name: "Huawei"
+    })).resolves.toEqual({
+      plugins: [
+        {
+          id: "plugin-1",
+          name: "CodeHealth",
+          version: "1.0.0",
+          publisher_name: "Huawei"
+        }
+      ],
+      total: 1
+    });
+    await expect(client.getTaskWebhookInfo(createTaskRefInput())).resolves.toEqual({
+      task_id: "task-1",
+      raw: {
+        enabled: true,
+        url: "https://example.com/hook"
+      }
+    });
+    await expect(client.getCodeHealthSvg(createTaskRefInput())).resolves.toEqual({
+      task_id: "task-1",
+      raw: "<svg></svg>"
+    });
+
+    expect(requests).toEqual([
+      "/v2/plugins?id=plugin-1&name=CodeHealth&version=1.0.0&publisher_name=Huawei",
+      "/v4/tasks/task-1/task-webhook-info",
+      "/v4/task/task-1/code-health-svg"
+    ]);
+  });
+
   it("uses documented ruleset metadata endpoints", async () => {
     const requests: string[] = [];
     const client = createClient({
@@ -842,6 +910,41 @@ describe("createCheckClient", () => {
             }
           };
         }
+        if (path.includes("/criterion-filters")) {
+          return {
+            result: {
+              filters: [
+                {
+                  id: "filter-1",
+                  name: "Security"
+                }
+              ],
+              total: 1
+            }
+          };
+        }
+        if (path.includes("/v2/criterions")) {
+          return {
+            result: {
+              criterions: [
+                {
+                  id: "criterion-2",
+                  name: "NoBug",
+                  language: "JAVA"
+                }
+              ],
+              total: 1
+            }
+          };
+        }
+        if (path.includes("/defects/task-statistics")) {
+          return {
+            result: {
+              total_defects: 2,
+              fixed_defects: 1
+            }
+          };
+        }
 
         return {
           result: {
@@ -865,7 +968,25 @@ describe("createCheckClient", () => {
       page_size: 10,
       types: "1",
       languages: "JAVA",
-      tags: "cwe"
+      tags: "cwe",
+      keyword: "security",
+      sort_by: "rule_name",
+      sort_order: "asc"
+    })).resolves.toEqual({
+      rules: [
+        {
+          rule_id: "rule-1",
+          rule_name: "NoBug",
+          rule_language: "JAVA"
+        }
+      ],
+      total: 1
+    });
+    await expect(client.listRulesetRules({
+      project_id: "project-1",
+      ruleset_id: "ruleset-1",
+      page: 1,
+      page_size: 20
     })).resolves.toEqual({
       rules: [
         {
@@ -881,7 +1002,10 @@ describe("createCheckClient", () => {
       language: "JAVA",
       page: 3,
       page_size: 50,
-      search: "default"
+      search: "default",
+      keyword: "java",
+      sort_by: "name",
+      sort_order: "asc"
     })).resolves.toEqual({
       criterionsets: [
         {
@@ -939,14 +1063,60 @@ describe("createCheckClient", () => {
       ],
       total: 1
     });
+    await expect(client.listCriterionFilters({
+      project_id: "project-1",
+      language: "JAVA",
+      checker_name: "java-checker",
+      key: "security",
+      operator: "user-1"
+    })).resolves.toEqual({
+      filters: [
+        {
+          id: "filter-1",
+          name: "Security"
+        }
+      ],
+      total: 1
+    });
+    await expect(client.listCriterions({
+      languages: "JAVA,PYTHON",
+      search: "bug",
+      keyword: "bug",
+      sort_by: "name",
+      sort_order: "desc",
+      page: 3,
+      page_size: 25
+    })).resolves.toEqual({
+      criterions: [
+        {
+          id: "criterion-2",
+          name: "NoBug",
+          language: "JAVA"
+        }
+      ],
+      total: 1
+    });
+    await expect(client.getDefectTaskStatistics({
+      task_id: "task-1"
+    })).resolves.toEqual({
+      task_id: "task-1",
+      raw: {
+        total_defects: 2,
+        fixed_defects: 1
+      }
+    });
 
     expect(requests).toEqual([
-      "/v2/project-1/ruleset/ruleset-1/rules?offset=10&limit=10&types=1&languages=JAVA&tags=cwe",
-      "/v1/criterionsets/language?project_id=project-1&language=JAVA&page=3&page_size=50&search=default",
+      "/v2/project-1/ruleset/ruleset-1/rules?offset=10&limit=10&types=1&languages=JAVA&tags=cwe&keyword=security&sort_by=rule_name&sort_order=asc",
+      "/v2/project-1/ruleset/ruleset-1/rules?offset=0&limit=20&types=1",
+      "/v1/criterionsets/language?project_id=project-1&language=JAVA&page=3&page_size=50&search=default&keyword=java&sort_by=name&sort_order=asc",
       "/v1/rule/criterion-rule/query/criterion-1",
       "/v2/excute/all-thirdtools?rule_type=3&language=JAVA",
       "/v1/criterionsets/set-1?operator=user-1",
-      "/v2/all-criterionsets?page=2&page_size=20&languages=PYTHON&search=default&my_create=false&project_id=project-1&is_call_status=true&sort_field=last_update_time&sort_order=down&operator=user-1"
+      "/v2/all-criterionsets?page=2&page_size=20&languages=PYTHON&search=default&my_create=false&project_id=project-1&is_call_status=true&sort_field=last_update_time&sort_order=down&operator=user-1",
+      "/v1/criterion-filters?project_id=project-1&language=JAVA&checker_name=java-checker&key=security",
+      "/v2/criterions?page=3&page_size=25&languages=JAVA%2CPYTHON&search=bug&keyword=bug&sort_by=name&sort_order=desc",
+      "/v1/defects/task-statistics?task_id=task-1"
     ]);
   });
 });

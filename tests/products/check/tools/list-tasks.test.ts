@@ -59,7 +59,7 @@ describe("mapCheckTasks", () => {
       })
     });
 
-    const result = await handler({ page: 1, page_size: 20 });
+    const result = await handler({ page: 1, page_size: 20, project_id: "project-1" });
 
     expect(result.content[0]?.text).toContain("id: task-1");
     expect(result.content[0]?.text).toContain("name: scan-demo");

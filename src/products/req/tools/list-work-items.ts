@@ -9,7 +9,7 @@ import {
   type ReqWorkItemAssignee
 } from "./work-item-assignee.js";
 
-type ReqListWorkItem = {
+export type ReqListWorkItem = {
   [key: string]: unknown;
   id: number | string;
   subject?: string;
@@ -70,7 +70,7 @@ export function mapReqWorkItems(
   );
 }
 
-type ReqListWorkItemsClient = {
+export type ReqListWorkItemsClient = {
   listWorkItems: (input: {
     project_id: string;
     page: number;

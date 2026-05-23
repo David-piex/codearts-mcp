@@ -84,7 +84,9 @@ import {
   reqGetProjectPublicConfigInput,
   reqGetProjectSummaryInput,
   reqGetProjectWorkhourConfigInput,
+  reqGetWorkHourPermissionInput,
   reqGetIterationInput,
+  reqGetVersionDetailV2Input,
   reqGetPlanInput,
   reqGetReleasePlanInput,
   reqGetProjectInput,
@@ -130,6 +132,7 @@ import {
   reqListPlanAddableWorkItemsInput,
   reqListPlanWorkItemsInput,
   reqListPlansInput,
+  reqListParentWorkItemsInput,
   reqListReleasePlansInput,
   reqListProgramFieldsInput,
   reqListProgramsInput,
@@ -137,8 +140,10 @@ import {
   reqListProjectDemandStatisticsInput,
   reqListProjectDomainsInput,
   reqListUserFeaturesInput,
+  reqListProjectVersionsInput,
   reqListProjectWorkHourTypesInput,
   reqListProjectWorkHoursInput,
+  reqListProjectMemberWorkHoursInput,
   reqListProjectWorkItemRecordsInput,
   reqQueryIterationImmovableIssuesInput,
   reqGetWorkItemInput,
@@ -168,10 +173,14 @@ import {
   reqListWorkItemTemplatesInput,
   reqListWorkItemWorkflowConfigInput,
   reqListWorkItemRecordsInput,
+  reqListWorkItemStayTimesInput,
   reqListWorkItemsInput,
+  reqFindIterationsInput,
   reqListRrHistoriesInput,
   reqListRrsInput,
   reqListRrStatusesInput,
+  reqSearchMyWorkItemsInput,
+  reqSearchTodoWorkItemsInput,
   reqUpdatePlanInput,
   reqUpdateReleasePlanInput,
   reqUpdateIpdChangeReviewFormInput,
@@ -257,6 +266,8 @@ import { createReqGetProjectPublicConfigHandler } from "../products/req/tools/ge
 import { createReqGetProjectHandler } from "../products/req/tools/get-project.js";
 import { createReqGetProjectSummaryHandler } from "../products/req/tools/get-project-summary.js";
 import { createReqGetProjectWorkhourConfigHandler } from "../products/req/tools/get-project-workhour-config.js";
+import { createReqGetWorkHourPermissionHandler } from "../products/req/tools/get-work-hour-permission.js";
+import { createReqGetVersionDetailV2Handler } from "../products/req/tools/get-version-detail-v2.js";
 import { createReqGetWorkItemHandler } from "../products/req/tools/get-work-item.js";
 import { createReqGetWorkItemCompletionRateHandler } from "../products/req/tools/get-work-item-completion-rate.js";
 import { createReqGetWorkItemIssueDetailsHandler } from "../products/req/tools/get-work-item-issue-details.js";
@@ -282,15 +293,18 @@ import { createReqListOptionalWorkItemStatusConfigsHandler } from "../products/r
 import { createReqListPlanAddableWorkItemsHandler } from "../products/req/tools/list-plan-addable-work-items.js";
 import { createReqListPlanWorkItemsHandler } from "../products/req/tools/list-plan-work-items.js";
 import { createReqListPlansHandler } from "../products/req/tools/list-plans.js";
+import { createReqListParentWorkItemsHandler } from "../products/req/tools/list-parent-work-items.js";
 import { createReqListReleasePlansHandler } from "../products/req/tools/list-release-plans.js";
 import { createReqListProgramFieldsHandler } from "../products/req/tools/list-program-fields.js";
 import { createReqListProgramsHandler } from "../products/req/tools/list-programs.js";
 import { createReqListProjectBugStatisticsHandler } from "../products/req/tools/list-project-bug-statistics.js";
 import { createReqListProjectDemandStatisticsHandler } from "../products/req/tools/list-project-demand-statistics.js";
 import { createReqListProjectDomainsHandler } from "../products/req/tools/list-project-domains.js";
+import { createReqListProjectVersionsHandler } from "../products/req/tools/list-project-versions.js";
 import { createReqListUserFeaturesHandler } from "../products/req/tools/list-user-features.js";
 import { createReqListProjectWorkHourTypesHandler } from "../products/req/tools/list-project-work-hour-types.js";
 import { createReqListProjectWorkHoursHandler } from "../products/req/tools/list-project-work-hours.js";
+import { createReqListProjectMemberWorkHoursHandler } from "../products/req/tools/list-project-member-work-hours.js";
 import { createReqListProjectWorkItemRecordsHandler } from "../products/req/tools/list-project-work-item-records.js";
 import { createReqListNotAddedProjectsHandler } from "../products/req/tools/list-not-added-projects.js";
 import { createReqListProjectModulesHandler } from "../products/req/tools/list-project-modules.js";
@@ -311,12 +325,16 @@ import { createReqListWorkItemTrackerHandlersHandler } from "../products/req/too
 import { createReqListWorkItemTemplatesHandler } from "../products/req/tools/list-work-item-templates.js";
 import { createReqListWorkItemWorkflowConfigHandler } from "../products/req/tools/list-work-item-workflow-config.js";
 import { createReqListWorkItemRecordsHandler } from "../products/req/tools/list-work-item-records.js";
+import { createReqListWorkItemStayTimesHandler } from "../products/req/tools/list-work-item-stay-times.js";
 import { createReqListWorkItemWorkHoursHandler } from "../products/req/tools/list-work-item-work-hours.js";
+import { createReqFindIterationsHandler } from "../products/req/tools/find-iterations.js";
 import { createReqListWorkItemsHandler } from "../products/req/tools/list-work-items.js";
 import { createReqListRrHistoriesHandler } from "../products/req/tools/list-rr-histories.js";
 import { createReqListRrStatusesHandler } from "../products/req/tools/list-rr-statuses.js";
 import { createReqListRrsHandler } from "../products/req/tools/list-rrs.js";
 import { createReqQueryIterationImmovableIssuesHandler } from "../products/req/tools/query-iteration-immovable-issues.js";
+import { createReqSearchMyWorkItemsHandler } from "../products/req/tools/search-my-work-items.js";
+import { createReqSearchTodoWorkItemsHandler } from "../products/req/tools/search-todo-work-items.js";
 import { createReqUpdatePlanHandler } from "../products/req/tools/update-plan.js";
 import { createReqUpdatePlanImageHandler } from "../products/req/tools/update-plan-image.js";
 import { createReqUpdateReleasePlanHandler } from "../products/req/tools/update-release-plan.js";
@@ -1408,6 +1426,13 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGetIterationHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqGetIterationHandler
   }),
+  "req_get_version_detail_v2": defineProductTool({
+    description: "Get CodeArts Req version detail from the official V2 endpoint",
+    inputSchema: reqGetVersionDetailV2Input,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGetVersionDetailV2Handler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqGetVersionDetailV2Handler
+  }),
   "req_get_plan": defineProductTool({
     description: "Get CodeArts Req plan detail",
     inputSchema: reqGetPlanInput,
@@ -1546,6 +1571,20 @@ const reqToolDefinitions = {
     inputSchema: reqListWorkItemsInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemsHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqListWorkItemsHandler
+  }),
+  "req_search_todo_work_items": defineProductTool({
+    description: "Search CodeArts Req todo work items across projects",
+    inputSchema: reqSearchTodoWorkItemsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqSearchTodoWorkItemsHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqSearchTodoWorkItemsHandler
+  }),
+  "req_search_my_work_items": defineProductTool({
+    description: "Search CodeArts Req personal workbench todo work items",
+    inputSchema: reqSearchMyWorkItemsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqSearchMyWorkItemsHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqSearchMyWorkItemsHandler
   }),
   "req_list_associated_issues": defineProductTool({
     description: "List CodeArts Req associated issues",
@@ -1691,6 +1730,13 @@ const reqToolDefinitions = {
     }) => clients.reqClient,
     createProductHandler: createReqGetWorkItemIndexCountsHandler
   }),
+  "req_get_work_hour_permission": defineProductTool({
+    description: "Get CodeArts Req work hour operation permission for a work item",
+    inputSchema: reqGetWorkHourPermissionInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGetWorkHourPermissionHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqGetWorkHourPermissionHandler
+  }),
   "req_list_work_item_comments": defineProductTool({
     description: "List CodeArts Req work item comments",
     inputSchema: reqListWorkItemCommentsInput,
@@ -1704,6 +1750,13 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemTagsHandler>[0] }) =>
       clients.reqClient,
     createProductHandler: createReqListWorkItemTagsHandler
+  }),
+  "req_list_parent_work_items": defineProductTool({
+    description: "List a CodeArts Req work item and all parent work items",
+    inputSchema: reqListParentWorkItemsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListParentWorkItemsHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListParentWorkItemsHandler
   }),
   "req_list_work_item_tree": defineProductTool({
     description: "List CodeArts Req work items in tree mode",
@@ -1732,6 +1785,20 @@ const reqToolDefinitions = {
     inputSchema: reqListWorkItemRecordsInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemRecordsHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqListWorkItemRecordsHandler
+  }),
+  "req_list_work_item_stay_times": defineProductTool({
+    description: "List CodeArts Req work item stay time in the current status",
+    inputSchema: reqListWorkItemStayTimesInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemStayTimesHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListWorkItemStayTimesHandler
+  }),
+  "req_find_iterations": defineProductTool({
+    description: "Find CodeArts Req iterations by update-time interval",
+    inputSchema: reqFindIterationsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqFindIterationsHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqFindIterationsHandler
   }),
   "req_list_iterations": defineProductTool({
     description: "List CodeArts Req iterations",
@@ -1808,6 +1875,20 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListProjectWorkHoursHandler>[0] }) =>
       clients.reqClient,
     createProductHandler: createReqListProjectWorkHoursHandler
+  }),
+  "req_list_project_versions": defineProductTool({
+    description: "List CodeArts Req project versions",
+    inputSchema: reqListProjectVersionsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListProjectVersionsHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListProjectVersionsHandler
+  }),
+  "req_list_project_member_work_hours": defineProductTool({
+    description: "List CodeArts Req member work hour records",
+    inputSchema: reqListProjectMemberWorkHoursInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListProjectMemberWorkHoursHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListProjectMemberWorkHoursHandler
   }),
   "req_list_project_work_hour_types": defineProductTool({
     description: "List CodeArts Req project work hour types",

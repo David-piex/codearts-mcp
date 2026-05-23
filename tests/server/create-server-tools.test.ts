@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+﻿import { describe, expect, it, vi } from "vitest";
 import { createServer, createServerFactory } from "../../src/server/create-server.js";
 import { collectToolNames } from "../../src/server/register-tools.js";
 import { createSessionCredentialStore } from "../../src/server/session-store.js";
@@ -24,7 +24,7 @@ const stdioConfig = {
   reqBaseUrl: "https://projectman-ext.cn-north-4.myhuaweicloud.com",
   repoBaseUrl: "https://codehub-ext.cn-north-4.myhuaweicloud.com",
   pipelineBaseUrl: "https://cloudpipeline-ext.cn-north-4.myhuaweicloud.com",
-  checkBaseUrl: "https://codecheck-ext.cn-north-4.myhuaweicloud.com",
+  checkBaseUrl: "https://codearts-check.cn-north-4.myhuaweicloud.com",
   testPlanBaseUrl: "https://cloudtest-ext.cn-north-4.myhuaweicloud.com",
   deployBaseUrl: "https://codearts-deploy.cn-north-4.myhuaweicloud.com",
   buildBaseUrl: "https://cloudbuild-ext.cn-north-4.myhuaweicloud.com",

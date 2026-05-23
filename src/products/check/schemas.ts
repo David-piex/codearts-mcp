@@ -2,7 +2,7 @@ import { z } from "zod";
 import { idSchema, pagingSchema } from "../../contracts/common-schemas.js";
 
 export const checkListTasksInput = pagingSchema.extend({
-  project_id: idSchema.optional()
+  project_id: idSchema
 });
 
 export const checkGetTaskInput = z.object({
@@ -85,6 +85,21 @@ export const checkGetTaskNotificationInput = z.object({
 
 export const checkGetCodeSumMeasuresInput = z.object({});
 
+export const checkListPluginsInput = z.object({
+  id: idSchema,
+  name: z.string().min(1).optional(),
+  version: z.string().min(1).optional(),
+  publisher_name: z.string().min(1).optional()
+});
+
+export const checkGetTaskWebhookInfoInput = z.object({
+  task_id: idSchema
+});
+
+export const checkGetCodeHealthSvgInput = z.object({
+  task_id: idSchema
+});
+
 export const checkListTaskRepositoryBranchesInput = pagingSchema.extend({
   task_id: idSchema,
   is_uncreated_only: z.boolean().optional(),
@@ -110,7 +125,7 @@ export const checkListTemplateTasksInput = pagingSchema.extend({
 export const checkListRulesetRulesInput = pagingSchema.extend({
   project_id: idSchema,
   ruleset_id: idSchema,
-  types: z.string().min(1).optional(),
+  types: z.string().min(1).default("1"),
   languages: z.string().min(1).optional(),
   tags: z.string().min(1).optional()
 });
@@ -144,6 +159,23 @@ export const checkListAllCriterionsetsInput = pagingSchema.extend({
   sort_field: z.string().min(1).optional(),
   sort_order: z.enum(["up", "down"]).optional(),
   operator: z.string().min(1).optional()
+});
+
+export const checkListCriterionFiltersInput = z.object({
+  project_id: idSchema,
+  language: z.string().min(1),
+  checker_name: z.string().min(1).optional(),
+  key: z.string().min(1).optional(),
+  operator: z.string().min(1)
+});
+
+export const checkListCriterionsInput = pagingSchema.extend({
+  languages: z.string().min(1).optional(),
+  search: z.string().min(1).optional()
+});
+
+export const checkGetDefectTaskStatisticsInput = z.object({
+  task_id: idSchema
 });
 
 export const checkGetTaskProgressInput = z.object({
@@ -232,6 +264,8 @@ export const checkListTaskIssuesInput = pagingSchema.extend({
   task_id: idSchema,
   severity: z.string().min(1).optional(),
   defect_level: z.string().min(1).optional(),
+  status_ids: z.string().min(1).optional(),
+  delay_status: z.string().min(1).optional(),
   rule_id: z.string().min(1).optional(),
   rule_name: z.string().min(1).optional(),
   file_path: z.string().min(1).optional(),
@@ -240,7 +274,7 @@ export const checkListTaskIssuesInput = pagingSchema.extend({
 });
 
 export const checkGetMetricsInput = z.object({
-  project_id: idSchema.optional(),
+  project_id: idSchema,
   task_id: idSchema
 });
 

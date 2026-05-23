@@ -467,7 +467,10 @@ describe("createBuildClient metadata read paths", () => {
       }
     } as never);
 
-    const permissions = await client.getProjectDefaultPermission({ project_id: "project-1" });
+    const permissions = await client.getProjectDefaultPermission({
+      project_id: "project-1",
+      job_id: "job-1"
+    });
     const templates = await client.listOfficialTemplates({
       page: 2,
       page_size: 10,
@@ -480,12 +483,13 @@ describe("createBuildClient metadata read paths", () => {
     });
 
     expect(paths).toEqual([
-      "/v1/job/project/default-permission?project_id=project-1",
+      "/v1/job/project/default-permission?project_id=project-1&job_id=job-1",
       "/v1/template/officialtemplates?page=1&page_size=10&name=Node",
       "/v3/templates/query?page=3&page_size=20&name=Maven"
     ]);
     expect(permissions).toEqual({
       project_id: "project-1",
+      job_id: "job-1",
       permissions: [{ role_id: 1, role_name: "developer" }],
       total: 1
     });

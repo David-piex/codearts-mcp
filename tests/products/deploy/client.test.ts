@@ -977,6 +977,68 @@ describe("createDeployClient", () => {
     });
   });
 
+  it("uses application name and permission check endpoints", async () => {
+    const requests: string[] = [];
+    const client = createClient({
+      get: async (path: string) => {
+        requests.push(path);
+
+        if (path.startsWith("/v1/applications/exist")) {
+          return { status: "success", result: false };
+        }
+        if (path.startsWith("/v3/applications/permissions")) {
+          return { status: "success", result: [{ role_id: "0", can_modify: true }] };
+        }
+
+        return { status: "success", result: { creatable: true } };
+      }
+    });
+
+    await expect(client.checkApplicationExists({
+      project_id: "project-1",
+      name: "gateway-prod"
+    })).resolves.toEqual({
+      project_id: "project-1",
+      name: "gateway-prod",
+      exists: false,
+      status: "success",
+      raw: false
+    });
+    await expect(client.listApplicationPermissions({
+      project_id: "project-1"
+    })).resolves.toEqual({
+      app_id: undefined,
+      project_id: "project-1",
+      permissions: [{ role_id: "0", can_modify: true }],
+      status: "success",
+      raw: [{ role_id: "0", can_modify: true }]
+    });
+    await expect(client.listApplicationPermissions({
+      app_id: "app-1"
+    })).resolves.toEqual({
+      app_id: "app-1",
+      project_id: undefined,
+      permissions: [{ role_id: "0", can_modify: true }],
+      status: "success",
+      raw: [{ role_id: "0", can_modify: true }]
+    });
+    await expect(client.checkApplicationCreatable({
+      project_id: "project-1"
+    })).resolves.toEqual({
+      project_id: "project-1",
+      creatable: true,
+      status: "success",
+      raw: { creatable: true }
+    });
+
+    expect(requests).toEqual([
+      "/v1/applications/exist?name=gateway-prod&project_id=project-1",
+      "/v3/applications/permissions?project_id=project-1",
+      "/v3/applications/permissions?app_id=app-1",
+      "/v1/applications/creatable?project_id=project-1"
+    ]);
+  });
+
   it("prefers new execution params endpoint and falls back compatibly", async () => {
     const seen: string[] = [];
     const client = createClient({
@@ -2831,5 +2893,4 @@ describe("createDeployClient", () => {
     });
   });
 });
-
 

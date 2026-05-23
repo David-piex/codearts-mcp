@@ -111,6 +111,18 @@ export type ArtifactClient = {
     project_id: string;
     raw: unknown;
   }>;
+  getRepositoryUserInfo: () => Promise<{
+    username?: string;
+    raw: unknown;
+  }>;
+  listRepositoryUsers: (input: {
+    page: number;
+    page_size: number;
+    user_name?: string;
+  }) => Promise<{
+    users: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
   listProjectRolePermissions: (input: { project_id: string }) => Promise<{
     permissions: Array<Record<string, unknown>>;
     total?: number;
@@ -616,6 +628,47 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
       return {
         project_id: input.project_id,
         raw: payload
+      };
+    },
+    async getRepositoryUserInfo() {
+      const { payload } = readStoragePayload(await _http.get("/cloudartifact/v5/repositories/user/info"));
+
+      return {
+        username: readOptionalString(payload.username),
+        raw: payload
+      };
+    },
+    async listRepositoryUsers(input) {
+      const query = new URLSearchParams({
+        page_no: String(input.page),
+        page_size: String(input.page_size)
+      });
+      if (input.user_name) query.set("user_name", input.user_name);
+
+      const { response, payload } = readStoragePayload(
+        await _http.get(`/cloudartifact/v5/repositories/users?${query.toString()}`)
+      );
+      const users = readArray<Record<string, unknown>>(
+        payload.data ??
+          payload.users ??
+          payload.user_list ??
+          payload.value ??
+          payload.items ??
+          payload.list ??
+          response.result ??
+          (Array.isArray(payload) ? payload : [])
+      );
+
+      return {
+        users,
+        total:
+          readOptionalNumber(payload.total_records) ??
+          readOptionalNumber(payload.total) ??
+          readOptionalNumber(payload.total_count) ??
+          readOptionalNumber(response.total_records) ??
+          readOptionalNumber(response.total) ??
+          readOptionalNumber(response.total_count) ??
+          users.length
       };
     },
     async listProjectRolePermissions(input) {

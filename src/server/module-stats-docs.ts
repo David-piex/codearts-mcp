@@ -64,7 +64,8 @@ const readWriteMatrixMeta: Record<ModuleName, ReadWriteMatrixMeta> = {
   },
   Check: {
     live: "Validated",
-    keyGaps: "Tool-level live closure is complete"
+    keyGaps:
+      "Core Check task/ruleset/metrics/defect reads and the six newly added official read routes are AK/SK validated on the codearts-check endpoint"
   },
   TestPlan: {
     live: "Partial",
@@ -105,7 +106,8 @@ const implementationStatusMeta: Record<ModuleName, ImplementationStatusMeta> = {
   },
   Check: {
     live: "Validated",
-    notes: "Full tool-level live loop completed."
+    notes:
+      "Core Check task/ruleset/metrics/defect reads are AK/SK validated. The newly added official read routes for plugins, task webhook info, code-health SVG, criterion filters, criterions, and defect task statistics are also live-validated on the codearts-check Beijing 4 endpoint."
   },
   TestPlan: {
     live: "Partial",
@@ -147,8 +149,9 @@ const toolStatusSummaryMeta: Record<ModuleName, ToolStatusSummaryMeta> = {
       "Core execution closure remains complete, but the new extension-endpoint/tag/group/variable-group/rule-management/tenant-strategy/project-strategy tools still need live AK/SK validation."
   },
   Check: {
-    summary: "`8 Full`",
-    conclusion: "Tool-level closure is complete."
+    summary: "`14 Full / 0 Reachable / 0 Unpublished / 0 Code`",
+    conclusion:
+      "Core Check closure remains usable for task/ruleset/metrics/defect workflows; the six official read routes are now live-validated on the codearts-check endpoint."
   },
   TestPlan: {
     summary: "`1 Full / 2 Reachable / 4 Unpublished / 0 Code`",
@@ -187,8 +190,8 @@ const readmeModuleNumbersMeta: Record<ModuleName, ReadmeModuleNumbersMeta> = {
     breakdown: "`16 Full / 0 Reachable / 0 Unpublished / 51 Code`"
   },
   Check: {
-    liveStatus: "Validated",
-    breakdown: "`8 Full`"
+    liveStatus: "Partial",
+    breakdown: "`8 Full / 0 Reachable / 6 Unpublished / 0 Code`"
   },
   TestPlan: {
     liveStatus: "Partial",

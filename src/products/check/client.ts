@@ -37,7 +37,7 @@ export type CheckClient = {
   listTasks: (input: {
     page: number;
     page_size: number;
-    project_id?: string;
+    project_id: string;
     keyword?: string;
   }) => Promise<{
     tasks: Array<{
@@ -153,6 +153,23 @@ export type CheckClient = {
   getCodeSumMeasures: () => Promise<{
     raw: Record<string, unknown>;
   }>;
+  listPlugins: (input: {
+    id: string;
+    name?: string;
+    version?: string;
+    publisher_name?: string;
+  }) => Promise<{
+    plugins: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getTaskWebhookInfo: (input: { task_id: string }) => Promise<{
+    task_id: string;
+    raw: Record<string, unknown>;
+  }>;
+  getCodeHealthSvg: (input: { task_id: string }) => Promise<{
+    task_id: string;
+    raw: Record<string, unknown> | string;
+  }>;
   listTaskRepositoryBranches: (input: {
     task_id: string;
     page: number;
@@ -191,6 +208,9 @@ export type CheckClient = {
     types?: string;
     languages?: string;
     tags?: string;
+    keyword?: string;
+    sort_by?: string;
+    sort_order?: "asc" | "desc";
   }) => Promise<{
     rules: Array<Record<string, unknown>>;
     total?: number;
@@ -201,6 +221,9 @@ export type CheckClient = {
     page: number;
     page_size: number;
     search?: string;
+    keyword?: string;
+    sort_by?: string;
+    sort_order?: "asc" | "desc";
   }) => Promise<{
     criterionsets: Array<Record<string, unknown>>;
     total?: number;
@@ -224,12 +247,40 @@ export type CheckClient = {
     my_create?: boolean;
     project_id?: string;
     is_call_status?: boolean;
+    keyword?: string;
+    sort_by?: string;
     sort_field?: string;
     sort_order?: "up" | "down";
     operator?: string;
   }) => Promise<{
     criterionsets: Array<Record<string, unknown>>;
     total?: number;
+  }>;
+  listCriterionFilters: (input: {
+    project_id: string;
+    language: string;
+    checker_name?: string;
+    key?: string;
+    operator: string;
+  }) => Promise<{
+    filters: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listCriterions: (input: {
+    page: number;
+    page_size: number;
+    languages?: string;
+    search?: string;
+    keyword?: string;
+    sort_by?: string;
+    sort_order?: "asc" | "desc";
+  }) => Promise<{
+    criterions: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getDefectTaskStatistics: (input: { task_id: string }) => Promise<{
+    task_id: string;
+    raw: Record<string, unknown>;
   }>;
   getTaskProgress: (input: { task_id: string }) => Promise<{
     task_id: string;
@@ -303,6 +354,8 @@ export type CheckClient = {
     file_path?: string;
     status?: string;
     checker?: string;
+    status_ids?: string;
+    delay_status?: string;
   }) => Promise<{
     issues: Array<{
       issue_id: string;
@@ -313,7 +366,7 @@ export type CheckClient = {
     }>;
     total?: number;
   }>;
-  getMetrics: (input: { task_id: string; project_id?: string }) => Promise<{
+  getMetrics: (input: { task_id: string; project_id: string }) => Promise<{
     task_id: string;
     code_lines?: number;
     issues_count?: number;
@@ -417,7 +470,7 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
         result?: {
           task_id?: string;
           task_name?: string;
-          project_id?: string;
+        project_id?: string;
           git_url?: string;
           git_branch?: string;
           language?: string;
@@ -496,11 +549,9 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
         query.set("task_name", input.keyword);
       }
 
-      const path = input.project_id
-        ? `/v2/${encodeURIComponent(input.project_id)}/tasks?${query.toString()}`
-        : `/v2/tasks?${query.toString()}`;
-
-      const response = (await _http.get(path)) as {
+      const response = (await _http.get(
+        `/v2/${encodeURIComponent(input.project_id)}/tasks?${query.toString()}`
+      )) as {
         tasks?: Array<{
           task_id?: string;
           taskId?: string;
@@ -819,6 +870,61 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
         raw: measures
       };
     },
+    async listPlugins(input) {
+      const query = new URLSearchParams({
+        id: input.id
+      });
+      if (input.name) query.set("name", input.name);
+      if (input.version) query.set("version", input.version);
+      if (input.publisher_name) query.set("publisher_name", input.publisher_name);
+      const response = await _http.get(`/v2/plugins?${query.toString()}`);
+      const payload = readResultPayload(response);
+      const plugins = readArray<Record<string, unknown>>(
+        payload.plugins ??
+          payload.data ??
+          payload.value ??
+          payload.items ??
+          payload.list ??
+          (Array.isArray(response) ? response : [])
+      );
+
+      return {
+        plugins,
+        total: readTotal(payload, response, plugins.length)
+      };
+    },
+    async getTaskWebhookInfo(input) {
+      const response = await _http.get(
+        `/v4/tasks/${encodeURIComponent(input.task_id)}/task-webhook-info`
+      );
+      const payload = readResultPayload(response);
+      const webhookInfo = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        task_id: input.task_id,
+        raw: webhookInfo
+      };
+    },
+    async getCodeHealthSvg(input) {
+      const response = await _http.get(
+        `/v4/task/${encodeURIComponent(input.task_id)}/code-health-svg`
+      );
+
+      if (typeof response === "string") {
+        return {
+          task_id: input.task_id,
+          raw: response
+        };
+      }
+
+      const payload = readResultPayload(response);
+      const svg = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        task_id: input.task_id,
+        raw: svg
+      };
+    },
     async listTaskRepositoryBranches(input) {
       const query = new URLSearchParams({
         page: String(input.page),
@@ -896,11 +1002,14 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
       const offset = (input.page - 1) * input.page_size;
       const query = new URLSearchParams({
         offset: String(offset),
-        limit: String(input.page_size)
+        limit: String(input.page_size),
+        types: input.types ?? "1"
       });
-      if (input.types) query.set("types", input.types);
       if (input.languages) query.set("languages", input.languages);
       if (input.tags) query.set("tags", input.tags);
+      if (input.keyword) query.set("keyword", input.keyword);
+      if (input.sort_by) query.set("sort_by", input.sort_by);
+      if (input.sort_order) query.set("sort_order", input.sort_order);
       const response = await _http.get(
         `/v2/${encodeURIComponent(input.project_id)}/ruleset/${encodeURIComponent(input.ruleset_id)}/rules?${query.toString()}`
       );
@@ -922,6 +1031,9 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
         page_size: String(input.page_size)
       });
       if (input.search) query.set("search", input.search);
+      if (input.keyword) query.set("keyword", input.keyword);
+      if (input.sort_by) query.set("sort_by", input.sort_by);
+      if (input.sort_order) query.set("sort_order", input.sort_order);
       const response = await _http.get(`/v1/criterionsets/language?${query.toString()}`);
       const payload = readResultPayload(response);
       const listPayload = readEnvelope(payload.result) ?? payload;
@@ -977,11 +1089,13 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
         page_size: String(input.page_size)
       });
       if (input.languages) query.set("languages", input.languages);
-      if (input.search) query.set("search", input.search);
+      const search = input.search ?? input.keyword;
+      if (search) query.set("search", search);
       if (input.my_create !== undefined) query.set("my_create", String(input.my_create));
       if (input.project_id) query.set("project_id", input.project_id);
       if (input.is_call_status !== undefined) query.set("is_call_status", String(input.is_call_status));
-      if (input.sort_field) query.set("sort_field", input.sort_field);
+      const sortField = input.sort_field ?? input.sort_by;
+      if (sortField) query.set("sort_field", sortField);
       if (input.sort_order) query.set("sort_order", input.sort_order);
       if (input.operator) query.set("operator", input.operator);
       const response = await _http.get(`/v2/all-criterionsets?${query.toString()}`);
@@ -994,6 +1108,61 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
       return {
         criterionsets,
         total: readTotal(listPayload, response, criterionsets.length)
+      };
+    },
+    async listCriterionFilters(input) {
+      const query = new URLSearchParams({
+        project_id: input.project_id,
+        language: input.language
+      });
+      if (input.checker_name) query.set("checker_name", input.checker_name);
+      if (input.key) query.set("key", input.key);
+      const response = await _http.get(
+        `/v1/criterion-filters?${query.toString()}`,
+        { headers: { operator: input.operator } }
+      );
+      const payload = readResultPayload(response);
+      const listPayload = readEnvelope(payload.result) ?? payload;
+      const filters = readArray<Record<string, unknown>>(
+        listPayload.filters ?? listPayload.criterionFilters ?? listPayload.data ?? listPayload.value ?? listPayload.items ?? listPayload.list ?? []
+      );
+
+      return {
+        filters,
+        total: readTotal(listPayload, response, filters.length)
+      };
+    },
+    async listCriterions(input) {
+      const query = new URLSearchParams({
+        page: String(input.page),
+        page_size: String(input.page_size)
+      });
+      if (input.languages) query.set("languages", input.languages);
+      if (input.search) query.set("search", input.search);
+      if (input.keyword) query.set("keyword", input.keyword);
+      if (input.sort_by) query.set("sort_by", input.sort_by);
+      if (input.sort_order) query.set("sort_order", input.sort_order);
+      const response = await _http.get(`/v2/criterions?${query.toString()}`);
+      const payload = readResultPayload(response);
+      const listPayload = readEnvelope(payload.result) ?? payload;
+      const criterions = readArray<Record<string, unknown>>(
+        listPayload.criterions ?? listPayload.criterionList ?? listPayload.data ?? listPayload.value ?? listPayload.items ?? listPayload.list ?? []
+      );
+
+      return {
+        criterions,
+        total: readTotal(listPayload, response, criterions.length)
+      };
+    },
+    async getDefectTaskStatistics(input) {
+      const query = new URLSearchParams({ task_id: input.task_id });
+      const response = await _http.get(`/v1/defects/task-statistics?${query.toString()}`);
+      const payload = readResultPayload(response);
+      const statistics = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        task_id: input.task_id,
+        raw: statistics
       };
     },
     async getTaskProgress(input) {
@@ -1160,6 +1329,12 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
       if (input.status) {
         query.set("status", input.status);
       }
+      if (input.status_ids) {
+        query.set("status_ids", input.status_ids);
+      }
+      if (input.delay_status) {
+        query.set("delay_status", input.delay_status);
+      }
       if (input.checker) {
         query.set("checker", input.checker);
       }
@@ -1215,11 +1390,10 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
         total: response.total ?? response.total_count
       };
     },
-    async getMetrics(input: { task_id: string; project_id?: string }) {
-      const path = input.project_id
-        ? `/v2/${encodeURIComponent(input.project_id)}/tasks/${encodeURIComponent(input.task_id)}/metrics-summary`
-        : `/v2/tasks/${encodeURIComponent(input.task_id)}/metrics-summary`;
-      const response = (await _http.get(path)) as {
+    async getMetrics(input: { task_id: string; project_id: string }) {
+      const response = (await _http.get(
+        `/v2/${encodeURIComponent(input.project_id)}/tasks/${encodeURIComponent(input.task_id)}/metrics-summary`
+      )) as {
         metric_info?: {
           code_size?: string | number;
           code_duplication_total?: string | number;

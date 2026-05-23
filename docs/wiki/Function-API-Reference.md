@@ -24,16 +24,16 @@
 
 | 模块 | API 数量 | 明细文档 |
 | --- | ---: | --- |
-| 制品仓 | 31 | [Function-API-Reference-Artifact.md](./Function-API-Reference-Artifact.md) |
+| 制品仓 | 33 | [Function-API-Reference-Artifact.md](./Function-API-Reference-Artifact.md) |
 | 鉴权会话 | 2 | [Function-API-Reference-Auth-Session.md](./Function-API-Reference-Auth-Session.md) |
 | 编译构建 | 62 | [Function-API-Reference-Build.md](./Function-API-Reference-Build.md) |
-| 代码检查 | 47 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
-| 部署 | 60 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
-| 流水线 | 88 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
+| 代码检查 | 53 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
+| 部署 | 63 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
+| 流水线 | 91 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 176 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
-| 需求管理 | 201 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
+| 需求管理 | 210 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 238 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **905** | |
+| **总计** | **928** | |
 
 ## 字段对应
 
@@ -48,6 +48,7 @@
 | `artifact_get_file` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_get_file) |
 | `artifact_get_file_tree` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_get_file_tree) |
 | `artifact_get_repository` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_get_repository) |
+| `artifact_get_repository_user_info` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_get_repository_user_info) |
 | `artifact_list_attentions` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_attentions) |
 | `artifact_list_build_archives` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_build_archives) |
 | `artifact_list_child_proxy_repositories` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_child_proxy_repositories) |
@@ -56,6 +57,7 @@
 | `artifact_list_maven_project_repositories` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_maven_project_repositories) |
 | `artifact_list_project_role_permissions` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_project_role_permissions) |
 | `artifact_list_repositories` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_repositories) |
+| `artifact_list_repository_users` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_repository_users) |
 | `artifact_list_sec_guard_tasks` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_sec_guard_tasks) |
 | `artifact_list_storage_statistics` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_storage_statistics) |
 | `artifact_list_versions` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_versions) |
@@ -140,10 +142,12 @@
 | `build_update_job_step` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_update_job_step) |
 | `check_create_task` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_create_task) |
 | `check_detect_task_language` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_detect_task_language) |
+| `check_get_code_health_svg` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_code_health_svg) |
 | `check_get_code_sum_measures` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_code_sum_measures) |
 | `check_get_console_log` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_console_log) |
 | `check_get_criterion_rule` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_criterion_rule) |
 | `check_get_criterionset` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_criterionset) |
+| `check_get_defect_task_statistics` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_defect_task_statistics) |
 | `check_get_domain_checkers_version` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_domain_checkers_version) |
 | `check_get_metrics` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_metrics) |
 | `check_get_task` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_task) |
@@ -157,12 +161,16 @@
 | `check_get_task_ruleset_check_parameters_v2` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_task_ruleset_check_parameters_v2) |
 | `check_get_task_ruleset_check_parameters_v3` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_task_ruleset_check_parameters_v3) |
 | `check_get_task_settings` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_task_settings) |
+| `check_get_task_webhook_info` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_task_webhook_info) |
 | `check_get_tenant_package_status` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_tenant_package_status) |
 | `check_get_transmission_notification` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_transmission_notification) |
 | `check_list_all_criterionsets` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_all_criterionsets) |
 | `check_list_codehub_repositories` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_codehub_repositories) |
+| `check_list_criterion_filters` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_criterion_filters) |
+| `check_list_criterions` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_criterions) |
 | `check_list_criterionsets_by_language` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_criterionsets_by_language) |
 | `check_list_default_rulesets` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_default_rulesets) |
+| `check_list_plugins` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_plugins) |
 | `check_list_project_task_groups` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_project_task_groups) |
 | `check_list_rules` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_rules) |
 | `check_list_ruleset_rules` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_ruleset_rules) |
@@ -187,6 +195,8 @@
 | `check_stop_task` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_stop_task) |
 | `deploy_add_v4_environment_hosts` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_add_v4_environment_hosts) |
 | `deploy_cancel_v4_deploy_record` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_cancel_v4_deploy_record) |
+| `deploy_check_application_creatable` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_check_application_creatable) |
+| `deploy_check_application_exists` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_check_application_exists) |
 | `deploy_create_application` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_create_application) |
 | `deploy_create_environment` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_create_environment) |
 | `deploy_create_task_by_template` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_create_task_by_template) |
@@ -214,6 +224,7 @@
 | `deploy_import_hosts_to_environment` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_import_hosts_to_environment) |
 | `deploy_list_app_host_groups` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_list_app_host_groups) |
 | `deploy_list_app_operations_log` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_list_app_operations_log) |
+| `deploy_list_application_permissions` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_list_application_permissions) |
 | `deploy_list_apps` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_list_apps) |
 | `deploy_list_deployment_units` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_list_deployment_units) |
 | `deploy_list_environment_hosts` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_list_environment_hosts) |
@@ -288,8 +299,10 @@
 | `pipeline_get_step_outputs` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_get_step_outputs) |
 | `pipeline_get_strategy` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_get_strategy) |
 | `pipeline_get_strategy_related_info` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_get_strategy_related_info) |
+| `pipeline_get_template` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_get_template) |
 | `pipeline_get_user_permission` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_get_user_permission) |
 | `pipeline_get_variable_group` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_get_variable_group) |
+| `pipeline_get_webhook_info` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_get_webhook_info) |
 | `pipeline_inherit_project_strategy` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_inherit_project_strategy) |
 | `pipeline_list_artifacts` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_list_artifacts) |
 | `pipeline_list_available_publishers` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_list_available_publishers) |
@@ -300,6 +313,7 @@
 | `pipeline_list_groups` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_list_groups) |
 | `pipeline_list_modify_history` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_list_modify_history) |
 | `pipeline_list_pipeline_variable_groups` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_list_pipeline_variable_groups) |
+| `pipeline_list_pipeline_vars` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_list_pipeline_vars) |
 | `pipeline_list_pipelines` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_list_pipelines) |
 | `pipeline_list_plugin_versions` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_list_plugin_versions) |
 | `pipeline_list_plugins` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_list_plugins) |
@@ -569,6 +583,7 @@
 | `req_download_image_file` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_download_image_file) |
 | `req_download_ipd_issue_attachment` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_download_ipd_issue_attachment) |
 | `req_download_ipd_issue_image` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_download_ipd_issue_image) |
+| `req_find_iterations` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_find_iterations) |
 | `req_get_current_user_info` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_get_current_user_info) |
 | `req_get_current_user_role` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_get_current_user_role) |
 | `req_get_ipd_e2e_graph` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_get_ipd_e2e_graph) |
@@ -592,6 +607,8 @@
 | `req_get_project_summary` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_get_project_summary) |
 | `req_get_project_workhour_config` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_get_project_workhour_config) |
 | `req_get_release_plan` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_get_release_plan) |
+| `req_get_version_detail_v2` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_get_version_detail_v2) |
+| `req_get_work_hour_permission` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_get_work_hour_permission) |
 | `req_get_work_item` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_get_work_item) |
 | `req_get_work_item_completion_rate` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_get_work_item_completion_rate) |
 | `req_get_work_item_index_counts` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_get_work_item_index_counts) |
@@ -644,6 +661,7 @@
 | `req_list_job_cache_boards` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_list_job_cache_boards) |
 | `req_list_not_added_projects` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_list_not_added_projects) |
 | `req_list_optional_work_item_status_configs` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_list_optional_work_item_status_configs) |
+| `req_list_parent_work_items` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_list_parent_work_items) |
 | `req_list_plan_addable_work_items` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_list_plan_addable_work_items) |
 | `req_list_plan_work_items` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_list_plan_work_items) |
 | `req_list_plans` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_list_plans) |
@@ -652,8 +670,10 @@
 | `req_list_project_bug_statistics` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_list_project_bug_statistics) |
 | `req_list_project_demand_statistics` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_list_project_demand_statistics) |
 | `req_list_project_domains` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_list_project_domains) |
+| `req_list_project_member_work_hours` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_list_project_member_work_hours) |
 | `req_list_project_members` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_list_project_members) |
 | `req_list_project_modules` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_list_project_modules) |
+| `req_list_project_versions` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_list_project_versions) |
 | `req_list_project_work_hour_types` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_list_project_work_hour_types) |
 | `req_list_project_work_hours` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_list_project_work_hours) |
 | `req_list_project_work_item_records` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_list_project_work_item_records) |
@@ -671,6 +691,7 @@
 | `req_list_work_item_status_configs` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_list_work_item_status_configs) |
 | `req_list_work_item_status_details` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_list_work_item_status_details) |
 | `req_list_work_item_statuses` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_list_work_item_statuses) |
+| `req_list_work_item_stay_times` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_list_work_item_stay_times) |
 | `req_list_work_item_tags` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_list_work_item_tags) |
 | `req_list_work_item_templates` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_list_work_item_templates) |
 | `req_list_work_item_tracker_handlers` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_list_work_item_tracker_handlers) |
@@ -680,6 +701,8 @@
 | `req_list_work_items` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_list_work_items) |
 | `req_query_iteration_immovable_issues` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_query_iteration_immovable_issues) |
 | `req_request_official_api` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_request_official_api) |
+| `req_search_my_work_items` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_search_my_work_items) |
+| `req_search_todo_work_items` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_search_todo_work_items) |
 | `req_transfer_ipd_work_item_flow` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_transfer_ipd_work_item_flow) |
 | `req_update_cache_data` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_update_cache_data) |
 | `req_update_ipd_change_review_form` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_update_ipd_change_review_form) |

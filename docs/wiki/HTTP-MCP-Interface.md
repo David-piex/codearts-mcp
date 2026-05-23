@@ -257,7 +257,7 @@ curl -i http://127.0.0.1:3000/mcp \
   "req_base_url": "https://projectman-ext.cn-north-4.myhuaweicloud.com",
   "repo_base_url": "https://codehub-ext.cn-north-4.myhuaweicloud.com",
   "pipeline_base_url": "https://cloudpipeline-ext.cn-north-4.myhuaweicloud.com",
-  "check_base_url": "https://codecheck-ext.cn-north-4.myhuaweicloud.com",
+  "check_base_url": "https://codearts-check.cn-north-4.myhuaweicloud.com",
   "testplan_base_url": "https://testplan-ext.cn-north-4.myhuaweicloud.com",
   "deploy_base_url": "https://clouddeploy-ext.cn-north-4.myhuaweicloud.com",
   "build_base_url": "https://codeartsbuild-ext.cn-north-4.myhuaweicloud.com",

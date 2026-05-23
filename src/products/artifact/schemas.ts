@@ -108,6 +108,12 @@ export const artifactShowUserPermissionsInput = z.object({
   project_id: idSchema
 });
 
+export const artifactGetRepositoryUserInfoInput = z.object({});
+
+export const artifactListRepositoryUsersInput = pagingSchema.extend({
+  user_name: z.string().min(1).optional()
+});
+
 export const artifactListProjectRolePermissionsInput = z.object({
   project_id: idSchema
 });

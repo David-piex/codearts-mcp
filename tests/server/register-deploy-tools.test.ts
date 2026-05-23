@@ -45,6 +45,34 @@ describe("registerDeployTool", () => {
     );
   });
 
+  it("registers application permission read tools", () => {
+    const registerTool = vi.fn();
+    const tools = [
+      ["deploy_check_application_exists", "Check whether a CodeArts Deploy application name exists"],
+      ["deploy_check_application_creatable", "Check whether CodeArts Deploy application creation is allowed"],
+      ["deploy_list_application_permissions", "List CodeArts Deploy application permissions"]
+    ] as const;
+
+    for (const [toolName, description] of tools) {
+      const handled = registerDeployTool({
+        toolName,
+        server: { registerTool },
+        mode: "stdio",
+        stdioClient: {} as never
+      });
+
+      expect(handled).toBe(true);
+      expect(registerTool).toHaveBeenLastCalledWith(
+        toolName,
+        expect.objectContaining({
+          title: toolName,
+          description
+        }),
+        expect.any(Function)
+      );
+    }
+  });
+
   it("returns false for non-deploy tools", () => {
     const registerTool = vi.fn();
 

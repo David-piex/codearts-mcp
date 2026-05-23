@@ -49,6 +49,8 @@ describe("registerArtifactTool", () => {
     const registerTool = vi.fn();
     const tools = [
       ["artifact_show_auto_delete_job_settings", "Show CodeArts Artifact auto delete job settings"],
+      ["artifact_get_repository_user_info", "Get CodeArts Artifact repository user info"],
+      ["artifact_list_repository_users", "List CodeArts Artifact repository users"],
       ["artifact_list_project_role_permissions", "List CodeArts Artifact project role permissions"],
       ["artifact_list_storage_statistics", "List CodeArts Artifact storage statistics"],
       ["artifact_list_attentions", "List CodeArts Artifact attentions"],

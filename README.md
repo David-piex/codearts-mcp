@@ -282,9 +282,9 @@ npm run cli -- call req_list_projects `
 
 <!-- GENERATED:readme-exposure-summary:start -->
 - `8` product modules
-- `903` product tools
+- `926` product tools
 - `2` session/auth tools for shared `http` mode
-- `905` total MCP tools in shared `http` mode
+- `928` total MCP tools in shared `http` mode
 <!-- GENERATED:readme-exposure-summary:end -->
 
 工具读写分布：读操作 177 (63.7%) / 写操作 101 (36.3%)
@@ -292,14 +292,14 @@ npm run cli -- call req_list_projects `
 <!-- GENERATED:readme-module-numbers:start -->
 | Module | Tools | Live status | Current breakdown |
 | --- | --- | --- | --- |
-| Req | 201 | Partial | Expanded Req surface with current-user info/role and user-feature reads, project bug/summary/statistics/metric reads, project domain reads, work-item-tree count/list, work-item tag/index-count reads, project work-item history reads, child work-item reads, work-hours/work-hour-type reads, issue image upload/download, attachment upload/download/delete, associated wiki reads, plan work-item management, plan image update, plan-context work item creation, work-item template/copy writes, project-template update/delete writes, project due-days-after/workhour-config reads, status-name check, status/status-attribute/status-detail/workflow-config/template/template-config/custom-field/status-rule-flag/status-config/optional-status-config/tracker-handler and project-public-config reads plus field/cache reads and board work-item reads; see `docs/wiki/Req-Live-Validated.md` for validated paths and remaining live-depth gaps |
+| Req | 210 | Partial | Expanded Req surface with current-user info/role and user-feature reads, project bug/summary/statistics/metric reads, project domain reads, work-item-tree count/list, work-item tag/index-count reads, project work-item history reads, child work-item reads, work-hours/work-hour-type reads, issue image upload/download, attachment upload/download/delete, associated wiki reads, plan work-item management, plan image update, plan-context work item creation, work-item template/copy writes, project-template update/delete writes, project due-days-after/workhour-config reads, status-name check, status/status-attribute/status-detail/workflow-config/template/template-config/custom-field/status-rule-flag/status-config/optional-status-config/tracker-handler and project-public-config reads plus field/cache reads and board work-item reads; see `docs/wiki/Req-Live-Validated.md` for validated paths and remaining live-depth gaps |
 | Repo | 176 | Partial | `25 Full / 0 Reachable / 0 Unpublished / 6 Code` |
-| Pipeline | 88 | Partial | `16 Full / 0 Reachable / 0 Unpublished / 51 Code` |
-| Check | 47 | Validated | `8 Full` |
+| Pipeline | 91 | Partial | `16 Full / 0 Reachable / 0 Unpublished / 51 Code` |
+| Check | 53 | Partial | `8 Full / 0 Reachable / 6 Unpublished / 0 Code` |
 | TestPlan | 238 | Partial | `1 Full / 2 Reachable / 4 Unpublished / 0 Code` |
-| Deploy | 60 | Partial | Expanded v4 surface with partial live closure; see `docs/wiki/Module-Live-Readiness.md` |
+| Deploy | 63 | Partial | Expanded v4 surface with partial live closure; see `docs/wiki/Module-Live-Readiness.md` |
 | Build | 62 | Validated | Expanded metadata read surface with live smoke coverage |
-| Artifact | 31 | Partial | `5 Full / 0 Reachable / 7 Unpublished / 0 Code` |
+| Artifact | 33 | Partial | `5 Full / 0 Reachable / 7 Unpublished / 0 Code` |
 <!-- GENERATED:readme-module-numbers:end -->
 
 Live 状态说明：
@@ -350,7 +350,7 @@ Live 状态说明：
 | `REQ_BASE_URL` | `https://projectman-ext.cn-north-4.myhuaweicloud.com` |
 | `REPO_BASE_URL` | `https://codehub-ext.cn-north-4.myhuaweicloud.com` |
 | `PIPELINE_BASE_URL` | `https://cloudpipeline-ext.cn-north-4.myhuaweicloud.com` |
-| `CHECK_BASE_URL` | `https://codecheck-ext.cn-north-4.myhuaweicloud.com` |
+| `CHECK_BASE_URL` | `https://codearts-check.cn-north-4.myhuaweicloud.com` |
 | `TESTPLAN_BASE_URL` | `https://cloudtest-ext.cn-north-4.myhuaweicloud.com` |
 | `DEPLOY_BASE_URL` | `https://codearts-deploy.cn-north-4.myhuaweicloud.com` |
 | `BUILD_BASE_URL` | `https://cloudbuild-ext.cn-north-4.myhuaweicloud.com` |

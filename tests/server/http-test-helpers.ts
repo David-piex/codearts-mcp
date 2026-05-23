@@ -1,4 +1,4 @@
-import { expect, vi } from "vitest";
+﻿import { expect, vi } from "vitest";
 import { createServer } from "../../src/server/create-server.js";
 import { encryptSecretValue } from "../../src/server/auth-crypto.js";
 import type { PersistedAuthRecord } from "../../src/server/auth-repository.js";
@@ -19,7 +19,7 @@ export function createPersistedAuthRecord(
     req_base_url: "https://projectman-ext.cn-north-4.myhuaweicloud.com",
     repo_base_url: "https://codehub-ext.cn-north-4.myhuaweicloud.com",
     pipeline_base_url: "https://cloudpipeline-ext.cn-north-4.myhuaweicloud.com",
-    check_base_url: "https://codecheck-ext.cn-north-4.myhuaweicloud.com",
+    check_base_url: "https://codearts-check.cn-north-4.myhuaweicloud.com",
     testplan_base_url: "https://cloudtest-ext.cn-north-4.myhuaweicloud.com",
     deploy_base_url: "https://codearts-deploy.cn-north-4.myhuaweicloud.com",
     build_base_url: "https://cloudbuild-ext.cn-north-4.myhuaweicloud.com",

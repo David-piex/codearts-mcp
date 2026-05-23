@@ -80,6 +80,9 @@ describe("registerCheckTool", () => {
       ["check_list_supported_languages", "List CodeArts Check supported languages"],
       ["check_get_task_notification", "Get CodeArts Check task notification settings"],
       ["check_get_code_sum_measures", "Get CodeArts Check tenant code sum measures"],
+      ["check_list_plugins", "List CodeArts Check plugins"],
+      ["check_get_task_webhook_info", "Get CodeArts Check task webhook info"],
+      ["check_get_code_health_svg", "Get CodeArts Check code health SVG"],
       ["check_list_task_repository_branches", "List CodeArts Check task repository branches"],
       ["check_get_transmission_notification", "Get CodeArts Check transmission notification settings"],
       ["check_get_tenant_package_status", "Get CodeArts Check tenant package status"],
@@ -89,7 +92,10 @@ describe("registerCheckTool", () => {
       ["check_get_criterion_rule", "Get CodeArts Check criterion rule"],
       ["check_list_third_tools", "List CodeArts Check third tools"],
       ["check_get_criterionset", "Get CodeArts Check criterionset"],
-      ["check_list_all_criterionsets", "List all CodeArts Check criterionsets"]
+      ["check_list_all_criterionsets", "List all CodeArts Check criterionsets"],
+      ["check_list_criterion_filters", "List CodeArts Check criterion filters"],
+      ["check_list_criterions", "List CodeArts Check criterions"],
+      ["check_get_defect_task_statistics", "Get CodeArts Check defect task statistics"]
     ] as const;
 
     for (const [toolName, description] of tools) {

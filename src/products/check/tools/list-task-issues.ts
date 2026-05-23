@@ -35,6 +35,8 @@ type CheckListTaskIssuesClient = {
     keyword?: string;
     severity?: string;
     defect_level?: string;
+    status_ids?: string;
+    delay_status?: string;
     rule_id?: string;
     rule_name?: string;
     file_path?: string;

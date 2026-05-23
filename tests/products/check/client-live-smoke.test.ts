@@ -22,6 +22,14 @@ function readTaskId(source: NodeJS.ProcessEnv) {
   return source.HUAWEICLOUD_CHECK_LIVE_TASK_ID?.trim() || "d5026e942a7b4d639f4ea6369f45a6f5";
 }
 
+function readPluginId(source: NodeJS.ProcessEnv) {
+  return source.HUAWEICLOUD_CHECK_LIVE_PLUGIN_ID?.trim() || "default";
+}
+
+function readOperator(source: NodeJS.ProcessEnv) {
+  return source.HUAWEICLOUD_CHECK_LIVE_OPERATOR?.trim() || "codearts-mcp-live-smoke";
+}
+
 if (hasLiveEnv(process.env)) {
   describe("createCheckClient live smoke", () => {
     const config = loadEnvConfig(process.env);
@@ -32,6 +40,8 @@ if (hasLiveEnv(process.env)) {
     const client = createCheckClient(http);
     const projectId = readProjectId(process.env);
     const taskId = readTaskId(process.env);
+    const pluginId = readPluginId(process.env);
+    const operator = readOperator(process.env);
 
     it("lists rulesets and tasks for the known project", async () => {
       const [rulesets, tasks] = await Promise.all([
@@ -77,6 +87,40 @@ if (hasLiveEnv(process.env)) {
       });
 
       expect(Array.isArray(result.issues)).toBe(true);
+    }, 30000);
+
+    it("reaches newly published official read routes on the Check endpoint", async () => {
+      const [
+        plugins,
+        webhookInfo,
+        codeHealthSvg,
+        criterionFilters,
+        criterions,
+        defectStatistics
+      ] = await Promise.all([
+        client.listPlugins({ id: pluginId }),
+        client.getTaskWebhookInfo({ task_id: taskId }),
+        client.getCodeHealthSvg({ task_id: taskId }),
+        client.listCriterionFilters({
+          project_id: projectId,
+          language: "java",
+          operator
+        }),
+        client.listCriterions({
+          page: 1,
+          page_size: 20
+        }),
+        client.getDefectTaskStatistics({ task_id: taskId })
+      ]);
+
+      expect(Array.isArray(plugins.plugins)).toBe(true);
+      expect(webhookInfo.task_id).toBe(taskId);
+      expect(codeHealthSvg.task_id).toBe(taskId);
+      expect(codeHealthSvg.raw).toBeDefined();
+      expect(Array.isArray(criterionFilters.filters)).toBe(true);
+      expect(Array.isArray(criterions.criterions)).toBe(true);
+      expect(defectStatistics.task_id).toBe(taskId);
+      expect(typeof defectStatistics.raw).toBe("object");
     }, 30000);
   });
 } else {

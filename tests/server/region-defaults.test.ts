@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+﻿import { describe, expect, it } from "vitest";
 import {
   mergeSessionEndpointOverrides,
   resolveRegionDefaults
@@ -10,7 +10,7 @@ describe("resolveRegionDefaults", () => {
       req_base_url: "https://projectman-ext.cn-north-4.myhuaweicloud.com",
       repo_base_url: "https://codehub-ext.cn-north-4.myhuaweicloud.com",
       pipeline_base_url: "https://cloudpipeline-ext.cn-north-4.myhuaweicloud.com",
-      check_base_url: "https://codecheck-ext.cn-north-4.myhuaweicloud.com",
+      check_base_url: "https://codearts-check.cn-north-4.myhuaweicloud.com",
       testplan_base_url: "https://cloudtest-ext.cn-north-4.myhuaweicloud.com",
       deploy_base_url: "https://codearts-deploy.cn-north-4.myhuaweicloud.com",
       build_base_url: "https://cloudbuild-ext.cn-north-4.myhuaweicloud.com",

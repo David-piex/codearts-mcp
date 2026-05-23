@@ -12,7 +12,7 @@ describe("createCheckGetMetricsHandler", () => {
       })
     });
 
-    const result = await handler({ task_id: "task-1" });
+    const result = await handler({ project_id: "project-1", task_id: "task-1" });
 
     expect(result.structuredContent.item).toEqual({
       id: "task-1",

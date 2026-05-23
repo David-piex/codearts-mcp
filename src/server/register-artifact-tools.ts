@@ -7,6 +7,7 @@ import {
   artifactGetFileInput,
   artifactGetDownloadUrlInput,
   artifactGetRepositoryInput,
+  artifactGetRepositoryUserInfoInput,
   artifactListBuildArchivesInput,
   artifactListAttentionsInput,
   artifactListChildProxyRepositoriesInput,
@@ -15,6 +16,7 @@ import {
   artifactListMavenProjectRepositoriesInput,
   artifactListProjectRolePermissionsInput,
   artifactListRepositoriesInput,
+  artifactListRepositoryUsersInput,
   artifactListSecGuardTasksInput,
   artifactListStorageStatisticsInput,
   artifactListVersionsInput,
@@ -38,6 +40,7 @@ import { createArtifactGetFileTreeHandler } from "../products/artifact/tools/get
 import { createArtifactGetFileHandler } from "../products/artifact/tools/get-file.js";
 import { createArtifactGetDownloadUrlHandler } from "../products/artifact/tools/get-download-url.js";
 import { createArtifactGetRepositoryHandler } from "../products/artifact/tools/get-repository.js";
+import { createArtifactGetRepositoryUserInfoHandler } from "../products/artifact/tools/get-repository-user-info.js";
 import { createArtifactListAttentionsHandler } from "../products/artifact/tools/list-attentions.js";
 import { createArtifactListBuildArchivesHandler } from "../products/artifact/tools/list-build-archives.js";
 import { createArtifactListChildProxyRepositoriesHandler } from "../products/artifact/tools/list-child-proxy-repositories.js";
@@ -46,6 +49,7 @@ import { createArtifactListLatestVersionFilesHandler } from "../products/artifac
 import { createArtifactListMavenProjectRepositoriesHandler } from "../products/artifact/tools/list-maven-project-repositories.js";
 import { createArtifactListProjectRolePermissionsHandler } from "../products/artifact/tools/list-project-role-permissions.js";
 import { createArtifactListRepositoriesHandler } from "../products/artifact/tools/list-repositories.js";
+import { createArtifactListRepositoryUsersHandler } from "../products/artifact/tools/list-repository-users.js";
 import { createArtifactListSecGuardTasksHandler } from "../products/artifact/tools/list-sec-guard-tasks.js";
 import { createArtifactListStorageStatisticsHandler } from "../products/artifact/tools/list-storage-statistics.js";
 import { createArtifactListVersionsHandler } from "../products/artifact/tools/list-versions.js";
@@ -167,6 +171,18 @@ const artifactToolDefinitions = {
     inputSchema: artifactShowUserPermissionsInput,
     selectHttpClient: (clients: { artifactClient: Parameters<typeof createArtifactShowUserPermissionsHandler>[0] }) => clients.artifactClient,
     createProductHandler: createArtifactShowUserPermissionsHandler
+  }),
+  "artifact_get_repository_user_info": defineProductTool({
+    description: "Get CodeArts Artifact repository user info",
+    inputSchema: artifactGetRepositoryUserInfoInput,
+    selectHttpClient: (clients: { artifactClient: Parameters<typeof createArtifactGetRepositoryUserInfoHandler>[0] }) => clients.artifactClient,
+    createProductHandler: createArtifactGetRepositoryUserInfoHandler
+  }),
+  "artifact_list_repository_users": defineProductTool({
+    description: "List CodeArts Artifact repository users",
+    inputSchema: artifactListRepositoryUsersInput,
+    selectHttpClient: (clients: { artifactClient: Parameters<typeof createArtifactListRepositoryUsersHandler>[0] }) => clients.artifactClient,
+    createProductHandler: createArtifactListRepositoryUsersHandler
   }),
   "artifact_list_project_role_permissions": defineProductTool({
     description: "List CodeArts Artifact project role permissions",

@@ -22,6 +22,8 @@ import {
   pipelineGetExtensionEndpointInput,
   pipelineGetExtensionModuleInput,
   pipelineGetInput,
+  pipelineGetTemplateInput,
+  pipelineGetWebhookInfoInput,
   pipelineGetNoticeDetailInput,
   pipelineGetNoticeInput,
   pipelineGetPermissionInput,
@@ -64,6 +66,7 @@ import {
   pipelineListStagePluginsInput,
   pipelineListStrategiesInput,
   pipelineListStrategyChildrenInput,
+  pipelineListPipelineVarsInput,
   pipelineListSystemVarsInput,
   pipelineListTriggerFailedRecordsInput,
   pipelineSetTagsForPipelinesInput,
@@ -122,7 +125,9 @@ import { createPipelineGetRuleRelatedInfoHandler } from "../products/pipeline/to
 import { createPipelineGetRolePermissionHandler } from "../products/pipeline/tools/get-role-permission.js";
 import { createPipelineGetStrategyHandler } from "../products/pipeline/tools/get-strategy.js";
 import { createPipelineGetStrategyRelatedInfoHandler } from "../products/pipeline/tools/get-strategy-related-info.js";
+import { createPipelineGetTemplateHandler } from "../products/pipeline/tools/get-template.js";
 import { createPipelineGetUserPermissionHandler } from "../products/pipeline/tools/get-user-permission.js";
+import { createPipelineGetWebhookInfoHandler } from "../products/pipeline/tools/get-webhook-info.js";
 import { createPipelineGetRunDetailHandler } from "../products/pipeline/tools/get-run-detail.js";
 import { createPipelineGetRunLogHandler } from "../products/pipeline/tools/get-run-log.js";
 import { createPipelineGetRunParametersHandler } from "../products/pipeline/tools/get-run-parameters.js";
@@ -154,6 +159,7 @@ import {
   createPipelineListVariableGroupsHandler
 } from "../products/pipeline/tools/list-variable-groups.js";
 import { createPipelineListRunsHandler } from "../products/pipeline/tools/list-runs.js";
+import { createPipelineListPipelineVarsHandler } from "../products/pipeline/tools/list-pipeline-vars.js";
 import { createPipelineListSystemVarsHandler } from "../products/pipeline/tools/list-system-vars.js";
 import { createPipelineListTemplatesHandler } from "../products/pipeline/tools/list-templates.js";
 import { createPipelineListTriggerFailedRecordsHandler } from "../products/pipeline/tools/list-trigger-failed-records.js";
@@ -687,6 +693,18 @@ const pipelineToolDefinitions = {
     selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineListSystemVarsHandler>[0] }) => clients.pipelineClient,
     createProductHandler: createPipelineListSystemVarsHandler
   }),
+  "pipeline_get_webhook_info": defineProductTool({
+    description: "Get CodeArts Pipeline webhook info",
+    inputSchema: pipelineGetWebhookInfoInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetWebhookInfoHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineGetWebhookInfoHandler
+  }),
+  "pipeline_list_pipeline_vars": defineProductTool({
+    description: "List CodeArts Pipeline variables",
+    inputSchema: pipelineListPipelineVarsInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineListPipelineVarsHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineListPipelineVarsHandler
+  }),
   "pipeline_list_trigger_failed_records": defineProductTool({
     description: "List CodeArts Pipeline trigger failed records",
     inputSchema: pipelineListTriggerFailedRecordsInput,
@@ -739,6 +757,12 @@ const pipelineToolDefinitions = {
     inputSchema: pipelineListTemplatesInput,
     selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineListTemplatesHandler>[0] }) => clients.pipelineClient,
     createProductHandler: createPipelineListTemplatesHandler
+  }),
+  "pipeline_get_template": defineProductTool({
+    description: "Get CodeArts Pipeline template detail",
+    inputSchema: pipelineGetTemplateInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetTemplateHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineGetTemplateHandler
   }),
   "pipeline_list_runs": defineProductTool({
     description: "List CodeArts Pipeline runs",

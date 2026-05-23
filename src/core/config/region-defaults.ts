@@ -31,7 +31,7 @@ export function resolveRegionDefaults(region: string): RegionEndpointDefaults {
     req_base_url: `https://projectman-ext.${region}.myhuaweicloud.com`,
     repo_base_url: `https://codehub-ext.${region}.myhuaweicloud.com`,
     pipeline_base_url: `https://cloudpipeline-ext.${region}.myhuaweicloud.com`,
-    check_base_url: `https://codecheck-ext.${region}.myhuaweicloud.com`,
+    check_base_url: `https://codearts-check.${region}.myhuaweicloud.com`,
     testplan_base_url: `https://cloudtest-ext.${region}.myhuaweicloud.com`,
     deploy_base_url: `https://codearts-deploy.${region}.myhuaweicloud.com`,
     build_base_url: `https://cloudbuild-ext.${region}.myhuaweicloud.com`,

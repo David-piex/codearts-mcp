@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+﻿import { describe, expect, it } from "vitest";
 import { buildStdioClients } from "../../src/server/build-stdio-clients.js";
 
 describe("buildStdioClients", () => {
@@ -15,7 +15,7 @@ describe("buildStdioClients", () => {
         reqBaseUrl: "https://projectman-ext.cn-north-4.myhuaweicloud.com",
         repoBaseUrl: "https://codehub-ext.cn-north-4.myhuaweicloud.com",
         pipelineBaseUrl: "https://cloudpipeline-ext.cn-north-4.myhuaweicloud.com",
-        checkBaseUrl: "https://codecheck-ext.cn-north-4.myhuaweicloud.com",
+        checkBaseUrl: "https://codearts-check.cn-north-4.myhuaweicloud.com",
         testPlanBaseUrl: "https://cloudtest-ext.cn-north-4.myhuaweicloud.com",
         deployBaseUrl: "https://codearts-deploy.cn-north-4.myhuaweicloud.com",
         buildBaseUrl: "https://cloudbuild-ext.cn-north-4.myhuaweicloud.com",

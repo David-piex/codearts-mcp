@@ -20,6 +20,8 @@ export const artifactToolNames = [
   "artifact_show_auto_delete_job_settings",
   "artifact_show_user_privileges",
   "artifact_show_user_permissions",
+  "artifact_get_repository_user_info",
+  "artifact_list_repository_users",
   "artifact_list_project_role_permissions",
   "artifact_list_child_proxy_repositories",
   "artifact_list_storage_statistics",
