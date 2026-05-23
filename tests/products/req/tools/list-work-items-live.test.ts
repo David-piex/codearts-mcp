@@ -24,7 +24,23 @@ describe("createReqListWorkItemsHandler", () => {
       id: "101",
       title: "Implement SSO",
       status: "Doing",
-      type: "Story"
+      type: "Story",
+      createdOn: undefined,
+      createdOnText: undefined,
+      updatedOn: undefined,
+      updatedOnText: undefined,
+      startDate: undefined,
+      startDateText: undefined,
+      dueDate: undefined,
+      dueDateText: undefined,
+      assignee: undefined,
+      assignedToName: undefined,
+      rawWorkItem: {
+        id: 101,
+        subject: "Implement SSO",
+        status: { name: "Doing" },
+        tracker_name: "Story"
+      }
     });
     expect(result.content[0]?.text).toContain("id: 101");
     expect(result.content[0]?.text).toContain("title: Implement SSO");

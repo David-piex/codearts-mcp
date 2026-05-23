@@ -20,7 +20,24 @@ describe("createReqGetWorkItemHandler", () => {
       title: "Implement SSO",
       status: "Done",
       type: "Story",
-      description: "SSO delivery"
+      description: "SSO delivery",
+      createdOn: undefined,
+      createdOnText: undefined,
+      updatedOn: undefined,
+      updatedOnText: undefined,
+      startDate: undefined,
+      startDateText: undefined,
+      dueDate: undefined,
+      dueDateText: undefined,
+      assignee: undefined,
+      assignedToName: undefined,
+      rawWorkItem: {
+        id: 101,
+        subject: "Implement SSO",
+        status: { name: "Done" },
+        tracker_name: "Story",
+        description: "SSO delivery"
+      }
     });
   });
 });
