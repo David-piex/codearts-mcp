@@ -144,6 +144,20 @@ export const buildGetJobSuccessRatioV3Input = z.object({
   end_time: z.string().regex(/^\d{4}-\d{2}-\d{2}$/)
 });
 
+export const buildListPeriodHistoryV3Input = pagingSchema.extend({
+  job_id: idSchema,
+  start_time: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  end_time: z.string().regex(/^\d{4}-\d{2}-\d{2}$/)
+});
+
+const buildDateTimeSchema = z.string().regex(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/);
+
+export const buildListBuildInfoRecordsV3Input = pagingSchema.extend({
+  job_id: idSchema,
+  start_time: buildDateTimeSchema,
+  end_time: buildDateTimeSchema
+});
+
 export const buildGetJobConfigDiffInput = z.object({
   job_id: idSchema,
   revisedl_no: z.number().int().positive(),

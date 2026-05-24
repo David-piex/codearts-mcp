@@ -29,6 +29,8 @@ export const buildToolNames = [
   "build_get_job_build_success_ratio",
   "build_get_job_success_ratio_v3",
   "build_get_last_history_v3",
+  "build_list_period_history_v3",
+  "build_list_build_info_records_v3",
   "build_get_job_config_diff",
   "build_list_recycling_jobs",
   "build_check_job_count_limit",

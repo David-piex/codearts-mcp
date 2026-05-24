@@ -247,6 +247,20 @@ describe("createBuildClient metadata read paths", () => {
       start_time: "2026-05-01",
       end_time: "2026-05-24"
     });
+    const periodHistory = await client.listPeriodHistoryV3({
+      job_id: "job-1",
+      start_time: "2026-05-01",
+      end_time: "2026-05-24",
+      page: 2,
+      page_size: 10
+    });
+    const buildInfoRecords = await client.listBuildInfoRecordsV3({
+      job_id: "job-1",
+      start_time: "2026-05-01 00:00:00",
+      end_time: "2026-05-24 23:59:59",
+      page: 3,
+      page_size: 20
+    });
 
     expect(paths).toEqual([
       "/v1/domain/job-summary",
@@ -255,7 +269,9 @@ describe("createBuildClient metadata read paths", () => {
       "/v1/job/check/exist?project_id=project-1&job_name=build-main",
       "/v1/report/ratio?job_id=job-1&repository_name=repo&branch=main&interval=7",
       "/v3/jobs/project-1/last-history?repository_name=repo",
-      "/v3/jobs/job-1/success-ratio?start_time=2026-05-01&end_time=2026-05-24"
+      "/v3/jobs/job-1/success-ratio?start_time=2026-05-01&end_time=2026-05-24",
+      "/v3/jobs/job-1/period-history?offset=1&limit=10&start_time=2026-05-01&end_time=2026-05-24",
+      "/v3/jobs/job-1/build-info-records?start_time=2026-05-01+00%3A00%3A00&end_time=2026-05-24+23%3A59%3A59&page_index=2&page_size=20"
     ]);
     expect(summary).toEqual({ raw: { job_total: 2 } });
     expect(statuses).toEqual({
@@ -295,6 +311,26 @@ describe("createBuildClient metadata read paths", () => {
       job_id: "job-1",
       start_time: "2026-05-01",
       end_time: "2026-05-24",
+      raw: {
+        job_id: "job-1",
+        branch: "main",
+        total_count: 4,
+        total_success_count: 3
+      }
+    });
+    expect(periodHistory).toEqual({
+      records: [],
+      total: 4,
+      raw: {
+        job_id: "job-1",
+        branch: "main",
+        total_count: 4,
+        total_success_count: 3
+      }
+    });
+    expect(buildInfoRecords).toEqual({
+      records: [],
+      total: 4,
       raw: {
         job_id: "job-1",
         branch: "main",

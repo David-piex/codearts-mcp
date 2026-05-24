@@ -113,6 +113,13 @@ function readDateWindow(source: NodeJS.ProcessEnv) {
   return { startTime, endTime };
 }
 
+function readDateTimeWindow(source: NodeJS.ProcessEnv) {
+  const endTime = source.HUAWEICLOUD_BUILD_LIVE_RECORDS_END_TIME?.trim() || "2026-05-24 23:59:59";
+  const startTime = source.HUAWEICLOUD_BUILD_LIVE_RECORDS_START_TIME?.trim() || "2026-05-01 00:00:00";
+
+  return { startTime, endTime };
+}
+
 function createPageInput<T extends Record<string, unknown>>(
   overrides?: T
 ): {
@@ -218,6 +225,7 @@ if (hasLiveEnv(process.env)) {
     const gitCodeRepositoryName = readGitCodeRepositoryName(process.env);
     const taskName = readTaskName(process.env);
     const ratioWindow = readDateWindow(process.env);
+    const recordsWindow = readDateTimeWindow(process.env);
 
     it("lists jobs across configured projects and gets the known live job", async () => {
       const [jobLists, projectJobsV3, job] = await Promise.all([
@@ -326,6 +334,30 @@ if (hasLiveEnv(process.env)) {
       expectReachedProvider(successRatio);
       if (lastHistory.ok) expect(lastHistory.value.project_id).toBe(projectId);
       if (successRatio.ok) expect(successRatio.value.job_id).toBe(jobId);
+    }, 30000);
+
+    it("reaches Build v3 period-history and build-info-record official routes", async () => {
+      const [periodHistory, buildInfoRecords] = await Promise.all([
+        readReachable(() => client.listPeriodHistoryV3({
+          job_id: jobId,
+          start_time: ratioWindow.startTime,
+          end_time: ratioWindow.endTime,
+          page: 1,
+          page_size: 20
+        })),
+        readReachable(() => client.listBuildInfoRecordsV3({
+          job_id: jobId,
+          start_time: recordsWindow.startTime,
+          end_time: recordsWindow.endTime,
+          page: 1,
+          page_size: 20
+        }))
+      ]);
+
+      expectReachedProvider(periodHistory);
+      expectReachedProvider(buildInfoRecords);
+      if (periodHistory.ok) expect(Array.isArray(periodHistory.value.records)).toBe(true);
+      if (buildInfoRecords.ok) expect(Array.isArray(buildInfoRecords.value.records)).toBe(true);
     }, 30000);
 
     it("gets flow graph for the known live record and still rejects a non-existent probe id", async () => {

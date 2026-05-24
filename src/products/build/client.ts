@@ -335,6 +335,28 @@ export type BuildClient = {
     end_time: string;
     raw: Record<string, unknown>;
   }>;
+  listPeriodHistoryV3: (input: {
+    job_id: string;
+    start_time: string;
+    end_time: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    records: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
+  listBuildInfoRecordsV3: (input: {
+    job_id: string;
+    start_time: string;
+    end_time: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    records: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
   getJobConfigDiff: (input: {
     job_id: string;
     revisedl_no: number;
@@ -1834,6 +1856,53 @@ export function createBuildClient(
         start_time: input.start_time,
         end_time: input.end_time,
         raw: readBuildRawRecord(payload)
+      };
+    },
+    async listPeriodHistoryV3(input) {
+      const query = new URLSearchParams({
+        offset: String(Math.max(0, input.page - 1)),
+        limit: String(input.page_size),
+        start_time: input.start_time,
+        end_time: input.end_time
+      });
+      const response = await _http.get(`/v3/jobs/${encodeURIComponent(input.job_id)}/period-history?${query.toString()}`);
+      const payload = readBuildPayload(response);
+      const raw = readBuildRawRecord(payload);
+      const records = readBuildArray<Record<string, unknown>>(
+        payload.history_records ??
+          payload.records ??
+          payload.items ??
+          payload.list
+      );
+
+      return {
+        records,
+        total: readBuildTotal(payload, response, records.length),
+        raw
+      };
+    },
+    async listBuildInfoRecordsV3(input) {
+      const query = new URLSearchParams({
+        start_time: input.start_time,
+        end_time: input.end_time,
+        page_index: String(Math.max(0, input.page - 1)),
+        page_size: String(input.page_size)
+      });
+      const response = await _http.get(`/v3/jobs/${encodeURIComponent(input.job_id)}/build-info-records?${query.toString()}`);
+      const payload = readBuildPayload(response);
+      const raw = readBuildRawRecord(payload);
+      const records = readBuildArray<Record<string, unknown>>(
+        payload.job_build_states ??
+          payload.history_records ??
+          payload.records ??
+          payload.items ??
+          payload.list
+      );
+
+      return {
+        records,
+        total: readBuildTotal(payload, response, records.length),
+        raw
       };
     },
     async getJobConfigDiff(input) {

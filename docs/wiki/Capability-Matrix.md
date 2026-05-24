@@ -16,7 +16,7 @@
 | Check | 64 | 5 | Validated | Core Check task/ruleset/metrics/defect reads and the six newly added official read routes are AK/SK validated on the codearts-check endpoint |
 | TestPlan | 228 | 10 | Partial | `get_plan / list_runs / get_case / run_cases` are unpublished in Beijing 4 |
 | Deploy | 57 | 17 | Partial | Expanded Deploy v4 environment/record/variable surface is implemented, but execute-class write paths still require dedicated runtime samples |
-| Build | 76 | 9 | Validated | Core Build job, record, log, parameter, domain metadata, permission, code-tag, report, and resource-spec tools have live or smoke coverage; optional Git-code endpoint reads need endpoint-specific samples |
+| Build | 78 | 9 | Validated | Core Build job, record, log, parameter, domain metadata, permission, code-tag, report, and resource-spec tools have live or smoke coverage; optional Git-code endpoint reads need endpoint-specific samples |
 | Artifact | 31 | 6 | Partial | 5 tools are fully live-validated, and 7 routes are now re-confirmed by live smoke as unpublished in Beijing 4 |
 <!-- GENERATED:capability-matrix:end -->
 

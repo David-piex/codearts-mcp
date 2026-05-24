@@ -43,7 +43,18 @@ export function mapBuildRecordList(
   return asListResult(
     `${items.length} ${noun} found`,
     items.map((item) => ({
-      id: String(item.id ?? item.uuid ?? item.name ?? item.value ?? item.branch ?? item.repository ?? ""),
+      id: String(
+        item.id ??
+          item.uuid ??
+          item.record_id ??
+          item.number ??
+          item.build_number ??
+          item.name ??
+          item.value ??
+          item.branch ??
+          item.repository ??
+          ""
+      ),
       name: typeof item.name === "string" ? item.name : undefined,
       [key]: item
     })),

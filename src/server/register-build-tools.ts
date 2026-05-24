@@ -25,6 +25,8 @@ import {
   buildGetJobBuildSuccessRatioInput,
   buildGetJobSuccessRatioV3Input,
   buildGetLastHistoryV3Input,
+  buildListBuildInfoRecordsV3Input,
+  buildListPeriodHistoryV3Input,
   buildGetJobBuildTimeInput,
   buildGetJobConfigDiffInput,
   buildGetCoverageMetricsInput,
@@ -139,6 +141,8 @@ import { createBuildGetJobBuildTimeHandler } from "../products/build/tools/get-j
 import { createBuildGetJobBuildSuccessRatioHandler } from "../products/build/tools/get-job-build-success-ratio.js";
 import { createBuildGetJobSuccessRatioV3Handler } from "../products/build/tools/get-job-success-ratio-v3.js";
 import { createBuildGetLastHistoryV3Handler } from "../products/build/tools/get-last-history-v3.js";
+import { createBuildListBuildInfoRecordsV3Handler } from "../products/build/tools/list-build-info-records-v3.js";
+import { createBuildListPeriodHistoryV3Handler } from "../products/build/tools/list-period-history-v3.js";
 import { createBuildGetJobConfigDiffHandler } from "../products/build/tools/get-job-config-diff.js";
 import { createBuildGetJobPermissionHandler } from "../products/build/tools/get-job-permission.js";
 import { createBuildGetJobPermissionInternalHandler } from "../products/build/tools/get-job-permission-internal.js";
@@ -343,6 +347,18 @@ const buildToolDefinitions = {
     inputSchema: buildGetLastHistoryV3Input,
     selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetLastHistoryV3Handler>[0] }) => clients.buildClient,
     createProductHandler: createBuildGetLastHistoryV3Handler
+  }),
+  "build_list_period_history_v3": defineProductTool({
+    description: "List CodeArts Build v3 period history records",
+    inputSchema: buildListPeriodHistoryV3Input,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListPeriodHistoryV3Handler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildListPeriodHistoryV3Handler
+  }),
+  "build_list_build_info_records_v3": defineProductTool({
+    description: "List CodeArts Build v3 build info records",
+    inputSchema: buildListBuildInfoRecordsV3Input,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListBuildInfoRecordsV3Handler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildListBuildInfoRecordsV3Handler
   }),
   "build_get_job_config_diff": defineProductTool({
     description: "Get CodeArts Build job configuration diff",
