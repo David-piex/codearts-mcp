@@ -27,13 +27,13 @@
 | 制品仓 | 37 | [Function-API-Reference-Artifact.md](./Function-API-Reference-Artifact.md) |
 | 鉴权会话 | 2 | [Function-API-Reference-Auth-Session.md](./Function-API-Reference-Auth-Session.md) |
 | 编译构建 | 87 | [Function-API-Reference-Build.md](./Function-API-Reference-Build.md) |
-| 代码检查 | 78 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
+| 代码检查 | 83 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
 | 部署 | 74 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
 | 流水线 | 109 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 187 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 243 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 238 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **1055** | |
+| **总计** | **1060** | |
 
 ## 字段对应
 
@@ -169,6 +169,7 @@
 | `build_show_package_spec_countdown` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_show_package_spec_countdown) |
 | `build_stop_job` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_stop_job) |
 | `build_update_job_step` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_update_job_step) |
+| `check_create_pdf_async_job` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_create_pdf_async_job) |
 | `check_create_task` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_create_task) |
 | `check_detect_task_language` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_detect_task_language) |
 | `check_download_log_file` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_download_log_file) |
@@ -247,6 +248,10 @@
 | `check_request_official_api` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_request_official_api) |
 | `check_run_task` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_run_task) |
 | `check_stop_task` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_stop_task) |
+| `check_update_check_mode` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_update_check_mode) |
+| `check_update_code_gate` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_update_code_gate) |
+| `check_update_ignore_files` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_update_ignore_files) |
+| `check_update_issue_status` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_update_issue_status) |
 | `deploy_add_v4_environment_hosts` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_add_v4_environment_hosts) |
 | `deploy_cancel_v4_deploy_record` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_cancel_v4_deploy_record) |
 | `deploy_check_application_creatable` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_check_application_creatable) |

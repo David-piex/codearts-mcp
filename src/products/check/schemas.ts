@@ -448,6 +448,54 @@ export const checkStopTaskInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const checkUpdateIssueStatusInput = z.object({
+  task_id: idSchema,
+  status: z.union([z.literal("0"), z.literal("2"), z.literal("5")]),
+  comment: z.string().min(1).max(256),
+  merge_key: idSchema,
+  merge_id: z.string().min(1).optional(),
+  job_id: idSchema.optional(),
+  operator: z.string().min(1).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const checkCreatePdfAsyncJobInput = z.object({
+  task_id: idSchema,
+  project_name: z.string().min(1).max(128),
+  dry_run: z.boolean().default(true)
+});
+
+const checkWriteResponseInput = z.object({
+  dry_run: z.boolean().default(true)
+});
+
+export const checkUpdateCodeGateInput = checkWriteResponseInput.extend({
+  task_id: idSchema,
+  operator: z.string().min(1).optional(),
+  review_data: z.array(z.object({
+    compare_type: z.string().min(1),
+    is_check: z.union([z.literal(0), z.literal(1)]),
+    name: z.string().min(1),
+    value: z.number().int().min(0)
+  })).min(1)
+});
+
+export const checkUpdateIgnoreFilesInput = checkWriteResponseInput.extend({
+  task_id: idSchema,
+  nodes: z.array(z.object({
+    name: z.string().min(1).optional(),
+    file_path: z.string().min(1).optional(),
+    is_leaf: z.boolean().optional(),
+    checkbox_status: z.enum(["unchecked", "all"]).optional()
+  })).min(1)
+});
+
+export const checkUpdateCheckModeInput = checkWriteResponseInput.extend({
+  task_id: idSchema,
+  mr_check_mode: z.union([z.literal(0), z.literal(4), z.literal(5)]),
+  operator: z.string().min(1).optional()
+});
+
 export const checkListTaskIssuesInput = pagingSchema.extend({
   task_id: idSchema,
   severity: z.string().min(1).optional(),

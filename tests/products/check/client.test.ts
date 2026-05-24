@@ -216,6 +216,204 @@ describe("createCheckClient", () => {
     });
   });
 
+  it("uses documented Check issue status and PDF async job endpoints", async () => {
+    const requests: Array<{ method: string; path: string; body?: unknown }> = [];
+    const client = createClient({
+      post: async (path: string, body?: unknown) => {
+        requests.push({ method: "POST", path, body });
+        return {
+          status: "success",
+          result: "ok"
+        };
+      },
+      put: async (path: string, body?: unknown) => {
+        requests.push({ method: "PUT", path, body });
+        return {
+          status: "success",
+          result: {
+            timeAsk: 3,
+            asyncJobId: 569151
+          }
+        };
+      }
+    });
+
+    await expect(client.updateIssueStatus({
+      task_id: "task-1",
+      status: "5",
+      comment: "tool false positive",
+      merge_key: "merge-1",
+      merge_id: "mr-1",
+      job_id: "job-1",
+      operator: "szh"
+    })).resolves.toEqual({
+      task_id: "task-1",
+      merge_key: "merge-1",
+      status: "success",
+      result: "ok",
+      raw: {
+        status: "success",
+        result: "ok"
+      }
+    });
+
+    await expect(client.createPdfAsyncJob({
+      task_id: "task-1",
+      project_name: "mall4cloud"
+    })).resolves.toEqual({
+      task_id: "task-1",
+      async_job_id: 569151,
+      time_ask: 3,
+      raw: {
+        timeAsk: 3,
+        asyncJobId: 569151
+      }
+    });
+
+    expect(requests).toEqual([
+      {
+        method: "POST",
+        path: "/v1/defect/issue-status",
+        body: {
+          taskId: "task-1",
+          mergeId: "mr-1",
+          jobId: "job-1",
+          status: "5",
+          comment: "tool false positive",
+          mergeKey: "merge-1",
+          operator: "szh"
+        }
+      },
+      {
+        method: "PUT",
+        path: "/v1/tasks/task-1/pdf-async-job?project_name=mall4cloud",
+        body: {}
+      }
+    ]);
+  });
+
+  it("uses documented Check task configuration write endpoints", async () => {
+    const requests: Array<{ method: string; path: string; body?: unknown; options?: unknown }> = [];
+    const client = createClient({
+      put: async (path: string, body?: unknown, options?: unknown) => {
+        requests.push({ method: "PUT", path, body, options });
+        return {
+          httpStatus: "OK",
+          status: "success",
+          result: "updated"
+        };
+      }
+    });
+
+    await expect(client.updateCodeGate({
+      task_id: "task-1",
+      operator: "szh",
+      review_data: [
+        {
+          compare_type: ">=",
+          is_check: 1,
+          name: "fatal",
+          value: 0
+        }
+      ]
+    })).resolves.toEqual({
+      task_id: "task-1",
+      status: "success",
+      result: "updated",
+      raw: {
+        httpStatus: "OK",
+        status: "success",
+        result: "updated"
+      }
+    });
+
+    await expect(client.updateIgnoreFiles({
+      task_id: "task-1",
+      nodes: [
+        {
+          file_path: "src/generated",
+          name: "generated",
+          is_leaf: false,
+          checkbox_status: "all"
+        }
+      ]
+    })).resolves.toEqual({
+      task_id: "task-1",
+      result: "updated",
+      raw: {
+        httpStatus: "OK",
+        status: "success",
+        result: "updated"
+      }
+    });
+
+    await expect(client.updateCheckMode({
+      task_id: "task-1",
+      mr_check_mode: 0,
+      operator: "szh"
+    })).resolves.toEqual({
+      task_id: "task-1",
+      status: "success",
+      result: "updated",
+      raw: {
+        httpStatus: "OK",
+        status: "success",
+        result: "updated"
+      }
+    });
+
+    expect(requests).toEqual([
+      {
+        method: "PUT",
+        path: "/v1/task/code-gate",
+        body: {
+          id: "task-1",
+          reviewData: [
+            {
+              compareType: ">=",
+              isCheck: 1,
+              name: "fatal",
+              value: 0
+            }
+          ]
+        },
+        options: {
+          headers: {
+            operator: "szh"
+          }
+        }
+      },
+      {
+        method: "PUT",
+        path: "/v4/task/task-1/ignore-files",
+        body: {
+          nodes: [
+            {
+              name: "generated",
+              file_path: "src/generated",
+              is_leaf: false,
+              checkbox_status: "all"
+            }
+          ]
+        },
+        options: undefined
+      },
+      {
+        method: "PUT",
+        path: "/v1/task/check-mode",
+        body: {
+          id: "task-1",
+          mrCheckMode: 0
+        },
+        options: {
+          headers: {
+            operator: "szh"
+          }
+        }
+      }
+    ]);
+  });
+
   it("uses the real project-scoped tasks endpoint when project_id is provided", async () => {
     let requestedPath = "";
     const client = createClient({

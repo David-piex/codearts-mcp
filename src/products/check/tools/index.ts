@@ -76,5 +76,10 @@ export const checkToolNames = [
   "check_get_metrics",
   "check_run_task",
   "check_stop_task",
+  "check_update_issue_status",
+  "check_create_pdf_async_job",
+  "check_update_code_gate",
+  "check_update_ignore_files",
+  "check_update_check_mode",
   "check_request_official_api"
 ];

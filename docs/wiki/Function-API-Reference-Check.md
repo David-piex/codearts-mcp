@@ -6,11 +6,71 @@
 
 模块：`代码检查`
 
-API 数量：`78`
+API 数量：`83`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
 ## API 清单
+
+### check_create_pdf_async_job
+
+所属模块：`代码检查`
+
+说明：创建代码检查的pdfasync任务。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "check_create_pdf_async_job",
+    "arguments": {
+      "task_id": "<task_id>",
+      "project_name": "<project_name>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `task_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `task_id` ↔ 原始 CodeArts 代码检查 API 同名字段 `task_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>任务 ID，用于定位对应的 CodeArts 资源。 |
+| `project_name` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_name` ↔ 原始 CodeArts 代码检查 API 同名字段 `project_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>项目名称。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "project_name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "task_id",
+    "project_name"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
 
 ### check_create_task
 
@@ -5038,6 +5098,343 @@ API 数量：`78`
   },
   "required": [
     "task_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### check_update_check_mode
+
+所属模块：`代码检查`
+
+说明：更新代码检查的检查mode。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "check_update_check_mode",
+    "arguments": {
+      "task_id": "<task_id>",
+      "mr_check_mode": "<mr_check_mode>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+| `task_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `task_id` ↔ 原始 CodeArts 代码检查 API 同名字段 `task_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>任务 ID，用于定位对应的 CodeArts 资源。 |
+| `mr_check_mode` | 是 | `0 \| 4 \| 5` |  | 字段对应：<br>MCP 字段 `mr_check_mode` ↔ 原始 CodeArts 代码检查 API 同名字段 `mr_check_mode`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。可选值：`0`、`4`、`5`。 |
+| `operator` | 否 | `string` |  | 字段对应：<br>MCP 字段 `operator` ↔ 原始 CodeArts 代码检查 API 同名字段 `operator`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>操作人标识，表示执行本次操作的用户。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mr_check_mode": {
+      "type": "number",
+      "enum": [
+        0,
+        4,
+        5
+      ]
+    },
+    "operator": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "task_id",
+    "mr_check_mode"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### check_update_code_gate
+
+所属模块：`代码检查`
+
+说明：更新代码检查的codegate。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "check_update_code_gate",
+    "arguments": {
+      "task_id": "<task_id>",
+      "review_data": "<review_data>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+| `task_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `task_id` ↔ 原始 CodeArts 代码检查 API 同名字段 `task_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>任务 ID，用于定位对应的 CodeArts 资源。 |
+| `operator` | 否 | `string` |  | 字段对应：<br>MCP 字段 `operator` ↔ 原始 CodeArts 代码检查 API 同名字段 `operator`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>操作人标识，表示执行本次操作的用户。 |
+| `review_data` | 是 | `array<object>` |  | 字段对应：<br>MCP 字段 `review_data` ↔ 原始 CodeArts 代码检查 API 同名字段 `review_data`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "operator": {
+      "type": "string",
+      "minLength": 1
+    },
+    "review_data": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "compare_type": {
+            "type": "string",
+            "minLength": 1
+          },
+          "is_check": {
+            "type": "number",
+            "enum": [
+              0,
+              1
+            ]
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "value": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "compare_type",
+          "is_check",
+          "name",
+          "value"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    }
+  },
+  "required": [
+    "task_id",
+    "review_data"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### check_update_ignore_files
+
+所属模块：`代码检查`
+
+说明：更新代码检查的ignore文件。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "check_update_ignore_files",
+    "arguments": {
+      "task_id": "<task_id>",
+      "nodes": "<nodes>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+| `task_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `task_id` ↔ 原始 CodeArts 代码检查 API 同名字段 `task_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>任务 ID，用于定位对应的 CodeArts 资源。 |
+| `nodes` | 是 | `array<object>` |  | 字段对应：<br>MCP 字段 `nodes` ↔ 原始 CodeArts 代码检查 API 同名字段 `nodes`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "file_path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "is_leaf": {
+            "type": "boolean"
+          },
+          "checkbox_status": {
+            "type": "string",
+            "enum": [
+              "unchecked",
+              "all"
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "minItems": 1
+    }
+  },
+  "required": [
+    "task_id",
+    "nodes"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### check_update_issue_status
+
+所属模块：`代码检查`
+
+说明：更新代码检查的工作项状态。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "check_update_issue_status",
+    "arguments": {
+      "task_id": "<task_id>",
+      "status": "<status>",
+      "comment": "<comment>",
+      "merge_key": "<merge_key>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `task_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `task_id` ↔ 原始 CodeArts 代码检查 API 同名字段 `task_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>任务 ID，用于定位对应的 CodeArts 资源。 |
+| `status` | 是 | `"0" \| "2" \| "5"` |  | 字段对应：<br>MCP 字段 `status` ↔ 原始 CodeArts 代码检查 API 同名字段 `status`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>状态过滤条件或目标状态。用于列表查询时表示筛选状态，用于更新/流转时表示要变更到的目标状态；具体取值以对应资源的状态字典为准。可选值：`0`、`2`、`5`。 |
+| `comment` | 是 | `string` |  | 字段对应：<br>MCP 字段 `comment` ↔ 原始 CodeArts 代码检查 API 同名字段 `comment`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `merge_key` | 是 | `string` |  | 字段对应：<br>MCP 字段 `merge_key` ↔ 原始 CodeArts 代码检查 API 同名字段 `merge_key`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `merge_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `merge_id` ↔ 原始 CodeArts 代码检查 API 同名字段 `merge_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>合并请求 ID，用于定位对应的 CodeArts 资源。 |
+| `job_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `job_id` ↔ 原始 CodeArts 代码检查 API 同名字段 `job_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>构建任务 ID，用于定位对应的 CodeArts 资源。 |
+| `operator` | 否 | `string` |  | 字段对应：<br>MCP 字段 `operator` ↔ 原始 CodeArts 代码检查 API 同名字段 `operator`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>操作人标识，表示执行本次操作的用户。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "0",
+        "2",
+        "5"
+      ]
+    },
+    "comment": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "merge_key": {
+      "$ref": "#/properties/task_id"
+    },
+    "merge_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "job_id": {
+      "$ref": "#/properties/task_id"
+    },
+    "operator": {
+      "type": "string",
+      "minLength": 1
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "task_id",
+    "status",
+    "comment",
+    "merge_key"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

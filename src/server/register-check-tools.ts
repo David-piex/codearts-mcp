@@ -3,6 +3,7 @@ import { officialApiRequestInput } from "../products/official-api.js";
 import { createCheckClient } from "../products/check/client.js";
 import {
   checkCreateTaskInput,
+  checkCreatePdfAsyncJobInput,
   checkDetectTaskLanguageInput,
   checkDownloadLogFileInput,
   checkExtractTaskAssistantSummaryInput,
@@ -78,9 +79,14 @@ import {
   checkListTaskRulesetsV3Input,
   checkListTasksInput,
   checkRunTaskInput,
-  checkStopTaskInput
+  checkStopTaskInput,
+  checkUpdateCheckModeInput,
+  checkUpdateCodeGateInput,
+  checkUpdateIgnoreFilesInput,
+  checkUpdateIssueStatusInput
 } from "../products/check/schemas.js";
 import { createCheckCreateTaskHandler } from "../products/check/tools/create-task.js";
+import { createCheckCreatePdfAsyncJobHandler } from "../products/check/tools/create-pdf-async-job.js";
 import {
   createCheckDownloadLogFileHandler,
   createCheckExtractTaskAssistantSummaryHandler,
@@ -159,6 +165,10 @@ import { createCheckListTaskRulesetsV3Handler } from "../products/check/tools/li
 import { createCheckListTasksHandler } from "../products/check/tools/list-tasks.js";
 import { createCheckRunTaskHandler } from "../products/check/tools/run-task.js";
 import { createCheckStopTaskHandler } from "../products/check/tools/stop-task.js";
+import { createCheckUpdateCheckModeHandler } from "../products/check/tools/update-check-mode.js";
+import { createCheckUpdateCodeGateHandler } from "../products/check/tools/update-code-gate.js";
+import { createCheckUpdateIgnoreFilesHandler } from "../products/check/tools/update-ignore-files.js";
+import { createCheckUpdateIssueStatusHandler } from "../products/check/tools/update-issue-status.js";
 import { createOfficialApiRequestHandler } from "../products/shared-tools/request-official-api.js";
 import { defineProductTool, registerDefinedTool } from "./product-tool-registry.js";
 import type { RateLimiter } from "./rate-limiter.js";
@@ -635,6 +645,36 @@ const checkToolDefinitions = {
     inputSchema: checkStopTaskInput,
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckStopTaskHandler>[0] }) => clients.checkClient,
     createProductHandler: createCheckStopTaskHandler
+  }),
+  "check_update_issue_status": defineProductTool({
+    description: "Update CodeArts Check issue status",
+    inputSchema: checkUpdateIssueStatusInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckUpdateIssueStatusHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckUpdateIssueStatusHandler
+  }),
+  "check_create_pdf_async_job": defineProductTool({
+    description: "Create CodeArts Check PDF report async job",
+    inputSchema: checkCreatePdfAsyncJobInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckCreatePdfAsyncJobHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckCreatePdfAsyncJobHandler
+  }),
+  "check_update_code_gate": defineProductTool({
+    description: "Update CodeArts Check code gate configuration",
+    inputSchema: checkUpdateCodeGateInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckUpdateCodeGateHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckUpdateCodeGateHandler
+  }),
+  "check_update_ignore_files": defineProductTool({
+    description: "Update CodeArts Check ignored files",
+    inputSchema: checkUpdateIgnoreFilesInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckUpdateIgnoreFilesHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckUpdateIgnoreFilesHandler
+  }),
+  "check_update_check_mode": defineProductTool({
+    description: "Update CodeArts Check MR check mode",
+    inputSchema: checkUpdateCheckModeInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckUpdateCheckModeHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckUpdateCheckModeHandler
   })
 } as const;
 

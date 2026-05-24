@@ -63,9 +63,9 @@ const readWriteMatrixMeta: Record<ModuleName, ReadWriteMatrixMeta> = {
       "The original execution surface is live-validated, but the 51 newly added extension-endpoint/group/variable-group/rule-management/tag-management/tenant-strategy/project-strategy tools still need real AK/SK validation"
   },
   Check: {
-    live: "Validated",
+    live: "Partial",
     keyGaps:
-      "Core Check task/ruleset/metrics/defect reads and the six newly added official read routes are AK/SK validated on the codearts-check endpoint"
+      "Core Check task/ruleset/metrics/defect reads and the six official read routes are AK/SK validated; newer write/trigger configuration tools are dry-run safe and still need dedicated real-write samples"
   },
   TestPlan: {
     live: "Partial",
@@ -105,9 +105,9 @@ const implementationStatusMeta: Record<ModuleName, ImplementationStatusMeta> = {
       "The original 16-tool execution surface remains live-validated. The newly added delete/enable/disable, extension-endpoint, tag-management, group-management, variable-group, rule-management, tenant-strategy, and project-strategy tools currently have unit regression coverage, but real AK/SK validation is still pending."
   },
   Check: {
-    live: "Validated",
+    live: "Partial",
     notes:
-      "Core Check task/ruleset/metrics/defect reads are AK/SK validated. The newly added official read routes for plugins, task webhook info, code-health SVG, criterion filters, criterions, and defect task statistics are also live-validated on the codearts-check Beijing 4 endpoint."
+      "Core Check task/ruleset/metrics/defect reads are AK/SK validated. The official read routes for plugins, task webhook info, code-health SVG, criterion filters, criterions, and defect task statistics are live-validated on the codearts-check Beijing 4 endpoint. Write/trigger configuration tools default to dry-run and still need dedicated real-write samples."
   },
   TestPlan: {
     live: "Partial",
@@ -149,9 +149,9 @@ const toolStatusSummaryMeta: Record<ModuleName, ToolStatusSummaryMeta> = {
       "Core execution closure remains complete, but the new extension-endpoint/tag/group/variable-group/rule-management/tenant-strategy/project-strategy tools still need live AK/SK validation."
   },
   Check: {
-    summary: "`14 Full / 0 Reachable / 0 Unpublished / 0 Code`",
+    summary: "`14 Full / 0 Reachable / 0 Unpublished / 5 Code`",
     conclusion:
-      "Core Check closure remains usable for task/ruleset/metrics/defect workflows; the six official read routes are now live-validated on the codearts-check endpoint."
+      "Core Check closure remains usable for task/ruleset/metrics/defect workflows; official read routes are live-validated, while dry-run-safe write/trigger tools still need dedicated real-write samples."
   },
   TestPlan: {
     summary: "`1 Full / 2 Reachable / 4 Unpublished / 0 Code`",
@@ -191,7 +191,7 @@ const readmeModuleNumbersMeta: Record<ModuleName, ReadmeModuleNumbersMeta> = {
   },
   Check: {
     liveStatus: "Partial",
-    breakdown: "`8 Full / 0 Reachable / 6 Unpublished / 0 Code`"
+    breakdown: "`8 Full / 0 Reachable / 6 Unpublished / 5 Code`"
   },
   TestPlan: {
     liveStatus: "Partial",

@@ -34,6 +34,68 @@ export type CheckClient = {
     task_id: string;
     status?: string;
   }>;
+  updateIssueStatus: (input: {
+    task_id: string;
+    status: "0" | "2" | "5";
+    comment: string;
+    merge_key: string;
+    merge_id?: string;
+    job_id?: string;
+    operator?: string;
+  }) => Promise<{
+    task_id: string;
+    merge_key: string;
+    status?: string;
+    result?: string;
+    raw: Record<string, unknown>;
+  }>;
+  createPdfAsyncJob: (input: {
+    task_id: string;
+    project_name: string;
+  }) => Promise<{
+    task_id: string;
+    async_job_id?: string | number;
+    time_ask?: number;
+    raw: Record<string, unknown>;
+  }>;
+  updateCodeGate: (input: {
+    task_id: string;
+    operator?: string;
+    review_data: Array<{
+      compare_type: string;
+      is_check: 0 | 1;
+      name: string;
+      value: number;
+    }>;
+  }) => Promise<{
+    task_id: string;
+    status?: string;
+    result?: string;
+    raw: Record<string, unknown>;
+  }>;
+  updateIgnoreFiles: (input: {
+    task_id: string;
+    nodes: Array<{
+      name?: string;
+      file_path?: string;
+      is_leaf?: boolean;
+      checkbox_status?: "unchecked" | "all";
+    }>;
+  }) => Promise<{
+    task_id: string;
+    result?: string;
+    raw: Record<string, unknown>;
+  }>;
+  updateCheckMode: (input: {
+    task_id: string;
+    mr_check_mode: 0 | 4 | 5;
+    operator?: string;
+  }) => Promise<{
+    task_id: string;
+    status?: string;
+    result?: string;
+    raw: Record<string, unknown>;
+  }>;
   listTasks: (input: {
     page: number;
     page_size: number;
@@ -814,6 +876,89 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
       return {
         task_id: item.task_id ?? input.task_id,
         status: item.status === undefined ? undefined : String(item.status)
+      };
+    },
+    async updateIssueStatus(input) {
+      const response = await _http.post("/v1/defect/issue-status", {
+        taskId: input.task_id,
+        mergeId: input.merge_id,
+        jobId: input.job_id,
+        status: input.status,
+        comment: input.comment,
+        mergeKey: input.merge_key,
+        operator: input.operator
+      });
+      const payload = readResultPayload(response);
+
+      return {
+        task_id: input.task_id,
+        merge_key: input.merge_key,
+        status: typeof payload.status === "string" ? payload.status : undefined,
+        result: typeof payload.result === "string" ? payload.result : undefined,
+        raw: payload
+      };
+    },
+    async createPdfAsyncJob(input) {
+      const response = await _http.put(`/v1/tasks/${encodeURIComponent(input.task_id)}/pdf-async-job${buildQuery({
+        project_name: input.project_name
+      })}`, {});
+      const payload = readResultPayload(response);
+
+      return {
+        task_id: input.task_id,
+        async_job_id: typeof payload.asyncJobId === "string" || typeof payload.asyncJobId === "number" ? payload.asyncJobId : undefined,
+        time_ask: readOptionalNumber(payload.timeAsk),
+        raw: payload
+      };
+    },
+    async updateCodeGate(input) {
+      const response = await _http.put("/v1/task/code-gate", {
+        id: input.task_id,
+        reviewData: input.review_data.map((item) => ({
+          compareType: item.compare_type,
+          isCheck: item.is_check,
+          name: item.name,
+          value: item.value
+        }))
+      }, input.operator ? { headers: { operator: input.operator } } : undefined);
+      const payload = readResultPayload(response);
+
+      return {
+        task_id: input.task_id,
+        status: typeof payload.status === "string" ? payload.status : undefined,
+        result: typeof payload.result === "string" ? payload.result : undefined,
+        raw: payload
+      };
+    },
+    async updateIgnoreFiles(input) {
+      const response = await _http.put(`/v4/task/${encodeURIComponent(input.task_id)}/ignore-files`, {
+        nodes: input.nodes.map((item) => ({
+          name: item.name,
+          file_path: item.file_path,
+          is_leaf: item.is_leaf,
+          checkbox_status: item.checkbox_status
+        }))
+      });
+      const payload = readResultPayload(response);
+
+      return {
+        task_id: input.task_id,
+        result: typeof payload.result === "string" ? payload.result : undefined,
+        raw: payload
+      };
+    },
+    async updateCheckMode(input) {
+      const response = await _http.put("/v1/task/check-mode", {
+        id: input.task_id,
+        mrCheckMode: input.mr_check_mode
+      }, input.operator ? { headers: { operator: input.operator } } : undefined);
+      const payload = readResultPayload(response);
+
+      return {
+        task_id: input.task_id,
+        status: typeof payload.status === "string" ? payload.status : undefined,
+        result: typeof payload.result === "string" ? payload.result : undefined,
+        raw: payload
       };
     },
     async listTasks(input) {
