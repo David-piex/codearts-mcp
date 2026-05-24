@@ -154,6 +154,20 @@ export const checkGetCriterionsetInput = z.object({
   operator: z.string().min(1).optional()
 });
 
+export const checkGetProjectConfigInput = z.object({
+  id: idSchema,
+  operator: z.string().min(1).optional()
+});
+
+export const checkListConfigItemsInput = z.object({
+  ids: z.array(idSchema).min(1)
+});
+
+export const checkGetMeasureTotalInput = z.object({
+  task_id: idSchema,
+  query: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).default({})
+});
+
 export const checkListAllCriterionsetsInput = pagingSchema.extend({
   languages: z.string().min(1).optional(),
   search: z.string().min(1).optional(),

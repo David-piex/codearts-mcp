@@ -47,7 +47,14 @@ export const productCoverageConfigs: ProductCoverageConfig[] = [
     module: "Check",
     docPath: "tmp/pdf-text/_____CodeArts_Check_API__.txt",
     clientPaths: ["src/products/check/client.ts"],
-    toolNames: checkToolNames
+    toolNames: checkToolNames,
+    endpointAliases: {
+      "GET /v1/simple-": "GET /v1/simple-query/{id}",
+      "POST /v1/config-": "POST /v1/config-items"
+    },
+    ignoredEndpoints: {
+      "POST /v1/relations": "write endpoint for updating ruleset-rule relations; not exposed as a read MCP tool"
+    }
   },
   {
     family: "deploy",

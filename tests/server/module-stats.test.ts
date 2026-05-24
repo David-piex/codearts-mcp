@@ -5,7 +5,7 @@ import {
   collectModuleStats,
   collectProductToolStats,
   renderModuleStatsMarkdown,
-  renderModuleStatsReportJson
+  renderModuleStatsReportJson,
 } from "../../src/server/module-stats.js";
 import { collectProductToolManifest } from "../../src/server/tool-manifest.js";
 
@@ -20,13 +20,19 @@ describe("classifyToolAccess", () => {
     expect(classifyToolAccess("deploy_retry_v4_deploy_record")).toBe("write");
     expect(classifyToolAccess("pipeline_approve_run")).toBe("write");
     expect(classifyToolAccess("pipeline_switch_strategy")).toBe("write");
-    expect(classifyToolAccess("pipeline_inherit_project_strategy")).toBe("write");
+    expect(classifyToolAccess("pipeline_inherit_project_strategy")).toBe(
+      "write",
+    );
     expect(classifyToolAccess("req_batch_update_work_items")).toBe("write");
     expect(classifyToolAccess("req_change_release_plan_status")).toBe("write");
     expect(classifyToolAccess("req_leave_project")).toBe("write");
     expect(classifyToolAccess("req_upload_work_item_image")).toBe("write");
-    expect(classifyToolAccess("repo_associate_branch_work_items")).toBe("write");
-    expect(classifyToolAccess("repo_bulk_delete_protected_branches")).toBe("write");
+    expect(classifyToolAccess("repo_associate_branch_work_items")).toBe(
+      "write",
+    );
+    expect(classifyToolAccess("repo_bulk_delete_protected_branches")).toBe(
+      "write",
+    );
   });
 });
 
@@ -35,12 +41,12 @@ describe("collectModuleStats", () => {
     expect(collectModuleStats()).toEqual([
       { module: "Req", total: 243, read: 148, write: 95 },
       { module: "Repo", total: 187, read: 141, write: 46 },
-      { module: "Pipeline", total: 108, read: 72, write: 36 },
-      { module: "Check", total: 64, read: 60, write: 4 },
+      { module: "Pipeline", total: 109, read: 72, write: 37 },
+      { module: "Check", total: 67, read: 63, write: 4 },
       { module: "TestPlan", total: 238, read: 228, write: 10 },
       { module: "Deploy", total: 74, read: 57, write: 17 },
       { module: "Build", total: 79, read: 70, write: 9 },
-      { module: "Artifact", total: 33, read: 31, write: 2 }
+      { module: "Artifact", total: 37, read: 31, write: 6 },
     ]);
   });
 
@@ -48,20 +54,22 @@ describe("collectModuleStats", () => {
     expect(collectProductToolStats()).toEqual({
       modules: 8,
       total: collectProductToolManifest().length,
-      read: 807,
-      write: 219
+      read: 810,
+      write: 224,
     });
   });
 
   it("renders a markdown report from the current stats", () => {
-    expect(renderModuleStatsMarkdown()).toContain("| Module | Total | Read | Write |");
+    expect(renderModuleStatsMarkdown()).toContain(
+      "| Module | Total | Read | Write |",
+    );
     expect(renderModuleStatsMarkdown()).toContain("| Deploy | 74 | 57 | 17 |");
     expect(renderModuleStatsMarkdown()).toContain("- Product modules: `8`");
     expect(renderModuleStatsMarkdown()).toContain(
-      `- Product tools: \`${collectProductToolManifest().length}\``
+      `- Product tools: \`${collectProductToolManifest().length}\``,
     );
     expect(renderModuleStatsMarkdown()).toContain(
-      `- Shared HTTP total with auth tools: \`${collectHttpToolTotal()}\``
+      `- Shared HTTP total with auth tools: \`${collectHttpToolTotal()}\``,
     );
   });
 
@@ -70,20 +78,20 @@ describe("collectModuleStats", () => {
       modules: [
         { module: "Req", total: 243, read: 148, write: 95 },
         { module: "Repo", total: 187, read: 141, write: 46 },
-        { module: "Pipeline", total: 108, read: 72, write: 36 },
-        { module: "Check", total: 64, read: 60, write: 4 },
+        { module: "Pipeline", total: 109, read: 72, write: 37 },
+        { module: "Check", total: 67, read: 63, write: 4 },
         { module: "TestPlan", total: 238, read: 228, write: 10 },
         { module: "Deploy", total: 74, read: 57, write: 17 },
         { module: "Build", total: 79, read: 70, write: 9 },
-        { module: "Artifact", total: 33, read: 31, write: 2 }
+        { module: "Artifact", total: 37, read: 31, write: 6 },
       ],
       totals: {
         modules: 8,
         total: collectProductToolManifest().length,
-        read: 807,
-        write: 219,
-        httpTotalWithAuth: collectHttpToolTotal()
-      }
+        read: 810,
+        write: 224,
+        httpTotalWithAuth: collectHttpToolTotal(),
+      },
     });
   });
 });

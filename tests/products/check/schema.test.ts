@@ -2,6 +2,9 @@ import { describe, expect, it } from "vitest";
 import {
   checkCreateTaskInput,
   checkDetectTaskLanguageInput,
+  checkGetMeasureTotalInput,
+  checkGetProjectConfigInput,
+  checkListConfigItemsInput,
   checkListCodehubRepositoriesInput,
   checkListTaskAllFilesInput,
   checkListTaskIssuesInput,
@@ -101,6 +104,34 @@ describe("check schemas", () => {
       search: "demo",
       page: 1,
       page_size: 20
+    });
+  });
+
+  it("accepts config and measure read schemas", () => {
+    expect(checkGetProjectConfigInput.parse({
+      id: "config-1",
+      operator: "szh"
+    })).toEqual({
+      id: "config-1",
+      operator: "szh"
+    });
+
+    expect(checkListConfigItemsInput.parse({
+      ids: ["ruleset-1", "ruleset-2"]
+    })).toEqual({
+      ids: ["ruleset-1", "ruleset-2"]
+    });
+
+    expect(checkGetMeasureTotalInput.parse({
+      task_id: "task-1",
+      query: {
+        branch: "main"
+      }
+    })).toEqual({
+      task_id: "task-1",
+      query: {
+        branch: "main"
+      }
     });
   });
 });

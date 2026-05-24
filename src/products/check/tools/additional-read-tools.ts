@@ -5,9 +5,12 @@ import {
   checkGetDefectFileContentInput,
   checkGetDefectMetricTrendInput,
   checkGetSingleDefectInput,
+  checkGetMeasureTotalInput,
+  checkGetProjectConfigInput,
   checkGetTaskByIdInput,
   checkGetTaskIssueStatisticsInput,
   checkGetTaskMeasuresInput,
+  checkListConfigItemsInput,
   checkListDefectNextStatusesInput
 } from "../schemas.js";
 import { formatCheckRecordListText, mapCheckRecordItem, mapCheckRecordList } from "./generic-read-tools.js";
@@ -40,6 +43,12 @@ type Client = {
     query?: Record<string, string | number | boolean>;
   }) => Promise<{ raw: RawRecord }>;
   getTaskMeasures: (input: {
+    task_id: string;
+    query?: Record<string, string | number | boolean>;
+  }) => Promise<{ task_id: string; raw: RawRecord }>;
+  getProjectConfig: (input: { id: string; operator?: string }) => Promise<{ id: string; raw: RawRecord }>;
+  listConfigItems: (input: { ids: string[] }) => Promise<{ items: RawRecord[]; total?: number; raw: RawRecord }>;
+  getMeasureTotal: (input: {
     task_id: string;
     query?: Record<string, string | number | boolean>;
   }) => Promise<{ task_id: string; raw: RawRecord }>;
@@ -126,6 +135,30 @@ export function createCheckGetTaskMeasuresHandler(client: Client) {
     const parsed = checkGetTaskMeasuresInput.parse(input);
     const response = await client.getTaskMeasures(parsed);
     return itemResponse(mapCheckRecordItem("Loaded Check task measures", response.task_id, "measures", response.raw));
+  };
+}
+
+export function createCheckGetProjectConfigHandler(client: Client) {
+  return async (input: unknown) => {
+    const parsed = checkGetProjectConfigInput.parse(input);
+    const response = await client.getProjectConfig(parsed);
+    return itemResponse(mapCheckRecordItem("Loaded Check project config", response.id, "config", response.raw));
+  };
+}
+
+export function createCheckListConfigItemsHandler(client: Client) {
+  return async (input: unknown) => {
+    const parsed = checkListConfigItemsInput.parse(input);
+    const response = await client.listConfigItems(parsed);
+    return listResponse(mapCheckRecordList(response.items, response.total, "config items", "configItem"), response.raw);
+  };
+}
+
+export function createCheckGetMeasureTotalHandler(client: Client) {
+  return async (input: unknown) => {
+    const parsed = checkGetMeasureTotalInput.parse(input);
+    const response = await client.getMeasureTotal(parsed);
+    return itemResponse(mapCheckRecordItem("Loaded Check measure total", response.task_id, "measures", response.raw));
   };
 }
 

@@ -6,7 +6,7 @@
 
 模块：`代码检查`
 
-API 数量：`64`
+API 数量：`67`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
@@ -778,6 +778,65 @@ API 数量：`64`
 }
 ```
 
+### check_get_measure_total
+
+所属模块：`代码检查`
+
+说明：获取代码检查的measuretotal。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "check_get_measure_total",
+    "arguments": {
+      "task_id": "<task_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `task_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `task_id` ↔ 原始 CodeArts 代码检查 API 同名字段 `task_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>任务 ID，用于定位对应的 CodeArts 资源。 |
+| `query` | 否 | `object` | {} | 字段对应：<br>MCP 字段 `query` ↔ 原始 CodeArts 代码检查 API 同名字段 `query`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>查询条件或搜索表达式，用于过滤列表结果；具体支持的字段由对应接口决定。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "query": {
+      "type": "object",
+      "additionalProperties": {
+        "type": [
+          "string",
+          "number",
+          "boolean"
+        ]
+      },
+      "default": {}
+    }
+  },
+  "required": [
+    "task_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### check_get_metrics
 
 所属模块：`代码检查`
@@ -825,6 +884,58 @@ API 数量：`64`
   "required": [
     "project_id",
     "task_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### check_get_project_config
+
+所属模块：`代码检查`
+
+说明：获取代码检查的项目配置。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "check_get_project_config",
+    "arguments": {
+      "id": "<id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `id` ↔ 原始 CodeArts 代码检查 API 同名字段 `id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>资源 ID，表示当前接口操作对象的唯一标识。具体含义由所在 API 决定，例如工作项 ID、记录 ID、任务 ID。 |
+| `operator` | 否 | `string` |  | 字段对应：<br>MCP 字段 `operator` ↔ 原始 CodeArts 代码检查 API 同名字段 `operator`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>操作人标识，表示执行本次操作的用户。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "operator": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "id"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -1968,6 +2079,57 @@ API 数量：`64`
       "minLength": 1
     }
   },
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### check_list_config_items
+
+所属模块：`代码检查`
+
+说明：查询代码检查的配置项。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "check_list_config_items",
+    "arguments": {
+      "ids": "<ids>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `ids` | 是 | `array<string>` |  | 字段对应：<br>MCP 字段 `ids` ↔ 原始 CodeArts 代码检查 API 同名字段 `ids`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    }
+  },
+  "required": [
+    "ids"
+  ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
 }

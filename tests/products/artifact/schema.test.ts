@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { artifactGetFileTreeInput, artifactListRepositoriesInput } from "../../../src/products/artifact/schemas.js";
+import {
+  artifactCreateRepositoryInput,
+  artifactDeleteTrashRepositoriesInput,
+  artifactGetFileTreeInput,
+  artifactListRepositoriesInput,
+  artifactRestoreTrashRepositoriesInput,
+  artifactUpdateRepositoryInput
+} from "../../../src/products/artifact/schemas.js";
 
 describe("artifact schemas", () => {
   it("accepts repository list query fields from the official API", () => {
@@ -32,5 +39,51 @@ describe("artifact schemas", () => {
     });
 
     expect(parsed.path).toBe("/");
+  });
+
+  it("defaults repository mutation inputs to dry run", () => {
+    expect(artifactCreateRepositoryInput.parse({
+      format: "maven2",
+      type: "hosted",
+      repository_name: "libs-release",
+      includes_pattern: "**/*"
+    })).toEqual({
+      format: "maven2",
+      type: "hosted",
+      repository_name: "libs-release",
+      includes_pattern: "**/*",
+      params: {},
+      dry_run: true
+    });
+
+    expect(artifactUpdateRepositoryInput.parse({
+      repo_name: "libs-release",
+      format: "maven2",
+      repository_ids: ["repo-1"],
+      includes_pattern: "**/*"
+    })).toEqual({
+      repo_name: "libs-release",
+      format: "maven2",
+      repository_ids: ["repo-1"],
+      includes_pattern: "**/*",
+      params: {},
+      dry_run: true
+    });
+
+    const trashItem = {
+      id: "repo-1",
+      format: "maven2",
+      uri: "libs-release",
+      status: "deleted"
+    };
+
+    expect(artifactRestoreTrashRepositoriesInput.parse({ items: [trashItem] })).toEqual({
+      items: [trashItem],
+      dry_run: true
+    });
+    expect(artifactDeleteTrashRepositoriesInput.parse({ items: [trashItem] })).toEqual({
+      items: [trashItem],
+      dry_run: true
+    });
   });
 });

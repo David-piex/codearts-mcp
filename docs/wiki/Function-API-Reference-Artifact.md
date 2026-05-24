@@ -6,11 +6,134 @@
 
 模块：`制品仓`
 
-API 数量：`33`
+API 数量：`37`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
 ## API 清单
+
+### artifact_create_repository
+
+所属模块：`制品仓`
+
+说明：创建制品仓的仓库。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "artifact_create_repository",
+    "arguments": {
+      "format": "<format>",
+      "type": "<type>",
+      "repository_name": "<repository_name>",
+      "includes_pattern": "<includes_pattern>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `format` | 是 | `string` |  | 字段对应：<br>MCP 字段 `format` ↔ 原始 CodeArts 制品仓 API 同名字段 `format`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>制品仓仓库格式或制品格式，例如 maven、npm、pypi、generic、docker 等；实际可选值以制品仓配置为准。 |
+| `type` | 是 | `string` |  | 字段对应：<br>MCP 字段 `type` ↔ 原始 CodeArts 制品仓 API 同名字段 `type`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>类型字段，用于区分资源类别、操作类别或查询类别；具体取值以该接口的业务对象为准。 |
+| `repository_name` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repository_name` ↔ 原始 CodeArts 制品仓 API 同名字段 `repository_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>仓库名称。 |
+| `includes_pattern` | 是 | `string` |  | 字段对应：<br>MCP 字段 `includes_pattern` ↔ 原始 CodeArts 制品仓 API 同名字段 `includes_pattern`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `project_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 制品仓 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `description` | 否 | `string` |  | 字段对应：<br>MCP 字段 `description` ↔ 原始 CodeArts 制品仓 API 同名字段 `description`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
+| `share_right` | 否 | `string` |  | 字段对应：<br>MCP 字段 `share_right` ↔ 原始 CodeArts 制品仓 API 同名字段 `share_right`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `params` | 否 | `object` | {} | 字段对应：<br>MCP 字段 `params` ↔ 原始 CodeArts 制品仓 API 同名字段 `params`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>参数对象，承载接口需要透传给下游任务、部署步骤或流水线的键值配置。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "format": {
+      "type": "string",
+      "minLength": 1
+    },
+    "type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repository_name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 50
+    },
+    "includes_pattern": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "share_right": {
+      "type": "string",
+      "minLength": 1
+    },
+    "params": {
+      "type": "object",
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "number"
+          },
+          {
+            "type": "boolean"
+          },
+          {
+            "type": "null"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        ]
+      },
+      "default": {}
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "format",
+    "type",
+    "repository_name",
+    "includes_pattern"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
 
 ### artifact_delete_file
 
@@ -85,6 +208,94 @@ API 数量：`33`
     "repo_name",
     "path",
     "format"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### artifact_delete_trash_repositories
+
+所属模块：`制品仓`
+
+说明：删除制品仓的trash仓库。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "artifact_delete_trash_repositories",
+    "arguments": {
+      "items": "<items>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `items` | 是 | `array<object>` |  | 字段对应：<br>MCP 字段 `items` ↔ 原始 CodeArts 制品仓 API 同名字段 `items`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "format": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uri": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "type": "string",
+            "minLength": 1
+          },
+          "include_pattern": {
+            "type": "string",
+            "minLength": 1
+          },
+          "includes_pattern": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "id",
+          "format",
+          "uri",
+          "status"
+        ],
+        "additionalProperties": true
+      },
+      "minItems": 1
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "items"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -1333,6 +1544,94 @@ API 数量：`33`
 }
 ```
 
+### artifact_restore_trash_repositories
+
+所属模块：`制品仓`
+
+说明：执行制品仓的trash仓库。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "artifact_restore_trash_repositories",
+    "arguments": {
+      "items": "<items>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `items` | 是 | `array<object>` |  | 字段对应：<br>MCP 字段 `items` ↔ 原始 CodeArts 制品仓 API 同名字段 `items`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "format": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uri": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "type": "string",
+            "minLength": 1
+          },
+          "include_pattern": {
+            "type": "string",
+            "minLength": 1
+          },
+          "includes_pattern": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "id",
+          "format",
+          "uri",
+          "status"
+        ],
+        "additionalProperties": true
+      },
+      "minItems": 1
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "items"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### artifact_search_artifacts
 
 所属模块：`制品仓`
@@ -2132,6 +2431,137 @@ API 数量：`33`
   },
   "required": [
     "project_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### artifact_update_repository
+
+所属模块：`制品仓`
+
+说明：更新制品仓的仓库。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "artifact_update_repository",
+    "arguments": {
+      "repo_name": "<repo_name>",
+      "format": "<format>",
+      "repository_ids": "<repository_ids>",
+      "includes_pattern": "<includes_pattern>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `repo_name` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repo_name` ↔ 原始 CodeArts 制品仓 API 同名字段 `repo_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>仓库名称。制品仓场景表示制品仓仓库名；Repo 场景表示代码仓库名。 |
+| `format` | 是 | `string` |  | 字段对应：<br>MCP 字段 `format` ↔ 原始 CodeArts 制品仓 API 同名字段 `format`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>制品仓仓库格式或制品格式，例如 maven、npm、pypi、generic、docker 等；实际可选值以制品仓配置为准。 |
+| `repository_ids` | 是 | `array<string>` |  | 字段对应：<br>MCP 字段 `repository_ids` ↔ 原始 CodeArts 制品仓 API 同名字段 `repository_ids`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>仓库 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `includes_pattern` | 是 | `string` |  | 字段对应：<br>MCP 字段 `includes_pattern` ↔ 原始 CodeArts 制品仓 API 同名字段 `includes_pattern`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `description` | 否 | `string` |  | 字段对应：<br>MCP 字段 `description` ↔ 原始 CodeArts 制品仓 API 同名字段 `description`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
+| `deployment_policy` | 否 | `string` |  | 字段对应：<br>MCP 字段 `deployment_policy` ↔ 原始 CodeArts 制品仓 API 同名字段 `deployment_policy`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `auto_clean_snapshot` | 否 | `boolean` |  | 字段对应：<br>MCP 字段 `auto_clean_snapshot` ↔ 原始 CodeArts 制品仓 API 同名字段 `auto_clean_snapshot`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `snapshot_alive_days` | 否 | `string` |  | 字段对应：<br>MCP 字段 `snapshot_alive_days` ↔ 原始 CodeArts 制品仓 API 同名字段 `snapshot_alive_days`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `params` | 否 | `object` | {} | 字段对应：<br>MCP 字段 `params` ↔ 原始 CodeArts 制品仓 API 同名字段 `params`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>参数对象，承载接口需要透传给下游任务、部署步骤或流水线的键值配置。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "repo_name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 50
+    },
+    "format": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repository_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "includes_pattern": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "deployment_policy": {
+      "type": "string",
+      "minLength": 1
+    },
+    "auto_clean_snapshot": {
+      "type": "boolean"
+    },
+    "snapshot_alive_days": {
+      "type": "string",
+      "minLength": 1
+    },
+    "params": {
+      "type": "object",
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "number"
+          },
+          {
+            "type": "boolean"
+          },
+          {
+            "type": "null"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        ]
+      },
+      "default": {}
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "repo_name",
+    "format",
+    "repository_ids",
+    "includes_pattern"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

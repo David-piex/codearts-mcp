@@ -1,6 +1,7 @@
 export const pipelineToolNames = [
   "pipeline_list_publishers",
   "pipeline_list_available_publishers",
+  "pipeline_upload_publisher_icon",
   "pipeline_list_stage_plugins",
   "pipeline_list_base_plugins",
   "pipeline_list_base_plugins_paged",

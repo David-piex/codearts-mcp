@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { createPipelineClient } from "../../../src/products/pipeline/client.js";
+import { pipelineUploadPublisherIconInput } from "../../../src/products/pipeline/schemas.js";
 
 function createClient(
   transport: Record<string, unknown>,
@@ -624,6 +625,20 @@ function createRuleContentGroup<T extends Record<string, unknown>>(overrides?: T
 }
 
 describe("createPipelineClient", () => {
+  it("defaults publisher icon uploads to dry-run", () => {
+    const parsed = pipelineUploadPublisherIconInput.parse({
+      domain_id: "domain-1",
+      publisher_en_name: "demoPublisher",
+      file_name: "icon.png",
+      file_content: "png-bytes"
+    });
+
+    expect(parsed).toMatchObject({
+      content_type: "application/octet-stream",
+      dry_run: true
+    });
+  });
+
   it("supports pipelines field when listing pipelines", async () => {
     const client = createClient({
       post: async () => ({
@@ -3406,6 +3421,46 @@ describe("createPipelineClient", () => {
         version: "1.0.0"
       }
     });
+  });
+
+  it("uploads publisher icons to the documented multipart endpoint", async () => {
+    let requestedPath = "";
+    let uploadedFileName = "";
+    let uploadedFileText = "";
+    let uploadedContentType = "";
+    const client = createClient({
+      postMultipart: async (path: string, body: FormData) => {
+        requestedPath = path;
+        const file = body.get("upload_file");
+        if (!(file instanceof File)) {
+          throw new Error("expected multipart publisher icon");
+        }
+
+        uploadedFileName = file.name;
+        uploadedFileText = await file.text();
+        uploadedContentType = file.type;
+
+        return "https://devops.example/icon.png";
+      }
+    });
+
+    await expect(client.uploadPublisherIcon({
+      domain_id: "domain-1",
+      publisher_en_name: "demoPublisher",
+      file_name: "icon.png",
+      file_content: "png-bytes",
+      content_type: "image/png"
+    })).resolves.toEqual({
+      url: "https://devops.example/icon.png",
+      raw: "https://devops.example/icon.png"
+    });
+
+    expect(requestedPath).toBe(
+      "/v1/domain-1/common/upload-publisher-icon?publisher_en_name=demoPublisher"
+    );
+    expect(uploadedFileName).toBe("icon.png");
+    expect(uploadedFileText).toBe("png-bytes");
+    expect(uploadedContentType).toBe("image/png");
   });
 
   it("unwraps wrapped plugin version detail payloads", async () => {

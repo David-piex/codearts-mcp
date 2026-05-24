@@ -6,7 +6,7 @@
 
 模块：`流水线`
 
-API 数量：`108`
+API 数量：`109`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
@@ -7121,6 +7121,86 @@ API 数量：`108`
     "project_id",
     "id",
     "name"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### pipeline_upload_publisher_icon
+
+所属模块：`流水线`
+
+说明：上传流水线的publishericon。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "pipeline_upload_publisher_icon",
+    "arguments": {
+      "domain_id": "<domain_id>",
+      "publisher_en_name": "<publisher_en_name>",
+      "file_name": "<file_name>",
+      "file_content": "<file_content>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `domain_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `domain_id` ↔ 原始 CodeArts 流水线 API 同名字段 `domain_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>租户账号 ID，也称 domainId，用于按租户维度查询 CodeArts 资源。 |
+| `publisher_en_name` | 是 | `string` |  | 字段对应：<br>MCP 字段 `publisher_en_name` ↔ 原始 CodeArts 流水线 API 同名字段 `publisher_en_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>publisheren名称。 |
+| `file_name` | 是 | `string` |  | 字段对应：<br>MCP 字段 `file_name` ↔ 原始 CodeArts 流水线 API 同名字段 `file_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>文件名称。 |
+| `file_content` | 是 | `string` |  | 字段对应：<br>MCP 字段 `file_content` ↔ 原始 CodeArts 流水线 API 同名字段 `file_content`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `content_type` | 否 | `string` | "application/octet-stream" | 字段对应：<br>MCP 字段 `content_type` ↔ 原始 CodeArts 流水线 API 同名字段 `content_type`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "domain_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "publisher_en_name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "file_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "file_content": {
+      "type": "string",
+      "minLength": 1
+    },
+    "content_type": {
+      "type": "string",
+      "minLength": 1,
+      "default": "application/octet-stream"
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "domain_id",
+    "publisher_en_name",
+    "file_name",
+    "file_content"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

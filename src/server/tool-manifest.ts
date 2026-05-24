@@ -94,6 +94,7 @@ const WRITE_ACTIONS = new Set([
   "quick",
   "refuse",
   "reject",
+  "restore",
   "request",
   "retry",
   "review",

@@ -47,6 +47,15 @@ export const pipelineListInput = pagingSchema.extend({
   project_id: idSchema
 });
 
+export const pipelineUploadPublisherIconInput = z.object({
+  domain_id: idSchema,
+  publisher_en_name: z.string().min(1).max(64),
+  file_name: z.string().min(1),
+  file_content: z.string().min(1),
+  content_type: z.string().min(1).default("application/octet-stream"),
+  dry_run: z.boolean().default(true)
+});
+
 export const pipelineStopRunInput = z.object({
   pipeline_id: idSchema,
   run_id: idSchema,

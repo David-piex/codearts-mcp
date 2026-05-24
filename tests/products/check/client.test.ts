@@ -1220,4 +1220,95 @@ describe("createCheckClient", () => {
       "/v4/task/task-1/check-list?page=1&page_size=10&check_type=branch&search=main"
     ]);
   });
+
+  it("uses documented config and measure endpoints", async () => {
+    const requests: Array<{ method: string; path: string; body?: unknown }> = [];
+    const client = createClient({
+      get: async (path: string) => {
+        requests.push({ method: "GET", path });
+        return {
+          result: {
+            id: "config-1",
+            name: "Default config"
+          }
+        };
+      },
+      post: async (path: string, body?: unknown) => {
+        requests.push({ method: "POST", path, body });
+        if (path.includes("/config-items")) {
+          return {
+            data: [
+              {
+                id: "rule-1",
+                name: "AvoidHardcode"
+              }
+            ],
+            total: 1
+          };
+        }
+
+        return {
+          result: {
+            taskId: "task-1",
+            defectCount: 2
+          }
+        };
+      }
+    });
+
+    await expect(client.getProjectConfig({ id: "config-1", operator: "szh" })).resolves.toEqual({
+      id: "config-1",
+      raw: {
+        id: "config-1",
+        name: "Default config"
+      }
+    });
+    await expect(client.listConfigItems({ ids: ["ruleset-1"] })).resolves.toEqual({
+      items: [
+        {
+          id: "rule-1",
+          name: "AvoidHardcode"
+        }
+      ],
+      total: 1,
+      raw: {
+        data: [
+          {
+            id: "rule-1",
+            name: "AvoidHardcode"
+          }
+        ],
+        total: 1
+      }
+    });
+    await expect(client.getMeasureTotal({ task_id: "task-1", query: { branch: "main" } })).resolves.toEqual({
+      task_id: "task-1",
+      raw: {
+        taskId: "task-1",
+        defectCount: 2
+      }
+    });
+
+    expect(requests).toEqual([
+      {
+        method: "GET",
+        path: "/v1/simple-query/config-1"
+      },
+      {
+        method: "POST",
+        path: "/v1/config-items",
+        body: {
+          ids: ["ruleset-1"]
+        }
+      },
+      {
+        method: "POST",
+        path: "/v1/measure/measure-total",
+        body: {
+          branch: "main",
+          taskId: "task-1"
+        }
+      }
+    ]);
+  });
 });

@@ -1,6 +1,10 @@
 export const artifactToolNames = [
   "artifact_list_repositories",
   "artifact_get_repository",
+  "artifact_create_repository",
+  "artifact_update_repository",
+  "artifact_restore_trash_repositories",
+  "artifact_delete_trash_repositories",
   "artifact_get_file_tree",
   "artifact_list_files",
   "artifact_get_file",
@@ -31,5 +35,5 @@ export const artifactToolNames = [
   "artifact_search_artifacts",
   "artifact_search_by_checksum",
   "artifact_show_audit",
-  "artifact_request_official_api"
+  "artifact_request_official_api",
 ];

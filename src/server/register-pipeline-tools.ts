@@ -94,6 +94,7 @@ import {
   pipelineStopRunInput,
   pipelineTogglePipelineInput,
   pipelineCreateProjectStrategyInput,
+  pipelineUploadPublisherIconInput,
   pipelineUpdateExtensionEndpointInput,
   pipelineUpdateTagInput,
   pipelineUpdateProjectStrategyInput,
@@ -214,6 +215,7 @@ import { createPipelineCreateStrategyHandler } from "../products/pipeline/tools/
 import { createPipelineUpdateStrategyHandler } from "../products/pipeline/tools/update-strategy.js";
 import { createPipelineUpdateTagHandler } from "../products/pipeline/tools/update-tag.js";
 import { createPipelineUpdateVariableGroupHandler } from "../products/pipeline/tools/update-variable-group.js";
+import { createPipelineUploadPublisherIconHandler } from "../products/pipeline/tools/upload-publisher-icon.js";
 import { createOfficialApiRequestHandler } from "../products/shared-tools/request-official-api.js";
 import { defineProductTool, registerDefinedTool } from "./product-tool-registry.js";
 import type { RateLimiter } from "./rate-limiter.js";
@@ -240,6 +242,12 @@ const pipelineToolDefinitions = {
     inputSchema: pipelineListAvailablePublishersInput,
     selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineListAvailablePublishersHandler>[0] }) => clients.pipelineClient,
     createProductHandler: createPipelineListAvailablePublishersHandler
+  }),
+  "pipeline_upload_publisher_icon": defineProductTool({
+    description: "Upload a CodeArts Pipeline publisher icon",
+    inputSchema: pipelineUploadPublisherIconInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineUploadPublisherIconHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineUploadPublisherIconHandler
   }),
   "pipeline_list_stage_plugins": defineProductTool({
     description: "List CodeArts Pipeline stage plugins",

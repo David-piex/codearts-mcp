@@ -24,16 +24,16 @@
 
 | 模块 | API 数量 | 明细文档 |
 | --- | ---: | --- |
-| 制品仓 | 33 | [Function-API-Reference-Artifact.md](./Function-API-Reference-Artifact.md) |
+| 制品仓 | 37 | [Function-API-Reference-Artifact.md](./Function-API-Reference-Artifact.md) |
 | 鉴权会话 | 2 | [Function-API-Reference-Auth-Session.md](./Function-API-Reference-Auth-Session.md) |
 | 编译构建 | 79 | [Function-API-Reference-Build.md](./Function-API-Reference-Build.md) |
-| 代码检查 | 64 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
+| 代码检查 | 67 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
 | 部署 | 74 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
-| 流水线 | 108 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
+| 流水线 | 109 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 187 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 243 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 238 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **1028** | |
+| **总计** | **1036** | |
 
 ## 字段对应
 
@@ -43,7 +43,9 @@
 
 | 工具 | 模块 | 明细文档 |
 | --- | --- | --- |
+| `artifact_create_repository` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_create_repository) |
 | `artifact_delete_file` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_delete_file) |
+| `artifact_delete_trash_repositories` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_delete_trash_repositories) |
 | `artifact_get_download_url` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_get_download_url) |
 | `artifact_get_file` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_get_file) |
 | `artifact_get_file_tree` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_get_file_tree) |
@@ -62,6 +64,7 @@
 | `artifact_list_storage_statistics` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_storage_statistics) |
 | `artifact_list_versions` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_versions) |
 | `artifact_request_official_api` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_request_official_api) |
+| `artifact_restore_trash_repositories` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_restore_trash_repositories) |
 | `artifact_search_artifacts` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_search_artifacts) |
 | `artifact_search_by_checksum` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_search_by_checksum) |
 | `artifact_show_audit` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_show_audit) |
@@ -76,6 +79,7 @@
 | `artifact_show_project_versions_count` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_show_project_versions_count) |
 | `artifact_show_user_permissions` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_show_user_permissions) |
 | `artifact_show_user_privileges` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_show_user_privileges) |
+| `artifact_update_repository` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_update_repository) |
 | `auth_clear_session` | 鉴权会话 | [查看](./Function-API-Reference-Auth-Session.md#auth_clear_session) |
 | `auth_configure_session` | 鉴权会话 | [查看](./Function-API-Reference-Auth-Session.md#auth_configure_session) |
 | `build_append_job_step` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_append_job_step) |
@@ -170,7 +174,9 @@
 | `check_get_defect_metric_trend` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_defect_metric_trend) |
 | `check_get_defect_task_statistics` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_defect_task_statistics) |
 | `check_get_domain_checkers_version` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_domain_checkers_version) |
+| `check_get_measure_total` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_measure_total) |
 | `check_get_metrics` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_metrics) |
+| `check_get_project_config` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_project_config) |
 | `check_get_single_defect` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_single_defect) |
 | `check_get_task` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_task) |
 | `check_get_task_by_id` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_task_by_id) |
@@ -192,6 +198,7 @@
 | `check_get_vpcep_authorization` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_vpcep_authorization) |
 | `check_list_all_criterionsets` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_all_criterionsets) |
 | `check_list_codehub_repositories` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_codehub_repositories) |
+| `check_list_config_items` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_config_items) |
 | `check_list_criterion_filters` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_criterion_filters) |
 | `check_list_criterions` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_criterions) |
 | `check_list_criterionsets_by_language` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_criterionsets_by_language) |
@@ -403,6 +410,7 @@
 | `pipeline_update_strategy` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_update_strategy) |
 | `pipeline_update_tag` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_update_tag) |
 | `pipeline_update_variable_group` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_update_variable_group) |
+| `pipeline_upload_publisher_icon` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_upload_publisher_icon) |
 | `repo_add_tenant_trusted_ip_address` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_add_tenant_trusted_ip_address) |
 | `repo_associate_branch_work_items` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_associate_branch_work_items) |
 | `repo_associate_remote_mirror` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_associate_remote_mirror) |

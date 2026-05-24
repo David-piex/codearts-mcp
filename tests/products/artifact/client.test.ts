@@ -758,4 +758,127 @@ describe("createArtifactClient", () => {
       total: 1
     });
   });
+
+  it("maps repository mutation endpoints and request bodies", async () => {
+    const requests: Array<{ method: string; path: string; body: unknown }> = [];
+    const client = createClient({
+      post: async (path: string, body: unknown) => {
+        requests.push({ method: "POST", path, body });
+        return { result: { status: "ok", trace_id: "trace-create" } };
+      },
+      put: async (path: string, body: unknown) => {
+        requests.push({ method: "PUT", path, body });
+        return { status: "ok", trace_id: "trace-put" };
+      },
+      delete: async (path: string, body: unknown) => {
+        requests.push({ method: "DELETE", path, body });
+        return JSON.stringify({ result: { status: "ok", trace_id: "trace-delete" } });
+      }
+    });
+
+    await expect(client.createRepository({
+      format: "maven2",
+      type: "hosted",
+      repository_name: "libs-release",
+      includes_pattern: "**/*",
+      project_id: "project-1",
+      description: "release repository",
+      share_right: "project",
+      params: { custom_flag: true }
+    })).resolves.toEqual({
+      status: "ok",
+      trace_id: "trace-create",
+      raw: {
+        status: "ok",
+        trace_id: "trace-create"
+      }
+    });
+
+    await expect(client.updateRepository({
+      repo_name: "libs-release",
+      format: "maven2",
+      repository_ids: ["repo-1"],
+      includes_pattern: "**/*",
+      description: "updated repository",
+      deployment_policy: "allow_redeploy",
+      auto_clean_snapshot: true,
+      snapshot_alive_days: "30",
+      params: { custom_flag: false }
+    })).resolves.toEqual({
+      status: "ok",
+      trace_id: "trace-put",
+      raw: {
+        status: "ok",
+        trace_id: "trace-put"
+      }
+    });
+
+    const trashItems = [
+      {
+        id: "repo-1",
+        format: "maven2",
+        uri: "libs-release",
+        status: "deleted"
+      }
+    ];
+
+    await expect(client.restoreTrashRepositories({ items: trashItems })).resolves.toEqual({
+      status: "ok",
+      trace_id: "trace-put",
+      raw: {
+        status: "ok",
+        trace_id: "trace-put"
+      }
+    });
+    await expect(client.deleteTrashRepositories({ items: trashItems })).resolves.toEqual({
+      status: "ok",
+      trace_id: "trace-delete",
+      raw: {
+        status: "ok",
+        trace_id: "trace-delete"
+      }
+    });
+
+    expect(requests).toEqual([
+      {
+        method: "POST",
+        path: "/cloudartifact/v5/artifact/",
+        body: {
+          custom_flag: true,
+          format: "maven2",
+          type: "hosted",
+          repository_name: "libs-release",
+          includes_pattern: "**/*",
+          project_id: "project-1",
+          description: "release repository",
+          share_right: "project"
+        }
+      },
+      {
+        method: "PUT",
+        path: "/cloudartifact/v5/artifact/",
+        body: {
+          custom_flag: false,
+          repo_name: "libs-release",
+          format: "maven2",
+          repository_ids: ["repo-1"],
+          includes_pattern: "**/*",
+          description: "updated repository",
+          deployment_policy: "allow_redeploy",
+          auto_clean_snapshot: true,
+          snapshot_alive_days: "30"
+        }
+      },
+      {
+        method: "PUT",
+        path: "/cloudartifact/v5/trashes",
+        body: trashItems
+      },
+      {
+        method: "DELETE",
+        path: "/cloudartifact/v5/trashes",
+        body: trashItems
+      }
+    ]);
+  });
 });

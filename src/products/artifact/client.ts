@@ -224,6 +224,49 @@ export type ArtifactClient = {
     path: string;
     deleted: boolean;
   }>;
+  createRepository: (input: {
+    format: string;
+    type: string;
+    repository_name: string;
+    includes_pattern: string;
+    project_id?: string;
+    description?: string;
+    share_right?: string;
+    params?: Record<string, unknown>;
+  }) => Promise<{
+    status?: string;
+    trace_id?: string;
+    raw: unknown;
+  }>;
+  updateRepository: (input: {
+    repo_name: string;
+    format: string;
+    repository_ids: string[];
+    includes_pattern: string;
+    description?: string;
+    deployment_policy?: string;
+    auto_clean_snapshot?: boolean;
+    snapshot_alive_days?: string;
+    params?: Record<string, unknown>;
+  }) => Promise<{
+    status?: string;
+    trace_id?: string;
+    raw: unknown;
+  }>;
+  restoreTrashRepositories: (input: {
+    items: Array<Record<string, unknown>>;
+  }) => Promise<{
+    status?: string;
+    trace_id?: string;
+    raw: unknown;
+  }>;
+  deleteTrashRepositories: (input: {
+    items: Array<Record<string, unknown>>;
+  }) => Promise<{
+    status?: string;
+    trace_id?: string;
+    raw: unknown;
+  }>;
   getDownloadUrl: (input: {
     tenant_id: string;
     project_id: string;
@@ -979,6 +1022,65 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
       return {
         path: input.path,
         deleted: true
+      };
+    },
+    async createRepository(input) {
+      const response = unwrapArtifactPayload(await _http.post("/cloudartifact/v5/artifact/", {
+        ...(input.params ?? {}),
+        format: input.format,
+        type: input.type,
+        repository_name: input.repository_name,
+        includes_pattern: input.includes_pattern,
+        project_id: input.project_id,
+        description: input.description,
+        share_right: input.share_right
+      })) as Record<string, unknown>;
+      const payload = readEnvelope(response.result) ?? response;
+
+      return {
+        status: readOptionalString(response.status) ?? readOptionalString(payload.status),
+        trace_id: readOptionalString(response.trace_id) ?? readOptionalString(payload.trace_id),
+        raw: payload
+      };
+    },
+    async updateRepository(input) {
+      const response = unwrapArtifactPayload(await _http.put("/cloudartifact/v5/artifact/", {
+        ...(input.params ?? {}),
+        repo_name: input.repo_name,
+        format: input.format,
+        repository_ids: input.repository_ids,
+        includes_pattern: input.includes_pattern,
+        description: input.description,
+        deployment_policy: input.deployment_policy,
+        auto_clean_snapshot: input.auto_clean_snapshot,
+        snapshot_alive_days: input.snapshot_alive_days
+      })) as Record<string, unknown>;
+      const payload = readEnvelope(response.result) ?? response;
+
+      return {
+        status: readOptionalString(response.status) ?? readOptionalString(payload.status),
+        trace_id: readOptionalString(response.trace_id) ?? readOptionalString(payload.trace_id),
+        raw: payload
+      };
+    },
+    async restoreTrashRepositories(input) {
+      const response = unwrapArtifactPayload(await _http.put("/cloudartifact/v5/trashes", input.items)) as Record<string, unknown>;
+      const payload = readEnvelope(response.result) ?? response;
+
+      return {
+        status: readOptionalString(response.status) ?? readOptionalString(payload.status),
+        trace_id: readOptionalString(response.trace_id) ?? readOptionalString(payload.trace_id),
+        raw: payload
+      };
+    },
+    async deleteTrashRepositories(input) {
+      const response = unwrapArtifactPayload(await _http.delete("/cloudartifact/v5/trashes", input.items)) as Record<string, unknown>;
+      const payload = readEnvelope(response.result) ?? response;
+
+      return {
+        status: readOptionalString(response.status) ?? readOptionalString(payload.status),
+        trace_id: readOptionalString(response.trace_id) ?? readOptionalString(payload.trace_id),
+        raw: payload
       };
     },
     async getDownloadUrl(input) {

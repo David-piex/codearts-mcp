@@ -8,6 +8,7 @@ import {
   checkGetAsyncJobV2Input,
   checkGetCriterionRuleInput,
   checkGetCriterionsetInput,
+  checkGetMeasureTotalInput,
   checkGetCodeHealthSvgInput,
   checkGetCodeSumMeasuresInput,
   checkGetDefectFileContentInput,
@@ -16,6 +17,7 @@ import {
   checkGetDomainCheckersVersionInput,
   checkGetConsoleLogInput,
   checkGetMetricsInput,
+  checkGetProjectConfigInput,
   checkGetSingleDefectInput,
   checkGetTenantPackageStatusInput,
   checkGetTaskByIdInput,
@@ -36,6 +38,7 @@ import {
   checkGetTransmissionNotificationInput,
   checkGetVpcepAuthorizationInput,
   checkListAllCriterionsetsInput,
+  checkListConfigItemsInput,
   checkListCriterionFiltersInput,
   checkListCriterionsInput,
   checkListCriterionsetsByLanguageInput,
@@ -72,10 +75,13 @@ import {
   createCheckGetAsyncJobV2Handler,
   createCheckGetDefectFileContentHandler,
   createCheckGetDefectMetricTrendHandler,
+  createCheckGetMeasureTotalHandler,
+  createCheckGetProjectConfigHandler,
   createCheckGetSingleDefectHandler,
   createCheckGetTaskByIdHandler,
   createCheckGetTaskIssueStatisticsHandler,
   createCheckGetTaskMeasuresHandler,
+  createCheckListConfigItemsHandler,
   createCheckListDefectNextStatusesHandler
 } from "../products/check/tools/additional-read-tools.js";
 import { createCheckDetectTaskLanguageHandler } from "../products/check/tools/detect-task-language.js";
@@ -349,6 +355,24 @@ const checkToolDefinitions = {
     inputSchema: checkGetCriterionsetInput,
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetCriterionsetHandler>[0] }) => clients.checkClient,
     createProductHandler: createCheckGetCriterionsetHandler
+  }),
+  "check_get_project_config": defineProductTool({
+    description: "Get CodeArts Check project config template",
+    inputSchema: checkGetProjectConfigInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetProjectConfigHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckGetProjectConfigHandler
+  }),
+  "check_list_config_items": defineProductTool({
+    description: "List CodeArts Check config items for rulesets",
+    inputSchema: checkListConfigItemsInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListConfigItemsHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckListConfigItemsHandler
+  }),
+  "check_get_measure_total": defineProductTool({
+    description: "Get CodeArts Check task measure total",
+    inputSchema: checkGetMeasureTotalInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetMeasureTotalHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckGetMeasureTotalHandler
   }),
   "check_list_all_criterionsets": defineProductTool({
     description: "List all CodeArts Check criterionsets",

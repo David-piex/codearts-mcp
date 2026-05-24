@@ -1,6 +1,20 @@
 import { z } from "zod";
 import { idSchema, pagingSchema } from "../../contracts/common-schemas.js";
 
+const artifactExtraParamsSchema = z.record(
+  z.string(),
+  z.union([z.string(), z.number(), z.boolean(), z.null(), z.array(z.string()), z.array(z.number())])
+);
+
+const artifactTrashItemSchema = z.object({
+  id: idSchema,
+  format: z.string().min(1),
+  uri: z.string().min(1),
+  status: z.string().min(1),
+  include_pattern: z.string().min(1).optional(),
+  includes_pattern: z.string().min(1).optional()
+}).passthrough();
+
 export const artifactListRepositoriesInput = pagingSchema.extend({
   tenant_id: idSchema,
   project_id: idSchema,
@@ -34,6 +48,41 @@ export const artifactDeleteFileInput = z.object({
   repo_name: z.string().min(1),
   path: z.string().min(1),
   format: z.string().min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const artifactCreateRepositoryInput = z.object({
+  format: z.string().min(1),
+  type: z.string().min(1),
+  repository_name: z.string().min(1).max(50),
+  includes_pattern: z.string().min(1).max(512),
+  project_id: idSchema.optional(),
+  description: z.string().max(500).optional(),
+  share_right: z.string().min(1).optional(),
+  params: artifactExtraParamsSchema.default({}),
+  dry_run: z.boolean().default(true)
+});
+
+export const artifactUpdateRepositoryInput = z.object({
+  repo_name: z.string().min(1).max(50),
+  format: z.string().min(1),
+  repository_ids: z.array(idSchema).min(1),
+  includes_pattern: z.string().min(1).max(512),
+  description: z.string().max(500).optional(),
+  deployment_policy: z.string().min(1).optional(),
+  auto_clean_snapshot: z.boolean().optional(),
+  snapshot_alive_days: z.string().min(1).optional(),
+  params: artifactExtraParamsSchema.default({}),
+  dry_run: z.boolean().default(true)
+});
+
+export const artifactRestoreTrashRepositoriesInput = z.object({
+  items: z.array(artifactTrashItemSchema).min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const artifactDeleteTrashRepositoriesInput = z.object({
+  items: z.array(artifactTrashItemSchema).min(1),
   dry_run: z.boolean().default(true)
 });
 

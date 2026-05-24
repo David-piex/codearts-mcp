@@ -722,6 +722,16 @@ export type PipelineClient = {
     items: PipelinePluginPublisher[];
     total: number;
   }>;
+  uploadPublisherIcon: (input: {
+    domain_id: string;
+    publisher_en_name: string;
+    file_name: string;
+    file_content: string;
+    content_type?: string;
+  }) => Promise<{
+    url?: string;
+    raw: unknown;
+  }>;
   listAvailablePublishers: (input: { domain_id: string }) => Promise<{
     items: PipelinePluginPublisher[];
   }>;
@@ -2455,6 +2465,31 @@ export function createPipelineClient(
 
       return {
         items: response.data ?? []
+      };
+    },
+    async uploadPublisherIcon(input) {
+      const query = new URLSearchParams({
+        publisher_en_name: input.publisher_en_name
+      });
+      const form = new FormData();
+      form.append(
+        "upload_file",
+        new Blob([Buffer.from(input.file_content)], {
+          type: input.content_type ?? "application/octet-stream"
+        }),
+        input.file_name
+      );
+
+      const response = unwrapPipelinePayload(
+        (await _http.postMultipart(
+          `/v1/${encodeURIComponent(input.domain_id)}/common/upload-publisher-icon?${query.toString()}`,
+          form
+        )) as unknown
+      );
+
+      return {
+        url: typeof response === "string" ? response : undefined,
+        raw: response
       };
     },
     async listStagePlugins(input) {

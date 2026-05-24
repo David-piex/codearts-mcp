@@ -243,6 +243,22 @@ export type CheckClient = {
     set_id: string;
     raw: Record<string, unknown>;
   }>;
+  getProjectConfig: (input: { id: string; operator?: string }) => Promise<{
+    id: string;
+    raw: Record<string, unknown>;
+  }>;
+  listConfigItems: (input: { ids: string[] }) => Promise<{
+    items: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
+  getMeasureTotal: (input: {
+    task_id: string;
+    query?: Record<string, string | number | boolean>;
+  }) => Promise<{
+    task_id: string;
+    raw: Record<string, unknown>;
+  }>;
   listAllCriterionsets: (input: {
     page: number;
     page_size: number;
@@ -1181,6 +1197,47 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
       return {
         set_id: input.set_id,
         raw: criterionset
+      };
+    },
+    async getProjectConfig(input) {
+      const response = await _http.get(
+        `/v1/simple-query/${encodeURIComponent(input.id)}`,
+        input.operator ? { headers: { operator: input.operator } } : undefined
+      );
+      const payload = readResultPayload(response);
+      const config = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        id: input.id,
+        raw: config
+      };
+    },
+    async listConfigItems(input) {
+      const response = await _http.post("/v1/config-items", {
+        ids: input.ids
+      });
+      const payload = readResultPayload(response);
+      const items = readArray<Record<string, unknown>>(
+        payload.items ?? payload.config_items ?? payload.data ?? payload.value ?? payload.list ?? (Array.isArray(response) ? response : [])
+      );
+
+      return {
+        items,
+        total: readTotal(payload, response, items.length),
+        raw: payload
+      };
+    },
+    async getMeasureTotal(input) {
+      const response = await _http.post("/v1/measure/measure-total", {
+        ...(input.query ?? {}),
+        taskId: input.task_id
+      });
+      const payload = readResultPayload(response);
+      const measures = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        task_id: input.task_id,
+        raw: measures
       };
     },
     async listAllCriterionsets(input) {
