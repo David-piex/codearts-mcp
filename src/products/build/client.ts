@@ -498,6 +498,16 @@ export type BuildClient = {
     }>;
     total?: number;
   }>;
+  listProjectJobsV3: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    keyword?: string;
+  }) => Promise<{
+    jobs: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
   getJobNotice: (input: { job_id: string }) => Promise<{
     job_id: string;
     raw: Record<string, unknown>;
@@ -2254,6 +2264,35 @@ export function createBuildClient(
       }
 
       return cached.value;
+    },
+    async listProjectJobsV3(input) {
+      const query = new URLSearchParams({
+        page_index: String(Math.max(0, input.page - 1)),
+        page_size: String(input.page_size)
+      });
+
+      if (input.keyword) {
+        query.set("search", input.keyword);
+      }
+
+      const response = await _http.get(`/v3/${encodeURIComponent(input.project_id)}/jobs?${query.toString()}`);
+      const payload = readBuildPayload(response);
+      const raw = readBuildRawRecord(payload);
+      const rawValue = readBuildPayloadValue(response);
+      const value = readBuildRawRecord(rawValue);
+      const jobs = readBuildArray<Record<string, unknown>>(
+        value.jobs ??
+          value.job_list ??
+          raw.jobs ??
+          raw.job_list
+      );
+      const total = readBuildTotal(value, raw, jobs.length);
+
+      return {
+        jobs,
+        total,
+        raw
+      };
     },
     async getJobNotice(input) {
       const response = await _http.get(`/v1/job/${encodeURIComponent(input.job_id)}/notice`);

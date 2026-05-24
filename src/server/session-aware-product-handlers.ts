@@ -26,6 +26,7 @@ import { createBuildGetRecordScriptHandler } from "../products/build/tools/get-r
 import { createBuildListBuildParameterTypesHandler } from "../products/build/tools/list-build-parameter-types.js";
 import { createBuildListBuildParametersHandler } from "../products/build/tools/list-build-parameters.js";
 import { createBuildListJobsHandler } from "../products/build/tools/list-jobs.js";
+import { createBuildListProjectJobsV3Handler } from "../products/build/tools/list-project-jobs-v3.js";
 import { createBuildListProjectRecordsHandler } from "../products/build/tools/list-project-records.js";
 import { createBuildListRecordsHandler } from "../products/build/tools/list-records.js";
 import { createBuildPrepareDeployableNodeAppHandler } from "../products/build/tools/prepare-deployable-node-app.js";
@@ -1255,6 +1256,17 @@ export function createSessionAwareBuildListBuildParameterTypesHandler(
     store,
     injectedClient,
     createBuildListBuildParameterTypesHandler
+  );
+}
+
+export function createSessionAwareBuildListProjectJobsV3Handler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createBuildListProjectJobsV3Handler>[0]
+) {
+  return createSessionAwareBuildToolHandler(
+    store,
+    injectedClient,
+    createBuildListProjectJobsV3Handler
   );
 }
 

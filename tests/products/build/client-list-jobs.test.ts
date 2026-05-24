@@ -98,6 +98,52 @@ describe("createBuildClient listJobs", () => {
     });
   });
 
+  it("uses the v3 project jobs endpoint and preserves raw job fields", async () => {
+    let requestedPath = "";
+    const client = createBuildClient({
+      get: async (path: string) => {
+        requestedPath = path;
+        return {
+          total: 1,
+          job_list: [
+            {
+              id: "job-1",
+              job_name: "gateway-build",
+              task_id: "#20250805.1",
+              last_build_time: 1754360164000
+            }
+          ]
+        };
+      }
+    } as never);
+
+    const result = await client.listProjectJobsV3(createProjectPageInput({ page: 2, page_size: 10, keyword: "gateway" }));
+
+    expect(requestedPath).toBe("/v3/project-1/jobs?page_index=1&page_size=10&search=gateway");
+    expect(result).toEqual({
+      jobs: [
+        {
+          id: "job-1",
+          job_name: "gateway-build",
+          task_id: "#20250805.1",
+          last_build_time: 1754360164000
+        }
+      ],
+      total: 1,
+      raw: {
+        total: 1,
+        job_list: [
+          {
+            id: "job-1",
+            job_name: "gateway-build",
+            task_id: "#20250805.1",
+            last_build_time: 1754360164000
+          }
+        ]
+      }
+    });
+  });
+
   it("reuses a short-lived cache for repeated identical build job list calls", async () => {
     let now = 1_000;
     const get = vi.fn(async () => ({

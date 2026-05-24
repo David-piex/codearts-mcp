@@ -63,6 +63,7 @@ export const buildToolNames = [
   "build_get_keystore_permission",
   "build_list_job_group_tree",
   "build_list_jobs",
+  "build_list_project_jobs_v3",
   "build_list_project_records",
   "build_get_info_record",
   "build_get_job",

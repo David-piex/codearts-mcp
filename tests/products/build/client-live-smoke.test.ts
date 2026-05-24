@@ -207,18 +207,20 @@ if (hasLiveEnv(process.env)) {
     const gitCodeRepositoryName = readGitCodeRepositoryName(process.env);
 
     it("lists jobs across configured projects and gets the known live job", async () => {
-      const [jobLists, job] = await Promise.all([
+      const [jobLists, projectJobsV3, job] = await Promise.all([
         Promise.all(
           projectIds.map((candidateProjectId) =>
             client.listJobs(createProjectPageInput(candidateProjectId))
           )
         ),
+        client.listProjectJobsV3(createProjectPageInput(projectId)),
         client.getJob({
           job_id: jobId
         })
       ]);
 
       expect(jobLists.every((entry) => Array.isArray(entry.jobs))).toBe(true);
+      expect(Array.isArray(projectJobsV3.jobs)).toBe(true);
       expect(job.job_id).toBe(jobId);
       expect(typeof job.name).toBe("string");
     }, 30000);

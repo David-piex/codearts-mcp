@@ -67,6 +67,7 @@ import {
   buildListOfficialTemplatesInput,
   buildListPackageSpecStatusesInput,
   buildListProjectEndpointsInput,
+  buildListProjectJobsV3Input,
   buildListProjectRecordsInput,
   buildListRecommendedOfficialTemplatesInput,
   buildListRecyclingJobsInput,
@@ -150,6 +151,7 @@ import { createBuildListJunitCoverageSummariesHandler } from "../products/build/
 import { createBuildListJobGroupTreeHandler } from "../products/build/tools/list-job-group-tree.js";
 import { createBuildListJobPermissionRolesHandler } from "../products/build/tools/list-job-permission-roles.js";
 import { createBuildListJobsHandler } from "../products/build/tools/list-jobs.js";
+import { createBuildListProjectJobsV3Handler } from "../products/build/tools/list-project-jobs-v3.js";
 import { createBuildListOfficialTemplatesHandler } from "../products/build/tools/list-official-templates.js";
 import { createBuildListPackageSpecStatusesHandler } from "../products/build/tools/list-package-spec-statuses.js";
 import { createBuildListProjectRecordsHandler } from "../products/build/tools/list-project-records.js";
@@ -183,6 +185,12 @@ const buildToolDefinitions = {
     inputSchema: buildListJobsInput,
     selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListJobsHandler>[0] }) => clients.buildClient,
     createProductHandler: createBuildListJobsHandler
+  }),
+  "build_list_project_jobs_v3": defineProductTool({
+    description: "List CodeArts Build v3 project jobs",
+    inputSchema: buildListProjectJobsV3Input,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListProjectJobsV3Handler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildListProjectJobsV3Handler
   }),
   "build_list_project_records": defineProductTool({
     description: "List CodeArts Build project records",

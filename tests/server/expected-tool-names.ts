@@ -99,6 +99,7 @@ export const expectedToolNames = [
   "build_list_official_templates",
   "build_list_package_spec_statuses",
   "build_list_project_endpoints",
+  "build_list_project_jobs_v3",
   "build_list_project_records",
   "build_list_recommended_official_templates",
   "build_list_records",

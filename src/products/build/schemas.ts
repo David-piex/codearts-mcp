@@ -5,6 +5,10 @@ export const buildListJobsInput = pagingSchema.extend({
   project_id: idSchema
 });
 
+export const buildListProjectJobsV3Input = pagingSchema.extend({
+  project_id: idSchema
+});
+
 export const buildListImageTemplatesInput = z.object({});
 
 export const buildListDefaultParametersInput = z.object({});
