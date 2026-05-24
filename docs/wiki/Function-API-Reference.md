@@ -30,10 +30,10 @@
 | 代码检查 | 64 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
 | 部署 | 74 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
 | 流水线 | 108 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
-| 代码仓库 | 185 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
+| 代码仓库 | 187 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 243 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 238 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **1026** | |
+| **总计** | **1028** | |
 
 ## 字段对应
 
@@ -427,11 +427,13 @@
 | `repo_create_repository_webhook` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_create_repository_webhook) |
 | `repo_create_tag` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_create_tag) |
 | `repo_create_tenant_kms_grant` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_create_tenant_kms_grant) |
+| `repo_create_user_ssh_key` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_create_user_ssh_key) |
 | `repo_delete_protected_branch` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_delete_protected_branch) |
 | `repo_delete_protected_tag` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_delete_protected_tag) |
 | `repo_delete_repository_webhook` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_delete_repository_webhook) |
 | `repo_delete_tag` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_delete_tag) |
 | `repo_delete_tenant_trusted_ip_address` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_delete_tenant_trusted_ip_address) |
+| `repo_delete_user_ssh_key` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_delete_user_ssh_key) |
 | `repo_export_tenant_repositories` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_export_tenant_repositories) |
 | `repo_get_branch` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_get_branch) |
 | `repo_get_commit` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_get_commit) |

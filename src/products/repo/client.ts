@@ -2479,6 +2479,16 @@ export type RepoClient = {
     keys: RepoUserSshKey[];
     total?: number;
   }>;
+  createUserSshKey: (input: {
+    title?: string | number;
+    key?: string | null;
+  }) => Promise<RepoUserSshKey>;
+  deleteUserSshKey: (input: {
+    key_id: string;
+  }) => Promise<{
+    key_id: string;
+    deleted: boolean;
+  }>;
   exportTenantRepositories: (input: {
     repository_ids?: Array<string | number>;
   }) => Promise<{
@@ -6031,6 +6041,28 @@ export function createRepoClient(
       )) as Parameters<typeof extractUserSshKeysResponse>[0];
 
       return extractUserSshKeysResponse(rawResponse);
+    },
+    async createUserSshKey(input) {
+      const rawResponse = (await _http.post(
+        "/v4/user/keys",
+        omitUndefinedFields({
+          title: input.title,
+          key: input.key
+        })
+      )) as RepoUserSshKey | { result?: RepoUserSshKey };
+
+      const payload = unwrapRepoPayload(rawResponse) as RepoUserSshKey | undefined;
+      return payload ?? {};
+    },
+    async deleteUserSshKey(input) {
+      await _http.delete(
+        `/v4/user/keys/${encodeURIComponent(input.key_id)}`
+      );
+
+      return {
+        key_id: input.key_id,
+        deleted: true
+      };
     },
     async exportTenantRepositories(input) {
       await _http.post("/v4/tenant/repositories/export", {

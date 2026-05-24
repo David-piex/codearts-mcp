@@ -6,7 +6,7 @@
 
 模块：`代码仓库`
 
-API 数量：`185`
+API 数量：`187`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
@@ -2351,6 +2351,74 @@ API 数量：`185`
 }
 ```
 
+### repo_create_user_ssh_key
+
+所属模块：`代码仓库`
+
+说明：创建代码仓库的用户sshkey。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_create_user_ssh_key",
+    "arguments": {}
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `title` | 否 | `string \| number` |  | 字段对应：<br>MCP 字段 `title` ↔ 原始 CodeArts 代码仓库 API 中的标题字段，常见原字段名为 `name`、`subject` 或 `title`。<br>标题，用于工作项、合并请求、计划等资源的主显示名称。建议简洁说明要做什么。 |
+| `key` | 否 | `string \| null` |  | 字段对应：<br>MCP 字段 `key` ↔ 原始 CodeArts 代码仓库 API 同名字段 `key`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "title": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        {
+          "type": "number"
+        }
+      ]
+    },
+    "key": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### repo_delete_protected_branch
 
 所属模块：`代码仓库`
@@ -2632,6 +2700,66 @@ API 数量：`185`
   },
   "required": [
     "ip_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### repo_delete_user_ssh_key
+
+所属模块：`代码仓库`
+
+说明：删除代码仓库的用户sshkey。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_delete_user_ssh_key",
+    "arguments": {
+      "key_id": "<key_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `key_id` | 是 | `string \| integer` |  | 字段对应：<br>MCP 字段 `key_id` ↔ 原始 CodeArts 代码仓库 API 同名字段 `key_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>key ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "key_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "integer",
+          "exclusiveMinimum": 0
+        }
+      ]
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "key_id"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

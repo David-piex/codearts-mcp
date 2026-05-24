@@ -28,6 +28,8 @@ import {
   repoListSubmodulesInput,
   repoListUserGpgKeysInput,
   repoListUserSshKeysInput,
+  repoCreateUserSshKeyInput,
+  repoDeleteUserSshKeyInput,
   repoListPersonalRepositoryImportRecordsInput,
   repoListPersonalRecentPushEventsInput,
   repoListRepositoryTemplatesInput,
@@ -265,6 +267,15 @@ describe("repo schemas", () => {
       page: 1,
       page_size: 10,
       query: "laptop"
+    });
+    expect(repoCreateUserSshKeyInput.parse({ title: "laptop", key: "ssh-rsa AAA", dry_run: false })).toEqual({
+      title: "laptop",
+      key: "ssh-rsa AAA",
+      dry_run: false
+    });
+    expect(repoDeleteUserSshKeyInput.parse({ key_id: 123 })).toEqual({
+      key_id: "123",
+      dry_run: true
     });
   });
 

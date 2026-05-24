@@ -138,6 +138,8 @@ import {
   repoListTenantTrustedIpAddressesInput,
   repoListUserGpgKeysInput,
   repoListUserSshKeysInput,
+  repoCreateUserSshKeyInput,
+  repoDeleteUserSshKeyInput,
   repoExportTenantRepositoriesInput,
   repoUpdateTenantRepoEncryptionSettingInput,
   repoCreateTenantKMSGrantInput,
@@ -327,6 +329,8 @@ import { createRepoShowProjectTenantSettingsHandler } from "../products/repo/too
 import { createRepoListTenantTrustedIpAddressesHandler } from "../products/repo/tools/list-tenant-trusted-ip-addresses.js";
 import { createRepoListUserGpgKeysHandler } from "../products/repo/tools/list-user-gpg-keys.js";
 import { createRepoListUserSshKeysHandler } from "../products/repo/tools/list-user-ssh-keys.js";
+import { createRepoCreateUserSshKeyHandler } from "../products/repo/tools/create-user-ssh-key.js";
+import { createRepoDeleteUserSshKeyHandler } from "../products/repo/tools/delete-user-ssh-key.js";
 import { createRepoExportTenantRepositoriesHandler } from "../products/repo/tools/export-tenant-repositories.js";
 import { createRepoUpdateTenantRepoEncryptionSettingHandler } from "../products/repo/tools/update-tenant-repo-encryption-setting.js";
 import { createRepoCreateTenantKmsGrantHandler } from "../products/repo/tools/create-tenant-kms-grant.js";
@@ -459,6 +463,8 @@ const repoToolDefinitions = {
   "repo_list_tenant_trusted_ip_addresses": defineProductTool({ description: "List CodeArts Repo tenant trusted IP addresses", inputSchema: repoListTenantTrustedIpAddressesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListTenantTrustedIpAddressesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListTenantTrustedIpAddressesHandler }),
   "repo_list_user_gpg_keys": defineProductTool({ description: "List CodeArts Repo current user GPG keys", inputSchema: repoListUserGpgKeysInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListUserGpgKeysHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListUserGpgKeysHandler }),
   "repo_list_user_ssh_keys": defineProductTool({ description: "List CodeArts Repo current user SSH keys", inputSchema: repoListUserSshKeysInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListUserSshKeysHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListUserSshKeysHandler }),
+  "repo_create_user_ssh_key": defineProductTool({ description: "Create CodeArts Repo current user SSH key", inputSchema: repoCreateUserSshKeyInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCreateUserSshKeyHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCreateUserSshKeyHandler }),
+  "repo_delete_user_ssh_key": defineProductTool({ description: "Delete CodeArts Repo current user SSH key", inputSchema: repoDeleteUserSshKeyInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoDeleteUserSshKeyHandler>[0] }) => clients.repoClient, createProductHandler: createRepoDeleteUserSshKeyHandler }),
   "repo_export_tenant_repositories": defineProductTool({ description: "Export CodeArts Repo tenant repositories", inputSchema: repoExportTenantRepositoriesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoExportTenantRepositoriesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoExportTenantRepositoriesHandler }),
   "repo_update_tenant_repo_encryption_setting": defineProductTool({ description: "Update CodeArts Repo tenant repo encryption setting", inputSchema: repoUpdateTenantRepoEncryptionSettingInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoUpdateTenantRepoEncryptionSettingHandler>[0] }) => clients.repoClient, createProductHandler: createRepoUpdateTenantRepoEncryptionSettingHandler }),
   "repo_create_tenant_kms_grant": defineProductTool({ description: "Create CodeArts Repo tenant KMS grant", inputSchema: repoCreateTenantKMSGrantInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCreateTenantKmsGrantHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCreateTenantKmsGrantHandler }),

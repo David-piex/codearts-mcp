@@ -847,6 +847,19 @@ export const repoListUserSshKeysInput = pagingSchema.extend({
   query: z.string().min(1).max(2000).optional()
 });
 
+export const repoCreateUserSshKeyInput = z.object({
+  title: z.union([z.string().min(1).max(1000), z.number()]).optional(),
+  key: z.union([z.string().min(1).max(1000), z.null()]).optional(),
+  dry_run: z.boolean().default(true)
+}).refine((input) => input.title !== undefined || input.key !== undefined, {
+  message: "At least one of title or key is required"
+});
+
+export const repoDeleteUserSshKeyInput = z.object({
+  key_id: z.union([z.string().min(1), z.number().int().positive()]).transform(String),
+  dry_run: z.boolean().default(true)
+});
+
 export const repoExportTenantRepositoriesInput = z.object({
   repository_ids: z.array(z.union([z.string().min(1), z.number().int().positive()])).min(1).optional(),
   dry_run: z.boolean().default(true)

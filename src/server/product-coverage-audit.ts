@@ -14,6 +14,7 @@ export type ProductCoverageEndpoint = {
   path: string;
   clientScore: number;
   matchedTools: string[];
+  ignoredReason?: string;
 };
 
 export type ProductCoverageConfig = {
@@ -22,6 +23,8 @@ export type ProductCoverageConfig = {
   docPath: string;
   clientPaths: string[];
   toolNames: readonly string[];
+  endpointAliases?: Record<string, string>;
+  ignoredEndpoints?: Record<string, string>;
 };
 
 export const productCoverageConfigs: ProductCoverageConfig[] = [
@@ -65,7 +68,15 @@ export const productCoverageConfigs: ProductCoverageConfig[] = [
     module: "Repo",
     docPath: "tmp/pdf-text/_____CodeArts_Repo_API__.txt",
     clientPaths: ["src/products/repo/client.ts"],
-    toolNames: repoToolNames
+    toolNames: repoToolNames,
+    endpointAliases: {
+      "DELETE /v1/users/sshkey/{id}": "DELETE /v4/user/keys/{key_id}",
+      "GET /v1/users/sshkey": "GET /v4/user/keys",
+      "POST /v1/users/sshkey": "POST /v4/user/keys"
+    },
+    ignoredEndpoints: {
+      "POST /v1/users/sshkey/privatekey/verify": "deprecated token-only endpoint that requires raw SSH private key input"
+    }
   },
   {
     family: "req",
@@ -178,7 +189,12 @@ function scoreClientPath(path: string, clientText: string) {
   return pathBonus + stableTokens.filter((token) => clientText.includes(token)).length;
 }
 
-function findMatchedTools(path: string, config: Pick<ProductCoverageConfig, "family" | "toolNames">) {
+function findMatchedTools(
+  endpoint: { method: string; path: string },
+  config: Pick<ProductCoverageConfig, "family" | "toolNames" | "endpointAliases">
+) {
+  const aliasKey = config.endpointAliases?.[`${endpoint.method} ${endpoint.path}`];
+  const path = aliasKey?.replace(/^[A-Z]+\s+/, "") ?? endpoint.path;
   const tokens = endpointTokens(path)
     .flatMap((token) => token.split(/[-_]/g))
     .filter((token) => token.length > 1)
@@ -206,7 +222,8 @@ export function auditProductCoverage(input: {
     .map<ProductCoverageEndpoint>((endpoint) => ({
       ...endpoint,
       clientScore: scoreClientPath(endpoint.path, clientText),
-      matchedTools: findMatchedTools(endpoint.path, input.config)
+      matchedTools: findMatchedTools(endpoint, input.config),
+      ignoredReason: input.config.ignoredEndpoints?.[`${endpoint.method} ${endpoint.path}`]
     }))
     .sort((left, right) => {
       if (left.clientScore !== right.clientScore) {
@@ -217,7 +234,7 @@ export function auditProductCoverage(input: {
 }
 
 export function findWeakProductCoverageRows(rows: ProductCoverageEndpoint[]) {
-  return rows.filter((row) => row.clientScore < 4 && row.matchedTools.length === 0);
+  return rows.filter((row) => !row.ignoredReason && row.clientScore < 4 && row.matchedTools.length === 0);
 }
 
 export function renderProductCoverageAudit(input: {

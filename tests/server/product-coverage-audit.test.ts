@@ -32,19 +32,22 @@ describe("product coverage audit", () => {
         method: "POST",
         path: "/v2/repositories/{repository_id}/missing-operation",
         clientScore: 2,
-        matchedTools: ["repo_get_repository"]
+        matchedTools: ["repo_get_repository"],
+        ignoredReason: undefined
       },
       {
         method: "GET",
         path: "/v2/repositories/{repository_id}/branches",
         clientScore: 3,
-        matchedTools: ["repo_list_branches", "repo_get_repository"]
+        matchedTools: ["repo_list_branches", "repo_get_repository"],
+        ignoredReason: undefined
       },
       {
         method: "GET",
         path: "/v2/repositories/{repository_id}",
         clientScore: 12,
-        matchedTools: ["repo_get_repository"]
+        matchedTools: ["repo_get_repository"],
+        ignoredReason: undefined
       }
     ]);
   });
@@ -59,6 +62,51 @@ describe("product coverage audit", () => {
     expect(weakRows).toEqual([
       { method: "GET", path: "/v1/missing", clientScore: 0, matchedTools: [] }
     ]);
+  });
+
+  it("maps deprecated official endpoints to their replacement tool surface", () => {
+    const rows = auditProductCoverage({
+      config: {
+        ...config,
+        toolNames: ["repo_list_user_ssh_keys"],
+        endpointAliases: {
+          "GET /v1/users/sshkey": "GET /v4/user/keys"
+        }
+      },
+      docText: "GET /v1/users/sshkey",
+      clientText: ""
+    });
+
+    expect(rows).toEqual([
+      {
+        method: "GET",
+        path: "/v1/users/sshkey",
+        clientScore: 0,
+        matchedTools: ["repo_list_user_ssh_keys"],
+        ignoredReason: undefined
+      }
+    ]);
+    expect(findWeakProductCoverageRows(rows)).toEqual([]);
+  });
+
+  it("excludes explicitly unsafe endpoints from weak coverage rows", () => {
+    const rows = auditProductCoverage({
+      config: {
+        ...config,
+        ignoredEndpoints: {
+          "POST /v1/users/sshkey/privatekey/verify": "requires raw private key input"
+        }
+      },
+      docText: "POST /v1/users/sshkey/privatekey/verify",
+      clientText: ""
+    });
+
+    expect(rows[0]).toMatchObject({
+      method: "POST",
+      path: "/v1/users/sshkey/privatekey/verify",
+      ignoredReason: "requires raw private key input"
+    });
+    expect(findWeakProductCoverageRows(rows)).toEqual([]);
   });
 
   it("renders product markdown summaries", () => {

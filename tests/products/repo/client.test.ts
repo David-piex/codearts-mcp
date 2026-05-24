@@ -289,6 +289,49 @@ describe("createRepoClient", () => {
     ]);
   });
 
+  it("uses official current user SSH key mutation paths", async () => {
+    const calls: Array<{ method: string; path: string; body?: unknown }> = [];
+    const client = createRepoClient({
+      post: async (path: string, body?: unknown) => {
+        calls.push({ method: "POST", path, body });
+        return { id: 123, title: "laptop", key: "ssh-rsa AAA", created_at: "2026-05-24T10:00:00.000+08:00" };
+      },
+      delete: async (path: string) => {
+        calls.push({ method: "DELETE", path });
+        return {};
+      }
+    } as never);
+
+    const created = await client.createUserSshKey({
+      title: "laptop",
+      key: "ssh-rsa AAA"
+    });
+    const deleted = await client.deleteUserSshKey({ key_id: "123" });
+
+    expect(created).toMatchObject({
+      id: 123,
+      title: "laptop"
+    });
+    expect(deleted).toEqual({
+      key_id: "123",
+      deleted: true
+    });
+    expect(calls).toEqual([
+      {
+        method: "POST",
+        path: "/v4/user/keys",
+        body: {
+          title: "laptop",
+          key: "ssh-rsa AAA"
+        }
+      },
+      {
+        method: "DELETE",
+        path: "/v4/user/keys/123"
+      }
+    ]);
+  });
+
   it("uses official repository log tree, v4 file content and blame paths", async () => {
     const calls: string[] = [];
     const client = createRepoClient({
