@@ -56,6 +56,7 @@ import {
   reqDeleteIterationInput,
   reqDeleteProjectModuleInput,
   reqDeleteProjectTemplateInput,
+  reqDeleteVersionV2Input,
   reqDeleteWorkItemInput,
   reqCreateWorkItemInput,
   reqBatchUpdateWorkItemsInput,
@@ -209,6 +210,7 @@ import {
   reqSearchTodoWorkItemsInput,
   reqUpdatePlanInput,
   reqUpdateReleasePlanInput,
+  reqUpdateCurrentUserNicknameInput,
   reqUpdateIpdChangeReviewFormInput,
   reqUpdateIpdFeatureSetInput,
   reqUpdateIpdLabelInput,
@@ -220,6 +222,7 @@ import {
   reqUpdatePlanImageInput,
   reqUpdateIterationInput,
   reqUpdateIterationStateInput,
+  reqUpdateVersionV2Input,
   reqUpdateCacheDataInput,
   reqUpdateCacheSettingInput,
   reqUpdateProjectModuleInput,
@@ -386,6 +389,7 @@ import { createReqQueryIterationImmovableIssuesHandler } from "../products/req/t
 import { createReqSearchMyWorkItemsHandler } from "../products/req/tools/search-my-work-items.js";
 import { createReqSearchTodoWorkItemsHandler } from "../products/req/tools/search-todo-work-items.js";
 import { createReqUpdatePlanHandler } from "../products/req/tools/update-plan.js";
+import { createReqUpdateCurrentUserNicknameHandler } from "../products/req/tools/update-current-user-nickname.js";
 import { createReqUpdatePlanImageHandler } from "../products/req/tools/update-plan-image.js";
 import { createReqUpdateReleasePlanHandler } from "../products/req/tools/update-release-plan.js";
 import { createReqUpdateIterationHandler } from "../products/req/tools/update-iteration.js";
@@ -402,6 +406,7 @@ import { createReqUpdateWorkItemCommentHandler } from "../products/req/tools/upd
 import { createReqUpdateWorkItemFlowHandler } from "../products/req/tools/update-work-item-flow.js";
 import { createReqUpdateWorkItemHandler } from "../products/req/tools/update-work-item.js";
 import { createReqUpdateWorkingHoursHandler } from "../products/req/tools/update-working-hours.js";
+import { createReqDeleteVersionV2Handler, createReqUpdateVersionV2Handler } from "../products/req/tools/version-v2-token-tools.js";
 import {
   createReqCreateWorkItemWithAttachmentV3Handler,
   createReqUploadAttachmentV3Handler,
@@ -674,6 +679,14 @@ const reqToolDefinitions = {
     createProductHandler: createReqCreateVersionV2Handler,
     rateLimitAction: "req_create_version_v2"
   }),
+  "req_update_version_v2": defineProductTool({
+    description: "Update CodeArts Req V2 version from the token-header endpoint",
+    inputSchema: reqUpdateVersionV2Input,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUpdateVersionV2Handler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqUpdateVersionV2Handler,
+    rateLimitAction: "req_update_version_v2"
+  }),
   "req_create_iteration_work_item": defineProductTool({
     description: "Create CodeArts Req iteration work item",
     inputSchema: reqCreateIterationWorkItemInput,
@@ -768,6 +781,14 @@ const reqToolDefinitions = {
     createProductHandler: createReqUpdateIterationHandler,
     rateLimitAction: "req_update_iteration"
   }),
+  "req_update_current_user_nickname": defineProductTool({
+    description: "Update the current CodeArts Req user nickname through the token-header endpoint",
+    inputSchema: reqUpdateCurrentUserNicknameInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUpdateCurrentUserNicknameHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqUpdateCurrentUserNicknameHandler,
+    rateLimitAction: "req_update_current_user_nickname"
+  }),
   "req_update_project_module": defineProductTool({
     description: "Update CodeArts Req project module",
     inputSchema: reqUpdateProjectModuleInput,
@@ -820,6 +841,14 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqDeleteIterationHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqDeleteIterationHandler,
     rateLimitAction: "req_delete_iteration"
+  }),
+  "req_delete_version_v2": defineProductTool({
+    description: "Delete CodeArts Req V2 version from the token-header endpoint",
+    inputSchema: reqDeleteVersionV2Input,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqDeleteVersionV2Handler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqDeleteVersionV2Handler,
+    rateLimitAction: "req_delete_version_v2"
   }),
   "req_delete_project_module": defineProductTool({
     description: "Delete CodeArts Req project module",

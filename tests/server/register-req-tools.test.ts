@@ -251,6 +251,18 @@ describe("registerReqTool", () => {
       {
         toolName: "req_create_work_item_with_attachment_v3",
         description: "Create a CodeArts Req work item through the V3 token-header attachment endpoint"
+      },
+      {
+        toolName: "req_update_current_user_nickname",
+        description: "Update the current CodeArts Req user nickname through the token-header endpoint"
+      },
+      {
+        toolName: "req_update_version_v2",
+        description: "Update CodeArts Req V2 version from the token-header endpoint"
+      },
+      {
+        toolName: "req_delete_version_v2",
+        description: "Delete CodeArts Req V2 version from the token-header endpoint"
       }
     ];
 

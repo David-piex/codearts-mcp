@@ -43,6 +43,24 @@ export const reqCreateVersionV2Input = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const reqUpdateVersionV2Input = z.object({
+  project_id: idSchema,
+  version_id: z.number().int().positive(),
+  name: z.string().min(1),
+  start_date: z.number().int().positive(),
+  due_date: z.number().int().positive(),
+  update_workitem_date: z.boolean().default(false),
+  x_auth_token: z.string().min(10),
+  dry_run: z.boolean().default(true)
+});
+
+export const reqDeleteVersionV2Input = z.object({
+  project_id: idSchema,
+  version_id: idSchema,
+  x_auth_token: z.string().min(10),
+  dry_run: z.boolean().default(true)
+});
+
 export const reqCreateIterationWorkItemInput = z.object({
   project_id: idSchema,
   iteration_id: idSchema,

@@ -214,6 +214,34 @@ describe("createHttpClient", () => {
     expect(result.fileName).toBe("work-items.xlsx");
   });
 
+  it("passes custom headers to PUT requests", async () => {
+    const fetcher = vi.fn().mockResolvedValue(
+      new Response(null, {
+        status: 204
+      })
+    );
+    const authHeaders = vi.fn(async ({ headers }: { headers: Record<string, string> }) => headers);
+    const client = createClient(fetcher, { authHeaders: authHeaders as never });
+
+    const result = await client.put("/v1/user", { nick_name: "Tom" }, {
+      headers: { "X-Auth-Token": "token-123456" }
+    });
+
+    expect(result).toBeNull();
+    expect(authHeaders).toHaveBeenCalledWith(expect.objectContaining({
+      headers: expect.objectContaining({
+        "X-Auth-Token": "token-123456"
+      })
+    }));
+    expect(fetcher).toHaveBeenCalledWith("https://example.com/v1/user", expect.objectContaining({
+      method: "PUT",
+      body: JSON.stringify({ nick_name: "Tom" }),
+      headers: expect.objectContaining({
+        "X-Auth-Token": "token-123456"
+      })
+    }));
+  });
+
   it("parses json-shaped provider errors even when content-type is text/html", async () => {
     const fetcher = vi.fn().mockResolvedValue(
       new Response(

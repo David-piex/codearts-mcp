@@ -20,6 +20,14 @@ export type ReqClient = {
     gender?: string;
     user_type?: string;
   }>;
+  updateCurrentUserNickname: (input: {
+    nick_name: string;
+    x_auth_token: string;
+  }) => Promise<{
+    nick_name: string;
+    updated: true;
+    response: unknown;
+  }>;
   getCurrentUserRole: (input: { project_id: string }) => Promise<{
     project_id: string;
     user_role?: number;
@@ -786,6 +794,32 @@ export type ReqClient = {
     start_date?: string;
     due_date?: string;
     status?: string;
+  }>;
+  updateVersionV2: (input: {
+    project_id: string;
+    version_id: number;
+    name: string;
+    start_date: number;
+    due_date: number;
+    update_workitem_date: boolean;
+    x_auth_token: string;
+  }) => Promise<{
+    project_id: string;
+    version_id: number;
+    name: string;
+    status?: string;
+    response: unknown;
+  }>;
+  deleteVersionV2: (input: {
+    project_id: string;
+    version_id: string;
+    x_auth_token: string;
+  }) => Promise<{
+    project_id: string;
+    version_id: string;
+    deleted: true;
+    status?: string;
+    response: unknown;
   }>;
   updateIteration: (input: {
     project_id: string;
@@ -3593,6 +3627,23 @@ export function createReqClient(
         user_type: response.user_type
       };
     },
+    async updateCurrentUserNickname(input) {
+      const response = await _http.put(
+        "/v4/user",
+        {
+          nick_name: input.nick_name
+        },
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
+      );
+
+      return {
+        nick_name: input.nick_name,
+        updated: true,
+        response
+      };
+    },
     async getCurrentUserRole(input) {
       const response = (await _http.get(
         `/v4/projects/${encodeURIComponent(input.project_id)}/user-role`
@@ -5204,6 +5255,58 @@ export function createReqClient(
         start_date: version.start_date,
         due_date: version.due_date,
         status: version.status
+      };
+    },
+    async updateVersionV2(input) {
+      const response = (await _http.post(
+        "/v2/version/update",
+        {
+          due_date: input.due_date,
+          id: input.version_id,
+          name: input.name,
+          start_date: input.start_date,
+          project_id: input.project_id,
+          update_workitem_date: input.update_workitem_date
+        },
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
+      )) as {
+        result?: unknown;
+        status?: string;
+      };
+      assertReqMutationSucceeded("update V2 version", response.status);
+
+      return {
+        project_id: input.project_id,
+        version_id: input.version_id,
+        name: input.name,
+        status: response.status,
+        response
+      };
+    },
+    async deleteVersionV2(input) {
+      const response = (await _http.post(
+        "/v2/version/delete",
+        {
+          project_id: input.project_id,
+          version_id: input.version_id
+        },
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
+      )) as {
+        result?: unknown;
+        status?: string;
+      };
+      assertReqMutationSucceeded("delete V2 version", response.status);
+
+      return {
+        project_id: input.project_id,
+        version_id: input.version_id,
+        deleted: true,
+        status: response.status,
+        response
       };
     },
     async updateIteration(input) {

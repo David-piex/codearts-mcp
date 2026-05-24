@@ -2495,6 +2495,125 @@ describe("createReqClient", () => {
     });
   });
 
+  it("maps current user nickname updates to the token-header endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    let requestedToken = "";
+    const client = createReqClient({
+      put: async (path: string, body: Record<string, unknown>, options?: { headers?: Record<string, string> }) => {
+        requestedPath = path;
+        requestedBody = body;
+        requestedToken = options?.headers?.["X-Auth-Token"] ?? "";
+
+        return null;
+      }
+    } as never);
+
+    const result = await client.updateCurrentUserNickname({
+      nick_name: "Tom",
+      x_auth_token: "token-123456"
+    });
+
+    expect(requestedPath).toBe("/v4/user");
+    expect(requestedBody).toEqual({ nick_name: "Tom" });
+    expect(requestedToken).toBe("token-123456");
+    expect(result).toEqual({
+      nick_name: "Tom",
+      updated: true,
+      response: null
+    });
+  });
+
+  it("maps V2 version updates to the token-header endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    let requestedToken = "";
+    const client = createReqClient({
+      post: async (path: string, body: Record<string, unknown>, options?: { headers?: Record<string, string> }) => {
+        requestedPath = path;
+        requestedBody = body;
+        requestedToken = options?.headers?.["X-Auth-Token"] ?? "";
+
+        return {
+          result: "",
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.updateVersionV2({
+      project_id: "p-1",
+      version_id: 26664721,
+      name: "iteration",
+      start_date: 1752854400000,
+      due_date: 1754064000000,
+      update_workitem_date: false,
+      x_auth_token: "token-123456"
+    });
+
+    expect(requestedPath).toBe("/v2/version/update");
+    expect(requestedToken).toBe("token-123456");
+    expect(requestedBody).toEqual({
+      project_id: "p-1",
+      id: 26664721,
+      name: "iteration",
+      start_date: 1752854400000,
+      due_date: 1754064000000,
+      update_workitem_date: false
+    });
+    expect(result).toEqual({
+      project_id: "p-1",
+      version_id: 26664721,
+      name: "iteration",
+      status: "success",
+      response: {
+        result: "",
+        status: "success"
+      }
+    });
+  });
+
+  it("maps V2 version deletion to the token-header endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    let requestedToken = "";
+    const client = createReqClient({
+      post: async (path: string, body: Record<string, unknown>, options?: { headers?: Record<string, string> }) => {
+        requestedPath = path;
+        requestedBody = body;
+        requestedToken = options?.headers?.["X-Auth-Token"] ?? "";
+
+        return {
+          result: "",
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.deleteVersionV2({
+      project_id: "p-1",
+      version_id: "26658661",
+      x_auth_token: "token-123456"
+    });
+
+    expect(requestedPath).toBe("/v2/version/delete");
+    expect(requestedToken).toBe("token-123456");
+    expect(requestedBody).toEqual({
+      project_id: "p-1",
+      version_id: "26658661"
+    });
+    expect(result).toEqual({
+      project_id: "p-1",
+      version_id: "26658661",
+      deleted: true,
+      status: "success",
+      response: {
+        result: "",
+        status: "success"
+      }
+    });
+  });
+
   it("maps AGC join requests to the documented token-header endpoint", async () => {
     let requestedPath = "";
     let requestedHeaders: Record<string, string> | undefined;

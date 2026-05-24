@@ -6,7 +6,7 @@
 
 模块：`需求管理`
 
-API 数量：`240`
+API 数量：`243`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
@@ -4896,6 +4896,71 @@ API 数量：`240`
   },
   "required": [
     "template_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### req_delete_version_v2
+
+所属模块：`需求管理`
+
+说明：删除需求管理的版本v2。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "req_delete_version_v2",
+    "arguments": {
+      "project_id": "<project_id>",
+      "version_id": "<version_id>",
+      "x_auth_token": "<x_auth_token>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 需求管理 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `version_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `version_id` ↔ 原始 CodeArts 需求管理 API 同名字段 `version_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>版本 ID，用于定位对应的 CodeArts 资源。 |
+| `x_auth_token` | 是 | `string` |  | 字段对应：<br>MCP 字段 `x_auth_token` ↔ 原始 CodeArts 需求管理 API 同名字段 `x_auth_token`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "x_auth_token": {
+      "type": "string",
+      "minLength": 10
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "project_id",
+    "version_id",
+    "x_auth_token"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -14480,6 +14545,66 @@ API 数量：`240`
 }
 ```
 
+### req_update_current_user_nickname
+
+所属模块：`需求管理`
+
+说明：更新需求管理的当前用户nickname。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "req_update_current_user_nickname",
+    "arguments": {
+      "nick_name": "<nick_name>",
+      "x_auth_token": "<x_auth_token>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `nick_name` | 是 | `string` |  | 字段对应：<br>MCP 字段 `nick_name` ↔ 原始 CodeArts 需求管理 API 同名字段 `nick_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>nick名称。 |
+| `x_auth_token` | 是 | `string` |  | 字段对应：<br>MCP 字段 `x_auth_token` ↔ 原始 CodeArts 需求管理 API 同名字段 `x_auth_token`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "nick_name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "x_auth_token": {
+      "type": "string",
+      "minLength": 10
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "nick_name",
+    "x_auth_token"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### req_update_ipd_change_review_form
 
 所属模块：`需求管理`
@@ -16270,6 +16395,98 @@ API 数量：`240`
     "tracker_id",
     "status_config_id",
     "new_position"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### req_update_version_v2
+
+所属模块：`需求管理`
+
+说明：更新需求管理的版本v2。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "req_update_version_v2",
+    "arguments": {
+      "project_id": "<project_id>",
+      "version_id": "<version_id>",
+      "name": "<name>",
+      "start_date": "<start_date>",
+      "due_date": "<due_date>",
+      "x_auth_token": "<x_auth_token>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 需求管理 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `version_id` | 是 | `integer` |  | 字段对应：<br>MCP 字段 `version_id` ↔ 原始 CodeArts 需求管理 API 同名字段 `version_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>版本 ID，用于定位对应的 CodeArts 资源。 |
+| `name` | 是 | `string` |  | 字段对应：<br>MCP 字段 `name` ↔ 原始 CodeArts 需求管理 API 同名字段 `name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
+| `start_date` | 是 | `integer` |  | 字段对应：<br>MCP 字段 `start_date` ↔ 原始 CodeArts 需求管理 API 同名字段 `start_date`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>开始日期，通常使用 yyyy-MM-dd 或接口要求的日期格式。 |
+| `due_date` | 是 | `integer` |  | 字段对应：<br>MCP 字段 `due_date` ↔ 原始 CodeArts 需求管理 API 同名字段 `due_date`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>截止日期，表示工作项、计划或任务期望完成时间。 |
+| `update_workitem_date` | 否 | `boolean` | false | 字段对应：<br>MCP 字段 `update_workitem_date` ↔ 原始 CodeArts 需求管理 API 同名字段 `update_workitem_date`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `x_auth_token` | 是 | `string` |  | 字段对应：<br>MCP 字段 `x_auth_token` ↔ 原始 CodeArts 需求管理 API 同名字段 `x_auth_token`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version_id": {
+      "type": "integer",
+      "exclusiveMinimum": 0
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "start_date": {
+      "type": "integer",
+      "exclusiveMinimum": 0
+    },
+    "due_date": {
+      "type": "integer",
+      "exclusiveMinimum": 0
+    },
+    "update_workitem_date": {
+      "type": "boolean",
+      "default": false
+    },
+    "x_auth_token": {
+      "type": "string",
+      "minLength": 10
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "project_id",
+    "version_id",
+    "name",
+    "start_date",
+    "due_date",
+    "x_auth_token"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
