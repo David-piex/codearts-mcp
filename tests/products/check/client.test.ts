@@ -272,6 +272,8 @@ describe("createCheckClient", () => {
     await client.listDefectNextStatuses({ query: { status_id: 1 } });
     await client.getSingleDefect({ defect_id: "defect-1", task_id: "task-1" });
     await client.getAsyncJobV2({ task_id: "task-1", async_job_id: "job-1" });
+    await client.getAsyncJob({ task_id: "task-1", async_job_id: "123" });
+    await client.getPdfFile({ task_id: "task-1", job_file: "defects/PdfFiles/report.pdf" });
     await client.getTaskMeasures({ task_id: "task-1" });
     await client.downloadLogFile({ sub_job_id: "sub-job-1" });
     await client.getDefectFileContent({
@@ -287,6 +289,8 @@ describe("createCheckClient", () => {
       "/v1/defects/next-status?status_id=1",
       "/v1/defect?defect_id=defect-1&task_id=task-1",
       "/v2/async-job?task_id=task-1&async_job_id=job-1",
+      "/v1/tasks/task-1/async-job/123",
+      "/v1/tasks/task-1/pdf-file?job_file=defects%2FPdfFiles%2Freport.pdf",
       "/v1/defects/task-measures?task_id=task-1",
       "/v1/log-file?sub_job_id=sub-job-1",
       "/v1/defects/file-content?task_id=task-1&defect_id=defect-1&file_path=src%2Fapp.ts"
@@ -1559,6 +1563,85 @@ describe("createCheckClient", () => {
           userTags: undefined,
           cwes: undefined,
           facets: "statusIds,severities"
+        }
+      }
+    ]);
+  });
+
+  it("uses documented Check export and assistant endpoints", async () => {
+    const requests: Array<{ method: string; path: string; body?: unknown }> = [];
+    const client = createClient({
+      get: async (path: string) => {
+        requests.push({ method: "GET", path });
+        if (path.includes("pdf-file")) return "%PDF-1.7";
+        return {
+          result: {
+            id: 123,
+            jobFile: "defects/PdfFiles/report.pdf",
+            jobStatus: "SUCCESS"
+          }
+        };
+      },
+      post: async (path: string, body?: unknown) => {
+        requests.push({ method: "POST", path, body });
+        return {
+          status: "success",
+          result: "风险：低 建议：保持"
+        };
+      }
+    });
+
+    await expect(client.getAsyncJob({
+      task_id: "task-1",
+      async_job_id: "123"
+    })).resolves.toEqual({
+      task_id: "task-1",
+      async_job_id: "123",
+      raw: {
+        id: 123,
+        jobFile: "defects/PdfFiles/report.pdf",
+        jobStatus: "SUCCESS"
+      }
+    });
+
+    await expect(client.getPdfFile({
+      task_id: "task-1",
+      job_file: "defects/PdfFiles/report.pdf"
+    })).resolves.toEqual({
+      task_id: "task-1",
+      job_file: "defects/PdfFiles/report.pdf",
+      raw: "%PDF-1.7"
+    });
+
+    await expect(client.extractTaskAssistantSummary({
+      project_id: "project-1",
+      task_id: "task-1",
+      merge_id: "mr-1",
+      job_id: "job-1"
+    })).resolves.toEqual({
+      task_id: "task-1",
+      summary: "风险：低 建议：保持",
+      raw: {
+        summary: "风险：低 建议：保持"
+      }
+    });
+
+    expect(requests).toEqual([
+      {
+        method: "GET",
+        path: "/v1/tasks/task-1/async-job/123"
+      },
+      {
+        method: "GET",
+        path: "/v1/tasks/task-1/pdf-file?job_file=defects%2FPdfFiles%2Freport.pdf"
+      },
+      {
+        method: "POST",
+        path: "/v1/defects/assistant-analysis/task-summary?project_id=project-1",
+        body: {
+          task_id: "task-1",
+          merge_id: "mr-1",
+          job_id: "job-1"
         }
       }
     ]);

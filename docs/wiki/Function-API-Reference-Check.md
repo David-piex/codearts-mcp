@@ -6,7 +6,7 @@
 
 模块：`代码检查`
 
-API 数量：`75`
+API 数量：`78`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
@@ -227,6 +227,121 @@ API 数量：`75`
       "default": {}
     }
   },
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### check_extract_task_assistant_summary
+
+所属模块：`代码检查`
+
+说明：执行代码检查的任务assistant摘要。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "check_extract_task_assistant_summary",
+    "arguments": {
+      "project_id": "<project_id>",
+      "task_id": "<task_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 代码检查 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `task_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `task_id` ↔ 原始 CodeArts 代码检查 API 同名字段 `task_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>任务 ID，用于定位对应的 CodeArts 资源。 |
+| `merge_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `merge_id` ↔ 原始 CodeArts 代码检查 API 同名字段 `merge_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>合并请求 ID，用于定位对应的 CodeArts 资源。 |
+| `job_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `job_id` ↔ 原始 CodeArts 代码检查 API 同名字段 `job_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>构建任务 ID，用于定位对应的 CodeArts 资源。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "task_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "merge_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "job_id": {
+      "$ref": "#/properties/project_id"
+    }
+  },
+  "required": [
+    "project_id",
+    "task_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### check_get_async_job
+
+所属模块：`代码检查`
+
+说明：获取代码检查的async任务。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "check_get_async_job",
+    "arguments": {
+      "task_id": "<task_id>",
+      "async_job_id": "<async_job_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `task_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `task_id` ↔ 原始 CodeArts 代码检查 API 同名字段 `task_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>任务 ID，用于定位对应的 CodeArts 资源。 |
+| `async_job_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `async_job_id` ↔ 原始 CodeArts 代码检查 API 同名字段 `async_job_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>async任务 ID，用于定位对应的 CodeArts 资源。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "async_job_id": {
+      "$ref": "#/properties/task_id"
+    }
+  },
+  "required": [
+    "task_id",
+    "async_job_id"
+  ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
 }
@@ -1075,6 +1190,60 @@ API 数量：`75`
   "required": [
     "project_id",
     "task_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### check_get_pdf_file
+
+所属模块：`代码检查`
+
+说明：获取代码检查的pdf文件。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "check_get_pdf_file",
+    "arguments": {
+      "task_id": "<task_id>",
+      "job_file": "<job_file>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `task_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `task_id` ↔ 原始 CodeArts 代码检查 API 同名字段 `task_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>任务 ID，用于定位对应的 CodeArts 资源。 |
+| `job_file` | 是 | `string` |  | 字段对应：<br>MCP 字段 `job_file` ↔ 原始 CodeArts 代码检查 API 同名字段 `job_file`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "job_file": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "task_id",
+    "job_file"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

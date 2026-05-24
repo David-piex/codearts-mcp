@@ -1,6 +1,8 @@
 import { type ToolResult } from "../../../contracts/tool-result.js";
 import {
   checkDownloadLogFileInput,
+  checkExtractTaskAssistantSummaryInput,
+  checkGetAsyncJobInput,
   checkGetAsyncJobV2Input,
   checkGetDefectFileContentInput,
   checkGetDefectMetricTrendInput,
@@ -8,6 +10,7 @@ import {
   checkGetSingleDefectInput,
   checkGetMeasureTotalInput,
   checkGetProjectConfigInput,
+  checkGetPdfFileInput,
   checkGetTaskByIdInput,
   checkGetTaskIssueStatisticsInput,
   checkGetTaskMeasuresInput,
@@ -82,6 +85,20 @@ type Client = {
     async_job_id?: string;
     query?: Record<string, string | number | boolean>;
   }) => Promise<{ raw: RawRecord }>;
+  getAsyncJob: (input: {
+    task_id: string;
+    async_job_id: string;
+  }) => Promise<{ task_id: string; async_job_id: string; raw: RawRecord }>;
+  getPdfFile: (input: {
+    task_id: string;
+    job_file: string;
+  }) => Promise<{ task_id: string; job_file: string; raw: RawRecord | string }>;
+  extractTaskAssistantSummary: (input: {
+    project_id: string;
+    task_id: string;
+    merge_id?: string;
+    job_id?: string;
+  }) => Promise<{ task_id: string; summary?: string; raw: RawRecord }>;
   getTaskMeasures: (input: {
     task_id: string;
     query?: Record<string, string | number | boolean>;
@@ -228,6 +245,34 @@ export function createCheckGetAsyncJobV2Handler(client: Client) {
     const parsed = checkGetAsyncJobV2Input.parse(input);
     const response = await client.getAsyncJobV2(parsed);
     return itemResponse(mapCheckRecordItem("Loaded Check async job V2", parsed.async_job_id ?? parsed.task_id ?? "async-job", "job", response.raw));
+  };
+}
+
+export function createCheckGetAsyncJobHandler(client: Client) {
+  return async (input: unknown) => {
+    const parsed = checkGetAsyncJobInput.parse(input);
+    const response = await client.getAsyncJob(parsed);
+    return itemResponse(mapCheckRecordItem("Loaded Check async job", response.async_job_id, "job", response.raw, {
+      taskId: response.task_id
+    }));
+  };
+}
+
+export function createCheckGetPdfFileHandler(client: Client) {
+  return async (input: unknown) => {
+    const parsed = checkGetPdfFileInput.parse(input);
+    const response = await client.getPdfFile(parsed);
+    return itemResponse(mapCheckRecordItem("Loaded Check PDF file", response.task_id, "pdfFile", rawRecord(response.raw), {
+      jobFile: response.job_file
+    }));
+  };
+}
+
+export function createCheckExtractTaskAssistantSummaryHandler(client: Client) {
+  return async (input: unknown) => {
+    const parsed = checkExtractTaskAssistantSummaryInput.parse(input);
+    const response = await client.extractTaskAssistantSummary(parsed);
+    return itemResponse(mapCheckRecordItem("Loaded Check task assistant summary", response.task_id, "summary", response.raw));
   };
 }
 

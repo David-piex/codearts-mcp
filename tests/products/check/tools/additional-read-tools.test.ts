@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
   createCheckDownloadLogFileHandler,
+  createCheckExtractTaskAssistantSummaryHandler,
+  createCheckGetAsyncJobHandler,
   createCheckGetMeasureTotalHandler,
+  createCheckGetPdfFileHandler,
   createCheckGetProjectConfigHandler,
   createCheckGetSingleDefectHandler,
   createCheckGetTaskByIdHandler,
@@ -77,6 +80,60 @@ describe("Check additional read tool handlers", () => {
     expect(result.structuredContent.item).toEqual({
       id: "sub-job-1",
       log: { content: "line 1" }
+    });
+  });
+
+  it("maps V1 async job and PDF file reads", async () => {
+    const asyncJobHandler = createCheckGetAsyncJobHandler({
+      getAsyncJob: async () => ({
+        task_id: "task-1",
+        async_job_id: "123",
+        raw: { id: 123, jobStatus: "SUCCESS" }
+      })
+    } as never);
+    const pdfHandler = createCheckGetPdfFileHandler({
+      getPdfFile: async () => ({
+        task_id: "task-1",
+        job_file: "defects/PdfFiles/report.pdf",
+        raw: "%PDF-1.7"
+      })
+    } as never);
+
+    await expect(asyncJobHandler({ task_id: "task-1", async_job_id: "123" })).resolves.toMatchObject({
+      structuredContent: {
+        item: {
+          id: "123",
+          taskId: "task-1",
+          job: { id: 123, jobStatus: "SUCCESS" }
+        }
+      }
+    });
+    await expect(pdfHandler({ task_id: "task-1", job_file: "defects/PdfFiles/report.pdf" })).resolves.toMatchObject({
+      structuredContent: {
+        item: {
+          id: "task-1",
+          jobFile: "defects/PdfFiles/report.pdf",
+          pdfFile: { content: "%PDF-1.7" }
+        }
+      }
+    });
+  });
+
+  it("maps assistant summary text", async () => {
+    const handler = createCheckExtractTaskAssistantSummaryHandler({
+      extractTaskAssistantSummary: async () => ({
+        task_id: "task-1",
+        summary: "风险：低 建议：保持",
+        raw: { summary: "风险：低 建议：保持" }
+      })
+    } as never);
+
+    const result = await handler({ project_id: "project-1", task_id: "task-1" });
+
+    expect(result.content[0]?.text).toContain("Loaded Check task assistant summary");
+    expect(result.structuredContent.item).toEqual({
+      id: "task-1",
+      summary: { summary: "风险：低 建议：保持" }
     });
   });
 

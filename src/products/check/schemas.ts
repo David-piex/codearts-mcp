@@ -265,6 +265,23 @@ export const checkGetAsyncJobV2Input = z.object({
   query: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).default({})
 });
 
+export const checkGetAsyncJobInput = z.object({
+  task_id: idSchema,
+  async_job_id: idSchema
+});
+
+export const checkGetPdfFileInput = z.object({
+  task_id: idSchema,
+  job_file: z.string().min(1)
+});
+
+export const checkExtractTaskAssistantSummaryInput = z.object({
+  project_id: idSchema,
+  task_id: idSchema,
+  merge_id: z.string().min(1).optional(),
+  job_id: idSchema.optional()
+});
+
 export const checkGetTaskMeasuresInput = z.object({
   task_id: idSchema,
   query: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).default({})

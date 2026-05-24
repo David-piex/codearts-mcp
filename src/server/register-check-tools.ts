@@ -5,6 +5,8 @@ import {
   checkCreateTaskInput,
   checkDetectTaskLanguageInput,
   checkDownloadLogFileInput,
+  checkExtractTaskAssistantSummaryInput,
+  checkGetAsyncJobInput,
   checkGetAsyncJobV2Input,
   checkGetCriterionRuleInput,
   checkGetCriterionsetInput,
@@ -19,6 +21,7 @@ import {
   checkGetConsoleLogInput,
   checkGetMetricsInput,
   checkModifyCriterionsetRelationsInput,
+  checkGetPdfFileInput,
   checkGetProjectConfigInput,
   checkGetSingleDefectInput,
   checkGetTenantPackageStatusInput,
@@ -80,12 +83,15 @@ import {
 import { createCheckCreateTaskHandler } from "../products/check/tools/create-task.js";
 import {
   createCheckDownloadLogFileHandler,
+  createCheckExtractTaskAssistantSummaryHandler,
+  createCheckGetAsyncJobHandler,
   createCheckGetAsyncJobV2Handler,
   createCheckGetDefectFileContentHandler,
   createCheckGetDefectMetricTrendHandler,
   createCheckGetMeasureDuplicationInfoHandler,
   createCheckGetMeasureTotalHandler,
   createCheckGetIssueFilterHandler,
+  createCheckGetPdfFileHandler,
   createCheckGetProjectConfigHandler,
   createCheckGetSingleDefectHandler,
   createCheckGetTaskByIdHandler,
@@ -461,6 +467,24 @@ const checkToolDefinitions = {
     inputSchema: checkGetAsyncJobV2Input,
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetAsyncJobV2Handler>[0] }) => clients.checkClient,
     createProductHandler: createCheckGetAsyncJobV2Handler
+  }),
+  "check_get_async_job": defineProductTool({
+    description: "Get CodeArts Check async job progress",
+    inputSchema: checkGetAsyncJobInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetAsyncJobHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckGetAsyncJobHandler
+  }),
+  "check_get_pdf_file": defineProductTool({
+    description: "Download CodeArts Check PDF report content",
+    inputSchema: checkGetPdfFileInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetPdfFileHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckGetPdfFileHandler
+  }),
+  "check_extract_task_assistant_summary": defineProductTool({
+    description: "Extract CodeArts Check task assistant summary",
+    inputSchema: checkExtractTaskAssistantSummaryInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckExtractTaskAssistantSummaryHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckExtractTaskAssistantSummaryHandler
   }),
   "check_get_task_measures": defineProductTool({
     description: "Get CodeArts Check task measures",

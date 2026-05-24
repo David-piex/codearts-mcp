@@ -392,6 +392,32 @@ export type CheckClient = {
   }) => Promise<{
     raw: Record<string, unknown>;
   }>;
+  getAsyncJob: (input: {
+    task_id: string;
+    async_job_id: string;
+  }) => Promise<{
+    task_id: string;
+    async_job_id: string;
+    raw: Record<string, unknown>;
+  }>;
+  getPdfFile: (input: {
+    task_id: string;
+    job_file: string;
+  }) => Promise<{
+    task_id: string;
+    job_file: string;
+    raw: Record<string, unknown> | string;
+  }>;
+  extractTaskAssistantSummary: (input: {
+    project_id: string;
+    task_id: string;
+    merge_id?: string;
+    job_id?: string;
+  }) => Promise<{
+    task_id: string;
+    summary?: string;
+    raw: Record<string, unknown>;
+  }>;
   getTaskMeasures: (input: {
     task_id: string;
     query?: Record<string, string | number | boolean>;
@@ -1598,6 +1624,60 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
       const job = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
 
       return { raw: job };
+    },
+    async getAsyncJob(input) {
+      const response = await _http.get(
+        `/v1/tasks/${encodeURIComponent(input.task_id)}/async-job/${encodeURIComponent(input.async_job_id)}`
+      );
+      const payload = readResultPayload(response);
+      const job = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        task_id: input.task_id,
+        async_job_id: input.async_job_id,
+        raw: job
+      };
+    },
+    async getPdfFile(input) {
+      const response = await _http.get(`/v1/tasks/${encodeURIComponent(input.task_id)}/pdf-file${buildQuery({
+        job_file: input.job_file
+      })}`);
+
+      if (typeof response === "string") {
+        return {
+          task_id: input.task_id,
+          job_file: input.job_file,
+          raw: response
+        };
+      }
+
+      const payload = readResultPayload(response);
+      const file = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        task_id: input.task_id,
+        job_file: input.job_file,
+        raw: file
+      };
+    },
+    async extractTaskAssistantSummary(input) {
+      const response = await _http.post(`/v1/defects/assistant-analysis/task-summary${buildQuery({
+        project_id: input.project_id
+      })}`, {
+        task_id: input.task_id,
+        merge_id: input.merge_id,
+        job_id: input.job_id
+      });
+      const payload = readResultPayload(response);
+      const result = payload.result ?? payload.data ?? payload.value;
+      const summary = typeof result === "string" ? result : undefined;
+      const raw = summary ? { summary } : (readEnvelope(result) ?? payload);
+
+      return {
+        task_id: input.task_id,
+        summary,
+        raw
+      };
     },
     async getTaskMeasures(input) {
       const response = await _http.get(`/v1/defects/task-measures${buildQuery({
