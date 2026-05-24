@@ -6,7 +6,7 @@
 
 模块：`代码检查`
 
-API 数量：`69`
+API 数量：`71`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
@@ -772,6 +772,78 @@ API 数量：`69`
   },
   "required": [
     "domain_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### check_get_measure_duplication_info
+
+所属模块：`代码检查`
+
+说明：获取代码检查的measureduplication信息。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "check_get_measure_duplication_info",
+    "arguments": {
+      "task_id": "<task_id>",
+      "file_path": "<file_path>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `task_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `task_id` ↔ 原始 CodeArts 代码检查 API 同名字段 `task_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>任务 ID，用于定位对应的 CodeArts 资源。 |
+| `file_path` | 是 | `string` |  | 字段对应：<br>MCP 字段 `file_path` ↔ 原始 CodeArts 代码检查 API 同名字段 `file_path`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>仓库内文件路径，从仓库根目录开始填写，例如 src/index.ts；不要带仓库 URL。 |
+| `job_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `job_id` ↔ 原始 CodeArts 代码检查 API 同名字段 `job_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>构建任务 ID，用于定位对应的 CodeArts 资源。 |
+| `block_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `block_id` ↔ 原始 CodeArts 代码检查 API 同名字段 `block_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>block ID，用于定位对应的 CodeArts 资源。 |
+| `start_line` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `start_line` ↔ 原始 CodeArts 代码检查 API 同名字段 `start_line`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `end_line` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `end_line` ↔ 原始 CodeArts 代码检查 API 同名字段 `end_line`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "file_path": {
+      "type": "string",
+      "minLength": 1
+    },
+    "job_id": {
+      "$ref": "#/properties/task_id"
+    },
+    "block_id": {
+      "$ref": "#/properties/task_id"
+    },
+    "start_line": {
+      "type": "integer",
+      "exclusiveMinimum": 0
+    },
+    "end_line": {
+      "type": "integer",
+      "exclusiveMinimum": 0
+    }
+  },
+  "required": [
+    "task_id",
+    "file_path"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -2649,6 +2721,74 @@ API 数量：`69`
   },
   "required": [
     "project_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### check_list_related_duplicate_blocks
+
+所属模块：`代码检查`
+
+说明：查询代码检查的相关duplicateblocks。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "check_list_related_duplicate_blocks",
+    "arguments": {
+      "task_id": "<task_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `task_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `task_id` ↔ 原始 CodeArts 代码检查 API 同名字段 `task_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>任务 ID，用于定位对应的 CodeArts 资源。 |
+| `job_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `job_id` ↔ 原始 CodeArts 代码检查 API 同名字段 `job_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>构建任务 ID，用于定位对应的 CodeArts 资源。 |
+| `file_path` | 否 | `string` |  | 字段对应：<br>MCP 字段 `file_path` ↔ 原始 CodeArts 代码检查 API 同名字段 `file_path`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>仓库内文件路径，从仓库根目录开始填写，例如 src/index.ts；不要带仓库 URL。 |
+| `block_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `block_id` ↔ 原始 CodeArts 代码检查 API 同名字段 `block_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>block ID，用于定位对应的 CodeArts 资源。 |
+| `duplication_type` | 否 | `"duplication_code" \| "duplication_file"` |  | 字段对应：<br>MCP 字段 `duplication_type` ↔ 原始 CodeArts 代码检查 API 同名字段 `duplication_type`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。可选值：`duplication_code`、`duplication_file`。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "job_id": {
+      "$ref": "#/properties/task_id"
+    },
+    "file_path": {
+      "type": "string",
+      "minLength": 1
+    },
+    "block_id": {
+      "$ref": "#/properties/task_id"
+    },
+    "duplication_type": {
+      "type": "string",
+      "enum": [
+        "duplication_code",
+        "duplication_file"
+      ]
+    }
+  },
+  "required": [
+    "task_id"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

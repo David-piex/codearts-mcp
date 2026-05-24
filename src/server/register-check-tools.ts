@@ -8,6 +8,7 @@ import {
   checkGetAsyncJobV2Input,
   checkGetCriterionRuleInput,
   checkGetCriterionsetInput,
+  checkGetMeasureDuplicationInfoInput,
   checkGetMeasureTotalInput,
   checkGetCodeHealthSvgInput,
   checkGetCodeSumMeasuresInput,
@@ -47,6 +48,7 @@ import {
   checkListDefaultRulesetsInput,
   checkListDefectNextStatusesInput,
   checkListMeasureFilesInput,
+  checkListRelatedDuplicateBlocksInput,
   checkListPluginsInput,
   checkListProjectTaskGroupsInput,
   checkListRulesInput,
@@ -77,6 +79,7 @@ import {
   createCheckGetAsyncJobV2Handler,
   createCheckGetDefectFileContentHandler,
   createCheckGetDefectMetricTrendHandler,
+  createCheckGetMeasureDuplicationInfoHandler,
   createCheckGetMeasureTotalHandler,
   createCheckGetProjectConfigHandler,
   createCheckGetSingleDefectHandler,
@@ -84,6 +87,7 @@ import {
   createCheckGetTaskIssueStatisticsHandler,
   createCheckGetTaskMeasuresHandler,
   createCheckListMeasureFilesHandler,
+  createCheckListRelatedDuplicateBlocksHandler,
   createCheckListConfigItemsHandler,
   createCheckListDefectNextStatusesHandler
 } from "../products/check/tools/additional-read-tools.js";
@@ -449,6 +453,18 @@ const checkToolDefinitions = {
     inputSchema: checkListMeasureFilesInput,
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListMeasureFilesHandler>[0] }) => clients.checkClient,
     createProductHandler: createCheckListMeasureFilesHandler
+  }),
+  "check_list_related_duplicate_blocks": defineProductTool({
+    description: "List CodeArts Check related duplicate blocks",
+    inputSchema: checkListRelatedDuplicateBlocksInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListRelatedDuplicateBlocksHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckListRelatedDuplicateBlocksHandler
+  }),
+  "check_get_measure_duplication_info": defineProductTool({
+    description: "Get CodeArts Check measure duplication info",
+    inputSchema: checkGetMeasureDuplicationInfoInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetMeasureDuplicationInfoHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckGetMeasureDuplicationInfoHandler
   }),
   "check_download_log_file": defineProductTool({
     description: "Get CodeArts Check log file content",

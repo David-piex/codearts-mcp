@@ -27,13 +27,13 @@
 | 制品仓 | 37 | [Function-API-Reference-Artifact.md](./Function-API-Reference-Artifact.md) |
 | 鉴权会话 | 2 | [Function-API-Reference-Auth-Session.md](./Function-API-Reference-Auth-Session.md) |
 | 编译构建 | 87 | [Function-API-Reference-Build.md](./Function-API-Reference-Build.md) |
-| 代码检查 | 69 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
+| 代码检查 | 71 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
 | 部署 | 74 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
 | 流水线 | 109 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 187 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 243 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 238 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **1046** | |
+| **总计** | **1048** | |
 
 ## 字段对应
 
@@ -182,6 +182,7 @@
 | `check_get_defect_metric_trend` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_defect_metric_trend) |
 | `check_get_defect_task_statistics` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_defect_task_statistics) |
 | `check_get_domain_checkers_version` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_domain_checkers_version) |
+| `check_get_measure_duplication_info` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_measure_duplication_info) |
 | `check_get_measure_total` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_measure_total) |
 | `check_get_metrics` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_metrics) |
 | `check_get_project_config` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_project_config) |
@@ -215,6 +216,7 @@
 | `check_list_measure_files` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_measure_files) |
 | `check_list_plugins` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_plugins) |
 | `check_list_project_task_groups` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_project_task_groups) |
+| `check_list_related_duplicate_blocks` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_related_duplicate_blocks) |
 | `check_list_rules` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_rules) |
 | `check_list_ruleset_rules` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_ruleset_rules) |
 | `check_list_rulesets` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_rulesets) |

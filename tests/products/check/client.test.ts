@@ -1302,6 +1302,31 @@ describe("createCheckClient", () => {
         name: "Default config"
       }
     });
+    await expect(client.listRelatedDuplicateBlocks({
+      task_id: "task-1",
+      file_path: "src/App.java",
+      job_id: "job-1"
+    })).resolves.toEqual({
+      task_id: "task-1",
+      blocks: [],
+      total: 0,
+      raw: {
+        id: "config-1",
+        name: "Default config"
+      }
+    });
+    await expect(client.getMeasureDuplicationInfo({
+      task_id: "task-1",
+      file_path: "src/App.java",
+      start_line: 1,
+      end_line: 20
+    })).resolves.toEqual({
+      task_id: "task-1",
+      raw: {
+        taskId: "task-1",
+        defectCount: 2
+      }
+    });
 
     expect(requests).toEqual([
       {
@@ -1326,6 +1351,22 @@ describe("createCheckClient", () => {
       {
         method: "GET",
         path: "/v1/tasks/task-1/measure-list?job_id=job-1&page_num=1&page_size=20"
+      },
+      {
+        method: "GET",
+        path: "/v1/tasks/task-1/related-duplicate-blocks?job_id=job-1&file_path=src%2FApp.java"
+      },
+      {
+        method: "POST",
+        path: "/v1/measure/measure-duplication-info",
+        body: {
+          taskId: "task-1",
+          filePath: "src/App.java",
+          jobId: undefined,
+          blockId: undefined,
+          startLine: 1,
+          endLine: 20
+        }
       }
     ]);
   });

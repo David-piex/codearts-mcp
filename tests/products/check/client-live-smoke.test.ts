@@ -4,6 +4,32 @@ import { loadEnvConfig } from "../../../src/core/config/env.js";
 import { createHttpClient } from "../../../src/core/http/client.js";
 import { createCheckClient } from "../../../src/products/check/client.js";
 
+async function readReachable<T>(operation: () => Promise<T>) {
+  try {
+    return {
+      ok: true as const,
+      value: await operation()
+    };
+  } catch (error: any) {
+    return {
+      ok: false as const,
+      error
+    };
+  }
+}
+
+function expectReachedProvider(result: Awaited<ReturnType<typeof readReachable>>) {
+  if (result.ok) {
+    expect(result.value).toBeDefined();
+    return;
+  }
+
+  expect(result.error).toMatchObject({
+    category: expect.stringMatching(/^(provider_error|not_found)$/),
+    status: expect.any(Number)
+  });
+}
+
 function hasLiveEnv(source: NodeJS.ProcessEnv) {
   return Boolean(
       source.HUAWEICLOUD_REGION &&
@@ -30,6 +56,10 @@ function readOperator(source: NodeJS.ProcessEnv) {
   return source.HUAWEICLOUD_CHECK_LIVE_OPERATOR?.trim() || "codearts-mcp-live-smoke";
 }
 
+function readFilePath(source: NodeJS.ProcessEnv) {
+  return source.HUAWEICLOUD_CHECK_LIVE_FILE_PATH?.trim() || "src/App.java";
+}
+
 if (hasLiveEnv(process.env)) {
   describe("createCheckClient live smoke", () => {
     const config = loadEnvConfig(process.env);
@@ -42,6 +72,7 @@ if (hasLiveEnv(process.env)) {
     const taskId = readTaskId(process.env);
     const pluginId = readPluginId(process.env);
     const operator = readOperator(process.env);
+    const filePath = readFilePath(process.env);
 
     it("lists rulesets and tasks for the known project", async () => {
       const [rulesets, tasks] = await Promise.all([
@@ -96,6 +127,26 @@ if (hasLiveEnv(process.env)) {
       expect(Array.isArray(issues.issues)).toBe(true);
       expect(Array.isArray(measureFiles.files)).toBe(true);
       expect(measureFiles.task_id).toBe(taskId);
+    }, 30000);
+
+    it("reaches duplicate-block read routes for the known live task", async () => {
+      const [relatedBlocks, duplicationInfo] = await Promise.all([
+        readReachable(() => client.listRelatedDuplicateBlocks({
+          task_id: taskId,
+          file_path: filePath
+        })),
+        readReachable(() => client.getMeasureDuplicationInfo({
+          task_id: taskId,
+          file_path: filePath,
+          start_line: 1,
+          end_line: 20
+        }))
+      ]);
+
+      expectReachedProvider(relatedBlocks);
+      expectReachedProvider(duplicationInfo);
+      if (relatedBlocks.ok) expect(Array.isArray(relatedBlocks.value.blocks)).toBe(true);
+      if (duplicationInfo.ok) expect(duplicationInfo.value.task_id).toBe(taskId);
     }, 30000);
 
     it("keeps the legacy task-measures endpoint reachable", async () => {

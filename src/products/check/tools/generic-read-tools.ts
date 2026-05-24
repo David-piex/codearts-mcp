@@ -32,6 +32,10 @@ export function mapCheckRecordList(
           item.job_id ??
           item.rule_id ??
           item.ruleId ??
+          item.blockId ??
+          item.block_id ??
+          item.filePath ??
+          item.file_path ??
           item.name ??
           item.value ??
           ""

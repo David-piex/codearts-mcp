@@ -252,6 +252,29 @@ export const checkListMeasureFilesInput = pagingSchema.extend({
   job_id: idSchema.optional()
 });
 
+export const checkListRelatedDuplicateBlocksInput = z.object({
+  task_id: idSchema,
+  job_id: idSchema.optional(),
+  file_path: z.string().min(1).optional(),
+  block_id: idSchema.optional(),
+  duplication_type: z.enum(["duplication_code", "duplication_file"]).optional()
+}).refine((input) => input.file_path || input.block_id, {
+  message: "file_path or block_id must be provided.",
+  path: ["file_path"]
+});
+
+export const checkGetMeasureDuplicationInfoInput = z.object({
+  task_id: idSchema,
+  file_path: z.string().min(1),
+  job_id: idSchema.optional(),
+  block_id: idSchema.optional(),
+  start_line: z.number().int().positive().optional(),
+  end_line: z.number().int().positive().optional()
+}).refine((input) => input.block_id || (input.start_line !== undefined && input.end_line !== undefined), {
+  message: "block_id or both start_line and end_line must be provided.",
+  path: ["block_id"]
+});
+
 export const checkDownloadLogFileInput = z.object({
   sub_job_id: idSchema.optional(),
   query: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).default({})

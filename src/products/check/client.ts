@@ -367,6 +367,29 @@ export type CheckClient = {
     total?: number;
     raw: Record<string, unknown>;
   }>;
+  listRelatedDuplicateBlocks: (input: {
+    task_id: string;
+    job_id?: string;
+    file_path?: string;
+    block_id?: string;
+    duplication_type?: "duplication_code" | "duplication_file";
+  }) => Promise<{
+    task_id: string;
+    blocks: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
+  getMeasureDuplicationInfo: (input: {
+    task_id: string;
+    file_path: string;
+    job_id?: string;
+    block_id?: string;
+    start_line?: number;
+    end_line?: number;
+  }) => Promise<{
+    task_id: string;
+    raw: Record<string, unknown>;
+  }>;
   downloadLogFile: (input: {
     sub_job_id?: string;
     query?: Record<string, string | number | boolean>;
@@ -1464,6 +1487,47 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
         files,
         total: readTotal(listPayload, response, files.length),
         raw: listPayload
+      };
+    },
+    async listRelatedDuplicateBlocks(input) {
+      const response = await _http.get(`/v1/tasks/${encodeURIComponent(input.task_id)}/related-duplicate-blocks${buildQuery({
+        job_id: input.job_id,
+        file_path: input.file_path,
+        block_id: input.block_id,
+        duplication_type: input.duplication_type
+      })}`);
+      const payload = readResultPayload(response);
+      const resultPayload = readEnvelope(payload.result) ?? payload;
+      const blocks = readArray<Record<string, unknown>>(
+        payload.result ??
+          resultPayload.blocks ??
+          resultPayload.files ??
+          resultPayload.items ??
+          resultPayload.list
+      );
+
+      return {
+        task_id: input.task_id,
+        blocks,
+        total: readTotal(resultPayload, response, blocks.length),
+        raw: resultPayload
+      };
+    },
+    async getMeasureDuplicationInfo(input) {
+      const response = await _http.post("/v1/measure/measure-duplication-info", {
+        taskId: input.task_id,
+        filePath: input.file_path,
+        jobId: input.job_id,
+        blockId: input.block_id,
+        startLine: input.start_line,
+        endLine: input.end_line
+      });
+      const payload = readResultPayload(response);
+      const resultPayload = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        task_id: input.task_id,
+        raw: resultPayload
       };
     },
     async downloadLogFile(input) {

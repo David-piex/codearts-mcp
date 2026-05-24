@@ -4,12 +4,14 @@ import {
   checkGetAsyncJobV2Input,
   checkGetDefectFileContentInput,
   checkGetDefectMetricTrendInput,
+  checkGetMeasureDuplicationInfoInput,
   checkGetSingleDefectInput,
   checkGetMeasureTotalInput,
   checkGetProjectConfigInput,
   checkGetTaskByIdInput,
   checkGetTaskIssueStatisticsInput,
   checkGetTaskMeasuresInput,
+  checkListRelatedDuplicateBlocksInput,
   checkListMeasureFilesInput,
   checkListConfigItemsInput,
   checkListDefectNextStatusesInput
@@ -53,6 +55,21 @@ type Client = {
     page_size: number;
     job_id?: string;
   }) => Promise<{ task_id: string; files: RawRecord[]; total?: number; raw: RawRecord }>;
+  listRelatedDuplicateBlocks: (input: {
+    task_id: string;
+    job_id?: string;
+    file_path?: string;
+    block_id?: string;
+    duplication_type?: "duplication_code" | "duplication_file";
+  }) => Promise<{ task_id: string; blocks: RawRecord[]; total?: number; raw: RawRecord }>;
+  getMeasureDuplicationInfo: (input: {
+    task_id: string;
+    file_path: string;
+    job_id?: string;
+    block_id?: string;
+    start_line?: number;
+    end_line?: number;
+  }) => Promise<{ task_id: string; raw: RawRecord }>;
   getProjectConfig: (input: { id: string; operator?: string }) => Promise<{ id: string; raw: RawRecord }>;
   listConfigItems: (input: { ids: string[] }) => Promise<{ items: RawRecord[]; total?: number; raw: RawRecord }>;
   getMeasureTotal: (input: {
@@ -153,6 +170,25 @@ export function createCheckListMeasureFilesHandler(client: Client) {
       mapCheckRecordList(response.files, response.total, "measure files", "measureFile"),
       response.raw
     );
+  };
+}
+
+export function createCheckListRelatedDuplicateBlocksHandler(client: Client) {
+  return async (input: unknown) => {
+    const parsed = checkListRelatedDuplicateBlocksInput.parse(input);
+    const response = await client.listRelatedDuplicateBlocks(parsed);
+    return listResponse(
+      mapCheckRecordList(response.blocks, response.total, "related duplicate blocks", "duplicateBlock"),
+      response.raw
+    );
+  };
+}
+
+export function createCheckGetMeasureDuplicationInfoHandler(client: Client) {
+  return async (input: unknown) => {
+    const parsed = checkGetMeasureDuplicationInfoInput.parse(input);
+    const response = await client.getMeasureDuplicationInfo(parsed);
+    return itemResponse(mapCheckRecordItem("Loaded Check measure duplication info", response.task_id, "duplicationInfo", response.raw));
   };
 }
 
