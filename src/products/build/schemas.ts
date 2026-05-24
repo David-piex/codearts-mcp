@@ -11,6 +11,8 @@ export const buildListDefaultParametersInput = z.object({});
 
 export const buildListSystemParametersInput = z.object({});
 
+export const buildListBuildParameterTypesInput = z.object({});
+
 export const buildGetJobInput = z.object({
   job_id: idSchema
 });

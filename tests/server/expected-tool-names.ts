@@ -80,6 +80,7 @@ export const expectedToolNames = [
   "build_get_stage_log_page",
   "build_get_template",
   "build_get_yaml_template",
+  "build_list_build_parameter_types",
   "build_list_build_parameters",
   "build_list_code_tags",
   "build_list_default_parameters",

@@ -130,6 +130,40 @@ describe("createBuildClient detail paths", () => {
     });
   });
 
+  it("uses the documented build parameter type endpoint", async () => {
+    let requestedPath = "";
+    const client = createBuildClient({
+      get: async (path: string) => {
+        requestedPath = path;
+        return {
+          result: {
+            build_parameters: [
+              {
+                name: "hudson.model.StringParameterDefinition",
+                title: "String Parameters",
+                params: [{ name: "name", title: "Parameter", type: "text" }]
+              }
+            ]
+          }
+        };
+      }
+    } as never);
+
+    const result = await client.listBuildParameterTypes();
+
+    expect(requestedPath).toBe("/v1/job/build-params");
+    expect(result).toEqual({
+      parameterTypes: [
+        {
+          name: "hudson.model.StringParameterDefinition",
+          title: "String Parameters",
+          params: [{ name: "name", title: "Parameter", type: "text" }]
+        }
+      ],
+      total: 1
+    });
+  });
+
   it("uses additional documented read endpoints", async () => {
     const gets: string[] = [];
     const posts: Array<{ path: string; body: unknown }> = [];

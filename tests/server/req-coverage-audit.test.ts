@@ -47,8 +47,9 @@ describe("Req coverage audit", () => {
 
     expect(report).toContain("Req official endpoints: 2");
     expect(report).toContain("Weak client/tool matches: 1");
+    expect(report).toContain("Low-confidence semantic matches: 1");
     expect(report).toContain("| POST | `/v1/custom/missing-endpoint` | 0 | - |");
-    expect(report).not.toContain("| GET | `/v4/projects/{project_id}/work-items`");
+    expect(report).toContain("| GET | `/v4/projects/{project_id}/work-items` | 3 | req_list_board_work_items |");
   });
 
   it("matches common official path abbreviations to semantic tool names", () => {

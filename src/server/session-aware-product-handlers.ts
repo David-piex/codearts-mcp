@@ -23,6 +23,7 @@ import { createBuildGetRealTimeLogHandler } from "../products/build/tools/get-re
 import { createBuildGetRecordFlowGraphHandler } from "../products/build/tools/get-record-flow-graph.js";
 import { createBuildGetRecordHandler } from "../products/build/tools/get-record.js";
 import { createBuildGetRecordScriptHandler } from "../products/build/tools/get-record-script.js";
+import { createBuildListBuildParameterTypesHandler } from "../products/build/tools/list-build-parameter-types.js";
 import { createBuildListBuildParametersHandler } from "../products/build/tools/list-build-parameters.js";
 import { createBuildListJobsHandler } from "../products/build/tools/list-jobs.js";
 import { createBuildListProjectRecordsHandler } from "../products/build/tools/list-project-records.js";
@@ -1243,6 +1244,17 @@ export function createSessionAwareBuildListBuildParametersHandler(
     store,
     injectedClient,
     createBuildListBuildParametersHandler
+  );
+}
+
+export function createSessionAwareBuildListBuildParameterTypesHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createBuildListBuildParameterTypesHandler>[0]
+) {
+  return createSessionAwareBuildToolHandler(
+    store,
+    injectedClient,
+    createBuildListBuildParameterTypesHandler
   );
 }
 

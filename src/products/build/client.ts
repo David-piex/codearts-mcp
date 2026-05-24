@@ -153,6 +153,10 @@ export type BuildClient = {
     parameters: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  listBuildParameterTypes: () => Promise<{
+    parameterTypes: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
   getRecordScript: (input: { record_id: string }) => Promise<{
     record_id: string;
     script?: string;
@@ -1198,6 +1202,24 @@ export function createBuildClient(
       return {
         parameters,
         total: readBuildTotal(payload, response, parameters.length)
+      };
+    },
+    async listBuildParameterTypes() {
+      const response = await _http.get("/v1/job/build-params");
+      const raw = readBuildPayloadValue(response);
+      const payload = readBuildPayload(response);
+      const parameterTypes = readBuildArray<Record<string, unknown>>(
+        payload.build_parameters ??
+          payload.parameters ??
+          payload.items ??
+          payload.list ??
+          payload.value ??
+          (Array.isArray(raw) ? raw : [])
+      );
+
+      return {
+        parameterTypes,
+        total: readBuildTotal(payload, response, parameterTypes.length)
       };
     },
     async listProjectRecords(input) {

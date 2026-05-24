@@ -245,6 +245,10 @@ export function findIgnoredProductCoverageRows(rows: ProductCoverageEndpoint[]) 
   return rows.filter((row) => row.ignoredReason);
 }
 
+export function findSuspectProductCoverageRows(rows: ProductCoverageEndpoint[]) {
+  return rows.filter((row) => !row.ignoredReason && row.clientScore < 4 && row.matchedTools.length > 0);
+}
+
 export function renderProductCoverageAudit(input: {
   config: ProductCoverageConfig;
   docText?: string;
@@ -253,15 +257,27 @@ export function renderProductCoverageAudit(input: {
   const rows = auditProductCoverage(input);
   const weakRows = findWeakProductCoverageRows(rows);
   const ignoredRows = findIgnoredProductCoverageRows(rows);
+  const suspectRows = findSuspectProductCoverageRows(rows);
 
   return [
     `${input.config.module} official endpoints: ${rows.length}`,
     `Weak client/tool matches: ${weakRows.length}`,
+    `Low-confidence semantic matches: ${suspectRows.length}`,
     `Explicitly ignored endpoints: ${ignoredRows.length}`,
     "",
     "| Method | Path | Client score | Matched tools |",
     "| --- | --- | ---: | --- |",
     ...weakRows.map((row) => `| ${row.method} | \`${row.path}\` | ${row.clientScore} | ${row.matchedTools.join(", ") || "-"} |`),
+    ...(suspectRows.length > 0
+      ? [
+          "",
+          "| Suspect method | Suspect path | Client score | Matched tools |",
+          "| --- | --- | ---: | --- |",
+          ...suspectRows
+            .slice(0, 50)
+            .map((row) => `| ${row.method} | \`${row.path}\` | ${row.clientScore} | ${row.matchedTools.slice(0, 8).join(", ")} |`)
+        ]
+      : []),
     ...(ignoredRows.length > 0
       ? [
           "",
@@ -278,20 +294,22 @@ export function renderAllProductCoverageAudit() {
     const rows = auditProductCoverage({ config });
     const weakRows = findWeakProductCoverageRows(rows);
     const ignoredRows = findIgnoredProductCoverageRows(rows);
+    const suspectRows = findSuspectProductCoverageRows(rows);
 
     return {
       config,
       rows,
       weakRows,
-      ignoredRows
+      ignoredRows,
+      suspectRows
     };
   });
   const lines = [
-    "| Module | Official endpoints | Weak client/tool matches | Explicitly ignored endpoints |",
-    "| --- | ---: | ---: | ---: |",
+    "| Module | Official endpoints | Weak client/tool matches | Low-confidence semantic matches | Explicitly ignored endpoints |",
+    "| --- | ---: | ---: | ---: | ---: |",
     ...sections.map(
-      ({ config, rows, weakRows, ignoredRows }) =>
-        `| ${config.module} | ${rows.length} | ${weakRows.length} | ${ignoredRows.length} |`
+      ({ config, rows, weakRows, suspectRows, ignoredRows }) =>
+        `| ${config.module} | ${rows.length} | ${weakRows.length} | ${suspectRows.length} | ${ignoredRows.length} |`
     )
   ];
 
@@ -301,6 +319,15 @@ export function renderAllProductCoverageAudit() {
       ...section.weakRows
         .slice(0, 50)
         .map((row) => `| ${row.method} | \`${row.path}\` | ${row.clientScore} |`)
+    );
+  }
+
+  for (const section of sections.filter(({ suspectRows }) => suspectRows.length > 0)) {
+    lines.push("", `## ${section.config.module} low-confidence semantic matches`, "", "| Method | Path | Client score | Matched tools |", "| --- | --- | ---: | --- |");
+    lines.push(
+      ...section.suspectRows
+        .slice(0, 50)
+        .map((row) => `| ${row.method} | \`${row.path}\` | ${row.clientScore} | ${row.matchedTools.slice(0, 8).join(", ")} |`)
     );
   }
 

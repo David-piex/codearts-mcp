@@ -49,6 +49,7 @@ import {
   buildGetRealTimeLogInput,
   buildGetJobInput,
   buildListBuildParametersInput,
+  buildListBuildParameterTypesInput,
   buildListCodeTagsInput,
   buildListDefaultParametersInput,
   buildListDomainRelatedProjectsInput,
@@ -137,6 +138,7 @@ import { createBuildGetReportSummaryHandler } from "../products/build/tools/get-
 import { createBuildCheckJobNameExistsHandler } from "../products/build/tools/check-job-name-exists.js";
 import { createBuildCheckJobCountLimitHandler } from "../products/build/tools/check-job-count-limit.js";
 import { createBuildListBuildParametersHandler } from "../products/build/tools/list-build-parameters.js";
+import { createBuildListBuildParameterTypesHandler } from "../products/build/tools/list-build-parameter-types.js";
 import { createBuildListCodeTagsHandler } from "../products/build/tools/list-code-tags.js";
 import { createBuildListDefaultParametersHandler } from "../products/build/tools/list-default-parameters.js";
 import { createBuildListDomainRelatedProjectsHandler } from "../products/build/tools/list-domain-related-projects.js";
@@ -547,6 +549,12 @@ const buildToolDefinitions = {
     inputSchema: buildListSystemParametersInput,
     selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListSystemParametersHandler>[0] }) => clients.buildClient,
     createProductHandler: createBuildListSystemParametersHandler
+  }),
+  "build_list_build_parameter_types": defineProductTool({
+    description: "List CodeArts Build parameter types for job configuration",
+    inputSchema: buildListBuildParameterTypesInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListBuildParameterTypesHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildListBuildParameterTypesHandler
   }),
   "build_list_records": defineProductTool({
     description: "List CodeArts Build records",

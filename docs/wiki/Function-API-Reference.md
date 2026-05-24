@@ -26,14 +26,14 @@
 | --- | ---: | --- |
 | 制品仓 | 37 | [Function-API-Reference-Artifact.md](./Function-API-Reference-Artifact.md) |
 | 鉴权会话 | 2 | [Function-API-Reference-Auth-Session.md](./Function-API-Reference-Auth-Session.md) |
-| 编译构建 | 79 | [Function-API-Reference-Build.md](./Function-API-Reference-Build.md) |
+| 编译构建 | 80 | [Function-API-Reference-Build.md](./Function-API-Reference-Build.md) |
 | 代码检查 | 68 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
 | 部署 | 74 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
 | 流水线 | 109 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 187 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 243 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 238 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **1037** | |
+| **总计** | **1038** | |
 
 ## 字段对应
 
@@ -126,6 +126,7 @@
 | `build_get_stage_log_page` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_stage_log_page) |
 | `build_get_template` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_template) |
 | `build_get_yaml_template` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_yaml_template) |
+| `build_list_build_parameter_types` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_list_build_parameter_types) |
 | `build_list_build_parameters` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_list_build_parameters) |
 | `build_list_code_tags` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_list_code_tags) |
 | `build_list_default_parameters` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_list_default_parameters) |

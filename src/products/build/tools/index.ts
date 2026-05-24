@@ -72,6 +72,7 @@ export const buildToolNames = [
   "build_get_record",
   "build_list_default_parameters",
   "build_list_system_parameters",
+  "build_list_build_parameter_types",
   "build_list_build_parameters",
   "build_list_records",
   "build_run_job",

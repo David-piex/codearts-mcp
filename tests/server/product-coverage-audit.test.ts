@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   auditProductCoverage,
   findIgnoredProductCoverageRows,
+  findSuspectProductCoverageRows,
   findWeakProductCoverageRows,
   renderAllProductCoverageAudit,
   renderProductCoverageAudit,
@@ -65,6 +66,21 @@ describe("product coverage audit", () => {
     ]);
   });
 
+  it("surfaces low-confidence semantic matches separately from weak rows", () => {
+    const rows = [
+      { method: "GET", path: "/v1/suspect", clientScore: 0, matchedTools: ["repo_get_repository"] },
+      { method: "GET", path: "/v1/weak", clientScore: 0, matchedTools: [] },
+      { method: "GET", path: "/v1/client", clientScore: 4, matchedTools: ["repo_get_repository"] }
+    ];
+
+    expect(findSuspectProductCoverageRows(rows)).toEqual([
+      { method: "GET", path: "/v1/suspect", clientScore: 0, matchedTools: ["repo_get_repository"] }
+    ]);
+    expect(findWeakProductCoverageRows(rows)).toEqual([
+      { method: "GET", path: "/v1/weak", clientScore: 0, matchedTools: [] }
+    ]);
+  });
+
   it("maps deprecated official endpoints to their replacement tool surface", () => {
     const rows = auditProductCoverage({
       config: {
@@ -120,20 +136,23 @@ describe("product coverage audit", () => {
 
     expect(report).toContain("Repo official endpoints: 2");
     expect(report).toContain("Weak client/tool matches: 1");
+    expect(report).toContain("Low-confidence semantic matches: 1");
     expect(report).toContain("Explicitly ignored endpoints: 0");
     expect(report).toContain("| GET | `/v1/missing` | 0 | - |");
+    expect(report).toContain("| Suspect method | Suspect path | Client score | Matched tools |");
   });
 
   it("renders the real all-product coverage overview", () => {
     const report = renderAllProductCoverageAudit();
 
     expect(report).toContain(
-      "| Module | Official endpoints | Weak client/tool matches | Explicitly ignored endpoints |"
+      "| Module | Official endpoints | Weak client/tool matches | Low-confidence semantic matches | Explicitly ignored endpoints |"
     );
     expect(report).toContain("| Req |");
     expect(report).toContain("| Repo |");
     expect(report).toContain("| TestPlan |");
     expect(report).toContain("## Repo ignored endpoints");
+    expect(report).toContain("low-confidence semantic matches");
     expect(report).toContain("requires raw SSH private key input");
   });
 });

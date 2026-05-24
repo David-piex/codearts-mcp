@@ -245,9 +245,10 @@ if (hasLiveEnv(process.env)) {
     }, 30000);
 
     it("gets record detail, script, parameters, and full stages", async () => {
-      const [record, script, parameters, stages] = await Promise.all([
+      const [record, script, parameterTypes, parameters, stages] = await Promise.all([
         client.getRecord(createRecordInput(recordId)),
         client.getRecordScript(createRecordInput(recordId)),
+        client.listBuildParameterTypes(),
         client.listBuildParameters(createJobBuildInput(jobId, infoBuildNo)),
         client.getFullStages(
           createRecordInput(recordId, {
@@ -258,6 +259,7 @@ if (hasLiveEnv(process.env)) {
 
       expect(record.record_id).toBe(recordId);
       expect(typeof script.record_id).toBe("string");
+      expect(Array.isArray(parameterTypes.parameterTypes)).toBe(true);
       expect(Array.isArray(parameters.parameters)).toBe(true);
       expect(typeof stages.build_stages).toBe("object");
     }, 30000);
