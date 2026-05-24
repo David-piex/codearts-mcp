@@ -360,6 +360,13 @@ export const reqUploadWorkItemImageInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const reqUploadWorkItemImageV2Input = z.object({
+  project_id: idSchema,
+  file_path: z.string().min(1),
+  x_auth_token: z.string().min(10),
+  dry_run: z.boolean().default(true)
+});
+
 export const reqDownloadImageFileInput = z.object({
   project_id: idSchema,
   image_uri: z.string().min(1)
@@ -369,6 +376,20 @@ export const reqUploadAttachmentInput = z.object({
   project_id: idSchema,
   work_item_id: idSchema,
   file_path: z.string().min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const reqUploadAttachmentV3Input = z.object({
+  file_path: z.string().min(1),
+  tiny_form_datas: z.string().min(1),
+  x_auth_token: z.string().min(10),
+  dry_run: z.boolean().default(true)
+});
+
+export const reqCreateWorkItemWithAttachmentV3Input = z.object({
+  issue_call_back_param: z.record(z.string(), z.unknown()),
+  type: z.string().min(1).default("scrum"),
+  x_auth_token: z.string().min(10),
   dry_run: z.boolean().default(true)
 });
 

@@ -7,6 +7,7 @@ import {
   reqAddWorkItemCommentInput,
   reqAddWorkItemWorkHourInput,
   reqAddProjectMemberInput,
+  reqApplyJoinProjectForAgcInput,
   reqBatchAddProjectMembersInput,
   reqBatchCreateTrackerConfigInput,
   reqBatchDeleteReleasePlansInput,
@@ -42,6 +43,7 @@ import {
   reqCreateProjectModuleInput,
   reqCreateProjectStatusConfigInput,
   reqCancelProjectDomainInput,
+  reqCreateWorkItemWithAttachmentV3Input,
   reqDeletePlanInput,
   reqDeleteIpdChangeReviewFormInput,
   reqDeleteIpdFeatureSetInput,
@@ -231,9 +233,11 @@ import {
   reqUpdateWorkItemFlowInput,
   reqUpdateWorkItemInput,
   reqUpdateWorkingHoursInput,
+  reqUploadAttachmentV3Input,
   reqUploadAttachmentInput,
   reqUploadIpdIssueAttachmentInput,
   reqUploadIpdIssueImageInput,
+  reqUploadWorkItemImageV2Input,
   reqUploadWorkItemImageInput,
   reqValidateModuleNameInput,
   reqValidateProjectTemplateNameInput
@@ -243,6 +247,7 @@ import { createReqAddPlanWorkItemsHandler } from "../products/req/tools/add-plan
 import { createReqAddWorkItemCommentHandler } from "../products/req/tools/add-work-item-comment.js";
 import { createReqAddWorkItemWorkHourHandler } from "../products/req/tools/add-work-item-work-hour.js";
 import { createReqAddProjectMemberHandler } from "../products/req/tools/add-project-member.js";
+import { createReqApplyJoinProjectForAgcHandler } from "../products/req/tools/apply-join-project-for-agc.js";
 import { createReqBatchAddProjectMembersHandler } from "../products/req/tools/batch-add-project-members.js";
 import { createReqBatchCreateTrackerConfigHandler } from "../products/req/tools/batch-create-tracker-config.js";
 import { createReqBatchDeleteReleasePlansHandler } from "../products/req/tools/batch-delete-release-plans.js";
@@ -397,6 +402,11 @@ import { createReqUpdateWorkItemCommentHandler } from "../products/req/tools/upd
 import { createReqUpdateWorkItemFlowHandler } from "../products/req/tools/update-work-item-flow.js";
 import { createReqUpdateWorkItemHandler } from "../products/req/tools/update-work-item.js";
 import { createReqUpdateWorkingHoursHandler } from "../products/req/tools/update-working-hours.js";
+import {
+  createReqCreateWorkItemWithAttachmentV3Handler,
+  createReqUploadAttachmentV3Handler,
+  createReqUploadWorkItemImageV2Handler
+} from "../products/req/tools/token-upload-tools.js";
 import { createReqUploadAttachmentHandler } from "../products/req/tools/upload-attachment.js";
 import { createReqUploadWorkItemImageHandler } from "../products/req/tools/upload-work-item-image.js";
 import { createReqQuickCreateChildWorkItemHandler } from "../products/req/tools/quick-create-child-work-item.js";
@@ -510,6 +520,14 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqAddProjectMemberHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqAddProjectMemberHandler,
     rateLimitAction: "req_add_project_member"
+  }),
+  "req_apply_join_project_for_agc": defineProductTool({
+    description: "Apply to join a CodeArts Req project through the AGC token-header endpoint",
+    inputSchema: reqApplyJoinProjectForAgcInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqApplyJoinProjectForAgcHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqApplyJoinProjectForAgcHandler,
+    rateLimitAction: "req_apply_join_project_for_agc"
   }),
   "req_batch_add_project_members": defineProductTool({
     description: "Add multiple members to a CodeArts Req project",
@@ -1614,6 +1632,14 @@ const reqToolDefinitions = {
     createProductHandler: createReqUploadWorkItemImageHandler,
     rateLimitAction: "req_upload_work_item_image"
   }),
+  "req_upload_work_item_image_v2": defineProductTool({
+    description: "Upload an image for CodeArts Req work item descriptions through the V2 token-header endpoint",
+    inputSchema: reqUploadWorkItemImageV2Input,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUploadWorkItemImageV2Handler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqUploadWorkItemImageV2Handler,
+    rateLimitAction: "req_upload_work_item_image_v2"
+  }),
   "req_upload_attachment": defineProductTool({
     description: "Upload a CodeArts Req work item attachment",
     inputSchema: reqUploadAttachmentInput,
@@ -1622,12 +1648,29 @@ const reqToolDefinitions = {
     createProductHandler: createReqUploadAttachmentHandler,
     rateLimitAction: "req_upload_attachment"
   }),
+  "req_upload_attachment_v3": defineProductTool({
+    description: "Upload a CodeArts Req work item attachment through the V3 token-header endpoint",
+    inputSchema: reqUploadAttachmentV3Input,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUploadAttachmentV3Handler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqUploadAttachmentV3Handler,
+    rateLimitAction: "req_upload_attachment_v3"
+  }),
   "req_create_work_item": defineProductTool({
     description: "Create CodeArts Req work item",
     inputSchema: reqCreateWorkItemInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqCreateWorkItemHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqCreateWorkItemHandler,
     rateLimitAction: "req_create_work_item"
+  }),
+  "req_create_work_item_with_attachment_v3": defineProductTool({
+    description: "Create a CodeArts Req work item through the V3 token-header attachment endpoint",
+    inputSchema: reqCreateWorkItemWithAttachmentV3Input,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqCreateWorkItemWithAttachmentV3Handler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqCreateWorkItemWithAttachmentV3Handler,
+    rateLimitAction: "req_create_work_item_with_attachment_v3"
   }),
   "req_quick_create_child_work_item": defineProductTool({
     description: "Quick create a CodeArts Req child work item from the official V2 endpoint",

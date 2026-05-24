@@ -11,6 +11,14 @@ export const reqListDevucProjectMembersInput = z.object({
   project_id: idSchema
 });
 
+export const reqApplyJoinProjectForAgcInput = z.object({
+  project_id: idSchema,
+  domain_id: idSchema,
+  user_id: idSchema,
+  x_auth_token: z.string().min(10),
+  dry_run: z.boolean().default(true)
+});
+
 export const reqAddProjectMemberInput = z.object({
   project_id: idSchema,
   user_id: idSchema,

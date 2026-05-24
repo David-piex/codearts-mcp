@@ -2278,6 +2278,100 @@ describe("createReqClient", () => {
     });
   });
 
+  it("maps V2 token-header image uploads to the documented multipart endpoint", async () => {
+    let requestedPath = "";
+    let requestedToken = "";
+    let uploadedFileName = "";
+    let projectId = "";
+    const client = createReqClient({
+      postMultipart: async (path: string, body: FormData, options?: { headers?: Record<string, string> }) => {
+        requestedPath = path;
+        requestedToken = options?.headers?.["X-Auth-Token"] ?? "";
+        const file = body.get("file");
+
+        if (!(file instanceof File)) {
+          throw new Error("expected multipart file");
+        }
+
+        uploadedFileName = file.name;
+        projectId = String(body.get("projectId"));
+
+        return {
+          status: "success",
+          result: {
+            imgId: "1",
+            imgUrl: "/v1/upload/demo.png"
+          }
+        };
+      }
+    } as never);
+
+    const result = await client.uploadIssueImageV2({
+      project_id: "p-1",
+      file_name: "demo.png",
+      file_content: new Uint8Array([102, 97, 107, 101]),
+      content_type: "image/png",
+      x_auth_token: "token-123456"
+    });
+
+    expect(requestedPath).toBe("/v2/upload/upload-img");
+    expect(requestedToken).toBe("token-123456");
+    expect(uploadedFileName).toBe("demo.png");
+    expect(projectId).toBe("p-1");
+    expect(result).toEqual({
+      project_id: "p-1",
+      file_name: "demo.png",
+      img_id: "1",
+      img_url: "/v1/upload/demo.png"
+    });
+  });
+
+  it("maps V3 token-header attachment uploads to the documented multipart endpoint", async () => {
+    let requestedPath = "";
+    let requestedToken = "";
+    let uploadedFileName = "";
+    let tinyFormDatas = "";
+    const client = createReqClient({
+      postMultipart: async (path: string, body: FormData, options?: { headers?: Record<string, string> }) => {
+        requestedPath = path;
+        requestedToken = options?.headers?.["X-Auth-Token"] ?? "";
+        const file = body.get("tinyfileName");
+
+        if (!(file instanceof File)) {
+          throw new Error("expected multipart file");
+        }
+
+        uploadedFileName = file.name;
+        tinyFormDatas = String(body.get("tinyFormDatas"));
+
+        return {
+          status: "success",
+          result: { id: "file-1" }
+        };
+      }
+    } as never);
+
+    const result = await client.uploadAttachmentV3({
+      file_name: "demo.txt",
+      file_content: new Uint8Array([102, 97, 107, 101]),
+      content_type: "text/plain",
+      tiny_form_datas: "{\"project_id\":\"p-1\"}",
+      x_auth_token: "token-123456"
+    });
+
+    expect(requestedPath).toBe("/v3/file/issue-upload");
+    expect(requestedToken).toBe("token-123456");
+    expect(uploadedFileName).toBe("demo.txt");
+    expect(tinyFormDatas).toBe("{\"project_id\":\"p-1\"}");
+    expect(result).toEqual({
+      file_name: "demo.txt",
+      response: {
+        status: "success",
+        result: { id: "file-1" }
+      }
+    });
+  });
+
   it("maps work item attachment downloads to the documented binary endpoint", async () => {
     let requestedPath = "";
     const client = createReqClient({
@@ -2355,6 +2449,83 @@ describe("createReqClient", () => {
       content_type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       size_bytes: 3,
       content_base64: "AQID"
+    });
+  });
+
+  it("maps V3 work item creation with attachment payload to the token-header endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    let requestedToken = "";
+    const client = createReqClient({
+      post: async (path: string, body: Record<string, unknown>, options?: { headers?: Record<string, string> }) => {
+        requestedPath = path;
+        requestedBody = body;
+        requestedToken = options?.headers?.["X-Auth-Token"] ?? "";
+
+        return {
+          status: "success",
+          result: { id: 70779173 }
+        };
+      }
+    } as never);
+
+    const result = await client.createWorkItemWithAttachmentV3({
+      issue_call_back_param: {
+        subject: "demo",
+        tracker_id: 7
+      },
+      type: "scrum",
+      x_auth_token: "token-123456"
+    });
+
+    expect(requestedPath).toBe("/v3/file/issue-create");
+    expect(requestedToken).toBe("token-123456");
+    expect(requestedBody).toEqual({
+      issue_call_back_param: {
+        subject: "demo",
+        tracker_id: 7
+      },
+      type: "scrum"
+    });
+    expect(result).toEqual({
+      response: {
+        status: "success",
+        result: { id: 70779173 }
+      }
+    });
+  });
+
+  it("maps AGC join requests to the documented token-header endpoint", async () => {
+    let requestedPath = "";
+    let requestedHeaders: Record<string, string> | undefined;
+    const client = createReqClient({
+      get: async (path: string, options?: { headers?: Record<string, string> }) => {
+        requestedPath = path;
+        requestedHeaders = options?.headers;
+
+        return { status: "success" };
+      }
+    } as never);
+
+    const result = await client.applyJoinProjectForAgc({
+      project_id: "p-1",
+      domain_id: "domain-1",
+      user_id: "user-1",
+      x_auth_token: "token-123456"
+    });
+
+    expect(requestedPath).toBe("/v4/projects/p-1/members/agc-join");
+    expect(requestedHeaders).toEqual({
+      "Domain-Id": "domain-1",
+      "User-Id": "user-1",
+      "X-Auth-Token": "token-123456"
+    });
+    expect(result).toEqual({
+      project_id: "p-1",
+      domain_id: "domain-1",
+      user_id: "user-1",
+      applied: true,
+      response: { status: "success" }
     });
   });
 

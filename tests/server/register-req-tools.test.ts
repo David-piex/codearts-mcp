@@ -234,6 +234,47 @@ describe("registerReqTool", () => {
     );
   });
 
+  it("registers token-header Req write tools with the expected metadata", () => {
+    const cases = [
+      {
+        toolName: "req_apply_join_project_for_agc",
+        description: "Apply to join a CodeArts Req project through the AGC token-header endpoint"
+      },
+      {
+        toolName: "req_upload_work_item_image_v2",
+        description: "Upload an image for CodeArts Req work item descriptions through the V2 token-header endpoint"
+      },
+      {
+        toolName: "req_upload_attachment_v3",
+        description: "Upload a CodeArts Req work item attachment through the V3 token-header endpoint"
+      },
+      {
+        toolName: "req_create_work_item_with_attachment_v3",
+        description: "Create a CodeArts Req work item through the V3 token-header attachment endpoint"
+      }
+    ];
+
+    for (const item of cases) {
+      const registerTool = vi.fn();
+      const handled = registerReqTool({
+        toolName: item.toolName,
+        server: { registerTool },
+        mode: "stdio",
+        stdioClient: {} as never
+      });
+
+      expect(handled).toBe(true);
+      expect(registerTool).toHaveBeenCalledWith(
+        item.toolName,
+        expect.objectContaining({
+          title: item.toolName,
+          description: item.description
+        }),
+        expect.any(Function)
+      );
+    }
+  });
+
   it("registers the batch delete work items tool with rate-limited metadata", () => {
     const registerTool = vi.fn();
 

@@ -296,7 +296,7 @@ export function createHttpClient(input: HttpClientInput) {
     getBinary: (path: string, options?: RequestOptions) => requestBinary("GET", path, undefined, options),
     post: (path: string, body?: unknown, options?: RequestOptions) => request("POST", path, body, options),
     postBinary: (path: string, body?: unknown, options?: RequestOptions) => requestBinary("POST", path, body, options),
-    postMultipart: (path: string, body: FormData) => request("POST", path, body),
+    postMultipart: (path: string, body: FormData, options?: RequestOptions) => request("POST", path, body, options),
     put: (path: string, body?: unknown) => request("PUT", path, body),
     patch: (path: string, body?: unknown) => request("PATCH", path, body),
     delete: (path: string, body?: unknown) => request("DELETE", path, body)

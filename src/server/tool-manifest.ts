@@ -66,6 +66,7 @@ const productToolSources: Array<{
 const WRITE_ACTIONS = new Set([
   "add",
   "append",
+  "apply",
   "approve",
   "associate",
   "batch",

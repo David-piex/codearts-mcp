@@ -2487,6 +2487,18 @@ export type ReqClient = {
     img_id?: string | number;
     img_url?: string;
   }>;
+  uploadIssueImageV2: (input: {
+    project_id: string;
+    file_name: string;
+    file_content: Uint8Array;
+    x_auth_token: string;
+    content_type?: string;
+  }) => Promise<{
+    project_id: string;
+    file_name: string;
+    img_id?: string | number;
+    img_url?: string;
+  }>;
   uploadAttachment: (input: {
     project_id: string;
     work_item_id: string;
@@ -2500,6 +2512,35 @@ export type ReqClient = {
     disk_filename?: string;
     file_name?: string;
     size?: string;
+  }>;
+  uploadAttachmentV3: (input: {
+    file_name: string;
+    file_content: Uint8Array;
+    tiny_form_datas: string;
+    x_auth_token: string;
+    content_type?: string;
+  }) => Promise<{
+    file_name: string;
+    response: unknown;
+  }>;
+  createWorkItemWithAttachmentV3: (input: {
+    issue_call_back_param: Record<string, unknown>;
+    type: string;
+    x_auth_token: string;
+  }) => Promise<{
+    response: unknown;
+  }>;
+  applyJoinProjectForAgc: (input: {
+    project_id: string;
+    domain_id: string;
+    user_id: string;
+    x_auth_token: string;
+  }) => Promise<{
+    project_id: string;
+    domain_id: string;
+    user_id: string;
+    applied: true;
+    response: unknown;
   }>;
   addWorkItemWorkHour: (input: {
     project_id: string;
@@ -9210,6 +9251,34 @@ export function createReqClient(
         img_url: response.img_url
       };
     },
+    async uploadIssueImageV2(input) {
+      const form = new FormData();
+      form.append(
+        "file",
+        new Blob([Buffer.from(input.file_content)], {
+          type: input.content_type ?? "application/octet-stream"
+        }),
+        input.file_name
+      );
+      form.append("projectId", input.project_id);
+      const response = (await _http.postMultipart("/v2/upload/upload-img", form, {
+        headers: { "X-Auth-Token": input.x_auth_token }
+      })) as {
+        status?: string;
+        result?: {
+          imgId?: string | number;
+          imgUrl?: string;
+        };
+      };
+      assertReqMutationSucceeded("upload V2 work item image", response.status);
+
+      return {
+        project_id: input.project_id,
+        file_name: input.file_name,
+        img_id: response.result?.imgId,
+        img_url: response.result?.imgUrl
+      };
+    },
     async uploadAttachment(input) {
       const form = new FormData();
       form.append(
@@ -9238,6 +9307,59 @@ export function createReqClient(
         disk_filename: response.disk_filename,
         file_name: response.file_name ?? input.file_name,
         size: response.size
+      };
+    },
+    async uploadAttachmentV3(input) {
+      const form = new FormData();
+      form.append(
+        "tinyfileName",
+        new Blob([Buffer.from(input.file_content)], {
+          type: input.content_type ?? "application/octet-stream"
+        }),
+        input.file_name
+      );
+      form.append("tinyFormDatas", input.tiny_form_datas);
+      const response = await _http.postMultipart("/v3/file/issue-upload", form, {
+        headers: { "X-Auth-Token": input.x_auth_token }
+      });
+
+      return {
+        file_name: input.file_name,
+        response
+      };
+    },
+    async createWorkItemWithAttachmentV3(input) {
+      const response = await _http.post(
+        "/v3/file/issue-create",
+        {
+          issue_call_back_param: input.issue_call_back_param,
+          type: input.type
+        },
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
+      );
+
+      return { response };
+    },
+    async applyJoinProjectForAgc(input) {
+      const response = await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/members/agc-join`,
+        {
+          headers: {
+            "Domain-Id": input.domain_id,
+            "User-Id": input.user_id,
+            "X-Auth-Token": input.x_auth_token
+          }
+        }
+      );
+
+      return {
+        project_id: input.project_id,
+        domain_id: input.domain_id,
+        user_id: input.user_id,
+        applied: true,
+        response
       };
     },
     async addWorkItemWorkHour(input) {
