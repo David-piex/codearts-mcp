@@ -1302,6 +1302,24 @@ describe("createCheckClient", () => {
         name: "Default config"
       }
     });
+    await expect(client.listMeasureFilesV2({
+      task_id: "task-1",
+      job_id: "job-1",
+      filter_type: "all",
+      sort_field: "filePath",
+      sort_type: "asc",
+      search: "App",
+      page: 1,
+      page_size: 20
+    })).resolves.toEqual({
+      task_id: "task-1",
+      files: [],
+      total: 0,
+      raw: {
+        taskId: "task-1",
+        defectCount: 2
+      }
+    });
     await expect(client.listRelatedDuplicateBlocks({
       task_id: "task-1",
       file_path: "src/App.java",
@@ -1313,6 +1331,21 @@ describe("createCheckClient", () => {
       raw: {
         id: "config-1",
         name: "Default config"
+      }
+    });
+    await expect(client.listRelatedDuplicateBlocksV2({
+      task_id: "task-1",
+      file_path: "src/App.java",
+      job_id: "job-1",
+      start_line: 1,
+      duplication_type: "duplication_code"
+    })).resolves.toEqual({
+      task_id: "task-1",
+      blocks: [],
+      total: 0,
+      raw: {
+        taskId: "task-1",
+        defectCount: 2
       }
     });
     await expect(client.getMeasureDuplicationInfo({
@@ -1353,8 +1386,34 @@ describe("createCheckClient", () => {
         path: "/v1/tasks/task-1/measure-list?job_id=job-1&page_num=1&page_size=20"
       },
       {
+        method: "POST",
+        path: "/v2/measure/measure-list",
+        body: {
+          taskId: "task-1",
+          jobId: "job-1",
+          filterType: "all",
+          sortField: "filePath",
+          sortType: "asc",
+          search: "App",
+          page: 1,
+          pageSize: 20
+        }
+      },
+      {
         method: "GET",
         path: "/v1/tasks/task-1/related-duplicate-blocks?job_id=job-1&file_path=src%2FApp.java"
+      },
+      {
+        method: "POST",
+        path: "/v2/related-duplicate-blocks",
+        body: {
+          taskId: "task-1",
+          jobId: "job-1",
+          filePath: "src/App.java",
+          blockId: undefined,
+          startLine: 1,
+          duplicationType: "duplication_code"
+        }
       },
       {
         method: "POST",
@@ -1366,6 +1425,140 @@ describe("createCheckClient", () => {
           blockId: undefined,
           startLine: 1,
           endLine: 20
+        }
+      }
+    ]);
+  });
+
+  it("uses documented issue filter endpoints", async () => {
+    const requests: Array<{ path: string; body?: unknown }> = [];
+    const client = createClient({
+      post: async (path: string, body?: unknown) => {
+        requests.push({ path, body });
+        if (path.includes("issue-list-by-filter")) {
+          return {
+            status: "success",
+            result: {
+              total: 1,
+              info: [
+                {
+                  mergeKey: "issue-1",
+                  ruleId: "rule-1",
+                  filePath: "src/App.java"
+                }
+              ]
+            }
+          };
+        }
+
+        return {
+          status: "success",
+          result: {
+            total: null,
+            facets: [
+              {
+                property: "statusIds",
+                values: [{ val: "0", count: "1" }]
+              }
+            ]
+          }
+        };
+      }
+    });
+
+    await expect(client.listIssuesByFilter({
+      task_id: "task-1",
+      page: 1,
+      page_size: 20,
+      job_id: "job-1",
+      rule_ids: "rule-1",
+      status_ids: "0",
+      user_tags: ["security"],
+      cwes: ["CWE-79"]
+    })).resolves.toEqual({
+      task_id: "task-1",
+      issues: [
+        {
+          mergeKey: "issue-1",
+          ruleId: "rule-1",
+          filePath: "src/App.java"
+        }
+      ],
+      total: 1,
+      raw: {
+        total: 1,
+        info: [
+          {
+            mergeKey: "issue-1",
+            ruleId: "rule-1",
+            filePath: "src/App.java"
+          }
+        ]
+      }
+    });
+
+    await expect(client.getIssueFilter({
+      task_id: "task-1",
+      facets: "statusIds,severities",
+      severities: "1"
+    })).resolves.toEqual({
+      task_id: "task-1",
+      facets: [
+        {
+          property: "statusIds",
+          values: [{ val: "0", count: "1" }]
+        }
+      ],
+      total: 1,
+      raw: {
+        total: null,
+        facets: [
+          {
+            property: "statusIds",
+            values: [{ val: "0", count: "1" }]
+          }
+        ]
+      }
+    });
+
+    expect(requests).toEqual([
+      {
+        path: "/v1/defect/issue-list-by-filter",
+        body: {
+          taskId: "task-1",
+          mergeId: undefined,
+          jobId: "job-1",
+          languages: undefined,
+          ruleIds: "rule-1",
+          authors: undefined,
+          isNew: undefined,
+          statusIds: "0",
+          severities: undefined,
+          delayStatus: undefined,
+          fileNames: undefined,
+          userTags: ["security"],
+          cwes: ["CWE-79"],
+          page: 1,
+          pageSize: 20
+        }
+      },
+      {
+        path: "/v1/defect/issue-filter",
+        body: {
+          taskId: "task-1",
+          mergeId: undefined,
+          jobId: undefined,
+          languages: undefined,
+          ruleIds: undefined,
+          authors: undefined,
+          isNew: undefined,
+          statusIds: undefined,
+          severities: "1",
+          delayStatus: undefined,
+          fileNames: undefined,
+          userTags: undefined,
+          cwes: undefined,
+          facets: "statusIds,severities"
         }
       }
     ]);

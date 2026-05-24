@@ -32,15 +32,26 @@ export function mapCheckRecordList(
           item.job_id ??
           item.rule_id ??
           item.ruleId ??
+          item.mergeKey ??
           item.blockId ??
           item.block_id ??
           item.filePath ??
           item.file_path ??
+          item.property ??
           item.name ??
           item.value ??
           ""
       ),
-      name: typeof item.name === "string" ? item.name : typeof item.rule_name === "string" ? item.rule_name : undefined,
+      name:
+        typeof item.name === "string"
+          ? item.name
+          : typeof item.rule_name === "string"
+            ? item.rule_name
+            : typeof item.fileName === "string"
+              ? item.fileName
+              : typeof item.file_name === "string"
+                ? item.file_name
+                : undefined,
       [key]: item
     })),
     toPageInfo(1, items.length || total || 1, total)

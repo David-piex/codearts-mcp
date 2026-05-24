@@ -11,6 +11,10 @@ import {
   checkGetTaskByIdInput,
   checkGetTaskIssueStatisticsInput,
   checkGetTaskMeasuresInput,
+  checkGetIssueFilterInput,
+  checkListMeasureFilesV2Input,
+  checkListRelatedDuplicateBlocksV2Input,
+  checkListIssuesByFilterInput,
   checkListRelatedDuplicateBlocksInput,
   checkListMeasureFilesInput,
   checkListConfigItemsInput,
@@ -40,6 +44,39 @@ type Client = {
     task_id?: string;
     query?: Record<string, string | number | boolean>;
   }) => Promise<{ defect_id?: string; raw: RawRecord }>;
+  listIssuesByFilter: (input: {
+    task_id: string;
+    page: number;
+    page_size: number;
+    merge_id?: string;
+    job_id?: string;
+    languages?: string;
+    rule_ids?: string;
+    authors?: string;
+    is_new?: string;
+    status_ids?: string;
+    severities?: string;
+    delay_status?: string;
+    file_names?: string;
+    user_tags?: string[];
+    cwes?: string[];
+  }) => Promise<{ task_id: string; issues: RawRecord[]; total?: number; raw: RawRecord }>;
+  getIssueFilter: (input: {
+    task_id: string;
+    facets: string;
+    merge_id?: string;
+    job_id?: string;
+    languages?: string;
+    rule_ids?: string;
+    authors?: string;
+    is_new?: string;
+    status_ids?: string;
+    severities?: string;
+    delay_status?: string;
+    file_names?: string;
+    user_tags?: string[];
+    cwes?: string[];
+  }) => Promise<{ task_id: string; facets: RawRecord[]; total?: number; raw: RawRecord }>;
   getAsyncJobV2: (input: {
     task_id?: string;
     async_job_id?: string;
@@ -55,12 +92,30 @@ type Client = {
     page_size: number;
     job_id?: string;
   }) => Promise<{ task_id: string; files: RawRecord[]; total?: number; raw: RawRecord }>;
+  listMeasureFilesV2: (input: {
+    task_id: string;
+    page: number;
+    page_size: number;
+    job_id?: string;
+    filter_type?: string;
+    sort_field?: string;
+    sort_type?: string;
+    search?: string;
+  }) => Promise<{ task_id: string; files: RawRecord[]; total?: number; raw: RawRecord }>;
   listRelatedDuplicateBlocks: (input: {
     task_id: string;
     job_id?: string;
     file_path?: string;
     block_id?: string;
     duplication_type?: "duplication_code" | "duplication_file";
+  }) => Promise<{ task_id: string; blocks: RawRecord[]; total?: number; raw: RawRecord }>;
+  listRelatedDuplicateBlocksV2: (input: {
+    task_id: string;
+    job_id?: string;
+    file_path?: string;
+    block_id?: string;
+    start_line?: number;
+    duplication_type?: string;
   }) => Promise<{ task_id: string; blocks: RawRecord[]; total?: number; raw: RawRecord }>;
   getMeasureDuplicationInfo: (input: {
     task_id: string;
@@ -146,6 +201,28 @@ export function createCheckGetSingleDefectHandler(client: Client) {
   };
 }
 
+export function createCheckListIssuesByFilterHandler(client: Client) {
+  return async (input: unknown) => {
+    const parsed = checkListIssuesByFilterInput.parse(input);
+    const response = await client.listIssuesByFilter(parsed);
+    return listResponse(
+      mapCheckRecordList(response.issues, response.total, "issues by filter", "issue"),
+      response.raw
+    );
+  };
+}
+
+export function createCheckGetIssueFilterHandler(client: Client) {
+  return async (input: unknown) => {
+    const parsed = checkGetIssueFilterInput.parse(input);
+    const response = await client.getIssueFilter(parsed);
+    return listResponse(
+      mapCheckRecordList(response.facets, response.total, "issue filter facets", "facet"),
+      response.raw
+    );
+  };
+}
+
 export function createCheckGetAsyncJobV2Handler(client: Client) {
   return async (input: unknown) => {
     const parsed = checkGetAsyncJobV2Input.parse(input);
@@ -173,12 +250,34 @@ export function createCheckListMeasureFilesHandler(client: Client) {
   };
 }
 
+export function createCheckListMeasureFilesV2Handler(client: Client) {
+  return async (input: unknown) => {
+    const parsed = checkListMeasureFilesV2Input.parse(input);
+    const response = await client.listMeasureFilesV2(parsed);
+    return listResponse(
+      mapCheckRecordList(response.files, response.total, "measure files V2", "measureFile"),
+      response.raw
+    );
+  };
+}
+
 export function createCheckListRelatedDuplicateBlocksHandler(client: Client) {
   return async (input: unknown) => {
     const parsed = checkListRelatedDuplicateBlocksInput.parse(input);
     const response = await client.listRelatedDuplicateBlocks(parsed);
     return listResponse(
       mapCheckRecordList(response.blocks, response.total, "related duplicate blocks", "duplicateBlock"),
+      response.raw
+    );
+  };
+}
+
+export function createCheckListRelatedDuplicateBlocksV2Handler(client: Client) {
+  return async (input: unknown) => {
+    const parsed = checkListRelatedDuplicateBlocksV2Input.parse(input);
+    const response = await client.listRelatedDuplicateBlocksV2(parsed);
+    return listResponse(
+      mapCheckRecordList(response.blocks, response.total, "related duplicate blocks V2", "duplicateBlock"),
       response.raw
     );
   };

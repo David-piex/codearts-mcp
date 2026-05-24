@@ -236,6 +236,29 @@ export const checkGetSingleDefectInput = z.object({
   path: ["defect_id"]
 });
 
+const checkIssueFilterFields = {
+  task_id: idSchema,
+  merge_id: z.string().min(1).optional(),
+  job_id: idSchema.optional(),
+  languages: z.string().min(1).optional(),
+  rule_ids: z.string().min(1).optional(),
+  authors: z.string().min(1).optional(),
+  is_new: z.string().min(1).optional(),
+  status_ids: z.string().min(1).optional(),
+  severities: z.string().min(1).optional(),
+  delay_status: z.string().min(1).optional(),
+  file_names: z.string().min(1).optional(),
+  user_tags: z.array(z.string().min(1)).optional(),
+  cwes: z.array(z.string().min(1)).optional()
+};
+
+export const checkListIssuesByFilterInput = pagingSchema.extend(checkIssueFilterFields);
+
+export const checkGetIssueFilterInput = z.object({
+  ...checkIssueFilterFields,
+  facets: z.string().min(1)
+});
+
 export const checkGetAsyncJobV2Input = z.object({
   task_id: idSchema.optional(),
   async_job_id: idSchema.optional(),
@@ -252,12 +275,33 @@ export const checkListMeasureFilesInput = pagingSchema.extend({
   job_id: idSchema.optional()
 });
 
+export const checkListMeasureFilesV2Input = pagingSchema.extend({
+  task_id: idSchema,
+  job_id: idSchema.optional(),
+  filter_type: z.string().min(1).optional(),
+  sort_field: z.string().min(1).optional(),
+  sort_type: z.string().min(1).optional(),
+  search: z.string().min(1).optional()
+});
+
 export const checkListRelatedDuplicateBlocksInput = z.object({
   task_id: idSchema,
   job_id: idSchema.optional(),
   file_path: z.string().min(1).optional(),
   block_id: idSchema.optional(),
   duplication_type: z.enum(["duplication_code", "duplication_file"]).optional()
+}).refine((input) => input.file_path || input.block_id, {
+  message: "file_path or block_id must be provided.",
+  path: ["file_path"]
+});
+
+export const checkListRelatedDuplicateBlocksV2Input = z.object({
+  task_id: idSchema,
+  job_id: idSchema.optional(),
+  file_path: z.string().min(1).optional(),
+  block_id: idSchema.optional(),
+  start_line: z.number().int().positive().optional(),
+  duplication_type: z.string().min(1).optional()
 }).refine((input) => input.file_path || input.block_id, {
   message: "file_path or block_id must be provided.",
   path: ["file_path"]

@@ -130,10 +130,36 @@ if (hasLiveEnv(process.env)) {
     }, 30000);
 
     it("reaches duplicate-block read routes for the known live task", async () => {
-      const [relatedBlocks, duplicationInfo] = await Promise.all([
+      const [
+        issuesByFilter,
+        issueFilter,
+        relatedBlocks,
+        measureFilesV2,
+        relatedBlocksV2,
+        duplicationInfo
+      ] = await Promise.all([
+        readReachable(() => client.listIssuesByFilter({
+          task_id: taskId,
+          page: 1,
+          page_size: 20
+        })),
+        readReachable(() => client.getIssueFilter({
+          task_id: taskId,
+          facets: "statusIds,severities"
+        })),
         readReachable(() => client.listRelatedDuplicateBlocks({
           task_id: taskId,
           file_path: filePath
+        })),
+        readReachable(() => client.listMeasureFilesV2({
+          task_id: taskId,
+          page: 1,
+          page_size: 20
+        })),
+        readReachable(() => client.listRelatedDuplicateBlocksV2({
+          task_id: taskId,
+          file_path: filePath,
+          start_line: 1
         })),
         readReachable(() => client.getMeasureDuplicationInfo({
           task_id: taskId,
@@ -143,9 +169,17 @@ if (hasLiveEnv(process.env)) {
         }))
       ]);
 
+      expectReachedProvider(issuesByFilter);
+      expectReachedProvider(issueFilter);
       expectReachedProvider(relatedBlocks);
+      expectReachedProvider(measureFilesV2);
+      expectReachedProvider(relatedBlocksV2);
       expectReachedProvider(duplicationInfo);
+      if (issuesByFilter.ok) expect(Array.isArray(issuesByFilter.value.issues)).toBe(true);
+      if (issueFilter.ok) expect(Array.isArray(issueFilter.value.facets)).toBe(true);
       if (relatedBlocks.ok) expect(Array.isArray(relatedBlocks.value.blocks)).toBe(true);
+      if (measureFilesV2.ok) expect(Array.isArray(measureFilesV2.value.files)).toBe(true);
+      if (relatedBlocksV2.ok) expect(Array.isArray(relatedBlocksV2.value.blocks)).toBe(true);
       if (duplicationInfo.ok) expect(duplicationInfo.value.task_id).toBe(taskId);
     }, 30000);
 

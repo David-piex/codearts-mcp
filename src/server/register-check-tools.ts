@@ -28,6 +28,7 @@ import {
   checkGetTaskIssueStatisticsInput,
   checkGetTaskLogDetailInput,
   checkGetTaskMeasuresInput,
+  checkGetIssueFilterInput,
   checkGetTaskNotificationInput,
   checkGetTaskOwnerMatchingSwitchInput,
   checkGetTaskPreCheckScriptInput,
@@ -47,8 +48,11 @@ import {
   checkListCodehubRepositoriesInput,
   checkListDefaultRulesetsInput,
   checkListDefectNextStatusesInput,
+  checkListIssuesByFilterInput,
   checkListMeasureFilesInput,
+  checkListMeasureFilesV2Input,
   checkListRelatedDuplicateBlocksInput,
+  checkListRelatedDuplicateBlocksV2Input,
   checkListPluginsInput,
   checkListProjectTaskGroupsInput,
   checkListRulesInput,
@@ -81,13 +85,17 @@ import {
   createCheckGetDefectMetricTrendHandler,
   createCheckGetMeasureDuplicationInfoHandler,
   createCheckGetMeasureTotalHandler,
+  createCheckGetIssueFilterHandler,
   createCheckGetProjectConfigHandler,
   createCheckGetSingleDefectHandler,
   createCheckGetTaskByIdHandler,
   createCheckGetTaskIssueStatisticsHandler,
   createCheckGetTaskMeasuresHandler,
   createCheckListMeasureFilesHandler,
+  createCheckListMeasureFilesV2Handler,
+  createCheckListIssuesByFilterHandler,
   createCheckListRelatedDuplicateBlocksHandler,
+  createCheckListRelatedDuplicateBlocksV2Handler,
   createCheckListConfigItemsHandler,
   createCheckListDefectNextStatusesHandler
 } from "../products/check/tools/additional-read-tools.js";
@@ -436,6 +444,18 @@ const checkToolDefinitions = {
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetSingleDefectHandler>[0] }) => clients.checkClient,
     createProductHandler: createCheckGetSingleDefectHandler
   }),
+  "check_list_issues_by_filter": defineProductTool({
+    description: "List CodeArts Check issues by filter",
+    inputSchema: checkListIssuesByFilterInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListIssuesByFilterHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckListIssuesByFilterHandler
+  }),
+  "check_get_issue_filter": defineProductTool({
+    description: "Get CodeArts Check issue filter facets",
+    inputSchema: checkGetIssueFilterInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetIssueFilterHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckGetIssueFilterHandler
+  }),
   "check_get_async_job_v2": defineProductTool({
     description: "Get CodeArts Check async job V2 progress",
     inputSchema: checkGetAsyncJobV2Input,
@@ -454,11 +474,23 @@ const checkToolDefinitions = {
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListMeasureFilesHandler>[0] }) => clients.checkClient,
     createProductHandler: createCheckListMeasureFilesHandler
   }),
+  "check_list_measure_files_v2": defineProductTool({
+    description: "List CodeArts Check task measure files V2",
+    inputSchema: checkListMeasureFilesV2Input,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListMeasureFilesV2Handler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckListMeasureFilesV2Handler
+  }),
   "check_list_related_duplicate_blocks": defineProductTool({
     description: "List CodeArts Check related duplicate blocks",
     inputSchema: checkListRelatedDuplicateBlocksInput,
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListRelatedDuplicateBlocksHandler>[0] }) => clients.checkClient,
     createProductHandler: createCheckListRelatedDuplicateBlocksHandler
+  }),
+  "check_list_related_duplicate_blocks_v2": defineProductTool({
+    description: "List CodeArts Check related duplicate blocks V2",
+    inputSchema: checkListRelatedDuplicateBlocksV2Input,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListRelatedDuplicateBlocksV2Handler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckListRelatedDuplicateBlocksV2Handler
   }),
   "check_get_measure_duplication_info": defineProductTool({
     description: "Get CodeArts Check measure duplication info",

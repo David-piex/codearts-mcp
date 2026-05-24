@@ -342,6 +342,49 @@ export type CheckClient = {
     defect_id?: string;
     raw: Record<string, unknown>;
   }>;
+  listIssuesByFilter: (input: {
+    task_id: string;
+    page: number;
+    page_size: number;
+    merge_id?: string;
+    job_id?: string;
+    languages?: string;
+    rule_ids?: string;
+    authors?: string;
+    is_new?: string;
+    status_ids?: string;
+    severities?: string;
+    delay_status?: string;
+    file_names?: string;
+    user_tags?: string[];
+    cwes?: string[];
+  }) => Promise<{
+    task_id: string;
+    issues: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
+  getIssueFilter: (input: {
+    task_id: string;
+    facets: string;
+    merge_id?: string;
+    job_id?: string;
+    languages?: string;
+    rule_ids?: string;
+    authors?: string;
+    is_new?: string;
+    status_ids?: string;
+    severities?: string;
+    delay_status?: string;
+    file_names?: string;
+    user_tags?: string[];
+    cwes?: string[];
+  }) => Promise<{
+    task_id: string;
+    facets: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
   getAsyncJobV2: (input: {
     task_id?: string;
     async_job_id?: string;
@@ -367,12 +410,40 @@ export type CheckClient = {
     total?: number;
     raw: Record<string, unknown>;
   }>;
+  listMeasureFilesV2: (input: {
+    task_id: string;
+    page: number;
+    page_size: number;
+    job_id?: string;
+    filter_type?: string;
+    sort_field?: string;
+    sort_type?: string;
+    search?: string;
+  }) => Promise<{
+    task_id: string;
+    files: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
   listRelatedDuplicateBlocks: (input: {
     task_id: string;
     job_id?: string;
     file_path?: string;
     block_id?: string;
     duplication_type?: "duplication_code" | "duplication_file";
+  }) => Promise<{
+    task_id: string;
+    blocks: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
+  listRelatedDuplicateBlocksV2: (input: {
+    task_id: string;
+    job_id?: string;
+    file_path?: string;
+    block_id?: string;
+    start_line?: number;
+    duplication_type?: string;
   }) => Promise<{
     task_id: string;
     blocks: Array<Record<string, unknown>>;
@@ -569,6 +640,38 @@ function buildQuery(input: Record<string, string | number | boolean | undefined>
   }
   const text = query.toString();
   return text ? `?${text}` : "";
+}
+
+function issueFilterBody(input: {
+  task_id: string;
+  merge_id?: string;
+  job_id?: string;
+  languages?: string;
+  rule_ids?: string;
+  authors?: string;
+  is_new?: string;
+  status_ids?: string;
+  severities?: string;
+  delay_status?: string;
+  file_names?: string;
+  user_tags?: string[];
+  cwes?: string[];
+}) {
+  return {
+    taskId: input.task_id,
+    mergeId: input.merge_id,
+    jobId: input.job_id,
+    languages: input.languages,
+    ruleIds: input.rule_ids,
+    authors: input.authors,
+    isNew: input.is_new,
+    statusIds: input.status_ids,
+    severities: input.severities,
+    delayStatus: input.delay_status,
+    fileNames: input.file_names,
+    userTags: input.user_tags,
+    cwes: input.cwes
+  };
 }
 
 export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClient {
@@ -1443,6 +1546,48 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
         raw: defect
       };
     },
+    async listIssuesByFilter(input) {
+      const response = await _http.post("/v1/defect/issue-list-by-filter", {
+        ...issueFilterBody(input),
+        page: input.page,
+        pageSize: input.page_size
+      });
+      const payload = readResultPayload(response);
+      const resultPayload = readEnvelope(payload.result) ?? payload;
+      const issues = readArray<Record<string, unknown>>(
+        resultPayload.info ??
+          resultPayload.issues ??
+          resultPayload.items ??
+          resultPayload.list
+      );
+
+      return {
+        task_id: input.task_id,
+        issues,
+        total: readTotal(resultPayload, response, issues.length),
+        raw: resultPayload
+      };
+    },
+    async getIssueFilter(input) {
+      const response = await _http.post("/v1/defect/issue-filter", {
+        ...issueFilterBody(input),
+        facets: input.facets
+      });
+      const payload = readResultPayload(response);
+      const resultPayload = readEnvelope(payload.result) ?? payload;
+      const facets = readArray<Record<string, unknown>>(
+        resultPayload.facets ??
+          resultPayload.items ??
+          resultPayload.list
+      );
+
+      return {
+        task_id: input.task_id,
+        facets,
+        total: readTotal(resultPayload, response, facets.length),
+        raw: resultPayload
+      };
+    },
     async getAsyncJobV2(input) {
       const response = await _http.get(`/v2/async-job${buildQuery({
         ...(input.query ?? {}),
@@ -1489,6 +1634,33 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
         raw: listPayload
       };
     },
+    async listMeasureFilesV2(input) {
+      const response = await _http.post("/v2/measure/measure-list", {
+        taskId: input.task_id,
+        jobId: input.job_id,
+        filterType: input.filter_type,
+        sortField: input.sort_field,
+        sortType: input.sort_type,
+        search: input.search,
+        page: input.page,
+        pageSize: input.page_size
+      });
+      const payload = readResultPayload(response);
+      const listPayload = readEnvelope(payload.result) ?? payload;
+      const files = readArray<Record<string, unknown>>(
+        listPayload.measureProjectInfos ??
+          listPayload.measure_project_infos ??
+          listPayload.items ??
+          listPayload.list
+      );
+
+      return {
+        task_id: input.task_id,
+        files,
+        total: readTotal(listPayload, response, files.length),
+        raw: listPayload
+      };
+    },
     async listRelatedDuplicateBlocks(input) {
       const response = await _http.get(`/v1/tasks/${encodeURIComponent(input.task_id)}/related-duplicate-blocks${buildQuery({
         job_id: input.job_id,
@@ -1496,6 +1668,32 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
         block_id: input.block_id,
         duplication_type: input.duplication_type
       })}`);
+      const payload = readResultPayload(response);
+      const resultPayload = readEnvelope(payload.result) ?? payload;
+      const blocks = readArray<Record<string, unknown>>(
+        payload.result ??
+          resultPayload.blocks ??
+          resultPayload.files ??
+          resultPayload.items ??
+          resultPayload.list
+      );
+
+      return {
+        task_id: input.task_id,
+        blocks,
+        total: readTotal(resultPayload, response, blocks.length),
+        raw: resultPayload
+      };
+    },
+    async listRelatedDuplicateBlocksV2(input) {
+      const response = await _http.post("/v2/related-duplicate-blocks", {
+        taskId: input.task_id,
+        jobId: input.job_id,
+        filePath: input.file_path,
+        blockId: input.block_id,
+        startLine: input.start_line,
+        duplicationType: input.duplication_type
+      });
       const payload = readResultPayload(response);
       const resultPayload = readEnvelope(payload.result) ?? payload;
       const blocks = readArray<Record<string, unknown>>(
