@@ -2,6 +2,7 @@ import { asListResult } from "../../../contracts/tool-result.js";
 import { formatListToolText } from "../../../contracts/tool-result-text.js";
 import { toPageInfo } from "../../../core/pagination/page-info.js";
 import { reqListProjectUserWorkHoursInput, reqListProjectWorkHoursInput } from "../schemas.js";
+import { formatReqTimestampText } from "./time-format.js";
 
 export function mapReqProjectWorkHours(
   items: Array<{
@@ -28,6 +29,7 @@ export function mapReqProjectWorkHours(
       title: item.subject,
       projectName: item.project_name,
       workDate: item.work_date,
+      workDateText: formatReqTimestampText(item.work_date),
       workHours:
         typeof item.work_hours_num !== "undefined" ? String(item.work_hours_num) : undefined,
       summary: item.summary,
@@ -38,9 +40,11 @@ export function mapReqProjectWorkHours(
               userName: item.user_name,
               nickName: item.nick_name
             }
-          : undefined
+          : undefined,
+      rawWorkHour: item
     })),
-    toPageInfo(page, pageSize, total)
+    toPageInfo(page, pageSize, total),
+    { work_hours: items }
   );
 }
 

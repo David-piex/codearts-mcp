@@ -6,44 +6,83 @@ import {
   mapReqBoardWorkItems
 } from "../../../../src/products/req/tools/list-board-work-items.js";
 
-describe("mapReqBoardWorkItems", () => {
-  it("returns normalized board work items with pagination", () => {
-    const result = mapReqBoardWorkItems(
-      [
-        {
-          id: "4633454879781163008",
-          subject: "看板卡片示例",
-          sequence: "5500756",
-          priority: "低",
-          important: "提示",
-          severity: "一般",
-          status: {
-            id: "status-1",
-            name: "新建"
-          }
-        }
-      ],
-      1,
-      20,
-      1
-    );
+const boardWorkItem = {
+  id: "4633454879781163008",
+  subject: "Board card sample",
+  description: "demo",
+  sequence: "5500756",
+  priority: "Low",
+  important: "Normal",
+  severity: "Minor",
+  actual_work_hours: 10,
+  expected_work_hours: 9,
+  begin_time: "1590940800000",
+  created_time: "1590940800000",
+  end_time: "1590940800000",
+  updated_time: "1595832054113",
+  assigned_user: {
+    id: "user-1",
+    name: "demo_user_name",
+    nick_name: "demo"
+  },
+  author: {
+    id: "user-2",
+    name: "author_name",
+    nick_name: "Author"
+  },
+  developer: {
+    id: "user-3",
+    name: "developer_name",
+    nick_name: "Developer"
+  },
+  tags: [{ id: "456", name: "tagdemo" }],
+  custom_fields: [{ field_id: "custom-1", value: "custom-value" }],
+  status: {
+    id: "status-1",
+    name: "New"
+  }
+};
 
-    expect(result.items).toEqual([
-      {
-        id: "4633454879781163008",
-        title: "看板卡片示例",
-        sequence: "5500756",
-        status: "新建",
-        statusId: "status-1",
-        priority: "低",
-        important: "提示",
-        severity: "一般"
-      }
-    ]);
+const normalizedBoardWorkItem = {
+  id: "4633454879781163008",
+  title: "Board card sample",
+  description: "demo",
+  sequence: "5500756",
+  status: "New",
+  statusId: "status-1",
+  priority: "Low",
+  important: "Normal",
+  severity: "Minor",
+  actualWorkHours: 10,
+  expectedWorkHours: 9,
+  beginTime: "1590940800000",
+  beginTimeText: "2020-06-01 00:00:00 Asia/Shanghai",
+  createdTime: "1590940800000",
+  createdTimeText: "2020-06-01 00:00:00 Asia/Shanghai",
+  endTime: "1590940800000",
+  endTimeText: "2020-06-01 00:00:00 Asia/Shanghai",
+  updatedTime: "1595832054113",
+  updatedTimeText: "2020-07-27 14:40:54 Asia/Shanghai",
+  assignedToName: "demo",
+  authorName: "Author",
+  developerName: "Developer",
+  tags: [{ id: "456", name: "tagdemo" }],
+  customFields: [{ field_id: "custom-1", value: "custom-value" }],
+  rawWorkItem: boardWorkItem
+};
+
+describe("mapReqBoardWorkItems", () => {
+  it("returns normalized board work items with pagination and raw payload", () => {
+    const result = mapReqBoardWorkItems([boardWorkItem], 1, 20, 1);
+
+    expect(result.items).toEqual([normalizedBoardWorkItem]);
     expect(result.page_info).toEqual({
       page: 1,
       pageSize: 20,
       total: 1
+    });
+    expect(result.raw).toEqual({
+      work_items: [boardWorkItem]
     });
   });
 });
@@ -65,20 +104,7 @@ describe("createReqListBoardWorkItemsHandler", () => {
   it("returns normalized board work items", async () => {
     const client = {
       listBoardWorkItems: vi.fn(async () => ({
-        work_items: [
-          {
-            id: "4633454879781163008",
-            subject: "看板卡片示例",
-            sequence: "5500756",
-            priority: "低",
-            important: "提示",
-            severity: "一般",
-            status: {
-              id: "status-1",
-              name: "新建"
-            }
-          }
-        ],
+        work_items: [boardWorkItem],
         total: 1
       }))
     };
@@ -96,17 +122,6 @@ describe("createReqListBoardWorkItemsHandler", () => {
       page_size: 20
     });
     expect(result.content[0]?.text).toContain("1 board work items found in this page");
-    expect(result.structuredContent.items).toEqual([
-      {
-        id: "4633454879781163008",
-        title: "看板卡片示例",
-        sequence: "5500756",
-        status: "新建",
-        statusId: "status-1",
-        priority: "低",
-        important: "提示",
-        severity: "一般"
-      }
-    ]);
+    expect(result.structuredContent.items).toEqual([normalizedBoardWorkItem]);
   });
 });

@@ -27,6 +27,7 @@ describe("mapReqWorkItemWorkHours", () => {
         id: "wh-1",
         workDate: "2025/07/25",
         workDateTimestamp: "1753372800000",
+        workDateText: "2025-07-25 00:00:00 Asia/Shanghai",
         workHours: "1.0",
         region: "example",
         author: {
@@ -34,7 +35,11 @@ describe("mapReqWorkItemWorkHours", () => {
           userNumId: 1001,
           userName: "alice",
           nickName: "Alice"
-        }
+        },
+        rawWorkHour: expect.objectContaining({
+          id: "wh-1",
+          work_date_timestamp: "1753372800000"
+        })
       }
     ]);
   });
@@ -88,6 +93,7 @@ describe("createReqListWorkItemWorkHoursHandler", () => {
         id: "wh-1",
         workDate: "2025/07/25",
         workDateTimestamp: "1753372800000",
+        workDateText: "2025-07-25 00:00:00 Asia/Shanghai",
         workHours: "1.0",
         region: "example",
         author: {
@@ -95,7 +101,11 @@ describe("createReqListWorkItemWorkHoursHandler", () => {
           userNumId: 1001,
           userName: "alice",
           nickName: "Alice"
-        }
+        },
+        rawWorkHour: expect.objectContaining({
+          id: "wh-1",
+          work_date_timestamp: "1753372800000"
+        })
       }
     ]);
   });

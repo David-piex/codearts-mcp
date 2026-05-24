@@ -36,15 +36,23 @@ describe("mapReqProjectWorkHours", () => {
         title: "Align acceptance criteria",
         projectName: "Payments",
         workDate: "2020-02-19",
+        workDateText: "2020-02-19 00:00:00 Asia/Shanghai",
         workHours: "1.0",
         summary: "Backend development",
         author: {
           userId: "user-1",
           userName: "alice",
           nickName: "Alice"
-        }
+        },
+        rawWorkHour: expect.objectContaining({
+          issue_id: 69813204,
+          work_date: "2020-02-19"
+        })
       }
     ]);
+    expect(result.raw).toEqual({
+      work_hours: [expect.objectContaining({ issue_id: 69813204 })]
+    });
     expect(result.page_info).toEqual({
       page: 2,
       pageSize: 10,
@@ -125,13 +133,18 @@ describe("createReqListProjectWorkHoursHandler", () => {
         title: "Align acceptance criteria",
         projectName: "Payments",
         workDate: "2020-02-19",
+        workDateText: "2020-02-19 00:00:00 Asia/Shanghai",
         workHours: "1.0",
         summary: "Backend development",
         author: {
           userId: "user-1",
           userName: "alice",
           nickName: "Alice"
-        }
+        },
+        rawWorkHour: expect.objectContaining({
+          issue_id: 69813204,
+          work_date: "2020-02-19"
+        })
       }
     ]);
   });
@@ -180,6 +193,7 @@ describe("createReqListProjectWorkHoursHandler", () => {
       expect.objectContaining({
         issueId: "69813204",
         title: "Align acceptance criteria",
+        workDateText: "2020-02-19 00:00:00 Asia/Shanghai",
         workHours: "1.0"
       })
     );

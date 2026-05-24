@@ -1,6 +1,7 @@
 import { asListResult } from "../../../contracts/tool-result.js";
 import { formatListToolText } from "../../../contracts/tool-result-text.js";
 import { reqListWorkItemWorkHoursInput } from "../schemas.js";
+import { formatReqTimestampText } from "./time-format.js";
 
 export function mapReqWorkItemWorkHours(
   items: Array<{
@@ -24,6 +25,7 @@ export function mapReqWorkItemWorkHours(
         typeof item.work_date_timestamp !== "undefined"
           ? String(item.work_date_timestamp)
           : undefined,
+      workDateText: formatReqTimestampText(item.work_date_timestamp ?? item.work_date),
       workHours: typeof item.work_hours !== "undefined" ? String(item.work_hours) : undefined,
       region: item.region,
       author:
@@ -34,7 +36,8 @@ export function mapReqWorkItemWorkHours(
               userName: item.user_name,
               nickName: item.nick_name
             }
-          : undefined
+          : undefined,
+      rawWorkHour: item
     }))
   );
 }

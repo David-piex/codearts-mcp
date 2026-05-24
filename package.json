@@ -15,6 +15,7 @@
     "check": "npm run lint && tsc --noEmit && npm run tool-manifest:check && npm run function-api:check && npm run stats:check-docs && npm test && npm run build",
     "probe:edge": "tsx src/server/edge-probe.ts",
     "stats:modules": "tsx src/server/print-module-stats.ts",
+    "req:coverage": "tsx src/server/print-req-coverage-audit.ts",
     "stats:check-docs": "tsx src/server/check-module-stats-docs.ts",
     "stats:sync-docs": "tsx src/server/sync-module-stats-docs.ts",
     "tool-manifest:check": "tsx src/server/check-tool-manifest.ts",
