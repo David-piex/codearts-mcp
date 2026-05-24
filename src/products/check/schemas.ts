@@ -247,6 +247,11 @@ export const checkGetTaskMeasuresInput = z.object({
   query: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).default({})
 });
 
+export const checkListMeasureFilesInput = pagingSchema.extend({
+  task_id: idSchema,
+  job_id: idSchema.optional()
+});
+
 export const checkDownloadLogFileInput = z.object({
   sub_job_id: idSchema.optional(),
   query: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).default({})

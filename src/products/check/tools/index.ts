@@ -48,6 +48,7 @@ export const checkToolNames = [
   "check_get_single_defect",
   "check_get_async_job_v2",
   "check_get_task_measures",
+  "check_list_measure_files",
   "check_download_log_file",
   "check_get_defect_file_content",
   "check_get_vpcep_authorization",

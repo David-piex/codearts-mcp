@@ -80,13 +80,31 @@ if (hasLiveEnv(process.env)) {
     }, 30000);
 
     it("lists issues for the known live task", async () => {
-      const result = await client.listTaskIssues({
+      const [issues, measureFiles] = await Promise.all([
+        client.listTaskIssues({
+          task_id: taskId,
+          page: 1,
+          page_size: 20
+        }),
+        client.listMeasureFiles({
+          task_id: taskId,
+          page: 1,
+          page_size: 20
+        })
+      ]);
+
+      expect(Array.isArray(issues.issues)).toBe(true);
+      expect(Array.isArray(measureFiles.files)).toBe(true);
+      expect(measureFiles.task_id).toBe(taskId);
+    }, 30000);
+
+    it("keeps the legacy task-measures endpoint reachable", async () => {
+      const result = await client.getTaskMeasures({
         task_id: taskId,
-        page: 1,
-        page_size: 20
       });
 
-      expect(Array.isArray(result.issues)).toBe(true);
+      expect(result.task_id).toBe(taskId);
+      expect(typeof result.raw).toBe("object");
     }, 30000);
 
     it("reaches newly published official read routes on the Check endpoint", async () => {

@@ -238,13 +238,24 @@ describe("createBuildClient metadata read paths", () => {
       branch: "main",
       interval: 7
     });
+    const lastHistory = await client.getLastHistoryV3({
+      project_id: "project-1",
+      repository_name: "repo"
+    });
+    const ratioV3 = await client.getJobSuccessRatioV3({
+      job_id: "job-1",
+      start_time: "2026-05-01",
+      end_time: "2026-05-24"
+    });
 
     expect(paths).toEqual([
       "/v1/domain/job-summary",
       "/v2/resource/package-spec/status?project_id=project-1&status=normal",
       "/v1/image/dockerfile-template?image_id=image-1",
       "/v1/job/check/exist?project_id=project-1&job_name=build-main",
-      "/v1/report/ratio?job_id=job-1&repository_name=repo&branch=main&interval=7"
+      "/v1/report/ratio?job_id=job-1&repository_name=repo&branch=main&interval=7",
+      "/v3/jobs/project-1/last-history?repository_name=repo",
+      "/v3/jobs/job-1/success-ratio?start_time=2026-05-01&end_time=2026-05-24"
     ]);
     expect(summary).toEqual({ raw: { job_total: 2 } });
     expect(statuses).toEqual({
@@ -263,6 +274,27 @@ describe("createBuildClient metadata read paths", () => {
       repository_name: "repo",
       branch: "main",
       interval: 7,
+      raw: {
+        job_id: "job-1",
+        branch: "main",
+        total_count: 4,
+        total_success_count: 3
+      }
+    });
+    expect(lastHistory).toEqual({
+      project_id: "project-1",
+      repository_name: "repo",
+      raw: {
+        job_id: "job-1",
+        branch: "main",
+        total_count: 4,
+        total_success_count: 3
+      }
+    });
+    expect(ratioV3).toEqual({
+      job_id: "job-1",
+      start_time: "2026-05-01",
+      end_time: "2026-05-24",
       raw: {
         job_id: "job-1",
         branch: "main",

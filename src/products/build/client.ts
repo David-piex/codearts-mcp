@@ -317,6 +317,24 @@ export type BuildClient = {
     interval: number;
     raw: Record<string, unknown>;
   }>;
+  getLastHistoryV3: (input: {
+    project_id: string;
+    repository_name: string;
+  }) => Promise<{
+    project_id: string;
+    repository_name: string;
+    raw: Record<string, unknown>;
+  }>;
+  getJobSuccessRatioV3: (input: {
+    job_id: string;
+    start_time: string;
+    end_time: string;
+  }) => Promise<{
+    job_id: string;
+    start_time: string;
+    end_time: string;
+    raw: Record<string, unknown>;
+  }>;
   getJobConfigDiff: (input: {
     job_id: string;
     revisedl_no: number;
@@ -1787,6 +1805,34 @@ export function createBuildClient(
         repository_name: input.repository_name,
         branch: input.branch,
         interval: input.interval,
+        raw: readBuildRawRecord(payload)
+      };
+    },
+    async getLastHistoryV3(input) {
+      const query = new URLSearchParams({
+        repository_name: input.repository_name
+      });
+      const response = await _http.get(`/v3/jobs/${encodeURIComponent(input.project_id)}/last-history?${query.toString()}`);
+      const payload = readBuildPayloadValue(response);
+
+      return {
+        project_id: input.project_id,
+        repository_name: input.repository_name,
+        raw: readBuildRawRecord(payload)
+      };
+    },
+    async getJobSuccessRatioV3(input) {
+      const query = new URLSearchParams({
+        start_time: input.start_time,
+        end_time: input.end_time
+      });
+      const response = await _http.get(`/v3/jobs/${encodeURIComponent(input.job_id)}/success-ratio?${query.toString()}`);
+      const payload = readBuildPayloadValue(response);
+
+      return {
+        job_id: input.job_id,
+        start_time: input.start_time,
+        end_time: input.end_time,
         raw: readBuildRawRecord(payload)
       };
     },

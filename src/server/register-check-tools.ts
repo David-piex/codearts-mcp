@@ -46,6 +46,7 @@ import {
   checkListCodehubRepositoriesInput,
   checkListDefaultRulesetsInput,
   checkListDefectNextStatusesInput,
+  checkListMeasureFilesInput,
   checkListPluginsInput,
   checkListProjectTaskGroupsInput,
   checkListRulesInput,
@@ -82,6 +83,7 @@ import {
   createCheckGetTaskByIdHandler,
   createCheckGetTaskIssueStatisticsHandler,
   createCheckGetTaskMeasuresHandler,
+  createCheckListMeasureFilesHandler,
   createCheckListConfigItemsHandler,
   createCheckListDefectNextStatusesHandler
 } from "../products/check/tools/additional-read-tools.js";
@@ -441,6 +443,12 @@ const checkToolDefinitions = {
     inputSchema: checkGetTaskMeasuresInput,
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetTaskMeasuresHandler>[0] }) => clients.checkClient,
     createProductHandler: createCheckGetTaskMeasuresHandler
+  }),
+  "check_list_measure_files": defineProductTool({
+    description: "List CodeArts Check task measure files",
+    inputSchema: checkListMeasureFilesInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListMeasureFilesHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckListMeasureFilesHandler
   }),
   "check_download_log_file": defineProductTool({
     description: "Get CodeArts Check log file content",

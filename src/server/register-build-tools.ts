@@ -23,6 +23,8 @@ import {
   buildGetDomainUserPermissionInput,
   buildGetDockerfileTemplateInput,
   buildGetJobBuildSuccessRatioInput,
+  buildGetJobSuccessRatioV3Input,
+  buildGetLastHistoryV3Input,
   buildGetJobBuildTimeInput,
   buildGetJobConfigDiffInput,
   buildGetCoverageMetricsInput,
@@ -135,6 +137,8 @@ import { createBuildGetDockerfileTemplateHandler } from "../products/build/tools
 import { createBuildGetCoverageMetricsHandler } from "../products/build/tools/get-coverage-metrics.js";
 import { createBuildGetJobBuildTimeHandler } from "../products/build/tools/get-job-build-time.js";
 import { createBuildGetJobBuildSuccessRatioHandler } from "../products/build/tools/get-job-build-success-ratio.js";
+import { createBuildGetJobSuccessRatioV3Handler } from "../products/build/tools/get-job-success-ratio-v3.js";
+import { createBuildGetLastHistoryV3Handler } from "../products/build/tools/get-last-history-v3.js";
 import { createBuildGetJobConfigDiffHandler } from "../products/build/tools/get-job-config-diff.js";
 import { createBuildGetJobPermissionHandler } from "../products/build/tools/get-job-permission.js";
 import { createBuildGetJobPermissionInternalHandler } from "../products/build/tools/get-job-permission-internal.js";
@@ -327,6 +331,18 @@ const buildToolDefinitions = {
     inputSchema: buildGetJobBuildSuccessRatioInput,
     selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetJobBuildSuccessRatioHandler>[0] }) => clients.buildClient,
     createProductHandler: createBuildGetJobBuildSuccessRatioHandler
+  }),
+  "build_get_job_success_ratio_v3": defineProductTool({
+    description: "Get CodeArts Build v3 job success ratio",
+    inputSchema: buildGetJobSuccessRatioV3Input,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetJobSuccessRatioV3Handler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildGetJobSuccessRatioV3Handler
+  }),
+  "build_get_last_history_v3": defineProductTool({
+    description: "Get CodeArts Build v3 last successful history for a repository",
+    inputSchema: buildGetLastHistoryV3Input,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetLastHistoryV3Handler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildGetLastHistoryV3Handler
   }),
   "build_get_job_config_diff": defineProductTool({
     description: "Get CodeArts Build job configuration diff",

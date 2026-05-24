@@ -27,6 +27,8 @@ export const buildToolNames = [
   "build_get_dockerfile_template",
   "build_check_job_name_exists",
   "build_get_job_build_success_ratio",
+  "build_get_job_success_ratio_v3",
+  "build_get_last_history_v3",
   "build_get_job_config_diff",
   "build_list_recycling_jobs",
   "build_check_job_count_limit",

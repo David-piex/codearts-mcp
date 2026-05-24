@@ -1288,6 +1288,20 @@ describe("createCheckClient", () => {
         defectCount: 2
       }
     });
+    await expect(client.listMeasureFiles({
+      task_id: "task-1",
+      job_id: "job-1",
+      page: 1,
+      page_size: 20
+    })).resolves.toEqual({
+      task_id: "task-1",
+      files: [],
+      total: 0,
+      raw: {
+        id: "config-1",
+        name: "Default config"
+      }
+    });
 
     expect(requests).toEqual([
       {
@@ -1308,6 +1322,10 @@ describe("createCheckClient", () => {
           branch: "main",
           taskId: "task-1"
         }
+      },
+      {
+        method: "GET",
+        path: "/v1/tasks/task-1/measure-list?job_id=job-1&page_num=1&page_size=20"
       }
     ]);
   });

@@ -26,14 +26,14 @@
 | --- | ---: | --- |
 | 制品仓 | 37 | [Function-API-Reference-Artifact.md](./Function-API-Reference-Artifact.md) |
 | 鉴权会话 | 2 | [Function-API-Reference-Auth-Session.md](./Function-API-Reference-Auth-Session.md) |
-| 编译构建 | 83 | [Function-API-Reference-Build.md](./Function-API-Reference-Build.md) |
-| 代码检查 | 68 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
+| 编译构建 | 85 | [Function-API-Reference-Build.md](./Function-API-Reference-Build.md) |
+| 代码检查 | 69 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
 | 部署 | 74 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
 | 流水线 | 109 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 187 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 243 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 238 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **1041** | |
+| **总计** | **1044** | |
 
 ## 字段对应
 
@@ -116,7 +116,9 @@
 | `build_get_job_pipeline_info` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_job_pipeline_info) |
 | `build_get_job_running_status` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_job_running_status) |
 | `build_get_job_step_status` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_job_step_status) |
+| `build_get_job_success_ratio_v3` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_job_success_ratio_v3) |
 | `build_get_keystore_permission` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_keystore_permission) |
+| `build_get_last_history_v3` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_last_history_v3) |
 | `build_get_project_default_permission` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_project_default_permission) |
 | `build_get_project_record_statistics` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_project_record_statistics) |
 | `build_get_real_time_log` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_real_time_log) |
@@ -208,6 +210,7 @@
 | `check_list_criterionsets_by_language` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_criterionsets_by_language) |
 | `check_list_default_rulesets` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_default_rulesets) |
 | `check_list_defect_next_statuses` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_defect_next_statuses) |
+| `check_list_measure_files` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_measure_files) |
 | `check_list_plugins` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_plugins) |
 | `check_list_project_task_groups` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_project_task_groups) |
 | `check_list_rules` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_rules) |

@@ -133,6 +133,17 @@ export const buildGetJobBuildSuccessRatioInput = z.object({
   interval: z.number().int().min(1).max(30).default(7)
 });
 
+export const buildGetLastHistoryV3Input = z.object({
+  project_id: idSchema,
+  repository_name: z.string().min(1).max(256)
+});
+
+export const buildGetJobSuccessRatioV3Input = z.object({
+  job_id: idSchema,
+  start_time: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  end_time: z.string().regex(/^\d{4}-\d{2}-\d{2}$/)
+});
+
 export const buildGetJobConfigDiffInput = z.object({
   job_id: idSchema,
   revisedl_no: z.number().int().positive(),

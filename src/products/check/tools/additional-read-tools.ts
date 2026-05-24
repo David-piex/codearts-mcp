@@ -10,6 +10,7 @@ import {
   checkGetTaskByIdInput,
   checkGetTaskIssueStatisticsInput,
   checkGetTaskMeasuresInput,
+  checkListMeasureFilesInput,
   checkListConfigItemsInput,
   checkListDefectNextStatusesInput
 } from "../schemas.js";
@@ -46,6 +47,12 @@ type Client = {
     task_id: string;
     query?: Record<string, string | number | boolean>;
   }) => Promise<{ task_id: string; raw: RawRecord }>;
+  listMeasureFiles: (input: {
+    task_id: string;
+    page: number;
+    page_size: number;
+    job_id?: string;
+  }) => Promise<{ task_id: string; files: RawRecord[]; total?: number; raw: RawRecord }>;
   getProjectConfig: (input: { id: string; operator?: string }) => Promise<{ id: string; raw: RawRecord }>;
   listConfigItems: (input: { ids: string[] }) => Promise<{ items: RawRecord[]; total?: number; raw: RawRecord }>;
   getMeasureTotal: (input: {
@@ -135,6 +142,17 @@ export function createCheckGetTaskMeasuresHandler(client: Client) {
     const parsed = checkGetTaskMeasuresInput.parse(input);
     const response = await client.getTaskMeasures(parsed);
     return itemResponse(mapCheckRecordItem("Loaded Check task measures", response.task_id, "measures", response.raw));
+  };
+}
+
+export function createCheckListMeasureFilesHandler(client: Client) {
+  return async (input: unknown) => {
+    const parsed = checkListMeasureFilesInput.parse(input);
+    const response = await client.listMeasureFiles(parsed);
+    return listResponse(
+      mapCheckRecordList(response.files, response.total, "measure files", "measureFile"),
+      response.raw
+    );
   };
 }
 

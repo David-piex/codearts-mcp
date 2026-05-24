@@ -106,6 +106,13 @@ function readTaskName(source: NodeJS.ProcessEnv) {
   return source.HUAWEICLOUD_BUILD_LIVE_TASK_NAME?.trim() || "stage1";
 }
 
+function readDateWindow(source: NodeJS.ProcessEnv) {
+  const endTime = source.HUAWEICLOUD_BUILD_LIVE_RATIO_END_TIME?.trim() || "2026-05-24";
+  const startTime = source.HUAWEICLOUD_BUILD_LIVE_RATIO_START_TIME?.trim() || "2026-05-01";
+
+  return { startTime, endTime };
+}
+
 function createPageInput<T extends Record<string, unknown>>(
   overrides?: T
 ): {
@@ -210,6 +217,7 @@ if (hasLiveEnv(process.env)) {
     const gitCodeEndpointId = readGitCodeEndpointId(process.env);
     const gitCodeRepositoryName = readGitCodeRepositoryName(process.env);
     const taskName = readTaskName(process.env);
+    const ratioWindow = readDateWindow(process.env);
 
     it("lists jobs across configured projects and gets the known live job", async () => {
       const [jobLists, projectJobsV3, job] = await Promise.all([
@@ -292,6 +300,32 @@ if (hasLiveEnv(process.env)) {
       expect(history.job_id).toBe(jobId);
       expect(realTimeLog.build_no).toBe(historyBuildNo);
       expect(Array.isArray(errorLog.error_nodes)).toBe(true);
+    }, 30000);
+
+    it("reaches Build v3 last-history and success-ratio official routes", async () => {
+      const job = await readReachable(() => client.getJob({ job_id: jobId }));
+      const repositoryName =
+        gitCodeRepositoryName ??
+        (job.ok
+          ? job.value.scm_repositories[0]?.repo_name ?? job.value.scm_repositories[0]?.url
+          : undefined) ??
+        "repo";
+      const [lastHistory, successRatio] = await Promise.all([
+        readReachable(() => client.getLastHistoryV3({
+          project_id: projectId,
+          repository_name: repositoryName
+        })),
+        readReachable(() => client.getJobSuccessRatioV3({
+          job_id: jobId,
+          start_time: ratioWindow.startTime,
+          end_time: ratioWindow.endTime
+        }))
+      ]);
+
+      expectReachedProvider(lastHistory);
+      expectReachedProvider(successRatio);
+      if (lastHistory.ok) expect(lastHistory.value.project_id).toBe(projectId);
+      if (successRatio.ok) expect(successRatio.value.job_id).toBe(jobId);
     }, 30000);
 
     it("gets flow graph for the known live record and still rejects a non-existent probe id", async () => {

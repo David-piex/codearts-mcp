@@ -356,6 +356,17 @@ export type CheckClient = {
     task_id: string;
     raw: Record<string, unknown>;
   }>;
+  listMeasureFiles: (input: {
+    task_id: string;
+    page: number;
+    page_size: number;
+    job_id?: string;
+  }) => Promise<{
+    task_id: string;
+    files: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
   downloadLogFile: (input: {
     sub_job_id?: string;
     query?: Record<string, string | number | boolean>;
@@ -1431,6 +1442,28 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
       return {
         task_id: input.task_id,
         raw: measures
+      };
+    },
+    async listMeasureFiles(input) {
+      const response = await _http.get(`/v1/tasks/${encodeURIComponent(input.task_id)}/measure-list${buildQuery({
+        job_id: input.job_id,
+        page_num: input.page,
+        page_size: input.page_size
+      })}`);
+      const payload = readResultPayload(response);
+      const listPayload = readEnvelope(payload.result) ?? payload;
+      const files = readArray<Record<string, unknown>>(
+        listPayload.measureProjectInfos ??
+          listPayload.measure_project_infos ??
+          listPayload.items ??
+          listPayload.list
+      );
+
+      return {
+        task_id: input.task_id,
+        files,
+        total: readTotal(listPayload, response, files.length),
+        raw: listPayload
       };
     },
     async downloadLogFile(input) {
