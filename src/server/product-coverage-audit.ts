@@ -241,6 +241,10 @@ export function findWeakProductCoverageRows(rows: ProductCoverageEndpoint[]) {
   return rows.filter((row) => !row.ignoredReason && row.clientScore < 4 && row.matchedTools.length === 0);
 }
 
+export function findIgnoredProductCoverageRows(rows: ProductCoverageEndpoint[]) {
+  return rows.filter((row) => row.ignoredReason);
+}
+
 export function renderProductCoverageAudit(input: {
   config: ProductCoverageConfig;
   docText?: string;
@@ -248,16 +252,24 @@ export function renderProductCoverageAudit(input: {
 }) {
   const rows = auditProductCoverage(input);
   const weakRows = findWeakProductCoverageRows(rows);
+  const ignoredRows = findIgnoredProductCoverageRows(rows);
 
   return [
     `${input.config.module} official endpoints: ${rows.length}`,
     `Weak client/tool matches: ${weakRows.length}`,
+    `Explicitly ignored endpoints: ${ignoredRows.length}`,
     "",
     "| Method | Path | Client score | Matched tools |",
     "| --- | --- | ---: | --- |",
-    ...weakRows.map((row) =>
-      `| ${row.method} | \`${row.path}\` | ${row.clientScore} | ${row.matchedTools.join(", ") || "-"} |`
-    )
+    ...weakRows.map((row) => `| ${row.method} | \`${row.path}\` | ${row.clientScore} | ${row.matchedTools.join(", ") || "-"} |`),
+    ...(ignoredRows.length > 0
+      ? [
+          "",
+          "| Ignored method | Ignored path | Reason |",
+          "| --- | --- | --- |",
+          ...ignoredRows.map((row) => `| ${row.method} | \`${row.path}\` | ${row.ignoredReason ?? "-"} |`)
+        ]
+      : [])
   ].join("\n");
 }
 
@@ -265,17 +277,22 @@ export function renderAllProductCoverageAudit() {
   const sections = productCoverageConfigs.map((config) => {
     const rows = auditProductCoverage({ config });
     const weakRows = findWeakProductCoverageRows(rows);
+    const ignoredRows = findIgnoredProductCoverageRows(rows);
 
     return {
       config,
       rows,
-      weakRows
+      weakRows,
+      ignoredRows
     };
   });
   const lines = [
-    "| Module | Official endpoints | Weak client/tool matches |",
-    "| --- | ---: | ---: |",
-    ...sections.map(({ config, rows, weakRows }) => `| ${config.module} | ${rows.length} | ${weakRows.length} |`)
+    "| Module | Official endpoints | Weak client/tool matches | Explicitly ignored endpoints |",
+    "| --- | ---: | ---: | ---: |",
+    ...sections.map(
+      ({ config, rows, weakRows, ignoredRows }) =>
+        `| ${config.module} | ${rows.length} | ${weakRows.length} | ${ignoredRows.length} |`
+    )
   ];
 
   for (const section of sections.filter(({ weakRows }) => weakRows.length > 0)) {
@@ -284,6 +301,15 @@ export function renderAllProductCoverageAudit() {
       ...section.weakRows
         .slice(0, 50)
         .map((row) => `| ${row.method} | \`${row.path}\` | ${row.clientScore} |`)
+    );
+  }
+
+  for (const section of sections.filter(({ ignoredRows }) => ignoredRows.length > 0)) {
+    lines.push("", `## ${section.config.module} ignored endpoints`, "", "| Method | Path | Reason |", "| --- | --- | --- |");
+    lines.push(
+      ...section.ignoredRows
+        .slice(0, 50)
+        .map((row) => `| ${row.method} | \`${row.path}\` | ${row.ignoredReason ?? "-"} |`)
     );
   }
 

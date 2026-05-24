@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   auditProductCoverage,
+  findIgnoredProductCoverageRows,
   findWeakProductCoverageRows,
   renderAllProductCoverageAudit,
   renderProductCoverageAudit,
@@ -107,6 +108,7 @@ describe("product coverage audit", () => {
       ignoredReason: "requires raw private key input"
     });
     expect(findWeakProductCoverageRows(rows)).toEqual([]);
+    expect(findIgnoredProductCoverageRows(rows)).toEqual(rows);
   });
 
   it("renders product markdown summaries", () => {
@@ -118,15 +120,20 @@ describe("product coverage audit", () => {
 
     expect(report).toContain("Repo official endpoints: 2");
     expect(report).toContain("Weak client/tool matches: 1");
+    expect(report).toContain("Explicitly ignored endpoints: 0");
     expect(report).toContain("| GET | `/v1/missing` | 0 | - |");
   });
 
   it("renders the real all-product coverage overview", () => {
     const report = renderAllProductCoverageAudit();
 
-    expect(report).toContain("| Module | Official endpoints | Weak client/tool matches |");
+    expect(report).toContain(
+      "| Module | Official endpoints | Weak client/tool matches | Explicitly ignored endpoints |"
+    );
     expect(report).toContain("| Req |");
     expect(report).toContain("| Repo |");
     expect(report).toContain("| TestPlan |");
+    expect(report).toContain("## Repo ignored endpoints");
+    expect(report).toContain("requires raw SSH private key input");
   });
 });
