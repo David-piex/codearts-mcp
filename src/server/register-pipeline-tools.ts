@@ -3,9 +3,12 @@ import { officialApiRequestInput } from "../products/official-api.js";
 import { createPipelineClient } from "../products/pipeline/client.js";
 import {
   pipelineApproveRunInput,
+  pipelineBatchGetPipelineStatusInput,
   pipelineGetPluginPartsInput,
   pipelineGetPluginVersionInput,
   pipelineBindVariableGroupsToPipelineInput,
+  pipelineCheckComponentInput,
+  pipelineCheckProjectInput,
   pipelineCreateExtensionEndpointInput,
   pipelineCreateGroupInput,
   pipelineCreateRuleInput,
@@ -22,8 +25,12 @@ import {
   pipelineGetExtensionEndpointInput,
   pipelineGetExtensionModuleInput,
   pipelineGetInput,
+  pipelineGetChangeRequestInput,
+  pipelineGetComponentInput,
+  pipelineGetPacActionInput,
   pipelineGetTemplateInput,
   pipelineGetWebhookInfoInput,
+  pipelineGetNoticeMessagesInput,
   pipelineGetNoticeDetailInput,
   pipelineGetNoticeInput,
   pipelineGetPermissionInput,
@@ -31,6 +38,10 @@ import {
   pipelineGetProjectStrategyInput,
   pipelineGetProjectStrategyRelatedInfoInput,
   pipelineListArtifactsInput,
+  pipelineDashboardQueryInput,
+  pipelineListChangeRequestsInput,
+  pipelineListComponentsInput,
+  pipelineListExecutionPlansInput,
   pipelineListGroupsInput,
   pipelineListModifyHistoryInput,
   pipelineListProjectStrategiesInput,
@@ -62,6 +73,8 @@ import {
   pipelineListPluginVersionsInput,
   pipelineListPluginsInput,
   pipelineListPublishersInput,
+  pipelineListPacActionsInput,
+  pipelineListReusableJobsInput,
   pipelineListRunsInput,
   pipelineListStagePluginsInput,
   pipelineListStrategiesInput,
@@ -133,6 +146,23 @@ import { createPipelineGetRunLogHandler } from "../products/pipeline/tools/get-r
 import { createPipelineGetRunParametersHandler } from "../products/pipeline/tools/get-run-parameters.js";
 import { createPipelineGetRunHandler } from "../products/pipeline/tools/get-run.js";
 import { createPipelineGetStepOutputsHandler } from "../products/pipeline/tools/get-step-outputs.js";
+import {
+  createPipelineBatchGetPipelineStatusHandler,
+  createPipelineCheckComponentHandler,
+  createPipelineCheckProjectHandler,
+  createPipelineGetChangeRequestHandler,
+  createPipelineGetComponentHandler,
+  createPipelineGetDashboardConcurrencyHandler,
+  createPipelineGetDashboardExecutionsOverviewHandler,
+  createPipelineGetNoticeMessagesHandler,
+  createPipelineGetPacActionHandler,
+  createPipelineListChangeRequestsHandler,
+  createPipelineListComponentsHandler,
+  createPipelineListDashboardPipelineCountsHandler,
+  createPipelineListExecutionPlansHandler,
+  createPipelineListPacActionsHandler,
+  createPipelineListReusableJobsHandler
+} from "../products/pipeline/tools/product-query-tools.js";
 import { createPipelineListArtifactsHandler } from "../products/pipeline/tools/list-artifacts.js";
 import { createPipelineListAvailablePublishersHandler } from "../products/pipeline/tools/list-available-publishers.js";
 import { createPipelineListBasePluginsHandler } from "../products/pipeline/tools/list-base-plugins.js";
@@ -710,6 +740,96 @@ const pipelineToolDefinitions = {
     inputSchema: pipelineListTriggerFailedRecordsInput,
     selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineListTriggerFailedRecordsHandler>[0] }) => clients.pipelineClient,
     createProductHandler: createPipelineListTriggerFailedRecordsHandler
+  }),
+  "pipeline_batch_get_pipeline_status": defineProductTool({
+    description: "Batch get CodeArts Pipeline status records",
+    inputSchema: pipelineBatchGetPipelineStatusInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineBatchGetPipelineStatusHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineBatchGetPipelineStatusHandler
+  }),
+  "pipeline_get_notice_messages": defineProductTool({
+    description: "Get CodeArts Pipeline notice messages",
+    inputSchema: pipelineGetNoticeMessagesInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetNoticeMessagesHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineGetNoticeMessagesHandler
+  }),
+  "pipeline_check_project": defineProductTool({
+    description: "Check CodeArts Pipeline project",
+    inputSchema: pipelineCheckProjectInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineCheckProjectHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineCheckProjectHandler
+  }),
+  "pipeline_check_component": defineProductTool({
+    description: "Check CodeArts Pipeline component",
+    inputSchema: pipelineCheckComponentInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineCheckComponentHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineCheckComponentHandler
+  }),
+  "pipeline_list_execution_plans": defineProductTool({
+    description: "List CodeArts Pipeline execution plans",
+    inputSchema: pipelineListExecutionPlansInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineListExecutionPlansHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineListExecutionPlansHandler
+  }),
+  "pipeline_list_reusable_jobs": defineProductTool({
+    description: "List CodeArts Pipeline reusable jobs",
+    inputSchema: pipelineListReusableJobsInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineListReusableJobsHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineListReusableJobsHandler
+  }),
+  "pipeline_list_dashboard_pipeline_counts": defineProductTool({
+    description: "List CodeArts Pipeline dashboard pipeline counts",
+    inputSchema: pipelineDashboardQueryInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineListDashboardPipelineCountsHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineListDashboardPipelineCountsHandler
+  }),
+  "pipeline_get_dashboard_executions_overview": defineProductTool({
+    description: "Get CodeArts Pipeline dashboard executions overview",
+    inputSchema: pipelineDashboardQueryInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetDashboardExecutionsOverviewHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineGetDashboardExecutionsOverviewHandler
+  }),
+  "pipeline_get_dashboard_concurrency": defineProductTool({
+    description: "Get CodeArts Pipeline dashboard concurrency",
+    inputSchema: pipelineDashboardQueryInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetDashboardConcurrencyHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineGetDashboardConcurrencyHandler
+  }),
+  "pipeline_list_change_requests": defineProductTool({
+    description: "List CodeArts Pipeline change requests",
+    inputSchema: pipelineListChangeRequestsInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineListChangeRequestsHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineListChangeRequestsHandler
+  }),
+  "pipeline_get_change_request": defineProductTool({
+    description: "Get CodeArts Pipeline change request",
+    inputSchema: pipelineGetChangeRequestInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetChangeRequestHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineGetChangeRequestHandler
+  }),
+  "pipeline_list_components": defineProductTool({
+    description: "List CodeArts Pipeline components",
+    inputSchema: pipelineListComponentsInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineListComponentsHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineListComponentsHandler
+  }),
+  "pipeline_get_component": defineProductTool({
+    description: "Get CodeArts Pipeline component",
+    inputSchema: pipelineGetComponentInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetComponentHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineGetComponentHandler
+  }),
+  "pipeline_list_pac_actions": defineProductTool({
+    description: "List CodeArts Pipeline PAC actions",
+    inputSchema: pipelineListPacActionsInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineListPacActionsHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineListPacActionsHandler
+  }),
+  "pipeline_get_pac_action": defineProductTool({
+    description: "Get CodeArts Pipeline PAC action",
+    inputSchema: pipelineGetPacActionInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetPacActionHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineGetPacActionHandler
   }),
   "pipeline_list_modify_history": defineProductTool({
     description: "List CodeArts Pipeline modify history records",

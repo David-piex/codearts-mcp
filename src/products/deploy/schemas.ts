@@ -203,11 +203,40 @@ export const deployListHostGroupsInput = pagingSchema.extend({
   project_id: idSchema
 });
 
+export const deployListHostGroupsV2Input = pagingSchema.extend({
+  project_id: idSchema.optional(),
+  keyword: z.string().optional(),
+  query: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).default({})
+});
+
 export const deployGetHostGroupInput = z.object({
   group_id: idSchema
 });
 
+export const deployGetHostGroupV2Input = z.object({
+  group_id: idSchema
+});
+
 export const deployListHostGroupHostsInput = pagingSchema.extend({
+  group_id: idSchema
+});
+
+export const deployListHostGroupHostsV2Input = pagingSchema.extend({
+  group_id: idSchema,
+  query: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).default({})
+});
+
+export const deployGetHostGroupHostV2Input = z.object({
+  group_id: idSchema,
+  host_id: idSchema
+});
+
+export const deployGetHostGroupHostInput = z.object({
+  group_id: idSchema,
+  host_id: idSchema
+});
+
+export const deployGetHostGroupPermissionsInput = z.object({
   group_id: idSchema
 });
 
@@ -551,6 +580,31 @@ export const deployListApplicationPermissionsInput = z.object({
   project_id: idSchema.optional()
 }).refine((input) => Boolean(input.app_id || input.project_id), {
   message: "app_id or project_id is required"
+});
+
+export const deployGetApplicationMessagesInput = z.object({
+  project_id: idSchema,
+  app_id: idSchema,
+  query: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).default({})
+});
+
+export const deployListApplicationGroupsInput = z.object({
+  project_id: idSchema
+});
+
+export const deployGetSuccessRateMetricsInput = z.object({
+  project_id: idSchema,
+  query: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).default({})
+});
+
+export const deployGetTaskSuccessRateMetricsInput = z.object({
+  project_id: idSchema,
+  body: z.record(z.string(), z.unknown()).default({})
+});
+
+export const deployGetEnvironmentPermissionsInput = z.object({
+  application_id: idSchema,
+  environment_id: idSchema
 });
 
 export const deployCheckApplicationCreatableInput = z.object({

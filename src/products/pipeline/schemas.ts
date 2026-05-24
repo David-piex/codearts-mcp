@@ -6,6 +6,7 @@ const pipelineTagNameSchema = z.string().min(1);
 const pipelineTagColorSchema = z.string().min(1);
 const pipelineVariableGroupNameSchema = z.string().min(1);
 const pipelineExtensionObjectSchema = z.record(z.string(), z.unknown());
+const pipelineRawQueryInput = z.record(z.string(), z.unknown());
 const pipelineExtensionAuthorizationInput = z.object({
   parameters: pipelineExtensionObjectSchema.optional(),
   scheme: z.string().min(1).optional()
@@ -618,4 +619,87 @@ export const pipelineListPipelineVarsInput = z.object({
 export const pipelineGetTemplateInput = z.object({
   tenant_id: idSchema,
   template_id: idSchema
+});
+
+export const pipelineBatchGetPipelineStatusInput = z.object({
+  project_id: idSchema,
+  pipeline_ids: z.array(idSchema).min(1).optional(),
+  body: pipelineRawQueryInput.optional()
+});
+
+export const pipelineGetNoticeMessagesInput = z.object({
+  project_id: idSchema,
+  pipeline_id: idSchema
+});
+
+export const pipelineCheckProjectInput = z.object({
+  project_id: idSchema,
+  type: z.string().min(1)
+});
+
+export const pipelineCheckComponentInput = z.object({
+  project_id: idSchema,
+  component_id: idSchema.optional(),
+  component_name: z.string().min(1).optional(),
+  query: pipelineRawQueryInput.optional()
+});
+
+export const pipelineListExecutionPlansInput = z.object({
+  project_id: idSchema,
+  pipeline_id: idSchema
+});
+
+export const pipelineListReusableJobsInput = z.object({
+  project_id: idSchema,
+  offset: z.number().int().min(0).default(0),
+  limit: z.number().int().min(1).max(200).default(20),
+  keyword: z.string().optional(),
+  body: pipelineRawQueryInput.optional()
+});
+
+export const pipelineDashboardQueryInput = z.object({
+  tenant_id: idSchema,
+  start_time: z.string().min(1).optional(),
+  end_time: z.string().min(1).optional(),
+  query: pipelineRawQueryInput.optional()
+});
+
+export const pipelineListChangeRequestsInput = z.object({
+  cloud_project_id: idSchema,
+  offset: z.number().int().min(0).default(0),
+  limit: z.number().int().min(1).max(200).default(20),
+  keyword: z.string().optional(),
+  body: pipelineRawQueryInput.optional()
+});
+
+export const pipelineGetChangeRequestInput = z.object({
+  cloud_project_id: idSchema,
+  change_request_id: idSchema
+});
+
+export const pipelineListComponentsInput = z.object({
+  cloud_project_id: idSchema,
+  offset: z.number().int().min(0).default(0),
+  limit: z.number().int().min(1).max(200).default(20),
+  keyword: z.string().optional(),
+  body: pipelineRawQueryInput.optional()
+});
+
+export const pipelineGetComponentInput = z.object({
+  cloud_project_id: idSchema,
+  component_id: idSchema
+});
+
+export const pipelineListPacActionsInput = z.object({
+  domain_id: idSchema,
+  offset: z.number().int().min(0).default(0),
+  limit: z.number().int().min(1).max(200).default(20),
+  keyword: z.string().optional(),
+  body: pipelineRawQueryInput.optional()
+});
+
+export const pipelineGetPacActionInput = z.object({
+  domain_id: idSchema,
+  pipeline_id: idSchema,
+  pipeline_run_id: idSchema
 });

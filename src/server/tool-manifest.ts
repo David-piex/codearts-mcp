@@ -134,6 +134,14 @@ const moduleLiveStatus: Record<ProductToolModule, ToolLiveStatus> = {
 };
 
 export function classifyToolAccess(toolName: string): ToolAccess {
+  if (
+    toolName === "pipeline_batch_get_pipeline_status" ||
+    toolName === "pipeline_check_project" ||
+    toolName === "pipeline_check_component"
+  ) {
+    return "read";
+  }
+
   const [, action = ""] = toolName.split("_");
   return WRITE_ACTIONS.has(action) ? "write" : "read";
 }

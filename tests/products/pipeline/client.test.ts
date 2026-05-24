@@ -2927,6 +2927,132 @@ describe("createPipelineClient", () => {
     });
   });
 
+  it("calls Pipeline product query endpoints", async () => {
+    const calls: Array<{ method: string; path: string; body?: unknown }> = [];
+    const client = createClient({
+      get: async (path: string) => {
+        calls.push({ method: "GET", path });
+        return { result: { records: [{ id: "item-1", name: "Item 1" }], total: 1 } };
+      },
+      post: async (path: string, body: unknown) => {
+        calls.push({ method: "POST", path, body });
+        return { records: [{ id: "item-1", name: "Item 1" }], total: 1 };
+      }
+    });
+
+    await client.batchGetPipelineStatus({
+      project_id: "project-1",
+      pipeline_ids: ["pipe-1"]
+    });
+    await client.getNoticeMessages({ project_id: "project-1", pipeline_id: "pipe-1" });
+    await client.checkProject({ project_id: "project-1", type: "pipeline" });
+    await client.checkComponent({
+      project_id: "project-1",
+      component_id: "component-1",
+      query: { branch: "main" }
+    });
+    await client.listExecutionPlans({ project_id: "project-1", pipeline_id: "pipe-1" });
+    await client.listReusableJobs({
+      project_id: "project-1",
+      offset: 0,
+      limit: 20,
+      keyword: "build"
+    });
+    await client.listDashboardPipelineCounts({
+      tenant_id: "tenant-1",
+      start_time: "2026-01-01",
+      end_time: "2026-01-31"
+    });
+    await client.getDashboardExecutionsOverview({ tenant_id: "tenant-1" });
+    await client.getDashboardConcurrency({ tenant_id: "tenant-1" });
+    await client.listChangeRequests({
+      cloud_project_id: "project-1",
+      offset: 0,
+      limit: 20,
+      body: { status: "open" }
+    });
+    await client.getChangeRequest({
+      cloud_project_id: "project-1",
+      change_request_id: "cr-1"
+    });
+    await client.listComponents({ cloud_project_id: "project-1", offset: 0, limit: 20 });
+    await client.getComponent({ cloud_project_id: "project-1", component_id: "component-1" });
+    await client.listPacActions({ domain_id: "domain-1", offset: 0, limit: 20 });
+    await client.getPacAction({
+      domain_id: "domain-1",
+      pipeline_id: "pipe-1",
+      pipeline_run_id: "run-1"
+    });
+
+    expect(calls).toEqual([
+      {
+        method: "POST",
+        path: "/v5/project-1/api/pipelines/status",
+        body: { pipeline_ids: ["pipe-1"] }
+      },
+      {
+        method: "GET",
+        path: "/v5/project-1/api/pipeline-notices/pipe-1/notice/message"
+      },
+      {
+        method: "GET",
+        path: "/v5/project-1/api/check-project/pipeline"
+      },
+      {
+        method: "GET",
+        path: "/v5/project-1/api/pipelines/component/check?branch=main&component_id=component-1"
+      },
+      {
+        method: "GET",
+        path: "/v5/project-1/api/pipelines/pipe-1/execution-plan/list"
+      },
+      {
+        method: "POST",
+        path: "/v5/project-1/api/reusable-jobs/list",
+        body: { offset: 0, limit: 20, keyword: "build", name: "build" }
+      },
+      {
+        method: "GET",
+        path: "/v5/tenant-1/api/dashboard/pipeline-count?start_time=2026-01-01&end_time=2026-01-31"
+      },
+      {
+        method: "GET",
+        path: "/v5/tenant-1/api/dashboard/executions-overview"
+      },
+      {
+        method: "GET",
+        path: "/v5/tenant-1/api/dashboard/concurrency"
+      },
+      {
+        method: "POST",
+        path: "/v2/project-1/change-requests/search",
+        body: { status: "open", offset: 0, limit: 20 }
+      },
+      {
+        method: "GET",
+        path: "/v2/project-1/change-request/cr-1/query"
+      },
+      {
+        method: "POST",
+        path: "/v2/project-1/component/list/query",
+        body: { offset: 0, limit: 20 }
+      },
+      {
+        method: "GET",
+        path: "/v2/project-1/component/component-1/query"
+      },
+      {
+        method: "POST",
+        path: "/v6/domain-1/api/pac/pipelines/actions/list",
+        body: { offset: 0, limit: 20 }
+      },
+      {
+        method: "GET",
+        path: "/v6/domain-1/api/pac/pipelines/actions/pipe-1/run-1"
+      }
+    ]);
+  });
+
   it("deletes pipeline extension endpoints", async () => {
     let requestedPath = "";
     const client = createClient({

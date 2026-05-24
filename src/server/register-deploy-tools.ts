@@ -14,6 +14,15 @@ import {
   deployGetDeploySourceDetailInput,
   deployGetTemplateDetailInput,
   deployGetHostGroupInput,
+  deployGetHostGroupV2Input,
+  deployGetHostGroupHostInput,
+  deployGetHostGroupHostV2Input,
+  deployGetHostGroupPermissionsInput,
+  deployGetApplicationMessagesInput,
+  deployListApplicationGroupsInput,
+  deployGetSuccessRateMetricsInput,
+  deployGetTaskSuccessRateMetricsInput,
+  deployGetEnvironmentPermissionsInput,
   deployGetTaskInput,
   deployImportHostsToEnvironmentInput,
   deployListSystemConfigsInput,
@@ -57,7 +66,9 @@ import {
   deployListVariablesInput,
   deployListHostGroupEnvironmentsInput,
   deployListHostGroupHostsInput,
+  deployListHostGroupHostsV2Input,
   deployListHostGroupsInput,
+  deployListHostGroupsV2Input,
   deployGetStatusInput,
   deployListAppsInput,
   deployListTasksInput,
@@ -77,6 +88,15 @@ import { createDeployGetAppHandler } from "../products/deploy/tools/get-app.js";
 import { createDeployGetDeploySourceDetailHandler } from "../products/deploy/tools/get-deploy-source-detail.js";
 import { createDeployGetTemplateDetailHandler } from "../products/deploy/tools/get-template-detail.js";
 import { createDeployGetHostGroupHandler } from "../products/deploy/tools/get-host-group.js";
+import { createDeployGetHostGroupV2Handler } from "../products/deploy/tools/get-host-group-v2.js";
+import { createDeployGetHostGroupHostHandler } from "../products/deploy/tools/get-host-group-host.js";
+import { createDeployGetHostGroupHostV2Handler } from "../products/deploy/tools/get-host-group-host-v2.js";
+import { createDeployGetHostGroupPermissionsHandler } from "../products/deploy/tools/get-host-group-permissions.js";
+import { createDeployGetApplicationMessagesHandler } from "../products/deploy/tools/get-application-messages.js";
+import { createDeployListApplicationGroupsHandler } from "../products/deploy/tools/list-application-groups.js";
+import { createDeployGetSuccessRateMetricsHandler } from "../products/deploy/tools/get-success-rate-metrics.js";
+import { createDeployGetTaskSuccessRateMetricsHandler } from "../products/deploy/tools/get-task-success-rate-metrics.js";
+import { createDeployGetEnvironmentPermissionsHandler } from "../products/deploy/tools/get-environment-permissions.js";
 import { createDeployGetTaskHandler } from "../products/deploy/tools/get-task.js";
 import { createDeployImportHostsToEnvironmentHandler } from "../products/deploy/tools/import-hosts-to-environment.js";
 import { createDeployGetAppLogHandler } from "../products/deploy/tools/get-app-log.js";
@@ -115,7 +135,9 @@ import { createDeployListEnvironmentsHandler } from "../products/deploy/tools/li
 import { createDeployListEnvironmentHostsHandler } from "../products/deploy/tools/list-environment-hosts.js";
 import { createDeployListHostGroupEnvironmentsHandler } from "../products/deploy/tools/list-host-group-environments.js";
 import { createDeployListHostGroupHostsHandler } from "../products/deploy/tools/list-host-group-hosts.js";
+import { createDeployListHostGroupHostsV2Handler } from "../products/deploy/tools/list-host-group-hosts-v2.js";
 import { createDeployListHostGroupsHandler } from "../products/deploy/tools/list-host-groups.js";
+import { createDeployListHostGroupsV2Handler } from "../products/deploy/tools/list-host-groups-v2.js";
 import { createDeployListTasksHandler } from "../products/deploy/tools/list-tasks.js";
 import { createDeployListHistoriesHandler } from "../products/deploy/tools/list-histories.js";
 import { createDeployListVariableHistoryHandler } from "../products/deploy/tools/list-variable-history.js";
@@ -164,14 +186,25 @@ const deployToolDefinitions = {
   "deploy_list_v4_deploy_records": defineProductTool({ description: "List CodeArts Deploy v4 deploy records", inputSchema: deployListV4DeployRecordsInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployListV4DeployRecordsHandler>[0] }) => clients.deployClient, createProductHandler: createDeployListV4DeployRecordsHandler }),
   "deploy_list_app_host_groups": defineProductTool({ description: "List CodeArts Deploy host groups available to an application", inputSchema: deployListAppHostGroupsInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployListAppHostGroupsHandler>[0] }) => clients.deployClient, createProductHandler: createDeployListAppHostGroupsHandler }),
   "deploy_list_host_groups": defineProductTool({ description: "List CodeArts Deploy host groups", inputSchema: deployListHostGroupsInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployListHostGroupsHandler>[0] }) => clients.deployClient, createProductHandler: createDeployListHostGroupsHandler }),
+  "deploy_list_host_groups_v2": defineProductTool({ description: "List CodeArts Deploy v2 host groups", inputSchema: deployListHostGroupsV2Input, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployListHostGroupsV2Handler>[0] }) => clients.deployClient, createProductHandler: createDeployListHostGroupsV2Handler }),
   "deploy_get_host_group": defineProductTool({ description: "Get CodeArts Deploy host group detail", inputSchema: deployGetHostGroupInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployGetHostGroupHandler>[0] }) => clients.deployClient, createProductHandler: createDeployGetHostGroupHandler }),
+  "deploy_get_host_group_v2": defineProductTool({ description: "Get CodeArts Deploy v2 host group detail", inputSchema: deployGetHostGroupV2Input, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployGetHostGroupV2Handler>[0] }) => clients.deployClient, createProductHandler: createDeployGetHostGroupV2Handler }),
   "deploy_list_host_group_hosts": defineProductTool({ description: "List CodeArts Deploy hosts in a host group", inputSchema: deployListHostGroupHostsInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployListHostGroupHostsHandler>[0] }) => clients.deployClient, createProductHandler: createDeployListHostGroupHostsHandler }),
+  "deploy_list_host_group_hosts_v2": defineProductTool({ description: "List CodeArts Deploy v2 hosts in a host group", inputSchema: deployListHostGroupHostsV2Input, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployListHostGroupHostsV2Handler>[0] }) => clients.deployClient, createProductHandler: createDeployListHostGroupHostsV2Handler }),
+  "deploy_get_host_group_host": defineProductTool({ description: "Get CodeArts Deploy host group host detail", inputSchema: deployGetHostGroupHostInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployGetHostGroupHostHandler>[0] }) => clients.deployClient, createProductHandler: createDeployGetHostGroupHostHandler }),
+  "deploy_get_host_group_host_v2": defineProductTool({ description: "Get CodeArts Deploy v2 host group host detail", inputSchema: deployGetHostGroupHostV2Input, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployGetHostGroupHostV2Handler>[0] }) => clients.deployClient, createProductHandler: createDeployGetHostGroupHostV2Handler }),
   "deploy_list_host_group_environments": defineProductTool({ description: "List CodeArts Deploy environments linked to a host group", inputSchema: deployListHostGroupEnvironmentsInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployListHostGroupEnvironmentsHandler>[0] }) => clients.deployClient, createProductHandler: createDeployListHostGroupEnvironmentsHandler }),
+  "deploy_get_host_group_permissions": defineProductTool({ description: "Get CodeArts Deploy host group permissions", inputSchema: deployGetHostGroupPermissionsInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployGetHostGroupPermissionsHandler>[0] }) => clients.deployClient, createProductHandler: createDeployGetHostGroupPermissionsHandler }),
   "deploy_create_environment": defineProductTool({ description: "Create CodeArts Deploy environment", inputSchema: deployCreateEnvironmentInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployCreateEnvironmentHandler>[0] }) => clients.deployClient, createProductHandler: createDeployCreateEnvironmentHandler, rateLimitAction: "deploy_create_environment" }),
   "deploy_create_application": defineProductTool({ description: "Create CodeArts Deploy application", inputSchema: deployCreateApplicationInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployCreateApplicationHandler>[0] }) => clients.deployClient, createProductHandler: createDeployCreateApplicationHandler, rateLimitAction: "deploy_create_application" }),
   "deploy_check_application_exists": defineProductTool({ description: "Check whether a CodeArts Deploy application name exists", inputSchema: deployCheckApplicationExistsInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployCheckApplicationExistsHandler>[0] }) => clients.deployClient, createProductHandler: createDeployCheckApplicationExistsHandler }),
   "deploy_check_application_creatable": defineProductTool({ description: "Check whether CodeArts Deploy application creation is allowed", inputSchema: deployCheckApplicationCreatableInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployCheckApplicationCreatableHandler>[0] }) => clients.deployClient, createProductHandler: createDeployCheckApplicationCreatableHandler }),
   "deploy_list_application_permissions": defineProductTool({ description: "List CodeArts Deploy application permissions", inputSchema: deployListApplicationPermissionsInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployListApplicationPermissionsHandler>[0] }) => clients.deployClient, createProductHandler: createDeployListApplicationPermissionsHandler }),
+  "deploy_get_application_messages": defineProductTool({ description: "Get CodeArts Deploy application messages", inputSchema: deployGetApplicationMessagesInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployGetApplicationMessagesHandler>[0] }) => clients.deployClient, createProductHandler: createDeployGetApplicationMessagesHandler }),
+  "deploy_list_application_groups": defineProductTool({ description: "List CodeArts Deploy application groups", inputSchema: deployListApplicationGroupsInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployListApplicationGroupsHandler>[0] }) => clients.deployClient, createProductHandler: createDeployListApplicationGroupsHandler }),
+  "deploy_get_success_rate_metrics": defineProductTool({ description: "Get CodeArts Deploy success rate metrics", inputSchema: deployGetSuccessRateMetricsInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployGetSuccessRateMetricsHandler>[0] }) => clients.deployClient, createProductHandler: createDeployGetSuccessRateMetricsHandler }),
+  "deploy_get_task_success_rate_metrics": defineProductTool({ description: "Get CodeArts Deploy task success rate metrics", inputSchema: deployGetTaskSuccessRateMetricsInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployGetTaskSuccessRateMetricsHandler>[0] }) => clients.deployClient, createProductHandler: createDeployGetTaskSuccessRateMetricsHandler }),
+  "deploy_get_environment_permissions": defineProductTool({ description: "Get CodeArts Deploy environment permissions", inputSchema: deployGetEnvironmentPermissionsInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployGetEnvironmentPermissionsHandler>[0] }) => clients.deployClient, createProductHandler: createDeployGetEnvironmentPermissionsHandler }),
   "deploy_modify_application": defineProductTool({ description: "Modify CodeArts Deploy application", inputSchema: deployModifyApplicationInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployModifyApplicationHandler>[0] }) => clients.deployClient, createProductHandler: createDeployModifyApplicationHandler, rateLimitAction: "deploy_modify_application" }),
   "deploy_create_task_by_template": defineProductTool({ description: "Create CodeArts Deploy task from template", inputSchema: deployCreateTaskByTemplateInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployCreateTaskByTemplateHandler>[0] }) => clients.deployClient, createProductHandler: createDeployCreateTaskByTemplateHandler, rateLimitAction: "deploy_create_task_by_template" }),
   "deploy_list_environment_hosts": defineProductTool({ description: "List CodeArts Deploy hosts in an environment", inputSchema: deployListEnvironmentHostsInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployListEnvironmentHostsHandler>[0] }) => clients.deployClient, createProductHandler: createDeployListEnvironmentHostsHandler }),

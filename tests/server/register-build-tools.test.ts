@@ -71,7 +71,11 @@ describe("registerBuildTool", () => {
     const tools = [
       ["build_get_project_default_permission", "Get CodeArts Build project default permission"],
       ["build_list_official_templates", "List CodeArts Build official templates"],
-      ["build_list_templates", "List CodeArts Build templates"]
+      ["build_list_templates", "List CodeArts Build templates"],
+      ["build_get_job_output", "Get CodeArts Build job output"],
+      ["build_get_job_step_status", "Get CodeArts Build job step status"],
+      ["build_list_project_endpoints", "List CodeArts Build project endpoints"],
+      ["build_get_keystore_permission", "Get CodeArts Build keystore permission"]
     ] as const;
 
     for (const [toolName, description] of tools) {

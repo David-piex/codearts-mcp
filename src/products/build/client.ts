@@ -395,6 +395,77 @@ export type BuildClient = {
     templates: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  showPackageSpecCountdown: (input: { body?: Record<string, unknown> }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  listJobUpdateHistory: (input: { job_id: string }) => Promise<{
+    history: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getJobOutput: (input: { job_id: string; build_no: number }) => Promise<{
+    job_id: string;
+    build_no: number;
+    raw: Record<string, unknown>;
+  }>;
+  getJobStepStatus: (input: { job_id: string }) => Promise<{
+    job_id: string;
+    raw: Record<string, unknown>;
+  }>;
+  getJobPipelineInfo: (input: { job_id: string }) => Promise<{
+    job_id: string;
+    raw: Record<string, unknown>;
+  }>;
+  listProjectEndpoints: (input: { project_id: string }) => Promise<{
+    endpoints: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  showDomainsStatuses: (input: { body?: Record<string, unknown> }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  listJobBadgeBranches: (input: { job_id: string }) => Promise<{
+    branches: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getRunningStepLog: (input: {
+    query?: Record<string, string | number | boolean>;
+  }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  getStageLogPage: (input: {
+    query?: Record<string, string | number | boolean>;
+  }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  downloadFullLog: (input: { record_id: string }) => Promise<{
+    record_id: string;
+    raw: Record<string, unknown>;
+  }>;
+  downloadTaskLog: (input: { record_id: string }) => Promise<{
+    record_id: string;
+    raw: Record<string, unknown>;
+  }>;
+  getTemplate: (input: { uuid: string }) => Promise<{
+    uuid: string;
+    raw: Record<string, unknown>;
+  }>;
+  getYamlTemplate: (input: { job_id: string }) => Promise<{
+    job_id: string;
+    raw: Record<string, unknown>;
+  }>;
+  listRecommendedOfficialTemplates: (input: { body?: Record<string, unknown> }) => Promise<{
+    templates: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listKeystoreFiles: (input: {
+    query?: Record<string, string | number | boolean>;
+  }) => Promise<{
+    files: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getKeystorePermission: (input: { keystore_id: string }) => Promise<{
+    keystore_id: string;
+    raw: Record<string, unknown>;
+  }>;
   getRealTimeLog: (input: {
     job_id: string;
     build_no: number;
@@ -701,6 +772,20 @@ function readBuildTotal(payload: Record<string, unknown>, response: unknown, fal
     readBuildNumber(envelope.total_count) ??
     fallback
   );
+}
+
+function buildQueryString(input: Record<string, string | number | boolean> | undefined) {
+  const query = new URLSearchParams();
+  for (const [key, value] of Object.entries(input ?? {})) {
+    query.set(key, String(value));
+  }
+
+  return query.toString();
+}
+
+function buildOptionalQuerySuffix(input: Record<string, string | number | boolean> | undefined) {
+  const query = buildQueryString(input);
+  return query ? `?${query}` : "";
 }
 
 function formatBuildQueryTime(date: Date): string {
@@ -1874,6 +1959,172 @@ export function createBuildClient(
       return {
         templates,
         total: readBuildTotal(payload, response, templates.length)
+      };
+    },
+    async showPackageSpecCountdown(input) {
+      const response = await _http.post("/v2/resource/countdown", input.body ?? {});
+      const payload = readBuildPayloadValue(response);
+
+      return { raw: readBuildRawRecord(payload) };
+    },
+    async listJobUpdateHistory(input) {
+      const response = await _http.get(`/v1/job/${encodeURIComponent(input.job_id)}/history`);
+      const raw = readBuildPayloadValue(response);
+      const payload = readBuildPayload(response);
+      const history = readBuildArray<Record<string, unknown>>(
+        payload.history ?? payload.records ?? payload.items ?? payload.list ?? payload.value ?? (Array.isArray(raw) ? raw : [])
+      );
+
+      return {
+        history,
+        total: readBuildTotal(payload, response, history.length)
+      };
+    },
+    async getJobOutput(input) {
+      const response = await _http.get(
+        `/v1/job/${encodeURIComponent(input.job_id)}/${input.build_no}/output`
+      );
+      const payload = readBuildPayloadValue(response);
+
+      return {
+        job_id: input.job_id,
+        build_no: input.build_no,
+        raw: readBuildRawRecord(payload)
+      };
+    },
+    async getJobStepStatus(input) {
+      const response = await _http.get(`/v1/job/${encodeURIComponent(input.job_id)}/status`);
+      const payload = readBuildPayloadValue(response);
+
+      return {
+        job_id: input.job_id,
+        raw: readBuildRawRecord(payload)
+      };
+    },
+    async getJobPipelineInfo(input) {
+      const response = await _http.get(`/v1/job/${encodeURIComponent(input.job_id)}/pipeline-info`);
+      const payload = readBuildPayloadValue(response);
+
+      return {
+        job_id: input.job_id,
+        raw: readBuildRawRecord(payload)
+      };
+    },
+    async listProjectEndpoints(input) {
+      const response = await _http.get(`/v1/job/${encodeURIComponent(input.project_id)}/nexus`);
+      const raw = readBuildPayloadValue(response);
+      const payload = readBuildPayload(response);
+      const endpoints = readBuildArray<Record<string, unknown>>(
+        payload.endpoints ?? payload.nexus ?? payload.items ?? payload.list ?? payload.value ?? (Array.isArray(raw) ? raw : [])
+      );
+
+      return {
+        endpoints,
+        total: readBuildTotal(payload, response, endpoints.length)
+      };
+    },
+    async showDomainsStatuses(input) {
+      const response = await _http.post("/v1/domain/domains-statuses", input.body ?? {});
+      const payload = readBuildPayloadValue(response);
+
+      return { raw: readBuildRawRecord(payload) };
+    },
+    async listJobBadgeBranches(input) {
+      const response = await _http.get(`/v1/job/${encodeURIComponent(input.job_id)}/badge/branches`);
+      const raw = readBuildPayloadValue(response);
+      const payload = readBuildPayload(response);
+      const branches = readBuildArray<Record<string, unknown>>(
+        payload.branches ?? payload.items ?? payload.list ?? payload.value ?? (Array.isArray(raw) ? raw : [])
+      );
+
+      return {
+        branches,
+        total: readBuildTotal(payload, response, branches.length)
+      };
+    },
+    async getRunningStepLog(input) {
+      const response = await _http.get(`/v1/log/task/step${buildOptionalQuerySuffix(input.query)}`);
+      const payload = readBuildPayloadValue(response);
+
+      return { raw: readBuildRawRecord(payload) };
+    },
+    async getStageLogPage(input) {
+      const response = await _http.get(`/v1/log/stage/page${buildOptionalQuerySuffix(input.query)}`);
+      const payload = readBuildPayloadValue(response);
+
+      return { raw: readBuildRawRecord(payload) };
+    },
+    async downloadFullLog(input) {
+      const response = await _http.get(`/v1/log/${encodeURIComponent(input.record_id)}/download-log`);
+      const payload = readBuildPayloadValue(response);
+
+      return {
+        record_id: input.record_id,
+        raw: readBuildRawRecord(payload)
+      };
+    },
+    async downloadTaskLog(input) {
+      const response = await _http.get(`/v1/log/${encodeURIComponent(input.record_id)}/task-log`);
+      const payload = readBuildPayloadValue(response);
+
+      return {
+        record_id: input.record_id,
+        raw: readBuildRawRecord(payload)
+      };
+    },
+    async getTemplate(input) {
+      const response = await _http.get(`/v1/template/${encodeURIComponent(input.uuid)}/custom`);
+      const payload = readBuildPayloadValue(response);
+
+      return {
+        uuid: input.uuid,
+        raw: readBuildRawRecord(payload)
+      };
+    },
+    async getYamlTemplate(input) {
+      const response = await _http.get(`/v1/template/${encodeURIComponent(input.job_id)}/default-template`);
+      const payload = readBuildPayloadValue(response);
+
+      return {
+        job_id: input.job_id,
+        raw: readBuildRawRecord(payload)
+      };
+    },
+    async listRecommendedOfficialTemplates(input) {
+      const response = await _http.post("/v1/template/recommend", input.body ?? {});
+      const raw = readBuildPayloadValue(response);
+      const payload = readBuildPayload(response);
+      const templates = readBuildArray<Record<string, unknown>>(
+        payload.templates ?? payload.items ?? payload.list ?? payload.value ?? (Array.isArray(raw) ? raw : [])
+      );
+
+      return {
+        templates,
+        total: readBuildTotal(payload, response, templates.length)
+      };
+    },
+    async listKeystoreFiles(input) {
+      const response = await _http.get(`/v2/keystore/list${buildOptionalQuerySuffix(input.query)}`);
+      const raw = readBuildPayloadValue(response);
+      const payload = readBuildPayload(response);
+      const files = readBuildArray<Record<string, unknown>>(
+        payload.files ?? payload.keystores ?? payload.items ?? payload.list ?? payload.value ?? (Array.isArray(raw) ? raw : [])
+      );
+
+      return {
+        files,
+        total: readBuildTotal(payload, response, files.length)
+      };
+    },
+    async getKeystorePermission(input) {
+      const response = await _http.get(
+        `/v2/keystore/permission/${encodeURIComponent(input.keystore_id)}/query`
+      );
+      const payload = readBuildPayloadValue(response);
+
+      return {
+        keystore_id: input.keystore_id,
+        raw: readBuildRawRecord(payload)
       };
     },
     async getRealTimeLog(input) {

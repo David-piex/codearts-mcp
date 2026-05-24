@@ -1615,6 +1615,69 @@ describe("createRepoClient", () => {
     ]);
   });
 
+  it("uses merge request setting, approver setting and template endpoints", async () => {
+    const calls: string[] = [];
+    const client = createRepoClient({
+      get: async (path: string) => {
+        calls.push(path);
+
+        if (path.endsWith("/merge-requests/setting")) {
+          return { can_reopen: true };
+        }
+        if (path.endsWith("/approver-settings")) {
+          return { approvers: [{ id: 1, name: "Reviewer" }] };
+        }
+        if (path.includes("/merge-requests/templates?")) {
+          return { templates: [{ id: 7, name: "default" }], total: 1 };
+        }
+        if (path.includes("/discussion/templates?")) {
+          return [{ id: 8, name: "discussion" }];
+        }
+        if (path.endsWith("/merge-requests/template/template-1")) {
+          return { id: "template-1", title: "MR template", content: "## Summary" };
+        }
+
+        throw new Error(`unexpected path: ${path}`);
+      }
+    } as never);
+
+    await client.showRepositoryMergeRequestSetting({ repository_id: "200" });
+    await client.showGroupMergeRequestSetting({ group_id: "100" });
+    await client.showProjectMergeRequestSetting({ project_id: "project-uuid-1" });
+    await client.showRepositoryApproverSettings({ repository_id: "200" });
+    await client.showGroupApproverSettings({ group_id: "100" });
+    await client.showProjectApproverSettings({ project_id: "project-uuid-1" });
+    const mergeTemplates = await client.listMergeRequestTemplates({
+      repository_id: "200",
+      page: 2,
+      page_size: 10
+    });
+    const discussionTemplates = await client.listDiscussionTemplates({
+      repository_id: "200",
+      page: 1,
+      page_size: 20
+    });
+    const template = await client.getMergeRequestTemplate({
+      repository_id: "200",
+      template_id: "template-1"
+    });
+
+    expect(mergeTemplates.templates[0]?.name).toBe("default");
+    expect(discussionTemplates.templates[0]?.name).toBe("discussion");
+    expect(template.title).toBe("MR template");
+    expect(calls).toEqual([
+      "/v4/repositories/200/merge-requests/setting",
+      "/v4/groups/100/merge-requests/setting",
+      "/v4/projects/project-uuid-1/merge-requests/setting",
+      "/v4/repositories/200/approver-settings",
+      "/v4/groups/100/approver-settings",
+      "/v4/projects/project-uuid-1/approver-settings",
+      "/v4/repositories/200/merge-requests/templates?offset=10&limit=10",
+      "/v4/repositories/200/discussion/templates?offset=0&limit=20",
+      "/v4/repositories/200/merge-requests/template/template-1"
+    ]);
+  });
+
   it("uses tenant repository, encryption and trusted IP endpoints", async () => {
     const calls: string[] = [];
     const client = createRepoClient({

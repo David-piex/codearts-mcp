@@ -54,7 +54,22 @@ describe("registerPipelineTool", () => {
     ["pipeline_list_publishers", "List CodeArts Pipeline publishers"],
     ["pipeline_get_webhook_info", "Get CodeArts Pipeline webhook info"],
     ["pipeline_list_pipeline_vars", "List CodeArts Pipeline variables"],
-    ["pipeline_get_template", "Get CodeArts Pipeline template detail"]
+    ["pipeline_get_template", "Get CodeArts Pipeline template detail"],
+    ["pipeline_batch_get_pipeline_status", "Batch get CodeArts Pipeline status records"],
+    ["pipeline_get_notice_messages", "Get CodeArts Pipeline notice messages"],
+    ["pipeline_check_project", "Check CodeArts Pipeline project"],
+    ["pipeline_check_component", "Check CodeArts Pipeline component"],
+    ["pipeline_list_execution_plans", "List CodeArts Pipeline execution plans"],
+    ["pipeline_list_reusable_jobs", "List CodeArts Pipeline reusable jobs"],
+    ["pipeline_list_dashboard_pipeline_counts", "List CodeArts Pipeline dashboard pipeline counts"],
+    ["pipeline_get_dashboard_executions_overview", "Get CodeArts Pipeline dashboard executions overview"],
+    ["pipeline_get_dashboard_concurrency", "Get CodeArts Pipeline dashboard concurrency"],
+    ["pipeline_list_change_requests", "List CodeArts Pipeline change requests"],
+    ["pipeline_get_change_request", "Get CodeArts Pipeline change request"],
+    ["pipeline_list_components", "List CodeArts Pipeline components"],
+    ["pipeline_get_component", "Get CodeArts Pipeline component"],
+    ["pipeline_list_pac_actions", "List CodeArts Pipeline PAC actions"],
+    ["pipeline_get_pac_action", "Get CodeArts Pipeline PAC action"]
   ])("registers %s in http mode", (toolName, description) => {
     expectPipelineToolRegistration({
       toolName,

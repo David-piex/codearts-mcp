@@ -667,6 +667,22 @@ export type RepoE2eSetting = {
   };
 };
 
+export type RepoMergeRequestSetting = Record<string, unknown>;
+
+export type RepoApproverSettings = Record<string, unknown>;
+
+export type RepoMergeRequestTemplate = {
+  id?: number | string;
+  name?: string;
+  title?: string;
+  description?: string;
+  content?: string;
+  file_name?: string;
+  file_path?: string;
+  created_at?: string;
+  updated_at?: string;
+} & Record<string, unknown>;
+
 export type RepoTenantRepository = {
   owner?: string;
   capacity?: number;
@@ -1429,6 +1445,44 @@ export type RepoClient = {
   showProjectE2eSetting: (input: {
     project_id: string;
   }) => Promise<RepoE2eSetting>;
+  showRepositoryMergeRequestSetting: (input: {
+    repository_id: string;
+  }) => Promise<RepoMergeRequestSetting>;
+  showGroupMergeRequestSetting: (input: {
+    group_id: string;
+  }) => Promise<RepoMergeRequestSetting>;
+  showProjectMergeRequestSetting: (input: {
+    project_id: string;
+  }) => Promise<RepoMergeRequestSetting>;
+  showRepositoryApproverSettings: (input: {
+    repository_id: string;
+  }) => Promise<RepoApproverSettings>;
+  showGroupApproverSettings: (input: {
+    group_id: string;
+  }) => Promise<RepoApproverSettings>;
+  showProjectApproverSettings: (input: {
+    project_id: string;
+  }) => Promise<RepoApproverSettings>;
+  listMergeRequestTemplates: (input: {
+    repository_id: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    templates: RepoMergeRequestTemplate[];
+    total?: number;
+  }>;
+  listDiscussionTemplates: (input: {
+    repository_id: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    templates: RepoMergeRequestTemplate[];
+    total?: number;
+  }>;
+  getMergeRequestTemplate: (input: {
+    repository_id: string;
+    template_id: string;
+  }) => Promise<RepoMergeRequestTemplate>;
   listRepositoryWebhooks: (input: {
     repository_id: string;
     page: number;
@@ -3959,6 +4013,85 @@ export function createRepoClient(
       )) as Parameters<typeof extractE2eSetting>[0];
 
       return extractE2eSetting(rawResponse);
+    },
+    async showRepositoryMergeRequestSetting(input) {
+      const response = unwrapRepoPayload(await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/setting`
+      ));
+
+      return (typeof response === "object" && response ? response : {}) as RepoMergeRequestSetting;
+    },
+    async showGroupMergeRequestSetting(input) {
+      const response = unwrapRepoPayload(await _http.get(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/merge-requests/setting`
+      ));
+
+      return (typeof response === "object" && response ? response : {}) as RepoMergeRequestSetting;
+    },
+    async showProjectMergeRequestSetting(input) {
+      const response = unwrapRepoPayload(await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/merge-requests/setting`
+      ));
+
+      return (typeof response === "object" && response ? response : {}) as RepoMergeRequestSetting;
+    },
+    async showRepositoryApproverSettings(input) {
+      const response = unwrapRepoPayload(await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/approver-settings`
+      ));
+
+      return (typeof response === "object" && response ? response : {}) as RepoApproverSettings;
+    },
+    async showGroupApproverSettings(input) {
+      const response = unwrapRepoPayload(await _http.get(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/approver-settings`
+      ));
+
+      return (typeof response === "object" && response ? response : {}) as RepoApproverSettings;
+    },
+    async showProjectApproverSettings(input) {
+      const response = unwrapRepoPayload(await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/approver-settings`
+      ));
+
+      return (typeof response === "object" && response ? response : {}) as RepoApproverSettings;
+    },
+    async listMergeRequestTemplates(input) {
+      const query = buildOffsetLimitQuery(input);
+      const response = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/templates?${query.toString()}`
+      );
+      const extracted = extractArrayFromFields<RepoMergeRequestTemplate>(
+        response as RepoMergeRequestTemplate[] | Record<string, unknown>,
+        ["templates", "items", "records"]
+      );
+
+      return {
+        templates: extracted.items,
+        total: extracted.total
+      };
+    },
+    async listDiscussionTemplates(input) {
+      const query = buildOffsetLimitQuery(input);
+      const response = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/discussion/templates?${query.toString()}`
+      );
+      const extracted = extractArrayFromFields<RepoMergeRequestTemplate>(
+        response as RepoMergeRequestTemplate[] | Record<string, unknown>,
+        ["templates", "items", "records"]
+      );
+
+      return {
+        templates: extracted.items,
+        total: extracted.total
+      };
+    },
+    async getMergeRequestTemplate(input) {
+      const response = unwrapRepoPayload(await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/template/${encodeURIComponent(input.template_id)}`
+      ));
+
+      return (typeof response === "object" && response ? response : {}) as RepoMergeRequestTemplate;
     },
     async listRepositoryWebhooks(input) {
       const query = new URLSearchParams({

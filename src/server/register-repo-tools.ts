@@ -117,6 +117,8 @@ import {
   repoShowDiffLinesInput,
   repoShowGroupE2eSettingInput,
   repoShowGroupInheritSettingInput,
+  repoShowGroupApproverSettingsInput,
+  repoShowGroupMergeRequestSettingInput,
   repoShowGroupPermissionInheritEnabledInput,
   repoShowGroupWatermarkInput,
   repoShowLastPushEventInRepositoryInput,
@@ -124,6 +126,7 @@ import {
   repoShowMergeRequestVotesInput,
   repoShowNoteRequiredAttributesInput,
   repoShowProjectE2eSettingInput,
+  repoShowProjectApproverSettingsInput,
   repoShowReviewSettingInput,
   repoShowTenantDevelopModeInput,
   repoShowTenantRepoEncryptionSettingInput,
@@ -142,6 +145,7 @@ import {
   repoUpdateTenantTrustedIpAddressInput,
   repoDeleteTenantTrustedIpAddressInput,
   repoShowProjectGeneralPolicyInput,
+  repoShowProjectMergeRequestSettingInput,
   repoShowProjectMemberSettingInput,
   repoShowProjectSettingsInheritCfgInput,
   repoShowProjectWatermarkInput,
@@ -149,6 +153,7 @@ import {
   repoShowRepoLastStatisticsInput,
   repoShowRepoStatisticsSummaryInput,
   repoShowRepositoryE2eSettingInput,
+  repoShowRepositoryApproverSettingsInput,
   repoShowRepositoryGeneralCommitRuleInput,
   repoShowRepositoryGeneralPolicyInput,
   repoShowRepositoryInheritSettingInput,
@@ -161,8 +166,12 @@ import {
   repoShowRepositoryStatisticsStatusInput,
   repoShowRepositoryStatisticsSummaryInput,
   repoShowRepositoryWatermarkInput,
+  repoShowRepositoryMergeRequestSettingInput,
   repoGetRepositoryBlameInput,
+  repoGetMergeRequestTemplateInput,
   repoGetRepositoryFileContentV4Input,
+  repoListDiscussionTemplatesInput,
+  repoListMergeRequestTemplatesInput,
   repoShowResourcePermissionsInput,
   repoShowUserRefPermissionInput,
   repoStartRemoteMirrorSynchronizationInput,
@@ -198,6 +207,7 @@ import { createRepoGetFileHandler } from "../products/repo/tools/get-file.js";
 import { createRepoGetGroupWebhookHandler } from "../products/repo/tools/get-group-webhook.js";
 import { createRepoGetGroupWebhookLogHandler } from "../products/repo/tools/get-group-webhook-log.js";
 import { createRepoGetMergeRequestHandler } from "../products/repo/tools/get-merge-request.js";
+import { createRepoGetMergeRequestTemplateHandler } from "../products/repo/tools/get-merge-request-template.js";
 import { createRepoGetProjectWebhookHandler } from "../products/repo/tools/get-project-webhook.js";
 import { createRepoGetProjectWebhookLogHandler } from "../products/repo/tools/get-project-webhook-log.js";
 import { createRepoGetRemoteMirrorHandler } from "../products/repo/tools/get-remote-mirror.js";
@@ -211,6 +221,7 @@ import { createRepoListBranchesHandler } from "../products/repo/tools/list-branc
 import { createRepoListCommitAssociatedRefsHandler } from "../products/repo/tools/list-commit-associated-refs.js";
 import { createRepoListCommitsHandler } from "../products/repo/tools/list-commits.js";
 import { createRepoListDefaultReviewCategoriesHandler } from "../products/repo/tools/list-default-review-categories.js";
+import { createRepoListDiscussionTemplatesHandler } from "../products/repo/tools/list-discussion-templates.js";
 import { createRepoListEventsHandler } from "../products/repo/tools/list-events.js";
 import { createRepoListBranchRelatedWorkItemsHandler } from "../products/repo/tools/list-branch-related-work-items.js";
 import { createRepoListCurrentUserRepositoriesHandler } from "../products/repo/tools/list-current-user-repositories.js";
@@ -232,6 +243,7 @@ import { createRepoListItemCommitsHandler } from "../products/repo/tools/list-it
 import { createRepoListMergeRequestChangesHandler } from "../products/repo/tools/list-merge-request-changes.js";
 import { createRepoListMergeRequestCommitsHandler } from "../products/repo/tools/list-merge-request-commits.js";
 import { createRepoListMergeRequestDiscussionsHandler } from "../products/repo/tools/list-merge-request-discussions.js";
+import { createRepoListMergeRequestTemplatesHandler } from "../products/repo/tools/list-merge-request-templates.js";
 import { createRepoListMergeRequestsHandler } from "../products/repo/tools/list-merge-requests.js";
 import { createRepoListPersonalRepositoryImportRecordsHandler } from "../products/repo/tools/list-personal-repository-import-records.js";
 import { createRepoListPersonalRecentPushEventsHandler } from "../products/repo/tools/list-personal-recent-push-events.js";
@@ -297,10 +309,14 @@ import { createRepoDeleteTagHandler } from "../products/repo/tools/delete-tag.js
 import { createRepoRemoveRepositoryDeployKeyHandler } from "../products/repo/tools/remove-repository-deploy-key.js";
 import { createRepoReviewMergeRequestHandler } from "../products/repo/tools/review-merge-request.js";
 import { createRepoShowGroupE2eSettingHandler } from "../products/repo/tools/show-group-e2e-setting.js";
+import { createRepoShowGroupApproverSettingsHandler } from "../products/repo/tools/show-group-approver-settings.js";
 import { createRepoShowGroupInheritSettingHandler } from "../products/repo/tools/show-group-inherit-setting.js";
+import { createRepoShowGroupMergeRequestSettingHandler } from "../products/repo/tools/show-group-merge-request-setting.js";
 import { createRepoShowGroupPermissionInheritEnabledHandler } from "../products/repo/tools/show-group-permission-inherit-enabled.js";
 import { createRepoShowGroupWatermarkHandler } from "../products/repo/tools/show-group-watermark.js";
 import { createRepoShowProjectE2eSettingHandler } from "../products/repo/tools/show-project-e2e-setting.js";
+import { createRepoShowProjectApproverSettingsHandler } from "../products/repo/tools/show-project-approver-settings.js";
+import { createRepoShowProjectMergeRequestSettingHandler } from "../products/repo/tools/show-project-merge-request-setting.js";
 import { createRepoShowTenantDevelopModeHandler } from "../products/repo/tools/show-tenant-develop-mode.js";
 import { createRepoShowTenantRepoEncryptionSettingHandler } from "../products/repo/tools/show-tenant-repo-encryption-setting.js";
 import { createRepoListTenantRepositoriesHandler } from "../products/repo/tools/list-tenant-repositories.js";
@@ -323,6 +339,8 @@ import { createRepoShowProjectSettingsInheritCfgHandler } from "../products/repo
 import { createRepoShowProjectWatermarkHandler } from "../products/repo/tools/show-project-watermark.js";
 import { createRepoShowProjectsGeneralPolicyHandler } from "../products/repo/tools/show-projects-general-policy.js";
 import { createRepoShowRepositoryE2eSettingHandler } from "../products/repo/tools/show-repository-e2e-setting.js";
+import { createRepoShowRepositoryApproverSettingsHandler } from "../products/repo/tools/show-repository-approver-settings.js";
+import { createRepoShowRepositoryMergeRequestSettingHandler } from "../products/repo/tools/show-repository-merge-request-setting.js";
 import { createRepoShowRepositoryPermissionInheritEnabledHandler } from "../products/repo/tools/show-repository-permission-inherit-enabled.js";
 import { createRepoShowResourcePermissionsHandler } from "../products/repo/tools/show-resource-permissions.js";
 import { createRepoShowUserRefPermissionHandler } from "../products/repo/tools/show-user-ref-permission.js";
@@ -384,6 +402,15 @@ const repoToolDefinitions = {
   "repo_list_group_addable_user_groups": defineProductTool({ description: "List CodeArts Repo user groups addable to a group", inputSchema: repoListGroupAddableUserGroupsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListGroupAddableUserGroupsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListGroupAddableUserGroupsHandler }),
   "repo_list_group_subgroups_and_repositories": defineProductTool({ description: "List CodeArts Repo subgroups and repositories in a group", inputSchema: repoListGroupSubgroupsAndRepositoriesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListGroupSubgroupsAndRepositoriesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListGroupSubgroupsAndRepositoriesHandler }),
   "repo_show_group_inherit_setting": defineProductTool({ description: "Show CodeArts Repo group inherit setting", inputSchema: repoShowGroupInheritSettingInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowGroupInheritSettingHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowGroupInheritSettingHandler }),
+  "repo_show_repository_merge_request_setting": defineProductTool({ description: "Show CodeArts Repo repository merge request setting", inputSchema: repoShowRepositoryMergeRequestSettingInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowRepositoryMergeRequestSettingHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowRepositoryMergeRequestSettingHandler }),
+  "repo_show_group_merge_request_setting": defineProductTool({ description: "Show CodeArts Repo group merge request setting", inputSchema: repoShowGroupMergeRequestSettingInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowGroupMergeRequestSettingHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowGroupMergeRequestSettingHandler }),
+  "repo_show_project_merge_request_setting": defineProductTool({ description: "Show CodeArts Repo project merge request setting", inputSchema: repoShowProjectMergeRequestSettingInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowProjectMergeRequestSettingHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowProjectMergeRequestSettingHandler }),
+  "repo_show_repository_approver_settings": defineProductTool({ description: "Show CodeArts Repo repository approver settings", inputSchema: repoShowRepositoryApproverSettingsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowRepositoryApproverSettingsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowRepositoryApproverSettingsHandler }),
+  "repo_show_group_approver_settings": defineProductTool({ description: "Show CodeArts Repo group approver settings", inputSchema: repoShowGroupApproverSettingsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowGroupApproverSettingsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowGroupApproverSettingsHandler }),
+  "repo_show_project_approver_settings": defineProductTool({ description: "Show CodeArts Repo project approver settings", inputSchema: repoShowProjectApproverSettingsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowProjectApproverSettingsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowProjectApproverSettingsHandler }),
+  "repo_list_merge_request_templates": defineProductTool({ description: "List CodeArts Repo merge request templates", inputSchema: repoListMergeRequestTemplatesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListMergeRequestTemplatesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListMergeRequestTemplatesHandler }),
+  "repo_list_discussion_templates": defineProductTool({ description: "List CodeArts Repo discussion templates", inputSchema: repoListDiscussionTemplatesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListDiscussionTemplatesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListDiscussionTemplatesHandler }),
+  "repo_get_merge_request_template": defineProductTool({ description: "Get CodeArts Repo merge request template", inputSchema: repoGetMergeRequestTemplateInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoGetMergeRequestTemplateHandler>[0] }) => clients.repoClient, createProductHandler: createRepoGetMergeRequestTemplateHandler }),
   "repo_associate_remote_mirror": defineProductTool({ description: "Associate CodeArts Repo remote mirror", inputSchema: repoAssociateRemoteMirrorInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoAssociateRemoteMirrorHandler>[0] }) => clients.repoClient, createProductHandler: createRepoAssociateRemoteMirrorHandler }),
   "repo_start_remote_mirror_synchronization": defineProductTool({ description: "Start CodeArts Repo remote mirror synchronization", inputSchema: repoStartRemoteMirrorSynchronizationInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoStartRemoteMirrorSynchronizationHandler>[0] }) => clients.repoClient, createProductHandler: createRepoStartRemoteMirrorSynchronizationHandler }),
   "repo_get_remote_mirror": defineProductTool({ description: "Get CodeArts Repo remote mirror detail", inputSchema: repoGetRemoteMirrorInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoGetRemoteMirrorHandler>[0] }) => clients.repoClient, createProductHandler: createRepoGetRemoteMirrorHandler }),

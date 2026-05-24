@@ -61,8 +61,8 @@ describe("module stats doc rendering", () => {
     const markdown = renderReadWriteMatrixMarkdown();
 
     expect(markdown).toContain("| Module | Read | Write | Live | Key Gaps |");
-    expect(markdown).toContain("| Deploy | 46 | 17 | Partial |");
-    expect(markdown).toContain("| Build | 53 | 9 | Validated |");
+    expect(markdown).toContain("| Deploy | 57 | 17 | Partial |");
+    expect(markdown).toContain("| Build | 70 | 9 | Validated |");
   });
 
   it("renders API reference scale tables from current module stats", () => {
@@ -108,7 +108,7 @@ describe("syncModuleStatsDocuments", () => {
     expect(synced["README.md"]).toContain(
       `- \`${collectProductToolStats().total}\` product tools`
     );
-    expect(synced["README.md"]).toContain("| Pipeline | 91 | Partial |");
+    expect(synced["README.md"]).toContain("| Pipeline | 106 | Partial |");
     expect(synced["README.md"]).toContain("| Req | 243 | Partial |");
     expect(synced["docs/wiki/Capability-Matrix.md"]).toContain(
       "| Req | 148 | 95 | Partial |"
@@ -122,7 +122,7 @@ describe("syncModuleStatsDocuments", () => {
     expect(synced["docs/wiki/Module-Live-Readiness.md"]).toContain(
       `- Total MCP tools exposed: \`${collectHttpToolTotal()}\``
     );
-    expect(synced["docs/wiki/Module-Live-Readiness.md"]).toContain("| Deploy | 63 |");
+    expect(synced["docs/wiki/Module-Live-Readiness.md"]).toContain("| Deploy | 74 |");
     expect(synced["docs/wiki/Req-API-Reference.md"]).toContain(
       `| 含鉴权的共享 HTTP 工具 | ${collectHttpToolTotal()} |`
     );

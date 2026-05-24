@@ -748,6 +748,45 @@ export const repoShowProjectE2eSettingInput = z.object({
   project_id: idSchema
 });
 
+export const repoShowRepositoryMergeRequestSettingInput = z.object({
+  repository_id: idSchema
+});
+
+export const repoShowGroupMergeRequestSettingInput = z.object({
+  group_id: idSchema
+});
+
+export const repoShowProjectMergeRequestSettingInput = z.object({
+  project_id: idSchema
+});
+
+export const repoShowRepositoryApproverSettingsInput = z.object({
+  repository_id: idSchema
+});
+
+export const repoShowGroupApproverSettingsInput = z.object({
+  group_id: idSchema
+});
+
+export const repoShowProjectApproverSettingsInput = z.object({
+  project_id: idSchema
+});
+
+export const repoListMergeRequestTemplatesInput = pagingSchema.extend({
+  repository_id: idSchema,
+  page_size: z.number().int().positive().max(100).default(20)
+});
+
+export const repoListDiscussionTemplatesInput = pagingSchema.extend({
+  repository_id: idSchema,
+  page_size: z.number().int().positive().max(100).default(20)
+});
+
+export const repoGetMergeRequestTemplateInput = z.object({
+  repository_id: idSchema,
+  template_id: idSchema
+});
+
 const tenantPagingSchema = z.object({
   offset: z.number().int().min(0).default(0),
   limit: z.number().int().positive().max(100).default(20)

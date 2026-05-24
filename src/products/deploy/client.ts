@@ -252,6 +252,21 @@ export type DeployClient = {
     }>;
     total?: number;
   }>;
+  listHostGroupsV2: (input: {
+    project_id?: string;
+    page: number;
+    page_size: number;
+    keyword?: string;
+    query?: Record<string, string | number | boolean>;
+  }) => Promise<{
+    host_groups: Array<Record<string, unknown> & {
+      group_id: string;
+      name?: string;
+      project_id?: string;
+    }>;
+    total?: number;
+    raw: unknown;
+  }>;
   getHostGroup: (input: { group_id: string }) => Promise<{
     group_id: string;
     name: string;
@@ -261,6 +276,11 @@ export type DeployClient = {
     is_proxy_mode?: number;
     created_time?: string;
     updated_time?: string;
+  }>;
+  getHostGroupV2: (input: { group_id: string }) => Promise<{
+    group_id: string;
+    name?: string;
+    raw: unknown;
   }>;
   listHostGroupHosts: (input: {
     group_id: string;
@@ -280,6 +300,41 @@ export type DeployClient = {
       lastest_connection_time?: string;
     }>;
     total?: number;
+  }>;
+  listHostGroupHostsV2: (input: {
+    group_id: string;
+    page: number;
+    page_size: number;
+    query?: Record<string, string | number | boolean>;
+  }) => Promise<{
+    group_id: string;
+    hosts: Array<Record<string, unknown> & {
+      host_id: string;
+      host_name?: string;
+      ip?: string;
+    }>;
+    total?: number;
+    raw: unknown;
+  }>;
+  getHostGroupHostV2: (input: { group_id: string; host_id: string }) => Promise<{
+    group_id: string;
+    host_id: string;
+    host_name?: string;
+    ip?: string;
+    raw: unknown;
+  }>;
+  getHostGroupHost: (input: { group_id: string; host_id: string }) => Promise<{
+    group_id: string;
+    host_id: string;
+    host_name?: string;
+    ip?: string;
+    raw: unknown;
+  }>;
+  getHostGroupPermissions: (input: { group_id: string }) => Promise<{
+    group_id: string;
+    permissions: Array<Record<string, unknown>>;
+    status?: string;
+    raw: unknown;
   }>;
   listHostGroupEnvironments: (input: {
     group_id: string;
@@ -332,6 +387,51 @@ export type DeployClient = {
   listApplicationPermissions: (input: { app_id?: string; project_id?: string }) => Promise<{
     app_id?: string;
     project_id?: string;
+    permissions: Array<Record<string, unknown>>;
+    status?: string;
+    raw: unknown;
+  }>;
+  getApplicationMessages: (input: {
+    project_id: string;
+    app_id: string;
+    query?: Record<string, string | number | boolean>;
+  }) => Promise<{
+    project_id: string;
+    app_id: string;
+    messages: Array<Record<string, unknown>>;
+    status?: string;
+    raw: unknown;
+  }>;
+  listApplicationGroups: (input: { project_id: string }) => Promise<{
+    project_id: string;
+    groups: Array<Record<string, unknown> & { id?: string; name?: string }>;
+    status?: string;
+    raw: unknown;
+  }>;
+  getSuccessRateMetrics: (input: {
+    project_id: string;
+    query?: Record<string, string | number | boolean>;
+  }) => Promise<{
+    project_id: string;
+    metrics: Record<string, unknown>;
+    status?: string;
+    raw: unknown;
+  }>;
+  getTaskSuccessRateMetrics: (input: {
+    project_id: string;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    project_id: string;
+    metrics: Record<string, unknown>;
+    status?: string;
+    raw: unknown;
+  }>;
+  getEnvironmentPermissions: (input: {
+    application_id: string;
+    environment_id: string;
+  }) => Promise<{
+    application_id: string;
+    environment_id: string;
     permissions: Array<Record<string, unknown>>;
     status?: string;
     raw: unknown;
@@ -1095,6 +1195,23 @@ function asArray<T>(input: unknown): T[] {
   return [];
 }
 
+function addQueryParams(
+  query: URLSearchParams,
+  params: Record<string, string | number | boolean> | undefined
+) {
+  for (const [key, value] of Object.entries(params ?? {})) {
+    query.set(key, String(value));
+  }
+}
+
+function getResultArray<T>(response: { result?: unknown; records?: unknown; total?: number; total_num?: number }) {
+  return asArray<T>(response.result ?? response.records);
+}
+
+function getResultObject<T extends Record<string, unknown>>(response: { result?: unknown }) {
+  return (asObjectRecord<T>(response.result) ?? asObjectRecord<T>(response) ?? {}) as T;
+}
+
 export function createDeployClient(_http: ReturnTypeCreateHttpClient): DeployClient {
   return {
     ...createOfficialApiRequester({
@@ -1186,6 +1303,39 @@ export function createDeployClient(_http: ReturnTypeCreateHttpClient): DeployCli
         total: response.total
       };
     },
+    async listHostGroupsV2(input) {
+      const query = new URLSearchParams({
+        page_index: String(input.page),
+        page_size: String(input.page_size)
+      });
+      if (input.project_id) query.set("project_id", input.project_id);
+      if (input.keyword) query.set("name", input.keyword);
+      addQueryParams(query, input.query);
+
+      const response = (await _http.get(`/v2/host-groups?${query.toString()}`)) as {
+        result?: unknown;
+        records?: unknown;
+        total?: number;
+        total_num?: number;
+      };
+      const rawItems = getResultArray<Record<string, unknown> & {
+        id?: string;
+        group_id?: string;
+        name?: string;
+        project_id?: string;
+      }>(response);
+
+      return {
+        host_groups: rawItems.map((item) => ({
+          ...item,
+          group_id: String(item.group_id ?? item.id ?? ""),
+          name: item.name,
+          project_id: item.project_id ?? input.project_id
+        })),
+        total: response.total ?? response.total_num,
+        raw: response.result ?? response.records ?? response
+      };
+    },
     async getHostGroup(input) {
       const response = (await _http.get(
         `/v1/resources/host-groups/${encodeURIComponent(input.group_id)}`
@@ -1235,6 +1385,22 @@ export function createDeployClient(_http: ReturnTypeCreateHttpClient): DeployCli
         updated_time: item.updated_time
       };
     },
+    async getHostGroupV2(input) {
+      const response = (await _http.get(
+        `/v2/host-groups/${encodeURIComponent(input.group_id)}`
+      )) as { result?: unknown };
+      const item = getResultObject<Record<string, unknown> & {
+        id?: string;
+        group_id?: string;
+        name?: string;
+      }>(response);
+
+      return {
+        group_id: String(item.group_id ?? item.id ?? input.group_id),
+        name: item.name,
+        raw: response.result ?? response
+      };
+    },
     async listHostGroupHosts(input) {
       const query = new URLSearchParams({
         page_index: String(input.page),
@@ -1276,6 +1442,96 @@ export function createDeployClient(_http: ReturnTypeCreateHttpClient): DeployCli
           lastest_connection_time: item.lastest_connection_time
         })),
         total: response.total
+      };
+    },
+    async listHostGroupHostsV2(input) {
+      const query = new URLSearchParams({
+        page_index: String(input.page),
+        page_size: String(input.page_size)
+      });
+      addQueryParams(query, input.query);
+
+      const response = (await _http.get(
+        `/v2/host-groups/${encodeURIComponent(input.group_id)}/hosts?${query.toString()}`
+      )) as {
+        result?: unknown;
+        records?: unknown;
+        total?: number;
+        total_num?: number;
+      };
+      const rawItems = getResultArray<Record<string, unknown> & {
+        uuid?: string;
+        id?: string;
+        host_id?: string;
+        host_name?: string;
+        ip?: string;
+      }>(response);
+
+      return {
+        group_id: input.group_id,
+        hosts: rawItems.map((item) => ({
+          ...item,
+          host_id: String(item.host_id ?? item.uuid ?? item.id ?? ""),
+          host_name: item.host_name,
+          ip: item.ip
+        })),
+        total: response.total ?? response.total_num,
+        raw: response.result ?? response.records ?? response
+      };
+    },
+    async getHostGroupHostV2(input) {
+      const response = (await _http.get(
+        `/v2/host-groups/${encodeURIComponent(input.group_id)}/hosts/${encodeURIComponent(input.host_id)}`
+      )) as { result?: unknown };
+      const item = getResultObject<Record<string, unknown> & {
+        uuid?: string;
+        id?: string;
+        host_id?: string;
+        host_name?: string;
+        ip?: string;
+      }>(response);
+
+      return {
+        group_id: input.group_id,
+        host_id: String(item.host_id ?? item.uuid ?? item.id ?? input.host_id),
+        host_name: item.host_name,
+        ip: item.ip,
+        raw: response.result ?? response
+      };
+    },
+    async getHostGroupHost(input) {
+      const response = (await _http.get(
+        `/v1/resources/host-groups/${encodeURIComponent(input.group_id)}/hosts/${encodeURIComponent(input.host_id)}`
+      )) as { result?: unknown };
+      const item = getResultObject<Record<string, unknown> & {
+        uuid?: string;
+        id?: string;
+        host_id?: string;
+        host_name?: string;
+        ip?: string;
+      }>(response);
+
+      return {
+        group_id: input.group_id,
+        host_id: String(item.host_id ?? item.uuid ?? item.id ?? input.host_id),
+        host_name: item.host_name,
+        ip: item.ip,
+        raw: response.result ?? response
+      };
+    },
+    async getHostGroupPermissions(input) {
+      const response = (await _http.get(
+        `/v2/host-groups/${encodeURIComponent(input.group_id)}/permissions`
+      )) as {
+        status?: string;
+        result?: unknown;
+      };
+
+      return {
+        group_id: input.group_id,
+        permissions: asArray<Record<string, unknown>>(response.result),
+        status: response.status,
+        raw: response.result
       };
     },
     async listHostGroupEnvironments(input) {
@@ -3293,6 +3549,91 @@ export function createDeployClient(_http: ReturnTypeCreateHttpClient): DeployCli
       return {
         app_id: input.app_id,
         project_id: input.project_id,
+        permissions: asArray<Record<string, unknown>>(response.result),
+        status: response.status,
+        raw: response.result
+      };
+    },
+    async getApplicationMessages(input) {
+      const query = new URLSearchParams();
+      addQueryParams(query, input.query);
+      const suffix = query.toString() ? `?${query.toString()}` : "";
+      const response = (await _http.get(
+        `/v2/projects/${encodeURIComponent(input.project_id)}/applications/${encodeURIComponent(input.app_id)}/messages${suffix}`
+      )) as {
+        status?: string;
+        result?: unknown;
+        records?: unknown;
+      };
+
+      return {
+        project_id: input.project_id,
+        app_id: input.app_id,
+        messages: asArray<Record<string, unknown>>(response.result ?? response.records),
+        status: response.status,
+        raw: response.result ?? response.records
+      };
+    },
+    async listApplicationGroups(input) {
+      const response = (await _http.get(
+        `/v1/projects/${encodeURIComponent(input.project_id)}/applications/groups`
+      )) as {
+        status?: string;
+        result?: unknown;
+      };
+
+      return {
+        project_id: input.project_id,
+        groups: asArray<Record<string, unknown> & { id?: string; name?: string }>(response.result),
+        status: response.status,
+        raw: response.result
+      };
+    },
+    async getSuccessRateMetrics(input) {
+      const query = new URLSearchParams();
+      addQueryParams(query, input.query);
+      const suffix = query.toString() ? `?${query.toString()}` : "";
+      const response = (await _http.get(
+        `/v2/${encodeURIComponent(input.project_id)}/metrics/success-rate${suffix}`
+      )) as {
+        status?: string;
+        result?: unknown;
+      };
+
+      return {
+        project_id: input.project_id,
+        metrics: asObjectRecord<Record<string, unknown>>(response.result) ?? {},
+        status: response.status,
+        raw: response.result
+      };
+    },
+    async getTaskSuccessRateMetrics(input) {
+      const response = (await _http.post(
+        `/v2/${encodeURIComponent(input.project_id)}/tasks/metrics/success-rate`,
+        input.body ?? {}
+      )) as {
+        status?: string;
+        result?: unknown;
+      };
+
+      return {
+        project_id: input.project_id,
+        metrics: asObjectRecord<Record<string, unknown>>(response.result) ?? {},
+        status: response.status,
+        raw: response.result
+      };
+    },
+    async getEnvironmentPermissions(input) {
+      const response = (await _http.get(
+        `/v2/applications/${encodeURIComponent(input.application_id)}/environments/${encodeURIComponent(input.environment_id)}/permissions`
+      )) as {
+        status?: string;
+        result?: unknown;
+      };
+
+      return {
+        application_id: input.application_id,
+        environment_id: input.environment_id,
         permissions: asArray<Record<string, unknown>>(response.result),
         status: response.status,
         raw: response.result

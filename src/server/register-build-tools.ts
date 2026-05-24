@@ -12,6 +12,8 @@ import {
   buildGetInfoRecordInput,
   buildGetJobCopyNameInput,
   buildGetJobDisableCheckInput,
+  buildDownloadFullLogInput,
+  buildDownloadTaskLogInput,
   buildGetDomainChargeTypeInput,
   buildGetDomainFederationInput,
   buildGetDomainJobSummaryInput,
@@ -23,10 +25,18 @@ import {
   buildGetJobBuildTimeInput,
   buildGetJobConfigDiffInput,
   buildGetCoverageMetricsInput,
+  buildGetJobOutputInput,
+  buildGetJobPipelineInfoInput,
+  buildGetJobStepStatusInput,
   buildGetJobNoticeInput,
   buildGetJobPermissionInput,
   buildGetJobPermissionInternalInput,
   buildGetJobRunningStatusInput,
+  buildGetKeystorePermissionInput,
+  buildGetRunningStepLogInput,
+  buildGetStageLogPageInput,
+  buildGetTemplateInput,
+  buildGetYamlTemplateInput,
   buildGetProjectDefaultPermissionInput,
   buildGetReportSummaryInput,
   buildGetProjectRecordStatisticsInput,
@@ -47,12 +57,17 @@ import {
   buildListGitCodeRepositoriesInput,
   buildListImageTemplatesInput,
   buildListJunitCoverageSummariesInput,
+  buildListJobBadgeBranchesInput,
   buildListJobGroupTreeInput,
   buildListJobsInput,
   buildListJobPermissionRolesInput,
+  buildListJobUpdateHistoryInput,
+  buildListKeystoreFilesInput,
   buildListOfficialTemplatesInput,
   buildListPackageSpecStatusesInput,
+  buildListProjectEndpointsInput,
   buildListProjectRecordsInput,
+  buildListRecommendedOfficialTemplatesInput,
   buildListRecyclingJobsInput,
   buildListReportBranchesInput,
   buildListReportRepositoriesInput,
@@ -60,6 +75,8 @@ import {
   buildListResourceSpecsInput,
   buildListSystemParametersInput,
   buildListTemplatesInput,
+  buildShowDomainsStatusesInput,
+  buildShowPackageSpecCountdownInput,
   buildRunJobInput,
   buildStopJobInput,
   buildUpdateJobStepInput
@@ -83,6 +100,25 @@ import { createBuildGetJobCopyNameHandler } from "../products/build/tools/get-jo
 import { createBuildGetJobDisableCheckHandler } from "../products/build/tools/get-job-disable-check.js";
 import { createBuildGetJobNoticeHandler } from "../products/build/tools/get-job-notice.js";
 import { createBuildGetJobRunningStatusHandler } from "../products/build/tools/get-job-running-status.js";
+import {
+  createBuildDownloadFullLogHandler,
+  createBuildDownloadTaskLogHandler,
+  createBuildGetJobOutputHandler,
+  createBuildGetJobPipelineInfoHandler,
+  createBuildGetJobStepStatusHandler,
+  createBuildGetKeystorePermissionHandler,
+  createBuildGetRunningStepLogHandler,
+  createBuildGetStageLogPageHandler,
+  createBuildGetTemplateHandler,
+  createBuildGetYamlTemplateHandler,
+  createBuildListJobBadgeBranchesHandler,
+  createBuildListJobUpdateHistoryHandler,
+  createBuildListKeystoreFilesHandler,
+  createBuildListProjectEndpointsHandler,
+  createBuildListRecommendedOfficialTemplatesHandler,
+  createBuildShowDomainsStatusesHandler,
+  createBuildShowPackageSpecCountdownHandler
+} from "../products/build/tools/additional-read-tools.js";
 import { createBuildGetDomainChargeTypeHandler } from "../products/build/tools/get-domain-charge-type.js";
 import { createBuildGetDomainFederationHandler } from "../products/build/tools/get-domain-federation.js";
 import { createBuildGetDomainJobSummaryHandler } from "../products/build/tools/get-domain-job-summary.js";
@@ -379,6 +415,108 @@ const buildToolDefinitions = {
     inputSchema: buildGetJobCopyNameInput,
     selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetJobCopyNameHandler>[0] }) => clients.buildClient,
     createProductHandler: createBuildGetJobCopyNameHandler
+  }),
+  "build_show_package_spec_countdown": defineProductTool({
+    description: "Show CodeArts Build package specification countdown metadata",
+    inputSchema: buildShowPackageSpecCountdownInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildShowPackageSpecCountdownHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildShowPackageSpecCountdownHandler
+  }),
+  "build_list_job_update_history": defineProductTool({
+    description: "List CodeArts Build job update history",
+    inputSchema: buildListJobUpdateHistoryInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListJobUpdateHistoryHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildListJobUpdateHistoryHandler
+  }),
+  "build_get_job_output": defineProductTool({
+    description: "Get CodeArts Build job output",
+    inputSchema: buildGetJobOutputInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetJobOutputHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildGetJobOutputHandler
+  }),
+  "build_get_job_step_status": defineProductTool({
+    description: "Get CodeArts Build job step status",
+    inputSchema: buildGetJobStepStatusInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetJobStepStatusHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildGetJobStepStatusHandler
+  }),
+  "build_get_job_pipeline_info": defineProductTool({
+    description: "Get CodeArts Build job pipeline information",
+    inputSchema: buildGetJobPipelineInfoInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetJobPipelineInfoHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildGetJobPipelineInfoHandler
+  }),
+  "build_list_project_endpoints": defineProductTool({
+    description: "List CodeArts Build project endpoints",
+    inputSchema: buildListProjectEndpointsInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListProjectEndpointsHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildListProjectEndpointsHandler
+  }),
+  "build_show_domains_statuses": defineProductTool({
+    description: "Show CodeArts Build domain statuses",
+    inputSchema: buildShowDomainsStatusesInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildShowDomainsStatusesHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildShowDomainsStatusesHandler
+  }),
+  "build_list_job_badge_branches": defineProductTool({
+    description: "List CodeArts Build job badge branches",
+    inputSchema: buildListJobBadgeBranchesInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListJobBadgeBranchesHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildListJobBadgeBranchesHandler
+  }),
+  "build_get_running_step_log": defineProductTool({
+    description: "Get CodeArts Build running step log",
+    inputSchema: buildGetRunningStepLogInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetRunningStepLogHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildGetRunningStepLogHandler
+  }),
+  "build_get_stage_log_page": defineProductTool({
+    description: "Get CodeArts Build stage log page",
+    inputSchema: buildGetStageLogPageInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetStageLogPageHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildGetStageLogPageHandler
+  }),
+  "build_download_full_log": defineProductTool({
+    description: "Get CodeArts Build full log download metadata",
+    inputSchema: buildDownloadFullLogInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildDownloadFullLogHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildDownloadFullLogHandler
+  }),
+  "build_download_task_log": defineProductTool({
+    description: "Get CodeArts Build task log download metadata",
+    inputSchema: buildDownloadTaskLogInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildDownloadTaskLogHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildDownloadTaskLogHandler
+  }),
+  "build_get_template": defineProductTool({
+    description: "Get a CodeArts Build custom template",
+    inputSchema: buildGetTemplateInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetTemplateHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildGetTemplateHandler
+  }),
+  "build_get_yaml_template": defineProductTool({
+    description: "Get a CodeArts Build YAML template",
+    inputSchema: buildGetYamlTemplateInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetYamlTemplateHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildGetYamlTemplateHandler
+  }),
+  "build_list_recommended_official_templates": defineProductTool({
+    description: "List CodeArts Build recommended official templates",
+    inputSchema: buildListRecommendedOfficialTemplatesInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListRecommendedOfficialTemplatesHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildListRecommendedOfficialTemplatesHandler
+  }),
+  "build_list_keystore_files": defineProductTool({
+    description: "List CodeArts Build keystore file metadata",
+    inputSchema: buildListKeystoreFilesInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListKeystoreFilesHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildListKeystoreFilesHandler
+  }),
+  "build_get_keystore_permission": defineProductTool({
+    description: "Get CodeArts Build keystore permission",
+    inputSchema: buildGetKeystorePermissionInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetKeystorePermissionHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildGetKeystorePermissionHandler
   }),
   "build_list_job_group_tree": defineProductTool({
     description: "List CodeArts Build job group tree",

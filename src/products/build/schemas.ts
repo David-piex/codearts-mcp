@@ -186,6 +186,75 @@ export const buildListTemplatesInput = pagingSchema.extend({
   name: z.string().min(1).optional()
 });
 
+export const buildShowPackageSpecCountdownInput = z.object({
+  body: z.record(z.string(), z.unknown()).default({})
+});
+
+export const buildListJobUpdateHistoryInput = z.object({
+  job_id: idSchema
+});
+
+export const buildGetJobOutputInput = z.object({
+  job_id: idSchema,
+  build_no: z.number().int().positive()
+});
+
+export const buildGetJobStepStatusInput = z.object({
+  job_id: idSchema
+});
+
+export const buildGetJobPipelineInfoInput = z.object({
+  job_id: idSchema
+});
+
+export const buildListProjectEndpointsInput = z.object({
+  project_id: idSchema
+});
+
+export const buildShowDomainsStatusesInput = z.object({
+  body: z.record(z.string(), z.unknown()).default({})
+});
+
+export const buildListJobBadgeBranchesInput = z.object({
+  job_id: idSchema
+});
+
+export const buildGetRunningStepLogInput = z.object({
+  query: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).default({})
+});
+
+export const buildGetStageLogPageInput = z.object({
+  query: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).default({})
+});
+
+export const buildDownloadFullLogInput = z.object({
+  record_id: idSchema
+});
+
+export const buildDownloadTaskLogInput = z.object({
+  record_id: idSchema
+});
+
+export const buildGetTemplateInput = z.object({
+  uuid: idSchema
+});
+
+export const buildGetYamlTemplateInput = z.object({
+  job_id: idSchema
+});
+
+export const buildListRecommendedOfficialTemplatesInput = z.object({
+  body: z.record(z.string(), z.unknown()).default({})
+});
+
+export const buildListKeystoreFilesInput = z.object({
+  query: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).default({})
+});
+
+export const buildGetKeystorePermissionInput = z.object({
+  keystore_id: idSchema
+});
+
 export const buildGetErrorLogInput = pagingSchema.extend({
   job_id: idSchema,
   build_no: z.number().int().positive()

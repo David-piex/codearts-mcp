@@ -244,6 +244,17 @@ type PipelinePluginVersion = {
 
 type PipelineRawRecord = Record<string, unknown>;
 
+type PipelineRawItemResult = {
+  item: PipelineRawRecord;
+  raw: PipelineRawRecord;
+};
+
+type PipelineRawListResult = {
+  records: PipelineRawRecord[];
+  total?: number;
+  raw: PipelineRawRecord;
+};
+
 export type PipelineClient = {
   requestOfficialApi: (input: OfficialApiRequestInput) => Promise<OfficialApiRequestResult>;
   getRunParameters: (input: {
@@ -910,6 +921,79 @@ export type PipelineClient = {
     records: Array<{ pipeline_run_id: string; status?: string; executor_name?: string }>;
     total?: number;
   }>;
+  batchGetPipelineStatus: (input: {
+    project_id: string;
+    pipeline_ids?: string[];
+    body?: PipelineRawRecord;
+  }) => Promise<PipelineRawListResult>;
+  getNoticeMessages: (input: { project_id: string; pipeline_id: string }) => Promise<PipelineRawListResult>;
+  checkProject: (input: { project_id: string; type: string }) => Promise<PipelineRawItemResult>;
+  checkComponent: (input: {
+    project_id: string;
+    component_id?: string;
+    component_name?: string;
+    query?: PipelineRawRecord;
+  }) => Promise<PipelineRawItemResult>;
+  listExecutionPlans: (input: { project_id: string; pipeline_id: string }) => Promise<PipelineRawListResult>;
+  listReusableJobs: (input: {
+    project_id: string;
+    offset: number;
+    limit: number;
+    keyword?: string;
+    body?: PipelineRawRecord;
+  }) => Promise<PipelineRawListResult>;
+  listDashboardPipelineCounts: (input: {
+    tenant_id: string;
+    start_time?: string;
+    end_time?: string;
+    query?: PipelineRawRecord;
+  }) => Promise<PipelineRawListResult>;
+  getDashboardExecutionsOverview: (input: {
+    tenant_id: string;
+    start_time?: string;
+    end_time?: string;
+    query?: PipelineRawRecord;
+  }) => Promise<PipelineRawItemResult>;
+  getDashboardConcurrency: (input: {
+    tenant_id: string;
+    start_time?: string;
+    end_time?: string;
+    query?: PipelineRawRecord;
+  }) => Promise<PipelineRawItemResult>;
+  listChangeRequests: (input: {
+    cloud_project_id: string;
+    offset: number;
+    limit: number;
+    keyword?: string;
+    body?: PipelineRawRecord;
+  }) => Promise<PipelineRawListResult>;
+  getChangeRequest: (input: {
+    cloud_project_id: string;
+    change_request_id: string;
+  }) => Promise<PipelineRawItemResult>;
+  listComponents: (input: {
+    cloud_project_id: string;
+    offset: number;
+    limit: number;
+    keyword?: string;
+    body?: PipelineRawRecord;
+  }) => Promise<PipelineRawListResult>;
+  getComponent: (input: {
+    cloud_project_id: string;
+    component_id: string;
+  }) => Promise<PipelineRawItemResult>;
+  listPacActions: (input: {
+    domain_id: string;
+    offset: number;
+    limit: number;
+    keyword?: string;
+    body?: PipelineRawRecord;
+  }) => Promise<PipelineRawListResult>;
+  getPacAction: (input: {
+    domain_id: string;
+    pipeline_id: string;
+    pipeline_run_id: string;
+  }) => Promise<PipelineRawItemResult>;
 };
 
 type PipelineClientOptions = {
@@ -970,6 +1054,57 @@ function readPipelineTotal(payload: PipelineRawRecord, fallback?: number) {
   }
 
   return fallback;
+}
+
+function mapPipelineRawListResult(payload: PipelineRawRecord): PipelineRawListResult {
+  const records = readPipelineRecordList(payload);
+
+  return {
+    records,
+    total: readPipelineTotal(payload, records.length),
+    raw: payload
+  };
+}
+
+function mapPipelineRawItemResult(payload: PipelineRawRecord): PipelineRawItemResult {
+  return {
+    item: payload,
+    raw: payload
+  };
+}
+
+function buildQuery(input: PipelineRawRecord | undefined) {
+  const query = new URLSearchParams();
+
+  for (const [key, value] of Object.entries(input ?? {})) {
+    if (value === undefined || value === null) {
+      continue;
+    }
+
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        query.append(key, String(item));
+      }
+    } else {
+      query.set(key, String(value));
+    }
+  }
+
+  return query.size > 0 ? `?${query.toString()}` : "";
+}
+
+function buildPagedBody(input: {
+  offset?: number;
+  limit?: number;
+  keyword?: string;
+  body?: PipelineRawRecord;
+}) {
+  return {
+    ...(input.body ?? {}),
+    ...(typeof input.offset === "number" ? { offset: input.offset } : {}),
+    ...(typeof input.limit === "number" ? { limit: input.limit } : {}),
+    ...(input.keyword ? { keyword: input.keyword, name: input.keyword } : {})
+  };
 }
 
 export function createPipelineClient(
@@ -2817,6 +2952,139 @@ export function createPipelineClient(
         executor_name: response.executor_name,
         trigger_type: response.trigger_type
       };
+    },
+    async batchGetPipelineStatus(input) {
+      const response = unwrapPipelinePayload(await _http.post(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipelines/status`,
+        {
+          ...(input.body ?? {}),
+          ...(input.pipeline_ids ? { pipeline_ids: input.pipeline_ids } : {})
+        }
+      ));
+
+      return mapPipelineRawListResult(getPipelinePayload(response));
+    },
+    async getNoticeMessages(input) {
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipeline-notices/${encodeURIComponent(input.pipeline_id)}/notice/message`
+      ));
+
+      return mapPipelineRawListResult(getPipelinePayload(response));
+    },
+    async checkProject(input) {
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v5/${encodeURIComponent(input.project_id)}/api/check-project/${encodeURIComponent(input.type)}`
+      ));
+
+      return mapPipelineRawItemResult(getPipelinePayload(response));
+    },
+    async checkComponent(input) {
+      const suffix = buildQuery({
+        ...(input.query ?? {}),
+        ...(input.component_id ? { component_id: input.component_id } : {}),
+        ...(input.component_name ? { component_name: input.component_name } : {})
+      });
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipelines/component/check${suffix}`
+      ));
+
+      return mapPipelineRawItemResult(getPipelinePayload(response));
+    },
+    async listExecutionPlans(input) {
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipelines/${encodeURIComponent(input.pipeline_id)}/execution-plan/list`
+      ));
+
+      return mapPipelineRawListResult(getPipelinePayload(response));
+    },
+    async listReusableJobs(input) {
+      const response = unwrapPipelinePayload(await _http.post(
+        `/v5/${encodeURIComponent(input.project_id)}/api/reusable-jobs/list`,
+        buildPagedBody(input)
+      ));
+
+      return mapPipelineRawListResult(getPipelinePayload(response));
+    },
+    async listDashboardPipelineCounts(input) {
+      const suffix = buildQuery({
+        ...(input.query ?? {}),
+        ...(input.start_time ? { start_time: input.start_time } : {}),
+        ...(input.end_time ? { end_time: input.end_time } : {})
+      });
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v5/${encodeURIComponent(input.tenant_id)}/api/dashboard/pipeline-count${suffix}`
+      ));
+
+      return mapPipelineRawListResult(getPipelinePayload(response));
+    },
+    async getDashboardExecutionsOverview(input) {
+      const suffix = buildQuery({
+        ...(input.query ?? {}),
+        ...(input.start_time ? { start_time: input.start_time } : {}),
+        ...(input.end_time ? { end_time: input.end_time } : {})
+      });
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v5/${encodeURIComponent(input.tenant_id)}/api/dashboard/executions-overview${suffix}`
+      ));
+
+      return mapPipelineRawItemResult(getPipelinePayload(response));
+    },
+    async getDashboardConcurrency(input) {
+      const suffix = buildQuery({
+        ...(input.query ?? {}),
+        ...(input.start_time ? { start_time: input.start_time } : {}),
+        ...(input.end_time ? { end_time: input.end_time } : {})
+      });
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v5/${encodeURIComponent(input.tenant_id)}/api/dashboard/concurrency${suffix}`
+      ));
+
+      return mapPipelineRawItemResult(getPipelinePayload(response));
+    },
+    async listChangeRequests(input) {
+      const response = unwrapPipelinePayload(await _http.post(
+        `/v2/${encodeURIComponent(input.cloud_project_id)}/change-requests/search`,
+        buildPagedBody(input)
+      ));
+
+      return mapPipelineRawListResult(getPipelinePayload(response));
+    },
+    async getChangeRequest(input) {
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v2/${encodeURIComponent(input.cloud_project_id)}/change-request/${encodeURIComponent(input.change_request_id)}/query`
+      ));
+
+      return mapPipelineRawItemResult(getPipelinePayload(response));
+    },
+    async listComponents(input) {
+      const response = unwrapPipelinePayload(await _http.post(
+        `/v2/${encodeURIComponent(input.cloud_project_id)}/component/list/query`,
+        buildPagedBody(input)
+      ));
+
+      return mapPipelineRawListResult(getPipelinePayload(response));
+    },
+    async getComponent(input) {
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v2/${encodeURIComponent(input.cloud_project_id)}/component/${encodeURIComponent(input.component_id)}/query`
+      ));
+
+      return mapPipelineRawItemResult(getPipelinePayload(response));
+    },
+    async listPacActions(input) {
+      const response = unwrapPipelinePayload(await _http.post(
+        `/v6/${encodeURIComponent(input.domain_id)}/api/pac/pipelines/actions/list`,
+        buildPagedBody(input)
+      ));
+
+      return mapPipelineRawListResult(getPipelinePayload(response));
+    },
+    async getPacAction(input) {
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v6/${encodeURIComponent(input.domain_id)}/api/pac/pipelines/actions/${encodeURIComponent(input.pipeline_id)}/${encodeURIComponent(input.pipeline_run_id)}`
+      ));
+
+      return mapPipelineRawItemResult(getPipelinePayload(response));
     }
   };
 }

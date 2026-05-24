@@ -50,7 +50,43 @@ describe("registerDeployTool", () => {
     const tools = [
       ["deploy_check_application_exists", "Check whether a CodeArts Deploy application name exists"],
       ["deploy_check_application_creatable", "Check whether CodeArts Deploy application creation is allowed"],
-      ["deploy_list_application_permissions", "List CodeArts Deploy application permissions"]
+      ["deploy_list_application_permissions", "List CodeArts Deploy application permissions"],
+      ["deploy_get_application_messages", "Get CodeArts Deploy application messages"],
+      ["deploy_list_application_groups", "List CodeArts Deploy application groups"],
+      ["deploy_get_success_rate_metrics", "Get CodeArts Deploy success rate metrics"],
+      ["deploy_get_task_success_rate_metrics", "Get CodeArts Deploy task success rate metrics"],
+      ["deploy_get_environment_permissions", "Get CodeArts Deploy environment permissions"]
+    ] as const;
+
+    for (const [toolName, description] of tools) {
+      const handled = registerDeployTool({
+        toolName,
+        server: { registerTool },
+        mode: "stdio",
+        stdioClient: {} as never
+      });
+
+      expect(handled).toBe(true);
+      expect(registerTool).toHaveBeenLastCalledWith(
+        toolName,
+        expect.objectContaining({
+          title: toolName,
+          description
+        }),
+        expect.any(Function)
+      );
+    }
+  });
+
+  it("registers v2 host group read tools", () => {
+    const registerTool = vi.fn();
+    const tools = [
+      ["deploy_list_host_groups_v2", "List CodeArts Deploy v2 host groups"],
+      ["deploy_get_host_group_v2", "Get CodeArts Deploy v2 host group detail"],
+      ["deploy_list_host_group_hosts_v2", "List CodeArts Deploy v2 hosts in a host group"],
+      ["deploy_get_host_group_host", "Get CodeArts Deploy host group host detail"],
+      ["deploy_get_host_group_host_v2", "Get CodeArts Deploy v2 host group host detail"],
+      ["deploy_get_host_group_permissions", "Get CodeArts Deploy host group permissions"]
     ] as const;
 
     for (const [toolName, description] of tools) {
