@@ -9,6 +9,10 @@ export const checkGetTaskInput = z.object({
   task_id: idSchema
 });
 
+export const checkGetTaskByIdInput = z.object({
+  task_id: idSchema
+});
+
 export const checkGetTaskResourcePoolInput = z.object({
   task_id: idSchema
 });
@@ -176,6 +180,62 @@ export const checkListCriterionsInput = pagingSchema.extend({
 
 export const checkGetDefectTaskStatisticsInput = z.object({
   task_id: idSchema
+});
+
+export const checkGetTaskIssueStatisticsInput = z.object({
+  task_id: idSchema
+});
+
+export const checkGetDefectMetricTrendInput = z.object({
+  task_id: idSchema,
+  start_time: z.string().min(1).optional(),
+  end_time: z.string().min(1).optional(),
+  metric_type: z.string().min(1).optional(),
+  severity: z.string().min(1).optional(),
+  query: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).default({})
+});
+
+export const checkListDefectNextStatusesInput = z.object({
+  query: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).default({})
+});
+
+export const checkGetSingleDefectInput = z.object({
+  defect_id: idSchema.optional(),
+  issue_id: idSchema.optional(),
+  task_id: idSchema.optional(),
+  query: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).default({})
+}).refine((input) => input.defect_id || input.issue_id || Object.keys(input.query).length > 0, {
+  message: "At least one of defect_id, issue_id, or query must be provided.",
+  path: ["defect_id"]
+});
+
+export const checkGetAsyncJobV2Input = z.object({
+  task_id: idSchema.optional(),
+  async_job_id: idSchema.optional(),
+  query: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).default({})
+});
+
+export const checkGetTaskMeasuresInput = z.object({
+  task_id: idSchema,
+  query: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).default({})
+});
+
+export const checkDownloadLogFileInput = z.object({
+  sub_job_id: idSchema.optional(),
+  query: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).default({})
+}).refine((input) => input.sub_job_id || Object.keys(input.query).length > 0, {
+  message: "sub_job_id or query must be provided.",
+  path: ["sub_job_id"]
+});
+
+export const checkGetDefectFileContentInput = z.object({
+  task_id: idSchema.optional(),
+  defect_id: idSchema.optional(),
+  file_path: z.string().min(1).optional(),
+  query: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).default({})
+}).refine((input) => input.task_id || input.defect_id || input.file_path || Object.keys(input.query).length > 0, {
+  message: "At least one locator must be provided.",
+  path: ["task_id"]
 });
 
 export const checkGetVpcepAuthorizationInput = z.object({

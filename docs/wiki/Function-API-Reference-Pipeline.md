@@ -6,7 +6,7 @@
 
 模块：`流水线`
 
-API 数量：`106`
+API 数量：`108`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
@@ -1763,6 +1763,58 @@ API 数量：`106`
 }
 ```
 
+### pipeline_get_devuc_auth
+
+所属模块：`流水线`
+
+说明：获取流水线的devucauth。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "pipeline_get_devuc_auth",
+    "arguments": {
+      "cloud_project_id": "<cloud_project_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `cloud_project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `cloud_project_id` ↔ 原始 CodeArts 流水线 API 同名字段 `cloud_project_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>云项目 ID，用于定位对应的 CodeArts 资源。 |
+| `query` | 否 | `object` |  | 字段对应：<br>MCP 字段 `query` ↔ 原始 CodeArts 流水线 API 同名字段 `query`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>查询条件或搜索表达式，用于过滤列表结果；具体支持的字段由对应接口决定。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "cloud_project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "query": {
+      "type": "object",
+      "additionalProperties": {}
+    }
+  },
+  "required": [
+    "cloud_project_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### pipeline_get_extension_endpoint
 
 所属模块：`流水线`
@@ -2075,6 +2127,48 @@ API 数量：`106`
     "project_id",
     "pipeline_id"
   ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### pipeline_get_oauth_authorization_url
+
+所属模块：`流水线`
+
+说明：获取流水线的oauthauthorizationurl。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "pipeline_get_oauth_authorization_url",
+    "arguments": {}
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `query` | 否 | `object` |  | 字段对应：<br>MCP 字段 `query` ↔ 原始 CodeArts 流水线 API 同名字段 `query`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>查询条件或搜索表达式，用于过滤列表结果；具体支持的字段由对应接口决定。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "query": {
+      "type": "object",
+      "additionalProperties": {}
+    }
+  },
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
 }

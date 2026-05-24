@@ -249,6 +249,50 @@ describe("createCheckClient", () => {
     });
   });
 
+  it("uses additional official read endpoints", async () => {
+    const paths: string[] = [];
+    const client = createClient({
+      get: async (path: string) => {
+        paths.push(path);
+        if (path.includes("next-status")) {
+          return { result: { statuses: [{ id: "1", name: "Open" }] } };
+        }
+        return { result: { id: "raw-1", ok: true } };
+      }
+    });
+
+    await client.getTaskById({ task_id: "task-1" });
+    await client.getTaskIssueStatistics({ task_id: "task-1" });
+    await client.getDefectMetricTrend({
+      task_id: "task-1",
+      start_time: "2026-01-01",
+      end_time: "2026-01-31",
+      metric_type: "defect"
+    });
+    await client.listDefectNextStatuses({ query: { status_id: 1 } });
+    await client.getSingleDefect({ defect_id: "defect-1", task_id: "task-1" });
+    await client.getAsyncJobV2({ task_id: "task-1", async_job_id: "job-1" });
+    await client.getTaskMeasures({ task_id: "task-1" });
+    await client.downloadLogFile({ sub_job_id: "sub-job-1" });
+    await client.getDefectFileContent({
+      task_id: "task-1",
+      defect_id: "defect-1",
+      file_path: "src/app.ts"
+    });
+
+    expect(paths).toEqual([
+      "/v3/task/task-1",
+      "/v1/defects/task-statistics?task_id=task-1",
+      "/v1/history/defect-metric-trend?task_id=task-1&start_time=2026-01-01&end_time=2026-01-31&metric_type=defect",
+      "/v1/defects/next-status?status_id=1",
+      "/v1/defect?defect_id=defect-1&task_id=task-1",
+      "/v2/async-job?task_id=task-1&async_job_id=job-1",
+      "/v1/defects/task-measures?task_id=task-1",
+      "/v1/log-file?sub_job_id=sub-job-1",
+      "/v1/defects/file-content?task_id=task-1&defect_id=defect-1&file_path=src%2Fapp.ts"
+    ]);
+  });
+
   it("maps project-scoped ruleset responses from the real info payload", async () => {
     let requestedPath = "";
     const client = createClient({

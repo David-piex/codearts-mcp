@@ -994,6 +994,11 @@ export type PipelineClient = {
     pipeline_id: string;
     pipeline_run_id: string;
   }) => Promise<PipelineRawItemResult>;
+  getOauthAuthorizationUrl: (input: { query?: PipelineRawRecord }) => Promise<PipelineRawItemResult>;
+  getDevucAuth: (input: {
+    cloud_project_id: string;
+    query?: PipelineRawRecord;
+  }) => Promise<PipelineRawItemResult>;
 };
 
 type PipelineClientOptions = {
@@ -3082,6 +3087,20 @@ export function createPipelineClient(
     async getPacAction(input) {
       const response = unwrapPipelinePayload(await _http.get(
         `/v6/${encodeURIComponent(input.domain_id)}/api/pac/pipelines/actions/${encodeURIComponent(input.pipeline_id)}/${encodeURIComponent(input.pipeline_run_id)}`
+      ));
+
+      return mapPipelineRawItemResult(getPipelinePayload(response));
+    },
+    async getOauthAuthorizationUrl(input) {
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v1/serviceconnection/oauth/authorization_url${buildQuery(input.query)}`
+      ));
+
+      return mapPipelineRawItemResult(getPipelinePayload(response));
+    },
+    async getDevucAuth(input) {
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v2/${encodeURIComponent(input.cloud_project_id)}/cicd/devuc-auth/query${buildQuery(input.query)}`
       ));
 
       return mapPipelineRawItemResult(getPipelinePayload(response));

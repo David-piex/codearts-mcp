@@ -95,6 +95,8 @@ export const pipelineToolNames = [
   "pipeline_get_component",
   "pipeline_list_pac_actions",
   "pipeline_get_pac_action",
+  "pipeline_get_oauth_authorization_url",
+  "pipeline_get_devuc_auth",
   "pipeline_get_run",
   "pipeline_get_run_detail",
   "pipeline_reject_run",

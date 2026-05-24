@@ -6,7 +6,7 @@
 
 模块：`代码检查`
 
-API 数量：`55`
+API 数量：`64`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
@@ -173,6 +173,118 @@ API 数量：`55`
   "required": [
     "task_id"
   ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### check_download_log_file
+
+所属模块：`代码检查`
+
+说明：下载代码检查的日志文件。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "check_download_log_file",
+    "arguments": {}
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `sub_job_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `sub_job_id` ↔ 原始 CodeArts 代码检查 API 同名字段 `sub_job_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>sub任务 ID，用于定位对应的 CodeArts 资源。 |
+| `query` | 否 | `object` | {} | 字段对应：<br>MCP 字段 `query` ↔ 原始 CodeArts 代码检查 API 同名字段 `query`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>查询条件或搜索表达式，用于过滤列表结果；具体支持的字段由对应接口决定。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "sub_job_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "query": {
+      "type": "object",
+      "additionalProperties": {
+        "type": [
+          "string",
+          "number",
+          "boolean"
+        ]
+      },
+      "default": {}
+    }
+  },
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### check_get_async_job_v2
+
+所属模块：`代码检查`
+
+说明：获取代码检查的async任务v2。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "check_get_async_job_v2",
+    "arguments": {}
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `task_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `task_id` ↔ 原始 CodeArts 代码检查 API 同名字段 `task_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>任务 ID，用于定位对应的 CodeArts 资源。 |
+| `async_job_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `async_job_id` ↔ 原始 CodeArts 代码检查 API 同名字段 `async_job_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>async任务 ID，用于定位对应的 CodeArts 资源。 |
+| `query` | 否 | `object` | {} | 字段对应：<br>MCP 字段 `query` ↔ 原始 CodeArts 代码检查 API 同名字段 `query`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>查询条件或搜索表达式，用于过滤列表结果；具体支持的字段由对应接口决定。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "async_job_id": {
+      "$ref": "#/properties/task_id"
+    },
+    "query": {
+      "type": "object",
+      "additionalProperties": {
+        "type": [
+          "string",
+          "number",
+          "boolean"
+        ]
+      },
+      "default": {}
+    }
+  },
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
 }
@@ -430,6 +542,148 @@ API 数量：`55`
 }
 ```
 
+### check_get_defect_file_content
+
+所属模块：`代码检查`
+
+说明：获取代码检查的defect文件content。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "check_get_defect_file_content",
+    "arguments": {}
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `task_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `task_id` ↔ 原始 CodeArts 代码检查 API 同名字段 `task_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>任务 ID，用于定位对应的 CodeArts 资源。 |
+| `defect_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `defect_id` ↔ 原始 CodeArts 代码检查 API 同名字段 `defect_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>defect ID，用于定位对应的 CodeArts 资源。 |
+| `file_path` | 否 | `string` |  | 字段对应：<br>MCP 字段 `file_path` ↔ 原始 CodeArts 代码检查 API 同名字段 `file_path`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>仓库内文件路径，从仓库根目录开始填写，例如 src/index.ts；不要带仓库 URL。 |
+| `query` | 否 | `object` | {} | 字段对应：<br>MCP 字段 `query` ↔ 原始 CodeArts 代码检查 API 同名字段 `query`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>查询条件或搜索表达式，用于过滤列表结果；具体支持的字段由对应接口决定。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "defect_id": {
+      "$ref": "#/properties/task_id"
+    },
+    "file_path": {
+      "type": "string",
+      "minLength": 1
+    },
+    "query": {
+      "type": "object",
+      "additionalProperties": {
+        "type": [
+          "string",
+          "number",
+          "boolean"
+        ]
+      },
+      "default": {}
+    }
+  },
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### check_get_defect_metric_trend
+
+所属模块：`代码检查`
+
+说明：获取代码检查的defect指标trend。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "check_get_defect_metric_trend",
+    "arguments": {
+      "task_id": "<task_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `task_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `task_id` ↔ 原始 CodeArts 代码检查 API 同名字段 `task_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>任务 ID，用于定位对应的 CodeArts 资源。 |
+| `start_time` | 否 | `string` |  | 字段对应：<br>MCP 字段 `start_time` ↔ 原始 CodeArts 代码检查 API 同名字段 `start_time`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>开始时间，通常使用时间戳或 ISO 8601 时间字符串，具体格式以接口要求为准。 |
+| `end_time` | 否 | `string` |  | 字段对应：<br>MCP 字段 `end_time` ↔ 原始 CodeArts 代码检查 API 同名字段 `end_time`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>结束时间，通常使用时间戳或 ISO 8601 时间字符串，具体格式以接口要求为准。 |
+| `metric_type` | 否 | `string` |  | 字段对应：<br>MCP 字段 `metric_type` ↔ 原始 CodeArts 代码检查 API 同名字段 `metric_type`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>指标类型，用于选择要查询或统计的度量项。 |
+| `severity` | 否 | `string` |  | 字段对应：<br>MCP 字段 `severity` ↔ 原始 CodeArts 代码检查 API 同名字段 `severity`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>严重级别。代码检查场景表示问题严重程度；需求管理场景表示缺陷严重程度。 |
+| `query` | 否 | `object` | {} | 字段对应：<br>MCP 字段 `query` ↔ 原始 CodeArts 代码检查 API 同名字段 `query`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>查询条件或搜索表达式，用于过滤列表结果；具体支持的字段由对应接口决定。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "start_time": {
+      "type": "string",
+      "minLength": 1
+    },
+    "end_time": {
+      "type": "string",
+      "minLength": 1
+    },
+    "metric_type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "severity": {
+      "type": "string",
+      "minLength": 1
+    },
+    "query": {
+      "type": "object",
+      "additionalProperties": {
+        "type": [
+          "string",
+          "number",
+          "boolean"
+        ]
+      },
+      "default": {}
+    }
+  },
+  "required": [
+    "task_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### check_get_defect_task_statistics
 
 所属模块：`代码检查`
@@ -577,6 +831,68 @@ API 数量：`55`
 }
 ```
 
+### check_get_single_defect
+
+所属模块：`代码检查`
+
+说明：获取代码检查的singledefect。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "check_get_single_defect",
+    "arguments": {}
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `defect_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `defect_id` ↔ 原始 CodeArts 代码检查 API 同名字段 `defect_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>defect ID，用于定位对应的 CodeArts 资源。 |
+| `issue_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `issue_id` ↔ 原始 CodeArts 代码检查 API 同名字段 `issue_id`，表示工作项/议题 ID。<br>工作项 ID，用于定位对应的 CodeArts 资源。 |
+| `task_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `task_id` ↔ 原始 CodeArts 代码检查 API 同名字段 `task_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>任务 ID，用于定位对应的 CodeArts 资源。 |
+| `query` | 否 | `object` | {} | 字段对应：<br>MCP 字段 `query` ↔ 原始 CodeArts 代码检查 API 同名字段 `query`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>查询条件或搜索表达式，用于过滤列表结果；具体支持的字段由对应接口决定。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "defect_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "issue_id": {
+      "$ref": "#/properties/defect_id"
+    },
+    "task_id": {
+      "$ref": "#/properties/defect_id"
+    },
+    "query": {
+      "type": "object",
+      "additionalProperties": {
+        "type": [
+          "string",
+          "number",
+          "boolean"
+        ]
+      },
+      "default": {}
+    }
+  },
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### check_get_task
 
 所属模块：`代码检查`
@@ -624,6 +940,53 @@ API 数量：`55`
 }
 ```
 
+### check_get_task_by_id
+
+所属模块：`代码检查`
+
+说明：获取代码检查的任务byid。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "check_get_task_by_id",
+    "arguments": {
+      "task_id": "<task_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `task_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `task_id` ↔ 原始 CodeArts 代码检查 API 同名字段 `task_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>任务 ID，用于定位对应的 CodeArts 资源。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "task_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### check_get_task_cron
 
 所属模块：`代码检查`
@@ -639,6 +1002,53 @@ API 数量：`55`
   "method": "tools/call",
   "params": {
     "name": "check_get_task_cron",
+    "arguments": {
+      "task_id": "<task_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `task_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `task_id` ↔ 原始 CodeArts 代码检查 API 同名字段 `task_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>任务 ID，用于定位对应的 CodeArts 资源。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "task_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### check_get_task_issue_statistics
+
+所属模块：`代码检查`
+
+说明：获取代码检查的任务工作项统计。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "check_get_task_issue_statistics",
     "arguments": {
       "task_id": "<task_id>"
     }
@@ -721,6 +1131,65 @@ API 数量：`55`
   },
   "required": [
     "project_id",
+    "task_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### check_get_task_measures
+
+所属模块：`代码检查`
+
+说明：获取代码检查的任务measures。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "check_get_task_measures",
+    "arguments": {
+      "task_id": "<task_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `task_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `task_id` ↔ 原始 CodeArts 代码检查 API 同名字段 `task_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>任务 ID，用于定位对应的 CodeArts 资源。 |
+| `query` | 否 | `object` | {} | 字段对应：<br>MCP 字段 `query` ↔ 原始 CodeArts 代码检查 API 同名字段 `query`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>查询条件或搜索表达式，用于过滤列表结果；具体支持的字段由对应接口决定。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "query": {
+      "type": "object",
+      "additionalProperties": {
+        "type": [
+          "string",
+          "number",
+          "boolean"
+        ]
+      },
+      "default": {}
+    }
+  },
+  "required": [
     "task_id"
   ],
   "additionalProperties": false,
@@ -1781,6 +2250,55 @@ API 数量：`55`
   "required": [
     "project_id"
   ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### check_list_defect_next_statuses
+
+所属模块：`代码检查`
+
+说明：查询代码检查的defectnext状态。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "check_list_defect_next_statuses",
+    "arguments": {}
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `query` | 否 | `object` | {} | 字段对应：<br>MCP 字段 `query` ↔ 原始 CodeArts 代码检查 API 同名字段 `query`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>查询条件或搜索表达式，用于过滤列表结果；具体支持的字段由对应接口决定。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "query": {
+      "type": "object",
+      "additionalProperties": {
+        "type": [
+          "string",
+          "number",
+          "boolean"
+        ]
+      },
+      "default": {}
+    }
+  },
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
 }

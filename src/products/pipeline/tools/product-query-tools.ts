@@ -5,7 +5,9 @@ import {
   pipelineDashboardQueryInput,
   pipelineGetChangeRequestInput,
   pipelineGetComponentInput,
+  pipelineGetDevucAuthInput,
   pipelineGetNoticeMessagesInput,
+  pipelineGetOauthAuthorizationUrlInput,
   pipelineGetPacActionInput,
   pipelineListChangeRequestsInput,
   pipelineListComponentsInput,
@@ -89,6 +91,11 @@ export type PipelineProductQueryClient = {
     domain_id: string;
     pipeline_id: string;
     pipeline_run_id: string;
+  }) => Promise<RawItemResponse>;
+  getOauthAuthorizationUrl: (input: { query?: RawRecord }) => Promise<RawItemResponse>;
+  getDevucAuth: (input: {
+    cloud_project_id: string;
+    query?: RawRecord;
   }) => Promise<RawItemResponse>;
 };
 
@@ -225,4 +232,22 @@ export const createPipelineGetPacActionHandler = (client: PipelineProductQueryCl
     summary: "Loaded pipeline PAC action",
     itemKey: "pacAction",
     id: (input) => input.pipeline_run_id
+  });
+
+export const createPipelineGetOauthAuthorizationUrlHandler = (client: PipelineProductQueryClient) =>
+  createPipelineRawItemHandler({
+    inputSchema: pipelineGetOauthAuthorizationUrlInput,
+    call: (input) => client.getOauthAuthorizationUrl(input),
+    summary: "Loaded pipeline OAuth authorization URL",
+    itemKey: "authorizationUrl",
+    id: () => "oauth-authorization-url"
+  });
+
+export const createPipelineGetDevucAuthHandler = (client: PipelineProductQueryClient) =>
+  createPipelineRawItemHandler({
+    inputSchema: pipelineGetDevucAuthInput,
+    call: (input) => client.getDevucAuth(input),
+    summary: "Loaded pipeline DevUC auth",
+    itemKey: "devucAuth",
+    id: (input) => input.cloud_project_id
   });

@@ -27,6 +27,8 @@ import {
   pipelineGetInput,
   pipelineGetChangeRequestInput,
   pipelineGetComponentInput,
+  pipelineGetDevucAuthInput,
+  pipelineGetOauthAuthorizationUrlInput,
   pipelineGetPacActionInput,
   pipelineGetTemplateInput,
   pipelineGetWebhookInfoInput,
@@ -154,7 +156,9 @@ import {
   createPipelineGetComponentHandler,
   createPipelineGetDashboardConcurrencyHandler,
   createPipelineGetDashboardExecutionsOverviewHandler,
+  createPipelineGetDevucAuthHandler,
   createPipelineGetNoticeMessagesHandler,
+  createPipelineGetOauthAuthorizationUrlHandler,
   createPipelineGetPacActionHandler,
   createPipelineListChangeRequestsHandler,
   createPipelineListComponentsHandler,
@@ -830,6 +834,18 @@ const pipelineToolDefinitions = {
     inputSchema: pipelineGetPacActionInput,
     selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetPacActionHandler>[0] }) => clients.pipelineClient,
     createProductHandler: createPipelineGetPacActionHandler
+  }),
+  "pipeline_get_oauth_authorization_url": defineProductTool({
+    description: "Get CodeArts Pipeline OAuth authorization URL",
+    inputSchema: pipelineGetOauthAuthorizationUrlInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetOauthAuthorizationUrlHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineGetOauthAuthorizationUrlHandler
+  }),
+  "pipeline_get_devuc_auth": defineProductTool({
+    description: "Get CodeArts Pipeline DevUC authorization status",
+    inputSchema: pipelineGetDevucAuthInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetDevucAuthHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineGetDevucAuthHandler
   }),
   "pipeline_list_modify_history": defineProductTool({
     description: "List CodeArts Pipeline modify history records",

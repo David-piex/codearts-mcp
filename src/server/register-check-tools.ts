@@ -4,18 +4,26 @@ import { createCheckClient } from "../products/check/client.js";
 import {
   checkCreateTaskInput,
   checkDetectTaskLanguageInput,
+  checkDownloadLogFileInput,
+  checkGetAsyncJobV2Input,
   checkGetCriterionRuleInput,
   checkGetCriterionsetInput,
   checkGetCodeHealthSvgInput,
   checkGetCodeSumMeasuresInput,
+  checkGetDefectFileContentInput,
+  checkGetDefectMetricTrendInput,
   checkGetDefectTaskStatisticsInput,
   checkGetDomainCheckersVersionInput,
   checkGetConsoleLogInput,
   checkGetMetricsInput,
+  checkGetSingleDefectInput,
   checkGetTenantPackageStatusInput,
+  checkGetTaskByIdInput,
   checkGetTaskCronInput,
   checkGetTaskInput,
+  checkGetTaskIssueStatisticsInput,
   checkGetTaskLogDetailInput,
+  checkGetTaskMeasuresInput,
   checkGetTaskNotificationInput,
   checkGetTaskOwnerMatchingSwitchInput,
   checkGetTaskPreCheckScriptInput,
@@ -33,6 +41,7 @@ import {
   checkListCriterionsetsByLanguageInput,
   checkListCodehubRepositoriesInput,
   checkListDefaultRulesetsInput,
+  checkListDefectNextStatusesInput,
   checkListPluginsInput,
   checkListProjectTaskGroupsInput,
   checkListRulesInput,
@@ -58,6 +67,17 @@ import {
   checkStopTaskInput
 } from "../products/check/schemas.js";
 import { createCheckCreateTaskHandler } from "../products/check/tools/create-task.js";
+import {
+  createCheckDownloadLogFileHandler,
+  createCheckGetAsyncJobV2Handler,
+  createCheckGetDefectFileContentHandler,
+  createCheckGetDefectMetricTrendHandler,
+  createCheckGetSingleDefectHandler,
+  createCheckGetTaskByIdHandler,
+  createCheckGetTaskIssueStatisticsHandler,
+  createCheckGetTaskMeasuresHandler,
+  createCheckListDefectNextStatusesHandler
+} from "../products/check/tools/additional-read-tools.js";
 import { createCheckDetectTaskLanguageHandler } from "../products/check/tools/detect-task-language.js";
 import { createCheckGetCriterionRuleHandler } from "../products/check/tools/get-criterion-rule.js";
 import { createCheckGetCriterionsetHandler } from "../products/check/tools/get-criterionset.js";
@@ -143,6 +163,12 @@ const checkToolDefinitions = {
     inputSchema: checkGetTaskInput,
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetTaskHandler>[0] }) => clients.checkClient,
     createProductHandler: createCheckGetTaskHandler
+  }),
+  "check_get_task_by_id": defineProductTool({
+    description: "Get CodeArts Check task by ID",
+    inputSchema: checkGetTaskByIdInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetTaskByIdHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckGetTaskByIdHandler
   }),
   "check_get_task_resource_pool": defineProductTool({
     description: "Get CodeArts Check task resource pool",
@@ -347,6 +373,54 @@ const checkToolDefinitions = {
     inputSchema: checkGetDefectTaskStatisticsInput,
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetDefectTaskStatisticsHandler>[0] }) => clients.checkClient,
     createProductHandler: createCheckGetDefectTaskStatisticsHandler
+  }),
+  "check_get_task_issue_statistics": defineProductTool({
+    description: "Get CodeArts Check task issue statistics",
+    inputSchema: checkGetTaskIssueStatisticsInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetTaskIssueStatisticsHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckGetTaskIssueStatisticsHandler
+  }),
+  "check_get_defect_metric_trend": defineProductTool({
+    description: "Get CodeArts Check defect metric trend",
+    inputSchema: checkGetDefectMetricTrendInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetDefectMetricTrendHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckGetDefectMetricTrendHandler
+  }),
+  "check_list_defect_next_statuses": defineProductTool({
+    description: "List CodeArts Check defect next statuses",
+    inputSchema: checkListDefectNextStatusesInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListDefectNextStatusesHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckListDefectNextStatusesHandler
+  }),
+  "check_get_single_defect": defineProductTool({
+    description: "Get CodeArts Check single defect detail",
+    inputSchema: checkGetSingleDefectInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetSingleDefectHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckGetSingleDefectHandler
+  }),
+  "check_get_async_job_v2": defineProductTool({
+    description: "Get CodeArts Check async job V2 progress",
+    inputSchema: checkGetAsyncJobV2Input,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetAsyncJobV2Handler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckGetAsyncJobV2Handler
+  }),
+  "check_get_task_measures": defineProductTool({
+    description: "Get CodeArts Check task measures",
+    inputSchema: checkGetTaskMeasuresInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetTaskMeasuresHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckGetTaskMeasuresHandler
+  }),
+  "check_download_log_file": defineProductTool({
+    description: "Get CodeArts Check log file content",
+    inputSchema: checkDownloadLogFileInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckDownloadLogFileHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckDownloadLogFileHandler
+  }),
+  "check_get_defect_file_content": defineProductTool({
+    description: "Get CodeArts Check defect source file content",
+    inputSchema: checkGetDefectFileContentInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetDefectFileContentHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckGetDefectFileContentHandler
   }),
   "check_get_vpcep_authorization": defineProductTool({
     description: "Get CodeArts Check VPC endpoint authorization",

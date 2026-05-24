@@ -69,7 +69,9 @@ describe("registerPipelineTool", () => {
     ["pipeline_list_components", "List CodeArts Pipeline components"],
     ["pipeline_get_component", "Get CodeArts Pipeline component"],
     ["pipeline_list_pac_actions", "List CodeArts Pipeline PAC actions"],
-    ["pipeline_get_pac_action", "Get CodeArts Pipeline PAC action"]
+    ["pipeline_get_pac_action", "Get CodeArts Pipeline PAC action"],
+    ["pipeline_get_oauth_authorization_url", "Get CodeArts Pipeline OAuth authorization URL"],
+    ["pipeline_get_devuc_auth", "Get CodeArts Pipeline DevUC authorization status"]
   ])("registers %s in http mode", (toolName, description) => {
     expectPipelineToolRegistration({
       toolName,

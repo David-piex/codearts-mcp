@@ -96,6 +96,15 @@ describe("registerCheckTool", () => {
       ["check_list_criterion_filters", "List CodeArts Check criterion filters"],
       ["check_list_criterions", "List CodeArts Check criterions"],
       ["check_get_defect_task_statistics", "Get CodeArts Check defect task statistics"],
+      ["check_get_task_by_id", "Get CodeArts Check task by ID"],
+      ["check_get_task_issue_statistics", "Get CodeArts Check task issue statistics"],
+      ["check_get_defect_metric_trend", "Get CodeArts Check defect metric trend"],
+      ["check_list_defect_next_statuses", "List CodeArts Check defect next statuses"],
+      ["check_get_single_defect", "Get CodeArts Check single defect detail"],
+      ["check_get_async_job_v2", "Get CodeArts Check async job V2 progress"],
+      ["check_get_task_measures", "Get CodeArts Check task measures"],
+      ["check_download_log_file", "Get CodeArts Check log file content"],
+      ["check_get_defect_file_content", "Get CodeArts Check defect source file content"],
       ["check_get_vpcep_authorization", "Get CodeArts Check VPC endpoint authorization"],
       ["check_list_task_check_list", "List CodeArts Check task check list"]
     ] as const;

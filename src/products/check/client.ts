@@ -61,6 +61,10 @@ export type CheckClient = {
     status?: string;
     last_check_time?: string;
   }>;
+  getTaskById: (input: { task_id: string }) => Promise<{
+    task_id: string;
+    raw: Record<string, unknown>;
+  }>;
   getTaskResourcePool: (input: { task_id: string }) => Promise<{
     task_id: string;
     raw: Record<string, unknown>;
@@ -282,6 +286,66 @@ export type CheckClient = {
     task_id: string;
     raw: Record<string, unknown>;
   }>;
+  getTaskIssueStatistics: (input: { task_id: string }) => Promise<{
+    task_id: string;
+    raw: Record<string, unknown>;
+  }>;
+  getDefectMetricTrend: (input: {
+    task_id: string;
+    start_time?: string;
+    end_time?: string;
+    metric_type?: string;
+    severity?: string;
+    query?: Record<string, string | number | boolean>;
+  }) => Promise<{
+    task_id: string;
+    raw: Record<string, unknown>;
+  }>;
+  listDefectNextStatuses: (input: {
+    query?: Record<string, string | number | boolean>;
+  }) => Promise<{
+    statuses: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
+  getSingleDefect: (input: {
+    defect_id?: string;
+    issue_id?: string;
+    task_id?: string;
+    query?: Record<string, string | number | boolean>;
+  }) => Promise<{
+    defect_id?: string;
+    raw: Record<string, unknown>;
+  }>;
+  getAsyncJobV2: (input: {
+    task_id?: string;
+    async_job_id?: string;
+    query?: Record<string, string | number | boolean>;
+  }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  getTaskMeasures: (input: {
+    task_id: string;
+    query?: Record<string, string | number | boolean>;
+  }) => Promise<{
+    task_id: string;
+    raw: Record<string, unknown>;
+  }>;
+  downloadLogFile: (input: {
+    sub_job_id?: string;
+    query?: Record<string, string | number | boolean>;
+  }) => Promise<{
+    sub_job_id?: string;
+    raw: Record<string, unknown> | string;
+  }>;
+  getDefectFileContent: (input: {
+    task_id?: string;
+    defect_id?: string;
+    file_path?: string;
+    query?: Record<string, string | number | boolean>;
+  }) => Promise<{
+    raw: Record<string, unknown> | string;
+  }>;
   getVpcepAuthorization: (input: { task_id: string }) => Promise<{
     task_id: string;
     raw: Record<string, unknown>;
@@ -437,6 +501,15 @@ function readTotal(payload: Record<string, unknown>, response: unknown, fallback
     readOptionalNumber(envelope.totalSize) ??
     fallback
   );
+}
+
+function buildQuery(input: Record<string, string | number | boolean | undefined>) {
+  const query = new URLSearchParams();
+  for (const [key, value] of Object.entries(input)) {
+    if (value !== undefined) query.set(key, String(value));
+  }
+  const text = query.toString();
+  return text ? `?${text}` : "";
 }
 
 export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClient {
@@ -650,6 +723,16 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
               : String(summary.task_status)
             : String(response.review_result ?? response.status),
         last_check_time: response.last_check_time ?? info?.lastCheckTime
+      };
+    },
+    async getTaskById(input) {
+      const response = await _http.get(`/v3/task/${encodeURIComponent(input.task_id)}`);
+      const payload = readResultPayload(response);
+      const task = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        task_id: input.task_id,
+        raw: task
       };
     },
     async getTaskResourcePool(input) {
@@ -1180,6 +1263,123 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
         task_id: input.task_id,
         raw: statistics
       };
+    },
+    async getTaskIssueStatistics(input) {
+      const response = await _http.get(`/v1/defects/task-statistics${buildQuery({ task_id: input.task_id })}`);
+      const payload = readResultPayload(response);
+      const statistics = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        task_id: input.task_id,
+        raw: statistics
+      };
+    },
+    async getDefectMetricTrend(input) {
+      const response = await _http.get(`/v1/history/defect-metric-trend${buildQuery({
+        ...(input.query ?? {}),
+        task_id: input.task_id,
+        start_time: input.start_time,
+        end_time: input.end_time,
+        metric_type: input.metric_type,
+        severity: input.severity
+      })}`);
+      const payload = readResultPayload(response);
+      const trend = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        task_id: input.task_id,
+        raw: trend
+      };
+    },
+    async listDefectNextStatuses(input) {
+      const response = await _http.get(`/v1/defects/next-status${buildQuery(input.query ?? {})}`);
+      const payload = readResultPayload(response);
+      const statuses = readArray<Record<string, unknown>>(
+        payload.statuses ?? payload.next_statuses ?? payload.data ?? payload.value ?? payload.items ?? payload.list ?? (Array.isArray(response) ? response : [])
+      );
+
+      return {
+        statuses,
+        total: readTotal(payload, response, statuses.length),
+        raw: payload
+      };
+    },
+    async getSingleDefect(input) {
+      const response = await _http.get(`/v1/defect${buildQuery({
+        ...(input.query ?? {}),
+        defect_id: input.defect_id,
+        issue_id: input.issue_id,
+        task_id: input.task_id
+      })}`);
+      const payload = readResultPayload(response);
+      const defect = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        defect_id: input.defect_id ?? input.issue_id,
+        raw: defect
+      };
+    },
+    async getAsyncJobV2(input) {
+      const response = await _http.get(`/v2/async-job${buildQuery({
+        ...(input.query ?? {}),
+        task_id: input.task_id,
+        async_job_id: input.async_job_id
+      })}`);
+      const payload = readResultPayload(response);
+      const job = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return { raw: job };
+    },
+    async getTaskMeasures(input) {
+      const response = await _http.get(`/v1/defects/task-measures${buildQuery({
+        ...(input.query ?? {}),
+        task_id: input.task_id
+      })}`);
+      const payload = readResultPayload(response);
+      const measures = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        task_id: input.task_id,
+        raw: measures
+      };
+    },
+    async downloadLogFile(input) {
+      const response = await _http.get(`/v1/log-file${buildQuery({
+        ...(input.query ?? {}),
+        sub_job_id: input.sub_job_id
+      })}`);
+
+      if (typeof response === "string") {
+        return {
+          sub_job_id: input.sub_job_id,
+          raw: response
+        };
+      }
+
+      const payload = readResultPayload(response);
+      const log = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        sub_job_id: input.sub_job_id,
+        raw: log
+      };
+    },
+    async getDefectFileContent(input) {
+      const response = await _http.get(`/v1/defects/file-content${buildQuery({
+        ...(input.query ?? {}),
+        task_id: input.task_id,
+        defect_id: input.defect_id,
+        file_path: input.file_path
+      })}`);
+
+      if (typeof response === "string") {
+        return { raw: response };
+      }
+
+      const payload = readResultPayload(response);
+      const fileContent = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return { raw: fileContent };
     },
     async getVpcepAuthorization(input) {
       const query = new URLSearchParams({ task_id: input.task_id });

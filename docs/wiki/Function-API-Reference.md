@@ -27,13 +27,13 @@
 | 制品仓 | 33 | [Function-API-Reference-Artifact.md](./Function-API-Reference-Artifact.md) |
 | 鉴权会话 | 2 | [Function-API-Reference-Auth-Session.md](./Function-API-Reference-Auth-Session.md) |
 | 编译构建 | 79 | [Function-API-Reference-Build.md](./Function-API-Reference-Build.md) |
-| 代码检查 | 55 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
+| 代码检查 | 64 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
 | 部署 | 74 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
-| 流水线 | 106 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
+| 流水线 | 108 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 185 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 243 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 238 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **1015** | |
+| **总计** | **1026** | |
 
 ## 字段对应
 
@@ -159,17 +159,25 @@
 | `build_update_job_step` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_update_job_step) |
 | `check_create_task` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_create_task) |
 | `check_detect_task_language` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_detect_task_language) |
+| `check_download_log_file` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_download_log_file) |
+| `check_get_async_job_v2` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_async_job_v2) |
 | `check_get_code_health_svg` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_code_health_svg) |
 | `check_get_code_sum_measures` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_code_sum_measures) |
 | `check_get_console_log` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_console_log) |
 | `check_get_criterion_rule` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_criterion_rule) |
 | `check_get_criterionset` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_criterionset) |
+| `check_get_defect_file_content` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_defect_file_content) |
+| `check_get_defect_metric_trend` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_defect_metric_trend) |
 | `check_get_defect_task_statistics` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_defect_task_statistics) |
 | `check_get_domain_checkers_version` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_domain_checkers_version) |
 | `check_get_metrics` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_metrics) |
+| `check_get_single_defect` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_single_defect) |
 | `check_get_task` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_task) |
+| `check_get_task_by_id` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_task_by_id) |
 | `check_get_task_cron` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_task_cron) |
+| `check_get_task_issue_statistics` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_task_issue_statistics) |
 | `check_get_task_log_detail` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_task_log_detail) |
+| `check_get_task_measures` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_task_measures) |
 | `check_get_task_notification` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_task_notification) |
 | `check_get_task_owner_matching_switch` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_task_owner_matching_switch) |
 | `check_get_task_pre_check_script` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_task_pre_check_script) |
@@ -188,6 +196,7 @@
 | `check_list_criterions` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_criterions) |
 | `check_list_criterionsets_by_language` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_criterionsets_by_language) |
 | `check_list_default_rulesets` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_default_rulesets) |
+| `check_list_defect_next_statuses` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_defect_next_statuses) |
 | `check_list_plugins` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_plugins) |
 | `check_list_project_task_groups` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_project_task_groups) |
 | `check_list_rules` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_rules) |
@@ -312,12 +321,14 @@
 | `pipeline_get_component` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_get_component) |
 | `pipeline_get_dashboard_concurrency` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_get_dashboard_concurrency) |
 | `pipeline_get_dashboard_executions_overview` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_get_dashboard_executions_overview) |
+| `pipeline_get_devuc_auth` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_get_devuc_auth) |
 | `pipeline_get_extension_endpoint` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_get_extension_endpoint) |
 | `pipeline_get_extension_module` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_get_extension_module) |
 | `pipeline_get_manual_review_context` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_get_manual_review_context) |
 | `pipeline_get_notice_detail` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_get_notice_detail) |
 | `pipeline_get_notice_messages` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_get_notice_messages) |
 | `pipeline_get_notice_status` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_get_notice_status) |
+| `pipeline_get_oauth_authorization_url` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_get_oauth_authorization_url) |
 | `pipeline_get_official_notice` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_get_official_notice) |
 | `pipeline_get_pac_action` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_get_pac_action) |
 | `pipeline_get_permission_switch` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_get_permission_switch) |

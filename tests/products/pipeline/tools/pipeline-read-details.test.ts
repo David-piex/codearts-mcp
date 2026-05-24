@@ -5,6 +5,8 @@ import { createPipelineListPipelineVarsHandler } from "../../../../src/products/
 import {
   createPipelineGetChangeRequestHandler,
   createPipelineGetDashboardConcurrencyHandler,
+  createPipelineGetDevucAuthHandler,
+  createPipelineGetOauthAuthorizationUrlHandler,
   createPipelineListExecutionPlansHandler,
   createPipelineListReusableJobsHandler
 } from "../../../../src/products/pipeline/tools/product-query-tools.js";
@@ -168,5 +170,30 @@ describe("Pipeline read detail tools", () => {
 
     expect(result.content[0]?.text).toContain("Loaded pipeline dashboard concurrency");
     expect(result.structuredContent.item?.dashboardConcurrency).toEqual({ running: 2 });
+  });
+
+  it("returns authorization helper query outputs", async () => {
+    const oauth = createPipelineGetOauthAuthorizationUrlHandler({
+      getOauthAuthorizationUrl: async () => ({
+        item: { url: "https://auth.example.com" },
+        raw: { url: "https://auth.example.com" }
+      })
+    } as never);
+    const devuc = createPipelineGetDevucAuthHandler({
+      getDevucAuth: async () => ({
+        item: { authorized: true },
+        raw: { authorized: true }
+      })
+    } as never);
+
+    const oauthResult = await oauth({ query: { redirect_uri: "https://example.com/cb" } });
+    const devucResult = await devuc({ cloud_project_id: "project-1" });
+
+    expect(oauthResult.structuredContent.item?.authorizationUrl).toEqual({
+      url: "https://auth.example.com"
+    });
+    expect(devucResult.structuredContent.item?.devucAuth).toEqual({
+      authorized: true
+    });
   });
 });

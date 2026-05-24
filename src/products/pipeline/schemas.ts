@@ -703,3 +703,12 @@ export const pipelineGetPacActionInput = z.object({
   pipeline_id: idSchema,
   pipeline_run_id: idSchema
 });
+
+export const pipelineGetOauthAuthorizationUrlInput = z.object({
+  query: pipelineRawQueryInput.optional()
+});
+
+export const pipelineGetDevucAuthInput = z.object({
+  cloud_project_id: idSchema,
+  query: pipelineRawQueryInput.optional()
+});

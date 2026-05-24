@@ -2983,6 +2983,8 @@ describe("createPipelineClient", () => {
       pipeline_id: "pipe-1",
       pipeline_run_id: "run-1"
     });
+    await client.getOauthAuthorizationUrl({ query: { redirect_uri: "https://example.com/cb" } });
+    await client.getDevucAuth({ cloud_project_id: "project-1", query: { service: "pipeline" } });
 
     expect(calls).toEqual([
       {
@@ -3049,6 +3051,14 @@ describe("createPipelineClient", () => {
       {
         method: "GET",
         path: "/v6/domain-1/api/pac/pipelines/actions/pipe-1/run-1"
+      },
+      {
+        method: "GET",
+        path: "/v1/serviceconnection/oauth/authorization_url?redirect_uri=https%3A%2F%2Fexample.com%2Fcb"
+      },
+      {
+        method: "GET",
+        path: "/v2/project-1/cicd/devuc-auth/query?service=pipeline"
       }
     ]);
   });
