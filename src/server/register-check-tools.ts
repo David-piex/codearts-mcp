@@ -17,6 +17,7 @@ import {
   checkGetDomainCheckersVersionInput,
   checkGetConsoleLogInput,
   checkGetMetricsInput,
+  checkModifyCriterionsetRelationsInput,
   checkGetProjectConfigInput,
   checkGetSingleDefectInput,
   checkGetTenantPackageStatusInput,
@@ -122,6 +123,7 @@ import { createCheckListRulesetRulesHandler } from "../products/check/tools/list
 import { createCheckListSupportedLanguagesHandler } from "../products/check/tools/list-supported-languages.js";
 import { createCheckListTemplateTasksHandler } from "../products/check/tools/list-template-tasks.js";
 import { createCheckListThirdToolsHandler } from "../products/check/tools/list-third-tools.js";
+import { createCheckModifyCriterionsetRelationsHandler } from "../products/check/tools/modify-criterionset-relations.js";
 import { createCheckListTaskAllFilesHandler } from "../products/check/tools/list-task-all-files.js";
 import { createCheckListTaskBranchesHandler } from "../products/check/tools/list-task-branches.js";
 import { createCheckListTaskCheckRecordsHandler } from "../products/check/tools/list-task-check-records.js";
@@ -373,6 +375,12 @@ const checkToolDefinitions = {
     inputSchema: checkGetMeasureTotalInput,
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetMeasureTotalHandler>[0] }) => clients.checkClient,
     createProductHandler: createCheckGetMeasureTotalHandler
+  }),
+  "check_modify_criterionset_relations": defineProductTool({
+    description: "Modify CodeArts Check criterionset rule relations",
+    inputSchema: checkModifyCriterionsetRelationsInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckModifyCriterionsetRelationsHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckModifyCriterionsetRelationsHandler
   }),
   "check_list_all_criterionsets": defineProductTool({
     description: "List all CodeArts Check criterionsets",

@@ -27,13 +27,13 @@
 | 制品仓 | 37 | [Function-API-Reference-Artifact.md](./Function-API-Reference-Artifact.md) |
 | 鉴权会话 | 2 | [Function-API-Reference-Auth-Session.md](./Function-API-Reference-Auth-Session.md) |
 | 编译构建 | 79 | [Function-API-Reference-Build.md](./Function-API-Reference-Build.md) |
-| 代码检查 | 67 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
+| 代码检查 | 68 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
 | 部署 | 74 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
 | 流水线 | 109 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 187 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 243 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 238 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **1036** | |
+| **总计** | **1037** | |
 
 ## 字段对应
 
@@ -225,6 +225,7 @@
 | `check_list_tasks` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_tasks) |
 | `check_list_template_tasks` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_template_tasks) |
 | `check_list_third_tools` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_list_third_tools) |
+| `check_modify_criterionset_relations` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_modify_criterionset_relations) |
 | `check_request_official_api` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_request_official_api) |
 | `check_run_task` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_run_task) |
 | `check_stop_task` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_stop_task) |

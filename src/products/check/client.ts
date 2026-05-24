@@ -259,6 +259,15 @@ export type CheckClient = {
     task_id: string;
     raw: Record<string, unknown>;
   }>;
+  modifyCriterionsetRelations: (input: {
+    set_id: string;
+    operator?: string;
+    show_tool_versions?: string[];
+    criterion_ids_list: Array<Record<string, unknown> & { id: string; status: "enable" | "disable" }>;
+  }) => Promise<{
+    set_id: string;
+    raw: Record<string, unknown>;
+  }>;
   listAllCriterionsets: (input: {
     page: number;
     page_size: number;
@@ -1238,6 +1247,30 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
       return {
         task_id: input.task_id,
         raw: measures
+      };
+    },
+    async modifyCriterionsetRelations(input) {
+      const response = await _http.post(
+        "/v1/relations",
+        {
+          setId: input.set_id,
+          ...(input.show_tool_versions ? { showToolVersions: input.show_tool_versions } : {}),
+          criterionIdsList: input.criterion_ids_list.map((item) => {
+            const { is_support_version, ...rest } = item;
+            return {
+              ...rest,
+              ...(is_support_version ? { isSupportVersion: is_support_version } : {})
+            };
+          })
+        },
+        input.operator ? { headers: { operator: input.operator } } : undefined
+      );
+      const payload = readResultPayload(response);
+      const result = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        set_id: input.set_id,
+        raw: result
       };
     },
     async listAllCriterionsets(input) {

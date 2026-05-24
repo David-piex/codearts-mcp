@@ -42,7 +42,7 @@ describe("collectModuleStats", () => {
       { module: "Req", total: 243, read: 148, write: 95 },
       { module: "Repo", total: 187, read: 141, write: 46 },
       { module: "Pipeline", total: 109, read: 72, write: 37 },
-      { module: "Check", total: 67, read: 63, write: 4 },
+      { module: "Check", total: 68, read: 63, write: 5 },
       { module: "TestPlan", total: 238, read: 228, write: 10 },
       { module: "Deploy", total: 74, read: 57, write: 17 },
       { module: "Build", total: 79, read: 70, write: 9 },
@@ -55,7 +55,7 @@ describe("collectModuleStats", () => {
       modules: 8,
       total: collectProductToolManifest().length,
       read: 810,
-      write: 224,
+      write: 225,
     });
   });
 
@@ -79,7 +79,7 @@ describe("collectModuleStats", () => {
         { module: "Req", total: 243, read: 148, write: 95 },
         { module: "Repo", total: 187, read: 141, write: 46 },
         { module: "Pipeline", total: 109, read: 72, write: 37 },
-        { module: "Check", total: 67, read: 63, write: 4 },
+        { module: "Check", total: 68, read: 63, write: 5 },
         { module: "TestPlan", total: 238, read: 228, write: 10 },
         { module: "Deploy", total: 74, read: 57, write: 17 },
         { module: "Build", total: 79, read: 70, write: 9 },
@@ -89,7 +89,7 @@ describe("collectModuleStats", () => {
         modules: 8,
         total: collectProductToolManifest().length,
         read: 810,
-        write: 224,
+        write: 225,
         httpTotalWithAuth: collectHttpToolTotal(),
       },
     });

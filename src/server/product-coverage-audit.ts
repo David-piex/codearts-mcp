@@ -51,9 +51,6 @@ export const productCoverageConfigs: ProductCoverageConfig[] = [
     endpointAliases: {
       "GET /v1/simple-": "GET /v1/simple-query/{id}",
       "POST /v1/config-": "POST /v1/config-items"
-    },
-    ignoredEndpoints: {
-      "POST /v1/relations": "write endpoint for updating ruleset-rule relations; not exposed as a read MCP tool"
     }
   },
   {

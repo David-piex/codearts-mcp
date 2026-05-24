@@ -168,6 +168,19 @@ export const checkGetMeasureTotalInput = z.object({
   query: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).default({})
 });
 
+export const checkModifyCriterionsetRelationsInput = z.object({
+  set_id: idSchema,
+  operator: z.string().min(1).max(128).optional(),
+  show_tool_versions: z.array(z.string().min(1)).optional(),
+  criterion_ids_list: z.array(z.object({
+    id: idSchema,
+    status: z.enum(["enable", "disable"]),
+    is_support_version: z.string().min(1).optional(),
+    params: z.record(z.string(), z.unknown()).optional()
+  }).passthrough()).min(1),
+  dry_run: z.boolean().default(true)
+});
+
 export const checkListAllCriterionsetsInput = pagingSchema.extend({
   languages: z.string().min(1).optional(),
   search: z.string().min(1).optional(),

@@ -37,6 +37,7 @@ export const checkToolNames = [
   "check_get_project_config",
   "check_list_config_items",
   "check_get_measure_total",
+  "check_modify_criterionset_relations",
   "check_list_all_criterionsets",
   "check_list_criterion_filters",
   "check_list_criterions",

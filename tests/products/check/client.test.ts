@@ -1311,4 +1311,62 @@ describe("createCheckClient", () => {
       }
     ]);
   });
+
+  it("uses documented criterionset relation mutation endpoint", async () => {
+    let request: { path?: string; body?: unknown; options?: unknown } = {};
+    const client = createClient({
+      post: async (path: string, body?: unknown, options?: unknown) => {
+        request = { path, body, options };
+        return {
+          result: {
+            status: "success"
+          }
+        };
+      }
+    });
+
+    await expect(client.modifyCriterionsetRelations({
+      set_id: "ruleset-1",
+      operator: "szh",
+      show_tool_versions: ["java:1.0"],
+      criterion_ids_list: [
+        {
+          id: "criterion-1",
+          status: "enable",
+          is_support_version: "enable",
+          params: {
+            threshold: 10
+          }
+        }
+      ]
+    })).resolves.toEqual({
+      set_id: "ruleset-1",
+      raw: {
+        status: "success"
+      }
+    });
+
+    expect(request).toEqual({
+      path: "/v1/relations",
+      body: {
+        setId: "ruleset-1",
+        showToolVersions: ["java:1.0"],
+        criterionIdsList: [
+          {
+            id: "criterion-1",
+            status: "enable",
+            params: {
+              threshold: 10
+            },
+            isSupportVersion: "enable"
+          }
+        ]
+      },
+      options: {
+        headers: {
+          operator: "szh"
+        }
+      }
+    });
+  });
 });

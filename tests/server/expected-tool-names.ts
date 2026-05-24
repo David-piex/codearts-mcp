@@ -179,6 +179,7 @@ export const expectedToolNames = [
   "check_list_tasks",
   "check_list_template_tasks",
   "check_list_third_tools",
+  "check_modify_criterionset_relations",
   "check_request_official_api",
   "check_run_task",
   "check_stop_task",

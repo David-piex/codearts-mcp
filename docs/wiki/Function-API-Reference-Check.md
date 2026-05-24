@@ -6,7 +6,7 @@
 
 模块：`代码检查`
 
-API 数量：`67`
+API 数量：`68`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
@@ -3914,6 +3914,107 @@ API 数量：`67`
   },
   "required": [
     "rule_type"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### check_modify_criterionset_relations
+
+所属模块：`代码检查`
+
+说明：修改代码检查的criterionsetrelations。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "check_modify_criterionset_relations",
+    "arguments": {
+      "set_id": "<set_id>",
+      "criterion_ids_list": "<criterion_ids_list>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `set_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `set_id` ↔ 原始 CodeArts 代码检查 API 同名字段 `set_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>set ID，用于定位对应的 CodeArts 资源。 |
+| `operator` | 否 | `string` |  | 字段对应：<br>MCP 字段 `operator` ↔ 原始 CodeArts 代码检查 API 同名字段 `operator`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>操作人标识，表示执行本次操作的用户。 |
+| `show_tool_versions` | 否 | `array<string>` |  | 字段对应：<br>MCP 字段 `show_tool_versions` ↔ 原始 CodeArts 代码检查 API 同名字段 `show_tool_versions`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `criterion_ids_list` | 是 | `array<object>` |  | 字段对应：<br>MCP 字段 `criterion_ids_list` ↔ 原始 CodeArts 代码检查 API 同名字段 `criterion_ids_list`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "set_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "operator": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "show_tool_versions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "criterion_ids_list": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/properties/set_id"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "enable",
+              "disable"
+            ]
+          },
+          "is_support_version": {
+            "type": "string",
+            "minLength": 1
+          },
+          "params": {
+            "type": "object",
+            "additionalProperties": {}
+          }
+        },
+        "required": [
+          "id",
+          "status"
+        ],
+        "additionalProperties": true
+      },
+      "minItems": 1
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "set_id",
+    "criterion_ids_list"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

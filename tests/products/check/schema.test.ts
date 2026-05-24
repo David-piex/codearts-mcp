@@ -8,6 +8,7 @@ import {
   checkListCodehubRepositoriesInput,
   checkListTaskAllFilesInput,
   checkListTaskIssuesInput,
+  checkModifyCriterionsetRelationsInput,
   checkRunTaskInput
 } from "../../../src/products/check/schemas.js";
 
@@ -132,6 +133,41 @@ describe("check schemas", () => {
       query: {
         branch: "main"
       }
+    });
+  });
+
+  it("accepts criterionset relation mutation schema with dry-run default", () => {
+    const parsed = checkModifyCriterionsetRelationsInput.parse({
+      set_id: "ruleset-1",
+      operator: "szh",
+      show_tool_versions: ["java:1.0"],
+      criterion_ids_list: [
+        {
+          id: "criterion-1",
+          status: "enable",
+          is_support_version: "enable",
+          params: {
+            threshold: 10
+          }
+        }
+      ]
+    });
+
+    expect(parsed).toEqual({
+      set_id: "ruleset-1",
+      operator: "szh",
+      show_tool_versions: ["java:1.0"],
+      criterion_ids_list: [
+        {
+          id: "criterion-1",
+          status: "enable",
+          is_support_version: "enable",
+          params: {
+            threshold: 10
+          }
+        }
+      ],
+      dry_run: true
     });
   });
 });
