@@ -241,6 +241,19 @@ export const buildDownloadTaskLogInput = z.object({
   record_id: idSchema
 });
 
+const buildLogLevelSchema = z.enum(["INFO", "DEBUG"]).default("INFO");
+
+export const buildDownloadBuildLogV4Input = z.object({
+  record_id: idSchema,
+  log_level: buildLogLevelSchema
+});
+
+export const buildDownloadTaskLogV4Input = z.object({
+  record_id: idSchema,
+  task_name: z.string().min(1),
+  log_level: buildLogLevelSchema
+});
+
 export const buildGetTemplateInput = z.object({
   uuid: idSchema
 });

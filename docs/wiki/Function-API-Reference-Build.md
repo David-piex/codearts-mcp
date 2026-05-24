@@ -6,7 +6,7 @@
 
 模块：`编译构建`
 
-API 数量：`81`
+API 数量：`83`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
@@ -400,6 +400,62 @@ API 数量：`81`
 }
 ```
 
+### build_download_build_log_v4
+
+所属模块：`编译构建`
+
+说明：下载编译构建的构建日志v4。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "build_download_build_log_v4",
+    "arguments": {
+      "record_id": "<record_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `record_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `record_id` ↔ 原始 CodeArts 编译构建 API 同名字段 `record_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>执行记录 ID，用于定位对应的 CodeArts 资源。 |
+| `log_level` | 否 | `"INFO" \| "DEBUG"` | "INFO" | 字段对应：<br>MCP 字段 `log_level` ↔ 原始 CodeArts 编译构建 API 同名字段 `log_level`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。可选值：`INFO`、`DEBUG`。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "log_level": {
+      "type": "string",
+      "enum": [
+        "INFO",
+        "DEBUG"
+      ],
+      "default": "INFO"
+    }
+  },
+  "required": [
+    "record_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### build_download_full_log
 
 所属模块：`编译构建`
@@ -488,6 +544,69 @@ API 数量：`81`
   },
   "required": [
     "record_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### build_download_task_log_v4
+
+所属模块：`编译构建`
+
+说明：下载编译构建的任务日志v4。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "build_download_task_log_v4",
+    "arguments": {
+      "record_id": "<record_id>",
+      "task_name": "<task_name>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `record_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `record_id` ↔ 原始 CodeArts 编译构建 API 同名字段 `record_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>执行记录 ID，用于定位对应的 CodeArts 资源。 |
+| `task_name` | 是 | `string` |  | 字段对应：<br>MCP 字段 `task_name` ↔ 原始 CodeArts 编译构建 API 同名字段 `task_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>任务名称。 |
+| `log_level` | 否 | `"INFO" \| "DEBUG"` | "INFO" | 字段对应：<br>MCP 字段 `log_level` ↔ 原始 CodeArts 编译构建 API 同名字段 `log_level`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。可选值：`INFO`、`DEBUG`。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "task_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "log_level": {
+      "type": "string",
+      "enum": [
+        "INFO",
+        "DEBUG"
+      ],
+      "default": "INFO"
+    }
+  },
+  "required": [
+    "record_id",
+    "task_name"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

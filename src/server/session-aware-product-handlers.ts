@@ -12,6 +12,10 @@ import { createArtifactSearchArtifactsHandler } from "../products/artifact/tools
 import { createArtifactShowAuditHandler } from "../products/artifact/tools/show-audit.js";
 import { createBuildAppendJobStepHandler } from "../products/build/tools/append-job-step.js";
 import { createBuildAppendReleaseUploadStepHandler } from "../products/build/tools/append-release-upload-step.js";
+import {
+  createBuildDownloadBuildLogV4Handler,
+  createBuildDownloadTaskLogV4Handler
+} from "../products/build/tools/additional-read-tools.js";
 import { createBuildConfigureReleaseUploadStepHandler } from "../products/build/tools/configure-release-upload-step.js";
 import { createBuildGetErrorLogHandler } from "../products/build/tools/get-error-log.js";
 import { createBuildGetFullStagesHandler } from "../products/build/tools/get-full-stages.js";
@@ -1267,6 +1271,28 @@ export function createSessionAwareBuildListProjectJobsV3Handler(
     store,
     injectedClient,
     createBuildListProjectJobsV3Handler
+  );
+}
+
+export function createSessionAwareBuildDownloadBuildLogV4Handler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createBuildDownloadBuildLogV4Handler>[0]
+) {
+  return createSessionAwareBuildToolHandler(
+    store,
+    injectedClient,
+    createBuildDownloadBuildLogV4Handler
+  );
+}
+
+export function createSessionAwareBuildDownloadTaskLogV4Handler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createBuildDownloadTaskLogV4Handler>[0]
+) {
+  return createSessionAwareBuildToolHandler(
+    store,
+    injectedClient,
+    createBuildDownloadTaskLogV4Handler
   );
 }
 

@@ -6,6 +6,7 @@ import {
   buildAppendJobStepInput,
   buildConfigureReleaseUploadStepInput,
   buildPrepareDeployableNodeAppInput,
+  buildDownloadBuildLogV4Input,
   buildGetErrorLogInput,
   buildGetFullStagesInput,
   buildGetHistoryDetailsInput,
@@ -37,6 +38,7 @@ import {
   buildGetStageLogPageInput,
   buildGetTemplateInput,
   buildGetYamlTemplateInput,
+  buildDownloadTaskLogV4Input,
   buildGetProjectDefaultPermissionInput,
   buildGetReportSummaryInput,
   buildGetProjectRecordStatisticsInput,
@@ -103,8 +105,10 @@ import { createBuildGetJobDisableCheckHandler } from "../products/build/tools/ge
 import { createBuildGetJobNoticeHandler } from "../products/build/tools/get-job-notice.js";
 import { createBuildGetJobRunningStatusHandler } from "../products/build/tools/get-job-running-status.js";
 import {
+  createBuildDownloadBuildLogV4Handler,
   createBuildDownloadFullLogHandler,
   createBuildDownloadTaskLogHandler,
+  createBuildDownloadTaskLogV4Handler,
   createBuildGetJobOutputHandler,
   createBuildGetJobPipelineInfoHandler,
   createBuildGetJobStepStatusHandler,
@@ -497,6 +501,18 @@ const buildToolDefinitions = {
     inputSchema: buildDownloadTaskLogInput,
     selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildDownloadTaskLogHandler>[0] }) => clients.buildClient,
     createProductHandler: createBuildDownloadTaskLogHandler
+  }),
+  "build_download_build_log_v4": defineProductTool({
+    description: "Download CodeArts Build v4 full log file",
+    inputSchema: buildDownloadBuildLogV4Input,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildDownloadBuildLogV4Handler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildDownloadBuildLogV4Handler
+  }),
+  "build_download_task_log_v4": defineProductTool({
+    description: "Download CodeArts Build v4 task log file",
+    inputSchema: buildDownloadTaskLogV4Input,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildDownloadTaskLogV4Handler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildDownloadTaskLogV4Handler
   }),
   "build_get_template": defineProductTool({
     description: "Get a CodeArts Build custom template",

@@ -102,6 +102,10 @@ function readGitCodeRepositoryName(source: NodeJS.ProcessEnv) {
   return source.HUAWEICLOUD_BUILD_LIVE_GIT_CODE_REPOSITORY_NAME?.trim();
 }
 
+function readTaskName(source: NodeJS.ProcessEnv) {
+  return source.HUAWEICLOUD_BUILD_LIVE_TASK_NAME?.trim() || "stage1";
+}
+
 function createPageInput<T extends Record<string, unknown>>(
   overrides?: T
 ): {
@@ -205,6 +209,7 @@ if (hasLiveEnv(process.env)) {
     const probeRecordId = readProbeRecordId(process.env);
     const gitCodeEndpointId = readGitCodeEndpointId(process.env);
     const gitCodeRepositoryName = readGitCodeRepositoryName(process.env);
+    const taskName = readTaskName(process.env);
 
     it("lists jobs across configured projects and gets the known live job", async () => {
       const [jobLists, projectJobsV3, job] = await Promise.all([
@@ -302,6 +307,31 @@ if (hasLiveEnv(process.env)) {
         code: "DEVCB.00031006",
         status: 422
       });
+    }, 30000);
+
+    it("downloads Build v4 full and task logs for the known live record", async () => {
+      const [fullLog, taskLog] = await Promise.all([
+        client.downloadBuildLogV4({
+          record_id: recordId,
+          log_level: "INFO"
+        }),
+        readReachable(() => client.downloadTaskLogV4({
+          record_id: recordId,
+          task_name: taskName,
+          log_level: "INFO"
+        }))
+      ]);
+
+      expect(fullLog.record_id).toBe(recordId);
+      expect(fullLog.body.byteLength).toBeGreaterThan(0);
+      expect(fullLog.log_level).toBe("INFO");
+
+      expectReachedProvider(taskLog);
+      if (taskLog.ok) {
+        expect(taskLog.value.record_id).toBe(recordId);
+        expect(taskLog.value.task_name).toBe(taskName);
+        expect(taskLog.value.body.byteLength).toBeGreaterThan(0);
+      }
     }, 30000);
 
     it("reaches stop on the known live build sample", async () => {

@@ -75,6 +75,8 @@ describe("registerBuildTool", () => {
       ["build_get_job_output", "Get CodeArts Build job output"],
       ["build_get_job_step_status", "Get CodeArts Build job step status"],
       ["build_list_project_endpoints", "List CodeArts Build project endpoints"],
+      ["build_download_build_log_v4", "Download CodeArts Build v4 full log file"],
+      ["build_download_task_log_v4", "Download CodeArts Build v4 task log file"],
       ["build_get_keystore_permission", "Get CodeArts Build keystore permission"]
     ] as const;
 

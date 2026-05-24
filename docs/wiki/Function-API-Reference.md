@@ -26,14 +26,14 @@
 | --- | ---: | --- |
 | 制品仓 | 37 | [Function-API-Reference-Artifact.md](./Function-API-Reference-Artifact.md) |
 | 鉴权会话 | 2 | [Function-API-Reference-Auth-Session.md](./Function-API-Reference-Auth-Session.md) |
-| 编译构建 | 81 | [Function-API-Reference-Build.md](./Function-API-Reference-Build.md) |
+| 编译构建 | 83 | [Function-API-Reference-Build.md](./Function-API-Reference-Build.md) |
 | 代码检查 | 68 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
 | 部署 | 74 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
 | 流水线 | 109 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 187 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 243 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 238 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **1039** | |
+| **总计** | **1041** | |
 
 ## 字段对应
 
@@ -87,8 +87,10 @@
 | `build_check_job_count_limit` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_check_job_count_limit) |
 | `build_check_job_name_exists` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_check_job_name_exists) |
 | `build_configure_release_upload_step` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_configure_release_upload_step) |
+| `build_download_build_log_v4` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_download_build_log_v4) |
 | `build_download_full_log` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_download_full_log) |
 | `build_download_task_log` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_download_task_log) |
+| `build_download_task_log_v4` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_download_task_log_v4) |
 | `build_get_coverage_metrics` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_coverage_metrics) |
 | `build_get_dockerfile_template` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_dockerfile_template) |
 | `build_get_domain_charge_type` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_domain_charge_type) |

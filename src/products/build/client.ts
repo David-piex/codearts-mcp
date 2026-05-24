@@ -448,6 +448,28 @@ export type BuildClient = {
     record_id: string;
     raw: Record<string, unknown>;
   }>;
+  downloadBuildLogV4: (input: {
+    record_id: string;
+    log_level: "INFO" | "DEBUG";
+  }) => Promise<{
+    record_id: string;
+    log_level: "INFO" | "DEBUG";
+    body: Uint8Array;
+    content_type?: string;
+    file_name?: string;
+  }>;
+  downloadTaskLogV4: (input: {
+    record_id: string;
+    task_name: string;
+    log_level: "INFO" | "DEBUG";
+  }) => Promise<{
+    record_id: string;
+    task_name: string;
+    log_level: "INFO" | "DEBUG";
+    body: Uint8Array;
+    content_type?: string;
+    file_name?: string;
+  }>;
   getTemplate: (input: { uuid: string }) => Promise<{
     uuid: string;
     raw: Record<string, unknown>;
@@ -2102,6 +2124,38 @@ export function createBuildClient(
       return {
         record_id: input.record_id,
         raw: readBuildRawRecord(payload)
+      };
+    },
+    async downloadBuildLogV4(input) {
+      const response = await _http.getBinary(
+        `/v4/${encodeURIComponent(input.record_id)}/download-log${buildOptionalQuerySuffix({
+          log_level: input.log_level
+        })}`
+      );
+
+      return {
+        record_id: input.record_id,
+        log_level: input.log_level,
+        body: response.body,
+        content_type: response.contentType,
+        file_name: response.fileName
+      };
+    },
+    async downloadTaskLogV4(input) {
+      const response = await _http.getBinary(
+        `/v4/${encodeURIComponent(input.record_id)}/task-log${buildOptionalQuerySuffix({
+          task_name: input.task_name,
+          log_level: input.log_level
+        })}`
+      );
+
+      return {
+        record_id: input.record_id,
+        task_name: input.task_name,
+        log_level: input.log_level,
+        body: response.body,
+        content_type: response.contentType,
+        file_name: response.fileName
       };
     },
     async getTemplate(input) {

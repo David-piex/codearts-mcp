@@ -1,7 +1,10 @@
+import { Buffer } from "node:buffer";
 import { type ToolResult } from "../../../contracts/tool-result.js";
 import {
+  buildDownloadBuildLogV4Input,
   buildDownloadFullLogInput,
   buildDownloadTaskLogInput,
+  buildDownloadTaskLogV4Input,
   buildGetJobOutputInput,
   buildGetJobPipelineInfoInput,
   buildGetJobStepStatusInput,
@@ -69,6 +72,28 @@ type Client = {
   downloadTaskLog: (input: { record_id: string }) => Promise<{
     record_id: string;
     raw: Record<string, unknown>;
+  }>;
+  downloadBuildLogV4: (input: {
+    record_id: string;
+    log_level: "INFO" | "DEBUG";
+  }) => Promise<{
+    record_id: string;
+    log_level: "INFO" | "DEBUG";
+    body: Uint8Array;
+    content_type?: string;
+    file_name?: string;
+  }>;
+  downloadTaskLogV4: (input: {
+    record_id: string;
+    task_name: string;
+    log_level: "INFO" | "DEBUG";
+  }) => Promise<{
+    record_id: string;
+    task_name: string;
+    log_level: "INFO" | "DEBUG";
+    body: Uint8Array;
+    content_type?: string;
+    file_name?: string;
   }>;
   getTemplate: (input: { uuid: string }) => Promise<{
     uuid: string;
@@ -200,6 +225,43 @@ export function createBuildDownloadTaskLogHandler(client: Client) {
     const parsed = buildDownloadTaskLogInput.parse(input);
     const response = await client.downloadTaskLog(parsed);
     return itemResponse(mapBuildRecordItem("Loaded Build task log metadata", response.record_id, "log", response.raw));
+  };
+}
+
+export function createBuildDownloadBuildLogV4Handler(client: Client) {
+  return async (input: unknown) => {
+    const parsed = buildDownloadBuildLogV4Input.parse(input);
+    const response = await client.downloadBuildLogV4(parsed);
+    const result = mapBuildRecordItem("Downloaded Build v4 full log", response.record_id, "log", {
+      fileName: response.file_name,
+      contentType: response.content_type,
+      sizeBytes: response.body.byteLength,
+      contentBase64: Buffer.from(response.body).toString("base64")
+    }, {
+      recordId: response.record_id,
+      logLevel: response.log_level
+    });
+
+    return itemResponse(result);
+  };
+}
+
+export function createBuildDownloadTaskLogV4Handler(client: Client) {
+  return async (input: unknown) => {
+    const parsed = buildDownloadTaskLogV4Input.parse(input);
+    const response = await client.downloadTaskLogV4(parsed);
+    const result = mapBuildRecordItem("Downloaded Build v4 task log", `${response.record_id}:${response.task_name}`, "log", {
+      fileName: response.file_name,
+      contentType: response.content_type,
+      sizeBytes: response.body.byteLength,
+      contentBase64: Buffer.from(response.body).toString("base64")
+    }, {
+      recordId: response.record_id,
+      taskName: response.task_name,
+      logLevel: response.log_level
+    });
+
+    return itemResponse(result);
   };
 }
 

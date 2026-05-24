@@ -184,6 +184,14 @@ describe("createBuildClient detail paths", () => {
         }
         return { result: { ok: true } };
       },
+      getBinary: async (path: string) => {
+        gets.push(path);
+        return {
+          body: new Uint8Array([1, 2, 3]),
+          contentType: "text/plain",
+          fileName: "build.log"
+        };
+      },
       post: async (path: string, body: unknown) => {
         posts.push({ path, body });
         return { result: { ok: true, templates: [{ id: "tpl1" }] } };
@@ -202,6 +210,8 @@ describe("createBuildClient detail paths", () => {
     await client.getStageLogPage({ query: { record_id: "record-1", offset: 0 } });
     await client.downloadFullLog({ record_id: "record-1" });
     await client.downloadTaskLog({ record_id: "record-1" });
+    await client.downloadBuildLogV4({ record_id: "record-1", log_level: "DEBUG" });
+    await client.downloadTaskLogV4({ record_id: "record-1", task_name: "stage1", log_level: "INFO" });
     await client.getTemplate({ uuid: "tpl-1" });
     await client.getYamlTemplate({ job_id: "job-1" });
     await client.listRecommendedOfficialTemplates({ body: { keyword: "node" } });
@@ -224,6 +234,8 @@ describe("createBuildClient detail paths", () => {
       "/v1/log/stage/page?record_id=record-1&offset=0",
       "/v1/log/record-1/download-log",
       "/v1/log/record-1/task-log",
+      "/v4/record-1/download-log?log_level=DEBUG",
+      "/v4/record-1/task-log?task_name=stage1&log_level=INFO",
       "/v1/template/tpl-1/custom",
       "/v1/template/job-1/default-template",
       "/v2/keystore/list?page=1&page_size=10",
