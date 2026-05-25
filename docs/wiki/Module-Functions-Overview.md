@@ -17,7 +17,7 @@
 | Req | 需求、项目协作与工作项治理 | 已覆盖 `project / module / member / iteration / plan / work-item / collaboration / config-read / board-read / cache-read / program-read / requirement-pool-read / ipd-read / ipd-config-write / ipd-work-item-write / ipd-work-hour / ipd-field-config` 17 个资源面，可做项目管理、成员协作、迭代治理、规划本身、规划内工作项管理、需求池/项目空间读取、IPD 基础读取、IPD 树/关联 Wiki/分组/租户列表/统计仪表盘读取、IPD 特性集/追溯/状态读取、IPD 模块/标签/特性集维护、IPD 工作项创建/批量变更/流程流转/附件/图片、IPD 工时管理、IPD 字段配置维护、工作项协作、状态配置读取、看板读取和字段缓存读取 | `req_list_projects` `req_create_project` `req_list_project_members` `req_create_iteration` `req_create_plan` `req_create_work_item` | 核心链路可直接用，规划写面、需求池/项目空间读取、IPD 读取基础面、IPD 写面与状态/公共配置读面先结合 live 边界使用 |
 | Repo | 代码仓库协作 | 查仓库、分支、提交、文件、MR，创建仓库，发起/评审/合并 MR，也能查看导入记录和维护远程镜像配置 | `repo_list_repositories` `repo_create_repository` `repo_create_merge_request` `repo_get_remote_mirror` | 原 25 个协作工具适合直接使用；导入/远程镜像工具已实现，仍需 live 样本补验 |
 | Pipeline | 流水线执行与治理 | 查流水线、运行记录、手动审批、重试/停止，也能管理分组、标签、变量组、规则、策略和扩展点 | `pipeline_list_pipelines` `pipeline_run_pipeline` `pipeline_create_group` | 适合进阶自动化 |
-| Check | 代码检查 | 查规则集、查检查任务、看问题、看指标、创建/执行/停止检查任务 | `check_list_rulesets` `check_list_task_issues` `check_run_task` | 适合和 Repo / Build 搭配 |
+| Check | 代码检查 | 查规则集、查检查任务、看问题、看指标、查缺陷过滤、PDF/异步任务、创建/执行/停止检查任务和 dry-run 配置写入 | `check_list_rulesets` `check_list_task_issues` `check_list_issues_by_filter` `check_create_pdf_async_job` | 适合和 Repo / Build 搭配 |
 | TestPlan | 测试计划与测试用例 | 查测试计划、查用例、查问题、查看运行记录、批量执行用例 | `testplan_list_plans` `testplan_list_cases` `testplan_run_cases` | 先按租户可用性使用 |
 | Deploy | 部署编排与环境资源 | 查应用、任务、环境、主机组、部署记录，创建应用/环境/任务，做启动/停止/回滚，也支持 v4 资源读取 | `deploy_list_apps` `deploy_create_task_by_template` `deploy_start_app` | 联调前先确认样本 |
 | Build | 编译构建 | 查构建任务、构建记录、日志、参数，运行/停止任务，也支持补步骤和发布上传步骤配置 | `build_list_jobs` `build_run_job` `build_get_real_time_log` | 适合直接接入 CI/CD |
@@ -27,7 +27,7 @@
 
 Req 是当前最像“把项目协作动作做成 MCP 工具”的模块，而且已经不只是最初那 8 个核心工具。
 
-当前 Req 已扩展到 `200` 个工具，基本可以按 17 个资源面理解：
+当前 Req 已扩展到 `243` 个工具，基本可以按 17 个资源面理解：
 
 - `project`：`req_list_projects` `req_get_project` `req_create_project` `req_update_project` `req_delete_project` `req_check_project_name` `req_list_not_added_projects`
 - `module`：`req_list_project_modules` `req_create_project_module` `req_update_project_module` `req_delete_project_module`
@@ -90,6 +90,8 @@ Check 聚焦静态质量分析。
 - 看检查任务的问题和指标。
 - 查询规则集。
 - 触发或停止检查任务。
+- 查询官方缺陷过滤、异步任务、PDF 文件和智能摘要。
+- dry-run 预览缺陷状态、质量门禁、忽略文件和检查模式更新。
 
 ## TestPlan
 

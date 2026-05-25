@@ -191,7 +191,7 @@ const readmeModuleNumbersMeta: Record<ModuleName, ReadmeModuleNumbersMeta> = {
   },
   Check: {
     liveStatus: "Partial",
-    breakdown: "`8 Full / 0 Reachable / 6 Unpublished / 5 Code`"
+    breakdown: "`14 Full / 0 Reachable / 0 Unpublished / 5 Code`"
   },
   TestPlan: {
     liveStatus: "Partial",

@@ -146,7 +146,7 @@ Pipeline 覆盖流水线读取、运行和治理能力，包括运行记录、�
 
 ## Check
 
-Check 覆盖 CodeArts Check 的检查任务、规则集、问题列表和指标读取。
+Check 覆盖 CodeArts Check 的检查任务、规则集、问题列表、指标读取、缺陷过滤、PDF 导出、异步任务、检查配置和受控触发能力。
 
 | 工具 | 用途 |
 | --- | --- |
@@ -158,8 +158,13 @@ Check 覆盖 CodeArts Check 的检查任务、规则集、问题列表和指标�
 | `check_list_rulesets` | 查询规则集列表 |
 | `check_list_task_issues` | 查询任务问题列表 |
 | `check_get_metrics` | 获取检查指标 |
+| `check_list_plugins` / `check_get_task_webhook_info` / `check_get_code_health_svg` | 查询官方插件、任务 webhook 和健康度 SVG |
+| `check_list_criterion_filters` / `check_list_criterions` / `check_get_defect_task_statistics` | 查询官方准则、过滤条件和缺陷任务统计 |
+| `check_list_issues_by_filter` / `check_get_issue_filter` | 按过滤器查询缺陷和过滤器详情 |
+| `check_get_async_job` / `check_get_pdf_file` / `check_create_pdf_async_job` | 查询异步任务、下载 PDF、创建 PDF 异步导出任务 |
+| `check_update_issue_status` / `check_update_code_gate` / `check_update_ignore_files` / `check_update_check_mode` | 更新缺陷状态、质量门禁、忽略文件和检查模式，默认 `dry_run=true` |
 
-当前真实环境状态：已验证。
+当前真实环境状态：部分验证。核心 task / ruleset / metrics / defect 读路径和新增官方读路径已在北京四 AK/SK 下验证；写入/触发配置类工具默认 dry-run，仍需专门真实写样本。
 
 ## TestPlan
 
@@ -249,9 +254,9 @@ Artifact 覆盖制品仓、版本、文件、下载地址、构建归档、制�
 
 当前真实环境状态：部分验证。部分 Artifact API 在北京四受区域或租户能力限制。
 
-## 完整工具清单
+## 核心工具清单
 
-本清单用于检查 MCP 客户端暴露情况，或编写允许/拒绝策略。Req 工具数量较多，完整 Req 清单放在 [Req-API-Reference](./Req-API-Reference.md)，避免本页过长。
+本清单用于快速查看各模块的常用入口，或编写允许/拒绝策略时先确定核心工具。完整 MCP 工具清单以自动生成的 [Function-API-Reference](./Function-API-Reference.md) 和各模块明细页为准；Req 工具数量较多，完整 Req 清单放在 [Req-API-Reference](./Req-API-Reference.md)，避免本页过长。
 
 ### Repo
 
@@ -263,7 +268,7 @@ Artifact 覆盖制品仓、版本、文件、下载地址、构建归档、制�
 
 ### Check
 
-`check_create_task`, `check_get_metrics`, `check_get_task`, `check_list_rulesets`, `check_list_task_issues`, `check_list_tasks`, `check_run_task`, `check_stop_task`
+`check_create_pdf_async_job`, `check_create_task`, `check_detect_task_language`, `check_download_log_file`, `check_extract_task_assistant_summary`, `check_get_async_job`, `check_get_async_job_v2`, `check_get_code_health_svg`, `check_get_code_sum_measures`, `check_get_console_log`, `check_get_criterion_rule`, `check_get_criterionset`, `check_get_defect_file_content`, `check_get_defect_metric_trend`, `check_get_defect_task_statistics`, `check_get_domain_checkers_version`, `check_get_issue_filter`, `check_get_measure_duplication_info`, `check_get_measure_total`, `check_get_metrics`, `check_get_pdf_file`, `check_get_project_config`, `check_get_single_defect`, `check_get_task`, `check_get_task_by_id`, `check_get_task_cron`, `check_get_task_issue_statistics`, `check_get_task_log_detail`, `check_get_task_measures`, `check_get_task_notification`, `check_get_task_owner_matching_switch`, `check_get_task_pre_check_script`, `check_get_task_progress`, `check_get_task_resource_pool`, `check_get_task_ruleset_check_parameters_v2`, `check_get_task_ruleset_check_parameters_v3`, `check_get_task_settings`, `check_get_task_webhook_info`, `check_get_tenant_package_status`, `check_get_transmission_notification`, `check_get_vpcep_authorization`, `check_list_all_criterionsets`, `check_list_codehub_repositories`, `check_list_config_items`, `check_list_criterion_filters`, `check_list_criterions`, `check_list_criterionsets_by_language`, `check_list_default_rulesets`, `check_list_defect_next_statuses`, `check_list_issues_by_filter`, `check_list_measure_files`, `check_list_measure_files_v2`, `check_list_plugins`, `check_list_project_task_groups`, `check_list_related_duplicate_blocks`, `check_list_related_duplicate_blocks_v2`, `check_list_rules`, `check_list_ruleset_rules`, `check_list_rulesets`, `check_list_supported_languages`, `check_list_task_all_files`, `check_list_task_branches`, `check_list_task_check_list`, `check_list_task_check_records`, `check_list_task_files`, `check_list_task_issues`, `check_list_task_jobs`, `check_list_task_last_jobs`, `check_list_task_path_tree`, `check_list_task_repository_branches`, `check_list_task_rulesets_v2`, `check_list_task_rulesets_v3`, `check_list_tasks`, `check_list_template_tasks`, `check_list_third_tools`, `check_modify_criterionset_relations`, `check_request_official_api`, `check_run_task`, `check_stop_task`, `check_update_check_mode`, `check_update_code_gate`, `check_update_ignore_files`, `check_update_issue_status`
 
 ### TestPlan
 

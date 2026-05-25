@@ -76,10 +76,10 @@ MCP_SERVER_VERSION=0.1.0
 
 ## 最近一轮真实结论
 
-按 `2026-04-28` 在北京四租户上做的全量 `*live*.test.ts` 扫描结果：
+按 `2026-05-24` 在北京四租户上做的全量 `*live*.test.ts` 扫描结果：
 
-- `128` 个 live 相关测试文件中，`124 passed / 4 skipped / 0 failed`
-- `212` 个 live 测试全部通过
+- `131` 个 live 相关测试文件中，`127 passed / 4 skipped / 0 failed`
+- `226` 个 live 测试中，`225 passed / 1 skipped / 0 failed`
 - 核心共享 `http` 会话链路通过
 - `repo_create_repository` 真创建通过
 - `req_create_work_item` 真写入通过

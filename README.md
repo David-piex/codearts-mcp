@@ -272,7 +272,7 @@ npm run cli -- call req_list_projects `
 | --- | --- |
 | [CLI Usage](docs/wiki/CLI-Usage.md) | 命令行调用 MCP 工具：本地模式、远程模式、profile、表格输出和补全 |
 | [HTTP MCP Interface](docs/wiki/HTTP-MCP-Interface.md) | HTTP 端点、MCP JSON-RPC、鉴权会话、请求响应和接入示例 |
-| [Function API Reference](docs/wiki/Function-API-Reference.md) | 419 个 MCP 功能 API 的总目录；完整参数表、字段对应和 JSON Schema 按模块拆分到明细页 |
+| [Function API Reference](docs/wiki/Function-API-Reference.md) | 完整 MCP 功能 API 总目录；完整参数表、字段对应和 JSON Schema 按模块拆分到明细页 |
 | [CodeArts MCP API Reference](docs/wiki/API-Reference.md) | 8 个 CodeArts 服务的 MCP API 总览、基础 URL、工具清单和 live 边界 |
 | [Req MCP API Reference](docs/wiki/Req-API-Reference.md) | Req 深度 API 文档，包含 Scrum、需求池、IPD、写入 gate 和 smoke 样本缺口 |
 | [Module Functions Overview](docs/wiki/Module-Functions-Overview.md) | 按模块解释每个服务能做什么、适合什么场景 |
@@ -295,7 +295,7 @@ npm run cli -- call req_list_projects `
 | Req | 243 | Partial | Expanded Req surface with current-user info/role and user-feature reads, project bug/summary/statistics/metric reads, project domain reads, work-item-tree count/list, work-item tag/index-count reads, project work-item history reads, child work-item reads, work-hours/work-hour-type reads, issue image upload/download, attachment upload/download/delete, associated wiki reads, plan work-item management, plan image update, plan-context work item creation, work-item template/copy writes, project-template update/delete writes, project due-days-after/workhour-config reads, status-name check, status/status-attribute/status-detail/workflow-config/template/template-config/custom-field/status-rule-flag/status-config/optional-status-config/tracker-handler and project-public-config reads plus field/cache reads and board work-item reads; see `docs/wiki/Req-Live-Validated.md` for validated paths and remaining live-depth gaps |
 | Repo | 187 | Partial | `25 Full / 0 Reachable / 0 Unpublished / 6 Code` |
 | Pipeline | 109 | Partial | `16 Full / 0 Reachable / 0 Unpublished / 51 Code` |
-| Check | 83 | Partial | `8 Full / 0 Reachable / 6 Unpublished / 5 Code` |
+| Check | 83 | Partial | `14 Full / 0 Reachable / 0 Unpublished / 5 Code` |
 | TestPlan | 238 | Partial | `1 Full / 2 Reachable / 4 Unpublished / 0 Code` |
 | Deploy | 74 | Partial | Expanded v4 surface with partial live closure; see `docs/wiki/Module-Live-Readiness.md` |
 | Build | 87 | Validated | Expanded metadata read surface with live smoke coverage |
