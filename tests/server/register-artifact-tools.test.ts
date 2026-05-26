@@ -57,7 +57,16 @@ describe("registerArtifactTool", () => {
       ["artifact_list_sec_guard_tasks", "List CodeArts Artifact security guard tasks"],
       ["artifact_show_open_source_enabled", "Show CodeArts Artifact open source enabled status"],
       ["artifact_search_by_checksum", "Search CodeArts Artifact artifacts by checksum"],
-      ["artifact_list_maven_project_repositories", "List CodeArts Artifact Maven project repositories"]
+      ["artifact_list_maven_project_repositories", "List CodeArts Artifact Maven project repositories"],
+      ["artifact_list_maven_repositories", "List CodeArts Artifact Maven repositories"],
+      ["artifact_list_project_release_files", "List CodeArts Artifact project release files"],
+      ["artifact_list_release_files", "List CodeArts Artifact release files"],
+      ["artifact_list_project_users", "List CodeArts Artifact project users"],
+      ["artifact_list_domain_ip_configs", "List CodeArts Artifact domain IP configs"],
+      ["artifact_show_repository_privileges", "Show CodeArts Artifact repository privileges"],
+      ["artifact_show_user_privileges_v3", "Show CodeArts Artifact v3 user privileges"],
+      ["artifact_get_repo_file_info_by_id", "Get CodeArts Artifact repository file info by id"],
+      ["artifact_get_repo_file_info_by_name", "Get CodeArts Artifact repository file info by name"]
     ] as const;
 
     for (const [toolName, description] of tools) {

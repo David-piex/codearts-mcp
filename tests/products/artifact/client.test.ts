@@ -550,6 +550,176 @@ describe("createArtifactClient", () => {
     ]);
   });
 
+  it("uses additional official read endpoints and redacts sensitive fields", async () => {
+    const requests: string[] = [];
+    const client = createClient({
+      get: async (path: string) => {
+        requests.push(path);
+        if (path.startsWith("/cloudartifact/v5/maven/list")) {
+          return {
+            result: [
+              {
+                id: "repo-1",
+                repository_name: "libs-release",
+                password: "secret"
+              }
+            ],
+            total: 1
+          };
+        }
+        if (path.startsWith("/v2/project-1/release/files")) {
+          return {
+            result: {
+              data: [{ id: "file-1", path: "/release/app.zip", download_url: "https://example.com/app.zip" }],
+              total_records: 1
+            }
+          };
+        }
+        if (path.startsWith("/devreposerver/v2/release/project-1/files")) {
+          return {
+            result: {
+              data: [{ id: "file-2", path: "/release/app2.zip" }],
+              total_records: 1
+            }
+          };
+        }
+        if (path.startsWith("/cloudartifact/v5/projects/project-1/users")) {
+          return {
+            result: {
+              data: [{ id: "user-1", name: "szh", token: "abc" }],
+              total_records: 1
+            }
+          };
+        }
+        if (path.startsWith("/cloudartifact/v5/domain/ipconfig")) {
+          return {
+            result: {
+              data: [{ id: "ip-1", ip: "192.0.2.1" }],
+              total_records: 1
+            }
+          };
+        }
+        if (path.startsWith("/cloudartifact/v5/repositories/project-1/repo-1/privileges")) {
+          return {
+            result: {
+              Viewer: [{ role_id: "role-1", operations: "downloadorview" }]
+            }
+          };
+        }
+        if (path.startsWith("/cloudartifact/v3/user/project-1/privileges")) {
+          return {
+            result: {
+              role_id: "role-1",
+              operations: "editRepository"
+            }
+          };
+        }
+        if (path.startsWith("/devreposerver/v5/files/file-1/info")) {
+          return {
+            result: {
+              id: "file-1",
+              name: "app.zip",
+              password: "secret"
+            }
+          };
+        }
+        if (path.startsWith("/devreposerver/v5/files/info")) {
+          return {
+            result: {
+              id: "file-2",
+              name: "app2.zip"
+            }
+          };
+        }
+        throw new Error(`unexpected path ${path}`);
+      }
+    });
+
+    await expect(client.listMavenRepositories({
+      project_id: "project-1",
+      default: true,
+      policy: "release",
+      repo_ids: ["repo-1", "repo-2"],
+      access: "r"
+    })).resolves.toEqual({
+      repositories: [
+        {
+          id: "repo-1",
+          repository_name: "libs-release",
+          password: "***"
+        }
+      ],
+      total: 1
+    });
+    await expect(client.listProjectReleaseFiles({
+      project_id: "project-1",
+      file_name: "app.zip",
+      page: 2,
+      page_size: 10
+    })).resolves.toEqual({
+      files: [{ id: "file-1", path: "/release/app.zip", download_url: "https://example.com/app.zip" }],
+      total: 1
+    });
+    await expect(client.listReleaseFiles({
+      project_id: "project-1",
+      file_name: "app2.zip",
+      page: 1,
+      page_size: 20
+    })).resolves.toEqual({
+      files: [{ id: "file-2", path: "/release/app2.zip" }],
+      total: 1
+    });
+    await expect(client.listProjectUsers({
+      project_id: "project-1",
+      repo_id: "repo-1",
+      scene: "repository",
+      page: 3,
+      page_size: 20
+    })).resolves.toEqual({
+      users: [{ id: "user-1", name: "szh", token: "***" }],
+      total: 1
+    });
+    await expect(client.listDomainIpConfigs({ page: 1, page_size: 10 })).resolves.toEqual({
+      configs: [{ id: "ip-1", ip: "192.0.2.1" }],
+      total: 1
+    });
+    await expect(client.showRepositoryPrivileges({ project_id: "project-1", repo_id: "repo-1" })).resolves.toEqual({
+      project_id: "project-1",
+      repo_id: "repo-1",
+      raw: {
+        Viewer: [{ role_id: "role-1", operations: "downloadorview" }]
+      }
+    });
+    await expect(client.showUserPrivilegesV3({ project_id: "project-1" })).resolves.toEqual({
+      project_id: "project-1",
+      raw: {
+        role_id: "role-1",
+        operations: "editRepository"
+      }
+    });
+    await expect(client.getRepoFileInfoById({ id: "file-1" })).resolves.toEqual({
+      id: "file-1",
+      name: "app.zip",
+      password: "***"
+    });
+    await expect(client.getRepoFileInfoByName({ file_name: "project-1/app2.zip" })).resolves.toEqual({
+      id: "file-2",
+      name: "app2.zip"
+    });
+
+    expect(requests).toEqual([
+      "/cloudartifact/v5/maven/list?project_id=project-1&default=true&policy=release&repo_ids=repo-1%2Crepo-2&access=r",
+      "/v2/project-1/release/files?file_name=app.zip&offset=10&limit=10",
+      "/devreposerver/v2/release/project-1/files?file_name=app2.zip&offset=0&limit=20",
+      "/cloudartifact/v5/projects/project-1/users?repo_id=repo-1&page_no=3&page_size=20&scene=repository",
+      "/cloudartifact/v5/domain/ipconfig?page_no=1&page_size=10",
+      "/cloudartifact/v5/repositories/project-1/repo-1/privileges",
+      "/cloudartifact/v3/user/project-1/privileges",
+      "/devreposerver/v5/files/file-1/info",
+      "/devreposerver/v5/files/info?file_name=project-1%2Fapp2.zip"
+    ]);
+  });
+
   it("uses tenant and project path when listing repositories", async () => {
     let requestedPath = "";
     const client = createClient({

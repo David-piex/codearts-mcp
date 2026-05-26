@@ -205,6 +205,46 @@ export const artifactListMavenProjectRepositoriesInput = pagingSchema.extend({
   repo_id: idSchema.optional()
 });
 
+export const artifactListMavenRepositoriesInput = z.object({
+  project_id: idSchema.optional(),
+  default: z.boolean().optional(),
+  policy: z.string().min(1).optional(),
+  repo_ids: z.array(idSchema).optional(),
+  access: z.string().min(1).optional()
+});
+
+export const artifactListProjectReleaseFilesInput = pagingSchema.extend({
+  project_id: idSchema,
+  file_name: z.string().min(1)
+});
+
+export const artifactListReleaseFilesInput = artifactListProjectReleaseFilesInput;
+
+export const artifactListProjectUsersInput = pagingSchema.extend({
+  project_id: idSchema,
+  repo_id: idSchema,
+  scene: z.string().min(1).optional()
+});
+
+export const artifactListDomainIpConfigsInput = pagingSchema;
+
+export const artifactShowRepositoryPrivilegesInput = z.object({
+  project_id: idSchema,
+  repo_id: idSchema
+});
+
+export const artifactShowUserPrivilegesV3Input = z.object({
+  project_id: idSchema
+});
+
+export const artifactGetRepoFileInfoByIdInput = z.object({
+  id: idSchema
+});
+
+export const artifactGetRepoFileInfoByNameInput = z.object({
+  file_name: z.string().min(1)
+});
+
 export const artifactShowAuditInput = pagingSchema.extend({
   tenant_id: idSchema,
   project_id: idSchema,

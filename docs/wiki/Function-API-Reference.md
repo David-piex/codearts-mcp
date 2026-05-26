@@ -24,7 +24,7 @@
 
 | 模块 | API 数量 | 明细文档 |
 | --- | ---: | --- |
-| 制品仓 | 37 | [Function-API-Reference-Artifact.md](./Function-API-Reference-Artifact.md) |
+| 制品仓 | 46 | [Function-API-Reference-Artifact.md](./Function-API-Reference-Artifact.md) |
 | 鉴权会话 | 2 | [Function-API-Reference-Auth-Session.md](./Function-API-Reference-Auth-Session.md) |
 | 编译构建 | 93 | [Function-API-Reference-Build.md](./Function-API-Reference-Build.md) |
 | 代码检查 | 83 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
@@ -33,7 +33,7 @@
 | 代码仓库 | 187 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 243 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 238 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **1066** | |
+| **总计** | **1075** | |
 
 ## 字段对应
 
@@ -49,15 +49,22 @@
 | `artifact_get_download_url` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_get_download_url) |
 | `artifact_get_file` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_get_file) |
 | `artifact_get_file_tree` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_get_file_tree) |
+| `artifact_get_repo_file_info_by_id` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_get_repo_file_info_by_id) |
+| `artifact_get_repo_file_info_by_name` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_get_repo_file_info_by_name) |
 | `artifact_get_repository` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_get_repository) |
 | `artifact_get_repository_user_info` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_get_repository_user_info) |
 | `artifact_list_attentions` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_attentions) |
 | `artifact_list_build_archives` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_build_archives) |
 | `artifact_list_child_proxy_repositories` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_child_proxy_repositories) |
+| `artifact_list_domain_ip_configs` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_domain_ip_configs) |
 | `artifact_list_files` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_files) |
 | `artifact_list_latest_version_files` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_latest_version_files) |
 | `artifact_list_maven_project_repositories` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_maven_project_repositories) |
+| `artifact_list_maven_repositories` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_maven_repositories) |
+| `artifact_list_project_release_files` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_project_release_files) |
 | `artifact_list_project_role_permissions` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_project_role_permissions) |
+| `artifact_list_project_users` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_project_users) |
+| `artifact_list_release_files` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_release_files) |
 | `artifact_list_repositories` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_repositories) |
 | `artifact_list_repository_users` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_repository_users) |
 | `artifact_list_sec_guard_tasks` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_sec_guard_tasks) |
@@ -77,8 +84,10 @@
 | `artifact_show_package_info` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_show_package_info) |
 | `artifact_show_project_storage_info` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_show_project_storage_info) |
 | `artifact_show_project_versions_count` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_show_project_versions_count) |
+| `artifact_show_repository_privileges` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_show_repository_privileges) |
 | `artifact_show_user_permissions` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_show_user_permissions) |
 | `artifact_show_user_privileges` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_show_user_privileges) |
+| `artifact_show_user_privileges_v3` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_show_user_privileges_v3) |
 | `artifact_update_repository` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_update_repository) |
 | `auth_clear_session` | 鉴权会话 | [查看](./Function-API-Reference-Auth-Session.md#auth_clear_session) |
 | `auth_configure_session` | 鉴权会话 | [查看](./Function-API-Reference-Auth-Session.md#auth_configure_session) |

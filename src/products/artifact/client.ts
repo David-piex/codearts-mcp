@@ -214,6 +214,65 @@ export type ArtifactClient = {
     repositories: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  listMavenRepositories: (input: {
+    project_id?: string;
+    default?: boolean;
+    policy?: string;
+    repo_ids?: string[];
+    access?: string;
+  }) => Promise<{
+    repositories: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listProjectReleaseFiles: (input: {
+    project_id: string;
+    file_name: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    files: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listReleaseFiles: (input: {
+    project_id: string;
+    file_name: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    files: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listProjectUsers: (input: {
+    project_id: string;
+    repo_id: string;
+    page: number;
+    page_size: number;
+    scene?: string;
+  }) => Promise<{
+    users: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listDomainIpConfigs: (input: {
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    configs: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  showRepositoryPrivileges: (input: {
+    project_id: string;
+    repo_id: string;
+  }) => Promise<{
+    project_id: string;
+    repo_id: string;
+    raw: unknown;
+  }>;
+  showUserPrivilegesV3: (input: { project_id: string }) => Promise<{
+    project_id: string;
+    raw: unknown;
+  }>;
+  getRepoFileInfoById: (input: { id: string }) => Promise<Record<string, unknown>>;
+  getRepoFileInfoByName: (input: { file_name: string }) => Promise<Record<string, unknown>>;
   deleteFile: (input: {
     tenant_id: string;
     project_id: string;
@@ -395,6 +454,20 @@ function readOptionalString(input: unknown) {
   return undefined;
 }
 
+function readTotal(payload: Record<string, unknown>, response: Record<string, unknown>, fallback: number) {
+  return (
+    readOptionalNumber(payload.total_records) ??
+    readOptionalNumber(payload.totalRecords) ??
+    readOptionalNumber(payload.total) ??
+    readOptionalNumber(payload.total_count) ??
+    readOptionalNumber(response.total_records) ??
+    readOptionalNumber(response.totalRecords) ??
+    readOptionalNumber(response.total) ??
+    readOptionalNumber(response.total_count) ??
+    fallback
+  );
+}
+
 function readCount(payload: Record<string, unknown>, response: Record<string, unknown>) {
   return (
     readOptionalNumber(payload.count) ??
@@ -413,6 +486,48 @@ function readStoragePayload(input: unknown) {
   const payload = readEnvelope(envelope.result) ?? envelope;
 
   return { response: envelope, payload };
+}
+
+function readRecordList(
+  payload: Record<string, unknown>,
+  response: Record<string, unknown>,
+  keys: string[]
+) {
+  for (const key of keys) {
+    const value = payload[key] ?? response[key];
+    const items = readArray<Record<string, unknown>>(value);
+    if (items.length || Array.isArray(value)) {
+      return items;
+    }
+  }
+
+  return readArray<Record<string, unknown>>(response.result ?? payload);
+}
+
+function sanitizeArtifactRecord(input: unknown): unknown {
+  if (Array.isArray(input)) {
+    return input.map((item) => sanitizeArtifactRecord(item));
+  }
+
+  if (!input || typeof input !== "object") {
+    return input;
+  }
+
+  const result: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(input)) {
+    if (["password", "token", "ticket", "secret", "secret_key", "access_key"].includes(key.toLowerCase())) {
+      result[key] = value === undefined || value === null || value === "" ? value : "***";
+      continue;
+    }
+
+    result[key] = sanitizeArtifactRecord(value);
+  }
+
+  return result;
+}
+
+function sanitizeArtifactRecordArray(items: Array<Record<string, unknown>>) {
+  return items.map((item) => sanitizeArtifactRecord(item) as Record<string, unknown>);
 }
 
 export function createArtifactClient(_http: ReturnTypeCreateHttpClient): ArtifactClient {
@@ -1007,6 +1122,152 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
           readOptionalNumber(response.total_count) ??
           repositories.length
       };
+    },
+    async listMavenRepositories(input) {
+      const query = new URLSearchParams();
+      if (input.project_id) query.set("project_id", input.project_id);
+      if (input.default !== undefined) query.set("default", String(input.default));
+      if (input.policy) query.set("policy", input.policy);
+      if (input.repo_ids?.length) query.set("repo_ids", input.repo_ids.join(","));
+      if (input.access) query.set("access", input.access);
+
+      const suffix = query.size ? `?${query.toString()}` : "";
+      const { response, payload } = readStoragePayload(await _http.get(`/cloudartifact/v5/maven/list${suffix}`));
+      const repositories = sanitizeArtifactRecordArray(readRecordList(payload, response, [
+        "repositories",
+        "repos",
+        "data",
+        "items",
+        "list"
+      ]));
+
+      return {
+        repositories,
+        total: readTotal(payload, response, repositories.length)
+      };
+    },
+    async listProjectReleaseFiles(input) {
+      const offset = (input.page - 1) * input.page_size;
+      const query = new URLSearchParams({
+        file_name: input.file_name,
+        offset: String(offset),
+        limit: String(input.page_size)
+      });
+      const { response, payload } = readStoragePayload(
+        await _http.get(`/v2/${encodeURIComponent(input.project_id)}/release/files?${query.toString()}`)
+      );
+      const files = sanitizeArtifactRecordArray(readRecordList(payload, response, [
+        "data",
+        "files",
+        "items",
+        "list"
+      ]));
+
+      return {
+        files,
+        total: readTotal(payload, response, files.length)
+      };
+    },
+    async listReleaseFiles(input) {
+      const offset = (input.page - 1) * input.page_size;
+      const query = new URLSearchParams({
+        file_name: input.file_name,
+        offset: String(offset),
+        limit: String(input.page_size)
+      });
+      const { response, payload } = readStoragePayload(
+        await _http.get(`/devreposerver/v2/release/${encodeURIComponent(input.project_id)}/files?${query.toString()}`)
+      );
+      const files = sanitizeArtifactRecordArray(readRecordList(payload, response, [
+        "data",
+        "files",
+        "items",
+        "list"
+      ]));
+
+      return {
+        files,
+        total: readTotal(payload, response, files.length)
+      };
+    },
+    async listProjectUsers(input) {
+      const query = new URLSearchParams({
+        repo_id: input.repo_id,
+        page_no: String(input.page),
+        page_size: String(input.page_size)
+      });
+      if (input.scene) query.set("scene", input.scene);
+      const { response, payload } = readStoragePayload(
+        await _http.get(`/cloudartifact/v5/projects/${encodeURIComponent(input.project_id)}/users?${query.toString()}`)
+      );
+      const users = sanitizeArtifactRecordArray(readRecordList(payload, response, [
+        "users",
+        "data",
+        "items",
+        "list"
+      ]));
+
+      return {
+        users,
+        total: readTotal(payload, response, users.length)
+      };
+    },
+    async listDomainIpConfigs(input) {
+      const query = new URLSearchParams({
+        page_no: String(input.page),
+        page_size: String(input.page_size)
+      });
+      const { response, payload } = readStoragePayload(
+        await _http.get(`/cloudartifact/v5/domain/ipconfig?${query.toString()}`)
+      );
+      const configs = sanitizeArtifactRecordArray(readRecordList(payload, response, [
+        "data",
+        "configs",
+        "ip_configs",
+        "items",
+        "list"
+      ]));
+
+      return {
+        configs,
+        total: readTotal(payload, response, configs.length)
+      };
+    },
+    async showRepositoryPrivileges(input) {
+      const { payload } = readStoragePayload(
+        await _http.get(`/cloudartifact/v5/repositories/${encodeURIComponent(input.project_id)}/${encodeURIComponent(input.repo_id)}/privileges`)
+      );
+
+      return {
+        project_id: input.project_id,
+        repo_id: input.repo_id,
+        raw: sanitizeArtifactRecord(payload)
+      };
+    },
+    async showUserPrivilegesV3(input) {
+      const { payload } = readStoragePayload(
+        await _http.get(`/cloudartifact/v3/user/${encodeURIComponent(input.project_id)}/privileges`)
+      );
+
+      return {
+        project_id: input.project_id,
+        raw: sanitizeArtifactRecord(payload)
+      };
+    },
+    async getRepoFileInfoById(input) {
+      const { payload } = readStoragePayload(
+        await _http.get(`/devreposerver/v5/files/${encodeURIComponent(input.id)}/info`)
+      );
+
+      return sanitizeArtifactRecord(payload) as Record<string, unknown>;
+    },
+    async getRepoFileInfoByName(input) {
+      const query = new URLSearchParams({ file_name: input.file_name });
+      const { payload } = readStoragePayload(
+        await _http.get(`/devreposerver/v5/files/info?${query.toString()}`)
+      );
+
+      return sanitizeArtifactRecord(payload) as Record<string, unknown>;
     },
     async deleteFile(input) {
       const query = new URLSearchParams({
