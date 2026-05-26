@@ -426,6 +426,16 @@ export type BuildClient = {
     build_no: number;
     raw: Record<string, unknown>;
   }>;
+  getOutputInfoV3: (input: { job_id: string; build_no: number }) => Promise<{
+    job_id: string;
+    build_no: number;
+    raw: Record<string, unknown>;
+  }>;
+  getRecordInfoV4: (input: { job_id: string; build_no: number }) => Promise<{
+    job_id: string;
+    build_no: number;
+    raw: Record<string, unknown>;
+  }>;
   getTaskLogPage: (input: {
     job_id: string;
     build_no: number;
@@ -2110,6 +2120,30 @@ export function createBuildClient(
     async getBuildDetails(input) {
       const response = await _http.get(
         `/v1/job/${encodeURIComponent(input.job_id)}/${input.build_no}/build-info`
+      );
+      const payload = readBuildPayloadValue(response);
+
+      return {
+        job_id: input.job_id,
+        build_no: input.build_no,
+        raw: readBuildRawRecord(payload)
+      };
+    },
+    async getOutputInfoV3(input) {
+      const response = await _http.get(
+        `/v3/jobs/${encodeURIComponent(input.job_id)}/${input.build_no}/output-info`
+      );
+      const payload = readBuildPayloadValue(response);
+
+      return {
+        job_id: input.job_id,
+        build_no: input.build_no,
+        raw: readBuildRawRecord(payload)
+      };
+    },
+    async getRecordInfoV4(input) {
+      const response = await _http.get(
+        `/v4/jobs/${encodeURIComponent(input.job_id)}/${input.build_no}/record-info`
       );
       const payload = readBuildPayloadValue(response);
 

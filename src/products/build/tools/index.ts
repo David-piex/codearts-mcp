@@ -43,6 +43,8 @@ export const buildToolNames = [
   "build_get_job_permission",
   "build_get_job_info",
   "build_get_build_details",
+  "build_get_output_info_v3",
+  "build_get_record_info_v4",
   "build_get_project_default_permission",
   "build_list_official_templates",
   "build_list_templates",

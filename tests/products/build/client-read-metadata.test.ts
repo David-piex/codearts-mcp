@@ -340,6 +340,40 @@ describe("createBuildClient metadata read paths", () => {
     });
   });
 
+  it("loads v3 output info and v4 record info through official paths", async () => {
+    const paths: string[] = [];
+    const client = createBuildClient({
+      get: async (path: string) => {
+        paths.push(path);
+        return {
+          result: {
+            job_id: "job-1",
+            build_no: 3,
+            status: "success"
+          }
+        };
+      }
+    } as never);
+
+    const outputInfo = await client.getOutputInfoV3({ job_id: "job-1", build_no: 3 });
+    const recordInfo = await client.getRecordInfoV4({ job_id: "job-1", build_no: 3 });
+
+    expect(paths).toEqual([
+      "/v3/jobs/job-1/3/output-info",
+      "/v4/jobs/job-1/3/record-info"
+    ]);
+    expect(outputInfo).toEqual({
+      job_id: "job-1",
+      build_no: 3,
+      raw: {
+        job_id: "job-1",
+        build_no: 3,
+        status: "success"
+      }
+    });
+    expect(recordInfo).toEqual(outputInfo);
+  });
+
   it("loads Junit coverage summaries and metrics", async () => {
     const paths: string[] = [];
     const client = createBuildClient({

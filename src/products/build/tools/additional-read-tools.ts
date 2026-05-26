@@ -12,6 +12,8 @@ import {
   buildGetJobStepStatusInput,
   buildGetKeystorePermissionInput,
   buildGetRunningStepLogInput,
+  buildGetOutputInfoV3Input,
+  buildGetRecordInfoV4Input,
   buildGetStageLogPageInput,
   buildGetTemplateInput,
   buildGetTaskLogPageInput,
@@ -47,6 +49,16 @@ type Client = {
     raw: Record<string, unknown>;
   }>;
   getBuildDetails: (input: { job_id: string; build_no: number }) => Promise<{
+    job_id: string;
+    build_no: number;
+    raw: Record<string, unknown>;
+  }>;
+  getOutputInfoV3: (input: { job_id: string; build_no: number }) => Promise<{
+    job_id: string;
+    build_no: number;
+    raw: Record<string, unknown>;
+  }>;
+  getRecordInfoV4: (input: { job_id: string; build_no: number }) => Promise<{
     job_id: string;
     build_no: number;
     raw: Record<string, unknown>;
@@ -218,6 +230,28 @@ export function createBuildGetBuildDetailsHandler(client: Client) {
     const parsed = buildGetBuildDetailsInput.parse(input);
     const response = await client.getBuildDetails(parsed);
     return itemResponse(mapBuildRecordItem("Loaded Build details", `${response.job_id}#${response.build_no}`, "details", response.raw, {
+      jobId: response.job_id,
+      buildNo: response.build_no
+    }));
+  };
+}
+
+export function createBuildGetOutputInfoV3Handler(client: Client) {
+  return async (input: unknown) => {
+    const parsed = buildGetOutputInfoV3Input.parse(input);
+    const response = await client.getOutputInfoV3(parsed);
+    return itemResponse(mapBuildRecordItem("Loaded Build v3 output info", `${response.job_id}#${response.build_no}`, "outputInfo", response.raw, {
+      jobId: response.job_id,
+      buildNo: response.build_no
+    }));
+  };
+}
+
+export function createBuildGetRecordInfoV4Handler(client: Client) {
+  return async (input: unknown) => {
+    const parsed = buildGetRecordInfoV4Input.parse(input);
+    const response = await client.getRecordInfoV4(parsed);
+    return itemResponse(mapBuildRecordItem("Loaded Build v4 record info", `${response.job_id}#${response.build_no}`, "recordInfo", response.raw, {
       jobId: response.job_id,
       buildNo: response.build_no
     }));

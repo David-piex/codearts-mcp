@@ -224,6 +224,29 @@ export type ArtifactClient = {
     repositories: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  listMavenRepositoryList: (input: {
+    project_id?: string;
+    policy?: string;
+    format?: string;
+    type?: string;
+    repo_id?: string;
+    search_name?: string;
+  }) => Promise<{
+    repositories: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  getRepositoryDetail: (input: {
+    tenant_id: string;
+    project_id: string;
+    repo_id: string;
+    region?: string;
+    path?: string;
+  }) => Promise<{
+    tenant_id: string;
+    project_id: string;
+    repo_id: string;
+    raw: unknown;
+  }>;
   listProjectReleaseFiles: (input: {
     project_id: string;
     file_name: string;
@@ -398,6 +421,10 @@ export type ArtifactClient = {
     page: number;
     page_size: number;
     keyword?: string;
+    parent_id?: string;
+    build_id?: string;
+    build_no?: string;
+    repo_branch?: string;
   }) => Promise<{
     archives: Array<{
       id: string;
@@ -1146,6 +1173,50 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
         total: readTotal(payload, response, repositories.length)
       };
     },
+    async listMavenRepositoryList(input) {
+      const query = new URLSearchParams();
+      if (input.project_id) query.set("project_id", input.project_id);
+      if (input.policy) query.set("policy", input.policy);
+      if (input.format) query.set("format", input.format);
+      if (input.type) query.set("type", input.type);
+      if (input.repo_id) query.set("repo_id", input.repo_id);
+      if (input.search_name) query.set("search_name", input.search_name);
+
+      const suffix = query.size ? `?${query.toString()}` : "";
+      const { response, payload } = readStoragePayload(
+        await _http.get(`/cloudartifact/v5/maven/repository/list${suffix}`)
+      );
+      const repositories = sanitizeArtifactRecordArray(readRecordList(payload, response, [
+        "repositories",
+        "repos",
+        "data",
+        "items",
+        "list"
+      ]));
+
+      return {
+        repositories,
+        total: readTotal(payload, response, repositories.length)
+      };
+    },
+    async getRepositoryDetail(input) {
+      const query = new URLSearchParams();
+      if (input.region) query.set("region", input.region);
+      if (input.path) query.set("path", input.path);
+      const suffix = query.size ? `?${query.toString()}` : "";
+      const { payload } = readStoragePayload(
+        await _http.get(
+          `/cloudartifact/v5/${encodeURIComponent(input.tenant_id)}/${encodeURIComponent(input.project_id)}/${encodeURIComponent(input.repo_id)}/repositories${suffix}`
+        )
+      );
+
+      return {
+        tenant_id: input.tenant_id,
+        project_id: input.project_id,
+        repo_id: input.repo_id,
+        raw: sanitizeArtifactRecord(payload)
+      };
+    },
     async listProjectReleaseFiles(input) {
       const offset = (input.page - 1) * input.page_size;
       const query = new URLSearchParams({
@@ -1555,9 +1626,21 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
       if (input.keyword) {
         query.set("search", input.keyword);
       }
+      if (input.parent_id) {
+        query.set("parent_id", input.parent_id);
+      }
+      if (input.build_id) {
+        query.set("build_id", input.build_id);
+      }
+      if (input.build_no) {
+        query.set("build_no", input.build_no);
+      }
+      if (input.repo_branch) {
+        query.set("repo_branch", input.repo_branch);
+      }
 
       const response = unwrapArtifactPayload((await _http.get(
-        `/cloudartifact/v5/build-archives?${query.toString()}`
+        `/devreposerver/v5/files/archives?${query.toString()}`
       )) as {
         archives?: unknown;
         result?: unknown;
@@ -1565,7 +1648,13 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
         total_count?: number;
       });
       const payload = readEnvelope(response.result) ?? response;
-      const archives = readArray<{
+      const archives = readRecordList(readEnvelope(payload) ?? {}, readEnvelope(response) ?? {}, [
+        "archives",
+        "data",
+        "files",
+        "items",
+        "list"
+      ]) as Array<{
         id?: string | number;
         archive_id?: string | number;
         name?: string;
@@ -1573,7 +1662,7 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
         size?: string | number;
         download_url?: string;
         md5?: string;
-      }>(payload.archives);
+      }>;
 
       return {
         archives: archives.map((item) => ({

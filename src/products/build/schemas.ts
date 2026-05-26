@@ -30,6 +30,10 @@ export const buildGetBuildDetailsInput = z.object({
   build_no: z.number().int().positive()
 });
 
+export const buildGetOutputInfoV3Input = buildGetBuildDetailsInput;
+
+export const buildGetRecordInfoV4Input = buildGetBuildDetailsInput;
+
 export const buildGetTaskLogPageInput = z.object({
   job_id: idSchema,
   build_no: z.number().int().positive(),

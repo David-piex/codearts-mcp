@@ -567,6 +567,23 @@ describe("createArtifactClient", () => {
             total: 1
           };
         }
+        if (path.startsWith("/cloudartifact/v5/maven/repository/list")) {
+          return {
+            result: {
+              data: [{ id: "repo-list-1", repository_name: "libs-snapshot", password: "secret" }],
+              total_records: 1
+            }
+          };
+        }
+        if (path.startsWith("/cloudartifact/v5/tenant-1/project-1/repo-1/repositories")) {
+          return {
+            result: {
+              id: "repo-1",
+              repository_name: "libs-release",
+              password: "secret"
+            }
+          };
+        }
         if (path.startsWith("/v2/project-1/release/files")) {
           return {
             result: {
@@ -651,6 +668,39 @@ describe("createArtifactClient", () => {
       ],
       total: 1
     });
+    await expect(client.listMavenRepositoryList({
+      project_id: "project-1",
+      policy: "snapshot",
+      format: "maven2",
+      type: "hosted",
+      repo_id: "repo-1",
+      search_name: "libs"
+    })).resolves.toEqual({
+      repositories: [
+        {
+          id: "repo-list-1",
+          repository_name: "libs-snapshot",
+          password: "***"
+        }
+      ],
+      total: 1
+    });
+    await expect(client.getRepositoryDetail({
+      tenant_id: "tenant-1",
+      project_id: "project-1",
+      repo_id: "repo-1",
+      region: "cn-north-4",
+      path: "/com/example"
+    })).resolves.toEqual({
+      tenant_id: "tenant-1",
+      project_id: "project-1",
+      repo_id: "repo-1",
+      raw: {
+        id: "repo-1",
+        repository_name: "libs-release",
+        password: "***"
+      }
+    });
     await expect(client.listProjectReleaseFiles({
       project_id: "project-1",
       file_name: "app.zip",
@@ -709,6 +759,8 @@ describe("createArtifactClient", () => {
 
     expect(requests).toEqual([
       "/cloudartifact/v5/maven/list?project_id=project-1&default=true&policy=release&repo_ids=repo-1%2Crepo-2&access=r",
+      "/cloudartifact/v5/maven/repository/list?project_id=project-1&policy=snapshot&format=maven2&type=hosted&repo_id=repo-1&search_name=libs",
+      "/cloudartifact/v5/tenant-1/project-1/repo-1/repositories?region=cn-north-4&path=%2Fcom%2Fexample",
       "/v2/project-1/release/files?file_name=app.zip&offset=10&limit=10",
       "/devreposerver/v2/release/project-1/files?file_name=app2.zip&offset=0&limit=20",
       "/cloudartifact/v5/projects/project-1/users?repo_id=repo-1&page_no=3&page_size=20&scene=repository",
@@ -895,12 +947,15 @@ describe("createArtifactClient", () => {
   });
 
   it("supports stringified build archive payloads from the provider", async () => {
+    let requestedPath = "";
     const client = createClient({
-      get: async () =>
+      get: async (path: string) => {
+        requestedPath = path;
+        return (
         JSON.stringify({
           result: {
             total_count: 1,
-            archives: [
+            data: [
               {
                 archive_id: "archive-1",
                 file_name: "gateway.zip",
@@ -911,10 +966,21 @@ describe("createArtifactClient", () => {
             ]
           }
         })
+        );
+      }
     });
 
-    const result = await client.listBuildArchives(createPageInput());
+    const result = await client.listBuildArchives(createPageInput({
+      keyword: "gateway",
+      parent_id: "parent-1",
+      build_id: "build-1",
+      build_no: "3",
+      repo_branch: "main"
+    }));
 
+    expect(requestedPath).toBe(
+      "/devreposerver/v5/files/archives?offset=0&limit=20&search=gateway&parent_id=parent-1&build_id=build-1&build_no=3&repo_branch=main"
+    );
     expect(result).toEqual({
       archives: [
         {

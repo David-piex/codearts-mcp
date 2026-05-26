@@ -33,6 +33,10 @@ type ArtifactListBuildArchivesClient = {
     page: number;
     page_size: number;
     keyword?: string;
+    parent_id?: string;
+    build_id?: string;
+    build_no?: string;
+    repo_branch?: string;
   }) => Promise<{
     archives: Array<{
       id: string;

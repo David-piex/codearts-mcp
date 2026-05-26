@@ -13,6 +13,8 @@ export const artifactToolNames = [
   "artifact_list_build_archives",
   "artifact_list_latest_version_files",
   "artifact_list_maven_repositories",
+  "artifact_list_maven_repository_list",
+  "artifact_get_repository_detail",
   "artifact_list_maven_project_repositories",
   "artifact_list_project_release_files",
   "artifact_list_release_files",

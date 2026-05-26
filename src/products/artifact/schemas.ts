@@ -94,7 +94,12 @@ export const artifactGetDownloadUrlInput = z.object({
   format: z.string().min(1)
 });
 
-export const artifactListBuildArchivesInput = pagingSchema;
+export const artifactListBuildArchivesInput = pagingSchema.extend({
+  parent_id: idSchema.optional(),
+  build_id: idSchema.optional(),
+  build_no: z.string().min(1).optional(),
+  repo_branch: z.string().min(1).optional()
+});
 
 export const artifactListVersionsInput = pagingSchema.extend({
   project_id: idSchema
@@ -211,6 +216,23 @@ export const artifactListMavenRepositoriesInput = z.object({
   policy: z.string().min(1).optional(),
   repo_ids: z.array(idSchema).optional(),
   access: z.string().min(1).optional()
+});
+
+export const artifactListMavenRepositoryListInput = z.object({
+  project_id: idSchema.optional(),
+  policy: z.string().min(1).optional(),
+  format: z.string().min(1).optional(),
+  type: z.string().min(1).optional(),
+  repo_id: idSchema.optional(),
+  search_name: z.string().min(1).optional()
+});
+
+export const artifactGetRepositoryDetailInput = z.object({
+  tenant_id: idSchema,
+  project_id: idSchema,
+  repo_id: idSchema,
+  region: z.string().min(1).optional(),
+  path: z.string().min(1).optional()
 });
 
 export const artifactListProjectReleaseFilesInput = pagingSchema.extend({

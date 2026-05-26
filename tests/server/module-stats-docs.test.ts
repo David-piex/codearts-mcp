@@ -62,7 +62,7 @@ describe("module stats doc rendering", () => {
 
     expect(markdown).toContain("| Module | Read | Write | Live | Key Gaps |");
     expect(markdown).toContain("| Deploy | 57 | 17 | Partial |");
-    expect(markdown).toContain("| Build | 84 | 9 | Validated |");
+    expect(markdown).toContain("| Build | 86 | 9 | Validated |");
     expect(markdown).toContain("| Check | 73 | 10 | Partial |");
   });
 

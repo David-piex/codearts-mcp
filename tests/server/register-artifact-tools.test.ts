@@ -59,6 +59,8 @@ describe("registerArtifactTool", () => {
       ["artifact_search_by_checksum", "Search CodeArts Artifact artifacts by checksum"],
       ["artifact_list_maven_project_repositories", "List CodeArts Artifact Maven project repositories"],
       ["artifact_list_maven_repositories", "List CodeArts Artifact Maven repositories"],
+      ["artifact_list_maven_repository_list", "List CodeArts Artifact Maven repository list records"],
+      ["artifact_get_repository_detail", "Get CodeArts Artifact repository detail by project and repo"],
       ["artifact_list_project_release_files", "List CodeArts Artifact project release files"],
       ["artifact_list_release_files", "List CodeArts Artifact release files"],
       ["artifact_list_project_users", "List CodeArts Artifact project users"],

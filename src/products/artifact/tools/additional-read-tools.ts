@@ -1,7 +1,9 @@
 import {
   artifactGetRepoFileInfoByIdInput,
   artifactGetRepoFileInfoByNameInput,
+  artifactGetRepositoryDetailInput,
   artifactListDomainIpConfigsInput,
+  artifactListMavenRepositoryListInput,
   artifactListMavenRepositoriesInput,
   artifactListProjectReleaseFilesInput,
   artifactListProjectUsersInput,
@@ -19,6 +21,21 @@ type Client = {
     repo_ids?: string[];
     access?: string;
   }) => Promise<{ repositories: Array<Record<string, unknown>>; total?: number }>;
+  listMavenRepositoryList: (input: {
+    project_id?: string;
+    policy?: string;
+    format?: string;
+    type?: string;
+    repo_id?: string;
+    search_name?: string;
+  }) => Promise<{ repositories: Array<Record<string, unknown>>; total?: number }>;
+  getRepositoryDetail: (input: {
+    tenant_id: string;
+    project_id: string;
+    repo_id: string;
+    region?: string;
+    path?: string;
+  }) => Promise<{ tenant_id: string; project_id: string; repo_id: string; raw: unknown }>;
   listProjectReleaseFiles: (input: {
     project_id: string;
     file_name: string;
@@ -67,6 +84,37 @@ export function createArtifactListMavenRepositoriesHandler(client: Client) {
     const parsed = artifactListMavenRepositoriesInput.parse(input);
     const response = await client.listMavenRepositories(parsed);
     return listResponse(response.repositories, response.total, "Maven repositories", "repository");
+  };
+}
+
+export function createArtifactListMavenRepositoryListHandler(client: Client) {
+  return async (input: unknown) => {
+    const parsed = artifactListMavenRepositoryListInput.parse(input);
+    const response = await client.listMavenRepositoryList(parsed);
+    return listResponse(response.repositories, response.total, "Maven repository list records", "repository");
+  };
+}
+
+export function createArtifactGetRepositoryDetailHandler(client: Client) {
+  return async (input: unknown) => {
+    const parsed = artifactGetRepositoryDetailInput.parse(input);
+    const response = await client.getRepositoryDetail(parsed);
+    const result = mapArtifactRecordItem(
+      `Loaded Artifact repository detail for ${response.repo_id}`,
+      response.repo_id,
+      "repository",
+      response.raw,
+      {
+        tenantId: response.tenant_id,
+        projectId: response.project_id,
+        repoId: response.repo_id
+      }
+    );
+
+    return {
+      content: [{ type: "text" as const, text: result.summary }],
+      structuredContent: result
+    };
   };
 }
 

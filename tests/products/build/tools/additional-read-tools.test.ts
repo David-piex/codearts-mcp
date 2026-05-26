@@ -3,6 +3,8 @@ import {
   createBuildGetBuildDetailsHandler,
   createBuildGetJobInfoHandler,
   createBuildGetJobOutputHandler,
+  createBuildGetOutputInfoV3Handler,
+  createBuildGetRecordInfoV4Handler,
   createBuildGetTaskLogPageHandler,
   createBuildListCustomTemplatesHandler,
   createBuildListJobNoticesV3Handler,
@@ -91,6 +93,22 @@ describe("Build additional read tool handlers", () => {
       })
     } as never)({ job_id: "job-1", build_no: 3, step_id: 2 });
 
+    const outputInfo = await createBuildGetOutputInfoV3Handler({
+      getOutputInfoV3: async () => ({
+        job_id: "job-1",
+        build_no: 3,
+        raw: { output: "pkg.zip" }
+      })
+    } as never)({ job_id: "job-1", build_no: 3 });
+
+    const recordInfo = await createBuildGetRecordInfoV4Handler({
+      getRecordInfoV4: async () => ({
+        job_id: "job-1",
+        build_no: 3,
+        raw: { status: "success" }
+      })
+    } as never)({ job_id: "job-1", build_no: 3 });
+
     const customTemplates = await createBuildListCustomTemplatesHandler({
       listCustomTemplates: async () => ({
         templates: [{ uuid: "tpl-1", name: "Custom" }],
@@ -126,6 +144,16 @@ describe("Build additional read tool handlers", () => {
       id: "job-1#3:2",
       stepId: 2,
       log: { logs: ["done"] }
+    });
+    expect(outputInfo.structuredContent.item).toMatchObject({
+      id: "job-1#3",
+      buildNo: 3,
+      outputInfo: { output: "pkg.zip" }
+    });
+    expect(recordInfo.structuredContent.item).toMatchObject({
+      id: "job-1#3",
+      buildNo: 3,
+      recordInfo: { status: "success" }
     });
     expect(customTemplates.structuredContent.items?.[0]).toMatchObject({
       id: "tpl-1",

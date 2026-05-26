@@ -72,6 +72,8 @@ describe("registerBuildTool", () => {
       ["build_get_project_default_permission", "Get CodeArts Build project default permission"],
       ["build_get_job_info", "Get CodeArts Build job build information"],
       ["build_get_build_details", "Get CodeArts Build build status details"],
+      ["build_get_output_info_v3", "Get CodeArts Build v3 output info"],
+      ["build_get_record_info_v4", "Get CodeArts Build v4 record info"],
       ["build_list_official_templates", "List CodeArts Build official templates"],
       ["build_list_templates", "List CodeArts Build templates"],
       ["build_list_custom_templates", "List CodeArts Build custom templates"],

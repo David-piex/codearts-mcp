@@ -9,6 +9,7 @@ import {
   artifactGetFileInput,
   artifactGetDownloadUrlInput,
   artifactGetRepositoryInput,
+  artifactGetRepositoryDetailInput,
   artifactGetRepositoryUserInfoInput,
   artifactGetRepoFileInfoByIdInput,
   artifactGetRepoFileInfoByNameInput,
@@ -18,6 +19,7 @@ import {
   artifactListDomainIpConfigsInput,
   artifactListFilesInput,
   artifactListLatestVersionFilesInput,
+  artifactListMavenRepositoryListInput,
   artifactListMavenRepositoriesInput,
   artifactListMavenProjectRepositoriesInput,
   artifactListProjectRolePermissionsInput,
@@ -51,7 +53,9 @@ import {
 import {
   createArtifactGetRepoFileInfoByIdHandler,
   createArtifactGetRepoFileInfoByNameHandler,
+  createArtifactGetRepositoryDetailHandler,
   createArtifactListDomainIpConfigsHandler,
+  createArtifactListMavenRepositoryListHandler,
   createArtifactListMavenRepositoriesHandler,
   createArtifactListProjectReleaseFilesHandler,
   createArtifactListProjectUsersHandler,
@@ -214,6 +218,26 @@ const artifactToolDefinitions = {
       >[0];
     }) => clients.artifactClient,
     createProductHandler: createArtifactListMavenRepositoriesHandler,
+  }),
+  artifact_list_maven_repository_list: defineProductTool({
+    description: "List CodeArts Artifact Maven repository list records",
+    inputSchema: artifactListMavenRepositoryListInput,
+    selectHttpClient: (clients: {
+      artifactClient: Parameters<
+        typeof createArtifactListMavenRepositoryListHandler
+      >[0];
+    }) => clients.artifactClient,
+    createProductHandler: createArtifactListMavenRepositoryListHandler,
+  }),
+  artifact_get_repository_detail: defineProductTool({
+    description: "Get CodeArts Artifact repository detail by project and repo",
+    inputSchema: artifactGetRepositoryDetailInput,
+    selectHttpClient: (clients: {
+      artifactClient: Parameters<
+        typeof createArtifactGetRepositoryDetailHandler
+      >[0];
+    }) => clients.artifactClient,
+    createProductHandler: createArtifactGetRepositoryDetailHandler,
   }),
   artifact_list_project_release_files: defineProductTool({
     description: "List CodeArts Artifact project release files",

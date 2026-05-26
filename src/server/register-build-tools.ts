@@ -40,6 +40,8 @@ import {
   buildGetJobPermissionInternalInput,
   buildGetJobRunningStatusInput,
   buildGetKeystorePermissionInput,
+  buildGetOutputInfoV3Input,
+  buildGetRecordInfoV4Input,
   buildGetRunningStepLogInput,
   buildGetStageLogPageInput,
   buildGetTemplateInput,
@@ -125,6 +127,8 @@ import {
   createBuildGetJobPipelineInfoHandler,
   createBuildGetJobStepStatusHandler,
   createBuildGetKeystorePermissionHandler,
+  createBuildGetOutputInfoV3Handler,
+  createBuildGetRecordInfoV4Handler,
   createBuildGetRunningStepLogHandler,
   createBuildGetStageLogPageHandler,
   createBuildGetTemplateHandler,
@@ -443,6 +447,18 @@ const buildToolDefinitions = {
     inputSchema: buildGetBuildDetailsInput,
     selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetBuildDetailsHandler>[0] }) => clients.buildClient,
     createProductHandler: createBuildGetBuildDetailsHandler
+  }),
+  "build_get_output_info_v3": defineProductTool({
+    description: "Get CodeArts Build v3 output info",
+    inputSchema: buildGetOutputInfoV3Input,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetOutputInfoV3Handler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildGetOutputInfoV3Handler
+  }),
+  "build_get_record_info_v4": defineProductTool({
+    description: "Get CodeArts Build v4 record info",
+    inputSchema: buildGetRecordInfoV4Input,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetRecordInfoV4Handler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildGetRecordInfoV4Handler
   }),
   "build_get_project_default_permission": defineProductTool({
     description: "Get CodeArts Build project default permission",

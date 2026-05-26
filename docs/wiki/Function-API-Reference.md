@@ -24,16 +24,16 @@
 
 | 模块 | API 数量 | 明细文档 |
 | --- | ---: | --- |
-| 制品仓 | 46 | [Function-API-Reference-Artifact.md](./Function-API-Reference-Artifact.md) |
+| 制品仓 | 48 | [Function-API-Reference-Artifact.md](./Function-API-Reference-Artifact.md) |
 | 鉴权会话 | 2 | [Function-API-Reference-Auth-Session.md](./Function-API-Reference-Auth-Session.md) |
-| 编译构建 | 93 | [Function-API-Reference-Build.md](./Function-API-Reference-Build.md) |
+| 编译构建 | 95 | [Function-API-Reference-Build.md](./Function-API-Reference-Build.md) |
 | 代码检查 | 83 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
 | 部署 | 74 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
 | 流水线 | 109 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 187 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 243 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 238 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **1075** | |
+| **总计** | **1079** | |
 
 ## 字段对应
 
@@ -52,6 +52,7 @@
 | `artifact_get_repo_file_info_by_id` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_get_repo_file_info_by_id) |
 | `artifact_get_repo_file_info_by_name` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_get_repo_file_info_by_name) |
 | `artifact_get_repository` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_get_repository) |
+| `artifact_get_repository_detail` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_get_repository_detail) |
 | `artifact_get_repository_user_info` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_get_repository_user_info) |
 | `artifact_list_attentions` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_attentions) |
 | `artifact_list_build_archives` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_build_archives) |
@@ -61,6 +62,7 @@
 | `artifact_list_latest_version_files` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_latest_version_files) |
 | `artifact_list_maven_project_repositories` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_maven_project_repositories) |
 | `artifact_list_maven_repositories` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_maven_repositories) |
+| `artifact_list_maven_repository_list` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_maven_repository_list) |
 | `artifact_list_project_release_files` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_project_release_files) |
 | `artifact_list_project_role_permissions` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_project_role_permissions) |
 | `artifact_list_project_users` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_project_users) |
@@ -130,11 +132,13 @@
 | `build_get_job_success_ratio_v3` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_job_success_ratio_v3) |
 | `build_get_keystore_permission` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_keystore_permission) |
 | `build_get_last_history_v3` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_last_history_v3) |
+| `build_get_output_info_v3` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_output_info_v3) |
 | `build_get_project_default_permission` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_project_default_permission) |
 | `build_get_project_record_statistics` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_project_record_statistics) |
 | `build_get_real_time_log` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_real_time_log) |
 | `build_get_record` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_record) |
 | `build_get_record_flow_graph` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_record_flow_graph) |
+| `build_get_record_info_v4` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_record_info_v4) |
 | `build_get_record_script` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_record_script) |
 | `build_get_report_summary` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_report_summary) |
 | `build_get_running_step_log` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_running_step_log) |

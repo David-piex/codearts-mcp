@@ -6,7 +6,7 @@
 
 模块：`制品仓`
 
-API 数量：`46`
+API 数量：`48`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
@@ -657,6 +657,75 @@ API 数量：`46`
 }
 ```
 
+### artifact_get_repository_detail
+
+所属模块：`制品仓`
+
+说明：获取制品仓的仓库详情。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "artifact_get_repository_detail",
+    "arguments": {
+      "tenant_id": "<tenant_id>",
+      "project_id": "<project_id>",
+      "repo_id": "<repo_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `tenant_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `tenant_id` ↔ 原始 CodeArts 制品仓 API 同名字段 `tenant_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>租户 ID 或 CodeArts 租户级项目标识，用于制品仓等服务定位当前租户/项目空间。 |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 制品仓 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `repo_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repo_id` ↔ 原始 CodeArts 制品仓 API 同名字段 `repo_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>repo ID，用于定位对应的 CodeArts 资源。 |
+| `region` | 否 | `string` |  | 字段对应：<br>MCP 字段 `region` 用于选择华为云区域和服务端点，原始业务请求体通常无对应字段。<br>华为云区域标识，例如 cn-north-4。 |
+| `path` | 否 | `string` |  | 字段对应：<br>MCP 字段 `path` ↔ 原始 CodeArts 制品仓 API 同名字段 `path`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>资源路径。制品仓场景表示制品或目录路径；代码仓场景表示仓库内文件路径。通常从仓库或制品仓根目录开始填写。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "project_id": {
+      "$ref": "#/properties/tenant_id"
+    },
+    "repo_id": {
+      "$ref": "#/properties/tenant_id"
+    },
+    "region": {
+      "type": "string",
+      "minLength": 1
+    },
+    "path": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "tenant_id",
+    "project_id",
+    "repo_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### artifact_get_repository_user_info
 
 所属模块：`制品仓`
@@ -792,6 +861,10 @@ API 数量：`46`
 | `keyword` | 否 | `string` |  | 字段对应：<br>MCP 字段 `keyword` ↔ 原始 CodeArts 制品仓 API 的搜索关键字字段，常见原字段名为 `keyword`、`search` 或 `name`。<br>搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
 | `sort_by` | 否 | `string` |  | 字段对应：<br>MCP 字段 `sort_by` ↔ 原始 CodeArts 制品仓 API 同名字段 `sort_by`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 字段对应：<br>MCP 字段 `sort_order` ↔ 原始 CodeArts 制品仓 API 同名字段 `sort_order`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `parent_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `parent_id` ↔ 原始 CodeArts 制品仓 API 同名字段 `parent_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>父级 ID，用于指定当前资源挂载到哪个父节点、父分组、父模块或父工作项下。 |
+| `build_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `build_id` ↔ 原始 CodeArts 制品仓 API 同名字段 `build_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>构建 ID，用于定位对应的 CodeArts 资源。 |
+| `build_no` | 否 | `string` |  | 字段对应：<br>MCP 字段 `build_no` ↔ 原始 CodeArts 制品仓 API 同名字段 `build_no`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>构建编号，用于定位某一次构建执行记录。 |
+| `repo_branch` | 否 | `string` |  | 字段对应：<br>MCP 字段 `repo_branch` ↔ 原始 CodeArts 制品仓 API 同名字段 `repo_branch`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
 
 输入 JSON Schema：
 
@@ -822,6 +895,21 @@ API 数量：`46`
         "asc",
         "desc"
       ]
+    },
+    "parent_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "build_id": {
+      "$ref": "#/properties/parent_id"
+    },
+    "build_no": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repo_branch": {
+      "type": "string",
+      "minLength": 1
     }
   },
   "additionalProperties": false,
@@ -1236,6 +1324,72 @@ API 数量：`46`
       }
     },
     "access": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### artifact_list_maven_repository_list
+
+所属模块：`制品仓`
+
+说明：查询制品仓的maven仓库list。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "artifact_list_maven_repository_list",
+    "arguments": {}
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 制品仓 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `policy` | 否 | `string` |  | 字段对应：<br>MCP 字段 `policy` ↔ 原始 CodeArts 制品仓 API 同名字段 `policy`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `format` | 否 | `string` |  | 字段对应：<br>MCP 字段 `format` ↔ 原始 CodeArts 制品仓 API 同名字段 `format`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>制品仓仓库格式或制品格式，例如 maven、npm、pypi、generic、docker 等；实际可选值以制品仓配置为准。 |
+| `type` | 否 | `string` |  | 字段对应：<br>MCP 字段 `type` ↔ 原始 CodeArts 制品仓 API 同名字段 `type`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>类型字段，用于区分资源类别、操作类别或查询类别；具体取值以该接口的业务对象为准。 |
+| `repo_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `repo_id` ↔ 原始 CodeArts 制品仓 API 同名字段 `repo_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>repo ID，用于定位对应的 CodeArts 资源。 |
+| `search_name` | 否 | `string` |  | 字段对应：<br>MCP 字段 `search_name` ↔ 原始 CodeArts 制品仓 API 同名字段 `search_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>search名称。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "policy": {
+      "type": "string",
+      "minLength": 1
+    },
+    "format": {
+      "type": "string",
+      "minLength": 1
+    },
+    "type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repo_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "search_name": {
       "type": "string",
       "minLength": 1
     }
