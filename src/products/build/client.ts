@@ -417,6 +417,28 @@ export type BuildClient = {
     job_id: string;
     raw: Record<string, unknown>;
   }>;
+  getJobInfo: (input: { job_id: string }) => Promise<{
+    job_id: string;
+    raw: Record<string, unknown>;
+  }>;
+  getBuildDetails: (input: { job_id: string; build_no: number }) => Promise<{
+    job_id: string;
+    build_no: number;
+    raw: Record<string, unknown>;
+  }>;
+  getTaskLogPage: (input: {
+    job_id: string;
+    build_no: number;
+    step_id: number;
+    start_offset: number;
+    end_offset: number;
+    sort: "AES" | "DESC";
+  }) => Promise<{
+    job_id: string;
+    build_no: number;
+    step_id: number;
+    raw: Record<string, unknown>;
+  }>;
   getProjectDefaultPermission: (input: { project_id: string; job_id: string }) => Promise<{
     project_id: string;
     job_id: string;
@@ -435,6 +457,15 @@ export type BuildClient = {
     page: number;
     page_size: number;
     name?: string;
+  }) => Promise<{
+    templates: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  listCustomTemplates: (input: {
+    page: number;
+    page_size: number;
+    name?: string;
+    filter?: string;
   }) => Promise<{
     templates: Array<Record<string, unknown>>;
     total?: number;
@@ -528,6 +559,10 @@ export type BuildClient = {
     files: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  listUsableKeystoreNames: () => Promise<{
+    files: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
   getKeystorePermission: (input: { keystore_id: string }) => Promise<{
     keystore_id: string;
     raw: Record<string, unknown>;
@@ -573,6 +608,11 @@ export type BuildClient = {
   getJobNotice: (input: { job_id: string }) => Promise<{
     job_id: string;
     raw: Record<string, unknown>;
+  }>;
+  listJobNoticesV3: (input: { job_id: string }) => Promise<{
+    job_id: string;
+    notices: Array<Record<string, unknown>>;
+    total?: number;
   }>;
   getJobRunningStatus: (input: { job_id: string }) => Promise<{
     job_id: string;
@@ -2058,6 +2098,46 @@ export function createBuildClient(
         raw: payload
       };
     },
+    async getJobInfo(input) {
+      const response = await _http.get(`/v1/job/${encodeURIComponent(input.job_id)}/info`);
+      const payload = readBuildPayloadValue(response);
+
+      return {
+        job_id: input.job_id,
+        raw: readBuildRawRecord(payload)
+      };
+    },
+    async getBuildDetails(input) {
+      const response = await _http.get(
+        `/v1/job/${encodeURIComponent(input.job_id)}/${input.build_no}/build-info`
+      );
+      const payload = readBuildPayloadValue(response);
+
+      return {
+        job_id: input.job_id,
+        build_no: input.build_no,
+        raw: readBuildRawRecord(payload)
+      };
+    },
+    async getTaskLogPage(input) {
+      const query = new URLSearchParams({
+        job_id: input.job_id,
+        build_no: String(input.build_no),
+        step_id: String(input.step_id),
+        start_offset: String(input.start_offset),
+        end_offset: String(input.end_offset),
+        sort: input.sort
+      });
+      const response = await _http.get(`/v1/log/task/page?${query.toString()}`);
+      const payload = readBuildPayloadValue(response);
+
+      return {
+        job_id: input.job_id,
+        build_no: input.build_no,
+        step_id: input.step_id,
+        raw: readBuildRawRecord(payload)
+      };
+    },
     async getProjectDefaultPermission(input) {
       const query = new URLSearchParams({
         project_id: input.project_id,
@@ -2115,6 +2195,33 @@ export function createBuildClient(
         query.set("name", input.name);
       }
       const response = await _http.get(`/v3/templates/query?${query.toString()}`);
+      const raw = readBuildPayloadValue(response);
+      const payload = readBuildPayload(response);
+      const templates = readBuildArray<Record<string, unknown>>(
+        payload.items ??
+          payload.templates ??
+          payload.value ??
+          payload.list ??
+          (Array.isArray(raw) ? raw : [])
+      );
+
+      return {
+        templates,
+        total: readBuildTotal(payload, response, templates.length)
+      };
+    },
+    async listCustomTemplates(input) {
+      const query = new URLSearchParams({
+        page: String(input.page),
+        page_size: String(input.page_size)
+      });
+      if (input.name) {
+        query.set("name", input.name);
+      }
+      if (input.filter) {
+        query.set("filter", input.filter);
+      }
+      const response = await _http.get(`/v1/template/custom?${query.toString()}`);
       const raw = readBuildPayloadValue(response);
       const payload = readBuildPayload(response);
       const templates = readBuildArray<Record<string, unknown>>(
@@ -2317,6 +2424,24 @@ export function createBuildClient(
         total: readBuildTotal(payload, response, files.length)
       };
     },
+    async listUsableKeystoreNames() {
+      const response = await _http.get("/v2/keystore/name");
+      const raw = readBuildPayloadValue(response);
+      const payload = readBuildPayload(response);
+      const files = readBuildArray<Record<string, unknown>>(
+        payload.files ??
+          payload.keystores ??
+          payload.items ??
+          payload.list ??
+          payload.value ??
+          (Array.isArray(raw) ? raw : [])
+      );
+
+      return {
+        files,
+        total: readBuildTotal(payload, response, files.length)
+      };
+    },
     async getKeystorePermission(input) {
       const response = await _http.get(
         `/v2/keystore/permission/${encodeURIComponent(input.keystore_id)}/query`
@@ -2470,6 +2595,25 @@ export function createBuildClient(
       return {
         job_id: input.job_id,
         raw: payload
+      };
+    },
+    async listJobNoticesV3(input) {
+      const response = await _http.get(`/v3/jobs/notice/${encodeURIComponent(input.job_id)}/query`);
+      const raw = readBuildPayloadValue(response);
+      const payload = readBuildPayload(response);
+      const notices = readBuildArray<Record<string, unknown>>(
+        payload.notices ??
+          payload.notice_list ??
+          payload.items ??
+          payload.list ??
+          payload.value ??
+          (Array.isArray(raw) ? raw : [])
+      );
+
+      return {
+        job_id: input.job_id,
+        notices,
+        total: readBuildTotal(payload, response, notices.length)
       };
     },
     async getJobRunningStatus(input) {

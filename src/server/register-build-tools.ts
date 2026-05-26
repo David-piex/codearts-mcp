@@ -15,6 +15,7 @@ import {
   buildGetJobDisableCheckInput,
   buildDownloadFullLogInput,
   buildDownloadTaskLogInput,
+  buildGetBuildDetailsInput,
   buildGetDomainChargeTypeInput,
   buildGetDomainFederationInput,
   buildGetDomainJobSummaryInput,
@@ -23,6 +24,7 @@ import {
   buildGetDomainUserPermissionInput,
   buildGetDockerfileTemplateInput,
   buildGetJobBuildSuccessRatioInput,
+  buildGetJobInfoInput,
   buildGetJobSuccessRatioV3Input,
   buildGetLastHistoryV3Input,
   buildListBuildInfoRecordsV3Input,
@@ -41,6 +43,7 @@ import {
   buildGetRunningStepLogInput,
   buildGetStageLogPageInput,
   buildGetTemplateInput,
+  buildGetTaskLogPageInput,
   buildGetYamlTemplateInput,
   buildDownloadTaskLogV4Input,
   buildGetProjectDefaultPermissionInput,
@@ -57,6 +60,7 @@ import {
   buildListBuildParametersInput,
   buildListBuildParameterTypesInput,
   buildListCodeTagsInput,
+  buildListCustomTemplatesInput,
   buildListDefaultParametersInput,
   buildListDomainRelatedProjectsInput,
   buildListDomainRelatedProjectsPageInput,
@@ -67,6 +71,7 @@ import {
   buildListJobBadgeBranchesInput,
   buildListJobGroupTreeInput,
   buildListJobsInput,
+  buildListJobNoticesV3Input,
   buildListJobPermissionRolesInput,
   buildListJobUpdateHistoryInput,
   buildListKeystoreFilesInput,
@@ -83,6 +88,7 @@ import {
   buildListResourceSpecsInput,
   buildListSystemParametersInput,
   buildListTemplatesInput,
+  buildListUsableKeystoreNamesInput,
   buildShowDomainsStatusesInput,
   buildShowPackageSpecCountdownInput,
   buildRunJobInput,
@@ -113,6 +119,8 @@ import {
   createBuildDownloadFullLogHandler,
   createBuildDownloadTaskLogHandler,
   createBuildDownloadTaskLogV4Handler,
+  createBuildGetBuildDetailsHandler,
+  createBuildGetJobInfoHandler,
   createBuildGetJobOutputHandler,
   createBuildGetJobPipelineInfoHandler,
   createBuildGetJobStepStatusHandler,
@@ -120,12 +128,16 @@ import {
   createBuildGetRunningStepLogHandler,
   createBuildGetStageLogPageHandler,
   createBuildGetTemplateHandler,
+  createBuildGetTaskLogPageHandler,
   createBuildGetYamlTemplateHandler,
+  createBuildListCustomTemplatesHandler,
   createBuildListJobBadgeBranchesHandler,
+  createBuildListJobNoticesV3Handler,
   createBuildListJobUpdateHistoryHandler,
   createBuildListKeystoreFilesHandler,
   createBuildListProjectEndpointsHandler,
   createBuildListRecommendedOfficialTemplatesHandler,
+  createBuildListUsableKeystoreNamesHandler,
   createBuildShowDomainsStatusesHandler,
   createBuildShowPackageSpecCountdownHandler
 } from "../products/build/tools/additional-read-tools.js";
@@ -420,6 +432,18 @@ const buildToolDefinitions = {
     selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetJobPermissionHandler>[0] }) => clients.buildClient,
     createProductHandler: createBuildGetJobPermissionHandler
   }),
+  "build_get_job_info": defineProductTool({
+    description: "Get CodeArts Build job build information",
+    inputSchema: buildGetJobInfoInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetJobInfoHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildGetJobInfoHandler
+  }),
+  "build_get_build_details": defineProductTool({
+    description: "Get CodeArts Build build status details",
+    inputSchema: buildGetBuildDetailsInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetBuildDetailsHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildGetBuildDetailsHandler
+  }),
   "build_get_project_default_permission": defineProductTool({
     description: "Get CodeArts Build project default permission",
     inputSchema: buildGetProjectDefaultPermissionInput,
@@ -438,11 +462,23 @@ const buildToolDefinitions = {
     selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListTemplatesHandler>[0] }) => clients.buildClient,
     createProductHandler: createBuildListTemplatesHandler
   }),
+  "build_list_custom_templates": defineProductTool({
+    description: "List CodeArts Build custom templates",
+    inputSchema: buildListCustomTemplatesInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListCustomTemplatesHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildListCustomTemplatesHandler
+  }),
   "build_get_job_notice": defineProductTool({
     description: "Get CodeArts Build job notice settings",
     inputSchema: buildGetJobNoticeInput,
     selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetJobNoticeHandler>[0] }) => clients.buildClient,
     createProductHandler: createBuildGetJobNoticeHandler
+  }),
+  "build_list_job_notices_v3": defineProductTool({
+    description: "List CodeArts Build v3 job notices",
+    inputSchema: buildListJobNoticesV3Input,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListJobNoticesV3Handler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildListJobNoticesV3Handler
   }),
   "build_get_job_running_status": defineProductTool({
     description: "Get CodeArts Build job running status",
@@ -522,6 +558,12 @@ const buildToolDefinitions = {
     selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetStageLogPageHandler>[0] }) => clients.buildClient,
     createProductHandler: createBuildGetStageLogPageHandler
   }),
+  "build_get_task_log_page": defineProductTool({
+    description: "Get CodeArts Build finished task step log page",
+    inputSchema: buildGetTaskLogPageInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetTaskLogPageHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildGetTaskLogPageHandler
+  }),
   "build_download_full_log": defineProductTool({
     description: "Get CodeArts Build full log download metadata",
     inputSchema: buildDownloadFullLogInput,
@@ -569,6 +611,12 @@ const buildToolDefinitions = {
     inputSchema: buildListKeystoreFilesInput,
     selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListKeystoreFilesHandler>[0] }) => clients.buildClient,
     createProductHandler: createBuildListKeystoreFilesHandler
+  }),
+  "build_list_usable_keystore_names": defineProductTool({
+    description: "List CodeArts Build usable keystore names",
+    inputSchema: buildListUsableKeystoreNamesInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListUsableKeystoreNamesHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildListUsableKeystoreNamesHandler
   }),
   "build_get_keystore_permission": defineProductTool({
     description: "Get CodeArts Build keystore permission",

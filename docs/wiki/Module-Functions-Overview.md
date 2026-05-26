@@ -20,7 +20,7 @@
 | Check | 代码检查 | 查规则集、查检查任务、看问题、看指标、查缺陷过滤、PDF/异步任务、创建/执行/停止检查任务和 dry-run 配置写入 | `check_list_rulesets` `check_list_task_issues` `check_list_issues_by_filter` `check_create_pdf_async_job` | 适合和 Repo / Build 搭配 |
 | TestPlan | 测试计划与测试用例 | 查测试计划、查用例、查问题、查看运行记录、批量执行用例 | `testplan_list_plans` `testplan_list_cases` `testplan_run_cases` | 先按租户可用性使用 |
 | Deploy | 部署编排与环境资源 | 查应用、任务、环境、主机组、部署记录，创建应用/环境/任务，做启动/停止/回滚，也支持 v4 资源读取 | `deploy_list_apps` `deploy_create_task_by_template` `deploy_start_app` | 联调前先确认样本 |
-| Build | 编译构建 | 查构建任务、构建记录、日志、参数，运行/停止任务，也支持补步骤和发布上传步骤配置 | `build_list_jobs` `build_run_job` `build_get_real_time_log` | 适合直接接入 CI/CD |
+| Build | 编译构建 | 查构建任务、构建记录、日志、参数、模板、keystore、通知和构建状态详情，运行/停止任务，也支持补步骤和发布上传步骤配置 | `build_list_jobs` `build_get_job_info` `build_get_build_details` `build_get_real_time_log` | 适合直接接入 CI/CD |
 | Artifact | 制品仓库 | 查仓库、版本、文件树、下载地址、构建归档和审计 | `artifact_list_repositories` `artifact_list_versions` `artifact_get_download_url` | 适合做制品追踪 |
 
 ## Req
@@ -122,6 +122,7 @@ Build 很适合和 Pipeline / Deploy 串联。
 
 - 查构建任务和构建记录。
 - 看实时日志、错误日志、阶段信息、脚本。
+- 查任务构建信息、构建状态详情、完成后步骤日志分页、模板、keystore 和通知。
 - 运行或停止构建任务。
 - 对发布上传步骤做预配置或增量修改。
 

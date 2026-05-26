@@ -21,7 +21,29 @@ export const buildGetJobInput = z.object({
   job_id: idSchema
 });
 
+export const buildGetJobInfoInput = z.object({
+  job_id: idSchema
+});
+
+export const buildGetBuildDetailsInput = z.object({
+  job_id: idSchema,
+  build_no: z.number().int().positive()
+});
+
+export const buildGetTaskLogPageInput = z.object({
+  job_id: idSchema,
+  build_no: z.number().int().positive(),
+  step_id: z.number().int().min(0),
+  start_offset: z.number().int().min(0).default(0),
+  end_offset: z.number().int().min(0).default(0),
+  sort: z.enum(["AES", "DESC"]).default("DESC")
+});
+
 export const buildGetJobNoticeInput = z.object({
+  job_id: idSchema
+});
+
+export const buildListJobNoticesV3Input = z.object({
   job_id: idSchema
 });
 
@@ -217,6 +239,11 @@ export const buildListTemplatesInput = pagingSchema.extend({
   name: z.string().min(1).optional()
 });
 
+export const buildListCustomTemplatesInput = pagingSchema.extend({
+  name: z.string().min(1).optional(),
+  filter: z.string().min(1).optional()
+});
+
 export const buildShowPackageSpecCountdownInput = z.object({
   body: z.record(z.string(), z.unknown()).default({})
 });
@@ -294,6 +321,8 @@ export const buildListRecommendedOfficialTemplatesInput = z.object({
 export const buildListKeystoreFilesInput = z.object({
   query: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).default({})
 });
+
+export const buildListUsableKeystoreNamesInput = z.object({});
 
 export const buildGetKeystorePermissionInput = z.object({
   keystore_id: idSchema

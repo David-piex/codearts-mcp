@@ -6,7 +6,7 @@
 
 模块：`编译构建`
 
-API 数量：`87`
+API 数量：`93`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
@@ -607,6 +607,60 @@ API 数量：`87`
   "required": [
     "record_id",
     "task_name"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### build_get_build_details
+
+所属模块：`编译构建`
+
+说明：获取编译构建的构建详情。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "build_get_build_details",
+    "arguments": {
+      "job_id": "<job_id>",
+      "build_no": "<build_no>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `job_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `job_id` ↔ 原始 CodeArts 编译构建 API 同名字段 `job_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>构建任务 ID，用于定位对应的 CodeArts 资源。 |
+| `build_no` | 是 | `integer` |  | 字段对应：<br>MCP 字段 `build_no` ↔ 原始 CodeArts 编译构建 API 同名字段 `build_no`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>构建编号，用于定位某一次构建执行记录。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "job_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "build_no": {
+      "type": "integer",
+      "exclusiveMinimum": 0
+    }
+  },
+  "required": [
+    "job_id",
+    "build_no"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -1501,6 +1555,53 @@ API 数量：`87`
   "method": "tools/call",
   "params": {
     "name": "build_get_job_disable_check",
+    "arguments": {
+      "job_id": "<job_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `job_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `job_id` ↔ 原始 CodeArts 编译构建 API 同名字段 `job_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>构建任务 ID，用于定位对应的 CodeArts 资源。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "job_id": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "job_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### build_get_job_info
+
+所属模块：`编译构建`
+
+说明：获取编译构建的任务信息。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "build_get_job_info",
     "arguments": {
       "job_id": "<job_id>"
     }
@@ -2484,6 +2585,88 @@ API 数量：`87`
 }
 ```
 
+### build_get_task_log_page
+
+所属模块：`编译构建`
+
+说明：获取编译构建的任务日志page。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "build_get_task_log_page",
+    "arguments": {
+      "job_id": "<job_id>",
+      "build_no": "<build_no>",
+      "step_id": "<step_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `job_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `job_id` ↔ 原始 CodeArts 编译构建 API 同名字段 `job_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>构建任务 ID，用于定位对应的 CodeArts 资源。 |
+| `build_no` | 是 | `integer` |  | 字段对应：<br>MCP 字段 `build_no` ↔ 原始 CodeArts 编译构建 API 同名字段 `build_no`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>构建编号，用于定位某一次构建执行记录。 |
+| `step_id` | 是 | `integer` |  | 字段对应：<br>MCP 字段 `step_id` ↔ 原始 CodeArts 编译构建 API 同名字段 `step_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>步骤 ID，用于定位对应的 CodeArts 资源。 |
+| `start_offset` | 否 | `integer` | 0 | 字段对应：<br>MCP 字段 `start_offset` ↔ 原始 CodeArts 编译构建 API 同名字段 `start_offset`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `end_offset` | 否 | `integer` | 0 | 字段对应：<br>MCP 字段 `end_offset` ↔ 原始 CodeArts 编译构建 API 同名字段 `end_offset`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>日志结束偏移量，用于增量读取部署或构建日志。 |
+| `sort` | 否 | `"AES" \| "DESC"` | "DESC" | 字段对应：<br>MCP 字段 `sort` ↔ 原始 CodeArts 编译构建 API 同名字段 `sort`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>排序方向。asc 表示升序，desc 表示降序。可选值：`AES`、`DESC`。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "job_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "build_no": {
+      "type": "integer",
+      "exclusiveMinimum": 0
+    },
+    "step_id": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "start_offset": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0
+    },
+    "end_offset": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0
+    },
+    "sort": {
+      "type": "string",
+      "enum": [
+        "AES",
+        "DESC"
+      ],
+      "default": "DESC"
+    }
+  },
+  "required": [
+    "job_id",
+    "build_no",
+    "step_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### build_get_template
 
 所属模块：`编译构建`
@@ -2837,6 +3020,82 @@ API 数量：`87`
   "required": [
     "scm_type"
   ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### build_list_custom_templates
+
+所属模块：`编译构建`
+
+说明：查询编译构建的自定义模板。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "build_list_custom_templates",
+    "arguments": {}
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 字段对应：<br>MCP 字段 `page` ↔ 原始 CodeArts 编译构建 API 的分页页码或由 `offset/limit` 换算得到的页码。<br>页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 字段对应：<br>MCP 字段 `page_size` ↔ 原始 CodeArts 编译构建 API 的分页大小字段，常见原字段名为 `page_size`、`limit` 或 `pageSize`。<br>每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 字段对应：<br>MCP 字段 `keyword` ↔ 原始 CodeArts 编译构建 API 的搜索关键字字段，常见原字段名为 `keyword`、`search` 或 `name`。<br>搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 字段对应：<br>MCP 字段 `sort_by` ↔ 原始 CodeArts 编译构建 API 同名字段 `sort_by`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 字段对应：<br>MCP 字段 `sort_order` ↔ 原始 CodeArts 编译构建 API 同名字段 `sort_order`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `name` | 否 | `string` |  | 字段对应：<br>MCP 字段 `name` ↔ 原始 CodeArts 编译构建 API 同名字段 `name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
+| `filter` | 否 | `string` |  | 字段对应：<br>MCP 字段 `filter` ↔ 原始 CodeArts 编译构建 API 同名字段 `filter`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>过滤条件对象或过滤表达式，用于缩小查询范围。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "page": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "default": 1
+    },
+    "page_size": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 200,
+      "default": 20
+    },
+    "keyword": {
+      "type": "string"
+    },
+    "sort_by": {
+      "type": "string"
+    },
+    "sort_order": {
+      "type": "string",
+      "enum": [
+        "asc",
+        "desc"
+      ]
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "filter": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
 }
@@ -3205,6 +3464,53 @@ API 数量：`87`
   },
   "required": [
     "project_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### build_list_job_notices_v3
+
+所属模块：`编译构建`
+
+说明：查询编译构建的任务noticesv3。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "build_list_job_notices_v3",
+    "arguments": {
+      "job_id": "<job_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `job_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `job_id` ↔ 原始 CodeArts 编译构建 API 同名字段 `job_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>构建任务 ID，用于定位对应的 CodeArts 资源。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "job_id": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "job_id"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -4347,6 +4653,41 @@ API 数量：`87`
       "minLength": 1
     }
   },
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### build_list_usable_keystore_names
+
+所属模块：`编译构建`
+
+说明：查询编译构建的usablekeystorenames。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "build_list_usable_keystore_names",
+    "arguments": {}
+  }
+}
+```
+
+参数：
+
+无参数。
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {},
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
 }

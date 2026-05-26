@@ -70,13 +70,19 @@ describe("registerBuildTool", () => {
     const registerTool = vi.fn();
     const tools = [
       ["build_get_project_default_permission", "Get CodeArts Build project default permission"],
+      ["build_get_job_info", "Get CodeArts Build job build information"],
+      ["build_get_build_details", "Get CodeArts Build build status details"],
       ["build_list_official_templates", "List CodeArts Build official templates"],
       ["build_list_templates", "List CodeArts Build templates"],
+      ["build_list_custom_templates", "List CodeArts Build custom templates"],
+      ["build_list_job_notices_v3", "List CodeArts Build v3 job notices"],
       ["build_get_job_output", "Get CodeArts Build job output"],
       ["build_get_job_step_status", "Get CodeArts Build job step status"],
       ["build_list_project_endpoints", "List CodeArts Build project endpoints"],
+      ["build_get_task_log_page", "Get CodeArts Build finished task step log page"],
       ["build_download_build_log_v4", "Download CodeArts Build v4 full log file"],
       ["build_download_task_log_v4", "Download CodeArts Build v4 task log file"],
+      ["build_list_usable_keystore_names", "List CodeArts Build usable keystore names"],
       ["build_get_keystore_permission", "Get CodeArts Build keystore permission"]
     ] as const;
 

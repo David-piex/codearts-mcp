@@ -13,10 +13,10 @@
 | Check | 83 | 73 | 10 | `HUAWEICLOUD_CHECK_BASE_URL` |
 | TestPlan | 238 | 228 | 10 | `HUAWEICLOUD_TESTPLAN_BASE_URL` |
 | Deploy | 74 | 57 | 17 | `HUAWEICLOUD_DEPLOY_BASE_URL` |
-| Build | 87 | 78 | 9 | `HUAWEICLOUD_BUILD_BASE_URL` |
+| Build | 93 | 84 | 9 | `HUAWEICLOUD_BUILD_BASE_URL` |
 | Artifact | 37 | 31 | 6 | `HUAWEICLOUD_ARTIFACT_BASE_URL` |
 
-产品工具合计 `1058` 个。HTTP 共享模式额外提供 `auth_configure_session` 和 `auth_clear_session` 两个会话工具，因此 HTTP MCP 总工具数为 `1060`。
+产品工具合计 `1064` 个。HTTP 共享模式额外提供 `auth_configure_session` 和 `auth_clear_session` 两个会话工具，因此 HTTP MCP 总工具数为 `1066`。
 <!-- GENERATED:api-reference-scale:end -->
 
 ## 通用运行环境
@@ -220,6 +220,11 @@ Build 覆盖构建任务、构建记录、日志、参数，以及构建步骤�
 | `build_get_record_flow_graph` | 获取构建记录流程图 |
 | `build_get_record_script` | 获取构建记录脚本 |
 | `build_get_real_time_log` | 获取实时日志 |
+| `build_get_job_info` / `build_get_build_details` | 查询任务构建信息和构建状态详情 |
+| `build_get_task_log_page` | 查询任务完成后的步骤日志分页 |
+| `build_list_custom_templates` | 查询自定义构建模板 |
+| `build_list_usable_keystore_names` | 查询当前用户可使用的 keystore 文件 |
+| `build_list_job_notices_v3` | 查询 v3 构建任务通知 |
 | `build_get_error_log` | 获取错误日志分析 |
 | `build_list_build_parameters` | 查询构建参数 |
 | `build_list_project_records` | 查询项目构建记录 |

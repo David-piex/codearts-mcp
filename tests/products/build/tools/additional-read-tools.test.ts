@@ -1,8 +1,14 @@
 import { describe, expect, it } from "vitest";
 import {
+  createBuildGetBuildDetailsHandler,
+  createBuildGetJobInfoHandler,
   createBuildGetJobOutputHandler,
+  createBuildGetTaskLogPageHandler,
+  createBuildListCustomTemplatesHandler,
+  createBuildListJobNoticesV3Handler,
   createBuildListJobUpdateHistoryHandler,
-  createBuildListKeystoreFilesHandler
+  createBuildListKeystoreFilesHandler,
+  createBuildListUsableKeystoreNamesHandler
 } from "../../../../src/products/build/tools/additional-read-tools.js";
 
 describe("Build additional read tool handlers", () => {
@@ -57,6 +63,81 @@ describe("Build additional read tool handlers", () => {
       id: "ks1",
       name: "signing-key",
       file: { id: "ks1", name: "signing-key" }
+    });
+  });
+
+  it("maps newly dedicated official read tools", async () => {
+    const jobInfo = await createBuildGetJobInfoHandler({
+      getJobInfo: async () => ({
+        job_id: "job-1",
+        raw: { name: "build-main" }
+      })
+    } as never)({ job_id: "job-1" });
+
+    const buildDetails = await createBuildGetBuildDetailsHandler({
+      getBuildDetails: async () => ({
+        job_id: "job-1",
+        build_no: 3,
+        raw: { building: false }
+      })
+    } as never)({ job_id: "job-1", build_no: 3 });
+
+    const logPage = await createBuildGetTaskLogPageHandler({
+      getTaskLogPage: async () => ({
+        job_id: "job-1",
+        build_no: 3,
+        step_id: 2,
+        raw: { logs: ["done"] }
+      })
+    } as never)({ job_id: "job-1", build_no: 3, step_id: 2 });
+
+    const customTemplates = await createBuildListCustomTemplatesHandler({
+      listCustomTemplates: async () => ({
+        templates: [{ uuid: "tpl-1", name: "Custom" }],
+        total: 1
+      })
+    } as never)({ page: 1, page_size: 10 });
+
+    const usableKeystores = await createBuildListUsableKeystoreNamesHandler({
+      listUsableKeystoreNames: async () => ({
+        files: [{ id: "ks-1", keystore_name: "android.jks" }],
+        total: 1
+      })
+    } as never)({});
+
+    const notices = await createBuildListJobNoticesV3Handler({
+      listJobNoticesV3: async () => ({
+        job_id: "job-1",
+        notices: [{ id: "notice-1", endpoint: "email" }],
+        total: 1
+      })
+    } as never)({ job_id: "job-1" });
+
+    expect(jobInfo.structuredContent.item).toMatchObject({
+      id: "job-1",
+      jobInfo: { name: "build-main" }
+    });
+    expect(buildDetails.structuredContent.item).toMatchObject({
+      id: "job-1#3",
+      buildNo: 3,
+      details: { building: false }
+    });
+    expect(logPage.structuredContent.item).toMatchObject({
+      id: "job-1#3:2",
+      stepId: 2,
+      log: { logs: ["done"] }
+    });
+    expect(customTemplates.structuredContent.items?.[0]).toMatchObject({
+      id: "tpl-1",
+      name: "Custom"
+    });
+    expect(usableKeystores.structuredContent.items?.[0]).toMatchObject({
+      id: "ks-1",
+      file: { id: "ks-1", keystore_name: "android.jks" }
+    });
+    expect(notices.structuredContent.items?.[0]).toMatchObject({
+      id: "notice-1",
+      notice: { id: "notice-1", endpoint: "email" }
     });
   });
 });

@@ -570,4 +570,85 @@ describe("createBuildClient metadata read paths", () => {
       total: 1
     });
   });
+
+  it("loads newly dedicated official read endpoints", async () => {
+    const paths: string[] = [];
+    const client = createBuildClient({
+      get: async (path: string) => {
+        paths.push(path);
+        if (path.includes("/build-info")) {
+          return { result: { building: false, build_result: "SUCCESS" } };
+        }
+        if (path.includes("/log/task/page")) {
+          return { result: { logs: ["done"], has_more: false } };
+        }
+        if (path.includes("/template/custom")) {
+          return { result: { total: 1, items: [{ uuid: "custom-1", name: "Custom" }] } };
+        }
+        if (path.includes("/keystore/name")) {
+          return { result: [{ id: "ks-1", keystore_name: "android.jks" }] };
+        }
+        if (path.includes("/jobs/notice")) {
+          return { result: [{ id: "notice-1", endpoint: "email" }] };
+        }
+        return { result: { job_id: "job-1", job_name: "build-main" } };
+      }
+    } as never);
+
+    const jobInfo = await client.getJobInfo({ job_id: "job-1" });
+    const details = await client.getBuildDetails({ job_id: "job-1", build_no: 3 });
+    const logPage = await client.getTaskLogPage({
+      job_id: "job-1",
+      build_no: 3,
+      step_id: 2,
+      start_offset: 0,
+      end_offset: 1024,
+      sort: "DESC"
+    });
+    const templates = await client.listCustomTemplates({
+      page: 2,
+      page_size: 10,
+      name: "Custom",
+      filter: "mine"
+    });
+    const keystores = await client.listUsableKeystoreNames();
+    const notices = await client.listJobNoticesV3({ job_id: "job-1" });
+
+    expect(paths).toEqual([
+      "/v1/job/job-1/info",
+      "/v1/job/job-1/3/build-info",
+      "/v1/log/task/page?job_id=job-1&build_no=3&step_id=2&start_offset=0&end_offset=1024&sort=DESC",
+      "/v1/template/custom?page=2&page_size=10&name=Custom&filter=mine",
+      "/v2/keystore/name",
+      "/v3/jobs/notice/job-1/query"
+    ]);
+    expect(jobInfo).toEqual({
+      job_id: "job-1",
+      raw: { job_id: "job-1", job_name: "build-main" }
+    });
+    expect(details).toEqual({
+      job_id: "job-1",
+      build_no: 3,
+      raw: { building: false, build_result: "SUCCESS" }
+    });
+    expect(logPage).toEqual({
+      job_id: "job-1",
+      build_no: 3,
+      step_id: 2,
+      raw: { logs: ["done"], has_more: false }
+    });
+    expect(templates).toEqual({
+      templates: [{ uuid: "custom-1", name: "Custom" }],
+      total: 1
+    });
+    expect(keystores).toEqual({
+      files: [{ id: "ks-1", keystore_name: "android.jks" }],
+      total: 1
+    });
+    expect(notices).toEqual({
+      job_id: "job-1",
+      notices: [{ id: "notice-1", endpoint: "email" }],
+      total: 1
+    });
+  });
 });

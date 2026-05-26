@@ -5,6 +5,8 @@ import {
   buildDownloadFullLogInput,
   buildDownloadTaskLogInput,
   buildDownloadTaskLogV4Input,
+  buildGetBuildDetailsInput,
+  buildGetJobInfoInput,
   buildGetJobOutputInput,
   buildGetJobPipelineInfoInput,
   buildGetJobStepStatusInput,
@@ -12,12 +14,16 @@ import {
   buildGetRunningStepLogInput,
   buildGetStageLogPageInput,
   buildGetTemplateInput,
+  buildGetTaskLogPageInput,
   buildGetYamlTemplateInput,
+  buildListCustomTemplatesInput,
+  buildListJobNoticesV3Input,
   buildListJobBadgeBranchesInput,
   buildListJobUpdateHistoryInput,
   buildListKeystoreFilesInput,
   buildListProjectEndpointsInput,
   buildListRecommendedOfficialTemplatesInput,
+  buildListUsableKeystoreNamesInput,
   buildShowDomainsStatusesInput,
   buildShowPackageSpecCountdownInput
 } from "../schemas.js";
@@ -34,6 +40,28 @@ type Client = {
   getJobOutput: (input: { job_id: string; build_no: number }) => Promise<{
     job_id: string;
     build_no: number;
+    raw: Record<string, unknown>;
+  }>;
+  getJobInfo: (input: { job_id: string }) => Promise<{
+    job_id: string;
+    raw: Record<string, unknown>;
+  }>;
+  getBuildDetails: (input: { job_id: string; build_no: number }) => Promise<{
+    job_id: string;
+    build_no: number;
+    raw: Record<string, unknown>;
+  }>;
+  getTaskLogPage: (input: {
+    job_id: string;
+    build_no: number;
+    step_id: number;
+    start_offset: number;
+    end_offset: number;
+    sort: "AES" | "DESC";
+  }) => Promise<{
+    job_id: string;
+    build_no: number;
+    step_id: number;
     raw: Record<string, unknown>;
   }>;
   getJobStepStatus: (input: { job_id: string }) => Promise<{
@@ -107,15 +135,33 @@ type Client = {
     templates: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  listCustomTemplates: (input: {
+    page: number;
+    page_size: number;
+    name?: string;
+    filter?: string;
+  }) => Promise<{
+    templates: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
   listKeystoreFiles: (input: {
     query?: Record<string, string | number | boolean>;
   }) => Promise<{
     files: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  listUsableKeystoreNames: () => Promise<{
+    files: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
   getKeystorePermission: (input: { keystore_id: string }) => Promise<{
     keystore_id: string;
     raw: Record<string, unknown>;
+  }>;
+  listJobNoticesV3: (input: { job_id: string }) => Promise<{
+    job_id: string;
+    notices: Array<Record<string, unknown>>;
+    total?: number;
   }>;
 };
 
@@ -155,6 +201,37 @@ export function createBuildGetJobOutputHandler(client: Client) {
     return itemResponse(mapBuildRecordItem("Loaded Build job output", `${response.job_id}#${response.build_no}`, "output", response.raw, {
       jobId: response.job_id,
       buildNo: response.build_no
+    }));
+  };
+}
+
+export function createBuildGetJobInfoHandler(client: Client) {
+  return async (input: unknown) => {
+    const parsed = buildGetJobInfoInput.parse(input);
+    const response = await client.getJobInfo(parsed);
+    return itemResponse(mapBuildRecordItem("Loaded Build job info", response.job_id, "jobInfo", response.raw));
+  };
+}
+
+export function createBuildGetBuildDetailsHandler(client: Client) {
+  return async (input: unknown) => {
+    const parsed = buildGetBuildDetailsInput.parse(input);
+    const response = await client.getBuildDetails(parsed);
+    return itemResponse(mapBuildRecordItem("Loaded Build details", `${response.job_id}#${response.build_no}`, "details", response.raw, {
+      jobId: response.job_id,
+      buildNo: response.build_no
+    }));
+  };
+}
+
+export function createBuildGetTaskLogPageHandler(client: Client) {
+  return async (input: unknown) => {
+    const parsed = buildGetTaskLogPageInput.parse(input);
+    const response = await client.getTaskLogPage(parsed);
+    return itemResponse(mapBuildRecordItem("Loaded Build task log page", `${response.job_id}#${response.build_no}:${response.step_id}`, "log", response.raw, {
+      jobId: response.job_id,
+      buildNo: response.build_no,
+      stepId: response.step_id
     }));
   };
 }
@@ -289,6 +366,14 @@ export function createBuildListRecommendedOfficialTemplatesHandler(client: Clien
   };
 }
 
+export function createBuildListCustomTemplatesHandler(client: Client) {
+  return async (input: unknown) => {
+    const parsed = buildListCustomTemplatesInput.parse(input);
+    const response = await client.listCustomTemplates(parsed);
+    return listResponse(mapBuildRecordList(response.templates, response.total, "Build custom templates", "template", parsed.page, parsed.page_size));
+  };
+}
+
 export function createBuildListKeystoreFilesHandler(client: Client) {
   return async (input: unknown) => {
     const parsed = buildListKeystoreFilesInput.parse(input);
@@ -297,10 +382,26 @@ export function createBuildListKeystoreFilesHandler(client: Client) {
   };
 }
 
+export function createBuildListUsableKeystoreNamesHandler(client: Client) {
+  return async (input: unknown) => {
+    buildListUsableKeystoreNamesInput.parse(input);
+    const response = await client.listUsableKeystoreNames();
+    return listResponse(mapBuildRecordList(response.files, response.total, "Build usable keystore files", "file"));
+  };
+}
+
 export function createBuildGetKeystorePermissionHandler(client: Client) {
   return async (input: unknown) => {
     const parsed = buildGetKeystorePermissionInput.parse(input);
     const response = await client.getKeystorePermission(parsed);
     return itemResponse(mapBuildRecordItem("Loaded Build keystore permission", response.keystore_id, "permission", response.raw));
+  };
+}
+
+export function createBuildListJobNoticesV3Handler(client: Client) {
+  return async (input: unknown) => {
+    const parsed = buildListJobNoticesV3Input.parse(input);
+    const response = await client.listJobNoticesV3(parsed);
+    return listResponse(mapBuildRecordList(response.notices, response.total, "Build v3 job notices", "notice"));
   };
 }

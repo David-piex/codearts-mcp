@@ -28,7 +28,7 @@
 | Check | 83 | 核心 task / ruleset / metrics / defects 读路径稳定，并补入官方读面、PDF/异步任务和 dry-run 安全配置写面 | 写入/触发配置类工具仍需专门真实写样本 |
 | TestPlan | 238 | 已覆盖基础查询、执行入口和更大测试计划读写面 | 部分北京四路径未发布 |
 | Deploy | 74 | 经典路径和 v4 扩展面都已进入 MCP | execute-class 场景仍需专门样本 |
-| Build | 87 | 当前工具面已扩展到构建元数据、日志、记录、资源规格和受控写面 | Git-code 相关端点 live 样本可继续补 |
+| Build | 93 | 当前工具面已扩展到构建元数据、日志、记录、资源规格、模板、keystore、通知和受控写面 | 新增官方只读路径已完成单测，后续可继续补 endpoint-specific live 样本 |
 | Artifact | 37 | 读面已有实用覆盖，并补入文件、版本、下载、审计和删除面 | 多条路径在北京四未发布 |
 
 ## 按模块看重点
@@ -84,7 +84,8 @@
 
 ### Build
 
-- 当前 22 个工具已形成较完整的构建实用面。
+- 当前 93 个工具已形成较完整的构建实用面。
+- 新增 `build_get_job_info`、`build_get_build_details`、`build_get_task_log_page`、`build_list_custom_templates`、`build_list_usable_keystore_names`、`build_list_job_notices_v3` 6 个官方只读路径，补齐任务构建信息、构建状态详情、完成后步骤日志分页、自定义模板、可用 keystore 文件和 v3 通知查询。
 - 包含若干用于发布前整理和 dry-run 预览的辅助工具。
 
 ### Artifact
