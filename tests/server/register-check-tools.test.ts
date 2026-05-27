@@ -106,7 +106,13 @@ describe("registerCheckTool", () => {
       ["check_download_log_file", "Get CodeArts Check log file content"],
       ["check_get_defect_file_content", "Get CodeArts Check defect source file content"],
       ["check_get_vpcep_authorization", "Get CodeArts Check VPC endpoint authorization"],
-      ["check_list_task_check_list", "List CodeArts Check task check list"]
+      ["check_list_task_check_list", "List CodeArts Check task check list"],
+      ["check_list_task_jobs_v4", "List CodeArts Check task jobs via official v4 API"],
+      ["check_list_task_last_jobs_v4", "List CodeArts Check task last jobs via official v4 API"],
+      ["check_list_task_file_list_v4", "List CodeArts Check task file list via official v4 API"],
+      ["check_list_task_all_files_v4", "List CodeArts Check task all files via official v4 API"],
+      ["check_get_task_webhook_info_v4", "Get CodeArts Check task webhook info via official v4 API"],
+      ["check_list_task_branches_v4", "List CodeArts Check task branches via official v4 API"]
     ] as const;
 
     for (const [toolName, description] of tools) {

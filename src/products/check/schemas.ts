@@ -21,9 +21,13 @@ export const checkListTaskJobsInput = z.object({
   task_id: idSchema
 });
 
+export const checkListTaskJobsV4Input = checkListTaskJobsInput;
+
 export const checkListTaskLastJobsInput = z.object({
   task_id: idSchema
 });
+
+export const checkListTaskLastJobsV4Input = checkListTaskLastJobsInput;
 
 export const checkGetTaskPreCheckScriptInput = z.object({
   task_id: idSchema
@@ -45,11 +49,15 @@ export const checkListTaskFilesInput = z.object({
   task_id: idSchema
 });
 
+export const checkListTaskFileListV4Input = checkListTaskFilesInput;
+
 export const checkListTaskAllFilesInput = z.object({
   task_id: idSchema,
   file_path: z.string().min(1).optional(),
   get_son: z.boolean().optional()
 });
+
+export const checkListTaskAllFilesV4Input = checkListTaskAllFilesInput;
 
 export const checkDetectTaskLanguageInput = z.object({
   task_id: idSchema,
@@ -100,6 +108,8 @@ export const checkGetTaskWebhookInfoInput = z.object({
   task_id: idSchema
 });
 
+export const checkGetTaskWebhookInfoV4Input = checkGetTaskWebhookInfoInput;
+
 export const checkGetCodeHealthSvgInput = z.object({
   task_id: idSchema
 });
@@ -110,6 +120,8 @@ export const checkListTaskRepositoryBranchesInput = pagingSchema.extend({
   search: z.string().min(1).optional(),
   repo_type: z.string().min(1).optional()
 });
+
+export const checkListTaskBranchesV4Input = checkListTaskRepositoryBranchesInput;
 
 export const checkGetTransmissionNotificationInput = z.object({
   is_check_project: z.union([z.literal(0), z.literal(1)]),

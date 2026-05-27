@@ -991,6 +991,17 @@ describe("createCheckClient", () => {
       ],
       total: 2
     });
+    await expect(client.listTaskRepositoryBranches({
+      task_id: "task-1",
+      page: 1,
+      page_size: 10
+    })).resolves.toEqual({
+      branches: [
+        { id: "main", name: "main", branch: "main" },
+        { id: "dev", name: "dev", branch: "dev" }
+      ],
+      total: 2
+    });
     await expect(client.getTransmissionNotification({
       is_check_project: 1,
       domain_id: "domain-1",
@@ -1031,6 +1042,7 @@ describe("createCheckClient", () => {
       "/v1/task/notification/task-1",
       "/v1/tasks/code-sum-measures",
       "/v4/tasks/task-1/branches?page=2&page_size=20&is_uncreated_only=true&search=ma&repo_type=gitcode",
+      "/v4/tasks/task-1/branches?page=1&page_size=10",
       "/v2/transmission/notification?is_check_project=1&domain_id=domain-1&project_id=project-1",
       "/v4/tenant/tenant-package-status?project_id=project-1",
       "/v4/template-tasks?page=1&page_size=15&project_id=project-1&search=Java"

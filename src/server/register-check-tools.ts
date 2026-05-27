@@ -42,6 +42,7 @@ import {
   checkGetTaskRulesetCheckParametersV3Input,
   checkGetTaskSettingsInput,
   checkGetTaskWebhookInfoInput,
+  checkGetTaskWebhookInfoV4Input,
   checkGetTransmissionNotificationInput,
   checkGetVpcepAuthorizationInput,
   checkListAllCriterionsetsInput,
@@ -66,13 +67,18 @@ import {
   checkListTemplateTasksInput,
   checkListThirdToolsInput,
   checkListTaskAllFilesInput,
+  checkListTaskAllFilesV4Input,
   checkListTaskBranchesInput,
+  checkListTaskBranchesV4Input,
   checkListTaskCheckRecordsInput,
   checkListTaskCheckListInput,
+  checkListTaskFileListV4Input,
   checkListTaskFilesInput,
   checkListTaskIssuesInput,
   checkListTaskJobsInput,
+  checkListTaskJobsV4Input,
   checkListTaskLastJobsInput,
+  checkListTaskLastJobsV4Input,
   checkListTaskPathTreeInput,
   checkListTaskRepositoryBranchesInput,
   checkListTaskRulesetsV2Input,
@@ -111,6 +117,14 @@ import {
   createCheckListConfigItemsHandler,
   createCheckListDefectNextStatusesHandler
 } from "../products/check/tools/additional-read-tools.js";
+import {
+  createCheckGetTaskWebhookInfoV4Handler,
+  createCheckListTaskAllFilesV4Handler,
+  createCheckListTaskBranchesV4Handler,
+  createCheckListTaskFileListV4Handler,
+  createCheckListTaskJobsV4Handler,
+  createCheckListTaskLastJobsV4Handler
+} from "../products/check/tools/official-v4-read-tools.js";
 import { createCheckDetectTaskLanguageHandler } from "../products/check/tools/detect-task-language.js";
 import { createCheckGetCriterionRuleHandler } from "../products/check/tools/get-criterion-rule.js";
 import { createCheckGetCriterionsetHandler } from "../products/check/tools/get-criterionset.js";
@@ -220,11 +234,23 @@ const checkToolDefinitions = {
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListTaskJobsHandler>[0] }) => clients.checkClient,
     createProductHandler: createCheckListTaskJobsHandler
   }),
+  "check_list_task_jobs_v4": defineProductTool({
+    description: "List CodeArts Check task jobs via official v4 API",
+    inputSchema: checkListTaskJobsV4Input,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListTaskJobsV4Handler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckListTaskJobsV4Handler
+  }),
   "check_list_task_last_jobs": defineProductTool({
     description: "List CodeArts Check task last jobs",
     inputSchema: checkListTaskLastJobsInput,
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListTaskLastJobsHandler>[0] }) => clients.checkClient,
     createProductHandler: createCheckListTaskLastJobsHandler
+  }),
+  "check_list_task_last_jobs_v4": defineProductTool({
+    description: "List CodeArts Check task last jobs via official v4 API",
+    inputSchema: checkListTaskLastJobsV4Input,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListTaskLastJobsV4Handler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckListTaskLastJobsV4Handler
   }),
   "check_get_task_pre_check_script": defineProductTool({
     description: "Get CodeArts Check task pre-check script",
@@ -256,11 +282,23 @@ const checkToolDefinitions = {
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListTaskFilesHandler>[0] }) => clients.checkClient,
     createProductHandler: createCheckListTaskFilesHandler
   }),
+  "check_list_task_file_list_v4": defineProductTool({
+    description: "List CodeArts Check task file list via official v4 API",
+    inputSchema: checkListTaskFileListV4Input,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListTaskFileListV4Handler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckListTaskFileListV4Handler
+  }),
   "check_list_task_all_files": defineProductTool({
     description: "List CodeArts Check task all files",
     inputSchema: checkListTaskAllFilesInput,
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListTaskAllFilesHandler>[0] }) => clients.checkClient,
     createProductHandler: createCheckListTaskAllFilesHandler
+  }),
+  "check_list_task_all_files_v4": defineProductTool({
+    description: "List CodeArts Check task all files via official v4 API",
+    inputSchema: checkListTaskAllFilesV4Input,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListTaskAllFilesV4Handler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckListTaskAllFilesV4Handler
   }),
   "check_detect_task_language": defineProductTool({
     description: "Detect CodeArts Check task language",
@@ -327,6 +365,12 @@ const checkToolDefinitions = {
     inputSchema: checkGetTaskWebhookInfoInput,
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetTaskWebhookInfoHandler>[0] }) => clients.checkClient,
     createProductHandler: createCheckGetTaskWebhookInfoHandler
+  }),
+  "check_get_task_webhook_info_v4": defineProductTool({
+    description: "Get CodeArts Check task webhook info via official v4 API",
+    inputSchema: checkGetTaskWebhookInfoV4Input,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetTaskWebhookInfoV4Handler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckGetTaskWebhookInfoV4Handler
   }),
   "check_get_code_health_svg": defineProductTool({
     description: "Get CodeArts Check code health SVG",
@@ -615,6 +659,12 @@ const checkToolDefinitions = {
     inputSchema: checkListTaskBranchesInput,
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListTaskBranchesHandler>[0] }) => clients.checkClient,
     createProductHandler: createCheckListTaskBranchesHandler
+  }),
+  "check_list_task_branches_v4": defineProductTool({
+    description: "List CodeArts Check task branches via official v4 API",
+    inputSchema: checkListTaskBranchesV4Input,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListTaskBranchesV4Handler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckListTaskBranchesV4Handler
   }),
   "check_list_rulesets": defineProductTool({
     description: "List CodeArts Check rulesets",
