@@ -20,6 +20,7 @@ import {
   testPlanGetApiTestConcurrencyPackageStatusInput,
   testPlanGetApiTestDebugLogInput,
   testPlanGetApiTestDnsMappingInput,
+  testPlanGetProjectDnsMappingV1Input,
   testPlanGetApiTestPackageChargeMessageInput,
   testPlanGetApiTestPackageChargePopupInput,
   testPlanGetApiTestProjectInfoInput,
@@ -180,6 +181,8 @@ import {
   testPlanListProjectServiceReposInput,
   testPlanListProjectTagsInput,
   testPlanListProjectUsersInput,
+  testPlanListProjectAssetsV1Input,
+  testPlanListProjectBranchesV1Input,
   testPlanListPublicAwLibAndAwsInput,
   testPlanListProgressReportsInput,
   testPlanListRequirementsOverviewDetailsInput,
@@ -254,6 +257,11 @@ import { createTestPlanGetApiTestDebugLogHandler } from "../products/testplan/to
 import { createTestPlanGetApiTestDnsMappingHandler } from "../products/testplan/tools/get-api-test-dns-mapping.js";
 import { createTestPlanGetApiTestPackageChargeMessageHandler } from "../products/testplan/tools/get-api-test-package-charge-message.js";
 import { createTestPlanGetApiTestPackageChargePopupHandler } from "../products/testplan/tools/get-api-test-package-charge-popup.js";
+import {
+  createTestPlanGetProjectDnsMappingV1Handler,
+  createTestPlanListProjectAssetsV1Handler,
+  createTestPlanListProjectBranchesV1Handler
+} from "../products/testplan/tools/official-v1-read-tools.js";
 import { createTestPlanGetApiTestProjectInfoHandler } from "../products/testplan/tools/get-api-test-project-info.js";
 import { createTestPlanGetApiTestTaskStatusHandler } from "../products/testplan/tools/get-api-test-task-status.js";
 import { createTestPlanGetApiTestTaskStatusV2Handler } from "../products/testplan/tools/get-api-test-task-status-v2.js";
@@ -907,6 +915,12 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListAssetsHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListAssetsHandler
   }),
+  "testplan_list_project_assets_v1": defineProductTool({
+    description: "List CodeArts TestPlan project assets via official v1 API",
+    inputSchema: testPlanListProjectAssetsV1Input,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListProjectAssetsV1Handler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListProjectAssetsV1Handler
+  }),
   "testplan_list_asset_tree": defineProductTool({
     description: "List CodeArts TestPlan test factor center asset tree nodes",
     inputSchema: testPlanListAssetTreeInput,
@@ -960,6 +974,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanGetApiTestDnsMappingInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetApiTestDnsMappingHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetApiTestDnsMappingHandler
+  }),
+  "testplan_get_project_dns_mapping_v1": defineProductTool({
+    description: "Get CodeArts TestPlan project DNS mapping via official v1 API",
+    inputSchema: testPlanGetProjectDnsMappingV1Input,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetProjectDnsMappingV1Handler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetProjectDnsMappingV1Handler
   }),
   "testplan_list_api_test_global_param_names": defineProductTool({
     description: "List CodeArts TestPlan API test global parameter names",
@@ -1320,6 +1340,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListV1BranchesInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListV1BranchesHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListV1BranchesHandler
+  }),
+  "testplan_list_project_branches_v1": defineProductTool({
+    description: "List CodeArts TestPlan project branches via official v1 API",
+    inputSchema: testPlanListProjectBranchesV1Input,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListProjectBranchesV1Handler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListProjectBranchesV1Handler
   }),
   "testplan_list_v4_branches": defineProductTool({
     description: "List CodeArts TestPlan v4 branches",

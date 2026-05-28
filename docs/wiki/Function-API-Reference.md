@@ -32,8 +32,8 @@
 | 流水线 | 109 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 187 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 243 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
-| 测试计划 | 238 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **1085** | |
+| 测试计划 | 241 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
+| **总计** | **1088** | |
 
 ## 字段对应
 
@@ -961,6 +961,7 @@
 | `testplan_get_project_advanced_feature_trial` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_project_advanced_feature_trial) |
 | `testplan_get_project_advanced_feature_trusted` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_project_advanced_feature_trusted) |
 | `testplan_get_project_data_dashboard` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_project_data_dashboard) |
+| `testplan_get_project_dns_mapping_v1` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_project_dns_mapping_v1) |
 | `testplan_get_project_domain_detail_info` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_project_domain_detail_info) |
 | `testplan_get_project_issue_update_notification` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_project_issue_update_notification) |
 | `testplan_get_project_local_config` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_project_local_config) |
@@ -1066,6 +1067,8 @@
 | `testplan_list_plans` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_plans) |
 | `testplan_list_plans_v2` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_plans_v2) |
 | `testplan_list_progress_reports` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_progress_reports) |
+| `testplan_list_project_assets_v1` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_project_assets_v1) |
+| `testplan_list_project_branches_v1` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_project_branches_v1) |
 | `testplan_list_project_defects` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_project_defects) |
 | `testplan_list_project_field_configs` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_project_field_configs) |
 | `testplan_list_project_issues` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_project_issues) |

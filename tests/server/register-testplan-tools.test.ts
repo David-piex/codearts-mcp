@@ -150,6 +150,34 @@ describe("registerTestPlanTool", () => {
     );
   });
 
+  it("registers official v1 TestPlan read aliases", () => {
+    const registerTool = vi.fn();
+    const tools = [
+      ["testplan_list_project_assets_v1", "List CodeArts TestPlan project assets via official v1 API"],
+      ["testplan_list_project_branches_v1", "List CodeArts TestPlan project branches via official v1 API"],
+      ["testplan_get_project_dns_mapping_v1", "Get CodeArts TestPlan project DNS mapping via official v1 API"]
+    ] as const;
+
+    for (const [toolName, description] of tools) {
+      const handled = registerTestPlanTool({
+        toolName,
+        server: { registerTool },
+        mode: "stdio",
+        stdioClient: {} as never
+      });
+
+      expect(handled).toBe(true);
+      expect(registerTool).toHaveBeenLastCalledWith(
+        toolName,
+        expect.objectContaining({
+          title: toolName,
+          description
+        }),
+        expect.any(Function)
+      );
+    }
+  });
+
   it("registers dynamic global variable tools", () => {
     const registerTool = vi.fn();
 

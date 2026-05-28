@@ -415,6 +415,8 @@ export const testPlanListAssetsInput = z.object({
   project_id: idSchema
 });
 
+export const testPlanListProjectAssetsV1Input = testPlanListAssetsInput;
+
 export const testPlanListAssetTreeInput = z.object({
   project_id: idSchema,
   asset_id: idSchema
@@ -632,6 +634,8 @@ export const testPlanListV1BranchesInput = pagingSchema.extend({
   sort_field: z.string().min(1).optional(),
   sort_type: z.string().min(1).optional()
 });
+
+export const testPlanListProjectBranchesV1Input = testPlanListV1BranchesInput;
 
 export const testPlanGetGt3kDomainInfoInput = z.object({
   project_uuid: idSchema.optional()
@@ -978,6 +982,8 @@ export const testPlanListApiTestsuiteHistoryInput = z.object({
 export const testPlanGetApiTestDnsMappingInput = z.object({
   project_id: idSchema
 });
+
+export const testPlanGetProjectDnsMappingV1Input = testPlanGetApiTestDnsMappingInput;
 
 export const testPlanListApiTestGlobalParamNamesInput = z.object({
   project_id: idSchema
