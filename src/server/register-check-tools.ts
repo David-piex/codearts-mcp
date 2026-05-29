@@ -17,12 +17,14 @@ import {
   checkGetCodeSumMeasuresInput,
   checkGetDefectFileContentInput,
   checkGetDefectMetricTrendInput,
+  checkGetDefectTaskMeasuresV1Input,
   checkGetDefectTaskStatisticsInput,
   checkGetDomainCheckersVersionInput,
   checkGetConsoleLogInput,
   checkGetMetricsInput,
   checkModifyCriterionsetRelationsInput,
   checkGetPdfFileInput,
+  checkGetTaskPdfFileV1Input,
   checkGetProjectConfigInput,
   checkGetSingleDefectInput,
   checkGetTenantPackageStatusInput,
@@ -56,6 +58,7 @@ import {
   checkListIssuesByFilterInput,
   checkListMeasureFilesInput,
   checkListMeasureFilesV2Input,
+  checkListTaskMeasureFilesV1Input,
   checkListRelatedDuplicateBlocksInput,
   checkListRelatedDuplicateBlocksV2Input,
   checkListPluginsInput,
@@ -117,6 +120,11 @@ import {
   createCheckListConfigItemsHandler,
   createCheckListDefectNextStatusesHandler
 } from "../products/check/tools/additional-read-tools.js";
+import {
+  createCheckGetDefectTaskMeasuresV1Handler,
+  createCheckGetTaskPdfFileV1Handler,
+  createCheckListTaskMeasureFilesV1Handler
+} from "../products/check/tools/official-v1-read-tools.js";
 import {
   createCheckGetTaskWebhookInfoV4Handler,
   createCheckListTaskAllFilesV4Handler,
@@ -534,6 +542,12 @@ const checkToolDefinitions = {
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetPdfFileHandler>[0] }) => clients.checkClient,
     createProductHandler: createCheckGetPdfFileHandler
   }),
+  "check_get_task_pdf_file_v1": defineProductTool({
+    description: "Download CodeArts Check task PDF file via official v1 API",
+    inputSchema: checkGetTaskPdfFileV1Input,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetTaskPdfFileV1Handler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckGetTaskPdfFileV1Handler
+  }),
   "check_extract_task_assistant_summary": defineProductTool({
     description: "Extract CodeArts Check task assistant summary",
     inputSchema: checkExtractTaskAssistantSummaryInput,
@@ -546,11 +560,23 @@ const checkToolDefinitions = {
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetTaskMeasuresHandler>[0] }) => clients.checkClient,
     createProductHandler: createCheckGetTaskMeasuresHandler
   }),
+  "check_get_defect_task_measures_v1": defineProductTool({
+    description: "Get CodeArts Check defect task measures via official v1 API",
+    inputSchema: checkGetDefectTaskMeasuresV1Input,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetDefectTaskMeasuresV1Handler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckGetDefectTaskMeasuresV1Handler
+  }),
   "check_list_measure_files": defineProductTool({
     description: "List CodeArts Check task measure files",
     inputSchema: checkListMeasureFilesInput,
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListMeasureFilesHandler>[0] }) => clients.checkClient,
     createProductHandler: createCheckListMeasureFilesHandler
+  }),
+  "check_list_task_measure_files_v1": defineProductTool({
+    description: "List CodeArts Check task measure files via official v1 API",
+    inputSchema: checkListTaskMeasureFilesV1Input,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListTaskMeasureFilesV1Handler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckListTaskMeasureFilesV1Handler
   }),
   "check_list_measure_files_v2": defineProductTool({
     description: "List CodeArts Check task measure files V2",

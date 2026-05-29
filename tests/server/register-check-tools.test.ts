@@ -112,7 +112,10 @@ describe("registerCheckTool", () => {
       ["check_list_task_file_list_v4", "List CodeArts Check task file list via official v4 API"],
       ["check_list_task_all_files_v4", "List CodeArts Check task all files via official v4 API"],
       ["check_get_task_webhook_info_v4", "Get CodeArts Check task webhook info via official v4 API"],
-      ["check_list_task_branches_v4", "List CodeArts Check task branches via official v4 API"]
+      ["check_list_task_branches_v4", "List CodeArts Check task branches via official v4 API"],
+      ["check_get_task_pdf_file_v1", "Download CodeArts Check task PDF file via official v1 API"],
+      ["check_get_defect_task_measures_v1", "Get CodeArts Check defect task measures via official v1 API"],
+      ["check_list_task_measure_files_v1", "List CodeArts Check task measure files via official v1 API"]
     ] as const;
 
     for (const [toolName, description] of tools) {

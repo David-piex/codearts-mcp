@@ -287,6 +287,8 @@ export const checkGetPdfFileInput = z.object({
   job_file: z.string().min(1)
 });
 
+export const checkGetTaskPdfFileV1Input = checkGetPdfFileInput;
+
 export const checkExtractTaskAssistantSummaryInput = z.object({
   project_id: idSchema,
   task_id: idSchema,
@@ -299,10 +301,14 @@ export const checkGetTaskMeasuresInput = z.object({
   query: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).default({})
 });
 
+export const checkGetDefectTaskMeasuresV1Input = checkGetTaskMeasuresInput;
+
 export const checkListMeasureFilesInput = pagingSchema.extend({
   task_id: idSchema,
   job_id: idSchema.optional()
 });
+
+export const checkListTaskMeasureFilesV1Input = checkListMeasureFilesInput;
 
 export const checkListMeasureFilesV2Input = pagingSchema.extend({
   task_id: idSchema,
