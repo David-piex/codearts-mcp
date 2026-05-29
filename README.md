@@ -282,9 +282,9 @@ npm run cli -- call req_list_projects `
 
 <!-- GENERATED:readme-exposure-summary:start -->
 - `8` product modules
-- `1095` product tools
+- `1098` product tools
 - `2` session/auth tools for shared `http` mode
-- `1097` total MCP tools in shared `http` mode
+- `1100` total MCP tools in shared `http` mode
 <!-- GENERATED:readme-exposure-summary:end -->
 
 工具读写分布：读操作 177 (63.7%) / 写操作 101 (36.3%)
@@ -296,7 +296,7 @@ npm run cli -- call req_list_projects `
 | Repo | 187 | Partial | `25 Full / 0 Reachable / 0 Unpublished / 6 Code` |
 | Pipeline | 109 | Partial | `16 Full / 0 Reachable / 0 Unpublished / 51 Code` |
 | Check | 92 | Partial | `14 Full / 0 Reachable / 0 Unpublished / 5 Code` |
-| TestPlan | 243 | Partial | `1 Full / 2 Reachable / 4 Unpublished / 0 Code` |
+| TestPlan | 246 | Partial | `1 Full / 2 Reachable / 4 Unpublished / 0 Code` |
 | Deploy | 74 | Partial | Expanded v4 surface with partial live closure; see `docs/wiki/Module-Live-Readiness.md` |
 | Build | 99 | Validated | Expanded metadata read surface with live smoke coverage |
 | Artifact | 48 | Partial | `5 Full / 0 Reachable / 7 Unpublished / 0 Code` |

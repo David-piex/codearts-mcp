@@ -112,7 +112,10 @@ describe("registerTestPlanTool", () => {
     const registerTool = vi.fn();
     const tools = [
       ["testplan_get_excel_error_testcases", "Get CodeArts TestPlan Excel error testcase generation result"],
-      ["testplan_get_testcase_dataset", "Get CodeArts TestPlan testcase dataset by case URI and group ID"]
+      ["testplan_get_testcase_dataset", "Get CodeArts TestPlan testcase dataset by case URI and group ID"],
+      ["testplan_get_case_logdata_upload_url", "Get CodeArts TestPlan case logdata upload URL"],
+      ["testplan_get_case_logdata_archive", "Get CodeArts TestPlan case logdata archive request data"],
+      ["testplan_list_resource_operation_records", "List CodeArts TestPlan resource operation records"]
     ] as const;
 
     for (const [toolName, description] of tools) {

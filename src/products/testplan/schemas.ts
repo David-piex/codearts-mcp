@@ -964,6 +964,22 @@ export const testPlanGetApiTestDebugLogInput = z.object({
   task_id: idSchema
 });
 
+export const testPlanGetCaseLogdataUploadUrlInput = z.object({
+  project_id: idSchema,
+  task_id: idSchema,
+  file_type: z.string().min(1),
+  case_id: idSchema.optional(),
+  filename: z.string().optional(),
+  round: z.string().optional()
+});
+
+export const testPlanGetCaseLogdataArchiveInput = z.object({
+  project_id: idSchema,
+  case_id: idSchema,
+  task_id: idSchema,
+  round: z.string().optional()
+});
+
 export const testPlanListApiTestcaseExecuteHistoriesInput = pagingSchema.extend({
   project_id: idSchema,
   testcase_id: idSchema,
@@ -1424,6 +1440,13 @@ export const testPlanListTaskResultsInput = pagingSchema.extend({
   project_id: idSchema,
   task_uri: idSchema,
   iterator_uri: idSchema.optional()
+});
+
+export const testPlanListResourceOperationRecordsInput = pagingSchema.extend({
+  project_id: idSchema,
+  resource_id: idSchema.optional(),
+  resource_type: z.string().min(1).optional(),
+  operation_type: z.string().min(1).optional()
 });
 
 export const testPlanGetCaseInput = z.object({

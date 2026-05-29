@@ -20,6 +20,8 @@ import {
   testPlanGetApiTestConcurrencyPackageStatusInput,
   testPlanGetApiTestDebugLogInput,
   testPlanGetApiTestDnsMappingInput,
+  testPlanGetCaseLogdataArchiveInput,
+  testPlanGetCaseLogdataUploadUrlInput,
   testPlanGetProjectDnsMappingV1Input,
   testPlanGetApiTestPackageChargeMessageInput,
   testPlanGetApiTestPackageChargePopupInput,
@@ -190,6 +192,7 @@ import {
   testPlanListRequirementsOverviewInput,
   testPlanListRegisteredServicesInput,
   testPlanListReleaseVersionsInput,
+  testPlanListResourceOperationRecordsInput,
   testPlanListResourceNumberRulesInput,
   testPlanListResourcePoolsInput,
   testPlanListRunsInput,
@@ -259,6 +262,8 @@ import { createTestPlanGetApiTestDebugLogHandler } from "../products/testplan/to
 import { createTestPlanGetApiTestDnsMappingHandler } from "../products/testplan/tools/get-api-test-dns-mapping.js";
 import { createTestPlanGetApiTestPackageChargeMessageHandler } from "../products/testplan/tools/get-api-test-package-charge-message.js";
 import { createTestPlanGetApiTestPackageChargePopupHandler } from "../products/testplan/tools/get-api-test-package-charge-popup.js";
+import { createTestPlanGetCaseLogdataArchiveHandler } from "../products/testplan/tools/get-case-logdata-archive.js";
+import { createTestPlanGetCaseLogdataUploadUrlHandler } from "../products/testplan/tools/get-case-logdata-upload-url.js";
 import {
   createTestPlanGetProjectDnsMappingV1Handler,
   createTestPlanListProjectAssetsV1Handler,
@@ -440,6 +445,7 @@ import { createTestPlanListRequirementsOverviewHandler } from "../products/testp
 import { createTestPlanListRequirementsOverviewTestcasesHandler } from "../products/testplan/tools/list-requirements-overview-testcases.js";
 import { createTestPlanListRegisteredServicesHandler } from "../products/testplan/tools/list-registered-services.js";
 import { createTestPlanListReleaseVersionsHandler } from "../products/testplan/tools/list-release-versions.js";
+import { createTestPlanListResourceOperationRecordsHandler } from "../products/testplan/tools/list-resource-operation-records.js";
 import { createTestPlanListResourceNumberRulesHandler } from "../products/testplan/tools/list-resource-number-rules.js";
 import { createTestPlanListResourcePoolsHandler } from "../products/testplan/tools/list-resource-pools.js";
 import { createTestPlanListRunsHandler } from "../products/testplan/tools/list-runs.js";
@@ -817,6 +823,12 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListResourceNumberRulesHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListResourceNumberRulesHandler
   }),
+  "testplan_list_resource_operation_records": defineProductTool({
+    description: "List CodeArts TestPlan resource operation records",
+    inputSchema: testPlanListResourceOperationRecordsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListResourceOperationRecordsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListResourceOperationRecordsHandler
+  }),
   "testplan_get_project_testcase_global_config": defineProductTool({
     description: "Get CodeArts TestPlan project testcase global configuration",
     inputSchema: testPlanGetProjectTestcaseGlobalConfigInput,
@@ -972,6 +984,18 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanGetApiTestDebugLogInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetApiTestDebugLogHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetApiTestDebugLogHandler
+  }),
+  "testplan_get_case_logdata_upload_url": defineProductTool({
+    description: "Get CodeArts TestPlan case logdata upload URL",
+    inputSchema: testPlanGetCaseLogdataUploadUrlInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetCaseLogdataUploadUrlHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetCaseLogdataUploadUrlHandler
+  }),
+  "testplan_get_case_logdata_archive": defineProductTool({
+    description: "Get CodeArts TestPlan case logdata archive request data",
+    inputSchema: testPlanGetCaseLogdataArchiveInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetCaseLogdataArchiveHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetCaseLogdataArchiveHandler
   }),
   "testplan_get_api_test_dns_mapping": defineProductTool({
     description: "Get CodeArts TestPlan API test DNS mapping",

@@ -5143,6 +5143,15 @@ describe("createTestPlanClient", () => {
         if (path === "/v1/project-1/excel/error-testcases?error_id=error-1") {
           return { result: { id: "error-1", status: "success" } };
         }
+        if (
+          path ===
+          "/v2/project-1/logdata/upload-url?task_id=task-1&file_type=CASE_LOG_REPORT&case_id=case-1&filename=case.log&round=1"
+        ) {
+          return { result: { primary: { url: "https://example.com/upload" }, backup: {} } };
+        }
+        if (path === "/v2/project-1/logdata/archive?task_id=task-1&case_id=case-1&round=1") {
+          return { result: { status: "success" } };
+        }
         if (path.includes("getGlobalParamNameList")) {
           return {
             result: {
@@ -5341,6 +5350,31 @@ describe("createTestPlanClient", () => {
     ).resolves.toEqual({
       error_id: "error-1",
       raw: { id: "error-1", status: "success" }
+    });
+    await expect(
+      client.getCaseLogdataUploadUrl({
+        project_id: "project-1",
+        task_id: "task-1",
+        case_id: "case-1",
+        file_type: "CASE_LOG_REPORT",
+        filename: "case.log",
+        round: "1"
+      })
+    ).resolves.toEqual({
+      task_id: "task-1",
+      raw: { primary: { url: "https://example.com/upload" }, backup: {} }
+    });
+    await expect(
+      client.getCaseLogdataArchive({
+        project_id: "project-1",
+        task_id: "task-1",
+        case_id: "case-1",
+        round: "1"
+      })
+    ).resolves.toEqual({
+      task_id: "task-1",
+      case_id: "case-1",
+      raw: { status: "success" }
     });
     await expect(
       client.listApiTestGlobalParamNames({
@@ -5584,6 +5618,8 @@ describe("createTestPlanClient", () => {
       "/v2/project-1/task/task-2",
       "/v1/project-1/dns-mapping",
       "/v1/project-1/excel/error-testcases?error_id=error-1",
+      "/v2/project-1/logdata/upload-url?task_id=task-1&file_type=CASE_LOG_REPORT&case_id=case-1&filename=case.log&round=1",
+      "/v2/project-1/logdata/archive?task_id=task-1&case_id=case-1&round=1",
       "/v1/project-1/variables/getGlobalParamNameList",
       "/v4/project-1/variables?group_id=group-1&page_no=1&page_size=20",
       "/v3/project-1/basic-aw/aw-1",
@@ -5631,6 +5667,61 @@ describe("createTestPlanClient", () => {
     expect(requestedBody).toEqual(["aw-batch-1"]);
     expect(result).toEqual({
       aws: [{ id: "aw-batch-1", name: "login" }],
+      total: 1
+    });
+  });
+
+  it("lists resource operation records", async () => {
+    let requestedPath = "";
+    let requestedBody: unknown;
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requestedPath = path;
+        requestedBody = body;
+        return {
+          data: {
+            total: 1,
+            list: [
+              {
+                id: "record-1",
+                resource_id: "mindmap-1",
+                resource_type: "mindmap",
+                operation_type: "updateMindmapCreatorInfo"
+              }
+            ]
+          }
+        };
+      }
+    } as never);
+
+    const result = await client.listResourceOperationRecords({
+      project_id: "project-1",
+      page: 2,
+      page_size: 5,
+      resource_id: "mindmap-1",
+      resource_type: "mindmap",
+      operation_type: "updateMindmapCreatorInfo"
+    });
+
+    expect(requestedPath).toBe("/v1/project-1/operation-record");
+    expect(requestedBody).toEqual({
+      params: {
+        offset: 5,
+        limit: 5,
+        resource_id: "mindmap-1",
+        resource_type: "mindmap",
+        operation_type: "updateMindmapCreatorInfo"
+      }
+    });
+    expect(result).toEqual({
+      records: [
+        {
+          id: "record-1",
+          resource_id: "mindmap-1",
+          resource_type: "mindmap",
+          operation_type: "updateMindmapCreatorInfo"
+        }
+      ],
       total: 1
     });
   });

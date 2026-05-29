@@ -1463,6 +1463,27 @@ export type TestPlanClient = {
   }) => Promise<{
     raw: Record<string, unknown>;
   }>;
+  getCaseLogdataUploadUrl: (input: {
+    project_id: string;
+    task_id: string;
+    file_type: string;
+    case_id?: string;
+    filename?: string;
+    round?: string;
+  }) => Promise<{
+    task_id: string;
+    raw: Record<string, unknown>;
+  }>;
+  getCaseLogdataArchive: (input: {
+    project_id: string;
+    case_id: string;
+    task_id: string;
+    round?: string;
+  }) => Promise<{
+    task_id: string;
+    case_id: string;
+    raw: Record<string, unknown>;
+  }>;
   listApiTestcaseExecuteHistories: (input: {
     project_id: string;
     testcase_id: string;
@@ -2119,6 +2140,17 @@ export type TestPlanClient = {
     case_uri: string;
     group_id: string;
     raw: Record<string, unknown>;
+  }>;
+  listResourceOperationRecords: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    resource_id?: string;
+    resource_type?: string;
+    operation_type?: string;
+  }) => Promise<{
+    records: Array<Record<string, unknown>>;
+    total?: number;
   }>;
 };
 
@@ -5448,6 +5480,41 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         raw: debugLog
       };
     },
+    async getCaseLogdataUploadUrl(input) {
+      const query = toQueryString({
+        task_id: input.task_id,
+        file_type: input.file_type,
+        case_id: input.case_id,
+        filename: input.filename,
+        round: input.round
+      });
+      const response = await _http.get(
+        `/v2/${encodeURIComponent(input.project_id)}/logdata/upload-url?${query}`
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        task_id: input.task_id,
+        raw: payload
+      };
+    },
+    async getCaseLogdataArchive(input) {
+      const query = toQueryString({
+        task_id: input.task_id,
+        case_id: input.case_id,
+        round: input.round
+      });
+      const response = await _http.get(
+        `/v2/${encodeURIComponent(input.project_id)}/logdata/archive?${query}`
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        task_id: input.task_id,
+        case_id: input.case_id,
+        raw: payload
+      };
+    },
     async listApiTestcaseExecuteHistories(input) {
       const query = new URLSearchParams({
         offset: String(pageToOffset(input.page, input.page_size) + 1),
@@ -6923,6 +6990,27 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         case_uri: input.case_uri,
         group_id: input.group_id,
         raw: payload
+      };
+    },
+    async listResourceOperationRecords(input) {
+      const response = await _http.post(`/v1/${encodeURIComponent(input.project_id)}/operation-record`, {
+        params: {
+          offset: pageToOffset(input.page, input.page_size),
+          limit: input.page_size,
+          resource_id: input.resource_id,
+          resource_type: input.resource_type,
+          operation_type: input.operation_type
+        }
+      });
+      const payload = readResultPayload(response);
+      const data = readEnvelope(payload.data) ?? payload;
+      const records = readArray<Record<string, unknown>>(
+        data.list ?? data.records ?? data.items ?? payload.list ?? payload.records ?? payload.items
+      );
+
+      return {
+        records,
+        total: readTotal(data, response, records.length)
       };
     }
   };

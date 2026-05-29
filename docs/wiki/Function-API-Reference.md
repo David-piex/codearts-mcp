@@ -32,8 +32,8 @@
 | 流水线 | 109 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 187 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 243 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
-| 测试计划 | 243 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **1097** | |
+| 测试计划 | 246 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
+| **总计** | **1100** | |
 
 ## 字段对应
 
@@ -925,6 +925,8 @@
 | `testplan_get_background_info` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_background_info) |
 | `testplan_get_branch` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_branch) |
 | `testplan_get_case` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_case) |
+| `testplan_get_case_logdata_archive` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_case_logdata_archive) |
+| `testplan_get_case_logdata_upload_url` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_case_logdata_upload_url) |
 | `testplan_get_case_template` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_case_template) |
 | `testplan_get_current_user_package_permission` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_current_user_package_permission) |
 | `testplan_get_custom_template` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_custom_template) |
@@ -1091,6 +1093,7 @@
 | `testplan_list_requirements_overview_defects` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_requirements_overview_defects) |
 | `testplan_list_requirements_overview_testcases` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_requirements_overview_testcases) |
 | `testplan_list_resource_number_rules` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_resource_number_rules) |
+| `testplan_list_resource_operation_records` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_resource_operation_records) |
 | `testplan_list_resource_pools` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_resource_pools) |
 | `testplan_list_rule_check_tasks` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_rule_check_tasks) |
 | `testplan_list_runs` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_runs) |
