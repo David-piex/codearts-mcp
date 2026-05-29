@@ -5140,6 +5140,9 @@ describe("createTestPlanClient", () => {
         if (path.includes("dns-mapping")) {
           return { result: { host: "example.com" } };
         }
+        if (path === "/v1/project-1/excel/error-testcases?error_id=error-1") {
+          return { result: { id: "error-1", status: "success" } };
+        }
         if (path.includes("getGlobalParamNameList")) {
           return {
             result: {
@@ -5202,6 +5205,9 @@ describe("createTestPlanClient", () => {
         }
         if (path === "/v4/project-1/testcase/case-1?task_id=task-1") {
           return { result: { tmss_case_uri: "case-1", name: "API case v4" } };
+        }
+        if (path === "/v1/project-1/testcase/case-1/dataset/group-1") {
+          return { result: { records: [{ name: "base_url", value: "https://example.com" }] } };
         }
         if (path.includes("getVarGroupList")) {
           return { result: { page_list: [{ id: "group-1", name: "Default" }], total_size: 1 } };
@@ -5326,6 +5332,15 @@ describe("createTestPlanClient", () => {
     });
     await expect(client.getApiTestDnsMapping({ project_id: "project-1" })).resolves.toEqual({
       raw: { host: "example.com" }
+    });
+    await expect(
+      client.getExcelErrorTestcases({
+        project_id: "project-1",
+        error_id: "error-1"
+      })
+    ).resolves.toEqual({
+      error_id: "error-1",
+      raw: { id: "error-1", status: "success" }
     });
     await expect(
       client.listApiTestGlobalParamNames({
@@ -5454,6 +5469,19 @@ describe("createTestPlanClient", () => {
       raw: { tmss_case_uri: "case-1", name: "API case v4" }
     });
     await expect(
+      client.getTestcaseDataset({
+        project_id: "project-1",
+        case_uri: "case-1",
+        group_id: "group-1"
+      })
+    ).resolves.toEqual({
+      case_uri: "case-1",
+      group_id: "group-1",
+      raw: {
+        records: [{ name: "base_url", value: "https://example.com" }]
+      }
+    });
+    await expect(
       client.listVariableGroups({
         project_id: "project-1",
         page: 1,
@@ -5555,6 +5583,7 @@ describe("createTestPlanClient", () => {
       "/v3/hutaf-ticc/package/status",
       "/v2/project-1/task/task-2",
       "/v1/project-1/dns-mapping",
+      "/v1/project-1/excel/error-testcases?error_id=error-1",
       "/v1/project-1/variables/getGlobalParamNameList",
       "/v4/project-1/variables?group_id=group-1&page_no=1&page_size=20",
       "/v3/project-1/basic-aw/aw-1",
@@ -5567,6 +5596,7 @@ describe("createTestPlanClient", () => {
       "/v1/project-1/testcase/case-1",
       "/v3/project-1/testcase/case-1?task_id=task-1",
       "/v4/project-1/testcase/case-1?task_id=task-1",
+      "/v1/project-1/testcase/case-1/dataset/group-1",
       "/v1/variables/getVarGroupList?project_id=project-1&page_no=1&page_size=10",
       "/v1/project-1/notice_config/notice_config_list",
       "/v1/project-1/get_timeOut_view",

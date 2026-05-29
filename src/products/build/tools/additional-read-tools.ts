@@ -6,6 +6,7 @@ import {
   buildDownloadTaskLogInput,
   buildDownloadTaskLogV4Input,
   buildGetBuildDetailsInput,
+  buildGetJobRunningStatusV3Input,
   buildGetJobInfoInput,
   buildGetJobOutputInput,
   buildGetJobPipelineInfoInput,
@@ -19,8 +20,11 @@ import {
   buildGetTaskLogPageInput,
   buildGetYamlTemplateInput,
   buildListCustomTemplatesInput,
+  buildListAllJobsInput,
+  buildListBriefRecordsInput,
   buildListJobNoticesV3Input,
   buildListJobBadgeBranchesInput,
+  buildListJobHistoryV3Input,
   buildListJobUpdateHistoryInput,
   buildListKeystoreFilesInput,
   buildListProjectEndpointsInput,
@@ -29,7 +33,7 @@ import {
   buildShowDomainsStatusesInput,
   buildShowPackageSpecCountdownInput
 } from "../schemas.js";
-import { formatBuildRecordListText, mapBuildRecordItem, mapBuildRecordList } from "./generic-read-tools.js";
+import { formatBuildRecordListText, mapBuildRecordItem, mapBuildRecordList, mapBuildValueItem } from "./generic-read-tools.js";
 
 type Client = {
   showPackageSpecCountdown: (input: { body?: Record<string, unknown> }) => Promise<{
@@ -39,9 +43,45 @@ type Client = {
     history: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  listAllJobs: (input: {
+    page: number;
+    page_size: number;
+    keyword?: string;
+    build_status?: string;
+    creator_id?: string;
+    sort_field?: string;
+    sort_type?: string;
+  }) => Promise<{
+    jobs: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
+  listBriefRecords: (input: {
+    build_project_ids: string[];
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    records: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
+  listJobHistoryV3: (input: {
+    job_id: string;
+    page: number;
+    page_size: number;
+    interval?: number;
+  }) => Promise<{
+    records: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
   getJobOutput: (input: { job_id: string; build_no: number }) => Promise<{
     job_id: string;
     build_no: number;
+    raw: Record<string, unknown>;
+  }>;
+  getJobRunningStatusV3: (input: { job_id: string }) => Promise<{
+    job_id: string;
+    value?: unknown;
     raw: Record<string, unknown>;
   }>;
   getJobInfo: (input: { job_id: string }) => Promise<{
@@ -206,6 +246,34 @@ export function createBuildListJobUpdateHistoryHandler(client: Client) {
   };
 }
 
+export function createBuildListAllJobsHandler(client: Client) {
+  return async (input: unknown) => {
+    const parsed = buildListAllJobsInput.parse(input);
+    const response = await client.listAllJobs(parsed);
+    return listResponse(
+      mapBuildRecordList(response.jobs, response.total, "Build user jobs", "job", parsed.page, parsed.page_size)
+    );
+  };
+}
+
+export function createBuildListBriefRecordsHandler(client: Client) {
+  return async (input: unknown) => {
+    const parsed = buildListBriefRecordsInput.parse(input);
+    const response = await client.listBriefRecords(parsed);
+    return listResponse(mapBuildRecordList(response.records, response.total, "Build brief records", "record"));
+  };
+}
+
+export function createBuildListJobHistoryV3Handler(client: Client) {
+  return async (input: unknown) => {
+    const parsed = buildListJobHistoryV3Input.parse(input);
+    const response = await client.listJobHistoryV3(parsed);
+    return listResponse(
+      mapBuildRecordList(response.records, response.total, "Build v3 job history records", "record", parsed.page, parsed.page_size)
+    );
+  };
+}
+
 export function createBuildGetJobOutputHandler(client: Client) {
   return async (input: unknown) => {
     const parsed = buildGetJobOutputInput.parse(input);
@@ -214,6 +282,14 @@ export function createBuildGetJobOutputHandler(client: Client) {
       jobId: response.job_id,
       buildNo: response.build_no
     }));
+  };
+}
+
+export function createBuildGetJobRunningStatusV3Handler(client: Client) {
+  return async (input: unknown) => {
+    const parsed = buildGetJobRunningStatusV3Input.parse(input);
+    const response = await client.getJobRunningStatusV3(parsed);
+    return itemResponse(mapBuildValueItem("Loaded Build v3 job running status", response.job_id, "status", response.value, response.raw));
   };
 }
 

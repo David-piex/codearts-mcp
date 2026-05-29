@@ -1,12 +1,16 @@
 import { describe, expect, it } from "vitest";
 import {
   createBuildGetBuildDetailsHandler,
+  createBuildGetJobRunningStatusV3Handler,
   createBuildGetJobInfoHandler,
   createBuildGetJobOutputHandler,
   createBuildGetOutputInfoV3Handler,
   createBuildGetRecordInfoV4Handler,
   createBuildGetTaskLogPageHandler,
+  createBuildListAllJobsHandler,
+  createBuildListBriefRecordsHandler,
   createBuildListCustomTemplatesHandler,
+  createBuildListJobHistoryV3Handler,
   createBuildListJobNoticesV3Handler,
   createBuildListJobUpdateHistoryHandler,
   createBuildListKeystoreFilesHandler,
@@ -48,6 +52,56 @@ describe("Build additional read tool handlers", () => {
       jobId: "job-1",
       buildNo: 2,
       output: { output: "ok" }
+    });
+  });
+
+  it("maps new Build official read query handlers", async () => {
+    const allJobs = await createBuildListAllJobsHandler({
+      listAllJobs: async () => ({
+        jobs: [{ id: "job-1", name: "gateway" }],
+        total: 1,
+        raw: { total: 1 }
+      })
+    } as never)({ page: 1, page_size: 10 });
+    const briefRecords = await createBuildListBriefRecordsHandler({
+      listBriefRecords: async () => ({
+        records: [{ id: "record-1", job_id: "job-1" }],
+        total: 1,
+        raw: { total: 1 }
+      })
+    } as never)({ build_project_ids: ["build-project-1"] });
+    const history = await createBuildListJobHistoryV3Handler({
+      listJobHistoryV3: async () => ({
+        records: [{ id: "history-1", status: "success" }],
+        total: 1,
+        raw: { total: 1 }
+      })
+    } as never)({ job_id: "job-1", page: 1, page_size: 10 });
+    const status = await createBuildGetJobRunningStatusV3Handler({
+      getJobRunningStatusV3: async () => ({
+        job_id: "job-1",
+        value: true,
+        raw: { is_running: true }
+      })
+    } as never)({ job_id: "job-1" });
+
+    expect(allJobs.structuredContent.items?.[0]).toMatchObject({
+      id: "job-1",
+      name: "gateway",
+      job: { id: "job-1", name: "gateway" }
+    });
+    expect(briefRecords.structuredContent.items?.[0]).toMatchObject({
+      id: "record-1",
+      record: { id: "record-1", job_id: "job-1" }
+    });
+    expect(history.structuredContent.items?.[0]).toMatchObject({
+      id: "history-1",
+      record: { id: "history-1", status: "success" }
+    });
+    expect(status.structuredContent.item).toMatchObject({
+      id: "job-1",
+      value: true,
+      status: { is_running: true }
     });
   });
 

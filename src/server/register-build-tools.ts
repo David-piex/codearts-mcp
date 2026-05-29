@@ -32,6 +32,7 @@ import {
   buildGetJobBuildTimeInput,
   buildGetJobConfigDiffInput,
   buildGetCoverageMetricsInput,
+  buildGetJobRunningStatusV3Input,
   buildGetJobOutputInput,
   buildGetJobPipelineInfoInput,
   buildGetJobStepStatusInput,
@@ -63,6 +64,8 @@ import {
   buildListBuildParameterTypesInput,
   buildListCodeTagsInput,
   buildListCustomTemplatesInput,
+  buildListAllJobsInput,
+  buildListBriefRecordsInput,
   buildListDefaultParametersInput,
   buildListDomainRelatedProjectsInput,
   buildListDomainRelatedProjectsPageInput,
@@ -72,6 +75,7 @@ import {
   buildListJunitCoverageSummariesInput,
   buildListJobBadgeBranchesInput,
   buildListJobGroupTreeInput,
+  buildListJobHistoryV3Input,
   buildListJobsInput,
   buildListJobNoticesV3Input,
   buildListJobPermissionRolesInput,
@@ -125,6 +129,7 @@ import {
   createBuildGetJobInfoHandler,
   createBuildGetJobOutputHandler,
   createBuildGetJobPipelineInfoHandler,
+  createBuildGetJobRunningStatusV3Handler,
   createBuildGetJobStepStatusHandler,
   createBuildGetKeystorePermissionHandler,
   createBuildGetOutputInfoV3Handler,
@@ -134,8 +139,11 @@ import {
   createBuildGetTemplateHandler,
   createBuildGetTaskLogPageHandler,
   createBuildGetYamlTemplateHandler,
+  createBuildListAllJobsHandler,
+  createBuildListBriefRecordsHandler,
   createBuildListCustomTemplatesHandler,
   createBuildListJobBadgeBranchesHandler,
+  createBuildListJobHistoryV3Handler,
   createBuildListJobNoticesV3Handler,
   createBuildListJobUpdateHistoryHandler,
   createBuildListKeystoreFilesHandler,
@@ -502,6 +510,12 @@ const buildToolDefinitions = {
     selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetJobRunningStatusHandler>[0] }) => clients.buildClient,
     createProductHandler: createBuildGetJobRunningStatusHandler
   }),
+  "build_get_job_running_status_v3": defineProductTool({
+    description: "Get CodeArts Build v3 job running status",
+    inputSchema: buildGetJobRunningStatusV3Input,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildGetJobRunningStatusV3Handler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildGetJobRunningStatusV3Handler
+  }),
   "build_get_job_disable_check": defineProductTool({
     description: "Get CodeArts Build job disable check status",
     inputSchema: buildGetJobDisableCheckInput,
@@ -525,6 +539,24 @@ const buildToolDefinitions = {
     inputSchema: buildListJobUpdateHistoryInput,
     selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListJobUpdateHistoryHandler>[0] }) => clients.buildClient,
     createProductHandler: createBuildListJobUpdateHistoryHandler
+  }),
+  "build_list_all_jobs": defineProductTool({
+    description: "List CodeArts Build jobs visible to the current user",
+    inputSchema: buildListAllJobsInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListAllJobsHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildListAllJobsHandler
+  }),
+  "build_list_brief_records": defineProductTool({
+    description: "List CodeArts Build brief records by build project IDs",
+    inputSchema: buildListBriefRecordsInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListBriefRecordsHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildListBriefRecordsHandler
+  }),
+  "build_list_job_history_v3": defineProductTool({
+    description: "List CodeArts Build v3 job history records",
+    inputSchema: buildListJobHistoryV3Input,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListJobHistoryV3Handler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildListJobHistoryV3Handler
   }),
   "build_get_job_output": defineProductTool({
     description: "Get CodeArts Build job output",

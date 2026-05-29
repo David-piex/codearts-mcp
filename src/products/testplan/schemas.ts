@@ -299,6 +299,11 @@ export const testPlanGetCaseTemplateInput = z.object({
   template_uri: idSchema
 });
 
+export const testPlanGetExcelErrorTestcasesInput = z.object({
+  project_id: idSchema,
+  error_id: idSchema
+});
+
 export const testPlanListCaseTemplatesInput = z.object({
   project_id: idSchema,
   name: z.string().optional(),
@@ -1428,6 +1433,12 @@ export const testPlanGetCaseInput = z.object({
 
 export const testPlanGetTestcaseDatasetSampleInput = z.object({
   project_id: idSchema
+});
+
+export const testPlanGetTestcaseDatasetInput = z.object({
+  project_id: idSchema,
+  case_uri: idSchema,
+  group_id: idSchema
 });
 
 export const testPlanListIssuesInput = pagingSchema.extend({

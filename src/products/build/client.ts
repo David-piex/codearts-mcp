@@ -615,6 +615,42 @@ export type BuildClient = {
     total?: number;
     raw: Record<string, unknown>;
   }>;
+  listAllJobs: (input: {
+    page: number;
+    page_size: number;
+    keyword?: string;
+    build_status?: string;
+    creator_id?: string;
+    sort_field?: string;
+    sort_type?: string;
+  }) => Promise<{
+    jobs: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
+  listBriefRecords: (input: {
+    build_project_ids: string[];
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    records: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
+  listJobHistoryV3: (input: {
+    job_id: string;
+    page: number;
+    page_size: number;
+    interval?: number;
+  }) => Promise<{
+    records: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
+  getJobRunningStatusV3: (input: { job_id: string }) => Promise<{
+    job_id: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
   getJobNotice: (input: { job_id: string }) => Promise<{
     job_id: string;
     raw: Record<string, unknown>;
@@ -2620,6 +2656,107 @@ export function createBuildClient(
         jobs,
         total,
         raw
+      };
+    },
+    async listAllJobs(input) {
+      const query = new URLSearchParams({
+        page_index: String(Math.max(0, input.page - 1)),
+        page_size: String(input.page_size)
+      });
+      if (input.keyword) {
+        query.set("search", input.keyword);
+      }
+      if (input.build_status) {
+        query.set("build_status", input.build_status);
+      }
+      if (input.creator_id) {
+        query.set("creator_id", input.creator_id);
+      }
+      if (input.sort_field) {
+        query.set("sort_field", input.sort_field);
+      }
+      if (input.sort_type) {
+        query.set("sort_type", input.sort_type);
+      }
+      const response = await _http.get(`/v1/job/list?${query.toString()}`);
+      const raw = readBuildPayloadValue(response);
+      const payload = readBuildPayload(response);
+      const rawRecord = readBuildRawRecord(raw);
+      const jobs = readBuildArray<Record<string, unknown>>(
+        rawRecord.jobs ??
+          rawRecord.job_list ??
+          payload.jobs ??
+          payload.job_list ??
+          payload.items ??
+          payload.list
+      );
+
+      return {
+        jobs,
+        total: readBuildTotal(rawRecord, payload, jobs.length),
+        raw: rawRecord
+      };
+    },
+    async listBriefRecords(input) {
+      const body = {
+        ...input.body,
+        build_project_ids: input.build_project_ids
+      };
+      const response = await _http.post("/v1/record/brief", body);
+      const raw = readBuildPayloadValue(response);
+      const payload = readBuildPayload(response);
+      const rawRecord = readBuildRawRecord(raw);
+      const records = readBuildArray<Record<string, unknown>>(
+        rawRecord.brief_build_record_dtos ??
+          rawRecord.records ??
+          rawRecord.items ??
+          rawRecord.list ??
+          payload.brief_build_record_dtos ??
+          payload.records
+      );
+
+      return {
+        records,
+        total: readBuildTotal(rawRecord, payload, records.length),
+        raw: rawRecord
+      };
+    },
+    async listJobHistoryV3(input) {
+      const query = new URLSearchParams({
+        offset: String(Math.max(0, input.page - 1)),
+        limit: String(input.page_size)
+      });
+      if (input.interval !== undefined) {
+        query.set("interval", String(input.interval));
+      }
+      const response = await _http.get(`/v3/jobs/${encodeURIComponent(input.job_id)}/history?${query.toString()}`);
+      const raw = readBuildPayloadValue(response);
+      const payload = readBuildPayload(response);
+      const rawRecord = readBuildRawRecord(raw);
+      const records = readBuildArray<Record<string, unknown>>(
+        rawRecord.history_records ??
+          rawRecord.records ??
+          rawRecord.items ??
+          rawRecord.list ??
+          payload.history_records ??
+          payload.records
+      );
+
+      return {
+        records,
+        total: readBuildTotal(rawRecord, payload, records.length),
+        raw: rawRecord
+      };
+    },
+    async getJobRunningStatusV3(input) {
+      const response = await _http.get(`/v3/jobs/${encodeURIComponent(input.job_id)}/status`);
+      const payload = readBuildPayloadValue(response);
+      const envelope = readBuildEnvelope(payload);
+
+      return {
+        job_id: input.job_id,
+        value: envelope ? envelope.value ?? envelope.result ?? envelope.status ?? envelope.is_running : payload,
+        raw: readBuildRawRecord(payload)
       };
     },
     async getJobNotice(input) {

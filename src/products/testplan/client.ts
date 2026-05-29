@@ -616,6 +616,13 @@ export type TestPlanClient = {
     name?: string;
     raw: Record<string, unknown>;
   }>;
+  getExcelErrorTestcases: (input: {
+    project_id: string;
+    error_id: string;
+  }) => Promise<{
+    error_id: string;
+    raw: Record<string, unknown>;
+  }>;
   listCaseTemplates: (input: {
     project_id: string;
     name?: string;
@@ -2104,6 +2111,15 @@ export type TestPlanClient = {
     project_id: string;
     raw: Record<string, unknown>;
   }>;
+  getTestcaseDataset: (input: {
+    project_id: string;
+    case_uri: string;
+    group_id: string;
+  }) => Promise<{
+    case_uri: string;
+    group_id: string;
+    raw: Record<string, unknown>;
+  }>;
 };
 
 function readArray<T>(input: unknown): T[] {
@@ -3566,6 +3582,18 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         template_id: String(template.uri ?? template.template_uri ?? template.id ?? input.template_uri),
         name: typeof template.name === "string" ? template.name : undefined,
         raw: template
+      };
+    },
+    async getExcelErrorTestcases(input) {
+      const query = new URLSearchParams({ error_id: input.error_id });
+      const response = await _http.get(
+        `/v1/${encodeURIComponent(input.project_id)}/excel/error-testcases?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        error_id: input.error_id,
+        raw: payload
       };
     },
     async listCaseTemplates(input) {
@@ -6882,6 +6910,18 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
 
       return {
         project_id: input.project_id,
+        raw: payload
+      };
+    },
+    async getTestcaseDataset(input) {
+      const response = await _http.get(
+        `/v1/${encodeURIComponent(input.project_id)}/testcase/${encodeURIComponent(input.case_uri)}/dataset/${encodeURIComponent(input.group_id)}`
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        case_uri: input.case_uri,
+        group_id: input.group_id,
         raw: payload
       };
     }

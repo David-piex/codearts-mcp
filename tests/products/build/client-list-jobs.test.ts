@@ -144,6 +144,111 @@ describe("createBuildClient listJobs", () => {
     });
   });
 
+  it("lists all user-visible jobs through the official v1 endpoint", async () => {
+    let requestedPath = "";
+    const client = createBuildClient({
+      get: async (path: string) => {
+        requestedPath = path;
+        return {
+          result: {
+            total: 1,
+            job_list: [{ id: "job-1", job_name: "gateway-build" }]
+          }
+        };
+      }
+    } as never);
+
+    const result = await client.listAllJobs({
+      page: 2,
+      page_size: 10,
+      keyword: "gateway",
+      build_status: "success",
+      creator_id: "user-1",
+      sort_field: "update_time",
+      sort_type: "desc"
+    });
+
+    expect(requestedPath).toBe(
+      "/v1/job/list?page_index=1&page_size=10&search=gateway&build_status=success&creator_id=user-1&sort_field=update_time&sort_type=desc"
+    );
+    expect(result).toEqual({
+      jobs: [{ id: "job-1", job_name: "gateway-build" }],
+      total: 1,
+      raw: {
+        total: 1,
+        job_list: [{ id: "job-1", job_name: "gateway-build" }]
+      }
+    });
+  });
+
+  it("lists brief records by build project ids", async () => {
+    let requestedBody: unknown;
+    const client = createBuildClient({
+      post: async (path: string, body?: unknown) => {
+        expect(path).toBe("/v1/record/brief");
+        requestedBody = body;
+        return {
+          result: {
+            total: 1,
+            brief_build_record_dtos: [{ id: "record-1", job_id: "job-1" }]
+          }
+        };
+      }
+    } as never);
+
+    const result = await client.listBriefRecords({
+      build_project_ids: ["build-project-1"],
+      body: { limit: 5 }
+    });
+
+    expect(requestedBody).toEqual({
+      limit: 5,
+      build_project_ids: ["build-project-1"]
+    });
+    expect(result.records).toEqual([{ id: "record-1", job_id: "job-1" }]);
+    expect(result.total).toBe(1);
+  });
+
+  it("lists v3 job history and gets v3 running status", async () => {
+    const requests: string[] = [];
+    const client = createBuildClient({
+      get: async (path: string) => {
+        requests.push(path);
+        if (path.includes("/history")) {
+          return {
+            result: {
+              total: 1,
+              history_records: [{ id: "record-1", status: "success" }]
+            }
+          };
+        }
+
+        return { result: { is_running: true } };
+      }
+    } as never);
+
+    await expect(
+      client.listJobHistoryV3({
+        job_id: "job-1",
+        page: 2,
+        page_size: 10,
+        interval: 7
+      })
+    ).resolves.toMatchObject({
+      records: [{ id: "record-1", status: "success" }],
+      total: 1
+    });
+    await expect(client.getJobRunningStatusV3({ job_id: "job-1" })).resolves.toEqual({
+      job_id: "job-1",
+      value: true,
+      raw: { is_running: true }
+    });
+    expect(requests).toEqual([
+      "/v3/jobs/job-1/history?offset=1&limit=10&interval=7",
+      "/v3/jobs/job-1/status"
+    ]);
+  });
+
   it("reuses a short-lived cache for repeated identical build job list calls", async () => {
     let now = 1_000;
     const get = vi.fn(async () => ({

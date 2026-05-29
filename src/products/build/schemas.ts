@@ -9,6 +9,19 @@ export const buildListProjectJobsV3Input = pagingSchema.extend({
   project_id: idSchema
 });
 
+export const buildListAllJobsInput = pagingSchema.extend({
+  keyword: z.string().min(1).optional(),
+  build_status: z.string().min(1).optional(),
+  creator_id: idSchema.optional(),
+  sort_field: z.string().min(1).optional(),
+  sort_type: z.string().min(1).optional()
+});
+
+export const buildListBriefRecordsInput = z.object({
+  build_project_ids: z.array(idSchema).min(1),
+  body: z.record(z.string(), z.unknown()).default({})
+});
+
 export const buildListImageTemplatesInput = z.object({});
 
 export const buildListDefaultParametersInput = z.object({});
@@ -174,6 +187,15 @@ export const buildListPeriodHistoryV3Input = pagingSchema.extend({
   job_id: idSchema,
   start_time: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   end_time: z.string().regex(/^\d{4}-\d{2}-\d{2}$/)
+});
+
+export const buildListJobHistoryV3Input = pagingSchema.extend({
+  job_id: idSchema,
+  interval: z.number().int().positive().optional()
+});
+
+export const buildGetJobRunningStatusV3Input = z.object({
+  job_id: idSchema
 });
 
 const buildDateTimeSchema = z.string().regex(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/);

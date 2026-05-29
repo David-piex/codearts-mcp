@@ -26,14 +26,14 @@
 | --- | ---: | --- |
 | 制品仓 | 48 | [Function-API-Reference-Artifact.md](./Function-API-Reference-Artifact.md) |
 | 鉴权会话 | 2 | [Function-API-Reference-Auth-Session.md](./Function-API-Reference-Auth-Session.md) |
-| 编译构建 | 95 | [Function-API-Reference-Build.md](./Function-API-Reference-Build.md) |
+| 编译构建 | 99 | [Function-API-Reference-Build.md](./Function-API-Reference-Build.md) |
 | 代码检查 | 92 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
 | 部署 | 74 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
 | 流水线 | 109 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 187 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 243 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
-| 测试计划 | 241 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **1091** | |
+| 测试计划 | 243 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
+| **总计** | **1097** | |
 
 ## 字段对应
 
@@ -128,6 +128,7 @@
 | `build_get_job_permission_internal` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_job_permission_internal) |
 | `build_get_job_pipeline_info` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_job_pipeline_info) |
 | `build_get_job_running_status` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_job_running_status) |
+| `build_get_job_running_status_v3` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_job_running_status_v3) |
 | `build_get_job_step_status` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_job_step_status) |
 | `build_get_job_success_ratio_v3` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_job_success_ratio_v3) |
 | `build_get_keystore_permission` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_keystore_permission) |
@@ -146,6 +147,8 @@
 | `build_get_task_log_page` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_task_log_page) |
 | `build_get_template` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_template) |
 | `build_get_yaml_template` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_yaml_template) |
+| `build_list_all_jobs` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_list_all_jobs) |
+| `build_list_brief_records` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_list_brief_records) |
 | `build_list_build_info_records_v3` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_list_build_info_records_v3) |
 | `build_list_build_parameter_types` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_list_build_parameter_types) |
 | `build_list_build_parameters` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_list_build_parameters) |
@@ -159,6 +162,7 @@
 | `build_list_image_templates` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_list_image_templates) |
 | `build_list_job_badge_branches` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_list_job_badge_branches) |
 | `build_list_job_group_tree` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_list_job_group_tree) |
+| `build_list_job_history_v3` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_list_job_history_v3) |
 | `build_list_job_notices_v3` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_list_job_notices_v3) |
 | `build_list_job_permission_roles` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_list_job_permission_roles) |
 | `build_list_job_update_history` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_list_job_update_history) |
@@ -933,6 +937,7 @@
 | `testplan_get_domain_need_popup` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_domain_need_popup) |
 | `testplan_get_domain_user_count` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_domain_user_count) |
 | `testplan_get_dynamic_global_variable` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_dynamic_global_variable) |
+| `testplan_get_excel_error_testcases` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_excel_error_testcases) |
 | `testplan_get_factor` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_factor) |
 | `testplan_get_free_declaration` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_free_declaration) |
 | `testplan_get_free_test_time` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_free_test_time) |
@@ -992,6 +997,7 @@
 | `testplan_get_test_design_testcase` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_test_design_testcase) |
 | `testplan_get_test_report` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_test_report) |
 | `testplan_get_testcase_change_statistics` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_testcase_change_statistics) |
+| `testplan_get_testcase_dataset` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_testcase_dataset) |
 | `testplan_get_testcase_dataset_sample` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_testcase_dataset_sample) |
 | `testplan_get_testcase_field` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_testcase_field) |
 | `testplan_get_testcase_script_detail_v1` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_testcase_script_detail_v1) |

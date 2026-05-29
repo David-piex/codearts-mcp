@@ -94,7 +94,11 @@ export const productCoverageConfigs: ProductCoverageConfig[] = [
     module: "TestPlan",
     docPath: "tmp/pdf-text/_____CodeArts_TestPlan_API__.txt",
     clientPaths: ["src/products/testplan/client.ts"],
-    toolNames: testPlanToolNames
+    toolNames: testPlanToolNames,
+    endpointAliases: {
+      "GET /v1/{project_id}/aw_cata/child_cata_data": "GET /v1/{project_id}/api-test-child-basic-aws",
+      "GET /v1/{project_id}/get_awName_view": "GET /v1/{project_id}/api-test-aw-name-views"
+    }
   }
 ];
 

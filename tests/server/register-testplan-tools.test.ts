@@ -108,6 +108,33 @@ describe("registerTestPlanTool", () => {
     );
   });
 
+  it("registers testcase dataset and Excel error read tools", () => {
+    const registerTool = vi.fn();
+    const tools = [
+      ["testplan_get_excel_error_testcases", "Get CodeArts TestPlan Excel error testcase generation result"],
+      ["testplan_get_testcase_dataset", "Get CodeArts TestPlan testcase dataset by case URI and group ID"]
+    ] as const;
+
+    for (const [toolName, description] of tools) {
+      const handled = registerTestPlanTool({
+        toolName,
+        server: { registerTool },
+        mode: "stdio",
+        stdioClient: {} as never
+      });
+
+      expect(handled).toBe(true);
+      expect(registerTool).toHaveBeenLastCalledWith(
+        toolName,
+        expect.objectContaining({
+          title: toolName,
+          description
+        }),
+        expect.any(Function)
+      );
+    }
+  });
+
   it("registers functional test status read tools", () => {
     const registerTool = vi.fn();
 

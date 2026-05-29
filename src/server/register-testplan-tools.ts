@@ -33,6 +33,7 @@ import {
   testPlanGetDomainNeedPopupInput,
   testPlanGetBranchInput,
   testPlanGetCaseTemplateInput,
+  testPlanGetExcelErrorTestcasesInput,
   testPlanListCaseTemplatesInput,
   testPlanGetCaseInput,
   testPlanGetCurrentUserPackagePermissionInput,
@@ -211,6 +212,7 @@ import {
   testPlanListTestcaseRelationsInput,
   testPlanListTestexecutorResourcePoolsInput,
   testPlanListSolutionTemplatesInput,
+  testPlanGetTestcaseDatasetInput,
   testPlanGetTestcaseDatasetSampleInput,
   testPlanGetTestcaseFieldInput,
   testPlanListTestcaseFieldsInput,
@@ -303,6 +305,7 @@ import { createTestPlanCountMindmapsHandler } from "../products/testplan/tools/c
 import { createTestPlanGetMindmapHandler } from "../products/testplan/tools/get-mindmap.js";
 import { createTestPlanGetMindmapBackupHandler } from "../products/testplan/tools/get-mindmap-backup.js";
 import { createTestPlanGetDynamicGlobalVariableHandler } from "../products/testplan/tools/get-dynamic-global-variable.js";
+import { createTestPlanGetExcelErrorTestcasesHandler } from "../products/testplan/tools/get-excel-error-testcases.js";
 import { createTestPlanGetMindmapCreatorNameHandler } from "../products/testplan/tools/get-mindmap-creator-name.js";
 import { createTestPlanGetMindmapPermissionHandler } from "../products/testplan/tools/get-mindmap-permission.js";
 import { createTestPlanGetMindmapRecycleHandler } from "../products/testplan/tools/get-mindmap-recycle.js";
@@ -355,6 +358,7 @@ import { createTestPlanGetTaskHandler } from "../products/testplan/tools/get-tas
 import { createTestPlanGetTaskResultDetailHandler } from "../products/testplan/tools/get-task-result-detail.js";
 import { createTestPlanGetTaskSuccessTestCasesCountHandler } from "../products/testplan/tools/get-task-success-testcases-count.js";
 import { createTestPlanGetTestcaseChangeStatisticsHandler } from "../products/testplan/tools/get-testcase-change-statistics.js";
+import { createTestPlanGetTestcaseDatasetHandler } from "../products/testplan/tools/get-testcase-dataset.js";
 import { createTestPlanGetTestcaseDatasetSampleHandler } from "../products/testplan/tools/get-testcase-dataset-sample.js";
 import { createTestPlanGetTestcaseFieldHandler } from "../products/testplan/tools/get-testcase-field.js";
 import { createTestPlanGetTestcaseScriptDetailV1Handler } from "../products/testplan/tools/get-testcase-script-detail-v1.js";
@@ -1473,6 +1477,12 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetCaseTemplateHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetCaseTemplateHandler
   }),
+  "testplan_get_excel_error_testcases": defineProductTool({
+    description: "Get CodeArts TestPlan Excel error testcase generation result",
+    inputSchema: testPlanGetExcelErrorTestcasesInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetExcelErrorTestcasesHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetExcelErrorTestcasesHandler
+  }),
   "testplan_list_case_templates": defineProductTool({
     description: "List CodeArts TestPlan case templates",
     inputSchema: testPlanListCaseTemplatesInput,
@@ -1862,6 +1872,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanGetTestcaseDatasetSampleInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetTestcaseDatasetSampleHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetTestcaseDatasetSampleHandler
+  }),
+  "testplan_get_testcase_dataset": defineProductTool({
+    description: "Get CodeArts TestPlan testcase dataset by case URI and group ID",
+    inputSchema: testPlanGetTestcaseDatasetInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetTestcaseDatasetHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetTestcaseDatasetHandler
   }),
   "testplan_list_feature_case_counts": defineProductTool({
     description: "List CodeArts TestPlan testcase counts grouped by feature",
