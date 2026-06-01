@@ -32,8 +32,8 @@
 | 流水线 | 109 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 187 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 243 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
-| 测试计划 | 266 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **1120** | |
+| 测试计划 | 274 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
+| **总计** | **1128** | |
 
 ## 字段对应
 
@@ -897,6 +897,7 @@
 | `req_upload_work_item_image_v2` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_upload_work_item_image_v2) |
 | `req_validate_module_name` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_validate_module_name) |
 | `req_validate_project_template_name` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_validate_project_template_name) |
+| `testplan_batch_delete_factors` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_batch_delete_factors) |
 | `testplan_batch_delete_tasks` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_batch_delete_tasks) |
 | `testplan_check_alert_template_name` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_check_alert_template_name) |
 | `testplan_check_alert_user_name` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_check_alert_user_name) |
@@ -910,13 +911,20 @@
 | `testplan_create_task` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_create_task) |
 | `testplan_create_task_relations` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_create_task_relations) |
 | `testplan_delete_asset` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_delete_asset) |
+| `testplan_delete_attachment` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_delete_attachment) |
 | `testplan_delete_basic_aws_v1` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_delete_basic_aws_v1) |
 | `testplan_delete_basic_aws_v2` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_delete_basic_aws_v2) |
+| `testplan_delete_customized_filter` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_delete_customized_filter) |
 | `testplan_delete_dynamic_global_variable` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_delete_dynamic_global_variable) |
+| `testplan_delete_factor` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_delete_factor) |
+| `testplan_delete_issue_dynamic_records` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_delete_issue_dynamic_records) |
 | `testplan_delete_mindmap` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_delete_mindmap) |
 | `testplan_delete_mindmap_backup` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_delete_mindmap_backup) |
 | `testplan_delete_mindmap_recycle` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_delete_mindmap_recycle) |
+| `testplan_delete_recycle_resource` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_delete_recycle_resource) |
 | `testplan_delete_test_design_template` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_delete_test_design_template) |
+| `testplan_delete_testcases_v3` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_delete_testcases_v3) |
+| `testplan_delete_vectors` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_delete_vectors) |
 | `testplan_download_asset_template` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_download_asset_template) |
 | `testplan_download_test_design_template` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_download_test_design_template) |
 | `testplan_export_mindmap` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_export_mindmap) |

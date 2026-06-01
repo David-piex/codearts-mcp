@@ -686,6 +686,73 @@ describe("createTestPlanClient", () => {
       value: "success",
       raw: { status: "success", result: "success" }
     });
+    await expect(client.deleteFactor({ project_id: "project-1", id: "factor-1" })).resolves.toEqual({
+      factor_id: "factor-1",
+      raw: { status: "success", result: "success" }
+    });
+    await expect(
+      client.batchDeleteFactors({ project_id: "project-1", factor_ids: ["factor-1", "factor-2"] })
+    ).resolves.toEqual({
+      factor_ids: ["factor-1", "factor-2"],
+      raw: { status: "success", result: "success" }
+    });
+    await expect(
+      client.deleteAttachment({ project_id: "project-1", attachment_uri: "attachment-1" })
+    ).resolves.toEqual({
+      attachment_uri: "attachment-1",
+      value: "success",
+      raw: { status: "success", result: "success" }
+    });
+    await expect(
+      client.deleteIssueDynamicRecords({
+        project_id: "project-1",
+        issue_id: "issue-1",
+        owner_id: "owner-1"
+      })
+    ).resolves.toEqual({
+      issue_id: "issue-1",
+      owner_id: "owner-1",
+      value: "success",
+      raw: { status: "success", result: "success" }
+    });
+    await expect(
+      client.deleteCustomizedFilter({ project_id: "project-1", filter_uri: "filter-1" })
+    ).resolves.toEqual({
+      filter_uri: "filter-1",
+      value: "success",
+      raw: { status: "success", result: "success" }
+    });
+    await expect(
+      client.deleteVectors({ project_uuid: "project-uuid-1", case_uris: ["case-1", "case-2"] })
+    ).resolves.toEqual({
+      project_uuid: "project-uuid-1",
+      case_uris: ["case-1", "case-2"],
+      value: "success",
+      raw: { status: "success", result: "success" }
+    });
+    await expect(
+      client.deleteRecycleResource({
+        project_uuid: "project-uuid-1",
+        resources: [{ resource_type: "TestCase", resource_uris: ["case-1"] }],
+        is_async: true
+      })
+    ).resolves.toEqual({
+      project_uuid: "project-uuid-1",
+      value: "success",
+      raw: { status: "success", result: "success" }
+    });
+    await expect(
+      client.deleteTestcasesV3({
+        project_id: "project-1",
+        testcases: [{ id: "case-1", type: "TestCase" }],
+        delete_git_script: true,
+        iterator_uri: "iterator-1"
+      })
+    ).resolves.toEqual({
+      project_id: "project-1",
+      value: "success",
+      raw: { status: "success", result: "success" }
+    });
 
     expect(requests).toEqual([
       { path: "/v1/project-1/asset/asset-1", body: undefined },
@@ -694,7 +761,31 @@ describe("createTestPlanClient", () => {
       { path: "/v2/project-1/mindmap-recycles/recycle-1", body: undefined },
       { path: "/v2/project-1/mindmap-backups/backup-1", body: undefined },
       { path: "/v1/project-1/basic-aws?is_api=true", body: ["aw-1", "aw-2"] },
-      { path: "/v2/project-1/basic-aws", body: ["aw-3"] }
+      { path: "/v2/project-1/basic-aws", body: ["aw-3"] },
+      { path: "/v1/project-1/factor/factor-1", body: undefined },
+      { path: "/v1/project-1/factor", body: { params: ["factor-1", "factor-2"] } },
+      { path: "/v4/project-1/attachments/attachment-1", body: undefined },
+      {
+        path: "/v4/projects/project-1/issue-update-records?issue_id=issue-1&owner_id=owner-1",
+        body: undefined
+      },
+      { path: "/v4/projects/project-1/filters/filter-1", body: undefined },
+      {
+        path: "/v4/testcases/vector",
+        body: { project_uuid: "project-uuid-1", case_uris: ["case-1", "case-2"] }
+      },
+      {
+        path: "/v4/recycle",
+        body: {
+          project_uuid: "project-uuid-1",
+          resources: [{ resource_type: "TestCase", resource_uris: ["case-1"] }],
+          is_async: true
+        }
+      },
+      {
+        path: "/v3/project-1/testcases?delete_git_script=true&iterator_uri=iterator-1",
+        body: [{ id: "case-1", type: "TestCase" }]
+      }
     ]);
   });
 

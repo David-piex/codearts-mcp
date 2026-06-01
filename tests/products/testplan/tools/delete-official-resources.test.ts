@@ -1,12 +1,20 @@
 import { describe, expect, it } from "vitest";
 import {
+  createTestPlanBatchDeleteFactorsHandler,
+  createTestPlanDeleteAttachmentHandler,
   createTestPlanDeleteAssetHandler,
   createTestPlanDeleteBasicAwsV1Handler,
   createTestPlanDeleteBasicAwsV2Handler,
+  createTestPlanDeleteCustomizedFilterHandler,
+  createTestPlanDeleteFactorHandler,
+  createTestPlanDeleteIssueDynamicRecordsHandler,
   createTestPlanDeleteMindmapBackupHandler,
   createTestPlanDeleteMindmapHandler,
   createTestPlanDeleteMindmapRecycleHandler,
-  createTestPlanDeleteTestDesignTemplateHandler
+  createTestPlanDeleteRecycleResourceHandler,
+  createTestPlanDeleteTestDesignTemplateHandler,
+  createTestPlanDeleteTestcasesV3Handler,
+  createTestPlanDeleteVectorsHandler
 } from "../../../../src/products/testplan/tools/delete-official-resources.js";
 
 describe("official TestPlan delete handlers", () => {
@@ -43,6 +51,46 @@ describe("official TestPlan delete handlers", () => {
     });
     const basicAwV2Handler = createTestPlanDeleteBasicAwsV2Handler({
       deleteBasicAwsV2: async () => {
+        throw new Error("should not execute in dry run");
+      }
+    });
+    const factorHandler = createTestPlanDeleteFactorHandler({
+      deleteFactor: async () => {
+        throw new Error("should not execute in dry run");
+      }
+    });
+    const factorBatchHandler = createTestPlanBatchDeleteFactorsHandler({
+      batchDeleteFactors: async () => {
+        throw new Error("should not execute in dry run");
+      }
+    });
+    const attachmentHandler = createTestPlanDeleteAttachmentHandler({
+      deleteAttachment: async () => {
+        throw new Error("should not execute in dry run");
+      }
+    });
+    const issueDynamicRecordsHandler = createTestPlanDeleteIssueDynamicRecordsHandler({
+      deleteIssueDynamicRecords: async () => {
+        throw new Error("should not execute in dry run");
+      }
+    });
+    const filterHandler = createTestPlanDeleteCustomizedFilterHandler({
+      deleteCustomizedFilter: async () => {
+        throw new Error("should not execute in dry run");
+      }
+    });
+    const vectorsHandler = createTestPlanDeleteVectorsHandler({
+      deleteVectors: async () => {
+        throw new Error("should not execute in dry run");
+      }
+    });
+    const recycleResourceHandler = createTestPlanDeleteRecycleResourceHandler({
+      deleteRecycleResource: async () => {
+        throw new Error("should not execute in dry run");
+      }
+    });
+    const testcasesV3Handler = createTestPlanDeleteTestcasesV3Handler({
+      deleteTestcasesV3: async () => {
         throw new Error("should not execute in dry run");
       }
     });
@@ -91,6 +139,76 @@ describe("official TestPlan delete handlers", () => {
         item: { id: "aw-3", executed: false, deletedCount: 1 }
       }
     });
+    await expect(factorHandler({ project_id: "project-1", id: "factor-1" })).resolves.toMatchObject({
+      structuredContent: {
+        summary: "Dry run: delete factor factor-1",
+        item: { id: "factor-1", executed: false }
+      }
+    });
+    await expect(
+      factorBatchHandler({ project_id: "project-1", factor_ids: ["factor-1", "factor-2"] })
+    ).resolves.toMatchObject({
+      structuredContent: {
+        summary: "Dry run: delete 2 factors",
+        item: { id: "factor-1,factor-2", executed: false, deletedCount: 2 }
+      }
+    });
+    await expect(
+      attachmentHandler({ project_id: "project-1", attachment_uri: "attachment-1" })
+    ).resolves.toMatchObject({
+      structuredContent: {
+        summary: "Dry run: delete attachment attachment-1",
+        item: { id: "attachment-1", executed: false }
+      }
+    });
+    await expect(
+      issueDynamicRecordsHandler({
+        project_id: "project-1",
+        issue_id: "issue-1",
+        owner_id: "owner-1"
+      })
+    ).resolves.toMatchObject({
+      structuredContent: {
+        summary: "Dry run: delete issue dynamic records issue-1",
+        item: { id: "issue-1", executed: false }
+      }
+    });
+    await expect(filterHandler({ project_id: "project-1", filter_uri: "filter-1" })).resolves.toMatchObject({
+      structuredContent: {
+        summary: "Dry run: delete customized filter filter-1",
+        item: { id: "filter-1", executed: false }
+      }
+    });
+    await expect(
+      vectorsHandler({ project_uuid: "project-uuid-1", case_uris: ["case-1", "case-2"] })
+    ).resolves.toMatchObject({
+      structuredContent: {
+        summary: "Dry run: delete 2 testcase vectors",
+        item: { id: "case-1,case-2", executed: false, deletedCount: 2 }
+      }
+    });
+    await expect(
+      recycleResourceHandler({
+        project_uuid: "project-uuid-1",
+        resources: [{ resource_type: "TestCase", resource_uris: ["case-1"] }]
+      })
+    ).resolves.toMatchObject({
+      structuredContent: {
+        summary: "Dry run: delete 1 recycle resources",
+        item: { id: "case-1", executed: false, deletedCount: 1 }
+      }
+    });
+    await expect(
+      testcasesV3Handler({
+        project_id: "project-1",
+        testcases: [{ id: "case-1", type: "TestCase" }]
+      })
+    ).resolves.toMatchObject({
+      structuredContent: {
+        summary: "Dry run: delete 1 v3 testcases",
+        item: { id: "case-1", executed: false, deletedCount: 1 }
+      }
+    });
   });
 
   it("executes official delete calls when dry_run is false", async () => {
@@ -102,6 +220,16 @@ describe("official TestPlan delete handlers", () => {
         aw_ids: input.aw_ids,
         value: "success",
         raw: { status: "success", result: "success" }
+      })
+    });
+    const testcasesV3Handler = createTestPlanDeleteTestcasesV3Handler({
+      deleteTestcasesV3: async () => ({
+        value: {
+          progress: {
+            id: "progress-1"
+          }
+        },
+        raw: { status: "success", result: { progress: { id: "progress-1" } } }
       })
     });
 
@@ -124,6 +252,24 @@ describe("official TestPlan delete handlers", () => {
           deletedCount: 1,
           value: "success",
           basicAws: { status: "success", result: "success" }
+        }
+      }
+    });
+    await expect(
+      testcasesV3Handler({
+        project_id: "project-1",
+        testcases: [{ id: "case-1", type: "TestCase" }],
+        dry_run: false
+      })
+    ).resolves.toMatchObject({
+      structuredContent: {
+        summary: "Deleted 1 v3 testcases case-1",
+        item: {
+          id: "case-1",
+          executed: true,
+          deletedCount: 1,
+          value: { progress: { id: "progress-1" } },
+          testcases: { status: "success", result: { progress: { id: "progress-1" } } }
         }
       }
     });

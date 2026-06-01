@@ -448,6 +448,18 @@ export const testPlanGetFactorInput = z.object({
   id: idSchema
 });
 
+export const testPlanDeleteFactorInput = z.object({
+  project_id: idSchema,
+  id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanBatchDeleteFactorsInput = z.object({
+  project_id: idSchema,
+  factor_ids: z.array(idSchema).min(1),
+  dry_run: z.boolean().default(true)
+});
+
 export const testPlanDeleteAssetInput = z.object({
   project_id: idSchema,
   id: idSchema,
@@ -514,6 +526,12 @@ export const testPlanListAttachmentsInput = z.object({
   project_id: idSchema,
   resource_uri: idSchema,
   resource_type: z.string().min(1)
+});
+
+export const testPlanDeleteAttachmentInput = z.object({
+  project_id: idSchema,
+  attachment_uri: idSchema,
+  dry_run: z.boolean().default(true)
 });
 
 export const testPlanListProjectFieldConfigsInput = z.object({
@@ -1216,6 +1234,47 @@ export const testPlanDeleteBasicAwsV1Input = z.object({
 });
 
 export const testPlanDeleteBasicAwsV2Input = testPlanDeleteBasicAwsV1Input;
+
+export const testPlanDeleteIssueDynamicRecordsInput = z.object({
+  project_id: idSchema,
+  issue_id: idSchema,
+  owner_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanDeleteCustomizedFilterInput = z.object({
+  project_id: idSchema,
+  filter_uri: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanDeleteVectorsInput = z.object({
+  project_uuid: idSchema,
+  case_uris: z.array(idSchema).min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanDeleteRecycleResourceInput = z.object({
+  project_uuid: idSchema,
+  resources: z
+    .array(
+      z.object({
+        resource_type: z.string().min(1),
+        resource_uris: z.array(idSchema).min(1)
+      })
+    )
+    .min(1),
+  is_async: z.boolean().optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanDeleteTestcasesV3Input = z.object({
+  project_id: idSchema,
+  testcases: z.array(z.record(z.string(), z.unknown())).min(1),
+  delete_git_script: z.boolean().optional(),
+  iterator_uri: idSchema.optional(),
+  dry_run: z.boolean().default(true)
+});
 
 export const testPlanGetProgressInput = z.object({
   id: idSchema,

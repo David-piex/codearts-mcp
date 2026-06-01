@@ -266,6 +266,26 @@ describe("registerTestPlanTool", () => {
         "Batch delete CodeArts TestPlan basic AW keywords via official v2 API (dry-run by default)"
       ],
       [
+        "testplan_delete_attachment",
+        "Delete a CodeArts TestPlan testcase attachment by URI (dry-run by default)"
+      ],
+      [
+        "testplan_delete_customized_filter",
+        "Delete a CodeArts TestPlan customized filter by URI (dry-run by default)"
+      ],
+      [
+        "testplan_delete_factor",
+        "Delete a CodeArts TestPlan factor by ID (dry-run by default)"
+      ],
+      [
+        "testplan_batch_delete_factors",
+        "Batch delete CodeArts TestPlan factors by IDs (dry-run by default)"
+      ],
+      [
+        "testplan_delete_issue_dynamic_records",
+        "Delete CodeArts TestPlan issue dynamic records by issue and owner (dry-run by default)"
+      ],
+      [
         "testplan_delete_mindmap",
         "Delete a CodeArts TestPlan mindmap by ID (dry-run by default)"
       ],
@@ -280,6 +300,18 @@ describe("registerTestPlanTool", () => {
       [
         "testplan_delete_test_design_template",
         "Delete a CodeArts TestPlan test design template by ID (dry-run by default)"
+      ],
+      [
+        "testplan_delete_recycle_resource",
+        "Permanently delete CodeArts TestPlan recycle-bin resources (dry-run by default)"
+      ],
+      [
+        "testplan_delete_testcases_v3",
+        "Batch delete CodeArts TestPlan v3 testcases and scripts (dry-run by default)"
+      ],
+      [
+        "testplan_delete_vectors",
+        "Delete CodeArts TestPlan testcase vectors by case URIs (dry-run by default)"
       ]
     ] as const;
 

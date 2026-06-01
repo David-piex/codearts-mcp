@@ -836,6 +836,20 @@ export type TestPlanClient = {
     name?: string;
     raw: Record<string, unknown>;
   }>;
+  deleteFactor: (input: {
+    project_id: string;
+    id: string;
+  }) => Promise<{
+    factor_id: string;
+    raw: Record<string, unknown>;
+  }>;
+  batchDeleteFactors: (input: {
+    project_id: string;
+    factor_ids: string[];
+  }) => Promise<{
+    factor_ids: string[];
+    raw: Record<string, unknown>;
+  }>;
   deleteAsset: (input: {
     project_id: string;
     id: string;
@@ -930,6 +944,14 @@ export type TestPlanClient = {
   }) => Promise<{
     attachments: Array<Record<string, unknown>>;
     total?: number;
+  }>;
+  deleteAttachment: (input: {
+    project_id: string;
+    attachment_uri: string;
+  }) => Promise<{
+    attachment_uri: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
   }>;
   listProjectFieldConfigs: (input: {
     project_id: string;
@@ -1663,6 +1685,55 @@ export type TestPlanClient = {
     is_api?: boolean;
   }) => Promise<{
     aw_ids: string[];
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  deleteIssueDynamicRecords: (input: {
+    project_id: string;
+    issue_id: string;
+    owner_id: string;
+  }) => Promise<{
+    issue_id: string;
+    owner_id: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  deleteCustomizedFilter: (input: {
+    project_id: string;
+    filter_uri: string;
+  }) => Promise<{
+    filter_uri: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  deleteVectors: (input: {
+    project_uuid: string;
+    case_uris: string[];
+  }) => Promise<{
+    project_uuid: string;
+    case_uris: string[];
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  deleteRecycleResource: (input: {
+    project_uuid: string;
+    resources: Array<{
+      resource_type: string;
+      resource_uris: string[];
+    }>;
+    is_async?: boolean;
+  }) => Promise<{
+    project_uuid: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  deleteTestcasesV3: (input: {
+    project_id: string;
+    testcases: Array<Record<string, unknown>>;
+    delete_git_script?: boolean;
+    iterator_uri?: string;
+  }) => Promise<{
+    project_id: string;
     value?: unknown;
     raw: Record<string, unknown>;
   }>;
@@ -4219,6 +4290,29 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         raw: factor
       };
     },
+    async deleteFactor(input) {
+      const response = await _http.delete(
+        `/v1/${encodeURIComponent(input.project_id)}/factor/${encodeURIComponent(input.id)}`
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        factor_id: input.id,
+        raw: payload
+      };
+    },
+    async batchDeleteFactors(input) {
+      const response = await _http.delete(
+        `/v1/${encodeURIComponent(input.project_id)}/factor`,
+        { params: input.factor_ids }
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        factor_ids: input.factor_ids,
+        raw: payload
+      };
+    },
     async deleteAsset(input) {
       const response = await _http.delete(
         `/v1/${encodeURIComponent(input.project_id)}/asset/${encodeURIComponent(input.id)}`
@@ -4394,6 +4488,18 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       return {
         attachments,
         total: readTotal(payload, response, attachments.length)
+      };
+    },
+    async deleteAttachment(input) {
+      const response = await _http.delete(
+        `/v4/${encodeURIComponent(input.project_id)}/attachments/${encodeURIComponent(input.attachment_uri)}`
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        attachment_uri: input.attachment_uri,
+        value: payload.value ?? payload.result ?? payload.data,
+        raw: payload
       };
     },
     async listProjectFieldConfigs(input) {
@@ -6013,6 +6119,80 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
 
       return {
         aw_ids: input.aw_ids,
+        value: payload.result ?? payload.value ?? payload.data,
+        raw: payload
+      };
+    },
+    async deleteIssueDynamicRecords(input) {
+      const query = new URLSearchParams({
+        issue_id: input.issue_id,
+        owner_id: input.owner_id
+      });
+      const response = await _http.delete(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/issue-update-records?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        issue_id: input.issue_id,
+        owner_id: input.owner_id,
+        value: payload.value ?? payload.result ?? payload.data,
+        raw: payload
+      };
+    },
+    async deleteCustomizedFilter(input) {
+      const response = await _http.delete(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/filters/${encodeURIComponent(input.filter_uri)}`
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        filter_uri: input.filter_uri,
+        value: payload.value ?? payload.result ?? payload.data,
+        raw: payload
+      };
+    },
+    async deleteVectors(input) {
+      const response = await _http.delete("/v4/testcases/vector", {
+        project_uuid: input.project_uuid,
+        case_uris: input.case_uris
+      });
+      const payload = readResultPayload(response);
+
+      return {
+        project_uuid: input.project_uuid,
+        case_uris: input.case_uris,
+        value: payload.value ?? payload.result ?? payload.data,
+        raw: payload
+      };
+    },
+    async deleteRecycleResource(input) {
+      const response = await _http.delete("/v4/recycle", {
+        project_uuid: input.project_uuid,
+        resources: input.resources,
+        is_async: input.is_async
+      });
+      const payload = readResultPayload(response);
+
+      return {
+        project_uuid: input.project_uuid,
+        value: payload.value ?? payload.result ?? payload.data,
+        raw: payload
+      };
+    },
+    async deleteTestcasesV3(input) {
+      const query = new URLSearchParams();
+      appendQueryValue(query, "delete_git_script", input.delete_git_script);
+      appendQueryValue(query, "iterator_uri", input.iterator_uri);
+      const suffix = query.size ? `?${query.toString()}` : "";
+      const response = await _http.delete(
+        `/v3/${encodeURIComponent(input.project_id)}/testcases${suffix}`,
+        input.testcases
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        project_id: input.project_id,
         value: payload.result ?? payload.value ?? payload.data,
         raw: payload
       };
