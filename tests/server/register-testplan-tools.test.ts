@@ -299,6 +299,47 @@ describe("registerTestPlanTool", () => {
     }
   });
 
+  it("registers official TestPlan misc tools", () => {
+    const registerTool = vi.fn();
+    const tools = [
+      [
+        "testplan_batch_send_notifications",
+        "Batch send CodeArts TestPlan notifications via official v4 API (dry-run by default)"
+      ],
+      [
+        "testplan_create_resource_uri_v4",
+        "Create a CodeArts TestPlan v4 resource URI via official API (dry-run by default)"
+      ],
+      [
+        "testplan_download_classes",
+        "Get CodeArts TestPlan class file download metadata via official v1 API"
+      ],
+      [
+        "testplan_update_user_infos",
+        "Update CodeArts TestPlan resource owner user information via official v1 API (dry-run by default)"
+      ]
+    ] as const;
+
+    for (const [toolName, description] of tools) {
+      const handled = registerTestPlanTool({
+        toolName,
+        server: { registerTool },
+        mode: "stdio",
+        stdioClient: {} as never
+      });
+
+      expect(handled).toBe(true);
+      expect(registerTool).toHaveBeenLastCalledWith(
+        toolName,
+        expect.objectContaining({
+          title: toolName,
+          description
+        }),
+        expect.any(Function)
+      );
+    }
+  });
+
   it("registers official TestPlan delete tools", () => {
     const registerTool = vi.fn();
     const tools = [

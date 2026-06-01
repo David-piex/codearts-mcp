@@ -1643,6 +1643,43 @@ export type TestPlanClient = {
     aws: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  batchSendNotifications: (input: {
+    project_id: string;
+    type?: string;
+    receivers?: string[];
+    comment_id?: string;
+    inner_text?: string;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  createResourceUriV4: (input: {
+    project_id: string;
+  }) => Promise<{
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  downloadClasses: (input: {
+    project_id: string;
+    testcase_ids?: string[];
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  updateUserInfos: (input: {
+    project_id: string;
+    old_user_num?: string;
+    new_user_num?: string;
+    update_business_type?: string;
+    update_resource_id?: string;
+    params?: Record<string, unknown>;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
   listApiTestBasicAwsBatch: (input: {
     project_id: string;
     aw_ids: string[];
@@ -6098,6 +6135,70 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       return {
         aws,
         total: readTotal(payload, response, aws.length)
+      };
+    },
+    async batchSendNotifications(input) {
+      const body = {
+        ...(input.body ?? {}),
+        ...(input.type !== undefined ? { type: input.type } : {}),
+        ...(input.receivers !== undefined ? { receivers: input.receivers } : {}),
+        ...(input.comment_id !== undefined ? { comment_id: input.comment_id } : {}),
+        ...(input.inner_text !== undefined ? { inner_text: input.inner_text } : {})
+      };
+      const response = await _http.post(
+        `/v4/${encodeURIComponent(input.project_id)}/notifications/batch-send`,
+        body
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        value: readResultValue(response, payload),
+        raw: payload
+      };
+    },
+    async createResourceUriV4(input) {
+      const response = await _http.post(`/GT3KServer/v4/${encodeURIComponent(input.project_id)}/resource-uri`);
+      const payload = readResultPayload(response);
+
+      return {
+        value: readResultValue(response, payload),
+        raw: payload
+      };
+    },
+    async downloadClasses(input) {
+      const body =
+        input.body ??
+        (input.testcase_ids !== undefined
+          ? {
+              DownloadClassesRequestBody: input.testcase_ids
+            }
+          : {});
+      const response = await _http.post(`/v1/${encodeURIComponent(input.project_id)}/scripts`, body);
+      const payload = readResultPayload(response);
+
+      return {
+        value: readResultValue(response, payload),
+        raw: payload
+      };
+    },
+    async updateUserInfos(input) {
+      const params =
+        input.params ??
+        {
+          ...(input.old_user_num !== undefined ? { old_user_num: input.old_user_num } : {}),
+          ...(input.new_user_num !== undefined ? { new_user_num: input.new_user_num } : {}),
+          ...(input.update_business_type !== undefined
+            ? { update_business_type: input.update_business_type }
+            : {}),
+          ...(input.update_resource_id !== undefined ? { update_resource_id: input.update_resource_id } : {})
+        };
+      const body = input.body ?? { params };
+      const response = await _http.put(`/v1/${encodeURIComponent(input.project_id)}/update-userinfo`, body);
+      const payload = readResultPayload(response);
+
+      return {
+        value: readResultValue(response, payload),
+        raw: payload
       };
     },
     async listApiTestBasicAwsBatch(input) {

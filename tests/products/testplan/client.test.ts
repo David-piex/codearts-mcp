@@ -910,6 +910,86 @@ describe("createTestPlanClient", () => {
     ]);
   });
 
+  it("calls official TestPlan misc endpoints", async () => {
+    const requests: Array<{ method: string; path: string; body?: unknown }> = [];
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requests.push({ method: "POST", path, body });
+        return { value: "success" };
+      },
+      put: async (path: string, body?: unknown) => {
+        requests.push({ method: "PUT", path, body });
+        return { code: "success", data: null };
+      }
+    } as never);
+
+    await expect(
+      client.batchSendNotifications({
+        project_id: "project-1",
+        type: "casecomment",
+        receivers: ["user-1"],
+        comment_id: "comment-1",
+        inner_text: "hello"
+      })
+    ).resolves.toEqual({
+      value: "success",
+      raw: { value: "success" }
+    });
+    await expect(client.createResourceUriV4({ project_id: "project-1" })).resolves.toEqual({
+      value: "success",
+      raw: { value: "success" }
+    });
+    await expect(
+      client.downloadClasses({ project_id: "project-1", testcase_ids: ["case-1"] })
+    ).resolves.toEqual({
+      value: "success",
+      raw: { value: "success" }
+    });
+    await expect(
+      client.updateUserInfos({
+        project_id: "project-1",
+        old_user_num: "old-user",
+        new_user_num: "new-user",
+        update_business_type: "mindmap",
+        update_resource_id: "mindmap-1"
+      })
+    ).resolves.toEqual({
+      value: null,
+      raw: { code: "success", data: null }
+    });
+
+    expect(requests).toEqual([
+      {
+        method: "POST",
+        path: "/v4/project-1/notifications/batch-send",
+        body: {
+          type: "casecomment",
+          receivers: ["user-1"],
+          comment_id: "comment-1",
+          inner_text: "hello"
+        }
+      },
+      { method: "POST", path: "/GT3KServer/v4/project-1/resource-uri", body: undefined },
+      {
+        method: "POST",
+        path: "/v1/project-1/scripts",
+        body: { DownloadClassesRequestBody: ["case-1"] }
+      },
+      {
+        method: "PUT",
+        path: "/v1/project-1/update-userinfo",
+        body: {
+          params: {
+            old_user_num: "old-user",
+            new_user_num: "new-user",
+            update_business_type: "mindmap",
+            update_resource_id: "mindmap-1"
+          }
+        }
+      }
+    ]);
+  });
+
   it("lists test suite tasks using the v4 batch query endpoint", async () => {
     let requestedPath = "";
     let requestedBody: Record<string, unknown> | undefined;

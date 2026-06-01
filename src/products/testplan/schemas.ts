@@ -1228,6 +1228,40 @@ export const testPlanUpdateAwCataFirstInput = z.object({
 
 const testPlanAwRequestBodyInput = z.record(z.string(), z.unknown());
 
+const testPlanGenericRequestBodyInput = z.record(z.string(), z.unknown());
+
+export const testPlanBatchSendNotificationsInput = z.object({
+  project_id: idSchema,
+  type: z.string().min(1).optional(),
+  receivers: z.array(z.string().min(1)).optional(),
+  comment_id: idSchema.optional(),
+  inner_text: z.string().optional(),
+  body: testPlanGenericRequestBodyInput.optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanCreateResourceUriV4Input = z.object({
+  project_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanDownloadClassesInput = z.object({
+  project_id: idSchema,
+  testcase_ids: z.array(idSchema).min(1).optional(),
+  body: testPlanGenericRequestBodyInput.optional()
+});
+
+export const testPlanUpdateUserInfosInput = z.object({
+  project_id: idSchema,
+  old_user_num: idSchema.optional(),
+  new_user_num: idSchema.optional(),
+  update_business_type: z.string().min(1).optional(),
+  update_resource_id: idSchema.optional(),
+  params: testPlanGenericRequestBodyInput.optional(),
+  body: testPlanGenericRequestBodyInput.optional(),
+  dry_run: z.boolean().default(true)
+});
+
 export const testPlanCreateAwCataFirstInput = z.object({
   project_id: idSchema,
   name: z.string().min(1).optional(),

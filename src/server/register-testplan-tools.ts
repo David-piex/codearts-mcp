@@ -3,6 +3,7 @@ import { officialApiRequestInput } from "../products/official-api.js";
 import { createTestPlanClient } from "../products/testplan/client.js";
 import {
   testPlanBatchDeleteTasksInput,
+  testPlanBatchSendNotificationsInput,
   testPlanCheckAlertTemplateNameInput,
   testPlanCheckAlertUserNameInput,
   testPlanCheckApiTestTaskNameInput,
@@ -16,6 +17,7 @@ import {
   testPlanCreateTaskRelationsInput,
   testPlanBatchDeleteFactorsInput,
   testPlanCreateAwCataFirstInput,
+  testPlanCreateResourceUriV4Input,
   testPlanDeleteAssetInput,
   testPlanDeleteAttachmentInput,
   testPlanDeleteAwCatasInput,
@@ -32,6 +34,7 @@ import {
   testPlanDeleteTestDesignTemplateInput,
   testPlanDeleteTestcasesV3Input,
   testPlanDeleteVectorsInput,
+  testPlanDownloadClassesInput,
   testPlanSaveAwRefreshToAllInput,
   testPlanGetApiTestAvailableConfigInput,
   testPlanGetApiTestBasicAwV3Input,
@@ -50,6 +53,7 @@ import {
   testPlanShowTaskStatusInput,
   testPlanShowTaskStatusTwoInput,
   testPlanUpdateAwNameViewInput,
+  testPlanUpdateUserInfosInput,
   testPlanGetBackgroundInfoInput,
   testPlanGetDomainAccessInfoInput,
   testPlanGetDomainDetailInfoInput,
@@ -375,6 +379,12 @@ import {
   createTestPlanUpdateTimeOutViewHandler
 } from "../products/testplan/tools/aw-write-tools.js";
 import {
+  createTestPlanBatchSendNotificationsHandler,
+  createTestPlanCreateResourceUriV4Handler,
+  createTestPlanDownloadClassesHandler,
+  createTestPlanUpdateUserInfosHandler
+} from "../products/testplan/tools/official-misc-tools.js";
+import {
   createTestPlanBatchDeleteFactorsHandler,
   createTestPlanDeleteAttachmentHandler,
   createTestPlanDeleteAssetHandler,
@@ -587,6 +597,12 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createOfficialApiRequestHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createOfficialApiRequestHandler
   }),
+  "testplan_batch_send_notifications": defineProductTool({
+    description: "Batch send CodeArts TestPlan notifications via official v4 API (dry-run by default)",
+    inputSchema: testPlanBatchSendNotificationsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanBatchSendNotificationsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanBatchSendNotificationsHandler
+  }),
   "testplan_list_plans": defineProductTool({
     description: "List CodeArts TestPlan plans",
     inputSchema: testPlanListPlansInput,
@@ -766,6 +782,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanDownloadAssetTemplateInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanDownloadAssetTemplateHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanDownloadAssetTemplateHandler
+  }),
+  "testplan_download_classes": defineProductTool({
+    description: "Get CodeArts TestPlan class file download metadata via official v1 API",
+    inputSchema: testPlanDownloadClassesInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanDownloadClassesHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanDownloadClassesHandler
   }),
   "testplan_export_mindmap": defineProductTool({
     description: "Get CodeArts TestPlan mindmap export metadata via official v1 API",
@@ -1199,6 +1221,12 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanCreateAwCataFirstHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanCreateAwCataFirstHandler
   }),
+  "testplan_create_resource_uri_v4": defineProductTool({
+    description: "Create a CodeArts TestPlan v4 resource URI via official API (dry-run by default)",
+    inputSchema: testPlanCreateResourceUriV4Input,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanCreateResourceUriV4Handler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanCreateResourceUriV4Handler
+  }),
   "testplan_delete_aw_catas": defineProductTool({
     description: "Batch delete CodeArts TestPlan AW keywords and catalogs via official v1 API (dry-run by default)",
     inputSchema: testPlanDeleteAwCatasInput,
@@ -1222,6 +1250,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanUpdateTimeOutViewInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanUpdateTimeOutViewHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanUpdateTimeOutViewHandler
+  }),
+  "testplan_update_user_infos": defineProductTool({
+    description: "Update CodeArts TestPlan resource owner user information via official v1 API (dry-run by default)",
+    inputSchema: testPlanUpdateUserInfosInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanUpdateUserInfosHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanUpdateUserInfosHandler
   }),
   "testplan_save_aw_refresh_to_all": defineProductTool({
     description: "Refresh matching CodeArts TestPlan cases from an AW keyword via official v1 API (dry-run by default)",
