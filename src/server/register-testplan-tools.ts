@@ -14,6 +14,13 @@ import {
   testPlanCountMindmapsInput,
   testPlanCreateTaskInput,
   testPlanCreateTaskRelationsInput,
+  testPlanDeleteAssetInput,
+  testPlanDeleteBasicAwsV1Input,
+  testPlanDeleteBasicAwsV2Input,
+  testPlanDeleteMindmapBackupInput,
+  testPlanDeleteMindmapInput,
+  testPlanDeleteMindmapRecycleInput,
+  testPlanDeleteTestDesignTemplateInput,
   testPlanGetApiTestAvailableConfigInput,
   testPlanGetApiTestBasicAwV3Input,
   testPlanGetApiTestBasicAwV4Input,
@@ -345,6 +352,15 @@ import { createTestPlanGetMindmapStatisticsHandler } from "../products/testplan/
 import { createTestPlanListDynamicGlobalVariablesHandler } from "../products/testplan/tools/list-dynamic-global-variables.js";
 import { createTestPlanUpdateDynamicGlobalVariableHandler } from "../products/testplan/tools/update-dynamic-global-variable.js";
 import { createTestPlanDeleteDynamicGlobalVariableHandler } from "../products/testplan/tools/delete-dynamic-global-variable.js";
+import {
+  createTestPlanDeleteAssetHandler,
+  createTestPlanDeleteBasicAwsV1Handler,
+  createTestPlanDeleteBasicAwsV2Handler,
+  createTestPlanDeleteMindmapBackupHandler,
+  createTestPlanDeleteMindmapHandler,
+  createTestPlanDeleteMindmapRecycleHandler,
+  createTestPlanDeleteTestDesignTemplateHandler
+} from "../products/testplan/tools/delete-official-resources.js";
 import { createTestPlanListMindmapBackupsHandler } from "../products/testplan/tools/list-mindmap-backups.js";
 import { createTestPlanListMindmapsV2Handler } from "../products/testplan/tools/list-mindmaps-v2.js";
 import { createTestPlanListMindmapsV3Handler } from "../products/testplan/tools/list-mindmaps-v3.js";
@@ -571,6 +587,12 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetMindmapHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetMindmapHandler
   }),
+  "testplan_delete_mindmap": defineProductTool({
+    description: "Delete a CodeArts TestPlan mindmap by ID (dry-run by default)",
+    inputSchema: testPlanDeleteMindmapInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanDeleteMindmapHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanDeleteMindmapHandler
+  }),
   "testplan_get_mindmap_creator_name": defineProductTool({
     description: "Get CodeArts TestPlan mindmap creator name",
     inputSchema: testPlanGetMindmapCreatorNameInput,
@@ -595,11 +617,23 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetMindmapRecycleHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetMindmapRecycleHandler
   }),
+  "testplan_delete_mindmap_recycle": defineProductTool({
+    description: "Delete a CodeArts TestPlan mindmap recycle-bin item by ID (dry-run by default)",
+    inputSchema: testPlanDeleteMindmapRecycleInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanDeleteMindmapRecycleHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanDeleteMindmapRecycleHandler
+  }),
   "testplan_get_mindmap_backup": defineProductTool({
     description: "Get CodeArts TestPlan mindmap backup detail",
     inputSchema: testPlanGetMindmapBackupInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetMindmapBackupHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetMindmapBackupHandler
+  }),
+  "testplan_delete_mindmap_backup": defineProductTool({
+    description: "Delete a CodeArts TestPlan mindmap backup by ID (dry-run by default)",
+    inputSchema: testPlanDeleteMindmapBackupInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanDeleteMindmapBackupHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanDeleteMindmapBackupHandler
   }),
   "testplan_get_mindmap_statistics": defineProductTool({
     description: "Get CodeArts TestPlan mindmap resource statistics",
@@ -684,6 +718,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanGetTestDesignTemplateInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetTestDesignTemplateHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetTestDesignTemplateHandler
+  }),
+  "testplan_delete_test_design_template": defineProductTool({
+    description: "Delete a CodeArts TestPlan test design template by ID (dry-run by default)",
+    inputSchema: testPlanDeleteTestDesignTemplateInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanDeleteTestDesignTemplateHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanDeleteTestDesignTemplateHandler
   }),
   "testplan_download_test_design_template": defineProductTool({
     description: "Get CodeArts TestPlan test design template download metadata",
@@ -979,6 +1019,12 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListAssetsHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListAssetsHandler
   }),
+  "testplan_delete_asset": defineProductTool({
+    description: "Delete a CodeArts TestPlan test factor center asset by ID (dry-run by default)",
+    inputSchema: testPlanDeleteAssetInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanDeleteAssetHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanDeleteAssetHandler
+  }),
   "testplan_list_project_assets_v1": defineProductTool({
     description: "List CodeArts TestPlan project assets via official v1 API",
     inputSchema: testPlanListProjectAssetsV1Input,
@@ -1104,6 +1150,18 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanUpdateAwCataFirstInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanUpdateAwCataFirstHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanUpdateAwCataFirstHandler
+  }),
+  "testplan_delete_basic_aws_v1": defineProductTool({
+    description: "Batch delete CodeArts TestPlan basic AW keywords via official v1 API (dry-run by default)",
+    inputSchema: testPlanDeleteBasicAwsV1Input,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanDeleteBasicAwsV1Handler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanDeleteBasicAwsV1Handler
+  }),
+  "testplan_delete_basic_aws_v2": defineProductTool({
+    description: "Batch delete CodeArts TestPlan basic AW keywords via official v2 API (dry-run by default)",
+    inputSchema: testPlanDeleteBasicAwsV2Input,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanDeleteBasicAwsV2Handler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanDeleteBasicAwsV2Handler
   }),
   "testplan_list_api_test_aw_name_views": defineProductTool({
     description: "List CodeArts TestPlan API test AW name view settings",

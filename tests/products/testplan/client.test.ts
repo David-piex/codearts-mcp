@@ -628,6 +628,76 @@ describe("createTestPlanClient", () => {
     });
   });
 
+  it("deletes official TestPlan resources by documented endpoints", async () => {
+    const requests: Array<{ path: string; body?: unknown }> = [];
+    const client = createTestPlanClient({
+      delete: async (path: string, body?: unknown) => {
+        requests.push({ path, body });
+        return {
+          status: "success",
+          result: "success"
+        };
+      }
+    } as never);
+
+    await expect(client.deleteAsset({ project_id: "project-1", id: "asset-1" })).resolves.toEqual({
+      asset_id: "asset-1",
+      raw: { status: "success", result: "success" }
+    });
+    await expect(
+      client.deleteMindmap({ project_id: "project-1", id: "mindmap-1" })
+    ).resolves.toEqual({
+      mindmap_id: "mindmap-1",
+      raw: { status: "success", result: "success" }
+    });
+    await expect(
+      client.deleteTestDesignTemplate({ project_id: "project-1", id: "template-1" })
+    ).resolves.toEqual({
+      template_id: "template-1",
+      raw: { status: "success", result: "success" }
+    });
+    await expect(
+      client.deleteMindmapRecycle({ project_id: "project-1", id: "recycle-1" })
+    ).resolves.toEqual({
+      recycle_id: "recycle-1",
+      raw: { status: "success", result: "success" }
+    });
+    await expect(
+      client.deleteMindmapBackup({ project_id: "project-1", id: "backup-1" })
+    ).resolves.toEqual({
+      backup_id: "backup-1",
+      raw: { status: "success", result: "success" }
+    });
+    await expect(
+      client.deleteBasicAwsV1({
+        project_id: "project-1",
+        aw_ids: ["aw-1", "aw-2"],
+        is_api: true
+      })
+    ).resolves.toEqual({
+      aw_ids: ["aw-1", "aw-2"],
+      value: "success",
+      raw: { status: "success", result: "success" }
+    });
+    await expect(
+      client.deleteBasicAwsV2({ project_id: "project-1", aw_ids: ["aw-3"] })
+    ).resolves.toEqual({
+      aw_ids: ["aw-3"],
+      value: "success",
+      raw: { status: "success", result: "success" }
+    });
+
+    expect(requests).toEqual([
+      { path: "/v1/project-1/asset/asset-1", body: undefined },
+      { path: "/v1/project-1/mindmaps/mindmap-1", body: undefined },
+      { path: "/v2/project-1/templates/template-1", body: undefined },
+      { path: "/v2/project-1/mindmap-recycles/recycle-1", body: undefined },
+      { path: "/v2/project-1/mindmap-backups/backup-1", body: undefined },
+      { path: "/v1/project-1/basic-aws?is_api=true", body: ["aw-1", "aw-2"] },
+      { path: "/v2/project-1/basic-aws", body: ["aw-3"] }
+    ]);
+  });
+
   it("lists test suite tasks using the v4 batch query endpoint", async () => {
     let requestedPath = "";
     let requestedBody: Record<string, unknown> | undefined;

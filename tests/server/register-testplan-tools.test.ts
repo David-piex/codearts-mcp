@@ -250,6 +250,59 @@ describe("registerTestPlanTool", () => {
     );
   });
 
+  it("registers official TestPlan delete tools", () => {
+    const registerTool = vi.fn();
+    const tools = [
+      [
+        "testplan_delete_asset",
+        "Delete a CodeArts TestPlan test factor center asset by ID (dry-run by default)"
+      ],
+      [
+        "testplan_delete_basic_aws_v1",
+        "Batch delete CodeArts TestPlan basic AW keywords via official v1 API (dry-run by default)"
+      ],
+      [
+        "testplan_delete_basic_aws_v2",
+        "Batch delete CodeArts TestPlan basic AW keywords via official v2 API (dry-run by default)"
+      ],
+      [
+        "testplan_delete_mindmap",
+        "Delete a CodeArts TestPlan mindmap by ID (dry-run by default)"
+      ],
+      [
+        "testplan_delete_mindmap_backup",
+        "Delete a CodeArts TestPlan mindmap backup by ID (dry-run by default)"
+      ],
+      [
+        "testplan_delete_mindmap_recycle",
+        "Delete a CodeArts TestPlan mindmap recycle-bin item by ID (dry-run by default)"
+      ],
+      [
+        "testplan_delete_test_design_template",
+        "Delete a CodeArts TestPlan test design template by ID (dry-run by default)"
+      ]
+    ] as const;
+
+    for (const [toolName, description] of tools) {
+      const handled = registerTestPlanTool({
+        toolName,
+        server: { registerTool },
+        mode: "stdio",
+        stdioClient: {} as never
+      });
+
+      expect(handled).toBe(true);
+      expect(registerTool).toHaveBeenLastCalledWith(
+        toolName,
+        expect.objectContaining({
+          title: toolName,
+          description
+        }),
+        expect.any(Function)
+      );
+    }
+  });
+
   it("registers dynamic global variable tools", () => {
     const registerTool = vi.fn();
 

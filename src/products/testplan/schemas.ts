@@ -448,9 +448,21 @@ export const testPlanGetFactorInput = z.object({
   id: idSchema
 });
 
+export const testPlanDeleteAssetInput = z.object({
+  project_id: idSchema,
+  id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
 export const testPlanGetTestDesignTemplateInput = z.object({
   project_id: idSchema,
   id: idSchema
+});
+
+export const testPlanDeleteTestDesignTemplateInput = z.object({
+  project_id: idSchema,
+  id: idSchema,
+  dry_run: z.boolean().default(true)
 });
 
 export const testPlanDownloadTestDesignTemplateInput = z.object({
@@ -465,6 +477,24 @@ export const testPlanDownloadAssetTemplateInput = z.object({
 export const testPlanExportMindmapInput = z.object({
   project_id: idSchema,
   id: idSchema
+});
+
+export const testPlanDeleteMindmapInput = z.object({
+  project_id: idSchema,
+  id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanDeleteMindmapRecycleInput = z.object({
+  project_id: idSchema,
+  id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanDeleteMindmapBackupInput = z.object({
+  project_id: idSchema,
+  id: idSchema,
+  dry_run: z.boolean().default(true)
 });
 
 export const testPlanListTesthubServicesInput = z.object({});
@@ -1177,6 +1207,15 @@ export const testPlanUpdateAwCataFirstInput = z.object({
   source_type: z.union([z.string().min(1), z.number().int()]).optional(),
   dry_run: z.boolean().default(true)
 });
+
+export const testPlanDeleteBasicAwsV1Input = z.object({
+  project_id: idSchema,
+  aw_ids: z.array(idSchema).min(1),
+  is_api: z.boolean().optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanDeleteBasicAwsV2Input = testPlanDeleteBasicAwsV1Input;
 
 export const testPlanGetProgressInput = z.object({
   id: idSchema,

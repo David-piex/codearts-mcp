@@ -836,12 +836,26 @@ export type TestPlanClient = {
     name?: string;
     raw: Record<string, unknown>;
   }>;
+  deleteAsset: (input: {
+    project_id: string;
+    id: string;
+  }) => Promise<{
+    asset_id: string;
+    raw: Record<string, unknown>;
+  }>;
   getTestDesignTemplate: (input: {
     project_id: string;
     id: string;
   }) => Promise<{
     template_id: string;
     name?: string;
+    raw: Record<string, unknown>;
+  }>;
+  deleteTestDesignTemplate: (input: {
+    project_id: string;
+    id: string;
+  }) => Promise<{
+    template_id: string;
     raw: Record<string, unknown>;
   }>;
   downloadTestDesignTemplate: (input: {
@@ -865,6 +879,27 @@ export type TestPlanClient = {
   }) => Promise<{
     mindmap_id: string;
     name?: string;
+    raw: Record<string, unknown>;
+  }>;
+  deleteMindmap: (input: {
+    project_id: string;
+    id: string;
+  }) => Promise<{
+    mindmap_id: string;
+    raw: Record<string, unknown>;
+  }>;
+  deleteMindmapRecycle: (input: {
+    project_id: string;
+    id: string;
+  }) => Promise<{
+    recycle_id: string;
+    raw: Record<string, unknown>;
+  }>;
+  deleteMindmapBackup: (input: {
+    project_id: string;
+    id: string;
+  }) => Promise<{
+    backup_id: string;
     raw: Record<string, unknown>;
   }>;
   listTesthubServices: () => Promise<{
@@ -1610,6 +1645,24 @@ export type TestPlanClient = {
     source_type?: string | number;
   }) => Promise<{
     cata_id: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  deleteBasicAwsV1: (input: {
+    project_id: string;
+    aw_ids: string[];
+    is_api?: boolean;
+  }) => Promise<{
+    aw_ids: string[];
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  deleteBasicAwsV2: (input: {
+    project_id: string;
+    aw_ids: string[];
+    is_api?: boolean;
+  }) => Promise<{
+    aw_ids: string[];
     value?: unknown;
     raw: Record<string, unknown>;
   }>;
@@ -4166,6 +4219,17 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         raw: factor
       };
     },
+    async deleteAsset(input) {
+      const response = await _http.delete(
+        `/v1/${encodeURIComponent(input.project_id)}/asset/${encodeURIComponent(input.id)}`
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        asset_id: input.id,
+        raw: payload
+      };
+    },
     async getTestDesignTemplate(input) {
       const response = await _http.get(
         `/v2/${encodeURIComponent(input.project_id)}/templates/${encodeURIComponent(input.id)}`
@@ -4177,6 +4241,17 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         template_id: String(template.id ?? template.uri ?? input.id),
         name: typeof template.name === "string" ? template.name : undefined,
         raw: template
+      };
+    },
+    async deleteTestDesignTemplate(input) {
+      const response = await _http.delete(
+        `/v2/${encodeURIComponent(input.project_id)}/templates/${encodeURIComponent(input.id)}`
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        template_id: input.id,
+        raw: payload
       };
     },
     async downloadTestDesignTemplate(input) {
@@ -4225,6 +4300,39 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         mindmap_id: String(mindmap.id ?? mindmap.uri ?? input.id),
         name: typeof mindmap.name === "string" ? mindmap.name : undefined,
         raw: mindmap
+      };
+    },
+    async deleteMindmap(input) {
+      const response = await _http.delete(
+        `/v1/${encodeURIComponent(input.project_id)}/mindmaps/${encodeURIComponent(input.id)}`
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        mindmap_id: input.id,
+        raw: payload
+      };
+    },
+    async deleteMindmapRecycle(input) {
+      const response = await _http.delete(
+        `/v2/${encodeURIComponent(input.project_id)}/mindmap-recycles/${encodeURIComponent(input.id)}`
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        recycle_id: input.id,
+        raw: payload
+      };
+    },
+    async deleteMindmapBackup(input) {
+      const response = await _http.delete(
+        `/v2/${encodeURIComponent(input.project_id)}/mindmap-backups/${encodeURIComponent(input.id)}`
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        backup_id: input.id,
+        raw: payload
       };
     },
     async listTesthubServices() {
@@ -5873,6 +5981,38 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
 
       return {
         cata_id: input.cata_id,
+        value: payload.result ?? payload.value ?? payload.data,
+        raw: payload
+      };
+    },
+    async deleteBasicAwsV1(input) {
+      const query = new URLSearchParams();
+      appendQueryValue(query, "is_api", input.is_api);
+      const suffix = query.size ? `?${query.toString()}` : "";
+      const response = await _http.delete(
+        `/v1/${encodeURIComponent(input.project_id)}/basic-aws${suffix}`,
+        input.aw_ids
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        aw_ids: input.aw_ids,
+        value: payload.result ?? payload.value ?? payload.data,
+        raw: payload
+      };
+    },
+    async deleteBasicAwsV2(input) {
+      const query = new URLSearchParams();
+      appendQueryValue(query, "is_api", input.is_api);
+      const suffix = query.size ? `?${query.toString()}` : "";
+      const response = await _http.delete(
+        `/v2/${encodeURIComponent(input.project_id)}/basic-aws${suffix}`,
+        input.aw_ids
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        aw_ids: input.aw_ids,
         value: payload.result ?? payload.value ?? payload.data,
         raw: payload
       };
