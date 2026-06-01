@@ -233,6 +233,7 @@ import {
   testPlanListV4TestcaseReviewsInput,
   testPlanListVariableGroupsInput,
   testPlanListVariablesByGroupInput,
+  testPlanListVariablesByGroupWithSensitiveInput,
   testPlanListVariablesV3Input,
   testPlanListVisibleServicesInput,
   testPlanListUserExecuteTestcaseStatisticsInput,
@@ -242,6 +243,10 @@ import {
   testPlanSearchApiTestBasicAwInfosInput,
   testPlanSearchFeaturesByCaseInput,
   testPlanSearchFeaturesInput,
+  testPlanShowAwNameViewInput,
+  testPlanShowSensitivePropertyByIdInput,
+  testPlanShowTimeOutViewInput,
+  testPlanShowVariablesDecryptInput,
   testPlanStopTaskExecutionInput,
   testPlanUpdateTaskInput
 } from "../products/testplan/schemas.js";
@@ -264,6 +269,13 @@ import { createTestPlanGetApiTestPackageChargeMessageHandler } from "../products
 import { createTestPlanGetApiTestPackageChargePopupHandler } from "../products/testplan/tools/get-api-test-package-charge-popup.js";
 import { createTestPlanGetCaseLogdataArchiveHandler } from "../products/testplan/tools/get-case-logdata-archive.js";
 import { createTestPlanGetCaseLogdataUploadUrlHandler } from "../products/testplan/tools/get-case-logdata-upload-url.js";
+import {
+  createTestPlanListVariablesByGroupWithSensitiveHandler,
+  createTestPlanShowAwNameViewHandler,
+  createTestPlanShowSensitivePropertyByIdHandler,
+  createTestPlanShowTimeOutViewHandler,
+  createTestPlanShowVariablesDecryptHandler
+} from "../products/testplan/tools/official-v1-settings-tools.js";
 import {
   createTestPlanGetProjectDnsMappingV1Handler,
   createTestPlanListProjectAssetsV1Handler,
@@ -1045,6 +1057,12 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListApiTestAwNameViewsHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListApiTestAwNameViewsHandler
   }),
+  "testplan_show_aw_name_view": defineProductTool({
+    description: "Show CodeArts TestPlan AW name display settings via official v1 API",
+    inputSchema: testPlanShowAwNameViewInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanShowAwNameViewHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanShowAwNameViewHandler
+  }),
   "testplan_list_api_test_basic_aws_batch": defineProductTool({
     description: "Batch list CodeArts TestPlan API test basic AW entries by AW IDs",
     inputSchema: testPlanListApiTestBasicAwsBatchInput,
@@ -1135,6 +1153,12 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTimeoutSettingsHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListTimeoutSettingsHandler
   }),
+  "testplan_show_time_out_view": defineProductTool({
+    description: "Show CodeArts TestPlan timeout display settings via official v1 API",
+    inputSchema: testPlanShowTimeOutViewInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanShowTimeOutViewHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanShowTimeOutViewHandler
+  }),
   "testplan_list_variables_v3": defineProductTool({
     description: "List CodeArts TestPlan v3 variables with sensitive values redacted",
     inputSchema: testPlanListVariablesV3Input,
@@ -1146,6 +1170,24 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListVariablesByGroupInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListVariablesByGroupHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListVariablesByGroupHandler
+  }),
+  "testplan_list_variables_by_group_with_sensitive": defineProductTool({
+    description: "List CodeArts TestPlan variables by group via official sensitive endpoint with values redacted",
+    inputSchema: testPlanListVariablesByGroupWithSensitiveInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListVariablesByGroupWithSensitiveHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListVariablesByGroupWithSensitiveHandler
+  }),
+  "testplan_show_sensitive_property_by_id": defineProductTool({
+    description: "Show CodeArts TestPlan variable sensitive property with value redacted",
+    inputSchema: testPlanShowSensitivePropertyByIdInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanShowSensitivePropertyByIdHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanShowSensitivePropertyByIdHandler
+  }),
+  "testplan_show_variables_decrypt": defineProductTool({
+    description: "Show CodeArts TestPlan decrypted variable value with value redacted",
+    inputSchema: testPlanShowVariablesDecryptInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanShowVariablesDecryptHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanShowVariablesDecryptHandler
   }),
   "testplan_get_variable_synchronization_v2": defineProductTool({
     description: "Get CodeArts TestPlan v2 variable synchronization information",

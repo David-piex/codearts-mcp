@@ -185,7 +185,15 @@ describe("registerTestPlanTool", () => {
     const tools = [
       ["testplan_list_project_assets_v1", "List CodeArts TestPlan project assets via official v1 API"],
       ["testplan_list_project_branches_v1", "List CodeArts TestPlan project branches via official v1 API"],
-      ["testplan_get_project_dns_mapping_v1", "Get CodeArts TestPlan project DNS mapping via official v1 API"]
+      ["testplan_get_project_dns_mapping_v1", "Get CodeArts TestPlan project DNS mapping via official v1 API"],
+      ["testplan_show_aw_name_view", "Show CodeArts TestPlan AW name display settings via official v1 API"],
+      ["testplan_show_time_out_view", "Show CodeArts TestPlan timeout display settings via official v1 API"],
+      [
+        "testplan_list_variables_by_group_with_sensitive",
+        "List CodeArts TestPlan variables by group via official sensitive endpoint with values redacted"
+      ],
+      ["testplan_show_sensitive_property_by_id", "Show CodeArts TestPlan variable sensitive property with value redacted"],
+      ["testplan_show_variables_decrypt", "Show CodeArts TestPlan decrypted variable value with value redacted"]
     ] as const;
 
     for (const [toolName, description] of tools) {

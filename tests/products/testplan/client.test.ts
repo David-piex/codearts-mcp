@@ -5268,6 +5268,31 @@ describe("createTestPlanClient", () => {
         }
         if (
           path ===
+          "/v1/variables/getVarbyGroupWithSensitive?project_id=project-1&group_id=group-1"
+        ) {
+          return {
+            result: [
+              {
+                id: "sensitive-var-1",
+                name: "secret",
+                isSensitiveInfo: true,
+                property: "cipher-text",
+                functionParams: "cipher-params"
+              }
+            ]
+          };
+        }
+        if (
+          path ===
+          "/v1/project-1/variables/getSensitivePropertybyId?group_id=group-1&var_id=sensitive-var-1"
+        ) {
+          return { result: "plain-secret" };
+        }
+        if (path === "/v1/project-1/variables/decrypt?variable_id=sensitive-var-1") {
+          return { result: "plain-secret" };
+        }
+        if (
+          path ===
           "/v2/project-1/variable-synchronization?variable_name=base_url&group_id=group-1"
         ) {
           return { result: { syncable: [{ id: "group-1", name: "Default" }] } };
@@ -5582,6 +5607,46 @@ describe("createTestPlanClient", () => {
       total: 1
     });
     await expect(
+      client.listVariablesByGroupWithSensitive({
+        project_id: "project-1",
+        group_id: "group-1"
+      })
+    ).resolves.toEqual({
+      variables: [
+        {
+          id: "sensitive-var-1",
+          name: "secret",
+          isSensitiveInfo: true,
+          property: "[REDACTED]",
+          functionParams: "[REDACTED]"
+        }
+      ],
+      total: 1
+    });
+    await expect(
+      client.showSensitivePropertyById({
+        project_id: "project-1",
+        group_id: "group-1",
+        var_id: "sensitive-var-1"
+      })
+    ).resolves.toEqual({
+      variable_id: "sensitive-var-1",
+      value: "[REDACTED]",
+      redacted: true,
+      raw: { result: "[REDACTED]" }
+    });
+    await expect(
+      client.showVariablesDecrypt({
+        project_id: "project-1",
+        variable_id: "sensitive-var-1"
+      })
+    ).resolves.toEqual({
+      variable_id: "sensitive-var-1",
+      value: "[REDACTED]",
+      redacted: true,
+      raw: { result: "[REDACTED]" }
+    });
+    await expect(
       client.getVariableSynchronizationV2({
         project_id: "project-1",
         variable_name: "base_url",
@@ -5639,6 +5704,9 @@ describe("createTestPlanClient", () => {
       "/v1/project-1/local/desensitization/config",
       "/v3/project-1/variables?page_no=1&page_size=5&group_id=group-1",
       "/v1/variables/getVarbyGroup?project_id=project-1&page_no=2&page_size=5&group_id=group-1",
+      "/v1/variables/getVarbyGroupWithSensitive?project_id=project-1&group_id=group-1",
+      "/v1/project-1/variables/getSensitivePropertybyId?group_id=group-1&var_id=sensitive-var-1",
+      "/v1/project-1/variables/decrypt?variable_id=sensitive-var-1",
       "/v2/project-1/variable-synchronization?variable_name=base_url&group_id=group-1",
       "/v1/project-1/variable-synchronization?variable_name=base_url&group_id=group-1",
       "/v1/progress/progress-1?project_id=project-1"

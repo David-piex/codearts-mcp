@@ -32,8 +32,8 @@
 | 流水线 | 109 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 187 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 243 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
-| 测试计划 | 246 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **1100** | |
+| 测试计划 | 251 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
+| **总计** | **1105** | |
 
 ## 字段对应
 
@@ -1133,6 +1133,7 @@
 | `testplan_list_v4_testcase_reviews` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_v4_testcase_reviews) |
 | `testplan_list_variable_groups` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_variable_groups) |
 | `testplan_list_variables_by_group` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_variables_by_group) |
+| `testplan_list_variables_by_group_with_sensitive` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_variables_by_group_with_sensitive) |
 | `testplan_list_variables_v3` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_variables_v3) |
 | `testplan_list_visible_services` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_visible_services) |
 | `testplan_request_official_api` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_request_official_api) |
@@ -1140,6 +1141,10 @@
 | `testplan_search_api_test_basic_aw_infos` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_search_api_test_basic_aw_infos) |
 | `testplan_search_features` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_search_features) |
 | `testplan_search_features_by_case` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_search_features_by_case) |
+| `testplan_show_aw_name_view` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_show_aw_name_view) |
+| `testplan_show_sensitive_property_by_id` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_show_sensitive_property_by_id) |
+| `testplan_show_time_out_view` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_show_time_out_view) |
+| `testplan_show_variables_decrypt` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_show_variables_decrypt) |
 | `testplan_stop_task_execution` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_stop_task_execution) |
 | `testplan_update_dynamic_global_variable` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_update_dynamic_global_variable) |
 | `testplan_update_task` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_update_task) |

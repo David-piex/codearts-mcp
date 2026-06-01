@@ -1061,6 +1061,8 @@ export const testPlanListApiTestAwNameViewsInput = z.object({
   project_id: idSchema
 });
 
+export const testPlanShowAwNameViewInput = testPlanListApiTestAwNameViewsInput;
+
 export const testPlanListApiTestBasicAwParamPropertiesInput = z.object({
   project_id: idSchema,
   aw_id: idSchema
@@ -1108,6 +1110,8 @@ export const testPlanListTimeoutSettingsInput = z.object({
   project_id: idSchema
 });
 
+export const testPlanShowTimeOutViewInput = testPlanListTimeoutSettingsInput;
+
 export const testPlanListVariablesV3Input = pagingSchema.extend({
   project_id: idSchema,
   group_id: idSchema.optional()
@@ -1116,6 +1120,22 @@ export const testPlanListVariablesV3Input = pagingSchema.extend({
 export const testPlanListVariablesByGroupInput = pagingSchema.extend({
   project_id: idSchema,
   group_id: idSchema.optional()
+});
+
+export const testPlanListVariablesByGroupWithSensitiveInput = z.object({
+  project_id: idSchema,
+  group_id: idSchema.optional()
+});
+
+export const testPlanShowSensitivePropertyByIdInput = z.object({
+  project_id: idSchema,
+  group_id: idSchema,
+  var_id: idSchema
+});
+
+export const testPlanShowVariablesDecryptInput = z.object({
+  project_id: idSchema,
+  variable_id: idSchema
 });
 
 export const testPlanGetVariableSynchronizationV2Input = z.object({

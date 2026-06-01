@@ -1665,6 +1665,32 @@ export type TestPlanClient = {
     variables: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  listVariablesByGroupWithSensitive: (input: {
+    project_id: string;
+    group_id?: string;
+  }) => Promise<{
+    variables: Array<Record<string, unknown>>;
+    total?: number;
+  }>;
+  showSensitivePropertyById: (input: {
+    project_id: string;
+    group_id: string;
+    var_id: string;
+  }) => Promise<{
+    variable_id: string;
+    value?: unknown;
+    redacted: boolean;
+    raw: Record<string, unknown>;
+  }>;
+  showVariablesDecrypt: (input: {
+    project_id: string;
+    variable_id: string;
+  }) => Promise<{
+    variable_id: string;
+    value?: unknown;
+    redacted: boolean;
+    raw: Record<string, unknown>;
+  }>;
   getVariableSynchronizationV2: (input: {
     project_id: string;
     variable_name: string;
@@ -2494,6 +2520,24 @@ function redactSensitiveVariable(variable: Record<string, unknown>) {
   }
 
   return redacted;
+}
+
+function redactedStringValue(input: unknown) {
+  return typeof input === "string" && input !== "" ? "[REDACTED]" : input;
+}
+
+function redactStringResult(payload: Record<string, unknown>) {
+  const result = redactedStringValue(payload.result);
+  const redacted = result !== payload.result;
+
+  return {
+    value: result,
+    redacted,
+    raw: {
+      ...payload,
+      result
+    }
+  };
 }
 
 function redactSensitiveProjectInfoValue(key: string, value: unknown): unknown {
@@ -5938,6 +5982,57 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       return {
         variables,
         total: readTotal(payload, response, variables.length)
+      };
+    },
+    async listVariablesByGroupWithSensitive(input) {
+      const query = new URLSearchParams({
+        project_id: input.project_id
+      });
+      appendQueryValue(query, "group_id", input.group_id);
+      const response = await _http.get(`/v1/variables/getVarbyGroupWithSensitive?${query.toString()}`);
+      const payload = readResultPayload(response);
+      const variables = readArray<Record<string, unknown>>(
+        payload.value ?? payload.result ?? payload.variables ?? payload.items ?? payload.list
+      ).map(redactSensitiveVariable);
+
+      return {
+        variables,
+        total: readTotal(payload, response, variables.length)
+      };
+    },
+    async showSensitivePropertyById(input) {
+      const query = toQueryString({
+        group_id: input.group_id,
+        var_id: input.var_id
+      });
+      const response = await _http.get(
+        `/v1/${encodeURIComponent(input.project_id)}/variables/getSensitivePropertybyId?${query}`
+      );
+      const payload = readResultPayload(response);
+      const redacted = redactStringResult(payload);
+
+      return {
+        variable_id: input.var_id,
+        value: redacted.value,
+        redacted: redacted.redacted,
+        raw: redacted.raw
+      };
+    },
+    async showVariablesDecrypt(input) {
+      const query = toQueryString({
+        variable_id: input.variable_id
+      });
+      const response = await _http.get(
+        `/v1/${encodeURIComponent(input.project_id)}/variables/decrypt?${query}`
+      );
+      const payload = readResultPayload(response);
+      const redacted = redactStringResult(payload);
+
+      return {
+        variable_id: input.variable_id,
+        value: redacted.value,
+        redacted: redacted.redacted,
+        raw: redacted.raw
       };
     },
     async getVariableSynchronizationV2(input) {
