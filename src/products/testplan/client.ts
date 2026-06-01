@@ -1602,6 +1602,17 @@ export type TestPlanClient = {
     aws: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  updateAwCataFirst: (input: {
+    project_id: string;
+    cata_id: string;
+    cata_name: string;
+    parent_id?: string;
+    source_type?: string | number;
+  }) => Promise<{
+    cata_id: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
   listApiTestAwNameViews: (input: { project_id: string }) => Promise<{
     views: Array<Record<string, unknown>>;
     total?: number;
@@ -5846,6 +5857,24 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       return {
         aws,
         total: readTotal(payload, response, aws.length)
+      };
+    },
+    async updateAwCataFirst(input) {
+      const query = new URLSearchParams({
+        cata_id: input.cata_id,
+        cata_name: input.cata_name
+      });
+      appendQueryValue(query, "parent_id", input.parent_id);
+      appendQueryValue(query, "source_type", input.source_type);
+      const response = await _http.get(
+        `/v1/${encodeURIComponent(input.project_id)}/aw_cata/update_aw_cata?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        cata_id: input.cata_id,
+        value: payload.result ?? payload.value ?? payload.data,
+        raw: payload
       };
     },
     async listApiTestAwNameViews(input) {

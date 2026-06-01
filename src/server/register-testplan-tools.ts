@@ -28,6 +28,8 @@ import {
   testPlanGetApiTestProjectInfoInput,
   testPlanGetApiTestTaskStatusInput,
   testPlanGetApiTestTaskStatusV2Input,
+  testPlanShowTaskStatusInput,
+  testPlanShowTaskStatusTwoInput,
   testPlanGetBackgroundInfoInput,
   testPlanGetDomainAccessInfoInput,
   testPlanGetDomainDetailInfoInput,
@@ -69,6 +71,7 @@ import {
   testPlanGetMindmapBackupInput,
   testPlanGetDynamicGlobalVariableInput,
   testPlanGetMindmapCreatorNameInput,
+  testPlanShowMindmapCreatorNameInput,
   testPlanListDynamicGlobalVariablesInput,
   testPlanGetMindmapPermissionInput,
   testPlanGetMindmapRecycleInput,
@@ -126,6 +129,8 @@ import {
   testPlanGetUserPackagePermissionInput,
   testPlanGetVariableSynchronizationInput,
   testPlanGetVariableSynchronizationV2Input,
+  testPlanListVariableSynchronizationInput,
+  testPlanListVariableSynchronizationTwoInput,
   testPlanGetSuiteInfoPageUrlInput,
   testPlanInitTaskExecutionInput,
   testPlanListApiTestAwNameViewsInput,
@@ -249,6 +254,7 @@ import {
   testPlanShowSensitivePropertyByIdInput,
   testPlanShowTimeOutViewInput,
   testPlanShowVariablesDecryptInput,
+  testPlanUpdateAwCataFirstInput,
   testPlanStopTaskExecutionInput,
   testPlanUpdateTaskInput
 } from "../products/testplan/schemas.js";
@@ -286,6 +292,13 @@ import {
 import { createTestPlanGetApiTestProjectInfoHandler } from "../products/testplan/tools/get-api-test-project-info.js";
 import { createTestPlanGetApiTestTaskStatusHandler } from "../products/testplan/tools/get-api-test-task-status.js";
 import { createTestPlanGetApiTestTaskStatusV2Handler } from "../products/testplan/tools/get-api-test-task-status-v2.js";
+import {
+  createTestPlanListVariableSynchronizationHandler,
+  createTestPlanListVariableSynchronizationTwoHandler,
+  createTestPlanShowMindmapCreatorNameHandler,
+  createTestPlanShowTaskStatusHandler,
+  createTestPlanShowTaskStatusTwoHandler
+} from "../products/testplan/tools/official-v1-alias-tools.js";
 import { createTestPlanGetBackgroundInfoHandler } from "../products/testplan/tools/get-background-info.js";
 import { createTestPlanGetBranchHandler } from "../products/testplan/tools/get-branch.js";
 import { createTestPlanGetCaseTemplateHandler } from "../products/testplan/tools/get-case-template.js";
@@ -398,6 +411,7 @@ import { createTestPlanListApiTestBasicAwParamPropertiesHandler } from "../produ
 import { createTestPlanListApiTestBasicAwInfosHandler } from "../products/testplan/tools/list-api-test-basic-aw-infos.js";
 import { createTestPlanListApiTestBasicAwInfosV2Handler } from "../products/testplan/tools/list-api-test-basic-aw-infos-v2.js";
 import { createTestPlanListApiTestChildBasicAwsHandler } from "../products/testplan/tools/list-api-test-child-basic-aws.js";
+import { createTestPlanUpdateAwCataFirstHandler } from "../products/testplan/tools/update-aw-cata-first.js";
 import { createTestPlanListApiTestGlobalParamNamesHandler } from "../products/testplan/tools/list-api-test-global-param-names.js";
 import { createTestPlanListAlertTemplatesHandler } from "../products/testplan/tools/list-alert-templates.js";
 import { createTestPlanListApiTestPackageUsageHandler } from "../products/testplan/tools/list-api-test-package-usage.js";
@@ -562,6 +576,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanGetMindmapCreatorNameInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetMindmapCreatorNameHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetMindmapCreatorNameHandler
+  }),
+  "testplan_show_mindmap_creator_name": defineProductTool({
+    description: "Show CodeArts TestPlan mindmap creator names via official v2 API",
+    inputSchema: testPlanShowMindmapCreatorNameInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanShowMindmapCreatorNameHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanShowMindmapCreatorNameHandler
   }),
   "testplan_get_mindmap_permission": defineProductTool({
     description: "Get CodeArts TestPlan mindmap permission detail",
@@ -995,11 +1015,23 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetApiTestTaskStatusHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetApiTestTaskStatusHandler
   }),
+  "testplan_show_task_status": defineProductTool({
+    description: "Show CodeArts TestPlan task status via official v1 API",
+    inputSchema: testPlanShowTaskStatusInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanShowTaskStatusHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanShowTaskStatusHandler
+  }),
   "testplan_get_api_test_task_status_v2": defineProductTool({
     description: "Get CodeArts TestPlan API test v2 task status",
     inputSchema: testPlanGetApiTestTaskStatusV2Input,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetApiTestTaskStatusV2Handler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetApiTestTaskStatusV2Handler
+  }),
+  "testplan_show_task_status_two": defineProductTool({
+    description: "Show CodeArts TestPlan v2 task status via official v2 API",
+    inputSchema: testPlanShowTaskStatusTwoInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanShowTaskStatusTwoHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanShowTaskStatusTwoHandler
   }),
   "testplan_get_suite_info_page_url": defineProductTool({
     description: "Get CodeArts TestPlan test suite detail page URL",
@@ -1066,6 +1098,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListApiTestChildBasicAwsInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListApiTestChildBasicAwsHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListApiTestChildBasicAwsHandler
+  }),
+  "testplan_update_aw_cata_first": defineProductTool({
+    description: "Update CodeArts TestPlan AW catalog via official v1 API",
+    inputSchema: testPlanUpdateAwCataFirstInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanUpdateAwCataFirstHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanUpdateAwCataFirstHandler
   }),
   "testplan_list_api_test_aw_name_views": defineProductTool({
     description: "List CodeArts TestPlan API test AW name view settings",
@@ -1211,11 +1249,23 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetVariableSynchronizationV2Handler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetVariableSynchronizationV2Handler
   }),
+  "testplan_list_variable_synchronization_two": defineProductTool({
+    description: "List CodeArts TestPlan v2 variable synchronization information via official v2 API",
+    inputSchema: testPlanListVariableSynchronizationTwoInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListVariableSynchronizationTwoHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListVariableSynchronizationTwoHandler
+  }),
   "testplan_get_variable_synchronization": defineProductTool({
     description: "Get CodeArts TestPlan variable synchronization information",
     inputSchema: testPlanGetVariableSynchronizationInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetVariableSynchronizationHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetVariableSynchronizationHandler
+  }),
+  "testplan_list_variable_synchronization": defineProductTool({
+    description: "List CodeArts TestPlan variable synchronization information via official v1 API",
+    inputSchema: testPlanListVariableSynchronizationInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListVariableSynchronizationHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListVariableSynchronizationHandler
   }),
   "testplan_list_dynamic_global_variables": defineProductTool({
     description: "List CodeArts TestPlan dynamic global variables for a task",

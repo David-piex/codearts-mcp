@@ -83,10 +83,14 @@ export const testPlanGetApiTestTaskStatusInput = z.object({
   task_id: idSchema
 });
 
+export const testPlanShowTaskStatusInput = testPlanGetApiTestTaskStatusInput;
+
 export const testPlanGetApiTestTaskStatusV2Input = z.object({
   project_id: idSchema,
   task_id: idSchema
 });
+
+export const testPlanShowTaskStatusTwoInput = testPlanGetApiTestTaskStatusV2Input;
 
 export const testPlanGetTaskExecutionParamInput = z.object({
   task_uri: idSchema,
@@ -583,6 +587,8 @@ export const testPlanCheckUserInfoInput = z.object({
 export const testPlanGetMindmapCreatorNameInput = z.object({
   project_id: idSchema
 });
+
+export const testPlanShowMindmapCreatorNameInput = testPlanGetMindmapCreatorNameInput;
 
 export const testPlanListDynamicGlobalVariablesInput = z.object({
   project_id: idSchema,
@@ -1153,10 +1159,23 @@ export const testPlanGetVariableSynchronizationV2Input = z.object({
   group_id: idSchema.optional()
 });
 
+export const testPlanListVariableSynchronizationTwoInput = testPlanGetVariableSynchronizationV2Input;
+
 export const testPlanGetVariableSynchronizationInput = z.object({
   project_id: idSchema,
   variable_name: z.string().min(1),
   group_id: idSchema.optional()
+});
+
+export const testPlanListVariableSynchronizationInput = testPlanGetVariableSynchronizationInput;
+
+export const testPlanUpdateAwCataFirstInput = z.object({
+  project_id: idSchema,
+  cata_id: idSchema,
+  cata_name: z.string().min(1),
+  parent_id: idSchema.optional(),
+  source_type: z.union([z.string().min(1), z.number().int()]).optional(),
+  dry_run: z.boolean().default(true)
 });
 
 export const testPlanGetProgressInput = z.object({

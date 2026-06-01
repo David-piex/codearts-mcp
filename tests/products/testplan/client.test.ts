@@ -5343,6 +5343,12 @@ describe("createTestPlanClient", () => {
         ) {
           return { result: { syncable: [{ id: "group-2", name: "Env" }], conflict: [] } };
         }
+        if (
+          path ===
+          "/v1/project-1/aw_cata/update_aw_cata?cata_id=cata-1&cata_name=Smoke+Catalog&parent_id=TOP&source_type=1"
+        ) {
+          return { status: "success", result: "ok" };
+        }
         if (path === "/v1/progress/progress-1?project_id=project-1") {
           return { result: { id: "progress-1", rate: 100 } };
         }
@@ -5486,6 +5492,19 @@ describe("createTestPlanClient", () => {
     ).resolves.toEqual({
       aws: [{ id: "folder-1", name: "Default Folder", cata_type: 4 }],
       total: 1
+    });
+    await expect(
+      client.updateAwCataFirst({
+        project_id: "project-1",
+        cata_id: "cata-1",
+        cata_name: "Smoke Catalog",
+        parent_id: "TOP",
+        source_type: 1
+      })
+    ).resolves.toEqual({
+      cata_id: "cata-1",
+      value: "ok",
+      raw: { status: "success", result: "ok" }
     });
     await expect(client.listApiTestAwNameViews({ project_id: "project-1" })).resolves.toEqual({
       views: [{ id: "view-1", name_view: "0" }],
@@ -5730,6 +5749,7 @@ describe("createTestPlanClient", () => {
       "/v4/project-1/variables?group_id=group-1&page_no=1&page_size=20",
       "/v3/project-1/basic-aw/aw-1",
       "/v1/project-1/aw_cata/child_cata_data?parent_id=TOP&is_contain_aw=false&aw_name=login&source_type=1",
+      "/v1/project-1/aw_cata/update_aw_cata?cata_id=cata-1&cata_name=Smoke+Catalog&parent_id=TOP&source_type=1",
       "/v1/project-1/get_awName_view",
       "/v1/project-1/basic-aw/aw-1/param-property",
       "/v1/project/project-1/public_aw_lib_and_aws",

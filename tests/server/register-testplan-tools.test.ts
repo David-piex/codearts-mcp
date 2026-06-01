@@ -188,6 +188,17 @@ describe("registerTestPlanTool", () => {
       ["testplan_get_project_dns_mapping_v1", "Get CodeArts TestPlan project DNS mapping via official v1 API"],
       ["testplan_download_asset_template", "Get CodeArts TestPlan asset template download metadata via official v1 API"],
       ["testplan_export_mindmap", "Get CodeArts TestPlan mindmap export metadata via official v1 API"],
+      ["testplan_show_task_status", "Show CodeArts TestPlan task status via official v1 API"],
+      ["testplan_show_task_status_two", "Show CodeArts TestPlan v2 task status via official v2 API"],
+      ["testplan_show_mindmap_creator_name", "Show CodeArts TestPlan mindmap creator names via official v2 API"],
+      [
+        "testplan_list_variable_synchronization",
+        "List CodeArts TestPlan variable synchronization information via official v1 API"
+      ],
+      [
+        "testplan_list_variable_synchronization_two",
+        "List CodeArts TestPlan v2 variable synchronization information via official v2 API"
+      ],
       ["testplan_show_aw_name_view", "Show CodeArts TestPlan AW name display settings via official v1 API"],
       ["testplan_show_time_out_view", "Show CodeArts TestPlan timeout display settings via official v1 API"],
       [
@@ -216,6 +227,27 @@ describe("registerTestPlanTool", () => {
         expect.any(Function)
       );
     }
+  });
+
+  it("registers official AW catalog update tool", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerTestPlanTool({
+      toolName: "testplan_update_aw_cata_first",
+      server: { registerTool },
+      mode: "stdio",
+      stdioClient: {} as never
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "testplan_update_aw_cata_first",
+      expect.objectContaining({
+        title: "testplan_update_aw_cata_first",
+        description: "Update CodeArts TestPlan AW catalog via official v1 API"
+      }),
+      expect.any(Function)
+    );
   });
 
   it("registers dynamic global variable tools", () => {

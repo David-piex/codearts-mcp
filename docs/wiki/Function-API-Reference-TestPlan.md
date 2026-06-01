@@ -6,7 +6,7 @@
 
 模块：`测试计划`
 
-API 数量：`253`
+API 数量：`259`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
@@ -16061,6 +16061,122 @@ API 数量：`253`
 }
 ```
 
+### testplan_list_variable_synchronization
+
+所属模块：`测试计划`
+
+说明：查询测试计划的变量synchronization。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "testplan_list_variable_synchronization",
+    "arguments": {
+      "project_id": "<project_id>",
+      "variable_name": "<variable_name>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 测试计划 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `variable_name` | 是 | `string` |  | 字段对应：<br>MCP 字段 `variable_name` ↔ 原始 CodeArts 测试计划 API 同名字段 `variable_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>变量名称。 |
+| `group_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `group_id` ↔ 原始 CodeArts 测试计划 API 同名字段 `group_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>分组 ID，用于定位对应的 CodeArts 资源。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "variable_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "group_id": {
+      "$ref": "#/properties/project_id"
+    }
+  },
+  "required": [
+    "project_id",
+    "variable_name"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### testplan_list_variable_synchronization_two
+
+所属模块：`测试计划`
+
+说明：查询测试计划的变量synchronizationtwo。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "testplan_list_variable_synchronization_two",
+    "arguments": {
+      "project_id": "<project_id>",
+      "variable_name": "<variable_name>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 测试计划 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `variable_name` | 是 | `string` |  | 字段对应：<br>MCP 字段 `variable_name` ↔ 原始 CodeArts 测试计划 API 同名字段 `variable_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>变量名称。 |
+| `group_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `group_id` ↔ 原始 CodeArts 测试计划 API 同名字段 `group_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>分组 ID，用于定位对应的 CodeArts 资源。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "variable_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "group_id": {
+      "$ref": "#/properties/project_id"
+    }
+  },
+  "required": [
+    "project_id",
+    "variable_name"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### testplan_list_variables_by_group
 
 所属模块：`测试计划`
@@ -16816,6 +16932,53 @@ API 数量：`253`
 }
 ```
 
+### testplan_show_mindmap_creator_name
+
+所属模块：`测试计划`
+
+说明：执行测试计划的mindmapcreatorname。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "testplan_show_mindmap_creator_name",
+    "arguments": {
+      "project_id": "<project_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 测试计划 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "project_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### testplan_show_sensitive_property_by_id
 
 所属模块：`测试计划`
@@ -16869,6 +17032,112 @@ API 数量：`253`
     "project_id",
     "group_id",
     "var_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### testplan_show_task_status
+
+所属模块：`测试计划`
+
+说明：执行测试计划的任务状态。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "testplan_show_task_status",
+    "arguments": {
+      "project_id": "<project_id>",
+      "task_id": "<task_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 测试计划 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `task_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `task_id` ↔ 原始 CodeArts 测试计划 API 同名字段 `task_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>任务 ID，用于定位对应的 CodeArts 资源。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "task_id": {
+      "$ref": "#/properties/project_id"
+    }
+  },
+  "required": [
+    "project_id",
+    "task_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### testplan_show_task_status_two
+
+所属模块：`测试计划`
+
+说明：执行测试计划的任务状态two。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "testplan_show_task_status_two",
+    "arguments": {
+      "project_id": "<project_id>",
+      "task_id": "<task_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 测试计划 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `task_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `task_id` ↔ 原始 CodeArts 测试计划 API 同名字段 `task_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>任务 ID，用于定位对应的 CodeArts 资源。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "task_id": {
+      "$ref": "#/properties/project_id"
+    }
+  },
+  "required": [
+    "project_id",
+    "task_id"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -17033,6 +17302,87 @@ API 数量：`253`
     "project_id",
     "task_uri",
     "result_uri"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### testplan_update_aw_cata_first
+
+所属模块：`测试计划`
+
+说明：更新测试计划的awcatafirst。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "testplan_update_aw_cata_first",
+    "arguments": {
+      "project_id": "<project_id>",
+      "cata_id": "<cata_id>",
+      "cata_name": "<cata_name>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 测试计划 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `cata_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `cata_id` ↔ 原始 CodeArts 测试计划 API 同名字段 `cata_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>cata ID，用于定位对应的 CodeArts 资源。 |
+| `cata_name` | 是 | `string` |  | 字段对应：<br>MCP 字段 `cata_name` ↔ 原始 CodeArts 测试计划 API 同名字段 `cata_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>cata名称。 |
+| `parent_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `parent_id` ↔ 原始 CodeArts 测试计划 API 同名字段 `parent_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>父级 ID，用于指定当前资源挂载到哪个父节点、父分组、父模块或父工作项下。 |
+| `source_type` | 否 | `string \| integer` |  | 字段对应：<br>MCP 字段 `source_type` ↔ 原始 CodeArts 测试计划 API 同名字段 `source_type`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>导入来源类型，例如 gitee、github、gitlab、git、svn 等。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "cata_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "cata_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "parent_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "source_type": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "integer"
+        }
+      ]
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "project_id",
+    "cata_id",
+    "cata_name"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
