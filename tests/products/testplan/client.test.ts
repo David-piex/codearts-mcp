@@ -3319,6 +3319,15 @@ describe("createTestPlanClient", () => {
             data: [{ id: "asset-1", name: "Common factors" }]
           };
         }
+        if (path.endsWith("/asset/template")) {
+          return {
+            code: "success",
+            data: {
+              id: "asset-template-1",
+              name: "Asset template"
+            }
+          };
+        }
         if (path.startsWith("/v1/project-1/templates")) {
           return {
             status: "ok",
@@ -3395,6 +3404,14 @@ describe("createTestPlanClient", () => {
       assets: [{ id: "asset-1", name: "Common factors" }],
       total: 1
     });
+    await expect(client.downloadAssetTemplate({ project_id: "project-1" })).resolves.toEqual({
+      template_id: "asset-template-1",
+      name: "Asset template",
+      raw: {
+        id: "asset-template-1",
+        name: "Asset template"
+      }
+    });
     await expect(
       client.getTestDesignTemplate({
         project_id: "project-1",
@@ -3415,6 +3432,7 @@ describe("createTestPlanClient", () => {
       "/v2/project-1/mindmap-backups/backup-1",
       "/v2/project-1/testcases/draft-case-1",
       "/v1/project-1/asset",
+      "/v1/project-1/asset/template",
       "/v2/project-1/templates/template-1"
     ]);
   });
@@ -3466,6 +3484,15 @@ describe("createTestPlanClient", () => {
           return {
             code: "success",
             data: [{ id: "node-1", name: "Root", factor_cnt: 2 }]
+          };
+        }
+        if (path.includes("/mindmaps/mindmap-export/")) {
+          return {
+            code: "success",
+            data: {
+              id: "mindmap-1",
+              name: "Checkout flow export"
+            }
           };
         }
 
@@ -3549,6 +3576,19 @@ describe("createTestPlanClient", () => {
         name: "Browser"
       }
     });
+    await expect(
+      client.exportMindmap({
+        project_id: "project-1",
+        id: "mindmap-1"
+      })
+    ).resolves.toEqual({
+      mindmap_id: "mindmap-1",
+      name: "Checkout flow export",
+      raw: {
+        id: "mindmap-1",
+        name: "Checkout flow export"
+      }
+    });
 
     expect(requests).toEqual([
       { method: "GET", path: "/v1/project-1/statistics/mindmap-1" },
@@ -3570,7 +3610,8 @@ describe("createTestPlanClient", () => {
           }
         }
       },
-      { method: "GET", path: "/v1/project-1/factor/factor-1" }
+      { method: "GET", path: "/v1/project-1/factor/factor-1" },
+      { method: "GET", path: "/v1/project-1/mindmaps/mindmap-export/mindmap-1" }
     ]);
   });
 

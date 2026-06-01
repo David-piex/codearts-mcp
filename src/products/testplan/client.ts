@@ -852,6 +852,21 @@ export type TestPlanClient = {
     name?: string;
     raw: Record<string, unknown>;
   }>;
+  downloadAssetTemplate: (input: {
+    project_id: string;
+  }) => Promise<{
+    template_id?: string;
+    name?: string;
+    raw: Record<string, unknown>;
+  }>;
+  exportMindmap: (input: {
+    project_id: string;
+    id: string;
+  }) => Promise<{
+    mindmap_id: string;
+    name?: string;
+    raw: Record<string, unknown>;
+  }>;
   listTesthubServices: () => Promise<{
     services: Array<Record<string, unknown>>;
     total?: number;
@@ -4170,6 +4185,35 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
             : undefined,
         name: typeof template.name === "string" ? template.name : undefined,
         raw: template
+      };
+    },
+    async downloadAssetTemplate(input) {
+      const response = await _http.get(
+        `/v1/${encodeURIComponent(input.project_id)}/asset/template`
+      );
+      const payload = readResultPayload(response);
+      const template = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? readEnvelope(payload.result) ?? payload;
+
+      return {
+        template_id:
+          typeof template.id === "string" || typeof template.id === "number"
+            ? String(template.id)
+            : undefined,
+        name: typeof template.name === "string" ? template.name : undefined,
+        raw: template
+      };
+    },
+    async exportMindmap(input) {
+      const response = await _http.get(
+        `/v1/${encodeURIComponent(input.project_id)}/mindmaps/mindmap-export/${encodeURIComponent(input.id)}`
+      );
+      const payload = readResultPayload(response);
+      const mindmap = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? readEnvelope(payload.result) ?? payload;
+
+      return {
+        mindmap_id: String(mindmap.id ?? mindmap.uri ?? input.id),
+        name: typeof mindmap.name === "string" ? mindmap.name : undefined,
+        raw: mindmap
       };
     },
     async listTesthubServices() {

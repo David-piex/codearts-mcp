@@ -11,12 +11,12 @@
 | Repo | 187 | 141 | 46 | `HUAWEICLOUD_REPO_BASE_URL` |
 | Pipeline | 109 | 72 | 37 | `HUAWEICLOUD_PIPELINE_BASE_URL` |
 | Check | 92 | 82 | 10 | `HUAWEICLOUD_CHECK_BASE_URL` |
-| TestPlan | 251 | 241 | 10 | `HUAWEICLOUD_TESTPLAN_BASE_URL` |
+| TestPlan | 253 | 243 | 10 | `HUAWEICLOUD_TESTPLAN_BASE_URL` |
 | Deploy | 74 | 57 | 17 | `HUAWEICLOUD_DEPLOY_BASE_URL` |
 | Build | 99 | 90 | 9 | `HUAWEICLOUD_BUILD_BASE_URL` |
 | Artifact | 48 | 42 | 6 | `HUAWEICLOUD_ARTIFACT_BASE_URL` |
 
-产品工具合计 `1103` 个。HTTP 共享模式额外提供 `auth_configure_session` 和 `auth_clear_session` 两个会话工具，因此 HTTP MCP 总工具数为 `1105`。
+产品工具合计 `1105` 个。HTTP 共享模式额外提供 `auth_configure_session` 和 `auth_clear_session` 两个会话工具，因此 HTTP MCP 总工具数为 `1107`。
 <!-- GENERATED:api-reference-scale:end -->
 
 ## 通用运行环境

@@ -75,10 +75,12 @@ import {
   testPlanGetMindmapStatisticsInput,
   testPlanUpdateDynamicGlobalVariableInput,
   testPlanDeleteDynamicGlobalVariableInput,
+  testPlanDownloadAssetTemplateInput,
   testPlanListMindmapBackupsInput,
   testPlanListMindmapRecyclesInput,
   testPlanListMindmapsV2Input,
   testPlanListMindmapsV3Input,
+  testPlanExportMindmapInput,
   testPlanGetPlanInput,
   testPlanGetProjectTestcaseInput,
   testPlanGetProjectTestcaseByNumberInput,
@@ -362,7 +364,9 @@ import { createTestPlanGetHomePageDefectSeverityOverviewHandler } from "../produ
 import { createTestPlanGetHomePageDefectStatusOverviewHandler } from "../products/testplan/tools/get-home-page-defect-status-overview.js";
 import { createTestPlanGetHomePageOverviewV5Handler } from "../products/testplan/tools/get-home-page-overview-v5.js";
 import { createTestPlanGetTestReportHandler } from "../products/testplan/tools/get-test-report.js";
+import { createTestPlanDownloadAssetTemplateHandler } from "../products/testplan/tools/download-asset-template.js";
 import { createTestPlanDownloadTestDesignTemplateHandler } from "../products/testplan/tools/download-test-design-template.js";
+import { createTestPlanExportMindmapHandler } from "../products/testplan/tools/export-mindmap.js";
 import { createTestPlanGetTestDesignTemplateHandler } from "../products/testplan/tools/get-test-design-template.js";
 import { createTestPlanGetTestDesignTestcaseHandler } from "../products/testplan/tools/get-test-design-testcase.js";
 import { createTestPlanGetTestcaseV4Handler } from "../products/testplan/tools/get-testcase-v4.js";
@@ -666,6 +670,18 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanDownloadTestDesignTemplateInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanDownloadTestDesignTemplateHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanDownloadTestDesignTemplateHandler
+  }),
+  "testplan_download_asset_template": defineProductTool({
+    description: "Get CodeArts TestPlan asset template download metadata via official v1 API",
+    inputSchema: testPlanDownloadAssetTemplateInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanDownloadAssetTemplateHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanDownloadAssetTemplateHandler
+  }),
+  "testplan_export_mindmap": defineProductTool({
+    description: "Get CodeArts TestPlan mindmap export metadata via official v1 API",
+    inputSchema: testPlanExportMindmapInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanExportMindmapHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanExportMindmapHandler
   }),
   "testplan_get_test_design_testcase": defineProductTool({
     description: "Get CodeArts TestPlan test design testcase detail",

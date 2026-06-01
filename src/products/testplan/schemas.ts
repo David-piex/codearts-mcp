@@ -454,6 +454,15 @@ export const testPlanDownloadTestDesignTemplateInput = z.object({
   file_name: z.string().min(1).optional()
 });
 
+export const testPlanDownloadAssetTemplateInput = z.object({
+  project_id: idSchema
+});
+
+export const testPlanExportMindmapInput = z.object({
+  project_id: idSchema,
+  id: idSchema
+});
+
 export const testPlanListTesthubServicesInput = z.object({});
 
 export const testPlanGetTesthubCaseInput = z.object({

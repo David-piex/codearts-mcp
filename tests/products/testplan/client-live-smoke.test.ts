@@ -139,6 +139,14 @@ if (hasLiveEnv(process.env)) {
       expect(Array.isArray(result.cases)).toBe(true);
     }, 30000);
 
+    it("loads asset template download metadata for the supported project", async () => {
+      const result = await client.downloadAssetTemplate({
+        project_id: supportedProjectId
+      });
+
+      expect(result.raw).toBeDefined();
+    }, 30000);
+
     it("shows unpublished detail routes for getPlan/getCase/listRuns", async () => {
       await expect(
         client.getPlan(createProjectPlanInput(supportedProjectId, planId))

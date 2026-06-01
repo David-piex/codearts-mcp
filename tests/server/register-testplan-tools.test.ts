@@ -186,6 +186,8 @@ describe("registerTestPlanTool", () => {
       ["testplan_list_project_assets_v1", "List CodeArts TestPlan project assets via official v1 API"],
       ["testplan_list_project_branches_v1", "List CodeArts TestPlan project branches via official v1 API"],
       ["testplan_get_project_dns_mapping_v1", "Get CodeArts TestPlan project DNS mapping via official v1 API"],
+      ["testplan_download_asset_template", "Get CodeArts TestPlan asset template download metadata via official v1 API"],
+      ["testplan_export_mindmap", "Get CodeArts TestPlan mindmap export metadata via official v1 API"],
       ["testplan_show_aw_name_view", "Show CodeArts TestPlan AW name display settings via official v1 API"],
       ["testplan_show_time_out_view", "Show CodeArts TestPlan timeout display settings via official v1 API"],
       [
