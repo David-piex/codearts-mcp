@@ -32,8 +32,8 @@
 | 流水线 | 109 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 187 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 243 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
-| 测试计划 | 274 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **1128** | |
+| 测试计划 | 280 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
+| **总计** | **1134** | |
 
 ## 字段对应
 
@@ -908,12 +908,15 @@
 | `testplan_check_user_exists` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_check_user_exists) |
 | `testplan_check_user_info` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_check_user_info) |
 | `testplan_count_mindmaps` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_count_mindmaps) |
+| `testplan_create_aw_cata_first` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_create_aw_cata_first) |
 | `testplan_create_task` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_create_task) |
 | `testplan_create_task_relations` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_create_task_relations) |
 | `testplan_delete_asset` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_delete_asset) |
 | `testplan_delete_attachment` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_delete_attachment) |
+| `testplan_delete_aw_catas` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_delete_aw_catas) |
 | `testplan_delete_basic_aws_v1` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_delete_basic_aws_v1) |
 | `testplan_delete_basic_aws_v2` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_delete_basic_aws_v2) |
+| `testplan_delete_custom_aw_file` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_delete_custom_aw_file) |
 | `testplan_delete_customized_filter` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_delete_customized_filter) |
 | `testplan_delete_dynamic_global_variable` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_delete_dynamic_global_variable) |
 | `testplan_delete_factor` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_delete_factor) |
@@ -1157,6 +1160,7 @@
 | `testplan_list_visible_services` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_list_visible_services) |
 | `testplan_request_official_api` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_request_official_api) |
 | `testplan_run_cases` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_run_cases) |
+| `testplan_save_aw_refresh_to_all` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_save_aw_refresh_to_all) |
 | `testplan_search_api_test_basic_aw_infos` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_search_api_test_basic_aw_infos) |
 | `testplan_search_features` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_search_features) |
 | `testplan_search_features_by_case` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_search_features_by_case) |
@@ -1169,6 +1173,8 @@
 | `testplan_show_variables_decrypt` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_show_variables_decrypt) |
 | `testplan_stop_task_execution` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_stop_task_execution) |
 | `testplan_update_aw_cata_first` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_update_aw_cata_first) |
+| `testplan_update_aw_name_view` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_update_aw_name_view) |
 | `testplan_update_dynamic_global_variable` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_update_dynamic_global_variable) |
 | `testplan_update_task` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_update_task) |
+| `testplan_update_time_out_view` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_update_time_out_view) |
 

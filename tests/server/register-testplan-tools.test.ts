@@ -250,6 +250,55 @@ describe("registerTestPlanTool", () => {
     );
   });
 
+  it("registers official AW write tools", () => {
+    const registerTool = vi.fn();
+    const tools = [
+      [
+        "testplan_create_aw_cata_first",
+        "Create a CodeArts TestPlan AW catalog via official v1 API (dry-run by default)"
+      ],
+      [
+        "testplan_delete_aw_catas",
+        "Batch delete CodeArts TestPlan AW keywords and catalogs via official v1 API (dry-run by default)"
+      ],
+      [
+        "testplan_delete_custom_aw_file",
+        "Delete a CodeArts TestPlan custom AW jar file relation via official v1 API (dry-run by default)"
+      ],
+      [
+        "testplan_update_aw_name_view",
+        "Update CodeArts TestPlan AW name display settings via official v1 API (dry-run by default)"
+      ],
+      [
+        "testplan_update_time_out_view",
+        "Update CodeArts TestPlan timeout display settings via official v1 API (dry-run by default)"
+      ],
+      [
+        "testplan_save_aw_refresh_to_all",
+        "Refresh matching CodeArts TestPlan cases from an AW keyword via official v1 API (dry-run by default)"
+      ]
+    ] as const;
+
+    for (const [toolName, description] of tools) {
+      const handled = registerTestPlanTool({
+        toolName,
+        server: { registerTool },
+        mode: "stdio",
+        stdioClient: {} as never
+      });
+
+      expect(handled).toBe(true);
+      expect(registerTool).toHaveBeenLastCalledWith(
+        toolName,
+        expect.objectContaining({
+          title: toolName,
+          description
+        }),
+        expect.any(Function)
+      );
+    }
+  });
+
   it("registers official TestPlan delete tools", () => {
     const registerTool = vi.fn();
     const tools = [

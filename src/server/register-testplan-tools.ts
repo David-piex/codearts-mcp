@@ -15,10 +15,13 @@ import {
   testPlanCreateTaskInput,
   testPlanCreateTaskRelationsInput,
   testPlanBatchDeleteFactorsInput,
+  testPlanCreateAwCataFirstInput,
   testPlanDeleteAssetInput,
   testPlanDeleteAttachmentInput,
+  testPlanDeleteAwCatasInput,
   testPlanDeleteBasicAwsV1Input,
   testPlanDeleteBasicAwsV2Input,
+  testPlanDeleteCustomAwFileInput,
   testPlanDeleteCustomizedFilterInput,
   testPlanDeleteFactorInput,
   testPlanDeleteIssueDynamicRecordsInput,
@@ -29,6 +32,7 @@ import {
   testPlanDeleteTestDesignTemplateInput,
   testPlanDeleteTestcasesV3Input,
   testPlanDeleteVectorsInput,
+  testPlanSaveAwRefreshToAllInput,
   testPlanGetApiTestAvailableConfigInput,
   testPlanGetApiTestBasicAwV3Input,
   testPlanGetApiTestBasicAwV4Input,
@@ -45,6 +49,7 @@ import {
   testPlanGetApiTestTaskStatusV2Input,
   testPlanShowTaskStatusInput,
   testPlanShowTaskStatusTwoInput,
+  testPlanUpdateAwNameViewInput,
   testPlanGetBackgroundInfoInput,
   testPlanGetDomainAccessInfoInput,
   testPlanGetDomainDetailInfoInput,
@@ -270,6 +275,7 @@ import {
   testPlanShowTimeOutViewInput,
   testPlanShowVariablesDecryptInput,
   testPlanUpdateAwCataFirstInput,
+  testPlanUpdateTimeOutViewInput,
   testPlanStopTaskExecutionInput,
   testPlanUpdateTaskInput
 } from "../products/testplan/schemas.js";
@@ -360,6 +366,14 @@ import { createTestPlanGetMindmapStatisticsHandler } from "../products/testplan/
 import { createTestPlanListDynamicGlobalVariablesHandler } from "../products/testplan/tools/list-dynamic-global-variables.js";
 import { createTestPlanUpdateDynamicGlobalVariableHandler } from "../products/testplan/tools/update-dynamic-global-variable.js";
 import { createTestPlanDeleteDynamicGlobalVariableHandler } from "../products/testplan/tools/delete-dynamic-global-variable.js";
+import {
+  createTestPlanCreateAwCataFirstHandler,
+  createTestPlanDeleteAwCatasHandler,
+  createTestPlanDeleteCustomAwFileHandler,
+  createTestPlanSaveAwRefreshToAllHandler,
+  createTestPlanUpdateAwNameViewHandler,
+  createTestPlanUpdateTimeOutViewHandler
+} from "../products/testplan/tools/aw-write-tools.js";
 import {
   createTestPlanBatchDeleteFactorsHandler,
   createTestPlanDeleteAttachmentHandler,
@@ -1178,6 +1192,42 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanUpdateAwCataFirstInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanUpdateAwCataFirstHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanUpdateAwCataFirstHandler
+  }),
+  "testplan_create_aw_cata_first": defineProductTool({
+    description: "Create a CodeArts TestPlan AW catalog via official v1 API (dry-run by default)",
+    inputSchema: testPlanCreateAwCataFirstInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanCreateAwCataFirstHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanCreateAwCataFirstHandler
+  }),
+  "testplan_delete_aw_catas": defineProductTool({
+    description: "Batch delete CodeArts TestPlan AW keywords and catalogs via official v1 API (dry-run by default)",
+    inputSchema: testPlanDeleteAwCatasInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanDeleteAwCatasHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanDeleteAwCatasHandler
+  }),
+  "testplan_delete_custom_aw_file": defineProductTool({
+    description: "Delete a CodeArts TestPlan custom AW jar file relation via official v1 API (dry-run by default)",
+    inputSchema: testPlanDeleteCustomAwFileInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanDeleteCustomAwFileHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanDeleteCustomAwFileHandler
+  }),
+  "testplan_update_aw_name_view": defineProductTool({
+    description: "Update CodeArts TestPlan AW name display settings via official v1 API (dry-run by default)",
+    inputSchema: testPlanUpdateAwNameViewInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanUpdateAwNameViewHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanUpdateAwNameViewHandler
+  }),
+  "testplan_update_time_out_view": defineProductTool({
+    description: "Update CodeArts TestPlan timeout display settings via official v1 API (dry-run by default)",
+    inputSchema: testPlanUpdateTimeOutViewInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanUpdateTimeOutViewHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanUpdateTimeOutViewHandler
+  }),
+  "testplan_save_aw_refresh_to_all": defineProductTool({
+    description: "Refresh matching CodeArts TestPlan cases from an AW keyword via official v1 API (dry-run by default)",
+    inputSchema: testPlanSaveAwRefreshToAllInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanSaveAwRefreshToAllHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanSaveAwRefreshToAllHandler
   }),
   "testplan_delete_basic_aws_v1": defineProductTool({
     description: "Batch delete CodeArts TestPlan basic AW keywords via official v1 API (dry-run by default)",

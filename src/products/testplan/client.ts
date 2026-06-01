@@ -1670,6 +1670,63 @@ export type TestPlanClient = {
     value?: unknown;
     raw: Record<string, unknown>;
   }>;
+  createAwCataFirst: (input: {
+    project_id: string;
+    name?: string;
+    desc?: string;
+    parent_id?: string;
+    aw_type?: string | number;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    cata_id?: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  deleteAwCatas: (input: {
+    project_id: string;
+    items: Array<Record<string, unknown> & { id: string; is_folder?: boolean }>;
+  }) => Promise<{
+    ids: string[];
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  deleteCustomAwFile: (input: {
+    project_id: string;
+    basic_aw_id: string;
+    aw_lib_id: string;
+  }) => Promise<{
+    basic_aw_id: string;
+    aw_lib_id: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  updateAwNameView: (input: {
+    project_id: string;
+    name_view?: string;
+    source_type?: string | number;
+    body?: string | Record<string, unknown>;
+  }) => Promise<{
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  updateTimeOutView: (input: {
+    project_id: string;
+    time_out?: string | number;
+    source_type?: string | number;
+    body?: string | Record<string, unknown>;
+  }) => Promise<{
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  saveAwRefreshToAll: (input: {
+    project_id: string;
+    aw_id: string;
+    body: Record<string, unknown>;
+  }) => Promise<{
+    aw_id: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
   deleteBasicAwsV1: (input: {
     project_id: string;
     aw_ids: string[];
@@ -2349,6 +2406,11 @@ function readOptionalNumber(input: unknown) {
 function readResultPayload(input: unknown) {
   const envelope = readEnvelope(input) ?? {};
   return readEnvelope(envelope.result) ?? envelope;
+}
+
+function readResultValue(input: unknown, payload: Record<string, unknown>) {
+  const envelope = readEnvelope(input) ?? {};
+  return envelope.result ?? envelope.value ?? envelope.data ?? payload.result ?? payload.value ?? payload.data;
 }
 
 function readTotal(payload: Record<string, unknown>, response: unknown, fallback?: number) {
@@ -6088,6 +6150,116 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       return {
         cata_id: input.cata_id,
         value: payload.result ?? payload.value ?? payload.data,
+        raw: payload
+      };
+    },
+    async createAwCataFirst(input) {
+      const body = {
+        ...(input.body ?? {}),
+        ...(input.name !== undefined ? { name: input.name } : {}),
+        ...(input.desc !== undefined ? { desc: input.desc } : {}),
+        ...(input.parent_id !== undefined ? { parent_id: input.parent_id } : {}),
+        ...(input.aw_type !== undefined ? { aw_type: input.aw_type } : {})
+      };
+      const response = await _http.post(
+        `/v1/${encodeURIComponent(input.project_id)}/aw_cata/create_aw_cata`,
+        body
+      );
+      const payload = readResultPayload(response);
+      const value = readResultValue(response, payload);
+      const result = readEnvelope(value);
+
+      return {
+        cata_id: String(result?.id ?? result?.cata_id ?? ""),
+        value,
+        raw: payload
+      };
+    },
+    async deleteAwCatas(input) {
+      const response = await _http.post(
+        `/v1/${encodeURIComponent(input.project_id)}/aw_cata/delete_aw_catas`,
+        input.items
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        ids: input.items.map((item) => item.id),
+        value: readResultValue(response, payload),
+        raw: payload
+      };
+    },
+    async deleteCustomAwFile(input) {
+      const response = await _http.delete(
+        `/v1/${encodeURIComponent(input.project_id)}/basic-aw-lib/${encodeURIComponent(input.basic_aw_id)}/${encodeURIComponent(input.aw_lib_id)}`
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        basic_aw_id: input.basic_aw_id,
+        aw_lib_id: input.aw_lib_id,
+        value: readResultValue(response, payload),
+        raw: payload
+      };
+    },
+    async updateAwNameView(input) {
+      const query = new URLSearchParams();
+      appendQueryValue(query, "source_type", input.source_type);
+      const suffix = query.size ? `?${query.toString()}` : "";
+      const body =
+        input.body ??
+        (input.name_view !== undefined
+          ? {
+              project_id: input.project_id,
+              name_view: input.name_view
+            }
+          : {});
+      const response = await _http.post(
+        `/v1/${encodeURIComponent(input.project_id)}/update_awName_view${suffix}`,
+        body
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        value: readResultValue(response, payload),
+        raw: payload
+      };
+    },
+    async updateTimeOutView(input) {
+      const query = new URLSearchParams();
+      appendQueryValue(query, "source_type", input.source_type);
+      const suffix = query.size ? `?${query.toString()}` : "";
+      const body =
+        input.body ??
+        (input.time_out !== undefined
+          ? {
+              project_id: input.project_id,
+              time_out: input.time_out
+            }
+          : {});
+      const response = await _http.post(
+        `/v1/${encodeURIComponent(input.project_id)}/update_timeOut_view${suffix}`,
+        body
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        value: readResultValue(response, payload),
+        raw: payload
+      };
+    },
+    async saveAwRefreshToAll(input) {
+      const query = new URLSearchParams({
+        aw_id: input.aw_id
+      });
+      const response = await _http.post(
+        `/v1/${encodeURIComponent(input.project_id)}/basic-aw/refresh-to-all/save?${query.toString()}`,
+        input.body
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        aw_id: input.aw_id,
+        value: readResultValue(response, payload),
         raw: payload
       };
     },

@@ -789,6 +789,127 @@ describe("createTestPlanClient", () => {
     ]);
   });
 
+  it("calls official TestPlan AW write endpoints", async () => {
+    const requests: Array<{ method: string; path: string; body?: unknown }> = [];
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requests.push({ method: "post", path, body });
+        return {
+          status: "success",
+          result: { id: "cata-1", rate: 0 }
+        };
+      },
+      delete: async (path: string, body?: unknown) => {
+        requests.push({ method: "delete", path, body });
+        return {
+          status: "success",
+          result: "success"
+        };
+      }
+    } as never);
+
+    await expect(
+      client.createAwCataFirst({
+        project_id: "project-1",
+        name: "Smoke",
+        desc: "desc",
+        parent_id: "TOP",
+        aw_type: 4,
+        body: { custom: true }
+      })
+    ).resolves.toEqual({
+      cata_id: "cata-1",
+      value: { id: "cata-1", rate: 0 },
+      raw: { id: "cata-1", rate: 0 }
+    });
+    await expect(
+      client.deleteAwCatas({
+        project_id: "project-1",
+        items: [{ id: "cata-1", is_folder: true }]
+      })
+    ).resolves.toEqual({
+      ids: ["cata-1"],
+      value: { id: "cata-1", rate: 0 },
+      raw: { id: "cata-1", rate: 0 }
+    });
+    await expect(
+      client.deleteCustomAwFile({
+        project_id: "project-1",
+        basic_aw_id: "aw-1",
+        aw_lib_id: "lib-1"
+      })
+    ).resolves.toEqual({
+      basic_aw_id: "aw-1",
+      aw_lib_id: "lib-1",
+      value: "success",
+      raw: { status: "success", result: "success" }
+    });
+    await expect(
+      client.updateAwNameView({
+        project_id: "project-1",
+        name_view: "1",
+        source_type: 2
+      })
+    ).resolves.toEqual({
+      value: { id: "cata-1", rate: 0 },
+      raw: { id: "cata-1", rate: 0 }
+    });
+    await expect(
+      client.updateTimeOutView({
+        project_id: "project-1",
+        time_out: 30,
+        source_type: 2
+      })
+    ).resolves.toEqual({
+      value: { id: "cata-1", rate: 0 },
+      raw: { id: "cata-1", rate: 0 }
+    });
+    await expect(
+      client.saveAwRefreshToAll({
+        project_id: "project-1",
+        aw_id: "aw-1",
+        body: { operation_type: "refresh" }
+      })
+    ).resolves.toEqual({
+      aw_id: "aw-1",
+      value: { id: "cata-1", rate: 0 },
+      raw: { id: "cata-1", rate: 0 }
+    });
+
+    expect(requests).toEqual([
+      {
+        method: "post",
+        path: "/v1/project-1/aw_cata/create_aw_cata",
+        body: { custom: true, name: "Smoke", desc: "desc", parent_id: "TOP", aw_type: 4 }
+      },
+      {
+        method: "post",
+        path: "/v1/project-1/aw_cata/delete_aw_catas",
+        body: [{ id: "cata-1", is_folder: true }]
+      },
+      {
+        method: "delete",
+        path: "/v1/project-1/basic-aw-lib/aw-1/lib-1",
+        body: undefined
+      },
+      {
+        method: "post",
+        path: "/v1/project-1/update_awName_view?source_type=2",
+        body: { project_id: "project-1", name_view: "1" }
+      },
+      {
+        method: "post",
+        path: "/v1/project-1/update_timeOut_view?source_type=2",
+        body: { project_id: "project-1", time_out: 30 }
+      },
+      {
+        method: "post",
+        path: "/v1/project-1/basic-aw/refresh-to-all/save?aw_id=aw-1",
+        body: { operation_type: "refresh" }
+      }
+    ]);
+  });
+
   it("lists test suite tasks using the v4 batch query endpoint", async () => {
     let requestedPath = "";
     let requestedBody: Record<string, unknown> | undefined;

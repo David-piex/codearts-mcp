@@ -100,6 +100,7 @@ const WRITE_ACTIONS = new Set([
   "review",
   "rollback",
   "run",
+  "save",
   "set",
   "start",
   "stop",

@@ -1226,6 +1226,63 @@ export const testPlanUpdateAwCataFirstInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+const testPlanAwRequestBodyInput = z.record(z.string(), z.unknown());
+
+export const testPlanCreateAwCataFirstInput = z.object({
+  project_id: idSchema,
+  name: z.string().min(1).optional(),
+  desc: z.string().optional(),
+  parent_id: idSchema.optional(),
+  aw_type: z.union([z.string().min(1), z.number().int()]).optional(),
+  body: testPlanAwRequestBodyInput.optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanDeleteAwCatasInput = z.object({
+  project_id: idSchema,
+  items: z
+    .array(
+      z
+        .object({
+          id: idSchema,
+          is_folder: z.boolean().optional()
+        })
+        .passthrough()
+    )
+    .min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanDeleteCustomAwFileInput = z.object({
+  project_id: idSchema,
+  basic_aw_id: idSchema,
+  aw_lib_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanUpdateAwNameViewInput = z.object({
+  project_id: idSchema,
+  name_view: z.string().min(1).optional(),
+  source_type: z.union([z.string().min(1), z.number().int()]).optional(),
+  body: z.union([z.string().min(1), testPlanAwRequestBodyInput]).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanUpdateTimeOutViewInput = z.object({
+  project_id: idSchema,
+  time_out: z.union([z.string().min(1), z.number().int().nonnegative()]).optional(),
+  source_type: z.union([z.string().min(1), z.number().int()]).optional(),
+  body: z.union([z.string().min(1), testPlanAwRequestBodyInput]).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanSaveAwRefreshToAllInput = z.object({
+  project_id: idSchema,
+  aw_id: idSchema,
+  body: testPlanAwRequestBodyInput,
+  dry_run: z.boolean().default(true)
+});
+
 export const testPlanDeleteBasicAwsV1Input = z.object({
   project_id: idSchema,
   aw_ids: z.array(idSchema).min(1),
