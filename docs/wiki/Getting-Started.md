@@ -42,7 +42,7 @@ node dist/src/server/index.js
 ```json
 {
   "mcpServers": {
-    "codearts-shared": {
+    "codearts": {
       "type": "http",
       "url": "http://your-server-ip/mcp"
     }

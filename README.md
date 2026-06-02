@@ -88,7 +88,7 @@ node dist/src/server/index.js
 ```json
 {
   "mcpServers": {
-    "codearts-shared": {
+    "codearts": {
       "type": "http",
       "url": "http://your-server-ip/mcp"
     }
@@ -101,7 +101,7 @@ node dist/src/server/index.js
 ```json
 {
   "mcpServers": {
-    "codearts-shared": {
+    "codearts": {
       "disabled": false,
       "timeout": 60,
       "type": "streamableHttp",

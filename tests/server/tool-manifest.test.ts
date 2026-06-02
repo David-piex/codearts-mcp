@@ -13,6 +13,8 @@ import {
 
 const liveStatuses: ToolLiveStatus[] = ["validated", "partial", "unpublished", "unknown"];
 const riskLevels: ToolRiskLevel[] = ["low", "medium", "high"];
+const recommendedClientAlias = "codearts";
+const inferHubFunctionNameLimit = 64;
 
 describe("ToolManifest", () => {
   it("is the product tool-name source of truth", () => {
@@ -36,6 +38,14 @@ describe("ToolManifest", () => {
     expect(
       collectToolManifest({ kind: "product" }).every((entry) => entry.family !== undefined)
     ).toBe(true);
+  });
+
+  it("keeps recommended client-prefixed function names within InferHub's limit", () => {
+    const overLimitNames = collectManifestToolNames({ mode: "http" })
+      .map((name) => `${recommendedClientAlias}_${name}`)
+      .filter((name) => name.length > inferHubFunctionNameLimit);
+
+    expect(overLimitNames).toEqual([]);
   });
 
   it("matches actual stdio and HTTP server registration", () => {

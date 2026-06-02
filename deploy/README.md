@@ -265,7 +265,7 @@ bash deploy/manage-shared.sh start-ssl
 ```json
 {
   "mcpServers": {
-    "codearts-shared": {
+    "codearts": {
       "type": "http",
       "url": "https://your-domain.example.com/mcp"
     }
