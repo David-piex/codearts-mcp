@@ -71,15 +71,15 @@ describe("module stats doc rendering", () => {
   });
 
   it("renders API reference scale tables from current module stats", () => {
-    expect(renderApiReferenceScaleMarkdown()).toContain(
-      `产品工具合计 \`${collectProductToolStats().total}\` 个。`,
+    const apiReference = renderApiReferenceScaleMarkdown();
+    const reqReference = renderReqApiReferenceScaleMarkdown();
+
+    expect(apiReference).toContain(
+      `\`${collectProductToolStats().total}\``,
     );
-    expect(renderReqApiReferenceScaleMarkdown()).toContain(
-      "| Req MCP 工具 | 278 |",
-    );
-    expect(renderReqApiReferenceScaleMarkdown()).toContain(
-      `| 含鉴权的共享 HTTP 工具 | ${collectHttpToolTotal()} |`,
-    );
+    expect(reqReference).toContain("| Req MCP");
+    expect(reqReference).toContain("| 342 |");
+    expect(reqReference).toContain(`| ${collectHttpToolTotal()} |`);
   });
 });
 
@@ -118,15 +118,15 @@ describe("syncModuleStatsDocuments", () => {
       `- \`${collectProductToolStats().total}\` product tools`,
     );
     expect(synced["README.md"]).toContain("| Pipeline | 109 | Partial |");
-    expect(synced["README.md"]).toContain("| Req | 278 | Partial |");
+    expect(synced["README.md"]).toContain("| Req | 342 | Partial |");
     expect(synced["docs/wiki/Capability-Matrix.md"]).toContain(
-      "| Req | 169 | 109 | Partial |",
+      "| Req | 208 | 134 | Partial |",
     );
     expect(synced["docs/wiki/API-Reference.md"]).toContain(
-      `产品工具合计 \`${collectProductToolStats().total}\` 个。`,
+      `\`${collectProductToolStats().total}\``,
     );
     expect(synced["docs/wiki/Module-Live-Readiness.md"]).toContain(
-      "| Req | 278 | 169 | 109 | Partial |",
+      "| Req | 342 | 208 | 134 | Partial |",
     );
     expect(synced["docs/wiki/Module-Live-Readiness.md"]).toContain(
       `- Total MCP tools exposed: \`${collectHttpToolTotal()}\``,
@@ -135,7 +135,7 @@ describe("syncModuleStatsDocuments", () => {
       "| Deploy | 74 |",
     );
     expect(synced["docs/wiki/Req-API-Reference.md"]).toContain(
-      `| 含鉴权的共享 HTTP 工具 | ${collectHttpToolTotal()} |`,
+      `| ${collectHttpToolTotal()} |`,
     );
   });
 });

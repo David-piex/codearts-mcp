@@ -542,6 +542,13 @@ const reqToolDefinitions = {
     createProductHandler: createReqAddProjectMemberHandler,
     rateLimitAction: "req_add_project_member"
   }),
+  "req_add_member_v4": defineProductTool({
+    description: "Add member to a CodeArts Req project through the official V4 endpoint",
+    inputSchema: reqAddProjectMemberInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqAddProjectMemberHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqAddProjectMemberHandler,
+    rateLimitAction: "req_add_member_v4"
+  }),
   "req_apply_join_project_for_agc": defineProductTool({
     description: "Apply to join a CodeArts Req project through the AGC token-header endpoint",
     inputSchema: reqApplyJoinProjectForAgcInput,
@@ -550,12 +557,27 @@ const reqToolDefinitions = {
     createProductHandler: createReqApplyJoinProjectForAgcHandler,
     rateLimitAction: "req_apply_join_project_for_agc"
   }),
+  "req_add_apply_join_project_for_agc": defineProductTool({
+    description: "Apply to join a CodeArts Req project through the official AGC endpoint",
+    inputSchema: reqApplyJoinProjectForAgcInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqApplyJoinProjectForAgcHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqApplyJoinProjectForAgcHandler,
+    rateLimitAction: "req_add_apply_join_project_for_agc"
+  }),
   "req_batch_add_project_members": defineProductTool({
     description: "Add multiple members to a CodeArts Req project",
     inputSchema: reqBatchAddProjectMembersInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqBatchAddProjectMembersHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqBatchAddProjectMembersHandler,
     rateLimitAction: "req_batch_add_project_members"
+  }),
+  "req_batch_add_members_v4": defineProductTool({
+    description: "Add multiple members to a CodeArts Req project through the official V4 endpoint",
+    inputSchema: reqBatchAddProjectMembersInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqBatchAddProjectMembersHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqBatchAddProjectMembersHandler,
+    rateLimitAction: "req_batch_add_members_v4"
   }),
   "req_batch_create_tracker_config": defineProductTool({
     description: "Bind custom work item statuses to a CodeArts Req tracker",
@@ -572,12 +594,26 @@ const reqToolDefinitions = {
     createProductHandler: createReqBatchDeleteProjectMembersHandler,
     rateLimitAction: "req_batch_delete_project_members"
   }),
+  "req_batch_delete_members_v4": defineProductTool({
+    description: "Remove multiple members from a CodeArts Req project through the official V4 endpoint",
+    inputSchema: reqBatchDeleteProjectMembersInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqBatchDeleteProjectMembersHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqBatchDeleteProjectMembersHandler,
+    rateLimitAction: "req_batch_delete_members_v4"
+  }),
   "req_batch_delete_iterations": defineProductTool({
     description: "Delete multiple CodeArts Req iterations",
     inputSchema: reqBatchDeleteIterationsInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqBatchDeleteIterationsHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqBatchDeleteIterationsHandler,
     rateLimitAction: "req_batch_delete_iterations"
+  }),
+  "req_batch_delete_iterations_v4": defineProductTool({
+    description: "Delete multiple CodeArts Req iterations through the official V4 endpoint",
+    inputSchema: reqBatchDeleteIterationsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqBatchDeleteIterationsHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqBatchDeleteIterationsHandler,
+    rateLimitAction: "req_batch_delete_iterations_v4"
   }),
   "req_batch_delete_work_items": defineProductTool({
     description: "Delete multiple CodeArts Req work items",
@@ -620,6 +656,15 @@ const reqToolDefinitions = {
     }) => clients.reqClient,
     createProductHandler: createReqBatchUpdateChildUserNicknamesHandler,
     rateLimitAction: "req_batch_update_child_user_nicknames"
+  }),
+  "req_batch_update_child_nick_names": defineProductTool({
+    description: "Batch update CodeArts Req child nick names through the official endpoint",
+    inputSchema: reqBatchUpdateChildUserNicknamesInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqBatchUpdateChildUserNicknamesHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqBatchUpdateChildUserNicknamesHandler,
+    rateLimitAction: "req_batch_update_child_nick_names"
   }),
   "req_batch_delete_ipd_issues": defineProductTool({
     description: "Batch delete CodeArts Req IPD issues",
@@ -666,12 +711,26 @@ const reqToolDefinitions = {
     createProductHandler: createReqCreateProjectHandler,
     rateLimitAction: "req_create_project"
   }),
+  "req_create_project_v4": defineProductTool({
+    description: "Create CodeArts Req project through the official V4 endpoint",
+    inputSchema: reqCreateProjectInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqCreateProjectHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqCreateProjectHandler,
+    rateLimitAction: "req_create_project_v4"
+  }),
   "req_create_plan": defineProductTool({
     description: "Create CodeArts Req plan",
     inputSchema: reqCreatePlanInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqCreatePlanHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqCreatePlanHandler,
     rateLimitAction: "req_create_plan"
+  }),
+  "req_create_scrum_plan_to_project": defineProductTool({
+    description: "Create a CodeArts Req scrum plan through the official CreateScrumPlanToProject endpoint",
+    inputSchema: reqCreatePlanInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqCreatePlanHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqCreatePlanHandler,
+    rateLimitAction: "req_create_scrum_plan_to_project"
   }),
   "req_create_release_plan": defineProductTool({
     description: "Create CodeArts Req release or iteration plan",
@@ -695,6 +754,13 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqCreateIterationHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqCreateIterationHandler,
     rateLimitAction: "req_create_iteration"
+  }),
+  "req_create_iteration_v4": defineProductTool({
+    description: "Create CodeArts Req iteration through the official V4 endpoint",
+    inputSchema: reqCreateIterationInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqCreateIterationHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqCreateIterationHandler,
+    rateLimitAction: "req_create_iteration_v4"
   }),
   "req_create_version_v2": defineProductTool({
     description: "Create CodeArts Req V2 version from the official V2 endpoint",
@@ -753,6 +819,15 @@ const reqToolDefinitions = {
     createProductHandler: createReqCreateWorkItemCustomFieldHandler,
     rateLimitAction: "req_create_work_item_custom_field"
   }),
+  "req_create_customfields": defineProductTool({
+    description: "Create CodeArts Req custom fields through the official CreateCustomfields endpoint",
+    inputSchema: reqCreateWorkItemCustomFieldInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqCreateWorkItemCustomFieldHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqCreateWorkItemCustomFieldHandler,
+    rateLimitAction: "req_create_customfields"
+  }),
   "req_update_project": defineProductTool({
     description: "Update CodeArts Req project",
     inputSchema: reqUpdateProjectInput,
@@ -760,12 +835,26 @@ const reqToolDefinitions = {
     createProductHandler: createReqUpdateProjectHandler,
     rateLimitAction: "req_update_project"
   }),
+  "req_update_project_v4": defineProductTool({
+    description: "Update CodeArts Req project through the official V4 endpoint",
+    inputSchema: reqUpdateProjectInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUpdateProjectHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqUpdateProjectHandler,
+    rateLimitAction: "req_update_project_v4"
+  }),
   "req_update_plan": defineProductTool({
     description: "Update CodeArts Req plan",
     inputSchema: reqUpdatePlanInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUpdatePlanHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqUpdatePlanHandler,
     rateLimitAction: "req_update_plan"
+  }),
+  "req_update_scrum_plan_in_project": defineProductTool({
+    description: "Update a CodeArts Req scrum plan through the official UpdateScrumPlanInProject endpoint",
+    inputSchema: reqUpdatePlanInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUpdatePlanHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqUpdatePlanHandler,
+    rateLimitAction: "req_update_scrum_plan_in_project"
   }),
   "req_update_release_plan": defineProductTool({
     description: "Update CodeArts Req release or iteration plan",
@@ -815,6 +904,13 @@ const reqToolDefinitions = {
     createProductHandler: createReqUpdateIterationHandler,
     rateLimitAction: "req_update_iteration"
   }),
+  "req_update_iteration_v4": defineProductTool({
+    description: "Update CodeArts Req iteration through the official V4 endpoint",
+    inputSchema: reqUpdateIterationInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUpdateIterationHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqUpdateIterationHandler,
+    rateLimitAction: "req_update_iteration_v4"
+  }),
   "req_update_current_user_nickname": defineProductTool({
     description: "Update the current CodeArts Req user nickname through the token-header endpoint",
     inputSchema: reqUpdateCurrentUserNicknameInput,
@@ -822,6 +918,14 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqUpdateCurrentUserNicknameHandler,
     rateLimitAction: "req_update_current_user_nickname"
+  }),
+  "req_update_nick_name_v4": defineProductTool({
+    description: "Update the current CodeArts Req user nick name through the official V4 endpoint",
+    inputSchema: reqUpdateCurrentUserNicknameInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUpdateCurrentUserNicknameHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqUpdateCurrentUserNicknameHandler,
+    rateLimitAction: "req_update_nick_name_v4"
   }),
   "req_update_project_module": defineProductTool({
     description: "Update CodeArts Req project module",
@@ -862,6 +966,13 @@ const reqToolDefinitions = {
     createProductHandler: createReqDeleteProjectHandler,
     rateLimitAction: "req_delete_project"
   }),
+  "req_delete_project_v4": defineProductTool({
+    description: "Delete CodeArts Req project through the official V4 endpoint",
+    inputSchema: reqDeleteProjectInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqDeleteProjectHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqDeleteProjectHandler,
+    rateLimitAction: "req_delete_project_v4"
+  }),
   "req_delete_plan": defineProductTool({
     description: "Delete CodeArts Req plan",
     inputSchema: reqDeletePlanInput,
@@ -869,12 +980,26 @@ const reqToolDefinitions = {
     createProductHandler: createReqDeletePlanHandler,
     rateLimitAction: "req_delete_plan"
   }),
+  "req_delete_scrum_plan_in_project": defineProductTool({
+    description: "Delete a CodeArts Req scrum plan through the official DeleteScrumPlanInProject endpoint",
+    inputSchema: reqDeletePlanInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqDeletePlanHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqDeletePlanHandler,
+    rateLimitAction: "req_delete_scrum_plan_in_project"
+  }),
   "req_delete_iteration": defineProductTool({
     description: "Delete CodeArts Req iteration",
     inputSchema: reqDeleteIterationInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqDeleteIterationHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqDeleteIterationHandler,
     rateLimitAction: "req_delete_iteration"
+  }),
+  "req_delete_iteration_v4": defineProductTool({
+    description: "Delete CodeArts Req iteration through the official V4 endpoint",
+    inputSchema: reqDeleteIterationInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqDeleteIterationHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqDeleteIterationHandler,
+    rateLimitAction: "req_delete_iteration_v4"
   }),
   "req_delete_version_v2": defineProductTool({
     description: "Delete CodeArts Req V2 version from the token-header endpoint",
@@ -910,6 +1035,12 @@ const reqToolDefinitions = {
   }),
   "req_check_project_name": defineProductTool({
     description: "Check whether a CodeArts Req project name exists",
+    inputSchema: reqCheckProjectNameInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqCheckProjectNameHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqCheckProjectNameHandler
+  }),
+  "req_check_project_name_v4": defineProductTool({
+    description: "Check whether a CodeArts Req project name exists through the official V4 endpoint",
     inputSchema: reqCheckProjectNameInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqCheckProjectNameHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqCheckProjectNameHandler
@@ -952,8 +1083,20 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListNotAddedProjectsHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqListNotAddedProjectsHandler
   }),
+  "req_list_domain_not_added_projects_v4": defineProductTool({
+    description: "List CodeArts Req projects not yet added to the current domain through the official V4 endpoint",
+    inputSchema: reqListNotAddedProjectsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListNotAddedProjectsHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqListNotAddedProjectsHandler
+  }),
   "req_list_projects": defineProductTool({
     description: "List CodeArts Req projects",
+    inputSchema: reqListProjectsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListProjectsHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqListProjectsHandler
+  }),
+  "req_list_projects_v4": defineProductTool({
+    description: "List CodeArts Req projects through the official V4 endpoint",
     inputSchema: reqListProjectsInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListProjectsHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqListProjectsHandler
@@ -966,8 +1109,24 @@ const reqToolDefinitions = {
     }) => clients.reqClient,
     createProductHandler: createReqGetCurrentUserInfoHandler
   }),
+  "req_show_cur_user_info": defineProductTool({
+    description: "Show current CodeArts Req user info through the official endpoint",
+    inputSchema: reqGetCurrentUserInfoInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqGetCurrentUserInfoHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqGetCurrentUserInfoHandler
+  }),
   "req_get_current_user_role": defineProductTool({
     description: "Get current CodeArts Req user role in a project",
+    inputSchema: reqGetCurrentUserRoleInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqGetCurrentUserRoleHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqGetCurrentUserRoleHandler
+  }),
+  "req_show_cur_user_role": defineProductTool({
+    description: "Show current CodeArts Req user role in a project through the official endpoint",
     inputSchema: reqGetCurrentUserRoleInput,
     selectHttpClient: (clients: {
       reqClient: Parameters<typeof createReqGetCurrentUserRoleHandler>[0];
@@ -993,8 +1152,22 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGetProjectHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqGetProjectHandler
   }),
+  "req_show_project_info_v4": defineProductTool({
+    description: "Show CodeArts Req project detail through the official V4 endpoint",
+    inputSchema: reqGetProjectInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGetProjectHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqGetProjectHandler
+  }),
   "req_get_project_bug_density": defineProductTool({
     description: "Get CodeArts Req project bug density metric",
+    inputSchema: reqGetProjectBugDensityInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqGetProjectBugDensityHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqGetProjectBugDensityHandler
+  }),
+  "req_show_bug_density_v2": defineProductTool({
+    description: "Show CodeArts Req project bug density metric through the official V2 endpoint",
     inputSchema: reqGetProjectBugDensityInput,
     selectHttpClient: (clients: {
       reqClient: Parameters<typeof createReqGetProjectBugDensityHandler>[0];
@@ -1009,8 +1182,24 @@ const reqToolDefinitions = {
     }) => clients.reqClient,
     createProductHandler: createReqGetProjectBugsPerDeveloperHandler
   }),
+  "req_show_bugs_per_developer": defineProductTool({
+    description: "Show CodeArts Req project bugs per developer metric through the official endpoint",
+    inputSchema: reqGetProjectBugsPerDeveloperInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqGetProjectBugsPerDeveloperHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqGetProjectBugsPerDeveloperHandler
+  }),
   "req_get_project_completion_rate": defineProductTool({
     description: "Get CodeArts Req project completion rate metric",
+    inputSchema: reqGetProjectCompletionRateInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqGetProjectCompletionRateHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqGetProjectCompletionRateHandler
+  }),
+  "req_show_completion_rate": defineProductTool({
+    description: "Show CodeArts Req project completion rate metric through the official endpoint",
     inputSchema: reqGetProjectCompletionRateInput,
     selectHttpClient: (clients: {
       reqClient: Parameters<typeof createReqGetProjectCompletionRateHandler>[0];
@@ -1027,6 +1216,14 @@ const reqToolDefinitions = {
   }),
   "req_list_project_demand_statistics": defineProductTool({
     description: "List CodeArts Req project demand statistics",
+    inputSchema: reqListProjectDemandStatisticsInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqListProjectDemandStatisticsHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqListProjectDemandStatisticsHandler
+  }),
+  "req_list_project_demand_static_v4": defineProductTool({
+    description: "List CodeArts Req project demand statistics through the official V4 endpoint",
     inputSchema: reqListProjectDemandStatisticsInput,
     selectHttpClient: (clients: {
       reqClient: Parameters<typeof createReqListProjectDemandStatisticsHandler>[0];
@@ -1068,6 +1265,13 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqListIssueSeveritiesHandler
   }),
+  "req_show_scrum_issue_severities": defineProductTool({
+    description: "List CodeArts Req issue severities through the official ShowScrumIssueSeverities endpoint",
+    inputSchema: reqListIssueSeveritiesInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIssueSeveritiesHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListIssueSeveritiesHandler
+  }),
   "req_list_ipd_projects": defineProductTool({
     description: "List CodeArts Req IPD projects",
     inputSchema: reqListIpdProjectsInput,
@@ -1091,6 +1295,13 @@ const reqToolDefinitions = {
   }),
   "req_list_ipd_issues": defineProductTool({
     description: "List CodeArts Req IPD issues",
+    inputSchema: reqListIpdIssuesInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIpdIssuesHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListIpdIssuesHandler
+  }),
+  "req_list_ipd_project_issues": defineProductTool({
+    description: "List CodeArts Req IPD project issues through the official ListIpdProjectIssues endpoint",
     inputSchema: reqListIpdIssuesInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIpdIssuesHandler>[0] }) =>
       clients.reqClient,
@@ -1201,6 +1412,13 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqListIpdIssueFieldsHandler
   }),
+  "req_list_issue_fields": defineProductTool({
+    description: "List CodeArts Req issue fields through the official ListIssueFields endpoint",
+    inputSchema: reqListIpdIssueFieldsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIpdIssueFieldsHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListIpdIssueFieldsHandler
+  }),
   "req_list_ipd_tenant_fields": defineProductTool({
     description: "List CodeArts Req IPD tenant fields",
     inputSchema: reqListIpdTenantFieldsInput,
@@ -1231,6 +1449,13 @@ const reqToolDefinitions = {
   }),
   "req_list_ipd_workflow_templates": defineProductTool({
     description: "List CodeArts Req IPD workflow templates",
+    inputSchema: reqListIpdWorkflowTemplatesInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIpdWorkflowTemplatesHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListIpdWorkflowTemplatesHandler
+  }),
+  "req_show_workflow_template": defineProductTool({
+    description: "Show a CodeArts Req workflow template through the official ShowWorkflowTemplate endpoint",
     inputSchema: reqListIpdWorkflowTemplatesInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIpdWorkflowTemplatesHandler>[0] }) =>
       clients.reqClient,
@@ -1307,6 +1532,14 @@ const reqToolDefinitions = {
     createProductHandler: createReqTransferIpdWorkItemFlowHandler,
     rateLimitAction: "req_transfer_ipd_work_item_flow"
   }),
+  "req_transfer_work_item_flow": defineProductTool({
+    description: "Transfer a CodeArts Req work item flow through the official TransferWorkItemFlow endpoint",
+    inputSchema: reqTransferIpdWorkItemFlowInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqTransferIpdWorkItemFlowHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqTransferIpdWorkItemFlowHandler,
+    rateLimitAction: "req_transfer_work_item_flow"
+  }),
   "req_batch_transfer_ipd_work_item_flow": defineProductTool({
     description: "Batch transfer CodeArts Req IPD work item flow",
     inputSchema: reqBatchTransferIpdWorkItemFlowInput,
@@ -1371,6 +1604,14 @@ const reqToolDefinitions = {
     createProductHandler: createReqCreateIpdIssueHandler,
     rateLimitAction: "req_create_ipd_issue"
   }),
+  "req_create_ipd_project_issue": defineProductTool({
+    description: "Create a CodeArts Req IPD project issue through the official CreateIpdProjectIssue endpoint",
+    inputSchema: reqCreateIpdIssueInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqCreateIpdIssueHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqCreateIpdIssueHandler,
+    rateLimitAction: "req_create_ipd_project_issue"
+  }),
   "req_upload_ipd_issue_attachment": defineProductTool({
     description: "Upload attachment to CodeArts Req IPD issue",
     inputSchema: reqUploadIpdIssueAttachmentInput,
@@ -1379,8 +1620,23 @@ const reqToolDefinitions = {
     createProductHandler: createReqUploadIpdIssueAttachmentHandler,
     rateLimitAction: "req_upload_ipd_issue_attachment"
   }),
+  "req_create_ipd_project_issue_attachment": defineProductTool({
+    description: "Create a CodeArts Req IPD project issue attachment through the official CreateIpdProjectIssueAttachment endpoint",
+    inputSchema: reqUploadIpdIssueAttachmentInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUploadIpdIssueAttachmentHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqUploadIpdIssueAttachmentHandler,
+    rateLimitAction: "req_create_ipd_project_issue_attachment"
+  }),
   "req_list_ipd_issue_attachments": defineProductTool({
     description: "List CodeArts Req IPD issue attachments",
+    inputSchema: reqListIpdIssueAttachmentsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIpdIssueAttachmentsHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListIpdIssueAttachmentsHandler
+  }),
+  "req_show_ipd_attachment_by_work_item_id": defineProductTool({
+    description: "Show CodeArts Req IPD attachments by work item id through the official ShowIpdAttachmentByWorkItemId endpoint",
     inputSchema: reqListIpdIssueAttachmentsInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIpdIssueAttachmentsHandler>[0] }) =>
       clients.reqClient,
@@ -1557,8 +1813,24 @@ const reqToolDefinitions = {
     }) => clients.reqClient,
     createProductHandler: createReqListProjectBugStatisticsHandler
   }),
+  "req_list_project_bug_statics_v4": defineProductTool({
+    description: "List CodeArts Req project bug statistics through the official V4 endpoint",
+    inputSchema: reqListProjectBugStatisticsInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqListProjectBugStatisticsHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqListProjectBugStatisticsHandler
+  }),
   "req_get_project_summary": defineProductTool({
     description: "Get CodeArts Req project summary",
+    inputSchema: reqGetProjectSummaryInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqGetProjectSummaryHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqGetProjectSummaryHandler
+  }),
+  "req_show_project_summary_v4": defineProductTool({
+    description: "Show CodeArts Req project summary through the official V4 endpoint",
     inputSchema: reqGetProjectSummaryInput,
     selectHttpClient: (clients: {
       reqClient: Parameters<typeof createReqGetProjectSummaryHandler>[0];
@@ -1589,6 +1861,12 @@ const reqToolDefinitions = {
   }),
   "req_get_iteration": defineProductTool({
     description: "Get CodeArts Req iteration detail",
+    inputSchema: reqGetIterationInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGetIterationHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqGetIterationHandler
+  }),
+  "req_show_iteration_v4": defineProductTool({
+    description: "Show CodeArts Req iteration detail through the official V4 endpoint",
     inputSchema: reqGetIterationInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGetIterationHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqGetIterationHandler
@@ -1641,6 +1919,13 @@ const reqToolDefinitions = {
     createProductHandler: createReqLeaveProjectHandler,
     rateLimitAction: "req_leave_project"
   }),
+  "req_remove_project": defineProductTool({
+    description: "Remove the current member from a CodeArts Req project through the official endpoint",
+    inputSchema: reqLeaveProjectInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqLeaveProjectHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqLeaveProjectHandler,
+    rateLimitAction: "req_remove_project"
+  }),
   "req_list_board_work_items": defineProductTool({
     description: "List CodeArts Req board work items",
     inputSchema: reqListBoardWorkItemsInput,
@@ -1650,6 +1935,14 @@ const reqToolDefinitions = {
   }),
   "req_list_board_work_item_status_records": defineProductTool({
     description: "List CodeArts Req board work item status records",
+    inputSchema: reqListBoardWorkItemStatusRecordsInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqListBoardWorkItemStatusRecordsHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqListBoardWorkItemStatusRecordsHandler
+  }),
+  "req_list_workitem_status_records_v4": defineProductTool({
+    description: "List CodeArts Req work item status records through the official ListWorkitemStatusRecordsV4 endpoint",
     inputSchema: reqListBoardWorkItemStatusRecordsInput,
     selectHttpClient: (clients: {
       reqClient: Parameters<typeof createReqListBoardWorkItemStatusRecordsHandler>[0];
@@ -1741,6 +2034,14 @@ const reqToolDefinitions = {
     createProductHandler: createReqUploadAttachmentHandler,
     rateLimitAction: "req_upload_attachment"
   }),
+  "req_upload_attachments": defineProductTool({
+    description: "Upload CodeArts Req work item attachments through the official UploadAttachments endpoint",
+    inputSchema: reqUploadAttachmentInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUploadAttachmentHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqUploadAttachmentHandler,
+    rateLimitAction: "req_upload_attachments"
+  }),
   "req_upload_attachment_v3": defineProductTool({
     description: "Upload a CodeArts Req work item attachment through the V3 token-header endpoint",
     inputSchema: reqUploadAttachmentV3Input,
@@ -1787,6 +2088,15 @@ const reqToolDefinitions = {
     }) => clients.reqClient,
     createProductHandler: createReqCreateSystemWorkItemV4Handler,
     rateLimitAction: "req_create_system_work_item_v4"
+  }),
+  "req_create_system_issue_v4": defineProductTool({
+    description: "Create CodeArts Req work item through the official CreateSystemIssueV4 endpoint",
+    inputSchema: reqCreateSystemWorkItemV4Input,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqCreateSystemWorkItemV4Handler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqCreateSystemWorkItemV4Handler,
+    rateLimitAction: "req_create_system_issue_v4"
   }),
   "req_create_work_item_with_attachment_v3": defineProductTool({
     description: "Create a CodeArts Req work item through the V3 token-header attachment endpoint",
@@ -1900,8 +2210,21 @@ const reqToolDefinitions = {
     createProductHandler: createReqBatchUpdateWorkItemsV2TokenHandler,
     rateLimitAction: "req_batch_update_work_items_v2_token"
   }),
+  "req_batch_delete_issues_v4": defineProductTool({
+    description: "Batch delete CodeArts Req issues through the official BatchDeleteIssuesV4 endpoint",
+    inputSchema: reqBatchDeleteWorkItemsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqBatchDeleteWorkItemsHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqBatchDeleteWorkItemsHandler,
+    rateLimitAction: "req_batch_delete_issues_v4"
+  }),
   "req_list_work_items": defineProductTool({
     description: "List CodeArts Req work items",
+    inputSchema: reqListWorkItemsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemsHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqListWorkItemsHandler
+  }),
+  "req_list_workitems": defineProductTool({
+    description: "List CodeArts Req work items through the official ListWorkitems endpoint",
     inputSchema: reqListWorkItemsInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemsHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqListWorkItemsHandler
@@ -1933,8 +2256,22 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqListWorkItemsV4Handler
   }),
+  "req_list_issues_v4": defineProductTool({
+    description: "List CodeArts Req work items through the official ListIssuesV4 endpoint",
+    inputSchema: reqListWorkItemsV4Input,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemsV4Handler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListWorkItemsV4Handler
+  }),
   "req_list_query_issues": defineProductTool({
     description: "List CodeArts Req issues with the official V2 temporary filter query endpoint",
+    inputSchema: reqListQueryIssuesInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListQueryIssuesHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListQueryIssuesHandler
+  }),
+  "req_search_issues": defineProductTool({
+    description: "Search CodeArts Req issues through the official SearchIssues endpoint",
     inputSchema: reqListQueryIssuesInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListQueryIssuesHandler>[0] }) =>
       clients.reqClient,
@@ -1977,6 +2314,13 @@ const reqToolDefinitions = {
   }),
   "req_list_associated_commits": defineProductTool({
     description: "List CodeArts Req associated commits",
+    inputSchema: reqListAssociatedCommitsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListAssociatedCommitsHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListAssociatedCommitsHandler
+  }),
+  "req_list_issue_associated_commits": defineProductTool({
+    description: "List CodeArts Req associated commits through the official ListIssueAssociatedCommits endpoint",
     inputSchema: reqListAssociatedCommitsInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListAssociatedCommitsHandler>[0] }) =>
       clients.reqClient,
@@ -2037,6 +2381,20 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqListWorkItemStatusesHandler
   }),
+  "req_list_scrum_project_statuses": defineProductTool({
+    description: "List CodeArts Req scrum project statuses through the official ListScrumProjectStatuses endpoint",
+    inputSchema: reqListWorkItemStatusesInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemStatusesHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListWorkItemStatusesHandler
+  }),
+  "req_list_issue_statues": defineProductTool({
+    description: "List CodeArts Req issue statuses through the official ListIssueStatues endpoint",
+    inputSchema: reqListWorkItemStatusesInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemStatusesHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListWorkItemStatusesHandler
+  }),
   "req_list_work_item_status_attributes": defineProductTool({
     description: "List CodeArts Req work item status attributes",
     inputSchema: reqListWorkItemStatusAttributesInput,
@@ -2091,8 +2449,29 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqListWorkItemWorkflowConfigHandler
   }),
+  "req_show_issues_wrok_flow_config": defineProductTool({
+    description: "Show CodeArts Req issues workflow config through the official ShowIssuesWrokFlowConfig endpoint",
+    inputSchema: reqListWorkItemWorkflowConfigInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemWorkflowConfigHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListWorkItemWorkflowConfigHandler
+  }),
+  "req_show_work_item_wrokflow_config": defineProductTool({
+    description: "Show CodeArts Req work item workflow config through the official ShowWorkItemWrokflowConfig endpoint",
+    inputSchema: reqListWorkItemWorkflowConfigInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemWorkflowConfigHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListWorkItemWorkflowConfigHandler
+  }),
   "req_list_work_item_templates": defineProductTool({
     description: "List CodeArts Req work item templates",
+    inputSchema: reqListWorkItemTemplatesInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemTemplatesHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListWorkItemTemplatesHandler
+  }),
+  "req_list_templates": defineProductTool({
+    description: "List CodeArts Req work item templates through the official ListTemplates endpoint",
     inputSchema: reqListWorkItemTemplatesInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemTemplatesHandler>[0] }) =>
       clients.reqClient,
@@ -2129,6 +2508,13 @@ const reqToolDefinitions = {
   }),
   "req_list_issue_custom_fields": defineProductTool({
     description: "List CodeArts Req work item custom fields through the official V4 issue custom-fields endpoint",
+    inputSchema: reqListWorkItemCustomFieldsV4Input,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemCustomFieldsV4Handler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListWorkItemCustomFieldsV4Handler
+  }),
+  "req_show_issue_config_fields": defineProductTool({
+    description: "Show CodeArts Req issue config fields through the official ShowIssueConfigFields endpoint",
     inputSchema: reqListWorkItemCustomFieldsV4Input,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemCustomFieldsV4Handler>[0] }) =>
       clients.reqClient,
@@ -2176,8 +2562,23 @@ const reqToolDefinitions = {
     }) => clients.reqClient,
     createProductHandler: createReqGetWorkItemCompletionRateHandler
   }),
+  "req_show_issue_completion_rate": defineProductTool({
+    description: "Show CodeArts Req work item completion rates through the official ShowIssueCompletionRate endpoint",
+    inputSchema: reqGetWorkItemCompletionRateInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqGetWorkItemCompletionRateHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqGetWorkItemCompletionRateHandler
+  }),
   "req_get_work_item_issue_details": defineProductTool({
     description: "Get CodeArts Req work item issue details from the official V2 issue detail endpoint and map journals to comments",
+    inputSchema: reqGetWorkItemIssueDetailsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGetWorkItemIssueDetailsHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqGetWorkItemIssueDetailsHandler
+  }),
+  "req_show_issue_detail": defineProductTool({
+    description: "Show CodeArts Req issue detail through the official ShowIssueDetail endpoint",
     inputSchema: reqGetWorkItemIssueDetailsInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGetWorkItemIssueDetailsHandler>[0] }) =>
       clients.reqClient,
@@ -2280,6 +2681,14 @@ const reqToolDefinitions = {
     }) => clients.reqClient,
     createProductHandler: createReqListChildWorkItemsDirectV4Handler
   }),
+  "req_list_child_issues_v4": defineProductTool({
+    description: "List CodeArts Req child work items through the official ListChildIssuesV4 endpoint",
+    inputSchema: reqListChildWorkItemsDirectV4Input,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqListChildWorkItemsDirectV4Handler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqListChildWorkItemsDirectV4Handler
+  }),
   "req_list_work_item_work_hours": defineProductTool({
     description: "List CodeArts Req work hour records for a work item",
     inputSchema: reqListWorkItemWorkHoursInput,
@@ -2320,6 +2729,13 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqListWorkItemStayTimesHandler
   }),
+  "req_list_spec_issue_stay_times": defineProductTool({
+    description: "List CodeArts Req work item stay time through the official ListSpecIssueStayTimes endpoint",
+    inputSchema: reqListWorkItemStayTimesInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemStayTimesHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListWorkItemStayTimesHandler
+  }),
   "req_find_iterations": defineProductTool({
     description: "Find CodeArts Req iterations by update-time interval",
     inputSchema: reqFindIterationsInput,
@@ -2329,6 +2745,12 @@ const reqToolDefinitions = {
   }),
   "req_list_iterations": defineProductTool({
     description: "List CodeArts Req iterations",
+    inputSchema: reqListIterationsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIterationsHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqListIterationsHandler
+  }),
+  "req_list_project_iterations_v4": defineProductTool({
+    description: "List CodeArts Req iterations through the official ListProjectIterationsV4 endpoint",
     inputSchema: reqListIterationsInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListIterationsHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqListIterationsHandler
@@ -2343,6 +2765,14 @@ const reqToolDefinitions = {
   }),
   "req_list_iteration_status_statistics": defineProductTool({
     description: "List CodeArts Req iteration status statistics",
+    inputSchema: reqListIterationStatusStatisticsInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqListIterationStatusStatisticsHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqListIterationStatusStatisticsHandler
+  }),
+  "req_list_status_statistic": defineProductTool({
+    description: "List CodeArts Req iteration status statistics through the official ListStatusStatistic endpoint",
     inputSchema: reqListIterationStatusStatisticsInput,
     selectHttpClient: (clients: {
       reqClient: Parameters<typeof createReqListIterationStatusStatisticsHandler>[0];
@@ -2385,6 +2815,12 @@ const reqToolDefinitions = {
   }),
   "req_list_plans": defineProductTool({
     description: "List CodeArts Req plans",
+    inputSchema: reqListPlansInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListPlansHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqListPlansHandler
+  }),
+  "req_show_scrum_plans_by_condition": defineProductTool({
+    description: "Show CodeArts Req scrum plans by condition through the official ShowScrumPlansByCondition endpoint",
     inputSchema: reqListPlansInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListPlansHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqListPlansHandler
@@ -2457,6 +2893,14 @@ const reqToolDefinitions = {
   }),
   "req_list_project_work_item_records": defineProductTool({
     description: "List CodeArts Req project work item records",
+    inputSchema: reqListProjectWorkItemRecordsInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqListProjectWorkItemRecordsHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqListProjectWorkItemRecordsHandler
+  }),
+  "req_list_project_issues_records_v4": defineProductTool({
+    description: "List CodeArts Req project work item records through the official ListProjectIssuesRecordsV4 endpoint",
     inputSchema: reqListProjectWorkItemRecordsInput,
     selectHttpClient: (clients: {
       reqClient: Parameters<typeof createReqListProjectWorkItemRecordsHandler>[0];
@@ -2543,8 +2987,28 @@ const reqToolDefinitions = {
     createProductHandler: createReqUpdateProjectMemberRoleHandler,
     rateLimitAction: "req_update_project_member_role"
   }),
+  "req_update_members_role_v4": defineProductTool({
+    description: "Update a CodeArts Req project member role through the official V4 endpoint",
+    inputSchema: reqUpdateProjectMemberRoleInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUpdateProjectMemberRoleHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqUpdateProjectMemberRoleHandler,
+    rateLimitAction: "req_update_members_role_v4"
+  }),
+  "req_update_membes_role_v4": defineProductTool({
+    description: "Update a CodeArts Req project member role through the official UpdateMembesRoleV4 endpoint",
+    inputSchema: reqUpdateProjectMemberRoleInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUpdateProjectMemberRoleHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqUpdateProjectMemberRoleHandler,
+    rateLimitAction: "req_update_membes_role_v4"
+  }),
   "req_list_project_members": defineProductTool({
     description: "List CodeArts Req project members",
+    inputSchema: reqListProjectMembersInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListProjectMembersHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqListProjectMembersHandler
+  }),
+  "req_list_project_members_v4": defineProductTool({
+    description: "List CodeArts Req project members through the official V4 endpoint",
     inputSchema: reqListProjectMembersInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListProjectMembersHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqListProjectMembersHandler
