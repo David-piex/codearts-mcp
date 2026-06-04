@@ -93,6 +93,33 @@ export type ReqClient = {
     status?: { id?: number; name?: string };
     tracker?: { id?: number; name?: string };
   }>;
+  createSystemWorkItemV4: (input: {
+    project_id: string;
+    title: string;
+    work_item_type: string;
+    parent_work_item_id?: string;
+    description?: string;
+    priority_id?: number;
+    iteration_id?: string;
+    module_id?: string;
+    severity_id?: number;
+    assigned_id?: string;
+    developer_id?: string;
+    domain_id?: number;
+    done_ratio?: number;
+    expected_work_hours?: number;
+    actual_work_hours?: number;
+    start_date?: number;
+    due_date?: number;
+    x_auth_token: string;
+  }) => Promise<{
+    id: number | string;
+    name: string;
+    description?: string;
+    status?: { id?: number; name?: string };
+    tracker?: { id?: number; name?: string };
+    raw?: unknown;
+  }>;
   quickCreateChildWorkItem: (input: {
     project_id: string;
     title: string;
@@ -362,6 +389,21 @@ export type ReqClient = {
     work_item_id: string;
     deleted: true;
   }>;
+  deleteWorkItemV3: (input: {
+    project_id: string;
+    work_item_id: string;
+    type: string;
+    x_auth_token: string;
+  }) => Promise<{
+    project_id: string;
+    work_item_id: string;
+    type: string;
+    status?: string;
+    deleted_issues: Array<Record<string, unknown>>;
+    delete_attachment_files: string[];
+    issues: Array<Record<string, unknown>>;
+    raw?: unknown;
+  }>;
   batchDeleteWorkItems: (input: {
     project_id: string;
     work_item_ids: string[];
@@ -369,6 +411,28 @@ export type ReqClient = {
     project_id: string;
     work_item_ids: string[];
     deletedCount: number;
+  }>;
+  batchDeleteWorkItemsV2Token: (input: {
+    project_id: string;
+    work_item_ids: string[];
+    x_auth_token: string;
+  }) => Promise<{
+    project_id: string;
+    work_item_ids: string[];
+    status?: string;
+    deleted_issue_ids: string[];
+    deleted_issues: Array<{
+      id?: number | string;
+      tracker_id?: number;
+      subject?: string;
+      status_id?: number;
+      done_ratio?: number;
+      expected_work_hours?: number | string;
+      actual_work_hours?: number | string;
+      deleted?: boolean;
+      is_archived?: boolean;
+    }>;
+    raw?: unknown;
   }>;
   copyWorkItems: (input: {
     from_project_id: string;
@@ -467,6 +531,32 @@ export type ReqClient = {
     iteration_id?: string;
     module_id?: string;
     updatedCount: number;
+  }>;
+  batchUpdateWorkItemsV2Token: (input: {
+    project_id: string;
+    work_item_ids: string[];
+    assigned_to_id?: string;
+    x_auth_token: string;
+  }) => Promise<{
+    project_id: string;
+    work_item_ids: string[];
+    assigned_to_id?: string;
+    status?: string;
+    project?: {
+      id?: number;
+      identifier?: string;
+      total?: number;
+      close?: number;
+      role?: number;
+      type?: string;
+      archive?: boolean;
+      mem_count?: number;
+    };
+    journal_ids: string[];
+    error_issues: Array<number | string>;
+    versions_issues: string[];
+    success_issues: string[];
+    raw?: unknown;
   }>;
   listIterations: (input: { project_id: string; page: number; page_size: number }) => Promise<{
     iterations: Array<{
@@ -1695,6 +1785,29 @@ export type ReqClient = {
       statusAttribute?: number;
     };
   }>;
+  createWorkItemCustomField: (input: {
+    project_id: string;
+    name: string;
+    type: "textArea" | "select" | "radio" | "text" | "checkbox" | "date" | "time_date" | "number";
+    scrum_type: "Epic" | "Feature" | "Story" | "Task" | "Bug";
+    memo?: string;
+    options?: string;
+  }) => Promise<{
+    id?: number | string;
+    identifier?: string;
+    name?: string;
+    type?: string;
+    custom_field?: string;
+    tracker_id?: number;
+    project_id?: number | string;
+    memo?: string;
+    options?: string;
+    region?: string;
+    created?: string;
+    modified?: string;
+    is_delete?: boolean;
+    raw?: unknown;
+  }>;
   batchCreateTrackerConfig: (input: {
     project_id: string;
     tracker_id: number;
@@ -2563,6 +2676,23 @@ export type ReqClient = {
     x_auth_token: string;
   }) => Promise<{
     response: unknown;
+  }>;
+  watchWorkItem: (input: {
+    work_item_id: string;
+    type: string;
+    x_auth_token: string;
+  }) => Promise<{
+    work_item_id: string;
+    type: string;
+    status?: string;
+    watcher?: {
+      id?: number | string;
+      watchable_type?: string;
+      watchable_id?: number | string;
+      user_id?: number | string;
+      region?: string;
+    };
+    raw?: unknown;
   }>;
   applyJoinProjectForAgc: (input: {
     project_id: string;
@@ -3738,6 +3868,53 @@ export function createReqClient(
         description: response.description,
         status: response.status,
         tracker: response.tracker
+      };
+    },
+    async createSystemWorkItemV4(input) {
+      const beginTime = toReqWorkItemDate(input.start_date);
+      const endTime = toReqWorkItemDate(input.due_date);
+      const response = (await _http.post(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/system/issue`,
+        {
+          name: input.title,
+          description: input.description,
+          tracker_id: toTrackerId(input.work_item_type),
+          priority_id: toPriorityId(input.priority_id),
+          ...(input.parent_work_item_id ? { parent_issue_id: toOptionalNumericId(input.parent_work_item_id) } : {}),
+          ...(input.iteration_id ? { iteration_id: input.iteration_id } : {}),
+          ...(input.module_id ? { module_id: input.module_id } : {}),
+          ...(typeof input.severity_id !== "undefined" ? { severity_id: input.severity_id } : {}),
+          ...(input.assigned_id ? { assigned_id: input.assigned_id } : {}),
+          ...(input.developer_id ? { developer_id: toOptionalNumericId(input.developer_id) } : {}),
+          ...(typeof input.domain_id !== "undefined" ? { domain_id: input.domain_id } : {}),
+          ...(typeof input.done_ratio !== "undefined" ? { done_ratio: input.done_ratio } : {}),
+          ...(typeof input.expected_work_hours !== "undefined"
+            ? { expected_work_hours: input.expected_work_hours }
+            : {}),
+          ...(typeof input.actual_work_hours !== "undefined"
+            ? { actual_work_hours: input.actual_work_hours }
+            : {}),
+          ...(beginTime ? { begin_time: beginTime } : {}),
+          ...(endTime ? { end_time: endTime } : {})
+        },
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
+      )) as {
+        id?: number | string;
+        name?: string;
+        description?: string;
+        status?: { id?: number; name?: string };
+        tracker?: { id?: number; name?: string };
+      };
+
+      return {
+        id: response.id ?? "",
+        name: response.name ?? input.title,
+        description: response.description,
+        status: response.status,
+        tracker: response.tracker,
+        raw: response
       };
     },
     async quickCreateChildWorkItem(input) {
@@ -5508,6 +5685,41 @@ export function createReqClient(
         deleted: true as const
       };
     },
+    async deleteWorkItemV3(input) {
+      const response = (await _http.post(
+        "/v3/issue/delete",
+        {
+          call_back_param: {
+            project_id: input.project_id,
+            issue_id: input.work_item_id,
+            type: input.type
+          },
+          type: "deleteIssue"
+        },
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
+      )) as {
+        status?: string;
+        result?: {
+          deleted_issues?: Array<Record<string, unknown>>;
+          delete_attachment_files?: string[];
+          issues?: Array<Record<string, unknown>>;
+        };
+      };
+      assertReqMutationSucceeded("delete V3 work item", response.status);
+
+      return {
+        project_id: input.project_id,
+        work_item_id: input.work_item_id,
+        type: input.type,
+        status: response.status,
+        deleted_issues: response.result?.deleted_issues ?? [],
+        delete_attachment_files: response.result?.delete_attachment_files ?? [],
+        issues: response.result?.issues ?? [],
+        raw: response
+      };
+    },
     async batchDeleteWorkItems(input) {
       await _http.delete(`/v4/projects/${encodeURIComponent(input.project_id)}/issues`, {
         issue_ids: input.work_item_ids
@@ -5517,6 +5729,46 @@ export function createReqClient(
         project_id: input.project_id,
         work_item_ids: input.work_item_ids,
         deletedCount: input.work_item_ids.length
+      };
+    },
+    async batchDeleteWorkItemsV2Token(input) {
+      const response = (await _http.post(
+        "/v2/workitem/batch-delete",
+        {
+          project_id: input.project_id,
+          issue_ids: input.work_item_ids.join(",")
+        },
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
+      )) as {
+        status?: string;
+        result?: {
+          delete_issue?: {
+            del_issue_id?: Array<string | number>;
+            del_issue?: Array<{
+              id?: number | string;
+              tracker_id?: number;
+              subject?: string;
+              status_id?: number;
+              done_ratio?: number;
+              expected_work_hours?: number | string;
+              actual_work_hours?: number | string;
+              deleted?: boolean;
+              is_archived?: boolean;
+            }>;
+          };
+        };
+      };
+      assertReqMutationSucceeded("batch delete V2 work items", response.status);
+
+      return {
+        project_id: input.project_id,
+        work_item_ids: input.work_item_ids,
+        status: response.status,
+        deleted_issue_ids: (response.result?.delete_issue?.del_issue_id ?? []).map((item) => String(item)),
+        deleted_issues: response.result?.delete_issue?.del_issue ?? [],
+        raw: response
       };
     },
     async copyWorkItems(input) {
@@ -5610,6 +5862,52 @@ export function createReqClient(
         iteration_id: input.iteration_id,
         module_id: input.module_id,
         updatedCount: input.work_item_ids.length
+      };
+    },
+    async batchUpdateWorkItemsV2Token(input) {
+      const response = (await _http.post(
+        "/v2/workitem/issues",
+        {
+          project_id: input.project_id,
+          issue_ids: input.work_item_ids.join(","),
+          ...(typeof input.assigned_to_id !== "undefined"
+            ? { assigned_to_id: input.assigned_to_id }
+            : {})
+        },
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
+      )) as {
+        status?: string;
+        result?: {
+          project?: {
+            id?: number;
+            identifier?: string;
+            total?: number;
+            close?: number;
+            role?: number;
+            type?: string;
+            archive?: boolean;
+            mem_count?: number;
+          };
+          journal_ids?: Array<string | number>;
+          error_issues?: Array<string | number>;
+          versions_issues?: Array<string | number>;
+          success_issues?: Array<string | number>;
+        };
+      };
+
+      return {
+        project_id: input.project_id,
+        work_item_ids: input.work_item_ids,
+        assigned_to_id: input.assigned_to_id,
+        status: response.status,
+        project: response.result?.project,
+        journal_ids: (response.result?.journal_ids ?? []).map((item) => String(item)),
+        error_issues: response.result?.error_issues ?? [],
+        versions_issues: (response.result?.versions_issues ?? []).map((item) => String(item)),
+        success_issues: (response.result?.success_issues ?? []).map((item) => String(item)),
+        raw: response
       };
     },
     async listProjects(input) {
@@ -7267,6 +7565,37 @@ export function createReqClient(
           description?: string;
           statusAttribute?: number;
         };
+      };
+    },
+    async createWorkItemCustomField(input) {
+      const response = (await _http.post(
+        `/v3/${encodeURIComponent(input.project_id)}/custom-fields`,
+        {
+          name: input.name,
+          type: input.type,
+          scrum_type: input.scrum_type,
+          ...(typeof input.memo !== "undefined" ? { memo: input.memo } : {}),
+          ...(typeof input.options !== "undefined" ? { options: input.options } : {})
+        }
+      )) as {
+        id?: number | string;
+        identifier?: string;
+        name?: string;
+        type?: string;
+        custom_field?: string;
+        tracker_id?: number;
+        project_id?: number | string;
+        memo?: string;
+        options?: string;
+        region?: string;
+        created?: string;
+        modified?: string;
+        is_delete?: boolean;
+      };
+
+      return {
+        ...response,
+        raw: response
       };
     },
     async batchCreateTrackerConfig(input) {
@@ -9444,6 +9773,38 @@ export function createReqClient(
       );
 
       return { response };
+    },
+    async watchWorkItem(input) {
+      const response = (await _http.post(
+        "/v2/issues/watch",
+        {
+          issue_id: input.work_item_id,
+          type: input.type
+        },
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
+      )) as {
+        status?: string;
+        result?: {
+          watcher?: {
+            id?: number | string;
+            watchable_type?: string;
+            watchable_id?: number | string;
+            user_id?: number | string;
+            region?: string;
+          };
+        };
+      };
+      assertReqMutationSucceeded("watch work item", response.status);
+
+      return {
+        work_item_id: input.work_item_id,
+        type: input.type,
+        status: response.status,
+        watcher: response.result?.watcher,
+        raw: response
+      };
     },
     async applyJoinProjectForAgc(input) {
       const response = await _http.get(

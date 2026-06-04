@@ -22,6 +22,28 @@ export const reqCreateWorkItemInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const reqCreateSystemWorkItemV4Input = z.object({
+  project_id: idSchema,
+  title: z.string().min(1),
+  work_item_type: z.string().min(1),
+  parent_work_item_id: idSchema.optional(),
+  description: z.string().optional(),
+  priority_id: z.number().int().positive().optional(),
+  iteration_id: idSchema.optional(),
+  module_id: idSchema.optional(),
+  severity_id: z.number().int().positive().optional(),
+  assigned_id: idSchema.optional(),
+  developer_id: idSchema.optional(),
+  domain_id: z.number().int().positive().optional(),
+  done_ratio: z.number().int().nonnegative().optional(),
+  expected_work_hours: z.number().nonnegative().optional(),
+  actual_work_hours: z.number().nonnegative().optional(),
+  start_date: z.number().int().positive().optional(),
+  due_date: z.number().int().positive().optional(),
+  x_auth_token: z.string().min(10),
+  dry_run: z.boolean().default(true)
+});
+
 export const reqQuickCreateChildWorkItemInput = z.object({
   project_id: idSchema,
   title: z.string().min(1),
@@ -58,9 +80,24 @@ export const reqDeleteWorkItemInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const reqDeleteWorkItemV3Input = z.object({
+  project_id: idSchema,
+  work_item_id: idSchema,
+  type: z.string().min(1).default("scrum"),
+  x_auth_token: z.string().min(10),
+  dry_run: z.boolean().default(true)
+});
+
 export const reqBatchDeleteWorkItemsInput = z.object({
   project_id: idSchema,
   work_item_ids: z.array(idSchema).min(1).max(100),
+  dry_run: z.boolean().default(true)
+});
+
+export const reqBatchDeleteWorkItemsV2TokenInput = z.object({
+  project_id: idSchema,
+  work_item_ids: z.array(idSchema).min(1).max(100),
+  x_auth_token: z.string().min(10),
   dry_run: z.boolean().default(true)
 });
 
@@ -99,6 +136,20 @@ export const reqBatchUpdateWorkItemsInput = z.object({
     message:
       "At least one of status_id, priority_id, severity_id, assigned_id, developer_id, done_ratio, iteration_id, or module_id is required",
     path: ["status_id"]
+  }
+);
+
+export const reqBatchUpdateWorkItemsV2TokenInput = z.object({
+  project_id: idSchema,
+  work_item_ids: z.array(idSchema).min(1).max(100),
+  x_auth_token: z.string().min(10),
+  assigned_to_id: z.string().min(1).optional(),
+  dry_run: z.boolean().default(true)
+}).refine(
+  (input) => typeof input.assigned_to_id !== "undefined",
+  {
+    message: "At least one token-header mutable field is required; currently supported: assigned_to_id",
+    path: ["assigned_to_id"]
   }
 );
 
@@ -393,6 +444,13 @@ export const reqCreateWorkItemWithAttachmentV3Input = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const reqWatchWorkItemInput = z.object({
+  work_item_id: idSchema,
+  type: z.string().min(1).default("scrum"),
+  x_auth_token: z.string().min(10),
+  dry_run: z.boolean().default(true)
+});
+
 export const reqDownloadAttachmentInput = z.object({
   project_id: idSchema,
   work_item_id: idSchema,
@@ -677,6 +735,16 @@ export const reqGetWorkItemTemplateConfigInput = z.object({
 export const reqListWorkItemCustomFieldsInput = z.object({
   project_id: idSchema,
   tracker_id: reqTrackerIdSchema.optional()
+});
+
+export const reqCreateWorkItemCustomFieldInput = z.object({
+  project_id: idSchema,
+  name: z.string().min(1).max(15),
+  type: z.enum(["textArea", "select", "radio", "text", "checkbox", "date", "time_date", "number"]),
+  scrum_type: z.enum(["Epic", "Feature", "Story", "Task", "Bug"]),
+  memo: z.string().max(255).optional(),
+  options: z.string().min(1).max(6000).optional(),
+  dry_run: z.boolean().default(true)
 });
 
 export const reqListWorkItemCustomFieldsV4Input = z.object({

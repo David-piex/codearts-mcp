@@ -217,6 +217,76 @@ describe("createReqClient", () => {
     });
   });
 
+  it("maps createSystemWorkItemV4 to the token-header system issue endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    let requestedToken = "";
+    const client = createReqClient({
+      post: async (path: string, body: Record<string, unknown>, options?: { headers?: Record<string, string> }) => {
+        requestedPath = path;
+        requestedBody = body;
+        requestedToken = options?.headers?.["X-Auth-Token"] ?? "";
+
+        return {
+          id: 1001,
+          name: "Add login",
+          description: "desc",
+          status: { id: 1, name: "新建" },
+          tracker: { id: 7, name: "Story" }
+        };
+      }
+    } as never);
+
+    const result = await client.createSystemWorkItemV4({
+      project_id: "project-1",
+      title: "Add login",
+      work_item_type: "Story",
+      parent_work_item_id: "9001",
+      description: "desc",
+      priority_id: 2,
+      iteration_id: "iteration-1",
+      module_id: "module-1",
+      severity_id: 11,
+      assigned_id: "user-2",
+      developer_id: "4091",
+      domain_id: 15,
+      done_ratio: 20,
+      expected_work_hours: 8,
+      actual_work_hours: 2,
+      start_date: 1839340800000,
+      due_date: 1839945600000,
+      x_auth_token: "token-123456"
+    });
+
+    expect(requestedPath).toBe("/v4/projects/project-1/system/issue");
+    expect(requestedToken).toBe("token-123456");
+    expect(requestedBody).toEqual({
+      name: "Add login",
+      description: "desc",
+      tracker_id: 7,
+      priority_id: 2,
+      parent_issue_id: 9001,
+      iteration_id: "iteration-1",
+      module_id: "module-1",
+      severity_id: 11,
+      assigned_id: "user-2",
+      developer_id: 4091,
+      domain_id: 15,
+      done_ratio: 20,
+      expected_work_hours: 8,
+      actual_work_hours: 2,
+      begin_time: "2028-04-15",
+      end_time: "2028-04-22"
+    });
+    expect(result).toMatchObject({
+      id: 1001,
+      name: "Add login",
+      description: "desc",
+      status: { id: 1, name: "新建" },
+      tracker: { id: 7, name: "Story" }
+    });
+  });
+
   it("maps updateProject to the project update endpoint and synthesized response", async () => {
     let requestedPath = "";
     let requestedBody: Record<string, unknown> | undefined;
@@ -1516,6 +1586,65 @@ describe("createReqClient", () => {
     });
   });
 
+  it("maps deleteWorkItemV3 to the official token-header delete endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    let requestedOptions: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body: Record<string, unknown>, options?: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+        requestedOptions = options;
+
+        return {
+          result: {
+            deleted_issues: [{ id: 70779173, subject: "Story A" }],
+            delete_attachment_files: ["a.txt"],
+            issues: [{ id: 70779173 }]
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.deleteWorkItemV3({
+      project_id: "p-1",
+      work_item_id: "70779173",
+      type: "scrum",
+      x_auth_token: "token-123456"
+    });
+
+    expect(requestedPath).toBe("/v3/issue/delete");
+    expect(requestedBody).toEqual({
+      call_back_param: {
+        project_id: "p-1",
+        issue_id: "70779173",
+        type: "scrum"
+      },
+      type: "deleteIssue"
+    });
+    expect(requestedOptions).toEqual({
+      headers: { "X-Auth-Token": "token-123456" }
+    });
+    expect(result).toEqual({
+      project_id: "p-1",
+      work_item_id: "70779173",
+      type: "scrum",
+      status: "success",
+      deleted_issues: [{ id: 70779173, subject: "Story A" }],
+      delete_attachment_files: ["a.txt"],
+      issues: [{ id: 70779173 }],
+      raw: {
+        result: {
+          deleted_issues: [{ id: 70779173, subject: "Story A" }],
+          delete_attachment_files: ["a.txt"],
+          issues: [{ id: 70779173 }]
+        },
+        status: "success"
+      }
+    });
+  });
+
   it("maps batchUpdateWorkItems to the batch-update endpoint with id and attribute keys", async () => {
     let requestedPath = "";
     let requestedBody: Record<string, unknown> | undefined;
@@ -1567,6 +1696,250 @@ describe("createReqClient", () => {
       iteration_id: "iteration-1",
       module_id: "module-1",
       updatedCount: 2
+    });
+  });
+
+  it("maps batchUpdateWorkItemsV2Token to the official token-header endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    let requestedOptions: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body: Record<string, unknown>, options?: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+        requestedOptions = options;
+
+        return {
+          status: "success",
+          result: {
+            project: {
+              id: 35138974,
+              identifier: "5192de5eb435430c8cd41c6ae6028848",
+              total: 0,
+              close: 0,
+              role: 0,
+              type: "scrum",
+              archive: true,
+              mem_count: 0
+            },
+            journal_ids: [1, 2],
+            error_issues: [9191020],
+            versions_issues: [],
+            success_issues: [9191021]
+          }
+        };
+      }
+    } as never);
+
+    const result = await client.batchUpdateWorkItemsV2Token({
+      project_id: "p-1",
+      work_item_ids: ["9191020", "9191021"],
+      assigned_to_id: "4091",
+      x_auth_token: "token-123456"
+    });
+
+    expect(requestedPath).toBe("/v2/workitem/issues");
+    expect(requestedBody).toEqual({
+      project_id: "p-1",
+      issue_ids: "9191020,9191021",
+      assigned_to_id: "4091"
+    });
+    expect(requestedOptions).toEqual({
+      headers: { "X-Auth-Token": "token-123456" }
+    });
+    expect(result).toEqual({
+      project_id: "p-1",
+      work_item_ids: ["9191020", "9191021"],
+      assigned_to_id: "4091",
+      status: "success",
+      project: {
+        id: 35138974,
+        identifier: "5192de5eb435430c8cd41c6ae6028848",
+        total: 0,
+        close: 0,
+        role: 0,
+        type: "scrum",
+        archive: true,
+        mem_count: 0
+      },
+      journal_ids: ["1", "2"],
+      error_issues: [9191020],
+      versions_issues: [],
+      success_issues: ["9191021"],
+      raw: {
+        status: "success",
+        result: {
+          project: {
+            id: 35138974,
+            identifier: "5192de5eb435430c8cd41c6ae6028848",
+            total: 0,
+            close: 0,
+            role: 0,
+            type: "scrum",
+            archive: true,
+            mem_count: 0
+          },
+          journal_ids: [1, 2],
+          error_issues: [9191020],
+          versions_issues: [],
+          success_issues: [9191021]
+        }
+      }
+    });
+  });
+
+  it("maps watchWorkItem to the official token-header watch endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    let requestedOptions: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body: Record<string, unknown>, options?: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+        requestedOptions = options;
+
+        return {
+          result: {
+            watcher: {
+              id: 226991,
+              watchable_type: "Issue",
+              watchable_id: 9192160,
+              user_id: 4091,
+              region: "example"
+            }
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.watchWorkItem({
+      work_item_id: "9192160",
+      type: "scrum",
+      x_auth_token: "token-123456"
+    });
+
+    expect(requestedPath).toBe("/v2/issues/watch");
+    expect(requestedBody).toEqual({
+      issue_id: "9192160",
+      type: "scrum"
+    });
+    expect(requestedOptions).toEqual({
+      headers: { "X-Auth-Token": "token-123456" }
+    });
+    expect(result).toEqual({
+      work_item_id: "9192160",
+      type: "scrum",
+      status: "success",
+      watcher: {
+        id: 226991,
+        watchable_type: "Issue",
+        watchable_id: 9192160,
+        user_id: 4091,
+        region: "example"
+      },
+      raw: {
+        result: {
+          watcher: {
+            id: 226991,
+            watchable_type: "Issue",
+            watchable_id: 9192160,
+            user_id: 4091,
+            region: "example"
+          }
+        },
+        status: "success"
+      }
+    });
+  });
+
+  it("maps batchDeleteWorkItemsV2Token to the official token-header batch delete endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    let requestedOptions: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body: Record<string, unknown>, options?: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+        requestedOptions = options;
+
+        return {
+          result: {
+            delete_issue: {
+              del_issue_id: [9190894],
+              del_issue: [
+                {
+                  id: 9190894,
+                  tracker_id: 7,
+                  subject: "123",
+                  status_id: 1,
+                  done_ratio: 0,
+                  expected_work_hours: 0,
+                  actual_work_hours: 0,
+                  deleted: false,
+                  is_archived: false
+                }
+              ]
+            }
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.batchDeleteWorkItemsV2Token({
+      project_id: "p-1",
+      work_item_ids: ["9190894", "9179013"],
+      x_auth_token: "token-123456"
+    });
+
+    expect(requestedPath).toBe("/v2/workitem/batch-delete");
+    expect(requestedBody).toEqual({
+      project_id: "p-1",
+      issue_ids: "9190894,9179013"
+    });
+    expect(requestedOptions).toEqual({
+      headers: { "X-Auth-Token": "token-123456" }
+    });
+    expect(result).toEqual({
+      project_id: "p-1",
+      work_item_ids: ["9190894", "9179013"],
+      status: "success",
+      deleted_issue_ids: ["9190894"],
+      deleted_issues: [
+        {
+          id: 9190894,
+          tracker_id: 7,
+          subject: "123",
+          status_id: 1,
+          done_ratio: 0,
+          expected_work_hours: 0,
+          actual_work_hours: 0,
+          deleted: false,
+          is_archived: false
+        }
+      ],
+      raw: {
+        result: {
+          delete_issue: {
+            del_issue_id: [9190894],
+            del_issue: [
+              {
+                id: 9190894,
+                tracker_id: 7,
+                subject: "123",
+                status_id: 1,
+                done_ratio: 0,
+                expected_work_hours: 0,
+                actual_work_hours: 0,
+                deleted: false,
+                is_archived: false
+              }
+            ]
+          }
+        },
+        status: "success"
+      }
     });
   });
 
@@ -4086,6 +4459,58 @@ describe("createReqClient", () => {
           type: "text"
         }
       ]
+    });
+  });
+
+  it("maps work item custom field creation to the documented custom-fields endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return {
+          id: 492316,
+          identifier: "cf-1",
+          name: "Business line",
+          type: "text",
+          custom_field: "custom_field16",
+          tracker_id: 7,
+          project_id: 34883337,
+          memo: "desc",
+          options: "A,B",
+          region: "example",
+          created: "2025-06-28 10:00:30",
+          modified: "2025-06-28 10:00:30",
+          is_delete: false
+        };
+      }
+    } as never);
+
+    const result = await client.createWorkItemCustomField({
+      project_id: "p-1",
+      name: "Business line",
+      type: "text",
+      scrum_type: "Story",
+      memo: "desc",
+      options: "A,B"
+    });
+
+    expect(requestedPath).toBe("/v3/p-1/custom-fields");
+    expect(requestedBody).toEqual({
+      name: "Business line",
+      type: "text",
+      scrum_type: "Story",
+      memo: "desc",
+      options: "A,B"
+    });
+    expect(result).toMatchObject({
+      id: 492316,
+      identifier: "cf-1",
+      name: "Business line",
+      type: "text",
+      custom_field: "custom_field16"
     });
   });
 

@@ -31,9 +31,9 @@
 | 部署 | 74 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
 | 流水线 | 109 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 187 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
-| 需求管理 | 243 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
+| 需求管理 | 249 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 285 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **1139** | |
+| **总计** | **1145** | |
 
 ## 字段对应
 
@@ -668,11 +668,13 @@
 | `req_batch_delete_project_members` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_batch_delete_project_members) |
 | `req_batch_delete_release_plans` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_batch_delete_release_plans) |
 | `req_batch_delete_work_items` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_batch_delete_work_items) |
+| `req_batch_delete_work_items_v2_token` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_batch_delete_work_items_v2_token) |
 | `req_batch_transfer_ipd_work_item_flow` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_batch_transfer_ipd_work_item_flow) |
 | `req_batch_update_child_user_nicknames` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_batch_update_child_user_nicknames) |
 | `req_batch_update_ipd_issues` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_batch_update_ipd_issues) |
 | `req_batch_update_release_plan_baseline` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_batch_update_release_plan_baseline) |
 | `req_batch_update_work_items` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_batch_update_work_items) |
+| `req_batch_update_work_items_v2_token` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_batch_update_work_items_v2_token) |
 | `req_cancel_project_domain` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_cancel_project_domain) |
 | `req_change_release_plan_status` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_change_release_plan_status) |
 | `req_check_project_name` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_check_project_name) |
@@ -696,8 +698,10 @@
 | `req_create_project_module` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_create_project_module) |
 | `req_create_project_status_config` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_create_project_status_config) |
 | `req_create_release_plan` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_create_release_plan) |
+| `req_create_system_work_item_v4` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_create_system_work_item_v4) |
 | `req_create_version_v2` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_create_version_v2) |
 | `req_create_work_item` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_create_work_item) |
+| `req_create_work_item_custom_field` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_create_work_item_custom_field) |
 | `req_create_work_item_template` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_create_work_item_template) |
 | `req_create_work_item_with_attachment_v3` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_create_work_item_with_attachment_v3) |
 | `req_delete_attachment` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_delete_attachment) |
@@ -715,6 +719,7 @@
 | `req_delete_project_template` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_delete_project_template) |
 | `req_delete_version_v2` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_delete_version_v2) |
 | `req_delete_work_item` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_delete_work_item) |
+| `req_delete_work_item_v3` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_delete_work_item_v3) |
 | `req_download_attachment` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_download_attachment) |
 | `req_download_image_file` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_download_image_file) |
 | `req_download_ipd_issue_attachment` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_download_ipd_issue_attachment) |
@@ -897,6 +902,7 @@
 | `req_upload_work_item_image_v2` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_upload_work_item_image_v2) |
 | `req_validate_module_name` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_validate_module_name) |
 | `req_validate_project_template_name` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_validate_project_template_name) |
+| `req_watch_work_item` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_watch_work_item) |
 | `testplan_batch_delete_factors` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_batch_delete_factors) |
 | `testplan_batch_delete_tasks` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_batch_delete_tasks) |
 | `testplan_batch_send_notifications` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_batch_send_notifications) |

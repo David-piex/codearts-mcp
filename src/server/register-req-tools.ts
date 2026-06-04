@@ -16,9 +16,11 @@ import {
   reqBatchDeleteProjectMembersInput,
   reqBatchDeleteIterationsInput,
   reqBatchDeleteWorkItemsInput,
+  reqBatchDeleteWorkItemsV2TokenInput,
   reqBatchTransferIpdWorkItemFlowInput,
   reqBatchUpdateChildUserNicknamesInput,
   reqBatchUpdateIpdIssuesInput,
+  reqBatchUpdateWorkItemsV2TokenInput,
   reqBatchUpdateReleasePlanBaselineInput,
   reqChangeReleasePlanStatusInput,
   reqCopyWorkItemsInput,
@@ -42,6 +44,8 @@ import {
   reqCreateProjectDomainInput,
   reqCreateProjectModuleInput,
   reqCreateProjectStatusConfigInput,
+  reqCreateWorkItemCustomFieldInput,
+  reqCreateSystemWorkItemV4Input,
   reqCancelProjectDomainInput,
   reqCreateWorkItemWithAttachmentV3Input,
   reqDeletePlanInput,
@@ -58,6 +62,7 @@ import {
   reqDeleteProjectTemplateInput,
   reqDeleteVersionV2Input,
   reqDeleteWorkItemInput,
+  reqDeleteWorkItemV3Input,
   reqCreateWorkItemInput,
   reqBatchUpdateWorkItemsInput,
   reqCountWorkItemTreeInput,
@@ -240,6 +245,7 @@ import {
   reqUploadAttachmentInput,
   reqUploadIpdIssueAttachmentInput,
   reqUploadIpdIssueImageInput,
+  reqWatchWorkItemInput,
   reqUploadWorkItemImageV2Input,
   reqUploadWorkItemImageInput,
   reqValidateModuleNameInput,
@@ -257,6 +263,7 @@ import { createReqBatchDeleteReleasePlansHandler } from "../products/req/tools/b
 import { createReqBatchDeleteProjectMembersHandler } from "../products/req/tools/batch-delete-project-members.js";
 import { createReqBatchDeleteIterationsHandler } from "../products/req/tools/batch-delete-iterations.js";
 import { createReqBatchDeleteWorkItemsHandler } from "../products/req/tools/batch-delete-work-items.js";
+import { createReqBatchDeleteWorkItemsV2TokenHandler } from "../products/req/tools/batch-delete-work-items-v2-token.js";
 import { createReqBatchUpdateChildUserNicknamesHandler } from "../products/req/tools/batch-update-child-user-nicknames.js";
 import { createReqBatchUpdateReleasePlanBaselineHandler } from "../products/req/tools/batch-update-release-plan-baseline.js";
 import { createReqChangeReleasePlanStatusHandler } from "../products/req/tools/change-release-plan-status.js";
@@ -274,6 +281,8 @@ import { createReqCreateProjectHandler } from "../products/req/tools/create-proj
 import { createReqCreateProjectDomainHandler } from "../products/req/tools/create-project-domain.js";
 import { createReqCreateProjectModuleHandler } from "../products/req/tools/create-project-module.js";
 import { createReqCreateProjectStatusConfigHandler } from "../products/req/tools/create-project-status-config.js";
+import { createReqCreateWorkItemCustomFieldHandler } from "../products/req/tools/create-work-item-custom-field.js";
+import { createReqCreateSystemWorkItemV4Handler } from "../products/req/tools/create-system-work-item-v4.js";
 import { createReqCancelProjectDomainHandler } from "../products/req/tools/cancel-project-domain.js";
 import { createReqDeleteAttachmentHandler } from "../products/req/tools/delete-attachment.js";
 import { createReqDeletePlanHandler } from "../products/req/tools/delete-plan.js";
@@ -283,10 +292,12 @@ import { createReqDeleteProjectModuleHandler } from "../products/req/tools/delet
 import { createReqDeleteProjectTemplateHandler } from "../products/req/tools/delete-project-template.js";
 import { createReqCreateWorkItemHandler } from "../products/req/tools/create-work-item.js";
 import { createReqDeleteWorkItemHandler } from "../products/req/tools/delete-work-item.js";
+import { createReqDeleteWorkItemV3Handler } from "../products/req/tools/delete-work-item-v3.js";
 import { createReqDownloadAttachmentHandler } from "../products/req/tools/download-attachment.js";
 import { createReqDownloadImageFileHandler } from "../products/req/tools/download-image-file.js";
 import { createReqExportWorkItemsNewV2Handler } from "../products/req/tools/export-work-items-new-v2.js";
 import { createReqBatchUpdateWorkItemsHandler } from "../products/req/tools/batch-update-work-items.js";
+import { createReqBatchUpdateWorkItemsV2TokenHandler } from "../products/req/tools/batch-update-work-items-v2-token.js";
 import { createReqCountWorkItemTreeHandler } from "../products/req/tools/count-work-item-tree.js";
 import { createReqCreateWorkItemTemplateHandler } from "../products/req/tools/create-work-item-template.js";
 import { createReqGetCurrentUserInfoHandler } from "../products/req/tools/get-current-user-info.js";
@@ -406,6 +417,7 @@ import { createReqUpdateWorkItemCommentHandler } from "../products/req/tools/upd
 import { createReqUpdateWorkItemFlowHandler } from "../products/req/tools/update-work-item-flow.js";
 import { createReqUpdateWorkItemHandler } from "../products/req/tools/update-work-item.js";
 import { createReqUpdateWorkingHoursHandler } from "../products/req/tools/update-working-hours.js";
+import { createReqWatchWorkItemHandler } from "../products/req/tools/watch-work-item.js";
 import { createReqDeleteVersionV2Handler, createReqUpdateVersionV2Handler } from "../products/req/tools/version-v2-token-tools.js";
 import {
   createReqCreateWorkItemWithAttachmentV3Handler,
@@ -571,6 +583,15 @@ const reqToolDefinitions = {
     createProductHandler: createReqBatchDeleteWorkItemsHandler,
     rateLimitAction: "req_batch_delete_work_items"
   }),
+  "req_batch_delete_work_items_v2_token": defineProductTool({
+    description: "Batch delete CodeArts Req work items through the official V2 token-header endpoint",
+    inputSchema: reqBatchDeleteWorkItemsV2TokenInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqBatchDeleteWorkItemsV2TokenHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqBatchDeleteWorkItemsV2TokenHandler,
+    rateLimitAction: "req_batch_delete_work_items_v2_token"
+  }),
   "req_batch_create_ipd_issues": defineProductTool({
     description: "Batch create CodeArts Req IPD issues",
     inputSchema: reqBatchCreateIpdIssuesInput,
@@ -718,6 +739,15 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqCreateProjectStatusConfigHandler,
     rateLimitAction: "req_create_project_status_config"
+  }),
+  "req_create_work_item_custom_field": defineProductTool({
+    description: "Create CodeArts Req work item custom field",
+    inputSchema: reqCreateWorkItemCustomFieldInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqCreateWorkItemCustomFieldHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqCreateWorkItemCustomFieldHandler,
+    rateLimitAction: "req_create_work_item_custom_field"
   }),
   "req_update_project": defineProductTool({
     description: "Update CodeArts Req project",
@@ -1692,6 +1722,15 @@ const reqToolDefinitions = {
     createProductHandler: createReqCreateWorkItemHandler,
     rateLimitAction: "req_create_work_item"
   }),
+  "req_create_system_work_item_v4": defineProductTool({
+    description: "Create CodeArts Req work item through the official V4 system issue token-header endpoint",
+    inputSchema: reqCreateSystemWorkItemV4Input,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqCreateSystemWorkItemV4Handler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqCreateSystemWorkItemV4Handler,
+    rateLimitAction: "req_create_system_work_item_v4"
+  }),
   "req_create_work_item_with_attachment_v3": defineProductTool({
     description: "Create a CodeArts Req work item through the V3 token-header attachment endpoint",
     inputSchema: reqCreateWorkItemWithAttachmentV3Input,
@@ -1733,6 +1772,14 @@ const reqToolDefinitions = {
     createProductHandler: createReqUpdateWorkingHoursHandler,
     rateLimitAction: "req_update_working_hours"
   }),
+  "req_watch_work_item": defineProductTool({
+    description: "Watch a CodeArts Req work item through the official V2 token-header endpoint",
+    inputSchema: reqWatchWorkItemInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqWatchWorkItemHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqWatchWorkItemHandler,
+    rateLimitAction: "req_watch_work_item"
+  }),
   "req_delete_work_item": defineProductTool({
     description: "Delete CodeArts Req work item",
     inputSchema: reqDeleteWorkItemInput,
@@ -1740,12 +1787,29 @@ const reqToolDefinitions = {
     createProductHandler: createReqDeleteWorkItemHandler,
     rateLimitAction: "req_delete_work_item"
   }),
+  "req_delete_work_item_v3": defineProductTool({
+    description: "Delete CodeArts Req work item through the official V3 token-header endpoint",
+    inputSchema: reqDeleteWorkItemV3Input,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqDeleteWorkItemV3Handler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqDeleteWorkItemV3Handler,
+    rateLimitAction: "req_delete_work_item_v3"
+  }),
   "req_batch_update_work_items": defineProductTool({
     description: "Batch update CodeArts Req work items",
     inputSchema: reqBatchUpdateWorkItemsInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqBatchUpdateWorkItemsHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqBatchUpdateWorkItemsHandler,
     rateLimitAction: "req_batch_update_work_items"
+  }),
+  "req_batch_update_work_items_v2_token": defineProductTool({
+    description: "Batch update CodeArts Req work items through the official V2 token-header endpoint",
+    inputSchema: reqBatchUpdateWorkItemsV2TokenInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqBatchUpdateWorkItemsV2TokenHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqBatchUpdateWorkItemsV2TokenHandler,
+    rateLimitAction: "req_batch_update_work_items_v2_token"
   }),
   "req_list_work_items": defineProductTool({
     description: "List CodeArts Req work items",
