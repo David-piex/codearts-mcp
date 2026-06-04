@@ -120,6 +120,34 @@ export type ReqClient = {
     tracker?: { id?: number; name?: string };
     raw?: unknown;
   }>;
+  createWorkItemV2: (input: {
+    project_id: string;
+    title: string;
+    work_item_type: string;
+    parent_work_item_id?: string;
+    description?: string;
+    iteration_id?: string;
+    module_id?: string;
+    priority_id?: number;
+    severity_id?: number;
+    status_id?: number;
+    assigned_id?: string;
+    developer_id?: string;
+    done_ratio?: number;
+    expected_work_hours?: number;
+    start_date?: number;
+    due_date?: number;
+    plan_id?: string;
+  }) => Promise<{
+    id: number | string;
+    name: string;
+    number?: number | string;
+    description?: string;
+    status?: { id?: number | string; name?: string };
+    tracker?: { id?: number | string; name?: string };
+    project_id?: string;
+    plan_id?: string;
+  }>;
   quickCreateChildWorkItem: (input: {
     project_id: string;
     title: string;
@@ -3915,6 +3943,57 @@ export function createReqClient(
         status: response.status,
         tracker: response.tracker,
         raw: response
+      };
+    },
+    async createWorkItemV2(input) {
+      const response = (await _http.post("/v2/issues/create", {
+        projectUUId: input.project_id,
+        tracker_id: toTrackerId(input.work_item_type),
+        priority_id: input.priority_id,
+        subject: input.title,
+        ...(input.parent_work_item_id
+          ? { parent_issue_id: toOptionalNumericId(input.parent_work_item_id) }
+          : {}),
+        ...(input.description ? { description: input.description } : {}),
+        ...(typeof input.due_date !== "undefined" ? { due_date: input.due_date } : {}),
+        ...(typeof input.start_date !== "undefined" ? { start_date: input.start_date } : {}),
+        ...(typeof input.severity_id !== "undefined" ? { severity_id: input.severity_id } : {}),
+        ...(typeof input.done_ratio !== "undefined" ? { done_ratio: input.done_ratio } : {}),
+        ...(typeof input.status_id !== "undefined" ? { status_id: input.status_id } : {}),
+        ...(typeof input.expected_work_hours !== "undefined"
+          ? { expected_work_hours: input.expected_work_hours }
+          : {}),
+        ...(input.plan_id ? { plan_id: input.plan_id } : {}),
+        ...(input.iteration_id ? { iteration_id: input.iteration_id } : {}),
+        ...(input.module_id ? { module_id: input.module_id } : {}),
+        ...(input.assigned_id ? { assigned_id: input.assigned_id } : {}),
+        ...(input.developer_id ? { developer_id: toOptionalNumericId(input.developer_id) } : {})
+      })) as {
+        status?: string;
+        result?: {
+          issue?: {
+            id?: number | string;
+            issue_num?: number | string;
+            subject?: string;
+            description?: string;
+            status?: { id?: number | string; name?: string };
+            tracker?: { id?: number | string; name?: string };
+            project?: { identifier?: string };
+          };
+        };
+      };
+      assertReqMutationSucceeded("create work item v2", response.status);
+      const issue = response.result?.issue ?? {};
+
+      return {
+        id: issue.id ?? "",
+        name: issue.subject ?? input.title,
+        number: issue.issue_num,
+        description: issue.description ?? input.description,
+        status: issue.status,
+        tracker: issue.tracker,
+        project_id: issue.project?.identifier ?? input.project_id,
+        plan_id: input.plan_id
       };
     },
     async quickCreateChildWorkItem(input) {

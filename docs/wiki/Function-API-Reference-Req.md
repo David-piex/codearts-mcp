@@ -6,7 +6,7 @@
 
 模块：`需求管理`
 
-API 数量：`249`
+API 数量：`250`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
@@ -4446,6 +4446,135 @@ API 数量：`249`
   "required": [
     "project_id",
     "tracker_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### req_create_work_item_v2
+
+所属模块：`需求管理`
+
+说明：创建需求管理的工作项v2。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "req_create_work_item_v2",
+    "arguments": {
+      "project_id": "<project_id>",
+      "title": "<title>",
+      "work_item_type": "<work_item_type>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 需求管理 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `title` | 是 | `string` |  | 字段对应：<br>MCP 字段 `title` ↔ 原始 CodeArts 需求管理 API 中的标题字段，常见原字段名为 `name`、`subject` 或 `title`。<br>标题，用于工作项、合并请求、计划等资源的主显示名称。建议简洁说明要做什么。 |
+| `work_item_type` | 是 | `string` |  | 字段对应：<br>MCP 字段 `work_item_type` ↔ 原始 CodeArts 需求管理 API 中的工作项类型字段，常见原字段名为 `tracker_id`；工具会按接口需要转换。<br>参数解释：<br>工作项类型，用于指定创建或更新的 CodeArts Scrum 工作项类型。工具会把填写的类型名称或数字 ID 自动转换为 CodeArts 需要的 tracker_id。<br>约束限制：<br>创建子工作项时，父子类型需符合层级关系：Epic 只能作为 Feature 的父工作项类型；Feature 只能作为 Story 的父工作项类型；Story 只能作为 Task/任务、Bug/缺陷的父工作项类型。未创建子工作项时不涉及该限制。<br>取值范围：<br>2（任务/Task，可填 task 或 2）；<br>3（缺陷/Bug，可填 bug 或 3）；<br>5（Epic，可填 epic 或 5）；<br>6（Feature，可填 feature 或 6）；<br>7（Story，可填 story 或 7）。<br>默认取值：<br>不涉及。创建类接口必填；更新接口不传则不修改工作项类型。 |
+| `parent_work_item_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `parent_work_item_id` ↔ 原始 CodeArts 需求管理 API 同名字段 `parent_work_item_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>父工作项 ID，用于定位对应的 CodeArts 资源。 |
+| `description` | 否 | `string` |  | 字段对应：<br>MCP 字段 `description` ↔ 原始 CodeArts 需求管理 API 同名字段 `description`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
+| `priority_id` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `priority_id` ↔ 原始 CodeArts 需求管理 API 同名字段 `priority_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>工作项优先级 ID。创建工作项未传时默认使用 2；具体优先级名称和可选值以项目字段配置/优先级选项接口返回为准。 |
+| `iteration_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `iteration_id` ↔ 原始 CodeArts 需求管理 API 同名字段 `iteration_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>迭代 ID，用于定位对应的 CodeArts 资源。 |
+| `module_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `module_id` ↔ 原始 CodeArts 需求管理 API 同名字段 `module_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>模块 ID，用于定位对应的 CodeArts 资源。 |
+| `severity_id` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `severity_id` ↔ 原始 CodeArts 需求管理 API 同名字段 `severity_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>严重程度 ID。通常用于缺陷或问题等级；可通过 req_list_issue_severities 查询当前可用严重程度。 |
+| `status_id` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `status_id` ↔ 原始 CodeArts 需求管理 API 同名字段 `status_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>工作项状态 ID：1=新建，2=进行中，3=已解决，4=测试中，5=已关闭，6=已拒绝。项目自定义状态以状态配置/工作流接口返回为准。 |
+| `assigned_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `assigned_id` ↔ 原始 CodeArts 需求管理 API 同名字段 `assigned_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>处理人 ID，用于定位对应的 CodeArts 资源。 |
+| `developer_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `developer_id` ↔ 原始 CodeArts 需求管理 API 同名字段 `developer_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>开发人员 ID，用于定位对应的 CodeArts 资源。 |
+| `done_ratio` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `done_ratio` ↔ 原始 CodeArts 需求管理 API 同名字段 `done_ratio`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>完成百分比，通常为 0 到 100 的整数，用于表示工作项或任务完成进度。 |
+| `expected_work_hours` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `expected_work_hours` ↔ 原始 CodeArts 需求管理 API 同名字段 `expected_work_hours`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>预计工时，表示完成工作项或任务预计需要投入的小时数。 |
+| `start_date` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `start_date` ↔ 原始 CodeArts 需求管理 API 同名字段 `start_date`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>开始日期，通常使用 yyyy-MM-dd 或接口要求的日期格式。 |
+| `due_date` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `due_date` ↔ 原始 CodeArts 需求管理 API 同名字段 `due_date`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>截止日期，表示工作项、计划或任务期望完成时间。 |
+| `plan_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `plan_id` ↔ 原始 CodeArts 需求管理 API 同名字段 `plan_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>计划 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "work_item_type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "parent_work_item_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "description": {
+      "type": "string"
+    },
+    "priority_id": {
+      "type": "integer",
+      "exclusiveMinimum": 0
+    },
+    "iteration_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "module_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "severity_id": {
+      "type": "integer",
+      "exclusiveMinimum": 0
+    },
+    "status_id": {
+      "type": "integer",
+      "exclusiveMinimum": 0
+    },
+    "assigned_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "developer_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "done_ratio": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "expected_work_hours": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "start_date": {
+      "type": "integer",
+      "exclusiveMinimum": 0
+    },
+    "due_date": {
+      "type": "integer",
+      "exclusiveMinimum": 0
+    },
+    "plan_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "project_id",
+    "title",
+    "work_item_type"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

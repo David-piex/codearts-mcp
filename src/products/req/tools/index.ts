@@ -176,6 +176,7 @@ export const reqToolNames = [
   "req_list_work_item_comments",
   "req_list_work_item_comments_v2",
   "req_create_work_item",
+  "req_create_work_item_v2",
   "req_create_system_work_item_v4",
   "req_add_work_item_comment",
   "req_batch_update_work_items",

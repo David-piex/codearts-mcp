@@ -657,6 +657,7 @@ export const expectedToolNames = [
   "req_create_work_item",
   "req_create_work_item_custom_field",
   "req_create_work_item_template",
+  "req_create_work_item_v2",
   "req_create_work_item_with_attachment_v3",
   "req_delete_attachment",
   "req_delete_ipd_change_review_form",

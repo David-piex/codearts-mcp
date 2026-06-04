@@ -71,7 +71,7 @@ describe("module stats doc rendering", () => {
     expect(renderApiReferenceScaleMarkdown()).toContain(
       `产品工具合计 \`${collectProductToolStats().total}\` 个`
     );
-    expect(renderReqApiReferenceScaleMarkdown()).toContain("| Req MCP 工具 | 249 |");
+    expect(renderReqApiReferenceScaleMarkdown()).toContain("| Req MCP 工具 | 250 |");
     expect(renderReqApiReferenceScaleMarkdown()).toContain(
       `| 含鉴权的共享 HTTP 工具 | ${collectHttpToolTotal()} |`
     );
@@ -111,15 +111,15 @@ describe("syncModuleStatsDocuments", () => {
       `- \`${collectProductToolStats().total}\` product tools`
     );
     expect(synced["README.md"]).toContain("| Pipeline | 109 | Partial |");
-    expect(synced["README.md"]).toContain("| Req | 249 | Partial |");
+    expect(synced["README.md"]).toContain("| Req | 250 | Partial |");
     expect(synced["docs/wiki/Capability-Matrix.md"]).toContain(
-      "| Req | 149 | 100 | Partial |"
+      "| Req | 149 | 101 | Partial |"
     );
     expect(synced["docs/wiki/API-Reference.md"]).toContain(
       `产品工具合计 \`${collectProductToolStats().total}\` 个`
     );
     expect(synced["docs/wiki/Module-Live-Readiness.md"]).toContain(
-      "| Req | 249 | 149 | 100 | Partial |"
+      "| Req | 250 | 149 | 101 | Partial |"
     );
     expect(synced["docs/wiki/Module-Live-Readiness.md"]).toContain(
       `- Total MCP tools exposed: \`${collectHttpToolTotal()}\``

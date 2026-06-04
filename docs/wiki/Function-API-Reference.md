@@ -31,9 +31,9 @@
 | 部署 | 74 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
 | 流水线 | 109 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 187 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
-| 需求管理 | 249 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
+| 需求管理 | 250 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 285 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **1145** | |
+| **总计** | **1146** | |
 
 ## 字段对应
 
@@ -703,6 +703,7 @@
 | `req_create_work_item` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_create_work_item) |
 | `req_create_work_item_custom_field` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_create_work_item_custom_field) |
 | `req_create_work_item_template` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_create_work_item_template) |
+| `req_create_work_item_v2` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_create_work_item_v2) |
 | `req_create_work_item_with_attachment_v3` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_create_work_item_with_attachment_v3) |
 | `req_delete_attachment` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_delete_attachment) |
 | `req_delete_ipd_change_review_form` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_delete_ipd_change_review_form) |

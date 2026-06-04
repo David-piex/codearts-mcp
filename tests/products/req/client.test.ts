@@ -6412,6 +6412,71 @@ describe("createReqClient", () => {
     });
   });
 
+  it("maps createWorkItemV2 to the documented V2 issues/create endpoint without requiring plan_id", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      post: async (path: string, body: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedBody = body;
+
+        return {
+          result: {
+            issue: {
+              id: 102,
+              issue_num: 1002,
+              subject: "Story A",
+              description: "Standalone V2 item",
+              status: { id: 1, name: "New" },
+              tracker: { id: 7, name: "Story" },
+              project: { identifier: "p-1" }
+            }
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.createWorkItemV2({
+      project_id: "p-1",
+      title: "Story A",
+      work_item_type: "Story",
+      description: "Standalone V2 item",
+      priority_id: 2,
+      severity_id: 12,
+      start_date: 1839340800000,
+      due_date: 1839945600000,
+      status_id: 1,
+      done_ratio: 0,
+      expected_work_hours: 5
+    });
+
+    expect(requestedPath).toBe("/v2/issues/create");
+    expect(requestedBody).toEqual({
+      projectUUId: "p-1",
+      tracker_id: 7,
+      priority_id: 2,
+      subject: "Story A",
+      description: "Standalone V2 item",
+      due_date: 1839945600000,
+      start_date: 1839340800000,
+      severity_id: 12,
+      done_ratio: 0,
+      status_id: 1,
+      expected_work_hours: 5
+    });
+    expect(result).toEqual({
+      id: 102,
+      name: "Story A",
+      number: 1002,
+      description: "Standalone V2 item",
+      status: { id: 1, name: "New" },
+      tracker: { id: 7, name: "Story" },
+      project_id: "p-1",
+      plan_id: undefined
+    });
+  });
+
   it("maps project statistics read endpoints to the documented request shapes", async () => {
     const get = vi
       .fn()

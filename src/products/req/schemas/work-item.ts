@@ -44,6 +44,27 @@ export const reqCreateSystemWorkItemV4Input = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const reqCreateWorkItemV2Input = z.object({
+  project_id: idSchema,
+  title: z.string().min(1),
+  work_item_type: z.string().min(1),
+  parent_work_item_id: idSchema.optional(),
+  description: z.string().optional(),
+  priority_id: z.number().int().positive().optional(),
+  iteration_id: idSchema.optional(),
+  module_id: idSchema.optional(),
+  severity_id: z.number().int().positive().optional(),
+  status_id: z.number().int().positive().optional(),
+  assigned_id: idSchema.optional(),
+  developer_id: idSchema.optional(),
+  done_ratio: z.number().int().nonnegative().optional(),
+  expected_work_hours: z.number().int().nonnegative().optional(),
+  start_date: z.number().int().positive().optional(),
+  due_date: z.number().int().positive().optional(),
+  plan_id: idSchema.optional(),
+  dry_run: z.boolean().default(true)
+});
+
 export const reqQuickCreateChildWorkItemInput = z.object({
   project_id: idSchema,
   title: z.string().min(1),
