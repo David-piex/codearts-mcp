@@ -35,6 +35,7 @@ import {
   testPlanDeleteTestcasesV3Input,
   testPlanDeleteVectorsInput,
   testPlanDownloadClassesInput,
+  testPlanGetExecutorElementsInput,
   testPlanSaveAwRefreshToAllInput,
   testPlanGetApiTestAvailableConfigInput,
   testPlanGetApiTestBasicAwV3Input,
@@ -363,6 +364,7 @@ import { createTestPlanGetMindmapHandler } from "../products/testplan/tools/get-
 import { createTestPlanGetMindmapBackupHandler } from "../products/testplan/tools/get-mindmap-backup.js";
 import { createTestPlanGetDynamicGlobalVariableHandler } from "../products/testplan/tools/get-dynamic-global-variable.js";
 import { createTestPlanGetExcelErrorTestcasesHandler } from "../products/testplan/tools/get-excel-error-testcases.js";
+import { createTestPlanGetExecutorElementsHandler } from "../products/testplan/tools/get-executor-elements.js";
 import { createTestPlanGetMindmapCreatorNameHandler } from "../products/testplan/tools/get-mindmap-creator-name.js";
 import { createTestPlanGetMindmapPermissionHandler } from "../products/testplan/tools/get-mindmap-permission.js";
 import { createTestPlanGetMindmapRecycleHandler } from "../products/testplan/tools/get-mindmap-recycle.js";
@@ -788,6 +790,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanDownloadClassesInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanDownloadClassesHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanDownloadClassesHandler
+  }),
+  "testplan_get_executor_elements": defineProductTool({
+    description: "Get CodeArts TestPlan executor runtime elements via official v1 API",
+    inputSchema: testPlanGetExecutorElementsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetExecutorElementsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetExecutorElementsHandler
   }),
   "testplan_export_mindmap": defineProductTool({
     description: "Get CodeArts TestPlan mindmap export metadata via official v1 API",

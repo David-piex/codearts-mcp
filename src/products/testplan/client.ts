@@ -1660,6 +1660,14 @@ export type TestPlanClient = {
     value?: unknown;
     raw: Record<string, unknown>;
   }>;
+  getExecutorElements: (input: {
+    project_id: string;
+    execute_mode?: string;
+    testcase_infos?: Array<Record<string, unknown>>;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
   downloadClasses: (input: {
     project_id: string;
     testcase_ids?: string[];
@@ -6162,6 +6170,20 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
 
       return {
         value: readResultValue(response, payload),
+        raw: payload
+      };
+    },
+    async getExecutorElements(input) {
+      const body =
+        input.body ??
+        {
+          ...(input.execute_mode !== undefined ? { execute_mode: input.execute_mode } : {}),
+          ...(input.testcase_infos !== undefined ? { testcase_infos: input.testcase_infos } : {})
+        };
+      const response = await _http.post(`/v1/${encodeURIComponent(input.project_id)}/executor/elements`, body);
+      const payload = readResultPayload(response);
+
+      return {
         raw: payload
       };
     },

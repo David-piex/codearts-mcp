@@ -315,6 +315,10 @@ describe("registerTestPlanTool", () => {
         "Get CodeArts TestPlan class file download metadata via official v1 API"
       ],
       [
+        "testplan_get_executor_elements",
+        "Get CodeArts TestPlan executor runtime elements via official v1 API"
+      ],
+      [
         "testplan_update_user_infos",
         "Update CodeArts TestPlan resource owner user information via official v1 API (dry-run by default)"
       ]

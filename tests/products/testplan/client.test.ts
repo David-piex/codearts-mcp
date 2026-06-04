@@ -6216,4 +6216,39 @@ describe("createTestPlanClient", () => {
       total: 1
     });
   });
+
+  it("gets executor runtime elements", async () => {
+    let requestedPath = "";
+    let requestedBody: unknown;
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requestedPath = path;
+        requestedBody = body;
+        return {
+          type: "api_test",
+          public_aw_lib_infos: [{ id: "lib-1", name: "Common Lib" }],
+          testcase_src_infos: [{ class_name: "LoginTest", uri: "case-1" }]
+        };
+      }
+    } as never);
+
+    const result = await client.getExecutorElements({
+      project_id: "project-1",
+      execute_mode: "serial",
+      testcase_infos: [{ uri: "case-1", case_type: 1, script_path: "/tmp/LoginTest.java" }]
+    });
+
+    expect(requestedPath).toBe("/v1/project-1/executor/elements");
+    expect(requestedBody).toEqual({
+      execute_mode: "serial",
+      testcase_infos: [{ uri: "case-1", case_type: 1, script_path: "/tmp/LoginTest.java" }]
+    });
+    expect(result).toEqual({
+      raw: {
+        type: "api_test",
+        public_aw_lib_infos: [{ id: "lib-1", name: "Common Lib" }],
+        testcase_src_infos: [{ class_name: "LoginTest", uri: "case-1" }]
+      }
+    });
+  });
 });

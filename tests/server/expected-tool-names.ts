@@ -917,6 +917,7 @@ export const expectedToolNames = [
   "testplan_get_domain_user_count",
   "testplan_get_dynamic_global_variable",
   "testplan_get_excel_error_testcases",
+  "testplan_get_executor_elements",
   "testplan_get_factor",
   "testplan_get_free_declaration",
   "testplan_get_free_test_time",

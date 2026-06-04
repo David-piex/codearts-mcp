@@ -1245,6 +1245,23 @@ export const testPlanCreateResourceUriV4Input = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const testPlanGetExecutorElementsInput = z.object({
+  project_id: idSchema,
+  execute_mode: z.string().min(1).optional(),
+  testcase_infos: z
+    .array(
+      z
+        .object({
+          case_type: z.number().int().optional(),
+          script_path: z.string().min(1).optional(),
+          uri: z.string().min(1).optional()
+        })
+        .passthrough()
+    )
+    .optional(),
+  body: testPlanGenericRequestBodyInput.optional()
+});
+
 export const testPlanDownloadClassesInput = z.object({
   project_id: idSchema,
   testcase_ids: z.array(idSchema).min(1).optional(),

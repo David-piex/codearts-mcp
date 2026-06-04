@@ -95,6 +95,7 @@ export const testPlanToolNames = [
   "testplan_download_classes",
   "testplan_download_test_design_template",
   "testplan_export_mindmap",
+  "testplan_get_executor_elements",
   "testplan_get_test_design_template",
   "testplan_get_test_design_testcase",
   "testplan_get_project_testcase",

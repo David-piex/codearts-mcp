@@ -32,8 +32,8 @@
 | 流水线 | 109 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 187 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 243 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
-| 测试计划 | 284 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **1138** | |
+| 测试计划 | 285 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
+| **总计** | **1139** | |
 
 ## 字段对应
 
@@ -963,6 +963,7 @@
 | `testplan_get_domain_user_count` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_domain_user_count) |
 | `testplan_get_dynamic_global_variable` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_dynamic_global_variable) |
 | `testplan_get_excel_error_testcases` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_excel_error_testcases) |
+| `testplan_get_executor_elements` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_executor_elements) |
 | `testplan_get_factor` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_factor) |
 | `testplan_get_free_declaration` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_free_declaration) |
 | `testplan_get_free_test_time` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_get_free_test_time) |
