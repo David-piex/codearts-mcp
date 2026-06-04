@@ -2662,6 +2662,20 @@ export type ReqClient = {
     img_id?: string | number;
     img_url?: string;
   }>;
+  uploadIssuesImg: (input: {
+    project_id: string;
+    upload_ym: string;
+    img_name: string;
+    extention: string;
+    x_auth_token: string;
+  }) => Promise<{
+    project_id: string;
+    upload_ym: string;
+    img_name: string;
+    extention: string;
+    body: Uint8Array;
+    content_type?: string;
+  }>;
   uploadIssueImageV2: (input: {
     project_id: string;
     file_name: string;
@@ -9760,6 +9774,23 @@ export function createReqClient(
         file_name: input.file_name,
         img_id: response.img_id,
         img_url: response.img_url
+      };
+    },
+    async uploadIssuesImg(input) {
+      const response = await _http.getBinary(
+        `/v3/upload/${encodeURIComponent(input.project_id)}/${encodeURIComponent(input.upload_ym)}/${encodeURIComponent(input.img_name)}.${encodeURIComponent(input.extention)}`,
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
+      );
+
+      return {
+        project_id: input.project_id,
+        upload_ym: input.upload_ym,
+        img_name: input.img_name,
+        extention: input.extention,
+        body: response.body,
+        content_type: response.contentType
       };
     },
     async uploadIssueImageV2(input) {

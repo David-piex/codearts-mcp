@@ -432,6 +432,14 @@ export const reqUploadWorkItemImageInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const reqUploadIssuesImgInput = z.object({
+  project_id: idSchema,
+  upload_ym: z.string().min(1),
+  img_name: z.string().min(1),
+  extention: z.string().min(1),
+  x_auth_token: z.string().min(10)
+});
+
 export const reqUploadWorkItemImageV2Input = z.object({
   project_id: idSchema,
   file_path: z.string().min(1),

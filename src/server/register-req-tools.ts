@@ -90,6 +90,7 @@ import {
   reqDeleteAttachmentInput,
   reqDownloadAttachmentInput,
   reqDownloadImageFileInput,
+  reqUploadIssuesImgInput,
   reqDownloadIpdIssueAttachmentInput,
   reqDownloadIpdIssueImageInput,
   reqExportWorkItemsNewV2Input,
@@ -427,6 +428,7 @@ import {
   createReqUploadWorkItemImageV2Handler
 } from "../products/req/tools/token-upload-tools.js";
 import { createReqUploadAttachmentHandler } from "../products/req/tools/upload-attachment.js";
+import { createReqUploadIssuesImgHandler } from "../products/req/tools/upload-issues-img.js";
 import { createReqUploadWorkItemImageHandler } from "../products/req/tools/upload-work-item-image.js";
 import { createReqQuickCreateChildWorkItemHandler } from "../products/req/tools/quick-create-child-work-item.js";
 import { createReqValidateModuleNameHandler } from "../products/req/tools/validate-module-name.js";
@@ -1269,6 +1271,13 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqGetIpdE2EGraphHandler
   }),
+  "req_list_e2e_graphs_open_api": defineProductTool({
+    description: "List CodeArts Req IPD E2E graphs through the official OpenAPI endpoint",
+    inputSchema: reqGetIpdE2EGraphInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGetIpdE2EGraphHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqGetIpdE2EGraphHandler
+  }),
   "req_list_ipd_category_statuses": defineProductTool({
     description: "List CodeArts Req IPD category statuses",
     inputSchema: reqListIpdCategoryStatusesInput,
@@ -1693,6 +1702,21 @@ const reqToolDefinitions = {
     createProductHandler: createReqUploadWorkItemImageHandler,
     rateLimitAction: "req_upload_work_item_image"
   }),
+  "req_upload_issue_img": defineProductTool({
+    description: "Upload an image through the official CodeArts Req UploadIssueImg endpoint",
+    inputSchema: reqUploadWorkItemImageInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUploadWorkItemImageHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqUploadWorkItemImageHandler,
+    rateLimitAction: "req_upload_issue_img"
+  }),
+  "req_upload_issues_img": defineProductTool({
+    description: "Download an uploaded issue image through the official CodeArts Req UploadIssuesImg endpoint",
+    inputSchema: reqUploadIssuesImgInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUploadIssuesImgHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqUploadIssuesImgHandler
+  }),
   "req_upload_work_item_image_v2": defineProductTool({
     description: "Upload an image for CodeArts Req work item descriptions through the V2 token-header endpoint",
     inputSchema: reqUploadWorkItemImageV2Input,
@@ -1700,6 +1724,14 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqUploadWorkItemImageV2Handler,
     rateLimitAction: "req_upload_work_item_image_v2"
+  }),
+  "req_img_upload": defineProductTool({
+    description: "Upload a work item description image through the official CodeArts Req ImgUpload endpoint",
+    inputSchema: reqUploadWorkItemImageV2Input,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUploadWorkItemImageV2Handler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqUploadWorkItemImageV2Handler,
+    rateLimitAction: "req_img_upload"
   }),
   "req_upload_attachment": defineProductTool({
     description: "Upload a CodeArts Req work item attachment",
@@ -1717,12 +1749,27 @@ const reqToolDefinitions = {
     createProductHandler: createReqUploadAttachmentV3Handler,
     rateLimitAction: "req_upload_attachment_v3"
   }),
+  "req_attachment_upload": defineProductTool({
+    description: "Upload a work item attachment through the official CodeArts Req AttachmentUpload endpoint",
+    inputSchema: reqUploadAttachmentV3Input,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUploadAttachmentV3Handler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqUploadAttachmentV3Handler,
+    rateLimitAction: "req_attachment_upload"
+  }),
   "req_create_work_item": defineProductTool({
     description: "Create CodeArts Req work item",
     inputSchema: reqCreateWorkItemInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqCreateWorkItemHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqCreateWorkItemHandler,
     rateLimitAction: "req_create_work_item"
+  }),
+  "req_create_issue_v4": defineProductTool({
+    description: "Create CodeArts Req work item through the official V4 issue endpoint",
+    inputSchema: reqCreateWorkItemInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqCreateWorkItemHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqCreateWorkItemHandler,
+    rateLimitAction: "req_create_issue_v4"
   }),
   "req_create_work_item_v2": defineProductTool({
     description: "Create CodeArts Req work item through the official V2 issues create endpoint",
@@ -1750,6 +1797,15 @@ const reqToolDefinitions = {
     createProductHandler: createReqCreateWorkItemWithAttachmentV3Handler,
     rateLimitAction: "req_create_work_item_with_attachment_v3"
   }),
+  "req_issue_upload_create": defineProductTool({
+    description: "Create a work item through the official CodeArts Req IssueUploadCreate endpoint",
+    inputSchema: reqCreateWorkItemWithAttachmentV3Input,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqCreateWorkItemWithAttachmentV3Handler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqCreateWorkItemWithAttachmentV3Handler,
+    rateLimitAction: "req_issue_upload_create"
+  }),
   "req_quick_create_child_work_item": defineProductTool({
     description: "Quick create a CodeArts Req child work item from the official V2 endpoint",
     inputSchema: reqQuickCreateChildWorkItemInput,
@@ -1774,6 +1830,14 @@ const reqToolDefinitions = {
     createProductHandler: createReqAddWorkItemWorkHourHandler,
     rateLimitAction: "req_add_work_item_work_hour"
   }),
+  "req_add_issue_work_hours": defineProductTool({
+    description: "Add a CodeArts Req work hour record through the official issue work-hours endpoint",
+    inputSchema: reqAddWorkItemWorkHourInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqAddWorkItemWorkHourHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqAddWorkItemWorkHourHandler,
+    rateLimitAction: "req_add_issue_work_hours"
+  }),
   "req_update_working_hours": defineProductTool({
     description: "Update a CodeArts Req work item work hour record",
     inputSchema: reqUpdateWorkingHoursInput,
@@ -1797,6 +1861,13 @@ const reqToolDefinitions = {
     createProductHandler: createReqDeleteWorkItemHandler,
     rateLimitAction: "req_delete_work_item"
   }),
+  "req_delete_issue_v4": defineProductTool({
+    description: "Delete CodeArts Req work item through the official V4 issue endpoint",
+    inputSchema: reqDeleteWorkItemInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqDeleteWorkItemHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqDeleteWorkItemHandler,
+    rateLimitAction: "req_delete_issue_v4"
+  }),
   "req_delete_work_item_v3": defineProductTool({
     description: "Delete CodeArts Req work item through the official V3 token-header endpoint",
     inputSchema: reqDeleteWorkItemV3Input,
@@ -1804,6 +1875,14 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqDeleteWorkItemV3Handler,
     rateLimitAction: "req_delete_work_item_v3"
+  }),
+  "req_delete_issue_upload": defineProductTool({
+    description: "Delete a work item through the official CodeArts Req DeleteIssueUpload endpoint",
+    inputSchema: reqDeleteWorkItemV3Input,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqDeleteWorkItemV3Handler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqDeleteWorkItemV3Handler,
+    rateLimitAction: "req_delete_issue_upload"
   }),
   "req_batch_update_work_items": defineProductTool({
     description: "Batch update CodeArts Req work items",
@@ -1827,8 +1906,21 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemsHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqListWorkItemsHandler
   }),
+  "req_list_issues_sf_v4": defineProductTool({
+    description: "List CodeArts Req project work items through the official V4 issues endpoint",
+    inputSchema: reqListWorkItemsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemsHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqListWorkItemsHandler
+  }),
   "req_list_work_items_v3": defineProductTool({
     description: "List CodeArts Req work items from the official V3 issue-list endpoint",
+    inputSchema: reqListWorkItemsV3Input,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemsV3Handler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListWorkItemsV3Handler
+  }),
+  "req_issue_list": defineProductTool({
+    description: "List CodeArts Req work items through the official V3 issue-list endpoint",
     inputSchema: reqListWorkItemsV3Input,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemsV3Handler>[0] }) =>
       clients.reqClient,
@@ -1843,6 +1935,13 @@ const reqToolDefinitions = {
   }),
   "req_list_query_issues": defineProductTool({
     description: "List CodeArts Req issues with the official V2 temporary filter query endpoint",
+    inputSchema: reqListQueryIssuesInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListQueryIssuesHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListQueryIssuesHandler
+  }),
+  "req_list_query_issue": defineProductTool({
+    description: "List CodeArts Req issues through the official V2 query-issue endpoint",
     inputSchema: reqListQueryIssuesInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListQueryIssuesHandler>[0] }) =>
       clients.reqClient,
@@ -1890,6 +1989,13 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqListAssociatedCodeV2Handler
   }),
+  "req_get_commit_list_by_related_id": defineProductTool({
+    description: "List CodeArts Req associated code through the official V2 related-id commit endpoint",
+    inputSchema: reqListAssociatedCodeV2Input,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListAssociatedCodeV2Handler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListAssociatedCodeV2Handler
+  }),
   "req_list_associated_test_cases": defineProductTool({
     description: "List CodeArts Req associated test cases",
     inputSchema: reqListAssociatedTestCasesInput,
@@ -1911,6 +2017,13 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqListAssociatedWikisV5Handler
   }),
+  "req_list_associate_wikis_v5": defineProductTool({
+    description: "List CodeArts Req associated wikis through the official V5 attach-wiki endpoint",
+    inputSchema: reqListAssociatedWikisV5Input,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListAssociatedWikisV5Handler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListAssociatedWikisV5Handler
+  }),
   "req_list_related_users": defineProductTool({
     description: "List CodeArts Req related users",
     inputSchema: reqListRelatedUsersInput,
@@ -1926,6 +2039,14 @@ const reqToolDefinitions = {
   }),
   "req_list_work_item_status_attributes": defineProductTool({
     description: "List CodeArts Req work item status attributes",
+    inputSchema: reqListWorkItemStatusAttributesInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqListWorkItemStatusAttributesHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqListWorkItemStatusAttributesHandler
+  }),
+  "req_list_issue_status_attributes": defineProductTool({
+    description: "List CodeArts Req issue status attributes through the official V2 endpoint",
     inputSchema: reqListWorkItemStatusAttributesInput,
     selectHttpClient: (clients: {
       reqClient: Parameters<typeof createReqListWorkItemStatusAttributesHandler>[0];
@@ -2006,6 +2127,13 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqListWorkItemCustomFieldsV4Handler
   }),
+  "req_list_issue_custom_fields": defineProductTool({
+    description: "List CodeArts Req work item custom fields through the official V4 issue custom-fields endpoint",
+    inputSchema: reqListWorkItemCustomFieldsV4Input,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemCustomFieldsV4Handler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListWorkItemCustomFieldsV4Handler
+  }),
   "req_list_work_item_assigned_status_configs": defineProductTool({
     description: "List CodeArts Req work item assigned status configs from the official V3 endpoint",
     inputSchema: reqListWorkItemAssignedStatusConfigsInput,
@@ -2021,8 +2149,21 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqListWorkItemTrackerHandlersHandler
   }),
+  "req_list_get_tracker_handlers": defineProductTool({
+    description: "List CodeArts Req tracker handlers through the official tracker-handler-config endpoint",
+    inputSchema: reqListWorkItemTrackerHandlersInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemTrackerHandlersHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListWorkItemTrackerHandlersHandler
+  }),
   "req_get_work_item": defineProductTool({
     description: "Get CodeArts Req work item detail including assignee information when available",
+    inputSchema: reqGetWorkItemInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGetWorkItemHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqGetWorkItemHandler
+  }),
+  "req_show_issue_v4": defineProductTool({
+    description: "Show CodeArts Req work item detail through the official V4 issue endpoint",
     inputSchema: reqGetWorkItemInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqGetWorkItemHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqGetWorkItemHandler
@@ -2050,6 +2191,14 @@ const reqToolDefinitions = {
     }) => clients.reqClient,
     createProductHandler: createReqGetWorkItemIndexCountsHandler
   }),
+  "req_issue_index_count": defineProductTool({
+    description: "Get CodeArts Req work item index counts through the official issue index-count endpoint",
+    inputSchema: reqGetWorkItemIndexCountsInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqGetWorkItemIndexCountsHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqGetWorkItemIndexCountsHandler
+  }),
   "req_get_work_hour_permission": defineProductTool({
     description: "Get CodeArts Req work hour operation permission for a work item",
     inputSchema: reqGetWorkHourPermissionInput,
@@ -2059,6 +2208,13 @@ const reqToolDefinitions = {
   }),
   "req_list_work_item_comments": defineProductTool({
     description: "List CodeArts Req work item comments",
+    inputSchema: reqListWorkItemCommentsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemCommentsHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListWorkItemCommentsHandler
+  }),
+  "req_list_issue_comments_v4": defineProductTool({
+    description: "List CodeArts Req work item comments through the official V4 issue comments endpoint",
     inputSchema: reqListWorkItemCommentsInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemCommentsHandler>[0] }) =>
       clients.reqClient,
@@ -2116,6 +2272,14 @@ const reqToolDefinitions = {
     }) => clients.reqClient,
     createProductHandler: createReqListChildWorkItemsDirectV4Handler
   }),
+  "req_list_child_issue_v4": defineProductTool({
+    description: "List CodeArts Req direct child work items through the official V4 child endpoint",
+    inputSchema: reqListChildWorkItemsDirectV4Input,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqListChildWorkItemsDirectV4Handler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqListChildWorkItemsDirectV4Handler
+  }),
   "req_list_work_item_work_hours": defineProductTool({
     description: "List CodeArts Req work hour records for a work item",
     inputSchema: reqListWorkItemWorkHoursInput,
@@ -2123,8 +2287,21 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqListWorkItemWorkHoursHandler
   }),
+  "req_list_working_hour_v3": defineProductTool({
+    description: "List CodeArts Req work hour records through the official V3 working-hour endpoint",
+    inputSchema: reqListWorkItemWorkHoursInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemWorkHoursHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListWorkItemWorkHoursHandler
+  }),
   "req_list_work_item_records": defineProductTool({
     description: "List CodeArts Req work item records",
+    inputSchema: reqListWorkItemRecordsInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemRecordsHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqListWorkItemRecordsHandler
+  }),
+  "req_list_issue_records_v4": defineProductTool({
+    description: "List CodeArts Req work item records through the official V4 issue records endpoint",
     inputSchema: reqListWorkItemRecordsInput,
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListWorkItemRecordsHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqListWorkItemRecordsHandler
@@ -2233,6 +2410,13 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqListProjectUserWorkHoursHandler
   }),
+  "req_show_project_work_hours": defineProductTool({
+    description: "Show CodeArts Req project work hour records through the official single-project endpoint",
+    inputSchema: reqListProjectUserWorkHoursInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqListProjectUserWorkHoursHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqListProjectUserWorkHoursHandler
+  }),
   "req_list_project_versions": defineProductTool({
     description: "List CodeArts Req project versions",
     inputSchema: reqListProjectVersionsInput,
@@ -2249,6 +2433,14 @@ const reqToolDefinitions = {
   }),
   "req_list_project_work_hour_types": defineProductTool({
     description: "List CodeArts Req project work hour types",
+    inputSchema: reqListProjectWorkHourTypesInput,
+    selectHttpClient: (clients: {
+      reqClient: Parameters<typeof createReqListProjectWorkHourTypesHandler>[0];
+    }) => clients.reqClient,
+    createProductHandler: createReqListProjectWorkHourTypesHandler
+  }),
+  "req_list_project_work_hours_type": defineProductTool({
+    description: "List CodeArts Req project work hour types through the official V4 endpoint",
     inputSchema: reqListProjectWorkHourTypesInput,
     selectHttpClient: (clients: {
       reqClient: Parameters<typeof createReqListProjectWorkHourTypesHandler>[0];
@@ -2313,6 +2505,13 @@ const reqToolDefinitions = {
     createProductHandler: createReqUpdateWorkItemHandler,
     rateLimitAction: "req_update_work_item"
   }),
+  "req_update_issue_v4": defineProductTool({
+    description: "Update CodeArts Req work item through the official V4 issue endpoint",
+    inputSchema: reqUpdateWorkItemInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUpdateWorkItemHandler>[0] }) => clients.reqClient,
+    createProductHandler: createReqUpdateWorkItemHandler,
+    rateLimitAction: "req_update_issue_v4"
+  }),
   "req_update_work_item_comment": defineProductTool({
     description: "Update a CodeArts Req work item comment",
     inputSchema: reqUpdateWorkItemCommentInput,
@@ -2328,6 +2527,14 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqUpdateWorkItemFlowHandler,
     rateLimitAction: "req_update_work_item_flow"
+  }),
+  "req_update_issue_flow": defineProductTool({
+    description: "Update CodeArts Req work item flow through the official V2 issue-flowage endpoint",
+    inputSchema: reqUpdateWorkItemFlowInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUpdateWorkItemFlowHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqUpdateWorkItemFlowHandler,
+    rateLimitAction: "req_update_issue_flow"
   }),
   "req_update_project_member_role": defineProductTool({
     description: "Update a CodeArts Req project member role",
