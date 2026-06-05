@@ -93,6 +93,100 @@ describe("createCheckClient", () => {
     });
   });
 
+  it("uses documented create and delete ruleset endpoints", async () => {
+    const requests: Array<{ method: string; path: string; body?: unknown }> = [];
+    const client = createClient({
+      post: async (path: string, body?: unknown) => {
+        requests.push({ method: "POST", path, body });
+        return {
+          result: {
+            template_id: "ruleset-1",
+            template_name: "java-custom",
+            language: "JAVA",
+            is_default: "1"
+          }
+        };
+      },
+      delete: async (path: string) => {
+        requests.push({ method: "DELETE", path });
+        return null;
+      }
+    });
+
+    await expect(client.createRuleset({
+      project_id: "project-1",
+      template_name: "java-custom",
+      language: "JAVA",
+      is_default: "1",
+      template_id: "ruleset-base",
+      rule_ids: "rule-1,rule-2",
+      uncheck_ids: "rule-3",
+      custom_attributes: [
+        {
+          attribute: "severity",
+          rules: [
+            {
+              rule_id: "rule-1",
+              value: "1"
+            }
+          ]
+        }
+      ]
+    })).resolves.toEqual({
+      project_id: "project-1",
+      ruleset_id: "ruleset-1",
+      template_name: "java-custom",
+      language: "JAVA",
+      is_default: "1",
+      raw: {
+        template_id: "ruleset-1",
+        template_name: "java-custom",
+        language: "JAVA",
+        is_default: "1"
+      }
+    });
+
+    await expect(client.deleteRuleset({
+      project_id: "project-1",
+      ruleset_id: "ruleset-1"
+    })).resolves.toEqual({
+      project_id: "project-1",
+      ruleset_id: "ruleset-1",
+      raw: undefined
+    });
+
+    expect(requests).toEqual([
+      {
+        method: "POST",
+        path: "/v2/ruleset",
+        body: {
+          project_id: "project-1",
+          template_name: "java-custom",
+          language: "JAVA",
+          is_default: "1",
+          rule_ids: "rule-1,rule-2",
+          uncheck_ids: "rule-3",
+          template_id: "ruleset-base",
+          custom_attributes: [
+            {
+              attribute: "severity",
+              rules: [
+                {
+                  rule_id: "rule-1",
+                  value: "1"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        method: "DELETE",
+        path: "/v2/project-1/ruleset/ruleset-1"
+      }
+    ]);
+  });
+
   it("maps incremental task type to the documented inc value", async () => {
     let requestedBody: unknown;
     const client = createClient({
@@ -696,6 +790,7 @@ describe("createCheckClient", () => {
 
   it("reads additional task metadata endpoints from the Check API docs", async () => {
     const requests: string[] = [];
+    const putRequests: Array<{ path: string; body?: unknown }> = [];
     const client = createClient({
       get: async (path: string) => {
         requests.push(path);
@@ -719,6 +814,10 @@ describe("createCheckClient", () => {
         }
 
         return { result: { branches: [{ id: "branch-1", name: "main" }], total: 1 } };
+      },
+      put: async (path: string, body?: unknown) => {
+        putRequests.push({ path, body });
+        return { result: "updated", status: "success" };
       }
     });
 
@@ -766,6 +865,30 @@ describe("createCheckClient", () => {
       task_id: "task-1",
       raw: { language: "java" }
     });
+    await expect(client.updateTaskResourcePool({
+      task_id: "task-1",
+      resource_pool_id: "pool-2",
+      resource_pool_type: "custom",
+      body: {
+        pool_name: "high-cpu"
+      }
+    })).resolves.toEqual({
+      task_id: "task-1",
+      status: "success",
+      result: "updated",
+      raw: { result: "updated", status: "success" }
+    });
+    await expect(client.updatePipelineTask({
+      task_id: "task-1",
+      body: {
+        task_name: "pipeline-check"
+      }
+    })).resolves.toEqual({
+      task_id: "task-1",
+      status: "success",
+      result: "updated",
+      raw: { result: "updated", status: "success" }
+    });
     await expect(client.listTaskBranches(createProjectTaskInput())).resolves.toEqual({
       branches: [{ id: "branch-1", name: "main" }],
       total: 1
@@ -781,6 +904,22 @@ describe("createCheckClient", () => {
       "/v3/project-1/tasks/task-1/ruleset/ruleset-1/check-parameters",
       "/v2/project-1/tasks/task-1/settings",
       "/v3/project-1/tasks/task-1/branches"
+    ]);
+    expect(putRequests).toEqual([
+      {
+        path: "/v1/tasks/task-1/resource-pool",
+        body: {
+          pool_name: "high-cpu",
+          resource_pool_id: "pool-2",
+          resource_pool_type: "custom"
+        }
+      },
+      {
+        path: "/v2/pipeline-task/task-1",
+        body: {
+          task_name: "pipeline-check"
+        }
+      }
     ]);
   });
 

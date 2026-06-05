@@ -66,6 +66,35 @@ describe("registerCheckTool", () => {
     );
   });
 
+  it("registers new check mutation tools", () => {
+    const registerTool = vi.fn();
+    const tools = [
+      ["check_create_ruleset", "Create CodeArts Check ruleset"],
+      ["check_delete_ruleset", "Delete CodeArts Check ruleset"],
+      ["check_update_task_resource_pool", "Update CodeArts Check task resource pool"],
+      ["check_update_pipeline_task", "Update CodeArts Check pipeline task"]
+    ] as const;
+
+    for (const [toolName, description] of tools) {
+      const handled = registerCheckTool({
+        toolName,
+        server: { registerTool },
+        mode: "stdio",
+        stdioClient: {} as never
+      });
+
+      expect(handled).toBe(true);
+      expect(registerTool).toHaveBeenLastCalledWith(
+        toolName,
+        expect.objectContaining({
+          title: toolName,
+          description
+        }),
+        expect.any(Function)
+      );
+    }
+  });
+
   it("registers new read-only check tools", () => {
     const registerTool = vi.fn();
     const tools = [

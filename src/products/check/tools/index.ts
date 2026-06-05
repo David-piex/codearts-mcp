@@ -1,10 +1,13 @@
 export const checkToolNames = [
   "check_create_task",
+  "check_create_ruleset",
+  "check_delete_ruleset",
   "check_list_rulesets",
   "check_list_tasks",
   "check_get_task",
   "check_get_task_by_id",
   "check_get_task_resource_pool",
+  "check_update_task_resource_pool",
   "check_list_task_jobs",
   "check_list_task_jobs_v4",
   "check_list_task_last_jobs",
@@ -90,5 +93,6 @@ export const checkToolNames = [
   "check_update_code_gate",
   "check_update_ignore_files",
   "check_update_check_mode",
+  "check_update_pipeline_task",
   "check_request_official_api"
 ];

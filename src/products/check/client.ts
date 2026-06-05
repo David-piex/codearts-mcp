@@ -24,6 +24,31 @@ export type CheckClient = {
     language?: string;
     status?: string;
   }>;
+  createRuleset: (input: {
+    project_id: string;
+    template_name: string;
+    language: string;
+    is_default?: "0" | "1";
+    rule_ids?: string;
+    uncheck_ids?: string;
+    template_id?: string;
+    custom_attributes?: Array<Record<string, unknown>>;
+  }) => Promise<{
+    project_id: string;
+    ruleset_id: string;
+    template_name?: string;
+    language?: string;
+    is_default?: string;
+    raw: Record<string, unknown>;
+  }>;
+  deleteRuleset: (input: {
+    project_id: string;
+    ruleset_id: string;
+  }) => Promise<{
+    project_id: string;
+    ruleset_id: string;
+    raw?: Record<string, unknown>;
+  }>;
   runTask: (input: { task_id: string; ref?: string }) => Promise<{
     task_id: string;
     job_id?: string;
@@ -131,6 +156,17 @@ export type CheckClient = {
     task_id: string;
     raw: Record<string, unknown>;
   }>;
+  updateTaskResourcePool: (input: {
+    task_id: string;
+    resource_pool_id?: string;
+    resource_pool_type?: "default" | "custom";
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    task_id: string;
+    status?: string;
+    result?: string;
+    raw: Record<string, unknown>;
+  }>;
   listTaskJobs: (input: { task_id: string }) => Promise<{
     jobs: Array<Record<string, unknown>>;
     total?: number;
@@ -149,6 +185,15 @@ export type CheckClient = {
   }>;
   getTaskCron: (input: { task_id: string }) => Promise<{
     task_id: string;
+    raw: Record<string, unknown>;
+  }>;
+  updatePipelineTask: (input: {
+    task_id: string;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    task_id: string;
+    status?: string;
+    result?: string;
     raw: Record<string, unknown>;
   }>;
   listProjectTaskGroups: (input: { project_id: string }) => Promise<{
@@ -830,6 +875,57 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
         status: item.status === undefined ? undefined : String(item.status)
       };
     },
+    async createRuleset(input) {
+      const response = await _http.post("/v2/ruleset", {
+        project_id: input.project_id,
+        template_name: input.template_name,
+        language: input.language,
+        is_default: input.is_default ?? "0",
+        rule_ids: input.rule_ids,
+        uncheck_ids: input.uncheck_ids,
+        template_id: input.template_id,
+        custom_attributes: input.custom_attributes
+      });
+      const payload = readResultPayload(response);
+      const result = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        project_id: input.project_id,
+        ruleset_id: typeof result.template_id === "string" ? result.template_id : "",
+        template_name:
+          typeof result.template_name === "string"
+            ? result.template_name
+            : input.template_name,
+        language: typeof result.language === "string" ? result.language : input.language,
+        is_default:
+          typeof result.is_default === "string"
+            ? result.is_default
+            : input.is_default ?? "0",
+        raw: result
+      };
+    },
+    async deleteRuleset(input) {
+      const response = await _http.delete?.(
+        `/v2/${encodeURIComponent(input.project_id)}/ruleset/${encodeURIComponent(input.ruleset_id)}`
+      );
+
+      if (response === null || response === undefined) {
+        return {
+          project_id: input.project_id,
+          ruleset_id: input.ruleset_id,
+          raw: undefined
+        };
+      }
+
+      const payload = readResultPayload(response);
+      const result = readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        project_id: input.project_id,
+        ruleset_id: input.ruleset_id,
+        raw: result
+      };
+    },
     async runTask(input) {
       const response = (await _http.post(
         `/v2/tasks/${encodeURIComponent(input.task_id)}/run`,
@@ -1080,6 +1176,24 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
         raw: resourcePool
       };
     },
+    async updateTaskResourcePool(input) {
+      const response = await _http.put(
+        `/v1/tasks/${encodeURIComponent(input.task_id)}/resource-pool`,
+        {
+          ...input.body,
+          ...(input.resource_pool_id === undefined ? {} : { resource_pool_id: input.resource_pool_id }),
+          ...(input.resource_pool_type === undefined ? {} : { resource_pool_type: input.resource_pool_type })
+        }
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        task_id: input.task_id,
+        status: typeof payload.status === "string" ? payload.status : undefined,
+        result: typeof payload.result === "string" ? payload.result : undefined,
+        raw: payload
+      };
+    },
     async listTaskJobs(input) {
       const response = await _http.get(`/v4/tasks/${encodeURIComponent(input.task_id)}/jobs`);
       const payload = readResultPayload(response);
@@ -1132,6 +1246,20 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
       return {
         task_id: input.task_id,
         raw: cron
+      };
+    },
+    async updatePipelineTask(input) {
+      const response = await _http.put(
+        `/v2/pipeline-task/${encodeURIComponent(input.task_id)}`,
+        input.body ?? {}
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        task_id: input.task_id,
+        status: typeof payload.status === "string" ? payload.status : undefined,
+        result: typeof payload.result === "string" ? payload.result : undefined,
+        raw: payload
       };
     },
     async listProjectTaskGroups(input) {

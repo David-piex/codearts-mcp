@@ -17,6 +17,14 @@ export const checkGetTaskResourcePoolInput = z.object({
   task_id: idSchema
 });
 
+export const checkUpdateTaskResourcePoolInput = z.object({
+  task_id: idSchema,
+  resource_pool_id: idSchema.optional(),
+  resource_pool_type: z.enum(["default", "custom"]).optional(),
+  body: z.record(z.string(), z.unknown()).default({}),
+  dry_run: z.boolean().default(true)
+});
+
 export const checkListTaskJobsInput = z.object({
   task_id: idSchema
 });
@@ -39,6 +47,12 @@ export const checkGetTaskOwnerMatchingSwitchInput = z.object({
 
 export const checkGetTaskCronInput = z.object({
   task_id: idSchema
+});
+
+export const checkUpdatePipelineTaskInput = z.object({
+  task_id: idSchema,
+  body: z.record(z.string(), z.unknown()).default({}),
+  dry_run: z.boolean().default(true)
 });
 
 export const checkListProjectTaskGroupsInput = z.object({
@@ -452,6 +466,49 @@ export const checkCreateTaskInput = z.object({
   include_paths: z.string().min(1).optional(),
   exclude_dir: z.string().min(1).optional(),
   task_type: z.enum(["full", "incremental"]).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+const checkRulesetCustomAttributeRuleConfigInput = z.object({
+  id: z.number().int().nonnegative().optional(),
+  rule_id: idSchema.optional(),
+  default_value: z.string().min(1).optional(),
+  option_value: z.string().min(1).optional(),
+  option_key: z.string().min(1).optional(),
+  option_name: z.string().min(1).optional(),
+  template_id: idSchema.optional(),
+  description: z.string().min(1).optional()
+}).passthrough();
+
+const checkRulesetCustomAttributeRuleInput = z.object({
+  rule_id: idSchema,
+  value: z.union([z.literal("0"), z.literal("1"), z.literal("2"), z.literal("3")]).optional(),
+  rule_config_list: z.array(checkRulesetCustomAttributeRuleConfigInput).optional()
+}).passthrough();
+
+const checkRulesetCustomAttributeInput = z.object({
+  attribute: z.string().min(1),
+  rules: z.array(checkRulesetCustomAttributeRuleInput).min(1)
+}).passthrough();
+
+export const checkCreateRulesetInput = z.object({
+  project_id: idSchema,
+  template_name: z.string().min(1),
+  language: z.string().min(1),
+  is_default: z.union([z.literal("0"), z.literal("1")]).default("0"),
+  rule_ids: z.string().min(1).optional(),
+  uncheck_ids: z.string().min(1).optional(),
+  template_id: idSchema.optional(),
+  custom_attributes: z.array(checkRulesetCustomAttributeInput).optional(),
+  dry_run: z.boolean().default(true)
+}).refine((input) => input.is_default === "0" || input.template_id, {
+  message: "template_id is required when is_default is \"1\".",
+  path: ["template_id"]
+});
+
+export const checkDeleteRulesetInput = z.object({
+  project_id: idSchema,
+  ruleset_id: idSchema,
   dry_run: z.boolean().default(true)
 });
 

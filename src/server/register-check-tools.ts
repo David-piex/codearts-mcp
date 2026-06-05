@@ -2,8 +2,10 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { officialApiRequestInput } from "../products/official-api.js";
 import { createCheckClient } from "../products/check/client.js";
 import {
+  checkCreateRulesetInput,
   checkCreateTaskInput,
   checkCreatePdfAsyncJobInput,
+  checkDeleteRulesetInput,
   checkDetectTaskLanguageInput,
   checkDownloadLogFileInput,
   checkExtractTaskAssistantSummaryInput,
@@ -40,6 +42,7 @@ import {
   checkGetTaskPreCheckScriptInput,
   checkGetTaskProgressInput,
   checkGetTaskResourcePoolInput,
+  checkUpdateTaskResourcePoolInput,
   checkGetTaskRulesetCheckParametersV2Input,
   checkGetTaskRulesetCheckParametersV3Input,
   checkGetTaskSettingsInput,
@@ -92,10 +95,13 @@ import {
   checkUpdateCheckModeInput,
   checkUpdateCodeGateInput,
   checkUpdateIgnoreFilesInput,
+  checkUpdatePipelineTaskInput,
   checkUpdateIssueStatusInput
 } from "../products/check/schemas.js";
 import { createCheckCreateTaskHandler } from "../products/check/tools/create-task.js";
+import { createCheckCreateRulesetHandler } from "../products/check/tools/create-ruleset.js";
 import { createCheckCreatePdfAsyncJobHandler } from "../products/check/tools/create-pdf-async-job.js";
+import { createCheckDeleteRulesetHandler } from "../products/check/tools/delete-ruleset.js";
 import {
   createCheckDownloadLogFileHandler,
   createCheckExtractTaskAssistantSummaryHandler,
@@ -151,6 +157,7 @@ import { createCheckGetTaskOwnerMatchingSwitchHandler } from "../products/check/
 import { createCheckGetTaskPreCheckScriptHandler } from "../products/check/tools/get-task-pre-check-script.js";
 import { createCheckGetTaskProgressHandler } from "../products/check/tools/get-task-progress.js";
 import { createCheckGetTaskResourcePoolHandler } from "../products/check/tools/get-task-resource-pool.js";
+import { createCheckUpdateTaskResourcePoolHandler } from "../products/check/tools/update-task-resource-pool.js";
 import { createCheckGetTaskRulesetCheckParametersV2Handler } from "../products/check/tools/get-task-ruleset-check-parameters-v2.js";
 import { createCheckGetTaskRulesetCheckParametersV3Handler } from "../products/check/tools/get-task-ruleset-check-parameters-v3.js";
 import { createCheckGetTaskSettingsHandler } from "../products/check/tools/get-task-settings.js";
@@ -191,6 +198,7 @@ import { createCheckUpdateCheckModeHandler } from "../products/check/tools/updat
 import { createCheckUpdateCodeGateHandler } from "../products/check/tools/update-code-gate.js";
 import { createCheckUpdateIgnoreFilesHandler } from "../products/check/tools/update-ignore-files.js";
 import { createCheckUpdateIssueStatusHandler } from "../products/check/tools/update-issue-status.js";
+import { createCheckUpdatePipelineTaskHandler } from "../products/check/tools/update-pipeline-task.js";
 import { createOfficialApiRequestHandler } from "../products/shared-tools/request-official-api.js";
 import { defineProductTool, registerDefinedTool } from "./product-tool-registry.js";
 import type { RateLimiter } from "./rate-limiter.js";
@@ -218,6 +226,18 @@ const checkToolDefinitions = {
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckCreateTaskHandler>[0] }) => clients.checkClient,
     createProductHandler: createCheckCreateTaskHandler
   }),
+  "check_create_ruleset": defineProductTool({
+    description: "Create CodeArts Check ruleset",
+    inputSchema: checkCreateRulesetInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckCreateRulesetHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckCreateRulesetHandler
+  }),
+  "check_delete_ruleset": defineProductTool({
+    description: "Delete CodeArts Check ruleset",
+    inputSchema: checkDeleteRulesetInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckDeleteRulesetHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckDeleteRulesetHandler
+  }),
   "check_get_task": defineProductTool({
     description: "Get CodeArts Check task detail",
     inputSchema: checkGetTaskInput,
@@ -235,6 +255,12 @@ const checkToolDefinitions = {
     inputSchema: checkGetTaskResourcePoolInput,
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetTaskResourcePoolHandler>[0] }) => clients.checkClient,
     createProductHandler: createCheckGetTaskResourcePoolHandler
+  }),
+  "check_update_task_resource_pool": defineProductTool({
+    description: "Update CodeArts Check task resource pool",
+    inputSchema: checkUpdateTaskResourcePoolInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckUpdateTaskResourcePoolHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckUpdateTaskResourcePoolHandler
   }),
   "check_list_task_jobs": defineProductTool({
     description: "List CodeArts Check task jobs",
@@ -751,6 +777,12 @@ const checkToolDefinitions = {
     inputSchema: checkUpdateCheckModeInput,
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckUpdateCheckModeHandler>[0] }) => clients.checkClient,
     createProductHandler: createCheckUpdateCheckModeHandler
+  }),
+  "check_update_pipeline_task": defineProductTool({
+    description: "Update CodeArts Check pipeline task",
+    inputSchema: checkUpdatePipelineTaskInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckUpdatePipelineTaskHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckUpdatePipelineTaskHandler
   })
 } as const;
 

@@ -1,9 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
+  checkCreateRulesetInput,
   checkCreateTaskInput,
+  checkDeleteRulesetInput,
   checkDetectTaskLanguageInput,
   checkGetMeasureTotalInput,
   checkGetProjectConfigInput,
+  checkUpdatePipelineTaskInput,
+  checkUpdateTaskResourcePoolInput,
   checkListConfigItemsInput,
   checkListCodehubRepositoriesInput,
   checkListTaskAllFilesInput,
@@ -36,6 +40,58 @@ describe("check schemas", () => {
       resource_pool_type: "custom",
       include_paths: "src,lib",
       exclude_dir: "dist",
+      dry_run: true
+    });
+  });
+
+  it("accepts create and delete ruleset schemas with dry-run defaults", () => {
+    expect(checkCreateRulesetInput.parse({
+      project_id: "project-1",
+      template_name: "java-custom",
+      language: "JAVA",
+      is_default: "1",
+      template_id: "ruleset-1",
+      rule_ids: "rule-1,rule-2",
+      uncheck_ids: "rule-3",
+      custom_attributes: [
+        {
+          attribute: "severity",
+          rules: [
+            {
+              rule_id: "rule-1",
+              value: "1"
+            }
+          ]
+        }
+      ]
+    })).toEqual({
+      project_id: "project-1",
+      template_name: "java-custom",
+      language: "JAVA",
+      is_default: "1",
+      template_id: "ruleset-1",
+      rule_ids: "rule-1,rule-2",
+      uncheck_ids: "rule-3",
+      custom_attributes: [
+        {
+          attribute: "severity",
+          rules: [
+            {
+              rule_id: "rule-1",
+              value: "1"
+            }
+          ]
+        }
+      ],
+      dry_run: true
+    });
+
+    expect(checkDeleteRulesetInput.parse({
+      project_id: "project-1",
+      ruleset_id: "ruleset-1"
+    })).toEqual({
+      project_id: "project-1",
+      ruleset_id: "ruleset-1",
       dry_run: true
     });
   });
@@ -167,6 +223,38 @@ describe("check schemas", () => {
           }
         }
       ],
+      dry_run: true
+    });
+  });
+
+  it("accepts task resource pool and pipeline task update schemas", () => {
+    expect(checkUpdateTaskResourcePoolInput.parse({
+      task_id: "task-1",
+      resource_pool_id: "pool-1",
+      resource_pool_type: "custom",
+      body: {
+        pool_name: "high-cpu"
+      }
+    })).toEqual({
+      task_id: "task-1",
+      resource_pool_id: "pool-1",
+      resource_pool_type: "custom",
+      body: {
+        pool_name: "high-cpu"
+      },
+      dry_run: true
+    });
+
+    expect(checkUpdatePipelineTaskInput.parse({
+      task_id: "task-2",
+      body: {
+        task_name: "pipeline-check"
+      }
+    })).toEqual({
+      task_id: "task-2",
+      body: {
+        task_name: "pipeline-check"
+      },
       dry_run: true
     });
   });
