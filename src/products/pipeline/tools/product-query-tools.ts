@@ -4,17 +4,21 @@ import {
   pipelineCheckProjectInput,
   pipelineDashboardQueryInput,
   pipelineGetChangeRequestInput,
+  pipelineGetTenantVersionDetailInput,
   pipelineGetComponentInput,
   pipelineGetComponentFollowStatusInput,
   pipelineGetDevucAuthInput,
   pipelineGetNoticeMessagesInput,
   pipelineGetOauthAuthorizationUrlInput,
   pipelineGetPacActionInput,
+  pipelineCheckVariableGroupRightsInput,
   pipelineListChangeRequestOperationLogsInput,
+  pipelineListChangeRequestCreatorsInput,
   pipelineListChangeRequestWorkItemsInput,
   pipelineListChangeRequestsInput,
   pipelineListComponentsInput,
   pipelineListExecutionPlansInput,
+  pipelineListRelatedProjectsInput,
   pipelineListPacActionsInput,
   pipelineListReusableJobsInput
 } from "../schemas.js";
@@ -71,6 +75,11 @@ export type PipelineProductQueryClient = {
     keyword?: string;
     body?: RawRecord;
   }) => Promise<RawListResponse>;
+  listChangeRequestCreators: (input: {
+    cloud_project_id: string;
+    component_id: string;
+    name?: string;
+  }) => Promise<RawListResponse>;
   getChangeRequest: (input: {
     cloud_project_id: string;
     change_request_id: string;
@@ -96,6 +105,18 @@ export type PipelineProductQueryClient = {
   getComponentFollowStatus: (input: {
     cloud_project_id: string;
     component_id: string;
+  }) => Promise<RawItemResponse>;
+  checkVariableGroupRights: (input: {
+    project_id: string;
+  }) => Promise<RawListResponse>;
+  listRelatedProjects: (input: {
+    tenant_id: string;
+    page_index: number;
+    page_size: number;
+    search?: string;
+  }) => Promise<RawListResponse>;
+  getTenantVersionDetail: (input: {
+    tenant_id: string;
   }) => Promise<RawItemResponse>;
   listPacActions: (input: {
     domain_id: string;
@@ -215,6 +236,15 @@ export const createPipelineListChangeRequestsHandler = (client: PipelineProductQ
     rawKey: "changeRequests"
   });
 
+export const createPipelineListChangeRequestCreatorsHandler = (client: PipelineProductQueryClient) =>
+  createPipelineRawListHandler({
+    inputSchema: pipelineListChangeRequestCreatorsInput,
+    call: (input) => client.listChangeRequestCreators(input),
+    noun: "pipeline change request creators",
+    itemKey: "changeRequestCreator",
+    rawKey: "changeRequestCreators"
+  });
+
 export const createPipelineGetChangeRequestHandler = (client: PipelineProductQueryClient) =>
   createPipelineRawItemHandler({
     inputSchema: pipelineGetChangeRequestInput,
@@ -258,6 +288,33 @@ export const createPipelineGetComponentHandler = (client: PipelineProductQueryCl
     summary: "Loaded pipeline component",
     itemKey: "component",
     id: (input) => input.component_id
+  });
+
+export const createPipelineCheckVariableGroupRightsHandler = (client: PipelineProductQueryClient) =>
+  createPipelineRawListHandler({
+    inputSchema: pipelineCheckVariableGroupRightsInput,
+    call: (input) => client.checkVariableGroupRights(input),
+    noun: "pipeline variable group rights",
+    itemKey: "variableGroupRight",
+    rawKey: "variableGroupRights"
+  });
+
+export const createPipelineListRelatedProjectsHandler = (client: PipelineProductQueryClient) =>
+  createPipelineRawListHandler({
+    inputSchema: pipelineListRelatedProjectsInput,
+    call: (input) => client.listRelatedProjects(input),
+    noun: "pipeline related projects",
+    itemKey: "relatedProject",
+    rawKey: "relatedProjects"
+  });
+
+export const createPipelineGetTenantVersionDetailHandler = (client: PipelineProductQueryClient) =>
+  createPipelineRawItemHandler({
+    inputSchema: pipelineGetTenantVersionDetailInput,
+    call: (input) => client.getTenantVersionDetail(input),
+    summary: "Loaded pipeline tenant version detail",
+    itemKey: "tenantVersionDetail",
+    id: (input) => input.tenant_id
   });
 
 export const createPipelineListPacActionsHandler = (client: PipelineProductQueryClient) =>

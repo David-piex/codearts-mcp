@@ -28,7 +28,12 @@ export function createPipelineRawListHandler<TSchema extends z.ZodTypeAny>(optio
   return async (input: unknown) => {
     const parsed = options.inputSchema.parse(input);
     const response = await options.call(parsed);
-    const page = "page" in parsed && typeof parsed.page === "number" ? parsed.page : 1;
+    const page =
+      "page" in parsed && typeof parsed.page === "number"
+        ? parsed.page
+        : "page_index" in parsed && typeof parsed.page_index === "number"
+          ? parsed.page_index
+          : 1;
     const pageSize =
       "page_size" in parsed && typeof parsed.page_size === "number"
         ? parsed.page_size

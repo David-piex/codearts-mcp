@@ -500,6 +500,15 @@ export type PipelineClient = {
     total?: number;
     raw: PipelineRawRecord;
   }>;
+  listRelatedProjects: (input: {
+    tenant_id: string;
+    page_index: number;
+    page_size: number;
+    search?: string;
+  }) => Promise<PipelineRawListResult>;
+  getTenantVersionDetail: (input: {
+    tenant_id: string;
+  }) => Promise<PipelineRawItemResult>;
   listTriggerFailedRecords: (input: {
     project_id: string;
     pipeline_id: string;
@@ -1292,6 +1301,11 @@ export type PipelineClient = {
     keyword?: string;
     body?: PipelineRawRecord;
   }) => Promise<PipelineRawListResult>;
+  listChangeRequestCreators: (input: {
+    cloud_project_id: string;
+    component_id: string;
+    name?: string;
+  }) => Promise<PipelineRawListResult>;
   getChangeRequest: (input: {
     cloud_project_id: string;
     change_request_id: string;
@@ -1329,6 +1343,9 @@ export type PipelineClient = {
     cloud_project_id: string;
     component_id: string;
   }) => Promise<PipelineRawItemResult>;
+  checkVariableGroupRights: (input: {
+    project_id: string;
+  }) => Promise<PipelineRawListResult>;
   createComponent: (input: {
     cloud_project_id: string;
     name: string;
@@ -2209,6 +2226,33 @@ export function createPipelineClient(
         total: readPipelineTotal(payload, variables.length),
         raw: payload
       };
+    },
+    async listRelatedProjects(input) {
+      const suffix = buildQuery({
+        page_index: input.page_index,
+        page_size: input.page_size,
+        ...(input.search ? { search: input.search } : {})
+      });
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v5/${encodeURIComponent(input.tenant_id)}/api/project/query-related-project${suffix}`
+      ));
+      const payload = getPipelinePayload(response);
+      const records = Array.isArray(payload.project_info_list)
+        ? payload.project_info_list.map((item) => asPipelineRecord(item))
+        : readPipelineRecordList(payload);
+
+      return {
+        records,
+        total: typeof payload.total === "number" ? payload.total : readPipelineTotal(payload, records.length),
+        raw: payload
+      };
+    },
+    async getTenantVersionDetail(input) {
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v5/${encodeURIComponent(input.tenant_id)}/api/tenant-version/detail`
+      ));
+
+      return mapPipelineRawItemResult(getPipelinePayload(response));
     },
     async listTriggerFailedRecords(input) {
       const offset = (input.page - 1) * input.page_size;
@@ -3975,6 +4019,36 @@ export function createPipelineClient(
 
       return mapPipelineRawListResult(getPipelinePayload(response));
     },
+    async listChangeRequestCreators(input) {
+      const suffix = buildQuery({
+        component_id: input.component_id,
+        ...(input.name !== undefined ? { name: input.name } : {})
+      });
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v2/${encodeURIComponent(input.cloud_project_id)}/change-request/creator/list/search${suffix}`
+      ));
+
+      if (Array.isArray(response)) {
+        return {
+          records: response.map((item) => asPipelineRecord(item)),
+          total: response.length,
+          raw: { result: response }
+        };
+      }
+
+      const payload = getPipelinePayload(response);
+      const records = Array.isArray(payload.result)
+        ? payload.result.map((item) => asPipelineRecord(item))
+        : Array.isArray(payload.data)
+          ? payload.data.map((item) => asPipelineRecord(item))
+          : readPipelineRecordList(payload);
+
+      return {
+        records,
+        total: readPipelineTotal(payload, records.length),
+        raw: payload
+      };
+    },
     async getChangeRequest(input) {
       const response = unwrapPipelinePayload(await _http.get(
         `/v2/${encodeURIComponent(input.cloud_project_id)}/change-request/${encodeURIComponent(input.change_request_id)}/query`
@@ -4078,6 +4152,32 @@ export function createPipelineClient(
         raw: asPipelineRecord(
           typeof response === "boolean" ? { result: response } : response
         )
+      };
+    },
+    async checkVariableGroupRights(input) {
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v5/${encodeURIComponent(input.project_id)}/api/variable/group/check-rights`
+      ));
+
+      if (Array.isArray(response)) {
+        return {
+          records: response.map((item) => asPipelineRecord(item)),
+          total: response.length,
+          raw: { result: response }
+        };
+      }
+
+      const payload = getPipelinePayload(response);
+      const records = Array.isArray(payload.result)
+        ? payload.result.map((item) => asPipelineRecord(item))
+        : Array.isArray(payload.data)
+          ? payload.data.map((item) => asPipelineRecord(item))
+          : readPipelineRecordList(payload);
+
+      return {
+        records,
+        total: readPipelineTotal(payload, records.length),
+        raw: payload
       };
     },
     async createComponent(input) {

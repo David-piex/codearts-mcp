@@ -13,6 +13,7 @@ import {
   pipelineBindVariableGroupsToPipelineInput,
   pipelineCheckComponentInput,
   pipelineCheckProjectInput,
+  pipelineCheckVariableGroupRightsInput,
   pipelineCheckpointInput,
   pipelineCreateChangeRequestInput,
   pipelineCreateComponentInput,
@@ -44,6 +45,7 @@ import {
   pipelineGetExecLogInput,
   pipelineGetOauthAuthorizationUrlInput,
   pipelineGetPacActionInput,
+  pipelineGetTenantVersionDetailInput,
   pipelineGetTemplateInput,
   pipelineGetWebhookInfoInput,
   pipelineGetNoticeMessagesInput,
@@ -58,6 +60,7 @@ import {
   pipelineGetProjectStrategyInput,
   pipelineGetProjectStrategyRelatedInfoInput,
   pipelineListArtifactsInput,
+  pipelineListChangeRequestCreatorsInput,
   pipelineListChangeRequestOperationLogsInput,
   pipelineListChangeRequestWorkItemsInput,
   pipelineDashboardQueryInput,
@@ -103,6 +106,7 @@ import {
   pipelineListStrategiesInput,
   pipelineListStrategyChildrenInput,
   pipelineListPipelineVarsInput,
+  pipelineListRelatedProjectsInput,
   pipelineListSystemVarsInput,
   pipelineListTriggerFailedRecordsInput,
   pipelineSetTagsForPipelinesInput,
@@ -235,6 +239,7 @@ import {
   createPipelineBatchGetPipelineStatusHandler,
   createPipelineCheckComponentHandler,
   createPipelineCheckProjectHandler,
+  createPipelineCheckVariableGroupRightsHandler,
   createPipelineGetChangeRequestHandler,
   createPipelineGetComponentHandler,
   createPipelineGetComponentFollowStatusHandler,
@@ -244,6 +249,8 @@ import {
   createPipelineGetNoticeMessagesHandler,
   createPipelineGetOauthAuthorizationUrlHandler,
   createPipelineGetPacActionHandler,
+  createPipelineGetTenantVersionDetailHandler,
+  createPipelineListChangeRequestCreatorsHandler,
   createPipelineListChangeRequestOperationLogsHandler,
   createPipelineListChangeRequestWorkItemsHandler,
   createPipelineListChangeRequestsHandler,
@@ -251,6 +258,7 @@ import {
   createPipelineListDashboardPipelineCountsHandler,
   createPipelineListExecutionPlansHandler,
   createPipelineListPacActionsHandler,
+  createPipelineListRelatedProjectsHandler,
   createPipelineListReusableJobsHandler
 } from "../products/pipeline/tools/product-query-tools.js";
 import { createPipelineListArtifactsHandler } from "../products/pipeline/tools/list-artifacts.js";
@@ -939,6 +947,18 @@ const pipelineToolDefinitions = {
     selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetWebhookInfoHandler>[0] }) => clients.pipelineClient,
     createProductHandler: createPipelineGetWebhookInfoHandler
   }),
+  "pipeline_list_related_projects": defineProductTool({
+    description: "List CodeArts Pipeline related projects",
+    inputSchema: pipelineListRelatedProjectsInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineListRelatedProjectsHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineListRelatedProjectsHandler
+  }),
+  "pipeline_get_tenant_version_detail": defineProductTool({
+    description: "Get CodeArts Pipeline tenant version detail",
+    inputSchema: pipelineGetTenantVersionDetailInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetTenantVersionDetailHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineGetTenantVersionDetailHandler
+  }),
   "pipeline_list_pipeline_vars": defineProductTool({
     description: "List CodeArts Pipeline variables",
     inputSchema: pipelineListPipelineVarsInput,
@@ -974,6 +994,12 @@ const pipelineToolDefinitions = {
     inputSchema: pipelineCheckComponentInput,
     selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineCheckComponentHandler>[0] }) => clients.pipelineClient,
     createProductHandler: createPipelineCheckComponentHandler
+  }),
+  "pipeline_check_variable_group_rights": defineProductTool({
+    description: "Check CodeArts Pipeline variable group rights",
+    inputSchema: pipelineCheckVariableGroupRightsInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineCheckVariableGroupRightsHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineCheckVariableGroupRightsHandler
   }),
   "pipeline_list_execution_plans": defineProductTool({
     description: "List CodeArts Pipeline execution plans",
@@ -1024,6 +1050,12 @@ const pipelineToolDefinitions = {
     inputSchema: pipelineListChangeRequestsInput,
     selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineListChangeRequestsHandler>[0] }) => clients.pipelineClient,
     createProductHandler: createPipelineListChangeRequestsHandler
+  }),
+  "pipeline_list_change_request_creators": defineProductTool({
+    description: "List CodeArts Pipeline change request creators",
+    inputSchema: pipelineListChangeRequestCreatorsInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineListChangeRequestCreatorsHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineListChangeRequestCreatorsHandler
   }),
   "pipeline_get_change_request": defineProductTool({
     description: "Get CodeArts Pipeline change request",

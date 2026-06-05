@@ -3,12 +3,16 @@ import { createPipelineGetTemplateHandler, mapPipelineTemplate } from "../../../
 import { createPipelineGetWebhookInfoHandler } from "../../../../src/products/pipeline/tools/get-webhook-info.js";
 import { createPipelineListPipelineVarsHandler } from "../../../../src/products/pipeline/tools/list-pipeline-vars.js";
 import {
+  createPipelineCheckVariableGroupRightsHandler,
   createPipelineGetChangeRequestHandler,
   createPipelineGetComponentFollowStatusHandler,
   createPipelineGetDashboardConcurrencyHandler,
   createPipelineGetDevucAuthHandler,
   createPipelineGetOauthAuthorizationUrlHandler,
+  createPipelineGetTenantVersionDetailHandler,
+  createPipelineListChangeRequestCreatorsHandler,
   createPipelineListChangeRequestOperationLogsHandler,
+  createPipelineListRelatedProjectsHandler,
   createPipelineListChangeRequestWorkItemsHandler,
   createPipelineListExecutionPlansHandler,
   createPipelineListReusableJobsHandler
@@ -139,6 +143,27 @@ describe("Pipeline read detail tools", () => {
     });
   });
 
+  it("returns change request creators query output", async () => {
+    const handler = createPipelineListChangeRequestCreatorsHandler({
+      listChangeRequestCreators: async () => ({
+        records: [{ creator_id: "user-1", creator_name: "yao" }],
+        total: 1,
+        raw: { result: [{ creator_id: "user-1", creator_name: "yao" }] }
+      })
+    } as never);
+
+    const result = await handler({
+      cloud_project_id: "project-1",
+      component_id: "component-1"
+    });
+
+    expect(result.content[0]?.text).toContain("Loaded 1 pipeline change request creators");
+    expect(result.structuredContent.items?.[0]?.changeRequestCreator).toEqual({
+      creator_id: "user-1",
+      creator_name: "yao"
+    });
+  });
+
   it("returns component follow status query output", async () => {
     const handler = createPipelineGetComponentFollowStatusHandler({
       getComponentFollowStatus: async () => ({
@@ -156,6 +181,26 @@ describe("Pipeline read detail tools", () => {
     expect(result.structuredContent.item?.componentFollowStatus).toEqual({
       component_id: "component-1",
       favorite: true
+    });
+  });
+
+  it("returns variable group rights query output", async () => {
+    const handler = createPipelineCheckVariableGroupRightsHandler({
+      checkVariableGroupRights: async () => ({
+        records: [{ action: "read", verdict: "allow" }],
+        total: 1,
+        raw: { result: [{ action: "read", verdict: "allow" }] }
+      })
+    } as never);
+
+    const result = await handler({
+      project_id: "project-1"
+    });
+
+    expect(result.content[0]?.text).toContain("Loaded 1 pipeline variable group rights");
+    expect(result.structuredContent.items?.[0]?.variableGroupRight).toEqual({
+      action: "read",
+      verdict: "allow"
     });
   });
 
@@ -240,6 +285,39 @@ describe("Pipeline read detail tools", () => {
 
     expect(result.content[0]?.text).toContain("Loaded pipeline dashboard concurrency");
     expect(result.structuredContent.item?.dashboardConcurrency).toEqual({ running: 2 });
+  });
+
+  it("returns related project and tenant version query outputs", async () => {
+    const relatedProjects = createPipelineListRelatedProjectsHandler({
+      listRelatedProjects: async () => ({
+        records: [{ id: 1, identifier: "proj-1", name: "Mall", enable_create_pipeline: true }],
+        total: 1,
+        raw: { total: 1, project_info_list: [{ id: 1, identifier: "proj-1", name: "Mall", enable_create_pipeline: true }] }
+      })
+    } as never);
+    const tenantVersion = createPipelineGetTenantVersionDetailHandler({
+      getTenantVersionDetail: async () => ({
+        item: { region: "cn-north-4", version: "3.0", domain_id: "tenant-1" },
+        raw: { region: "cn-north-4", version: "3.0", domain_id: "tenant-1" }
+      })
+    } as never);
+
+    const relatedProjectsResult = await relatedProjects({ tenant_id: "tenant-1" });
+    const tenantVersionResult = await tenantVersion({ tenant_id: "tenant-1" });
+
+    expect(relatedProjectsResult.content[0]?.text).toContain("Loaded 1 pipeline related projects");
+    expect(relatedProjectsResult.structuredContent.items?.[0]?.relatedProject).toEqual({
+      id: 1,
+      identifier: "proj-1",
+      name: "Mall",
+      enable_create_pipeline: true
+    });
+    expect(tenantVersionResult.content[0]?.text).toContain("Loaded pipeline tenant version detail");
+    expect(tenantVersionResult.structuredContent.item?.tenantVersionDetail).toEqual({
+      region: "cn-north-4",
+      version: "3.0",
+      domain_id: "tenant-1"
+    });
   });
 
   it("returns authorization helper query outputs", async () => {

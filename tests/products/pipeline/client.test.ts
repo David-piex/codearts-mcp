@@ -6,7 +6,11 @@ import {
   pipelineCreateTemplateInput,
   pipelineDeleteTemplateInput,
   pipelineFavoriteTemplateInput,
+  pipelineGetTenantVersionDetailInput,
   pipelineListChangeRequestOperationLogsInput,
+  pipelineListChangeRequestCreatorsInput,
+  pipelineListRelatedProjectsInput,
+  pipelineCheckVariableGroupRightsInput,
   pipelineUpdateComponentInput,
   pipelineUpdateChangeRequestStatusInput,
   pipelineUpdateTemplateInput,
@@ -759,6 +763,44 @@ describe("createPipelineClient", () => {
         desc: "updated service"
       }).dry_run
     ).toBe(true);
+  });
+
+  it("defaults new pipeline read helper inputs", () => {
+    expect(
+      pipelineListRelatedProjectsInput.parse({
+        tenant_id: "tenant-1"
+      })
+    ).toEqual({
+      tenant_id: "tenant-1",
+      page_index: 1,
+      page_size: 20
+    });
+
+    expect(
+      pipelineListChangeRequestCreatorsInput.parse({
+        cloud_project_id: "project-1",
+        component_id: "component-1"
+      })
+    ).toEqual({
+      cloud_project_id: "project-1",
+      component_id: "component-1"
+    });
+
+    expect(
+      pipelineGetTenantVersionDetailInput.parse({
+        tenant_id: "tenant-1"
+      })
+    ).toEqual({
+      tenant_id: "tenant-1"
+    });
+
+    expect(
+      pipelineCheckVariableGroupRightsInput.parse({
+        project_id: "project-1"
+      })
+    ).toEqual({
+      project_id: "project-1"
+    });
   });
 
   it("supports pipelines field when listing pipelines", async () => {
@@ -3518,6 +3560,13 @@ describe("createPipelineClient", () => {
     });
     await client.getDashboardExecutionsOverview({ tenant_id: "tenant-1" });
     await client.getDashboardConcurrency({ tenant_id: "tenant-1" });
+    await client.listRelatedProjects({
+      tenant_id: "tenant-1",
+      page_index: 2,
+      page_size: 10,
+      search: "mall"
+    });
+    await client.getTenantVersionDetail({ tenant_id: "tenant-1" });
     await client.createChangeRequest({
       cloud_project_id: "project-1",
       component_id: "component-1",
@@ -3544,6 +3593,11 @@ describe("createPipelineClient", () => {
       offset: 0,
       limit: 20,
       body: { status: "open" }
+    });
+    await client.listChangeRequestCreators({
+      cloud_project_id: "project-1",
+      component_id: "component-1",
+      name: "yao"
     });
     await client.getChangeRequest({
       cloud_project_id: "project-1",
@@ -3583,6 +3637,7 @@ describe("createPipelineClient", () => {
     await client.listComponents({ cloud_project_id: "project-1", offset: 0, limit: 20 });
     await client.getComponent({ cloud_project_id: "project-1", component_id: "component-1" });
     await client.getComponentFollowStatus({ cloud_project_id: "project-1", component_id: "component-1" });
+    await client.checkVariableGroupRights({ project_id: "project-1" });
     await client.followComponent({ cloud_project_id: "project-1", component_id: "component-1" });
     await client.unfollowComponent({ cloud_project_id: "project-1", component_id: "component-1" });
     await client.updateComponent({
@@ -3654,6 +3709,14 @@ describe("createPipelineClient", () => {
         path: "/v5/tenant-1/api/dashboard/concurrency"
       },
       {
+        method: "GET",
+        path: "/v5/tenant-1/api/project/query-related-project?page_index=2&page_size=10&search=mall"
+      },
+      {
+        method: "GET",
+        path: "/v5/tenant-1/api/tenant-version/detail"
+      },
+      {
         method: "POST",
         path: "/v2/project-1/change-request/create",
         body: {
@@ -3681,6 +3744,10 @@ describe("createPipelineClient", () => {
         method: "POST",
         path: "/v2/project-1/change-requests/search",
         body: { status: "open", offset: 0, limit: 20 }
+      },
+      {
+        method: "GET",
+        path: "/v2/project-1/change-request/creator/list/search?component_id=component-1&name=yao"
       },
       {
         method: "GET",
@@ -3730,6 +3797,10 @@ describe("createPipelineClient", () => {
       {
         method: "GET",
         path: "/v2/project-1/component/component-1/follow/query"
+      },
+      {
+        method: "GET",
+        path: "/v5/project-1/api/variable/group/check-rights"
       },
       {
         method: "PUT",

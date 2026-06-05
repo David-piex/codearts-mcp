@@ -815,6 +815,17 @@ export const pipelineListPipelineVarsInput = z.object({
   pipeline_id: idSchema
 });
 
+export const pipelineListRelatedProjectsInput = z.object({
+  tenant_id: idSchema,
+  page_index: z.number().int().min(1).default(1),
+  page_size: z.number().int().min(1).max(200).default(20),
+  search: z.string().optional()
+});
+
+export const pipelineGetTenantVersionDetailInput = z.object({
+  tenant_id: idSchema
+});
+
 export const pipelineGetTemplateInput = z.object({
   tenant_id: idSchema,
   template_id: idSchema
@@ -966,6 +977,12 @@ export const pipelineListChangeRequestsInput = z.object({
   body: pipelineRawQueryInput.optional()
 });
 
+export const pipelineListChangeRequestCreatorsInput = z.object({
+  cloud_project_id: idSchema,
+  component_id: idSchema,
+  name: z.string().optional()
+});
+
 export const pipelineGetChangeRequestInput = z.object({
   cloud_project_id: idSchema,
   change_request_id: idSchema
@@ -987,6 +1004,10 @@ export const pipelineGetComponentInput = z.object({
 export const pipelineGetComponentFollowStatusInput = z.object({
   cloud_project_id: idSchema,
   component_id: idSchema
+});
+
+export const pipelineCheckVariableGroupRightsInput = z.object({
+  project_id: idSchema
 });
 
 export const pipelineComponentRepoInput = z.object({

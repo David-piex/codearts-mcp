@@ -29,11 +29,11 @@
 | 编译构建 | 138 | [Function-API-Reference-Build.md](./Function-API-Reference-Build.md) |
 | 代码检查 | 104 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
 | 部署 | 87 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
-| 流水线 | 149 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
+| 流水线 | 153 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 372 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 343 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 313 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **1560** | |
+| **总计** | **1564** | |
 
 ## 字段对应
 
@@ -436,6 +436,7 @@
 | `pipeline_cancel_queue` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_cancel_queue) |
 | `pipeline_check_component` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_check_component) |
 | `pipeline_check_project` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_check_project) |
+| `pipeline_check_variable_group_rights` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_check_variable_group_rights) |
 | `pipeline_continue_delay_job` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_continue_delay_job) |
 | `pipeline_create_change_request` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_create_change_request) |
 | `pipeline_create_component` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_create_component) |
@@ -501,6 +502,7 @@
 | `pipeline_get_strategy` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_get_strategy) |
 | `pipeline_get_strategy_related_info` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_get_strategy_related_info) |
 | `pipeline_get_template` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_get_template) |
+| `pipeline_get_tenant_version_detail` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_get_tenant_version_detail) |
 | `pipeline_get_user_permission` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_get_user_permission) |
 | `pipeline_get_variable_group` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_get_variable_group) |
 | `pipeline_get_webhook_info` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_get_webhook_info) |
@@ -509,6 +511,7 @@
 | `pipeline_list_available_publishers` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_list_available_publishers) |
 | `pipeline_list_base_plugins` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_list_base_plugins) |
 | `pipeline_list_base_plugins_paged` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_list_base_plugins_paged) |
+| `pipeline_list_change_request_creators` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_list_change_request_creators) |
 | `pipeline_list_change_request_operation_logs` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_list_change_request_operation_logs) |
 | `pipeline_list_change_request_work_items` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_list_change_request_work_items) |
 | `pipeline_list_change_requests` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_list_change_requests) |
@@ -528,6 +531,7 @@
 | `pipeline_list_project_strategies` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_list_project_strategies) |
 | `pipeline_list_publishers` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_list_publishers) |
 | `pipeline_list_queue` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_list_queue) |
+| `pipeline_list_related_projects` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_list_related_projects) |
 | `pipeline_list_reusable_jobs` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_list_reusable_jobs) |
 | `pipeline_list_rule_types` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_list_rule_types) |
 | `pipeline_list_rules` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_list_rules) |
