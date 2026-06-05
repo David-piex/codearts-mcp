@@ -64,6 +64,7 @@ import {
   reqDeleteWorkItemInput,
   reqDeleteWorkItemV3Input,
   reqCreateWorkItemInput,
+  reqCreateEpicIssueInput,
   reqCreateWorkItemV2Input,
   reqBatchUpdateWorkItemsInput,
   reqCountWorkItemTreeInput,
@@ -293,6 +294,7 @@ import { createReqDeleteIterationHandler } from "../products/req/tools/delete-it
 import { createReqDeleteProjectModuleHandler } from "../products/req/tools/delete-project-module.js";
 import { createReqDeleteProjectTemplateHandler } from "../products/req/tools/delete-project-template.js";
 import { createReqCreateWorkItemHandler } from "../products/req/tools/create-work-item.js";
+import { createReqCreateEpicIssueHandler } from "../products/req/tools/create-epic-issue.js";
 import { createReqCreateWorkItemV2Handler } from "../products/req/tools/create-work-item-v2.js";
 import { createReqDeleteWorkItemHandler } from "../products/req/tools/delete-work-item.js";
 import { createReqDeleteWorkItemV3Handler } from "../products/req/tools/delete-work-item-v3.js";
@@ -2079,6 +2081,14 @@ const reqToolDefinitions = {
       clients.reqClient,
     createProductHandler: createReqCreateWorkItemV2Handler,
     rateLimitAction: "req_create_work_item_v2"
+  }),
+  "req_create_epic_issue": defineProductTool({
+    description: "Create a CodeArts Req epic issue through the official CreateEpicIssue endpoint",
+    inputSchema: reqCreateEpicIssueInput,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqCreateEpicIssueHandler>[0] }) =>
+      clients.reqClient,
+    createProductHandler: createReqCreateEpicIssueHandler,
+    rateLimitAction: "req_create_epic_issue"
   }),
   "req_create_system_work_item_v4": defineProductTool({
     description: "Create CodeArts Req work item through the official V4 system issue token-header endpoint",

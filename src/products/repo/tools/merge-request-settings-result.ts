@@ -9,12 +9,18 @@ import type {
 function mapTemplate(input: RepoMergeRequestTemplate) {
   return {
     id: input.id !== undefined ? String(input.id) : undefined,
-    name: input.name,
-    title: input.title,
+    name: input.template_name ?? input.name,
+    title: input.merge_request_title ?? input.title,
     description: input.description,
     content: input.content,
     fileName: input.file_name,
     filePath: input.file_path,
+    repositoryId: input.repository_id !== undefined ? String(input.repository_id) : undefined,
+    groupId: input.group_id !== undefined ? String(input.group_id) : undefined,
+    projectId: input.project_id,
+    isDefault: input.is_default,
+    isWip: input.is_wip,
+    autoExtractMrTitle: input.auto_extract_mr_title,
     createdAt: input.created_at,
     updatedAt: input.updated_at,
     raw: input
@@ -45,4 +51,24 @@ export function mapMergeRequestTemplatesList(
 
 export function mapMergeRequestTemplate(input: RepoMergeRequestTemplate) {
   return asItemResult("Fetched merge request template", mapTemplate(input));
+}
+
+export function previewApproverSettingsMutation(
+  summary: string,
+  input: Record<string, unknown>
+) {
+  return asItemResult(summary, {
+    ...input,
+    executed: false
+  });
+}
+
+export function previewMergeRequestTemplateMutation(
+  summary: string,
+  input: Record<string, unknown>
+) {
+  return asItemResult(summary, {
+    ...input,
+    executed: false
+  });
 }

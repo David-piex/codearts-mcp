@@ -97,6 +97,8 @@ type RepoRepositoryWebhookMutationInput = {
   push_events_branch_regex_filter?: string;
 };
 
+type RepoWebhookPayloadInput = Omit<RepoRepositoryWebhookMutationInput, "repository_id">;
+
 export type RepoRepositoryWebhookLog = {
   id: number | string;
   web_hook_id?: number | string;
@@ -302,6 +304,18 @@ export type RepoRepositorySummary = {
   project_name?: string;
   project_id?: string;
   creator_id?: number | string;
+  full_name?: string;
+  full_path?: string;
+  visibility_level?: number | string;
+  parent_id?: number | string;
+  members_count?: number;
+  repository_count?: number;
+  subgroup_count?: number;
+  ancestor_ids?: Array<number | string>;
+  ancestor_names?: string[];
+  sum?: {
+    open_merge_requests_count?: number;
+  };
 };
 
 export type RepoRepositoryUserGroup = {
@@ -349,12 +363,178 @@ export type RepoGroupInheritSetting = {
   upward_inherit_editable?: boolean;
 };
 
+export type RepoGroupSettingsInheritCfg = {
+  can_update?: boolean;
+  id?: number | string;
+  product_id?: string;
+  namespace_id?: number | string;
+  parent_id?: number | string;
+  ownership?: number;
+  pbi?: number;
+  protected_branches?: number;
+  protected_tags?: number;
+  push_rules?: number;
+  change_requests?: number;
+  custom_ctrl_items?: number;
+  reviews?: number;
+  issues?: number;
+  cr_evaluation?: number;
+  e2e_settings?: number;
+  committer_settings?: number;
+  webhook_settings?: number;
+  stream_event_settings?: number;
+  pipeline_settings?: number;
+  issue_templates?: number;
+  cr_comment_templates?: number;
+  merge_requests?: number;
+  mr_branch_policies?: number;
+  repository_settings?: number;
+  deploy_keys?: number;
+  watermark?: number;
+  created_at?: string;
+  update_at?: string;
+};
+
+export type RepoAssociateGroupUserGroupResult = {
+  success?: Array<{
+    id?: number | string;
+    name?: string;
+    iam_id?: string;
+  }>;
+  failure?: Array<{
+    iam_id?: string;
+    message?: string[];
+  }>;
+};
+
+export type RepoAssociateRepositoryUserGroupResult = {
+  status?: string;
+  error_code?: string;
+  error_msg?: string;
+};
+
+export type RepoGroupPermissionResource = {
+  id?: number | string;
+  name?: string;
+  name_cn?: string;
+  resource_name_display?: string;
+  resource_name_cn_display?: string;
+  path?: string;
+  scope?: string;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type RepoGroupPermissionResourcesResponse = {
+  use_project_permission?: boolean;
+  resources?: RepoGroupPermissionResource[];
+};
+
+export type RepoHttpsPasswordSetting = {
+  https_clone_iam_auth?: boolean;
+};
+
+export type RepoHttpsPasswordSettingUpdateResult = {
+  status?: string;
+};
+
+export type RepoBatchValidateRepoNameItem = {
+  name?: string;
+  project_id?: string;
+  group_id?: number | string | null;
+  result?: boolean;
+  error_message?: string | null;
+};
+
+export type RepoBatchValidateRepoNameInputItem = {
+  name: string;
+  project_id: string;
+  group_id?: string;
+};
+
+export type RepoGroupRoleInfo = {
+  id?: number | string;
+  access_level?: number | string;
+  role_namecn?: string | null;
+  role_namen?: string | null;
+  source_id?: number | string;
+  source_type?: string;
+  user_id?: number | string;
+  notification_level?: number;
+  created_at?: string;
+  updated_at?: string;
+  created_by_id?: number | string | null;
+  invite_email?: string | null;
+  invite_token?: string | null;
+  invite_accepted_at?: string | null;
+  requested_at?: string | null;
+  expires_at?: string | null;
+  limited?: boolean;
+  isProjectAdmin?: number | string | null;
+  isGroupCreator?: number | string | null;
+  isRepoCreator?: number | string | null;
+  roleShowFlag?: number | string | null;
+};
+
+export type RepoTransferGroupResult = RepoRepositorySummary & {
+  my_role?: RepoGroupRoleInfo;
+};
+
+export type RepoAddRepositoryMemberInputItem = {
+  user_iam_id?: string;
+  user_name?: string;
+  tenant_name?: string;
+  tenant_id?: string;
+  repository_role_Id?: string;
+};
+
+export type RepoAddRepositoryMemberResultItem = {
+  user_iam_id?: string;
+  user_name?: string;
+  user_nick_name?: string;
+  tenant_name?: string;
+  status?: string;
+  message?: string;
+};
+
+export type RepoAddRepositoryMembersResult = {
+  status?: string;
+  result?: RepoAddRepositoryMemberResultItem[];
+};
+
+export type RepoArchiveDownloadResult = {
+  file_name?: string;
+  content_type?: string;
+  size_bytes: number;
+};
+
+export type RepoSubmoduleMutationResult = {
+  result?: string;
+  status?: string;
+};
+
+export type RepoUserEmailOperationResult = {
+  result?: string;
+};
+
+export type RepoUserEmailInfo = {
+  id?: number | string;
+  email?: string;
+  commit_email?: string;
+  is_primary?: boolean;
+  primary?: boolean;
+  confirmed_at?: string;
+  status?: string;
+};
+
 export type RepoMergeRequestCommit = {
   id?: string;
   short_id?: string;
   title?: string;
   message?: string;
   author_name?: string;
+  author_email?: string | null;
+  committer_email?: string | null;
   name?: string;
   user_name?: string;
   tenant_name?: string;
@@ -364,9 +544,22 @@ export type RepoMergeRequestCommit = {
   committer_name?: string;
   gpg_primary_key_id?: string;
   open_gpg_verified?: boolean;
-  verification_status?: string;
+  verification_status?: string | number;
   parent_ids?: string[];
   created_at?: string;
+  author_avatar_url?: string | null;
+  committer_avatar_url?: string | null;
+  author_id?: number | string;
+  project_id?: string;
+  state?: string;
+  stats?: {
+    additions?: number;
+    deletions?: number;
+    total?: number;
+  };
+  cherry_pick_branch_name?: string;
+  revert_branch_name?: string;
+  iid?: number | string;
 };
 
 export type RepoMergeRequestVote = {
@@ -404,6 +597,276 @@ export type RepoMergeRequestStatistic = {
   votes?: number;
 };
 
+export type RepoMergeRequestEvaluationUser = RepoReviewUserBasic;
+
+export type RepoMergeRequestCustomEvaluation = {
+  id?: number | string;
+  evaluation_type_id?: number | string;
+  name?: string;
+  level?: number;
+};
+
+export type RepoMergeRequestEvaluation = {
+  id?: number | string;
+  merge_request_id?: number | string;
+  level?: number;
+  created_at?: string;
+  updated_at?: string;
+  content?: string | number;
+  user?: RepoMergeRequestEvaluationUser;
+  custom_evaluations?: RepoMergeRequestCustomEvaluation[] | null;
+};
+
+export type RepoMergeRequestAverageEvaluation = {
+  merge_request_id?: number | string;
+  average_evaluation_level?: number;
+  evaluations?: RepoMergeRequestEvaluation[];
+  custom_evaluations?: Array<{
+    evaluation_type_id?: number | string;
+    name?: string;
+    level?: number;
+  }> | null;
+};
+
+export type RepoMergeRequestVersion = {
+  id?: number | string;
+  head_commit_sha?: string;
+  base_commit_sha?: string;
+  start_commit_sha?: string;
+  created_at?: string;
+  merge_request_id?: number | string;
+  state?: string;
+  real_size?: number | string;
+};
+
+export type RepoCherryPickMergeRequestResult = {
+  state?: string;
+  title?: string;
+  cherry_pick_branch_name?: string;
+};
+
+export type RepoPipelineStage = {
+  id?: number | string;
+  repository_id?: number | string;
+  pipeline_id?: number | string;
+  name?: string;
+  sort_id?: number | string | null;
+  status?: string;
+  jobs?: RepoPipelineJob[];
+};
+
+export type RepoActualHeadPipeline = {
+  is_valid?: boolean;
+  data?: {
+    id?: number | string;
+    web_url?: string;
+    sha?: string;
+    ref?: string;
+    status?: string;
+    created_at?: string;
+    updated_at?: string;
+    started_at?: string;
+    finished_at?: string;
+    repository_id?: number | string;
+    is_invalid?: boolean | null;
+    type?: string;
+    stages?: RepoPipelineStage[];
+    is_latest?: boolean;
+    trigger_user?: string | null;
+    all_job_finished?: boolean;
+  };
+};
+
+export type RepoMergeRequestVoteResult = {
+  id?: number | string;
+  merge_request_id?: number | string;
+  score?: number;
+  author?: {
+    id?: number | string;
+    name?: string;
+    username?: string;
+  };
+};
+
+export type RepoMergeRequestChangesTreeNode = {
+  title?: string;
+  level?: number;
+  file_path?: string;
+  file_type?: string;
+  diff?: {
+    diff?: string;
+    new_path?: string;
+    old_path?: string;
+    a_mode?: string;
+    b_mode?: string;
+    new_file?: boolean;
+    renamed_file?: boolean;
+    deleted_file?: boolean;
+    too_large?: boolean;
+  };
+  items?: RepoMergeRequestChangesTreeNode[];
+};
+
+export type RepoMergeRequestChangesTrees = {
+  can_show_my_approval_files?: boolean | null;
+  tree?: RepoMergeRequestChangesTreeNode[];
+};
+
+export type RepoMergeRequestParticipant = {
+  id?: number | string;
+  name?: string;
+  username?: string;
+  state?: string;
+  service_license_status?: number | string | null;
+  avatar_url?: string;
+  avatar_path?: string;
+  email?: string;
+  name_cn?: string;
+  web_url?: string;
+  nick_name?: string;
+  tenant_name?: string;
+  error_message?: string | null;
+};
+
+export type RepoMergeableState = {
+  merge_request_id?: number | string;
+  state?: boolean;
+  conflict_passed?: boolean;
+  non_ff_passed?: boolean;
+  merged_by_user_passed?: boolean;
+  work_in_progress_passed?: boolean;
+  resolve_discussion_passed?: boolean;
+  ci_state_passed?: boolean;
+  merge_by_self_passed?: boolean;
+  can_force_merge?: boolean;
+  vote_passed?: boolean;
+  e2e_check_passed?: boolean;
+  all_issues_passed?: boolean;
+  only_one_issue_passed?: boolean;
+  approval_reviewers_required_passed?: boolean;
+  approval_approvers_required_passed?: boolean;
+  evaluation_passed?: boolean;
+};
+
+export type RepoMergeRequestCandidateUser = RepoReviewUserBasic & {
+  is_committer?: boolean;
+  is_verified?: boolean;
+  has_permission?: boolean;
+};
+
+export type RepoMergeRequestImportApprover = {
+  approver_id?: number | string;
+  code_owner?: boolean;
+  accept?: boolean;
+};
+
+export type RepoMergeRequestImportDiffRefs = {
+  base_sha: string;
+  start_sha: string;
+  head_sha: string;
+};
+
+export type RepoConflictSectionLineMetaData = {
+  old_pos?: number;
+  new_pos?: number;
+};
+
+export type RepoConflictSectionLine = {
+  line_code?: string;
+  type?: string;
+  old_line?: number;
+  new_line?: number;
+  text?: string;
+  meta_data?: RepoConflictSectionLineMetaData;
+  rich_text?: string;
+  can_receive_suggestion?: boolean;
+};
+
+export type RepoReviewNote = {
+  id?: number | string;
+  type?: string | null;
+  body?: string;
+  author?: RepoReviewUserBasic;
+  created_at?: string;
+  updated_at?: string;
+  system?: boolean;
+  noteable_id?: number | string;
+  noteable_type?: string;
+  commit_id?: string | null;
+  resolvable?: boolean;
+};
+
+export type RepoLineDiscussion = {
+  discussions?: Array<{
+    id?: string;
+    individual_note?: boolean;
+    notes?: RepoReviewNote[];
+    repository_id?: number | string;
+    noteable_type?: string;
+    commit_id?: string | null;
+    repository_full_path?: string;
+    a_mode?: string;
+    b_mode?: string;
+    deleted_file?: boolean;
+    new_file?: boolean;
+    resolved?: boolean;
+    archived?: boolean;
+    review_categories?: string;
+    review_categories_cn?: string;
+    review_categories_en?: string;
+    review_modules?: string;
+    severity?: string;
+    severity_cn?: string;
+    severity_en?: string;
+    assignee?: RepoReviewUserBasic;
+    proposer?: RepoReviewUserBasic;
+    merge_request_version_params?: {
+      diff_id?: number | string;
+      base_commit_sha?: string;
+      start_commit_sha?: string;
+      head_commit_sha?: string;
+    };
+    diff_file?: string;
+    added_lines?: number;
+    removed_lines?: number;
+  }>;
+  line?: number;
+  type?: string;
+};
+
+export type RepoCommentPath = {
+  path?: string;
+  new?: RepoLineDiscussion[];
+  old?: RepoLineDiscussion[];
+};
+
+export type RepoConflictSection = {
+  conflict?: boolean;
+  lines?: RepoConflictSectionLine[];
+  id?: string;
+};
+
+export type RepoMergeRequestConflictFile = {
+  old_path?: string;
+  new_path?: string;
+  blob_icon?: string;
+  blob_path?: string;
+  conflict_type?: string;
+  content?: string;
+  content_path?: string;
+  sections?: RepoConflictSection[];
+  type?: string;
+  error_message?: string;
+};
+
+export type RepoBranchConflict = {
+  source_repository_id?: number | string;
+  target_repository_id?: number | string;
+  source_branch?: string;
+  target_branch?: string;
+  is_conflict?: boolean;
+};
+
 export type RepoBlob = {
   size?: number;
   encoding?: string;
@@ -413,6 +876,58 @@ export type RepoBlob = {
 
 export type RepoDiffLines = {
   text?: string;
+};
+
+export type RepoCommitDiffEntry = {
+  old_path?: string;
+  new_path?: string;
+  file_path?: string;
+  a_mode?: string;
+  b_mode?: string;
+  file_type?: string;
+  new_file?: boolean;
+  renamed_file?: boolean;
+  deleted_file?: boolean;
+  binary?: boolean;
+  too_large?: boolean;
+  collapsed?: boolean;
+  line_count?: number[];
+  added_lines?: number;
+  removed_lines?: number;
+  diff?: string;
+};
+
+export type RepoCommitDiffRefs = {
+  base_sha?: string;
+  head_sha?: string;
+  start_sha?: string;
+};
+
+export type RepoCommitDiffMetadata = {
+  diffs?: RepoCommitDiffEntry[];
+  diff_refs?: RepoCommitDiffRefs;
+  added_lines?: number;
+  removed_lines?: number;
+  change_file_count?: number;
+  change_line_count?: number;
+  too_large?: boolean;
+  blob_id?: string;
+};
+
+export type RepoPipelineJob = {
+  id?: number | string;
+  sha?: string;
+  ref?: string;
+  status?: string;
+  name?: string;
+  target_url?: string;
+  created_at?: string;
+  updated_at?: string;
+  started_at?: string;
+  finished_at?: string;
+  third_build_id?: string;
+  stage_id?: number | string;
+  stage?: string;
 };
 
 export type RepoTreeObject = {
@@ -440,6 +955,36 @@ export type RepoFileContent = {
   file_path: string;
   sha: string;
   content: string;
+};
+
+export type RepoRepositoryFileTreeEntry = {
+  id?: string;
+  name?: string;
+  type?: string;
+  path?: string;
+  level?: number;
+  isShownDropDown?: boolean;
+  folder?: boolean;
+  children?: RepoRepositoryFileTreeEntry[] | null;
+  submodule_link?: string | null;
+};
+
+export type RepoRepositoryFileDetail = {
+  name?: string;
+  path?: string;
+  size?: number;
+  encoding?: string;
+  ref?: string;
+  blob_id?: string;
+  file_type?: string;
+  commit?: RepoMergeRequestCommit;
+  content?: string;
+  is_limited?: boolean;
+  content_sha256?: string;
+  last_commit_id?: string;
+  nick_name?: string;
+  tenant_name?: string;
+  user_name?: string;
 };
 
 export type RepoBlameLine = {
@@ -505,6 +1050,23 @@ export type RepoNoteRequiredAttributes = {
 export type RepoDefaultReviewCategories = {
   codehub_default_categories?: RepoReviewCategory[];
   hicode_default_categories?: RepoReviewCategory[];
+};
+
+type RepoReviewSettingMutationInput = {
+  categories_and_modules_enabled?: boolean;
+  review_modules?: string[];
+  secondary_category_enabled?: boolean;
+  review_default_categories?: string[];
+  review_customized_categories?: string[];
+  is_assignee_id_required?: boolean;
+  is_review_categories_required?: boolean;
+  is_review_modules_required?: boolean;
+};
+
+type RepoNoteRequiredAttributesMutationInput = {
+  is_assignee_id_required?: boolean;
+  is_review_categories_required?: boolean;
+  is_review_modules_required?: boolean;
 };
 
 export type RepoReviewUserBasic = {
@@ -639,6 +1201,13 @@ export type RepoNavigationLanguageInfo = {
   language_list?: RepoNavigationLanguage[];
 };
 
+export type RepoRepositoryNavigationBuildResult = {
+  result?: string;
+  message?: string;
+  duration?: number;
+  size?: number;
+};
+
 export type RepoE2eSetting = {
   e2e_policies?: {
     auto_extract?: boolean;
@@ -670,6 +1239,38 @@ export type RepoE2eSetting = {
 export type RepoMergeRequestSetting = Record<string, unknown>;
 
 export type RepoApproverSettings = Record<string, unknown>;
+
+type RepoApproverSettingMutationInput = {
+  id?: string;
+  target?: string;
+  target_type?: string;
+  is_use_approval?: boolean;
+  approval_required_reviewers?: number;
+  approval_required_approvers?: number;
+  reset_approvals_on_push?: boolean;
+  reset_reviewers_on_push?: boolean;
+  approvers_from_project?: boolean;
+  append_reviewer_ids?: string[];
+  append_reviewers?: Array<Record<string, unknown>>;
+  append_approver_ids?: string[];
+  append_approvers?: Array<Record<string, unknown>>;
+  only_merge_when_pipeline_pass?: boolean;
+  assignee_ids?: string[];
+  assignees?: Array<Record<string, unknown>>;
+  approver_ids?: string[];
+  approvers?: Array<Record<string, unknown>>;
+  reviewer_ids?: string[];
+  reviewers?: Array<Record<string, unknown>>;
+};
+
+type RepoMergeRequestTemplateMutationInput = {
+  template_name: string;
+  merge_request_title?: string;
+  description?: string;
+  auto_extract_mr_title?: number;
+  is_wip?: boolean;
+  is_default?: boolean;
+};
 
 export type RepoMergeRequestTemplate = {
   id?: number | string;
@@ -881,6 +1482,30 @@ export type RepoNotificationSubscriptionsStatus = {
   dingding?: RepoNotificationSubscriptionState;
 };
 
+type RepoNotificationSubscriptionWebhookConfigInput = {
+  url?: string;
+  token?: string;
+  mention_users?: string;
+  mention_phone?: string;
+};
+
+type RepoNotificationSubscriptionEventInput = {
+  resource_type: string;
+  action: string;
+  enabled: boolean;
+  role_ids?: string[];
+  role_names?: string[];
+};
+
+type RepoNotificationSubscriptionUpdateInput = {
+  repository_id: string;
+  enabled?: boolean;
+  config_source?: string;
+  waring_repo_usage_rate?: number;
+  webhook_config?: RepoNotificationSubscriptionWebhookConfigInput;
+  subscript_events?: RepoNotificationSubscriptionEventInput[];
+};
+
 export type RepoRepositoryInheritSettingSource = {
   source_type?: string;
   source_id?: string;
@@ -1062,6 +1687,49 @@ type RepoProjectGeneralPolicyUpdateInput = {
   generate_pre_merge_ref?: boolean;
 };
 
+type RepoRepositoryGeneralPolicyUpdateInput = {
+  repository_id: string;
+  disable_fork?: boolean;
+  branch_name_regex?: string;
+  tag_name_regex?: string;
+  generate_pre_merge_ref?: boolean;
+  forbidden_developer_create_branch?: boolean;
+  create_branch_whitelist_user_ids?: string;
+};
+
+export type RepoLabelDetail = {
+  id?: number | string;
+  name?: string;
+  color?: string;
+  description?: string;
+  text_color?: string;
+  expires_at?: string;
+  is_expired?: boolean;
+  open_merge_requests_count?: number;
+  open_change_request_count?: number;
+  priority?: number;
+  is_repository_label?: boolean;
+};
+
+type RepoRepositoryCommitRuleMutationInput = {
+  repository_id: string;
+  name?: string;
+  branch_name?: string;
+  commit_message_regex?: string;
+  commit_message_negative_regex?: string;
+  author_regex?: string;
+  author_email_regex?: string;
+  prohibited_file_name_regex?: string;
+  max_file_size?: number;
+  binary_gate_enabled?: boolean;
+  allowed_modify_binary?: boolean;
+  allowed_binary_file_name_regex?: string;
+  privileged_user_ids?: number[];
+  effective_date?: string;
+  skip_rule_check?: boolean;
+  skip_rule_end_date?: string;
+};
+
 export type RepoItemCommit = {
   id?: string;
   short_id?: string;
@@ -1130,6 +1798,73 @@ type RepoProtectedRefsUserGroup = {
 
 export type RepoClient = {
   requestOfficialApi: (input: OfficialApiRequestInput) => Promise<OfficialApiRequestResult>;
+  downloadBlobsRaw: (input: {
+    repository_id: string;
+    blob_id: string;
+    file_path: string;
+    file_name?: string;
+  }) => Promise<{
+    repository_id: string;
+    blob_id: string;
+    file_path: string;
+    file_name?: string;
+    content: string;
+  }>;
+  batchDeleteBranch: (input: {
+    repository_id: string;
+    branches: string[];
+  }) => Promise<{
+    repository_id: string;
+    branches: string[];
+    deleted: true;
+  }>;
+  createBranch: (input: {
+    repository_id: string;
+    branch: string;
+    ref: string;
+    description?: string;
+    related_ids?: string[];
+  }) => Promise<{
+    name: string;
+    protected?: boolean;
+    default?: boolean;
+    can_delete?: boolean;
+    can_read?: boolean;
+    can_download?: boolean;
+    can_push?: boolean;
+    web_url?: string;
+    commit?: {
+      id?: string;
+      short_id?: string;
+      title?: string;
+      author_name?: string;
+      created_at?: string;
+    };
+    merged?: boolean;
+    created_at?: string;
+    description?: string;
+    create_source?: string;
+    create_source_exists?: boolean;
+  }>;
+  deleteBranch: (input: {
+    repository_id: string;
+    branch_name: string;
+  }) => Promise<{
+    repository_id: string;
+    branch_name: string;
+    status?: string;
+    deleted: boolean;
+  }>;
+  updateBranchName: (input: {
+    repository_id: string;
+    old_branch: string;
+    new_branch: string;
+  }) => Promise<{
+    old_branch_name?: string;
+    old_branch_commit_id?: string;
+    new_branch_name?: string;
+    new_branch_commit_id?: string;
+  }>;
   getBranch: (input: { repository_id: string; branch_name: string }) => Promise<{
     name: string;
     protected?: boolean;
@@ -1261,6 +1996,10 @@ export type RepoClient = {
     project_id: string;
     watermark: boolean;
   }) => Promise<RepoWatermarkSetting>;
+  updateRepositoryWatermark: (input: {
+    repository_id: string;
+    watermark: boolean;
+  }) => Promise<RepoWatermarkSetting>;
   listProjectSubgroupsAndRepositories: (input: {
     project_id: string;
     page: number;
@@ -1315,6 +2054,7 @@ export type RepoClient = {
     repository_id: string;
     type: "internal_message" | "email" | "qyweixin" | "feishu" | "dingding";
   }) => Promise<RepoNotificationSubscription>;
+  updateNotificationSubscription: (input: RepoNotificationSubscriptionUpdateInput) => Promise<RepoNotificationSubscription>;
   showNotificationSubscriptionsStatus: (input: {
     repository_id: string;
   }) => Promise<RepoNotificationSubscriptionsStatus>;
@@ -1331,8 +2071,17 @@ export type RepoClient = {
   showRepositoryGeneralPolicy: (input: {
     repository_id: string;
   }) => Promise<RepoProjectGeneralPolicy>;
+  updateRepositoryGeneralPolicy: (input: RepoRepositoryGeneralPolicyUpdateInput) => Promise<RepoProjectGeneralPolicy>;
   showRepositoryGeneralCommitRule: (input: {
     repository_id: string;
+  }) => Promise<RepoRepositoryGeneralCommitRule>;
+  updateRepositoryGeneralCommitRule: (input: {
+    repository_id: string;
+    reject_unsigned_commits?: boolean;
+    reject_not_signed_by_gpg?: boolean;
+    deny_delete_tag?: boolean;
+    prevent_secrets?: boolean;
+    deny_force_push?: boolean;
   }) => Promise<RepoRepositoryGeneralCommitRule>;
   listRepositoryCommitRules: (input: {
     repository_id: string;
@@ -1342,9 +2091,74 @@ export type RepoClient = {
     rules: RepoRepositoryCommitRule[];
     total?: number;
   }>;
+  createRepositoryCommitRule: (input: RepoRepositoryCommitRuleMutationInput) => Promise<RepoRepositoryCommitRule>;
+  updateRepositoryCommitRule: (input: RepoRepositoryCommitRuleMutationInput & {
+    commit_rule_id: string;
+  }) => Promise<RepoRepositoryCommitRule>;
   showRepositoryWatermark: (input: {
     repository_id: string;
   }) => Promise<RepoWatermarkSetting>;
+  lockRepository: (input: {
+    project_id: string;
+    repository_id: string;
+  }) => Promise<{
+    repository_id: string;
+    locked: boolean;
+  }>;
+  unlockRepository: (input: {
+    project_id: string;
+    repository_id: string;
+  }) => Promise<{
+    repository_id: string;
+    locked: boolean;
+  }>;
+  executeRepositoryStatistics: (input: {
+    repository_id: string;
+  }) => Promise<{
+    repository_id: string;
+    executed: boolean;
+  }>;
+  createDir: (input: {
+    repository_id: string;
+    branch_name: string;
+    file_path: string;
+    commit_message: string;
+  }) => Promise<{
+    repository_id: string;
+    branch_name: string;
+    file_path: string;
+    commit_message: string;
+    commit_ids: string[];
+  }>;
+  updateRepositoryInheritSetting: (input: {
+    repository_id: string;
+    data: RepoProjectSettingsInheritCfg[];
+  }) => Promise<{
+    settings: RepoProjectSettingsInheritCfg[];
+    total?: number;
+  }>;
+  startHouseKeeping: (input: {
+    repository_id: string;
+  }) => Promise<{
+    repository_id: string;
+    started: boolean;
+  }>;
+  syncDeployKeyToSubmodules: (input: {
+    repository_id: string;
+    key_id: string;
+  }) => Promise<{
+    repository_id: string;
+    key_id: string;
+    synced: boolean;
+  }>;
+  removeDeployKeyFromSubmodules: (input: {
+    repository_id: string;
+    key_id: string;
+  }) => Promise<{
+    repository_id: string;
+    key_id: string;
+    removed: boolean;
+  }>;
   showUserRefPermission: (input: {
     repository_id: string;
     target_ref: string;
@@ -1372,10 +2186,54 @@ export type RepoClient = {
   showProjectGeneralPolicy: (input: {
     project_id: string;
   }) => Promise<RepoProjectGeneralPolicy>;
+  createGroup: (input: {
+    project_id: string;
+    name: string;
+    visibility: "private" | "internal" | "public";
+    description?: string;
+  }) => Promise<RepoRepositorySummary>;
+  showGroup: (input: {
+    project_id: string;
+    group_id: string;
+  }) => Promise<RepoRepositorySummary>;
+  deleteGroup: (input: {
+    project_id: string;
+    group_id: string;
+  }) => Promise<{
+    project_id: string;
+    group_id: string;
+    deleted: boolean;
+    message?: string;
+  }>;
+  associateGroupUserGroup: (input: {
+    project_id: string;
+    group_id: string;
+    user_group_id: string;
+  }) => Promise<RepoAssociateGroupUserGroupResult>;
+  showGroupSettingsInheritCfg: (input: {
+    group_id: string;
+  }) => Promise<RepoGroupSettingsInheritCfg>;
+  showGroupGeneralPolicy: (input: {
+    group_id: string;
+  }) => Promise<RepoProjectGeneralPolicy>;
+  showGroupsGeneralPolicy: (input: {
+    group_id: string;
+  }) => Promise<RepoProjectGeneralPolicy>;
   showProjectsGeneralPolicy: (input: {
     project_id: string;
   }) => Promise<RepoProjectGeneralPolicy>;
   updateProjectGeneralPolicy: (input: RepoProjectGeneralPolicyUpdateInput) => Promise<RepoProjectGeneralPolicy>;
+  updateGroupGeneralPolicy: (input: {
+    group_id: string;
+    disable_fork?: boolean;
+    branch_name_regex?: string;
+    tag_name_regex?: string;
+    generate_pre_merge_ref?: boolean;
+  }) => Promise<RepoProjectGeneralPolicy>;
+  updateGroupWatermark: (input: {
+    group_id: string;
+    watermark: boolean;
+  }) => Promise<RepoWatermarkSetting>;
   listItemCommits: (input: {
     project_id: string;
     item_id: string;
@@ -1457,19 +2315,102 @@ export type RepoClient = {
   showRepositoryApproverSettings: (input: {
     repository_id: string;
   }) => Promise<RepoApproverSettings>;
+  createMergeRequestApproverSetting: (input: { repository_id: string } & RepoApproverSettingMutationInput) => Promise<RepoApproverSettings>;
+  updateMergeRequestApproverSetting: (input: { repository_id: string; setting_id: string } & RepoApproverSettingMutationInput) => Promise<RepoApproverSettings>;
+  deleteMergeRequestApproverSetting: (input: {
+    repository_id: string;
+    setting_id: string;
+  }) => Promise<{
+    repository_id: string;
+    setting_id: string;
+    deleted: boolean;
+  }>;
   showGroupApproverSettings: (input: {
     group_id: string;
   }) => Promise<RepoApproverSettings>;
+  createGroupMergeRequestApproverSetting: (input: { group_id: string } & RepoApproverSettingMutationInput) => Promise<RepoApproverSettings>;
+  updateGroupMergeRequestApproverSetting: (input: { group_id: string; setting_id: string } & RepoApproverSettingMutationInput) => Promise<RepoApproverSettings>;
+  deleteGroupMergeRequestApproverSetting: (input: {
+    group_id: string;
+    setting_id: string;
+  }) => Promise<{
+    group_id: string;
+    setting_id: string;
+    deleted: boolean;
+  }>;
   showProjectApproverSettings: (input: {
     project_id: string;
   }) => Promise<RepoApproverSettings>;
+  createProjectMergeRequestApproverSetting: (input: { project_id: string } & RepoApproverSettingMutationInput) => Promise<RepoApproverSettings>;
+  updateProjectMergeRequestApproverSetting: (input: { project_id: string; setting_id: string } & RepoApproverSettingMutationInput) => Promise<RepoApproverSettings>;
+  deleteProjectMergeRequestApproverSetting: (input: {
+    project_id: string;
+    setting_id: string;
+  }) => Promise<{
+    project_id: string;
+    setting_id: string;
+    deleted: boolean;
+  }>;
+  updateMergeRequestSetting: (input: {
+    repository_id: string;
+    settings: Record<string, unknown>;
+  }) => Promise<RepoMergeRequestSetting>;
   listMergeRequestTemplates: (input: {
     repository_id: string;
     page: number;
     page_size: number;
+    template_name?: string;
   }) => Promise<{
     templates: RepoMergeRequestTemplate[];
     total?: number;
+  }>;
+  createMergeRequestTemplate: (input: { repository_id: string } & RepoMergeRequestTemplateMutationInput) => Promise<RepoMergeRequestTemplate>;
+  updateMergeRequestTemplate: (input: { repository_id: string; template_id: string } & RepoMergeRequestTemplateMutationInput) => Promise<RepoMergeRequestTemplate>;
+  deleteMergeRequestTemplate: (input: {
+    repository_id: string;
+    template_id: string;
+  }) => Promise<{
+    repository_id: string;
+    template_id: string;
+    deleted: boolean;
+  }>;
+  listGroupMergeRequestTemplates: (input: {
+    group_id: string;
+    page: number;
+    page_size: number;
+    template_name?: string;
+  }) => Promise<{
+    templates: RepoMergeRequestTemplate[];
+    total?: number;
+  }>;
+  createGroupMergeRequestTemplate: (input: { group_id: string } & RepoMergeRequestTemplateMutationInput) => Promise<RepoMergeRequestTemplate>;
+  updateGroupMergeRequestTemplate: (input: { group_id: string; template_id: string } & RepoMergeRequestTemplateMutationInput) => Promise<RepoMergeRequestTemplate>;
+  deleteGroupMergeRequestTemplate: (input: {
+    group_id: string;
+    template_id: string;
+  }) => Promise<{
+    group_id: string;
+    template_id: string;
+    deleted: boolean;
+  }>;
+  listProjectMergeRequestTemplates: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    template_name?: string;
+  }) => Promise<{
+    templates: RepoMergeRequestTemplate[];
+    total?: number;
+  }>;
+  createProjectMergeRequestTemplate: (input: { project_id: string } & RepoMergeRequestTemplateMutationInput) => Promise<RepoMergeRequestTemplate>;
+  updateProjectMergeRequestTemplate: (input: { project_id: string; template_id: string } & RepoMergeRequestTemplateMutationInput) => Promise<RepoMergeRequestTemplate>;
+  deleteProjectMergeRequestTemplate: (input: {
+    project_id: string;
+    template_id: string;
+  }) => Promise<{
+    project_id: string;
+    template_id: string;
+    deleted: boolean;
   }>;
   listDiscussionTemplates: (input: {
     repository_id: string;
@@ -1511,6 +2452,14 @@ export type RepoClient = {
   createRepositoryWebhook: (input: RepoRepositoryWebhookMutationInput & {
     url: string;
   }) => Promise<RepoRepositoryWebhook>;
+  createProjectWebhook: (input: Omit<RepoRepositoryWebhookMutationInput, "repository_id"> & {
+    project_id: string;
+    url: string;
+  }) => Promise<RepoRepositoryWebhook>;
+  createGroupWebhook: (input: Omit<RepoRepositoryWebhookMutationInput, "repository_id"> & {
+    group_id: string;
+    url: string;
+  }) => Promise<RepoRepositoryWebhook>;
   getRepositoryWebhook: (input: {
     repository_id: string;
     hook_id: string;
@@ -1526,8 +2475,30 @@ export type RepoClient = {
   updateRepositoryWebhook: (input: RepoRepositoryWebhookMutationInput & {
     hook_id: string;
   }) => Promise<RepoRepositoryWebhook>;
+  updateProjectWebhook: (input: Omit<RepoRepositoryWebhookMutationInput, "repository_id"> & {
+    project_id: string;
+    hook_id: string;
+  }) => Promise<RepoRepositoryWebhook>;
+  updateGroupWebhook: (input: Omit<RepoRepositoryWebhookMutationInput, "repository_id"> & {
+    group_id: string;
+    hook_id: string;
+  }) => Promise<RepoRepositoryWebhook>;
   deleteRepositoryWebhook: (input: {
     repository_id: string;
+    hook_id: string;
+  }) => Promise<{
+    hook_id: string;
+    deleted: boolean;
+  }>;
+  deleteProjectWebhook: (input: {
+    project_id: string;
+    hook_id: string;
+  }) => Promise<{
+    hook_id: string;
+    deleted: boolean;
+  }>;
+  deleteGroupWebhook: (input: {
+    group_id: string;
     hook_id: string;
   }) => Promise<{
     hook_id: string;
@@ -1696,19 +2667,44 @@ export type RepoClient = {
   }) => Promise<RepoRemoteMirror>;
   listRepositoryLabels: (input: {
     repository_id: string;
+    page: number;
+    page_size: number;
+    search?: string;
+    sort?: "name_asc" | "name_desc" | "created_asc" | "created_desc" | "updated_asc" | "updated_desc";
+    include_expired?: boolean;
+    view?: "simple" | "basic" | "detail";
   }) => Promise<{
-    labels: Array<{
-      id: number | string;
-      name?: string;
-      color?: string;
-      description?: string;
-      text_color?: string;
-      is_expired?: boolean;
-      open_merge_requests_count?: number;
-      priority?: number;
-      is_repository_label?: boolean;
-    }>;
+    labels: RepoLabelDetail[];
     total?: number;
+  }>;
+  createRepositorySystemLabels: (input: {
+    repository_id: string;
+  }) => Promise<{
+    labels: RepoLabelDetail[];
+    total?: number;
+  }>;
+  createRepositoryLabel: (input: {
+    repository_id: string;
+    name: string;
+    color?: string;
+    description?: string;
+    expires_at?: string;
+  }) => Promise<RepoLabelDetail>;
+  updateRepositoryLabel: (input: {
+    repository_id: string;
+    name: string;
+    new_name?: string;
+    color?: string;
+    description?: string;
+    expires_at?: string;
+  }) => Promise<RepoLabelDetail>;
+  deleteRepositoryLabel: (input: {
+    repository_id: string;
+    name: string;
+  }) => Promise<{
+    repository_id: string;
+    name: string;
+    deleted: boolean;
   }>;
   listProtectedBranches: (input: {
     repository_id: string;
@@ -1882,6 +2878,30 @@ export type RepoClient = {
     }>;
     total?: number;
   }>;
+  createCherryPickMergeRequest: (input: {
+    repository_id: string;
+    merge_request_iid: string;
+    branch: string;
+    with_new_merge_request?: boolean;
+    message?: string;
+  }) => Promise<RepoCherryPickMergeRequestResult>;
+  showMergeRequestDiscussion: (input: {
+    repository_id: string;
+    merge_request_iid: string;
+    discussion_id: string;
+  }) => Promise<RepoRepositoryReview>;
+  updateMergeRequestDiscussionInfo: (input: {
+    repository_id: string;
+    merge_request_iid: string;
+    discussion_id: string;
+    body?: string;
+    severity?: "suggestion" | "minor" | "major" | "fatal";
+    assignee_id?: string;
+    review_categories?: string;
+    review_modules?: string;
+    proposer_id?: string;
+    resolved?: boolean;
+  }) => Promise<RepoRepositoryReview>;
   listMergeRequestChanges: (input: {
     repository_id: string;
     merge_request_iid: string;
@@ -1906,10 +2926,106 @@ export type RepoClient = {
     commits: RepoMergeRequestCommit[];
     total?: number;
   }>;
+  showAverageEvaluation: (input: {
+    repository_id: string;
+    merge_request_iid: string;
+  }) => Promise<RepoMergeRequestAverageEvaluation>;
+  listMergeRequestEvaluations: (input: {
+    repository_id: string;
+    merge_request_iid: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    evaluations: RepoMergeRequestEvaluation[];
+    total?: number;
+  }>;
+  showMergeRequestCommentsByLine: (input: {
+    repository_id: string;
+    merge_request_iid: string;
+    line?: number;
+    with_commit_comments?: boolean;
+    path?: string;
+    view?: "basic" | "sample";
+    base_sha?: string;
+    start_sha?: string;
+    head_sha?: string;
+  }) => Promise<{
+    comments: RepoCommentPath[];
+    total?: number;
+  }>;
+  showCommitCommentsByLine: (input: {
+    repository_id: string;
+    sha: string;
+  }) => Promise<{
+    comments: RepoCommentPath[];
+    total?: number;
+  }>;
+  listMergeRequestVersions: (input: {
+    repository_id: string;
+    merge_request_iid: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    versions: RepoMergeRequestVersion[];
+    total?: number;
+  }>;
+  listMergeRequestSystemNotes: (input: {
+    repository_id: string;
+    merge_request_iid: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    reviews: RepoRepositoryReview[];
+    total?: number;
+  }>;
+  listCommitDiscussions: (input: {
+    repository_id: string;
+    sha: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    reviews: RepoRepositoryReview[];
+    total?: number;
+  }>;
   showMergeRequestVotes: (input: {
     repository_id: string;
     merge_request_iid: string;
   }) => Promise<RepoMergeRequestVotes>;
+  showActualHeadPipeline: (input: {
+    repository_id: string;
+    merge_request_iid: string;
+  }) => Promise<RepoActualHeadPipeline>;
+  listLatestPipelineJobs: (input: {
+    repository_id: string;
+    pipeline_id: string;
+  }) => Promise<RepoActualHeadPipeline["data"]>;
+  listPipelineJobs: (input: {
+    repository_id: string;
+    pipeline_id: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    jobs: RepoPipelineJob[];
+    total?: number;
+  }>;
+  showMergeableStateOuter: (input: {
+    repository_id: string;
+    merge_request_iid: string;
+  }) => Promise<RepoMergeableState>;
+  updateMergeRequestVote: (input: {
+    repository_id: string;
+    merge_request_iid: string;
+    score: number;
+    action?: string;
+  }) => Promise<RepoMergeRequestVoteResult>;
+  deleteMergeRequestVote: (input: {
+    repository_id: string;
+    merge_request_iid: string;
+  }) => Promise<{
+    deleted: boolean;
+    repository_id: string;
+    merge_request_iid: string;
+  }>;
   showMergeRequestStatistic: (input: {
     repository_id: string;
     iids: string;
@@ -1918,6 +3034,249 @@ export type RepoClient = {
     statistics: RepoMergeRequestStatistic[];
     total?: number;
   }>;
+  listMergeRequestChangesTrees: (input: {
+    repository_id: string;
+    merge_request_iid: string;
+    page: number;
+    page_size: number;
+    approval_user_id?: string;
+    commit_id?: string;
+    from_diff_id?: string;
+    to_diff_id?: string;
+  }) => Promise<{
+    changes_trees: RepoMergeRequestChangesTrees;
+    total?: number;
+  }>;
+  listCommitAssociatedMergeRequests: (input: {
+    repository_id: string;
+    sha: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    merge_requests: Array<{
+      id: number | string;
+      iid?: number;
+      title?: string;
+      description?: string;
+      state?: string;
+      created_at?: string;
+      updated_at?: string;
+      merged_at?: string;
+      closed_at?: string;
+      target_branch?: string;
+      source_branch?: string;
+      author?: { name?: string; nick_name?: string };
+      web_url?: string;
+    }>;
+    total?: number;
+  }>;
+  listPersonalMergeRequests: (input: {
+    page: number;
+    page_size: number;
+    state?: string;
+    order_by?: string;
+    sort?: string;
+    labels?: string;
+    created_before?: string;
+    created_after?: string;
+    updated_after?: string;
+    updated_before?: string;
+    view?: string;
+    author_id?: string;
+    scope?: string;
+    source_branch?: string;
+    target_branch?: string;
+    search?: string;
+    wip?: string;
+    merged_by?: string;
+    merged_after?: string;
+    merged_before?: string;
+    only_count?: boolean;
+  }) => Promise<{
+    merge_requests: Array<{
+      id: number | string;
+      iid?: number;
+      title?: string;
+      state?: string;
+      source_branch?: string;
+      target_branch?: string;
+      created_at?: string;
+      updated_at?: string;
+      author?: { name?: string; nick_name?: string };
+      web_url?: string;
+    }>;
+    total?: number;
+  }>;
+  listMergeRequestParticipants: (input: {
+    repository_id: string;
+    merge_request_iid: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    participants: RepoMergeRequestParticipant[];
+    total?: number;
+  }>;
+  listMergeRequestValidAssignedCandidates: (input: {
+    repository_id: string;
+    page: number;
+    page_size: number;
+    search?: string;
+    target_branch?: string;
+    source_branch?: string;
+    merge_request_iid?: string;
+    target_repository_id?: string;
+  }) => Promise<{
+    users: RepoMergeRequestCandidateUser[];
+    total?: number;
+  }>;
+  listGroupMergeRequestValidAssignedCandidates: (input: {
+    group_id: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    users: RepoMergeRequestCandidateUser[];
+    total?: number;
+  }>;
+  listProjectMergeRequestCanBeAssignedUsers: (input: {
+    project_id: string;
+  }) => Promise<{
+    users: RepoMergeRequestCandidateUser[];
+    total?: number;
+  }>;
+  listGroupMergeRequestCanBeAssignedReviewers: (input: {
+    group_id: string;
+  }) => Promise<{
+    users: RepoMergeRequestCandidateUser[];
+    total?: number;
+  }>;
+  listProjectMergeRequestCanBeAssignedReviewers: (input: {
+    project_id: string;
+  }) => Promise<{
+    users: RepoMergeRequestCandidateUser[];
+    total?: number;
+  }>;
+  listMergeRequestApprovers: (input: {
+    repository_id: string;
+    page: number;
+    page_size: number;
+    search?: string;
+    target_branch?: string;
+    source_branch?: string;
+    merge_request_iid?: string;
+    target_repository_id?: string;
+  }) => Promise<{
+    users: RepoMergeRequestCandidateUser[];
+    total?: number;
+  }>;
+  listMergeRequestReviewers: (input: {
+    repository_id: string;
+    page: number;
+    page_size: number;
+    search?: string;
+    target_branch?: string;
+    source_branch?: string;
+    merge_request_iid?: string;
+    target_repository_id?: string;
+  }) => Promise<{
+    users: RepoMergeRequestCandidateUser[];
+    total?: number;
+  }>;
+  updateMergeRequestApprovers: (input: {
+    repository_id: string;
+    merge_request_iid: string;
+    approver_ids: string | string[];
+  }) => Promise<{
+    updated: boolean;
+    repository_id: string;
+    merge_request_iid: string;
+    approver_ids: string[];
+  }>;
+  updateMergeRequestReviewers: (input: {
+    repository_id: string;
+    merge_request_iid: string;
+    reviewer_ids: string | string[];
+  }) => Promise<{
+    updated: boolean;
+    repository_id: string;
+    merge_request_iid: string;
+    reviewer_ids: string[];
+  }>;
+  importMergeRequest: (input: {
+    repository_id: string;
+    iid: string | number;
+    source_uniq_key: string;
+    state: string;
+    source_branch: string;
+    target_branch: string;
+    target_repository_id: string | number;
+    diff_refs: RepoMergeRequestImportDiffRefs;
+    author_id?: string | number;
+    title?: string;
+    description?: string;
+    labels?: Record<string, unknown>;
+    created_at?: string;
+    updated_at?: string;
+    merged_at?: string;
+    closed_at?: string;
+    approvers?: RepoMergeRequestImportApprover[];
+    squash?: boolean;
+    remove_source_branch?: boolean;
+    branch_is_deleted?: boolean;
+    fork?: boolean;
+    import_source_from?: string;
+  }) => Promise<{
+    id: number | string;
+    iid?: number;
+    repository_id?: number | string;
+    title?: string;
+    description?: string;
+    state?: string;
+    source_branch?: string;
+    target_branch?: string;
+    web_url?: string;
+  }>;
+  rebaseMergeRequestForOpenApi: (input: {
+    repository_id: string;
+    merge_request_iid: string;
+  }) => Promise<{
+    repository_id: string;
+    merge_request_iid: string;
+    message?: string;
+    rebased: boolean;
+  }>;
+  resolveMergeRequestConflicts: (input: {
+    repository_id: string;
+    merge_request_iid: string;
+    commit_message: string;
+    files: Array<{
+      old_path: string;
+      new_path: string;
+      sections?: Record<string, unknown>;
+      content?: string;
+    }>;
+  }) => Promise<{
+    repository_id: string;
+    merge_request_iid: string;
+    message?: string;
+    resolved: boolean;
+  }>;
+  listMergeRequestConflictFiles: (input: {
+    repository_id: string;
+    merge_request_iid: string;
+    page: number;
+    page_size: number;
+    hide_content?: boolean;
+  }) => Promise<{
+    files: RepoMergeRequestConflictFile[];
+    total?: number;
+  }>;
+  showBranchConflict: (input: {
+    repository_id: string;
+    source_repository_id?: string;
+    source_branch?: string;
+    target_branch?: string;
+    target_repository_id?: string;
+  }) => Promise<RepoBranchConflict>;
   createMergeRequestDiscussion: (input: {
     repository_id: string;
     merge_request_iid: string;
@@ -1928,6 +3287,31 @@ export type RepoClient = {
     created_at?: string;
     author?: { name?: string; nick_name?: string };
   }>;
+  createMergeRequestDiscussionResponse: (input: {
+    repository_id: string;
+    merge_request_iid: string;
+    discussion_id: string;
+    body: string;
+    severity?: "suggestion" | "minor" | "major" | "fatal";
+    assignee_id?: string;
+    review_categories?: string;
+    review_modules?: string;
+    proposer_id?: string;
+    resolved?: boolean;
+  }) => Promise<RepoRepositoryReview>;
+  updateMergeRequestDiscussion: (input: {
+    repository_id: string;
+    merge_request_iid: string;
+    discussion_id: string;
+    note_id: string;
+    body?: string;
+    severity?: "suggestion" | "minor" | "major" | "fatal";
+    assignee_id?: string;
+    review_categories?: string;
+    review_modules?: string;
+    proposer_id?: string;
+    resolved?: boolean;
+  }) => Promise<RepoRepositoryReview>;
   mergeMergeRequest: (input: {
     repository_id: string;
     merge_request_iid: string;
@@ -2121,11 +3505,158 @@ export type RepoClient = {
     title?: string;
     author_name?: string;
     message?: string;
+    parent_ids?: string[];
+    authored_date?: string;
+    author_email?: string | null;
+    committed_date?: string;
+    committer_name?: string;
+    committer_email?: string | null;
+    open_gpg_verified?: boolean;
+    verification_status?: string | number;
+    gpg_primary_key_id?: string;
+    name?: string;
+    gpg_nick_name?: string | null;
+    gpg_tenant_name?: string | null;
+    gpg_user_name?: string | null;
+    created_at?: string;
+    author_avatar_url?: string | null;
+    committer_avatar_url?: string | null;
+    nick_name?: string | null;
+    tenant_name?: string | null;
+    user_name?: string | null;
+    author_id?: number | string;
+    stats?: {
+      additions?: number;
+      deletions?: number;
+      total?: number;
+    };
   }>;
+  createCommit: (input: {
+    repository_id: string;
+    branch: string;
+    commit_message: string;
+    actions: Array<{
+      action: "create" | "create_dir" | "update" | "move" | "delete" | "chmod";
+      file_path: string;
+      previous_path?: string;
+      content?: string;
+      encoding?: "text" | "base64";
+      last_commit_id?: string;
+      execute_filemode?: boolean;
+    }>;
+    start_branch?: string;
+    author_email?: string;
+    author_name?: string;
+    stats?: boolean;
+    force?: boolean;
+  }) => Promise<RepoMergeRequestCommit>;
+  createCommitRevert: (input: {
+    repository_id: string;
+    sha: string;
+    branch: string;
+    with_new_merge_request?: boolean;
+    message?: string;
+  }) => Promise<RepoMergeRequestCommit>;
+  showCommitDiffMetadata: (input: {
+    repository_id: string;
+    sha: string;
+  }) => Promise<RepoCommitDiffMetadata>;
+  showCommitFileDiff: (input: {
+    repository_id: string;
+    sha: string;
+    path: string;
+    old_path?: string;
+    ignore_whitespace_change?: boolean;
+  }) => Promise<RepoCommitDiffEntry>;
+  showDiffCommit: (input: {
+    repository_id: string;
+    sha: string;
+    page: number;
+    page_size: number;
+    ignore_whitespace_change?: boolean;
+    not_statistic?: boolean;
+  }) => Promise<RepoCommitDiffMetadata>;
   getFile: (input: { repository_id: string; file_path: string; branch: string }) => Promise<{
     file_path: string;
     branch_name: string;
     content: string;
+  }>;
+  listFileUpperTreeEntries: (input: {
+    repository_id: string;
+    file_path?: string;
+    ref_name?: string;
+  }) => Promise<RepoRepositoryFileTreeEntry[]>;
+  showFileRaw: (input: {
+    repository_id: string;
+    file_path: string;
+    ref?: string;
+  }) => Promise<{
+    repository_id: string;
+    file_path: string;
+    ref?: string;
+    content: string;
+  }>;
+  createFile: (input: {
+    repository_id: string;
+    file_path: string;
+    branch: string;
+    commit_message: string;
+    content: string;
+    name?: string;
+    author_email?: string;
+    author_name?: string;
+    encoding?: string;
+  }) => Promise<{
+    file_path?: string;
+    branch?: string;
+  }>;
+  showFile: (input: {
+    repository_id: string;
+    file_path: string;
+    ref?: string;
+  }) => Promise<RepoRepositoryFileDetail>;
+  deleteFile: (input: {
+    repository_id: string;
+    file_path: string;
+    branch: string;
+    commit_message: string;
+    author_name?: string;
+  }) => Promise<{
+    repository_id: string;
+    file_path: string;
+    deleted: boolean;
+  }>;
+  updateFile: (input: {
+    repository_id: string;
+    file_path: string;
+    branch: string;
+    commit_message: string;
+    content: string;
+    name?: string;
+    author_email?: string;
+    author_name?: string;
+    encoding?: string;
+    last_commit_id?: string;
+  }) => Promise<{
+    file_path?: string;
+    branch?: string;
+  }>;
+  renameFile: (input: {
+    repository_id: string;
+    file_path: string;
+    previous_path: string;
+    branch_name: string;
+    commit_message: string;
+    start_branch?: string;
+    author_email?: string;
+    author_name?: string;
+    infer_content?: boolean;
+    content?: string;
+    encoding?: string;
+    last_commit_id?: string;
+  }) => Promise<{
+    file_path?: string;
+    branch?: string;
   }>;
   listCommits: (input: {
     repository_id: string;
@@ -2262,6 +3793,15 @@ export type RepoClient = {
     members: RepoRepositoryMember[];
     total?: number;
   }>;
+  listProductPermissionResourcesGrantedUsers: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    query?: string;
+  }) => Promise<{
+    members: RepoRepositoryMember[];
+    total?: number;
+  }>;
   listRepositoryUserGroups: (input: {
     repository_id: string;
     page: number;
@@ -2269,6 +3809,82 @@ export type RepoClient = {
     search?: string;
   }) => Promise<{
     groups: RepoRepositoryUserGroup[];
+    total?: number;
+  }>;
+  batchValidateUserGroupPermissions: (input: {
+    items: Array<{
+      group_id: string;
+      project_id?: string;
+      group_name?: string;
+    }>;
+  }) => Promise<Array<{
+    group_id?: number | string;
+    group_visibility?: string;
+    can_create_group?: boolean;
+    can_craete_project?: boolean;
+    can_set_group?: boolean;
+  }>>;
+  associateRepositoryUserGroup: (input: {
+    project_id: string;
+    repository_id: string;
+    user_group_id: string;
+  }) => Promise<RepoAssociateRepositoryUserGroupResult>;
+  listGroupPermissionResources: (input: {
+    scope?: "group" | "project" | "all";
+  }) => Promise<RepoGroupPermissionResourcesResponse>;
+  downloadArchive: (input: {
+    repository_id: string;
+    sha?: string;
+    path?: string;
+    archive_format?: "zip" | "tar.gz" | "tar.bz2" | "tar";
+  }) => Promise<RepoArchiveDownloadResult>;
+  addSubmodule: (input: {
+    repository_id: string;
+    branch_name: string;
+    file_path: string;
+    subrepo_id: string;
+    commit_message: string;
+    subrepo_branch: string;
+  }) => Promise<RepoSubmoduleMutationResult>;
+  showHttpsPasswordSetting: () => Promise<RepoHttpsPasswordSetting>;
+  updateHttpsPasswordSetting: (input: {
+    https_clone_iam_auth: boolean | string;
+  }) => Promise<RepoHttpsPasswordSettingUpdateResult>;
+  batchValidateRepoNames: (input: {
+    items: RepoBatchValidateRepoNameInputItem[];
+  }) => Promise<RepoBatchValidateRepoNameItem[]>;
+  transferGroup: (input: {
+    group_id: string;
+    owner_id: string;
+  }) => Promise<RepoTransferGroupResult>;
+  transferRepository: (input: {
+    repository_id: string;
+    namespace: string;
+  }) => Promise<RepoRepositorySummary>;
+  listMembers: (input: {
+    repository_id: string;
+    page: number;
+    page_size: number;
+    search?: string;
+    permission?: "repository" | "code" | "member" | "branch" | "tag" | "mr" | "label";
+    action?: string;
+  }) => Promise<{
+    members: RepoRepositoryMember[];
+    total?: number;
+  }>;
+  addRepositoryMembers: (input: {
+    repository_id: string;
+    users: RepoAddRepositoryMemberInputItem[];
+  }) => Promise<RepoAddRepositoryMembersResult>;
+  sendUserEmailVerifyCode: (input: {
+    email: string;
+  }) => Promise<RepoUserEmailOperationResult>;
+  updateUserEmails: (input: {
+    email: string;
+    verify_code: string;
+  }) => Promise<RepoUserEmailOperationResult>;
+  showUserEmails: () => Promise<{
+    emails: RepoUserEmailInfo[];
     total?: number;
   }>;
   listRepositoryMembers: (input: {
@@ -2361,8 +3977,30 @@ export type RepoClient = {
     repository_id: string;
     with_default_review_categories?: boolean;
   }) => Promise<RepoReviewSetting>;
+  showGroupReviewSettings: (input: { group_id: string }) => Promise<RepoReviewSetting>;
+  showProjectReviewSettings: (input: { project_id: string }) => Promise<RepoReviewSetting>;
   showNoteRequiredAttributes: (input: { repository_id: string }) => Promise<RepoNoteRequiredAttributes>;
+  showGroupNoteRequiredAttributes: (input: { group_id: string }) => Promise<RepoNoteRequiredAttributes>;
+  listProjectNoteRequiredAttributes: (input: { project_id: string }) => Promise<RepoNoteRequiredAttributes>;
   listDefaultReviewCategories: () => Promise<RepoDefaultReviewCategories>;
+  createReviewSetting: (input: {
+    repository_id: string;
+  } & RepoReviewSettingMutationInput) => Promise<RepoReviewSetting>;
+  updateGroupReviewSettings: (input: {
+    group_id: string;
+  } & RepoReviewSettingMutationInput) => Promise<RepoReviewSetting>;
+  updateProjectReviewSettings: (input: {
+    project_id: string;
+  } & RepoReviewSettingMutationInput) => Promise<RepoReviewSetting>;
+  updateGroupNoteRequiredAttributes: (input: {
+    group_id: string;
+  } & RepoNoteRequiredAttributesMutationInput) => Promise<RepoNoteRequiredAttributes>;
+  updateProjectNoteRequiredAttributes: (input: {
+    project_id: string;
+  } & RepoNoteRequiredAttributesMutationInput) => Promise<RepoNoteRequiredAttributes>;
+  updateNoteRequiredAttributes: (input: {
+    repository_id: string;
+  } & RepoNoteRequiredAttributesMutationInput) => Promise<RepoNoteRequiredAttributes>;
   listRepositoryReviews: (input: {
     repository_id: string;
     page: number;
@@ -2416,6 +4054,7 @@ export type RepoClient = {
   }) => Promise<RepoNavigationOutline>;
   showRepositoryNavigationSchema: (input: { repository_id: string }) => Promise<RepoNavigationSchema>;
   showRepositoryNavigationLanguage: (input: { repository_id: string }) => Promise<RepoNavigationLanguageInfo>;
+  rebuildRepositoryNavigation: (input: { repository_id: string }) => Promise<RepoRepositoryNavigationBuildResult>;
   listTenantRepositories: (input: {
     repository_name?: string;
     member_number?: number;
@@ -2533,6 +4172,45 @@ export type RepoClient = {
     }>;
     total?: number;
   }>;
+  listProjectMergeRequests: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    state?: string;
+    order_by?: string;
+    sort?: string;
+    author_id?: string | number;
+    source_branch?: string;
+    target_branch?: string;
+    search?: string;
+    source_repository_id?: string;
+  }) => Promise<{
+    merge_requests: Array<{
+      id: number | string;
+      iid?: number;
+      title?: string;
+      state?: string;
+      source_branch?: string;
+      target_branch?: string;
+      created_at?: string;
+      updated_at?: string;
+      author?: { name?: string; nick_name?: string };
+      web_url?: string;
+    }>;
+    total?: number;
+  }>;
+  deleteMergeRequestDiscussion: (input: {
+    repository_id: string;
+    merge_request_iid: string;
+    discussion_id: string;
+    note_id: string;
+  }) => Promise<{
+    repository_id: string;
+    merge_request_iid: string;
+    discussion_id: string;
+    note_id: string;
+    deleted: boolean;
+  }>;
 };
 
 function unwrapRepoPayload<T>(input: T): T {
@@ -2632,7 +4310,7 @@ function appendOptionalQuery(
   }
 }
 
-function buildRepositoryWebhookPayload(input: RepoRepositoryWebhookMutationInput) {
+function buildRepositoryWebhookPayload(input: RepoWebhookPayloadInput) {
   return omitUndefinedFields({
     url: input.url,
     name: input.name,
@@ -3238,6 +4916,191 @@ function extractResourcePermissionUpdateResult(response: RepoResourcePermissionU
   };
 }
 
+function extractAssociateRepositoryUserGroupResult(response: RepoAssociateRepositoryUserGroupResult) {
+  const payload = unwrapRepoPayload(response);
+
+  return {
+    status: payload.status,
+    error_code: payload.error_code,
+    error_msg: payload.error_msg
+  };
+}
+
+function extractGroupPermissionResourcesResponse(
+  response: RepoGroupPermissionResourcesResponse | { result?: RepoGroupPermissionResourcesResponse }
+) {
+  const payload = unwrapRepoPayload(response);
+  const data = ("result" in payload && payload.result ? payload.result : payload) as RepoGroupPermissionResourcesResponse;
+
+  return {
+    use_project_permission: data.use_project_permission,
+    resources: data.resources ?? []
+  };
+}
+
+function extractSubmoduleMutationResult(
+  response: RepoSubmoduleMutationResult | { result?: RepoSubmoduleMutationResult | string }
+) {
+  const payload = unwrapRepoPayload(response);
+  const data = ("result" in payload && payload.result ? payload.result : payload) as
+    | RepoSubmoduleMutationResult
+    | string;
+
+  if (typeof data === "string") {
+    return {
+      result: data,
+      status: undefined
+    };
+  }
+
+  return {
+    result: data.result,
+    status: data.status
+  };
+}
+
+function extractHttpsPasswordSetting(
+  response: boolean | string | RepoHttpsPasswordSetting | { result?: boolean | string | RepoHttpsPasswordSetting }
+) {
+  const payload = unwrapRepoPayload(response);
+  const data = typeof payload === "object" && payload !== null && "result" in payload && payload.result
+    ? payload.result
+    : payload;
+
+  if (typeof data === "boolean") {
+    return { https_clone_iam_auth: data };
+  }
+
+  if (typeof data === "string") {
+    if (data === "true" || data === "false") {
+      return { https_clone_iam_auth: data === "true" };
+    }
+    return {
+      https_clone_iam_auth:
+        data.toLowerCase() === "success" ? undefined : undefined
+    };
+  }
+
+  return {
+    https_clone_iam_auth: (() => {
+      const raw = (data as Record<string, unknown>).https_clone_iam_auth;
+      return typeof raw === "string" ? raw === "true" : (raw as boolean | undefined);
+    })()
+  };
+}
+
+function extractHttpsPasswordSettingUpdateResult(
+  response: string | RepoHttpsPasswordSettingUpdateResult | { result?: string | RepoHttpsPasswordSettingUpdateResult }
+) {
+  const payload = unwrapRepoPayload(response);
+  const data = typeof payload === "object" && payload !== null && "result" in payload && payload.result
+    ? payload.result
+    : payload;
+
+  if (typeof data === "string") {
+    return { status: data };
+  }
+
+  return {
+    status: (data as RepoHttpsPasswordSettingUpdateResult).status
+  };
+}
+
+function extractBatchValidateRepoNamesResult(
+  response:
+    | RepoBatchValidateRepoNameItem[]
+    | {
+        result?: RepoBatchValidateRepoNameItem[];
+        items?: RepoBatchValidateRepoNameItem[];
+      }
+) {
+  const payload = unwrapRepoPayload(response);
+  if (Array.isArray(payload)) {
+    return payload;
+  }
+  return payload.result ?? payload.items ?? [];
+}
+
+function extractTransferGroupResult(
+  response: RepoTransferGroupResult | { result?: RepoTransferGroupResult }
+) {
+  const payload = unwrapRepoPayload(response);
+  return ("result" in payload && payload.result ? payload.result : payload) as RepoTransferGroupResult;
+}
+
+function extractAddRepositoryMembersResult(
+  response: RepoAddRepositoryMembersResult | { result?: RepoAddRepositoryMembersResult | RepoAddRepositoryMemberResultItem[] }
+) {
+  const payload = unwrapRepoPayload(response);
+  const data = ("result" in payload && payload.result ? payload.result : payload) as
+    | RepoAddRepositoryMembersResult
+    | RepoAddRepositoryMemberResultItem[];
+
+  if (Array.isArray(data)) {
+    return {
+      status: undefined,
+      result: data
+    };
+  }
+
+  return {
+    status: data.status,
+    result: data.result ?? []
+  };
+}
+
+function extractUserEmailOperationResult(
+  response: RepoUserEmailOperationResult | { result?: RepoUserEmailOperationResult | string }
+) {
+  const payload = unwrapRepoPayload(response);
+  const data = ("result" in payload && payload.result ? payload.result : payload) as
+    | RepoUserEmailOperationResult
+    | string;
+
+  if (typeof data === "string") {
+    return { result: data };
+  }
+
+  return {
+    result: data.result
+  };
+}
+
+function extractUserEmails(
+  response:
+    | RepoUserEmailInfo[]
+    | {
+        emails?: RepoUserEmailInfo[];
+        result?: RepoUserEmailInfo[] | { emails?: RepoUserEmailInfo[]; items?: RepoUserEmailInfo[] };
+        items?: RepoUserEmailInfo[];
+      }
+) {
+  const payload = unwrapRepoPayload(response);
+  if (Array.isArray(payload)) {
+    return {
+      emails: payload,
+      total: payload.length
+    };
+  }
+
+  const data = ("result" in payload && payload.result ? payload.result : payload) as
+    | { emails?: RepoUserEmailInfo[]; items?: RepoUserEmailInfo[] }
+    | RepoUserEmailInfo[];
+
+  if (Array.isArray(data)) {
+    return {
+      emails: data,
+      total: data.length
+    };
+  }
+
+  const emails = data.emails ?? data.items ?? [];
+  return {
+    emails,
+    total: emails.length
+  };
+}
+
 function extractRepositoryPermissionInheritSetting(
   response: RepoRepositoryPermissionInheritSetting
 ) {
@@ -3342,6 +5205,13 @@ function extractProjectGeneralPolicy(response: RepoProjectGeneralPolicy | { resu
     rebase_disable_trigger_webhook: policy.rebase_disable_trigger_webhook,
     open_gpg_verified: policy.open_gpg_verified
   };
+}
+
+function extractGroupSettingsInheritCfg(
+  response: RepoGroupSettingsInheritCfg | { result?: RepoGroupSettingsInheritCfg }
+) {
+  const payload = unwrapRepoPayload(response);
+  return ("result" in payload && payload.result ? payload.result : payload) as RepoGroupSettingsInheritCfg;
 }
 
 function extractItemCommitsResponse(
@@ -3489,6 +5359,103 @@ export function createRepoClient(
       http: _http,
       allowedPrefixes: ["/v1/","/v2/","/v4/"]
     }),
+    async batchDeleteBranch(input) {
+      await _http.post(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/branches/batch-delete`,
+        { branches: input.branches }
+      );
+
+      return {
+        repository_id: input.repository_id,
+        branches: input.branches,
+        deleted: true as const
+      };
+    },
+    async createBranch(input) {
+      const response = (await _http.post(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/branches`,
+        omitUndefinedFields({
+          branch: input.branch,
+          ref: input.ref,
+          description: input.description,
+          related_ids: input.related_ids
+        })
+      )) as {
+        name?: string;
+        protected?: boolean;
+        default?: boolean;
+        can_delete?: boolean;
+        can_read?: boolean;
+        can_download?: boolean;
+        can_push?: boolean;
+        web_url?: string;
+        commit?: {
+          id?: string;
+          short_id?: string;
+          title?: string;
+          author_name?: string;
+          created_at?: string;
+        };
+        merged?: boolean;
+        created_at?: string;
+        description?: string;
+        create_source?: string;
+        create_source_exists?: boolean;
+      };
+
+      return {
+        name: response.name ?? input.branch,
+        protected: response.protected,
+        default: response.default,
+        can_delete: response.can_delete,
+        can_read: response.can_read,
+        can_download: response.can_download,
+        can_push: response.can_push,
+        web_url: response.web_url,
+        commit: response.commit,
+        merged: response.merged,
+        created_at: response.created_at,
+        description: response.description,
+        create_source: response.create_source,
+        create_source_exists: response.create_source_exists
+      };
+    },
+    async deleteBranch(input) {
+      const query = new URLSearchParams({
+        branch_name: input.branch_name
+      });
+      const response = (await _http.delete(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/branch?${query.toString()}`
+      )) as { status?: string };
+
+      return {
+        repository_id: input.repository_id,
+        branch_name: input.branch_name,
+        status: response?.status,
+        deleted: response?.status === "success" || response?.status === undefined
+      };
+    },
+    async updateBranchName(input) {
+      const response = (await _http.put(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/branch`,
+        {
+          old_branch: input.old_branch,
+          new_branch: input.new_branch
+        }
+      )) as {
+        old_branch_name?: string;
+        old_branch_commit_id?: string;
+        new_branch_name?: string;
+        new_branch_commit_id?: string;
+      };
+
+      return {
+        old_branch_name: response.old_branch_name ?? input.old_branch,
+        old_branch_commit_id: response.old_branch_commit_id,
+        new_branch_name: response.new_branch_name ?? input.new_branch,
+        new_branch_commit_id: response.new_branch_commit_id
+      };
+    },
     async getBranch(input) {
       const query = new URLSearchParams({
         branch_name: input.branch_name
@@ -3716,6 +5683,14 @@ export function createRepoClient(
 
       return extractWatermarkSetting(rawResponse);
     },
+    async updateRepositoryWatermark(input) {
+      const rawResponse = (await _http.put(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/watermark`,
+        { watermark: input.watermark }
+      )) as RepoWatermarkSetting;
+
+      return extractWatermarkSetting(rawResponse);
+    },
     async listProjectSubgroupsAndRepositories(input) {
       const query = buildOffsetLimitQuery(input);
 
@@ -3800,6 +5775,29 @@ export function createRepoClient(
         `/v4/repositories/${encodeURIComponent(input.repository_id)}/notification-subscriptions/subscription?${query.toString()}`
       )) as RepoNotificationSubscription;
     },
+    async updateNotificationSubscription(input) {
+      return (await _http.put(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/notification-subscriptions/subscription`,
+        omitUndefinedFields({
+          enabled: input.enabled,
+          config_source: input.config_source,
+          waring_repo_usage_rate: input.waring_repo_usage_rate,
+          webhook_config: input.webhook_config ? omitUndefinedFields({
+            url: input.webhook_config.url,
+            token: input.webhook_config.token,
+            mention_users: input.webhook_config.mention_users,
+            mention_phone: input.webhook_config.mention_phone
+          }) : undefined,
+          subscript_events: input.subscript_events?.map((event) => omitUndefinedFields({
+            resource_type: event.resource_type,
+            action: event.action,
+            enabled: event.enabled,
+            role_ids: event.role_ids,
+            role_names: event.role_names
+          }))
+        })
+      )) as RepoNotificationSubscription;
+    },
     async showNotificationSubscriptionsStatus(input) {
       return (await _http.get(
         `/v4/repositories/${encodeURIComponent(input.repository_id)}/notification-subscriptions/status`
@@ -3827,9 +5825,36 @@ export function createRepoClient(
 
       return extractProjectGeneralPolicy(rawResponse);
     },
+    async updateRepositoryGeneralPolicy(input) {
+      const rawResponse = (await _http.put(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/general-policy`,
+        omitUndefinedFields({
+          disable_fork: input.disable_fork,
+          branch_name_regex: input.branch_name_regex,
+          tag_name_regex: input.tag_name_regex,
+          generate_pre_merge_ref: input.generate_pre_merge_ref,
+          forbidden_developer_create_branch: input.forbidden_developer_create_branch,
+          create_branch_whitelist_user_ids: input.create_branch_whitelist_user_ids
+        })
+      )) as Parameters<typeof extractProjectGeneralPolicy>[0];
+
+      return extractProjectGeneralPolicy(rawResponse);
+    },
     async showRepositoryGeneralCommitRule(input) {
       return (await _http.get(
         `/v4/repositories/${encodeURIComponent(input.repository_id)}/general-commit-rule`
+      )) as RepoRepositoryGeneralCommitRule;
+    },
+    async updateRepositoryGeneralCommitRule(input) {
+      return (await _http.put(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/general-commit-rule`,
+        omitUndefinedFields({
+          reject_unsigned_commits: input.reject_unsigned_commits,
+          reject_not_signed_by_gpg: input.reject_not_signed_by_gpg,
+          deny_delete_tag: input.deny_delete_tag,
+          prevent_secrets: input.prevent_secrets,
+          deny_force_push: input.deny_force_push
+        })
       )) as RepoRepositoryGeneralCommitRule;
     },
     async listRepositoryCommitRules(input) {
@@ -3846,12 +5871,163 @@ export function createRepoClient(
         total: extracted.total
       };
     },
+    async createRepositoryCommitRule(input) {
+      const response = (await _http.post(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/commit-rules`,
+        omitUndefinedFields({
+          name: input.name,
+          branch_name: input.branch_name,
+          commit_message_regex: input.commit_message_regex,
+          commit_message_negative_regex: input.commit_message_negative_regex,
+          author_regex: input.author_regex,
+          author_email_regex: input.author_email_regex,
+          prohibited_file_name_regex: input.prohibited_file_name_regex,
+          max_file_size: input.max_file_size,
+          binary_gate_enabled: input.binary_gate_enabled,
+          allowed_modify_binary: input.allowed_modify_binary,
+          allowed_binary_file_name_regex: input.allowed_binary_file_name_regex,
+          privileged_user_ids: input.privileged_user_ids,
+          effective_date: input.effective_date,
+          skip_rule_check: input.skip_rule_check,
+          skip_rule_end_date: input.skip_rule_end_date
+        })
+      )) as RepoRepositoryCommitRule;
+
+      return response;
+    },
+    async updateRepositoryCommitRule(input) {
+      const response = (await _http.put(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/commit-rules/${encodeURIComponent(input.commit_rule_id)}`,
+        omitUndefinedFields({
+          name: input.name,
+          branch_name: input.branch_name,
+          commit_message_regex: input.commit_message_regex,
+          commit_message_negative_regex: input.commit_message_negative_regex,
+          author_regex: input.author_regex,
+          author_email_regex: input.author_email_regex,
+          prohibited_file_name_regex: input.prohibited_file_name_regex,
+          max_file_size: input.max_file_size,
+          binary_gate_enabled: input.binary_gate_enabled,
+          allowed_modify_binary: input.allowed_modify_binary,
+          allowed_binary_file_name_regex: input.allowed_binary_file_name_regex,
+          privileged_user_ids: input.privileged_user_ids,
+          effective_date: input.effective_date,
+          skip_rule_check: input.skip_rule_check,
+          skip_rule_end_date: input.skip_rule_end_date
+        })
+      )) as RepoRepositoryCommitRule;
+
+      return response;
+    },
     async showRepositoryWatermark(input) {
       const rawResponse = (await _http.get(
         `/v4/repositories/${encodeURIComponent(input.repository_id)}/watermark`
       )) as RepoWatermarkSetting;
 
       return extractWatermarkSetting(rawResponse);
+    },
+    async transferRepository(input) {
+      const response = unwrapRepoPayload(await _http.post(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/transfer`,
+        {
+          namespace: input.namespace
+        }
+      )) as RepoRepositorySummary | undefined;
+
+      return response ?? {};
+    },
+    async lockRepository(input) {
+      await _http.post(
+        `/v4/${encodeURIComponent(input.project_id)}/repositories/${encodeURIComponent(input.repository_id)}/lock`
+      );
+
+      return {
+        repository_id: input.repository_id,
+        locked: true
+      };
+    },
+    async unlockRepository(input) {
+      await _http.post(
+        `/v4/${encodeURIComponent(input.project_id)}/repositories/${encodeURIComponent(input.repository_id)}/unlock`
+      );
+
+      return {
+        repository_id: input.repository_id,
+        locked: false
+      };
+    },
+    async executeRepositoryStatistics(input) {
+      await _http.post(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/statistics`
+      );
+
+      return {
+        repository_id: input.repository_id,
+        executed: true
+      };
+    },
+    async createDir(input) {
+      const response = await _http.post(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/dir`,
+        omitUndefinedFields({
+          branch_name: input.branch_name,
+          file_path: input.file_path,
+          commit_message: input.commit_message
+        })
+      );
+
+      return {
+        repository_id: input.repository_id,
+        branch_name: input.branch_name,
+        file_path: input.file_path,
+        commit_message: input.commit_message,
+        commit_ids: Array.isArray(response) ? response.map((item) => String(item)) : []
+      };
+    },
+    async updateRepositoryInheritSetting(input) {
+      const rawResponse = (await _http.put(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/inherit-setting`,
+        {
+          data: input.data.map((item) => omitUndefinedFields({
+            name: item.name,
+            inherit_mod: item.inherit_mod
+          }))
+        }
+      )) as Parameters<typeof extractProjectSettingsInheritCfgResponse>[0];
+
+      return extractProjectSettingsInheritCfgResponse(rawResponse);
+    },
+    async startHouseKeeping(input) {
+      await _http.post(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/house-keeping`
+      );
+
+      return {
+        repository_id: input.repository_id,
+        started: true
+      };
+    },
+    async syncDeployKeyToSubmodules(input) {
+      await _http.post(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/deploy-keys/${encodeURIComponent(input.key_id)}/submodules`
+      );
+
+      return {
+        repository_id: input.repository_id,
+        key_id: input.key_id,
+        synced: true
+      };
+    },
+    async removeDeployKeyFromSubmodules(input) {
+      await _http.delete(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/deploy-keys/${encodeURIComponent(input.key_id)}/submodules`
+      );
+
+      return {
+        repository_id: input.repository_id,
+        key_id: input.key_id,
+        removed: true
+      };
     },
     async showUserRefPermission(input) {
       const query = new URLSearchParams({
@@ -3893,6 +6069,63 @@ export function createRepoClient(
 
       return extractProjectGeneralPolicy(rawResponse);
     },
+    async createGroup(input) {
+      const response = unwrapRepoPayload(await _http.post(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/groups`,
+        omitUndefinedFields({
+          name: input.name,
+          visibility: input.visibility,
+          description: input.description
+        })
+      )) as RepoRepositorySummary;
+
+      return response;
+    },
+    async showGroup(input) {
+      const response = unwrapRepoPayload(await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/groups/${encodeURIComponent(input.group_id)}`
+      )) as RepoRepositorySummary;
+
+      return response;
+    },
+    async deleteGroup(input) {
+      const response = unwrapRepoPayload(await _http.delete(
+        `/v4/${encodeURIComponent(input.project_id)}/groups/${encodeURIComponent(input.group_id)}`
+      ));
+
+      return {
+        project_id: input.project_id,
+        group_id: input.group_id,
+        deleted: true,
+        message: typeof response === "string" ? response : undefined
+      };
+    },
+    async associateGroupUserGroup(input) {
+      return (await _http.post(
+        `/v4/${encodeURIComponent(input.project_id)}/groups/${encodeURIComponent(input.group_id)}/user-group/${encodeURIComponent(input.user_group_id)}`
+      )) as RepoAssociateGroupUserGroupResult;
+    },
+    async showGroupSettingsInheritCfg(input) {
+      const response = (await _http.get(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/settings-inherit-cfg`
+      )) as Parameters<typeof extractGroupSettingsInheritCfg>[0];
+
+      return extractGroupSettingsInheritCfg(response);
+    },
+    async showGroupGeneralPolicy(input) {
+      const rawResponse = (await _http.get(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/policies/general`
+      )) as Parameters<typeof extractProjectGeneralPolicy>[0];
+
+      return extractProjectGeneralPolicy(rawResponse);
+    },
+    async showGroupsGeneralPolicy(input) {
+      const rawResponse = (await _http.get(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/general-policy`
+      )) as Parameters<typeof extractProjectGeneralPolicy>[0];
+
+      return extractProjectGeneralPolicy(rawResponse);
+    },
     async showProjectsGeneralPolicy(input) {
       const rawResponse = (await _http.get(
         `/v4/projects/${encodeURIComponent(input.project_id)}/general-policy`
@@ -3912,6 +6145,27 @@ export function createRepoClient(
       )) as Parameters<typeof extractProjectGeneralPolicy>[0];
 
       return extractProjectGeneralPolicy(rawResponse);
+    },
+    async updateGroupGeneralPolicy(input) {
+      const rawResponse = (await _http.put(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/general-policy`,
+        omitUndefinedFields({
+          disable_fork: input.disable_fork,
+          branch_name_regex: input.branch_name_regex,
+          tag_name_regex: input.tag_name_regex,
+          generate_pre_merge_ref: input.generate_pre_merge_ref
+        })
+      )) as Parameters<typeof extractProjectGeneralPolicy>[0];
+
+      return extractProjectGeneralPolicy(rawResponse);
+    },
+    async updateGroupWatermark(input) {
+      const rawResponse = (await _http.put(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/watermark`,
+        { watermark: input.watermark }
+      )) as RepoWatermarkSetting;
+
+      return extractWatermarkSetting(rawResponse);
     },
     async listItemCommits(input) {
       const query = buildOffsetLimitQuery(input);
@@ -4052,12 +6306,150 @@ export function createRepoClient(
 
       return (typeof response === "object" && response ? response : {}) as RepoApproverSettings;
     },
+    async createMergeRequestApproverSetting(input) {
+      const response = unwrapRepoPayload(await _http.post(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/approver-settings`,
+        omitUndefinedFields({
+          id: input.id,
+          target: input.target,
+          target_type: input.target_type,
+          is_use_approval: input.is_use_approval,
+          approval_required_reviewers: input.approval_required_reviewers,
+          approval_required_approvers: input.approval_required_approvers,
+          reset_approvals_on_push: input.reset_approvals_on_push,
+          reset_reviewers_on_push: input.reset_reviewers_on_push,
+          approvers_from_project: input.approvers_from_project,
+          append_reviewer_ids: input.append_reviewer_ids,
+          append_reviewers: input.append_reviewers,
+          append_approver_ids: input.append_approver_ids,
+          append_approvers: input.append_approvers,
+          only_merge_when_pipeline_pass: input.only_merge_when_pipeline_pass,
+          assignee_ids: input.assignee_ids,
+          assignees: input.assignees,
+          approver_ids: input.approver_ids,
+          approvers: input.approvers,
+          reviewer_ids: input.reviewer_ids,
+          reviewers: input.reviewers
+        })
+      ));
+
+      return (typeof response === "object" && response ? response : {}) as RepoApproverSettings;
+    },
+    async updateMergeRequestApproverSetting(input) {
+      const response = unwrapRepoPayload(await _http.put(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/approver-settings/${encodeURIComponent(input.setting_id)}`,
+        omitUndefinedFields({
+          id: input.id,
+          target: input.target,
+          target_type: input.target_type,
+          is_use_approval: input.is_use_approval,
+          approval_required_reviewers: input.approval_required_reviewers,
+          approval_required_approvers: input.approval_required_approvers,
+          reset_approvals_on_push: input.reset_approvals_on_push,
+          reset_reviewers_on_push: input.reset_reviewers_on_push,
+          approvers_from_project: input.approvers_from_project,
+          append_reviewer_ids: input.append_reviewer_ids,
+          append_reviewers: input.append_reviewers,
+          append_approver_ids: input.append_approver_ids,
+          append_approvers: input.append_approvers,
+          only_merge_when_pipeline_pass: input.only_merge_when_pipeline_pass,
+          assignee_ids: input.assignee_ids,
+          assignees: input.assignees,
+          approver_ids: input.approver_ids,
+          approvers: input.approvers,
+          reviewer_ids: input.reviewer_ids,
+          reviewers: input.reviewers
+        })
+      ));
+
+      return (typeof response === "object" && response ? response : {}) as RepoApproverSettings;
+    },
+    async deleteMergeRequestApproverSetting(input) {
+      await _http.delete(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/approver-settings/${encodeURIComponent(input.setting_id)}`
+      );
+
+      return {
+        repository_id: input.repository_id,
+        setting_id: input.setting_id,
+        deleted: true
+      };
+    },
     async showGroupApproverSettings(input) {
       const response = unwrapRepoPayload(await _http.get(
         `/v4/groups/${encodeURIComponent(input.group_id)}/approver-settings`
       ));
 
       return (typeof response === "object" && response ? response : {}) as RepoApproverSettings;
+    },
+    async createGroupMergeRequestApproverSetting(input) {
+      const response = unwrapRepoPayload(await _http.post(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/approver-settings`,
+        omitUndefinedFields({
+          id: input.id,
+          target: input.target,
+          target_type: input.target_type,
+          is_use_approval: input.is_use_approval,
+          approval_required_reviewers: input.approval_required_reviewers,
+          approval_required_approvers: input.approval_required_approvers,
+          reset_approvals_on_push: input.reset_approvals_on_push,
+          reset_reviewers_on_push: input.reset_reviewers_on_push,
+          approvers_from_project: input.approvers_from_project,
+          append_reviewer_ids: input.append_reviewer_ids,
+          append_reviewers: input.append_reviewers,
+          append_approver_ids: input.append_approver_ids,
+          append_approvers: input.append_approvers,
+          only_merge_when_pipeline_pass: input.only_merge_when_pipeline_pass,
+          assignee_ids: input.assignee_ids,
+          assignees: input.assignees,
+          approver_ids: input.approver_ids,
+          approvers: input.approvers,
+          reviewer_ids: input.reviewer_ids,
+          reviewers: input.reviewers
+        })
+      ));
+
+      return (typeof response === "object" && response ? response : {}) as RepoApproverSettings;
+    },
+    async updateGroupMergeRequestApproverSetting(input) {
+      const response = unwrapRepoPayload(await _http.put(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/approver-settings/${encodeURIComponent(input.setting_id)}`,
+        omitUndefinedFields({
+          id: input.id,
+          target: input.target,
+          target_type: input.target_type,
+          is_use_approval: input.is_use_approval,
+          approval_required_reviewers: input.approval_required_reviewers,
+          approval_required_approvers: input.approval_required_approvers,
+          reset_approvals_on_push: input.reset_approvals_on_push,
+          reset_reviewers_on_push: input.reset_reviewers_on_push,
+          approvers_from_project: input.approvers_from_project,
+          append_reviewer_ids: input.append_reviewer_ids,
+          append_reviewers: input.append_reviewers,
+          append_approver_ids: input.append_approver_ids,
+          append_approvers: input.append_approvers,
+          only_merge_when_pipeline_pass: input.only_merge_when_pipeline_pass,
+          assignee_ids: input.assignee_ids,
+          assignees: input.assignees,
+          approver_ids: input.approver_ids,
+          approvers: input.approvers,
+          reviewer_ids: input.reviewer_ids,
+          reviewers: input.reviewers
+        })
+      ));
+
+      return (typeof response === "object" && response ? response : {}) as RepoApproverSettings;
+    },
+    async deleteGroupMergeRequestApproverSetting(input) {
+      await _http.delete(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/approver-settings/${encodeURIComponent(input.setting_id)}`
+      );
+
+      return {
+        group_id: input.group_id,
+        setting_id: input.setting_id,
+        deleted: true
+      };
     },
     async showProjectApproverSettings(input) {
       const response = unwrapRepoPayload(await _http.get(
@@ -4066,8 +6458,86 @@ export function createRepoClient(
 
       return (typeof response === "object" && response ? response : {}) as RepoApproverSettings;
     },
+    async createProjectMergeRequestApproverSetting(input) {
+      const response = unwrapRepoPayload(await _http.post(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/approver-settings`,
+        omitUndefinedFields({
+          id: input.id,
+          target: input.target,
+          target_type: input.target_type,
+          is_use_approval: input.is_use_approval,
+          approval_required_reviewers: input.approval_required_reviewers,
+          approval_required_approvers: input.approval_required_approvers,
+          reset_approvals_on_push: input.reset_approvals_on_push,
+          reset_reviewers_on_push: input.reset_reviewers_on_push,
+          approvers_from_project: input.approvers_from_project,
+          append_reviewer_ids: input.append_reviewer_ids,
+          append_reviewers: input.append_reviewers,
+          append_approver_ids: input.append_approver_ids,
+          append_approvers: input.append_approvers,
+          only_merge_when_pipeline_pass: input.only_merge_when_pipeline_pass,
+          assignee_ids: input.assignee_ids,
+          assignees: input.assignees,
+          approver_ids: input.approver_ids,
+          approvers: input.approvers,
+          reviewer_ids: input.reviewer_ids,
+          reviewers: input.reviewers
+        })
+      ));
+
+      return (typeof response === "object" && response ? response : {}) as RepoApproverSettings;
+    },
+    async updateProjectMergeRequestApproverSetting(input) {
+      const response = unwrapRepoPayload(await _http.put(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/approver-settings/${encodeURIComponent(input.setting_id)}`,
+        omitUndefinedFields({
+          id: input.id,
+          target: input.target,
+          target_type: input.target_type,
+          is_use_approval: input.is_use_approval,
+          approval_required_reviewers: input.approval_required_reviewers,
+          approval_required_approvers: input.approval_required_approvers,
+          reset_approvals_on_push: input.reset_approvals_on_push,
+          reset_reviewers_on_push: input.reset_reviewers_on_push,
+          approvers_from_project: input.approvers_from_project,
+          append_reviewer_ids: input.append_reviewer_ids,
+          append_reviewers: input.append_reviewers,
+          append_approver_ids: input.append_approver_ids,
+          append_approvers: input.append_approvers,
+          only_merge_when_pipeline_pass: input.only_merge_when_pipeline_pass,
+          assignee_ids: input.assignee_ids,
+          assignees: input.assignees,
+          approver_ids: input.approver_ids,
+          approvers: input.approvers,
+          reviewer_ids: input.reviewer_ids,
+          reviewers: input.reviewers
+        })
+      ));
+
+      return (typeof response === "object" && response ? response : {}) as RepoApproverSettings;
+    },
+    async deleteProjectMergeRequestApproverSetting(input) {
+      await _http.delete(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/approver-settings/${encodeURIComponent(input.setting_id)}`
+      );
+
+      return {
+        project_id: input.project_id,
+        setting_id: input.setting_id,
+        deleted: true
+      };
+    },
+    async updateMergeRequestSetting(input) {
+      const response = unwrapRepoPayload(await _http.put(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/setting`,
+        input.settings
+      ));
+
+      return (typeof response === "object" && response ? response : {}) as RepoMergeRequestSetting;
+    },
     async listMergeRequestTemplates(input) {
       const query = buildOffsetLimitQuery(input);
+      appendOptionalQuery(query, input, ["template_name"]);
       const response = await _http.get(
         `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/templates?${query.toString()}`
       );
@@ -4079,6 +6549,161 @@ export function createRepoClient(
       return {
         templates: extracted.items,
         total: extracted.total
+      };
+    },
+    async createMergeRequestTemplate(input) {
+      const response = unwrapRepoPayload(await _http.post(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/templates`,
+        omitUndefinedFields({
+          template_name: input.template_name,
+          merge_request_title: input.merge_request_title,
+          description: input.description,
+          auto_extract_mr_title: input.auto_extract_mr_title,
+          is_wip: input.is_wip,
+          is_default: input.is_default
+        })
+      ));
+
+      return (typeof response === "object" && response ? response : {}) as RepoMergeRequestTemplate;
+    },
+    async updateMergeRequestTemplate(input) {
+      const response = unwrapRepoPayload(await _http.put(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/templates/${encodeURIComponent(input.template_id)}`,
+        omitUndefinedFields({
+          template_name: input.template_name,
+          merge_request_title: input.merge_request_title,
+          description: input.description,
+          auto_extract_mr_title: input.auto_extract_mr_title,
+          is_wip: input.is_wip,
+          is_default: input.is_default
+        })
+      ));
+
+      return (typeof response === "object" && response ? response : {}) as RepoMergeRequestTemplate;
+    },
+    async deleteMergeRequestTemplate(input) {
+      await _http.delete(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/templates/${encodeURIComponent(input.template_id)}`
+      );
+
+      return {
+        repository_id: input.repository_id,
+        template_id: input.template_id,
+        deleted: true
+      };
+    },
+    async listGroupMergeRequestTemplates(input) {
+      const query = buildOffsetLimitQuery(input);
+      appendOptionalQuery(query, input, ["template_name"]);
+      const response = await _http.get(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/merge-requests/templates?${query.toString()}`
+      );
+      const extracted = extractArrayFromFields<RepoMergeRequestTemplate>(
+        response as RepoMergeRequestTemplate[] | Record<string, unknown>,
+        ["templates", "items", "records"]
+      );
+
+      return {
+        templates: extracted.items,
+        total: extracted.total
+      };
+    },
+    async createGroupMergeRequestTemplate(input) {
+      const response = unwrapRepoPayload(await _http.post(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/merge-requests/templates`,
+        omitUndefinedFields({
+          template_name: input.template_name,
+          merge_request_title: input.merge_request_title,
+          description: input.description,
+          auto_extract_mr_title: input.auto_extract_mr_title,
+          is_wip: input.is_wip,
+          is_default: input.is_default
+        })
+      ));
+
+      return (typeof response === "object" && response ? response : {}) as RepoMergeRequestTemplate;
+    },
+    async updateGroupMergeRequestTemplate(input) {
+      const response = unwrapRepoPayload(await _http.put(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/merge-requests/templates/${encodeURIComponent(input.template_id)}`,
+        omitUndefinedFields({
+          template_name: input.template_name,
+          merge_request_title: input.merge_request_title,
+          description: input.description,
+          auto_extract_mr_title: input.auto_extract_mr_title,
+          is_wip: input.is_wip,
+          is_default: input.is_default
+        })
+      ));
+
+      return (typeof response === "object" && response ? response : {}) as RepoMergeRequestTemplate;
+    },
+    async deleteGroupMergeRequestTemplate(input) {
+      await _http.delete(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/merge-requests/templates/${encodeURIComponent(input.template_id)}`
+      );
+
+      return {
+        group_id: input.group_id,
+        template_id: input.template_id,
+        deleted: true
+      };
+    },
+    async listProjectMergeRequestTemplates(input) {
+      const query = buildOffsetLimitQuery(input);
+      appendOptionalQuery(query, input, ["template_name"]);
+      const response = await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/merge-requests/templates?${query.toString()}`
+      );
+      const extracted = extractArrayFromFields<RepoMergeRequestTemplate>(
+        response as RepoMergeRequestTemplate[] | Record<string, unknown>,
+        ["templates", "items", "records"]
+      );
+
+      return {
+        templates: extracted.items,
+        total: extracted.total
+      };
+    },
+    async createProjectMergeRequestTemplate(input) {
+      const response = unwrapRepoPayload(await _http.post(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/merge-requests/templates`,
+        omitUndefinedFields({
+          template_name: input.template_name,
+          merge_request_title: input.merge_request_title,
+          description: input.description,
+          auto_extract_mr_title: input.auto_extract_mr_title,
+          is_wip: input.is_wip,
+          is_default: input.is_default
+        })
+      ));
+
+      return (typeof response === "object" && response ? response : {}) as RepoMergeRequestTemplate;
+    },
+    async updateProjectMergeRequestTemplate(input) {
+      const response = unwrapRepoPayload(await _http.put(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/merge-requests/templates/${encodeURIComponent(input.template_id)}`,
+        omitUndefinedFields({
+          template_name: input.template_name,
+          merge_request_title: input.merge_request_title,
+          description: input.description,
+          auto_extract_mr_title: input.auto_extract_mr_title,
+          is_wip: input.is_wip,
+          is_default: input.is_default
+        })
+      ));
+
+      return (typeof response === "object" && response ? response : {}) as RepoMergeRequestTemplate;
+    },
+    async deleteProjectMergeRequestTemplate(input) {
+      await _http.delete(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/merge-requests/templates/${encodeURIComponent(input.template_id)}`
+      );
+
+      return {
+        project_id: input.project_id,
+        template_id: input.template_id,
+        deleted: true
       };
     },
     async listDiscussionTemplates(input) {
@@ -4144,6 +6769,30 @@ export function createRepoClient(
         id: response.id ?? ""
       };
     },
+    async createProjectWebhook(input) {
+      const rawResponse = (await _http.post(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/hooks`,
+        buildRepositoryWebhookPayload(input)
+      )) as RepoRepositoryWebhook;
+      const response = unwrapRepoPayload(rawResponse);
+
+      return {
+        ...response,
+        id: response.id ?? ""
+      };
+    },
+    async createGroupWebhook(input) {
+      const rawResponse = (await _http.post(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/hooks`,
+        buildRepositoryWebhookPayload(input)
+      )) as RepoRepositoryWebhook;
+      const response = unwrapRepoPayload(rawResponse);
+
+      return {
+        ...response,
+        id: response.id ?? ""
+      };
+    },
     async getRepositoryWebhook(input) {
       const rawResponse = (await _http.get(
         `/v4/repositories/${encodeURIComponent(input.repository_id)}/hooks/${encodeURIComponent(input.hook_id)}`
@@ -4189,9 +6838,53 @@ export function createRepoClient(
         id: response.id ?? input.hook_id
       };
     },
+    async updateProjectWebhook(input) {
+      const rawResponse = (await _http.put(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/hooks/${encodeURIComponent(input.hook_id)}`,
+        buildRepositoryWebhookPayload(input)
+      )) as RepoRepositoryWebhook;
+      const response = unwrapRepoPayload(rawResponse);
+
+      return {
+        ...response,
+        id: response.id ?? input.hook_id
+      };
+    },
+    async updateGroupWebhook(input) {
+      const rawResponse = (await _http.put(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/hooks/${encodeURIComponent(input.hook_id)}`,
+        buildRepositoryWebhookPayload(input)
+      )) as RepoRepositoryWebhook;
+      const response = unwrapRepoPayload(rawResponse);
+
+      return {
+        ...response,
+        id: response.id ?? input.hook_id
+      };
+    },
     async deleteRepositoryWebhook(input) {
       await _http.delete?.(
         `/v4/repositories/${encodeURIComponent(input.repository_id)}/hooks/${encodeURIComponent(input.hook_id)}`
+      );
+
+      return {
+        hook_id: input.hook_id,
+        deleted: true
+      };
+    },
+    async deleteProjectWebhook(input) {
+      await _http.delete?.(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/hooks/${encodeURIComponent(input.hook_id)}`
+      );
+
+      return {
+        hook_id: input.hook_id,
+        deleted: true
+      };
+    },
+    async deleteGroupWebhook(input) {
+      await _http.delete?.(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/hooks/${encodeURIComponent(input.hook_id)}`
       );
 
       return {
@@ -4531,19 +7224,15 @@ export function createRepoClient(
       )) as RepoRemoteMirror;
     },
     async listRepositoryLabels(input) {
+      const query = buildOffsetLimitQuery(input);
+      appendOptionalQuery(query, input, ["search", "sort", "view"]);
+      if (typeof input.include_expired !== "undefined") {
+        query.set("include_expired", String(input.include_expired));
+      }
+
       const response = (await _http.get(
-        `/v4/repositories/${encodeURIComponent(input.repository_id)}/labels`
-      )) as Array<{
-        id?: number | string;
-        name?: string;
-        color?: string;
-        description?: string;
-        text_color?: string;
-        is_expired?: boolean;
-        open_merge_requests_count?: number;
-        priority?: number;
-        is_repository_label?: boolean;
-      }>;
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/labels?${query.toString()}`
+      )) as RepoLabelDetail[];
 
       const labels = (response ?? []).map((item) => ({
         id: item.id ?? "",
@@ -4551,8 +7240,10 @@ export function createRepoClient(
         color: item.color,
         description: item.description,
         text_color: item.text_color,
+        expires_at: item.expires_at,
         is_expired: item.is_expired,
         open_merge_requests_count: item.open_merge_requests_count,
+        open_change_request_count: item.open_change_request_count,
         priority: item.priority,
         is_repository_label: item.is_repository_label
       }));
@@ -4560,6 +7251,54 @@ export function createRepoClient(
       return {
         labels,
         total: labels.length
+      };
+    },
+    async createRepositorySystemLabels(input) {
+      const response = (await _http.post(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/system-labels`
+      )) as RepoLabelDetail[];
+
+      const labels = Array.isArray(response) ? response : [];
+      return {
+        labels,
+        total: labels.length
+      };
+    },
+    async createRepositoryLabel(input) {
+      return (await _http.post(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/labels`,
+        omitUndefinedFields({
+          name: input.name,
+          color: input.color,
+          description: input.description,
+          expires_at: input.expires_at
+        })
+      )) as RepoLabelDetail;
+    },
+    async updateRepositoryLabel(input) {
+      return (await _http.put(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/label`,
+        omitUndefinedFields({
+          name: input.name,
+          new_name: input.new_name,
+          color: input.color,
+          description: input.description,
+          expires_at: input.expires_at
+        })
+      )) as RepoLabelDetail;
+    },
+    async deleteRepositoryLabel(input) {
+      const query = new URLSearchParams({
+        name: input.name
+      });
+      await _http.delete(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/label?${query.toString()}`
+      );
+
+      return {
+        repository_id: input.repository_id,
+        name: input.name,
+        deleted: true
       };
     },
     async listProtectedBranches(input) {
@@ -4851,6 +7590,41 @@ export function createRepoClient(
         total: discussions.length
       };
     },
+    async createCherryPickMergeRequest(input) {
+      const response = (await _http.post(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/${encodeURIComponent(input.merge_request_iid)}/cherry-pick`,
+        {
+          branch: input.branch,
+          with_new_merge_request: input.with_new_merge_request,
+          message: input.message
+        }
+      )) as RepoCherryPickMergeRequestResult;
+
+      return response ?? {};
+    },
+    async showMergeRequestDiscussion(input) {
+      const response = (await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/${encodeURIComponent(input.merge_request_iid)}/discussions/${encodeURIComponent(input.discussion_id)}`
+      )) as RepoRepositoryReview;
+
+      return response ?? {};
+    },
+    async updateMergeRequestDiscussionInfo(input) {
+      const response = (await _http.put(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/${encodeURIComponent(input.merge_request_iid)}/discussions/${encodeURIComponent(input.discussion_id)}`,
+        {
+          body: input.body,
+          severity: input.severity,
+          assignee_id: input.assignee_id,
+          review_categories: input.review_categories,
+          review_modules: input.review_modules,
+          proposer_id: input.proposer_id,
+          resolved: input.resolved
+        }
+      )) as RepoRepositoryReview;
+
+      return response ?? {};
+    },
     async listMergeRequestChanges(input) {
       const response = (await _http.get(
         `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/${encodeURIComponent(input.merge_request_iid)}/changes`
@@ -4886,6 +7660,111 @@ export function createRepoClient(
         total: extracted.total
       };
     },
+    async showAverageEvaluation(input) {
+      const response = (await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/${encodeURIComponent(input.merge_request_iid)}/average-evaluation`
+      )) as RepoMergeRequestAverageEvaluation;
+
+      return response ?? {};
+    },
+    async listMergeRequestEvaluations(input) {
+      const query = buildOffsetLimitQuery(input);
+      const response = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/${encodeURIComponent(input.merge_request_iid)}/evaluations?${query.toString()}`
+      );
+      const extracted = extractArrayFromFields<RepoMergeRequestEvaluation>(
+        response as RepoMergeRequestEvaluation[] | Record<string, unknown>,
+        ["evaluations", "items", "records"]
+      );
+
+      return {
+        evaluations: extracted.items,
+        total: extracted.total
+      };
+    },
+    async showMergeRequestCommentsByLine(input) {
+      const query = new URLSearchParams();
+      appendOptionalQuery(query, input, [
+        "line",
+        "with_commit_comments",
+        "path",
+        "view",
+        "base_sha",
+        "start_sha",
+        "head_sha"
+      ]);
+      const response = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/${encodeURIComponent(input.merge_request_iid)}/comments-by-line${query.size > 0 ? `?${query.toString()}` : ""}`
+      );
+      const extracted = extractArrayFromFields<RepoCommentPath>(
+        response as RepoCommentPath[] | Record<string, unknown>,
+        ["comments", "items", "records"]
+      );
+
+      return {
+        comments: extracted.items,
+        total: extracted.total
+      };
+    },
+    async showCommitCommentsByLine(input) {
+      const response = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/commits/${encodeURIComponent(input.sha)}/comments-by-line`
+      );
+      const extracted = extractArrayFromFields<RepoCommentPath>(
+        response as RepoCommentPath[] | Record<string, unknown>,
+        ["comments", "items", "records"]
+      );
+
+      return {
+        comments: extracted.items,
+        total: extracted.total
+      };
+    },
+    async listMergeRequestVersions(input) {
+      const query = buildOffsetLimitQuery(input);
+      const response = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/${encodeURIComponent(input.merge_request_iid)}/versions?${query.toString()}`
+      );
+      const extracted = extractArrayFromFields<RepoMergeRequestVersion>(
+        response as RepoMergeRequestVersion[] | Record<string, unknown>,
+        ["versions", "items", "records"]
+      );
+
+      return {
+        versions: extracted.items,
+        total: extracted.total
+      };
+    },
+    async listMergeRequestSystemNotes(input) {
+      const query = buildOffsetLimitQuery(input);
+      const response = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/${encodeURIComponent(input.merge_request_iid)}/system-notes?${query.toString()}`
+      );
+      const extracted = extractArrayFromFields<RepoRepositoryReview>(
+        response as RepoRepositoryReview[] | Record<string, unknown>,
+        ["notes", "items", "records"]
+      );
+
+      return {
+        reviews: extracted.items,
+        total: extracted.total
+      };
+    },
+    async listCommitDiscussions(input) {
+      const query = buildOffsetLimitQuery(input);
+      const response = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/commits/${encodeURIComponent(input.sha)}/discussions?${query.toString()}`
+      );
+      const extracted = extractArrayFromFields<RepoRepositoryReview>(
+        response as RepoRepositoryReview[] | Record<string, unknown>,
+        ["notes", "items", "records"]
+      );
+
+      return {
+        reviews: extracted.items,
+        total: extracted.total
+      };
+    },
     async showMergeRequestVotes(input) {
       const rawResponse = await _http.get(
         `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/${encodeURIComponent(input.merge_request_iid)}/votes`
@@ -4900,6 +7779,90 @@ export function createRepoClient(
         merge_request_id: payload.merge_request_id,
         merge_request_creator: payload.merge_request_creator,
         votes: payload.votes ?? []
+      };
+    },
+    async showActualHeadPipeline(input) {
+      const rawResponse = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/${encodeURIComponent(input.merge_request_iid)}/actual-head-pipeline`
+      );
+      const response = unwrapRepoPayload(rawResponse) as RepoActualHeadPipeline;
+
+      return {
+        is_valid: response.is_valid,
+        data: response.data
+      };
+    },
+    async listLatestPipelineJobs(input) {
+      const rawResponse = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/pipelines/${encodeURIComponent(input.pipeline_id)}/latest-jobs`
+      );
+      const response = unwrapRepoPayload(rawResponse) as RepoActualHeadPipeline["data"] | { data?: RepoActualHeadPipeline["data"] };
+
+      return (response && typeof response === "object" && "data" in response
+        ? response.data
+        : response) as RepoActualHeadPipeline["data"];
+    },
+    async listPipelineJobs(input) {
+      const query = buildOffsetLimitQuery(input);
+      const response = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/pipelines/${encodeURIComponent(input.pipeline_id)}/jobs?${query.toString()}`
+      );
+      const extracted = extractArrayFromFields<RepoPipelineJob>(
+        response as RepoPipelineJob[] | Record<string, unknown>,
+        ["jobs", "items", "records"]
+      );
+
+      return {
+        jobs: extracted.items,
+        total: extracted.total
+      };
+    },
+    async showMergeableStateOuter(input) {
+      const response = (await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/${encodeURIComponent(input.merge_request_iid)}/mergeable-state-out`
+      )) as RepoMergeableState;
+
+      return response;
+    },
+    async updateMergeRequestVote(input) {
+      const rawResponse = await _http.put(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/${encodeURIComponent(input.merge_request_iid)}/vote`,
+        {
+          score: input.score,
+          action: input.action
+        }
+      );
+      const response = unwrapRepoPayload(rawResponse) as RepoMergeRequestVoteResult;
+
+      return {
+        id: response.id,
+        merge_request_id: response.merge_request_id,
+        score: response.score,
+        author: response.author
+      };
+    },
+    async deleteMergeRequestVote(input) {
+      await _http.delete(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/${encodeURIComponent(input.merge_request_iid)}/vote`
+      );
+
+      return {
+        deleted: true,
+        repository_id: input.repository_id,
+        merge_request_iid: input.merge_request_iid
+      };
+    },
+    async deleteMergeRequestDiscussion(input) {
+      await _http.delete(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/${encodeURIComponent(input.merge_request_iid)}/discussions/${encodeURIComponent(input.discussion_id)}/notes/${encodeURIComponent(input.note_id)}`
+      );
+
+      return {
+        repository_id: input.repository_id,
+        merge_request_iid: input.merge_request_iid,
+        discussion_id: input.discussion_id,
+        note_id: input.note_id,
+        deleted: true
       };
     },
     async showMergeRequestStatistic(input) {
@@ -4935,6 +7898,263 @@ export function createRepoClient(
             : result.length
       };
     },
+    async listMergeRequestChangesTrees(input) {
+      const query = buildOffsetLimitQuery(input);
+      appendOptionalQuery(query, input, ["approval_user_id", "commit_id", "from_diff_id", "to_diff_id"]);
+      const rawResponse = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/${encodeURIComponent(input.merge_request_iid)}/changes-trees?${query.toString()}`
+      );
+      const response = unwrapRepoPayload(rawResponse) as RepoMergeRequestChangesTrees;
+
+      return {
+        changes_trees: {
+          can_show_my_approval_files: response.can_show_my_approval_files,
+          tree: response.tree ?? []
+        },
+        total: response.tree?.length ?? 0
+      };
+    },
+    async listCommitAssociatedMergeRequests(input) {
+      const query = buildOffsetLimitQuery(input);
+      const rawResponse = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/commits/${encodeURIComponent(input.sha)}/merge-requests?${query.toString()}`
+      );
+      const extracted = extractArrayFromFields<Record<string, unknown>>(
+        rawResponse as Record<string, unknown>[] | Record<string, unknown>,
+        ["merge_requests", "items", "records"]
+      );
+
+      return {
+        merge_requests: extracted.items.map((item) => ({
+          id: (item.id as number | string | undefined) ?? "",
+          iid: item.iid as number | undefined,
+          title: item.title as string | undefined,
+          description: item.description as string | undefined,
+          state: item.state as string | undefined,
+          created_at: item.created_at as string | undefined,
+          updated_at: item.updated_at as string | undefined,
+          merged_at: item.merged_at as string | undefined,
+          closed_at: item.closed_at as string | undefined,
+          target_branch: item.target_branch as string | undefined,
+          source_branch: item.source_branch as string | undefined,
+          author: item.author as { name?: string; nick_name?: string } | undefined,
+          web_url: item.web_url as string | undefined
+        })),
+        total: extracted.total
+      };
+    },
+    async listMergeRequestParticipants(input) {
+      const query = buildOffsetLimitQuery(input);
+      const rawResponse = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/${encodeURIComponent(input.merge_request_iid)}/participants?${query.toString()}`
+      );
+      const extracted = extractArrayFromFields<RepoMergeRequestParticipant>(
+        rawResponse as RepoMergeRequestParticipant[] | Record<string, unknown>,
+        ["participants", "items", "records"]
+      );
+
+      return {
+        participants: extracted.items,
+        total: extracted.total
+      };
+    },
+    async listMergeRequestValidAssignedCandidates(input) {
+      const query = buildOffsetLimitQuery(input);
+      appendOptionalQuery(query, input, ["search", "target_branch", "source_branch", "merge_request_iid", "target_repository_id"]);
+      const response = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/assignee-candidates?${query.toString()}`
+      );
+      const extracted = extractArrayFromFields<RepoMergeRequestCandidateUser>(
+        response as RepoMergeRequestCandidateUser[] | Record<string, unknown>,
+        ["users", "items", "records"]
+      );
+      return {
+        users: extracted.items,
+        total: extracted.total
+      };
+    },
+    async listGroupMergeRequestValidAssignedCandidates(input) {
+      const query = buildOffsetLimitQuery(input);
+      const response = await _http.get(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/merge-requests/assignee-candidates?${query.toString()}`
+      );
+      const extracted = extractArrayFromFields<RepoMergeRequestCandidateUser>(
+        response as RepoMergeRequestCandidateUser[] | Record<string, unknown>,
+        ["users", "items", "records"]
+      );
+      return {
+        users: extracted.items,
+        total: extracted.total
+      };
+    },
+    async listProjectMergeRequestCanBeAssignedUsers(input) {
+      const response = await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/merge-requests/assignee-candidates`
+      );
+      const extracted = extractArrayFromFields<RepoMergeRequestCandidateUser>(
+        response as RepoMergeRequestCandidateUser[] | Record<string, unknown>,
+        ["users", "items", "records"]
+      );
+      return {
+        users: extracted.items,
+        total: extracted.total
+      };
+    },
+    async listGroupMergeRequestCanBeAssignedReviewers(input) {
+      const response = await _http.get(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/merge-requests/reviewer-candidates`
+      );
+      const extracted = extractArrayFromFields<RepoMergeRequestCandidateUser>(
+        response as RepoMergeRequestCandidateUser[] | Record<string, unknown>,
+        ["users", "items", "records"]
+      );
+      return {
+        users: extracted.items,
+        total: extracted.total
+      };
+    },
+    async listProjectMergeRequestCanBeAssignedReviewers(input) {
+      const response = await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/merge-requests/reviewer-candidates`
+      );
+      const extracted = extractArrayFromFields<RepoMergeRequestCandidateUser>(
+        response as RepoMergeRequestCandidateUser[] | Record<string, unknown>,
+        ["users", "items", "records"]
+      );
+      return {
+        users: extracted.items,
+        total: extracted.total
+      };
+    },
+    async listMergeRequestApprovers(input) {
+      const query = buildOffsetLimitQuery(input);
+      appendOptionalQuery(query, input, ["search", "target_branch", "source_branch", "merge_request_iid", "target_repository_id"]);
+      const response = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/approval-approvers?${query.toString()}`
+      );
+      const extracted = extractArrayFromFields<RepoMergeRequestCandidateUser>(
+        response as RepoMergeRequestCandidateUser[] | Record<string, unknown>,
+        ["users", "items", "records"]
+      );
+      return {
+        users: extracted.items,
+        total: extracted.total
+      };
+    },
+    async listMergeRequestReviewers(input) {
+      const query = buildOffsetLimitQuery(input);
+      appendOptionalQuery(query, input, ["search", "target_branch", "source_branch", "merge_request_iid", "target_repository_id"]);
+      const response = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/approval-reviewers?${query.toString()}`
+      );
+      const extracted = extractArrayFromFields<RepoMergeRequestCandidateUser>(
+        response as RepoMergeRequestCandidateUser[] | Record<string, unknown>,
+        ["users", "items", "records"]
+      );
+      return {
+        users: extracted.items,
+        total: extracted.total
+      };
+    },
+    async importMergeRequest(input) {
+      const response = (await _http.post(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/import-merge-requests`,
+        {
+          iid: input.iid,
+          source_uniq_key: input.source_uniq_key,
+          author_id: input.author_id,
+          state: input.state,
+          title: input.title,
+          description: input.description,
+          source_branch: input.source_branch,
+          target_branch: input.target_branch,
+          target_repository_id: input.target_repository_id,
+          labels: input.labels,
+          created_at: input.created_at,
+          updated_at: input.updated_at,
+          merged_at: input.merged_at,
+          closed_at: input.closed_at,
+          approvers: input.approvers,
+          diff_refs: input.diff_refs,
+          squash: input.squash,
+          remove_source_branch: input.remove_source_branch,
+          branch_is_deleted: input.branch_is_deleted,
+          fork: input.fork,
+          import_source_from: input.import_source_from
+        }
+      )) as {
+        id?: number | string;
+        iid?: number;
+        repository_id?: number | string;
+        title?: string;
+        description?: string;
+        state?: string;
+        source_branch?: string;
+        target_branch?: string;
+        web_url?: string;
+      };
+
+      return {
+        id: response.id ?? input.iid,
+        iid: response.iid,
+        repository_id: response.repository_id,
+        title: response.title,
+        description: response.description,
+        state: response.state,
+        source_branch: response.source_branch,
+        target_branch: response.target_branch,
+        web_url: response.web_url
+      };
+    },
+    async rebaseMergeRequestForOpenApi(input) {
+      const response = await _http.put(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/${encodeURIComponent(input.merge_request_iid)}/rebase`
+      );
+      const message = typeof response === "string"
+        ? response
+        : (typeof response === "object" && response && "message" in response
+            ? String((response as { message?: unknown }).message ?? "")
+            : undefined);
+
+      return {
+        repository_id: input.repository_id,
+        merge_request_iid: input.merge_request_iid,
+        message,
+        rebased: true
+      };
+    },
+    async resolveMergeRequestConflicts(input) {
+      const response = (await _http.put(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/${encodeURIComponent(input.merge_request_iid)}/resolve-conflicts`,
+        {
+          commit_message: input.commit_message,
+          files: input.files
+        }
+      )) as { message?: string };
+
+      return {
+        repository_id: input.repository_id,
+        merge_request_iid: input.merge_request_iid,
+        message: response?.message,
+        resolved: true
+      };
+    },
+    async listMergeRequestConflictFiles(input) {
+      const query = buildOffsetLimitQuery(input);
+      appendOptionalQuery(query, input, ["hide_content"]);
+      const response = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/${encodeURIComponent(input.merge_request_iid)}/conflict-files?${query.toString()}`
+      );
+      const extracted = extractArrayFromFields<RepoMergeRequestConflictFile>(
+        response as RepoMergeRequestConflictFile[] | Record<string, unknown>,
+        ["files", "items", "records"]
+      );
+
+      return {
+        files: extracted.items,
+        total: extracted.total
+      };
+    },
     async createMergeRequestDiscussion(input) {
       const response = (await _http.post(
         `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/${encodeURIComponent(input.merge_request_iid)}/discussions`,
@@ -4959,6 +8179,59 @@ export function createRepoClient(
         body: note?.body ?? input.body,
         created_at: note?.created_at ?? response.created_at,
         author: note?.author
+      };
+    },
+    async createMergeRequestDiscussionResponse(input) {
+      const response = (await _http.post(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/${encodeURIComponent(input.merge_request_iid)}/discussions/${encodeURIComponent(input.discussion_id)}/notes`,
+        {
+          body: input.body,
+          severity: input.severity,
+          assignee_id: input.assignee_id,
+          review_categories: input.review_categories,
+          review_modules: input.review_modules,
+          proposer_id: input.proposer_id,
+          resolved: input.resolved
+        }
+      )) as RepoRepositoryReview;
+
+      return response ?? {};
+    },
+    async updateMergeRequestDiscussion(input) {
+      const response = (await _http.put(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/${encodeURIComponent(input.merge_request_iid)}/discussions/${encodeURIComponent(input.discussion_id)}/notes/${encodeURIComponent(input.note_id)}`,
+        {
+          body: input.body,
+          severity: input.severity,
+          assignee_id: input.assignee_id,
+          review_categories: input.review_categories,
+          review_modules: input.review_modules,
+          proposer_id: input.proposer_id,
+          resolved: input.resolved
+        }
+      )) as RepoRepositoryReview;
+
+      return response ?? {};
+    },
+    async showBranchConflict(input) {
+      const query = new URLSearchParams();
+      appendOptionalQuery(query, input, [
+        "source_repository_id",
+        "source_branch",
+        "target_branch",
+        "target_repository_id"
+      ]);
+      const rawResponse = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/conflict${query.size > 0 ? `?${query.toString()}` : ""}`
+      );
+      const response = unwrapRepoPayload(rawResponse) as RepoBranchConflict;
+
+      return {
+        source_repository_id: response.source_repository_id,
+        target_repository_id: response.target_repository_id,
+        source_branch: response.source_branch,
+        target_branch: response.target_branch,
+        is_conflict: response.is_conflict
       };
     },
     async mergeMergeRequest(input) {
@@ -5129,6 +8402,36 @@ export function createRepoClient(
           updated_at: item.updated_at,
           approver_comment: item.approver_comment
         }))
+      };
+    },
+    async updateMergeRequestApprovers(input) {
+      const approverIds = Array.isArray(input.approver_ids)
+        ? input.approver_ids.map(String)
+        : input.approver_ids.split(",").map((item) => item.trim()).filter(Boolean);
+      await _http.put(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/${encodeURIComponent(input.merge_request_iid)}/approval-approvers`,
+        { approver_ids: approverIds.join(",") }
+      );
+      return {
+        updated: true,
+        repository_id: input.repository_id,
+        merge_request_iid: input.merge_request_iid,
+        approver_ids: approverIds
+      };
+    },
+    async updateMergeRequestReviewers(input) {
+      const reviewerIds = Array.isArray(input.reviewer_ids)
+        ? input.reviewer_ids.map(String)
+        : input.reviewer_ids.split(",").map((item) => item.trim()).filter(Boolean);
+      await _http.put(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/merge-requests/${encodeURIComponent(input.merge_request_iid)}/approval-reviewers`,
+        { reviewer_ids: reviewerIds.join(",") }
+      );
+      return {
+        updated: true,
+        repository_id: input.repository_id,
+        merge_request_iid: input.merge_request_iid,
+        reviewer_ids: reviewerIds
       };
     },
     async getRepository(input) {
@@ -5304,22 +8607,141 @@ export function createRepoClient(
       };
     },
     async getCommit(input) {
-      const response = (await _http.get(
-        `/v2/projects/${encodeURIComponent(input.repository_id)}/repository/commits/${encodeURIComponent(input.commit_sha)}`
-      )) as {
-        id?: string;
-        short_id?: string;
-        title?: string;
-        author_name?: string;
-        message?: string;
-      };
+      const response = unwrapRepoPayload(await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/commits?sha=${encodeURIComponent(input.commit_sha)}`
+      ));
+      const payload = (typeof response === "object" && response && "result" in response
+        ? (response as { result?: RepoMergeRequestCommit }).result
+        : response) as RepoMergeRequestCommit | undefined;
 
       return {
-        id: response.id ?? input.commit_sha,
-        short_id: response.short_id,
-        title: response.title,
-        author_name: response.author_name,
-        message: response.message
+        id: payload?.id ?? input.commit_sha,
+        short_id: payload?.short_id,
+        title: payload?.title,
+        author_name: payload?.author_name,
+        message: payload?.message,
+        parent_ids: payload?.parent_ids,
+        authored_date: payload?.authored_date,
+        author_email: payload?.author_email,
+        committed_date: payload?.committed_date,
+        committer_name: payload?.committer_name,
+        committer_email: payload?.committer_email,
+        open_gpg_verified: payload?.open_gpg_verified,
+        verification_status: payload?.verification_status,
+        gpg_primary_key_id: payload?.gpg_primary_key_id,
+        name: payload?.name,
+        gpg_nick_name: payload?.nick_name ?? undefined,
+        gpg_tenant_name: payload?.tenant_name ?? undefined,
+        gpg_user_name: payload?.user_name ?? undefined,
+        created_at: payload?.created_at,
+        author_avatar_url: payload?.author_avatar_url,
+        committer_avatar_url: payload?.committer_avatar_url,
+        nick_name: payload?.nick_name,
+        tenant_name: payload?.tenant_name,
+        user_name: payload?.user_name,
+        author_id: payload?.author_id,
+        stats: payload?.stats
+      };
+    },
+    async createCommit(input) {
+      const response = unwrapRepoPayload(await _http.post(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/commits`,
+        omitUndefinedFields({
+          branch: input.branch,
+          commit_message: input.commit_message,
+          actions: input.actions.map((action) => omitUndefinedFields({
+            action: action.action,
+            file_path: action.file_path,
+            previous_path: action.previous_path,
+            content: action.content,
+            encoding: action.encoding,
+            last_commit_id: action.last_commit_id,
+            execute_filemode: action.execute_filemode
+          })),
+          start_branch: input.start_branch,
+          author_email: input.author_email,
+          author_name: input.author_name,
+          stats: input.stats,
+          force: input.force
+        })
+      ));
+      const payload = (
+        typeof response === "object" &&
+        response &&
+        "result" in response &&
+        response.result &&
+        typeof response.result === "object"
+      )
+        ? response.result as RepoMergeRequestCommit
+        : response as RepoMergeRequestCommit;
+
+      return payload;
+    },
+    async createCommitRevert(input) {
+      const response = unwrapRepoPayload(await _http.post(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/commits/${encodeURIComponent(input.sha)}/revert`,
+        omitUndefinedFields({
+          branch: input.branch,
+          with_new_merge_request: input.with_new_merge_request,
+          message: input.message
+        })
+      )) as RepoMergeRequestCommit;
+
+      return response;
+    },
+    async showCommitDiffMetadata(input) {
+      const response = unwrapRepoPayload(await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/commits/diff-metadata?sha=${encodeURIComponent(input.sha)}`
+      )) as RepoCommitDiffMetadata;
+
+      return response;
+    },
+    async showCommitFileDiff(input) {
+      const query = new URLSearchParams({
+        sha: input.sha,
+        path: input.path
+      });
+      appendOptionalQuery(query, input, ["old_path", "ignore_whitespace_change"]);
+      const response = unwrapRepoPayload(await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/commits/file-diff?${query.toString()}`
+      ));
+      const payload = Array.isArray(response)
+        ? response[0]
+        : (response as { result?: RepoCommitDiffEntry | RepoCommitDiffEntry[] }).result ?? response;
+
+      return Array.isArray(payload) ? (payload[0] ?? {}) : (payload as RepoCommitDiffEntry);
+    },
+    async showDiffCommit(input) {
+      const offset = (input.page - 1) * input.page_size;
+      const query = new URLSearchParams({
+        sha: input.sha,
+        offset: String(offset),
+        limit: String(input.page_size)
+      });
+      appendOptionalQuery(query, input, ["ignore_whitespace_change", "not_statistic"]);
+      const response = unwrapRepoPayload(await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/commits/diff?${query.toString()}`
+      )) as RepoCommitDiffMetadata;
+
+      return response;
+    },
+    async downloadBlobsRaw(input) {
+      const query = new URLSearchParams({
+        file_path: input.file_path
+      });
+      if (input.file_name) {
+        query.set("file_name", input.file_name);
+      }
+      const response = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/blobs/${encodeURIComponent(input.blob_id)}/raw?${query.toString()}`
+      );
+
+      return {
+        repository_id: input.repository_id,
+        blob_id: input.blob_id,
+        file_path: input.file_path,
+        file_name: input.file_name,
+        content: typeof response === "string" ? response : JSON.stringify(response)
       };
     },
     async getFile(input) {
@@ -5340,6 +8762,123 @@ export function createRepoClient(
         branch_name: response.branch_name ?? input.branch,
         content: response.content ?? ""
       };
+    },
+    async listFileUpperTreeEntries(input) {
+      const query = new URLSearchParams();
+      appendOptionalQuery(query, input, ["file_path", "ref_name"]);
+      const response = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/upper-files-tree${query.toString() ? `?${query.toString()}` : ""}`
+      );
+      const extracted = extractArrayFromFields<RepoRepositoryFileTreeEntry>(
+        response as RepoRepositoryFileTreeEntry[] | Record<string, unknown>,
+        ["items", "records"]
+      );
+
+      return extracted.items;
+    },
+    async showFileRaw(input) {
+      const query = new URLSearchParams({
+        file_path: input.file_path
+      });
+      appendOptionalQuery(query, input, ["ref"]);
+      const response = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/files/raw?${query.toString()}`
+      );
+
+      return {
+        repository_id: input.repository_id,
+        file_path: input.file_path,
+        ref: input.ref,
+        content: typeof response === "string" ? response : JSON.stringify(response)
+      };
+    },
+    async createFile(input) {
+      const response = unwrapRepoPayload(await _http.post(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/files`,
+        omitUndefinedFields({
+          name: input.name,
+          file_path: input.file_path,
+          branch: input.branch,
+          commit_message: input.commit_message,
+          author_email: input.author_email,
+          author_name: input.author_name,
+          content: input.content,
+          encoding: input.encoding
+        })
+      )) as { file_path?: string; branch?: string };
+
+      return response;
+    },
+    async showFile(input) {
+      const query = new URLSearchParams({
+        file_path: input.file_path
+      });
+      appendOptionalQuery(query, input, ["ref"]);
+      const response = unwrapRepoPayload(await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/file?${query.toString()}`
+      )) as RepoRepositoryFileDetail;
+
+      return response;
+    },
+    async deleteFile(input) {
+      const query = new URLSearchParams({
+        file_path: input.file_path,
+        branch: input.branch,
+        commit_message: input.commit_message
+      });
+      if (input.author_name) {
+        query.set("author_name", input.author_name);
+      }
+      await _http.delete(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/file?${query.toString()}`
+      );
+
+      return {
+        repository_id: input.repository_id,
+        file_path: input.file_path,
+        deleted: true
+      };
+    },
+    async updateFile(input) {
+      const query = new URLSearchParams({
+        file_path: input.file_path
+      });
+      const response = unwrapRepoPayload(await _http.put(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/file?${query.toString()}`,
+        omitUndefinedFields({
+          name: input.name,
+          file_path: input.file_path,
+          branch: input.branch,
+          commit_message: input.commit_message,
+          author_email: input.author_email,
+          author_name: input.author_name,
+          content: input.content,
+          encoding: input.encoding,
+          last_commit_id: input.last_commit_id
+        })
+      )) as { file_path?: string; branch?: string };
+
+      return response;
+    },
+    async renameFile(input) {
+      const response = unwrapRepoPayload(await _http.put(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/rename-file`,
+        omitUndefinedFields({
+          file_path: input.file_path,
+          branch_name: input.branch_name,
+          commit_message: input.commit_message,
+          start_branch: input.start_branch,
+          author_email: input.author_email,
+          author_name: input.author_name,
+          previous_path: input.previous_path,
+          infer_content: input.infer_content,
+          content: input.content,
+          encoding: input.encoding,
+          last_commit_id: input.last_commit_id
+        })
+      )) as { file_path?: string; branch?: string };
+
+      return response;
     },
     async listCommits(input) {
       const offset = (input.page - 1) * input.page_size;
@@ -5596,6 +9135,22 @@ export function createRepoClient(
         total: extracted.total
       };
     },
+    async listProductPermissionResourcesGrantedUsers(input) {
+      const query = buildOffsetLimitQuery(input);
+      appendOptionalQuery(query, input, ["query"]);
+      const response = await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/members?${query.toString()}`
+      );
+      const extracted = extractArrayFromFields<RepoRepositoryMember>(
+        response as RepoRepositoryMember[] | Record<string, unknown>,
+        ["members", "users", "items", "records"]
+      );
+
+      return {
+        members: extracted.items,
+        total: extracted.total
+      };
+    },
     async listRepositoryUserGroups(input) {
       const query = buildOffsetLimitQuery(input);
       const response = await _http.get(
@@ -5610,6 +9165,174 @@ export function createRepoClient(
         groups: extracted.items,
         total: extracted.total
       };
+    },
+    async batchValidateUserGroupPermissions(input) {
+      const rawResponse = await _http.post("/v4/user/groups/group-permissions", input.items);
+      const extracted = extractArrayFromFields<{
+        group_id?: number | string;
+        group_visibility?: string;
+        can_create_group?: boolean;
+        can_craete_project?: boolean;
+        can_set_group?: boolean;
+      }>(
+        rawResponse as Array<Record<string, unknown>> | Record<string, unknown>,
+        ["items", "groups", "records"]
+      );
+
+      return extracted.items;
+    },
+    async associateRepositoryUserGroup(input) {
+      const rawResponse = (await _http.post(
+        `/v4/${encodeURIComponent(input.project_id)}/repositories/${encodeURIComponent(input.repository_id)}/user-group/${encodeURIComponent(input.user_group_id)}`
+      )) as RepoAssociateRepositoryUserGroupResult;
+
+      return extractAssociateRepositoryUserGroupResult(rawResponse);
+    },
+    async listGroupPermissionResources(input) {
+      const query = new URLSearchParams();
+      if (input.scope) {
+        query.set("scope", input.scope);
+      }
+      const rawResponse = (await _http.get(
+        `/v4/groups/permissions/resources${query.size > 0 ? `?${query.toString()}` : ""}`
+      )) as RepoGroupPermissionResourcesResponse;
+
+      return extractGroupPermissionResourcesResponse(rawResponse);
+    },
+    async downloadArchive(input) {
+      const query = new URLSearchParams();
+      appendOptionalQuery(query, input, ["sha", "path", "archive_format"]);
+      const response = await _http.getBinary(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/archive${query.size > 0 ? `?${query.toString()}` : ""}`
+      );
+
+      return {
+        file_name: response.fileName,
+        content_type: response.contentType,
+        size_bytes: response.body.byteLength
+      };
+    },
+    async addSubmodule(input) {
+      const rawResponse = (await _http.post(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/submodules`,
+        {
+          branch_name: input.branch_name,
+          file_path: input.file_path,
+          subrepo_id: input.subrepo_id,
+          commit_message: input.commit_message,
+          subrepo_branch: input.subrepo_branch
+        }
+      )) as RepoSubmoduleMutationResult | { result?: RepoSubmoduleMutationResult | string };
+
+      return extractSubmoduleMutationResult(rawResponse);
+    },
+    async showHttpsPasswordSetting() {
+      const rawResponse = (await _http.get(
+        `/v4/user/https-password-setting`
+      )) as boolean | string | RepoHttpsPasswordSetting;
+
+      return extractHttpsPasswordSetting(rawResponse);
+    },
+    async updateHttpsPasswordSetting(input) {
+      const rawResponse = (await _http.put(
+        `/v4/user/https-password-setting`,
+        {
+          https_clone_iam_auth:
+            typeof input.https_clone_iam_auth === "string"
+              ? input.https_clone_iam_auth === "true"
+              : input.https_clone_iam_auth
+        }
+      )) as string | RepoHttpsPasswordSettingUpdateResult;
+
+      return extractHttpsPasswordSettingUpdateResult(rawResponse);
+    },
+    async batchValidateRepoNames(input) {
+      const rawResponse = (await _http.post(
+        `/v4/repository-names/validations`,
+        input.items.map((item) => omitUndefinedFields({
+          name: item.name,
+          project_id: item.project_id,
+          group_id: item.group_id
+        }))
+      )) as RepoBatchValidateRepoNameItem[] | { result?: RepoBatchValidateRepoNameItem[] };
+
+      return extractBatchValidateRepoNamesResult(rawResponse);
+    },
+    async transferGroup(input) {
+      const rawResponse = (await _http.put(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/transfer`,
+        {
+          owner_id: input.owner_id
+        }
+      )) as RepoTransferGroupResult;
+
+      return extractTransferGroupResult(rawResponse);
+    },
+    async listMembers(input) {
+      const query = buildOffsetLimitQuery(input);
+      appendOptionalQuery(query, input, ["search", "permission", "action"]);
+      const response = await _http.get(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/members?${query.toString()}`
+      );
+      const extracted = extractArrayFromFields<RepoRepositoryMember>(
+        response as RepoRepositoryMember[] | Record<string, unknown>,
+        ["members", "items", "records"]
+      );
+
+      return {
+        members: extracted.items,
+        total: extracted.total
+      };
+    },
+    async addRepositoryMembers(input) {
+      const rawResponse = (await _http.post(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/members`,
+        {
+          users: input.users.map((user) => omitUndefinedFields({
+            user_iam_id: user.user_iam_id,
+            user_name: user.user_name,
+            tenant_name: user.tenant_name,
+            tenant_id: user.tenant_id,
+            repository_role_Id: user.repository_role_Id
+          }))
+        }
+      )) as RepoAddRepositoryMembersResult;
+
+      return extractAddRepositoryMembersResult(rawResponse);
+    },
+    async sendUserEmailVerifyCode(input) {
+      const rawResponse = (await _http.post(
+        `/v4/user/email-verify-code`,
+        {
+          email: input.email
+        }
+      )) as RepoUserEmailOperationResult | { result?: RepoUserEmailOperationResult | string };
+
+      return extractUserEmailOperationResult(rawResponse);
+    },
+    async updateUserEmails(input) {
+      const rawResponse = (await _http.put(
+        `/v4/user/emails`,
+        {
+          email: input.email,
+          verify_code: input.verify_code
+        }
+      )) as RepoUserEmailOperationResult | { result?: RepoUserEmailOperationResult | string };
+
+      return extractUserEmailOperationResult(rawResponse);
+    },
+    async showUserEmails() {
+      const rawResponse = (await _http.get(
+        `/v4/user/emails`
+      )) as
+        | RepoUserEmailInfo[]
+        | {
+            emails?: RepoUserEmailInfo[];
+            result?: RepoUserEmailInfo[] | { emails?: RepoUserEmailInfo[]; items?: RepoUserEmailInfo[] };
+            items?: RepoUserEmailInfo[];
+          };
+
+      return extractUserEmails(rawResponse);
     },
     async listRepositoryMembers(input) {
       const query = buildOffsetLimitQuery(input);
@@ -5804,9 +9527,57 @@ export function createRepoClient(
 
       return payload ?? {};
     },
+    async showGroupReviewSettings(input) {
+      const response = unwrapRepoPayload(await _http.get(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/review-settings`
+      ));
+      const payload = (typeof response === "object" && response && "result" in response && typeof response.result === "object"
+        ? response.result
+        : response) as RepoReviewSetting | undefined;
+
+      return payload ?? {};
+    },
+    async showProjectReviewSettings(input) {
+      const response = unwrapRepoPayload(await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/review-settings`
+      ));
+      const payload = (typeof response === "object" && response && "result" in response && typeof response.result === "object"
+        ? response.result
+        : response) as RepoReviewSetting | undefined;
+
+      return payload ?? {};
+    },
     async showNoteRequiredAttributes(input) {
       const response = unwrapRepoPayload(await _http.get(
         `/v4/repositories/${encodeURIComponent(input.repository_id)}/setting/note-required-attributes`
+      ));
+      if (Array.isArray(response)) {
+        return { note_required_attributes: response as RepoRequiredAttribute[] };
+      }
+
+      const payload = (typeof response === "object" && response && "result" in response && typeof response.result === "object"
+        ? response.result
+        : response) as RepoNoteRequiredAttributes | RepoRequiredAttribute[] | undefined;
+
+      return Array.isArray(payload) ? { note_required_attributes: payload } : payload ?? {};
+    },
+    async showGroupNoteRequiredAttributes(input) {
+      const response = unwrapRepoPayload(await _http.get(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/setting/note-required-attributes`
+      ));
+      if (Array.isArray(response)) {
+        return { note_required_attributes: response as RepoRequiredAttribute[] };
+      }
+
+      const payload = (typeof response === "object" && response && "result" in response && typeof response.result === "object"
+        ? response.result
+        : response) as RepoNoteRequiredAttributes | RepoRequiredAttribute[] | undefined;
+
+      return Array.isArray(payload) ? { note_required_attributes: payload } : payload ?? {};
+    },
+    async listProjectNoteRequiredAttributes(input) {
+      const response = unwrapRepoPayload(await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/setting/note-required-attributes`
       ));
       if (Array.isArray(response)) {
         return { note_required_attributes: response as RepoRequiredAttribute[] };
@@ -5825,6 +9596,90 @@ export function createRepoClient(
         : response) as RepoDefaultReviewCategories | undefined;
 
       return payload ?? {};
+    },
+    async createReviewSetting(input) {
+      const { repository_id, ...body } = input;
+      const response = unwrapRepoPayload(await _http.post(
+        `/v4/repositories/${encodeURIComponent(repository_id)}/review-settings`,
+        body
+      ));
+      const payload = (typeof response === "object" && response && "result" in response && typeof response.result === "object"
+        ? response.result
+        : response) as RepoReviewSetting | undefined;
+
+      return payload ?? {};
+    },
+    async updateGroupReviewSettings(input) {
+      const { group_id, ...body } = input;
+      const response = unwrapRepoPayload(await _http.post(
+        `/v4/groups/${encodeURIComponent(group_id)}/review-settings`,
+        body
+      ));
+      const payload = (typeof response === "object" && response && "result" in response && typeof response.result === "object"
+        ? response.result
+        : response) as RepoReviewSetting | undefined;
+
+      return payload ?? {};
+    },
+    async updateProjectReviewSettings(input) {
+      const { project_id, ...body } = input;
+      const response = unwrapRepoPayload(await _http.post(
+        `/v4/projects/${encodeURIComponent(project_id)}/review-settings`,
+        body
+      ));
+      const payload = (typeof response === "object" && response && "result" in response && typeof response.result === "object"
+        ? response.result
+        : response) as RepoReviewSetting | undefined;
+
+      return payload ?? {};
+    },
+    async updateGroupNoteRequiredAttributes(input) {
+      const { group_id, ...body } = input;
+      const response = unwrapRepoPayload(await _http.post(
+        `/v4/groups/${encodeURIComponent(group_id)}/setting/note-required-attributes`,
+        body
+      ));
+      if (Array.isArray(response)) {
+        return { note_required_attributes: response as RepoRequiredAttribute[] };
+      }
+
+      const payload = (typeof response === "object" && response && "result" in response && typeof response.result === "object"
+        ? response.result
+        : response) as RepoNoteRequiredAttributes | RepoRequiredAttribute[] | undefined;
+
+      return Array.isArray(payload) ? { note_required_attributes: payload } : payload ?? {};
+    },
+    async updateProjectNoteRequiredAttributes(input) {
+      const { project_id, ...body } = input;
+      const response = unwrapRepoPayload(await _http.post(
+        `/v4/projects/${encodeURIComponent(project_id)}/setting/note-required-attributes`,
+        body
+      ));
+      if (Array.isArray(response)) {
+        return { note_required_attributes: response as RepoRequiredAttribute[] };
+      }
+
+      const payload = (typeof response === "object" && response && "result" in response && typeof response.result === "object"
+        ? response.result
+        : response) as RepoNoteRequiredAttributes | RepoRequiredAttribute[] | undefined;
+
+      return Array.isArray(payload) ? { note_required_attributes: payload } : payload ?? {};
+    },
+    async updateNoteRequiredAttributes(input) {
+      const { repository_id, ...body } = input;
+      const response = unwrapRepoPayload(await _http.post(
+        `/v4/repositories/${encodeURIComponent(repository_id)}/setting/note-required-attributes`,
+        body
+      ));
+      if (Array.isArray(response)) {
+        return { note_required_attributes: response as RepoRequiredAttribute[] };
+      }
+
+      const payload = (typeof response === "object" && response && "result" in response && typeof response.result === "object"
+        ? response.result
+        : response) as RepoNoteRequiredAttributes | RepoRequiredAttribute[] | undefined;
+
+      return Array.isArray(payload) ? { note_required_attributes: payload } : payload ?? {};
     },
     async listRepositoryReviews(input) {
       const query = buildOffsetLimitQuery(input);
@@ -5945,6 +9800,13 @@ export function createRepoClient(
         message: payload.message,
         language_list: payload.language_list ?? []
       };
+    },
+    async rebuildRepositoryNavigation(input) {
+      const response = unwrapRepoPayload(await _http.post(
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/nav/build`
+      )) as RepoRepositoryNavigationBuildResult | undefined;
+
+      return response ?? {};
     },
     async listTenantRepositories(input) {
       const query = buildTenantOffsetLimitQuery(input);
@@ -6169,6 +10031,97 @@ export function createRepoClient(
       return {
         merge_requests: response ?? [],
         total: undefined
+      };
+    },
+    async listProjectMergeRequests(input) {
+      const offset = (input.page - 1) * input.page_size;
+      const query = new URLSearchParams({
+        offset: String(offset),
+        limit: String(input.page_size)
+      });
+      appendOptionalQuery(query, input, [
+        "state",
+        "order_by",
+        "sort",
+        "author_id",
+        "source_branch",
+        "target_branch",
+        "search",
+        "source_repository_id"
+      ]);
+
+      const rawResponse = await _http.get(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/merge-requests?${query.toString()}`
+      );
+      const extracted = extractArrayFromFields<Record<string, unknown>>(
+        rawResponse as Record<string, unknown>[] | Record<string, unknown>,
+        ["merge_requests", "items", "records"]
+      );
+
+      return {
+        merge_requests: extracted.items.map((item) => ({
+          id: (item.id as number | string | undefined) ?? "",
+          iid: item.iid as number | undefined,
+          title: item.title as string | undefined,
+          state: item.state as string | undefined,
+          source_branch: item.source_branch as string | undefined,
+          target_branch: item.target_branch as string | undefined,
+          created_at: item.created_at as string | undefined,
+          updated_at: item.updated_at as string | undefined,
+          author: item.author as { name?: string; nick_name?: string } | undefined,
+          web_url: item.web_url as string | undefined
+        })),
+        total: extracted.total
+      };
+    },
+    async listPersonalMergeRequests(input) {
+      const offset = (input.page - 1) * input.page_size;
+      const query = new URLSearchParams({
+        offset: String(offset),
+        limit: String(input.page_size)
+      });
+      appendOptionalQuery(query, input, [
+        "state",
+        "order_by",
+        "sort",
+        "labels",
+        "created_before",
+        "created_after",
+        "updated_after",
+        "updated_before",
+        "view",
+        "author_id",
+        "scope",
+        "source_branch",
+        "target_branch",
+        "search",
+        "wip",
+        "merged_by",
+        "merged_after",
+        "merged_before",
+        "only_count"
+      ]);
+
+      const rawResponse = await _http.get(`/v4/merge-requests?${query.toString()}`);
+      const extracted = extractArrayFromFields<Record<string, unknown>>(
+        rawResponse as Record<string, unknown>[] | Record<string, unknown>,
+        ["merge_requests", "items", "records"]
+      );
+
+      return {
+        merge_requests: extracted.items.map((item) => ({
+          id: (item.id as number | string | undefined) ?? "",
+          iid: item.iid as number | undefined,
+          title: item.title as string | undefined,
+          state: item.state as string | undefined,
+          source_branch: item.source_branch as string | undefined,
+          target_branch: item.target_branch as string | undefined,
+          created_at: item.created_at as string | undefined,
+          updated_at: item.updated_at as string | undefined,
+          author: item.author as { name?: string; nick_name?: string } | undefined,
+          web_url: item.web_url as string | undefined
+        })),
+        total: extracted.total
       };
     },
     async listBranches(input) {

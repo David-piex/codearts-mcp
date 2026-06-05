@@ -4,6 +4,8 @@ import type {
   RepoDefaultReviewCategories,
   RepoBlame,
   RepoFileContent,
+  RepoRepositoryFileDetail,
+  RepoRepositoryFileTreeEntry,
   RepoLogTreeObject,
   RepoNoteRequiredAttributes,
   RepoReadmeFile,
@@ -122,6 +124,10 @@ function mapRepositoryReview(input: RepoRepositoryReview) {
   };
 }
 
+export function mapRepositoryReviewItem(summary: string, input: RepoRepositoryReview) {
+  return asItemResult(summary, mapRepositoryReview(input));
+}
+
 export function mapRepositoryTrees(items: RepoTreeObject[], page: number, pageSize: number, total?: number) {
   return asListResult(
     `${items.length} repository tree entries found`,
@@ -169,6 +175,57 @@ export function mapRepositoryFileContentV4(input: RepoFileContent) {
     path: input.file_path,
     sha: input.sha,
     content: input.content
+  });
+}
+
+function mapRepositoryFileTreeEntry(input: RepoRepositoryFileTreeEntry): unknown {
+  return {
+    id: input.id,
+    name: input.name,
+    type: input.type,
+    path: input.path,
+    level: input.level,
+    shownDropDown: input.isShownDropDown,
+    folder: input.folder,
+    submoduleLink: input.submodule_link,
+    children: (input.children ?? undefined)?.map(mapRepositoryFileTreeEntry)
+  };
+}
+
+export function mapRepositoryUpperTreeEntries(input: RepoRepositoryFileTreeEntry[]) {
+  return asListResult(
+    `${input.length} repository upper tree entries found`,
+    input.map((item) => mapRepositoryFileTreeEntry(item)),
+    toPageInfo(1, input.length || 0, input.length)
+  );
+}
+
+export function mapRepositoryFileDetail(input: RepoRepositoryFileDetail) {
+  return asItemResult(`Loaded file ${input.path ?? input.name ?? "detail"}`, {
+    name: input.name,
+    path: input.path,
+    size: input.size,
+    encoding: input.encoding,
+    ref: input.ref,
+    blobId: input.blob_id,
+    fileType: input.file_type,
+    content: input.content,
+    limited: input.is_limited,
+    contentSha256: input.content_sha256,
+    lastCommitId: input.last_commit_id,
+    nickName: input.nick_name,
+    tenantName: input.tenant_name,
+    userName: input.user_name,
+    commit: input.commit
+      ? {
+          id: input.commit.id,
+          title: input.commit.title,
+          message: input.commit.message,
+          authorName: input.commit.author_name,
+          authoredDate: input.commit.authored_date,
+          committedDate: input.commit.committed_date
+        }
+      : undefined
   });
 }
 
@@ -239,6 +296,26 @@ export function mapReviewSetting(input: RepoReviewSetting) {
   });
 }
 
+export function mapReviewSettingResult(summary: string, input: RepoReviewSetting) {
+  return asItemResult(summary, {
+    categoriesAndModulesEnabled: input.categories_and_modules_enabled,
+    secondaryCategoryEnabled: input.secondary_category_enabled,
+    primaryCategories: (input.primary_categories ?? []).map(mapReviewCategory),
+    reviewDefaultCategories: (input.review_default_categories ?? []).map(mapReviewCategory),
+    reviewCustomizedCategories: (input.review_customized_categories ?? []).map(mapReviewCategory),
+    reviewModules: (input.review_modules ?? []).map((item) => ({
+      key: item.key,
+      nameZh: item.name_zh,
+      nameEn: item.name_en
+    })),
+    secondaryCategoryType: input.secondary_category_type,
+    secondaryCategories: (input.secondary_categories ?? []).map(mapReviewCategory),
+    noteRequiredAttributes: (input.note_required_attributes ?? []).map(mapRequiredAttribute),
+    codehubDefaultCategories: (input.codehub_default_categories ?? []).map(mapReviewCategory),
+    hicodeDefaultCategories: (input.hicode_default_categories ?? []).map(mapReviewCategory)
+  });
+}
+
 export function mapNoteRequiredAttributes(input: RepoNoteRequiredAttributes) {
   const attributes = input.note_required_attributes ?? [];
   return asListResult(
@@ -246,6 +323,27 @@ export function mapNoteRequiredAttributes(input: RepoNoteRequiredAttributes) {
     attributes.map(mapRequiredAttribute),
     toPageInfo(1, attributes.length, attributes.length)
   );
+}
+
+export function mapNoteRequiredAttributesResult(summary: string, input: RepoNoteRequiredAttributes) {
+  const attributes = input.note_required_attributes ?? [];
+  return asItemResult(summary, {
+    noteRequiredAttributes: attributes.map(mapRequiredAttribute)
+  });
+}
+
+export function previewReviewSettingMutation(summary: string, input: Record<string, unknown>) {
+  return asItemResult(summary, {
+    ...input,
+    executed: false
+  });
+}
+
+export function previewNoteRequiredAttributesMutation(summary: string, input: Record<string, unknown>) {
+  return asItemResult(summary, {
+    ...input,
+    executed: false
+  });
 }
 
 export function mapDefaultReviewCategories(input: RepoDefaultReviewCategories) {

@@ -2,6 +2,8 @@ import { asItemResult, asListResult } from "../../../contracts/tool-result.js";
 import { toPageInfo } from "../../../core/pagination/page-info.js";
 import type {
   RepoBlob,
+  RepoCommitDiffEntry,
+  RepoCommitDiffMetadata,
   RepoDiffLines,
   RepoNavigationEntry,
   RepoNavigationLanguageInfo,
@@ -48,6 +50,58 @@ export function mapDiffLines(input: RepoDiffLines) {
   return asItemResult("Fetched repository diff lines", {
     text: input.text
   });
+}
+
+function mapCommitDiffEntry(input: RepoCommitDiffEntry) {
+  return {
+    oldPath: input.old_path,
+    newPath: input.new_path,
+    filePath: input.file_path,
+    aMode: input.a_mode,
+    bMode: input.b_mode,
+    fileType: input.file_type,
+    newFile: input.new_file,
+    renamedFile: input.renamed_file,
+    deletedFile: input.deleted_file,
+    binary: input.binary,
+    tooLarge: input.too_large,
+    collapsed: input.collapsed,
+    lineCount: input.line_count,
+    addedLines: input.added_lines,
+    removedLines: input.removed_lines,
+    diff: input.diff
+  };
+}
+
+export function mapCommitDiffMetadata(input: RepoCommitDiffMetadata) {
+  return asItemResult("Fetched commit diff metadata", {
+    diffs: (input.diffs ?? []).map(mapCommitDiffEntry),
+    diffRefs: input.diff_refs
+      ? {
+          baseSha: input.diff_refs.base_sha,
+          headSha: input.diff_refs.head_sha,
+          startSha: input.diff_refs.start_sha
+        }
+      : undefined,
+    addedLines: input.added_lines,
+    removedLines: input.removed_lines,
+    changeFileCount: input.change_file_count,
+    changeLineCount: input.change_line_count,
+    tooLarge: input.too_large,
+    blobId: input.blob_id
+  });
+}
+
+export function mapCommitFileDiff(input: RepoCommitDiffEntry) {
+  return asItemResult(`Fetched commit file diff ${input.new_path ?? input.old_path ?? ""}`.trim(), mapCommitDiffEntry(input));
+}
+
+export function mapDiffCommit(input: RepoCommitDiffMetadata, page: number, pageSize: number) {
+  return asListResult(
+    `${(input.diffs ?? []).length} commit diffs found`,
+    (input.diffs ?? []).map(mapCommitDiffEntry),
+    toPageInfo(page, pageSize, input.change_file_count ?? input.diffs?.length)
+  );
 }
 
 export function mapRefs(items: string[], page: number, pageSize: number, total?: number) {

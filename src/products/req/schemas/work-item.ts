@@ -65,6 +65,23 @@ export const reqCreateWorkItemV2Input = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const reqCreateEpicIssueInput = z.object({
+  project_id: idSchema,
+  tracker_id: reqTrackerIdSchema.default(5),
+  priority_id: z.number().int().positive().optional(),
+  title: z.string().min(1),
+  parent_issue_id: z.number().int().positive().optional(),
+  description: z.string().optional(),
+  due_date: z.number().int().positive().optional(),
+  start_date: z.number().int().positive().optional(),
+  severity_id: z.number().int().positive().optional(),
+  done_ratio: z.number().int().nonnegative().optional(),
+  status_id: z.number().int().positive().optional(),
+  expected_work_hours: z.number().int().nonnegative().optional(),
+  plan_id: idSchema.optional(),
+  dry_run: z.boolean().default(true)
+});
+
 export const reqQuickCreateChildWorkItemInput = z.object({
   project_id: idSchema,
   title: z.string().min(1),

@@ -3,6 +3,7 @@ import { toPageInfo } from "../../../core/pagination/page-info.js";
 import type {
   RepoNotificationSubscription,
   RepoNotificationSubscriptionsStatus,
+  RepoLabelDetail,
   RepoPersonalRecentPushEvent,
   RepoRepositoryCommitRule,
   RepoRepositoryGeneralCommitRule,
@@ -73,6 +74,55 @@ export function mapRepositoryGeneralCommitRule(input: RepoRepositoryGeneralCommi
   });
 }
 
+export function mapRepositoryLabel(input: RepoLabelDetail) {
+  return {
+    id: input.id === undefined ? undefined : String(input.id),
+    name: input.name,
+    color: input.color,
+    description: input.description,
+    textColor: input.text_color,
+    expiresAt: input.expires_at,
+    expired: input.is_expired,
+    openMergeRequestsCount: input.open_merge_requests_count,
+    openChangeRequestCount: input.open_change_request_count,
+    priority: input.priority,
+    repositoryLabel: input.is_repository_label
+  };
+}
+
+export function mapRepositoryLabelResult(summary: string, input: RepoLabelDetail) {
+  return asItemResult(summary, mapRepositoryLabel(input));
+}
+
+export function mapRepositoryLabelsResult(summary: string, input: RepoLabelDetail[]) {
+  return asListResult(
+    summary,
+    input.map(mapRepositoryLabel),
+    toPageInfo(1, input.length || 0, input.length)
+  );
+}
+
+export function previewRepositoryLabelMutation(
+  summary: string,
+  input: Record<string, unknown>
+) {
+  return asItemResult(summary, {
+    ...input,
+    executed: false
+  });
+}
+
+export function previewRepositoryDeleteMutation(summary: string, input: {
+  repositoryId: string;
+  name: string;
+}) {
+  return asItemResult(summary, {
+    repositoryId: input.repositoryId,
+    name: input.name,
+    executed: false
+  });
+}
+
 function mapRepositoryCommitRule(input: RepoRepositoryCommitRule) {
   return {
     id: input.id !== undefined ? String(input.id) : undefined,
@@ -120,11 +170,110 @@ export function mapRepositoryCommitRulesList(
   );
 }
 
+export function mapRepositoryCommitRuleResult(summary: string, input: RepoRepositoryCommitRule) {
+  return asItemResult(summary, mapRepositoryCommitRule(input));
+}
+
+export function previewRepositoryGeneralPolicyMutation(input: {
+  repository_id: string;
+  disable_fork?: boolean;
+  branch_name_regex?: string;
+  tag_name_regex?: string;
+  generate_pre_merge_ref?: boolean;
+  forbidden_developer_create_branch?: boolean;
+  create_branch_whitelist_user_ids?: string;
+}) {
+  return {
+    repositoryId: input.repository_id,
+    disableFork: input.disable_fork,
+    branchNameRegex: input.branch_name_regex,
+    tagNameRegex: input.tag_name_regex,
+    generatePreMergeRef: input.generate_pre_merge_ref,
+    forbiddenDeveloperCreateBranch: input.forbidden_developer_create_branch,
+    createBranchWhitelistUserIds: input.create_branch_whitelist_user_ids,
+    executed: false
+  };
+}
+
+export function previewRepositoryGeneralCommitRuleMutation(input: {
+  repository_id: string;
+  reject_unsigned_commits?: boolean;
+  reject_not_signed_by_gpg?: boolean;
+  deny_delete_tag?: boolean;
+  prevent_secrets?: boolean;
+  deny_force_push?: boolean;
+}) {
+  return {
+    repositoryId: input.repository_id,
+    rejectUnsignedCommits: input.reject_unsigned_commits,
+    rejectNotSignedByGpg: input.reject_not_signed_by_gpg,
+    denyDeleteTag: input.deny_delete_tag,
+    preventSecrets: input.prevent_secrets,
+    denyForcePush: input.deny_force_push,
+    executed: false
+  };
+}
+
+export function previewRepositoryCommitRuleMutation(input: Record<string, unknown>) {
+  return {
+    ...input,
+    executed: false
+  };
+}
+
 export function mapRepositoryWatermark(input: RepoWatermarkSetting) {
   return asItemResult("Fetched repository watermark setting", {
     watermark: input.watermark,
     viewWatermark: input.view_watermark,
     canUpdate: input.can_update
+  });
+}
+
+export function previewNotificationSubscriptionMutation(input: {
+  repository_id: string;
+  enabled?: boolean;
+  config_source?: string;
+  waring_repo_usage_rate?: number;
+  webhook_config?: {
+    url?: string;
+    token?: string;
+    mention_users?: string;
+    mention_phone?: string;
+  };
+  subscript_events?: Array<{
+    resource_type: string;
+    action: string;
+    enabled: boolean;
+    role_ids?: string[];
+    role_names?: string[];
+  }>;
+}) {
+  return {
+    repositoryId: input.repository_id,
+    enabled: input.enabled,
+    configSource: input.config_source,
+    warningRepoUsageRate: input.waring_repo_usage_rate,
+    webhookConfig: input.webhook_config ? {
+      url: input.webhook_config.url,
+      hasToken: input.webhook_config.token !== undefined,
+      mentionUsers: input.webhook_config.mention_users,
+      mentionPhone: input.webhook_config.mention_phone
+    } : undefined,
+    subscriptEvents: input.subscript_events?.map((event) => ({
+      resourceType: event.resource_type,
+      action: event.action,
+      enabled: event.enabled,
+      roleIds: event.role_ids,
+      roleNames: event.role_names
+    })),
+    executed: false
+  };
+}
+
+export function previewRepositorySimpleMutation(summary: string, input: Record<string, unknown>) {
+  return asItemResult(summary, {
+    ...input,
+    executed: false
   });
 }
 

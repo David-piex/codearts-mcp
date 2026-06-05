@@ -148,6 +148,30 @@ export type ReqClient = {
     project_id?: string;
     plan_id?: string;
   }>;
+  createEpicIssue: (input: {
+    project_id: string;
+    tracker_id?: number;
+    priority_id?: number;
+    title: string;
+    parent_issue_id?: number;
+    description?: string;
+    due_date?: number;
+    start_date?: number;
+    severity_id?: number;
+    done_ratio?: number;
+    status_id?: number;
+    expected_work_hours?: number;
+    plan_id?: string;
+  }) => Promise<{
+    id: number | string;
+    name: string;
+    number?: number | string;
+    description?: string;
+    status?: { id?: number | string; name?: string };
+    tracker?: { id?: number | string; name?: string };
+    project_id?: string;
+    plan_id?: string;
+  }>;
   quickCreateChildWorkItem: (input: {
     project_id: string;
     title: string;
@@ -3997,6 +4021,51 @@ export function createReqClient(
         };
       };
       assertReqMutationSucceeded("create work item v2", response.status);
+      const issue = response.result?.issue ?? {};
+
+      return {
+        id: issue.id ?? "",
+        name: issue.subject ?? input.title,
+        number: issue.issue_num,
+        description: issue.description ?? input.description,
+        status: issue.status,
+        tracker: issue.tracker,
+        project_id: issue.project?.identifier ?? input.project_id,
+        plan_id: input.plan_id
+      };
+    },
+    async createEpicIssue(input) {
+      const response = (await _http.post("/v2/issues/create", {
+        projectUUId: input.project_id,
+        tracker_id: input.tracker_id ?? 5,
+        ...(typeof input.priority_id !== "undefined" ? { priority_id: input.priority_id } : {}),
+        subject: input.title,
+        ...(typeof input.parent_issue_id !== "undefined" ? { parent_issue_id: input.parent_issue_id } : {}),
+        ...(input.description ? { description: input.description } : {}),
+        ...(typeof input.due_date !== "undefined" ? { due_date: input.due_date } : {}),
+        ...(typeof input.start_date !== "undefined" ? { start_date: input.start_date } : {}),
+        ...(typeof input.severity_id !== "undefined" ? { severity_id: input.severity_id } : {}),
+        ...(typeof input.done_ratio !== "undefined" ? { done_ratio: input.done_ratio } : {}),
+        ...(typeof input.status_id !== "undefined" ? { status_id: input.status_id } : {}),
+        ...(typeof input.expected_work_hours !== "undefined"
+          ? { expected_work_hours: input.expected_work_hours }
+          : {}),
+        ...(input.plan_id ? { plan_id: input.plan_id } : {})
+      })) as {
+        status?: string;
+        result?: {
+          issue?: {
+            id?: number | string;
+            issue_num?: number | string;
+            subject?: string;
+            description?: string;
+            status?: { id?: number | string; name?: string };
+            tracker?: { id?: number | string; name?: string };
+            project?: { identifier?: string };
+          };
+        };
+      };
+      assertReqMutationSucceeded("create epic issue", response.status);
       const issue = response.result?.issue ?? {};
 
       return {

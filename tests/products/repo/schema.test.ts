@@ -31,6 +31,7 @@ import {
   repoCreateUserSshKeyInput,
   repoDeleteUserSshKeyInput,
   repoListPersonalRepositoryImportRecordsInput,
+  repoListProjectMergeRequestsInput,
   repoListPersonalRecentPushEventsInput,
   repoListRepositoryTemplatesInput,
   repoListProjectWebhookLogsInput,
@@ -60,7 +61,10 @@ import {
   repoGetRepositoryBlameInput,
   repoGetRepositoryFileContentV4Input,
   repoStartRemoteMirrorSynchronizationInput,
+  repoTransferRepositoryInput,
+  repoRebuildRepositoryNavigationInput,
   repoUpdateMergeRequestInput,
+  repoDeleteMergeRequestDiscussionInput,
   repoUpdateRemoteMirrorInput
 } from "../../../src/products/repo/schemas.js";
 
@@ -820,6 +824,72 @@ describe("repo schemas", () => {
       repository_id: "100",
       iids: "7,8",
       fields: "commits_count,changed_files_count"
+    });
+
+    expect(
+      repoListProjectMergeRequestsInput.parse({
+        project_id: "project-uuid-1",
+        state: "opened",
+        order_by: "updated_at",
+        sort: "desc",
+        author_id: 1001,
+        source_branch: "feature/demo",
+        target_branch: "main",
+        search: "demo",
+        source_repository_id: "100",
+        page: 2,
+        page_size: 50
+      })
+    ).toMatchObject({
+      project_id: "project-uuid-1",
+      state: "opened",
+      order_by: "updated_at",
+      sort: "desc",
+      author_id: 1001,
+      source_branch: "feature/demo",
+      target_branch: "main",
+      search: "demo",
+      source_repository_id: "100",
+      page: 2,
+      page_size: 50
+    });
+  });
+
+  it("accepts repository transfer and navigation rebuild mutations", () => {
+    expect(
+      repoTransferRepositoryInput.parse({
+        repository_id: "100",
+        namespace: "demo-group/subgroup",
+        dry_run: false
+      })
+    ).toEqual({
+      repository_id: "100",
+      namespace: "demo-group/subgroup",
+      dry_run: false
+    });
+
+    expect(
+      repoRebuildRepositoryNavigationInput.parse({
+        repository_id: "100"
+      })
+    ).toEqual({
+      repository_id: "100",
+      dry_run: true
+    });
+
+    expect(
+      repoDeleteMergeRequestDiscussionInput.parse({
+        repository_id: "100",
+        merge_request_iid: "7",
+        discussion_id: "discussion-1",
+        note_id: "99"
+      })
+    ).toEqual({
+      repository_id: "100",
+      merge_request_iid: "7",
+      discussion_id: "discussion-1",
+      note_id: "99",
+      dry_run: true
     });
   });
 

@@ -1872,4 +1872,200 @@ describe("createRepoClient", () => {
     ]);
   });
 
+  it("uses official repo commit and pipeline paths", async () => {
+    const getCalls: string[] = [];
+    const postCalls: Array<{ path: string; body: unknown }> = [];
+    const client = createRepoClient({
+      get: async (path: string) => {
+        getCalls.push(path);
+        if (path.includes("/repository/commits/diff-metadata?")) {
+          return { diffs: [{ old_path: "a.ts", new_path: "a.ts", added_lines: 2 }] };
+        }
+        if (path.includes("/repository/commits/file-diff?")) {
+          return { old_path: "a.ts", new_path: "a.ts", added_lines: 1, removed_lines: 0, diff: "@@" };
+        }
+        if (path.includes("/repository/commits/diff?")) {
+          return { diffs: [{ old_path: "a.ts", new_path: "a.ts", added_lines: 2 }], change_file_count: 1 };
+        }
+        if (path.includes("/pipelines/p-1/latest-jobs")) {
+          return { id: 10, status: "success", stages: [{ id: 1, name: "build", jobs: [{ id: 9, name: "job-1" }] }] };
+        }
+        if (path.includes("/pipelines/p-1/jobs?")) {
+          return [{ id: 9, name: "job-1", stage: "build" }];
+        }
+        throw new Error(`unexpected path: ${path}`);
+      },
+      post: async (path: string, body?: unknown) => {
+        postCalls.push({ path, body });
+        if (path.endsWith("/repository/commits")) {
+          return { id: "c1", short_id: "c1", title: "commit" };
+        }
+        if (path.endsWith("/repository/commits/c1/revert")) {
+          return { id: "c2", short_id: "c2", title: "revert" };
+        }
+        if (path.endsWith("/user/groups/group-permissions")) {
+          return [{ group_id: 7, can_create_group: true }];
+        }
+        throw new Error(`unexpected path: ${path}`);
+      }
+    } as never);
+
+    await client.createCommit({
+      repository_id: "100",
+      branch: "main",
+      commit_message: "msg",
+      actions: [{ action: "create", file_path: "a.ts", content: "x" }]
+    });
+    await client.createCommitRevert({ repository_id: "100", sha: "c1", branch: "main" });
+    await client.showCommitDiffMetadata({ repository_id: "100", sha: "c1" });
+    await client.showCommitFileDiff({ repository_id: "100", sha: "c1", path: "a.ts" });
+    await client.showDiffCommit({ repository_id: "100", sha: "c1", page: 2, page_size: 10 });
+    await client.listLatestPipelineJobs({ repository_id: "100", pipeline_id: "p-1" });
+    await client.listPipelineJobs({ repository_id: "100", pipeline_id: "p-1", page: 2, page_size: 10 });
+    await client.batchValidateUserGroupPermissions({ items: [{ group_id: "7", project_id: "p-1" }] });
+
+    expect(postCalls).toEqual([
+      {
+        path: "/v4/repositories/100/repository/commits",
+        body: {
+          branch: "main",
+          commit_message: "msg",
+          actions: [{ action: "create", file_path: "a.ts", content: "x" }]
+        }
+      },
+      {
+        path: "/v4/repositories/100/repository/commits/c1/revert",
+        body: { branch: "main", with_new_merge_request: undefined, message: undefined }
+      },
+      {
+        path: "/v4/user/groups/group-permissions",
+        body: [{ group_id: "7", project_id: "p-1" }]
+      }
+    ]);
+    expect(getCalls).toEqual([
+      "/v4/repositories/100/repository/commits/diff-metadata?sha=c1",
+      "/v4/repositories/100/repository/commits/file-diff?sha=c1&path=a.ts",
+      "/v4/repositories/100/repository/commits/diff?sha=c1&offset=10&limit=10",
+      "/v4/repositories/100/pipelines/p-1/latest-jobs",
+      "/v4/repositories/100/pipelines/p-1/jobs?offset=10&limit=10"
+    ]);
+  });
+
+  it("uses official repository transfer and navigation rebuild paths", async () => {
+    const calls: Array<{ method: string; path: string; body?: unknown }> = [];
+    const client = createRepoClient({
+      post: async (path: string, body?: unknown) => {
+        calls.push({ method: "POST", path, body });
+        if (path.endsWith("/transfer")) {
+          return { id: 100, name: "demo", namespace: "target-group" };
+        }
+        if (path.endsWith("/repository/nav/build")) {
+          return { result: "success", message: "queued", duration: 12, size: 34 };
+        }
+        throw new Error(`unexpected path: ${path}`);
+      }
+    } as never);
+
+    const transferred = await client.transferRepository({
+      repository_id: "100",
+      namespace: "target-group"
+    });
+    const rebuilt = await client.rebuildRepositoryNavigation({
+      repository_id: "100"
+    });
+
+    expect(transferred.namespace).toBe("target-group");
+    expect(rebuilt.result).toBe("success");
+    expect(calls).toEqual([
+      {
+        method: "POST",
+        path: "/v4/repositories/100/transfer",
+        body: { namespace: "target-group" }
+      },
+      {
+        method: "POST",
+        path: "/v4/repositories/100/repository/nav/build",
+        body: undefined
+      }
+    ]);
+  });
+
+  it("uses official project merge request list and discussion delete paths", async () => {
+    const calls: Array<{ method: string; path: string }> = [];
+    const client = createRepoClient({
+      get: async (path: string) => {
+        calls.push({ method: "GET", path });
+        return {
+          merge_requests: [
+            {
+              id: 101,
+              iid: 7,
+              title: "demo",
+              state: "opened",
+              source_branch: "feature/demo",
+              target_branch: "main"
+            }
+          ],
+          total: 1
+        };
+      },
+      delete: async (path: string) => {
+        calls.push({ method: "DELETE", path });
+        return {};
+      }
+    } as never);
+
+    const list = await client.listProjectMergeRequests({
+      project_id: "project-1",
+      page: 2,
+      page_size: 10,
+      state: "opened",
+      order_by: "updated_at",
+      sort: "desc",
+      author_id: "1001",
+      source_branch: "feature/demo",
+      target_branch: "main",
+      search: "demo",
+      source_repository_id: "100"
+    });
+    const deleted = await client.deleteMergeRequestDiscussion({
+      repository_id: "100",
+      merge_request_iid: "7",
+      discussion_id: "discussion-1",
+      note_id: "99"
+    });
+
+    expect(list.merge_requests[0]?.iid).toBe(7);
+    expect(deleted.deleted).toBe(true);
+    expect(calls).toEqual([
+      {
+        method: "GET",
+        path: "/v4/projects/project-1/merge-requests?offset=10&limit=10&state=opened&order_by=updated_at&sort=desc&author_id=1001&source_branch=feature%2Fdemo&target_branch=main&search=demo&source_repository_id=100"
+      },
+      {
+        method: "DELETE",
+        path: "/v4/repositories/100/merge-requests/7/discussions/discussion-1/notes/99"
+      }
+    ]);
+  });
+
+  it("uses official granted-user member path", async () => {
+    const calls: string[] = [];
+    const client = createRepoClient({
+      get: async (path: string) => {
+        calls.push(path);
+        return [{ id: 17, name: "qa", username: "iam-qa", nick_name: "QA" }];
+      }
+    } as never);
+
+    const result = await client.listProductPermissionResourcesGrantedUsers({
+      project_id: "project-1",
+      page: 2,
+      page_size: 10,
+      query: "qa"
+    });
+
+    expect(calls).toEqual(["/v4/projects/project-1/members?offset=10&limit=10&query=qa"]);
+    expect(result.members[0]?.name).toBe("qa");
+  });
 });

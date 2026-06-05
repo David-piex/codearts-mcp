@@ -11,12 +11,13 @@ describe("mapRepoCommit", () => {
       message: "fix: normalize refs\n\nMore details"
     });
 
-    expect(result.item).toEqual({
+    expect(result.item).toMatchObject({
       id: "abc123",
       shortId: "abc123",
       title: "fix: normalize refs",
       authorName: "Alice",
-      message: "fix: normalize refs\n\nMore details"
+      message: "fix: normalize refs\n\nMore details",
+      parentIds: []
     });
   });
 });

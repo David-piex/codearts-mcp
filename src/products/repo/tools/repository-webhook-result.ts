@@ -33,7 +33,9 @@ export function mapRepositoryWebhook(summary: string, item: RepositoryWebhook) {
 }
 
 export function webhookPreview(input: {
-  repository_id: string;
+  repository_id?: string;
+  project_id?: string;
+  group_id?: string;
   hook_id?: string;
   url?: string;
   name?: string;
@@ -55,6 +57,8 @@ export function webhookPreview(input: {
 }) {
   return {
     repositoryId: input.repository_id,
+    projectId: input.project_id,
+    groupId: input.group_id,
     hookId: input.hook_id,
     url: input.url,
     name: input.name,

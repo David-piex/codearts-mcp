@@ -126,6 +126,20 @@ export const repoListProjectMembersInput = pagingSchema.extend({
   query: z.string().min(1).max(256).optional()
 });
 
+export const repoListProductPermissionResourcesGrantedUsersInput = pagingSchema.extend({
+  project_id: idSchema,
+  page_size: z.number().int().positive().max(100).default(20),
+  query: z.string().min(1).max(256).optional()
+});
+
+export const repoBatchValidateUserGroupPermissionsInput = z.object({
+  items: z.array(z.object({
+    group_id: idSchema,
+    project_id: idSchema.optional(),
+    group_name: z.string().min(1).max(256).optional()
+  })).min(1)
+});
+
 export const repoListRepositoryUserGroupsInput = pagingSchema.extend({
   repository_id: idSchema,
   page_size: z.number().int().positive().max(100).default(20),
@@ -215,11 +229,74 @@ export const repoShowReviewSettingInput = z.object({
   with_default_review_categories: z.boolean().optional()
 });
 
+export const repoShowGroupReviewSettingsInput = z.object({
+  group_id: idSchema
+});
+
+export const repoShowProjectReviewSettingsInput = z.object({
+  project_id: idSchema
+});
+
 export const repoShowNoteRequiredAttributesInput = z.object({
   repository_id: idSchema
 });
 
+export const repoShowGroupNoteRequiredAttributesInput = z.object({
+  group_id: idSchema
+});
+
+export const repoListProjectNoteRequiredAttributesInput = z.object({
+  project_id: idSchema
+});
+
 export const repoListDefaultReviewCategoriesInput = z.object({});
+
+const repoReviewSettingMutationBodySchema = z.object({
+  categories_and_modules_enabled: z.boolean().optional(),
+  review_modules: z.array(z.string().min(1).max(256)).optional(),
+  secondary_category_enabled: z.boolean().optional(),
+  review_default_categories: z.array(z.string().min(1).max(256)).optional(),
+  review_customized_categories: z.array(z.string().min(1).max(256)).optional(),
+  is_assignee_id_required: z.boolean().optional(),
+  is_review_categories_required: z.boolean().optional(),
+  is_review_modules_required: z.boolean().optional()
+});
+
+const repoNoteRequiredAttributesMutationBodySchema = z.object({
+  is_assignee_id_required: z.boolean().optional(),
+  is_review_categories_required: z.boolean().optional(),
+  is_review_modules_required: z.boolean().optional()
+});
+
+export const repoCreateReviewSettingInput = repoReviewSettingMutationBodySchema.extend({
+  repository_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoUpdateGroupReviewSettingsInput = repoReviewSettingMutationBodySchema.extend({
+  group_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoUpdateProjectReviewSettingsInput = repoReviewSettingMutationBodySchema.extend({
+  project_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoUpdateGroupNoteRequiredAttributesInput = repoNoteRequiredAttributesMutationBodySchema.extend({
+  group_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoUpdateProjectNoteRequiredAttributesInput = repoNoteRequiredAttributesMutationBodySchema.extend({
+  project_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoUpdateNoteRequiredAttributesInput = repoNoteRequiredAttributesMutationBodySchema.extend({
+  repository_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
 
 const repoReviewNoteableTypeSchema = z.enum(["Commit", "MergeRequest"]);
 const repoReviewUserIdSchema = z.union([z.string().min(1).max(64), z.number().int().positive()]);
@@ -448,7 +525,52 @@ export const repoDeleteProtectedTagInput = z.object({
 });
 
 export const repoListRepositoryLabelsInput = pagingSchema.extend({
-  repository_id: idSchema
+  repository_id: idSchema,
+  search: z.string().min(1).max(256).optional(),
+  sort: z.enum([
+    "name_asc",
+    "name_desc",
+    "created_asc",
+    "created_desc",
+    "updated_asc",
+    "updated_desc"
+  ]).optional(),
+  include_expired: z.boolean().optional(),
+  view: z.enum(["simple", "basic", "detail"]).optional()
+});
+
+const repoLabelColorSchema = z
+  .string()
+  .regex(/^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$/, "Label color must be a hex color like #FFAABB");
+
+export const repoCreateRepositorySystemLabelsInput = z.object({
+  repository_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoCreateRepositoryLabelInput = z.object({
+  repository_id: idSchema,
+  name: z.string().min(1).max(255),
+  color: repoLabelColorSchema.optional(),
+  description: z.string().max(1000).optional(),
+  expires_at: z.string().min(1).max(64).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoUpdateRepositoryLabelInput = z.object({
+  repository_id: idSchema,
+  name: z.string().min(1).max(255),
+  new_name: z.string().min(1).max(255).optional(),
+  color: repoLabelColorSchema.optional(),
+  description: z.string().max(1000).optional(),
+  expires_at: z.string().min(1).max(64).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoDeleteRepositoryLabelInput = z.object({
+  repository_id: idSchema,
+  name: z.string().min(1).max(255),
+  dry_run: z.boolean().default(true)
 });
 
 export const repoListRepositoryDeployKeysInput = pagingSchema.extend({
@@ -546,6 +668,12 @@ export const repoUpdateProjectWatermarkInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const repoUpdateRepositoryWatermarkInput = z.object({
+  repository_id: idSchema,
+  watermark: z.boolean(),
+  dry_run: z.boolean().default(true)
+});
+
 export const repoListProjectSubgroupsAndRepositoriesInput = pagingSchema.extend({
   project_id: idSchema,
   page_size: z.number().int().positive().max(100).default(20),
@@ -617,13 +745,85 @@ export const repoShowRepositoryGeneralPolicyInput = z.object({
   repository_id: idSchema
 });
 
+export const repoUpdateRepositoryGeneralPolicyInput = z.object({
+  repository_id: idSchema,
+  disable_fork: z.boolean().optional(),
+  branch_name_regex: z.string().optional(),
+  tag_name_regex: z.string().optional(),
+  generate_pre_merge_ref: z.boolean().optional(),
+  forbidden_developer_create_branch: z.boolean().optional(),
+  create_branch_whitelist_user_ids: z.string().optional(),
+  dry_run: z.boolean().default(true)
+});
+
 export const repoShowRepositoryGeneralCommitRuleInput = z.object({
   repository_id: idSchema
+});
+
+export const repoUpdateRepositoryGeneralCommitRuleInput = z.object({
+  repository_id: idSchema,
+  reject_unsigned_commits: z.boolean().optional(),
+  reject_not_signed_by_gpg: z.boolean().optional(),
+  deny_delete_tag: z.boolean().optional(),
+  prevent_secrets: z.boolean().optional(),
+  deny_force_push: z.boolean().optional(),
+  dry_run: z.boolean().default(true)
+});
+
+const repoCommitRuleInputBase = z.object({
+  name: z.string().min(1).max(255),
+  branch_name: z.string().min(1).max(255),
+  commit_message_regex: z.string().optional(),
+  commit_message_negative_regex: z.string().optional(),
+  author_regex: z.string().optional(),
+  author_email_regex: z.string().optional(),
+  prohibited_file_name_regex: z.string().optional(),
+  max_file_size: z.number().int().min(1).max(300).optional(),
+  binary_gate_enabled: z.boolean().optional(),
+  allowed_modify_binary: z.boolean().optional(),
+  allowed_binary_file_name_regex: z.string().optional(),
+  privileged_user_ids: z.array(z.number().int().positive()).optional(),
+  effective_date: z.string().min(1).max(64).optional(),
+  skip_rule_check: z.boolean().optional(),
+  skip_rule_end_date: z.string().min(1).max(64).optional()
 });
 
 export const repoListRepositoryCommitRulesInput = pagingSchema.extend({
   repository_id: idSchema,
   page_size: z.number().int().positive().max(100).default(20)
+});
+
+export const repoCreateRepositoryCommitRuleInput = repoCommitRuleInputBase.extend({
+  repository_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoUpdateRepositoryCommitRuleInput = repoCommitRuleInputBase.partial().extend({
+  repository_id: idSchema,
+  commit_rule_id: idSchema,
+  dry_run: z.boolean().default(true)
+}).refine((value) => {
+  const keys = [
+    "name",
+    "branch_name",
+    "commit_message_regex",
+    "commit_message_negative_regex",
+    "author_regex",
+    "author_email_regex",
+    "prohibited_file_name_regex",
+    "max_file_size",
+    "binary_gate_enabled",
+    "allowed_modify_binary",
+    "allowed_binary_file_name_regex",
+    "privileged_user_ids",
+    "effective_date",
+    "skip_rule_check",
+    "skip_rule_end_date"
+  ];
+
+  return keys.some((key) => (value as Record<string, unknown>)[key] !== undefined);
+}, {
+  message: "At least one commit rule field must be provided"
 });
 
 export const repoShowRepositoryWatermarkInput = z.object({
@@ -676,6 +876,14 @@ export const repoShowProjectGeneralPolicyInput = z.object({
   project_id: idSchema
 });
 
+export const repoShowGroupGeneralPolicyInput = z.object({
+  group_id: idSchema
+});
+
+export const repoShowGroupsGeneralPolicyInput = z.object({
+  group_id: idSchema
+});
+
 export const repoShowProjectsGeneralPolicyInput = z.object({
   project_id: idSchema
 });
@@ -688,6 +896,136 @@ export const repoUpdateProjectGeneralPolicyInput = z.object({
   generate_pre_merge_ref: z.boolean().optional(),
   dry_run: z.boolean().default(true)
 });
+
+export const repoUpdateGroupGeneralPolicyInput = z.object({
+  group_id: idSchema,
+  disable_fork: z.boolean().optional(),
+  branch_name_regex: z.string().optional(),
+  tag_name_regex: z.string().optional(),
+  generate_pre_merge_ref: z.boolean().optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoCreateGroupInput = z.object({
+  project_id: idSchema,
+  name: z.string().min(1).max(255),
+  visibility: z.enum(["private", "internal", "public"]),
+  description: z.string().optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoShowGroupInput = z.object({
+  project_id: idSchema,
+  group_id: idSchema
+});
+
+export const repoDeleteGroupInput = z.object({
+  project_id: idSchema,
+  group_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoAssociateGroupUserGroupInput = z.object({
+  project_id: idSchema,
+  group_id: idSchema,
+  user_group_id: z.string().min(1).max(64),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoShowGroupSettingsInheritCfgInput = z.object({
+  group_id: idSchema
+});
+
+export const repoUpdateGroupWatermarkInput = z.object({
+  group_id: idSchema,
+  watermark: z.boolean(),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoAssociateRepositoryUserGroupInput = z.object({
+  project_id: idSchema,
+  repository_id: idSchema,
+  user_group_id: z.string().min(1).max(64),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoListGroupPermissionResourcesInput = z.object({
+  scope: z.enum(["group", "project", "all"]).default("all")
+});
+
+export const repoDownloadArchiveInput = z.object({
+  repository_id: idSchema,
+  sha: z.string().min(1).max(256).optional(),
+  path: z.string().min(1).max(100000).optional(),
+  archive_format: z.enum(["zip", "tar.gz", "tar.bz2", "tar"]).optional()
+});
+
+export const repoAddSubmoduleInput = z.object({
+  repository_id: idSchema,
+  branch_name: z.string().min(1).max(100),
+  file_path: z.string().min(1).max(100000),
+  subrepo_id: z.string().min(1).max(128),
+  commit_message: z.string().min(1).max(1000),
+  subrepo_branch: z.string().min(1).max(100),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoShowHttpsPasswordSettingInput = z.object({});
+
+export const repoUpdateHttpsPasswordSettingInput = z.object({
+  https_clone_iam_auth: z.union([z.boolean(), z.enum(["true", "false"])]),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoBatchValidateRepoNamesInput = z.object({
+  items: z.array(z.object({
+    name: z.string().min(1).max(255),
+    project_id: idSchema,
+    group_id: idSchema.optional()
+  })).min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoTransferGroupInput = z.object({
+  group_id: idSchema,
+  owner_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoListMembersInput = pagingSchema.extend({
+  repository_id: idSchema,
+  search: z.string().min(1).max(255).optional(),
+  permission: z.enum(["repository", "code", "member", "branch", "tag", "mr", "label"]).optional(),
+  action: z.string().min(1).max(64).optional(),
+  page_size: z.number().int().positive().max(100).default(20)
+});
+
+export const repoAddRepositoryMembersInput = z.object({
+  repository_id: idSchema,
+  users: z.array(z.object({
+    user_iam_id: z.string().min(1).max(128).optional(),
+    user_name: z.string().min(1).max(255).optional(),
+    tenant_name: z.string().min(1).max(255).optional(),
+    tenant_id: z.string().min(1).max(128).optional(),
+    repository_role_Id: z.string().min(1).max(128).optional()
+  }).refine((value) => Boolean(value.user_iam_id || value.user_name), {
+    message: "user_iam_id or user_name is required"
+  })).min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoSendUserEmailVerifyCodeInput = z.object({
+  email: z.string().min(1).max(1000),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoUpdateUserEmailsInput = z.object({
+  email: z.string().min(1).max(1000),
+  verify_code: z.string().min(1).max(1000),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoShowUserEmailsInput = z.object({});
 
 export const repoListItemCommitsInput = pagingSchema.extend({
   project_id: idSchema,
@@ -772,8 +1110,112 @@ export const repoShowProjectApproverSettingsInput = z.object({
   project_id: idSchema
 });
 
+const repoApproverSettingUserSchema = z.record(z.unknown());
+
+const repoApproverSettingPayloadInput = z.object({
+  id: idSchema.optional(),
+  target: z.string().min(1).max(2000).optional(),
+  target_type: z.enum(["branch"]).optional(),
+  is_use_approval: z.boolean().optional(),
+  approval_required_reviewers: z.number().int().min(0).optional(),
+  approval_required_approvers: z.number().int().min(0).optional(),
+  reset_approvals_on_push: z.boolean().optional(),
+  reset_reviewers_on_push: z.boolean().optional(),
+  approvers_from_project: z.boolean().optional(),
+  append_reviewer_ids: z.array(idSchema).optional(),
+  append_reviewers: z.array(repoApproverSettingUserSchema).optional(),
+  append_approver_ids: z.array(idSchema).optional(),
+  append_approvers: z.array(repoApproverSettingUserSchema).optional(),
+  only_merge_when_pipeline_pass: z.boolean().optional(),
+  assignee_ids: z.array(idSchema).optional(),
+  assignees: z.array(repoApproverSettingUserSchema).optional(),
+  approver_ids: z.array(idSchema).optional(),
+  approvers: z.array(repoApproverSettingUserSchema).optional(),
+  reviewer_ids: z.array(idSchema).optional(),
+  reviewers: z.array(repoApproverSettingUserSchema).optional()
+});
+
+export const repoListMergeRequestApproverSettingsInput = z.object({
+  repository_id: idSchema
+});
+
+export const repoCreateMergeRequestApproverSettingInput = repoApproverSettingPayloadInput.extend({
+  repository_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoUpdateMergeRequestApproverSettingInput = repoApproverSettingPayloadInput.extend({
+  repository_id: idSchema,
+  setting_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoDeleteMergeRequestApproverSettingInput = z.object({
+  repository_id: idSchema,
+  setting_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoListGroupMergeRequestApproverSettingsInput = z.object({
+  group_id: idSchema
+});
+
+export const repoCreateGroupMergeRequestApproverSettingInput = repoApproverSettingPayloadInput.extend({
+  group_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoUpdateGroupMergeRequestApproverSettingInput = repoApproverSettingPayloadInput.extend({
+  group_id: idSchema,
+  setting_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoDeleteGroupMergeRequestApproverSettingInput = z.object({
+  group_id: idSchema,
+  setting_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoListProjectMergeRequestApproverSettingsInput = z.object({
+  project_id: idSchema
+});
+
+export const repoCreateProjectMergeRequestApproverSettingInput = repoApproverSettingPayloadInput.extend({
+  project_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoUpdateProjectMergeRequestApproverSettingInput = repoApproverSettingPayloadInput.extend({
+  project_id: idSchema,
+  setting_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoDeleteProjectMergeRequestApproverSettingInput = z.object({
+  project_id: idSchema,
+  setting_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoUpdateMergeRequestSettingInput = z.object({
+  repository_id: idSchema,
+  settings: z.record(z.unknown()),
+  dry_run: z.boolean().default(true)
+});
+
+const repoMergeRequestTemplatePayloadInput = z.object({
+  template_name: z.string().min(1).max(255),
+  merge_request_title: z.string().min(1).max(1000).optional(),
+  description: z.string().optional(),
+  auto_extract_mr_title: z.number().int().min(0).max(2).optional(),
+  is_wip: z.boolean().optional(),
+  is_default: z.boolean().optional()
+});
+
 export const repoListMergeRequestTemplatesInput = pagingSchema.extend({
   repository_id: idSchema,
+  template_name: z.string().min(1).max(100000).optional(),
   page_size: z.number().int().positive().max(100).default(20)
 });
 
@@ -785,6 +1227,69 @@ export const repoListDiscussionTemplatesInput = pagingSchema.extend({
 export const repoGetMergeRequestTemplateInput = z.object({
   repository_id: idSchema,
   template_id: idSchema
+});
+
+export const repoCreateMergeRequestTemplateInput = repoMergeRequestTemplatePayloadInput.extend({
+  repository_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoUpdateMergeRequestTemplateInput = repoMergeRequestTemplatePayloadInput.extend({
+  repository_id: idSchema,
+  template_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoDeleteMergeRequestTemplateInput = z.object({
+  repository_id: idSchema,
+  template_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoListGroupMergeRequestTemplatesInput = pagingSchema.extend({
+  group_id: idSchema,
+  template_name: z.string().min(1).max(100000).optional(),
+  page_size: z.number().int().positive().max(100).default(20)
+});
+
+export const repoCreateGroupMergeRequestTemplateInput = repoMergeRequestTemplatePayloadInput.extend({
+  group_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoUpdateGroupMergeRequestTemplateInput = repoMergeRequestTemplatePayloadInput.extend({
+  group_id: idSchema,
+  template_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoDeleteGroupMergeRequestTemplateInput = z.object({
+  group_id: idSchema,
+  template_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoListProjectMergeRequestTemplatesInput = pagingSchema.extend({
+  project_id: idSchema,
+  template_name: z.string().min(1).max(100000).optional(),
+  page_size: z.number().int().positive().max(100).default(20)
+});
+
+export const repoCreateProjectMergeRequestTemplateInput = repoMergeRequestTemplatePayloadInput.extend({
+  project_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoUpdateProjectMergeRequestTemplateInput = repoMergeRequestTemplatePayloadInput.extend({
+  project_id: idSchema,
+  template_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoDeleteProjectMergeRequestTemplateInput = z.object({
+  project_id: idSchema,
+  template_id: idSchema,
+  dry_run: z.boolean().default(true)
 });
 
 const tenantPagingSchema = z.object({
@@ -944,6 +1449,16 @@ export const repoCreateRepositoryWebhookInput = repoRepositoryWebhookPayloadInpu
   dry_run: z.boolean().default(true)
 });
 
+export const repoCreateProjectWebhookInput = repoRepositoryWebhookPayloadInput.extend({
+  project_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoCreateGroupWebhookInput = repoRepositoryWebhookPayloadInput.extend({
+  group_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
 export const repoGetRepositoryWebhookInput = z.object({
   repository_id: idSchema,
   hook_id: idSchema
@@ -965,8 +1480,32 @@ export const repoUpdateRepositoryWebhookInput = repoRepositoryWebhookPayloadInpu
   dry_run: z.boolean().default(true)
 });
 
+export const repoUpdateProjectWebhookInput = repoRepositoryWebhookPayloadInput.partial().extend({
+  project_id: idSchema,
+  hook_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoUpdateGroupWebhookInput = repoRepositoryWebhookPayloadInput.partial().extend({
+  group_id: idSchema,
+  hook_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
 export const repoDeleteRepositoryWebhookInput = z.object({
   repository_id: idSchema,
+  hook_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoDeleteProjectWebhookInput = z.object({
+  project_id: idSchema,
+  hook_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoDeleteGroupWebhookInput = z.object({
+  group_id: idSchema,
   hook_id: idSchema,
   dry_run: z.boolean().default(true)
 });
@@ -1119,6 +1658,131 @@ export const repoDeleteTagInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const repoLockRepositoryInput = z.object({
+  project_id: idSchema,
+  repository_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoUnlockRepositoryInput = z.object({
+  project_id: idSchema,
+  repository_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+const repoNotificationSubscriptionEventInput = z.object({
+  resource_type: z.string().min(1),
+  action: z.string().min(1),
+  enabled: z.boolean(),
+  role_ids: z.array(z.string().min(1)).optional(),
+  role_names: z.array(z.string().min(1)).optional()
+});
+
+const repoNotificationSubscriptionWebhookConfigInput = z.object({
+  url: z.string().min(1).optional(),
+  token: z.string().min(1).optional(),
+  mention_users: z.string().min(1).optional(),
+  mention_phone: z.string().min(1).optional()
+}).refine((input) => Object.keys(input).length > 0, {
+  message: "At least one webhook_config field is required when webhook_config is provided"
+});
+
+export const repoUpdateNotificationSubscriptionInput = z.object({
+  repository_id: idSchema,
+  enabled: z.boolean().optional(),
+  config_source: z.string().min(1).optional(),
+  waring_repo_usage_rate: z.number().int().min(0).max(100).optional(),
+  webhook_config: repoNotificationSubscriptionWebhookConfigInput.optional(),
+  subscript_events: z.array(repoNotificationSubscriptionEventInput).min(1).optional(),
+  dry_run: z.boolean().default(true)
+}).refine((input) => (
+  input.enabled !== undefined
+  || input.config_source !== undefined
+  || input.waring_repo_usage_rate !== undefined
+  || input.webhook_config !== undefined
+  || input.subscript_events !== undefined
+), {
+  message: "At least one notification subscription field is required"
+});
+
+export const repoExecuteRepositoryStatisticsInput = z.object({
+  repository_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoCreateDirInput = z.object({
+  repository_id: idSchema,
+  branch_name: z.string().min(1).max(200),
+  file_path: z.string().min(1).max(2000),
+  commit_message: z.string().min(1).max(2000),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoBatchDeleteBranchInput = z.object({
+  repository_id: idSchema,
+  branches: z.array(z.string().min(1).max(200)).min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoCreateBranchInput = z.object({
+  repository_id: idSchema,
+  branch: z.string().min(1).max(200),
+  ref: z.string().min(1).max(200),
+  description: z.string().min(1).max(2000).optional(),
+  related_ids: z.array(idSchema).min(1).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoDeleteBranchInput = z.object({
+  repository_id: idSchema,
+  branch_name: z.string().min(1).max(2000),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoUpdateBranchNameInput = z.object({
+  repository_id: idSchema,
+  old_branch: z.string().min(1).max(200),
+  new_branch: z.string().min(1).max(200),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoUpdateRepositoryInheritSettingInput = z.object({
+  repository_id: idSchema,
+  data: z.array(z.object({
+    name: projectSettingNameSchema,
+    inherit_mod: projectInheritModeSchema
+  })).min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoStartHouseKeepingInput = z.object({
+  repository_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoTransferRepositoryInput = z.object({
+  repository_id: idSchema,
+  namespace: z.string().min(1).max(2000),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoRebuildRepositoryNavigationInput = z.object({
+  repository_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoSyncDeployKeyToSubmodulesInput = z.object({
+  repository_id: idSchema,
+  key_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoRemoveDeployKeyFromSubmodulesInput = z.object({
+  repository_id: idSchema,
+  key_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
 export const repoCreateMergeRequestInput = z.object({
   repository_id: idSchema,
   source_branch: z.string().min(1),
@@ -1134,6 +1798,153 @@ export const repoCreateMergeRequestInput = z.object({
   draft: z.boolean().optional(),
   labels: z.union([z.string().min(1), z.array(z.string().min(1))]).optional(),
   milestone_id: z.union([z.string().min(1), z.number().int().positive()]).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoShowActualHeadPipelineInput = z.object({
+  repository_id: idSchema,
+  merge_request_iid: idSchema
+});
+
+export const repoListLatestPipelineJobsInput = z.object({
+  repository_id: idSchema,
+  pipeline_id: idSchema
+});
+
+export const repoListPipelineJobsInput = pagingSchema.extend({
+  repository_id: idSchema,
+  pipeline_id: idSchema,
+  page_size: z.number().int().positive().max(100).default(20)
+});
+
+export const repoShowMergeableStateOuterInput = z.object({
+  repository_id: idSchema,
+  merge_request_iid: idSchema
+});
+
+export const repoImportMergeRequestInput = z.object({
+  repository_id: idSchema,
+  iid: z.union([z.string().min(1), z.number().int().positive()]),
+  source_uniq_key: z.string().min(1),
+  state: z.string().min(1),
+  source_branch: z.string().min(1),
+  target_branch: z.string().min(1),
+  target_repository_id: z.union([z.string().min(1), z.number().int().positive()]),
+  diff_refs: z.object({
+    base_sha: z.string().min(1),
+    start_sha: z.string().min(1),
+    head_sha: z.string().min(1)
+  }),
+  author_id: z.union([z.string().min(1), z.number().int().positive()]).optional(),
+  title: z.string().min(1).optional(),
+  description: z.string().optional(),
+  labels: z.record(z.unknown()).optional(),
+  created_at: z.string().min(1).optional(),
+  updated_at: z.string().min(1).optional(),
+  merged_at: z.string().min(1).optional(),
+  closed_at: z.string().min(1).optional(),
+  approvers: z.array(z.object({
+    approver_id: z.union([z.string().min(1), z.number().int().positive()]).optional(),
+    code_owner: z.boolean().optional(),
+    accept: z.boolean().optional()
+  })).optional(),
+  squash: z.boolean().optional(),
+  remove_source_branch: z.boolean().optional(),
+  branch_is_deleted: z.boolean().optional(),
+  fork: z.boolean().optional(),
+  import_source_from: z.string().min(1).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoRebaseMergeRequestForOpenApiInput = z.object({
+  repository_id: idSchema,
+  merge_request_iid: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoResolveMergeRequestConflictsInput = z.object({
+  repository_id: idSchema,
+  merge_request_iid: idSchema,
+  commit_message: z.string().min(1),
+  files: z.array(z.object({
+    old_path: z.string().min(1),
+    new_path: z.string().min(1),
+    sections: z.record(z.unknown()).optional(),
+    content: z.string().optional()
+  })).min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoListMergeRequestConflictFilesInput = pagingSchema.extend({
+  repository_id: idSchema,
+  merge_request_iid: idSchema,
+  hide_content: z.boolean().optional(),
+  page_size: z.number().int().positive().max(100).default(20)
+});
+
+const repoMergeRequestCandidatesBaseInput = pagingSchema.extend({
+  search: z.string().min(1).optional(),
+  target_branch: z.string().min(1).optional(),
+  source_branch: z.string().min(1).optional(),
+  merge_request_iid: idSchema.optional(),
+  target_repository_id: idSchema.optional(),
+  page_size: z.number().int().positive().max(100).default(20)
+});
+
+export const repoListMergeRequestValidAssignedCandidatesInput = repoMergeRequestCandidatesBaseInput.extend({
+  repository_id: idSchema
+});
+
+export const repoListGroupMergeRequestValidAssignedCandidatesInput = pagingSchema.extend({
+  group_id: idSchema,
+  page_size: z.number().int().positive().max(100).default(20)
+});
+
+export const repoListProjectMergeRequestCanBeAssignedUsersInput = z.object({
+  project_id: idSchema
+});
+
+export const repoListGroupMergeRequestCanBeAssignedReviewersInput = z.object({
+  group_id: idSchema
+});
+
+export const repoListProjectMergeRequestCanBeAssignedReviewersInput = z.object({
+  project_id: idSchema
+});
+
+export const repoListMergeRequestApproversInput = repoMergeRequestCandidatesBaseInput.extend({
+  repository_id: idSchema
+});
+
+export const repoListMergeRequestReviewersInput = repoMergeRequestCandidatesBaseInput.extend({
+  repository_id: idSchema
+});
+
+export const repoUpdateMergeRequestApproversInput = z.object({
+  repository_id: idSchema,
+  merge_request_iid: idSchema,
+  approver_ids: z.union([z.string().min(1), z.array(idSchema).min(1)]),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoUpdateMergeRequestReviewersInput = z.object({
+  repository_id: idSchema,
+  merge_request_iid: idSchema,
+  reviewer_ids: z.union([z.string().min(1), z.array(idSchema).min(1)]),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoUpdateMergeRequestVoteInput = z.object({
+  repository_id: idSchema,
+  merge_request_iid: idSchema,
+  score: z.number().int().min(-2).max(2),
+  action: z.string().min(1).max(64).default("vote"),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoDeleteMergeRequestVoteInput = z.object({
+  repository_id: idSchema,
+  merge_request_iid: idSchema,
   dry_run: z.boolean().default(true)
 });
 
@@ -1159,6 +1970,16 @@ export const repoListMergeRequestChangesInput = pagingSchema.extend({
   merge_request_iid: idSchema
 });
 
+export const repoListMergeRequestChangesTreesInput = pagingSchema.extend({
+  repository_id: idSchema,
+  merge_request_iid: idSchema,
+  approval_user_id: idSchema.optional(),
+  commit_id: z.string().min(1).max(40).optional(),
+  from_diff_id: idSchema.optional(),
+  to_diff_id: idSchema.optional(),
+  page_size: z.number().int().positive().max(100).default(20)
+});
+
 export const repoListMergeRequestCommitsInput = pagingSchema.extend({
   repository_id: idSchema,
   merge_request_iid: idSchema,
@@ -1177,15 +1998,126 @@ export const repoShowMergeRequestStatisticInput = z.object({
   fields: z.string().min(1).max(256).optional()
 });
 
+export const repoListCommitAssociatedMergeRequestsInput = pagingSchema.extend({
+  repository_id: idSchema,
+  sha: z.string().min(1).max(64),
+  page_size: z.number().int().positive().max(100).default(20)
+});
+
 export const repoListMergeRequestDiscussionsInput = pagingSchema.extend({
   repository_id: idSchema,
   merge_request_iid: idSchema
+});
+
+const repoDiscussionMutationBodySchema = z.object({
+  body: z.string().min(1).optional(),
+  severity: z.enum(["suggestion", "minor", "major", "fatal"]).optional(),
+  assignee_id: idSchema.optional(),
+  review_categories: z.string().min(1).optional(),
+  review_modules: z.string().min(1).optional(),
+  proposer_id: idSchema.optional(),
+  resolved: z.boolean().optional()
+});
+
+export const repoCreateCherryPickMergeRequestInput = z.object({
+  repository_id: idSchema,
+  merge_request_iid: idSchema,
+  branch: z.string().min(1),
+  with_new_merge_request: z.boolean().optional(),
+  message: z.string().min(1).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoShowMergeRequestDiscussionInput = z.object({
+  repository_id: idSchema,
+  merge_request_iid: idSchema,
+  discussion_id: z.string().min(1)
+});
+
+export const repoUpdateMergeRequestDiscussionInfoInput = repoDiscussionMutationBodySchema.extend({
+  repository_id: idSchema,
+  merge_request_iid: idSchema,
+  discussion_id: z.string().min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoShowAverageEvaluationInput = z.object({
+  repository_id: idSchema,
+  merge_request_iid: idSchema
+});
+
+export const repoListMergeRequestEvaluationsInput = pagingSchema.extend({
+  repository_id: idSchema,
+  merge_request_iid: idSchema,
+  page_size: z.number().int().positive().max(100).default(20)
+});
+
+const repoCommentsByLineQuerySchema = z.object({
+  line: z.number().int().positive().optional(),
+  with_commit_comments: z.boolean().optional(),
+  path: z.string().min(1).optional(),
+  view: z.enum(["basic", "sample"]).optional(),
+  base_sha: z.string().min(1).max(64).optional(),
+  start_sha: z.string().min(1).max(64).optional(),
+  head_sha: z.string().min(1).max(64).optional()
+});
+
+export const repoShowMergeRequestCommentsByLineInput = repoCommentsByLineQuerySchema.extend({
+  repository_id: idSchema,
+  merge_request_iid: idSchema
+});
+
+export const repoShowCommitCommentsByLineInput = z.object({
+  repository_id: idSchema,
+  sha: z.string().min(1).max(64)
+});
+
+export const repoListMergeRequestVersionsInput = pagingSchema.extend({
+  repository_id: idSchema,
+  merge_request_iid: idSchema,
+  page_size: z.number().int().positive().max(100).default(20)
+});
+
+export const repoListMergeRequestSystemNotesInput = pagingSchema.extend({
+  repository_id: idSchema,
+  merge_request_iid: idSchema,
+  page_size: z.number().int().positive().max(100).default(20)
+});
+
+export const repoListCommitDiscussionsInput = pagingSchema.extend({
+  repository_id: idSchema,
+  sha: z.string().min(1).max(64),
+  page_size: z.number().int().positive().max(100).default(20)
 });
 
 export const repoCreateMergeRequestDiscussionInput = z.object({
   repository_id: idSchema,
   merge_request_iid: idSchema,
   body: z.string().min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoCreateMergeRequestDiscussionResponseInput = repoDiscussionMutationBodySchema.extend({
+  repository_id: idSchema,
+  merge_request_iid: idSchema,
+  discussion_id: z.string().min(1),
+  body: z.string().min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoUpdateMergeRequestDiscussionInput = repoDiscussionMutationBodySchema.extend({
+  repository_id: idSchema,
+  merge_request_iid: idSchema,
+  discussion_id: z.string().min(1),
+  note_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoDeleteMergeRequestDiscussionInput = z.object({
+  repository_id: idSchema,
+  merge_request_iid: idSchema,
+  discussion_id: z.string().min(1),
+  note_id: idSchema,
   dry_run: z.boolean().default(true)
 });
 
@@ -1201,10 +2133,127 @@ export const repoMergeMergeRequestInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const repoListPersonalMergeRequestsInput = pagingSchema.extend({
+  state: z.enum(["all", "opened", "closed", "locked", "merged"]).default("all"),
+  order_by: z.enum(["created_at", "updated_at", "merged_at"]).optional(),
+  sort: z.enum(["asc", "desc"]).optional(),
+  labels: z.string().min(1).optional(),
+  created_before: z.string().min(1).optional(),
+  created_after: z.string().min(1).optional(),
+  updated_after: z.string().min(1).optional(),
+  updated_before: z.string().min(1).optional(),
+  view: z.enum(["simple", "basic"]).optional(),
+  author_id: idSchema.optional(),
+  scope: z.enum(["created_by_me", "assigned_to_me", "need_my_review", "need_my_approve", "all"]).optional(),
+  source_branch: z.string().min(1).optional(),
+  target_branch: z.string().min(1).optional(),
+  search: z.string().min(1).optional(),
+  wip: z.string().min(1).optional(),
+  merged_by: idSchema.optional(),
+  merged_after: z.string().min(1).optional(),
+  merged_before: z.string().min(1).optional(),
+  only_count: z.boolean().optional(),
+  page_size: z.number().int().positive().max(100).default(20)
+});
+
+export const repoListMergeRequestParticipantsInput = pagingSchema.extend({
+  repository_id: idSchema,
+  merge_request_iid: idSchema,
+  page_size: z.number().int().positive().max(100).default(20)
+});
+
+export const repoShowBranchConflictInput = z.object({
+  repository_id: idSchema,
+  source_repository_id: idSchema.optional(),
+  source_branch: z.string().min(1).optional(),
+  target_branch: z.string().min(1).optional(),
+  target_repository_id: idSchema.optional()
+});
+
 export const repoGetFileInput = z.object({
   repository_id: idSchema,
   file_path: z.string().min(1),
   branch: z.string().min(1)
+});
+
+export const repoDownloadBlobsRawInput = z.object({
+  repository_id: idSchema,
+  blob_id: z.string().min(1),
+  file_path: z.string().min(1).max(10000),
+  file_name: z.string().min(1).optional()
+});
+
+export const repoListFileUpperTreeEntriesInput = z.object({
+  repository_id: idSchema,
+  file_path: z.string().min(1).max(10000).optional(),
+  ref_name: z.string().min(1).max(200).optional()
+});
+
+export const repoShowFileRawInput = z.object({
+  repository_id: idSchema,
+  file_path: z.string().min(1).max(10000),
+  ref: z.string().min(1).max(2000).optional()
+});
+
+export const repoCreateFileInput = z.object({
+  repository_id: idSchema,
+  file_path: z.string().min(1).max(10000),
+  branch: z.string().min(1).max(2000),
+  commit_message: z.string().min(1).max(2000),
+  content: z.string().min(1),
+  name: z.string().min(1).optional(),
+  author_email: z.string().min(1).optional(),
+  author_name: z.string().min(1).optional(),
+  encoding: z.enum(["text", "base64"]).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoShowFileInput = z.object({
+  repository_id: idSchema,
+  file_path: z.string().min(1).max(10000),
+  ref: z.string().min(1).max(2000).optional()
+});
+
+export const repoDeleteFileInput = z.object({
+  repository_id: idSchema,
+  file_path: z.string().min(1).max(10000),
+  branch: z.string().min(1).max(2000),
+  commit_message: z.string().min(1).max(2000),
+  author_name: z.string().min(1).optional(),
+  author_email: z.string().min(1).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoUpdateFileInput = z.object({
+  repository_id: idSchema,
+  file_path: z.string().min(1).max(10000),
+  branch: z.string().min(1).max(2000),
+  commit_message: z.string().min(1).max(2000),
+  content: z.string().min(1),
+  name: z.string().min(1).optional(),
+  author_email: z.string().min(1).optional(),
+  author_name: z.string().min(1).optional(),
+  encoding: z.enum(["text", "base64"]).optional(),
+  last_commit_id: z.string().min(1).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoRenameFileInput = z.object({
+  repository_id: idSchema,
+  file_path: z.string().min(1),
+  previous_path: z.string().min(1),
+  branch_name: z.string().min(1),
+  commit_message: z.string().min(1),
+  start_branch: z.string().min(1).optional(),
+  author_email: z.string().min(1).optional(),
+  author_name: z.string().min(1).optional(),
+  infer_content: z.boolean().optional(),
+  content: z.string().optional(),
+  encoding: z.enum(["text", "base64"]).optional(),
+  last_commit_id: z.string().min(1).optional(),
+  dry_run: z.boolean().default(true)
+}).refine((input) => input.infer_content !== undefined || input.content !== undefined, {
+  message: "Either infer_content or content is required"
 });
 
 export const repoListBranchesInput = pagingSchema.extend({
@@ -1242,6 +2291,59 @@ export const repoListCommitsInput = pagingSchema.extend({
 export const repoGetCommitInput = z.object({
   repository_id: idSchema,
   commit_sha: idSchema
+});
+
+export const repoCreateCommitInput = z.object({
+  repository_id: idSchema,
+  branch: z.string().min(1).max(2000),
+  commit_message: z.string().min(1).max(2000),
+  actions: z.array(
+    z.object({
+      action: z.enum(["create", "create_dir", "update", "move", "delete", "chmod"]),
+      file_path: z.string().min(1).max(100000),
+      previous_path: z.string().min(1).max(100000).optional(),
+      content: z.string().optional(),
+      encoding: z.enum(["text", "base64"]).optional(),
+      last_commit_id: z.string().min(1).optional(),
+      execute_filemode: z.boolean().optional()
+    })
+  ).min(1),
+  start_branch: z.string().min(1).max(2000).optional(),
+  author_email: z.string().min(1).max(2000).optional(),
+  author_name: z.string().min(1).max(2000).optional(),
+  stats: z.boolean().optional(),
+  force: z.boolean().optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoCreateCommitRevertInput = z.object({
+  repository_id: idSchema,
+  sha: z.string().min(1).max(2000),
+  branch: z.string().min(1).max(2000),
+  with_new_merge_request: z.boolean().optional(),
+  message: z.string().min(1).max(2000).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoShowCommitDiffMetadataInput = z.object({
+  repository_id: idSchema,
+  sha: z.string().min(1).max(2000)
+});
+
+export const repoShowCommitFileDiffInput = z.object({
+  repository_id: idSchema,
+  sha: z.string().min(1).max(2000),
+  path: z.string().min(1).max(100000),
+  old_path: z.string().min(1).max(100000).optional(),
+  ignore_whitespace_change: z.boolean().optional()
+});
+
+export const repoShowDiffCommitInput = pagingSchema.extend({
+  repository_id: idSchema,
+  sha: z.string().min(1).max(2000),
+  ignore_whitespace_change: z.boolean().optional(),
+  not_statistic: z.boolean().optional(),
+  page_size: z.number().int().positive().max(100).default(20)
 });
 
 export const repoGetRepositoryInput = z.object({
@@ -1305,6 +2407,18 @@ export const repoListRepositoryForksInput = pagingSchema.extend({
 export const repoListMergeRequestsInput = pagingSchema.extend({
   repository_id: idSchema,
   state: z.enum(["all", "opened", "closed", "merged"]).optional()
+});
+
+export const repoListProjectMergeRequestsInput = pagingSchema.extend({
+  project_id: idSchema,
+  state: z.enum(["all", "opened", "closed", "locked", "merged"]).optional(),
+  order_by: z.enum(["created_at", "updated_at", "title"]).optional(),
+  sort: z.enum(["asc", "desc"]).optional(),
+  author_id: z.union([z.string().min(1), z.number().int().positive()]).optional(),
+  source_branch: z.string().min(1).optional(),
+  target_branch: z.string().min(1).optional(),
+  search: z.string().min(1).optional(),
+  source_repository_id: idSchema.optional()
 });
 
 export const repoGetMergeRequestInput = z.object({

@@ -58,6 +58,7 @@ export const reqToolNames = [
   "req_create_release_plan",
   "req_create_iteration",
   "req_create_iteration_v4",
+  "req_create_epic_issue",
   "req_create_version_v2",
   "req_create_work_item_with_attachment_v3",
   "req_issue_upload_create",
