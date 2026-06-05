@@ -1,6 +1,7 @@
 export const checkToolNames = [
   "check_create_task",
   "check_create_ruleset",
+  "check_delete_task",
   "check_delete_ruleset",
   "check_list_rulesets",
   "check_list_tasks",
@@ -85,7 +86,9 @@ export const checkToolNames = [
   "check_get_task_ruleset_check_parameters_v2",
   "check_get_task_ruleset_check_parameters_v3",
   "check_get_task_settings",
+  "check_get_transmission_review_data",
   "check_update_task_config_parameters",
+  "check_update_task_settings",
   "check_list_task_branches",
   "check_list_task_branches_v4",
   "check_list_task_issues",
@@ -98,5 +101,6 @@ export const checkToolNames = [
   "check_update_ignore_files",
   "check_update_check_mode",
   "check_update_pipeline_task",
+  "check_refresh_job_result",
   "check_request_official_api"
 ];

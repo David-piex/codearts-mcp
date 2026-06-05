@@ -923,6 +923,126 @@ describe("createCheckClient", () => {
     ]);
   });
 
+  it("uses documented token-header task settings, review-data, refresh, and delete endpoints", async () => {
+    const getRequests: Array<{ path: string; options?: Record<string, unknown> }> = [];
+    const postRequests: Array<{ path: string; body?: unknown; options?: Record<string, unknown> }> = [];
+    const putRequests: Array<{ path: string; body?: unknown; options?: Record<string, unknown> }> = [];
+    const deleteRequests: Array<{ path: string; body?: unknown; options?: Record<string, unknown> }> = [];
+    const client = createClient({
+      get: async (path: string, options?: Record<string, unknown>) => {
+        getRequests.push({ path, options });
+        return {
+          status: "success",
+          httpStatus: "OK",
+          result: {
+            review_info: [{ name: "critical", value: 3 }]
+          }
+        };
+      },
+      post: async (path: string, body?: unknown, options?: Record<string, unknown>) => {
+        postRequests.push({ path, body, options });
+        return null;
+      },
+      put: async (path: string, body?: unknown, options?: Record<string, unknown>) => {
+        putRequests.push({ path, body, options });
+        return {
+          status: "success",
+          result: {
+            REPORT_URL: "https://example.com/report"
+          }
+        };
+      },
+      delete: async (path: string, body?: unknown, options?: Record<string, unknown>) => {
+        deleteRequests.push({ path, body, options });
+        return null;
+      }
+    });
+
+    await expect(client.getTransmissionReviewData({
+      is_check_project: 1,
+      project_id: "project-1",
+      x_auth_token: "token-1"
+    })).resolves.toEqual({
+      status: "success",
+      http_status: "OK",
+      raw: {
+        review_info: [{ name: "critical", value: 3 }]
+      }
+    });
+    await expect(client.updateTaskSettings({
+      project_id: "project-1",
+      task_id: "task-1",
+      x_auth_token: "token-2",
+      task_advanced_settings: [{ key: "scan_range", value: "full" }]
+    })).resolves.toEqual({
+      task_id: "task-1",
+      status: undefined,
+      result: undefined,
+      raw: {}
+    });
+    await expect(client.refreshJobResult({
+      job_id: "job-1",
+      task_id: "task-1",
+      async: false,
+      x_auth_token: "token-3"
+    })).resolves.toEqual({
+      job_id: "job-1",
+      task_id: "task-1",
+      async: false,
+      status: "success",
+      raw: {
+        REPORT_URL: "https://example.com/report"
+      }
+    });
+    await expect(client.deleteTask({
+      task_id: "task-1",
+      x_auth_token: "token-4"
+    })).resolves.toEqual({
+      task_id: "task-1",
+      status: undefined,
+      result: undefined,
+      raw: {}
+    });
+
+    expect(getRequests).toEqual([
+      {
+        path: "/v2/transmission/review-data?is_check_project=1&project_id=project-1",
+        options: {
+          headers: { "X-Auth-Token": "token-1" }
+        }
+      }
+    ]);
+    expect(postRequests).toEqual([
+      {
+        path: "/v2/project-1/tasks/task-1/settings",
+        body: {
+          task_advanced_settings: [{ key: "scan_range", value: "full" }]
+        },
+        options: {
+          headers: { "X-Auth-Token": "token-2" }
+        }
+      }
+    ]);
+    expect(putRequests).toEqual([
+      {
+        path: "/v1/jobs/job-1/result/refresh?async=false&task_id=task-1",
+        body: undefined,
+        options: {
+          headers: { "X-Auth-Token": "token-3" }
+        }
+      }
+    ]);
+    expect(deleteRequests).toEqual([
+      {
+        path: "/v2/tasks/task-1",
+        body: undefined,
+        options: {
+          headers: { "X-Auth-Token": "token-4" }
+        }
+      }
+    ]);
+  });
+
   it("uses documented file, language, repository, and checker version endpoints", async () => {
     const requests: string[] = [];
     const client = createClient({

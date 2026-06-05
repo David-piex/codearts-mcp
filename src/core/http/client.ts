@@ -299,6 +299,6 @@ export function createHttpClient(input: HttpClientInput) {
     postMultipart: (path: string, body: FormData, options?: RequestOptions) => request("POST", path, body, options),
     put: (path: string, body?: unknown, options?: RequestOptions) => request("PUT", path, body, options),
     patch: (path: string, body?: unknown) => request("PATCH", path, body),
-    delete: (path: string, body?: unknown) => request("DELETE", path, body)
+    delete: (path: string, body?: unknown, options?: RequestOptions) => request("DELETE", path, body, options)
   };
 }

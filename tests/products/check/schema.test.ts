@@ -2,13 +2,17 @@ import { describe, expect, it } from "vitest";
 import {
   checkCreateRulesetInput,
   checkCreateTaskInput,
+  checkDeleteTaskInput,
   checkDeleteRulesetInput,
   checkDetectTaskLanguageInput,
+  checkGetTransmissionReviewDataInput,
   checkGetMeasureTotalInput,
   checkGetProjectConfigInput,
+  checkRefreshJobResultInput,
   checkSetDefaultRulesetInput,
   checkUpdatePipelineTaskInput,
   checkUpdateTaskConfigParametersInput,
+  checkUpdateTaskSettingsInput,
   checkUpdateTaskOwnerMatchingSwitchInput,
   checkUpdateTaskWebhookInput,
   checkUpdateTaskResourcePoolInput,
@@ -193,6 +197,63 @@ describe("check schemas", () => {
       query: {
         branch: "main"
       }
+    });
+  });
+
+  it("accepts token-header delete, review-data, refresh, and settings schemas", () => {
+    expect(checkDeleteTaskInput.parse({
+      task_id: "task-1",
+      x_auth_token: "token-1"
+    })).toEqual({
+      task_id: "task-1",
+      x_auth_token: "token-1",
+      dry_run: true
+    });
+
+    expect(checkGetTransmissionReviewDataInput.parse({
+      is_check_project: 1,
+      project_id: "project-1",
+      x_auth_token: "token-2"
+    })).toEqual({
+      is_check_project: 1,
+      project_id: "project-1",
+      x_auth_token: "token-2"
+    });
+
+    expect(checkRefreshJobResultInput.parse({
+      job_id: "job-1",
+      task_id: "task-1",
+      async: false,
+      x_auth_token: "token-3"
+    })).toEqual({
+      job_id: "job-1",
+      task_id: "task-1",
+      async: false,
+      x_auth_token: "token-3",
+      dry_run: true
+    });
+
+    expect(checkUpdateTaskSettingsInput.parse({
+      project_id: "project-1",
+      task_id: "task-1",
+      x_auth_token: "token-4",
+      task_advanced_settings: [
+        {
+          key: "scan_range",
+          value: "full"
+        }
+      ]
+    })).toEqual({
+      project_id: "project-1",
+      task_id: "task-1",
+      x_auth_token: "token-4",
+      task_advanced_settings: [
+        {
+          key: "scan_range",
+          value: "full"
+        }
+      ],
+      dry_run: true
     });
   });
 

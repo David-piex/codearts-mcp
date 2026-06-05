@@ -5,6 +5,7 @@ import {
   checkCreateRulesetInput,
   checkCreateTaskInput,
   checkCreatePdfAsyncJobInput,
+  checkDeleteTaskInput,
   checkDeleteRulesetInput,
   checkDetectTaskLanguageInput,
   checkDownloadLogFileInput,
@@ -47,10 +48,13 @@ import {
   checkGetTaskRulesetCheckParametersV2Input,
   checkGetTaskRulesetCheckParametersV3Input,
   checkGetTaskSettingsInput,
+  checkGetTransmissionReviewDataInput,
   checkGetTaskWebhookInfoInput,
   checkGetTaskWebhookInfoV4Input,
   checkUpdateTaskWebhookInput,
   checkUpdateTaskConfigParametersInput,
+  checkRefreshJobResultInput,
+  checkUpdateTaskSettingsInput,
   checkGetTransmissionNotificationInput,
   checkGetVpcepAuthorizationInput,
   checkListAllCriterionsetsInput,
@@ -105,6 +109,7 @@ import {
 import { createCheckCreateTaskHandler } from "../products/check/tools/create-task.js";
 import { createCheckCreateRulesetHandler } from "../products/check/tools/create-ruleset.js";
 import { createCheckCreatePdfAsyncJobHandler } from "../products/check/tools/create-pdf-async-job.js";
+import { createCheckDeleteTaskHandler } from "../products/check/tools/delete-task.js";
 import { createCheckDeleteRulesetHandler } from "../products/check/tools/delete-ruleset.js";
 import {
   createCheckDownloadLogFileHandler,
@@ -166,6 +171,7 @@ import { createCheckUpdateTaskResourcePoolHandler } from "../products/check/tool
 import { createCheckGetTaskRulesetCheckParametersV2Handler } from "../products/check/tools/get-task-ruleset-check-parameters-v2.js";
 import { createCheckGetTaskRulesetCheckParametersV3Handler } from "../products/check/tools/get-task-ruleset-check-parameters-v3.js";
 import { createCheckGetTaskSettingsHandler } from "../products/check/tools/get-task-settings.js";
+import { createCheckGetTransmissionReviewDataHandler } from "../products/check/tools/get-transmission-review-data.js";
 import { createCheckGetTaskWebhookInfoHandler } from "../products/check/tools/get-task-webhook-info.js";
 import { createCheckUpdateTaskWebhookHandler } from "../products/check/tools/update-task-webhook.js";
 import { createCheckUpdateTaskConfigParametersHandler } from "../products/check/tools/update-task-config-parameters.js";
@@ -200,6 +206,7 @@ import { createCheckListTaskRepositoryBranchesHandler } from "../products/check/
 import { createCheckListTaskRulesetsV2Handler } from "../products/check/tools/list-task-rulesets-v2.js";
 import { createCheckListTaskRulesetsV3Handler } from "../products/check/tools/list-task-rulesets-v3.js";
 import { createCheckListTasksHandler } from "../products/check/tools/list-tasks.js";
+import { createCheckRefreshJobResultHandler } from "../products/check/tools/refresh-job-result.js";
 import { createCheckRunTaskHandler } from "../products/check/tools/run-task.js";
 import { createCheckStopTaskHandler } from "../products/check/tools/stop-task.js";
 import { createCheckUpdateCheckModeHandler } from "../products/check/tools/update-check-mode.js";
@@ -207,6 +214,7 @@ import { createCheckUpdateCodeGateHandler } from "../products/check/tools/update
 import { createCheckUpdateIgnoreFilesHandler } from "../products/check/tools/update-ignore-files.js";
 import { createCheckUpdateIssueStatusHandler } from "../products/check/tools/update-issue-status.js";
 import { createCheckUpdatePipelineTaskHandler } from "../products/check/tools/update-pipeline-task.js";
+import { createCheckUpdateTaskSettingsHandler } from "../products/check/tools/update-task-settings.js";
 import { createOfficialApiRequestHandler } from "../products/shared-tools/request-official-api.js";
 import { defineProductTool, registerDefinedTool } from "./product-tool-registry.js";
 import type { RateLimiter } from "./rate-limiter.js";
@@ -239,6 +247,12 @@ const checkToolDefinitions = {
     inputSchema: checkCreateRulesetInput,
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckCreateRulesetHandler>[0] }) => clients.checkClient,
     createProductHandler: createCheckCreateRulesetHandler
+  }),
+  "check_delete_task": defineProductTool({
+    description: "Delete CodeArts Check task via official v2 token-header API",
+    inputSchema: checkDeleteTaskInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckDeleteTaskHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckDeleteTaskHandler
   }),
   "check_delete_ruleset": defineProductTool({
     description: "Delete CodeArts Check ruleset",
@@ -732,11 +746,23 @@ const checkToolDefinitions = {
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetTaskSettingsHandler>[0] }) => clients.checkClient,
     createProductHandler: createCheckGetTaskSettingsHandler
   }),
+  "check_get_transmission_review_data": defineProductTool({
+    description: "Get CodeArts Check transmission review data via official token-header API",
+    inputSchema: checkGetTransmissionReviewDataInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetTransmissionReviewDataHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckGetTransmissionReviewDataHandler
+  }),
   "check_update_task_config_parameters": defineProductTool({
     description: "Update CodeArts Check task config parameters",
     inputSchema: checkUpdateTaskConfigParametersInput,
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckUpdateTaskConfigParametersHandler>[0] }) => clients.checkClient,
     createProductHandler: createCheckUpdateTaskConfigParametersHandler
+  }),
+  "check_update_task_settings": defineProductTool({
+    description: "Update CodeArts Check task settings via official token-header API",
+    inputSchema: checkUpdateTaskSettingsInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckUpdateTaskSettingsHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckUpdateTaskSettingsHandler
   }),
   "check_list_task_branches": defineProductTool({
     description: "List CodeArts Check task branches",
@@ -815,6 +841,12 @@ const checkToolDefinitions = {
     inputSchema: checkUpdatePipelineTaskInput,
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckUpdatePipelineTaskHandler>[0] }) => clients.checkClient,
     createProductHandler: createCheckUpdatePipelineTaskHandler
+  }),
+  "check_refresh_job_result": defineProductTool({
+    description: "Refresh CodeArts Check job result via official token-header API",
+    inputSchema: checkRefreshJobResultInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckRefreshJobResultHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckRefreshJobResultHandler
   })
 } as const;
 

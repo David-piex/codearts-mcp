@@ -470,6 +470,38 @@ export const checkGetTaskSettingsInput = z.object({
   task_id: idSchema
 });
 
+export const checkDeleteTaskInput = z.object({
+  task_id: idSchema,
+  x_auth_token: z.string().min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const checkUpdateTaskSettingsInput = z.object({
+  project_id: idSchema,
+  task_id: idSchema,
+  x_auth_token: z.string().min(1),
+  task_advanced_settings: z.array(z.object({
+    key: z.string().min(1).max(50),
+    value: z.string().min(1).max(1000)
+  })).min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const checkGetTransmissionReviewDataInput = z.object({
+  is_check_project: z.union([z.literal(0), z.literal(1)]),
+  x_auth_token: z.string().min(1),
+  domain_id: idSchema.optional(),
+  project_id: idSchema.optional()
+});
+
+export const checkRefreshJobResultInput = z.object({
+  job_id: idSchema,
+  task_id: idSchema.optional(),
+  async: z.boolean().default(true),
+  x_auth_token: z.string().min(1),
+  dry_run: z.boolean().default(true)
+});
+
 export const checkUpdateTaskConfigParametersInput = z.object({
   project_id: idSchema,
   task_id: idSchema,

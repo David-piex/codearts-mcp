@@ -242,6 +242,33 @@ describe("createHttpClient", () => {
     }));
   });
 
+  it("passes custom headers to DELETE requests", async () => {
+    const fetcher = vi.fn().mockResolvedValue(
+      new Response(null, {
+        status: 204
+      })
+    );
+    const authHeaders = vi.fn(async ({ headers }: { headers: Record<string, string> }) => headers);
+    const client = createClient(fetcher, { authHeaders: authHeaders as never });
+
+    const result = await client.delete("/v1/task/task-1", undefined, {
+      headers: { "X-Auth-Token": "token-654321" }
+    });
+
+    expect(result).toBeNull();
+    expect(authHeaders).toHaveBeenCalledWith(expect.objectContaining({
+      headers: expect.objectContaining({
+        "X-Auth-Token": "token-654321"
+      })
+    }));
+    expect(fetcher).toHaveBeenCalledWith("https://example.com/v1/task/task-1", expect.objectContaining({
+      method: "DELETE",
+      headers: expect.objectContaining({
+        "X-Auth-Token": "token-654321"
+      })
+    }));
+  });
+
   it("parses json-shaped provider errors even when content-type is text/html", async () => {
     const fetcher = vi.fn().mockResolvedValue(
       new Response(

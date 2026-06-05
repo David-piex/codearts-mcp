@@ -714,6 +714,51 @@ export type CheckClient = {
     task_id: string;
     raw: Record<string, unknown>;
   }>;
+  deleteTask: (input: {
+    task_id: string;
+    x_auth_token: string;
+  }) => Promise<{
+    task_id: string;
+    status?: string;
+    result?: string;
+    raw: Record<string, unknown>;
+  }>;
+  updateTaskSettings: (input: {
+    project_id: string;
+    task_id: string;
+    x_auth_token: string;
+    task_advanced_settings: Array<{
+      key: string;
+      value: string;
+    }>;
+  }) => Promise<{
+    task_id: string;
+    status?: string;
+    result?: string;
+    raw: Record<string, unknown>;
+  }>;
+  getTransmissionReviewData: (input: {
+    is_check_project: 0 | 1;
+    x_auth_token: string;
+    domain_id?: string;
+    project_id?: string;
+  }) => Promise<{
+    status?: string;
+    http_status?: string | number;
+    raw: Record<string, unknown>;
+  }>;
+  refreshJobResult: (input: {
+    job_id: string;
+    task_id?: string;
+    async: boolean;
+    x_auth_token: string;
+  }) => Promise<{
+    job_id: string;
+    task_id?: string;
+    async: boolean;
+    status?: string;
+    raw: Record<string, unknown>;
+  }>;
   updateTaskConfigParameters: (input: {
     project_id: string;
     task_id: string;
@@ -2364,6 +2409,84 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
       return {
         task_id: input.task_id,
         raw: settings
+      };
+    },
+    async deleteTask(input) {
+      const response = await _http.delete(`/v2/tasks/${encodeURIComponent(input.task_id)}`, undefined, {
+        headers: { "X-Auth-Token": input.x_auth_token }
+      });
+      const payload = readResultPayload(response);
+
+      return {
+        task_id: input.task_id,
+        status: typeof payload.status === "string" ? payload.status : undefined,
+        result: typeof payload.result === "string" ? payload.result : undefined,
+        raw: payload
+      };
+    },
+    async updateTaskSettings(input) {
+      const response = await _http.post(
+        `/v2/${encodeURIComponent(input.project_id)}/tasks/${encodeURIComponent(input.task_id)}/settings`,
+        {
+          task_advanced_settings: input.task_advanced_settings
+        },
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        task_id: input.task_id,
+        status: typeof payload.status === "string" ? payload.status : undefined,
+        result: typeof payload.result === "string" ? payload.result : undefined,
+        raw: payload
+      };
+    },
+    async getTransmissionReviewData(input) {
+      const query = new URLSearchParams({
+        is_check_project: String(input.is_check_project)
+      });
+      if (input.project_id) query.set("project_id", input.project_id);
+      if (input.domain_id) query.set("domain_id", input.domain_id);
+      const response = await _http.get(`/v2/transmission/review-data?${query.toString()}`, {
+        headers: { "X-Auth-Token": input.x_auth_token }
+      });
+      const envelope = readEnvelope(response) ?? {};
+      const payload = readResultPayload(response);
+      const reviewData = readEnvelope(payload.result) ?? readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        status: typeof envelope.status === "string" ? envelope.status : undefined,
+        http_status:
+          typeof envelope.httpStatus === "string" || typeof envelope.httpStatus === "number"
+            ? envelope.httpStatus
+            : undefined,
+        raw: reviewData
+      };
+    },
+    async refreshJobResult(input) {
+      const query = new URLSearchParams({
+        async: String(input.async)
+      });
+      if (input.task_id) query.set("task_id", input.task_id);
+      const response = await _http.put(
+        `/v1/jobs/${encodeURIComponent(input.job_id)}/result/refresh?${query.toString()}`,
+        undefined,
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
+      );
+      const envelope = readEnvelope(response) ?? {};
+      const payload = readResultPayload(response);
+      const report = readEnvelope(payload.result) ?? readEnvelope(payload.data) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        job_id: input.job_id,
+        task_id: input.task_id,
+        async: input.async,
+        status: typeof envelope.status === "string" ? envelope.status : undefined,
+        raw: report
       };
     },
     async updateTaskConfigParameters(input) {
