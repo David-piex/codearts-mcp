@@ -2,7 +2,9 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { officialApiRequestInput } from "../products/official-api.js";
 import { createArtifactClient } from "../products/artifact/client.js";
 import {
+  artifactCreateAttentionInput,
   artifactDeleteFileInput,
+  artifactDeleteCompletelyUpdateFileStateInput,
   artifactDeleteTrashRepositoriesInput,
   artifactCreateRepositoryInput,
   artifactGetFileTreeInput,
@@ -45,12 +47,14 @@ import {
   artifactShowProjectStorageInfoInput,
   artifactShowProjectVersionsCountInput,
   artifactShowRepositoryPrivilegesInput,
+  artifactShowUserTicketInput,
   artifactShowUserPermissionsInput,
   artifactShowUserPrivilegesInput,
   artifactShowUserPrivilegesV3Input,
   artifactUpdateRepositoryInput,
 } from "../products/artifact/schemas.js";
 import {
+  createArtifactShowFileDetailByFullNameHandler,
   createArtifactGetRepoFileInfoByIdHandler,
   createArtifactGetRepoFileInfoByNameHandler,
   createArtifactGetRepositoryDetailHandler,
@@ -61,8 +65,13 @@ import {
   createArtifactListProjectUsersHandler,
   createArtifactListReleaseFilesHandler,
   createArtifactShowRepositoryPrivilegesHandler,
+  createArtifactShowUserTicketHandler,
   createArtifactShowUserPrivilegesV3Handler,
 } from "../products/artifact/tools/additional-read-tools.js";
+import {
+  createArtifactCreateAttentionHandler,
+  createArtifactDeleteCompletelyUpdateFileStateHandler,
+} from "../products/artifact/tools/additional-mutation-tools.js";
 import { createArtifactDeleteFileHandler } from "../products/artifact/tools/delete-file.js";
 import { createArtifactGetFileTreeHandler } from "../products/artifact/tools/get-file-tree.js";
 import { createArtifactGetFileHandler } from "../products/artifact/tools/get-file.js";
@@ -566,6 +575,40 @@ const artifactToolDefinitions = {
       >[0];
     }) => clients.artifactClient,
     createProductHandler: createArtifactGetRepoFileInfoByNameHandler,
+  }),
+  artifact_show_file_detail_by_full_name: defineProductTool({
+    description: "Show CodeArts Artifact file detail by full name",
+    inputSchema: artifactGetRepoFileInfoByNameInput,
+    selectHttpClient: (clients: {
+      artifactClient: Parameters<
+        typeof createArtifactShowFileDetailByFullNameHandler
+      >[0];
+    }) => clients.artifactClient,
+    createProductHandler: createArtifactShowFileDetailByFullNameHandler,
+  }),
+  artifact_show_user_ticket: defineProductTool({
+    description: "Show CodeArts Artifact user ticket",
+    inputSchema: artifactShowUserTicketInput,
+    selectHttpClient: (clients: {
+      artifactClient: Parameters<typeof createArtifactShowUserTicketHandler>[0];
+    }) => clients.artifactClient,
+    createProductHandler: createArtifactShowUserTicketHandler,
+  }),
+  artifact_create_attention: defineProductTool({
+    description: "Create or remove CodeArts Artifact attention items",
+    inputSchema: artifactCreateAttentionInput,
+    selectHttpClient: (clients: {
+      artifactClient: Parameters<typeof createArtifactCreateAttentionHandler>[0];
+    }) => clients.artifactClient,
+    createProductHandler: createArtifactCreateAttentionHandler,
+  }),
+  artifact_delete_completely_update_file_state: defineProductTool({
+    description: "Permanently delete CodeArts Artifact files by id through the official DeleteCompletelyUpdateFileState endpoint",
+    inputSchema: artifactDeleteCompletelyUpdateFileStateInput,
+    selectHttpClient: (clients: {
+      artifactClient: Parameters<typeof createArtifactDeleteCompletelyUpdateFileStateHandler>[0];
+    }) => clients.artifactClient,
+    createProductHandler: createArtifactDeleteCompletelyUpdateFileStateHandler,
   }),
   artifact_show_audit: defineProductTool({
     description: "Show CodeArts Artifact audit logs",

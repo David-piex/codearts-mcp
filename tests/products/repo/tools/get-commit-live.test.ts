@@ -14,13 +14,16 @@ describe("createRepoGetCommitHandler", () => {
     });
 
     const result = await handler({ repository_id: "repo-1", commit_sha: "abc123" });
+    const item = result.structuredContent.item;
 
-    expect(result.structuredContent.item).toEqual({
+    expect(item).toBeDefined();
+    expect(item).toMatchObject({
       id: "abc123",
       shortId: "abc123",
       title: "feat: add login",
       authorName: "Yao",
       message: "feat: add login"
     });
+    expect(item?.parentIds).toEqual([]);
   });
 });

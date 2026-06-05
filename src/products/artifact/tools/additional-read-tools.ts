@@ -9,6 +9,7 @@ import {
   artifactListProjectUsersInput,
   artifactListReleaseFilesInput,
   artifactShowRepositoryPrivilegesInput,
+  artifactShowUserTicketInput,
   artifactShowUserPrivilegesV3Input
 } from "../schemas.js";
 import { formatArtifactRecordListText, mapArtifactRecordItem, mapArtifactRecordList } from "./generic-record-tools.js";
@@ -68,6 +69,7 @@ type Client = {
   }) => Promise<{ project_id: string; raw: unknown }>;
   getRepoFileInfoById: (input: { id: string }) => Promise<Record<string, unknown>>;
   getRepoFileInfoByName: (input: { file_name: string }) => Promise<Record<string, unknown>>;
+  showUserTicket: () => Promise<{ ticket?: string; raw: unknown }>;
 };
 
 function listResponse(items: Array<Record<string, unknown>>, total: number | undefined, noun: string, key: string) {
@@ -215,6 +217,44 @@ export function createArtifactGetRepoFileInfoByNameHandler(client: Client) {
       String(file.id ?? file.file_id ?? parsed.file_name),
       "file",
       file
+    );
+
+    return {
+      content: [{ type: "text" as const, text: result.summary }],
+      structuredContent: result
+    };
+  };
+}
+
+export function createArtifactShowFileDetailByFullNameHandler(client: Client) {
+  return async (input: unknown) => {
+    const parsed = artifactGetRepoFileInfoByNameInput.parse(input);
+    const file = await client.getRepoFileInfoByName(parsed);
+    const result = mapArtifactRecordItem(
+      `Loaded Artifact file detail for ${parsed.file_name}`,
+      String(file.id ?? file.file_id ?? parsed.file_name),
+      "file",
+      file,
+      { fileName: parsed.file_name }
+    );
+
+    return {
+      content: [{ type: "text" as const, text: result.summary }],
+      structuredContent: result
+    };
+  };
+}
+
+export function createArtifactShowUserTicketHandler(client: Client) {
+  return async (input: unknown) => {
+    artifactShowUserTicketInput.parse(input);
+    const response = await client.showUserTicket();
+    const result = mapArtifactRecordItem(
+      "Loaded Artifact user ticket",
+      response.ticket ?? "ticket",
+      "ticket",
+      response.raw,
+      { ticket: response.ticket }
     );
 
     return {

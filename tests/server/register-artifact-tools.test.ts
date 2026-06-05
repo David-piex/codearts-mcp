@@ -68,7 +68,11 @@ describe("registerArtifactTool", () => {
       ["artifact_show_repository_privileges", "Show CodeArts Artifact repository privileges"],
       ["artifact_show_user_privileges_v3", "Show CodeArts Artifact v3 user privileges"],
       ["artifact_get_repo_file_info_by_id", "Get CodeArts Artifact repository file info by id"],
-      ["artifact_get_repo_file_info_by_name", "Get CodeArts Artifact repository file info by name"]
+      ["artifact_get_repo_file_info_by_name", "Get CodeArts Artifact repository file info by name"],
+      ["artifact_show_file_detail_by_full_name", "Show CodeArts Artifact file detail by full name"],
+      ["artifact_show_user_ticket", "Show CodeArts Artifact user ticket"],
+      ["artifact_create_attention", "Create or remove CodeArts Artifact attention items"],
+      ["artifact_delete_completely_update_file_state", "Permanently delete CodeArts Artifact files by id through the official DeleteCompletelyUpdateFileState endpoint"]
     ] as const;
 
     for (const [toolName, description] of tools) {

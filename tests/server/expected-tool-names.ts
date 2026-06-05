@@ -1,5 +1,7 @@
 export const expectedToolNames = [
+  "artifact_create_attention",
   "artifact_create_repository",
+  "artifact_delete_completely_update_file_state",
   "artifact_delete_file",
   "artifact_delete_trash_repositories",
   "artifact_get_download_url",
@@ -36,6 +38,7 @@ export const expectedToolNames = [
   "artifact_show_auto_delete_job_settings",
   "artifact_show_capacity_notice_settings",
   "artifact_show_domain_release_repo_storage",
+  "artifact_show_file_detail_by_full_name",
   "artifact_show_latest_version_files_count",
   "artifact_show_open_source_enabled",
   "artifact_show_package_data_detail",
@@ -46,6 +49,7 @@ export const expectedToolNames = [
   "artifact_show_user_permissions",
   "artifact_show_user_privileges",
   "artifact_show_user_privileges_v3",
+  "artifact_show_user_ticket",
   "artifact_update_repository",
   "build_append_job_step",
   "build_append_release_upload_step",

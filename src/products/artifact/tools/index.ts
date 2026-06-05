@@ -45,6 +45,10 @@ export const artifactToolNames = [
   "artifact_show_user_privileges_v3",
   "artifact_get_repo_file_info_by_id",
   "artifact_get_repo_file_info_by_name",
+  "artifact_show_file_detail_by_full_name",
+  "artifact_show_user_ticket",
+  "artifact_create_attention",
+  "artifact_delete_completely_update_file_state",
   "artifact_show_audit",
   "artifact_request_official_api",
 ];

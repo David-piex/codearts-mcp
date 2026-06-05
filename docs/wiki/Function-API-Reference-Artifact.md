@@ -6,11 +6,81 @@
 
 模块：`制品仓`
 
-API 数量：`48`
+API 数量：`52`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
 ## API 清单
+
+### artifact_create_attention
+
+所属模块：`制品仓`
+
+说明：创建制品仓的attention。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "artifact_create_attention",
+    "arguments": {
+      "format": "<format>",
+      "attention": "<attention>",
+      "ids": "<ids>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `format` | 是 | `string` |  | 字段对应：<br>MCP 字段 `format` ↔ 原始 CodeArts 制品仓 API 同名字段 `format`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>制品仓仓库格式或制品格式，例如 maven、npm、pypi、generic、docker 等；实际可选值以制品仓配置为准。 |
+| `attention` | 是 | `string` |  | 字段对应：<br>MCP 字段 `attention` ↔ 原始 CodeArts 制品仓 API 同名字段 `attention`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `ids` | 是 | `array<string>` |  | 字段对应：<br>MCP 字段 `ids` ↔ 原始 CodeArts 制品仓 API 同名字段 `ids`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "format": {
+      "type": "string",
+      "minLength": 1
+    },
+    "attention": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "format",
+    "attention",
+    "ids"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
 
 ### artifact_create_repository
 
@@ -129,6 +199,62 @@ API 数量：`48`
     "type",
     "repository_name",
     "includes_pattern"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### artifact_delete_completely_update_file_state
+
+所属模块：`制品仓`
+
+说明：删除制品仓的completelyupdate文件state。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "artifact_delete_completely_update_file_state",
+    "arguments": {
+      "ids": "<ids>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `ids` | 是 | `array<string>` |  | 字段对应：<br>MCP 字段 `ids` ↔ 原始 CodeArts 制品仓 API 同名字段 `ids`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "ids"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -2678,6 +2804,53 @@ API 数量：`48`
 }
 ```
 
+### artifact_show_file_detail_by_full_name
+
+所属模块：`制品仓`
+
+说明：执行制品仓的文件详情byfullname。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "artifact_show_file_detail_by_full_name",
+    "arguments": {
+      "file_name": "<file_name>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `file_name` | 是 | `string` |  | 字段对应：<br>MCP 字段 `file_name` ↔ 原始 CodeArts 制品仓 API 同名字段 `file_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>文件名称。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "file_name": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "file_name"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### artifact_show_latest_version_files_count
 
 所属模块：`制品仓`
@@ -3162,6 +3335,41 @@ API 数量：`48`
   "required": [
     "project_id"
   ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### artifact_show_user_ticket
+
+所属模块：`制品仓`
+
+说明：执行制品仓的用户ticket。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "artifact_show_user_ticket",
+    "arguments": {}
+  }
+}
+```
+
+参数：
+
+无参数。
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {},
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
 }

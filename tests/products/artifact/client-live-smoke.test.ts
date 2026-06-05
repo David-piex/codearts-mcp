@@ -195,6 +195,39 @@ function readLiveRepoNames(source: NodeJS.ProcessEnv) {
   return names.length > 0 ? names : fallbackRepoNames;
 }
 
+async function findLatestFileSample(
+  client: ReturnType<typeof createArtifactClient>,
+  projectIds: string[]
+) {
+  for (const project_id of projectIds) {
+    const result = await client.listLatestVersionFiles(
+      createProjectPageInput(project_id, {
+        page_size: 20
+      })
+    );
+    const sample = result.files.find((file) => {
+      const path = typeof file.path === "string" ? file.path : undefined;
+      const name = typeof file.name === "string" ? file.name : undefined;
+      return Boolean(path && name);
+    });
+
+    if (sample) {
+      const path = String(sample.path);
+      const name = String(sample.name);
+      const normalizedPath = path.endsWith("/") ? path : `${path}/`;
+
+      return {
+        project_id,
+        file_name: `${project_id}${normalizedPath}${name}`,
+        path: normalizedPath,
+        name
+      };
+    }
+  }
+
+  return undefined;
+}
+
 if (hasLiveEnv(process.env)) {
   describe("createArtifactClient live smoke", () => {
     const config = loadEnvConfig(process.env);
@@ -238,6 +271,31 @@ if (hasLiveEnv(process.env)) {
         expect(Array.isArray(entry.result.files)).toBe(true);
         expect(entry.result.total === undefined || typeof entry.result.total === "number").toBe(true);
       }
+    }, 30000);
+
+    it("shows the current Artifact user ticket", async () => {
+      const result = await client.showUserTicket();
+
+      expect(typeof result.ticket).toBe("string");
+      expect(result.ticket && result.ticket.length > 0).toBe(true);
+    }, 30000);
+
+    it("loads file detail by full name when a latest-version file sample exists", async () => {
+      const sample = await findLatestFileSample(client, projectIds);
+
+      if (!sample) {
+        return;
+      }
+
+      const result = await client.getRepoFileInfoByName({
+        file_name: sample.file_name
+      });
+
+      expect(result.project_id).toBe(sample.project_id);
+      expect(result.path).toBe(sample.path);
+      expect(result.name).toBe(sample.name);
+      expect(result.type).toBe("file");
+      expect(typeof result.download_url).toBe("string");
     }, 30000);
 
     it("lists repositories when a live tenant id is configured", async () => {

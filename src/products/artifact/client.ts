@@ -143,6 +143,15 @@ export type ArtifactClient = {
     attentions: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  createAttention: (input: {
+    format: string;
+    attention: string;
+    ids: string[];
+  }) => Promise<{
+    status?: string;
+    trace_id?: string;
+    raw: unknown;
+  }>;
   listSecGuardTasks: (input: {
     date?: string;
     page: number;
@@ -296,6 +305,20 @@ export type ArtifactClient = {
   }>;
   getRepoFileInfoById: (input: { id: string }) => Promise<Record<string, unknown>>;
   getRepoFileInfoByName: (input: { file_name: string }) => Promise<Record<string, unknown>>;
+  showUserTicket: () => Promise<{
+    ticket?: string;
+    raw: unknown;
+  }>;
+  deleteCompletelyUpdateFileState: (input: { ids: string[] }) => Promise<{
+    status?: string;
+    trace_id?: string;
+    raw: unknown;
+    success?: number;
+    failed?: number;
+    success_items?: string[];
+    failed_items?: string[];
+    reason?: unknown[];
+  }>;
   deleteFile: (input: {
     tenant_id: string;
     project_id: string;
@@ -961,6 +984,20 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
           attentions.length
       };
     },
+    async createAttention(input) {
+      const response = unwrapArtifactPayload(await _http.post("/cloudartifact/v5/attention", {
+        format: input.format,
+        attention: input.attention,
+        ids: input.ids
+      })) as Record<string, unknown>;
+      const payload = readEnvelope(response.result) ?? response;
+
+      return {
+        status: readOptionalString(response.status) ?? readOptionalString(payload.status),
+        trace_id: readOptionalString(response.trace_id) ?? readOptionalString(payload.trace_id),
+        raw: sanitizeArtifactRecord(payload)
+      };
+    },
     async listSecGuardTasks(input) {
       const query = new URLSearchParams({
         page_no: String(input.page),
@@ -1339,6 +1376,31 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
       );
 
       return sanitizeArtifactRecord(payload) as Record<string, unknown>;
+    },
+    async showUserTicket() {
+      const { payload } = readStoragePayload(await _http.get("/cloudartifact/v5/ticket"));
+
+      return {
+        ticket: readOptionalString(payload.result) ?? readOptionalString(payload.ticket),
+        raw: sanitizeArtifactRecord(payload)
+      };
+    },
+    async deleteCompletelyUpdateFileState(input) {
+      const response = unwrapArtifactPayload(
+        await _http.delete("/devreposerver/v5/files/compeletion", input.ids)
+      ) as Record<string, unknown>;
+      const payload = readEnvelope(response.result) ?? response;
+
+      return {
+        status: readOptionalString(response.status) ?? readOptionalString(payload.status),
+        trace_id: readOptionalString(response.trace_id) ?? readOptionalString(payload.trace_id),
+        raw: sanitizeArtifactRecord(payload),
+        success: readOptionalNumber(payload.success),
+        failed: readOptionalNumber(payload.failed),
+        success_items: readArray<string>(payload.success_items),
+        failed_items: readArray<string>(payload.failed_items),
+        reason: readArray<unknown>(payload.reason)
+      };
     },
     async deleteFile(input) {
       const query = new URLSearchParams({

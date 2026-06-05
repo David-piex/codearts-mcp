@@ -186,6 +186,13 @@ export const artifactListAttentionsInput = pagingSchema.extend({
   project_id: idSchema.optional()
 });
 
+export const artifactCreateAttentionInput = z.object({
+  format: z.string().min(1),
+  attention: z.string().min(1),
+  ids: z.array(z.string().min(1)).min(1),
+  dry_run: z.boolean().default(true)
+});
+
 export const artifactListSecGuardTasksInput = pagingSchema.extend({
   date: z.string().min(1).optional()
 });
@@ -265,6 +272,13 @@ export const artifactGetRepoFileInfoByIdInput = z.object({
 
 export const artifactGetRepoFileInfoByNameInput = z.object({
   file_name: z.string().min(1)
+});
+
+export const artifactShowUserTicketInput = z.object({});
+
+export const artifactDeleteCompletelyUpdateFileStateInput = z.object({
+  ids: z.array(idSchema).min(1),
+  dry_run: z.boolean().default(true)
 });
 
 export const artifactShowAuditInput = pagingSchema.extend({

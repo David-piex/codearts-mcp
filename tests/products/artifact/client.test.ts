@@ -648,6 +648,11 @@ describe("createArtifactClient", () => {
             }
           };
         }
+        if (path.startsWith("/cloudartifact/v5/ticket")) {
+          return {
+            result: "ticket-value"
+          };
+        }
         throw new Error(`unexpected path ${path}`);
       }
     });
@@ -756,6 +761,12 @@ describe("createArtifactClient", () => {
       id: "file-2",
       name: "app2.zip"
     });
+    await expect(client.showUserTicket()).resolves.toEqual({
+      ticket: "ticket-value",
+      raw: {
+        result: "ticket-value"
+      }
+    });
 
     expect(requests).toEqual([
       "/cloudartifact/v5/maven/list?project_id=project-1&default=true&policy=release&repo_ids=repo-1%2Crepo-2&access=r",
@@ -768,8 +779,75 @@ describe("createArtifactClient", () => {
       "/cloudartifact/v5/repositories/project-1/repo-1/privileges",
       "/cloudartifact/v3/user/project-1/privileges",
       "/devreposerver/v5/files/file-1/info",
-      "/devreposerver/v5/files/info?file_name=project-1%2Fapp2.zip"
+      "/devreposerver/v5/files/info?file_name=project-1%2Fapp2.zip",
+      "/cloudartifact/v5/ticket"
     ]);
+  });
+
+  it("uses attention and permanent file deletion endpoints", async () => {
+    const post = async (path: string, body: Record<string, unknown>) => {
+      expect(path).toBe("/cloudartifact/v5/attention");
+      expect(body).toEqual({
+        format: "npm",
+        attention: "1",
+        ids: ["pkg-1"]
+      });
+      return {
+        status: "success",
+        trace_id: "trace-post",
+        result: null
+      };
+    };
+    const del = async (path: string, body?: unknown) => {
+      expect(path).toBe("/devreposerver/v5/files/compeletion");
+      expect(body).toEqual(["file-1"]);
+      return {
+        status: "success",
+        trace_id: "trace-delete",
+        result: {
+          success: 1,
+          failed: 0,
+          success_items: ["file-1"],
+          failed_items: [],
+          reason: []
+        }
+      };
+    };
+    const client = createClient({
+      get: async () => ({ result: {} }),
+      post,
+      delete: del
+    });
+
+    await expect(client.createAttention({
+      format: "npm",
+      attention: "1",
+      ids: ["pkg-1"]
+    })).resolves.toEqual({
+      status: "success",
+      trace_id: "trace-post",
+      raw: {
+        status: "success",
+        trace_id: "trace-post",
+        result: null
+      }
+    });
+    await expect(client.deleteCompletelyUpdateFileState({ ids: ["file-1"] })).resolves.toEqual({
+      status: "success",
+      trace_id: "trace-delete",
+      raw: {
+        success: 1,
+        failed: 0,
+        success_items: ["file-1"],
+        failed_items: [],
+        reason: []
+      },
+      success: 1,
+      failed: 0,
+      success_items: ["file-1"],
+      failed_items: [],
+      reason: []
+    });
   });
 
   it("uses tenant and project path when listing repositories", async () => {
