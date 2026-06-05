@@ -29,11 +29,11 @@
 | 编译构建 | 138 | [Function-API-Reference-Build.md](./Function-API-Reference-Build.md) |
 | 代码检查 | 104 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
 | 部署 | 87 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
-| 流水线 | 138 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
+| 流水线 | 144 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 372 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 343 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 313 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **1549** | |
+| **总计** | **1555** | |
 
 ## 字段对应
 
@@ -438,6 +438,7 @@
 | `pipeline_check_project` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_check_project) |
 | `pipeline_continue_delay_job` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_continue_delay_job) |
 | `pipeline_create_change_request` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_create_change_request) |
+| `pipeline_create_component` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_create_component) |
 | `pipeline_create_extension_endpoint` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_create_extension_endpoint) |
 | `pipeline_create_group` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_create_group) |
 | `pipeline_create_pipeline` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_create_pipeline) |
@@ -446,6 +447,7 @@
 | `pipeline_create_rule` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_create_rule) |
 | `pipeline_create_strategy` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_create_strategy) |
 | `pipeline_create_tag` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_create_tag) |
+| `pipeline_create_template` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_create_template) |
 | `pipeline_create_variable_group` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_create_variable_group) |
 | `pipeline_delete_extension_endpoint` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_delete_extension_endpoint) |
 | `pipeline_delete_group` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_delete_group) |
@@ -454,9 +456,11 @@
 | `pipeline_delete_rule` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_delete_rule) |
 | `pipeline_delete_strategy` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_delete_strategy) |
 | `pipeline_delete_tag` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_delete_tag) |
+| `pipeline_delete_template` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_delete_template) |
 | `pipeline_delete_variable_group` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_delete_variable_group) |
 | `pipeline_disable_pipeline` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_disable_pipeline) |
 | `pipeline_enable_pipeline` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_enable_pipeline) |
+| `pipeline_favorite_template` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_favorite_template) |
 | `pipeline_get_batch_run_result` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_get_batch_run_result) |
 | `pipeline_get_change_request` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_get_change_request) |
 | `pipeline_get_component` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_get_component) |
@@ -550,6 +554,7 @@
 | `pipeline_switch_strategy` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_switch_strategy) |
 | `pipeline_update_change_request_status` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_update_change_request_status) |
 | `pipeline_update_change_request_work_items` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_update_change_request_work_items) |
+| `pipeline_update_component` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_update_component) |
 | `pipeline_update_extension_endpoint` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_update_extension_endpoint) |
 | `pipeline_update_group` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_update_group) |
 | `pipeline_update_notice_status` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_update_notice_status) |
@@ -560,6 +565,7 @@
 | `pipeline_update_rule` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_update_rule) |
 | `pipeline_update_strategy` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_update_strategy) |
 | `pipeline_update_tag` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_update_tag) |
+| `pipeline_update_template` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_update_template) |
 | `pipeline_update_third_party_notice` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_update_third_party_notice) |
 | `pipeline_update_user_permission` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_update_user_permission) |
 | `pipeline_update_variable_group` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_update_variable_group) |

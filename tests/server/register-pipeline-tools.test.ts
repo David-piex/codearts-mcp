@@ -71,12 +71,18 @@ describe("registerPipelineTool", () => {
     ["pipeline_list_change_request_operation_logs", "List CodeArts Pipeline change request operation logs"],
     ["pipeline_list_change_request_work_items", "List CodeArts Pipeline change request work items"],
     ["pipeline_update_change_request_work_items", "Update CodeArts Pipeline change request work items"],
+    ["pipeline_create_component", "Create CodeArts Pipeline component"],
     ["pipeline_list_components", "List CodeArts Pipeline components"],
     ["pipeline_get_component", "Get CodeArts Pipeline component"],
+    ["pipeline_update_component", "Update CodeArts Pipeline component"],
     ["pipeline_list_pac_actions", "List CodeArts Pipeline PAC actions"],
     ["pipeline_get_pac_action", "Get CodeArts Pipeline PAC action"],
     ["pipeline_get_oauth_authorization_url", "Get CodeArts Pipeline OAuth authorization URL"],
-    ["pipeline_get_devuc_auth", "Get CodeArts Pipeline DevUC authorization status"]
+    ["pipeline_get_devuc_auth", "Get CodeArts Pipeline DevUC authorization status"],
+    ["pipeline_create_template", "Create CodeArts Pipeline template"],
+    ["pipeline_update_template", "Update CodeArts Pipeline template"],
+    ["pipeline_delete_template", "Delete CodeArts Pipeline template"],
+    ["pipeline_favorite_template", "Favorite or unfavorite a CodeArts Pipeline template"]
   ])("registers %s in http mode", (toolName, description) => {
     expectPipelineToolRegistration({
       toolName,

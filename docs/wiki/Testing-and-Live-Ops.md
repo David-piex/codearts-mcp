@@ -61,6 +61,18 @@ powershell -ExecutionPolicy Bypass -File .\scripts\npmw.ps1 run test:live
 powershell -ExecutionPolicy Bypass -File .\scripts\nodew.ps1 .\dist\src\server\cli.js schema req_get_work_item_issue_details
 ```
 
+如果你需要在当前 PowerShell 会话里直接运行 `tsx`、`vitest`、`eslint`，先执行：
+
+```powershell
+. .\scripts\use-local-node.ps1
+```
+
+如果你想直接打开一个已经切好本机 Node/npm 的新终端，执行：
+
+```powershell
+.\scripts\dev-shell.cmd
+```
+
 ## Live 联调最小环境变量
 
 通用变量：

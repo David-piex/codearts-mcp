@@ -94,6 +94,18 @@ npm run build
 node dist/src/server/index.js
 ```
 
+如果你在 Windows PowerShell 下要直接运行 `tsx`、`vitest`、`eslint` 等本地命令，先执行：
+
+```powershell
+. .\scripts\use-local-node.ps1
+```
+
+如果你想打开一个已经切好本机 Node/npm 的新终端，执行：
+
+```powershell
+.\scripts\dev-shell.cmd
+```
+
 ### 3. 验证读路径
 
 同样先跑：

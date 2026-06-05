@@ -104,6 +104,7 @@ export const pipelineToolNames = [
   "pipeline_get_dashboard_executions_overview",
   "pipeline_get_dashboard_concurrency",
   "pipeline_create_change_request",
+  "pipeline_create_component",
   "pipeline_update_change_request_status",
   "pipeline_list_change_requests",
   "pipeline_get_change_request",
@@ -112,6 +113,7 @@ export const pipelineToolNames = [
   "pipeline_update_change_request_work_items",
   "pipeline_list_components",
   "pipeline_get_component",
+  "pipeline_update_component",
   "pipeline_list_pac_actions",
   "pipeline_get_pac_action",
   "pipeline_get_oauth_authorization_url",
@@ -134,7 +136,11 @@ export const pipelineToolNames = [
   "pipeline_resume_pipeline",
   "pipeline_stop_run",
   "pipeline_run_pipeline",
+  "pipeline_create_template",
   "pipeline_list_templates",
   "pipeline_get_template",
+  "pipeline_update_template",
+  "pipeline_delete_template",
+  "pipeline_favorite_template",
   "pipeline_request_official_api"
 ];

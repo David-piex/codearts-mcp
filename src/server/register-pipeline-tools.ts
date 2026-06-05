@@ -15,8 +15,10 @@ import {
   pipelineCheckProjectInput,
   pipelineCheckpointInput,
   pipelineCreateChangeRequestInput,
+  pipelineCreateComponentInput,
   pipelineCreateExtensionEndpointInput,
   pipelineCreateGroupInput,
+  pipelineCreateTemplateInput,
   pipelineCreateByTemplateInput,
   pipelineCreateInput,
   pipelineCreateRuleInput,
@@ -25,6 +27,7 @@ import {
   pipelineDeleteExtensionEndpointInput,
   pipelineDeleteTagInput,
   pipelineDeleteGroupInput,
+  pipelineDeleteTemplateInput,
   pipelineDeleteProjectStrategyInput,
   pipelineDeleteRuleInput,
   pipelineDeleteStrategyInput,
@@ -46,6 +49,7 @@ import {
   pipelineGetNoticeDetailInput,
   pipelineGetNoticeInput,
   pipelineGetPermissionInput,
+  pipelineFavoriteTemplateInput,
   pipelineSwitchNoticeInput,
   pipelineSwitchPermissionInput,
   pipelineGetRunChangeRequestsInput,
@@ -119,8 +123,10 @@ import {
   pipelineUpdateThirdPartyNoticeInput,
   pipelineUpdateChangeRequestStatusInput,
   pipelineUpdateChangeRequestWorkItemsInput,
+  pipelineUpdateComponentInput,
   pipelineUpdatePipelineInfoInput,
   pipelineUpdateProjectStrategyInput,
+  pipelineUpdateTemplateInput,
   pipelineRollbackRunInput,
   pipelineUpdateRuleInput,
   pipelineCreateStrategyInput,
@@ -148,10 +154,20 @@ import {
   createPipelineUpdateInfoHandler
 } from "../products/pipeline/tools/manage-pipeline-core.js";
 import {
+  createPipelineCreateTemplateHandler,
+  createPipelineDeleteTemplateHandler,
+  createPipelineFavoriteTemplateHandler,
+  createPipelineUpdateTemplateHandler
+} from "../products/pipeline/tools/manage-templates.js";
+import {
   createPipelineCreateChangeRequestHandler,
   createPipelineUpdateChangeRequestStatusHandler,
   createPipelineUpdateChangeRequestWorkItemsHandler
 } from "../products/pipeline/tools/manage-change-requests.js";
+import {
+  createPipelineCreateComponentHandler,
+  createPipelineUpdateComponentHandler
+} from "../products/pipeline/tools/manage-components.js";
 import {
   createPipelineSwitchNoticeHandler,
   createPipelineSwitchPermissionHandler,
@@ -1024,6 +1040,13 @@ const pipelineToolDefinitions = {
     createProductHandler: createPipelineUpdateChangeRequestWorkItemsHandler,
     rateLimitAction: "pipeline_update_change_request_work_items"
   }),
+  "pipeline_create_component": defineProductTool({
+    description: "Create CodeArts Pipeline component",
+    inputSchema: pipelineCreateComponentInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineCreateComponentHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineCreateComponentHandler,
+    rateLimitAction: "pipeline_create_component"
+  }),
   "pipeline_list_components": defineProductTool({
     description: "List CodeArts Pipeline components",
     inputSchema: pipelineListComponentsInput,
@@ -1035,6 +1058,13 @@ const pipelineToolDefinitions = {
     inputSchema: pipelineGetComponentInput,
     selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetComponentHandler>[0] }) => clients.pipelineClient,
     createProductHandler: createPipelineGetComponentHandler
+  }),
+  "pipeline_update_component": defineProductTool({
+    description: "Update CodeArts Pipeline component",
+    inputSchema: pipelineUpdateComponentInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineUpdateComponentHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineUpdateComponentHandler,
+    rateLimitAction: "pipeline_update_component"
   }),
   "pipeline_list_pac_actions": defineProductTool({
     description: "List CodeArts Pipeline PAC actions",
@@ -1143,6 +1173,13 @@ const pipelineToolDefinitions = {
     createProductHandler: createPipelineResumePipelineHandler,
     rateLimitAction: "pipeline_resume_pipeline"
   }),
+  "pipeline_create_template": defineProductTool({
+    description: "Create CodeArts Pipeline template",
+    inputSchema: pipelineCreateTemplateInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineCreateTemplateHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineCreateTemplateHandler,
+    rateLimitAction: "pipeline_create_template"
+  }),
   "pipeline_list_templates": defineProductTool({
     description: "List CodeArts Pipeline templates",
     inputSchema: pipelineListTemplatesInput,
@@ -1154,6 +1191,27 @@ const pipelineToolDefinitions = {
     inputSchema: pipelineGetTemplateInput,
     selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetTemplateHandler>[0] }) => clients.pipelineClient,
     createProductHandler: createPipelineGetTemplateHandler
+  }),
+  "pipeline_update_template": defineProductTool({
+    description: "Update CodeArts Pipeline template",
+    inputSchema: pipelineUpdateTemplateInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineUpdateTemplateHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineUpdateTemplateHandler,
+    rateLimitAction: "pipeline_update_template"
+  }),
+  "pipeline_delete_template": defineProductTool({
+    description: "Delete CodeArts Pipeline template",
+    inputSchema: pipelineDeleteTemplateInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineDeleteTemplateHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineDeleteTemplateHandler,
+    rateLimitAction: "pipeline_delete_template"
+  }),
+  "pipeline_favorite_template": defineProductTool({
+    description: "Favorite or unfavorite a CodeArts Pipeline template",
+    inputSchema: pipelineFavoriteTemplateInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineFavoriteTemplateHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineFavoriteTemplateHandler,
+    rateLimitAction: "pipeline_favorite_template"
   }),
   "pipeline_list_runs": defineProductTool({
     description: "List CodeArts Pipeline runs",

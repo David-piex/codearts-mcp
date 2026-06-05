@@ -23,6 +23,12 @@ $env:MCP_SERVER_NAME="codearts-mcp"
 $env:MCP_SERVER_VERSION="0.1.0"
 ```
 
+如果你在 Windows PowerShell 下还想直接运行 `tsx`、`vitest`、`eslint` 这些本地命令，先执行：
+
+```powershell
+. .\scripts\use-local-node.ps1
+```
+
 查看工具：
 
 ```powershell
@@ -176,4 +182,3 @@ npm run cli -- completion zsh
 | 远程模式提示需要 endpoint | 加 `--endpoint https://.../mcp`，或设置 `CODEARTS_MCP_URL` |
 | JSON 参数报错 | 参数必须是合法 JSON；参数多时建议写到 `params.json` 后用 `--file` |
 | 不知道工具需要哪些字段 | 先跑 `npm run cli -- schema <tool>` |
-

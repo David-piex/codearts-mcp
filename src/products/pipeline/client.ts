@@ -255,6 +255,12 @@ type PipelineRawListResult = {
   raw: PipelineRawRecord;
 };
 
+type PipelineTemplateMutationResult = {
+  templateId?: string;
+  template_id?: string;
+  [key: string]: unknown;
+};
+
 export type PipelineClient = {
   requestOfficialApi: (input: OfficialApiRequestInput) => Promise<OfficialApiRequestResult>;
   getRunParameters: (input: {
@@ -1135,6 +1141,52 @@ export type PipelineClient = {
     region?: string;
     template: PipelineRawRecord;
   }>;
+  createTemplate: (input: {
+    tenant_id: string;
+    name: string;
+    description?: string;
+    language: string;
+    variables?: Array<Record<string, unknown>>;
+    definition: string;
+    is_system?: boolean;
+    domain_id?: string;
+    is_show_source?: boolean;
+  }) => Promise<{
+    template_id?: string;
+    raw: PipelineRawRecord;
+  }>;
+  updateTemplate: (input: {
+    tenant_id: string;
+    template_id: string;
+    name: string;
+    description?: string;
+    language: string;
+    variables?: Array<Record<string, unknown>>;
+    definition: string;
+    is_system?: boolean;
+    domain_id?: string;
+    is_show_source?: boolean;
+  }) => Promise<{
+    template_id?: string;
+    raw: PipelineRawRecord;
+  }>;
+  deleteTemplate: (input: {
+    tenant_id: string;
+    template_id: string;
+  }) => Promise<{
+    template_id?: string;
+    deleted: boolean;
+    raw: PipelineRawRecord;
+  }>;
+  favoriteTemplate: (input: {
+    tenant_id: string;
+    template_id: string;
+    flag: boolean;
+  }) => Promise<{
+    template_id?: string;
+    favorited: boolean;
+    raw: PipelineRawRecord;
+  }>;
   getPipeline: (input: { project_id: string; pipeline_id: string }) => Promise<{
     id: string;
     name: string;
@@ -1272,6 +1324,27 @@ export type PipelineClient = {
   getComponent: (input: {
     cloud_project_id: string;
     component_id: string;
+  }) => Promise<PipelineRawItemResult>;
+  createComponent: (input: {
+    cloud_project_id: string;
+    name: string;
+    type: string;
+    parent_id?: string | null;
+    desc?: string;
+    repos: Array<{
+      type: string;
+      repo_id: string;
+      http_url: string;
+      git_url: string;
+      branch: string;
+      language: string;
+      endpoint_id?: string;
+    }>;
+  }) => Promise<PipelineRawItemResult>;
+  updateComponent: (input: {
+    cloud_project_id: string;
+    component_id: string;
+    desc?: string;
   }) => Promise<PipelineRawItemResult>;
   listPacActions: (input: {
     domain_id: string;
@@ -3527,6 +3600,92 @@ export function createPipelineClient(
         template: payload
       };
     },
+    async createTemplate(input) {
+      const response = unwrapPipelinePayload(await _http.post(
+        `/v5/${encodeURIComponent(input.tenant_id)}/api/pipeline-templates`,
+        {
+          name: input.name,
+          ...(input.description !== undefined ? { description: input.description } : {}),
+          language: input.language,
+          ...(input.variables ? { variables: input.variables } : {}),
+          definition: input.definition,
+          ...(input.is_system !== undefined ? { is_system: input.is_system } : {}),
+          ...(input.domain_id ? { domain_id: input.domain_id } : {}),
+          ...(input.is_show_source !== undefined ? { is_show_source: input.is_show_source } : {})
+        }
+      ));
+      const payload = asPipelineRecord(response as PipelineTemplateMutationResult);
+
+      return {
+        template_id:
+          typeof payload.templateId === "string"
+            ? payload.templateId
+            : typeof payload.template_id === "string"
+              ? payload.template_id
+              : undefined,
+        raw: payload
+      };
+    },
+    async updateTemplate(input) {
+      const response = unwrapPipelinePayload(await _http.put(
+        `/v5/${encodeURIComponent(input.tenant_id)}/api/pipeline-templates/${encodeURIComponent(input.template_id)}`,
+        {
+          name: input.name,
+          ...(input.description !== undefined ? { description: input.description } : {}),
+          language: input.language,
+          ...(input.variables ? { variables: input.variables } : {}),
+          definition: input.definition,
+          ...(input.is_system !== undefined ? { is_system: input.is_system } : {}),
+          ...(input.domain_id ? { domain_id: input.domain_id } : {}),
+          ...(input.is_show_source !== undefined ? { is_show_source: input.is_show_source } : {})
+        }
+      ));
+      const payload = asPipelineRecord(response as PipelineTemplateMutationResult);
+
+      return {
+        template_id:
+          typeof payload.templateId === "string"
+            ? payload.templateId
+            : typeof payload.template_id === "string"
+              ? payload.template_id
+              : input.template_id,
+        raw: payload
+      };
+    },
+    async deleteTemplate(input) {
+      const response = unwrapPipelinePayload(await _http.delete(
+        `/v5/${encodeURIComponent(input.tenant_id)}/api/pipeline-templates/${encodeURIComponent(input.template_id)}`
+      ));
+      const payload = asPipelineRecord(response as PipelineTemplateMutationResult);
+
+      return {
+        template_id:
+          typeof payload.templateId === "string"
+            ? payload.templateId
+            : typeof payload.template_id === "string"
+              ? payload.template_id
+              : input.template_id,
+        deleted: true,
+        raw: payload
+      };
+    },
+    async favoriteTemplate(input) {
+      const response = unwrapPipelinePayload(await _http.post(
+        `/v5/${encodeURIComponent(input.tenant_id)}/api/pipeline-templates/${encodeURIComponent(input.template_id)}/favorite?flag=${encodeURIComponent(String(input.flag))}`
+      ));
+      const payload = asPipelineRecord(response as PipelineTemplateMutationResult);
+
+      return {
+        template_id:
+          typeof payload.templateId === "string"
+            ? payload.templateId
+            : typeof payload.template_id === "string"
+              ? payload.template_id
+              : input.template_id,
+        favorited: input.flag,
+        raw: payload
+      };
+    },
     async getPipeline(input) {
       const response = unwrapPipelinePayload((await _http.get(
         `/v5/${encodeURIComponent(input.project_id)}/api/pipelines/${encodeURIComponent(input.pipeline_id)}`
@@ -3854,6 +4013,30 @@ export function createPipelineClient(
     async getComponent(input) {
       const response = unwrapPipelinePayload(await _http.get(
         `/v2/${encodeURIComponent(input.cloud_project_id)}/component/${encodeURIComponent(input.component_id)}/query`
+      ));
+
+      return mapPipelineRawItemResult(getPipelinePayload(response));
+    },
+    async createComponent(input) {
+      const response = unwrapPipelinePayload(await _http.post(
+        `/v2/${encodeURIComponent(input.cloud_project_id)}/component/create`,
+        {
+          name: input.name,
+          type: input.type,
+          ...(input.parent_id !== undefined ? { parent_id: input.parent_id } : {}),
+          ...(input.desc !== undefined ? { desc: input.desc } : {}),
+          repos: input.repos
+        }
+      ));
+
+      return mapPipelineRawItemResult(getPipelinePayload(response));
+    },
+    async updateComponent(input) {
+      const response = unwrapPipelinePayload(await _http.put(
+        `/v2/${encodeURIComponent(input.cloud_project_id)}/component/${encodeURIComponent(input.component_id)}/update`,
+        {
+          ...(input.desc !== undefined ? { desc: input.desc } : {})
+        }
       ));
 
       return mapPipelineRawItemResult(getPipelinePayload(response));

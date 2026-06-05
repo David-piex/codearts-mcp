@@ -820,6 +820,48 @@ export const pipelineGetTemplateInput = z.object({
   template_id: idSchema
 });
 
+export const pipelineTemplateVariableInput = z.record(z.string(), z.unknown());
+
+export const pipelineCreateTemplateInput = z.object({
+  tenant_id: idSchema,
+  name: z.string().min(1),
+  description: z.string().optional(),
+  language: z.string().min(1),
+  variables: z.array(pipelineTemplateVariableInput).optional(),
+  definition: z.string().min(1),
+  is_system: z.boolean().optional(),
+  domain_id: idSchema.optional(),
+  is_show_source: z.boolean().optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const pipelineUpdateTemplateInput = z.object({
+  tenant_id: idSchema,
+  template_id: idSchema,
+  name: z.string().min(1),
+  description: z.string().optional(),
+  language: z.string().min(1),
+  variables: z.array(pipelineTemplateVariableInput).optional(),
+  definition: z.string().min(1),
+  is_system: z.boolean().optional(),
+  domain_id: idSchema.optional(),
+  is_show_source: z.boolean().optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const pipelineDeleteTemplateInput = z.object({
+  tenant_id: idSchema,
+  template_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const pipelineFavoriteTemplateInput = z.object({
+  tenant_id: idSchema,
+  template_id: idSchema,
+  flag: z.boolean(),
+  dry_run: z.boolean().default(true)
+});
+
 export const pipelineBatchGetPipelineStatusInput = z.object({
   project_id: idSchema,
   pipeline_ids: z.array(idSchema).min(1).optional(),
@@ -940,6 +982,33 @@ export const pipelineListComponentsInput = z.object({
 export const pipelineGetComponentInput = z.object({
   cloud_project_id: idSchema,
   component_id: idSchema
+});
+
+export const pipelineComponentRepoInput = z.object({
+  type: z.string().min(1),
+  repo_id: z.string().min(1),
+  http_url: z.string().min(1),
+  git_url: z.string().min(1),
+  branch: z.string().min(1),
+  language: z.string().min(1),
+  endpoint_id: z.string().optional()
+});
+
+export const pipelineCreateComponentInput = z.object({
+  cloud_project_id: idSchema,
+  name: z.string().min(1),
+  type: z.string().min(1),
+  parent_id: z.union([idSchema, z.null()]).optional(),
+  desc: z.string().optional(),
+  repos: z.array(pipelineComponentRepoInput).min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const pipelineUpdateComponentInput = z.object({
+  cloud_project_id: idSchema,
+  component_id: idSchema,
+  desc: z.string().optional(),
+  dry_run: z.boolean().default(true)
 });
 
 export const pipelineListPacActionsInput = z.object({

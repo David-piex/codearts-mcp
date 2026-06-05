@@ -2,8 +2,14 @@ import { describe, expect, it, vi } from "vitest";
 import { createPipelineClient } from "../../../src/products/pipeline/client.js";
 import {
   pipelineCreateChangeRequestInput,
+  pipelineCreateComponentInput,
+  pipelineCreateTemplateInput,
+  pipelineDeleteTemplateInput,
+  pipelineFavoriteTemplateInput,
   pipelineListChangeRequestOperationLogsInput,
+  pipelineUpdateComponentInput,
   pipelineUpdateChangeRequestStatusInput,
+  pipelineUpdateTemplateInput,
   pipelineUpdateChangeRequestWorkItemsInput,
   pipelineUploadPublisherIconInput
 } from "../../../src/products/pipeline/schemas.js";
@@ -693,6 +699,68 @@ describe("createPipelineClient", () => {
     });
   });
 
+  it("defaults pipeline template and component write inputs to dry-run", () => {
+    expect(
+      pipelineCreateTemplateInput.parse({
+        tenant_id: "tenant-1",
+        name: "Node.js",
+        language: "nodejs",
+        definition: "{\"stages\":[]}"
+      }).dry_run
+    ).toBe(true);
+
+    expect(
+      pipelineUpdateTemplateInput.parse({
+        tenant_id: "tenant-1",
+        template_id: "tpl-1",
+        name: "Node.js v2",
+        language: "nodejs",
+        definition: "{\"stages\":[]}"
+      }).dry_run
+    ).toBe(true);
+
+    expect(
+      pipelineDeleteTemplateInput.parse({
+        tenant_id: "tenant-1",
+        template_id: "tpl-1"
+      }).dry_run
+    ).toBe(true);
+
+    expect(
+      pipelineFavoriteTemplateInput.parse({
+        tenant_id: "tenant-1",
+        template_id: "tpl-1",
+        flag: true
+      }).dry_run
+    ).toBe(true);
+
+    expect(
+      pipelineCreateComponentInput.parse({
+        cloud_project_id: "project-1",
+        name: "mall-order",
+        type: "microservice",
+        repos: [
+          {
+            type: "codehub",
+            repo_id: "repo-1",
+            http_url: "https://example.com/repo.git",
+            git_url: "git@example.com:repo.git",
+            branch: "master",
+            language: "java"
+          }
+        ]
+      }).dry_run
+    ).toBe(true);
+
+    expect(
+      pipelineUpdateComponentInput.parse({
+        cloud_project_id: "project-1",
+        component_id: "component-1",
+        desc: "updated service"
+      }).dry_run
+    ).toBe(true);
+  });
+
   it("supports pipelines field when listing pipelines", async () => {
     const client = createClient({
       post: async () => ({
@@ -1265,6 +1333,81 @@ describe("createPipelineClient", () => {
       }
     });
     expect(requestedPath).toBe("/v5/tenant-1/api/pipeline-templates/tpl-1");
+  });
+
+  it("calls pipeline template write endpoints", async () => {
+    const calls: Array<{ method: string; path: string; body?: unknown }> = [];
+    const client = createClient({
+      post: async (path: string, body?: unknown) => {
+        calls.push({ method: "POST", path, body });
+        return { templateId: "tpl-1" };
+      },
+      put: async (path: string, body?: unknown) => {
+        calls.push({ method: "PUT", path, body });
+        return { templateId: "tpl-1" };
+      },
+      delete: async (path: string) => {
+        calls.push({ method: "DELETE", path });
+        return { templateId: "tpl-1" };
+      }
+    });
+
+    await client.createTemplate({
+      tenant_id: "tenant-1",
+      name: "Node.js",
+      language: "nodejs",
+      definition: "{\"stages\":[]}",
+      is_show_source: true
+    });
+    await client.updateTemplate({
+      tenant_id: "tenant-1",
+      template_id: "tpl-1",
+      name: "Node.js v2",
+      language: "nodejs",
+      definition: "{\"stages\":[1]}",
+      is_system: false
+    });
+    await client.deleteTemplate({
+      tenant_id: "tenant-1",
+      template_id: "tpl-1"
+    });
+    await client.favoriteTemplate({
+      tenant_id: "tenant-1",
+      template_id: "tpl-1",
+      flag: true
+    });
+
+    expect(calls).toEqual([
+      {
+        method: "POST",
+        path: "/v5/tenant-1/api/pipeline-templates",
+        body: {
+          name: "Node.js",
+          language: "nodejs",
+          definition: "{\"stages\":[]}",
+          is_show_source: true
+        }
+      },
+      {
+        method: "PUT",
+        path: "/v5/tenant-1/api/pipeline-templates/tpl-1",
+        body: {
+          name: "Node.js v2",
+          language: "nodejs",
+          definition: "{\"stages\":[1]}",
+          is_system: false
+        }
+      },
+      {
+        method: "DELETE",
+        path: "/v5/tenant-1/api/pipeline-templates/tpl-1"
+      },
+      {
+        method: "POST",
+        path: "/v5/tenant-1/api/pipeline-templates/tpl-1/favorite?flag=true",
+        body: undefined
+      }
+    ]);
   });
 
   it("maps reject manual review responses", async () => {
@@ -3417,8 +3560,29 @@ describe("createPipelineClient", () => {
       change_request_id: "cr-1",
       work_item_ids: ["70844211", "70844212"]
     });
+    await client.createComponent({
+      cloud_project_id: "project-1",
+      name: "mall-order",
+      type: "microservice",
+      desc: "order service",
+      repos: [
+        {
+          type: "codehub",
+          repo_id: "repo-1",
+          http_url: "https://example.com/repo.git",
+          git_url: "git@example.com:repo.git",
+          branch: "master",
+          language: "java"
+        }
+      ]
+    });
     await client.listComponents({ cloud_project_id: "project-1", offset: 0, limit: 20 });
     await client.getComponent({ cloud_project_id: "project-1", component_id: "component-1" });
+    await client.updateComponent({
+      cloud_project_id: "project-1",
+      component_id: "component-1",
+      desc: "updated service"
+    });
     await client.listPacActions({ domain_id: "domain-1", offset: 0, limit: 20 });
     await client.getPacAction({
       domain_id: "domain-1",
@@ -3515,12 +3679,36 @@ describe("createPipelineClient", () => {
       },
       {
         method: "POST",
+        path: "/v2/project-1/component/create",
+        body: {
+          name: "mall-order",
+          type: "microservice",
+          desc: "order service",
+          repos: [
+            {
+              type: "codehub",
+              repo_id: "repo-1",
+              http_url: "https://example.com/repo.git",
+              git_url: "git@example.com:repo.git",
+              branch: "master",
+              language: "java"
+            }
+          ]
+        }
+      },
+      {
+        method: "POST",
         path: "/v2/project-1/component/list/query",
         body: { offset: 0, limit: 20 }
       },
       {
         method: "GET",
         path: "/v2/project-1/component/component-1/query"
+      },
+      {
+        method: "PUT",
+        path: "/v2/project-1/component/component-1/update",
+        body: { desc: "updated service" }
       },
       {
         method: "POST",
