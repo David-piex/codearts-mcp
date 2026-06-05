@@ -1767,6 +1767,58 @@ export const testPlanInitTaskExecutionInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+const testPlanTaskCaseExecutionMutationItemInput = z
+  .object({
+    uri: idSchema.optional(),
+    execute_latest_time: z.string().min(1).optional(),
+    execute_duration: z.string().min(1).optional(),
+    result_code: z.number().int().optional(),
+    status_code: z.number().int().optional(),
+    execute_times: z.number().int().optional(),
+    total_execute_times: z.number().int().optional(),
+    success_times: z.union([z.string().min(1), z.number().int()]).optional(),
+    executor_id: idSchema.optional(),
+    version_uri: idSchema.optional()
+  })
+  .passthrough();
+
+const testPlanTaskExecutionMutationBodyInput = z.object({
+  result_code: z.number().int().optional(),
+  status_code: z.number().int().optional(),
+  execute_latest_time: z.string().min(1).optional(),
+  execute_duration: z.string().min(1).optional(),
+  execute_times: z.number().int().optional(),
+  total_execute_times: z.number().int().optional(),
+  task_uri: idSchema.optional(),
+  version_uri: idSchema.optional(),
+  executor_id: idSchema.optional(),
+  execute_status_code: z.number().int().optional(),
+  case_list: z.array(testPlanTaskCaseExecutionMutationItemInput).optional()
+});
+
+export const testPlanUpdateTaskExecutionInfoInput = testPlanTaskExecutionMutationBodyInput.extend({
+  project_id: idSchema,
+  task_uri: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanUpdateTaskExecutionStatusInput = testPlanTaskExecutionMutationBodyInput.extend({
+  project_id: idSchema,
+  task_uri: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanStopTaskExecutionByCaseInput = testPlanTaskExecutionMutationBodyInput.extend({
+  project_id: idSchema,
+  task_uri: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanBatchUpdateTestcaseExecutionInfoInput = testPlanTaskExecutionMutationBodyInput.extend({
+  project_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
 export const testPlanStopTaskExecutionInput = z.object({
   project_id: idSchema,
   task_uri: idSchema,

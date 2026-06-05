@@ -58,6 +58,8 @@ import {
   testPlanShowTaskStatusInput,
   testPlanShowTaskStatusTwoInput,
   testPlanUpdateAwNameViewInput,
+  testPlanUpdateTaskExecutionInfoInput,
+  testPlanUpdateTaskExecutionStatusInput,
   testPlanUpdateUserInfosInput,
   testPlanUploadBackgroundInput,
   testPlanUploadFileToGitInput,
@@ -155,6 +157,7 @@ import {
   testPlanGetTaskInput,
   testPlanGetTaskResultDetailInput,
   testPlanGetTaskSuccessTestCasesCountInput,
+  testPlanBatchUpdateTestcaseExecutionInfoInput,
   testPlanGetTestcaseChangeStatisticsInput,
   testPlanGetUserDisclaimerInput,
   testPlanGetUserInfoDomainInput,
@@ -165,6 +168,7 @@ import {
   testPlanListVariableSynchronizationTwoInput,
   testPlanGetSuiteInfoPageUrlInput,
   testPlanInitTaskExecutionInput,
+  testPlanStopTaskExecutionByCaseInput,
   testPlanListApiTestAwNameViewsInput,
   testPlanListApiTestBasicAwsBatchInput,
   testPlanListApiTestBasicAwParamPropertiesInput,
@@ -495,6 +499,12 @@ import { createTestPlanGetVariableSynchronizationHandler } from "../products/tes
 import { createTestPlanGetVariableSynchronizationV2Handler } from "../products/testplan/tools/get-variable-synchronization-v2.js";
 import { createTestPlanGetSuiteInfoPageUrlHandler } from "../products/testplan/tools/get-suite-info-page-url.js";
 import { createTestPlanInitTaskExecutionHandler } from "../products/testplan/tools/init-task-execution.js";
+import {
+  createTestPlanBatchUpdateTestcaseExecutionInfoHandler,
+  createTestPlanStopTaskExecutionByCaseHandler,
+  createTestPlanUpdateTaskExecutionInfoHandler,
+  createTestPlanUpdateTaskExecutionStatusHandler
+} from "../products/testplan/tools/task-execution-mutations.js";
 import { createTestPlanListApiTestAwNameViewsHandler } from "../products/testplan/tools/list-api-test-aw-name-views.js";
 import { createTestPlanListApiTestBasicAwsBatchHandler } from "../products/testplan/tools/list-api-test-basic-aws-batch.js";
 import { createTestPlanListApiTestBasicAwParamPropertiesHandler } from "../products/testplan/tools/list-api-test-basic-aw-param-properties.js";
@@ -2354,6 +2364,30 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanInitTaskExecutionInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanInitTaskExecutionHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanInitTaskExecutionHandler
+  }),
+  "testplan_update_task_execution_info": defineProductTool({
+    description: "Update CodeArts TestPlan testcase execution info for a task",
+    inputSchema: testPlanUpdateTaskExecutionInfoInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanUpdateTaskExecutionInfoHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanUpdateTaskExecutionInfoHandler
+  }),
+  "testplan_update_task_execution_status": defineProductTool({
+    description: "Update CodeArts TestPlan testcase execution status for a task",
+    inputSchema: testPlanUpdateTaskExecutionStatusInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanUpdateTaskExecutionStatusHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanUpdateTaskExecutionStatusHandler
+  }),
+  "testplan_stop_task_execution_by_case": defineProductTool({
+    description: "Stop CodeArts TestPlan testcase execution for a task by official execution-stop API",
+    inputSchema: testPlanStopTaskExecutionByCaseInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanStopTaskExecutionByCaseHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanStopTaskExecutionByCaseHandler
+  }),
+  "testplan_batch_update_testcase_execution_info": defineProductTool({
+    description: "Batch update CodeArts TestPlan testcase execution info",
+    inputSchema: testPlanBatchUpdateTestcaseExecutionInfoInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanBatchUpdateTestcaseExecutionInfoHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanBatchUpdateTestcaseExecutionInfoHandler
   }),
   "testplan_stop_task_execution": defineProductTool({
     description: "Stop CodeArts TestPlan test suite task execution",

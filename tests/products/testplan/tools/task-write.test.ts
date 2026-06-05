@@ -4,6 +4,12 @@ import { createTestPlanCreateTaskHandler } from "../../../../src/products/testpl
 import { createTestPlanCreateTaskRelationsHandler } from "../../../../src/products/testplan/tools/create-task-relations.js";
 import { createTestPlanInitTaskExecutionHandler } from "../../../../src/products/testplan/tools/init-task-execution.js";
 import { createTestPlanStopTaskExecutionHandler } from "../../../../src/products/testplan/tools/stop-task-execution.js";
+import {
+  createTestPlanBatchUpdateTestcaseExecutionInfoHandler,
+  createTestPlanStopTaskExecutionByCaseHandler,
+  createTestPlanUpdateTaskExecutionInfoHandler,
+  createTestPlanUpdateTaskExecutionStatusHandler
+} from "../../../../src/products/testplan/tools/task-execution-mutations.js";
 import { createTestPlanUpdateTaskHandler } from "../../../../src/products/testplan/tools/update-task.js";
 
 describe("testplan task write handlers", () => {
@@ -35,6 +41,26 @@ describe("testplan task write handlers", () => {
     });
     const stopHandler = createTestPlanStopTaskExecutionHandler({
       stopTaskExecution: async () => {
+        throw new Error("should not execute in dry run");
+      }
+    });
+    const updateExecutionInfoHandler = createTestPlanUpdateTaskExecutionInfoHandler({
+      updateTaskExecutionInfo: async () => {
+        throw new Error("should not execute in dry run");
+      }
+    });
+    const updateExecutionStatusHandler = createTestPlanUpdateTaskExecutionStatusHandler({
+      updateTaskExecutionStatus: async () => {
+        throw new Error("should not execute in dry run");
+      }
+    });
+    const stopByCaseHandler = createTestPlanStopTaskExecutionByCaseHandler({
+      stopTaskExecutionByCase: async () => {
+        throw new Error("should not execute in dry run");
+      }
+    });
+    const batchUpdateExecutionInfoHandler = createTestPlanBatchUpdateTestcaseExecutionInfoHandler({
+      batchUpdateTestcaseExecutionInfo: async () => {
         throw new Error("should not execute in dry run");
       }
     });
@@ -87,6 +113,54 @@ describe("testplan task write handlers", () => {
         item: { executed: false }
       }
     });
+    await expect(
+      updateExecutionInfoHandler({
+        project_id: "project-1",
+        task_uri: "task-1",
+        case_list: [{ uri: "case-1" }]
+      })
+    ).resolves.toMatchObject({
+      structuredContent: {
+        summary: "Dry run: update test plan testcase execution info for task task-1",
+        item: { executed: false, caseCount: 1 }
+      }
+    });
+    await expect(
+      updateExecutionStatusHandler({
+        project_id: "project-1",
+        task_uri: "task-1",
+        case_list: [{ uri: "case-1" }]
+      })
+    ).resolves.toMatchObject({
+      structuredContent: {
+        summary: "Dry run: update test plan testcase execution status for task task-1",
+        item: { executed: false, caseCount: 1 }
+      }
+    });
+    await expect(
+      stopByCaseHandler({
+        project_id: "project-1",
+        task_uri: "task-1",
+        case_list: [{ uri: "case-1" }]
+      })
+    ).resolves.toMatchObject({
+      structuredContent: {
+        summary: "Dry run: stop test plan testcase execution for task task-1",
+        item: { executed: false, caseCount: 1 }
+      }
+    });
+    await expect(
+      batchUpdateExecutionInfoHandler({
+        project_id: "project-1",
+        task_uri: "task-1",
+        case_list: [{ uri: "case-1" }]
+      })
+    ).resolves.toMatchObject({
+      structuredContent: {
+        summary: "Dry run: batch update test plan testcase execution info task-1",
+        item: { executed: false, caseCount: 1 }
+      }
+    });
   });
 
   it("executes when dry_run is false", async () => {
@@ -136,6 +210,34 @@ describe("testplan task write handlers", () => {
         result_uri: input.result_uri,
         value: "ok",
         stopped: true
+      })
+    });
+    const updateExecutionInfoHandler = createTestPlanUpdateTaskExecutionInfoHandler({
+      updateTaskExecutionInfo: async (input) => ({
+        task_uri: input.task_uri,
+        value: "success",
+        updated: true
+      })
+    });
+    const updateExecutionStatusHandler = createTestPlanUpdateTaskExecutionStatusHandler({
+      updateTaskExecutionStatus: async (input) => ({
+        task_uri: input.task_uri,
+        value: "success",
+        updated: true
+      })
+    });
+    const stopByCaseHandler = createTestPlanStopTaskExecutionByCaseHandler({
+      stopTaskExecutionByCase: async (input) => ({
+        task_uri: input.task_uri,
+        value: "success",
+        stopped: true
+      })
+    });
+    const batchUpdateExecutionInfoHandler = createTestPlanBatchUpdateTestcaseExecutionInfoHandler({
+      batchUpdateTestcaseExecutionInfo: async (input) => ({
+        project_id: input.project_id,
+        value: "success",
+        updated: true
       })
     });
 
@@ -208,6 +310,54 @@ describe("testplan task write handlers", () => {
     ).resolves.toMatchObject({
       structuredContent: {
         item: { id: "result-1", executed: true, stopped: true }
+      }
+    });
+    await expect(
+      updateExecutionInfoHandler({
+        project_id: "project-1",
+        task_uri: "task-1",
+        case_list: [{ uri: "case-1" }],
+        dry_run: false
+      })
+    ).resolves.toMatchObject({
+      structuredContent: {
+        item: { id: "task-1", executed: true, updated: true, caseCount: 1 }
+      }
+    });
+    await expect(
+      updateExecutionStatusHandler({
+        project_id: "project-1",
+        task_uri: "task-1",
+        case_list: [{ uri: "case-1" }],
+        dry_run: false
+      })
+    ).resolves.toMatchObject({
+      structuredContent: {
+        item: { id: "task-1", executed: true, updated: true, caseCount: 1 }
+      }
+    });
+    await expect(
+      stopByCaseHandler({
+        project_id: "project-1",
+        task_uri: "task-1",
+        case_list: [{ uri: "case-1" }],
+        dry_run: false
+      })
+    ).resolves.toMatchObject({
+      structuredContent: {
+        item: { id: "task-1", executed: true, stopped: true, caseCount: 1 }
+      }
+    });
+    await expect(
+      batchUpdateExecutionInfoHandler({
+        project_id: "project-1",
+        task_uri: "task-1",
+        case_list: [{ uri: "case-1" }],
+        dry_run: false
+      })
+    ).resolves.toMatchObject({
+      structuredContent: {
+        item: { id: "task-1", executed: true, updated: true, caseCount: 1 }
       }
     });
   });

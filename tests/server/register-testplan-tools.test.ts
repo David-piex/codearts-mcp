@@ -558,6 +558,35 @@ describe("registerTestPlanTool", () => {
     }
   });
 
+  it("registers task execution mutation write tools", () => {
+    const registerTool = vi.fn();
+    const tools = [
+      ["testplan_update_task_execution_info", "Update CodeArts TestPlan testcase execution info for a task"],
+      ["testplan_update_task_execution_status", "Update CodeArts TestPlan testcase execution status for a task"],
+      ["testplan_stop_task_execution_by_case", "Stop CodeArts TestPlan testcase execution for a task by official execution-stop API"],
+      ["testplan_batch_update_testcase_execution_info", "Batch update CodeArts TestPlan testcase execution info"]
+    ] as const;
+
+    for (const [toolName, description] of tools) {
+      const handled = registerTestPlanTool({
+        toolName,
+        server: { registerTool },
+        mode: "stdio",
+        stdioClient: {} as never
+      });
+
+      expect(handled).toBe(true);
+      expect(registerTool).toHaveBeenLastCalledWith(
+        toolName,
+        expect.objectContaining({
+          title: toolName,
+          description
+        }),
+        expect.any(Function)
+      );
+    }
+  });
+
   it("returns false for non-testplan tools", () => {
     const registerTool = vi.fn();
 

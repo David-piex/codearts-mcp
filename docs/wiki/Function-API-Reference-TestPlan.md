@@ -6,7 +6,7 @@
 
 模块：`测试计划`
 
-API 数量：`299`
+API 数量：`303`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
@@ -204,6 +204,150 @@ API 数量：`299`
     "body": {
       "type": "object",
       "additionalProperties": {}
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "project_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### testplan_batch_update_testcase_execution_info
+
+所属模块：`测试计划`
+
+说明：批量处理测试计划的updatetestcase执行信息。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "testplan_batch_update_testcase_execution_info",
+    "arguments": {
+      "project_id": "<project_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `result_code` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `result_code` ↔ 原始 CodeArts 测试计划 API 同名字段 `result_code`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `status_code` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `status_code` ↔ 原始 CodeArts 测试计划 API 同名字段 `status_code`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `execute_latest_time` | 否 | `string` |  | 字段对应：<br>MCP 字段 `execute_latest_time` ↔ 原始 CodeArts 测试计划 API 同名字段 `execute_latest_time`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `execute_duration` | 否 | `string` |  | 字段对应：<br>MCP 字段 `execute_duration` ↔ 原始 CodeArts 测试计划 API 同名字段 `execute_duration`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `execute_times` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `execute_times` ↔ 原始 CodeArts 测试计划 API 同名字段 `execute_times`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `total_execute_times` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `total_execute_times` ↔ 原始 CodeArts 测试计划 API 同名字段 `total_execute_times`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `task_uri` | 否 | `string` |  | 字段对应：<br>MCP 字段 `task_uri` ↔ 原始 CodeArts 测试计划 API 同名字段 `task_uri`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `version_uri` | 否 | `string` |  | 字段对应：<br>MCP 字段 `version_uri` ↔ 原始 CodeArts 测试计划 API 同名字段 `version_uri`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `executor_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `executor_id` ↔ 原始 CodeArts 测试计划 API 同名字段 `executor_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>executor ID，用于定位对应的 CodeArts 资源。 |
+| `execute_status_code` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `execute_status_code` ↔ 原始 CodeArts 测试计划 API 同名字段 `execute_status_code`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `case_list` | 否 | `array<object>` |  | 字段对应：<br>MCP 字段 `case_list` ↔ 原始 CodeArts 测试计划 API 同名字段 `case_list`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 测试计划 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "result_code": {
+      "type": "integer"
+    },
+    "status_code": {
+      "type": "integer"
+    },
+    "execute_latest_time": {
+      "type": "string",
+      "minLength": 1
+    },
+    "execute_duration": {
+      "type": "string",
+      "minLength": 1
+    },
+    "execute_times": {
+      "type": "integer"
+    },
+    "total_execute_times": {
+      "type": "integer"
+    },
+    "task_uri": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version_uri": {
+      "$ref": "#/properties/task_uri"
+    },
+    "executor_id": {
+      "$ref": "#/properties/task_uri"
+    },
+    "execute_status_code": {
+      "type": "integer"
+    },
+    "case_list": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "uri": {
+            "$ref": "#/properties/task_uri"
+          },
+          "execute_latest_time": {
+            "type": "string",
+            "minLength": 1
+          },
+          "execute_duration": {
+            "type": "string",
+            "minLength": 1
+          },
+          "result_code": {
+            "type": "integer"
+          },
+          "status_code": {
+            "type": "integer"
+          },
+          "execute_times": {
+            "type": "integer"
+          },
+          "total_execute_times": {
+            "type": "integer"
+          },
+          "success_times": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "integer"
+              }
+            ]
+          },
+          "executor_id": {
+            "$ref": "#/properties/task_uri"
+          },
+          "version_uri": {
+            "$ref": "#/properties/task_uri"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "project_id": {
+      "$ref": "#/properties/task_uri"
     },
     "dry_run": {
       "type": "boolean",
@@ -19504,6 +19648,152 @@ API 数量：`299`
 }
 ```
 
+### testplan_stop_task_execution_by_case
+
+所属模块：`测试计划`
+
+说明：停止测试计划的任务执行by用例。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "testplan_stop_task_execution_by_case",
+    "arguments": {
+      "task_uri": "<task_uri>",
+      "project_id": "<project_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `result_code` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `result_code` ↔ 原始 CodeArts 测试计划 API 同名字段 `result_code`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `status_code` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `status_code` ↔ 原始 CodeArts 测试计划 API 同名字段 `status_code`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `execute_latest_time` | 否 | `string` |  | 字段对应：<br>MCP 字段 `execute_latest_time` ↔ 原始 CodeArts 测试计划 API 同名字段 `execute_latest_time`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `execute_duration` | 否 | `string` |  | 字段对应：<br>MCP 字段 `execute_duration` ↔ 原始 CodeArts 测试计划 API 同名字段 `execute_duration`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `execute_times` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `execute_times` ↔ 原始 CodeArts 测试计划 API 同名字段 `execute_times`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `total_execute_times` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `total_execute_times` ↔ 原始 CodeArts 测试计划 API 同名字段 `total_execute_times`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `task_uri` | 是 | `string` |  | 字段对应：<br>MCP 字段 `task_uri` ↔ 原始 CodeArts 测试计划 API 同名字段 `task_uri`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `version_uri` | 否 | `string` |  | 字段对应：<br>MCP 字段 `version_uri` ↔ 原始 CodeArts 测试计划 API 同名字段 `version_uri`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `executor_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `executor_id` ↔ 原始 CodeArts 测试计划 API 同名字段 `executor_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>executor ID，用于定位对应的 CodeArts 资源。 |
+| `execute_status_code` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `execute_status_code` ↔ 原始 CodeArts 测试计划 API 同名字段 `execute_status_code`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `case_list` | 否 | `array<object>` |  | 字段对应：<br>MCP 字段 `case_list` ↔ 原始 CodeArts 测试计划 API 同名字段 `case_list`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 测试计划 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "result_code": {
+      "type": "integer"
+    },
+    "status_code": {
+      "type": "integer"
+    },
+    "execute_latest_time": {
+      "type": "string",
+      "minLength": 1
+    },
+    "execute_duration": {
+      "type": "string",
+      "minLength": 1
+    },
+    "execute_times": {
+      "type": "integer"
+    },
+    "total_execute_times": {
+      "type": "integer"
+    },
+    "task_uri": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version_uri": {
+      "$ref": "#/properties/task_uri"
+    },
+    "executor_id": {
+      "$ref": "#/properties/task_uri"
+    },
+    "execute_status_code": {
+      "type": "integer"
+    },
+    "case_list": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "uri": {
+            "$ref": "#/properties/task_uri"
+          },
+          "execute_latest_time": {
+            "type": "string",
+            "minLength": 1
+          },
+          "execute_duration": {
+            "type": "string",
+            "minLength": 1
+          },
+          "result_code": {
+            "type": "integer"
+          },
+          "status_code": {
+            "type": "integer"
+          },
+          "execute_times": {
+            "type": "integer"
+          },
+          "total_execute_times": {
+            "type": "integer"
+          },
+          "success_times": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "integer"
+              }
+            ]
+          },
+          "executor_id": {
+            "$ref": "#/properties/task_uri"
+          },
+          "version_uri": {
+            "$ref": "#/properties/task_uri"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "project_id": {
+      "$ref": "#/properties/task_uri"
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "task_uri",
+    "project_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### testplan_update_aw_cata_first
 
 所属模块：`测试计划`
@@ -19877,6 +20167,298 @@ API 数量：`299`
     "project_id",
     "task_uri",
     "name"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### testplan_update_task_execution_info
+
+所属模块：`测试计划`
+
+说明：更新测试计划的任务执行信息。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "testplan_update_task_execution_info",
+    "arguments": {
+      "task_uri": "<task_uri>",
+      "project_id": "<project_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `result_code` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `result_code` ↔ 原始 CodeArts 测试计划 API 同名字段 `result_code`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `status_code` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `status_code` ↔ 原始 CodeArts 测试计划 API 同名字段 `status_code`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `execute_latest_time` | 否 | `string` |  | 字段对应：<br>MCP 字段 `execute_latest_time` ↔ 原始 CodeArts 测试计划 API 同名字段 `execute_latest_time`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `execute_duration` | 否 | `string` |  | 字段对应：<br>MCP 字段 `execute_duration` ↔ 原始 CodeArts 测试计划 API 同名字段 `execute_duration`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `execute_times` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `execute_times` ↔ 原始 CodeArts 测试计划 API 同名字段 `execute_times`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `total_execute_times` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `total_execute_times` ↔ 原始 CodeArts 测试计划 API 同名字段 `total_execute_times`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `task_uri` | 是 | `string` |  | 字段对应：<br>MCP 字段 `task_uri` ↔ 原始 CodeArts 测试计划 API 同名字段 `task_uri`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `version_uri` | 否 | `string` |  | 字段对应：<br>MCP 字段 `version_uri` ↔ 原始 CodeArts 测试计划 API 同名字段 `version_uri`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `executor_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `executor_id` ↔ 原始 CodeArts 测试计划 API 同名字段 `executor_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>executor ID，用于定位对应的 CodeArts 资源。 |
+| `execute_status_code` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `execute_status_code` ↔ 原始 CodeArts 测试计划 API 同名字段 `execute_status_code`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `case_list` | 否 | `array<object>` |  | 字段对应：<br>MCP 字段 `case_list` ↔ 原始 CodeArts 测试计划 API 同名字段 `case_list`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 测试计划 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "result_code": {
+      "type": "integer"
+    },
+    "status_code": {
+      "type": "integer"
+    },
+    "execute_latest_time": {
+      "type": "string",
+      "minLength": 1
+    },
+    "execute_duration": {
+      "type": "string",
+      "minLength": 1
+    },
+    "execute_times": {
+      "type": "integer"
+    },
+    "total_execute_times": {
+      "type": "integer"
+    },
+    "task_uri": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version_uri": {
+      "$ref": "#/properties/task_uri"
+    },
+    "executor_id": {
+      "$ref": "#/properties/task_uri"
+    },
+    "execute_status_code": {
+      "type": "integer"
+    },
+    "case_list": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "uri": {
+            "$ref": "#/properties/task_uri"
+          },
+          "execute_latest_time": {
+            "type": "string",
+            "minLength": 1
+          },
+          "execute_duration": {
+            "type": "string",
+            "minLength": 1
+          },
+          "result_code": {
+            "type": "integer"
+          },
+          "status_code": {
+            "type": "integer"
+          },
+          "execute_times": {
+            "type": "integer"
+          },
+          "total_execute_times": {
+            "type": "integer"
+          },
+          "success_times": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "integer"
+              }
+            ]
+          },
+          "executor_id": {
+            "$ref": "#/properties/task_uri"
+          },
+          "version_uri": {
+            "$ref": "#/properties/task_uri"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "project_id": {
+      "$ref": "#/properties/task_uri"
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "task_uri",
+    "project_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### testplan_update_task_execution_status
+
+所属模块：`测试计划`
+
+说明：更新测试计划的任务执行状态。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "testplan_update_task_execution_status",
+    "arguments": {
+      "task_uri": "<task_uri>",
+      "project_id": "<project_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `result_code` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `result_code` ↔ 原始 CodeArts 测试计划 API 同名字段 `result_code`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `status_code` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `status_code` ↔ 原始 CodeArts 测试计划 API 同名字段 `status_code`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `execute_latest_time` | 否 | `string` |  | 字段对应：<br>MCP 字段 `execute_latest_time` ↔ 原始 CodeArts 测试计划 API 同名字段 `execute_latest_time`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `execute_duration` | 否 | `string` |  | 字段对应：<br>MCP 字段 `execute_duration` ↔ 原始 CodeArts 测试计划 API 同名字段 `execute_duration`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `execute_times` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `execute_times` ↔ 原始 CodeArts 测试计划 API 同名字段 `execute_times`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `total_execute_times` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `total_execute_times` ↔ 原始 CodeArts 测试计划 API 同名字段 `total_execute_times`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `task_uri` | 是 | `string` |  | 字段对应：<br>MCP 字段 `task_uri` ↔ 原始 CodeArts 测试计划 API 同名字段 `task_uri`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `version_uri` | 否 | `string` |  | 字段对应：<br>MCP 字段 `version_uri` ↔ 原始 CodeArts 测试计划 API 同名字段 `version_uri`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `executor_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `executor_id` ↔ 原始 CodeArts 测试计划 API 同名字段 `executor_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>executor ID，用于定位对应的 CodeArts 资源。 |
+| `execute_status_code` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `execute_status_code` ↔ 原始 CodeArts 测试计划 API 同名字段 `execute_status_code`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `case_list` | 否 | `array<object>` |  | 字段对应：<br>MCP 字段 `case_list` ↔ 原始 CodeArts 测试计划 API 同名字段 `case_list`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 测试计划 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "result_code": {
+      "type": "integer"
+    },
+    "status_code": {
+      "type": "integer"
+    },
+    "execute_latest_time": {
+      "type": "string",
+      "minLength": 1
+    },
+    "execute_duration": {
+      "type": "string",
+      "minLength": 1
+    },
+    "execute_times": {
+      "type": "integer"
+    },
+    "total_execute_times": {
+      "type": "integer"
+    },
+    "task_uri": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version_uri": {
+      "$ref": "#/properties/task_uri"
+    },
+    "executor_id": {
+      "$ref": "#/properties/task_uri"
+    },
+    "execute_status_code": {
+      "type": "integer"
+    },
+    "case_list": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "uri": {
+            "$ref": "#/properties/task_uri"
+          },
+          "execute_latest_time": {
+            "type": "string",
+            "minLength": 1
+          },
+          "execute_duration": {
+            "type": "string",
+            "minLength": 1
+          },
+          "result_code": {
+            "type": "integer"
+          },
+          "status_code": {
+            "type": "integer"
+          },
+          "execute_times": {
+            "type": "integer"
+          },
+          "total_execute_times": {
+            "type": "integer"
+          },
+          "success_times": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "integer"
+              }
+            ]
+          },
+          "executor_id": {
+            "$ref": "#/properties/task_uri"
+          },
+          "version_uri": {
+            "$ref": "#/properties/task_uri"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "project_id": {
+      "$ref": "#/properties/task_uri"
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "task_uri",
+    "project_id"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

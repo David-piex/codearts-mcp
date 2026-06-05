@@ -32,8 +32,8 @@
 | 流水线 | 126 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 372 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 343 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
-| 测试计划 | 299 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **1506** | |
+| 测试计划 | 303 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
+| **总计** | **1510** | |
 
 ## 字段对应
 
@@ -1253,6 +1253,7 @@
 | `testplan_batch_delete_factors` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_batch_delete_factors) |
 | `testplan_batch_delete_tasks` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_batch_delete_tasks) |
 | `testplan_batch_send_notifications` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_batch_send_notifications) |
+| `testplan_batch_update_testcase_execution_info` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_batch_update_testcase_execution_info) |
 | `testplan_check_alert_template_name` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_check_alert_template_name) |
 | `testplan_check_alert_user_name` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_check_alert_user_name) |
 | `testplan_check_api_test_task_name` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_check_api_test_task_name) |
@@ -1537,11 +1538,14 @@
 | `testplan_show_time_out_view` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_show_time_out_view) |
 | `testplan_show_variables_decrypt` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_show_variables_decrypt) |
 | `testplan_stop_task_execution` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_stop_task_execution) |
+| `testplan_stop_task_execution_by_case` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_stop_task_execution_by_case) |
 | `testplan_update_aw_cata_first` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_update_aw_cata_first) |
 | `testplan_update_aw_name_view` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_update_aw_name_view) |
 | `testplan_update_defect_association` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_update_defect_association) |
 | `testplan_update_dynamic_global_variable` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_update_dynamic_global_variable) |
 | `testplan_update_task` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_update_task) |
+| `testplan_update_task_execution_info` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_update_task_execution_info) |
+| `testplan_update_task_execution_status` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_update_task_execution_status) |
 | `testplan_update_test_report` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_update_test_report) |
 | `testplan_update_test_report_quality_attributes` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_update_test_report_quality_attributes) |
 | `testplan_update_time_out_view` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_update_time_out_view) |

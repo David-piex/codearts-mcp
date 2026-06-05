@@ -148,6 +148,9 @@ export const testPlanToolNames = [
   "testplan_get_variable_synchronization",
   "testplan_get_variable_synchronization_v2",
   "testplan_init_task_execution",
+  "testplan_update_task_execution_info",
+  "testplan_update_task_execution_status",
+  "testplan_stop_task_execution_by_case",
   "testplan_import_tasks",
   "testplan_list_alert_templates",
   "testplan_list_api_test_aw_name_views",
@@ -296,6 +299,7 @@ export const testPlanToolNames = [
   "testplan_upload_file_to_git",
   "testplan_upload_file_v3",
   "testplan_delete_dynamic_global_variable",
+  "testplan_batch_update_testcase_execution_info",
   "testplan_stop_task_execution",
   "testplan_update_task"
 ];

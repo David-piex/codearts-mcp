@@ -2442,6 +2442,78 @@ export type TestPlanClient = {
     total?: number;
     has_more?: boolean;
   }>;
+  updateTaskExecutionInfo: (input: {
+    project_id: string;
+    task_uri: string;
+    result_code?: number;
+    status_code?: number;
+    execute_latest_time?: string;
+    execute_duration?: string;
+    execute_times?: number;
+    total_execute_times?: number;
+    version_uri?: string;
+    executor_id?: string;
+    execute_status_code?: number;
+    case_list?: Array<Record<string, unknown>>;
+  }) => Promise<{
+    task_uri: string;
+    value?: string;
+    updated: boolean;
+  }>;
+  updateTaskExecutionStatus: (input: {
+    project_id: string;
+    task_uri: string;
+    result_code?: number;
+    status_code?: number;
+    execute_latest_time?: string;
+    execute_duration?: string;
+    execute_times?: number;
+    total_execute_times?: number;
+    version_uri?: string;
+    executor_id?: string;
+    execute_status_code?: number;
+    case_list?: Array<Record<string, unknown>>;
+  }) => Promise<{
+    task_uri: string;
+    value?: string;
+    updated: boolean;
+  }>;
+  stopTaskExecutionByCase: (input: {
+    project_id: string;
+    task_uri: string;
+    result_code?: number;
+    status_code?: number;
+    execute_latest_time?: string;
+    execute_duration?: string;
+    execute_times?: number;
+    total_execute_times?: number;
+    version_uri?: string;
+    executor_id?: string;
+    execute_status_code?: number;
+    case_list?: Array<Record<string, unknown>>;
+  }) => Promise<{
+    task_uri: string;
+    value?: string;
+    stopped: boolean;
+  }>;
+  batchUpdateTestcaseExecutionInfo: (input: {
+    project_id: string;
+    result_code?: number;
+    status_code?: number;
+    execute_latest_time?: string;
+    execute_duration?: string;
+    execute_times?: number;
+    total_execute_times?: number;
+    task_uri?: string;
+    version_uri?: string;
+    executor_id?: string;
+    execute_status_code?: number;
+    case_list?: Array<Record<string, unknown>>;
+  }) => Promise<{
+    project_id: string;
+    value?: string;
+    updated: boolean;
+  }>;
   stopTaskExecution: (input: {
     project_id: string;
     task_uri: string;
@@ -7933,6 +8005,112 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         task_uri: input.task_uri,
         total: readTotal(payload, response),
         has_more: typeof payload.has_more === "boolean" ? payload.has_more : undefined
+      };
+    },
+    async updateTaskExecutionInfo(input) {
+      const response = await _http.post(
+        `/v4/${encodeURIComponent(input.project_id)}/tasks/${encodeURIComponent(input.task_uri)}/testcases/execution-info`,
+        {
+          result_code: input.result_code,
+          status_code: input.status_code,
+          execute_latest_time: input.execute_latest_time,
+          execute_duration: input.execute_duration,
+          execute_times: input.execute_times,
+          total_execute_times: input.total_execute_times,
+          task_uri: input.task_uri,
+          version_uri: input.version_uri,
+          executor_id: input.executor_id,
+          execute_status_code: input.execute_status_code,
+          case_list: input.case_list
+        }
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        task_uri: input.task_uri,
+        value: typeof payload.value === "string" ? payload.value : undefined,
+        updated: true
+      };
+    },
+    async updateTaskExecutionStatus(input) {
+      const response = await _http.post(
+        `/v4/${encodeURIComponent(input.project_id)}/tasks/${encodeURIComponent(input.task_uri)}/testcases/execution-status`,
+        {
+          result_code: input.result_code,
+          status_code: input.status_code,
+          execute_latest_time: input.execute_latest_time,
+          execute_duration: input.execute_duration,
+          execute_times: input.execute_times,
+          total_execute_times: input.total_execute_times,
+          task_uri: input.task_uri,
+          version_uri: input.version_uri,
+          executor_id: input.executor_id,
+          execute_status_code: input.execute_status_code,
+          case_list: input.case_list
+        }
+      );
+      const payload = readResultPayload(response);
+      const value = readEnvelope(payload.value) ?? payload;
+
+      return {
+        task_uri: input.task_uri,
+        value:
+          typeof value.value === "string"
+            ? value.value
+            : typeof payload.value === "string"
+              ? payload.value
+              : undefined,
+        updated: true
+      };
+    },
+    async stopTaskExecutionByCase(input) {
+      const response = await _http.post(
+        `/v4/${encodeURIComponent(input.project_id)}/tasks/${encodeURIComponent(input.task_uri)}/testcases/execution-stop`,
+        {
+          result_code: input.result_code,
+          status_code: input.status_code,
+          execute_latest_time: input.execute_latest_time,
+          execute_duration: input.execute_duration,
+          execute_times: input.execute_times,
+          total_execute_times: input.total_execute_times,
+          task_uri: input.task_uri,
+          version_uri: input.version_uri,
+          executor_id: input.executor_id,
+          execute_status_code: input.execute_status_code,
+          case_list: input.case_list
+        }
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        task_uri: input.task_uri,
+        value: typeof payload.value === "string" ? payload.value : undefined,
+        stopped: true
+      };
+    },
+    async batchUpdateTestcaseExecutionInfo(input) {
+      const response = await _http.post(
+        `/v4/${encodeURIComponent(input.project_id)}/testcases/execution-info/batch-update`,
+        {
+          result_code: input.result_code,
+          status_code: input.status_code,
+          execute_latest_time: input.execute_latest_time,
+          execute_duration: input.execute_duration,
+          execute_times: input.execute_times,
+          total_execute_times: input.total_execute_times,
+          task_uri: input.task_uri,
+          version_uri: input.version_uri,
+          executor_id: input.executor_id,
+          execute_status_code: input.execute_status_code,
+          case_list: input.case_list
+        }
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        project_id: input.project_id,
+        value: typeof payload.value === "string" ? payload.value : undefined,
+        updated: true
       };
     },
     async stopTaskExecution(input) {

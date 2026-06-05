@@ -3482,6 +3482,120 @@ describe("createTestPlanClient", () => {
     ]);
   });
 
+  it("updates testcase execution info, status, stop, and batch update through official endpoints", async () => {
+    const requests: Array<{ method: string; path: string; body?: unknown }> = [];
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requests.push({ method: "POST", path, body });
+        if (path.endsWith("/execution-status")) {
+          return {
+            status: "success",
+            result: {
+              value: "status-updated"
+            }
+          };
+        }
+
+        return {
+          value: "success"
+        };
+      }
+    } as never);
+
+    const payload = {
+      result_code: 1,
+      status_code: 2,
+      execute_latest_time: "2021-01-01 00:00:00",
+      execute_duration: "00:00:42",
+      execute_times: 1,
+      total_execute_times: 3,
+      version_uri: "version-1",
+      executor_id: "user-1",
+      execute_status_code: 0,
+      case_list: [{ uri: "case-1", result_code: 1 }]
+    };
+
+    await expect(
+      client.updateTaskExecutionInfo({
+        project_id: "project-1",
+        task_uri: "task-1",
+        ...payload
+      })
+    ).resolves.toEqual({
+      task_uri: "task-1",
+      value: "success",
+      updated: true
+    });
+    await expect(
+      client.updateTaskExecutionStatus({
+        project_id: "project-1",
+        task_uri: "task-1",
+        ...payload
+      })
+    ).resolves.toEqual({
+      task_uri: "task-1",
+      value: "status-updated",
+      updated: true
+    });
+    await expect(
+      client.stopTaskExecutionByCase({
+        project_id: "project-1",
+        task_uri: "task-1",
+        ...payload
+      })
+    ).resolves.toEqual({
+      task_uri: "task-1",
+      value: "success",
+      stopped: true
+    });
+    await expect(
+      client.batchUpdateTestcaseExecutionInfo({
+        project_id: "project-1",
+        task_uri: "task-1",
+        ...payload
+      })
+    ).resolves.toEqual({
+      project_id: "project-1",
+      value: "success",
+      updated: true
+    });
+
+    expect(requests).toEqual([
+      {
+        method: "POST",
+        path: "/v4/project-1/tasks/task-1/testcases/execution-info",
+        body: {
+          ...payload,
+          task_uri: "task-1"
+        }
+      },
+      {
+        method: "POST",
+        path: "/v4/project-1/tasks/task-1/testcases/execution-status",
+        body: {
+          ...payload,
+          task_uri: "task-1"
+        }
+      },
+      {
+        method: "POST",
+        path: "/v4/project-1/tasks/task-1/testcases/execution-stop",
+        body: {
+          ...payload,
+          task_uri: "task-1"
+        }
+      },
+      {
+        method: "POST",
+        path: "/v4/project-1/testcases/execution-info/batch-update",
+        body: {
+          ...payload,
+          task_uri: "task-1"
+        }
+      }
+    ]);
+  });
+
   it("lists custom reports and loads custom report templates", async () => {
     const requests: string[] = [];
     const client = createTestPlanClient({
