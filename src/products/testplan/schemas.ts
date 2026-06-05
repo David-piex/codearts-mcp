@@ -1342,6 +1342,48 @@ export const testPlanCreateResourceUriV4Input = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const testPlanImportTasksInput = z.object({
+  source_version_uri: idSchema,
+  dest_version_uri: idSchema,
+  source_task_uris: z.array(idSchema).min(1),
+  project_uuid: idSchema,
+  is_copy: z.boolean().optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanUploadBackgroundInput = z.object({
+  project_id: idSchema,
+  background_type: z.enum(["cover", "background", "logo"]).default("background"),
+  file_path: z.string().min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanCreateTestStepByCollectionInput = z.object({
+  project_id: idSchema,
+  x_auth_token: z.string().min(1),
+  file_path: z.string().min(1),
+  branch_uri: idSchema.optional(),
+  tmss_case_uri: idSchema.optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanUploadFileToGitInput = z.object({
+  project_id: idSchema,
+  x_auth_token: z.string().min(1),
+  file_path: z.string().min(1),
+  aw_ins_id: idSchema.optional(),
+  case_id: idSchema.optional(),
+  is_combined_aw: z.boolean().optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanUploadFileV3Input = z.object({
+  project_id: idSchema,
+  x_auth_token: z.string().min(1),
+  file_path: z.string().min(1),
+  dry_run: z.boolean().default(true)
+});
+
 export const testPlanGetExecutorElementsInput = z.object({
   project_id: idSchema,
   execute_mode: z.string().min(1).optional(),

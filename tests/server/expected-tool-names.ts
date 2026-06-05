@@ -1223,6 +1223,7 @@ export const expectedToolNames = [
   "testplan_create_task",
   "testplan_create_task_relations",
   "testplan_create_test_report",
+  "testplan_create_test_step_by_collection",
   "testplan_delete_asset",
   "testplan_delete_attachment",
   "testplan_delete_aw_catas",
@@ -1350,6 +1351,7 @@ export const expectedToolNames = [
   "testplan_get_user_package_permission",
   "testplan_get_variable_synchronization",
   "testplan_get_variable_synchronization_v2",
+  "testplan_import_tasks",
   "testplan_init_task_execution",
   "testplan_list_alert_templates",
   "testplan_list_api_test_aw_name_views",
@@ -1497,5 +1499,8 @@ export const expectedToolNames = [
   "testplan_update_test_report",
   "testplan_update_test_report_quality_attributes",
   "testplan_update_time_out_view",
-  "testplan_update_user_infos"
+  "testplan_update_user_infos",
+  "testplan_upload_background",
+  "testplan_upload_file_to_git",
+  "testplan_upload_file_v3"
 ];

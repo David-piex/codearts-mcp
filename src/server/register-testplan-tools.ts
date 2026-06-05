@@ -20,6 +20,7 @@ import {
   testPlanBatchDeleteFactorsInput,
   testPlanCreateAwCataFirstInput,
   testPlanCreateResourceUriV4Input,
+  testPlanCreateTestStepByCollectionInput,
   testPlanDeleteAssetInput,
   testPlanDeleteAttachmentInput,
   testPlanDeleteAwCatasInput,
@@ -37,6 +38,7 @@ import {
   testPlanDeleteTestcasesV3Input,
   testPlanDeleteVectorsInput,
   testPlanDownloadClassesInput,
+  testPlanImportTasksInput,
   testPlanGetExecutorElementsInput,
   testPlanSaveAwRefreshToAllInput,
   testPlanGetApiTestAvailableConfigInput,
@@ -57,6 +59,9 @@ import {
   testPlanShowTaskStatusTwoInput,
   testPlanUpdateAwNameViewInput,
   testPlanUpdateUserInfosInput,
+  testPlanUploadBackgroundInput,
+  testPlanUploadFileToGitInput,
+  testPlanUploadFileV3Input,
   testPlanGetBackgroundInfoInput,
   testPlanGetDomainAccessInfoInput,
   testPlanGetDomainDetailInfoInput,
@@ -406,6 +411,13 @@ import {
   createTestPlanDownloadClassesHandler,
   createTestPlanUpdateUserInfosHandler
 } from "../products/testplan/tools/official-misc-tools.js";
+import {
+  createTestPlanCreateTestStepByCollectionHandler,
+  createTestPlanImportTasksHandler,
+  createTestPlanUploadBackgroundHandler,
+  createTestPlanUploadFileToGitHandler,
+  createTestPlanUploadFileV3Handler
+} from "../products/testplan/tools/upload-import-tools.js";
 import {
   createTestPlanBatchDeleteFactorsHandler,
   createTestPlanDeleteAttachmentHandler,
@@ -1256,6 +1268,36 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanCreateResourceUriV4Input,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanCreateResourceUriV4Handler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanCreateResourceUriV4Handler
+  }),
+  "testplan_import_tasks": defineProductTool({
+    description: "Import CodeArts TestPlan tasks between versions (dry-run by default)",
+    inputSchema: testPlanImportTasksInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanImportTasksHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanImportTasksHandler
+  }),
+  "testplan_upload_background": defineProductTool({
+    description: "Upload a CodeArts TestPlan report background image (dry-run by default)",
+    inputSchema: testPlanUploadBackgroundInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanUploadBackgroundHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanUploadBackgroundHandler
+  }),
+  "testplan_create_test_step_by_collection": defineProductTool({
+    description: "Create CodeArts TestPlan steps from a Postman collection upload (dry-run by default)",
+    inputSchema: testPlanCreateTestStepByCollectionInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanCreateTestStepByCollectionHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanCreateTestStepByCollectionHandler
+  }),
+  "testplan_upload_file_to_git": defineProductTool({
+    description: "Upload a CodeArts TestPlan step file to git-backed storage (dry-run by default)",
+    inputSchema: testPlanUploadFileToGitInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanUploadFileToGitHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanUploadFileToGitHandler
+  }),
+  "testplan_upload_file_v3": defineProductTool({
+    description: "Upload a CodeArts TestPlan v3 step file (dry-run by default)",
+    inputSchema: testPlanUploadFileV3Input,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanUploadFileV3Handler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanUploadFileV3Handler
   }),
   "testplan_delete_aw_catas": defineProductTool({
     description: "Batch delete CodeArts TestPlan AW keywords and catalogs via official v1 API (dry-run by default)",

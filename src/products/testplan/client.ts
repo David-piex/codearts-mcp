@@ -141,6 +141,11 @@ type TestPlanTestcaseUrisInput = {
   just_return_id?: boolean;
 };
 
+type TestPlanTokenUploadResult = {
+  value?: unknown;
+  raw: Record<string, unknown>;
+};
+
 export type TestPlanClient = {
   requestOfficialApi: (input: OfficialApiRequestInput) => Promise<OfficialApiRequestResult>;
   listIssues: (input: {
@@ -1796,6 +1801,49 @@ export type TestPlanClient = {
     value?: unknown;
     raw: Record<string, unknown>;
   }>;
+  importTasks: (input: {
+    source_version_uri: string;
+    dest_version_uri: string;
+    source_task_uris: string[];
+    project_uuid: string;
+    is_copy?: boolean;
+  }) => Promise<{
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  uploadBackground: (input: {
+    project_id: string;
+    background_type: string;
+    file_name: string;
+    file_content: Uint8Array;
+    content_type?: string;
+  }) => Promise<TestPlanTokenUploadResult>;
+  createTestStepByCollection: (input: {
+    project_id: string;
+    x_auth_token: string;
+    file_name: string;
+    file_content: Uint8Array;
+    branch_uri?: string;
+    tmss_case_uri?: string;
+    content_type?: string;
+  }) => Promise<TestPlanTokenUploadResult>;
+  uploadFileToGit: (input: {
+    project_id: string;
+    x_auth_token: string;
+    file_name: string;
+    file_content: Uint8Array;
+    aw_ins_id?: string;
+    case_id?: string;
+    is_combined_aw?: boolean;
+    content_type?: string;
+  }) => Promise<TestPlanTokenUploadResult>;
+  uploadFileV3: (input: {
+    project_id: string;
+    x_auth_token: string;
+    file_name: string;
+    file_content: Uint8Array;
+    content_type?: string;
+  }) => Promise<TestPlanTokenUploadResult>;
   getExecutorElements: (input: {
     project_id: string;
     execute_mode?: string;
@@ -6502,6 +6550,121 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
     },
     async createResourceUriV4(input) {
       const response = await _http.post(`/GT3KServer/v4/${encodeURIComponent(input.project_id)}/resource-uri`);
+      const payload = readResultPayload(response);
+
+      return {
+        value: readResultValue(response, payload),
+        raw: payload
+      };
+    },
+    async importTasks(input) {
+      const body = {
+        source_version_uri: input.source_version_uri,
+        dest_version_uri: input.dest_version_uri,
+        source_task_uris: input.source_task_uris,
+        project_uuid: input.project_uuid,
+        ...(input.is_copy !== undefined ? { is_copy: input.is_copy } : {})
+      };
+      const response = await _http.post("/v4/tasks/import", body);
+      const payload = readResultPayload(response);
+
+      return {
+        value: readResultValue(response, payload),
+        raw: payload
+      };
+    },
+    async uploadBackground(input) {
+      const query = new URLSearchParams({ background_type: input.background_type });
+      const form = new FormData();
+      form.append(
+        "param",
+        new Blob([Buffer.from(input.file_content)], {
+          type: input.content_type ?? "application/octet-stream"
+        }),
+        input.file_name
+      );
+      const response = await _http.postMultipart(
+        `/v4/${encodeURIComponent(input.project_id)}/background/upload?${query.toString()}`,
+        form
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        value: readResultValue(response, payload),
+        raw: payload
+      };
+    },
+    async createTestStepByCollection(input) {
+      const query = new URLSearchParams();
+      appendQueryValue(query, "branch_uri", input.branch_uri);
+      appendQueryValue(query, "tmss_case_uri", input.tmss_case_uri);
+      const form = new FormData();
+      form.append(
+        "req",
+        new Blob([Buffer.from(input.file_content)], {
+          type: input.content_type ?? "application/octet-stream"
+        }),
+        input.file_name
+      );
+      const response = await _http.postMultipart(
+        `/v1/${encodeURIComponent(input.project_id)}/postman-collection?${query.toString()}`,
+        form,
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        value: readResultValue(response, payload),
+        raw: payload
+      };
+    },
+    async uploadFileToGit(input) {
+      const query = new URLSearchParams();
+      appendQueryValue(query, "aw_ins_id", input.aw_ins_id);
+      appendQueryValue(query, "case_id", input.case_id);
+      if (input.is_combined_aw !== undefined) {
+        query.set("is_combined_aw", String(input.is_combined_aw));
+      }
+      const form = new FormData();
+      form.append(
+        "request",
+        new Blob([Buffer.from(input.file_content)], {
+          type: input.content_type ?? "application/octet-stream"
+        }),
+        input.file_name
+      );
+      const response = await _http.postMultipart(
+        `/v1/${encodeURIComponent(input.project_id)}/uploadFile?${query.toString()}`,
+        form,
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        value: readResultValue(response, payload),
+        raw: payload
+      };
+    },
+    async uploadFileV3(input) {
+      const form = new FormData();
+      form.append(
+        "request",
+        new Blob([Buffer.from(input.file_content)], {
+          type: input.content_type ?? "application/octet-stream"
+        }),
+        input.file_name
+      );
+      const response = await _http.postMultipart(
+        `/v3/${encodeURIComponent(input.project_id)}/files`,
+        form,
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
+      );
       const payload = readResultPayload(response);
 
       return {

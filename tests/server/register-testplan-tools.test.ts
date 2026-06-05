@@ -525,6 +525,39 @@ describe("registerTestPlanTool", () => {
     ).toBe(true);
   });
 
+  it("registers upload and import write tools", () => {
+    const registerTool = vi.fn();
+    const tools = [
+      ["testplan_import_tasks", "Import CodeArts TestPlan tasks between versions (dry-run by default)"],
+      ["testplan_upload_background", "Upload a CodeArts TestPlan report background image (dry-run by default)"],
+      [
+        "testplan_create_test_step_by_collection",
+        "Create CodeArts TestPlan steps from a Postman collection upload (dry-run by default)"
+      ],
+      ["testplan_upload_file_to_git", "Upload a CodeArts TestPlan step file to git-backed storage (dry-run by default)"],
+      ["testplan_upload_file_v3", "Upload a CodeArts TestPlan v3 step file (dry-run by default)"]
+    ] as const;
+
+    for (const [toolName, description] of tools) {
+      const handled = registerTestPlanTool({
+        toolName,
+        server: { registerTool },
+        mode: "stdio",
+        stdioClient: {} as never
+      });
+
+      expect(handled).toBe(true);
+      expect(registerTool).toHaveBeenLastCalledWith(
+        toolName,
+        expect.objectContaining({
+          title: toolName,
+          description
+        }),
+        expect.any(Function)
+      );
+    }
+  });
+
   it("returns false for non-testplan tools", () => {
     const registerTool = vi.fn();
 

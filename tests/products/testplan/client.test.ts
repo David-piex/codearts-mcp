@@ -1205,6 +1205,125 @@ describe("createTestPlanClient", () => {
     ]);
   });
 
+  it("calls TestPlan import and upload endpoints", async () => {
+    const requests: Array<{
+      method: string;
+      path: string;
+      body?: unknown;
+      headers?: Record<string, string>;
+    }> = [];
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requests.push({ method: "POST", path, body });
+        return { status: "success", result: { value: "import-1" } };
+      },
+      postMultipart: async (path: string, body: FormData, options?: { headers?: Record<string, string> }) => {
+        requests.push({ method: "POST_MULTIPART", path, body, headers: options?.headers });
+        return { status: "success", result: { id: "file-1" }, value: { id: "file-1" } };
+      }
+    } as never);
+
+    await expect(
+      client.importTasks({
+        source_version_uri: "v1",
+        dest_version_uri: "v2",
+        source_task_uris: ["task-1"],
+        project_uuid: "project-1",
+        is_copy: true
+      })
+    ).resolves.toEqual({
+      value: { value: "import-1" },
+      raw: { value: "import-1" }
+    });
+    await expect(
+      client.uploadBackground({
+        project_id: "project-1",
+        background_type: "background",
+        file_name: "demo.png",
+        file_content: new Uint8Array([1, 2, 3]),
+        content_type: "image/png"
+      })
+    ).resolves.toMatchObject({
+      value: { id: "file-1" },
+      raw: { id: "file-1" }
+    });
+    await expect(
+      client.createTestStepByCollection({
+        project_id: "project-1",
+        x_auth_token: "token",
+        file_name: "collection.json",
+        file_content: new Uint8Array([4, 5, 6]),
+        branch_uri: "branch-1",
+        tmss_case_uri: "case-1",
+        content_type: "application/json"
+      })
+    ).resolves.toMatchObject({
+      value: { id: "file-1" },
+      raw: { id: "file-1" }
+    });
+    await expect(
+      client.uploadFileToGit({
+        project_id: "project-1",
+        x_auth_token: "token",
+        file_name: "payload.txt",
+        file_content: new Uint8Array([7, 8, 9]),
+        aw_ins_id: "aw-1",
+        case_id: "case-1",
+        is_combined_aw: true,
+        content_type: "text/plain"
+      })
+    ).resolves.toMatchObject({
+      value: { id: "file-1" },
+      raw: { id: "file-1" }
+    });
+    await expect(
+      client.uploadFileV3({
+        project_id: "project-1",
+        x_auth_token: "token",
+        file_name: "script.yaml",
+        file_content: new Uint8Array([10, 11, 12]),
+        content_type: "application/yaml"
+      })
+    ).resolves.toMatchObject({
+      value: { id: "file-1" },
+      raw: { id: "file-1" }
+    });
+
+    expect(requests).toHaveLength(5);
+    expect(requests[0]).toEqual({
+      method: "POST",
+      path: "/v4/tasks/import",
+      body: {
+        source_version_uri: "v1",
+        dest_version_uri: "v2",
+        source_task_uris: ["task-1"],
+        project_uuid: "project-1",
+        is_copy: true
+      }
+    });
+    expect(requests[1]?.path).toBe("/v4/project-1/background/upload?background_type=background");
+    expect(requests[2]?.path).toBe("/v1/project-1/postman-collection?branch_uri=branch-1&tmss_case_uri=case-1");
+    expect(requests[2]?.headers).toEqual({ "X-Auth-Token": "token" });
+    expect(requests[3]?.path).toBe("/v1/project-1/uploadFile?aw_ins_id=aw-1&case_id=case-1&is_combined_aw=true");
+    expect(requests[3]?.headers).toEqual({ "X-Auth-Token": "token" });
+    expect(requests[4]?.path).toBe("/v3/project-1/files");
+    expect(requests[4]?.headers).toEqual({ "X-Auth-Token": "token" });
+
+    const backgroundFile = (requests[1]?.body as FormData).get("param");
+    const collectionFile = (requests[2]?.body as FormData).get("req");
+    const gitFile = (requests[3]?.body as FormData).get("request");
+    const v3File = (requests[4]?.body as FormData).get("request");
+
+    expect(backgroundFile).toBeInstanceOf(File);
+    expect(collectionFile).toBeInstanceOf(File);
+    expect(gitFile).toBeInstanceOf(File);
+    expect(v3File).toBeInstanceOf(File);
+    expect((backgroundFile as File).name).toBe("demo.png");
+    expect((collectionFile as File).name).toBe("collection.json");
+    expect((gitFile as File).name).toBe("payload.txt");
+    expect((v3File as File).name).toBe("script.yaml");
+  });
+
   it("lists test suite tasks using the v4 batch query endpoint", async () => {
     let requestedPath = "";
     let requestedBody: Record<string, unknown> | undefined;
