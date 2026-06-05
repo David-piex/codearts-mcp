@@ -65,6 +65,7 @@ const productToolSources: Array<{
 
 const WRITE_ACTIONS = new Set([
   "add",
+  "accept",
   "append",
   "apply",
   "approve",
@@ -77,6 +78,7 @@ const WRITE_ACTIONS = new Set([
   "clear",
   "close",
   "configure",
+  "continue",
   "copy",
   "create",
   "delete",
@@ -96,6 +98,7 @@ const WRITE_ACTIONS = new Set([
   "refuse",
   "reject",
   "restore",
+  "resume",
   "request",
   "retry",
   "review",

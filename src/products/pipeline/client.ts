@@ -277,9 +277,27 @@ export type PipelineClient = {
     step_id: string;
   }) => Promise<{
     log: string;
-    status?: string;
+        status?: string;
       truncated?: boolean;
     }>;
+  getExecLog: (input: {
+    project_id: string;
+    pipeline_id: string;
+    run_id: string;
+    job_id: string;
+    step_id: string;
+    start_offset?: number;
+    end_offset?: number;
+    limit?: number;
+    sort?: "asc" | "desc";
+    offset?: number;
+  }) => Promise<{
+    log: string;
+    has_more?: boolean;
+    start_offset?: string;
+    end_offset?: string;
+    step_run_id?: string;
+  }>;
   cancelQueue: (input: {
     project_id: string;
     pipeline_id: string;
@@ -518,6 +536,58 @@ export type PipelineClient = {
     job_id?: string;
     step_id?: string;
     status?: string;
+  }>;
+  acceptDelayJob: (input: {
+    project_id: string;
+    pipeline_id: string;
+    run_id: string;
+    job_id: string;
+    step_id: string;
+  }) => Promise<{
+    success?: boolean;
+  }>;
+  rejectDelayJob: (input: {
+    project_id: string;
+    pipeline_id: string;
+    run_id: string;
+    job_id: string;
+    step_id: string;
+  }) => Promise<{
+    success?: boolean;
+  }>;
+  continueDelayJob: (input: {
+    project_id: string;
+    pipeline_id: string;
+    run_id: string;
+    job_id: string;
+    step_id: string;
+  }) => Promise<{
+    success?: boolean;
+  }>;
+  acceptCheckpoint: (input: {
+    project_id: string;
+    pipeline_id: string;
+    run_id: string;
+    step_id: string;
+  }) => Promise<{
+    success?: boolean;
+  }>;
+  rejectCheckpoint: (input: {
+    project_id: string;
+    pipeline_id: string;
+    run_id: string;
+    step_id: string;
+  }) => Promise<{
+    success?: boolean;
+  }>;
+  resumePipeline: (input: {
+    project_id: string;
+    pipeline_id: string;
+    run_id: string;
+    job_id: string;
+    step_id: string;
+  }) => Promise<{
+    success?: boolean;
   }>;
   stopRun: (input: { pipeline_id: string; run_id: string }) => Promise<{
     pipeline_id?: string;
@@ -1611,6 +1681,39 @@ export function createPipelineClient(
         truncated: response.truncated ?? response.result?.truncated
       };
     },
+    async getExecLog(input) {
+      const response = (await _http.post(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipelines/${encodeURIComponent(input.pipeline_id)}/pipeline-runs/${encodeURIComponent(input.run_id)}/jobs/${encodeURIComponent(input.job_id)}/steps/${encodeURIComponent(input.step_id)}/exec-log`,
+        {
+          ...(typeof input.start_offset === "number" ? { start_offset: input.start_offset } : {}),
+          ...(typeof input.end_offset === "number" ? { end_offset: input.end_offset } : {}),
+          ...(typeof input.limit === "number" ? { limit: input.limit } : {}),
+          ...(typeof input.offset === "number" ? { offset: input.offset } : {}),
+          ...(input.sort ? { sort: input.sort } : {})
+        }
+      )) as {
+        log?: string;
+        has_more?: boolean;
+        start_offset?: string;
+        end_offset?: string;
+        step_run_id?: string;
+        result?: {
+          log?: string;
+          has_more?: boolean;
+          start_offset?: string;
+          end_offset?: string;
+          step_run_id?: string;
+        };
+      };
+
+      return {
+        log: response.log ?? response.result?.log ?? "",
+        has_more: response.has_more ?? response.result?.has_more,
+        start_offset: response.start_offset ?? response.result?.start_offset,
+        end_offset: response.end_offset ?? response.result?.end_offset,
+        step_run_id: response.step_run_id ?? response.result?.step_run_id
+      };
+    },
     async cancelQueue(input) {
       const response = (await _http.post(
         `/v5/${encodeURIComponent(input.project_id)}/api/pipelines/${encodeURIComponent(input.pipeline_id)}/${encodeURIComponent(input.run_id)}/cancel-queuing/${encodeURIComponent(String(input.queue_id))}`
@@ -2029,6 +2132,60 @@ export function createPipelineClient(
         job_id: response.job_run_id ?? input.job_id,
         step_id: response.step_run_id ?? input.step_id,
         status: response.status
+      };
+    },
+    async acceptDelayJob(input) {
+      const response = (await _http.post(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipelines/${encodeURIComponent(input.pipeline_id)}/pipeline-runs/${encodeURIComponent(input.run_id)}/jobs/${encodeURIComponent(input.job_id)}/steps/${encodeURIComponent(input.step_id)}/delay-pass`
+      )) as { success?: boolean };
+
+      return {
+        success: response.success ?? true
+      };
+    },
+    async rejectDelayJob(input) {
+      const response = (await _http.post(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipelines/${encodeURIComponent(input.pipeline_id)}/pipeline-runs/${encodeURIComponent(input.run_id)}/jobs/${encodeURIComponent(input.job_id)}/steps/${encodeURIComponent(input.step_id)}/delay-refuse`
+      )) as { success?: boolean };
+
+      return {
+        success: response.success ?? true
+      };
+    },
+    async continueDelayJob(input) {
+      const response = (await _http.post(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipelines/${encodeURIComponent(input.pipeline_id)}/pipeline-runs/${encodeURIComponent(input.run_id)}/jobs/${encodeURIComponent(input.job_id)}/steps/${encodeURIComponent(input.step_id)}/delay`
+      )) as { success?: boolean };
+
+      return {
+        success: response.success ?? true
+      };
+    },
+    async acceptCheckpoint(input) {
+      const response = (await _http.post(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipelines/${encodeURIComponent(input.pipeline_id)}/pipeline-runs/${encodeURIComponent(input.run_id)}/steps/${encodeURIComponent(input.step_id)}/manual/pass`
+      )) as { success?: boolean };
+
+      return {
+        success: response.success ?? true
+      };
+    },
+    async rejectCheckpoint(input) {
+      const response = (await _http.post(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipelines/${encodeURIComponent(input.pipeline_id)}/pipeline-runs/${encodeURIComponent(input.run_id)}/steps/${encodeURIComponent(input.step_id)}/manual/refuse`
+      )) as { success?: boolean };
+
+      return {
+        success: response.success ?? true
+      };
+    },
+    async resumePipeline(input) {
+      const response = (await _http.post(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipelines/${encodeURIComponent(input.pipeline_id)}/pipeline-runs/${encodeURIComponent(input.run_id)}/jobs/${encodeURIComponent(input.job_id)}/steps/${encodeURIComponent(input.step_id)}/resume`
+      )) as { success?: boolean };
+
+      return {
+        success: response.success ?? true
       };
     },
     async stopRun(input) {

@@ -13,6 +13,7 @@ import {
   pipelineBindVariableGroupsToPipelineInput,
   pipelineCheckComponentInput,
   pipelineCheckProjectInput,
+  pipelineCheckpointInput,
   pipelineCreateExtensionEndpointInput,
   pipelineCreateGroupInput,
   pipelineCreateByTemplateInput,
@@ -27,6 +28,7 @@ import {
   pipelineDeleteRuleInput,
   pipelineDeleteStrategyInput,
   pipelineDeleteVariableGroupInput,
+  pipelineDelayJobInput,
   pipelineDeletePipelineInput,
   pipelineGetExtensionEndpointInput,
   pipelineGetExtensionModuleInput,
@@ -34,6 +36,7 @@ import {
   pipelineGetChangeRequestInput,
   pipelineGetComponentInput,
   pipelineGetDevucAuthInput,
+  pipelineGetExecLogInput,
   pipelineGetOauthAuthorizationUrlInput,
   pipelineGetPacActionInput,
   pipelineGetTemplateInput,
@@ -122,7 +125,10 @@ import {
   pipelineUpdateVariableGroupInput
 } from "../products/pipeline/schemas.js";
 import { createPipelineApproveRunHandler } from "../products/pipeline/tools/approve-run.js";
+import { createPipelineAcceptCheckpointHandler } from "../products/pipeline/tools/accept-checkpoint.js";
+import { createPipelineAcceptDelayJobHandler } from "../products/pipeline/tools/accept-delay-job.js";
 import { createPipelineBindVariableGroupsToPipelineHandler } from "../products/pipeline/tools/bind-variable-groups-to-pipeline.js";
+import { createPipelineContinueDelayJobHandler } from "../products/pipeline/tools/continue-delay-job.js";
 import { createPipelineCreateExtensionEndpointHandler } from "../products/pipeline/tools/create-extension-endpoint.js";
 import { createPipelineCreateGroupHandler } from "../products/pipeline/tools/create-group.js";
 import { createPipelineCreateProjectStrategyHandler } from "../products/pipeline/tools/create-project-strategy.js";
@@ -185,6 +191,7 @@ import { createPipelineGetTemplateHandler } from "../products/pipeline/tools/get
 import { createPipelineGetUserPermissionHandler } from "../products/pipeline/tools/get-user-permission.js";
 import { createPipelineGetWebhookInfoHandler } from "../products/pipeline/tools/get-webhook-info.js";
 import { createPipelineGetRunDetailHandler } from "../products/pipeline/tools/get-run-detail.js";
+import { createPipelineGetExecLogHandler } from "../products/pipeline/tools/get-exec-log.js";
 import { createPipelineGetRunLogHandler } from "../products/pipeline/tools/get-run-log.js";
 import { createPipelineGetRunParametersHandler } from "../products/pipeline/tools/get-run-parameters.js";
 import { createPipelineGetRunHandler } from "../products/pipeline/tools/get-run.js";
@@ -239,7 +246,10 @@ import { createPipelineListSystemVarsHandler } from "../products/pipeline/tools/
 import { createPipelineListTemplatesHandler } from "../products/pipeline/tools/list-templates.js";
 import { createPipelineListTriggerFailedRecordsHandler } from "../products/pipeline/tools/list-trigger-failed-records.js";
 import { createPipelineMovePipelinesToGroupHandler } from "../products/pipeline/tools/move-pipelines-to-group.js";
+import { createPipelineRejectCheckpointHandler } from "../products/pipeline/tools/reject-checkpoint.js";
+import { createPipelineRejectDelayJobHandler } from "../products/pipeline/tools/reject-delay-job.js";
 import { createPipelineRejectRunHandler } from "../products/pipeline/tools/reject-run.js";
+import { createPipelineResumePipelineHandler } from "../products/pipeline/tools/resume-pipeline.js";
 import { createPipelineRetryRunHandler } from "../products/pipeline/tools/retry-run.js";
 import { createPipelineRunPipelineHandler } from "../products/pipeline/tools/run-pipeline.js";
 import { createPipelineSetTagsForPipelinesHandler } from "../products/pipeline/tools/set-tags-for-pipelines.js";
@@ -428,6 +438,12 @@ const pipelineToolDefinitions = {
     inputSchema: pipelineGetRunLogInput,
     selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetRunLogHandler>[0] }) => clients.pipelineClient,
     createProductHandler: createPipelineGetRunLogHandler
+  }),
+  "pipeline_get_exec_log": defineProductTool({
+    description: "Get CodeArts Pipeline execution log",
+    inputSchema: pipelineGetExecLogInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetExecLogHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineGetExecLogHandler
   }),
   "pipeline_get_manual_review_context": defineProductTool({
     description: "Get CodeArts Pipeline manual review context",
@@ -1039,6 +1055,48 @@ const pipelineToolDefinitions = {
     selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineRejectRunHandler>[0] }) => clients.pipelineClient,
     createProductHandler: createPipelineRejectRunHandler,
     rateLimitAction: "pipeline_reject_run"
+  }),
+  "pipeline_accept_delay_job": defineProductTool({
+    description: "Accept CodeArts Pipeline delay job",
+    inputSchema: pipelineDelayJobInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineAcceptDelayJobHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineAcceptDelayJobHandler,
+    rateLimitAction: "pipeline_accept_delay_job"
+  }),
+  "pipeline_reject_delay_job": defineProductTool({
+    description: "Reject CodeArts Pipeline delay job",
+    inputSchema: pipelineDelayJobInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineRejectDelayJobHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineRejectDelayJobHandler,
+    rateLimitAction: "pipeline_reject_delay_job"
+  }),
+  "pipeline_continue_delay_job": defineProductTool({
+    description: "Continue a CodeArts Pipeline delay job",
+    inputSchema: pipelineDelayJobInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineContinueDelayJobHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineContinueDelayJobHandler,
+    rateLimitAction: "pipeline_continue_delay_job"
+  }),
+  "pipeline_accept_checkpoint": defineProductTool({
+    description: "Accept CodeArts Pipeline manual checkpoint",
+    inputSchema: pipelineCheckpointInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineAcceptCheckpointHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineAcceptCheckpointHandler,
+    rateLimitAction: "pipeline_accept_checkpoint"
+  }),
+  "pipeline_reject_checkpoint": defineProductTool({
+    description: "Reject CodeArts Pipeline manual checkpoint",
+    inputSchema: pipelineCheckpointInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineRejectCheckpointHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineRejectCheckpointHandler,
+    rateLimitAction: "pipeline_reject_checkpoint"
+  }),
+  "pipeline_resume_pipeline": defineProductTool({
+    description: "Resume a suspended CodeArts Pipeline run",
+    inputSchema: pipelineDelayJobInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineResumePipelineHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineResumePipelineHandler,
+    rateLimitAction: "pipeline_resume_pipeline"
   }),
   "pipeline_list_templates": defineProductTool({
     description: "List CodeArts Pipeline templates",

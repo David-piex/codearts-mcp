@@ -6,11 +6,157 @@
 
 模块：`流水线`
 
-API 数量：`126`
+API 数量：`133`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
 ## API 清单
+
+### pipeline_accept_checkpoint
+
+所属模块：`流水线`
+
+说明：执行流水线的checkpoint。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "pipeline_accept_checkpoint",
+    "arguments": {
+      "project_id": "<project_id>",
+      "pipeline_id": "<pipeline_id>",
+      "run_id": "<run_id>",
+      "step_id": "<step_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 流水线 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `pipeline_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `pipeline_id` ↔ 原始 CodeArts 流水线 API 同名字段 `pipeline_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>流水线 ID，用于定位对应的 CodeArts 资源。 |
+| `run_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `run_id` ↔ 原始 CodeArts 流水线 API 同名字段 `run_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>运行记录 ID，用于定位对应的 CodeArts 资源。 |
+| `step_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `step_id` ↔ 原始 CodeArts 流水线 API 同名字段 `step_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>步骤 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "pipeline_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "run_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "step_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "project_id",
+    "pipeline_id",
+    "run_id",
+    "step_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### pipeline_accept_delay_job
+
+所属模块：`流水线`
+
+说明：执行流水线的delay任务。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "pipeline_accept_delay_job",
+    "arguments": {
+      "project_id": "<project_id>",
+      "pipeline_id": "<pipeline_id>",
+      "run_id": "<run_id>",
+      "job_id": "<job_id>",
+      "step_id": "<step_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 流水线 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `pipeline_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `pipeline_id` ↔ 原始 CodeArts 流水线 API 同名字段 `pipeline_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>流水线 ID，用于定位对应的 CodeArts 资源。 |
+| `run_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `run_id` ↔ 原始 CodeArts 流水线 API 同名字段 `run_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>运行记录 ID，用于定位对应的 CodeArts 资源。 |
+| `job_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `job_id` ↔ 原始 CodeArts 流水线 API 同名字段 `job_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>构建任务 ID，用于定位对应的 CodeArts 资源。 |
+| `step_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `step_id` ↔ 原始 CodeArts 流水线 API 同名字段 `step_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>步骤 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "pipeline_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "run_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "job_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "step_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "project_id",
+    "pipeline_id",
+    "run_id",
+    "job_id",
+    "step_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
 
 ### pipeline_approve_run
 
@@ -536,6 +682,82 @@ API 数量：`126`
   "required": [
     "project_id",
     "type"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### pipeline_continue_delay_job
+
+所属模块：`流水线`
+
+说明：执行流水线的delay任务。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "pipeline_continue_delay_job",
+    "arguments": {
+      "project_id": "<project_id>",
+      "pipeline_id": "<pipeline_id>",
+      "run_id": "<run_id>",
+      "job_id": "<job_id>",
+      "step_id": "<step_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 流水线 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `pipeline_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `pipeline_id` ↔ 原始 CodeArts 流水线 API 同名字段 `pipeline_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>流水线 ID，用于定位对应的 CodeArts 资源。 |
+| `run_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `run_id` ↔ 原始 CodeArts 流水线 API 同名字段 `run_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>运行记录 ID，用于定位对应的 CodeArts 资源。 |
+| `job_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `job_id` ↔ 原始 CodeArts 流水线 API 同名字段 `job_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>构建任务 ID，用于定位对应的 CodeArts 资源。 |
+| `step_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `step_id` ↔ 原始 CodeArts 流水线 API 同名字段 `step_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>步骤 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "pipeline_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "run_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "job_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "step_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "project_id",
+    "pipeline_id",
+    "run_id",
+    "job_id",
+    "step_id"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -2259,6 +2481,105 @@ API 数量：`126`
   },
   "required": [
     "cloud_project_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### pipeline_get_exec_log
+
+所属模块：`流水线`
+
+说明：获取流水线的exec日志。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "pipeline_get_exec_log",
+    "arguments": {
+      "project_id": "<project_id>",
+      "pipeline_id": "<pipeline_id>",
+      "run_id": "<run_id>",
+      "job_id": "<job_id>",
+      "step_id": "<step_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 流水线 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `pipeline_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `pipeline_id` ↔ 原始 CodeArts 流水线 API 同名字段 `pipeline_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>流水线 ID，用于定位对应的 CodeArts 资源。 |
+| `run_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `run_id` ↔ 原始 CodeArts 流水线 API 同名字段 `run_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>运行记录 ID，用于定位对应的 CodeArts 资源。 |
+| `job_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `job_id` ↔ 原始 CodeArts 流水线 API 同名字段 `job_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>构建任务 ID，用于定位对应的 CodeArts 资源。 |
+| `step_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `step_id` ↔ 原始 CodeArts 流水线 API 同名字段 `step_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>步骤 ID，用于定位对应的 CodeArts 资源。 |
+| `start_offset` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `start_offset` ↔ 原始 CodeArts 流水线 API 同名字段 `start_offset`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `end_offset` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `end_offset` ↔ 原始 CodeArts 流水线 API 同名字段 `end_offset`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>日志结束偏移量，用于增量读取部署或构建日志。 |
+| `limit` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `limit` ↔ 原始 CodeArts 流水线 API 同名字段 `limit`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>分页数量上限，表示本次最多返回多少条记录。 |
+| `sort` | 否 | `"asc" \| "desc"` |  | 字段对应：<br>MCP 字段 `sort` ↔ 原始 CodeArts 流水线 API 同名字段 `sort`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `offset` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `offset` ↔ 原始 CodeArts 流水线 API 同名字段 `offset`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>分页偏移量，表示从结果集第几条开始返回，常与 limit 配合使用。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "pipeline_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "run_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "job_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "step_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "start_offset": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "end_offset": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "limit": {
+      "type": "integer",
+      "exclusiveMinimum": 0
+    },
+    "sort": {
+      "type": "string",
+      "enum": [
+        "asc",
+        "desc"
+      ]
+    },
+    "offset": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "required": [
+    "project_id",
+    "pipeline_id",
+    "run_id",
+    "job_id",
+    "step_id"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -6494,6 +6815,152 @@ API 数量：`126`
 }
 ```
 
+### pipeline_reject_checkpoint
+
+所属模块：`流水线`
+
+说明：驳回流水线的checkpoint。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "pipeline_reject_checkpoint",
+    "arguments": {
+      "project_id": "<project_id>",
+      "pipeline_id": "<pipeline_id>",
+      "run_id": "<run_id>",
+      "step_id": "<step_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 流水线 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `pipeline_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `pipeline_id` ↔ 原始 CodeArts 流水线 API 同名字段 `pipeline_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>流水线 ID，用于定位对应的 CodeArts 资源。 |
+| `run_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `run_id` ↔ 原始 CodeArts 流水线 API 同名字段 `run_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>运行记录 ID，用于定位对应的 CodeArts 资源。 |
+| `step_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `step_id` ↔ 原始 CodeArts 流水线 API 同名字段 `step_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>步骤 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "pipeline_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "run_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "step_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "project_id",
+    "pipeline_id",
+    "run_id",
+    "step_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### pipeline_reject_delay_job
+
+所属模块：`流水线`
+
+说明：驳回流水线的delay任务。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "pipeline_reject_delay_job",
+    "arguments": {
+      "project_id": "<project_id>",
+      "pipeline_id": "<pipeline_id>",
+      "run_id": "<run_id>",
+      "job_id": "<job_id>",
+      "step_id": "<step_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 流水线 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `pipeline_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `pipeline_id` ↔ 原始 CodeArts 流水线 API 同名字段 `pipeline_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>流水线 ID，用于定位对应的 CodeArts 资源。 |
+| `run_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `run_id` ↔ 原始 CodeArts 流水线 API 同名字段 `run_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>运行记录 ID，用于定位对应的 CodeArts 资源。 |
+| `job_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `job_id` ↔ 原始 CodeArts 流水线 API 同名字段 `job_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>构建任务 ID，用于定位对应的 CodeArts 资源。 |
+| `step_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `step_id` ↔ 原始 CodeArts 流水线 API 同名字段 `step_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>步骤 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "pipeline_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "run_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "job_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "step_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "project_id",
+    "pipeline_id",
+    "run_id",
+    "job_id",
+    "step_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### pipeline_reject_run
 
 所属模块：`流水线`
@@ -6659,6 +7126,82 @@ API 数量：`126`
   "required": [
     "method",
     "path"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### pipeline_resume_pipeline
+
+所属模块：`流水线`
+
+说明：执行流水线的流水线。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "pipeline_resume_pipeline",
+    "arguments": {
+      "project_id": "<project_id>",
+      "pipeline_id": "<pipeline_id>",
+      "run_id": "<run_id>",
+      "job_id": "<job_id>",
+      "step_id": "<step_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 流水线 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `pipeline_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `pipeline_id` ↔ 原始 CodeArts 流水线 API 同名字段 `pipeline_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>流水线 ID，用于定位对应的 CodeArts 资源。 |
+| `run_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `run_id` ↔ 原始 CodeArts 流水线 API 同名字段 `run_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>运行记录 ID，用于定位对应的 CodeArts 资源。 |
+| `job_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `job_id` ↔ 原始 CodeArts 流水线 API 同名字段 `job_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>构建任务 ID，用于定位对应的 CodeArts 资源。 |
+| `step_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `step_id` ↔ 原始 CodeArts 流水线 API 同名字段 `step_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>步骤 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "pipeline_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "run_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "job_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "step_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "project_id",
+    "pipeline_id",
+    "run_id",
+    "job_id",
+    "step_id"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

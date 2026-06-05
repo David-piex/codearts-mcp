@@ -1225,6 +1225,119 @@ describe("createPipelineClient", () => {
     expect(result).toEqual({ success: true });
   });
 
+  it("maps exec log responses", async () => {
+    let requestedPath = "";
+    let requestedBody: unknown;
+    const client = createClient({
+      post: async (path: string, body?: unknown) => {
+        requestedPath = path;
+        requestedBody = body;
+        return {
+          log: "line1\nline2",
+          has_more: true,
+          start_offset: "0",
+          end_offset: "42",
+          step_run_id: "step-1"
+        };
+      }
+    });
+
+    const result = await client.getExecLog({
+      project_id: "project-1",
+      pipeline_id: "pipe-1",
+      run_id: "run-1",
+      job_id: "job-1",
+      step_id: "step-1",
+      start_offset: 0,
+      end_offset: 0,
+      limit: 500,
+      sort: "asc",
+      offset: 0
+    });
+
+    expect(requestedPath).toBe(
+      "/v5/project-1/api/pipelines/pipe-1/pipeline-runs/run-1/jobs/job-1/steps/step-1/exec-log"
+    );
+    expect(requestedBody).toEqual({
+      start_offset: 0,
+      end_offset: 0,
+      limit: 500,
+      sort: "asc",
+      offset: 0
+    });
+    expect(result).toEqual({
+      log: "line1\nline2",
+      has_more: true,
+      start_offset: "0",
+      end_offset: "42",
+      step_run_id: "step-1"
+    });
+  });
+
+  it("maps delay and checkpoint control responses", async () => {
+    const requests: Array<{ path: string; body: unknown }> = [];
+    const client = createClient({
+      post: async (path: string, body?: unknown) => {
+        requests.push({ path, body: body ?? null });
+        return { success: true };
+      }
+    });
+
+    await expect(client.acceptDelayJob(createProjectPipelineReviewInput())).resolves.toEqual({
+      success: true
+    });
+    await expect(client.rejectDelayJob(createProjectPipelineReviewInput())).resolves.toEqual({
+      success: true
+    });
+    await expect(client.continueDelayJob(createProjectPipelineReviewInput())).resolves.toEqual({
+      success: true
+    });
+    await expect(
+      client.acceptCheckpoint(
+        createProjectPipelineRunInput({
+          step_id: "step-1"
+        })
+      )
+    ).resolves.toEqual({ success: true });
+    await expect(
+      client.rejectCheckpoint(
+        createProjectPipelineRunInput({
+          step_id: "step-1"
+        })
+      )
+    ).resolves.toEqual({ success: true });
+    await expect(client.resumePipeline(createProjectPipelineReviewInput())).resolves.toEqual({
+      success: true
+    });
+
+    expect(requests).toEqual([
+      {
+        path: "/v5/project-1/api/pipelines/pipe-1/pipeline-runs/run-1/jobs/job-1/steps/step-1/delay-pass",
+        body: null
+      },
+      {
+        path: "/v5/project-1/api/pipelines/pipe-1/pipeline-runs/run-1/jobs/job-1/steps/step-1/delay-refuse",
+        body: null
+      },
+      {
+        path: "/v5/project-1/api/pipelines/pipe-1/pipeline-runs/run-1/jobs/job-1/steps/step-1/delay",
+        body: null
+      },
+      {
+        path: "/v5/project-1/api/pipelines/pipe-1/pipeline-runs/run-1/steps/step-1/manual/pass",
+        body: null
+      },
+      {
+        path: "/v5/project-1/api/pipelines/pipe-1/pipeline-runs/run-1/steps/step-1/manual/refuse",
+        body: null
+      },
+      {
+        path: "/v5/project-1/api/pipelines/pipe-1/pipeline-runs/run-1/jobs/job-1/steps/step-1/resume",
+        body: null
+      }
+    ]);
+  });
+
   it("maps pipeline tenant strategy detail responses", async () => {
     let requestedPath = "";
     const client = createClient({

@@ -193,6 +193,36 @@ export const pipelineGetRunLogInput = z.object({
   step_id: idSchema
 });
 
+export const pipelineGetExecLogInput = z.object({
+  project_id: idSchema,
+  pipeline_id: idSchema,
+  run_id: idSchema,
+  job_id: idSchema,
+  step_id: idSchema,
+  start_offset: z.number().int().nonnegative().optional(),
+  end_offset: z.number().int().nonnegative().optional(),
+  limit: z.number().int().positive().optional(),
+  sort: z.enum(["asc", "desc"]).optional(),
+  offset: z.number().int().nonnegative().optional()
+});
+
+export const pipelineDelayJobInput = z.object({
+  project_id: idSchema,
+  pipeline_id: idSchema,
+  run_id: idSchema,
+  job_id: idSchema,
+  step_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const pipelineCheckpointInput = z.object({
+  project_id: idSchema,
+  pipeline_id: idSchema,
+  run_id: idSchema,
+  step_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
 export const pipelineCancelQueueInput = z.object({
   project_id: idSchema,
   pipeline_id: idSchema,
