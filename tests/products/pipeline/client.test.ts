@@ -952,6 +952,105 @@ describe("createPipelineClient", () => {
     ]);
   });
 
+  it("updates pipeline notices and permissions", async () => {
+    const post = vi.fn(async () => ({ status: "success" }));
+    const put = vi
+      .fn()
+      .mockResolvedValueOnce(true)
+      .mockResolvedValueOnce({ status: "success" });
+    const client = createClient({ post, put });
+
+    await expect(client.updateOfficialNotice({
+      project_id: "project-1",
+      pipeline_id: "pipe-1",
+      event_type: "pipeline.deleted",
+      notice_data: { notice_types: ["MESSAGE"], notice_roles: ["CREATOR"] }
+    })).resolves.toEqual({ status: "success" });
+    await expect(client.switchNotice({
+      project_id: "project-1",
+      pipeline_id: "pipe-1",
+      notice_type: "officialNotice",
+      notice_switch: false
+    })).resolves.toEqual({ status: "success" });
+    await expect(client.updateThirdPartyNotice({
+      project_id: "project-1",
+      pipeline_id: "pipe-1",
+      notice_id: "notice-1",
+      notice_type: "feishu",
+      notice_status: true,
+      send_url: "https://example.com/hook"
+    })).resolves.toEqual({ status: "success" });
+    await expect(client.updateNoticeStatus({
+      project_id: "project-1",
+      pipeline_id: "pipe-1",
+      type: 3,
+      enable: true
+    })).resolves.toEqual({ enabled: true });
+    await expect(client.updateRolePermission({
+      project_id: "project-1",
+      pipeline_id: "pipe-1",
+      operation_query: true,
+      operation_execute: true,
+      operation_update: true,
+      operation_delete: false,
+      operation_authorize: false,
+      role_id: 4
+    })).resolves.toEqual({ status: "success" });
+    await expect(client.updateUserPermission({
+      project_id: "project-1",
+      pipeline_id: "pipe-1",
+      operation_query: true,
+      operation_execute: true,
+      operation_update: true,
+      operation_delete: false,
+      operation_authorize: false,
+      user_id: "user-1"
+    })).resolves.toEqual({ status: "success" });
+    await expect(client.switchPermission({
+      project_id: "project-1",
+      pipeline_id: "pipe-1",
+      flag: true
+    })).resolves.toEqual({ status: "success" });
+
+    expect(post).toHaveBeenNthCalledWith(1, "/v5/project-1/api/pipeline-notices/pipe-1/notice", {
+      event_type: "pipeline.deleted",
+      notice_data: { notice_types: ["MESSAGE"], notice_roles: ["CREATOR"] }
+    });
+    expect(post).toHaveBeenNthCalledWith(2, "/v5/project-1/api/pipeline-notices/pipe-1/notice/all", {
+      notice_type: "officialNotice",
+      notice_switch: false
+    });
+    expect(post).toHaveBeenNthCalledWith(3, "/v5/project-1/api/pipeline-notices/pipe-1/notice/message", {
+      notice_id: "notice-1",
+      notice_type: "feishu",
+      notice_status: true,
+      send_url: "https://example.com/hook"
+    });
+    expect(put).toHaveBeenNthCalledWith(1, "/v5/project-1/api/pipeline-notices/pipe-1/notice/status", {
+      type: 3,
+      enable: true
+    });
+    expect(post).toHaveBeenNthCalledWith(4, "/v5/project-1/api/pipeline-permissions/pipe-1/update-role-permission", {
+      pipeline_id: "pipe-1",
+      operation_query: true,
+      operation_execute: true,
+      operation_update: true,
+      operation_delete: false,
+      operation_authorize: false,
+      role_id: 4
+    });
+    expect(post).toHaveBeenNthCalledWith(5, "/v5/project-1/api/pipeline-permissions/pipe-1/update-user-permission", {
+      pipeline_id: "pipe-1",
+      operation_query: true,
+      operation_execute: true,
+      operation_update: true,
+      operation_delete: false,
+      operation_authorize: false,
+      user_id: "user-1"
+    });
+    expect(put).toHaveBeenNthCalledWith(2, "/v5/project-1/api/pipeline-permissions/pipe-1/update-permission-switch?flag=true");
+  });
+
   it("lists pipeline queue, system variables, trigger failures, and modify history", async () => {
     const requests: string[] = [];
     const client = createClient({
@@ -1890,6 +1989,112 @@ describe("createPipelineClient", () => {
     expect(deleted).toEqual({
       pipeline_id: "pipe-1",
       deleted: true
+    });
+  });
+
+  it("creates and updates pipelines, and supports batch delete and batch run", async () => {
+    const post = vi
+      .fn()
+      .mockResolvedValueOnce({
+        pipeline_id: "pipe-template-1",
+        name: "Created From Template"
+      })
+      .mockResolvedValueOnce({
+        pipeline_id: "pipe-new-1",
+        name: "Created Directly"
+      })
+      .mockResolvedValueOnce({})
+      .mockResolvedValueOnce({});
+    const put = vi.fn(async () => ({ success: true }));
+    const del = vi.fn(async () => ({}));
+    const client = createClient({ post, put, delete: del });
+
+    const createdFromTemplate = await client.createPipelineByTemplate({
+      project_id: "project-1",
+      template_id: "template-1",
+      name: "Created From Template",
+      description: "desc",
+      group_id: "group-1"
+    });
+    const created = await client.createPipeline({
+      project_id: "project-1",
+      name: "Created Directly",
+      description: "desc",
+      manifest_version: "3.0"
+    });
+    const updated = await client.updatePipelineInfo({
+      project_id: "project-1",
+      pipeline_id: "pipe-new-1",
+      name: "Updated Name",
+      description: "updated",
+      is_publish: true,
+      manifest_version: "3.1"
+    });
+    const batchDeleted = await client.batchDeletePipelines({
+      project_id: "project-1",
+      pipeline_ids: ["pipe-a", "pipe-b"]
+    });
+    const batchRun = await client.batchRunPipelines({
+      project_id: "project-1",
+      pipeline_ids: ["pipe-a", "pipe-b"],
+      branch: "main",
+      description: "release"
+    });
+
+    expect(post).toHaveBeenNthCalledWith(1, "/v5/project-1/api/pipelines/template/template-1", {
+      name: "Created From Template",
+      description: "desc",
+      group_id: "group-1"
+    });
+    expect(post).toHaveBeenNthCalledWith(2, "/v5/project-1/api/pipelines", {
+      name: "Created Directly",
+      description: "desc",
+      manifest_version: "3.0"
+    });
+    expect(put).toHaveBeenCalledWith("/v5/project-1/api/pipelines/pipe-new-1", {
+      name: "Updated Name",
+      description: "updated",
+      is_publish: true,
+      manifest_version: "3.1"
+    });
+    expect(del).toHaveBeenCalledWith("/v5/project-1/api/pipelines/batch", {
+      pipeline_ids: ["pipe-a", "pipe-b"]
+    });
+    expect(post).toHaveBeenNthCalledWith(3, "/v5/project-1/api/pipelines/batch-run", {
+      pipeline_ids: ["pipe-a", "pipe-b"],
+      description: "release",
+      sources: [
+        {
+          type: "code",
+          params: {
+            build_params: {
+              build_type: "branch",
+              event_type: "Manual",
+              target_branch: "main"
+            }
+          }
+        }
+      ]
+    });
+    expect(createdFromTemplate).toEqual({
+      pipeline_id: "pipe-template-1",
+      name: "Created From Template"
+    });
+    expect(created).toEqual({
+      pipeline_id: "pipe-new-1",
+      name: "Created Directly"
+    });
+    expect(updated).toEqual({
+      pipeline_id: "pipe-new-1",
+      success: true
+    });
+    expect(batchDeleted).toEqual({
+      pipeline_ids: ["pipe-a", "pipe-b"],
+      deleted: true
+    });
+    expect(batchRun).toEqual({
+      pipeline_ids: ["pipe-a", "pipe-b"],
+      success: true
     });
   });
 
@@ -3074,6 +3279,95 @@ describe("createPipelineClient", () => {
       {
         method: "GET",
         path: "/v2/project-1/cicd/devuc-auth/query?service=pipeline"
+      }
+    ]);
+  });
+
+  it("calls advanced Pipeline run endpoints", async () => {
+    const calls: Array<{ method: string; path: string; body?: unknown }> = [];
+    const client = createClient({
+      get: async (path: string) => {
+        calls.push({ method: "GET", path });
+        if (path.endsWith("/jump-link")) {
+          return { jumpLink: "https://example.com/jump" };
+        }
+        return {
+          result: [{ id: "change-1", name: "CR-1" }]
+        };
+      },
+      post: async (path: string, body?: unknown) => {
+        calls.push({ method: "POST", path, body });
+        if (path.endsWith("/rollback-run")) {
+          return { pipeline_run_id: "rollback-run-1" };
+        }
+        if (path.endsWith("/batch-runs/result")) {
+          return {
+            result: [{ pipeline_id: "pipe-1", pipeline_run_id: "run-1", status: "success" }]
+          };
+        }
+        return { pipeline_run_id: "run-1" };
+      }
+    });
+
+    await client.cancelQueue({
+      project_id: "project-1",
+      pipeline_id: "pipe-1",
+      run_id: "run-1",
+      queue_id: 12
+    });
+    await client.getStepJumpLink({
+      project_id: "project-1",
+      pipeline_id: "pipe-1",
+      run_id: "run-1",
+      job_id: "job-1",
+      step_id: "step-1"
+    });
+    await client.getRunChangeRequests({
+      project_id: "project-1",
+      pipeline_id: "pipe-1",
+      run_id: "run-1",
+      component_id: "component-1"
+    });
+    await client.rollbackRun({
+      project_id: "project-1",
+      pipeline_id: "pipe-1",
+      run_id: "run-1",
+      description: "rollback to last good",
+      choose_jobs: ["job-1"]
+    });
+    await client.getBatchRunResult({
+      project_id: "project-1",
+      query: [{ pipeline_id: "pipe-1", pipeline_run_id: "run-1" }]
+    });
+
+    expect(calls).toEqual([
+      {
+        method: "POST",
+        path: "/v5/project-1/api/pipelines/pipe-1/run-1/cancel-queuing/12",
+        body: undefined
+      },
+      {
+        method: "GET",
+        path: "/v5/project-1/api/pipelines/pipe-1/pipeline-runs/run-1/jobs/job-1/steps/step-1/jump-link"
+      },
+      {
+        method: "GET",
+        path: "/v5/project-1/api/pipelines/pipe-1/pipeline-runs/run-1/query-change-requests?component_id=component-1"
+      },
+      {
+        method: "POST",
+        path: "/v5/project-1/api/pipelines/pipe-1/pipeline-runs/run-1/rollback-run",
+        body: {
+          description: "rollback to last good",
+          choose_jobs: ["job-1"]
+        }
+      },
+      {
+        method: "POST",
+        path: "/v5/project-1/api/pipelines/batch-runs/result",
+        body: {
+          query: [{ pipeline_id: "pipe-1", pipeline_run_id: "run-1" }]
+        }
       }
     ]);
   });

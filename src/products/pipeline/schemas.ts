@@ -95,9 +95,40 @@ export const pipelineRunInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const pipelineCreateByTemplateInput = z.object({
+  project_id: idSchema,
+  template_id: idSchema,
+  name: z.string().min(1),
+  description: z.string().max(1024).optional(),
+  group_id: idSchema.optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const pipelineCreateInput = z.object({
+  project_id: idSchema,
+  name: z.string().min(1),
+  description: z.string().max(1024).optional(),
+  manifest_version: z.string().min(1).optional(),
+  sources: z.array(pipelineExtensionObjectSchema).optional(),
+  variables: z.array(pipelineExtensionObjectSchema).optional(),
+  parameters: z.array(pipelineExtensionObjectSchema).optional(),
+  definition: pipelineExtensionObjectSchema.optional(),
+  dry_run: z.boolean().default(true)
+});
+
 export const pipelineDeletePipelineInput = z.object({
   project_id: idSchema,
   pipeline_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const pipelineUpdatePipelineInfoInput = z.object({
+  project_id: idSchema,
+  pipeline_id: idSchema,
+  name: z.string().min(1).optional(),
+  description: z.string().max(1024).optional(),
+  is_publish: z.boolean().optional(),
+  manifest_version: z.string().min(1).optional(),
   dry_run: z.boolean().default(true)
 });
 
@@ -105,6 +136,30 @@ export const pipelineTogglePipelineInput = z.object({
   project_id: idSchema,
   pipeline_id: idSchema,
   dry_run: z.boolean().default(true)
+});
+
+export const pipelineBatchDeleteInput = z.object({
+  project_id: idSchema,
+  pipeline_ids: z.array(idSchema).min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const pipelineBatchRunInput = z.object({
+  project_id: idSchema,
+  pipeline_ids: z.array(idSchema).min(1),
+  branch: z.string().min(1).optional(),
+  description: z.string().max(1024).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const pipelineBatchRunResultInput = z.object({
+  project_id: idSchema,
+  query: z.array(
+    z.object({
+      pipeline_id: idSchema,
+      pipeline_run_id: idSchema
+    })
+  ).min(1)
 });
 
 export const pipelineListRunsInput = pagingSchema.extend({
@@ -138,6 +193,14 @@ export const pipelineGetRunLogInput = z.object({
   step_id: idSchema
 });
 
+export const pipelineCancelQueueInput = z.object({
+  project_id: idSchema,
+  pipeline_id: idSchema,
+  run_id: idSchema,
+  queue_id: z.union([idSchema, z.number().int()]),
+  dry_run: z.boolean().default(true)
+});
+
 export const pipelineGetManualReviewContextInput = z.object({
   project_id: idSchema,
   pipeline_id: idSchema,
@@ -157,6 +220,33 @@ export const pipelineGetStepOutputsInput = z.object({
   step_run_ids: z.array(idSchema).min(1)
 });
 
+export const pipelineGetStepJumpLinkInput = z.object({
+  project_id: idSchema,
+  pipeline_id: idSchema,
+  run_id: idSchema,
+  job_id: idSchema,
+  step_id: idSchema
+});
+
+export const pipelineGetRunChangeRequestsInput = z.object({
+  project_id: idSchema,
+  pipeline_id: idSchema,
+  run_id: idSchema,
+  component_id: idSchema.optional()
+});
+
+export const pipelineRollbackRunInput = z.object({
+  project_id: idSchema,
+  pipeline_id: idSchema,
+  run_id: idSchema,
+  sources: z.array(pipelineExtensionObjectSchema).optional(),
+  description: z.string().max(1024).optional(),
+  variables: z.array(pipelineExtensionObjectSchema).optional(),
+  choose_jobs: z.array(z.string().min(1)).optional(),
+  choose_stages: z.array(z.string().min(1)).optional(),
+  dry_run: z.boolean().default(true)
+});
+
 export const pipelineGetInput = z.object({
   project_id: idSchema,
   pipeline_id: idSchema
@@ -167,15 +257,85 @@ export const pipelineGetNoticeInput = z.object({
   pipeline_id: idSchema
 });
 
+export const pipelineNoticeDataInput = z.object({
+  notice_types: z.array(z.string().min(1)).min(1),
+  notice_roles: z.array(z.string().min(1)).min(1)
+});
+
 export const pipelineGetNoticeDetailInput = z.object({
   project_id: idSchema,
   pipeline_id: idSchema,
   type: z.string().min(1).optional()
 });
 
+export const pipelineUpdateOfficialNoticeInput = z.object({
+  project_id: idSchema,
+  pipeline_id: idSchema,
+  event_type: z.string().min(1),
+  notice_data: pipelineNoticeDataInput,
+  dry_run: z.boolean().default(true)
+});
+
+export const pipelineSwitchNoticeInput = z.object({
+  project_id: idSchema,
+  pipeline_id: idSchema,
+  notice_type: z.string().min(1),
+  notice_switch: z.boolean(),
+  dry_run: z.boolean().default(true)
+});
+
+export const pipelineUpdateThirdPartyNoticeInput = z.object({
+  project_id: idSchema,
+  pipeline_id: idSchema,
+  notice_id: idSchema,
+  notice_type: z.string().min(1),
+  notice_status: z.boolean(),
+  send_url: z.string().min(1),
+  secret_info: z.string().optional(),
+  notice_events: z.array(z.string().min(1)).optional(),
+  notice_contents: z.array(z.string().min(1)).optional(),
+  notice_users: z.array(z.string().min(1)).optional(),
+  sort_index: z.number().int().optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const pipelineUpdateNoticeStatusInput = z.object({
+  project_id: idSchema,
+  pipeline_id: idSchema,
+  type: z.number().int(),
+  enable: z.boolean(),
+  dry_run: z.boolean().default(true)
+});
+
 export const pipelineGetPermissionInput = z.object({
   project_id: idSchema,
   pipeline_id: idSchema
+});
+
+export const pipelinePermissionMutationInput = z.object({
+  project_id: idSchema,
+  pipeline_id: idSchema,
+  operation_query: z.boolean(),
+  operation_execute: z.boolean(),
+  operation_update: z.boolean(),
+  operation_delete: z.boolean(),
+  operation_authorize: z.boolean(),
+  dry_run: z.boolean().default(true)
+});
+
+export const pipelineUpdateRolePermissionInput = pipelinePermissionMutationInput.extend({
+  role_id: z.number().int()
+});
+
+export const pipelineUpdateUserPermissionInput = pipelinePermissionMutationInput.extend({
+  user_id: idSchema
+});
+
+export const pipelineSwitchPermissionInput = z.object({
+  project_id: idSchema,
+  pipeline_id: idSchema,
+  flag: z.boolean(),
+  dry_run: z.boolean().default(true)
 });
 
 export const pipelineListQueueInput = z.object({

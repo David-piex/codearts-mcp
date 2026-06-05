@@ -278,7 +278,15 @@ export type PipelineClient = {
   }) => Promise<{
     log: string;
     status?: string;
-    truncated?: boolean;
+      truncated?: boolean;
+    }>;
+  cancelQueue: (input: {
+    project_id: string;
+    pipeline_id: string;
+    run_id: string;
+    queue_id: string | number;
+  }) => Promise<{
+    pipeline_run_id?: string;
   }>;
   getStepOutputs: (input: {
     project_id: string;
@@ -286,11 +294,53 @@ export type PipelineClient = {
     run_id: string;
     step_run_ids: string[];
   }) => Promise<{
-    step_outputs: Array<{
-      step_run_id?: string;
-      output_result?: Array<{ key?: string; value?: string }>;
+      step_outputs: Array<{
+        step_run_id?: string;
+        output_result?: Array<{ key?: string; value?: string }>;
+      }>;
+      current_system_time?: number;
     }>;
-    current_system_time?: number;
+  getStepJumpLink: (input: {
+    project_id: string;
+    pipeline_id: string;
+    run_id: string;
+    job_id: string;
+    step_id: string;
+  }) => Promise<{
+    jump_link?: string;
+  }>;
+  getRunChangeRequests: (input: {
+    project_id: string;
+    pipeline_id: string;
+    run_id: string;
+    component_id?: string;
+  }) => Promise<{
+    records: PipelineRawRecord[];
+    total?: number;
+    raw: PipelineRawRecord;
+  }>;
+  rollbackRun: (input: {
+    project_id: string;
+    pipeline_id: string;
+    run_id: string;
+    sources?: Array<Record<string, unknown>>;
+    description?: string;
+    variables?: Array<Record<string, unknown>>;
+    choose_jobs?: string[];
+    choose_stages?: string[];
+  }) => Promise<{
+    pipeline_run_id?: string;
+  }>;
+  getBatchRunResult: (input: {
+    project_id: string;
+    query: Array<{
+      pipeline_id: string;
+      pipeline_run_id: string;
+    }>;
+  }) => Promise<{
+    records: PipelineRawRecord[];
+    total?: number;
+    raw: PipelineRawRecord;
   }>;
   listArtifacts: (input: {
     project_id: string;
@@ -322,6 +372,48 @@ export type PipelineClient = {
   }) => Promise<{
     detail: PipelineRawRecord;
   }>;
+  updateOfficialNotice: (input: {
+    project_id: string;
+    pipeline_id: string;
+    event_type: string;
+    notice_data: {
+      notice_types: string[];
+      notice_roles: string[];
+    };
+  }) => Promise<{
+    status: string;
+  }>;
+  switchNotice: (input: {
+    project_id: string;
+    pipeline_id: string;
+    notice_type: string;
+    notice_switch: boolean;
+  }) => Promise<{
+    status: string;
+  }>;
+  updateThirdPartyNotice: (input: {
+    project_id: string;
+    pipeline_id: string;
+    notice_id: string;
+    notice_type: string;
+    notice_status: boolean;
+    send_url: string;
+    secret_info?: string;
+    notice_events?: string[];
+    notice_contents?: string[];
+    notice_users?: string[];
+    sort_index?: number;
+  }) => Promise<{
+    status: string;
+  }>;
+  updateNoticeStatus: (input: {
+    project_id: string;
+    pipeline_id: string;
+    type: number;
+    enable: boolean;
+  }) => Promise<{
+    enabled: boolean;
+  }>;
   getPermissionSwitch: (input: { project_id: string; pipeline_id: string }) => Promise<{
     permission_switch: PipelineRawRecord;
   }>;
@@ -330,6 +422,37 @@ export type PipelineClient = {
   }>;
   getUserPermission: (input: { project_id: string; pipeline_id: string }) => Promise<{
     user_permission: PipelineRawRecord;
+  }>;
+  updateRolePermission: (input: {
+    project_id: string;
+    pipeline_id: string;
+    operation_query: boolean;
+    operation_execute: boolean;
+    operation_update: boolean;
+    operation_delete: boolean;
+    operation_authorize: boolean;
+    role_id: number;
+  }) => Promise<{
+    status: string;
+  }>;
+  updateUserPermission: (input: {
+    project_id: string;
+    pipeline_id: string;
+    operation_query: boolean;
+    operation_execute: boolean;
+    operation_update: boolean;
+    operation_delete: boolean;
+    operation_authorize: boolean;
+    user_id: string;
+  }) => Promise<{
+    status: string;
+  }>;
+  switchPermission: (input: {
+    project_id: string;
+    pipeline_id: string;
+    flag: boolean;
+  }) => Promise<{
+    status: string;
   }>;
   listQueue: (input: { project_id: string; pipeline_id: string }) => Promise<{
     records: PipelineRawRecord[];
@@ -440,6 +563,56 @@ export type PipelineClient = {
   deletePipeline: (input: { project_id: string; pipeline_id: string }) => Promise<{
     pipeline_id: string;
     deleted: boolean;
+  }>;
+  createPipelineByTemplate: (input: {
+    project_id: string;
+    template_id: string;
+    name: string;
+    description?: string;
+    group_id?: string;
+  }) => Promise<{
+    pipeline_id?: string;
+    name?: string;
+  }>;
+  createPipeline: (input: {
+    project_id: string;
+    name: string;
+    description?: string;
+    manifest_version?: string;
+    sources?: Array<Record<string, unknown>>;
+    variables?: Array<Record<string, unknown>>;
+    parameters?: Array<Record<string, unknown>>;
+    definition?: Record<string, unknown>;
+  }) => Promise<{
+    pipeline_id?: string;
+    name?: string;
+  }>;
+  updatePipelineInfo: (input: {
+    project_id: string;
+    pipeline_id: string;
+    name?: string;
+    description?: string;
+    is_publish?: boolean;
+    manifest_version?: string;
+  }) => Promise<{
+    pipeline_id: string;
+    success: boolean;
+  }>;
+  batchDeletePipelines: (input: {
+    project_id: string;
+    pipeline_ids: string[];
+  }) => Promise<{
+    pipeline_ids: string[];
+    deleted: boolean;
+  }>;
+  batchRunPipelines: (input: {
+    project_id: string;
+    pipeline_ids: string[];
+    branch?: string;
+    description?: string;
+  }) => Promise<{
+    pipeline_ids: string[];
+    success: boolean;
   }>;
   disablePipeline: (input: { project_id: string; pipeline_id: string }) => Promise<{
     pipeline_id: string;
@@ -1438,6 +1611,17 @@ export function createPipelineClient(
         truncated: response.truncated ?? response.result?.truncated
       };
     },
+    async cancelQueue(input) {
+      const response = (await _http.post(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipelines/${encodeURIComponent(input.pipeline_id)}/${encodeURIComponent(input.run_id)}/cancel-queuing/${encodeURIComponent(String(input.queue_id))}`
+      )) as {
+        pipeline_run_id?: string;
+      };
+
+      return {
+        pipeline_run_id: response.pipeline_run_id ?? input.run_id
+      };
+    },
     async getStepOutputs(input) {
       const query = new URLSearchParams({
         pipeline_run_id: input.run_id,
@@ -1457,6 +1641,73 @@ export function createPipelineClient(
       return {
         step_outputs: response.step_outputs ?? [],
         current_system_time: response.current_system_time
+      };
+    },
+    async getStepJumpLink(input) {
+      const response = (await _http.get(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipelines/${encodeURIComponent(input.pipeline_id)}/pipeline-runs/${encodeURIComponent(input.run_id)}/jobs/${encodeURIComponent(input.job_id)}/steps/${encodeURIComponent(input.step_id)}/jump-link`
+      )) as {
+        jumpLink?: string;
+      };
+
+      return {
+        jump_link: response.jumpLink
+      };
+    },
+    async getRunChangeRequests(input) {
+      const query = new URLSearchParams();
+      if (input.component_id) {
+        query.set("component_id", input.component_id);
+      }
+      const suffix = query.size > 0 ? `?${query.toString()}` : "";
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipelines/${encodeURIComponent(input.pipeline_id)}/pipeline-runs/${encodeURIComponent(input.run_id)}/query-change-requests${suffix}`
+      ));
+      const payload = Array.isArray(response) ? { result: response } : getPipelinePayload(response);
+      const records = Array.isArray(response)
+        ? response
+        : Array.isArray(payload.result)
+          ? (payload.result as PipelineRawRecord[])
+          : readPipelineRecordList(payload);
+      return {
+        records,
+        total: records.length,
+        raw: payload as PipelineRawRecord
+      };
+    },
+    async rollbackRun(input) {
+      const response = (await _http.post(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipelines/${encodeURIComponent(input.pipeline_id)}/pipeline-runs/${encodeURIComponent(input.run_id)}/rollback-run`,
+        {
+          ...(input.sources ? { sources: input.sources } : {}),
+          ...(input.description ? { description: input.description } : {}),
+          ...(input.variables ? { variables: input.variables } : {}),
+          ...(input.choose_jobs ? { choose_jobs: input.choose_jobs } : {}),
+          ...(input.choose_stages ? { choose_stages: input.choose_stages } : {})
+        }
+      )) as {
+        pipeline_run_id?: string;
+      };
+
+      return {
+        pipeline_run_id: response.pipeline_run_id
+      };
+    },
+    async getBatchRunResult(input) {
+      const response = unwrapPipelinePayload(await _http.post(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipelines/batch-runs/result`,
+        {
+          query: input.query
+        }
+      ));
+      const payload = getPipelinePayload(response);
+      const records = Array.isArray(payload.result)
+        ? (payload.result as PipelineRawRecord[])
+        : readPipelineRecordList(payload);
+      return {
+        records,
+        total: records.length,
+        raw: payload
       };
     },
     async listArtifacts(input) {
@@ -1522,6 +1773,65 @@ export function createPipelineClient(
         detail: getPipelinePayload(response)
       };
     },
+    async updateOfficialNotice(input) {
+      const response = unwrapPipelinePayload(await _http.post(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipeline-notices/${encodeURIComponent(input.pipeline_id)}/notice`,
+        {
+          event_type: input.event_type,
+          notice_data: input.notice_data
+        }
+      )) as { status?: string };
+
+      return {
+        status: response.status ?? "success"
+      };
+    },
+    async switchNotice(input) {
+      const response = unwrapPipelinePayload(await _http.post(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipeline-notices/${encodeURIComponent(input.pipeline_id)}/notice/all`,
+        {
+          notice_type: input.notice_type,
+          notice_switch: input.notice_switch
+        }
+      )) as { status?: string };
+
+      return {
+        status: response.status ?? "success"
+      };
+    },
+    async updateThirdPartyNotice(input) {
+      const response = unwrapPipelinePayload(await _http.post(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipeline-notices/${encodeURIComponent(input.pipeline_id)}/notice/message`,
+        {
+          notice_id: input.notice_id,
+          notice_type: input.notice_type,
+          notice_status: input.notice_status,
+          send_url: input.send_url,
+          ...(input.secret_info ? { secret_info: input.secret_info } : {}),
+          ...(input.notice_events ? { notice_events: input.notice_events } : {}),
+          ...(input.notice_contents ? { notice_contents: input.notice_contents } : {}),
+          ...(input.notice_users ? { notice_users: input.notice_users } : {}),
+          ...(typeof input.sort_index === "number" ? { sort_index: input.sort_index } : {})
+        }
+      )) as { status?: string };
+
+      return {
+        status: response.status ?? "success"
+      };
+    },
+    async updateNoticeStatus(input) {
+      const response = await _http.put(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipeline-notices/${encodeURIComponent(input.pipeline_id)}/notice/status`,
+        {
+          type: input.type,
+          enable: input.enable
+        }
+      ) as boolean;
+
+      return {
+        enabled: response
+      };
+    },
     async getPermissionSwitch(input) {
       const response = unwrapPipelinePayload(await _http.get(
         `/v5/${encodeURIComponent(input.project_id)}/api/pipeline-permissions/${encodeURIComponent(input.pipeline_id)}/permission-switch`
@@ -1544,6 +1854,54 @@ export function createPipelineClient(
       ));
       return {
         user_permission: getPipelinePayload(response)
+      };
+    },
+    async updateRolePermission(input) {
+      const response = unwrapPipelinePayload(await _http.post(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipeline-permissions/${encodeURIComponent(input.pipeline_id)}/update-role-permission`,
+        {
+          pipeline_id: input.pipeline_id,
+          operation_query: input.operation_query,
+          operation_execute: input.operation_execute,
+          operation_update: input.operation_update,
+          operation_delete: input.operation_delete,
+          operation_authorize: input.operation_authorize,
+          role_id: input.role_id
+        }
+      )) as { status?: string };
+
+      return {
+        status: response.status ?? "success"
+      };
+    },
+    async updateUserPermission(input) {
+      const response = unwrapPipelinePayload(await _http.post(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipeline-permissions/${encodeURIComponent(input.pipeline_id)}/update-user-permission`,
+        {
+          pipeline_id: input.pipeline_id,
+          operation_query: input.operation_query,
+          operation_execute: input.operation_execute,
+          operation_update: input.operation_update,
+          operation_delete: input.operation_delete,
+          operation_authorize: input.operation_authorize,
+          user_id: input.user_id
+        }
+      )) as { status?: string };
+
+      return {
+        status: response.status ?? "success"
+      };
+    },
+    async switchPermission(input) {
+      const query = new URLSearchParams({
+        flag: input.flag ? "true" : "false"
+      });
+      const response = unwrapPipelinePayload(await _http.put(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipeline-permissions/${encodeURIComponent(input.pipeline_id)}/update-permission-switch?${query.toString()}`
+      )) as { status?: string };
+
+      return {
+        status: response.status ?? "success"
       };
     },
     async listQueue(input) {
@@ -1783,6 +2141,115 @@ export function createPipelineClient(
       return {
         pipeline_id: response.pipeline_id ?? input.pipeline_id,
         deleted: true
+      };
+    },
+    async createPipelineByTemplate(input) {
+      clearProjectListCache(input.project_id);
+      const response = unwrapPipelinePayload((await _http.post(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipelines/template/${encodeURIComponent(input.template_id)}`,
+        {
+          name: input.name,
+          ...(input.description ? { description: input.description } : {}),
+          ...(input.group_id ? { group_id: input.group_id } : {})
+        }
+      )) as {
+        pipeline_id?: string;
+        id?: string;
+        name?: string;
+      });
+
+      return {
+        pipeline_id: response.pipeline_id ?? response.id,
+        name: response.name ?? input.name
+      };
+    },
+    async createPipeline(input) {
+      clearProjectListCache(input.project_id);
+      const response = unwrapPipelinePayload((await _http.post(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipelines`,
+        {
+          name: input.name,
+          ...(input.description ? { description: input.description } : {}),
+          ...(input.manifest_version ? { manifest_version: input.manifest_version } : {}),
+          ...(input.sources ? { sources: input.sources } : {}),
+          ...(input.variables ? { variables: input.variables } : {}),
+          ...(input.parameters ? { parameters: input.parameters } : {}),
+          ...(input.definition ? { definition: input.definition } : {})
+        }
+      )) as {
+        pipeline_id?: string;
+        id?: string;
+        name?: string;
+      });
+
+      return {
+        pipeline_id: response.pipeline_id ?? response.id,
+        name: response.name ?? input.name
+      };
+    },
+    async updatePipelineInfo(input) {
+      clearProjectListCache(input.project_id);
+      const response = unwrapPipelinePayload((await _http.put(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipelines/${encodeURIComponent(input.pipeline_id)}`,
+        {
+          ...(input.name ? { name: input.name } : {}),
+          ...(input.description ? { description: input.description } : {}),
+          ...(typeof input.is_publish === "boolean" ? { is_publish: input.is_publish } : {}),
+          ...(input.manifest_version ? { manifest_version: input.manifest_version } : {})
+        }
+      )) as boolean | { success?: boolean; pipeline_id?: string });
+
+      return {
+        pipeline_id:
+          typeof response === "object" && response && "pipeline_id" in response && typeof response.pipeline_id === "string"
+            ? response.pipeline_id
+            : input.pipeline_id,
+        success: typeof response === "boolean" ? response : response.success ?? true
+      };
+    },
+    async batchDeletePipelines(input) {
+      clearProjectListCache(input.project_id);
+      await _http.delete(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipelines/batch`,
+        {
+          pipeline_ids: input.pipeline_ids
+        }
+      );
+
+      return {
+        pipeline_ids: input.pipeline_ids,
+        deleted: true
+      };
+    },
+    async batchRunPipelines(input) {
+      clearProjectListCache(input.project_id);
+      await _http.post(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipelines/batch-run`,
+        {
+          pipeline_ids: input.pipeline_ids,
+          ...(input.description ? { description: input.description } : {}),
+          ...(input.branch
+            ? {
+                sources: [
+                  {
+                    type: "code",
+                    params: {
+                      build_params: {
+                        build_type: "branch",
+                        event_type: "Manual",
+                        target_branch: input.branch
+                      }
+                    }
+                  }
+                ]
+              }
+            : {})
+        }
+      );
+
+      return {
+        pipeline_ids: input.pipeline_ids,
+        success: true
       };
     },
     async disablePipeline(input) {

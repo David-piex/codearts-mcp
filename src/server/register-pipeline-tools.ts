@@ -3,7 +3,11 @@ import { officialApiRequestInput } from "../products/official-api.js";
 import { createPipelineClient } from "../products/pipeline/client.js";
 import {
   pipelineApproveRunInput,
+  pipelineBatchRunResultInput,
+  pipelineBatchDeleteInput,
   pipelineBatchGetPipelineStatusInput,
+  pipelineBatchRunInput,
+  pipelineCancelQueueInput,
   pipelineGetPluginPartsInput,
   pipelineGetPluginVersionInput,
   pipelineBindVariableGroupsToPipelineInput,
@@ -11,6 +15,8 @@ import {
   pipelineCheckProjectInput,
   pipelineCreateExtensionEndpointInput,
   pipelineCreateGroupInput,
+  pipelineCreateByTemplateInput,
+  pipelineCreateInput,
   pipelineCreateRuleInput,
   pipelineCreateTagInput,
   pipelineCreateVariableGroupInput,
@@ -36,6 +42,9 @@ import {
   pipelineGetNoticeDetailInput,
   pipelineGetNoticeInput,
   pipelineGetPermissionInput,
+  pipelineSwitchNoticeInput,
+  pipelineSwitchPermissionInput,
+  pipelineGetRunChangeRequestsInput,
   pipelineGetProjectStrategyDetailInput,
   pipelineGetProjectStrategyInput,
   pipelineGetProjectStrategyRelatedInfoInput,
@@ -60,6 +69,7 @@ import {
   pipelineGetStepOutputsInput,
   pipelineGetRunInput,
   pipelineGetRunDetailInput,
+  pipelineGetStepJumpLinkInput,
   pipelineListExtensionEndpointsInput,
   pipelineListExtensionModulesInput,
   pipelineListRuleTypesInput,
@@ -96,12 +106,19 @@ import {
   pipelineCreateProjectStrategyInput,
   pipelineUploadPublisherIconInput,
   pipelineUpdateExtensionEndpointInput,
+  pipelineUpdateNoticeStatusInput,
+  pipelineUpdateOfficialNoticeInput,
+  pipelineUpdateRolePermissionInput,
   pipelineUpdateTagInput,
+  pipelineUpdateThirdPartyNoticeInput,
+  pipelineUpdatePipelineInfoInput,
   pipelineUpdateProjectStrategyInput,
+  pipelineRollbackRunInput,
   pipelineUpdateRuleInput,
   pipelineCreateStrategyInput,
   pipelineUpdateStrategyInput,
   pipelineUpdateGroupInput,
+  pipelineUpdateUserPermissionInput,
   pipelineUpdateVariableGroupInput
 } from "../products/pipeline/schemas.js";
 import { createPipelineApproveRunHandler } from "../products/pipeline/tools/approve-run.js";
@@ -112,6 +129,29 @@ import { createPipelineCreateProjectStrategyHandler } from "../products/pipeline
 import { createPipelineCreateRuleHandler } from "../products/pipeline/tools/create-rule.js";
 import { createPipelineCreateTagHandler } from "../products/pipeline/tools/create-tag.js";
 import { createPipelineCreateVariableGroupHandler } from "../products/pipeline/tools/create-variable-group.js";
+import {
+  createPipelineBatchDeleteHandler,
+  createPipelineBatchRunHandler,
+  createPipelineCreateByTemplateHandler,
+  createPipelineCreateHandler,
+  createPipelineUpdateInfoHandler
+} from "../products/pipeline/tools/manage-pipeline-core.js";
+import {
+  createPipelineSwitchNoticeHandler,
+  createPipelineSwitchPermissionHandler,
+  createPipelineUpdateNoticeStatusHandler,
+  createPipelineUpdateOfficialNoticeHandler,
+  createPipelineUpdateRolePermissionHandler,
+  createPipelineUpdateThirdPartyNoticeHandler,
+  createPipelineUpdateUserPermissionHandler
+} from "../products/pipeline/tools/manage-pipeline-notice-permission.js";
+import {
+  createPipelineCancelQueueHandler,
+  createPipelineGetBatchRunResultHandler,
+  createPipelineGetRunChangeRequestsHandler,
+  createPipelineGetStepJumpLinkHandler,
+  createPipelineRollbackRunHandler
+} from "../products/pipeline/tools/manage-run-advanced.js";
 import { createPipelineDeleteExtensionEndpointHandler } from "../products/pipeline/tools/delete-extension-endpoint.js";
 import { createPipelineDeleteGroupHandler } from "../products/pipeline/tools/delete-group.js";
 import { createPipelineDeleteProjectStrategyHandler } from "../products/pipeline/tools/delete-project-strategy.js";
@@ -345,6 +385,38 @@ const pipelineToolDefinitions = {
     selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetRunDetailHandler>[0] }) => clients.pipelineClient,
     createProductHandler: createPipelineGetRunDetailHandler
   }),
+  "pipeline_cancel_queue": defineProductTool({
+    description: "Cancel a queued CodeArts Pipeline run record",
+    inputSchema: pipelineCancelQueueInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineCancelQueueHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineCancelQueueHandler,
+    rateLimitAction: "pipeline_cancel_queue"
+  }),
+  "pipeline_get_step_jump_link": defineProductTool({
+    description: "Get a CodeArts Pipeline step jump link",
+    inputSchema: pipelineGetStepJumpLinkInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetStepJumpLinkHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineGetStepJumpLinkHandler
+  }),
+  "pipeline_get_run_change_requests": defineProductTool({
+    description: "Get CodeArts Pipeline run change requests",
+    inputSchema: pipelineGetRunChangeRequestsInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetRunChangeRequestsHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineGetRunChangeRequestsHandler
+  }),
+  "pipeline_rollback_run": defineProductTool({
+    description: "Rollback a CodeArts Pipeline run",
+    inputSchema: pipelineRollbackRunInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineRollbackRunHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineRollbackRunHandler,
+    rateLimitAction: "pipeline_rollback_run"
+  }),
+  "pipeline_get_batch_run_result": defineProductTool({
+    description: "Get CodeArts Pipeline batch run results",
+    inputSchema: pipelineBatchRunResultInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetBatchRunResultHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineGetBatchRunResultHandler
+  }),
   "pipeline_get_run_parameters": defineProductTool({
     description: "Get CodeArts Pipeline run parameters",
     inputSchema: pipelineGetRunParametersInput,
@@ -369,6 +441,12 @@ const pipelineToolDefinitions = {
     selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetOfficialNoticeHandler>[0] }) => clients.pipelineClient,
     createProductHandler: createPipelineGetOfficialNoticeHandler
   }),
+  "pipeline_update_official_notice": defineProductTool({
+    description: "Update CodeArts Pipeline official notice",
+    inputSchema: pipelineUpdateOfficialNoticeInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineUpdateOfficialNoticeHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineUpdateOfficialNoticeHandler
+  }),
   "pipeline_get_notice_status": defineProductTool({
     description: "Get CodeArts Pipeline notice status",
     inputSchema: pipelineGetNoticeInput,
@@ -381,11 +459,35 @@ const pipelineToolDefinitions = {
     selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetNoticeDetailHandler>[0] }) => clients.pipelineClient,
     createProductHandler: createPipelineGetNoticeDetailHandler
   }),
+  "pipeline_switch_notice": defineProductTool({
+    description: "Switch CodeArts Pipeline notice",
+    inputSchema: pipelineSwitchNoticeInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineSwitchNoticeHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineSwitchNoticeHandler
+  }),
+  "pipeline_update_third_party_notice": defineProductTool({
+    description: "Update CodeArts Pipeline third-party notice",
+    inputSchema: pipelineUpdateThirdPartyNoticeInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineUpdateThirdPartyNoticeHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineUpdateThirdPartyNoticeHandler
+  }),
+  "pipeline_update_notice_status": defineProductTool({
+    description: "Update CodeArts Pipeline notice status",
+    inputSchema: pipelineUpdateNoticeStatusInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineUpdateNoticeStatusHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineUpdateNoticeStatusHandler
+  }),
   "pipeline_get_permission_switch": defineProductTool({
     description: "Get CodeArts Pipeline permission switch",
     inputSchema: pipelineGetPermissionInput,
     selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetPermissionSwitchHandler>[0] }) => clients.pipelineClient,
     createProductHandler: createPipelineGetPermissionSwitchHandler
+  }),
+  "pipeline_update_role_permission": defineProductTool({
+    description: "Update CodeArts Pipeline role permission",
+    inputSchema: pipelineUpdateRolePermissionInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineUpdateRolePermissionHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineUpdateRolePermissionHandler
   }),
   "pipeline_get_role_permission": defineProductTool({
     description: "Get CodeArts Pipeline role permission",
@@ -393,11 +495,23 @@ const pipelineToolDefinitions = {
     selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetRolePermissionHandler>[0] }) => clients.pipelineClient,
     createProductHandler: createPipelineGetRolePermissionHandler
   }),
+  "pipeline_update_user_permission": defineProductTool({
+    description: "Update CodeArts Pipeline user permission",
+    inputSchema: pipelineUpdateUserPermissionInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineUpdateUserPermissionHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineUpdateUserPermissionHandler
+  }),
   "pipeline_get_user_permission": defineProductTool({
     description: "Get CodeArts Pipeline user permission",
     inputSchema: pipelineGetPermissionInput,
     selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetUserPermissionHandler>[0] }) => clients.pipelineClient,
     createProductHandler: createPipelineGetUserPermissionHandler
+  }),
+  "pipeline_switch_permission": defineProductTool({
+    description: "Switch CodeArts Pipeline permission",
+    inputSchema: pipelineSwitchPermissionInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineSwitchPermissionHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineSwitchPermissionHandler
   }),
   "pipeline_get_step_outputs": defineProductTool({
     description: "Get CodeArts Pipeline step outputs",
@@ -422,6 +536,36 @@ const pipelineToolDefinitions = {
     inputSchema: pipelineGetInput,
     selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetPipelineHandler>[0] }) => clients.pipelineClient,
     createProductHandler: createPipelineGetPipelineHandler
+  }),
+  "pipeline_create_pipeline_by_template": defineProductTool({
+    description: "Create a CodeArts Pipeline from a template",
+    inputSchema: pipelineCreateByTemplateInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineCreateByTemplateHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineCreateByTemplateHandler
+  }),
+  "pipeline_create_pipeline": defineProductTool({
+    description: "Create a CodeArts Pipeline",
+    inputSchema: pipelineCreateInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineCreateHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineCreateHandler
+  }),
+  "pipeline_update_pipeline_info": defineProductTool({
+    description: "Update CodeArts Pipeline information",
+    inputSchema: pipelineUpdatePipelineInfoInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineUpdateInfoHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineUpdateInfoHandler
+  }),
+  "pipeline_batch_delete_pipelines": defineProductTool({
+    description: "Batch delete CodeArts Pipelines",
+    inputSchema: pipelineBatchDeleteInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineBatchDeleteHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineBatchDeleteHandler
+  }),
+  "pipeline_batch_run_pipelines": defineProductTool({
+    description: "Batch run CodeArts Pipelines",
+    inputSchema: pipelineBatchRunInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineBatchRunHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineBatchRunHandler
   }),
   "pipeline_create_extension_endpoint": defineProductTool({
     description: "Create CodeArts Pipeline extension endpoint",
