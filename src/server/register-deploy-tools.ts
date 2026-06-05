@@ -5,6 +5,9 @@ import { createSessionAwareProductToolHandler } from "./session-aware-handler.js
 import { createDeployClient } from "../products/deploy/client.js";
 import {
   deployCreateEnvironmentInput,
+  deployGetApplicationEnvironmentInput,
+  deployUpdateApplicationEnvironmentInput,
+  deployDeleteApplicationEnvironmentInput,
   deployCreateApplicationInput,
   deployCheckApplicationCreatableInput,
   deployCheckApplicationExistsInput,
@@ -23,11 +26,13 @@ import {
   deployGetSuccessRateMetricsInput,
   deployGetTaskSuccessRateMetricsInput,
   deployGetEnvironmentPermissionsInput,
+  deployUpdateApplicationPermissionLevelInput,
   deployGetTaskInput,
   deployImportHostsToEnvironmentInput,
   deployListSystemConfigsInput,
   deployListAppOperationsLogInput,
   deployListApplicationPermissionsInput,
+  deployBatchDeleteApplicationsInput,
   deployListAppHostGroupsInput,
   deployListEnvironmentsInput,
   deployListEnvironmentHostsInput,
@@ -79,6 +84,9 @@ import {
   deployStopAppInput
 } from "../products/deploy/schemas.js";
 import { createDeployCreateEnvironmentHandler } from "../products/deploy/tools/create-environment.js";
+import { createDeployGetApplicationEnvironmentHandler } from "../products/deploy/tools/get-application-environment.js";
+import { createDeployUpdateApplicationEnvironmentHandler } from "../products/deploy/tools/update-application-environment.js";
+import { createDeployDeleteApplicationEnvironmentHandler } from "../products/deploy/tools/delete-application-environment.js";
 import { createDeployCreateApplicationHandler } from "../products/deploy/tools/create-application.js";
 import { createDeployCheckApplicationCreatableHandler } from "../products/deploy/tools/check-application-creatable.js";
 import { createDeployCheckApplicationExistsHandler } from "../products/deploy/tools/check-application-exists.js";
@@ -97,6 +105,7 @@ import { createDeployListApplicationGroupsHandler } from "../products/deploy/too
 import { createDeployGetSuccessRateMetricsHandler } from "../products/deploy/tools/get-success-rate-metrics.js";
 import { createDeployGetTaskSuccessRateMetricsHandler } from "../products/deploy/tools/get-task-success-rate-metrics.js";
 import { createDeployGetEnvironmentPermissionsHandler } from "../products/deploy/tools/get-environment-permissions.js";
+import { createDeployUpdateApplicationPermissionLevelHandler } from "../products/deploy/tools/update-application-permission-level.js";
 import { createDeployGetTaskHandler } from "../products/deploy/tools/get-task.js";
 import { createDeployImportHostsToEnvironmentHandler } from "../products/deploy/tools/import-hosts-to-environment.js";
 import { createDeployGetAppLogHandler } from "../products/deploy/tools/get-app-log.js";
@@ -106,6 +115,7 @@ import { createDeployGetStatusHandler } from "../products/deploy/tools/get-statu
 import { createDeployGetRuntimeVariablesHandler } from "../products/deploy/tools/get-runtime-variables.js";
 import { createDeployListSystemConfigsHandler } from "../products/deploy/tools/list-system-configs.js";
 import { createDeployListApplicationPermissionsHandler } from "../products/deploy/tools/list-application-permissions.js";
+import { createDeployBatchDeleteApplicationsHandler } from "../products/deploy/tools/batch-delete-applications.js";
 import { createDeployListAppOperationsLogHandler } from "../products/deploy/tools/list-app-operations-log.js";
 import { createDeployListAppHostGroupsHandler } from "../products/deploy/tools/list-app-host-groups.js";
 import { createDeployListAppsHandler } from "../products/deploy/tools/list-apps.js";
@@ -196,15 +206,20 @@ const deployToolDefinitions = {
   "deploy_list_host_group_environments": defineProductTool({ description: "List CodeArts Deploy environments linked to a host group", inputSchema: deployListHostGroupEnvironmentsInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployListHostGroupEnvironmentsHandler>[0] }) => clients.deployClient, createProductHandler: createDeployListHostGroupEnvironmentsHandler }),
   "deploy_get_host_group_permissions": defineProductTool({ description: "Get CodeArts Deploy host group permissions", inputSchema: deployGetHostGroupPermissionsInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployGetHostGroupPermissionsHandler>[0] }) => clients.deployClient, createProductHandler: createDeployGetHostGroupPermissionsHandler }),
   "deploy_create_environment": defineProductTool({ description: "Create CodeArts Deploy environment", inputSchema: deployCreateEnvironmentInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployCreateEnvironmentHandler>[0] }) => clients.deployClient, createProductHandler: createDeployCreateEnvironmentHandler, rateLimitAction: "deploy_create_environment" }),
+  "deploy_get_application_environment": defineProductTool({ description: "Get CodeArts Deploy application environment detail", inputSchema: deployGetApplicationEnvironmentInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployGetApplicationEnvironmentHandler>[0] }) => clients.deployClient, createProductHandler: createDeployGetApplicationEnvironmentHandler }),
+  "deploy_update_application_environment": defineProductTool({ description: "Update CodeArts Deploy application environment", inputSchema: deployUpdateApplicationEnvironmentInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployUpdateApplicationEnvironmentHandler>[0] }) => clients.deployClient, createProductHandler: createDeployUpdateApplicationEnvironmentHandler, rateLimitAction: "deploy_update_application_environment" }),
+  "deploy_delete_application_environment": defineProductTool({ description: "Delete CodeArts Deploy application environment", inputSchema: deployDeleteApplicationEnvironmentInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployDeleteApplicationEnvironmentHandler>[0] }) => clients.deployClient, createProductHandler: createDeployDeleteApplicationEnvironmentHandler, rateLimitAction: "deploy_delete_application_environment" }),
   "deploy_create_application": defineProductTool({ description: "Create CodeArts Deploy application", inputSchema: deployCreateApplicationInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployCreateApplicationHandler>[0] }) => clients.deployClient, createProductHandler: createDeployCreateApplicationHandler, rateLimitAction: "deploy_create_application" }),
   "deploy_check_application_exists": defineProductTool({ description: "Check whether a CodeArts Deploy application name exists", inputSchema: deployCheckApplicationExistsInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployCheckApplicationExistsHandler>[0] }) => clients.deployClient, createProductHandler: createDeployCheckApplicationExistsHandler }),
   "deploy_check_application_creatable": defineProductTool({ description: "Check whether CodeArts Deploy application creation is allowed", inputSchema: deployCheckApplicationCreatableInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployCheckApplicationCreatableHandler>[0] }) => clients.deployClient, createProductHandler: createDeployCheckApplicationCreatableHandler }),
   "deploy_list_application_permissions": defineProductTool({ description: "List CodeArts Deploy application permissions", inputSchema: deployListApplicationPermissionsInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployListApplicationPermissionsHandler>[0] }) => clients.deployClient, createProductHandler: createDeployListApplicationPermissionsHandler }),
+  "deploy_batch_delete_applications": defineProductTool({ description: "Batch delete CodeArts Deploy applications", inputSchema: deployBatchDeleteApplicationsInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployBatchDeleteApplicationsHandler>[0] }) => clients.deployClient, createProductHandler: createDeployBatchDeleteApplicationsHandler, rateLimitAction: "deploy_batch_delete_applications" }),
   "deploy_get_application_messages": defineProductTool({ description: "Get CodeArts Deploy application messages", inputSchema: deployGetApplicationMessagesInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployGetApplicationMessagesHandler>[0] }) => clients.deployClient, createProductHandler: createDeployGetApplicationMessagesHandler }),
   "deploy_list_application_groups": defineProductTool({ description: "List CodeArts Deploy application groups", inputSchema: deployListApplicationGroupsInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployListApplicationGroupsHandler>[0] }) => clients.deployClient, createProductHandler: createDeployListApplicationGroupsHandler }),
   "deploy_get_success_rate_metrics": defineProductTool({ description: "Get CodeArts Deploy success rate metrics", inputSchema: deployGetSuccessRateMetricsInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployGetSuccessRateMetricsHandler>[0] }) => clients.deployClient, createProductHandler: createDeployGetSuccessRateMetricsHandler }),
   "deploy_get_task_success_rate_metrics": defineProductTool({ description: "Get CodeArts Deploy task success rate metrics", inputSchema: deployGetTaskSuccessRateMetricsInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployGetTaskSuccessRateMetricsHandler>[0] }) => clients.deployClient, createProductHandler: createDeployGetTaskSuccessRateMetricsHandler }),
   "deploy_get_environment_permissions": defineProductTool({ description: "Get CodeArts Deploy environment permissions", inputSchema: deployGetEnvironmentPermissionsInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployGetEnvironmentPermissionsHandler>[0] }) => clients.deployClient, createProductHandler: createDeployGetEnvironmentPermissionsHandler }),
+  "deploy_update_application_permission_level": defineProductTool({ description: "Update CodeArts Deploy application permission level", inputSchema: deployUpdateApplicationPermissionLevelInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployUpdateApplicationPermissionLevelHandler>[0] }) => clients.deployClient, createProductHandler: createDeployUpdateApplicationPermissionLevelHandler, rateLimitAction: "deploy_update_application_permission_level" }),
   "deploy_modify_application": defineProductTool({ description: "Modify CodeArts Deploy application", inputSchema: deployModifyApplicationInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployModifyApplicationHandler>[0] }) => clients.deployClient, createProductHandler: createDeployModifyApplicationHandler, rateLimitAction: "deploy_modify_application" }),
   "deploy_create_task_by_template": defineProductTool({ description: "Create CodeArts Deploy task from template", inputSchema: deployCreateTaskByTemplateInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployCreateTaskByTemplateHandler>[0] }) => clients.deployClient, createProductHandler: createDeployCreateTaskByTemplateHandler, rateLimitAction: "deploy_create_task_by_template" }),
   "deploy_list_environment_hosts": defineProductTool({ description: "List CodeArts Deploy hosts in an environment", inputSchema: deployListEnvironmentHostsInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployListEnvironmentHostsHandler>[0] }) => clients.deployClient, createProductHandler: createDeployListEnvironmentHostsHandler }),

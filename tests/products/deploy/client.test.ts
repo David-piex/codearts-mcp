@@ -538,6 +538,61 @@ describe("createDeployClient", () => {
     expect(result.environment_id).toBe("env-1");
   });
 
+  it("updates and deletes a deploy application environment", async () => {
+    const requests: Array<{ method: string; path: string; body?: unknown }> = [];
+    const client = createClient({
+      put: async (path: string, body?: unknown) => {
+        requests.push({ method: "PUT", path, body });
+        return {
+          status: "success",
+          id: "env-1"
+        };
+      },
+      delete: async (path: string) => {
+        requests.push({ method: "DELETE", path });
+        return {
+          status: "success",
+          id: "env-1"
+        };
+      }
+    });
+
+    const updated = await client.updateApplicationEnvironment({
+      application_id: "app-1",
+      environment_id: "env-1",
+      name: "prod-new",
+      description: "new desc"
+    });
+    const deleted = await client.deleteApplicationEnvironment({
+      application_id: "app-1",
+      environment_id: "env-1"
+    });
+
+    expect(requests).toEqual([
+      {
+        method: "PUT",
+        path: "/v1/applications/app-1/environments/env-1",
+        body: { name: "prod-new", description: "new desc" }
+      },
+      {
+        method: "DELETE",
+        path: "/v1/applications/app-1/environments/env-1"
+      }
+    ]);
+    expect(updated).toEqual({
+      application_id: "app-1",
+      environment_id: "env-1",
+      id: "env-1",
+      status: "success"
+    });
+    expect(deleted).toEqual({
+      application_id: "app-1",
+      environment_id: "env-1",
+      id: "env-1",
+      status: "success"
+    });
+  });
+
   it("lists hosts inside a deploy environment", async () => {
     let requestedPath = "";
     const client = createClient({
@@ -2823,6 +2878,77 @@ describe("createDeployClient", () => {
     });
   });
 
+  it("batch deletes applications and updates permission level", async () => {
+    const requests: Array<{ method: string; path: string; body?: unknown }> = [];
+    const client = createClient({
+      post: async (path: string, body?: unknown) => {
+        requests.push({ method: "POST", path, body });
+        return {
+          project_id: "project-1",
+          total_num: 2,
+          result: [
+            { application_id: "app-1", status: "success" },
+            { application_id: "app-2", status: "error", error_reason: "permission denied" }
+          ]
+        };
+      },
+      put: async (path: string, body?: unknown) => {
+        requests.push({ method: "PUT", path, body });
+        return {
+          status: "success"
+        };
+      }
+    });
+
+    const deleted = await client.batchDeleteApplications({
+      project_id: "project-1",
+      application_ids: ["app-1", "app-2"]
+    });
+    const updated = await client.updateApplicationPermissionLevel({
+      project_id: "project-1",
+      application_ids: ["app-1", "app-2"],
+      permission_level: "project"
+    });
+
+    expect(requests).toEqual([
+      {
+        method: "POST",
+        path: "/v2/applications/batch-delete",
+        body: {
+          project_id: "project-1",
+          application_ids: ["app-1", "app-2"]
+        }
+      },
+      {
+        method: "PUT",
+        path: "/v3/applications/permission-level",
+        body: {
+          project_id: "project-1",
+          permission_level: "project",
+          application_ids: ["app-1", "app-2"]
+        }
+      }
+    ]);
+    expect(deleted).toEqual({
+      project_id: "project-1",
+      total_num: 2,
+      result: [
+        { application_id: "app-1", status: "success" },
+        { application_id: "app-2", status: "error", error_reason: "permission denied" }
+      ],
+      raw: [
+        { application_id: "app-1", status: "success" },
+        { application_id: "app-2", status: "error", error_reason: "permission denied" }
+      ]
+    });
+    expect(updated).toEqual({
+      project_id: "project-1",
+      application_ids: ["app-1", "app-2"],
+      permission_level: "project",
+      status: "success"
+    });
+  });
+
   it("uses the start endpoint with record_id body when rolling back a deploy task", async () => {
     let requestedPath = "";
     let requestedBody: unknown;
@@ -2893,4 +3019,3 @@ describe("createDeployClient", () => {
     });
   });
 });
-

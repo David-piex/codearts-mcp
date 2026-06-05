@@ -168,4 +168,57 @@ describe("createDeployClient read-only Deploy endpoints", () => {
     expect(projectMetrics.metrics.success_rate).toBe(95);
     expect(taskMetrics.metrics.success_rate).toBe(80);
   });
+
+  it("gets application environment detail", async () => {
+    let requestedPath = "";
+    const client = createClient({
+      get: async (path: string) => {
+        requestedPath = path;
+        return {
+          status: "success",
+          result: {
+            id: "env-1",
+            name: "prod",
+            description: "demo",
+            os: "linux",
+            project_id: "project-1",
+            nick_name: "alice"
+          }
+        };
+      }
+    });
+
+    const result = await client.getApplicationEnvironment({
+      application_id: "app-1",
+      environment_id: "env-1"
+    });
+
+    expect(requestedPath).toBe("/v1/applications/app-1/environments/env-1");
+    expect(result).toEqual({
+      application_id: "app-1",
+      environment_id: "env-1",
+      environment: {
+        id: "env-1",
+        name: "prod",
+        description: "demo",
+        os: "linux",
+        project_id: "project-1",
+        nick_name: "alice",
+        deploy_type: undefined,
+        instance_count: undefined,
+        created_time: undefined,
+        created_by: undefined,
+        permission: undefined
+      },
+      status: "success",
+      raw: {
+        id: "env-1",
+        name: "prod",
+        description: "demo",
+        os: "linux",
+        project_id: "project-1",
+        nick_name: "alice"
+      }
+    });
+  });
 });

@@ -254,6 +254,42 @@ export const deployCreateEnvironmentInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const deployGetApplicationEnvironmentInput = z.object({
+  application_id: idSchema,
+  environment_id: idSchema
+});
+
+export const deployUpdateApplicationEnvironmentInput = z
+  .object({
+    application_id: idSchema,
+    environment_id: idSchema,
+    name: z.string().min(1).optional(),
+    description: z.string().optional(),
+    dry_run: z.boolean().default(true)
+  })
+  .refine((input) => input.name !== undefined || input.description !== undefined, {
+    message: "At least one of name or description is required"
+  });
+
+export const deployDeleteApplicationEnvironmentInput = z.object({
+  application_id: idSchema,
+  environment_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const deployBatchDeleteApplicationsInput = z.object({
+  project_id: idSchema,
+  application_ids: z.array(idSchema).min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const deployUpdateApplicationPermissionLevelInput = z.object({
+  project_id: idSchema,
+  application_ids: z.array(idSchema).min(1),
+  permission_level: z.enum(["project", "instance"]),
+  dry_run: z.boolean().default(true)
+});
+
 const deployV2OperationInput = z
   .object({
     id: idSchema.optional(),

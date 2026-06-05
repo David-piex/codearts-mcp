@@ -12,7 +12,7 @@
 | Pipeline | 126 | 75 | 51 | Partial | The original 16-tool execution surface remains live-validated. The newly added delete/enable/disable, extension-endpoint, tag-management, group-management, variable-group, rule-management, tenant-strategy, and project-strategy tools currently have unit regression coverage, but real AK/SK validation is still pending. |
 | Check | 104 | 84 | 20 | Partial | Core Check task/ruleset/metrics/defect reads are AK/SK validated. The official read routes for plugins, task webhook info, code-health SVG, criterion filters, criterions, and defect task statistics are live-validated on the codearts-check Beijing 4 endpoint. Write/trigger configuration tools default to dry-run and still need dedicated real-write samples. |
 | TestPlan | 313 | 257 | 56 | Partial | Two scanned projects now return real plan samples; 4 routes are re-confirmed as unpublished in Beijing 4. |
-| Deploy | 74 | 57 | 17 | Partial | `deploy_create_application`, `deploy_modify_application`, `deploy_start_app`, `deploy_get_execution_params`, `deploy_get_history_detail`, `deploy_get_app_log`, `deploy_stop_app`, and `deploy_rollback_app` already have real AK/SK coverage on at least one healthy path. The remaining practical blocker is the outdated Node.js template runtime (`Node v10.9.0` + `forever`) and the need for dedicated execute-class samples. |
+| Deploy | 79 | 58 | 21 | Partial | `deploy_create_application`, `deploy_modify_application`, `deploy_start_app`, `deploy_get_execution_params`, `deploy_get_history_detail`, `deploy_get_app_log`, `deploy_stop_app`, and `deploy_rollback_app` already have real AK/SK coverage on at least one healthy path. The remaining practical blocker is the outdated Node.js template runtime (`Node v10.9.0` + `forever`) and the need for dedicated execute-class samples. |
 | Build | 138 | 97 | 41 | Validated | Core Build job, record, log, parameter, domain metadata, permission, code-tag, report, and resource-spec tools are covered by live or smoke validation. Git-code endpoint reads are implemented and unit-tested, with endpoint-specific live samples optional. |
 | Artifact | 52 | 44 | 8 | Partial | Five tools are AK/SK Full; the remaining seven are re-confirmed as unpublished in Beijing 4. |
 <!-- GENERATED:module-live-readiness-table:end -->
@@ -21,9 +21,9 @@
 
 <!-- GENERATED:module-live-readiness-totals:start -->
 - Product modules implemented: `8`
-- Product tools implemented: `1522`
+- Product tools implemented: `1527`
 - Auth/session tools implemented: `2`
-- Total MCP tools exposed: `1524`
+- Total MCP tools exposed: `1529`
 <!-- GENERATED:module-live-readiness-totals:end -->
 
 ## 模块摘要
@@ -36,7 +36,7 @@
 | Pipeline | 126 | `16 Full / 0 Reachable / 0 Unpublished / 51 Code` | Core execution closure remains complete, but the new extension-endpoint/tag/group/variable-group/rule-management/tenant-strategy/project-strategy tools still need live AK/SK validation. |
 | Check | 104 | `14 Full / 0 Reachable / 0 Unpublished / 5 Code` | Core Check closure remains usable for task/ruleset/metrics/defect workflows; official read routes are live-validated, while dry-run-safe write/trigger tools still need dedicated real-write samples. |
 | TestPlan | 313 | `1 Full / 2 Reachable / 4 Unpublished / 0 Code` | Real plan samples now exist on two projects, but detail/run routes are still unpublished in Beijing 4. |
-| Deploy | 74 | Expanded v4 surface with partial live closure | The Deploy MCP surface now includes v4 application/environment/cluster/record/variable tools. Read paths and selected write paths are live-validated, while full execute-class coverage still depends on dedicated runtime samples. |
+| Deploy | 79 | Expanded v4 surface with partial live closure | The Deploy MCP surface now includes v4 application/environment/cluster/record/variable tools. Read paths and selected write paths are live-validated, while full execute-class coverage still depends on dedicated runtime samples. |
 | Build | 138 | Expanded metadata read surface with live smoke coverage | The Build surface now includes metadata reads for domain status, permissions, code tags, report repositories/branches, resource specs, and optional Git-code repositories/branches. |
 | Artifact | 52 | `5 Full / 0 Reachable / 7 Unpublished / 0 Code` | Five tools are fully validated; seven routes are unpublished in Beijing 4. The current tenant now exposes a real published file sample at `/codearts-mcp/1.0.0/codearts-mcp.tgz`. |
 <!-- GENERATED:module-live-readiness-summary:end -->

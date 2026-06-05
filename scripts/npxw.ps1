@@ -28,31 +28,31 @@ function Resolve-NodeExe {
   return $null
 }
 
-function Resolve-NpmCmd {
-  if ($env:CODEARTS_MCP_NPM_CMD -and (Test-Path $env:CODEARTS_MCP_NPM_CMD)) {
-    return $env:CODEARTS_MCP_NPM_CMD
+function Resolve-NpxCmd {
+  if ($env:CODEARTS_MCP_NPX_CMD -and (Test-Path $env:CODEARTS_MCP_NPX_CMD)) {
+    return $env:CODEARTS_MCP_NPX_CMD
   }
 
   $nodeExe = Resolve-NodeExe
   if ($nodeExe) {
     $nodeDir = Split-Path -Parent $nodeExe
-    $pairedNpm = Join-Path $nodeDir "npm.cmd"
-    if (Test-Path $pairedNpm) {
-      return $pairedNpm
+    $pairedNpx = Join-Path $nodeDir "npx.cmd"
+    if (Test-Path $pairedNpx) {
+      return $pairedNpx
     }
   }
 
   foreach ($candidate in @(
-    "C:\nvm4w\nodejs\npm.cmd",
-    "C:\Users\Yao\AppData\Local\nvm\v22.22.1\npm.cmd",
-    "C:\Program Files\nodejs\npm.cmd"
+    "C:\nvm4w\nodejs\npx.cmd",
+    "C:\Users\Yao\AppData\Local\nvm\v22.22.1\npx.cmd",
+    "C:\Program Files\nodejs\npx.cmd"
   )) {
     if (Test-Path $candidate) {
       return $candidate
     }
   }
 
-  $command = Get-Command npm.cmd -ErrorAction SilentlyContinue
+  $command = Get-Command npx.cmd -ErrorAction SilentlyContinue
   if ($command -and $command.Source) {
     return $command.Source
   }
@@ -60,12 +60,12 @@ function Resolve-NpmCmd {
   return $null
 }
 
-$resolved = Resolve-NpmCmd
+$resolved = Resolve-NpxCmd
 
 if (-not $resolved) {
-  throw "Unable to locate npm.cmd. Set CODEARTS_MCP_NPM_CMD or install Node.js locally."
+  throw "Unable to locate npx.cmd. Set CODEARTS_MCP_NPX_CMD or install Node.js locally."
 }
 
-Write-Host "[npmw] using $resolved"
+Write-Host "[npxw] using $resolved"
 & $resolved @Args
 exit $LASTEXITCODE

@@ -9,10 +9,12 @@ const coveredDeployToolNames = [
   "deploy_create_application",
   "deploy_create_environment",
   "deploy_create_task_by_template",
+  "deploy_delete_application_environment",
   "deploy_delete_v4_cluster_hosts",
   "deploy_delete_v4_environment_hosts",
   "deploy_get_app",
   "deploy_get_app_log",
+  "deploy_get_application_environment",
   "deploy_get_application_messages",
   "deploy_get_deploy_source_detail",
   "deploy_get_environment_permissions",
@@ -44,6 +46,7 @@ const coveredDeployToolNames = [
   "deploy_list_app_host_groups",
   "deploy_list_app_operations_log",
   "deploy_list_apps",
+  "deploy_batch_delete_applications",
   "deploy_list_deployment_units",
   "deploy_list_environment_hosts",
   "deploy_list_environments",
@@ -75,7 +78,9 @@ const coveredDeployToolNames = [
   "deploy_rollback_app",
   "deploy_rollback_v4_deploy_record",
   "deploy_start_app",
-  "deploy_stop_app"
+  "deploy_stop_app",
+  "deploy_update_application_environment",
+  "deploy_update_application_permission_level"
 ].sort();
 
 describe("deploy tool coverage manifest", () => {

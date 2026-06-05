@@ -44,7 +44,7 @@ describe("collectModuleStats", () => {
       { module: "Pipeline", total: 126, read: 75, write: 51 },
       { module: "Check", total: 104, read: 84, write: 20 },
       { module: "TestPlan", total: 313, read: 257, write: 56 },
-      { module: "Deploy", total: 74, read: 57, write: 17 },
+      { module: "Deploy", total: 79, read: 58, write: 21 },
       { module: "Build", total: 138, read: 97, write: 41 },
       { module: "Artifact", total: 52, read: 44, write: 8 },
     ]);
@@ -54,8 +54,8 @@ describe("collectModuleStats", () => {
     expect(collectProductToolStats()).toEqual({
       modules: 8,
       total: collectProductToolManifest().length,
-      read: 1063,
-      write: 459,
+      read: 1064,
+      write: 463,
     });
   });
 
@@ -63,7 +63,7 @@ describe("collectModuleStats", () => {
     expect(renderModuleStatsMarkdown()).toContain(
       "| Module | Total | Read | Write |",
     );
-    expect(renderModuleStatsMarkdown()).toContain("| Deploy | 74 | 57 | 17 |");
+    expect(renderModuleStatsMarkdown()).toContain("| Deploy | 79 | 58 | 21 |");
     expect(renderModuleStatsMarkdown()).toContain("- Product modules: `8`");
     expect(renderModuleStatsMarkdown()).toContain(
       `- Product tools: \`${collectProductToolManifest().length}\``,
@@ -81,15 +81,15 @@ describe("collectModuleStats", () => {
         { module: "Pipeline", total: 126, read: 75, write: 51 },
         { module: "Check", total: 104, read: 84, write: 20 },
         { module: "TestPlan", total: 313, read: 257, write: 56 },
-        { module: "Deploy", total: 74, read: 57, write: 17 },
+        { module: "Deploy", total: 79, read: 58, write: 21 },
         { module: "Build", total: 138, read: 97, write: 41 },
         { module: "Artifact", total: 52, read: 44, write: 8 },
       ],
       totals: {
         modules: 8,
         total: collectProductToolManifest().length,
-        read: 1063,
-        write: 459,
+        read: 1064,
+        write: 463,
         httpTotalWithAuth: collectHttpToolTotal(),
       },
     });

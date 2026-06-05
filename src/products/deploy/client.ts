@@ -367,6 +367,52 @@ export type DeployClient = {
     deploy_type?: number;
     description?: string;
   }>;
+  getApplicationEnvironment: (input: {
+    application_id: string;
+    environment_id: string;
+  }) => Promise<{
+    application_id: string;
+    environment_id: string;
+    environment: {
+      id?: string;
+      name?: string;
+      description?: string;
+      os?: string;
+      project_id?: string;
+      nick_name?: string;
+      deploy_type?: number;
+      instance_count?: number;
+      created_time?: string;
+      created_by?: {
+        user_id?: string;
+        user_name?: string;
+        nick_name?: string;
+      };
+      permission?: Record<string, unknown>;
+    };
+    status?: string;
+    raw: unknown;
+  }>;
+  updateApplicationEnvironment: (input: {
+    application_id: string;
+    environment_id: string;
+    name?: string;
+    description?: string;
+  }) => Promise<{
+    application_id: string;
+    environment_id: string;
+    id?: string;
+    status?: string;
+  }>;
+  deleteApplicationEnvironment: (input: {
+    application_id: string;
+    environment_id: string;
+  }) => Promise<{
+    application_id: string;
+    environment_id: string;
+    id?: string;
+    status?: string;
+  }>;
   createApplication: (input: DeployCreateApplicationInput) => Promise<{
     application_id: string;
     name: string;
@@ -390,6 +436,20 @@ export type DeployClient = {
     permissions: Array<Record<string, unknown>>;
     status?: string;
     raw: unknown;
+  }>;
+  batchDeleteApplications: (input: {
+    project_id: string;
+    application_ids: string[];
+  }) => Promise<{
+    project_id?: string;
+    total_num?: number;
+    result: Array<{
+      application_id: string;
+      application_name?: string;
+      status?: string;
+      error_reason?: string;
+    }>;
+    raw?: unknown;
   }>;
   getApplicationMessages: (input: {
     project_id: string;
@@ -435,6 +495,16 @@ export type DeployClient = {
     permissions: Array<Record<string, unknown>>;
     status?: string;
     raw: unknown;
+  }>;
+  updateApplicationPermissionLevel: (input: {
+    project_id: string;
+    application_ids: string[];
+    permission_level: "project" | "instance";
+  }) => Promise<{
+    project_id?: string;
+    application_ids?: string[];
+    permission_level?: "project" | "instance";
+    status?: string;
   }>;
   checkApplicationCreatable: (input: { project_id: string }) => Promise<{
     project_id: string;
@@ -1603,6 +1673,126 @@ export function createDeployClient(_http: ReturnTypeCreateHttpClient): DeployCli
         os: input.os,
         deploy_type: input.deploy_type ?? 0,
         description: input.description
+      };
+    },
+    async getApplicationEnvironment(input) {
+      const response = (await _http.get(
+        `/v1/applications/${encodeURIComponent(input.application_id)}/environments/${encodeURIComponent(input.environment_id)}`
+      )) as {
+        status?: string;
+        result?: {
+          id?: string;
+          environment_id?: string;
+          name?: string;
+          description?: string;
+          os?: string;
+          project_id?: string;
+          nick_name?: string;
+          deploy_type?: number;
+          instance_count?: number;
+          created_time?: string;
+          created_by?: {
+            user_id?: string;
+            user_name?: string;
+            nick_name?: string;
+          };
+          permission?: Record<string, unknown>;
+        };
+      };
+
+      const environment = getResultObject<{
+        id?: string;
+        environment_id?: string;
+        name?: string;
+        description?: string;
+        os?: string;
+        project_id?: string;
+        nick_name?: string;
+        deploy_type?: number;
+        instance_count?: number;
+        created_time?: string;
+        created_by?: {
+          user_id?: string;
+          user_name?: string;
+          nick_name?: string;
+        };
+        permission?: Record<string, unknown>;
+      }>(response);
+
+      return {
+        application_id: input.application_id,
+        environment_id: environment.environment_id ?? environment.id ?? input.environment_id,
+        environment: {
+          id: environment.id ?? environment.environment_id ?? input.environment_id,
+          name: environment.name,
+          description: environment.description,
+          os: environment.os,
+          project_id: environment.project_id,
+          nick_name: environment.nick_name,
+          deploy_type: environment.deploy_type,
+          instance_count: environment.instance_count,
+          created_time: environment.created_time,
+          created_by: environment.created_by,
+          permission: environment.permission
+        },
+        status: response.status,
+        raw: response.result ?? response
+      };
+    },
+    async updateApplicationEnvironment(input) {
+      const response = (await _http.put(
+        `/v1/applications/${encodeURIComponent(input.application_id)}/environments/${encodeURIComponent(input.environment_id)}`,
+        {
+          ...(input.name !== undefined ? { name: input.name } : {}),
+          ...(input.description !== undefined ? { description: input.description } : {})
+        }
+      )) as {
+        status?: string;
+        id?: string;
+        environment_id?: string;
+        result?: {
+          id?: string;
+          environment_id?: string;
+        };
+      };
+
+      const item = (response.result ?? response) as {
+        id?: string;
+        environment_id?: string;
+      };
+
+      return {
+        application_id: input.application_id,
+        environment_id: item.environment_id ?? item.id ?? input.environment_id,
+        id: item.id ?? item.environment_id ?? input.environment_id,
+        status: response.status
+      };
+    },
+    async deleteApplicationEnvironment(input) {
+      const response = (await _http.delete(
+        `/v1/applications/${encodeURIComponent(input.application_id)}/environments/${encodeURIComponent(input.environment_id)}`
+      )) as
+        | {
+            status?: string;
+            id?: string;
+            environment_id?: string;
+            result?: {
+              id?: string;
+              environment_id?: string;
+            };
+          }
+        | null;
+
+      const item = ((response?.result ?? response) ?? {}) as {
+        id?: string;
+        environment_id?: string;
+      };
+
+      return {
+        application_id: input.application_id,
+        environment_id: item.environment_id ?? item.id ?? input.environment_id,
+        id: item.id ?? item.environment_id ?? input.environment_id,
+        status: response?.status
       };
     },
     async createApplication(input) {
@@ -3554,6 +3744,28 @@ export function createDeployClient(_http: ReturnTypeCreateHttpClient): DeployCli
         raw: response.result
       };
     },
+    async batchDeleteApplications(input) {
+      const response = (await _http.post("/v2/applications/batch-delete", {
+        project_id: input.project_id,
+        application_ids: input.application_ids
+      })) as {
+        project_id?: string;
+        total_num?: number;
+        result?: unknown;
+      };
+
+      return {
+        project_id: response.project_id ?? input.project_id,
+        total_num: response.total_num,
+        result: asArray<{
+          application_id: string;
+          application_name?: string;
+          status?: string;
+          error_reason?: string;
+        }>(response.result),
+        raw: response.result
+      };
+    },
     async getApplicationMessages(input) {
       const query = new URLSearchParams();
       addQueryParams(query, input.query);
@@ -3637,6 +3849,25 @@ export function createDeployClient(_http: ReturnTypeCreateHttpClient): DeployCli
         permissions: asArray<Record<string, unknown>>(response.result),
         status: response.status,
         raw: response.result
+      };
+    },
+    async updateApplicationPermissionLevel(input) {
+      const response = (await _http.put("/v3/applications/permission-level", {
+        project_id: input.project_id,
+        permission_level: input.permission_level,
+        application_ids: input.application_ids
+      })) as {
+        status?: string;
+        project_id?: string;
+        permission_level?: "project" | "instance";
+        application_ids?: string[];
+      };
+
+      return {
+        project_id: response.project_id ?? input.project_id,
+        application_ids: response.application_ids ?? input.application_ids,
+        permission_level: response.permission_level ?? input.permission_level,
+        status: response.status
       };
     },
     async checkApplicationCreatable(input) {

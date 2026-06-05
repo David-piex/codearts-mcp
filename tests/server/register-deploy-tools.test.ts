@@ -78,6 +78,36 @@ describe("registerDeployTool", () => {
     }
   });
 
+  it("registers application environment and permission write tools", () => {
+    const registerTool = vi.fn();
+    const tools = [
+      ["deploy_get_application_environment", "Get CodeArts Deploy application environment detail"],
+      ["deploy_update_application_environment", "Update CodeArts Deploy application environment"],
+      ["deploy_delete_application_environment", "Delete CodeArts Deploy application environment"],
+      ["deploy_batch_delete_applications", "Batch delete CodeArts Deploy applications"],
+      ["deploy_update_application_permission_level", "Update CodeArts Deploy application permission level"]
+    ] as const;
+
+    for (const [toolName, description] of tools) {
+      const handled = registerDeployTool({
+        toolName,
+        server: { registerTool },
+        mode: "stdio",
+        stdioClient: {} as never
+      });
+
+      expect(handled).toBe(true);
+      expect(registerTool).toHaveBeenLastCalledWith(
+        toolName,
+        expect.objectContaining({
+          title: toolName,
+          description
+        }),
+        expect.any(Function)
+      );
+    }
+  });
+
   it("registers v2 host group read tools", () => {
     const registerTool = vi.fn();
     const tools = [

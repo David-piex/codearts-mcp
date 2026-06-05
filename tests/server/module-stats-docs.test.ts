@@ -64,7 +64,7 @@ describe("module stats doc rendering", () => {
     const markdown = renderReadWriteMatrixMarkdown();
 
     expect(markdown).toContain("| Module | Read | Write | Live | Key Gaps |");
-    expect(markdown).toContain("| Deploy | 57 | 17 | Partial |");
+    expect(markdown).toContain("| Deploy | 58 | 21 | Partial |");
     expect(markdown).toContain("| Build | 97 | 41 | Validated |");
     expect(markdown).toContain("| TestPlan | 257 | 56 | Partial |");
     expect(markdown).toContain("| Check | 84 | 20 | Partial |");
@@ -132,7 +132,7 @@ describe("syncModuleStatsDocuments", () => {
       `- Total MCP tools exposed: \`${collectHttpToolTotal()}\``,
     );
     expect(synced["docs/wiki/Module-Live-Readiness.md"]).toContain(
-      "| Deploy | 74 |",
+      "| Deploy | 79 |",
     );
     expect(synced["docs/wiki/Req-API-Reference.md"]).toContain(
       `| ${collectHttpToolTotal()} |`,

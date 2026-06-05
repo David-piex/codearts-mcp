@@ -6,7 +6,7 @@
 
 模块：`部署`
 
-API 数量：`74`
+API 数量：`79`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
@@ -80,6 +80,68 @@ API 数量：`74`
     "environment_id",
     "cluster_id",
     "host_ids"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### deploy_batch_delete_applications
+
+所属模块：`部署`
+
+说明：批量处理部署的deleteapplications。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "deploy_batch_delete_applications",
+    "arguments": {
+      "project_id": "<project_id>",
+      "application_ids": "<application_ids>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 部署 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `application_ids` | 是 | `array<object>` |  | 字段对应：<br>MCP 字段 `application_ids` ↔ 原始 CodeArts 部署 API 同名字段 `application_ids`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>应用 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "application_ids": {
+      "type": "array",
+      "items": {
+        "$ref": "#/properties/project_id"
+      },
+      "minItems": 1
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "project_id",
+    "application_ids"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -642,6 +704,64 @@ API 数量：`74`
 }
 ```
 
+### deploy_delete_application_environment
+
+所属模块：`部署`
+
+说明：删除部署的application环境。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "deploy_delete_application_environment",
+    "arguments": {
+      "application_id": "<application_id>",
+      "environment_id": "<environment_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `application_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `application_id` ↔ 原始 CodeArts 部署 API 同名字段 `application_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>应用 ID，用于定位对应的 CodeArts 资源。 |
+| `environment_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `environment_id` ↔ 原始 CodeArts 部署 API 同名字段 `environment_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>部署环境 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "application_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "environment_id": {
+      "$ref": "#/properties/application_id"
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "application_id",
+    "environment_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### deploy_delete_v4_cluster_hosts
 
 所属模块：`部署`
@@ -886,6 +1006,59 @@ API 数量：`74`
   "required": [
     "application_id",
     "record_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### deploy_get_application_environment
+
+所属模块：`部署`
+
+说明：获取部署的application环境。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "deploy_get_application_environment",
+    "arguments": {
+      "application_id": "<application_id>",
+      "environment_id": "<environment_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `application_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `application_id` ↔ 原始 CodeArts 部署 API 同名字段 `application_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>应用 ID，用于定位对应的 CodeArts 资源。 |
+| `environment_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `environment_id` ↔ 原始 CodeArts 部署 API 同名字段 `environment_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>部署环境 ID，用于定位对应的 CodeArts 资源。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "application_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "environment_id": {
+      "$ref": "#/properties/application_id"
+    }
+  },
+  "required": [
+    "application_id",
+    "environment_id"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -5097,6 +5270,145 @@ API 数量：`74`
   "required": [
     "task_id",
     "record_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### deploy_update_application_environment
+
+所属模块：`部署`
+
+说明：更新部署的application环境。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "deploy_update_application_environment",
+    "arguments": {
+      "application_id": "<application_id>",
+      "environment_id": "<environment_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `application_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `application_id` ↔ 原始 CodeArts 部署 API 同名字段 `application_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>应用 ID，用于定位对应的 CodeArts 资源。 |
+| `environment_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `environment_id` ↔ 原始 CodeArts 部署 API 同名字段 `environment_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>部署环境 ID，用于定位对应的 CodeArts 资源。 |
+| `name` | 否 | `string` |  | 字段对应：<br>MCP 字段 `name` ↔ 原始 CodeArts 部署 API 同名字段 `name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
+| `description` | 否 | `string` |  | 字段对应：<br>MCP 字段 `description` ↔ 原始 CodeArts 部署 API 同名字段 `description`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "application_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "environment_id": {
+      "$ref": "#/properties/application_id"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string"
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "application_id",
+    "environment_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### deploy_update_application_permission_level
+
+所属模块：`部署`
+
+说明：更新部署的applicationpermissionlevel。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "deploy_update_application_permission_level",
+    "arguments": {
+      "project_id": "<project_id>",
+      "application_ids": "<application_ids>",
+      "permission_level": "<permission_level>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 部署 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `application_ids` | 是 | `array<object>` |  | 字段对应：<br>MCP 字段 `application_ids` ↔ 原始 CodeArts 部署 API 同名字段 `application_ids`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>应用 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `permission_level` | 是 | `"project" \| "instance"` |  | 字段对应：<br>MCP 字段 `permission_level` ↔ 原始 CodeArts 部署 API 同名字段 `permission_level`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。可选值：`project`、`instance`。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "application_ids": {
+      "type": "array",
+      "items": {
+        "$ref": "#/properties/project_id"
+      },
+      "minItems": 1
+    },
+    "permission_level": {
+      "type": "string",
+      "enum": [
+        "project",
+        "instance"
+      ]
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "project_id",
+    "application_ids",
+    "permission_level"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

@@ -28,12 +28,12 @@
 | 鉴权会话 | 2 | [Function-API-Reference-Auth-Session.md](./Function-API-Reference-Auth-Session.md) |
 | 编译构建 | 138 | [Function-API-Reference-Build.md](./Function-API-Reference-Build.md) |
 | 代码检查 | 104 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
-| 部署 | 74 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
+| 部署 | 79 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
 | 流水线 | 126 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 372 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 343 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 313 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **1524** | |
+| **总计** | **1529** | |
 
 ## 字段对应
 
@@ -340,16 +340,19 @@
 | `check_update_task_settings` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_update_task_settings) |
 | `check_update_task_webhook` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_update_task_webhook) |
 | `deploy_add_v4_environment_hosts` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_add_v4_environment_hosts) |
+| `deploy_batch_delete_applications` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_batch_delete_applications) |
 | `deploy_cancel_v4_deploy_record` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_cancel_v4_deploy_record) |
 | `deploy_check_application_creatable` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_check_application_creatable) |
 | `deploy_check_application_exists` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_check_application_exists) |
 | `deploy_create_application` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_create_application) |
 | `deploy_create_environment` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_create_environment) |
 | `deploy_create_task_by_template` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_create_task_by_template) |
+| `deploy_delete_application_environment` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_delete_application_environment) |
 | `deploy_delete_v4_cluster_hosts` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_delete_v4_cluster_hosts) |
 | `deploy_delete_v4_environment_hosts` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_delete_v4_environment_hosts) |
 | `deploy_get_app` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_get_app) |
 | `deploy_get_app_log` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_get_app_log) |
+| `deploy_get_application_environment` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_get_application_environment) |
 | `deploy_get_application_messages` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_get_application_messages) |
 | `deploy_get_deploy_source_detail` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_get_deploy_source_detail) |
 | `deploy_get_environment_permissions` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_get_environment_permissions) |
@@ -413,6 +416,8 @@
 | `deploy_rollback_v4_deploy_record` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_rollback_v4_deploy_record) |
 | `deploy_start_app` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_start_app) |
 | `deploy_stop_app` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_stop_app) |
+| `deploy_update_application_environment` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_update_application_environment) |
+| `deploy_update_application_permission_level` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_update_application_permission_level) |
 | `pipeline_approve_run` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_approve_run) |
 | `pipeline_batch_delete_pipelines` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_batch_delete_pipelines) |
 | `pipeline_batch_get_pipeline_status` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_batch_get_pipeline_status) |
