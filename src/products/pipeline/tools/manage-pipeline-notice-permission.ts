@@ -1,9 +1,12 @@
 import { asItemResult } from "../../../contracts/tool-result.js";
 import {
+  pipelineBatchUpdatePipelinePermissionInput,
   pipelineSwitchNoticeInput,
   pipelineSwitchPermissionInput,
   pipelineUpdateNoticeStatusInput,
   pipelineUpdateOfficialNoticeInput,
+  pipelineUpdatePipelineNoticeConfInput,
+  pipelineUpdateProjectNoticeEventSwitchInput,
   pipelineUpdateRolePermissionInput,
   pipelineUpdateThirdPartyNoticeInput,
   pipelineUpdateUserPermissionInput
@@ -109,6 +112,52 @@ export function createPipelineUpdateNoticeStatusHandler(client: {
   };
 }
 
+export function createPipelineUpdateProjectNoticeEventSwitchHandler(client: {
+  updateProjectNoticeEventSwitch: (
+    input: Omit<ReturnType<typeof pipelineUpdateProjectNoticeEventSwitchInput.parse>, "dry_run">
+  ) => Promise<{ enabled: boolean }>;
+}) {
+  return async (input: unknown) => {
+    const parsed = pipelineUpdateProjectNoticeEventSwitchInput.parse(input);
+    const item = {
+      projectId: parsed.project_id,
+      pipelineId: parsed.pipeline_id,
+      type: parsed.type,
+      enable: parsed.enable
+    };
+    const result = parsed.dry_run
+      ? previewPipelineWrite(`update project notice event switch for pipeline ${parsed.pipeline_id}`, item)
+      : mapPipelineWrite(`Updated project notice event switch for pipeline ${parsed.pipeline_id}`, {
+          ...item,
+          enabled: (await client.updateProjectNoticeEventSwitch(parsed)).enabled
+        });
+    return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+  };
+}
+
+export function createPipelineUpdatePipelineNoticeConfHandler(client: {
+  updatePipelineNoticeConf: (
+    input: Omit<ReturnType<typeof pipelineUpdatePipelineNoticeConfInput.parse>, "dry_run">
+  ) => Promise<{ status: string }>;
+}) {
+  return async (input: unknown) => {
+    const parsed = pipelineUpdatePipelineNoticeConfInput.parse(input);
+    const item = {
+      projectId: parsed.project_id,
+      pipelineId: parsed.pipeline_id,
+      type: parsed.type,
+      event: parsed.event
+    };
+    const result = parsed.dry_run
+      ? previewPipelineWrite(`update pipeline notice config for pipeline ${parsed.pipeline_id}`, item)
+      : mapPipelineWrite(`Updated pipeline notice config for pipeline ${parsed.pipeline_id}`, {
+          ...item,
+          status: (await client.updatePipelineNoticeConf(parsed)).status
+        });
+    return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+  };
+}
+
 export function createPipelineUpdateRolePermissionHandler(client: {
   updateRolePermission: (input: Omit<ReturnType<typeof pipelineUpdateRolePermissionInput.parse>, "dry_run">) => Promise<{ status: string }>;
 }) {
@@ -144,6 +193,29 @@ export function createPipelineUpdateUserPermissionHandler(client: {
       : mapPipelineWrite(`Updated user permission for pipeline ${parsed.pipeline_id}`, {
           ...item,
           status: (await client.updateUserPermission(parsed)).status
+        });
+    return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+  };
+}
+
+export function createPipelineBatchUpdatePipelinePermissionHandler(client: {
+  batchUpdatePipelinePermission: (
+    input: Omit<ReturnType<typeof pipelineBatchUpdatePipelinePermissionInput.parse>, "dry_run">
+  ) => Promise<{ status: string }>;
+}) {
+  return async (input: unknown) => {
+    const parsed = pipelineBatchUpdatePipelinePermissionInput.parse(input);
+    const item = {
+      projectId: parsed.project_id,
+      pipelineIds: parsed.pipeline_ids,
+      isProjectSwitch: parsed.is_project_switch,
+      roles: parsed.roles
+    };
+    const result = parsed.dry_run
+      ? previewPipelineWrite(`batch update pipeline permission in project ${parsed.project_id}`, item)
+      : mapPipelineWrite(`Batch updated pipeline permission in project ${parsed.project_id}`, {
+          ...item,
+          status: (await client.batchUpdatePipelinePermission(parsed)).status
         });
     return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
   };

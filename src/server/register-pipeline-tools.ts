@@ -58,6 +58,7 @@ import {
   pipelineFavoriteTemplateInput,
   pipelineSwitchNoticeInput,
   pipelineSwitchPermissionInput,
+  pipelineBatchUpdatePipelinePermissionInput,
   pipelineGetRunChangeRequestsInput,
   pipelineGetProjectStrategyDetailInput,
   pipelineGetProjectStrategyInput,
@@ -128,6 +129,8 @@ import {
   pipelineUpdateExtensionEndpointInput,
   pipelineUpdateNoticeStatusInput,
   pipelineUpdateOfficialNoticeInput,
+  pipelineUpdatePipelineNoticeConfInput,
+  pipelineUpdateProjectNoticeEventSwitchInput,
   pipelineUpdateRolePermissionInput,
   pipelineUpdateTagInput,
   pipelineUpdateThirdPartyNoticeInput,
@@ -188,7 +191,10 @@ import {
 } from "../products/pipeline/tools/manage-components.js";
 import {
   createPipelineSwitchNoticeHandler,
+  createPipelineBatchUpdatePipelinePermissionHandler,
   createPipelineSwitchPermissionHandler,
+  createPipelineUpdatePipelineNoticeConfHandler,
+  createPipelineUpdateProjectNoticeEventSwitchHandler,
   createPipelineUpdateNoticeStatusHandler,
   createPipelineUpdateOfficialNoticeHandler,
   createPipelineUpdateRolePermissionHandler,
@@ -549,6 +555,18 @@ const pipelineToolDefinitions = {
     selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineUpdateNoticeStatusHandler>[0] }) => clients.pipelineClient,
     createProductHandler: createPipelineUpdateNoticeStatusHandler
   }),
+  "pipeline_update_project_notice_event_switch": defineProductTool({
+    description: "Update CodeArts Pipeline project notice event switch",
+    inputSchema: pipelineUpdateProjectNoticeEventSwitchInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineUpdateProjectNoticeEventSwitchHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineUpdateProjectNoticeEventSwitchHandler
+  }),
+  "pipeline_update_pipeline_notice_conf": defineProductTool({
+    description: "Update CodeArts Pipeline notice configuration",
+    inputSchema: pipelineUpdatePipelineNoticeConfInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineUpdatePipelineNoticeConfHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineUpdatePipelineNoticeConfHandler
+  }),
   "pipeline_get_permission_switch": defineProductTool({
     description: "Get CodeArts Pipeline permission switch",
     inputSchema: pipelineGetPermissionInput,
@@ -572,6 +590,12 @@ const pipelineToolDefinitions = {
     inputSchema: pipelineUpdateUserPermissionInput,
     selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineUpdateUserPermissionHandler>[0] }) => clients.pipelineClient,
     createProductHandler: createPipelineUpdateUserPermissionHandler
+  }),
+  "pipeline_batch_update_pipeline_permission": defineProductTool({
+    description: "Batch update CodeArts Pipeline permissions",
+    inputSchema: pipelineBatchUpdatePipelinePermissionInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineBatchUpdatePipelinePermissionHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineBatchUpdatePipelinePermissionHandler
   }),
   "pipeline_get_user_permission": defineProductTool({
     description: "Get CodeArts Pipeline user permission",

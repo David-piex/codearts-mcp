@@ -337,6 +337,28 @@ export const pipelineUpdateNoticeStatusInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const pipelineUpdateProjectNoticeEventSwitchInput = z.object({
+  project_id: idSchema,
+  pipeline_id: idSchema,
+  type: z.number().int(),
+  enable: z.boolean(),
+  dry_run: z.boolean().default(true)
+});
+
+export const pipelineNoticeEventInput = z.object({
+  id: z.string().min(1),
+  selected: z.boolean(),
+  notice_roles: z.array(z.string().min(1)).min(1)
+});
+
+export const pipelineUpdatePipelineNoticeConfInput = z.object({
+  project_id: idSchema,
+  pipeline_id: idSchema,
+  type: z.string().min(1),
+  event: pipelineNoticeEventInput,
+  dry_run: z.boolean().default(true)
+});
+
 export const pipelineGetPermissionInput = z.object({
   project_id: idSchema,
   pipeline_id: idSchema
@@ -365,6 +387,23 @@ export const pipelineSwitchPermissionInput = z.object({
   project_id: idSchema,
   pipeline_id: idSchema,
   flag: z.boolean(),
+  dry_run: z.boolean().default(true)
+});
+
+export const pipelinePermissionRoleInput = z.object({
+  operation_query: z.boolean(),
+  operation_execute: z.boolean(),
+  operation_update: z.boolean(),
+  operation_delete: z.boolean(),
+  operation_authorize: z.boolean(),
+  role_id: z.number().int()
+});
+
+export const pipelineBatchUpdatePipelinePermissionInput = z.object({
+  project_id: idSchema,
+  pipeline_ids: z.array(idSchema).min(1),
+  is_project_switch: z.boolean(),
+  roles: z.array(pipelinePermissionRoleInput).min(1),
   dry_run: z.boolean().default(true)
 });
 

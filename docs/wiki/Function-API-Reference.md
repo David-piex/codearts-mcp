@@ -29,11 +29,11 @@
 | 编译构建 | 138 | [Function-API-Reference-Build.md](./Function-API-Reference-Build.md) |
 | 代码检查 | 104 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
 | 部署 | 87 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
-| 流水线 | 158 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
+| 流水线 | 161 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 372 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 343 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 313 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **1569** | |
+| **总计** | **1572** | |
 
 ## 字段对应
 
@@ -432,6 +432,7 @@
 | `pipeline_batch_delete_pipelines` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_batch_delete_pipelines) |
 | `pipeline_batch_get_pipeline_status` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_batch_get_pipeline_status) |
 | `pipeline_batch_run_pipelines` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_batch_run_pipelines) |
+| `pipeline_batch_update_pipeline_permission` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_batch_update_pipeline_permission) |
 | `pipeline_bind_variable_groups_to_pipeline` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_bind_variable_groups_to_pipeline) |
 | `pipeline_cancel_queue` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_cancel_queue) |
 | `pipeline_check_component` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_check_component) |
@@ -574,6 +575,8 @@
 | `pipeline_update_notice_status` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_update_notice_status) |
 | `pipeline_update_official_notice` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_update_official_notice) |
 | `pipeline_update_pipeline_info` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_update_pipeline_info) |
+| `pipeline_update_pipeline_notice_conf` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_update_pipeline_notice_conf) |
+| `pipeline_update_project_notice_event_switch` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_update_project_notice_event_switch) |
 | `pipeline_update_project_strategy` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_update_project_strategy) |
 | `pipeline_update_role_permission` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_update_role_permission) |
 | `pipeline_update_rule` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_update_rule) |

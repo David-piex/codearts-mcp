@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { createPipelineClient } from "../../../src/products/pipeline/client.js";
 import {
+  pipelineBatchUpdatePipelinePermissionInput,
   pipelineCreateChangeRequestInput,
   pipelineCreateComponentInput,
   pipelineCreateTemplateInput,
@@ -16,6 +17,8 @@ import {
   pipelineListCodeRepositoriesInput,
   pipelineListRelatedProjectsInput,
   pipelineCheckVariableGroupRightsInput,
+  pipelineUpdatePipelineNoticeConfInput,
+  pipelineUpdateProjectNoticeEventSwitchInput,
   pipelineUpdateComponentInput,
   pipelineUpdateChangeRequestStatusInput,
   pipelineUpdateTemplateInput,
@@ -856,6 +859,44 @@ describe("createPipelineClient", () => {
     ).toEqual({
       project_id: "project-1"
     });
+
+    expect(
+      pipelineUpdateProjectNoticeEventSwitchInput.parse({
+        project_id: "project-1",
+        pipeline_id: "pipe-1",
+        type: 3,
+        enable: true
+      }).dry_run
+    ).toBe(true);
+
+    expect(
+      pipelineUpdatePipelineNoticeConfInput.parse({
+        project_id: "project-1",
+        pipeline_id: "pipe-1",
+        type: "2",
+        event: {
+          id: "pipelineRun.failed",
+          selected: true,
+          notice_roles: ["CREATOR"]
+        }
+      }).dry_run
+    ).toBe(true);
+
+    expect(
+      pipelineBatchUpdatePipelinePermissionInput.parse({
+        project_id: "project-1",
+        pipeline_ids: ["pipe-1"],
+        is_project_switch: false,
+        roles: [{
+          operation_query: true,
+          operation_execute: true,
+          operation_update: true,
+          operation_delete: false,
+          operation_authorize: false,
+          role_id: 4
+        }]
+      }).dry_run
+    ).toBe(true);
   });
 
   it("supports pipelines field when listing pipelines", async () => {
@@ -1176,6 +1217,8 @@ describe("createPipelineClient", () => {
     const put = vi
       .fn()
       .mockResolvedValueOnce(true)
+      .mockResolvedValueOnce(true)
+      .mockResolvedValueOnce({ status: "success" })
       .mockResolvedValueOnce({ status: "success" });
     const client = createClient({ post, put });
 
@@ -1205,6 +1248,22 @@ describe("createPipelineClient", () => {
       type: 3,
       enable: true
     })).resolves.toEqual({ enabled: true });
+    await expect(client.updateProjectNoticeEventSwitch({
+      project_id: "project-1",
+      pipeline_id: "pipe-1",
+      type: 3,
+      enable: true
+    })).resolves.toEqual({ enabled: true });
+    await expect(client.updatePipelineNoticeConf({
+      project_id: "project-1",
+      pipeline_id: "pipe-1",
+      type: "2",
+      event: {
+        id: "pipelineRun.failed",
+        selected: true,
+        notice_roles: ["CREATOR", "EXECUTOR", "COLLECTOR"]
+      }
+    })).resolves.toEqual({ status: "success" });
     await expect(client.updateRolePermission({
       project_id: "project-1",
       pipeline_id: "pipe-1",
@@ -1230,6 +1289,19 @@ describe("createPipelineClient", () => {
       pipeline_id: "pipe-1",
       flag: true
     })).resolves.toEqual({ status: "success" });
+    await expect(client.batchUpdatePipelinePermission({
+      project_id: "project-1",
+      pipeline_ids: ["pipe-1", "pipe-2"],
+      is_project_switch: false,
+      roles: [{
+        operation_query: true,
+        operation_execute: true,
+        operation_update: true,
+        operation_delete: false,
+        operation_authorize: false,
+        role_id: 4
+      }]
+    })).resolves.toEqual({ status: "success" });
 
     expect(post).toHaveBeenNthCalledWith(1, "/v5/project-1/api/pipeline-notices/pipe-1/notice", {
       event_type: "pipeline.deleted",
@@ -1249,6 +1321,18 @@ describe("createPipelineClient", () => {
       type: 3,
       enable: true
     });
+    expect(put).toHaveBeenNthCalledWith(2, "/v5/project-1/api/pipeline-notices/pipe-1/notice/conf-switch", {
+      type: 3,
+      enable: true
+    });
+    expect(put).toHaveBeenNthCalledWith(3, "/v5/project-1/api/pipeline-notices/pipe-1/notice/update", {
+      type: "2",
+      event: {
+        id: "pipelineRun.failed",
+        selected: true,
+        notice_roles: ["CREATOR", "EXECUTOR", "COLLECTOR"]
+      }
+    });
     expect(post).toHaveBeenNthCalledWith(4, "/v5/project-1/api/pipeline-permissions/pipe-1/update-role-permission", {
       pipeline_id: "pipe-1",
       operation_query: true,
@@ -1267,7 +1351,19 @@ describe("createPipelineClient", () => {
       operation_authorize: false,
       user_id: "user-1"
     });
-    expect(put).toHaveBeenNthCalledWith(2, "/v5/project-1/api/pipeline-permissions/pipe-1/update-permission-switch?flag=true");
+    expect(put).toHaveBeenNthCalledWith(4, "/v5/project-1/api/pipeline-permissions/pipe-1/update-permission-switch?flag=true");
+    expect(post).toHaveBeenNthCalledWith(6, "/v5/project-1/api/pipeline-permissions/pipeline/batch-role-permission", {
+      pipeline_ids: ["pipe-1", "pipe-2"],
+      is_project_switch: false,
+      roles: [{
+        operation_query: true,
+        operation_execute: true,
+        operation_update: true,
+        operation_delete: false,
+        operation_authorize: false,
+        role_id: 4
+      }]
+    });
   });
 
   it("lists pipeline queue, system variables, trigger failures, and modify history", async () => {

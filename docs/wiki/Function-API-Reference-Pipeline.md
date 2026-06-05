@@ -6,7 +6,7 @@
 
 模块：`流水线`
 
-API 数量：`158`
+API 数量：`161`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
@@ -422,6 +422,113 @@ API 数量：`158`
   "required": [
     "project_id",
     "pipeline_ids"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### pipeline_batch_update_pipeline_permission
+
+所属模块：`流水线`
+
+说明：批量处理流水线的update流水线permission。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "pipeline_batch_update_pipeline_permission",
+    "arguments": {
+      "project_id": "<project_id>",
+      "pipeline_ids": "<pipeline_ids>",
+      "is_project_switch": "<is_project_switch>",
+      "roles": "<roles>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 流水线 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `pipeline_ids` | 是 | `array<object>` |  | 字段对应：<br>MCP 字段 `pipeline_ids` ↔ 原始 CodeArts 流水线 API 同名字段 `pipeline_ids`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>流水线 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `is_project_switch` | 是 | `boolean` |  | 字段对应：<br>MCP 字段 `is_project_switch` ↔ 原始 CodeArts 流水线 API 同名字段 `is_project_switch`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `roles` | 是 | `array<object>` |  | 字段对应：<br>MCP 字段 `roles` ↔ 原始 CodeArts 流水线 API 同名字段 `roles`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "pipeline_ids": {
+      "type": "array",
+      "items": {
+        "$ref": "#/properties/project_id"
+      },
+      "minItems": 1
+    },
+    "is_project_switch": {
+      "type": "boolean"
+    },
+    "roles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "operation_query": {
+            "type": "boolean"
+          },
+          "operation_execute": {
+            "type": "boolean"
+          },
+          "operation_update": {
+            "type": "boolean"
+          },
+          "operation_delete": {
+            "type": "boolean"
+          },
+          "operation_authorize": {
+            "type": "boolean"
+          },
+          "role_id": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "operation_query",
+          "operation_execute",
+          "operation_update",
+          "operation_delete",
+          "operation_authorize",
+          "role_id"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "project_id",
+    "pipeline_ids",
+    "is_project_switch",
+    "roles"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -9893,6 +10000,170 @@ API 数量：`158`
   "required": [
     "project_id",
     "pipeline_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### pipeline_update_pipeline_notice_conf
+
+所属模块：`流水线`
+
+说明：更新流水线的流水线noticeconf。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "pipeline_update_pipeline_notice_conf",
+    "arguments": {
+      "project_id": "<project_id>",
+      "pipeline_id": "<pipeline_id>",
+      "type": "<type>",
+      "event": "<event>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 流水线 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `pipeline_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `pipeline_id` ↔ 原始 CodeArts 流水线 API 同名字段 `pipeline_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>流水线 ID，用于定位对应的 CodeArts 资源。 |
+| `type` | 是 | `string` |  | 字段对应：<br>MCP 字段 `type` ↔ 原始 CodeArts 流水线 API 同名字段 `type`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>类型字段，用于区分资源类别、操作类别或查询类别；具体取值以该接口的业务对象为准。 |
+| `event` | 是 | `object` |  | 字段对应：<br>MCP 字段 `event` ↔ 原始 CodeArts 流水线 API 同名字段 `event`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "pipeline_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "event": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "selected": {
+          "type": "boolean"
+        },
+        "notice_roles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "id",
+        "selected",
+        "notice_roles"
+      ],
+      "additionalProperties": false
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "project_id",
+    "pipeline_id",
+    "type",
+    "event"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### pipeline_update_project_notice_event_switch
+
+所属模块：`流水线`
+
+说明：更新流水线的项目noticeeventswitch。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "pipeline_update_project_notice_event_switch",
+    "arguments": {
+      "project_id": "<project_id>",
+      "pipeline_id": "<pipeline_id>",
+      "type": "<type>",
+      "enable": "<enable>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 流水线 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `pipeline_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `pipeline_id` ↔ 原始 CodeArts 流水线 API 同名字段 `pipeline_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>流水线 ID，用于定位对应的 CodeArts 资源。 |
+| `type` | 是 | `integer` |  | 字段对应：<br>MCP 字段 `type` ↔ 原始 CodeArts 流水线 API 同名字段 `type`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>类型字段，用于区分资源类别、操作类别或查询类别；具体取值以该接口的业务对象为准。 |
+| `enable` | 是 | `boolean` |  | 字段对应：<br>MCP 字段 `enable` ↔ 原始 CodeArts 流水线 API 同名字段 `enable`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>是否启用。true 表示启用该配置、步骤、规则或能力。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "pipeline_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "type": {
+      "type": "integer"
+    },
+    "enable": {
+      "type": "boolean"
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "project_id",
+    "pipeline_id",
+    "type",
+    "enable"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

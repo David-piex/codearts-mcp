@@ -438,6 +438,26 @@ export type PipelineClient = {
   }) => Promise<{
     enabled: boolean;
   }>;
+  updateProjectNoticeEventSwitch: (input: {
+    project_id: string;
+    pipeline_id: string;
+    type: number;
+    enable: boolean;
+  }) => Promise<{
+    enabled: boolean;
+  }>;
+  updatePipelineNoticeConf: (input: {
+    project_id: string;
+    pipeline_id: string;
+    type: string;
+    event: {
+      id: string;
+      selected: boolean;
+      notice_roles: string[];
+    };
+  }) => Promise<{
+    status: string;
+  }>;
   getPermissionSwitch: (input: { project_id: string; pipeline_id: string }) => Promise<{
     permission_switch: PipelineRawRecord;
   }>;
@@ -475,6 +495,21 @@ export type PipelineClient = {
     project_id: string;
     pipeline_id: string;
     flag: boolean;
+  }) => Promise<{
+    status: string;
+  }>;
+  batchUpdatePipelinePermission: (input: {
+    project_id: string;
+    pipeline_ids: string[];
+    is_project_switch: boolean;
+    roles: Array<{
+      operation_query: boolean;
+      operation_execute: boolean;
+      operation_update: boolean;
+      operation_delete: boolean;
+      operation_authorize: boolean;
+      role_id: number;
+    }>;
   }) => Promise<{
     status: string;
   }>;
@@ -2137,6 +2172,32 @@ export function createPipelineClient(
         enabled: response
       };
     },
+    async updateProjectNoticeEventSwitch(input) {
+      const response = await _http.put(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipeline-notices/${encodeURIComponent(input.pipeline_id)}/notice/conf-switch`,
+        {
+          type: input.type,
+          enable: input.enable
+        }
+      ) as boolean;
+
+      return {
+        enabled: response
+      };
+    },
+    async updatePipelineNoticeConf(input) {
+      const response = unwrapPipelinePayload(await _http.put(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipeline-notices/${encodeURIComponent(input.pipeline_id)}/notice/update`,
+        {
+          type: input.type,
+          event: input.event
+        }
+      )) as { status?: string };
+
+      return {
+        status: response.status ?? "success"
+      };
+    },
     async getPermissionSwitch(input) {
       const response = unwrapPipelinePayload(await _http.get(
         `/v5/${encodeURIComponent(input.project_id)}/api/pipeline-permissions/${encodeURIComponent(input.pipeline_id)}/permission-switch`
@@ -2203,6 +2264,20 @@ export function createPipelineClient(
       });
       const response = unwrapPipelinePayload(await _http.put(
         `/v5/${encodeURIComponent(input.project_id)}/api/pipeline-permissions/${encodeURIComponent(input.pipeline_id)}/update-permission-switch?${query.toString()}`
+      )) as { status?: string };
+
+      return {
+        status: response.status ?? "success"
+      };
+    },
+    async batchUpdatePipelinePermission(input) {
+      const response = unwrapPipelinePayload(await _http.post(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipeline-permissions/pipeline/batch-role-permission`,
+        {
+          pipeline_ids: input.pipeline_ids,
+          is_project_switch: input.is_project_switch,
+          roles: input.roles
+        }
       )) as { status?: string };
 
       return {
