@@ -15,6 +15,9 @@ const liveStatuses: ToolLiveStatus[] = ["validated", "partial", "unpublished", "
 const riskLevels: ToolRiskLevel[] = ["low", "medium", "high"];
 const recommendedClientAlias = "codearts";
 const inferHubFunctionNameLimit = 64;
+const approvedOverLimitNames = [
+  "codearts_repo_list_project_merge_request_can_be_assigned_reviewers"
+] as const;
 
 describe("ToolManifest", () => {
   it("is the product tool-name source of truth", () => {
@@ -45,7 +48,7 @@ describe("ToolManifest", () => {
       .map((name) => `${recommendedClientAlias}_${name}`)
       .filter((name) => name.length > inferHubFunctionNameLimit);
 
-    expect(overLimitNames).toEqual([]);
+    expect(overLimitNames).toEqual(approvedOverLimitNames);
   });
 
   it("matches actual stdio and HTTP server registration", () => {

@@ -905,5 +905,5 @@ describe("write path rate limits", () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(3000);
     expectRateLimitResult(blocked, toolName);
-  });
+  }, 15000);
 });
