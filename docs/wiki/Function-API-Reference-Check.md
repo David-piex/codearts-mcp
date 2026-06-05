@@ -6,7 +6,7 @@
 
 模块：`代码检查`
 
-API 数量：`92`
+API 数量：`96`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
@@ -66,6 +66,177 @@ API 数量：`92`
   "required": [
     "task_id",
     "project_name"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### check_create_ruleset
+
+所属模块：`代码检查`
+
+说明：创建代码检查的ruleset。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "check_create_ruleset",
+    "arguments": {
+      "project_id": "<project_id>",
+      "template_name": "<template_name>",
+      "language": "<language>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 代码检查 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `template_name` | 是 | `string` |  | 字段对应：<br>MCP 字段 `template_name` ↔ 原始 CodeArts 代码检查 API 同名字段 `template_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>模板名称。 |
+| `language` | 是 | `string` |  | 字段对应：<br>MCP 字段 `language` ↔ 原始 CodeArts 代码检查 API 同名字段 `language`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>代码语言或技术栈，例如 Java、JavaScript、TypeScript、Python、Go；可选值以代码检查服务支持范围为准。 |
+| `is_default` | 否 | `"0" \| "1"` | "0" | 字段对应：<br>MCP 字段 `is_default` ↔ 原始 CodeArts 代码检查 API 同名字段 `is_default`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。可选值：`0`、`1`。 |
+| `rule_ids` | 否 | `string` |  | 字段对应：<br>MCP 字段 `rule_ids` ↔ 原始 CodeArts 代码检查 API 同名字段 `rule_ids`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>规则 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `uncheck_ids` | 否 | `string` |  | 字段对应：<br>MCP 字段 `uncheck_ids` ↔ 原始 CodeArts 代码检查 API 同名字段 `uncheck_ids`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>uncheck ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `template_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `template_id` ↔ 原始 CodeArts 代码检查 API 同名字段 `template_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>模板 ID，用于定位对应的 CodeArts 资源。 |
+| `custom_attributes` | 否 | `array<object>` |  | 字段对应：<br>MCP 字段 `custom_attributes` ↔ 原始 CodeArts 代码检查 API 同名字段 `custom_attributes`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "template_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "language": {
+      "type": "string",
+      "minLength": 1
+    },
+    "is_default": {
+      "type": "string",
+      "enum": [
+        "0",
+        "1"
+      ],
+      "default": "0"
+    },
+    "rule_ids": {
+      "type": "string",
+      "minLength": 1
+    },
+    "uncheck_ids": {
+      "type": "string",
+      "minLength": 1
+    },
+    "template_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "custom_attributes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "attribute": {
+            "type": "string",
+            "minLength": 1
+          },
+          "rules": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "rule_id": {
+                  "$ref": "#/properties/project_id"
+                },
+                "value": {
+                  "type": "string",
+                  "enum": [
+                    "0",
+                    "1",
+                    "2",
+                    "3"
+                  ]
+                },
+                "rule_config_list": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "rule_id": {
+                        "$ref": "#/properties/project_id"
+                      },
+                      "default_value": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "option_value": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "option_key": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "option_name": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "template_id": {
+                        "$ref": "#/properties/project_id"
+                      },
+                      "description": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "additionalProperties": true
+                  }
+                }
+              },
+              "required": [
+                "rule_id"
+              ],
+              "additionalProperties": true
+            },
+            "minItems": 1
+          }
+        },
+        "required": [
+          "attribute",
+          "rules"
+        ],
+        "additionalProperties": true
+      }
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "project_id",
+    "template_name",
+    "language"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -180,6 +351,64 @@ API 数量：`92`
     "git_url",
     "git_branch",
     "language"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### check_delete_ruleset
+
+所属模块：`代码检查`
+
+说明：删除代码检查的ruleset。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "check_delete_ruleset",
+    "arguments": {
+      "project_id": "<project_id>",
+      "ruleset_id": "<ruleset_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 代码检查 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `ruleset_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `ruleset_id` ↔ 原始 CodeArts 代码检查 API 同名字段 `ruleset_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>ruleset ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ruleset_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "project_id",
+    "ruleset_id"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -5962,6 +6191,134 @@ API 数量：`92`
     "status",
     "comment",
     "merge_key"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### check_update_pipeline_task
+
+所属模块：`代码检查`
+
+说明：更新代码检查的流水线任务。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "check_update_pipeline_task",
+    "arguments": {
+      "task_id": "<task_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `task_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `task_id` ↔ 原始 CodeArts 代码检查 API 同名字段 `task_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>任务 ID，用于定位对应的 CodeArts 资源。 |
+| `body` | 否 | `object` | {} | 字段对应：<br>MCP 字段 `body` ↔ 原始 CodeArts 代码检查 API 同名字段 `body`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>请求体或正文内容。复杂接口会把多个业务字段放在 body 中提交。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "body": {
+      "type": "object",
+      "additionalProperties": {},
+      "default": {}
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "task_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### check_update_task_resource_pool
+
+所属模块：`代码检查`
+
+说明：更新代码检查的任务资源pool。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "check_update_task_resource_pool",
+    "arguments": {
+      "task_id": "<task_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `task_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `task_id` ↔ 原始 CodeArts 代码检查 API 同名字段 `task_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>任务 ID，用于定位对应的 CodeArts 资源。 |
+| `resource_pool_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `resource_pool_id` ↔ 原始 CodeArts 代码检查 API 同名字段 `resource_pool_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>资源池 ID，用于定位对应的 CodeArts 资源。 |
+| `resource_pool_type` | 否 | `"default" \| "custom"` |  | 字段对应：<br>MCP 字段 `resource_pool_type` ↔ 原始 CodeArts 代码检查 API 同名字段 `resource_pool_type`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>资源池类型，用于选择构建、检查或部署使用的执行资源池。可选值：`default`、`custom`。 |
+| `body` | 否 | `object` | {} | 字段对应：<br>MCP 字段 `body` ↔ 原始 CodeArts 代码检查 API 同名字段 `body`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>请求体或正文内容。复杂接口会把多个业务字段放在 body 中提交。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "resource_pool_id": {
+      "$ref": "#/properties/task_id"
+    },
+    "resource_pool_type": {
+      "type": "string",
+      "enum": [
+        "default",
+        "custom"
+      ]
+    },
+    "body": {
+      "type": "object",
+      "additionalProperties": {},
+      "default": {}
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "task_id"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

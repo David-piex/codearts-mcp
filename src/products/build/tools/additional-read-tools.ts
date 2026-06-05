@@ -2,6 +2,8 @@ import { Buffer } from "node:buffer";
 import { type ToolResult } from "../../../contracts/tool-result.js";
 import {
   buildDownloadBuildLogV4Input,
+  buildDownloadKeystoreV2Input,
+  buildDownloadKeystoreV3Input,
   buildDownloadFullLogInput,
   buildDownloadTaskLogInput,
   buildDownloadTaskLogV4Input,
@@ -174,6 +176,28 @@ type Client = {
     body: Uint8Array;
     content_type?: string;
     file_name?: string;
+  }>;
+  downloadKeystoreV2: (input: {
+    name: string;
+    domain_id: string;
+    id: string;
+  }) => Promise<{
+    name: string;
+    domain_id: string;
+    id: string;
+    body: Uint8Array;
+    content_type?: string;
+    file_name?: string;
+  }>;
+  downloadKeystoreV3: (input: {
+    file_name: string;
+    domain_id: string;
+  }) => Promise<{
+    file_name: string;
+    domain_id: string;
+    body: Uint8Array;
+    content_type?: string;
+    file_name_from_header?: string;
   }>;
   getTemplate: (input: { uuid: string }) => Promise<{
     uuid: string;
@@ -446,6 +470,43 @@ export function createBuildDownloadTaskLogV4Handler(client: Client) {
       recordId: response.record_id,
       taskName: response.task_name,
       logLevel: response.log_level
+    });
+
+    return itemResponse(result);
+  };
+}
+
+export function createBuildDownloadKeystoreV2Handler(client: Client) {
+  return async (input: unknown) => {
+    const parsed = buildDownloadKeystoreV2Input.parse(input);
+    const response = await client.downloadKeystoreV2(parsed);
+    const result = mapBuildRecordItem("Downloaded Build v2 keystore file", response.id, "keystore", {
+      name: response.name,
+      domainId: response.domain_id,
+      fileName: response.file_name,
+      contentType: response.content_type,
+      sizeBytes: response.body.byteLength,
+      contentBase64: Buffer.from(response.body).toString("base64")
+    }, {
+      keystoreId: response.id
+    });
+
+    return itemResponse(result);
+  };
+}
+
+export function createBuildDownloadKeystoreV3Handler(client: Client) {
+  return async (input: unknown) => {
+    const parsed = buildDownloadKeystoreV3Input.parse(input);
+    const response = await client.downloadKeystoreV3(parsed);
+    const result = mapBuildRecordItem("Downloaded Build v3 keystore file", response.file_name, "keystore", {
+      domainId: response.domain_id,
+      fileName: response.file_name_from_header ?? response.file_name,
+      contentType: response.content_type,
+      sizeBytes: response.body.byteLength,
+      contentBase64: Buffer.from(response.body).toString("base64")
+    }, {
+      fileName: response.file_name
     });
 
     return itemResponse(result);

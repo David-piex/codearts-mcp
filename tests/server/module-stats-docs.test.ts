@@ -65,9 +65,9 @@ describe("module stats doc rendering", () => {
 
     expect(markdown).toContain("| Module | Read | Write | Live | Key Gaps |");
     expect(markdown).toContain("| Deploy | 57 | 17 | Partial |");
-    expect(markdown).toContain("| Build | 90 | 16 | Validated |");
-    expect(markdown).toContain("| TestPlan | 250 | 35 | Partial |");
-    expect(markdown).toContain("| Check | 82 | 10 | Partial |");
+    expect(markdown).toContain("| Build | 96 | 37 | Validated |");
+    expect(markdown).toContain("| TestPlan | 253 | 41 | Partial |");
+    expect(markdown).toContain("| Check | 82 | 14 | Partial |");
   });
 
   it("renders API reference scale tables from current module stats", () => {

@@ -212,6 +212,8 @@ describe("createBuildClient detail paths", () => {
     await client.downloadTaskLog({ record_id: "record-1" });
     await client.downloadBuildLogV4({ record_id: "record-1", log_level: "DEBUG" });
     await client.downloadTaskLogV4({ record_id: "record-1", task_name: "stage1", log_level: "INFO" });
+    await client.downloadKeystoreV2({ name: "android.jks", domain_id: "domain-1", id: "ks-1" });
+    await client.downloadKeystoreV3({ file_name: "android.jks", domain_id: "domain-1" });
     await client.getTemplate({ uuid: "tpl-1" });
     await client.getYamlTemplate({ job_id: "job-1" });
     await client.listRecommendedOfficialTemplates({ body: { keyword: "node" } });
@@ -236,6 +238,8 @@ describe("createBuildClient detail paths", () => {
       "/v1/log/record-1/task-log",
       "/v4/record-1/download-log?log_level=DEBUG",
       "/v4/record-1/task-log?task_name=stage1&log_level=INFO",
+      "/v2/keystore/download?name=android.jks&domain_id=domain-1&id=ks-1",
+      "/v3/keystore?file_name=android.jks&domain_id=domain-1",
       "/v1/template/tpl-1/custom",
       "/v1/template/job-1/default-template",
       "/v2/keystore/list?page=1&page_size=10",

@@ -1,5 +1,6 @@
 import { createReadThroughCache } from "../../core/cache/read-through-cache.js";
 import { DEFAULT_READ_CACHE_TTLS } from "../../core/cache/read-cache-ttl.js";
+import { Buffer } from "node:buffer";
 import type { ReturnTypeCreateHttpClient } from "../types.js";
 import { createOfficialApiRequester, type OfficialApiRequestInput, type OfficialApiRequestResult } from "../official-api.js";
 import { normalizeProviderError } from "../../core/errors/app-error.js";
@@ -563,6 +564,28 @@ export type BuildClient = {
     templates: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  downloadKeystoreV2: (input: {
+    name: string;
+    domain_id: string;
+    id: string;
+  }) => Promise<{
+    name: string;
+    domain_id: string;
+    id: string;
+    body: Uint8Array;
+    content_type?: string;
+    file_name?: string;
+  }>;
+  downloadKeystoreV3: (input: {
+    file_name: string;
+    domain_id: string;
+  }) => Promise<{
+    file_name: string;
+    domain_id: string;
+    body: Uint8Array;
+    content_type?: string;
+    file_name_from_header?: string;
+  }>;
   listKeystoreFiles: (input: {
     query?: Record<string, string | number | boolean>;
   }) => Promise<{
@@ -777,6 +800,228 @@ export type BuildClient = {
     job_id: string;
     favorite?: boolean;
     status?: string;
+  }>;
+  deleteTemplate: (input: { uuid: string }) => Promise<{
+    uuid: string;
+    status?: string;
+  }>;
+  saveTemplateUsedInfo: (input: {
+    job_id: string;
+    template_id: string;
+  }) => Promise<{
+    job_id: string;
+    template_id: string;
+    status?: string;
+    result?: string;
+  }>;
+  followCustomTemplate: (input: { uuid: string }) => Promise<{
+    uuid: string;
+    favorite?: boolean;
+    status?: string;
+  }>;
+  unfollowCustomTemplate: (input: { uuid: string }) => Promise<{
+    uuid: string;
+    favorite?: boolean;
+    status?: string;
+  }>;
+  followOfficialTemplate: (input: { uuid: string }) => Promise<{
+    uuid: string;
+    favorite?: boolean;
+    status?: string;
+  }>;
+  unfollowOfficialTemplate: (input: { uuid: string }) => Promise<{
+    uuid: string;
+    favorite?: boolean;
+    status?: string;
+  }>;
+  deleteKeystore: (input: { keystore_id: string }) => Promise<{
+    keystore_id: string;
+    status?: string;
+  }>;
+  deleteKeystorePermission: (input: { permission_id: string }) => Promise<{
+    permission_id: string;
+    status?: string;
+  }>;
+  deleteJobV3: (input: { job_id: string }) => Promise<{
+    job_id: string;
+    project_id?: string;
+    status?: string;
+  }>;
+  recoverJobV3: (input: { job_id: string }) => Promise<{
+    job_id: string;
+    status?: string;
+  }>;
+  checkWebhookUrl: (input: {
+    job_id: string;
+    notice_type: string;
+    webhook_url: string;
+  }) => Promise<{
+    job_id: string;
+    notice_type: string;
+    webhook_url: string;
+    status?: string;
+    result?: string;
+  }>;
+  autoExecuteJob: (input: {
+    job_id: string;
+    event_type?: string;
+    ref?: string;
+    after?: string;
+    before?: string;
+    commits?: Array<Record<string, unknown>>;
+    repository?: Record<string, unknown>;
+  }) => Promise<{
+    job_id: string;
+    status?: string;
+    result?: Record<string, unknown>;
+  }>;
+  batchUpdateJobPermissions: (input: {
+    project_id: string;
+    job_ids: string[];
+    project_switch?: boolean;
+    permissions: Array<Record<string, unknown>>;
+  }) => Promise<{
+    project_id: string;
+    job_ids: string[];
+    status?: string;
+  }>;
+  batchDeleteJobs: (input: { job_ids: string[] }) => Promise<{
+    job_ids: string[];
+    project_id?: string;
+    deleted_job_id?: string;
+    status?: string;
+  }>;
+  batchSetAgency: (input: { job_ids: string[]; agency_urn?: string }) => Promise<{
+    job_ids: string[];
+    agency_urn?: string;
+    status?: string;
+  }>;
+  updateJobRolePermission: (input: {
+    job_id: string;
+    role_id: string;
+    permission_name: string;
+    permission_value: boolean;
+  }) => Promise<{
+    job_id: string;
+    role_id: string;
+    permission_name: string;
+    permission_value: boolean;
+    status?: string;
+  }>;
+  moveJobGroup: (input: {
+    project_id: string;
+    group_id: string;
+    jobs: Array<{ job_id: string; job_name: string }>;
+  }) => Promise<{
+    project_id: string;
+    group_id: string;
+    jobs: Array<{ job_id?: string; group_path_id?: string }>;
+    status?: string;
+  }>;
+  deleteJobGroup: (input: {
+    project_id: string;
+    id: string;
+  }) => Promise<{
+    project_id: string;
+    id: string;
+    status?: string;
+    result?: unknown;
+  }>;
+  swapJobGroup: (input: {
+    project_id: string;
+    source_group_id: string;
+    target_group_id: string;
+  }) => Promise<{
+    project_id: string;
+    source_group_id: string;
+    target_group_id: string;
+    status?: string;
+  }>;
+  addKeystorePermission: (input: {
+    keystore_id: string;
+    user_id: string;
+    user_name: string;
+    setting: boolean;
+    delete: boolean;
+    modify: boolean;
+    usage: boolean;
+    can_absent: boolean;
+  }) => Promise<{
+    keystore_id: string;
+    user_id: string;
+    user_name: string;
+    status?: string;
+  }>;
+  createJob: (input: {
+    project_id: string;
+    job_name: string;
+    arch?: string;
+    auto_update_sub_module?: boolean;
+    flavor?: string;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    project_id: string;
+    job_name: string;
+    job_id?: string;
+    status?: string;
+    raw: Record<string, unknown>;
+  }>;
+  copyJob: (input: {
+    project_id: string;
+    copy_job_id: string;
+    job_name: string;
+    arch?: string;
+    auto_update_sub_module?: boolean;
+    flavor?: string;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    project_id: string;
+    copy_job_id: string;
+    job_name: string;
+    job_id?: string;
+    status?: string;
+    raw: Record<string, unknown>;
+  }>;
+  updateJobNotice: (input: {
+    job_id: string;
+    notice_type: string;
+    enabled_event_type_names: string[];
+    send_switch?: string;
+    webhook_url?: string;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    job_id: string;
+    status?: string;
+    raw: Record<string, unknown>;
+  }>;
+  createJobGroup: (input: {
+    project_id: string;
+    name: string;
+    parent_id?: string;
+    id?: string;
+    group_id?: string;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    project_id: string;
+    id?: string;
+    group_id?: string;
+    name: string;
+    parent_id?: string;
+    status?: string;
+    raw: Record<string, unknown>;
+  }>;
+  uploadKeystore: (input: {
+    file_name: string;
+    file_content: Uint8Array;
+    privacy?: boolean;
+    description?: string;
+    content_type?: string;
+  }) => Promise<{
+    file_name: string;
+    privacy?: boolean;
+    description?: string;
+    status?: string;
+    raw: Record<string, unknown>;
   }>;
   updateJobStep: (input: {
     job_id: string;
@@ -2511,6 +2756,38 @@ export function createBuildClient(
         total: readBuildTotal(payload, response, templates.length)
       };
     },
+    async downloadKeystoreV2(input) {
+      const query = new URLSearchParams({
+        name: input.name,
+        domain_id: input.domain_id,
+        id: input.id
+      });
+      const response = await _http.getBinary(`/v2/keystore/download?${query.toString()}`);
+
+      return {
+        name: input.name,
+        domain_id: input.domain_id,
+        id: input.id,
+        body: response.body,
+        content_type: response.contentType,
+        file_name: response.fileName
+      };
+    },
+    async downloadKeystoreV3(input) {
+      const query = new URLSearchParams({
+        file_name: input.file_name,
+        domain_id: input.domain_id
+      });
+      const response = await _http.getBinary(`/v3/keystore?${query.toString()}`);
+
+      return {
+        file_name: input.file_name,
+        domain_id: input.domain_id,
+        body: response.body,
+        content_type: response.contentType,
+        file_name_from_header: response.fileName
+      };
+    },
     async listKeystoreFiles(input) {
       const response = await _http.get(`/v2/keystore/list${buildOptionalQuerySuffix(input.query)}`);
       const raw = readBuildPayloadValue(response);
@@ -3304,6 +3581,472 @@ export function createBuildClient(
         job_id: input.job_id,
         favorite: response.result?.favorite,
         status: response.status
+      };
+    },
+    async deleteTemplate(input) {
+      const response = unwrapBuildPayload((await _http.delete(
+        `/v1/template/${encodeURIComponent(input.uuid)}/delete`
+      )) as {
+        status?: string;
+      });
+
+      return {
+        uuid: input.uuid,
+        status: response.status
+      };
+    },
+    async saveTemplateUsedInfo(input) {
+      const response = unwrapBuildPayload((await _http.post("/v1/template/used-info", {
+        job_id: input.job_id,
+        template_id: input.template_id
+      })) as {
+        status?: string;
+        result?: string;
+      });
+
+      return {
+        job_id: input.job_id,
+        template_id: input.template_id,
+        status: response.status,
+        result: response.result
+      };
+    },
+    async followCustomTemplate(input) {
+      const response = unwrapBuildPayload((await _http.post(
+        `/v1/template/custom/${encodeURIComponent(input.uuid)}/follow`
+      )) as {
+        status?: string;
+        result?: {
+          favorite?: boolean;
+        };
+      });
+
+      return {
+        uuid: input.uuid,
+        favorite: response.result?.favorite,
+        status: response.status
+      };
+    },
+    async unfollowCustomTemplate(input) {
+      const response = unwrapBuildPayload((await _http.post(
+        `/v1/template/custom/${encodeURIComponent(input.uuid)}/unfollow`
+      )) as {
+        status?: string;
+        result?: {
+          favorite?: boolean;
+        };
+      });
+
+      return {
+        uuid: input.uuid,
+        favorite: response.result?.favorite,
+        status: response.status
+      };
+    },
+    async followOfficialTemplate(input) {
+      const response = unwrapBuildPayload((await _http.post(
+        `/v1/template/official/${encodeURIComponent(input.uuid)}/follow`
+      )) as {
+        status?: string;
+        result?: {
+          favorite?: boolean;
+        };
+      });
+
+      return {
+        uuid: input.uuid,
+        favorite: response.result?.favorite,
+        status: response.status
+      };
+    },
+    async unfollowOfficialTemplate(input) {
+      const response = unwrapBuildPayload((await _http.post(
+        `/v1/template/official/${encodeURIComponent(input.uuid)}/unfollow`
+      )) as {
+        status?: string;
+        result?: {
+          favorite?: boolean;
+        };
+      });
+
+      return {
+        uuid: input.uuid,
+        favorite: response.result?.favorite,
+        status: response.status
+      };
+    },
+    async deleteKeystore(input) {
+      const response = unwrapBuildPayload((await _http.delete(
+        `/v2/keystore/${encodeURIComponent(input.keystore_id)}/delete`
+      )) as {
+        status?: string;
+      });
+
+      return {
+        keystore_id: input.keystore_id,
+        status: response.status
+      };
+    },
+    async deleteKeystorePermission(input) {
+      const response = unwrapBuildPayload((await _http.delete(
+        `/v2/keystore/permission/${encodeURIComponent(input.permission_id)}/delete`
+      )) as {
+        status?: string;
+      });
+
+      return {
+        permission_id: input.permission_id,
+        status: response.status
+      };
+    },
+    async deleteJobV3(input) {
+      const response = unwrapBuildPayload((await _http.post(
+        `/v3/jobs/${encodeURIComponent(input.job_id)}/delete`
+      )) as {
+        status?: string;
+        result?: {
+          job_id?: string;
+          project_id?: string;
+        };
+      });
+
+      return {
+        job_id: response.result?.job_id ?? input.job_id,
+        project_id: response.result?.project_id,
+        status: response.status
+      };
+    },
+    async recoverJobV3(input) {
+      const response = unwrapBuildPayload((await _http.post(
+        `/v3/jobs/${encodeURIComponent(input.job_id)}/recover`
+      )) as {
+        status?: string;
+      });
+
+      return {
+        job_id: input.job_id,
+        status: response.status
+      };
+    },
+    async checkWebhookUrl(input) {
+      const response = unwrapBuildPayload((await _http.post("/v1/job/check/webhook-url", {
+        job_id: input.job_id,
+        notice_type: input.notice_type,
+        webhook_url: input.webhook_url
+      })) as {
+        status?: string;
+        result?: string;
+      });
+
+      return {
+        job_id: input.job_id,
+        notice_type: input.notice_type,
+        webhook_url: input.webhook_url,
+        status: response.status,
+        result: response.result
+      };
+    },
+    async autoExecuteJob(input) {
+      const response = unwrapBuildPayload((await _http.post(
+        `/v1/job/${encodeURIComponent(input.job_id)}/auto-execute`,
+        {
+          ...(input.event_type === undefined ? {} : { event_type: input.event_type }),
+          ...(input.ref === undefined ? {} : { ref: input.ref }),
+          ...(input.after === undefined ? {} : { after: input.after }),
+          ...(input.before === undefined ? {} : { before: input.before }),
+          ...(input.commits === undefined ? {} : { commits: input.commits }),
+          ...(input.repository === undefined ? {} : { repository: input.repository })
+        }
+      )) as {
+        status?: string;
+        result?: Record<string, unknown>;
+      });
+
+      return {
+        job_id: input.job_id,
+        status: response.status,
+        result: response.result
+      };
+    },
+    async batchUpdateJobPermissions(input) {
+      const response = unwrapBuildPayload((await _http.post("/v1/job/permissions/batch", {
+        project_id: input.project_id,
+        job_ids: input.job_ids,
+        ...(input.project_switch === undefined ? {} : { project_switch: input.project_switch }),
+        permissions: input.permissions
+      })) as {
+        status?: string;
+      });
+
+      return {
+        project_id: input.project_id,
+        job_ids: input.job_ids,
+        status: response.status
+      };
+    },
+    async batchDeleteJobs(input) {
+      const response = unwrapBuildPayload((await _http.delete("/v1/job/batch-delete", {
+        job_ids: input.job_ids
+      })) as {
+        status?: string;
+        result?: {
+          project_id?: string;
+          job_id?: string;
+        };
+      });
+
+      return {
+        job_ids: input.job_ids,
+        project_id: response.result?.project_id,
+        deleted_job_id: response.result?.job_id,
+        status: response.status
+      };
+    },
+    async batchSetAgency(input) {
+      const response = unwrapBuildPayload((await _http.post("/v1/job/batch-agency", {
+        job_ids: input.job_ids,
+        ...(input.agency_urn === undefined ? {} : { agency_urn: input.agency_urn })
+      })) as {
+        status?: string;
+      });
+
+      return {
+        job_ids: input.job_ids,
+        agency_urn: input.agency_urn,
+        status: response.status
+      };
+    },
+    async updateJobRolePermission(input) {
+      const response = unwrapBuildPayload((await _http.put("/v1/job/role-permission", {
+        job_id: input.job_id,
+        role_id: input.role_id,
+        permission_name: input.permission_name,
+        permission_value: input.permission_value
+      })) as {
+        status?: string;
+      });
+
+      return {
+        job_id: input.job_id,
+        role_id: input.role_id,
+        permission_name: input.permission_name,
+        permission_value: input.permission_value,
+        status: response.status
+      };
+    },
+    async moveJobGroup(input) {
+      const response = unwrapBuildPayload((await _http.post(
+        `/v1/job/${encodeURIComponent(input.project_id)}/group/move`,
+        {
+          group_id: input.group_id,
+          jobs: input.jobs
+        }
+      )) as {
+        status?: string;
+        result?: Array<{
+          job_id?: string;
+          group_path_id?: string;
+        }>;
+      });
+
+      return {
+        project_id: input.project_id,
+        group_id: input.group_id,
+        jobs: response.result ?? [],
+        status: response.status
+      };
+    },
+    async deleteJobGroup(input) {
+      const query = new URLSearchParams({
+        id: input.id
+      });
+      const response = unwrapBuildPayload((await _http.delete(
+        `/v1/job/${encodeURIComponent(input.project_id)}/group/delete?${query.toString()}`
+      )) as {
+        status?: string;
+        result?: unknown;
+      });
+
+      return {
+        project_id: input.project_id,
+        id: input.id,
+        status: response.status,
+        result: response.result
+      };
+    },
+    async swapJobGroup(input) {
+      const query = new URLSearchParams({
+        source_group_id: input.source_group_id,
+        target_group_id: input.target_group_id
+      });
+      const response = unwrapBuildPayload((await _http.post(
+        `/v1/job/${encodeURIComponent(input.project_id)}/group/swap?${query.toString()}`
+      )) as {
+        status?: string;
+      });
+
+      return {
+        project_id: input.project_id,
+        source_group_id: input.source_group_id,
+        target_group_id: input.target_group_id,
+        status: response.status
+      };
+    },
+    async addKeystorePermission(input) {
+      const response = unwrapBuildPayload((await _http.post("/v2/keystore/permission/add", {
+        keystore_id: input.keystore_id,
+        user_id: input.user_id,
+        user_name: input.user_name,
+        setting: input.setting,
+        delete: input.delete,
+        modify: input.modify,
+        usage: input.usage,
+        can_absent: input.can_absent
+      })) as {
+        status?: string;
+      });
+
+      return {
+        keystore_id: input.keystore_id,
+        user_id: input.user_id,
+        user_name: input.user_name,
+        status: response.status
+      };
+    },
+    async createJob(input) {
+      const payload = {
+        ...input.body,
+        project_id: input.project_id,
+        job_name: input.job_name,
+        ...(input.arch ? { arch: input.arch } : {}),
+        ...(typeof input.auto_update_sub_module === "boolean"
+          ? { auto_update_sub_module: String(input.auto_update_sub_module) }
+          : {}),
+        ...(input.flavor ? { flavor: input.flavor } : {})
+      };
+      const response = await _http.post("/v1/job/create", payload);
+      const raw = readBuildRawRecord(readBuildPayloadValue(response));
+      const payloadRecord = readBuildPayload(response);
+
+      return {
+        project_id: input.project_id,
+        job_name: String(payloadRecord.job_name ?? payloadRecord.name ?? input.job_name),
+        job_id:
+          typeof payloadRecord.job_id === "string"
+            ? payloadRecord.job_id
+            : typeof payloadRecord.id === "string"
+              ? payloadRecord.id
+              : undefined,
+        status: typeof payloadRecord.status === "string" ? payloadRecord.status : undefined,
+        raw
+      };
+    },
+    async copyJob(input) {
+      const payload = {
+        ...input.body,
+        project_id: input.project_id,
+        copy_job_id: input.copy_job_id,
+        job_name: input.job_name,
+        ...(input.arch ? { arch: input.arch } : {}),
+        ...(typeof input.auto_update_sub_module === "boolean"
+          ? { auto_update_sub_module: String(input.auto_update_sub_module) }
+          : {}),
+        ...(input.flavor ? { flavor: input.flavor } : {})
+      };
+      const response = await _http.post("/v1/job/copy", payload);
+      const raw = readBuildRawRecord(readBuildPayloadValue(response));
+      const payloadRecord = readBuildPayload(response);
+
+      return {
+        project_id: input.project_id,
+        copy_job_id: input.copy_job_id,
+        job_name: String(payloadRecord.job_name ?? payloadRecord.name ?? input.job_name),
+        job_id:
+          typeof payloadRecord.job_id === "string"
+            ? payloadRecord.job_id
+            : typeof payloadRecord.id === "string"
+              ? payloadRecord.id
+              : undefined,
+        status: typeof payloadRecord.status === "string" ? payloadRecord.status : undefined,
+        raw
+      };
+    },
+    async updateJobNotice(input) {
+      const payload = {
+        ...input.body,
+        notice_type: input.notice_type,
+        enabled_event_type_names: input.enabled_event_type_names,
+        ...(input.send_switch ? { send_switch: input.send_switch } : {}),
+        ...(input.webhook_url ? { webhook_url: input.webhook_url } : {})
+      };
+      const response = await _http.put(`/v1/job/${encodeURIComponent(input.job_id)}/notice`, payload);
+      const payloadRecord = readBuildPayload(response);
+
+      return {
+        job_id: input.job_id,
+        status: typeof payloadRecord.status === "string" ? payloadRecord.status : undefined,
+        raw: readBuildRawRecord(readBuildPayloadValue(response))
+      };
+    },
+    async createJobGroup(input) {
+      const payload = {
+        ...input.body,
+        project_id: input.project_id,
+        name: input.name,
+        ...(input.parent_id ? { parent_id: input.parent_id } : {}),
+        ...(input.id ? { id: input.id } : {}),
+        ...(input.group_id ? { group_id: input.group_id } : {})
+      };
+      const response = await _http.post(
+        `/v1/job/${encodeURIComponent(input.project_id)}/group/create`,
+        payload
+      );
+      const rawValue = readBuildPayloadValue(response);
+      const first =
+        Array.isArray((rawValue as { result?: unknown }).result)
+          ? ((rawValue as { result: Array<Record<string, unknown>> }).result[0] ?? {})
+          : readBuildPayload(response);
+      const record = readBuildEnvelope(first) ?? {};
+
+      return {
+        project_id: String(record.project_id ?? input.project_id),
+        id: typeof record.id === "string" ? record.id : undefined,
+        group_id: typeof record.group_id === "string" ? record.group_id : undefined,
+        name: String(record.name ?? input.name),
+        parent_id:
+          typeof record.parent_id === "string"
+            ? record.parent_id
+            : input.parent_id,
+        status:
+          typeof (readBuildEnvelope(response) ?? {}).status === "string"
+            ? String((readBuildEnvelope(response) ?? {}).status)
+            : undefined,
+        raw: readBuildRawRecord(rawValue)
+      };
+    },
+    async uploadKeystore(input) {
+      const form = new FormData();
+      form.append(
+        "file",
+        new Blob([Buffer.from(input.file_content)], {
+          type: input.content_type ?? "application/octet-stream"
+        }),
+        input.file_name
+      );
+      form.append("privacy", String(input.privacy ?? true));
+      if (input.description) {
+        form.append("description", input.description);
+      }
+
+      const response = await _http.postMultipart("/v2/keystore/upload", form);
+      const payloadRecord = readBuildPayload(response);
+
+      return {
+        file_name: input.file_name,
+        privacy: input.privacy ?? true,
+        description: input.description,
+        status: typeof payloadRecord.status === "string" ? payloadRecord.status : undefined,
+        raw: readBuildRawRecord(readBuildPayloadValue(response))
       };
     },
     async updateJobStep(input) {

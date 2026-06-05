@@ -344,6 +344,17 @@ export const buildListRecommendedOfficialTemplatesInput = z.object({
   body: z.record(z.string(), z.unknown()).default({})
 });
 
+export const buildDownloadKeystoreV2Input = z.object({
+  name: z.string().min(1),
+  domain_id: idSchema,
+  id: idSchema
+});
+
+export const buildDownloadKeystoreV3Input = z.object({
+  file_name: z.string().min(1),
+  domain_id: idSchema
+});
+
 export const buildListKeystoreFilesInput = z.object({
   query: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).default({})
 });
@@ -428,6 +439,208 @@ export const buildFollowJobInput = z.object({
 
 export const buildUnfollowJobInput = z.object({
   job_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const buildDeleteTemplateInput = z.object({
+  uuid: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const buildSaveTemplateUsedInfoInput = z.object({
+  job_id: idSchema,
+  template_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const buildFollowCustomTemplateInput = z.object({
+  uuid: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const buildUnfollowCustomTemplateInput = z.object({
+  uuid: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const buildFollowOfficialTemplateInput = z.object({
+  uuid: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const buildUnfollowOfficialTemplateInput = z.object({
+  uuid: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const buildDeleteKeystoreInput = z.object({
+  keystore_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const buildDeleteKeystorePermissionInput = z.object({
+  permission_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const buildDeleteJobV3Input = z.object({
+  job_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const buildRecoverJobV3Input = z.object({
+  job_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const buildCheckWebhookUrlInput = z.object({
+  job_id: idSchema,
+  notice_type: z.enum(["MESSAGE", "MAIL", "WECOM", "DING_TALK", "FEISHU"]),
+  webhook_url: z.string().min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const buildAutoExecuteJobInput = z.object({
+  job_id: idSchema,
+  event_type: z.string().min(1).optional(),
+  ref: z.string().min(1).optional(),
+  after: z.string().min(1).optional(),
+  before: z.string().min(1).optional(),
+  commits: z.array(z.record(z.string(), z.unknown())).optional(),
+  repository: z.record(z.string(), z.unknown()).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const buildJobPermissionItemInput = z.object({
+  id: z.number().int().optional(),
+  role_id: z.number().int(),
+  devuc_role_id: z.string().min(1).optional(),
+  role_name: z.string().min(1).optional(),
+  is_modify: z.boolean().optional(),
+  is_delete: z.boolean().optional(),
+  is_view: z.boolean().optional(),
+  is_execute: z.boolean().optional(),
+  is_copy: z.boolean().optional(),
+  is_forbidden: z.boolean().optional(),
+  is_manager: z.boolean().optional(),
+  count: z.number().int().optional()
+});
+
+export const buildBatchUpdateJobPermissionsInput = z.object({
+  project_id: idSchema,
+  job_ids: z.array(idSchema).min(1),
+  project_switch: z.boolean().optional(),
+  permissions: z.array(buildJobPermissionItemInput).min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const buildBatchDeleteJobsInput = z.object({
+  job_ids: z.array(idSchema).min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const buildBatchSetAgencyInput = z.object({
+  job_ids: z.array(idSchema).min(1),
+  agency_urn: z.string().min(1).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const buildUpdateJobRolePermissionInput = z.object({
+  job_id: idSchema,
+  role_id: z.string().min(1),
+  permission_name: z.enum([
+    "is_modify",
+    "is_delete",
+    "is_view",
+    "is_execute",
+    "is_copy",
+    "is_forbidden",
+    "is_manager"
+  ]),
+  permission_value: z.boolean().default(true),
+  dry_run: z.boolean().default(true)
+});
+
+export const buildMoveJobGroupInput = z.object({
+  project_id: idSchema,
+  group_id: idSchema,
+  jobs: z.array(z.object({
+    job_id: idSchema,
+    job_name: z.string().min(1)
+  })).min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const buildDeleteJobGroupInput = z.object({
+  project_id: idSchema,
+  id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const buildSwapJobGroupInput = z.object({
+  project_id: idSchema,
+  source_group_id: idSchema,
+  target_group_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const buildAddKeystorePermissionInput = z.object({
+  keystore_id: idSchema,
+  user_id: idSchema,
+  user_name: z.string().min(1),
+  setting: z.boolean().default(true),
+  delete: z.boolean().default(false),
+  modify: z.boolean().default(true),
+  usage: z.boolean().default(true),
+  can_absent: z.boolean().default(true),
+  dry_run: z.boolean().default(true)
+});
+
+export const buildCreateJobInput = z.object({
+  project_id: idSchema,
+  job_name: z.string().min(1),
+  arch: z.string().min(1).optional(),
+  auto_update_sub_module: z.boolean().optional(),
+  flavor: z.string().min(1).optional(),
+  body: z.record(z.string(), z.unknown()).default({}),
+  dry_run: z.boolean().default(true)
+});
+
+export const buildCopyJobInput = z.object({
+  project_id: idSchema,
+  copy_job_id: idSchema,
+  job_name: z.string().min(1),
+  arch: z.string().min(1).optional(),
+  auto_update_sub_module: z.boolean().optional(),
+  flavor: z.string().min(1).optional(),
+  body: z.record(z.string(), z.unknown()).default({}),
+  dry_run: z.boolean().default(true)
+});
+
+export const buildUpdateJobNoticeInput = z.object({
+  job_id: idSchema,
+  notice_type: z.enum(["MESSAGE", "MAIL", "WECOM", "DING_TALK", "FEISHU"]),
+  enabled_event_type_names: z.array(z.string().min(1)).min(1),
+  send_switch: z.string().min(1).optional(),
+  webhook_url: z.string().min(1).optional(),
+  body: z.record(z.string(), z.unknown()).default({}),
+  dry_run: z.boolean().default(true)
+});
+
+export const buildCreateJobGroupInput = z.object({
+  project_id: idSchema,
+  name: z.string().min(1).max(128),
+  parent_id: idSchema.optional(),
+  id: idSchema.optional(),
+  group_id: idSchema.optional(),
+  body: z.record(z.string(), z.unknown()).default({}),
+  dry_run: z.boolean().default(true)
+});
+
+export const buildUploadKeystoreInput = z.object({
+  file_path: z.string().min(1),
+  privacy: z.boolean().default(true),
+  description: z.string().optional(),
   dry_run: z.boolean().default(true)
 });
 

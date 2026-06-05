@@ -2,14 +2,30 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { officialApiRequestInput } from "../products/official-api.js";
 import { createBuildClient } from "../products/build/client.js";
 import {
+  buildAddKeystorePermissionInput,
+  buildAutoExecuteJobInput,
+  buildBatchDeleteJobsInput,
+  buildBatchSetAgencyInput,
+  buildBatchUpdateJobPermissionsInput,
   buildAppendReleaseUploadStepInput,
   buildAppendJobStepInput,
+  buildCheckWebhookUrlInput,
   buildClearRecyclingJobsInput,
+  buildCopyJobInput,
   buildConfigureReleaseUploadStepInput,
+  buildCreateJobGroupInput,
+  buildCreateJobInput,
+  buildDeleteJobGroupInput,
   buildDeleteJobInput,
+  buildDeleteJobV3Input,
+  buildDeleteKeystoreInput,
+  buildDeleteKeystorePermissionInput,
   buildDeleteRecyclingJobsInput,
+  buildDeleteTemplateInput,
   buildPrepareDeployableNodeAppInput,
   buildDownloadBuildLogV4Input,
+  buildDownloadKeystoreV2Input,
+  buildDownloadKeystoreV3Input,
   buildGetErrorLogInput,
   buildGetFullStagesInput,
   buildGetHistoryDetailsInput,
@@ -98,14 +114,25 @@ import {
   buildListSystemParametersInput,
   buildListTemplatesInput,
   buildListUsableKeystoreNamesInput,
+  buildFollowCustomTemplateInput,
   buildFollowJobInput,
+  buildFollowOfficialTemplateInput,
+  buildRecoverJobV3Input,
   buildRestoreRecyclingJobsInput,
   buildSetKeepTimeInput,
   buildShowDomainsStatusesInput,
   buildShowPackageSpecCountdownInput,
   buildRunJobInput,
   buildStopJobInput,
+  buildUnfollowCustomTemplateInput,
   buildUnfollowJobInput,
+  buildUnfollowOfficialTemplateInput,
+  buildUpdateJobNoticeInput,
+  buildUpdateJobRolePermissionInput,
+  buildUploadKeystoreInput,
+  buildMoveJobGroupInput,
+  buildSaveTemplateUsedInfoInput,
+  buildSwapJobGroupInput,
   buildUpdateJobStepInput
 } from "../products/build/schemas.js";
 import { createBuildGetErrorLogHandler } from "../products/build/tools/get-error-log.js";
@@ -129,6 +156,8 @@ import { createBuildGetJobNoticeHandler } from "../products/build/tools/get-job-
 import { createBuildGetJobRunningStatusHandler } from "../products/build/tools/get-job-running-status.js";
 import {
   createBuildDownloadBuildLogV4Handler,
+  createBuildDownloadKeystoreV2Handler,
+  createBuildDownloadKeystoreV3Handler,
   createBuildDownloadFullLogHandler,
   createBuildDownloadTaskLogHandler,
   createBuildDownloadTaskLogV4Handler,
@@ -209,13 +238,38 @@ import { createBuildRunJobHandler } from "../products/build/tools/run-job.js";
 import { createBuildStopJobHandler } from "../products/build/tools/stop-job.js";
 import { createBuildUpdateJobStepHandler } from "../products/build/tools/update-job-step.js";
 import {
+  createBuildAddKeystorePermissionHandler,
+  createBuildAutoExecuteJobHandler,
+  createBuildBatchDeleteJobsHandler,
+  createBuildBatchSetAgencyHandler,
+  createBuildBatchUpdateJobPermissionsHandler,
+  createBuildCheckWebhookUrlHandler,
   createBuildClearRecyclingJobsHandler,
+  createBuildCopyJobHandler,
+  createBuildCreateJobGroupHandler,
+  createBuildCreateJobHandler,
+  createBuildDeleteJobGroupHandler,
   createBuildDeleteJobHandler,
+  createBuildDeleteJobV3Handler,
+  createBuildDeleteKeystoreHandler,
+  createBuildDeleteKeystorePermissionHandler,
   createBuildDeleteRecyclingJobsHandler,
+  createBuildDeleteTemplateHandler,
+  createBuildFollowCustomTemplateHandler,
   createBuildFollowJobHandler,
+  createBuildFollowOfficialTemplateHandler,
+  createBuildMoveJobGroupHandler,
+  createBuildRecoverJobV3Handler,
   createBuildRestoreRecyclingJobsHandler,
+  createBuildSaveTemplateUsedInfoHandler,
   createBuildSetKeepTimeHandler,
-  createBuildUnfollowJobHandler
+  createBuildSwapJobGroupHandler,
+  createBuildUnfollowCustomTemplateHandler,
+  createBuildUnfollowJobHandler,
+  createBuildUnfollowOfficialTemplateHandler,
+  createBuildUpdateJobNoticeHandler,
+  createBuildUploadKeystoreHandler,
+  createBuildUpdateJobRolePermissionHandler
 } from "../products/build/tools/additional-mutation-tools.js";
 import { createOfficialApiRequestHandler } from "../products/shared-tools/request-official-api.js";
 import { defineProductTool, registerDefinedTool } from "./product-tool-registry.js";
@@ -670,6 +724,18 @@ const buildToolDefinitions = {
     selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListRecommendedOfficialTemplatesHandler>[0] }) => clients.buildClient,
     createProductHandler: createBuildListRecommendedOfficialTemplatesHandler
   }),
+  "build_download_keystore_v2": defineProductTool({
+    description: "Download CodeArts Build v2 keystore file",
+    inputSchema: buildDownloadKeystoreV2Input,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildDownloadKeystoreV2Handler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildDownloadKeystoreV2Handler
+  }),
+  "build_download_keystore_v3": defineProductTool({
+    description: "Download CodeArts Build v3 keystore file",
+    inputSchema: buildDownloadKeystoreV3Input,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildDownloadKeystoreV3Handler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildDownloadKeystoreV3Handler
+  }),
   "build_list_keystore_files": defineProductTool({
     description: "List CodeArts Build keystore file metadata",
     inputSchema: buildListKeystoreFilesInput,
@@ -777,6 +843,156 @@ const buildToolDefinitions = {
     inputSchema: buildUnfollowJobInput,
     selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildUnfollowJobHandler>[0] }) => clients.buildClient,
     createProductHandler: createBuildUnfollowJobHandler
+  }),
+  "build_delete_template": defineProductTool({
+    description: "Delete CodeArts Build template",
+    inputSchema: buildDeleteTemplateInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildDeleteTemplateHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildDeleteTemplateHandler
+  }),
+  "build_save_template_used_info": defineProductTool({
+    description: "Save CodeArts Build template usage record",
+    inputSchema: buildSaveTemplateUsedInfoInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildSaveTemplateUsedInfoHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildSaveTemplateUsedInfoHandler
+  }),
+  "build_follow_custom_template": defineProductTool({
+    description: "Follow CodeArts Build custom template",
+    inputSchema: buildFollowCustomTemplateInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildFollowCustomTemplateHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildFollowCustomTemplateHandler
+  }),
+  "build_unfollow_custom_template": defineProductTool({
+    description: "Unfollow CodeArts Build custom template",
+    inputSchema: buildUnfollowCustomTemplateInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildUnfollowCustomTemplateHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildUnfollowCustomTemplateHandler
+  }),
+  "build_follow_official_template": defineProductTool({
+    description: "Follow CodeArts Build official template",
+    inputSchema: buildFollowOfficialTemplateInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildFollowOfficialTemplateHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildFollowOfficialTemplateHandler
+  }),
+  "build_unfollow_official_template": defineProductTool({
+    description: "Unfollow CodeArts Build official template",
+    inputSchema: buildUnfollowOfficialTemplateInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildUnfollowOfficialTemplateHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildUnfollowOfficialTemplateHandler
+  }),
+  "build_delete_keystore": defineProductTool({
+    description: "Delete CodeArts Build keystore",
+    inputSchema: buildDeleteKeystoreInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildDeleteKeystoreHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildDeleteKeystoreHandler
+  }),
+  "build_delete_keystore_permission": defineProductTool({
+    description: "Delete CodeArts Build keystore permission",
+    inputSchema: buildDeleteKeystorePermissionInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildDeleteKeystorePermissionHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildDeleteKeystorePermissionHandler
+  }),
+  "build_delete_job_v3": defineProductTool({
+    description: "Delete CodeArts Build v3 job",
+    inputSchema: buildDeleteJobV3Input,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildDeleteJobV3Handler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildDeleteJobV3Handler
+  }),
+  "build_recover_job_v3": defineProductTool({
+    description: "Recover CodeArts Build v3 job",
+    inputSchema: buildRecoverJobV3Input,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildRecoverJobV3Handler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildRecoverJobV3Handler
+  }),
+  "build_check_webhook_url": defineProductTool({
+    description: "Check CodeArts Build webhook URL parameters",
+    inputSchema: buildCheckWebhookUrlInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildCheckWebhookUrlHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildCheckWebhookUrlHandler
+  }),
+  "build_auto_execute_job": defineProductTool({
+    description: "Auto-execute CodeArts Build job from source update event payload",
+    inputSchema: buildAutoExecuteJobInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildAutoExecuteJobHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildAutoExecuteJobHandler
+  }),
+  "build_batch_update_job_permissions": defineProductTool({
+    description: "Batch update CodeArts Build job permissions",
+    inputSchema: buildBatchUpdateJobPermissionsInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildBatchUpdateJobPermissionsHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildBatchUpdateJobPermissionsHandler
+  }),
+  "build_batch_delete_jobs": defineProductTool({
+    description: "Batch delete CodeArts Build jobs",
+    inputSchema: buildBatchDeleteJobsInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildBatchDeleteJobsHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildBatchDeleteJobsHandler
+  }),
+  "build_batch_set_agency": defineProductTool({
+    description: "Batch set CodeArts Build job agency",
+    inputSchema: buildBatchSetAgencyInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildBatchSetAgencyHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildBatchSetAgencyHandler
+  }),
+  "build_update_job_role_permission": defineProductTool({
+    description: "Update CodeArts Build job role permission",
+    inputSchema: buildUpdateJobRolePermissionInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildUpdateJobRolePermissionHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildUpdateJobRolePermissionHandler
+  }),
+  "build_move_job_group": defineProductTool({
+    description: "Move CodeArts Build jobs to a target group",
+    inputSchema: buildMoveJobGroupInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildMoveJobGroupHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildMoveJobGroupHandler
+  }),
+  "build_create_job": defineProductTool({
+    description: "Create CodeArts Build job",
+    inputSchema: buildCreateJobInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildCreateJobHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildCreateJobHandler
+  }),
+  "build_copy_job": defineProductTool({
+    description: "Copy CodeArts Build job",
+    inputSchema: buildCopyJobInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildCopyJobHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildCopyJobHandler
+  }),
+  "build_update_job_notice": defineProductTool({
+    description: "Update CodeArts Build job notice",
+    inputSchema: buildUpdateJobNoticeInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildUpdateJobNoticeHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildUpdateJobNoticeHandler
+  }),
+  "build_create_job_group": defineProductTool({
+    description: "Create CodeArts Build job group",
+    inputSchema: buildCreateJobGroupInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildCreateJobGroupHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildCreateJobGroupHandler
+  }),
+  "build_upload_keystore": defineProductTool({
+    description: "Upload CodeArts Build keystore file",
+    inputSchema: buildUploadKeystoreInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildUploadKeystoreHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildUploadKeystoreHandler
+  }),
+  "build_delete_job_group": defineProductTool({
+    description: "Delete CodeArts Build job group",
+    inputSchema: buildDeleteJobGroupInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildDeleteJobGroupHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildDeleteJobGroupHandler
+  }),
+  "build_swap_job_group": defineProductTool({
+    description: "Swap CodeArts Build job group order",
+    inputSchema: buildSwapJobGroupInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildSwapJobGroupHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildSwapJobGroupHandler
+  }),
+  "build_add_keystore_permission": defineProductTool({
+    description: "Add CodeArts Build keystore permission",
+    inputSchema: buildAddKeystorePermissionInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildAddKeystorePermissionHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildAddKeystorePermissionHandler
   }),
   "build_append_job_step": defineProductTool({
     description: "Append a new step to a CodeArts Build job",

@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   createBuildGetBuildDetailsHandler,
+  createBuildDownloadKeystoreV2Handler,
+  createBuildDownloadKeystoreV3Handler,
   createBuildGetJobRunningStatusV3Handler,
   createBuildGetJobInfoHandler,
   createBuildGetJobOutputHandler,
@@ -119,6 +121,49 @@ describe("Build additional read tool handlers", () => {
       id: "ks1",
       name: "signing-key",
       file: { id: "ks1", name: "signing-key" }
+    });
+  });
+
+  it("maps keystore downloads as item results with binary metadata", async () => {
+    const downloadV2 = await createBuildDownloadKeystoreV2Handler({
+      downloadKeystoreV2: async () => ({
+        name: "android.jks",
+        domain_id: "domain-1",
+        id: "ks-1",
+        body: new Uint8Array([1, 2, 3]),
+        content_type: "application/octet-stream",
+        file_name: "android.jks"
+      })
+    } as never)({ name: "android.jks", domain_id: "domain-1", id: "ks-1" });
+
+    const downloadV3 = await createBuildDownloadKeystoreV3Handler({
+      downloadKeystoreV3: async () => ({
+        file_name: "android.jks",
+        domain_id: "domain-1",
+        body: new Uint8Array([4, 5]),
+        content_type: "application/octet-stream",
+        file_name_from_header: "android.jks"
+      })
+    } as never)({ file_name: "android.jks", domain_id: "domain-1" });
+
+    expect(downloadV2.structuredContent.item).toMatchObject({
+      id: "ks-1",
+      keystore: {
+        name: "android.jks",
+        domainId: "domain-1",
+        fileName: "android.jks",
+        contentType: "application/octet-stream",
+        sizeBytes: 3
+      }
+    });
+    expect(downloadV3.structuredContent.item).toMatchObject({
+      id: "android.jks",
+      keystore: {
+        domainId: "domain-1",
+        fileName: "android.jks",
+        contentType: "application/octet-stream",
+        sizeBytes: 2
+      }
     });
   });
 
