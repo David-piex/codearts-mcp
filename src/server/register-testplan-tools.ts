@@ -9,6 +9,7 @@ import {
   testPlanCheckApiTestTaskNameInput,
   testPlanCheckProjectMemberExistsInput,
   testPlanCheckResourceExistsInput,
+  testPlanCreateDefectAssociationInput,
   testPlanCheckUserDefinedConfigUsedInput,
   testPlanCheckUserInfoInput,
   testPlanCheckUserExistsInput,
@@ -235,6 +236,7 @@ import {
   testPlanListTaskParameterTemplatesInput,
   testPlanListTaskResultsInput,
   testPlanListTasksInput,
+  testPlanCheckTestcaseExistsInput,
   testPlanListTestcaseCommentsInput,
   testPlanListTestcaseDefectStatisticsInput,
   testPlanListTestTypesInput,
@@ -275,13 +277,16 @@ import {
   testPlanSearchApiTestBasicAwInfosInput,
   testPlanSearchFeaturesByCaseInput,
   testPlanSearchFeaturesInput,
+  testPlanSearchTestcaseUrisUsedForAutomationInput,
   testPlanShowAwNameViewInput,
   testPlanShowSensitivePropertyByIdInput,
   testPlanShowTimeOutViewInput,
   testPlanShowVariablesDecryptInput,
   testPlanUpdateAwCataFirstInput,
+  testPlanUpdateDefectAssociationInput,
   testPlanUpdateTimeOutViewInput,
   testPlanStopTaskExecutionInput,
+  testPlanDeleteDefectAssociationInput,
   testPlanUpdateTaskInput
 } from "../products/testplan/schemas.js";
 import { createTestPlanCheckUserExistsHandler } from "../products/testplan/tools/check-user-exists.js";
@@ -293,6 +298,11 @@ import { createTestPlanCheckAlertTemplateNameHandler } from "../products/testpla
 import { createTestPlanCheckAlertUserNameHandler } from "../products/testplan/tools/check-alert-user-name.js";
 import { createTestPlanCheckApiTestTaskNameHandler } from "../products/testplan/tools/check-api-test-task-name.js";
 import { createTestPlanBatchDeleteTasksHandler } from "../products/testplan/tools/batch-delete-tasks.js";
+import {
+  createTestPlanCreateDefectAssociationHandler,
+  createTestPlanDeleteDefectAssociationHandler,
+  createTestPlanUpdateDefectAssociationHandler
+} from "../products/testplan/tools/defect-association.js";
 import { createTestPlanGetApiTestAvailableConfigHandler } from "../products/testplan/tools/get-api-test-available-config.js";
 import { createTestPlanGetApiTestBasicAwV3Handler } from "../products/testplan/tools/get-api-test-basic-aw-v3.js";
 import { createTestPlanGetApiTestBasicAwV4Handler } from "../products/testplan/tools/get-api-test-basic-aw-v4.js";
@@ -545,6 +555,7 @@ import { createTestPlanListTaskDefectsHandler } from "../products/testplan/tools
 import { createTestPlanListTaskParameterTemplatesHandler } from "../products/testplan/tools/list-task-parameter-templates.js";
 import { createTestPlanListTaskResultsHandler } from "../products/testplan/tools/list-task-results.js";
 import { createTestPlanListTasksHandler } from "../products/testplan/tools/list-tasks.js";
+import { createTestPlanCheckTestcaseExistsHandler } from "../products/testplan/tools/check-testcase-exists.js";
 import { createTestPlanListTestTypesHandler } from "../products/testplan/tools/list-test-types.js";
 import { createTestPlanListTestReportDefectsHandler } from "../products/testplan/tools/list-test-report-defects.js";
 import { createTestPlanListTestReportCustomInfosHandler } from "../products/testplan/tools/list-test-report-custom-infos.js";
@@ -582,6 +593,7 @@ import { createTestPlanRunCasesHandler } from "../products/testplan/tools/run-ca
 import { createTestPlanSearchApiTestBasicAwInfosHandler } from "../products/testplan/tools/search-api-test-basic-aw-infos.js";
 import { createTestPlanSearchFeaturesByCaseHandler } from "../products/testplan/tools/search-features-by-case.js";
 import { createTestPlanSearchFeaturesHandler } from "../products/testplan/tools/search-features.js";
+import { createTestPlanSearchTestcaseUrisUsedForAutomationHandler } from "../products/testplan/tools/search-testcase-uris-used-for-automation.js";
 import { createTestPlanStopTaskExecutionHandler } from "../products/testplan/tools/stop-task-execution.js";
 import { createTestPlanUpdateTaskHandler } from "../products/testplan/tools/update-task.js";
 import { createOfficialApiRequestHandler } from "../products/shared-tools/request-official-api.js";
@@ -2027,6 +2039,18 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTestcaseDefectStatisticsHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListTestcaseDefectStatisticsHandler
   }),
+  "testplan_check_testcase_exists": defineProductTool({
+    description: "Check whether CodeArts TestPlan testcase URIs exist",
+    inputSchema: testPlanCheckTestcaseExistsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanCheckTestcaseExistsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanCheckTestcaseExistsHandler
+  }),
+  "testplan_create_defect_association": defineProductTool({
+    description: "Associate a CodeArts TestPlan defect with an iterator",
+    inputSchema: testPlanCreateDefectAssociationInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanCreateDefectAssociationHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanCreateDefectAssociationHandler
+  }),
   "testplan_get_project_data_dashboard": defineProductTool({
     description: "Get CodeArts TestPlan project data dashboard overview",
     inputSchema: testPlanGetProjectDataDashboardInput,
@@ -2279,6 +2303,18 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanStopTaskExecutionHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanStopTaskExecutionHandler
   }),
+  "testplan_delete_defect_association": defineProductTool({
+    description: "Remove a CodeArts TestPlan defect association from an iterator",
+    inputSchema: testPlanDeleteDefectAssociationInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanDeleteDefectAssociationHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanDeleteDefectAssociationHandler
+  }),
+  "testplan_update_defect_association": defineProductTool({
+    description: "Move a CodeArts TestPlan defect association between iterators",
+    inputSchema: testPlanUpdateDefectAssociationInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanUpdateDefectAssociationHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanUpdateDefectAssociationHandler
+  }),
   "testplan_run_cases": defineProductTool({
     description: "Run CodeArts TestPlan cases",
     inputSchema: testPlanRunCasesInput,
@@ -2290,6 +2326,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanSearchApiTestBasicAwInfosInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanSearchApiTestBasicAwInfosHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanSearchApiTestBasicAwInfosHandler
+  }),
+  "testplan_search_testcase_uris_used_for_automation": defineProductTool({
+    description: "Search CodeArts TestPlan testcase URIs used for automation",
+    inputSchema: testPlanSearchTestcaseUrisUsedForAutomationInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanSearchTestcaseUrisUsedForAutomationHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanSearchTestcaseUrisUsedForAutomationHandler
   }),
   "testplan_search_features": defineProductTool({
     description: "Search CodeArts TestPlan feature tree nodes",

@@ -177,6 +177,36 @@ export const testPlanListTestcaseDefectStatisticsInput = z
   })
   .passthrough();
 
+export const testPlanCheckTestcaseExistsInput = z.object({
+  project_uuid: idSchema,
+  case_uris: z.array(z.string().min(1)).min(1),
+  version_uri: z.string().min(1).optional()
+});
+
+const testPlanSearchConditionInput = z.object({
+  field: z.string().min(1).optional(),
+  operator: z.string().min(1).optional(),
+  value: z.unknown().optional()
+}).passthrough();
+
+export const testPlanSearchTestcaseUrisUsedForAutomationInput = pagingSchema.extend({
+  project_uuid: idSchema,
+  keyword: z.string().min(1).optional(),
+  exeplatforms: z.array(z.string().min(1)).optional(),
+  own: z.boolean().optional(),
+  conditions: z.array(testPlanSearchConditionInput).optional(),
+  queryByDisplayCfg: z.boolean().optional(),
+  useOffset: z.boolean().optional(),
+  version_uri: z.string().min(1).optional(),
+  case_uris: z.array(z.string().min(1)).optional(),
+  owner_ids: z.array(z.string().min(1)).optional(),
+  status_codes: z.array(z.string().min(1)).optional(),
+  rank_ids: z.array(z.string().min(1)).optional(),
+  module_ids: z.array(z.string().min(1)).optional(),
+  issue_id: z.string().min(1).optional(),
+  creator_ids: z.array(z.string().min(1)).optional()
+}).passthrough();
+
 export const testPlanGetProjectDataDashboardInput = z
   .object({
     project_id: idSchema,
@@ -227,6 +257,28 @@ export const testPlanListGt3kDefectIteratorsInput = z.object({
 export const testPlanListDefectIteratorsInput = z.object({
   project_id: idSchema,
   defect_id: idSchema
+});
+
+export const testPlanCreateDefectAssociationInput = z.object({
+  project_id: idSchema,
+  defect_id: idSchema,
+  iterator_uri: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanUpdateDefectAssociationInput = z.object({
+  project_id: idSchema,
+  defect_id: idSchema,
+  old_iterator_uri: idSchema,
+  new_iterator_uri: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanDeleteDefectAssociationInput = z.object({
+  project_id: idSchema,
+  defect_id: idSchema,
+  iterator_uri: idSchema,
+  dry_run: z.boolean().default(true)
 });
 
 export const testPlanListTestReportQualityAttributesInput = z.object({

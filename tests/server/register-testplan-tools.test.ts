@@ -138,6 +138,36 @@ describe("registerTestPlanTool", () => {
     }
   });
 
+  it("registers testcase existence and automation URI query tools", () => {
+    const registerTool = vi.fn();
+    const tools = [
+      ["testplan_check_testcase_exists", "Check whether CodeArts TestPlan testcase URIs exist"],
+      ["testplan_search_testcase_uris_used_for_automation", "Search CodeArts TestPlan testcase URIs used for automation"],
+      ["testplan_create_defect_association", "Associate a CodeArts TestPlan defect with an iterator"],
+      ["testplan_update_defect_association", "Move a CodeArts TestPlan defect association between iterators"],
+      ["testplan_delete_defect_association", "Remove a CodeArts TestPlan defect association from an iterator"]
+    ] as const;
+
+    for (const [toolName, description] of tools) {
+      const handled = registerTestPlanTool({
+        toolName,
+        server: { registerTool },
+        mode: "stdio",
+        stdioClient: {} as never
+      });
+
+      expect(handled).toBe(true);
+      expect(registerTool).toHaveBeenLastCalledWith(
+        toolName,
+        expect.objectContaining({
+          title: toolName,
+          description
+        }),
+        expect.any(Function)
+      );
+    }
+  });
+
   it("registers functional test status read tools", () => {
     const registerTool = vi.fn();
 

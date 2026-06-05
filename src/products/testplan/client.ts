@@ -436,6 +436,40 @@ export type TestPlanClient = {
     total?: number;
     raw: Record<string, unknown>;
   }>;
+  checkTestcaseExists: (input: {
+    project_uuid: string;
+    case_uris: string[];
+    version_uri?: string;
+  }) => Promise<{
+    project_uuid: string;
+    existing_case_uris: string[];
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
+  searchTestcaseUrisUsedForAutomation: (input: {
+    project_uuid: string;
+    page: number;
+    page_size: number;
+    keyword?: string;
+    exeplatforms?: string[];
+    own?: boolean;
+    conditions?: Array<Record<string, unknown>>;
+    queryByDisplayCfg?: boolean;
+    useOffset?: boolean;
+    version_uri?: string;
+    case_uris?: string[];
+    owner_ids?: string[];
+    status_codes?: string[];
+    rank_ids?: string[];
+    module_ids?: string[];
+    issue_id?: string;
+    creator_ids?: string[];
+    [key: string]: unknown;
+  }) => Promise<{
+    uris: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
   getProjectDataDashboard: (input: TestPlanRecordBodyInput) => Promise<{
     raw: Record<string, unknown>;
   }>;
@@ -507,6 +541,44 @@ export type TestPlanClient = {
   }) => Promise<{
     iterators: Array<Record<string, unknown>>;
     total?: number;
+  }>;
+  createDefectAssociation: (input: {
+    project_id: string;
+    defect_id: string;
+    iterator_uri: string;
+  }) => Promise<{
+    project_id: string;
+    defect_id: string;
+    iterator_uri: string;
+    status?: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  updateDefectAssociation: (input: {
+    project_id: string;
+    defect_id: string;
+    old_iterator_uri: string;
+    new_iterator_uri: string;
+  }) => Promise<{
+    project_id: string;
+    defect_id: string;
+    old_iterator_uri: string;
+    new_iterator_uri: string;
+    status?: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  deleteDefectAssociation: (input: {
+    project_id: string;
+    defect_id: string;
+    iterator_uri: string;
+  }) => Promise<{
+    project_id: string;
+    defect_id: string;
+    iterator_uri: string;
+    status?: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
   }>;
   listTestReportQualityAttributes: (input: {
     project_id: string;
@@ -3559,6 +3631,55 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         raw: payload
       };
     },
+    async checkTestcaseExists(input) {
+      const response = await _http.post("/v4/testcase/exists", {
+        case_uris: input.case_uris,
+        ...(input.version_uri === undefined ? {} : { version_uri: input.version_uri }),
+        project_uuid: input.project_uuid
+      });
+      const payload = readResultPayload(response);
+      const existingCaseUris = readArray<string>(
+        payload.value ?? payload.values ?? payload.result ?? payload.items ?? payload.list
+      );
+
+      return {
+        project_uuid: input.project_uuid,
+        existing_case_uris: existingCaseUris,
+        total: readTotal(payload, response, existingCaseUris.length),
+        raw: payload
+      };
+    },
+    async searchTestcaseUrisUsedForAutomation(input) {
+      const body: Record<string, unknown> = {
+        page_no: input.page,
+        page_size: input.page_size,
+        project_uuid: input.project_uuid
+      };
+
+      for (const [key, value] of Object.entries(input)) {
+        if (["page", "page_size", "project_uuid"].includes(key) || value === undefined) {
+          continue;
+        }
+        body[key] = value;
+      }
+
+      const response = await _http.post("/v4/testcase-uris/search/used-for-automation", body);
+      const payload = readResultPayload(response);
+      const uris = readArray<unknown>(payload.value ?? payload.values ?? payload.items ?? payload.list).map(
+        (item) =>
+          typeof item === "string"
+            ? { id: item, value: item }
+            : typeof item === "object" && item !== null
+              ? (item as Record<string, unknown>)
+              : { value: item }
+      ) as Array<Record<string, unknown>>;
+
+      return {
+        uris,
+        total: readTotal(payload, response, uris.length),
+        raw: payload
+      };
+    },
     async getProjectDataDashboard(input) {
       const response = await _http.post(
         `/v1/${encodeURIComponent(input.project_id)}/data-dashboard/overview`,
@@ -3716,6 +3837,62 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       return {
         iterators,
         total: readTotal(payload, response, iterators.length)
+      };
+    },
+    async createDefectAssociation(input) {
+      const query = new URLSearchParams({
+        iterator_uri: input.iterator_uri
+      });
+      const response = await _http.post(
+        `/v4/${encodeURIComponent(input.project_id)}/defects/${encodeURIComponent(input.defect_id)}/association?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        project_id: input.project_id,
+        defect_id: input.defect_id,
+        iterator_uri: input.iterator_uri,
+        status: typeof payload.status === "string" ? payload.status : undefined,
+        value: payload.value ?? payload.result,
+        raw: payload
+      };
+    },
+    async updateDefectAssociation(input) {
+      const query = new URLSearchParams({
+        old_iterator_uri: input.old_iterator_uri,
+        new_iterator_uri: input.new_iterator_uri
+      });
+      const response = await _http.put(
+        `/v4/${encodeURIComponent(input.project_id)}/defects/${encodeURIComponent(input.defect_id)}/association?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        project_id: input.project_id,
+        defect_id: input.defect_id,
+        old_iterator_uri: input.old_iterator_uri,
+        new_iterator_uri: input.new_iterator_uri,
+        status: typeof payload.status === "string" ? payload.status : undefined,
+        value: payload.value ?? payload.result,
+        raw: payload
+      };
+    },
+    async deleteDefectAssociation(input) {
+      const query = new URLSearchParams({
+        iterator_uri: input.iterator_uri
+      });
+      const response = await _http.delete(
+        `/v4/${encodeURIComponent(input.project_id)}/defects/${encodeURIComponent(input.defect_id)}/association?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        project_id: input.project_id,
+        defect_id: input.defect_id,
+        iterator_uri: input.iterator_uri,
+        status: typeof payload.status === "string" ? payload.status : undefined,
+        value: payload.value ?? payload.result,
+        raw: payload
       };
     },
     async listTestReportQualityAttributes(input) {

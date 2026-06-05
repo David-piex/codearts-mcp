@@ -243,6 +243,19 @@ describe("createTestPlanClient", () => {
     const client = createTestPlanClient({
       post: async (path: string, body?: unknown) => {
         requests.push({ path, body });
+        if (path === "/v4/testcase/exists") {
+          return {
+            result: ["case-v4-a"]
+          };
+        }
+        if (path === "/v4/testcase-uris/search/used-for-automation") {
+          return {
+            result: {
+              total: 1,
+              value: ["case-auto-1"]
+            }
+          };
+        }
         if (path.startsWith("/v5/")) {
           return {
             result: {
@@ -285,6 +298,19 @@ describe("createTestPlanClient", () => {
       keyword: "api",
       service_types: [1, 2]
     });
+    const existsResult = await client.checkTestcaseExists({
+      project_uuid: "project-uuid-1",
+      case_uris: ["case-v4-a"],
+      version_uri: "version-1"
+    });
+    const automationResult = await client.searchTestcaseUrisUsedForAutomation({
+      project_uuid: "project-uuid-1",
+      page: 1,
+      page_size: 20,
+      keyword: "api",
+      version_uri: "version-1",
+      owner_ids: ["user-1"]
+    });
 
     expect(v4Result).toMatchObject({
       uris: [
@@ -303,6 +329,15 @@ describe("createTestPlanClient", () => {
           feature_uri: "feature-1"
         }
       ],
+      total: 1
+    });
+    expect(existsResult).toMatchObject({
+      project_uuid: "project-uuid-1",
+      existing_case_uris: ["case-v4-a"],
+      total: 1
+    });
+    expect(automationResult).toMatchObject({
+      uris: [{ id: "case-auto-1", value: "case-auto-1" }],
       total: 1
     });
     expect(requests).toEqual([
@@ -324,6 +359,25 @@ describe("createTestPlanClient", () => {
           keyword: "api",
           version_uri: "version-1",
           service_types: [1, 2]
+        }
+      },
+      {
+        path: "/v4/testcase/exists",
+        body: {
+          case_uris: ["case-v4-a"],
+          version_uri: "version-1",
+          project_uuid: "project-uuid-1"
+        }
+      },
+      {
+        path: "/v4/testcase-uris/search/used-for-automation",
+        body: {
+          page_no: 1,
+          page_size: 20,
+          project_uuid: "project-uuid-1",
+          keyword: "api",
+          version_uri: "version-1",
+          owner_ids: ["user-1"]
         }
       }
     ]);
@@ -378,6 +432,56 @@ describe("createTestPlanClient", () => {
       accepted_count: 1,
       status: "queued"
     });
+  });
+
+  it("creates, updates, and deletes defect associations through iterator query params", async () => {
+    const requests: Array<{ method: string; path: string }> = [];
+    const client = createTestPlanClient({
+      post: async (path: string) => {
+        requests.push({ method: "post", path });
+        return { status: "success", value: true };
+      },
+      put: async (path: string) => {
+        requests.push({ method: "put", path });
+        return { status: "success", value: true };
+      },
+      delete: async (path: string) => {
+        requests.push({ method: "delete", path });
+        return { status: "success", value: true };
+      }
+    } as never);
+
+    await client.createDefectAssociation({
+      project_id: "project-1",
+      defect_id: "defect-1",
+      iterator_uri: "iter-1"
+    });
+    await client.updateDefectAssociation({
+      project_id: "project-1",
+      defect_id: "defect-1",
+      old_iterator_uri: "iter-1",
+      new_iterator_uri: "iter-2"
+    });
+    await client.deleteDefectAssociation({
+      project_id: "project-1",
+      defect_id: "defect-1",
+      iterator_uri: "iter-2"
+    });
+
+    expect(requests).toEqual([
+      {
+        method: "post",
+        path: "/v4/project-1/defects/defect-1/association?iterator_uri=iter-1"
+      },
+      {
+        method: "put",
+        path: "/v4/project-1/defects/defect-1/association?old_iterator_uri=iter-1&new_iterator_uri=iter-2"
+      },
+      {
+        method: "delete",
+        path: "/v4/project-1/defects/defect-1/association?iterator_uri=iter-2"
+      }
+    ]);
   });
 
   it("lists task parameter templates", async () => {
