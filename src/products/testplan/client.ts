@@ -1732,6 +1732,78 @@ export type TestPlanClient = {
     histories: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  listCasesStatus: (input: {
+    testServiceId: string;
+    x_auth_token: string;
+    cases: string[];
+  }) => Promise<{
+    statuses: Array<Record<string, unknown>>;
+    total?: number;
+    status?: string;
+  }>;
+  listCasesStatusV3: (input: {
+    testServiceId: string;
+    x_auth_token: string;
+    cases: string[];
+  }) => Promise<{
+    statuses: Array<Record<string, unknown>>;
+    total?: number;
+    status?: string;
+  }>;
+  listCaseHistory: (input: {
+    testServiceId: string;
+    x_auth_token: string;
+    case_id?: string;
+    task_id?: string;
+    page: number;
+    page_size: number;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    histories: Array<Record<string, unknown>>;
+    total?: number;
+    status?: string;
+  }>;
+  listCasesByStid: (input: {
+    testServiceId: string;
+    x_auth_token: string;
+    suiteid: string;
+    page: number;
+    page_size: number;
+    sort_field?: string;
+    sort_type?: string;
+    status?: string[];
+    owner_ids?: string[];
+    results?: string[];
+    plan_id?: string;
+    stage?: unknown;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    cases: Array<Record<string, unknown>>;
+    total?: number;
+    status?: string;
+  }>;
+  createCasesTask: (input: {
+    testServiceId: string;
+    x_auth_token: string;
+    cases: string[];
+    task_name: string;
+    plan_id?: string;
+    projectId?: string;
+    projectUUId?: string;
+    serviceType?: number;
+    functionType?: string;
+    releaseversion?: string;
+    resourcePool?: string | Record<string, unknown>;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    task_id: string;
+    need_approve?: unknown;
+    warn?: unknown[];
+    package_type?: string;
+    is_popup?: boolean;
+    status?: string;
+    raw: Record<string, unknown>;
+  }>;
   getFreeTestTime: (input: { testServiceId: string }) => Promise<{
     raw: Record<string, unknown>;
   }>;
@@ -6531,6 +6603,162 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       return {
         histories,
         total: readTotal(result, response, histories.length)
+      };
+    },
+    async listCasesStatus(input) {
+      const query = new URLSearchParams({
+        testServiceId: input.testServiceId
+      });
+      const response = await _http.post(
+        `/v2/querycasestatus?${query.toString()}`,
+        {
+          cases: input.cases
+        },
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
+      );
+      const payload = readResultPayload(response);
+      const result = readEnvelope(payload.result) ?? payload;
+      const statuses = readArray<Record<string, unknown>>(
+        result.casesStatusJA ?? result.cases_status ?? result.statuses ?? result.items ?? result.list
+      );
+
+      return {
+        statuses,
+        total: readTotal(result, response, statuses.length),
+        status: readResultStatus(response, payload)
+      };
+    },
+    async listCasesStatusV3(input) {
+      const query = new URLSearchParams({
+        testServiceId: input.testServiceId
+      });
+      const response = await _http.post(
+        `/v3/querycasestatus?${query.toString()}`,
+        {
+          cases: input.cases
+        },
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
+      );
+      const payload = readResultPayload(response);
+      const result = readEnvelope(payload.result) ?? payload;
+      const statuses = readArray<Record<string, unknown>>(
+        result.casesStatusJA ?? result.cases_status ?? result.statuses ?? result.items ?? result.list
+      );
+
+      return {
+        statuses,
+        total: readTotal(result, response, statuses.length),
+        status: readResultStatus(response, payload)
+      };
+    },
+    async listCaseHistory(input) {
+      const query = new URLSearchParams({
+        testServiceId: input.testServiceId
+      });
+      appendQueryValue(query, "taskId", input.task_id);
+      const body =
+        input.body ??
+        {
+          ...(input.case_id !== undefined ? { caseId: input.case_id } : {}),
+          testServiceId: input.testServiceId,
+          pageNum: input.page,
+          pageSize: input.page_size
+        };
+      const response = await _http.post(
+        `/v2/casehistory?${query.toString()}`,
+        body,
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
+      );
+      const payload = readResultPayload(response);
+      const result = readEnvelope(payload.result) ?? payload;
+      const histories = readArray<Record<string, unknown>>(
+        result.caseResultList ?? result.histories ?? result.items ?? result.list
+      );
+
+      return {
+        histories,
+        total: readTotal(result, response, histories.length),
+        status: readResultStatus(response, payload)
+      };
+    },
+    async listCasesByStid(input) {
+      const query = new URLSearchParams({
+        testServiceId: input.testServiceId
+      });
+      const body =
+        input.body ??
+        {
+          suiteid: input.suiteid,
+          sortField: input.sort_field ?? "",
+          sortType: input.sort_type ?? "",
+          status: input.status ?? [],
+          ownerIds: input.owner_ids ?? [],
+          results: input.results ?? [],
+          planId: input.plan_id ?? "",
+          stage: input.stage ?? null,
+          pageNo: input.page,
+          pageSize: input.page_size
+        };
+      const response = await _http.post(
+        `/v2/querycasesbystid?${query.toString()}`,
+        body,
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
+      );
+      const payload = readResultPayload(response);
+      const result = readEnvelope(payload.result) ?? payload;
+      const cases = readArray<Record<string, unknown>>(
+        result.casesArr ?? result.cases ?? result.items ?? result.list
+      );
+
+      return {
+        cases,
+        total: readTotal(result, response, cases.length),
+        status: readResultStatus(response, payload)
+      };
+    },
+    async createCasesTask(input) {
+      const query = new URLSearchParams({
+        testServiceId: input.testServiceId
+      });
+      const body =
+        input.body ??
+        {
+          cases: input.cases,
+          taskName: input.task_name,
+          ...(input.plan_id !== undefined ? { planId: input.plan_id } : {}),
+          ...(input.projectId !== undefined ? { projectId: input.projectId } : {}),
+          ...(input.projectUUId !== undefined ? { projectUUId: input.projectUUId } : {}),
+          ...(input.serviceType !== undefined ? { serviceType: input.serviceType } : {}),
+          ...(input.functionType !== undefined ? { functionType: input.functionType } : {}),
+          ...(input.releaseversion !== undefined ? { releaseversion: input.releaseversion } : {}),
+          ...(input.resourcePool !== undefined ? { resourcePool: input.resourcePool } : {})
+        };
+      const response = await _http.post(
+        `/v2/casestask?${query.toString()}`,
+        body,
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
+      );
+      const payload = readResultPayload(response);
+      const result = readEnvelope(payload.result) ?? payload;
+
+      return {
+        task_id: String(result.taskId ?? result.task_id ?? ""),
+        need_approve: result.needApprove,
+        warn: readArray<unknown>(result.warn),
+        package_type: readOptionalString(result.packageType),
+        is_popup: typeof result.isPopup === "boolean" ? result.isPopup : undefined,
+        status: readResultStatus(response, payload),
+        raw: result
       };
     },
     async getFreeTestTime(input) {

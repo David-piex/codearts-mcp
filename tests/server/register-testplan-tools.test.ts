@@ -587,6 +587,51 @@ describe("registerTestPlanTool", () => {
     }
   });
 
+  it("registers legacy case official API tools", () => {
+    const registerTool = vi.fn();
+    const tools = [
+      [
+        "testplan_list_cases_status",
+        "List CodeArts TestPlan legacy case statuses via official v2 API"
+      ],
+      [
+        "testplan_list_cases_status_v3",
+        "List CodeArts TestPlan legacy case statuses via official v3 API"
+      ],
+      [
+        "testplan_list_case_history",
+        "List CodeArts TestPlan legacy case execution histories via official v2 API"
+      ],
+      [
+        "testplan_list_cases_by_stid",
+        "List CodeArts TestPlan legacy suite cases by suite ID via official v2 API"
+      ],
+      [
+        "testplan_create_cases_task",
+        "Create a CodeArts TestPlan legacy cases task via official v2 API (dry-run by default)"
+      ]
+    ] as const;
+
+    for (const [toolName, description] of tools) {
+      const handled = registerTestPlanTool({
+        toolName,
+        server: { registerTool },
+        mode: "stdio",
+        stdioClient: {} as never
+      });
+
+      expect(handled).toBe(true);
+      expect(registerTool).toHaveBeenLastCalledWith(
+        toolName,
+        expect.objectContaining({
+          title: toolName,
+          description
+        }),
+        expect.any(Function)
+      );
+    }
+  });
+
   it("registers testhub and task attribute write tools", () => {
     const registerTool = vi.fn();
     const tools = [

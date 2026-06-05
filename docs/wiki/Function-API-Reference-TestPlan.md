@@ -6,7 +6,7 @@
 
 模块：`测试计划`
 
-API 数量：`308`
+API 数量：`313`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
@@ -1161,6 +1161,124 @@ API 数量：`308`
   },
   "required": [
     "project_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### testplan_create_cases_task
+
+所属模块：`测试计划`
+
+说明：创建测试计划的用例任务。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "testplan_create_cases_task",
+    "arguments": {
+      "testServiceId": "<testServiceId>",
+      "x_auth_token": "<x_auth_token>",
+      "cases": "<cases>",
+      "task_name": "<task_name>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `testServiceId` | 是 | `string` |  | 字段对应：<br>MCP 字段 `testServiceId` ↔ 原始 CodeArts 测试计划 API 同名字段 `testServiceId`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `x_auth_token` | 是 | `string` |  | 字段对应：<br>MCP 字段 `x_auth_token` ↔ 原始 CodeArts 测试计划 API 同名字段 `x_auth_token`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `cases` | 是 | `array<string>` |  | 字段对应：<br>MCP 字段 `cases` ↔ 原始 CodeArts 测试计划 API 同名字段 `cases`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `task_name` | 是 | `string` |  | 字段对应：<br>MCP 字段 `task_name` ↔ 原始 CodeArts 测试计划 API 同名字段 `task_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>任务名称。 |
+| `plan_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `plan_id` ↔ 原始 CodeArts 测试计划 API 同名字段 `plan_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>计划 ID，用于定位对应的 CodeArts 资源。 |
+| `projectId` | 否 | `string` |  | 字段对应：<br>MCP 字段 `projectId` ↔ 原始 CodeArts 测试计划 API 同名字段 `projectId`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `projectUUId` | 否 | `string` |  | 字段对应：<br>MCP 字段 `projectUUId` ↔ 原始 CodeArts 测试计划 API 同名字段 `projectUUId`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `serviceType` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `serviceType` ↔ 原始 CodeArts 测试计划 API 同名字段 `serviceType`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `functionType` | 否 | `string` |  | 字段对应：<br>MCP 字段 `functionType` ↔ 原始 CodeArts 测试计划 API 同名字段 `functionType`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `releaseversion` | 否 | `string` |  | 字段对应：<br>MCP 字段 `releaseversion` ↔ 原始 CodeArts 测试计划 API 同名字段 `releaseversion`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `resourcePool` | 否 | `string \| object` |  | 字段对应：<br>MCP 字段 `resourcePool` ↔ 原始 CodeArts 测试计划 API 同名字段 `resourcePool`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `body` | 否 | `object` |  | 字段对应：<br>MCP 字段 `body` ↔ 原始 CodeArts 测试计划 API 同名字段 `body`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>请求体或正文内容。复杂接口会把多个业务字段放在 body 中提交。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "testServiceId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "x_auth_token": {
+      "type": "string",
+      "minLength": 1
+    },
+    "cases": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "task_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "plan_id": {
+      "type": "string"
+    },
+    "projectId": {
+      "type": "string"
+    },
+    "projectUUId": {
+      "type": "string"
+    },
+    "serviceType": {
+      "type": "integer"
+    },
+    "functionType": {
+      "type": "string"
+    },
+    "releaseversion": {
+      "type": "string"
+    },
+    "resourcePool": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "object",
+          "additionalProperties": {}
+        }
+      ]
+    },
+    "body": {
+      "type": "object",
+      "additionalProperties": {}
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "testServiceId",
+    "x_auth_token",
+    "cases",
+    "task_name"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -10337,6 +10455,86 @@ API 数量：`308`
 }
 ```
 
+### testplan_list_case_history
+
+所属模块：`测试计划`
+
+说明：查询测试计划的用例历史。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "testplan_list_case_history",
+    "arguments": {
+      "testServiceId": "<testServiceId>",
+      "x_auth_token": "<x_auth_token>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `testServiceId` | 是 | `string` |  | 字段对应：<br>MCP 字段 `testServiceId` ↔ 原始 CodeArts 测试计划 API 同名字段 `testServiceId`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `x_auth_token` | 是 | `string` |  | 字段对应：<br>MCP 字段 `x_auth_token` ↔ 原始 CodeArts 测试计划 API 同名字段 `x_auth_token`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `case_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `case_id` ↔ 原始 CodeArts 测试计划 API 同名字段 `case_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>测试用例 ID，用于定位对应的 CodeArts 资源。 |
+| `task_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `task_id` ↔ 原始 CodeArts 测试计划 API 同名字段 `task_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>任务 ID，用于定位对应的 CodeArts 资源。 |
+| `page` | 否 | `integer` | 1 | 字段对应：<br>MCP 字段 `page` ↔ 原始 CodeArts 测试计划 API 的分页页码或由 `offset/limit` 换算得到的页码。<br>页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 字段对应：<br>MCP 字段 `page_size` ↔ 原始 CodeArts 测试计划 API 的分页大小字段，常见原字段名为 `page_size`、`limit` 或 `pageSize`。<br>每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `body` | 否 | `object` |  | 字段对应：<br>MCP 字段 `body` ↔ 原始 CodeArts 测试计划 API 同名字段 `body`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>请求体或正文内容。复杂接口会把多个业务字段放在 body 中提交。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "testServiceId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "x_auth_token": {
+      "type": "string",
+      "minLength": 1
+    },
+    "case_id": {
+      "$ref": "#/properties/testServiceId"
+    },
+    "task_id": {
+      "$ref": "#/properties/testServiceId"
+    },
+    "page": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 1
+    },
+    "page_size": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 200,
+      "default": 20
+    },
+    "body": {
+      "type": "object",
+      "additionalProperties": {}
+    }
+  },
+  "required": [
+    "testServiceId",
+    "x_auth_token"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### testplan_list_case_templates
 
 所属模块：`测试计划`
@@ -10535,6 +10733,252 @@ API 数量：`308`
   "required": [
     "project_id",
     "plan_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### testplan_list_cases_by_stid
+
+所属模块：`测试计划`
+
+说明：查询测试计划的用例bystid。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "testplan_list_cases_by_stid",
+    "arguments": {
+      "testServiceId": "<testServiceId>",
+      "x_auth_token": "<x_auth_token>",
+      "suiteid": "<suiteid>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `testServiceId` | 是 | `string` |  | 字段对应：<br>MCP 字段 `testServiceId` ↔ 原始 CodeArts 测试计划 API 同名字段 `testServiceId`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `x_auth_token` | 是 | `string` |  | 字段对应：<br>MCP 字段 `x_auth_token` ↔ 原始 CodeArts 测试计划 API 同名字段 `x_auth_token`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `suiteid` | 是 | `string` |  | 字段对应：<br>MCP 字段 `suiteid` ↔ 原始 CodeArts 测试计划 API 同名字段 `suiteid`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `page` | 否 | `integer` | 1 | 字段对应：<br>MCP 字段 `page` ↔ 原始 CodeArts 测试计划 API 的分页页码或由 `offset/limit` 换算得到的页码。<br>页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 字段对应：<br>MCP 字段 `page_size` ↔ 原始 CodeArts 测试计划 API 的分页大小字段，常见原字段名为 `page_size`、`limit` 或 `pageSize`。<br>每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `sort_field` | 否 | `string` |  | 字段对应：<br>MCP 字段 `sort_field` ↔ 原始 CodeArts 测试计划 API 同名字段 `sort_field`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `sort_type` | 否 | `string` |  | 字段对应：<br>MCP 字段 `sort_type` ↔ 原始 CodeArts 测试计划 API 同名字段 `sort_type`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `status` | 否 | `array<string>` |  | 字段对应：<br>MCP 字段 `status` ↔ 原始 CodeArts 测试计划 API 同名字段 `status`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>状态过滤条件或目标状态。用于列表查询时表示筛选状态，用于更新/流转时表示要变更到的目标状态；具体取值以对应资源的状态字典为准。 |
+| `owner_ids` | 否 | `array<string>` |  | 字段对应：<br>MCP 字段 `owner_ids` ↔ 原始 CodeArts 测试计划 API 同名字段 `owner_ids`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>拥有者 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `results` | 否 | `array<string>` |  | 字段对应：<br>MCP 字段 `results` ↔ 原始 CodeArts 测试计划 API 同名字段 `results`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `plan_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `plan_id` ↔ 原始 CodeArts 测试计划 API 同名字段 `plan_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>计划 ID，用于定位对应的 CodeArts 资源。 |
+| `stage` | 否 | `object` |  | 字段对应：<br>MCP 字段 `stage` ↔ 原始 CodeArts 测试计划 API 同名字段 `stage`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `body` | 否 | `object` |  | 字段对应：<br>MCP 字段 `body` ↔ 原始 CodeArts 测试计划 API 同名字段 `body`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>请求体或正文内容。复杂接口会把多个业务字段放在 body 中提交。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "testServiceId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "x_auth_token": {
+      "type": "string",
+      "minLength": 1
+    },
+    "suiteid": {
+      "$ref": "#/properties/testServiceId"
+    },
+    "page": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 1
+    },
+    "page_size": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 200,
+      "default": 20
+    },
+    "sort_field": {
+      "type": "string"
+    },
+    "sort_type": {
+      "type": "string"
+    },
+    "status": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "owner_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "plan_id": {
+      "type": "string"
+    },
+    "stage": {},
+    "body": {
+      "type": "object",
+      "additionalProperties": {}
+    }
+  },
+  "required": [
+    "testServiceId",
+    "x_auth_token",
+    "suiteid"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### testplan_list_cases_status
+
+所属模块：`测试计划`
+
+说明：查询测试计划的用例状态。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "testplan_list_cases_status",
+    "arguments": {
+      "testServiceId": "<testServiceId>",
+      "x_auth_token": "<x_auth_token>",
+      "cases": "<cases>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `testServiceId` | 是 | `string` |  | 字段对应：<br>MCP 字段 `testServiceId` ↔ 原始 CodeArts 测试计划 API 同名字段 `testServiceId`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `x_auth_token` | 是 | `string` |  | 字段对应：<br>MCP 字段 `x_auth_token` ↔ 原始 CodeArts 测试计划 API 同名字段 `x_auth_token`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `cases` | 是 | `array<string>` |  | 字段对应：<br>MCP 字段 `cases` ↔ 原始 CodeArts 测试计划 API 同名字段 `cases`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "testServiceId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "x_auth_token": {
+      "type": "string",
+      "minLength": 1
+    },
+    "cases": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    }
+  },
+  "required": [
+    "testServiceId",
+    "x_auth_token",
+    "cases"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### testplan_list_cases_status_v3
+
+所属模块：`测试计划`
+
+说明：查询测试计划的用例状态v3。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "testplan_list_cases_status_v3",
+    "arguments": {
+      "testServiceId": "<testServiceId>",
+      "x_auth_token": "<x_auth_token>",
+      "cases": "<cases>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `testServiceId` | 是 | `string` |  | 字段对应：<br>MCP 字段 `testServiceId` ↔ 原始 CodeArts 测试计划 API 同名字段 `testServiceId`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `x_auth_token` | 是 | `string` |  | 字段对应：<br>MCP 字段 `x_auth_token` ↔ 原始 CodeArts 测试计划 API 同名字段 `x_auth_token`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `cases` | 是 | `array<string>` |  | 字段对应：<br>MCP 字段 `cases` ↔ 原始 CodeArts 测试计划 API 同名字段 `cases`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "testServiceId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "x_auth_token": {
+      "type": "string",
+      "minLength": 1
+    },
+    "cases": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    }
+  },
+  "required": [
+    "testServiceId",
+    "x_auth_token",
+    "cases"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

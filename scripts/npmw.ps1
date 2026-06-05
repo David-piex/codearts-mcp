@@ -12,8 +12,8 @@ if ($env:CODEARTS_MCP_NPM_CMD) {
 }
 
 $candidates += @(
-  "C:\Users\Yao\AppData\Local\nvm\v22.22.1\npm.cmd",
   "C:\nvm4w\nodejs\npm.cmd",
+  "C:\Users\Yao\AppData\Local\nvm\v22.22.1\npm.cmd",
   "C:\Program Files\nodejs\npm.cmd"
 )
 

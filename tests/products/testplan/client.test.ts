@@ -6843,6 +6843,209 @@ describe("createTestPlanClient", () => {
     });
   });
 
+  it("handles legacy case official APIs with X-Auth-Token headers", async () => {
+    const requests: Array<{
+      path: string;
+      body: unknown;
+      options?: unknown;
+    }> = [];
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown, options?: unknown) => {
+        requests.push({ path, body, options });
+        if (path === "/v2/querycasestatus?testServiceId=service-1") {
+          return {
+            result: {
+              casesStatusJA: [{ case_id: "case-1", status: "PASSED" }],
+              totalCount: 1
+            },
+            status: "success"
+          };
+        }
+        if (path === "/v3/querycasestatus?testServiceId=service-1") {
+          return {
+            result: {
+              casesStatusJA: [{ case_id: "case-2", status: "FAILED" }],
+              totalCount: 1
+            },
+            status: "success"
+          };
+        }
+        if (path === "/v2/casehistory?testServiceId=service-1&taskId=task-1") {
+          return {
+            result: {
+              caseResultList: [{ id: "history-1", result: "PASSED" }],
+              totalCount: 1
+            },
+            status: "success"
+          };
+        }
+        if (path === "/v2/querycasesbystid?testServiceId=service-1") {
+          return {
+            result: {
+              casesArr: [{ id: "case-3", name: "legacy suite case" }],
+              totalCount: 1
+            },
+            status: "success"
+          };
+        }
+        if (path === "/v2/casestask?testServiceId=service-1") {
+          return {
+            result: {
+              taskId: "task-legacy-1",
+              needApprove: true,
+              warn: ["quota warning"],
+              packageType: "PUBLIC",
+              isPopup: false
+            },
+            status: "success"
+          };
+        }
+
+        return {};
+      }
+    } as never);
+
+    await expect(
+      client.listCasesStatus({
+        testServiceId: "service-1",
+        x_auth_token: "token-1",
+        cases: ["case-1"]
+      })
+    ).resolves.toEqual({
+      statuses: [{ case_id: "case-1", status: "PASSED" }],
+      total: 1,
+      status: "success"
+    });
+    await expect(
+      client.listCasesStatusV3({
+        testServiceId: "service-1",
+        x_auth_token: "token-1",
+        cases: ["case-2"]
+      })
+    ).resolves.toEqual({
+      statuses: [{ case_id: "case-2", status: "FAILED" }],
+      total: 1,
+      status: "success"
+    });
+    await expect(
+      client.listCaseHistory({
+        testServiceId: "service-1",
+        x_auth_token: "token-1",
+        case_id: "case-1",
+        task_id: "task-1",
+        page: 2,
+        page_size: 5
+      })
+    ).resolves.toEqual({
+      histories: [{ id: "history-1", result: "PASSED" }],
+      total: 1,
+      status: "success"
+    });
+    await expect(
+      client.listCasesByStid({
+        testServiceId: "service-1",
+        x_auth_token: "token-1",
+        suiteid: "suite-1",
+        page: 3,
+        page_size: 20,
+        sort_field: "name",
+        sort_type: "asc",
+        status: ["READY"],
+        owner_ids: ["user-1"],
+        results: ["PASSED"],
+        plan_id: "plan-1",
+        stage: 1
+      })
+    ).resolves.toEqual({
+      cases: [{ id: "case-3", name: "legacy suite case" }],
+      total: 1,
+      status: "success"
+    });
+    await expect(
+      client.createCasesTask({
+        testServiceId: "service-1",
+        x_auth_token: "token-1",
+        cases: ["case-1", "case-2"],
+        task_name: "legacy task",
+        plan_id: "plan-1",
+        projectId: "project-1",
+        projectUUId: "project-uuid-1",
+        serviceType: 1,
+        functionType: "api",
+        releaseversion: "1.0.0",
+        resourcePool: "default"
+      })
+    ).resolves.toEqual({
+      task_id: "task-legacy-1",
+      need_approve: true,
+      warn: ["quota warning"],
+      package_type: "PUBLIC",
+      is_popup: false,
+      status: "success",
+      raw: {
+        taskId: "task-legacy-1",
+        needApprove: true,
+        warn: ["quota warning"],
+        packageType: "PUBLIC",
+        isPopup: false
+      }
+    });
+
+    expect(requests).toEqual([
+      {
+        path: "/v2/querycasestatus?testServiceId=service-1",
+        body: { cases: ["case-1"] },
+        options: { headers: { "X-Auth-Token": "token-1" } }
+      },
+      {
+        path: "/v3/querycasestatus?testServiceId=service-1",
+        body: { cases: ["case-2"] },
+        options: { headers: { "X-Auth-Token": "token-1" } }
+      },
+      {
+        path: "/v2/casehistory?testServiceId=service-1&taskId=task-1",
+        body: {
+          caseId: "case-1",
+          testServiceId: "service-1",
+          pageNum: 2,
+          pageSize: 5
+        },
+        options: { headers: { "X-Auth-Token": "token-1" } }
+      },
+      {
+        path: "/v2/querycasesbystid?testServiceId=service-1",
+        body: {
+          suiteid: "suite-1",
+          sortField: "name",
+          sortType: "asc",
+          status: ["READY"],
+          ownerIds: ["user-1"],
+          results: ["PASSED"],
+          planId: "plan-1",
+          stage: 1,
+          pageNo: 3,
+          pageSize: 20
+        },
+        options: { headers: { "X-Auth-Token": "token-1" } }
+      },
+      {
+        path: "/v2/casestask?testServiceId=service-1",
+        body: {
+          cases: ["case-1", "case-2"],
+          taskName: "legacy task",
+          planId: "plan-1",
+          projectId: "project-1",
+          projectUUId: "project-uuid-1",
+          serviceType: 1,
+          functionType: "api",
+          releaseversion: "1.0.0",
+          resourcePool: "default"
+        },
+        options: { headers: { "X-Auth-Token": "token-1" } }
+      }
+    ]);
+  });
+
   it("gets executor runtime elements", async () => {
     let requestedPath = "";
     let requestedBody: unknown;

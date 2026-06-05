@@ -182,6 +182,11 @@ import {
   testPlanListApiTestPackageUsageInput,
   testPlanListApiTestPackageStatusInput,
   testPlanListApiTestVariablesInput,
+  testPlanListCasesStatusInput,
+  testPlanListCasesStatusV3Input,
+  testPlanListCaseHistoryInput,
+  testPlanListCasesByStidInput,
+  testPlanCreateCasesTaskInput,
   testPlanListApiTestcaseExecuteHistoriesInput,
   testPlanListApiTestcaseHistoryInput,
   testPlanListApiTestsuiteHistoryInput,
@@ -420,6 +425,13 @@ import {
   createTestPlanDownloadClassesHandler,
   createTestPlanUpdateUserInfosHandler
 } from "../products/testplan/tools/official-misc-tools.js";
+import {
+  createTestPlanCreateCasesTaskHandler,
+  createTestPlanListCaseHistoryHandler,
+  createTestPlanListCasesByStidHandler,
+  createTestPlanListCasesStatusHandler,
+  createTestPlanListCasesStatusV3Handler
+} from "../products/testplan/tools/legacy-case-tools.js";
 import {
   createTestPlanCreateTestStepByCollectionHandler,
   createTestPlanImportTasksHandler,
@@ -1117,6 +1129,30 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListApiTestPackageStatusHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListApiTestPackageStatusHandler
   }),
+  "testplan_list_cases_status": defineProductTool({
+    description: "List CodeArts TestPlan legacy case statuses via official v2 API",
+    inputSchema: testPlanListCasesStatusInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListCasesStatusHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListCasesStatusHandler
+  }),
+  "testplan_list_cases_status_v3": defineProductTool({
+    description: "List CodeArts TestPlan legacy case statuses via official v3 API",
+    inputSchema: testPlanListCasesStatusV3Input,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListCasesStatusV3Handler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListCasesStatusV3Handler
+  }),
+  "testplan_list_case_history": defineProductTool({
+    description: "List CodeArts TestPlan legacy case execution histories via official v2 API",
+    inputSchema: testPlanListCaseHistoryInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListCaseHistoryHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListCaseHistoryHandler
+  }),
+  "testplan_list_cases_by_stid": defineProductTool({
+    description: "List CodeArts TestPlan legacy suite cases by suite ID via official v2 API",
+    inputSchema: testPlanListCasesByStidInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListCasesByStidHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListCasesByStidHandler
+  }),
   "testplan_list_api_testcase_execute_histories": defineProductTool({
     description: "List CodeArts TestPlan API testcase execution histories",
     inputSchema: testPlanListApiTestcaseExecuteHistoriesInput,
@@ -1308,6 +1344,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanImportTasksInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanImportTasksHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanImportTasksHandler
+  }),
+  "testplan_create_cases_task": defineProductTool({
+    description: "Create a CodeArts TestPlan legacy cases task via official v2 API (dry-run by default)",
+    inputSchema: testPlanCreateCasesTaskInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanCreateCasesTaskHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanCreateCasesTaskHandler
   }),
   "testplan_upload_background": defineProductTool({
     description: "Upload a CodeArts TestPlan report background image (dry-run by default)",

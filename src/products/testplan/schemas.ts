@@ -1173,6 +1173,56 @@ export const testPlanListApiTestsuiteHistoryInput = z.object({
   plan_id: idSchema.optional()
 });
 
+export const testPlanListCasesStatusInput = z.object({
+  testServiceId: idSchema,
+  x_auth_token: z.string().min(1),
+  cases: z.array(z.string().min(1)).min(1)
+});
+
+export const testPlanListCasesStatusV3Input = testPlanListCasesStatusInput;
+
+export const testPlanListCaseHistoryInput = z.object({
+  testServiceId: idSchema,
+  x_auth_token: z.string().min(1),
+  case_id: idSchema.optional(),
+  task_id: idSchema.optional(),
+  page: z.number().int().min(1).default(1),
+  page_size: z.number().int().min(1).max(200).default(20),
+  body: z.record(z.string(), z.unknown()).optional()
+});
+
+export const testPlanListCasesByStidInput = z.object({
+  testServiceId: idSchema,
+  x_auth_token: z.string().min(1),
+  suiteid: idSchema,
+  page: z.number().int().min(1).default(1),
+  page_size: z.number().int().min(1).max(200).default(20),
+  sort_field: z.string().optional(),
+  sort_type: z.string().optional(),
+  status: z.array(z.string().min(1)).optional(),
+  owner_ids: z.array(z.string().min(1)).optional(),
+  results: z.array(z.string().min(1)).optional(),
+  plan_id: z.string().optional(),
+  stage: z.unknown().optional(),
+  body: z.record(z.string(), z.unknown()).optional()
+});
+
+export const testPlanCreateCasesTaskInput = z.object({
+  testServiceId: idSchema,
+  x_auth_token: z.string().min(1),
+  cases: z.array(z.string().min(1)).min(1),
+  task_name: z.string().min(1),
+  plan_id: z.string().optional(),
+  projectId: z.string().optional(),
+  projectUUId: z.string().optional(),
+  serviceType: z.number().int().optional(),
+  functionType: z.string().optional(),
+  releaseversion: z.string().optional(),
+  resourcePool: z.union([z.string(), z.record(z.string(), z.unknown())]).optional(),
+  body: z.record(z.string(), z.unknown()).optional(),
+  dry_run: z.boolean().default(true)
+});
+
 export const testPlanGetApiTestDnsMappingInput = z.object({
   project_id: idSchema
 });
