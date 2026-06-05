@@ -41,10 +41,10 @@ describe("collectModuleStats", () => {
     expect(collectModuleStats()).toEqual([
       { module: "Req", total: 343, read: 208, write: 135 },
       { module: "Repo", total: 372, read: 241, write: 131 },
-      { module: "Pipeline", total: 133, read: 76, write: 57 },
+      { module: "Pipeline", total: 138, read: 78, write: 60 },
       { module: "Check", total: 104, read: 84, write: 20 },
       { module: "TestPlan", total: 313, read: 257, write: 56 },
-      { module: "Deploy", total: 79, read: 58, write: 21 },
+      { module: "Deploy", total: 87, read: 59, write: 28 },
       { module: "Build", total: 138, read: 97, write: 41 },
       { module: "Artifact", total: 52, read: 44, write: 8 },
     ]);
@@ -54,8 +54,8 @@ describe("collectModuleStats", () => {
     expect(collectProductToolStats()).toEqual({
       modules: 8,
       total: collectProductToolManifest().length,
-      read: 1065,
-      write: 469,
+      read: 1068,
+      write: 479,
     });
   });
 
@@ -63,7 +63,7 @@ describe("collectModuleStats", () => {
     expect(renderModuleStatsMarkdown()).toContain(
       "| Module | Total | Read | Write |",
     );
-    expect(renderModuleStatsMarkdown()).toContain("| Deploy | 79 | 58 | 21 |");
+    expect(renderModuleStatsMarkdown()).toContain("| Deploy | 87 | 59 | 28 |");
     expect(renderModuleStatsMarkdown()).toContain("- Product modules: `8`");
     expect(renderModuleStatsMarkdown()).toContain(
       `- Product tools: \`${collectProductToolManifest().length}\``,
@@ -78,18 +78,18 @@ describe("collectModuleStats", () => {
       modules: [
         { module: "Req", total: 343, read: 208, write: 135 },
         { module: "Repo", total: 372, read: 241, write: 131 },
-        { module: "Pipeline", total: 133, read: 76, write: 57 },
+        { module: "Pipeline", total: 138, read: 78, write: 60 },
         { module: "Check", total: 104, read: 84, write: 20 },
         { module: "TestPlan", total: 313, read: 257, write: 56 },
-        { module: "Deploy", total: 79, read: 58, write: 21 },
+        { module: "Deploy", total: 87, read: 59, write: 28 },
         { module: "Build", total: 138, read: 97, write: 41 },
         { module: "Artifact", total: 52, read: 44, write: 8 },
       ],
       totals: {
         modules: 8,
         total: collectProductToolManifest().length,
-        read: 1065,
-        write: 469,
+        read: 1068,
+        write: 479,
         httpTotalWithAuth: collectHttpToolTotal(),
       },
     });

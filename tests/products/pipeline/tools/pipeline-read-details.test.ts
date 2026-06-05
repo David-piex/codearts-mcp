@@ -7,6 +7,8 @@ import {
   createPipelineGetDashboardConcurrencyHandler,
   createPipelineGetDevucAuthHandler,
   createPipelineGetOauthAuthorizationUrlHandler,
+  createPipelineListChangeRequestOperationLogsHandler,
+  createPipelineListChangeRequestWorkItemsHandler,
   createPipelineListExecutionPlansHandler,
   createPipelineListReusableJobsHandler
 } from "../../../../src/products/pipeline/tools/product-query-tools.js";
@@ -133,6 +135,53 @@ describe("Pipeline read detail tools", () => {
     expect(result.structuredContent.item?.changeRequest).toEqual({
       id: "cr-1",
       name: "Release CR"
+    });
+  });
+
+  it("returns change request operation logs query output", async () => {
+    const handler = createPipelineListChangeRequestOperationLogsHandler({
+      listChangeRequestOperationLogs: async () => ({
+        records: [{ id: "log-1", operate: "create", operator_name: "yao" }],
+        total: 1,
+        raw: { total: 1, data: [{ id: "log-1", operate: "create", operator_name: "yao" }] }
+      })
+    } as never);
+
+    const result = await handler({
+      cloud_project_id: "project-1",
+      change_request_id: "cr-1"
+    });
+
+    expect(result.content[0]?.text).toContain("Loaded 1 pipeline change request operation logs");
+    expect(result.structuredContent.items?.[0]?.changeRequestOperationLog).toEqual({
+      id: "log-1",
+      operate: "create",
+      operator_name: "yao"
+    });
+    expect((result.structuredContent as Record<string, unknown>).changeRequestOperationLogs).toEqual({
+      total: 1,
+      data: [{ id: "log-1", operate: "create", operator_name: "yao" }]
+    });
+  });
+
+  it("returns change request work items query output", async () => {
+    const handler = createPipelineListChangeRequestWorkItemsHandler({
+      listChangeRequestWorkItems: async () => ({
+        records: [{ work_item_id: "70844211", title: "运营" }],
+        total: 1,
+        raw: { result: [{ work_item_id: "70844211", title: "运营" }] }
+      })
+    } as never);
+
+    const result = await handler({
+      cloud_project_id: "project-1",
+      change_request_id: "cr-1"
+    });
+
+    expect(result.content[0]?.text).toContain("Loaded 1 pipeline change request work items");
+    expect(result.structuredContent.items?.[0]?.changeRequestWorkItem).toEqual({
+      work_item_id: "70844211",
+      title: "运营"
     });
   });
 

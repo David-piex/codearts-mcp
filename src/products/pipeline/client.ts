@@ -1213,6 +1213,26 @@ export type PipelineClient = {
     end_time?: string;
     query?: PipelineRawRecord;
   }) => Promise<PipelineRawItemResult>;
+  createChangeRequest: (input: {
+    cloud_project_id: string;
+    component_id: string;
+    title: string;
+    type?: string;
+    workitem_ids: string[];
+    repos: Array<{
+      repo_id: string;
+      http_url: string;
+      git_url: string;
+      feature_branch: string;
+      main_branch: string;
+      delete_branch_after_released?: boolean;
+    }>;
+  }) => Promise<PipelineRawItemResult>;
+  updateChangeRequestStatus: (input: {
+    cloud_project_id: string;
+    change_request_id: string;
+    status: "developing" | "to_be_released" | "releasing" | "released" | "revoked";
+  }) => Promise<PipelineRawItemResult>;
   listChangeRequests: (input: {
     cloud_project_id: string;
     offset: number;
@@ -1224,6 +1244,24 @@ export type PipelineClient = {
     cloud_project_id: string;
     change_request_id: string;
   }) => Promise<PipelineRawItemResult>;
+  listChangeRequestOperationLogs: (input: {
+    cloud_project_id: string;
+    change_request_id: string;
+    offset: number;
+    limit: number;
+  }) => Promise<PipelineRawListResult>;
+  listChangeRequestWorkItems: (input: {
+    cloud_project_id: string;
+    change_request_id: string;
+  }) => Promise<PipelineRawListResult>;
+  updateChangeRequestWorkItems: (input: {
+    cloud_project_id: string;
+    change_request_id: string;
+    work_item_ids: string[];
+  }) => Promise<{
+    result: string;
+    raw: PipelineRawRecord;
+  }>;
   listComponents: (input: {
     cloud_project_id: string;
     offset: number;
@@ -3705,6 +3743,30 @@ export function createPipelineClient(
 
       return mapPipelineRawItemResult(getPipelinePayload(response));
     },
+    async createChangeRequest(input) {
+      const response = unwrapPipelinePayload(await _http.post(
+        `/v2/${encodeURIComponent(input.cloud_project_id)}/change-request/create`,
+        {
+          component_id: input.component_id,
+          title: input.title,
+          ...(input.type ? { type: input.type } : {}),
+          workitem_ids: input.workitem_ids,
+          repos: input.repos
+        }
+      ));
+
+      return mapPipelineRawItemResult(getPipelinePayload(response));
+    },
+    async updateChangeRequestStatus(input) {
+      const suffix = buildQuery({
+        status: input.status
+      });
+      const response = unwrapPipelinePayload(await _http.put(
+        `/v2/${encodeURIComponent(input.cloud_project_id)}/change-request/${encodeURIComponent(input.change_request_id)}/status/update${suffix}`
+      ));
+
+      return mapPipelineRawItemResult(getPipelinePayload(response));
+    },
     async listChangeRequests(input) {
       const response = unwrapPipelinePayload(await _http.post(
         `/v2/${encodeURIComponent(input.cloud_project_id)}/change-requests/search`,
@@ -3719,6 +3781,67 @@ export function createPipelineClient(
       ));
 
       return mapPipelineRawItemResult(getPipelinePayload(response));
+    },
+    async listChangeRequestOperationLogs(input) {
+      const suffix = buildQuery({
+        offset: input.offset,
+        limit: input.limit
+      });
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v2/${encodeURIComponent(input.cloud_project_id)}/change-request/${encodeURIComponent(input.change_request_id)}/oplog/query${suffix}`
+      ));
+      const payload = getPipelinePayload(response);
+
+      return {
+        records: Array.isArray(payload.data) ? payload.data.map((item) => asPipelineRecord(item)) : readPipelineRecordList(payload),
+        total: readPipelineTotal(payload, Array.isArray(payload.data) ? payload.data.length : readPipelineRecordList(payload).length),
+        raw: payload
+      };
+    },
+    async listChangeRequestWorkItems(input) {
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v2/${encodeURIComponent(input.cloud_project_id)}/change-request/${encodeURIComponent(input.change_request_id)}/workitems/query`
+      ));
+      if (Array.isArray(response)) {
+        return {
+          records: response.map((item) => asPipelineRecord(item)),
+          total: response.length,
+          raw: { result: response }
+        };
+      }
+      const payload = getPipelinePayload(response);
+      const records = Array.isArray(payload.result)
+        ? payload.result.map((item) => asPipelineRecord(item))
+        : readPipelineRecordList(payload);
+
+      return {
+        records,
+        total: readPipelineTotal(payload, records.length),
+        raw: payload
+      };
+    },
+    async updateChangeRequestWorkItems(input) {
+      const response = unwrapPipelinePayload(await _http.put(
+        `/v2/${encodeURIComponent(input.cloud_project_id)}/change-request/${encodeURIComponent(input.change_request_id)}/workitem/update`,
+        {
+          work_item_ids: input.work_item_ids
+        }
+      ));
+
+      if (typeof response === "string") {
+        return {
+          result: response,
+          raw: { result: response }
+        };
+      }
+
+      const payload = asPipelineRecord(response);
+      const resultValue = payload.result;
+
+      return {
+        result: typeof resultValue === "string" ? resultValue : "success",
+        raw: payload
+      };
     },
     async listComponents(input) {
       const response = unwrapPipelinePayload(await _http.post(

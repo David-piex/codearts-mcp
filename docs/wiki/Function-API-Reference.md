@@ -28,12 +28,12 @@
 | 鉴权会话 | 2 | [Function-API-Reference-Auth-Session.md](./Function-API-Reference-Auth-Session.md) |
 | 编译构建 | 138 | [Function-API-Reference-Build.md](./Function-API-Reference-Build.md) |
 | 代码检查 | 104 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
-| 部署 | 79 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
-| 流水线 | 133 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
+| 部署 | 87 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
+| 流水线 | 138 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 372 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 343 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 313 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **1536** | |
+| **总计** | **1549** | |
 
 ## 字段对应
 
@@ -344,10 +344,13 @@
 | `deploy_cancel_v4_deploy_record` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_cancel_v4_deploy_record) |
 | `deploy_check_application_creatable` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_check_application_creatable) |
 | `deploy_check_application_exists` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_check_application_exists) |
+| `deploy_check_host_group_creatable` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_check_host_group_creatable) |
 | `deploy_create_application` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_create_application) |
+| `deploy_create_application_group` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_create_application_group) |
 | `deploy_create_environment` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_create_environment) |
 | `deploy_create_task_by_template` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_create_task_by_template) |
 | `deploy_delete_application_environment` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_delete_application_environment) |
+| `deploy_delete_application_group` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_delete_application_group) |
 | `deploy_delete_v4_cluster_hosts` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_delete_v4_cluster_hosts) |
 | `deploy_delete_v4_environment_hosts` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_delete_v4_environment_hosts) |
 | `deploy_get_app` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_get_app) |
@@ -406,6 +409,8 @@
 | `deploy_list_variable_history` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_list_variable_history) |
 | `deploy_list_variables` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_list_variables) |
 | `deploy_modify_application` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_modify_application) |
+| `deploy_move_application_group` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_move_application_group) |
+| `deploy_move_applications_to_group` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_move_applications_to_group) |
 | `deploy_pass_v4_manual_check` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_pass_v4_manual_check) |
 | `deploy_query_variables` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_query_variables) |
 | `deploy_refuse_v4_manual_check` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_refuse_v4_manual_check) |
@@ -417,7 +422,10 @@
 | `deploy_start_app` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_start_app) |
 | `deploy_stop_app` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_stop_app) |
 | `deploy_update_application_environment` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_update_application_environment) |
+| `deploy_update_application_group` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_update_application_group) |
 | `deploy_update_application_permission_level` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_update_application_permission_level) |
+| `deploy_update_environment_permissions` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_update_environment_permissions) |
+| `deploy_update_host_group_permissions` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_update_host_group_permissions) |
 | `pipeline_accept_checkpoint` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_accept_checkpoint) |
 | `pipeline_accept_delay_job` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_accept_delay_job) |
 | `pipeline_approve_run` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_approve_run) |
@@ -429,6 +437,7 @@
 | `pipeline_check_component` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_check_component) |
 | `pipeline_check_project` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_check_project) |
 | `pipeline_continue_delay_job` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_continue_delay_job) |
+| `pipeline_create_change_request` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_create_change_request) |
 | `pipeline_create_extension_endpoint` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_create_extension_endpoint) |
 | `pipeline_create_group` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_create_group) |
 | `pipeline_create_pipeline` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_create_pipeline) |
@@ -493,6 +502,8 @@
 | `pipeline_list_available_publishers` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_list_available_publishers) |
 | `pipeline_list_base_plugins` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_list_base_plugins) |
 | `pipeline_list_base_plugins_paged` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_list_base_plugins_paged) |
+| `pipeline_list_change_request_operation_logs` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_list_change_request_operation_logs) |
+| `pipeline_list_change_request_work_items` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_list_change_request_work_items) |
 | `pipeline_list_change_requests` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_list_change_requests) |
 | `pipeline_list_components` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_list_components) |
 | `pipeline_list_dashboard_pipeline_counts` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_list_dashboard_pipeline_counts) |
@@ -537,6 +548,8 @@
 | `pipeline_switch_permission` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_switch_permission) |
 | `pipeline_switch_project_strategy` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_switch_project_strategy) |
 | `pipeline_switch_strategy` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_switch_strategy) |
+| `pipeline_update_change_request_status` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_update_change_request_status) |
+| `pipeline_update_change_request_work_items` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_update_change_request_work_items) |
 | `pipeline_update_extension_endpoint` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_update_extension_endpoint) |
 | `pipeline_update_group` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_update_group) |
 | `pipeline_update_notice_status` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_update_notice_status) |

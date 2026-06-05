@@ -1,6 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
 import { createPipelineClient } from "../../../src/products/pipeline/client.js";
-import { pipelineUploadPublisherIconInput } from "../../../src/products/pipeline/schemas.js";
+import {
+  pipelineCreateChangeRequestInput,
+  pipelineListChangeRequestOperationLogsInput,
+  pipelineUpdateChangeRequestStatusInput,
+  pipelineUpdateChangeRequestWorkItemsInput,
+  pipelineUploadPublisherIconInput
+} from "../../../src/products/pipeline/schemas.js";
 
 function createClient(
   transport: Record<string, unknown>,
@@ -636,6 +642,54 @@ describe("createPipelineClient", () => {
     expect(parsed).toMatchObject({
       content_type: "application/octet-stream",
       dry_run: true
+    });
+  });
+
+  it("defaults pipeline change request write inputs to dry-run", () => {
+    expect(
+      pipelineCreateChangeRequestInput.parse({
+        cloud_project_id: "project-1",
+        component_id: "component-1",
+        title: "Release CR",
+        workitem_ids: ["70844211"],
+        repos: [
+          {
+            repo_id: "repo-1",
+            http_url: "https://example.com/repo.git",
+            git_url: "git@example.com:repo.git",
+            feature_branch: "feature/release",
+            main_branch: "main"
+          }
+        ]
+      }).dry_run
+    ).toBe(true);
+
+    expect(
+      pipelineUpdateChangeRequestStatusInput.parse({
+        cloud_project_id: "project-1",
+        change_request_id: "cr-1",
+        status: "released"
+      }).dry_run
+    ).toBe(true);
+
+    expect(
+      pipelineUpdateChangeRequestWorkItemsInput.parse({
+        cloud_project_id: "project-1",
+        change_request_id: "cr-1",
+        work_item_ids: ["70844211"]
+      }).dry_run
+    ).toBe(true);
+
+    expect(
+      pipelineListChangeRequestOperationLogsInput.parse({
+        cloud_project_id: "project-1",
+        change_request_id: "cr-1"
+      })
+    ).toEqual({
+      cloud_project_id: "project-1",
+      change_request_id: "cr-1",
+      offset: 0,
+      limit: 20
     });
   });
 
@@ -3265,11 +3319,30 @@ describe("createPipelineClient", () => {
     const client = createClient({
       get: async (path: string) => {
         calls.push({ method: "GET", path });
+        if (path.includes("/oplog/query")) {
+          return { result: { total: 1, data: [{ id: "log-1", operate: "create" }] } };
+        }
+        if (path.includes("/workitems/query")) {
+          return [{ work_item_id: "70844211", title: "运营" }];
+        }
         return { result: { records: [{ id: "item-1", name: "Item 1" }], total: 1 } };
       },
       post: async (path: string, body: unknown) => {
         calls.push({ method: "POST", path, body });
+        if (path.endsWith("/change-request/create")) {
+          return { result: { id: "cr-created", title: "Release CR", status: "developing" } };
+        }
         return { records: [{ id: "item-1", name: "Item 1" }], total: 1 };
+      },
+      put: async (path: string, body?: unknown) => {
+        calls.push({ method: "PUT", path, body });
+        if (path.includes("/status/update")) {
+          return { result: { id: "cr-1", title: "Release CR", status: "released" } };
+        }
+        if (path.endsWith("/workitem/update")) {
+          return "success";
+        }
+        return { result: { status: "success" } };
       }
     });
 
@@ -3298,6 +3371,27 @@ describe("createPipelineClient", () => {
     });
     await client.getDashboardExecutionsOverview({ tenant_id: "tenant-1" });
     await client.getDashboardConcurrency({ tenant_id: "tenant-1" });
+    await client.createChangeRequest({
+      cloud_project_id: "project-1",
+      component_id: "component-1",
+      title: "Release CR",
+      workitem_ids: ["70844211"],
+      repos: [
+        {
+          repo_id: "repo-1",
+          http_url: "https://example.com/repo.git",
+          git_url: "git@example.com:repo.git",
+          feature_branch: "feature/release",
+          main_branch: "main",
+          delete_branch_after_released: true
+        }
+      ]
+    });
+    await client.updateChangeRequestStatus({
+      cloud_project_id: "project-1",
+      change_request_id: "cr-1",
+      status: "released"
+    });
     await client.listChangeRequests({
       cloud_project_id: "project-1",
       offset: 0,
@@ -3307,6 +3401,21 @@ describe("createPipelineClient", () => {
     await client.getChangeRequest({
       cloud_project_id: "project-1",
       change_request_id: "cr-1"
+    });
+    await client.listChangeRequestOperationLogs({
+      cloud_project_id: "project-1",
+      change_request_id: "cr-1",
+      offset: 0,
+      limit: 20
+    });
+    await client.listChangeRequestWorkItems({
+      cloud_project_id: "project-1",
+      change_request_id: "cr-1"
+    });
+    await client.updateChangeRequestWorkItems({
+      cloud_project_id: "project-1",
+      change_request_id: "cr-1",
+      work_item_ids: ["70844211", "70844212"]
     });
     await client.listComponents({ cloud_project_id: "project-1", offset: 0, limit: 20 });
     await client.getComponent({ cloud_project_id: "project-1", component_id: "component-1" });
@@ -3360,12 +3469,49 @@ describe("createPipelineClient", () => {
       },
       {
         method: "POST",
+        path: "/v2/project-1/change-request/create",
+        body: {
+          component_id: "component-1",
+          title: "Release CR",
+          workitem_ids: ["70844211"],
+          repos: [
+            {
+              repo_id: "repo-1",
+              http_url: "https://example.com/repo.git",
+              git_url: "git@example.com:repo.git",
+              feature_branch: "feature/release",
+              main_branch: "main",
+              delete_branch_after_released: true
+            }
+          ]
+        }
+      },
+      {
+        method: "PUT",
+        path: "/v2/project-1/change-request/cr-1/status/update?status=released",
+        body: undefined
+      },
+      {
+        method: "POST",
         path: "/v2/project-1/change-requests/search",
         body: { status: "open", offset: 0, limit: 20 }
       },
       {
         method: "GET",
         path: "/v2/project-1/change-request/cr-1/query"
+      },
+      {
+        method: "GET",
+        path: "/v2/project-1/change-request/cr-1/oplog/query?offset=0&limit=20"
+      },
+      {
+        method: "GET",
+        path: "/v2/project-1/change-request/cr-1/workitems/query"
+      },
+      {
+        method: "PUT",
+        path: "/v2/project-1/change-request/cr-1/workitem/update",
+        body: { work_item_ids: ["70844211", "70844212"] }
       },
       {
         method: "POST",

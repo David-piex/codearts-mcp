@@ -336,6 +336,17 @@ export type DeployClient = {
     status?: string;
     raw: unknown;
   }>;
+  updateHostGroupPermissions: (input: {
+    group_id: string;
+    project_id: string;
+    role_id: string;
+    permission_name: "can_view" | "can_edit" | "can_delete" | "can_add_host" | "can_manage" | "can_copy";
+    permission_value: boolean;
+  }) => Promise<{
+    group_id: string;
+    permission: Record<string, unknown>;
+    raw: unknown;
+  }>;
   listHostGroupEnvironments: (input: {
     group_id: string;
     page: number;
@@ -468,6 +479,57 @@ export type DeployClient = {
     status?: string;
     raw: unknown;
   }>;
+  createApplicationGroup: (input: {
+    project_id: string;
+    name: string;
+    parent_id?: string;
+  }) => Promise<{
+    project_id: string;
+    group_id: string;
+    name: string;
+    parent_id?: string;
+    status?: string;
+  }>;
+  updateApplicationGroup: (input: {
+    project_id: string;
+    group_id: string;
+    name: string;
+  }) => Promise<{
+    project_id: string;
+    group_id: string;
+    name: string;
+    status?: string;
+  }>;
+  deleteApplicationGroup: (input: {
+    project_id: string;
+    group_id: string;
+  }) => Promise<{
+    project_id: string;
+    group_id: string;
+    status?: string;
+  }>;
+  moveApplicationGroup: (input: {
+    project_id: string;
+    id: string;
+    movement: 1 | -1;
+  }) => Promise<{
+    project_id: string;
+    group_id: string;
+    movement: 1 | -1;
+    status?: string;
+  }>;
+  moveApplicationsToGroup: (input: {
+    project_id: string;
+    group_id: string;
+    application_ids: string[];
+  }) => Promise<{
+    project_id: string;
+    group_id: string;
+    application_ids: string[];
+    result: Array<Record<string, unknown>>;
+    status?: string;
+    raw: unknown;
+  }>;
   getSuccessRateMetrics: (input: {
     project_id: string;
     query?: Record<string, string | number | boolean>;
@@ -496,6 +558,19 @@ export type DeployClient = {
     status?: string;
     raw: unknown;
   }>;
+  updateEnvironmentPermissions: (input: {
+    application_id: string;
+    environment_id: string;
+    role_id?: string;
+    permission_name?: "can_view" | "can_edit" | "can_delete" | "can_deploy" | "can_manage";
+    permission_value?: boolean;
+  }) => Promise<{
+    application_id: string;
+    environment_id: string;
+    permission: Record<string, unknown>;
+    status?: string;
+    raw: unknown;
+  }>;
   updateApplicationPermissionLevel: (input: {
     project_id: string;
     application_ids: string[];
@@ -510,6 +585,11 @@ export type DeployClient = {
     project_id: string;
     creatable: boolean;
     status?: string;
+    raw: unknown;
+  }>;
+  checkHostGroupCreatable: (input: { project_id: string }) => Promise<{
+    project_id: string;
+    can_created: boolean;
     raw: unknown;
   }>;
   createTaskByTemplate: (input: {
@@ -1602,6 +1682,24 @@ export function createDeployClient(_http: ReturnTypeCreateHttpClient): DeployCli
         permissions: asArray<Record<string, unknown>>(response.result),
         status: response.status,
         raw: response.result
+      };
+    },
+    async updateHostGroupPermissions(input) {
+      const response = (await _http.put(
+        `/v2/host-groups/${encodeURIComponent(input.group_id)}/permissions`,
+        {
+          project_id: input.project_id,
+          role_id: input.role_id,
+          permission_name: input.permission_name,
+          permission_value: input.permission_value
+        }
+      )) as Record<string, unknown>;
+      const item = getResultObject<Record<string, unknown>>(response);
+
+      return {
+        group_id: String(item.group_id ?? input.group_id),
+        permission: item,
+        raw: response.result ?? response
       };
     },
     async listHostGroupEnvironments(input) {
@@ -3801,6 +3899,100 @@ export function createDeployClient(_http: ReturnTypeCreateHttpClient): DeployCli
         raw: response.result
       };
     },
+    async createApplicationGroup(input) {
+      const response = (await _http.post(
+        `/v1/projects/${encodeURIComponent(input.project_id)}/applications/groups`,
+        {
+          name: input.name,
+          ...(input.parent_id ? { parent_id: input.parent_id } : {})
+        }
+      )) as {
+        result?: string;
+        status?: string;
+      };
+
+      return {
+        project_id: input.project_id,
+        group_id: response.result ?? "",
+        name: input.name,
+        parent_id: input.parent_id,
+        status: response.status
+      };
+    },
+    async updateApplicationGroup(input) {
+      const response = (await _http.put(
+        `/v1/projects/${encodeURIComponent(input.project_id)}/applications/groups/${encodeURIComponent(input.group_id)}`,
+        {
+          name: input.name
+        }
+      )) as {
+        result?: string;
+        status?: string;
+      };
+
+      return {
+        project_id: input.project_id,
+        group_id: response.result ?? input.group_id,
+        name: input.name,
+        status: response.status
+      };
+    },
+    async deleteApplicationGroup(input) {
+      const response = (await _http.delete(
+        `/v1/projects/${encodeURIComponent(input.project_id)}/applications/groups/${encodeURIComponent(input.group_id)}`
+      )) as
+        | {
+            result?: string;
+            status?: string;
+          }
+        | null;
+
+      return {
+        project_id: input.project_id,
+        group_id: response?.result ?? input.group_id,
+        status: response?.status
+      };
+    },
+    async moveApplicationGroup(input) {
+      const response = (await _http.put(
+        `/v1/projects/${encodeURIComponent(input.project_id)}/applications/groups/swap`,
+        {
+          id: input.id,
+          movement: input.movement
+        }
+      )) as {
+        result?: string;
+        status?: string;
+      };
+
+      return {
+        project_id: input.project_id,
+        group_id: response.result ?? input.id,
+        movement: input.movement,
+        status: response.status
+      };
+    },
+    async moveApplicationsToGroup(input) {
+      const response = (await _http.put(
+        `/v1/projects/${encodeURIComponent(input.project_id)}/applications/groups/move`,
+        {
+          group_id: input.group_id,
+          application_ids: input.application_ids
+        }
+      )) as {
+        result?: unknown;
+        status?: string;
+      };
+
+      return {
+        project_id: input.project_id,
+        group_id: input.group_id,
+        application_ids: input.application_ids,
+        result: asArray<Record<string, unknown>>(response.result),
+        status: response.status,
+        raw: response.result
+      };
+    },
     async getSuccessRateMetrics(input) {
       const query = new URLSearchParams();
       addQueryParams(query, input.query);
@@ -3851,6 +4043,30 @@ export function createDeployClient(_http: ReturnTypeCreateHttpClient): DeployCli
         raw: response.result
       };
     },
+    async updateEnvironmentPermissions(input) {
+      const response = (await _http.put(
+        `/v2/applications/${encodeURIComponent(input.application_id)}/environments/${encodeURIComponent(input.environment_id)}/permissions`,
+        {
+          ...(input.role_id !== undefined ? { role_id: input.role_id } : {}),
+          ...(input.permission_name !== undefined ? { permission_name: input.permission_name } : {}),
+          ...(typeof input.permission_value !== "undefined"
+            ? { permission_value: input.permission_value }
+            : {})
+        }
+      )) as {
+        status?: string;
+        result?: unknown;
+      };
+      const item = getResultObject<Record<string, unknown>>(response);
+
+      return {
+        application_id: input.application_id,
+        environment_id: String(item.environment_id ?? input.environment_id),
+        permission: item,
+        status: response.status,
+        raw: response.result ?? response
+      };
+    },
     async updateApplicationPermissionLevel(input) {
       const response = (await _http.put("/v3/applications/permission-level", {
         project_id: input.project_id,
@@ -3884,6 +4100,22 @@ export function createDeployClient(_http: ReturnTypeCreateHttpClient): DeployCli
         creatable: Boolean(response.result?.creatable),
         status: response.status,
         raw: response.result
+      };
+    },
+    async checkHostGroupCreatable(input) {
+      const response = (await _http.get(
+        `/v1/host-groups/creatable/${encodeURIComponent(input.project_id)}/permissions`
+      )) as {
+        can_created?: boolean;
+        result?: {
+          can_created?: boolean;
+        };
+      };
+
+      return {
+        project_id: input.project_id,
+        can_created: Boolean(response.can_created ?? response.result?.can_created),
+        raw: response.result ?? response
       };
     },
     async listHistories(input) {

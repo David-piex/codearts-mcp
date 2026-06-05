@@ -6,7 +6,7 @@
 
 模块：`流水线`
 
-API 数量：`133`
+API 数量：`138`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
@@ -758,6 +758,128 @@ API 数量：`133`
     "run_id",
     "job_id",
     "step_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### pipeline_create_change_request
+
+所属模块：`流水线`
+
+说明：创建流水线的change请求。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "pipeline_create_change_request",
+    "arguments": {
+      "cloud_project_id": "<cloud_project_id>",
+      "component_id": "<component_id>",
+      "title": "<title>",
+      "workitem_ids": "<workitem_ids>",
+      "repos": "<repos>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `cloud_project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `cloud_project_id` ↔ 原始 CodeArts 流水线 API 同名字段 `cloud_project_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>云项目 ID，用于定位对应的 CodeArts 资源。 |
+| `component_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `component_id` ↔ 原始 CodeArts 流水线 API 同名字段 `component_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>component ID，用于定位对应的 CodeArts 资源。 |
+| `title` | 是 | `string` |  | 字段对应：<br>MCP 字段 `title` ↔ 原始 CodeArts 流水线 API 中的标题字段，常见原字段名为 `name`、`subject` 或 `title`。<br>标题，用于工作项、合并请求、计划等资源的主显示名称。建议简洁说明要做什么。 |
+| `type` | 否 | `string` |  | 字段对应：<br>MCP 字段 `type` ↔ 原始 CodeArts 流水线 API 同名字段 `type`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>类型字段，用于区分资源类别、操作类别或查询类别；具体取值以该接口的业务对象为准。 |
+| `workitem_ids` | 是 | `array<object>` |  | 字段对应：<br>MCP 字段 `workitem_ids` ↔ 原始 CodeArts 流水线 API 同名字段 `workitem_ids`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>工作项 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `repos` | 是 | `array<object>` |  | 字段对应：<br>MCP 字段 `repos` ↔ 原始 CodeArts 流水线 API 同名字段 `repos`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "cloud_project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "component_id": {
+      "$ref": "#/properties/cloud_project_id"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "workitem_ids": {
+      "type": "array",
+      "items": {
+        "$ref": "#/properties/cloud_project_id"
+      },
+      "minItems": 1
+    },
+    "repos": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "repo_id": {
+            "$ref": "#/properties/cloud_project_id"
+          },
+          "http_url": {
+            "type": "string",
+            "minLength": 1
+          },
+          "git_url": {
+            "type": "string",
+            "minLength": 1
+          },
+          "feature_branch": {
+            "type": "string",
+            "minLength": 1
+          },
+          "main_branch": {
+            "type": "string",
+            "minLength": 1
+          },
+          "delete_branch_after_released": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "repo_id",
+          "http_url",
+          "git_url",
+          "feature_branch",
+          "main_branch"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "cloud_project_id",
+    "component_id",
+    "title",
+    "workitem_ids",
+    "repos"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -4762,6 +4884,125 @@ API 数量：`133`
 }
 ```
 
+### pipeline_list_change_request_operation_logs
+
+所属模块：`流水线`
+
+说明：查询流水线的change请求操作日志。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "pipeline_list_change_request_operation_logs",
+    "arguments": {
+      "cloud_project_id": "<cloud_project_id>",
+      "change_request_id": "<change_request_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `cloud_project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `cloud_project_id` ↔ 原始 CodeArts 流水线 API 同名字段 `cloud_project_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>云项目 ID，用于定位对应的 CodeArts 资源。 |
+| `change_request_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `change_request_id` ↔ 原始 CodeArts 流水线 API 同名字段 `change_request_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>change请求 ID，用于定位对应的 CodeArts 资源。 |
+| `offset` | 否 | `integer` | 0 | 字段对应：<br>MCP 字段 `offset` ↔ 原始 CodeArts 流水线 API 同名字段 `offset`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>分页偏移量，表示从结果集第几条开始返回，常与 limit 配合使用。 |
+| `limit` | 否 | `integer` | 20 | 字段对应：<br>MCP 字段 `limit` ↔ 原始 CodeArts 流水线 API 同名字段 `limit`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>分页数量上限，表示本次最多返回多少条记录。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "cloud_project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "change_request_id": {
+      "$ref": "#/properties/cloud_project_id"
+    },
+    "offset": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 200,
+      "default": 20
+    }
+  },
+  "required": [
+    "cloud_project_id",
+    "change_request_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### pipeline_list_change_request_work_items
+
+所属模块：`流水线`
+
+说明：查询流水线的change请求工作项。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "pipeline_list_change_request_work_items",
+    "arguments": {
+      "cloud_project_id": "<cloud_project_id>",
+      "change_request_id": "<change_request_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `cloud_project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `cloud_project_id` ↔ 原始 CodeArts 流水线 API 同名字段 `cloud_project_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>云项目 ID，用于定位对应的 CodeArts 资源。 |
+| `change_request_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `change_request_id` ↔ 原始 CodeArts 流水线 API 同名字段 `change_request_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>change请求 ID，用于定位对应的 CodeArts 资源。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "cloud_project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "change_request_id": {
+      "$ref": "#/properties/cloud_project_id"
+    }
+  },
+  "required": [
+    "cloud_project_id",
+    "change_request_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### pipeline_list_change_requests
 
 所属模块：`流水线`
@@ -7827,6 +8068,145 @@ API 数量：`133`
     "domain_id",
     "rule_set_id",
     "is_valid"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### pipeline_update_change_request_status
+
+所属模块：`流水线`
+
+说明：更新流水线的change请求状态。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "pipeline_update_change_request_status",
+    "arguments": {
+      "cloud_project_id": "<cloud_project_id>",
+      "change_request_id": "<change_request_id>",
+      "status": "<status>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `cloud_project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `cloud_project_id` ↔ 原始 CodeArts 流水线 API 同名字段 `cloud_project_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>云项目 ID，用于定位对应的 CodeArts 资源。 |
+| `change_request_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `change_request_id` ↔ 原始 CodeArts 流水线 API 同名字段 `change_request_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>change请求 ID，用于定位对应的 CodeArts 资源。 |
+| `status` | 是 | `"developing" \| "to_be_released" \| "releasing" \| "released" \| "revoked"` |  | 字段对应：<br>MCP 字段 `status` ↔ 原始 CodeArts 流水线 API 同名字段 `status`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>状态过滤条件或目标状态。用于列表查询时表示筛选状态，用于更新/流转时表示要变更到的目标状态；具体取值以对应资源的状态字典为准。可选值：`developing`、`to_be_released`、`releasing`、`released`、`revoked`。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "cloud_project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "change_request_id": {
+      "$ref": "#/properties/cloud_project_id"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "developing",
+        "to_be_released",
+        "releasing",
+        "released",
+        "revoked"
+      ]
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "cloud_project_id",
+    "change_request_id",
+    "status"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### pipeline_update_change_request_work_items
+
+所属模块：`流水线`
+
+说明：更新流水线的change请求工作项。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "pipeline_update_change_request_work_items",
+    "arguments": {
+      "cloud_project_id": "<cloud_project_id>",
+      "change_request_id": "<change_request_id>",
+      "work_item_ids": "<work_item_ids>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `cloud_project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `cloud_project_id` ↔ 原始 CodeArts 流水线 API 同名字段 `cloud_project_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>云项目 ID，用于定位对应的 CodeArts 资源。 |
+| `change_request_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `change_request_id` ↔ 原始 CodeArts 流水线 API 同名字段 `change_request_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>change请求 ID，用于定位对应的 CodeArts 资源。 |
+| `work_item_ids` | 是 | `array<object>` |  | 字段对应：<br>MCP 字段 `work_item_ids` ↔ 原始 CodeArts 流水线 API 中的工作项 ID 集合字段，常见原字段名为 `issue_ids`、`issueIds`、`id`。<br>工作项 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "cloud_project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "change_request_id": {
+      "$ref": "#/properties/cloud_project_id"
+    },
+    "work_item_ids": {
+      "type": "array",
+      "items": {
+        "$ref": "#/properties/cloud_project_id"
+      },
+      "minItems": 1
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "cloud_project_id",
+    "change_request_id",
+    "work_item_ids"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

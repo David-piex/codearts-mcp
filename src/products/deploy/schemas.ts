@@ -240,6 +240,22 @@ export const deployGetHostGroupPermissionsInput = z.object({
   group_id: idSchema
 });
 
+export const deployUpdateHostGroupPermissionsInput = z.object({
+  group_id: idSchema,
+  project_id: idSchema,
+  role_id: idSchema,
+  permission_name: z.enum([
+    "can_view",
+    "can_edit",
+    "can_delete",
+    "can_add_host",
+    "can_manage",
+    "can_copy"
+  ]),
+  permission_value: z.boolean(),
+  dry_run: z.boolean().default(true)
+});
+
 export const deployListHostGroupEnvironmentsInput = pagingSchema.extend({
   group_id: idSchema
 });
@@ -628,6 +644,40 @@ export const deployListApplicationGroupsInput = z.object({
   project_id: idSchema
 });
 
+export const deployCreateApplicationGroupInput = z.object({
+  project_id: idSchema,
+  name: z.string().min(1),
+  parent_id: idSchema.optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const deployUpdateApplicationGroupInput = z.object({
+  project_id: idSchema,
+  group_id: idSchema,
+  name: z.string().min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const deployDeleteApplicationGroupInput = z.object({
+  project_id: idSchema,
+  group_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const deployMoveApplicationGroupInput = z.object({
+  project_id: idSchema,
+  id: idSchema,
+  movement: z.union([z.literal(1), z.literal(-1)]),
+  dry_run: z.boolean().default(true)
+});
+
+export const deployMoveApplicationsToGroupInput = z.object({
+  project_id: idSchema,
+  group_id: idSchema,
+  application_ids: z.array(idSchema).min(1),
+  dry_run: z.boolean().default(true)
+});
+
 export const deployGetSuccessRateMetricsInput = z.object({
   project_id: idSchema,
   query: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).default({})
@@ -643,6 +693,31 @@ export const deployGetEnvironmentPermissionsInput = z.object({
   environment_id: idSchema
 });
 
+export const deployUpdateEnvironmentPermissionsInput = z
+  .object({
+    application_id: idSchema,
+    environment_id: idSchema,
+    role_id: idSchema.optional(),
+    permission_name: z
+      .enum(["can_view", "can_edit", "can_delete", "can_deploy", "can_manage"])
+      .optional(),
+    permission_value: z.boolean().optional(),
+    dry_run: z.boolean().default(true)
+  })
+  .refine(
+    (input) =>
+      input.role_id !== undefined ||
+      input.permission_name !== undefined ||
+      input.permission_value !== undefined,
+    {
+      message: "At least one of role_id, permission_name, or permission_value is required"
+    }
+  );
+
 export const deployCheckApplicationCreatableInput = z.object({
+  project_id: idSchema
+});
+
+export const deployCheckHostGroupCreatableInput = z.object({
   project_id: idSchema
 });

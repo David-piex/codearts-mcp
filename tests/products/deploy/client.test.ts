@@ -509,6 +509,54 @@ describe("createDeployClient", () => {
     ]);
   });
 
+  it("updates host group permissions from the v2 permissions endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: unknown;
+    const client = createClient({
+      put: async (path: string, body?: unknown) => {
+        requestedPath = path;
+        requestedBody = body;
+        return {
+          group_id: "group-1",
+          role_id: "role-1",
+          can_add_host: true,
+          can_manage: true
+        };
+      }
+    });
+
+    const result = await client.updateHostGroupPermissions({
+      group_id: "group-1",
+      project_id: "project-1",
+      role_id: "role-1",
+      permission_name: "can_add_host",
+      permission_value: true
+    });
+
+    expect(requestedPath).toBe("/v2/host-groups/group-1/permissions");
+    expect(requestedBody).toEqual({
+      project_id: "project-1",
+      role_id: "role-1",
+      permission_name: "can_add_host",
+      permission_value: true
+    });
+    expect(result).toEqual({
+      group_id: "group-1",
+      permission: {
+        group_id: "group-1",
+        role_id: "role-1",
+        can_add_host: true,
+        can_manage: true
+      },
+      raw: {
+        group_id: "group-1",
+        role_id: "role-1",
+        can_add_host: true,
+        can_manage: true
+      }
+    });
+  });
+
   it("creates a deploy environment from the application environments endpoint", async () => {
     let requestedPath = "";
     let requestedBody: unknown;
@@ -702,6 +750,56 @@ describe("createDeployClient", () => {
         }
       ],
       total: 1
+    });
+  });
+
+  it("updates environment permissions from the documented v2 endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: unknown;
+    const client = createClient({
+      put: async (path: string, body?: unknown) => {
+        requestedPath = path;
+        requestedBody = body;
+        return {
+          status: "success",
+          result: {
+            environment_id: "env-1",
+            role_id: "role-1",
+            can_deploy: true,
+            can_manage: true
+          }
+        };
+      }
+    });
+
+    const result = await client.updateEnvironmentPermissions({
+      application_id: "app-1",
+      environment_id: "env-1",
+      permission_name: "can_deploy",
+      permission_value: true
+    });
+
+    expect(requestedPath).toBe("/v2/applications/app-1/environments/env-1/permissions");
+    expect(requestedBody).toEqual({
+      permission_name: "can_deploy",
+      permission_value: true
+    });
+    expect(result).toEqual({
+      application_id: "app-1",
+      environment_id: "env-1",
+      permission: {
+        environment_id: "env-1",
+        role_id: "role-1",
+        can_deploy: true,
+        can_manage: true
+      },
+      status: "success",
+      raw: {
+        environment_id: "env-1",
+        role_id: "role-1",
+        can_deploy: true,
+        can_manage: true
+      }
     });
   });
 
@@ -2946,6 +3044,166 @@ describe("createDeployClient", () => {
       application_ids: ["app-1", "app-2"],
       permission_level: "project",
       status: "success"
+    });
+  });
+
+  it("creates, updates, deletes, and moves application groups", async () => {
+    const requests: Array<{ method: string; path: string; body?: unknown }> = [];
+    const client = createClient({
+      post: async (path: string, body?: unknown) => {
+        requests.push({ method: "POST", path, body });
+        return {
+          result: "group-1",
+          status: "success"
+        };
+      },
+      put: async (path: string, body?: unknown) => {
+        requests.push({ method: "PUT", path, body });
+
+        if (path.endsWith("/groups/group-1")) {
+          return { result: "group-1", status: "success" };
+        }
+
+        if (path.endsWith("/groups/swap")) {
+          return { result: "group-1", status: "success" };
+        }
+
+        return {
+          result: [
+            {
+              code: "failed",
+              application_id: "app-2",
+              application_name: "billing",
+              error_code: "403",
+              error_msg: "permission denied"
+            }
+          ],
+          status: "success"
+        };
+      },
+      delete: async (path: string) => {
+        requests.push({ method: "DELETE", path });
+        return { result: "group-1", status: "success" };
+      }
+    });
+
+    const created = await client.createApplicationGroup({
+      project_id: "project-1",
+      name: "group-a",
+      parent_id: "parent-1"
+    });
+    const updated = await client.updateApplicationGroup({
+      project_id: "project-1",
+      group_id: "group-1",
+      name: "group-b"
+    });
+    const moved = await client.moveApplicationGroup({
+      project_id: "project-1",
+      id: "group-1",
+      movement: -1
+    });
+    const moveApps = await client.moveApplicationsToGroup({
+      project_id: "project-1",
+      group_id: "group-1",
+      application_ids: ["app-1", "app-2"]
+    });
+    const deleted = await client.deleteApplicationGroup({
+      project_id: "project-1",
+      group_id: "group-1"
+    });
+
+    expect(requests).toEqual([
+      {
+        method: "POST",
+        path: "/v1/projects/project-1/applications/groups",
+        body: { name: "group-a", parent_id: "parent-1" }
+      },
+      {
+        method: "PUT",
+        path: "/v1/projects/project-1/applications/groups/group-1",
+        body: { name: "group-b" }
+      },
+      {
+        method: "PUT",
+        path: "/v1/projects/project-1/applications/groups/swap",
+        body: { id: "group-1", movement: -1 }
+      },
+      {
+        method: "PUT",
+        path: "/v1/projects/project-1/applications/groups/move",
+        body: { group_id: "group-1", application_ids: ["app-1", "app-2"] }
+      },
+      {
+        method: "DELETE",
+        path: "/v1/projects/project-1/applications/groups/group-1"
+      }
+    ]);
+    expect(created).toEqual({
+      project_id: "project-1",
+      group_id: "group-1",
+      name: "group-a",
+      parent_id: "parent-1",
+      status: "success"
+    });
+    expect(updated).toEqual({
+      project_id: "project-1",
+      group_id: "group-1",
+      name: "group-b",
+      status: "success"
+    });
+    expect(moved).toEqual({
+      project_id: "project-1",
+      group_id: "group-1",
+      movement: -1,
+      status: "success"
+    });
+    expect(moveApps).toEqual({
+      project_id: "project-1",
+      group_id: "group-1",
+      application_ids: ["app-1", "app-2"],
+      result: [
+        {
+          code: "failed",
+          application_id: "app-2",
+          application_name: "billing",
+          error_code: "403",
+          error_msg: "permission denied"
+        }
+      ],
+      status: "success",
+      raw: [
+        {
+          code: "failed",
+          application_id: "app-2",
+          application_name: "billing",
+          error_code: "403",
+          error_msg: "permission denied"
+        }
+      ]
+    });
+    expect(deleted).toEqual({
+      project_id: "project-1",
+      group_id: "group-1",
+      status: "success"
+    });
+  });
+
+  it("checks host group creatable permission from the documented endpoint", async () => {
+    let requestedPath = "";
+    const client = createClient({
+      get: async (path: string) => {
+        requestedPath = path;
+        return { can_created: true };
+      }
+    });
+
+    const result = await client.checkHostGroupCreatable(createProjectInput());
+
+    expect(requestedPath).toBe("/v1/host-groups/creatable/project-1/permissions");
+    expect(result).toEqual({
+      project_id: "project-1",
+      can_created: true,
+      raw: { can_created: true }
     });
   });
 

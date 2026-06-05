@@ -9,6 +9,8 @@ import {
   pipelineGetNoticeMessagesInput,
   pipelineGetOauthAuthorizationUrlInput,
   pipelineGetPacActionInput,
+  pipelineListChangeRequestOperationLogsInput,
+  pipelineListChangeRequestWorkItemsInput,
   pipelineListChangeRequestsInput,
   pipelineListComponentsInput,
   pipelineListExecutionPlansInput,
@@ -72,6 +74,16 @@ export type PipelineProductQueryClient = {
     cloud_project_id: string;
     change_request_id: string;
   }) => Promise<RawItemResponse>;
+  listChangeRequestOperationLogs: (input: {
+    cloud_project_id: string;
+    change_request_id: string;
+    offset: number;
+    limit: number;
+  }) => Promise<RawListResponse>;
+  listChangeRequestWorkItems: (input: {
+    cloud_project_id: string;
+    change_request_id: string;
+  }) => Promise<RawListResponse>;
   listComponents: (input: {
     cloud_project_id: string;
     offset: number;
@@ -196,6 +208,24 @@ export const createPipelineGetChangeRequestHandler = (client: PipelineProductQue
     summary: "Loaded pipeline change request",
     itemKey: "changeRequest",
     id: (input) => input.change_request_id
+  });
+
+export const createPipelineListChangeRequestOperationLogsHandler = (client: PipelineProductQueryClient) =>
+  createPipelineRawListHandler({
+    inputSchema: pipelineListChangeRequestOperationLogsInput,
+    call: (input) => client.listChangeRequestOperationLogs(input),
+    noun: "pipeline change request operation logs",
+    itemKey: "changeRequestOperationLog",
+    rawKey: "changeRequestOperationLogs"
+  });
+
+export const createPipelineListChangeRequestWorkItemsHandler = (client: PipelineProductQueryClient) =>
+  createPipelineRawListHandler({
+    inputSchema: pipelineListChangeRequestWorkItemsInput,
+    call: (input) => client.listChangeRequestWorkItems(input),
+    noun: "pipeline change request work items",
+    itemKey: "changeRequestWorkItem",
+    rawKey: "changeRequestWorkItems"
   });
 
 export const createPipelineListComponentsHandler = (client: PipelineProductQueryClient) =>

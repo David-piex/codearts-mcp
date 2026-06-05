@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
+import { createDeployCheckHostGroupCreatableHandler } from "../../../../src/products/deploy/tools/check-host-group-creatable.js";
 import { createDeployGetHostGroupHandler } from "../../../../src/products/deploy/tools/get-host-group.js";
 import { createDeployListAppHostGroupsHandler } from "../../../../src/products/deploy/tools/list-app-host-groups.js";
 import { createDeployListHostGroupEnvironmentsHandler } from "../../../../src/products/deploy/tools/list-host-group-environments.js";
 import { createDeployListHostGroupHostsHandler } from "../../../../src/products/deploy/tools/list-host-group-hosts.js";
 import { createDeployListHostGroupsHandler } from "../../../../src/products/deploy/tools/list-host-groups.js";
+import { createDeployUpdateHostGroupPermissionsHandler } from "../../../../src/products/deploy/tools/update-host-group-permissions.js";
 
 describe("deploy host group handlers", () => {
   it("maps deploy host groups into MCP output", async () => {
@@ -209,5 +211,58 @@ describe("deploy host group handlers", () => {
     expect(result.content[0]?.text).toContain("0 deploy host groups available to the application");
     expect(result.content[0]?.text).toContain("If you expected deploy host groups available to the application here");
     expect(result.content[0]?.text).toContain("project-empty");
+  });
+
+  it("checks host group creatable permission", async () => {
+    const handler = createDeployCheckHostGroupCreatableHandler({
+      checkHostGroupCreatable: async () => ({
+        project_id: "project-1",
+        can_created: true,
+        raw: { can_created: true }
+      })
+    });
+
+    const result = await handler({ project_id: "project-1" });
+
+    expect(result.structuredContent.item).toEqual({
+      id: "project-1",
+      projectId: "project-1",
+      canCreated: true,
+      raw: { can_created: true }
+    });
+  });
+
+  it("maps updated host group permissions into MCP output", async () => {
+    const handler = createDeployUpdateHostGroupPermissionsHandler({
+      updateHostGroupPermissions: async () => ({
+        group_id: "group-1",
+        permission: {
+          role_id: "role-1",
+          role_type: "cluster-creator",
+          can_add_host: true,
+          can_copy: true
+        },
+        raw: { ok: true }
+      })
+    });
+
+    const result = await handler({
+      group_id: "group-1",
+      project_id: "project-1",
+      role_id: "role-1",
+      permission_name: "can_add_host",
+      permission_value: true,
+      dry_run: false
+    });
+
+    expect(result.structuredContent.item).toMatchObject({
+      id: "role-1",
+      roleId: "role-1",
+      roleType: "cluster-creator",
+      canAddHost: true,
+      canCopy: true,
+      groupId: "group-1",
+      executed: true
+    });
   });
 });

@@ -6,9 +6,12 @@ const coveredDeployToolNames = [
   "deploy_cancel_v4_deploy_record",
   "deploy_check_application_creatable",
   "deploy_check_application_exists",
+  "deploy_check_host_group_creatable",
   "deploy_create_application",
+  "deploy_create_application_group",
   "deploy_create_environment",
   "deploy_create_task_by_template",
+  "deploy_delete_application_group",
   "deploy_delete_application_environment",
   "deploy_delete_v4_cluster_hosts",
   "deploy_delete_v4_environment_hosts",
@@ -69,6 +72,8 @@ const coveredDeployToolNames = [
   "deploy_list_variable_history",
   "deploy_list_variables",
   "deploy_modify_application",
+  "deploy_move_application_group",
+  "deploy_move_applications_to_group",
   "deploy_pass_v4_manual_check",
   "deploy_query_variables",
   "deploy_refuse_v4_manual_check",
@@ -79,7 +84,10 @@ const coveredDeployToolNames = [
   "deploy_rollback_v4_deploy_record",
   "deploy_start_app",
   "deploy_stop_app",
+  "deploy_update_application_group",
   "deploy_update_application_environment",
+  "deploy_update_environment_permissions",
+  "deploy_update_host_group_permissions",
   "deploy_update_application_permission_level"
 ].sort();
 

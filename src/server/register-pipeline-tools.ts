@@ -14,6 +14,7 @@ import {
   pipelineCheckComponentInput,
   pipelineCheckProjectInput,
   pipelineCheckpointInput,
+  pipelineCreateChangeRequestInput,
   pipelineCreateExtensionEndpointInput,
   pipelineCreateGroupInput,
   pipelineCreateByTemplateInput,
@@ -52,6 +53,8 @@ import {
   pipelineGetProjectStrategyInput,
   pipelineGetProjectStrategyRelatedInfoInput,
   pipelineListArtifactsInput,
+  pipelineListChangeRequestOperationLogsInput,
+  pipelineListChangeRequestWorkItemsInput,
   pipelineDashboardQueryInput,
   pipelineListChangeRequestsInput,
   pipelineListComponentsInput,
@@ -114,6 +117,8 @@ import {
   pipelineUpdateRolePermissionInput,
   pipelineUpdateTagInput,
   pipelineUpdateThirdPartyNoticeInput,
+  pipelineUpdateChangeRequestStatusInput,
+  pipelineUpdateChangeRequestWorkItemsInput,
   pipelineUpdatePipelineInfoInput,
   pipelineUpdateProjectStrategyInput,
   pipelineRollbackRunInput,
@@ -142,6 +147,11 @@ import {
   createPipelineCreateHandler,
   createPipelineUpdateInfoHandler
 } from "../products/pipeline/tools/manage-pipeline-core.js";
+import {
+  createPipelineCreateChangeRequestHandler,
+  createPipelineUpdateChangeRequestStatusHandler,
+  createPipelineUpdateChangeRequestWorkItemsHandler
+} from "../products/pipeline/tools/manage-change-requests.js";
 import {
   createPipelineSwitchNoticeHandler,
   createPipelineSwitchPermissionHandler,
@@ -208,6 +218,8 @@ import {
   createPipelineGetNoticeMessagesHandler,
   createPipelineGetOauthAuthorizationUrlHandler,
   createPipelineGetPacActionHandler,
+  createPipelineListChangeRequestOperationLogsHandler,
+  createPipelineListChangeRequestWorkItemsHandler,
   createPipelineListChangeRequestsHandler,
   createPipelineListComponentsHandler,
   createPipelineListDashboardPipelineCountsHandler,
@@ -967,6 +979,20 @@ const pipelineToolDefinitions = {
     selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetDashboardConcurrencyHandler>[0] }) => clients.pipelineClient,
     createProductHandler: createPipelineGetDashboardConcurrencyHandler
   }),
+  "pipeline_create_change_request": defineProductTool({
+    description: "Create CodeArts Pipeline change request",
+    inputSchema: pipelineCreateChangeRequestInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineCreateChangeRequestHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineCreateChangeRequestHandler,
+    rateLimitAction: "pipeline_create_change_request"
+  }),
+  "pipeline_update_change_request_status": defineProductTool({
+    description: "Update CodeArts Pipeline change request status",
+    inputSchema: pipelineUpdateChangeRequestStatusInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineUpdateChangeRequestStatusHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineUpdateChangeRequestStatusHandler,
+    rateLimitAction: "pipeline_update_change_request_status"
+  }),
   "pipeline_list_change_requests": defineProductTool({
     description: "List CodeArts Pipeline change requests",
     inputSchema: pipelineListChangeRequestsInput,
@@ -978,6 +1004,25 @@ const pipelineToolDefinitions = {
     inputSchema: pipelineGetChangeRequestInput,
     selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetChangeRequestHandler>[0] }) => clients.pipelineClient,
     createProductHandler: createPipelineGetChangeRequestHandler
+  }),
+  "pipeline_list_change_request_operation_logs": defineProductTool({
+    description: "List CodeArts Pipeline change request operation logs",
+    inputSchema: pipelineListChangeRequestOperationLogsInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineListChangeRequestOperationLogsHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineListChangeRequestOperationLogsHandler
+  }),
+  "pipeline_list_change_request_work_items": defineProductTool({
+    description: "List CodeArts Pipeline change request work items",
+    inputSchema: pipelineListChangeRequestWorkItemsInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineListChangeRequestWorkItemsHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineListChangeRequestWorkItemsHandler
+  }),
+  "pipeline_update_change_request_work_items": defineProductTool({
+    description: "Update CodeArts Pipeline change request work items",
+    inputSchema: pipelineUpdateChangeRequestWorkItemsInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineUpdateChangeRequestWorkItemsHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineUpdateChangeRequestWorkItemsHandler,
+    rateLimitAction: "pipeline_update_change_request_work_items"
   }),
   "pipeline_list_components": defineProductTool({
     description: "List CodeArts Pipeline components",

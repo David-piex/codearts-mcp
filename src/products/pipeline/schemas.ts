@@ -863,6 +863,59 @@ export const pipelineDashboardQueryInput = z.object({
   query: pipelineRawQueryInput.optional()
 });
 
+const pipelineChangeRequestStatusSchema = z.enum([
+  "developing",
+  "to_be_released",
+  "releasing",
+  "released",
+  "revoked"
+]);
+
+export const pipelineChangeRequestRepoInput = z.object({
+  repo_id: idSchema,
+  http_url: z.string().min(1),
+  git_url: z.string().min(1),
+  feature_branch: z.string().min(1),
+  main_branch: z.string().min(1),
+  delete_branch_after_released: z.boolean().optional()
+});
+
+export const pipelineCreateChangeRequestInput = z.object({
+  cloud_project_id: idSchema,
+  component_id: idSchema,
+  title: z.string().min(1),
+  type: z.string().min(1).optional(),
+  workitem_ids: z.array(idSchema).min(1),
+  repos: z.array(pipelineChangeRequestRepoInput).min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const pipelineUpdateChangeRequestStatusInput = z.object({
+  cloud_project_id: idSchema,
+  change_request_id: idSchema,
+  status: pipelineChangeRequestStatusSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const pipelineListChangeRequestOperationLogsInput = z.object({
+  cloud_project_id: idSchema,
+  change_request_id: idSchema,
+  offset: z.number().int().min(0).default(0),
+  limit: z.number().int().min(1).max(200).default(20)
+});
+
+export const pipelineListChangeRequestWorkItemsInput = z.object({
+  cloud_project_id: idSchema,
+  change_request_id: idSchema
+});
+
+export const pipelineUpdateChangeRequestWorkItemsInput = z.object({
+  cloud_project_id: idSchema,
+  change_request_id: idSchema,
+  work_item_ids: z.array(idSchema).min(1),
+  dry_run: z.boolean().default(true)
+});
+
 export const pipelineListChangeRequestsInput = z.object({
   cloud_project_id: idSchema,
   offset: z.number().int().min(0).default(0),
