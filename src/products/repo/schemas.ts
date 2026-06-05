@@ -1343,6 +1343,10 @@ export const repoShowProjectTenantSettingsInput = z.object({
 
 export const repoListTenantTrustedIpAddressesInput = tenantPagingSchema;
 
+export const repoListTrustedIpAddressesInput = pagingSchema.extend({
+  repository_id: idSchema
+});
+
 export const repoListUserGpgKeysInput = z.object({
   query: z.string().min(1).max(2000).optional()
 });
@@ -1397,11 +1401,25 @@ export const repoAddTenantTrustedIpAddressInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const repoAddTrustedIpAddressInput = repoAddTenantTrustedIpAddressInput.extend({
+  repository_id: idSchema
+});
+
 export const repoUpdateTenantTrustedIpAddressInput = repoAddTenantTrustedIpAddressInput.extend({
   ip_id: idSchema
 });
 
+export const repoUpdateTrustedIpAddressInput = repoAddTrustedIpAddressInput.extend({
+  ip_id: idSchema
+});
+
 export const repoDeleteTenantTrustedIpAddressInput = z.object({
+  ip_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoDeleteTrustedIpAddressInput = z.object({
+  repository_id: idSchema,
   ip_id: idSchema,
   dry_run: z.boolean().default(true)
 });

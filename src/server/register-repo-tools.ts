@@ -213,6 +213,7 @@ import {
   repoShowTenantKMSGrantInput,
   repoShowProjectTenantSettingsInput,
   repoListTenantTrustedIpAddressesInput,
+  repoListTrustedIpAddressesInput,
   repoListUserGpgKeysInput,
   repoListUserSshKeysInput,
   repoCreateUserSshKeyInput,
@@ -221,8 +222,11 @@ import {
   repoUpdateTenantRepoEncryptionSettingInput,
   repoCreateTenantKMSGrantInput,
   repoAddTenantTrustedIpAddressInput,
+  repoAddTrustedIpAddressInput,
   repoUpdateTenantTrustedIpAddressInput,
+  repoUpdateTrustedIpAddressInput,
   repoDeleteTenantTrustedIpAddressInput,
+  repoDeleteTrustedIpAddressInput,
   repoShowProjectGeneralPolicyInput,
   repoShowProjectMergeRequestSettingInput,
   repoShowProjectMemberSettingInput,
@@ -546,6 +550,7 @@ import { createRepoListTenantEncryptedRepositoriesHandler } from "../products/re
 import { createRepoShowTenantKmsGrantHandler } from "../products/repo/tools/show-tenant-kms-grant.js";
 import { createRepoShowProjectTenantSettingsHandler } from "../products/repo/tools/show-project-tenant-settings.js";
 import { createRepoListTenantTrustedIpAddressesHandler } from "../products/repo/tools/list-tenant-trusted-ip-addresses.js";
+import { createRepoListTrustedIpAddressesHandler } from "../products/repo/tools/list-trusted-ip-addresses.js";
 import { createRepoListUserGpgKeysHandler } from "../products/repo/tools/list-user-gpg-keys.js";
 import { createRepoListUserSshKeysHandler } from "../products/repo/tools/list-user-ssh-keys.js";
 import { createRepoCreateUserSshKeyHandler } from "../products/repo/tools/create-user-ssh-key.js";
@@ -554,8 +559,11 @@ import { createRepoExportTenantRepositoriesHandler } from "../products/repo/tool
 import { createRepoUpdateTenantRepoEncryptionSettingHandler } from "../products/repo/tools/update-tenant-repo-encryption-setting.js";
 import { createRepoCreateTenantKmsGrantHandler } from "../products/repo/tools/create-tenant-kms-grant.js";
 import { createRepoAddTenantTrustedIpAddressHandler } from "../products/repo/tools/add-tenant-trusted-ip-address.js";
+import { createRepoAddTrustedIpAddressHandler } from "../products/repo/tools/add-trusted-ip-address.js";
 import { createRepoUpdateTenantTrustedIpAddressHandler } from "../products/repo/tools/update-tenant-trusted-ip-address.js";
+import { createRepoUpdateTrustedIpAddressHandler } from "../products/repo/tools/update-trusted-ip-address.js";
 import { createRepoDeleteTenantTrustedIpAddressHandler } from "../products/repo/tools/delete-tenant-trusted-ip-address.js";
+import { createRepoDeleteTrustedIpAddressHandler } from "../products/repo/tools/delete-trusted-ip-address.js";
 import { createRepoShowProjectGeneralPolicyHandler } from "../products/repo/tools/show-project-general-policy.js";
 import { createRepoListProjectNoteRequiredAttributesHandler } from "../products/repo/tools/list-project-note-required-attributes.js";
 import { createRepoShowProjectMemberSettingHandler } from "../products/repo/tools/show-project-member-setting.js";
@@ -795,7 +803,7 @@ const repoToolDefinitions = {
   "repo_show_tenant_kms_grant": defineProductTool({ description: "Show CodeArts Repo tenant KMS grant status", inputSchema: repoShowTenantKMSGrantInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowTenantKmsGrantHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowTenantKmsGrantHandler }),
   "repo_show_project_tenant_settings": defineProductTool({ description: "Show CodeArts Repo tenant settings", inputSchema: repoShowProjectTenantSettingsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowProjectTenantSettingsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowProjectTenantSettingsHandler }),
   "repo_list_tenant_trusted_ip_addresses": defineProductTool({ description: "List CodeArts Repo tenant trusted IP addresses", inputSchema: repoListTenantTrustedIpAddressesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListTenantTrustedIpAddressesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListTenantTrustedIpAddressesHandler }),
-  "repo_list_trusted_ip_addresses": defineProductTool({ description: "List CodeArts Repo trusted IP addresses through the official ListTrustedIpAddresses endpoint", inputSchema: repoListTenantTrustedIpAddressesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListTenantTrustedIpAddressesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListTenantTrustedIpAddressesHandler }),
+  "repo_list_trusted_ip_addresses": defineProductTool({ description: "List CodeArts Repo trusted IP addresses through the official ListTrustedIpAddresses endpoint", inputSchema: repoListTrustedIpAddressesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListTrustedIpAddressesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListTrustedIpAddressesHandler }),
   "repo_list_user_gpg_keys": defineProductTool({ description: "List CodeArts Repo current user GPG keys", inputSchema: repoListUserGpgKeysInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListUserGpgKeysHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListUserGpgKeysHandler }),
   "repo_list_user_ssh_keys": defineProductTool({ description: "List CodeArts Repo current user SSH keys", inputSchema: repoListUserSshKeysInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListUserSshKeysHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListUserSshKeysHandler }),
   "repo_list_user_keys": defineProductTool({ description: "List CodeArts Repo current user SSH keys through the official ListUserKeys endpoint", inputSchema: repoListUserSshKeysInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListUserSshKeysHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListUserSshKeysHandler }),
@@ -807,11 +815,11 @@ const repoToolDefinitions = {
   "repo_update_tenant_repo_encryption_setting": defineProductTool({ description: "Update CodeArts Repo tenant repo encryption setting", inputSchema: repoUpdateTenantRepoEncryptionSettingInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoUpdateTenantRepoEncryptionSettingHandler>[0] }) => clients.repoClient, createProductHandler: createRepoUpdateTenantRepoEncryptionSettingHandler }),
   "repo_create_tenant_kms_grant": defineProductTool({ description: "Create CodeArts Repo tenant KMS grant", inputSchema: repoCreateTenantKMSGrantInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCreateTenantKmsGrantHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCreateTenantKmsGrantHandler }),
   "repo_add_tenant_trusted_ip_address": defineProductTool({ description: "Add CodeArts Repo tenant trusted IP address", inputSchema: repoAddTenantTrustedIpAddressInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoAddTenantTrustedIpAddressHandler>[0] }) => clients.repoClient, createProductHandler: createRepoAddTenantTrustedIpAddressHandler }),
-  "repo_add_trusted_ip_address": defineProductTool({ description: "Add a CodeArts Repo trusted IP address through the official AddTrustedIpAddress endpoint", inputSchema: repoAddTenantTrustedIpAddressInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoAddTenantTrustedIpAddressHandler>[0] }) => clients.repoClient, createProductHandler: createRepoAddTenantTrustedIpAddressHandler }),
+  "repo_add_trusted_ip_address": defineProductTool({ description: "Add a CodeArts Repo trusted IP address through the official AddTrustedIpAddress endpoint", inputSchema: repoAddTrustedIpAddressInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoAddTrustedIpAddressHandler>[0] }) => clients.repoClient, createProductHandler: createRepoAddTrustedIpAddressHandler }),
   "repo_update_tenant_trusted_ip_address": defineProductTool({ description: "Update CodeArts Repo tenant trusted IP address", inputSchema: repoUpdateTenantTrustedIpAddressInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoUpdateTenantTrustedIpAddressHandler>[0] }) => clients.repoClient, createProductHandler: createRepoUpdateTenantTrustedIpAddressHandler }),
-  "repo_update_trusted_ip_address": defineProductTool({ description: "Update a CodeArts Repo trusted IP address through the official UpdateTrustedIpAddress endpoint", inputSchema: repoUpdateTenantTrustedIpAddressInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoUpdateTenantTrustedIpAddressHandler>[0] }) => clients.repoClient, createProductHandler: createRepoUpdateTenantTrustedIpAddressHandler }),
+  "repo_update_trusted_ip_address": defineProductTool({ description: "Update a CodeArts Repo trusted IP address through the official UpdateTrustedIpAddress endpoint", inputSchema: repoUpdateTrustedIpAddressInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoUpdateTrustedIpAddressHandler>[0] }) => clients.repoClient, createProductHandler: createRepoUpdateTrustedIpAddressHandler }),
   "repo_delete_tenant_trusted_ip_address": defineProductTool({ description: "Delete CodeArts Repo tenant trusted IP address", inputSchema: repoDeleteTenantTrustedIpAddressInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoDeleteTenantTrustedIpAddressHandler>[0] }) => clients.repoClient, createProductHandler: createRepoDeleteTenantTrustedIpAddressHandler }),
-  "repo_delete_trusted_ip_address": defineProductTool({ description: "Delete a CodeArts Repo trusted IP address through the official DeleteTrustedIpAddress endpoint", inputSchema: repoDeleteTenantTrustedIpAddressInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoDeleteTenantTrustedIpAddressHandler>[0] }) => clients.repoClient, createProductHandler: createRepoDeleteTenantTrustedIpAddressHandler }),
+  "repo_delete_trusted_ip_address": defineProductTool({ description: "Delete a CodeArts Repo trusted IP address through the official DeleteTrustedIpAddress endpoint", inputSchema: repoDeleteTrustedIpAddressInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoDeleteTrustedIpAddressHandler>[0] }) => clients.repoClient, createProductHandler: createRepoDeleteTrustedIpAddressHandler }),
   "repo_list_repository_webhooks": defineProductTool({ description: "List CodeArts Repo repository webhooks", inputSchema: repoListRepositoryWebhooksInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoryWebhooksHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoryWebhooksHandler }),
   "repo_list_project_webhooks": defineProductTool({ description: "List CodeArts Repo project webhooks", inputSchema: repoListProjectWebhooksInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListProjectWebhooksHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListProjectWebhooksHandler }),
   "repo_list_group_webhooks": defineProductTool({ description: "List CodeArts Repo group webhooks", inputSchema: repoListGroupWebhooksInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListGroupWebhooksHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListGroupWebhooksHandler }),

@@ -1872,6 +1872,135 @@ describe("createRepoClient", () => {
     ]);
   });
 
+  it("uses repository trusted IP endpoints", async () => {
+    const calls: Array<{ method: string; path: string; body?: unknown }> = [];
+    const client = createRepoClient({
+      get: async (path: string) => {
+        calls.push({ method: "GET", path });
+        return [{
+          id: 19324,
+          repository_id: 2111897848,
+          ip_range: "255.255.255.255",
+          ip_start: "255.255.255.255",
+          ip_end: "255.255.255.255",
+          created_at: "Jul 22, 2024 2:42:46 PM",
+          updated_at: "Jul 22, 2024 2:42:46 PM",
+          ip_type: 2,
+          view_flag: 1,
+          download_flag: 1,
+          upload_flag: 1,
+          order_flag: 0
+        }];
+      },
+      post: async (path: string, body?: unknown) => {
+        calls.push({ method: "POST", path, body });
+        return {
+          id: 19324,
+          repository_id: 2111897848,
+          ip_range: "255.255.255.255",
+          ip_start: "255.255.255.255",
+          ip_end: "255.255.255.255",
+          ip_type: 2,
+          view_flag: 1,
+          download_flag: 1,
+          upload_flag: 1,
+          remark: "office"
+        };
+      },
+      put: async (path: string, body?: unknown) => {
+        calls.push({ method: "PUT", path, body });
+        return {
+          id: 19324,
+          repository_id: 2111897848,
+          ip_range: "255.255.255.0/24",
+          ip_start: "255.255.255.0",
+          ip_end: "255.255.255.255",
+          ip_type: 2,
+          view_flag: 1,
+          download_flag: 0,
+          upload_flag: 0,
+          remark: "updated"
+        };
+      },
+      delete: async (path: string) => {
+        calls.push({ method: "DELETE", path });
+        return { status: "success" };
+      }
+    } as never);
+
+    const listed = await client.listTrustedIpAddresses({
+      repository_id: "10001",
+      page: 2,
+      page_size: 10
+    });
+    const created = await client.addTrustedIpAddress({
+      repository_id: "10001",
+      ip_type: 2,
+      ip_start: "255.255.255.255",
+      ip_end: "255.255.255.255",
+      view_flag: 1,
+      download_flag: 1,
+      upload_flag: 1,
+      remark: "office"
+    });
+    const updated = await client.updateTrustedIpAddress({
+      repository_id: "10001",
+      ip_id: "19324",
+      ip_type: 2,
+      ip_start: "255.255.255.0",
+      ip_end: "255.255.255.255",
+      view_flag: 1,
+      download_flag: 0,
+      upload_flag: 0,
+      remark: "updated"
+    });
+    const deleted = await client.deleteTrustedIpAddress({
+      repository_id: "10001",
+      ip_id: "19324"
+    });
+
+    expect(listed.ip_addresses[0]?.repository_id).toBe(2111897848);
+    expect(created.repository_id).toBe(2111897848);
+    expect(updated.remark).toBe("updated");
+    expect(deleted.status).toBe("success");
+    expect(calls).toEqual([
+      {
+        method: "GET",
+        path: "/v4/projects/10001/trusted-ip-addresses?offset=10&limit=10"
+      },
+      {
+        method: "POST",
+        path: "/v4/projects/10001/trusted-ip-addresses",
+        body: {
+          ip_type: 2,
+          ip_start: "255.255.255.255",
+          ip_end: "255.255.255.255",
+          view_flag: 1,
+          download_flag: 1,
+          upload_flag: 1,
+          remark: "office"
+        }
+      },
+      {
+        method: "PUT",
+        path: "/v4/projects/10001/trusted-ip-addresses/19324",
+        body: {
+          ip_type: 2,
+          ip_start: "255.255.255.0",
+          ip_end: "255.255.255.255",
+          view_flag: 1,
+          download_flag: 0,
+          upload_flag: 0,
+          remark: "updated"
+        }
+      },
+      {
+        method: "DELETE",
+        path: "/v4/projects/10001/trusted-ip-addresses/19324"
+      }
+    ]);
+  });
+
   it("uses official repo commit and pipeline paths", async () => {
     const getCalls: string[] = [];
     const postCalls: Array<{ path: string; body: unknown }> = [];

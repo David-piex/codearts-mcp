@@ -1349,6 +1349,7 @@ export type RepoTenantTrustedIpAddress = {
   id?: number | string;
   user_id?: number | string;
   domain_id?: string;
+  repository_id?: number | string;
   ip_range?: string;
   ip_type?: number;
   ip_start?: string;
@@ -4104,6 +4105,14 @@ export type RepoClient = {
     ip_addresses: RepoTenantTrustedIpAddress[];
     total?: number;
   }>;
+  listTrustedIpAddresses: (input: {
+    repository_id: string;
+    page: number;
+    page_size: number;
+  }) => Promise<{
+    ip_addresses: RepoTenantTrustedIpAddress[];
+    total?: number;
+  }>;
   listUserGpgKeys: (input: {
     query?: string;
   }) => Promise<{
@@ -4146,8 +4155,19 @@ export type RepoClient = {
     title?: string | number;
   }) => Promise<RepoTenantKmsGrant>;
   addTenantTrustedIpAddress: (input: RepoTenantTrustedIpAddressMutationInput) => Promise<RepoTenantTrustedIpAddress>;
+  addTrustedIpAddress: (input: RepoTenantTrustedIpAddressMutationInput & { repository_id: string }) => Promise<RepoTenantTrustedIpAddress>;
   updateTenantTrustedIpAddress: (input: RepoTenantTrustedIpAddressMutationInput & { ip_id: string }) => Promise<RepoTenantTrustedIpAddress>;
+  updateTrustedIpAddress: (input: RepoTenantTrustedIpAddressMutationInput & {
+    repository_id: string;
+    ip_id: string;
+  }) => Promise<RepoTenantTrustedIpAddress>;
   deleteTenantTrustedIpAddress: (input: {
+    ip_id: string;
+  }) => Promise<{
+    status?: string;
+  }>;
+  deleteTrustedIpAddress: (input: {
+    repository_id: string;
     ip_id: string;
   }) => Promise<{
     status?: string;
@@ -4612,6 +4632,7 @@ function extractTenantTrustedIpAddressResponse(
     id: address.id,
     user_id: address.user_id,
     domain_id: address.domain_id,
+    repository_id: address.repository_id,
     ip_range: address.ip_range,
     ip_type: address.ip_type,
     ip_start: address.ip_start,
@@ -9886,6 +9907,14 @@ export function createRepoClient(
 
       return extractTenantTrustedIpAddressesResponse(rawResponse);
     },
+    async listTrustedIpAddresses(input) {
+      const query = buildOffsetLimitQuery(input);
+      const rawResponse = (await _http.get(
+        `/v4/projects/${encodeURIComponent(input.repository_id)}/trusted-ip-addresses?${query.toString()}`
+      )) as Parameters<typeof extractTenantTrustedIpAddressesResponse>[0];
+
+      return extractTenantTrustedIpAddressesResponse(rawResponse);
+    },
     async listUserGpgKeys(input) {
       const query = new URLSearchParams();
       appendOptionalQuery(query, input as Record<string, unknown>, ["query"]);
@@ -9976,6 +10005,22 @@ export function createRepoClient(
 
       return extractTenantTrustedIpAddressResponse(rawResponse);
     },
+    async addTrustedIpAddress(input) {
+      const rawResponse = (await _http.post(
+        `/v4/projects/${encodeURIComponent(input.repository_id)}/trusted-ip-addresses`,
+        omitUndefinedFields({
+          ip_type: input.ip_type,
+          ip_start: input.ip_start,
+          ip_end: input.ip_end,
+          view_flag: input.view_flag,
+          download_flag: input.download_flag,
+          upload_flag: input.upload_flag,
+          remark: input.remark
+        })
+      )) as Parameters<typeof extractTenantTrustedIpAddressResponse>[0];
+
+      return extractTenantTrustedIpAddressResponse(rawResponse);
+    },
     async updateTenantTrustedIpAddress(input) {
       const rawResponse = (await _http.put(
         `/v4/tenant/trusted-ip-addresses/${encodeURIComponent(input.ip_id)}`,
@@ -9992,9 +10037,35 @@ export function createRepoClient(
 
       return extractTenantTrustedIpAddressResponse(rawResponse);
     },
+    async updateTrustedIpAddress(input) {
+      const rawResponse = (await _http.put(
+        `/v4/projects/${encodeURIComponent(input.repository_id)}/trusted-ip-addresses/${encodeURIComponent(input.ip_id)}`,
+        omitUndefinedFields({
+          ip_type: input.ip_type,
+          ip_start: input.ip_start,
+          ip_end: input.ip_end,
+          view_flag: input.view_flag,
+          download_flag: input.download_flag,
+          upload_flag: input.upload_flag,
+          remark: input.remark
+        })
+      )) as Parameters<typeof extractTenantTrustedIpAddressResponse>[0];
+
+      return extractTenantTrustedIpAddressResponse(rawResponse);
+    },
     async deleteTenantTrustedIpAddress(input) {
       const response = (await _http.delete(
         `/v4/tenant/trusted-ip-addresses/${encodeURIComponent(input.ip_id)}`
+      )) as { status?: string; result?: { status?: string } };
+      const payload = unwrapRepoPayload(response);
+
+      return {
+        status: payload.result?.status ?? payload.status ?? "success"
+      };
+    },
+    async deleteTrustedIpAddress(input) {
+      const response = (await _http.delete(
+        `/v4/projects/${encodeURIComponent(input.repository_id)}/trusted-ip-addresses/${encodeURIComponent(input.ip_id)}`
       )) as { status?: string; result?: { status?: string } };
       const payload = unwrapRepoPayload(response);
 

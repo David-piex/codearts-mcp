@@ -739,7 +739,9 @@ API 数量：`372`
   "method": "tools/call",
   "params": {
     "name": "repo_add_trusted_ip_address",
-    "arguments": {}
+    "arguments": {
+      "repository_id": "<repository_id>"
+    }
   }
 }
 ```
@@ -756,6 +758,7 @@ API 数量：`372`
 | `upload_flag` | 否 | `0 \| 1` |  | 字段对应：<br>MCP 字段 `upload_flag` ↔ 原始 CodeArts 代码仓库 API 同名字段 `upload_flag`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。可选值：`0`、`1`。 |
 | `remark` | 否 | `string` |  | 字段对应：<br>MCP 字段 `remark` ↔ 原始 CodeArts 代码仓库 API 同名字段 `remark`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
 | `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+| `repository_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repository_id` ↔ 原始 CodeArts 代码仓库 API 中的仓库 ID 字段，通常位于路径参数或 Query 参数。<br>CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
 
 输入 JSON Schema：
 
@@ -807,8 +810,15 @@ API 数量：`372`
     "dry_run": {
       "type": "boolean",
       "default": true
+    },
+    "repository_id": {
+      "type": "string",
+      "minLength": 1
     }
   },
+  "required": [
+    "repository_id"
+  ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
 }
@@ -6840,6 +6850,7 @@ API 数量：`372`
   "params": {
     "name": "repo_delete_trusted_ip_address",
     "arguments": {
+      "repository_id": "<repository_id>",
       "ip_id": "<ip_id>"
     }
   }
@@ -6850,6 +6861,7 @@ API 数量：`372`
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
+| `repository_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repository_id` ↔ 原始 CodeArts 代码仓库 API 中的仓库 ID 字段，通常位于路径参数或 Query 参数。<br>CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
 | `ip_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `ip_id` ↔ 原始 CodeArts 代码仓库 API 同名字段 `ip_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>ip ID，用于定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -6859,9 +6871,12 @@ API 数量：`372`
 {
   "type": "object",
   "properties": {
-    "ip_id": {
+    "repository_id": {
       "type": "string",
       "minLength": 1
+    },
+    "ip_id": {
+      "$ref": "#/properties/repository_id"
     },
     "dry_run": {
       "type": "boolean",
@@ -6869,6 +6884,7 @@ API 数量：`372`
     }
   },
   "required": [
+    "repository_id",
     "ip_id"
   ],
   "additionalProperties": false,
@@ -17528,7 +17544,9 @@ API 数量：`372`
   "method": "tools/call",
   "params": {
     "name": "repo_list_trusted_ip_addresses",
-    "arguments": {}
+    "arguments": {
+      "repository_id": "<repository_id>"
+    }
   }
 }
 ```
@@ -17537,8 +17555,12 @@ API 数量：`372`
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `offset` | 否 | `integer` | 0 | 字段对应：<br>MCP 字段 `offset` ↔ 原始 CodeArts 代码仓库 API 同名字段 `offset`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>分页偏移量，表示从结果集第几条开始返回，常与 limit 配合使用。 |
-| `limit` | 否 | `integer` | 20 | 字段对应：<br>MCP 字段 `limit` ↔ 原始 CodeArts 代码仓库 API 同名字段 `limit`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>分页数量上限，表示本次最多返回多少条记录。 |
+| `page` | 否 | `integer` | 1 | 字段对应：<br>MCP 字段 `page` ↔ 原始 CodeArts 代码仓库 API 的分页页码或由 `offset/limit` 换算得到的页码。<br>页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 字段对应：<br>MCP 字段 `page_size` ↔ 原始 CodeArts 代码仓库 API 的分页大小字段，常见原字段名为 `page_size`、`limit` 或 `pageSize`。<br>每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 字段对应：<br>MCP 字段 `keyword` ↔ 原始 CodeArts 代码仓库 API 的搜索关键字字段，常见原字段名为 `keyword`、`search` 或 `name`。<br>搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 字段对应：<br>MCP 字段 `sort_by` ↔ 原始 CodeArts 代码仓库 API 同名字段 `sort_by`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 字段对应：<br>MCP 字段 `sort_order` ↔ 原始 CodeArts 代码仓库 API 同名字段 `sort_order`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `repository_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repository_id` ↔ 原始 CodeArts 代码仓库 API 中的仓库 ID 字段，通常位于路径参数或 Query 参数。<br>CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
 
 输入 JSON Schema：
 
@@ -17546,18 +17568,38 @@ API 数量：`372`
 {
   "type": "object",
   "properties": {
-    "offset": {
-      "type": "integer",
-      "minimum": 0,
-      "default": 0
-    },
-    "limit": {
+    "page": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "maximum": 100,
+      "default": 1
+    },
+    "page_size": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 200,
       "default": 20
+    },
+    "keyword": {
+      "type": "string"
+    },
+    "sort_by": {
+      "type": "string"
+    },
+    "sort_order": {
+      "type": "string",
+      "enum": [
+        "asc",
+        "desc"
+      ]
+    },
+    "repository_id": {
+      "type": "string",
+      "minLength": 1
     }
   },
+  "required": [
+    "repository_id"
+  ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
 }
@@ -28330,6 +28372,7 @@ API 数量：`372`
   "params": {
     "name": "repo_update_trusted_ip_address",
     "arguments": {
+      "repository_id": "<repository_id>",
       "ip_id": "<ip_id>"
     }
   }
@@ -28348,6 +28391,7 @@ API 数量：`372`
 | `upload_flag` | 否 | `0 \| 1` |  | 字段对应：<br>MCP 字段 `upload_flag` ↔ 原始 CodeArts 代码仓库 API 同名字段 `upload_flag`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。可选值：`0`、`1`。 |
 | `remark` | 否 | `string` |  | 字段对应：<br>MCP 字段 `remark` ↔ 原始 CodeArts 代码仓库 API 同名字段 `remark`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
 | `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+| `repository_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repository_id` ↔ 原始 CodeArts 代码仓库 API 中的仓库 ID 字段，通常位于路径参数或 Query 参数。<br>CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
 | `ip_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `ip_id` ↔ 原始 CodeArts 代码仓库 API 同名字段 `ip_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>ip ID，用于定位对应的 CodeArts 资源。 |
 
 输入 JSON Schema：
@@ -28401,12 +28445,16 @@ API 数量：`372`
       "type": "boolean",
       "default": true
     },
-    "ip_id": {
+    "repository_id": {
       "type": "string",
       "minLength": 1
+    },
+    "ip_id": {
+      "$ref": "#/properties/repository_id"
     }
   },
   "required": [
+    "repository_id",
     "ip_id"
   ],
   "additionalProperties": false,
