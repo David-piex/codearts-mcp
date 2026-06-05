@@ -40,6 +40,7 @@ import {
   repoCreateMergeRequestDiscussionInput,
   repoCreateMergeRequestInput,
   repoCreateRepositoryInput,
+  repoForkRepositoryInput,
   repoCreateProjectWebhookInput,
   repoCreateGroupWebhookInput,
   repoCreateRepositoryWebhookInput,
@@ -67,6 +68,7 @@ import {
   repoDeleteRepositoryWebhookInput,
   repoDeleteRepositoryLabelInput,
   repoDeleteGroupInput,
+  repoDeleteRepositoryInput,
   repoDeleteBranchInput,
   repoDeleteFileInput,
   repoDeleteTagInput,
@@ -163,6 +165,7 @@ import {
   repoListGroupMergeRequestValidAssignedCandidatesInput,
   repoListProjectMergeRequestCanBeAssignedReviewersInput,
   repoListProjectMergeRequestCanBeAssignedUsersInput,
+  repoAddRepositoryDeployKeyInput,
   repoRemoveDeployKeyFromSubmodulesInput,
   repoRemoveRepositoryDeployKeyInput,
   repoReviewMergeRequestInput,
@@ -185,6 +188,7 @@ import {
   repoShowGroupPermissionInheritEnabledInput,
   repoShowGroupWatermarkInput,
   repoShowHttpsPasswordSettingInput,
+  repoValidateHttpsInfoInput,
   repoShowActualHeadPipelineInput,
   repoShowAverageEvaluationInput,
   repoShowBranchConflictInput,
@@ -303,6 +307,7 @@ import {
   repoShowDiffCommitInput,
   repoTransferGroupInput,
   repoAddRepositoryMembersInput,
+  repoDeleteRepositoryMemberInput,
   repoSendUserEmailVerifyCodeInput,
   repoUpdateUserEmailsInput,
   repoShowUserEmailsInput,
@@ -360,6 +365,7 @@ import { createRepoCreateMergeRequestDiscussionResponseHandler } from "../produc
 import { createRepoCreateMergeRequestDiscussionHandler } from "../products/repo/tools/create-merge-request-discussion.js";
 import { createRepoCreateMergeRequestHandler } from "../products/repo/tools/create-merge-request.js";
 import { createRepoCreateRepositoryHandler } from "../products/repo/tools/create-repository.js";
+import { createRepoForkRepositoryHandler } from "../products/repo/tools/fork-repository.js";
 import { createRepoCreateProjectWebhookHandler } from "../products/repo/tools/create-project-webhook.js";
 import { createRepoCreateGroupWebhookHandler } from "../products/repo/tools/create-group-webhook.js";
 import { createRepoCreateRepositoryWebhookHandler } from "../products/repo/tools/create-repository-webhook.js";
@@ -368,6 +374,7 @@ import { createRepoDeleteGroupWebhookHandler } from "../products/repo/tools/dele
 import { createRepoDeleteRepositoryWebhookHandler } from "../products/repo/tools/delete-repository-webhook.js";
 import { createRepoDeleteRepositoryLabelHandler } from "../products/repo/tools/delete-repository-label.js";
 import { createRepoDeleteGroupHandler } from "../products/repo/tools/delete-group.js";
+import { createRepoDeleteRepositoryHandler } from "../products/repo/tools/delete-repository.js";
 import { createRepoDeleteBranchHandler } from "../products/repo/tools/delete-branch.js";
 import { createRepoDeleteFileHandler } from "../products/repo/tools/delete-file.js";
 import { createRepoDownloadBlobsRawHandler } from "../products/repo/tools/download-blobs-raw.js";
@@ -529,6 +536,7 @@ import { createRepoShowRepositoryStatisticsSummaryHandler } from "../products/re
 import { createRepoShowRepositoryWatermarkHandler } from "../products/repo/tools/show-repository-watermark.js";
 import { createRepoCreateTagHandler } from "../products/repo/tools/create-tag.js";
 import { createRepoDeleteTagHandler } from "../products/repo/tools/delete-tag.js";
+import { createRepoAddRepositoryDeployKeyHandler } from "../products/repo/tools/add-repository-deploy-key.js";
 import { createRepoRemoveRepositoryDeployKeyHandler } from "../products/repo/tools/remove-repository-deploy-key.js";
 import { createRepoReviewMergeRequestHandler } from "../products/repo/tools/review-merge-request.js";
 import { createRepoShowGroupE2eSettingHandler } from "../products/repo/tools/show-group-e2e-setting.js";
@@ -539,6 +547,7 @@ import { createRepoShowGroupReviewSettingsHandler } from "../products/repo/tools
 import { createRepoShowGroupPermissionInheritEnabledHandler } from "../products/repo/tools/show-group-permission-inherit-enabled.js";
 import { createRepoShowGroupWatermarkHandler } from "../products/repo/tools/show-group-watermark.js";
 import { createRepoShowHttpsPasswordSettingHandler } from "../products/repo/tools/show-https-password-setting.js";
+import { createRepoValidateHttpsInfoHandler } from "../products/repo/tools/validate-https-info.js";
 import { createRepoShowProjectE2eSettingHandler } from "../products/repo/tools/show-project-e2e-setting.js";
 import { createRepoShowProjectApproverSettingsHandler } from "../products/repo/tools/show-project-approver-settings.js";
 import { createRepoShowProjectMergeRequestSettingHandler } from "../products/repo/tools/show-project-merge-request-setting.js";
@@ -583,6 +592,7 @@ import { createRepoRebuildRepositoryNavigationHandler } from "../products/repo/t
 import { createRepoSyncDeployKeyToSubmodulesHandler } from "../products/repo/tools/sync-deploy-key-to-submodules.js";
 import { createRepoUnlockRepositoryHandler } from "../products/repo/tools/unlock-repository.js";
 import { createRepoExecuteRepositoryStatisticsHandler } from "../products/repo/tools/execute-repository-statistics.js";
+import { createRepoDeleteRepositoryMemberHandler } from "../products/repo/tools/delete-repository-member.js";
 import { createRepoUpdateGroupResourcePermissionsHandler } from "../products/repo/tools/update-group-resource-permissions.js";
 import { createRepoUpdateGroupGeneralPolicyHandler } from "../products/repo/tools/update-group-general-policy.js";
 import { createRepoUpdateGroupNoteRequiredAttributesHandler } from "../products/repo/tools/update-group-note-required-attributes.js";
@@ -682,6 +692,7 @@ const repoToolDefinitions = {
   "repo_get_repository": defineProductTool({ description: "Get CodeArts Repo repository detail", inputSchema: repoGetRepositoryInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoGetRepositoryHandler>[0] }) => clients.repoClient, createProductHandler: createRepoGetRepositoryHandler }),
   "repo_show_repository": defineProductTool({ description: "Show CodeArts Repo repository detail through the official ShowRepository endpoint", inputSchema: repoGetRepositoryInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoGetRepositoryHandler>[0] }) => clients.repoClient, createProductHandler: createRepoGetRepositoryHandler }),
   "repo_create_repository": defineProductTool({ description: "Create CodeArts Repo repository", inputSchema: repoCreateRepositoryInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCreateRepositoryHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCreateRepositoryHandler }),
+  "repo_fork_repository": defineProductTool({ description: "Fork a CodeArts Repo repository through the official ForkRepository endpoint", inputSchema: repoForkRepositoryInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoForkRepositoryHandler>[0] }) => clients.repoClient, createProductHandler: createRepoForkRepositoryHandler }),
   "repo_import_repository": defineProductTool({ description: "Import external Git repository into CodeArts Repo", inputSchema: repoImportRepositoryInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoImportRepositoryHandler>[0] }) => clients.repoClient, createProductHandler: createRepoImportRepositoryHandler }),
   "repo_list_impersonation_tokens": defineProductTool({ description: "List CodeArts Repo personal access token metadata", inputSchema: repoListImpersonationTokensInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListImpersonationTokensHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListImpersonationTokensHandler }),
   "repo_list_personal_repository_import_records": defineProductTool({ description: "List personal CodeArts Repo repository import records", inputSchema: repoListPersonalRepositoryImportRecordsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListPersonalRepositoryImportRecordsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListPersonalRepositoryImportRecordsHandler }),
@@ -691,6 +702,7 @@ const repoToolDefinitions = {
   "repo_list_manageable_groups": defineProductTool({ description: "List CodeArts Repo manageable groups for a project", inputSchema: repoListManageableGroupsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListManageableGroupsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListManageableGroupsHandler }),
   "repo_show_group": defineProductTool({ description: "Show a CodeArts Repo group through the official ShowGroup endpoint", inputSchema: repoShowGroupInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowGroupHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowGroupHandler }),
   "repo_delete_group": defineProductTool({ description: "Delete a CodeArts Repo group through the official DeleteGroup endpoint", inputSchema: repoDeleteGroupInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoDeleteGroupHandler>[0] }) => clients.repoClient, createProductHandler: createRepoDeleteGroupHandler }),
+  "repo_delete_repository": defineProductTool({ description: "Delete a CodeArts Repo repository through the official DeleteRepository endpoint", inputSchema: repoDeleteRepositoryInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoDeleteRepositoryHandler>[0] }) => clients.repoClient, createProductHandler: createRepoDeleteRepositoryHandler }),
   "repo_transfer_group": defineProductTool({ description: "Transfer a CodeArts Repo group through the official TransferGroup endpoint", inputSchema: repoTransferGroupInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoTransferGroupHandler>[0] }) => clients.repoClient, createProductHandler: createRepoTransferGroupHandler }),
   "repo_transfer_repository": defineProductTool({ description: "Transfer a CodeArts Repo repository through the official TransferRepository endpoint", inputSchema: repoTransferRepositoryInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoTransferRepositoryHandler>[0] }) => clients.repoClient, createProductHandler: createRepoTransferRepositoryHandler }),
   "repo_list_group_permission_resources": defineProductTool({ description: "List CodeArts Repo group permission resources through the official ListGroupPermissionResources endpoint", inputSchema: repoListGroupPermissionResourcesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListGroupPermissionResourcesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListGroupPermissionResourcesHandler }),
@@ -760,6 +772,7 @@ const repoToolDefinitions = {
   "repo_batch_delete_repository_file_push_permissions": defineProductTool({ description: "Batch delete CodeArts Repo repository file push permissions", inputSchema: repoBatchDeleteRepositoryFilePushPermissionsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoBatchDeleteRepositoryFilePushPermissionsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoBatchDeleteRepositoryFilePushPermissionsHandler }),
   "repo_show_group_watermark": defineProductTool({ description: "Show CodeArts Repo group watermark setting", inputSchema: repoShowGroupWatermarkInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowGroupWatermarkHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowGroupWatermarkHandler }),
   "repo_show_https_password_setting": defineProductTool({ description: "Show CodeArts Repo HTTPS password setting through the official ShowHttpsPasswordSetting endpoint", inputSchema: repoShowHttpsPasswordSettingInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowHttpsPasswordSettingHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowHttpsPasswordSettingHandler }),
+  "repo_validate_https_info": defineProductTool({ description: "Validate CodeArts Repo HTTPS credentials through the official ValidateHttpsInfo endpoint", inputSchema: repoValidateHttpsInfoInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoValidateHttpsInfoHandler>[0] }) => clients.repoClient, createProductHandler: createRepoValidateHttpsInfoHandler }),
   "repo_update_group_watermark": defineProductTool({ description: "Update CodeArts Repo group watermark setting through the official UpdateGroupWatermark endpoint", inputSchema: repoUpdateGroupWatermarkInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoUpdateGroupWatermarkHandler>[0] }) => clients.repoClient, createProductHandler: createRepoUpdateGroupWatermarkHandler }),
   "repo_update_https_password_setting": defineProductTool({ description: "Update CodeArts Repo HTTPS password setting through the official UpdateHttpsPasswordSetting endpoint", inputSchema: repoUpdateHttpsPasswordSettingInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoUpdateHttpsPasswordSettingHandler>[0] }) => clients.repoClient, createProductHandler: createRepoUpdateHttpsPasswordSettingHandler }),
   "repo_show_project_watermark": defineProductTool({ description: "Show CodeArts Repo project watermark setting", inputSchema: repoShowProjectWatermarkInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowProjectWatermarkHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowProjectWatermarkHandler }),
@@ -783,6 +796,7 @@ const repoToolDefinitions = {
   "repo_list_item_commits": defineProductTool({ description: "List CodeArts Repo project item commits", inputSchema: repoListItemCommitsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListItemCommitsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListItemCommitsHandler }),
   "repo_check_repository_deploy_key": defineProductTool({ description: "Check whether a CodeArts Repo repository deploy key already exists upstream", inputSchema: repoCheckRepositoryDeployKeyInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCheckRepositoryDeployKeyHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCheckRepositoryDeployKeyHandler }),
   "repo_check_group_deploy_key": defineProductTool({ description: "Check whether a CodeArts Repo group deploy key already exists upstream", inputSchema: repoCheckGroupDeployKeyInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCheckGroupDeployKeyHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCheckGroupDeployKeyHandler }),
+  "repo_add_repository_deploy_key": defineProductTool({ description: "Add a CodeArts Repo repository deploy key", inputSchema: repoAddRepositoryDeployKeyInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoAddRepositoryDeployKeyHandler>[0] }) => clients.repoClient, createProductHandler: createRepoAddRepositoryDeployKeyHandler }),
   "repo_lock_repository": defineProductTool({ description: "Lock a CodeArts Repo repository", inputSchema: repoLockRepositoryInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoLockRepositoryHandler>[0] }) => clients.repoClient, createProductHandler: createRepoLockRepositoryHandler }),
   "repo_unlock_repository": defineProductTool({ description: "Unlock a CodeArts Repo repository", inputSchema: repoUnlockRepositoryInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoUnlockRepositoryHandler>[0] }) => clients.repoClient, createProductHandler: createRepoUnlockRepositoryHandler }),
   "repo_remove_repository_deploy_key": defineProductTool({ description: "Remove a CodeArts Repo repository deploy key", inputSchema: repoRemoveRepositoryDeployKeyInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoRemoveRepositoryDeployKeyHandler>[0] }) => clients.repoClient, createProductHandler: createRepoRemoveRepositoryDeployKeyHandler }),
@@ -931,6 +945,7 @@ const repoToolDefinitions = {
   "repo_list_events": defineProductTool({ description: "List CodeArts Repo events", inputSchema: repoListEventsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListEventsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListEventsHandler }),
   "repo_list_repository_events": defineProductTool({ description: "List CodeArts Repo repository events through the official ListRepositoryEvents endpoint", inputSchema: repoListEventsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListEventsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListEventsHandler }),
   "repo_add_repository_members": defineProductTool({ description: "Add CodeArts Repo repository members through the official AddRepositoryMembers endpoint", inputSchema: repoAddRepositoryMembersInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoAddRepositoryMembersHandler>[0] }) => clients.repoClient, createProductHandler: createRepoAddRepositoryMembersHandler }),
+  "repo_delete_repository_member": defineProductTool({ description: "Delete a CodeArts Repo repository member through the official DeleteRepositoryMember endpoint", inputSchema: repoDeleteRepositoryMemberInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoDeleteRepositoryMemberHandler>[0] }) => clients.repoClient, createProductHandler: createRepoDeleteRepositoryMemberHandler }),
   "repo_send_user_email_verify_code": defineProductTool({ description: "Send a CodeArts Repo user email verification code through the official SendUserEmailVerifyCode endpoint", inputSchema: repoSendUserEmailVerifyCodeInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoSendUserEmailVerifyCodeHandler>[0] }) => clients.repoClient, createProductHandler: createRepoSendUserEmailVerifyCodeHandler }),
   "repo_update_user_emails": defineProductTool({ description: "Update CodeArts Repo user email settings through the official UpdateUserEmails endpoint", inputSchema: repoUpdateUserEmailsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoUpdateUserEmailsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoUpdateUserEmailsHandler }),
   "repo_show_user_emails": defineProductTool({ description: "Show CodeArts Repo user email information through the official ShowUserEmails endpoint", inputSchema: repoShowUserEmailsInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowUserEmailsHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowUserEmailsHandler }),

@@ -30,10 +30,10 @@
 | 代码检查 | 104 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
 | 部署 | 87 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
 | 流水线 | 161 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
-| 代码仓库 | 372 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
+| 代码仓库 | 377 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 343 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 313 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **1572** | |
+| **总计** | **1577** | |
 
 ## 字段对应
 
@@ -589,6 +589,7 @@
 | `pipeline_upload_publisher_icon` | 流水线 | [查看](./Function-API-Reference-Pipeline.md#pipeline_upload_publisher_icon) |
 | `repo_add_group_webhook` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_add_group_webhook) |
 | `repo_add_project_webhook` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_add_project_webhook) |
+| `repo_add_repository_deploy_key` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_add_repository_deploy_key) |
 | `repo_add_repository_members` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_add_repository_members) |
 | `repo_add_repository_webhook` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_add_repository_webhook) |
 | `repo_add_ssh_key` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_add_ssh_key) |
@@ -660,7 +661,9 @@
 | `repo_delete_project_merge_request_template` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_delete_project_merge_request_template) |
 | `repo_delete_protected_branch` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_delete_protected_branch) |
 | `repo_delete_protected_tag` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_delete_protected_tag) |
+| `repo_delete_repository` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_delete_repository) |
 | `repo_delete_repository_label` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_delete_repository_label) |
+| `repo_delete_repository_member` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_delete_repository_member) |
 | `repo_delete_repository_webhook` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_delete_repository_webhook) |
 | `repo_delete_ssh_key` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_delete_ssh_key) |
 | `repo_delete_tag` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_delete_tag) |
@@ -671,6 +674,7 @@
 | `repo_download_blobs_raw` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_download_blobs_raw) |
 | `repo_execute_repository_statistics` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_execute_repository_statistics) |
 | `repo_export_tenant_repositories` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_export_tenant_repositories) |
+| `repo_fork_repository` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_fork_repository) |
 | `repo_get_branch` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_get_branch) |
 | `repo_get_commit` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_get_commit) |
 | `repo_get_file` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_get_file) |
@@ -959,6 +963,7 @@
 | `repo_update_tenant_trusted_ip_address` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_update_tenant_trusted_ip_address) |
 | `repo_update_trusted_ip_address` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_update_trusted_ip_address) |
 | `repo_update_user_emails` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_update_user_emails) |
+| `repo_validate_https_info` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_validate_https_info) |
 | `req_add_apply_join_project_for_agc` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_add_apply_join_project_for_agc) |
 | `req_add_issue_work_hours` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_add_issue_work_hours) |
 | `req_add_iteration_work_items` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_add_iteration_work_items) |

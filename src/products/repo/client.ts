@@ -1,6 +1,6 @@
 import { createReadThroughCache } from "../../core/cache/read-through-cache.js";
 import { DEFAULT_READ_CACHE_TTLS } from "../../core/cache/read-cache-ttl.js";
-import { normalizeProviderError } from "../../core/errors/app-error.js";
+import { AppError, normalizeProviderError } from "../../core/errors/app-error.js";
 import { recordRequestCacheHit } from "../../server/request-context.js";
 import type { ReturnTypeCreateHttpClient } from "../types.js";
 import { createOfficialApiRequester, type OfficialApiRequestInput, type OfficialApiRequestResult } from "../official-api.js";
@@ -120,9 +120,14 @@ export type RepoRepositoryWebhookLog = {
 };
 
 export type RepoRepositoryDeployKey = {
-  id: number | string;
+  id?: number | string;
+  key_id?: number | string;
   title?: string;
+  key_title?: string;
+  key?: string;
   fingerprint?: string;
+  can_push?: boolean;
+  application?: string;
   created_at?: string;
 };
 
@@ -438,6 +443,11 @@ export type RepoHttpsPasswordSettingUpdateResult = {
   status?: string;
 };
 
+export type RepoValidateHttpsInfoResult = {
+  result?: string;
+  status?: string;
+};
+
 export type RepoBatchValidateRepoNameItem = {
   name?: string;
   project_id?: string;
@@ -500,6 +510,11 @@ export type RepoAddRepositoryMemberResultItem = {
 export type RepoAddRepositoryMembersResult = {
   status?: string;
   result?: RepoAddRepositoryMemberResultItem[];
+};
+
+export type RepoDeleteRepositoryResult = {
+  result?: boolean | string;
+  status?: string;
 };
 
 export type RepoArchiveDownloadResult = {
@@ -1943,6 +1958,13 @@ export type RepoClient = {
     keys: RepoRepositoryDeployKey[];
     total?: number;
   }>;
+  addRepositoryDeployKey: (input: {
+    repository_id: string;
+    key_title: string;
+    key: string;
+    can_push?: boolean;
+    application?: string;
+  }) => Promise<RepoRepositoryDeployKey>;
   listGroupDeployKeys: (input: {
     group_id: string;
     page: number;
@@ -2197,6 +2219,9 @@ export type RepoClient = {
     project_id: string;
     group_id: string;
   }) => Promise<RepoRepositorySummary>;
+  deleteRepository: (input: {
+    repository_uuid: string;
+  }) => Promise<RepoDeleteRepositoryResult>;
   deleteGroup: (input: {
     project_id: string;
     group_id: string;
@@ -2597,6 +2622,22 @@ export type RepoClient = {
     caller?: string;
   }) => Promise<{
     repository_uuid: string;
+    project_uuid?: string;
+  }>;
+  forkRepository: (input: {
+    project_uuid?: string;
+    project_name: string;
+    repo_name: string;
+    template_id: string;
+    import_members?: number;
+    type?: string;
+    visibility_level?: number;
+    external_project_info?: {
+      external_key_message?: string;
+      external_service?: string;
+    };
+  }) => Promise<RepoForkRepository & {
+    repository_uuid?: string;
     project_uuid?: string;
   }>;
   listPersonalRepositoryImportRecords: (input: {
@@ -3848,6 +3889,10 @@ export type RepoClient = {
     subrepo_branch: string;
   }) => Promise<RepoSubmoduleMutationResult>;
   showHttpsPasswordSetting: () => Promise<RepoHttpsPasswordSetting>;
+  validateHttpsInfo: (input: {
+    iam_user_uuid: string;
+    pwd: string;
+  }) => Promise<RepoValidateHttpsInfoResult>;
   updateHttpsPasswordSetting: (input: {
     https_clone_iam_auth: boolean | string;
   }) => Promise<RepoHttpsPasswordSettingUpdateResult>;
@@ -3877,6 +3922,14 @@ export type RepoClient = {
     repository_id: string;
     users: RepoAddRepositoryMemberInputItem[];
   }) => Promise<RepoAddRepositoryMembersResult>;
+  deleteRepositoryMember: (input: {
+    repository_uuid: string;
+    member_id: string;
+  }) => Promise<{
+    repository_uuid: string;
+    member_id: string;
+    deleted: boolean;
+  }>;
   sendUserEmailVerifyCode: (input: {
     email: string;
   }) => Promise<RepoUserEmailOperationResult>;
@@ -5027,6 +5080,37 @@ function extractHttpsPasswordSettingUpdateResult(
   };
 }
 
+function extractValidateHttpsInfoResult(
+  response:
+    | RepoValidateHttpsInfoResult
+    | string
+    | { result?: RepoValidateHttpsInfoResult | string; status?: string }
+) {
+  const payload = unwrapRepoPayload(response);
+  const data = typeof payload === "object" && payload !== null && "result" in payload && payload.result
+    ? payload.result
+    : payload;
+
+  if (typeof data === "string") {
+    return {
+      result: data,
+      status:
+        typeof payload === "object" && payload !== null && "status" in payload && typeof payload.status === "string"
+          ? payload.status
+          : undefined
+    };
+  }
+
+  return {
+    result: (data as RepoValidateHttpsInfoResult).result,
+    status:
+      (data as RepoValidateHttpsInfoResult).status
+      ?? (typeof payload === "object" && payload !== null && "status" in payload && typeof payload.status === "string"
+        ? payload.status
+        : undefined)
+  };
+}
+
 function extractBatchValidateRepoNamesResult(
   response:
     | RepoBatchValidateRepoNameItem[]
@@ -5291,6 +5375,103 @@ function extractDeployKeysResponse(
         ? payload.result.length
         : payload.result?.total ?? payload.total ?? keys.length
   };
+}
+
+function extractDeployKeyMutationResult(
+  response:
+    | RepoRepositoryDeployKey
+    | {
+        status?: string;
+        result?: RepoRepositoryDeployKey;
+      }
+) {
+  const payload = unwrapRepoPayload(response);
+  const data = (typeof payload === "object" && payload !== null && "result" in payload && payload.result
+    ? payload.result
+    : payload) as RepoRepositoryDeployKey;
+
+  return {
+    id: data.id ?? data.key_id,
+    key_id: data.key_id ?? data.id,
+    title: data.title ?? data.key_title,
+    key_title: data.key_title ?? data.title,
+    key: data.key,
+    fingerprint: data.fingerprint,
+    can_push: data.can_push,
+    application: data.application,
+    created_at: data.created_at
+  } satisfies RepoRepositoryDeployKey;
+}
+
+function extractDeleteRepositoryResult(
+  response: RepoDeleteRepositoryResult | boolean | string | { result?: RepoDeleteRepositoryResult | boolean | string; status?: string }
+) {
+  const payload = unwrapRepoPayload(response);
+  const data = typeof payload === "object" && payload !== null && "result" in payload && payload.result !== undefined
+    ? payload.result
+    : payload;
+
+  if (typeof data === "boolean" || typeof data === "string") {
+    return {
+      result: data,
+      status:
+        typeof payload === "object" && payload !== null && "status" in payload && typeof payload.status === "string"
+          ? payload.status
+          : undefined
+    };
+  }
+
+  return {
+    result: (data as RepoDeleteRepositoryResult).result,
+    status:
+      (data as RepoDeleteRepositoryResult).status
+      ?? (typeof payload === "object" && payload !== null && "status" in payload && typeof payload.status === "string"
+        ? payload.status
+        : undefined)
+  };
+}
+
+function extractForkRepositoryResult(
+  response:
+    | RepoForkRepository
+    | {
+        status?: string;
+        result?: (RepoForkRepository & {
+          repositoryUuid?: string;
+          projectUuid?: string;
+          repository_uuid?: string;
+          project_uuid?: string;
+        });
+      }
+) {
+  const payload = unwrapRepoPayload(response);
+  const data = (typeof payload === "object" && payload !== null && "result" in payload && payload.result
+    ? payload.result
+    : payload) as RepoForkRepository & {
+      repositoryUuid?: string;
+      projectUuid?: string;
+      repository_uuid?: string;
+      project_uuid?: string;
+    };
+
+  return {
+    ...data,
+    repository_uuid: data.repository_uuid ?? data.repositoryUuid,
+    project_uuid: data.project_uuid ?? data.projectUuid
+  };
+}
+
+function isNotFoundError(error: unknown) {
+  if (error instanceof AppError) {
+    return error.category === "not_found" || error.status === 404;
+  }
+
+  if (!error || typeof error !== "object") {
+    return false;
+  }
+
+  const candidate = error as { category?: unknown; status?: unknown };
+  return candidate.category === "not_found" || candidate.status === 404;
 }
 
 function extractDeployKeyCheckResponse(response: { exists?: boolean; result?: { exists?: boolean } }) {
@@ -5625,6 +5806,19 @@ export function createRepoClient(
       )) as Parameters<typeof extractDeployKeysResponse>[0];
 
       return extractDeployKeysResponse(rawResponse);
+    },
+    async addRepositoryDeployKey(input) {
+      const rawResponse = (await _http.post(
+        `/v2/repositories/${encodeURIComponent(input.repository_id)}/deploy-keys`,
+        omitUndefinedFields({
+          key_title: input.key_title,
+          key: input.key,
+          can_push: input.can_push,
+          application: input.application
+        })
+      )) as Parameters<typeof extractDeployKeyMutationResult>[0];
+
+      return extractDeployKeyMutationResult(rawResponse);
     },
     async listGroupDeployKeys(input) {
       const query = buildOffsetLimitQuery(input);
@@ -6108,6 +6302,13 @@ export function createRepoClient(
       )) as RepoRepositorySummary;
 
       return response;
+    },
+    async deleteRepository(input) {
+      const rawResponse = (await _http.delete?.(
+        `/v1/repositories/${encodeURIComponent(input.repository_uuid)}`
+      )) as Parameters<typeof extractDeleteRepositoryResult>[0] | undefined;
+
+      return extractDeleteRepositoryResult(rawResponse ?? { result: true, status: "success" });
     },
     async deleteGroup(input) {
       const response = unwrapRepoPayload(await _http.delete(
@@ -7108,6 +7309,39 @@ export function createRepoClient(
         repository_uuid: result.repository_uuid,
         project_uuid: result.project_uuid ?? input.project_uuid
       };
+    },
+    async forkRepository(input) {
+      const body = omitUndefinedFields({
+        project_name: input.project_name,
+        repo_name: input.repo_name,
+        template_id: input.template_id,
+        import_members: input.import_members,
+        type: input.type,
+        visibility_level: input.visibility_level,
+        external_project_info: input.external_project_info
+      });
+
+      try {
+        const rawResponse = (await _http.post(
+          input.project_uuid
+            ? `/v2/projects/${encodeURIComponent(input.project_uuid)}/repositories/fork`
+            : `/v2/projects/repositories/fork`,
+          body
+        )) as Parameters<typeof extractForkRepositoryResult>[0];
+
+        return extractForkRepositoryResult(rawResponse);
+      } catch (error) {
+        if (!input.project_uuid || !isNotFoundError(error)) {
+          throw error;
+        }
+
+        const rawResponse = (await _http.post(
+          `/v2/projects/repositories/fork`,
+          body
+        )) as Parameters<typeof extractForkRepositoryResult>[0];
+
+        return extractForkRepositoryResult(rawResponse);
+      }
     },
     async listPersonalRepositoryImportRecords(input) {
       const offset = (input.page - 1) * input.page_size;
@@ -9254,6 +9488,27 @@ export function createRepoClient(
 
       return extractHttpsPasswordSetting(rawResponse);
     },
+    async validateHttpsInfo(input) {
+      try {
+        const rawResponse = (await _http.post(
+          `/v2/user/${encodeURIComponent(input.iam_user_uuid)}/validate-https-info`,
+          { pwd: input.pwd }
+        )) as Parameters<typeof extractValidateHttpsInfoResult>[0];
+
+        return extractValidateHttpsInfoResult(rawResponse);
+      } catch (error) {
+        if (!isNotFoundError(error)) {
+          throw error;
+        }
+
+        const rawResponse = (await _http.post(
+          `/v1/user/${encodeURIComponent(input.iam_user_uuid)}/validateHttpsInfo`,
+          { pwd: input.pwd }
+        )) as Parameters<typeof extractValidateHttpsInfoResult>[0];
+
+        return extractValidateHttpsInfoResult(rawResponse);
+      }
+    },
     async updateHttpsPasswordSetting(input) {
       const rawResponse = (await _http.put(
         `/v4/user/https-password-setting`,
@@ -9320,6 +9575,17 @@ export function createRepoClient(
       )) as RepoAddRepositoryMembersResult;
 
       return extractAddRepositoryMembersResult(rawResponse);
+    },
+    async deleteRepositoryMember(input) {
+      await _http.delete?.(
+        `/v1/repositories/${encodeURIComponent(input.repository_uuid)}/members/${encodeURIComponent(input.member_id)}`
+      );
+
+      return {
+        repository_uuid: input.repository_uuid,
+        member_id: input.member_id,
+        deleted: true
+      };
     },
     async sendUserEmailVerifyCode(input) {
       const rawResponse = (await _http.post(

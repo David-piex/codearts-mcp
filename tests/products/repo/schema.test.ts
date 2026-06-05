@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   repoCreateMergeRequestInput,
+  repoForkRepositoryInput,
   repoImportRepositoryInput,
   repoListCommitAssociatedRefsInput,
   repoListCommitsInput,
@@ -30,6 +31,10 @@ import {
   repoListUserSshKeysInput,
   repoCreateUserSshKeyInput,
   repoDeleteUserSshKeyInput,
+  repoDeleteRepositoryInput,
+  repoValidateHttpsInfoInput,
+  repoDeleteRepositoryMemberInput,
+  repoAddRepositoryDeployKeyInput,
   repoListPersonalRepositoryImportRecordsInput,
   repoListProjectMergeRequestsInput,
   repoListPersonalRecentPushEventsInput,
@@ -982,6 +987,69 @@ describe("repo schemas", () => {
     ).toMatchObject({
       dry_run: true,
       sync_branch_type: "all"
+    });
+  });
+
+  it("defaults new repository mutation tools to dry run", () => {
+    expect(
+      repoDeleteRepositoryInput.parse({
+        repository_uuid: "repo-uuid-1"
+      })
+    ).toMatchObject({
+      repository_uuid: "repo-uuid-1",
+      dry_run: true
+    });
+
+    expect(
+      repoValidateHttpsInfoInput.parse({
+        iam_user_uuid: "iam-1",
+        pwd: "secret"
+      })
+    ).toMatchObject({
+      iam_user_uuid: "iam-1",
+      pwd: "secret",
+      dry_run: true
+    });
+
+    expect(
+      repoDeleteRepositoryMemberInput.parse({
+        repository_uuid: "repo-uuid-1",
+        member_id: "member-1"
+      })
+    ).toMatchObject({
+      repository_uuid: "repo-uuid-1",
+      member_id: "member-1",
+      dry_run: true
+    });
+
+    expect(
+      repoAddRepositoryDeployKeyInput.parse({
+        repository_id: "100",
+        key_title: "ci",
+        key: "ssh-rsa AAA"
+      })
+    ).toMatchObject({
+      repository_id: "100",
+      key_title: "ci",
+      key: "ssh-rsa AAA",
+      dry_run: true
+    });
+
+    expect(
+      repoForkRepositoryInput.parse({
+        project_uuid: "project-1",
+        project_name: "demo-project",
+        repo_name: "demo-repo",
+        template_id: "template-1",
+        visibility_level: 20
+      })
+    ).toMatchObject({
+      project_uuid: "project-1",
+      project_name: "demo-project",
+      repo_name: "demo-repo",
+      template_id: "template-1",
+      visibility_level: 20,
+      dry_run: true
     });
   });
 });

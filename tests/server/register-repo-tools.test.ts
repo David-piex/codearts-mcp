@@ -45,6 +45,27 @@ describe("registerRepoTool", () => {
     );
   });
 
+  it("registers new repo mutation tools", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerRepoTool({
+      toolName: "repo_validate_https_info",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "repo_validate_https_info",
+      expect.objectContaining({
+        title: "repo_validate_https_info",
+        description: "Validate CodeArts Repo HTTPS credentials through the official ValidateHttpsInfo endpoint"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("returns false for non-repo tools", () => {
     const registerTool = vi.fn();
 

@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { AppError } from "../../../src/core/errors/app-error.js";
 import { createRepoClient } from "../../../src/products/repo/client.js";
 
 describe("createRepoClient", () => {
@@ -2196,5 +2197,132 @@ describe("createRepoClient", () => {
 
     expect(calls).toEqual(["/v4/projects/project-1/members?offset=10&limit=10&query=qa"]);
     expect(result.members[0]?.name).toBe("qa");
+  });
+
+  it("uses official deploy key, delete repository and delete member paths", async () => {
+    const calls: Array<{ method: string; path: string; body?: unknown }> = [];
+    const client = createRepoClient({
+      post: async (path: string, body?: unknown) => {
+        calls.push({ method: "POST", path, body });
+        return { key_id: 123, key_title: "ci", fingerprint: "fp", can_push: true };
+      },
+      delete: async (path: string) => {
+        calls.push({ method: "DELETE", path });
+        return { result: "true", status: "success" };
+      }
+    } as never);
+
+    const key = await client.addRepositoryDeployKey({
+      repository_id: "100",
+      key_title: "ci",
+      key: "ssh-rsa AAA",
+      can_push: true
+    });
+    const deleted = await client.deleteRepository({ repository_uuid: "repo-uuid-1" });
+    const removedMember = await client.deleteRepositoryMember({
+      repository_uuid: "repo-uuid-1",
+      member_id: "member-1"
+    });
+
+    expect(key).toMatchObject({ key_id: 123, key_title: "ci", fingerprint: "fp" });
+    expect(deleted).toEqual({ result: "true", status: "success" });
+    expect(removedMember).toEqual({
+      repository_uuid: "repo-uuid-1",
+      member_id: "member-1",
+      deleted: true
+    });
+    expect(calls).toEqual([
+      {
+        method: "POST",
+        path: "/v2/repositories/100/deploy-keys",
+        body: {
+          key_title: "ci",
+          key: "ssh-rsa AAA",
+          can_push: true
+        }
+      },
+      {
+        method: "DELETE",
+        path: "/v1/repositories/repo-uuid-1"
+      },
+      {
+        method: "DELETE",
+        path: "/v1/repositories/repo-uuid-1/members/member-1"
+      }
+    ]);
+  });
+
+  it("uses official fork path with project_uuid and falls back on not found", async () => {
+    const calls: Array<{ path: string; body?: unknown }> = [];
+    const post = vi
+      .fn()
+      .mockImplementationOnce(async (path: string) => {
+        calls.push({ path });
+        throw new AppError("not_found", "missing", "404", undefined, 404);
+      })
+      .mockImplementationOnce(async (path: string, body?: unknown) => {
+        calls.push({ path, body });
+        return { repository_uuid: "repo-uuid-1", project_uuid: "project-1", name: "demo-repo" };
+      });
+
+    const client = createRepoClient({ post } as never);
+    const result = await client.forkRepository({
+      project_uuid: "project-1",
+      project_name: "demo-project",
+      repo_name: "demo-repo",
+      template_id: "template-1",
+      import_members: 1
+    });
+
+    expect(result).toMatchObject({
+      repository_uuid: "repo-uuid-1",
+      project_uuid: "project-1",
+      name: "demo-repo"
+    });
+    expect(calls).toEqual([
+      {
+        path: "/v2/projects/project-1/repositories/fork"
+      },
+      {
+        path: "/v2/projects/repositories/fork",
+        body: {
+          project_name: "demo-project",
+          repo_name: "demo-repo",
+          template_id: "template-1",
+          import_members: 1
+        }
+      }
+    ]);
+  });
+
+  it("uses official validate https path and falls back to v1 on not found", async () => {
+    const calls: Array<{ path: string; body?: unknown }> = [];
+    const post = vi
+      .fn()
+      .mockImplementationOnce(async (path: string) => {
+        calls.push({ path });
+        throw new AppError("not_found", "missing", "404", undefined, 404);
+      })
+      .mockImplementationOnce(async (path: string, body?: unknown) => {
+        calls.push({ path, body });
+        return { result: "true", status: "success" };
+      });
+
+    const client = createRepoClient({ post } as never);
+    const result = await client.validateHttpsInfo({
+      iam_user_uuid: "iam-1",
+      pwd: "secret"
+    });
+
+    expect(result).toEqual({ result: "true", status: "success" });
+    expect(calls).toEqual([
+      {
+        path: "/v2/user/iam-1/validate-https-info"
+      },
+      {
+        path: "/v1/user/iam-1/validateHttpsInfo",
+        body: { pwd: "secret" }
+      }
+    ]);
   });
 });

@@ -925,6 +925,11 @@ export const repoDeleteGroupInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const repoDeleteRepositoryInput = z.object({
+  repository_uuid: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
 export const repoAssociateGroupUserGroupInput = z.object({
   project_id: idSchema,
   group_id: idSchema,
@@ -972,6 +977,12 @@ export const repoAddSubmoduleInput = z.object({
 
 export const repoShowHttpsPasswordSettingInput = z.object({});
 
+export const repoValidateHttpsInfoInput = z.object({
+  iam_user_uuid: z.string().min(1).max(128),
+  pwd: z.string().min(1).max(256),
+  dry_run: z.boolean().default(true)
+});
+
 export const repoUpdateHttpsPasswordSettingInput = z.object({
   https_clone_iam_auth: z.union([z.boolean(), z.enum(["true", "false"])]),
   dry_run: z.boolean().default(true)
@@ -1014,6 +1025,12 @@ export const repoAddRepositoryMembersInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const repoDeleteRepositoryMemberInput = z.object({
+  repository_uuid: idSchema,
+  member_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
 export const repoSendUserEmailVerifyCodeInput = z.object({
   email: z.string().min(1).max(1000),
   dry_run: z.boolean().default(true)
@@ -1049,6 +1066,15 @@ export const repoCheckGroupDeployKeyInput = z.object({
 export const repoRemoveRepositoryDeployKeyInput = z.object({
   repository_id: idSchema,
   key_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const repoAddRepositoryDeployKeyInput = z.object({
+  repository_id: idSchema,
+  key_title: z.string().min(1).max(255),
+  key: z.string().min(1).max(5000),
+  can_push: z.boolean().optional(),
+  application: z.string().min(1).max(255).optional(),
   dry_run: z.boolean().default(true)
 });
 
@@ -1592,6 +1618,21 @@ export const repoCreateRepositoryInput = z.object({
   license_id: z.number().int().positive().optional(),
   enable_readme: z.union([z.boolean(), z.number().int().min(0).max(1)]).optional(),
   caller: z.string().min(1).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoForkRepositoryInput = z.object({
+  project_uuid: idSchema.optional(),
+  project_name: z.string().min(1).max(255),
+  repo_name: repositoryNameSchema,
+  template_id: z.string().min(1).max(128),
+  import_members: z.number().int().min(0).max(1).optional(),
+  type: z.string().min(1).max(64).optional(),
+  visibility_level: z.union([z.literal(0), z.literal(20)]).optional(),
+  external_project_info: z.object({
+    external_key_message: z.string().min(1).max(2048).optional(),
+    external_service: z.string().min(1).max(255).optional()
+  }).optional(),
   dry_run: z.boolean().default(true)
 });
 
