@@ -44,7 +44,10 @@ import {
   pipelineGetDevucAuthInput,
   pipelineGetExecLogInput,
   pipelineGetOauthAuthorizationUrlInput,
+  pipelineGetPackageUsageInput,
   pipelineGetPacActionInput,
+  pipelineGetRepositoryNumberInput,
+  pipelineGetTenantPackageIsFreezeInput,
   pipelineGetTenantVersionDetailInput,
   pipelineGetTemplateInput,
   pipelineGetWebhookInfoInput,
@@ -66,6 +69,8 @@ import {
   pipelineDashboardQueryInput,
   pipelineListChangeRequestsInput,
   pipelineListComponentsInput,
+  pipelineListCodeBranchesInput,
+  pipelineListCodeRepositoriesInput,
   pipelineListExecutionPlansInput,
   pipelineListGroupsInput,
   pipelineListModifyHistoryInput,
@@ -241,6 +246,9 @@ import {
   createPipelineCheckProjectHandler,
   createPipelineCheckVariableGroupRightsHandler,
   createPipelineGetChangeRequestHandler,
+  createPipelineGetPackageUsageHandler,
+  createPipelineGetRepositoryNumberHandler,
+  createPipelineGetTenantPackageIsFreezeHandler,
   createPipelineGetComponentHandler,
   createPipelineGetComponentFollowStatusHandler,
   createPipelineGetDashboardConcurrencyHandler,
@@ -250,6 +258,8 @@ import {
   createPipelineGetOauthAuthorizationUrlHandler,
   createPipelineGetPacActionHandler,
   createPipelineGetTenantVersionDetailHandler,
+  createPipelineListCodeBranchesHandler,
+  createPipelineListCodeRepositoriesHandler,
   createPipelineListChangeRequestCreatorsHandler,
   createPipelineListChangeRequestOperationLogsHandler,
   createPipelineListChangeRequestWorkItemsHandler,
@@ -952,6 +962,36 @@ const pipelineToolDefinitions = {
     inputSchema: pipelineListRelatedProjectsInput,
     selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineListRelatedProjectsHandler>[0] }) => clients.pipelineClient,
     createProductHandler: createPipelineListRelatedProjectsHandler
+  }),
+  "pipeline_list_code_repositories": defineProductTool({
+    description: "List CodeArts Pipeline code repositories",
+    inputSchema: pipelineListCodeRepositoriesInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineListCodeRepositoriesHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineListCodeRepositoriesHandler
+  }),
+  "pipeline_list_code_branches": defineProductTool({
+    description: "List CodeArts Pipeline code branches",
+    inputSchema: pipelineListCodeBranchesInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineListCodeBranchesHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineListCodeBranchesHandler
+  }),
+  "pipeline_get_repository_number": defineProductTool({
+    description: "Get CodeArts Pipeline repository number",
+    inputSchema: pipelineGetRepositoryNumberInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetRepositoryNumberHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineGetRepositoryNumberHandler
+  }),
+  "pipeline_get_tenant_package_is_freeze": defineProductTool({
+    description: "Get CodeArts Pipeline tenant package freeze status",
+    inputSchema: pipelineGetTenantPackageIsFreezeInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetTenantPackageIsFreezeHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineGetTenantPackageIsFreezeHandler
+  }),
+  "pipeline_get_package_usage": defineProductTool({
+    description: "Get CodeArts Pipeline package usage",
+    inputSchema: pipelineGetPackageUsageInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetPackageUsageHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineGetPackageUsageHandler
   }),
   "pipeline_get_tenant_version_detail": defineProductTool({
     description: "Get CodeArts Pipeline tenant version detail",

@@ -33,6 +33,12 @@ export function createPipelineRawListHandler<TSchema extends z.ZodTypeAny>(optio
         ? parsed.page
         : "page_index" in parsed && typeof parsed.page_index === "number"
           ? parsed.page_index
+          : "offset" in parsed
+              && typeof parsed.offset === "number"
+              && "limit" in parsed
+              && typeof parsed.limit === "number"
+              && parsed.limit > 0
+            ? Math.floor(parsed.offset / parsed.limit) + 1
           : 1;
     const pageSize =
       "page_size" in parsed && typeof parsed.page_size === "number"

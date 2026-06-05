@@ -4,6 +4,9 @@ import {
   pipelineCheckProjectInput,
   pipelineDashboardQueryInput,
   pipelineGetChangeRequestInput,
+  pipelineGetPackageUsageInput,
+  pipelineGetRepositoryNumberInput,
+  pipelineGetTenantPackageIsFreezeInput,
   pipelineGetTenantVersionDetailInput,
   pipelineGetComponentInput,
   pipelineGetComponentFollowStatusInput,
@@ -17,6 +20,8 @@ import {
   pipelineListChangeRequestWorkItemsInput,
   pipelineListChangeRequestsInput,
   pipelineListComponentsInput,
+  pipelineListCodeBranchesInput,
+  pipelineListCodeRepositoriesInput,
   pipelineListExecutionPlansInput,
   pipelineListRelatedProjectsInput,
   pipelineListPacActionsInput,
@@ -115,6 +120,39 @@ export type PipelineProductQueryClient = {
     page_size: number;
     search?: string;
   }) => Promise<RawListResponse>;
+  listCodeRepositories: (input: {
+    cloud_project_id: string;
+    repoType?: string;
+    query?: string;
+    workspace?: string;
+    authEndpoint?: string;
+    offset: number;
+    limit: number;
+  }) => Promise<RawListResponse>;
+  listCodeBranches: (input: {
+    cloud_project_id: string;
+    repoUrl?: string;
+    authEndpoint?: string;
+    repoId?: string;
+    pipelineId?: string;
+    search?: string;
+    offset: number;
+    limit: number;
+  }) => Promise<RawListResponse>;
+  getRepositoryNumber: (input: {
+    tenant_id: string;
+    domain_id: string;
+    region: string;
+    project_id?: string;
+  }) => Promise<RawItemResponse>;
+  getTenantPackageIsFreeze: (input: {
+    tenant_id: string;
+    project_id?: string;
+  }) => Promise<RawItemResponse>;
+  getPackageUsage: (input: {
+    tenant_id: string;
+    project_id?: string;
+  }) => Promise<RawItemResponse>;
   getTenantVersionDetail: (input: {
     tenant_id: string;
   }) => Promise<RawItemResponse>;
@@ -306,6 +344,51 @@ export const createPipelineListRelatedProjectsHandler = (client: PipelineProduct
     noun: "pipeline related projects",
     itemKey: "relatedProject",
     rawKey: "relatedProjects"
+  });
+
+export const createPipelineListCodeRepositoriesHandler = (client: PipelineProductQueryClient) =>
+  createPipelineRawListHandler({
+    inputSchema: pipelineListCodeRepositoriesInput,
+    call: (input) => client.listCodeRepositories(input),
+    noun: "pipeline code repositories",
+    itemKey: "codeRepository",
+    rawKey: "codeRepositories"
+  });
+
+export const createPipelineListCodeBranchesHandler = (client: PipelineProductQueryClient) =>
+  createPipelineRawListHandler({
+    inputSchema: pipelineListCodeBranchesInput,
+    call: (input) => client.listCodeBranches(input),
+    noun: "pipeline code branches",
+    itemKey: "codeBranch",
+    rawKey: "codeBranches"
+  });
+
+export const createPipelineGetRepositoryNumberHandler = (client: PipelineProductQueryClient) =>
+  createPipelineRawItemHandler({
+    inputSchema: pipelineGetRepositoryNumberInput,
+    call: (input) => client.getRepositoryNumber(input),
+    summary: "Loaded pipeline repository number",
+    itemKey: "repositoryNumber",
+    id: (input) => input.tenant_id
+  });
+
+export const createPipelineGetTenantPackageIsFreezeHandler = (client: PipelineProductQueryClient) =>
+  createPipelineRawItemHandler({
+    inputSchema: pipelineGetTenantPackageIsFreezeInput,
+    call: (input) => client.getTenantPackageIsFreeze(input),
+    summary: "Loaded pipeline tenant package freeze status",
+    itemKey: "tenantPackageFreeze",
+    id: (input) => input.tenant_id
+  });
+
+export const createPipelineGetPackageUsageHandler = (client: PipelineProductQueryClient) =>
+  createPipelineRawItemHandler({
+    inputSchema: pipelineGetPackageUsageInput,
+    call: (input) => client.getPackageUsage(input),
+    summary: "Loaded pipeline package usage",
+    itemKey: "packageUsage",
+    id: (input) => input.tenant_id
   });
 
 export const createPipelineGetTenantVersionDetailHandler = (client: PipelineProductQueryClient) =>

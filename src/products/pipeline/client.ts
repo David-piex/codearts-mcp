@@ -506,6 +506,39 @@ export type PipelineClient = {
     page_size: number;
     search?: string;
   }) => Promise<PipelineRawListResult>;
+  listCodeRepositories: (input: {
+    cloud_project_id: string;
+    repoType?: string;
+    query?: string;
+    workspace?: string;
+    authEndpoint?: string;
+    offset: number;
+    limit: number;
+  }) => Promise<PipelineRawListResult>;
+  listCodeBranches: (input: {
+    cloud_project_id: string;
+    repoUrl?: string;
+    authEndpoint?: string;
+    repoId?: string;
+    pipelineId?: string;
+    search?: string;
+    offset: number;
+    limit: number;
+  }) => Promise<PipelineRawListResult>;
+  getRepositoryNumber: (input: {
+    tenant_id: string;
+    domain_id: string;
+    region: string;
+    project_id?: string;
+  }) => Promise<PipelineRawItemResult>;
+  getTenantPackageIsFreeze: (input: {
+    tenant_id: string;
+    project_id?: string;
+  }) => Promise<PipelineRawItemResult>;
+  getPackageUsage: (input: {
+    tenant_id: string;
+    project_id?: string;
+  }) => Promise<PipelineRawItemResult>;
   getTenantVersionDetail: (input: {
     tenant_id: string;
   }) => Promise<PipelineRawItemResult>;
@@ -2246,6 +2279,99 @@ export function createPipelineClient(
         total: typeof payload.total === "number" ? payload.total : readPipelineTotal(payload, records.length),
         raw: payload
       };
+    },
+    async listCodeRepositories(input) {
+      const suffix = buildQuery({
+        ...(input.repoType !== undefined ? { repoType: input.repoType } : {}),
+        ...(input.query !== undefined ? { query: input.query } : {}),
+        ...(input.workspace !== undefined ? { workspace: input.workspace } : {}),
+        ...(input.authEndpoint !== undefined ? { authEndpoint: input.authEndpoint } : {}),
+        offset: input.offset,
+        limit: input.limit
+      });
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v2/${encodeURIComponent(input.cloud_project_id)}/code/repositories/page${suffix}`
+      ));
+      const payload = getPipelinePayload(response);
+      const records = Array.isArray(payload.data)
+        ? payload.data.map((item) => asPipelineRecord(item))
+        : readPipelineRecordList(payload);
+
+      return {
+        records,
+        total:
+          typeof payload.total === "number"
+            ? payload.total
+            : readPipelineTotal(payload, records.length),
+        raw: payload
+      };
+    },
+    async listCodeBranches(input) {
+      const suffix = buildQuery({
+        ...(input.repoUrl !== undefined ? { repoUrl: input.repoUrl } : {}),
+        ...(input.authEndpoint !== undefined ? { authEndpoint: input.authEndpoint } : {}),
+        ...(input.repoId !== undefined ? { repoId: input.repoId } : {}),
+        ...(input.pipelineId !== undefined ? { pipelineId: input.pipelineId } : {}),
+        ...(input.search !== undefined ? { search: input.search } : {}),
+        offset: input.offset,
+        limit: input.limit
+      });
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v2/${encodeURIComponent(input.cloud_project_id)}/code/branches${suffix}`
+      ));
+
+      if (Array.isArray(response)) {
+        return {
+          records: response.map((item) => asPipelineRecord(item)),
+          total: response.length,
+          raw: { result: response }
+        };
+      }
+
+      const payload = getPipelinePayload(response);
+      const records = Array.isArray(payload.result)
+        ? payload.result.map((item) => asPipelineRecord(item))
+        : Array.isArray(payload.data)
+          ? payload.data.map((item) => asPipelineRecord(item))
+          : readPipelineRecordList(payload);
+
+      return {
+        records,
+        total: readPipelineTotal(payload, records.length),
+        raw: payload
+      };
+    },
+    async getRepositoryNumber(input) {
+      const suffix = buildQuery({
+        domain_id: input.domain_id,
+        region: input.region,
+        ...(input.project_id !== undefined ? { project_id: input.project_id } : {})
+      });
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v5/${encodeURIComponent(input.tenant_id)}/api/whitelist/repository-number${suffix}`
+      ));
+
+      return mapPipelineRawItemResult(getPipelinePayload(response));
+    },
+    async getTenantPackageIsFreeze(input) {
+      const suffix = buildQuery({
+        ...(input.project_id !== undefined ? { project_id: input.project_id } : {})
+      });
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v5/${encodeURIComponent(input.tenant_id)}/api/package-specs/is-freeze${suffix}`
+      ));
+
+      return mapPipelineRawItemResult(getPipelinePayload(response));
+    },
+    async getPackageUsage(input) {
+      const suffix = buildQuery({
+        ...(input.project_id !== undefined ? { project_id: input.project_id } : {})
+      });
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v5/${encodeURIComponent(input.tenant_id)}/api/package-specs/usage${suffix}`
+      ));
+
+      return mapPipelineRawItemResult(getPipelinePayload(response));
     },
     async getTenantVersionDetail(input) {
       const response = unwrapPipelinePayload(await _http.get(

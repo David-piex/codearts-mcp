@@ -822,6 +822,46 @@ export const pipelineListRelatedProjectsInput = z.object({
   search: z.string().optional()
 });
 
+export const pipelineListCodeRepositoriesInput = z.object({
+  cloud_project_id: idSchema,
+  repoType: z.string().min(1).optional(),
+  query: z.string().optional(),
+  workspace: z.string().optional(),
+  authEndpoint: z.string().optional(),
+  offset: z.number().int().min(0).default(0),
+  limit: z.number().int().min(1).max(200).default(30)
+});
+
+export const pipelineListCodeBranchesInput = z.object({
+  cloud_project_id: idSchema,
+  repoUrl: z.string().min(1).optional(),
+  authEndpoint: z.string().optional(),
+  repoId: z.string().min(1).optional(),
+  pipelineId: idSchema.optional(),
+  search: z.string().optional(),
+  offset: z.number().int().min(0).default(0),
+  limit: z.number().int().min(1).max(200).default(30)
+}).refine((input) => input.repoUrl !== undefined || input.repoId !== undefined, {
+  message: "At least one of repoUrl or repoId is required"
+});
+
+export const pipelineGetRepositoryNumberInput = z.object({
+  tenant_id: idSchema,
+  domain_id: idSchema,
+  region: z.string().min(1),
+  project_id: idSchema.optional()
+});
+
+export const pipelineGetTenantPackageIsFreezeInput = z.object({
+  tenant_id: idSchema,
+  project_id: idSchema.optional()
+});
+
+export const pipelineGetPackageUsageInput = z.object({
+  tenant_id: idSchema,
+  project_id: idSchema.optional()
+});
+
 export const pipelineGetTenantVersionDetailInput = z.object({
   tenant_id: idSchema
 });

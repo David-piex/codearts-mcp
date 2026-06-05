@@ -6,9 +6,14 @@ import {
   pipelineCreateTemplateInput,
   pipelineDeleteTemplateInput,
   pipelineFavoriteTemplateInput,
+  pipelineGetPackageUsageInput,
+  pipelineGetRepositoryNumberInput,
+  pipelineGetTenantPackageIsFreezeInput,
   pipelineGetTenantVersionDetailInput,
   pipelineListChangeRequestOperationLogsInput,
   pipelineListChangeRequestCreatorsInput,
+  pipelineListCodeBranchesInput,
+  pipelineListCodeRepositoriesInput,
   pipelineListRelatedProjectsInput,
   pipelineCheckVariableGroupRightsInput,
   pipelineUpdateComponentInput,
@@ -777,6 +782,28 @@ describe("createPipelineClient", () => {
     });
 
     expect(
+      pipelineListCodeRepositoriesInput.parse({
+        cloud_project_id: "project-1"
+      })
+    ).toEqual({
+      cloud_project_id: "project-1",
+      offset: 0,
+      limit: 30
+    });
+
+    expect(
+      pipelineListCodeBranchesInput.parse({
+        cloud_project_id: "project-1",
+        repoId: "repo-1"
+      })
+    ).toEqual({
+      cloud_project_id: "project-1",
+      repoId: "repo-1",
+      offset: 0,
+      limit: 30
+    });
+
+    expect(
       pipelineListChangeRequestCreatorsInput.parse({
         cloud_project_id: "project-1",
         component_id: "component-1"
@@ -784,6 +811,34 @@ describe("createPipelineClient", () => {
     ).toEqual({
       cloud_project_id: "project-1",
       component_id: "component-1"
+    });
+
+    expect(
+      pipelineGetRepositoryNumberInput.parse({
+        tenant_id: "tenant-1",
+        domain_id: "tenant-1",
+        region: "cn-north-4"
+      })
+    ).toEqual({
+      tenant_id: "tenant-1",
+      domain_id: "tenant-1",
+      region: "cn-north-4"
+    });
+
+    expect(
+      pipelineGetTenantPackageIsFreezeInput.parse({
+        tenant_id: "tenant-1"
+      })
+    ).toEqual({
+      tenant_id: "tenant-1"
+    });
+
+    expect(
+      pipelineGetPackageUsageInput.parse({
+        tenant_id: "tenant-1"
+      })
+    ).toEqual({
+      tenant_id: "tenant-1"
     });
 
     expect(
@@ -3566,6 +3621,39 @@ describe("createPipelineClient", () => {
       page_size: 10,
       search: "mall"
     });
+    await client.listCodeRepositories({
+      cloud_project_id: "project-1",
+      repoType: "codehub",
+      query: "phoenix",
+      workspace: "ws-1",
+      authEndpoint: "auth-endpoint",
+      offset: 30,
+      limit: 30
+    });
+    await client.listCodeBranches({
+      cloud_project_id: "project-1",
+      repoUrl: "https://example.com/repo.git",
+      authEndpoint: "auth-endpoint",
+      repoId: "repo-1",
+      pipelineId: "pipe-1",
+      search: "master",
+      offset: 30,
+      limit: 30
+    });
+    await client.getRepositoryNumber({
+      tenant_id: "tenant-1",
+      domain_id: "tenant-1",
+      region: "cn-north-4",
+      project_id: "project-1"
+    });
+    await client.getTenantPackageIsFreeze({
+      tenant_id: "tenant-1",
+      project_id: "project-1"
+    });
+    await client.getPackageUsage({
+      tenant_id: "tenant-1",
+      project_id: "project-1"
+    });
     await client.getTenantVersionDetail({ tenant_id: "tenant-1" });
     await client.createChangeRequest({
       cloud_project_id: "project-1",
@@ -3711,6 +3799,26 @@ describe("createPipelineClient", () => {
       {
         method: "GET",
         path: "/v5/tenant-1/api/project/query-related-project?page_index=2&page_size=10&search=mall"
+      },
+      {
+        method: "GET",
+        path: "/v2/project-1/code/repositories/page?repoType=codehub&query=phoenix&workspace=ws-1&authEndpoint=auth-endpoint&offset=30&limit=30"
+      },
+      {
+        method: "GET",
+        path: "/v2/project-1/code/branches?repoUrl=https%3A%2F%2Fexample.com%2Frepo.git&authEndpoint=auth-endpoint&repoId=repo-1&pipelineId=pipe-1&search=master&offset=30&limit=30"
+      },
+      {
+        method: "GET",
+        path: "/v5/tenant-1/api/whitelist/repository-number?domain_id=tenant-1&region=cn-north-4&project_id=project-1"
+      },
+      {
+        method: "GET",
+        path: "/v5/tenant-1/api/package-specs/is-freeze?project_id=project-1"
+      },
+      {
+        method: "GET",
+        path: "/v5/tenant-1/api/package-specs/usage?project_id=project-1"
       },
       {
         method: "GET",

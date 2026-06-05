@@ -5,11 +5,16 @@ import { createPipelineListPipelineVarsHandler } from "../../../../src/products/
 import {
   createPipelineCheckVariableGroupRightsHandler,
   createPipelineGetChangeRequestHandler,
+  createPipelineGetPackageUsageHandler,
+  createPipelineGetRepositoryNumberHandler,
+  createPipelineGetTenantPackageIsFreezeHandler,
   createPipelineGetComponentFollowStatusHandler,
   createPipelineGetDashboardConcurrencyHandler,
   createPipelineGetDevucAuthHandler,
   createPipelineGetOauthAuthorizationUrlHandler,
   createPipelineGetTenantVersionDetailHandler,
+  createPipelineListCodeBranchesHandler,
+  createPipelineListCodeRepositoriesHandler,
   createPipelineListChangeRequestCreatorsHandler,
   createPipelineListChangeRequestOperationLogsHandler,
   createPipelineListRelatedProjectsHandler,
@@ -317,6 +322,73 @@ describe("Pipeline read detail tools", () => {
       region: "cn-north-4",
       version: "3.0",
       domain_id: "tenant-1"
+    });
+  });
+
+  it("returns code repository, code branch, repository number, package freeze and usage outputs", async () => {
+    const codeRepositories = createPipelineListCodeRepositoriesHandler({
+      listCodeRepositories: async () => ({
+        records: [{ id: "repo-1", name: "phoenix-sample", group_name: "demo" }],
+        total: 1,
+        raw: { data: [{ id: "repo-1", name: "phoenix-sample", group_name: "demo" }], total: 1 }
+      })
+    } as never);
+    const codeBranches = createPipelineListCodeBranchesHandler({
+      listCodeBranches: async () => ({
+        records: [{ name: "master" }],
+        total: 1,
+        raw: { result: [{ name: "master" }] }
+      })
+    } as never);
+    const repositoryNumber = createPipelineGetRepositoryNumberHandler({
+      getRepositoryNumber: async () => ({
+        item: { repository_number: 20 },
+        raw: { repository_number: 20 }
+      })
+    } as never);
+    const packageFreeze = createPipelineGetTenantPackageIsFreezeHandler({
+      getTenantPackageIsFreeze: async () => ({
+        item: { freeze: false, packageName: "free" },
+        raw: { freeze: false, packageName: "free" }
+      })
+    } as never);
+    const packageUsage = createPipelineGetPackageUsageHandler({
+      getPackageUsage: async () => ({
+        item: { domain_id: "tenant-1", usage: { execute_duration: "0.0000" } },
+        raw: { domain_id: "tenant-1", usage: { execute_duration: "0.0000" } }
+      })
+    } as never);
+
+    const codeRepositoriesResult = await codeRepositories({ cloud_project_id: "project-1" });
+    const codeBranchesResult = await codeBranches({ cloud_project_id: "project-1", repoId: "repo-1" });
+    const repositoryNumberResult = await repositoryNumber({
+      tenant_id: "tenant-1",
+      domain_id: "tenant-1",
+      region: "cn-north-4"
+    });
+    const packageFreezeResult = await packageFreeze({ tenant_id: "tenant-1" });
+    const packageUsageResult = await packageUsage({ tenant_id: "tenant-1" });
+
+    expect(codeRepositoriesResult.content[0]?.text).toContain("Loaded 1 pipeline code repositories");
+    expect(codeRepositoriesResult.structuredContent.items?.[0]?.codeRepository).toEqual({
+      id: "repo-1",
+      name: "phoenix-sample",
+      group_name: "demo"
+    });
+    expect(codeBranchesResult.content[0]?.text).toContain("Loaded 1 pipeline code branches");
+    expect(codeBranchesResult.structuredContent.items?.[0]?.codeBranch).toEqual({
+      name: "master"
+    });
+    expect(repositoryNumberResult.structuredContent.item?.repositoryNumber).toEqual({
+      repository_number: 20
+    });
+    expect(packageFreezeResult.structuredContent.item?.tenantPackageFreeze).toEqual({
+      freeze: false,
+      packageName: "free"
+    });
+    expect(packageUsageResult.structuredContent.item?.packageUsage).toEqual({
+      domain_id: "tenant-1",
+      usage: { execute_duration: "0.0000" }
     });
   });
 
