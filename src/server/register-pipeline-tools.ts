@@ -39,6 +39,7 @@ import {
   pipelineGetInput,
   pipelineGetChangeRequestInput,
   pipelineGetComponentInput,
+  pipelineGetComponentFollowStatusInput,
   pipelineGetDevucAuthInput,
   pipelineGetExecLogInput,
   pipelineGetOauthAuthorizationUrlInput,
@@ -123,13 +124,17 @@ import {
   pipelineUpdateThirdPartyNoticeInput,
   pipelineUpdateChangeRequestStatusInput,
   pipelineUpdateChangeRequestWorkItemsInput,
+  pipelineDeleteComponentInput,
+  pipelineFollowComponentInput,
   pipelineUpdateComponentInput,
+  pipelineUpdateComponentReposInput,
   pipelineUpdatePipelineInfoInput,
   pipelineUpdateProjectStrategyInput,
   pipelineUpdateTemplateInput,
   pipelineRollbackRunInput,
   pipelineUpdateRuleInput,
   pipelineCreateStrategyInput,
+  pipelineUnfollowComponentInput,
   pipelineUpdateStrategyInput,
   pipelineUpdateGroupInput,
   pipelineUpdateUserPermissionInput,
@@ -166,7 +171,11 @@ import {
 } from "../products/pipeline/tools/manage-change-requests.js";
 import {
   createPipelineCreateComponentHandler,
-  createPipelineUpdateComponentHandler
+  createPipelineDeleteComponentHandler,
+  createPipelineFollowComponentHandler,
+  createPipelineUnfollowComponentHandler,
+  createPipelineUpdateComponentHandler,
+  createPipelineUpdateComponentReposHandler
 } from "../products/pipeline/tools/manage-components.js";
 import {
   createPipelineSwitchNoticeHandler,
@@ -228,6 +237,7 @@ import {
   createPipelineCheckProjectHandler,
   createPipelineGetChangeRequestHandler,
   createPipelineGetComponentHandler,
+  createPipelineGetComponentFollowStatusHandler,
   createPipelineGetDashboardConcurrencyHandler,
   createPipelineGetDashboardExecutionsOverviewHandler,
   createPipelineGetDevucAuthHandler,
@@ -1047,6 +1057,13 @@ const pipelineToolDefinitions = {
     createProductHandler: createPipelineCreateComponentHandler,
     rateLimitAction: "pipeline_create_component"
   }),
+  "pipeline_follow_component": defineProductTool({
+    description: "Follow a CodeArts Pipeline component",
+    inputSchema: pipelineFollowComponentInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineFollowComponentHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineFollowComponentHandler,
+    rateLimitAction: "pipeline_follow_component"
+  }),
   "pipeline_list_components": defineProductTool({
     description: "List CodeArts Pipeline components",
     inputSchema: pipelineListComponentsInput,
@@ -1059,12 +1076,39 @@ const pipelineToolDefinitions = {
     selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetComponentHandler>[0] }) => clients.pipelineClient,
     createProductHandler: createPipelineGetComponentHandler
   }),
+  "pipeline_get_component_follow_status": defineProductTool({
+    description: "Get CodeArts Pipeline component follow status",
+    inputSchema: pipelineGetComponentFollowStatusInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetComponentFollowStatusHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineGetComponentFollowStatusHandler
+  }),
+  "pipeline_delete_component": defineProductTool({
+    description: "Delete CodeArts Pipeline component",
+    inputSchema: pipelineDeleteComponentInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineDeleteComponentHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineDeleteComponentHandler,
+    rateLimitAction: "pipeline_delete_component"
+  }),
+  "pipeline_unfollow_component": defineProductTool({
+    description: "Unfollow a CodeArts Pipeline component",
+    inputSchema: pipelineUnfollowComponentInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineUnfollowComponentHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineUnfollowComponentHandler,
+    rateLimitAction: "pipeline_unfollow_component"
+  }),
   "pipeline_update_component": defineProductTool({
     description: "Update CodeArts Pipeline component",
     inputSchema: pipelineUpdateComponentInput,
     selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineUpdateComponentHandler>[0] }) => clients.pipelineClient,
     createProductHandler: createPipelineUpdateComponentHandler,
     rateLimitAction: "pipeline_update_component"
+  }),
+  "pipeline_update_component_repos": defineProductTool({
+    description: "Update CodeArts Pipeline component repos",
+    inputSchema: pipelineUpdateComponentReposInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineUpdateComponentReposHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineUpdateComponentReposHandler,
+    rateLimitAction: "pipeline_update_component_repos"
   }),
   "pipeline_list_pac_actions": defineProductTool({
     description: "List CodeArts Pipeline PAC actions",

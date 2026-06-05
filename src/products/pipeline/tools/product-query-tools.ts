@@ -5,6 +5,7 @@ import {
   pipelineDashboardQueryInput,
   pipelineGetChangeRequestInput,
   pipelineGetComponentInput,
+  pipelineGetComponentFollowStatusInput,
   pipelineGetDevucAuthInput,
   pipelineGetNoticeMessagesInput,
   pipelineGetOauthAuthorizationUrlInput,
@@ -92,6 +93,10 @@ export type PipelineProductQueryClient = {
     body?: RawRecord;
   }) => Promise<RawListResponse>;
   getComponent: (input: { cloud_project_id: string; component_id: string }) => Promise<RawItemResponse>;
+  getComponentFollowStatus: (input: {
+    cloud_project_id: string;
+    component_id: string;
+  }) => Promise<RawItemResponse>;
   listPacActions: (input: {
     domain_id: string;
     offset: number;
@@ -145,6 +150,15 @@ export const createPipelineCheckComponentHandler = (client: PipelineProductQuery
     summary: "Checked pipeline component",
     itemKey: "componentCheck",
     id: (input) => input.component_id ?? input.component_name ?? input.project_id
+  });
+
+export const createPipelineGetComponentFollowStatusHandler = (client: PipelineProductQueryClient) =>
+  createPipelineRawItemHandler({
+    inputSchema: pipelineGetComponentFollowStatusInput,
+    call: (input) => client.getComponentFollowStatus(input),
+    summary: "Loaded pipeline component follow status",
+    itemKey: "componentFollowStatus",
+    id: (input) => input.component_id
   });
 
 export const createPipelineListExecutionPlansHandler = (client: PipelineProductQueryClient) =>

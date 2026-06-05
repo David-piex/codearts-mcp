@@ -4,6 +4,7 @@ import { createPipelineGetWebhookInfoHandler } from "../../../../src/products/pi
 import { createPipelineListPipelineVarsHandler } from "../../../../src/products/pipeline/tools/list-pipeline-vars.js";
 import {
   createPipelineGetChangeRequestHandler,
+  createPipelineGetComponentFollowStatusHandler,
   createPipelineGetDashboardConcurrencyHandler,
   createPipelineGetDevucAuthHandler,
   createPipelineGetOauthAuthorizationUrlHandler,
@@ -135,6 +136,26 @@ describe("Pipeline read detail tools", () => {
     expect(result.structuredContent.item?.changeRequest).toEqual({
       id: "cr-1",
       name: "Release CR"
+    });
+  });
+
+  it("returns component follow status query output", async () => {
+    const handler = createPipelineGetComponentFollowStatusHandler({
+      getComponentFollowStatus: async () => ({
+        item: { component_id: "component-1", favorite: true },
+        raw: { result: true }
+      })
+    } as never);
+
+    const result = await handler({
+      cloud_project_id: "project-1",
+      component_id: "component-1"
+    });
+
+    expect(result.content[0]?.text).toContain("Loaded pipeline component follow status");
+    expect(result.structuredContent.item?.componentFollowStatus).toEqual({
+      component_id: "component-1",
+      favorite: true
     });
   });
 

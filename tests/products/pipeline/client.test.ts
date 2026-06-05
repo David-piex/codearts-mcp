@@ -3486,6 +3486,10 @@ describe("createPipelineClient", () => {
           return "success";
         }
         return { result: { status: "success" } };
+      },
+      delete: async (path: string) => {
+        calls.push({ method: "DELETE", path });
+        return "component-1";
       }
     });
 
@@ -3578,11 +3582,29 @@ describe("createPipelineClient", () => {
     });
     await client.listComponents({ cloud_project_id: "project-1", offset: 0, limit: 20 });
     await client.getComponent({ cloud_project_id: "project-1", component_id: "component-1" });
+    await client.getComponentFollowStatus({ cloud_project_id: "project-1", component_id: "component-1" });
+    await client.followComponent({ cloud_project_id: "project-1", component_id: "component-1" });
+    await client.unfollowComponent({ cloud_project_id: "project-1", component_id: "component-1" });
     await client.updateComponent({
       cloud_project_id: "project-1",
       component_id: "component-1",
       desc: "updated service"
     });
+    await client.updateComponentRepos({
+      cloud_project_id: "project-1",
+      component_id: "component-1",
+      repos: [
+        {
+          type: "codehub",
+          repo_id: "repo-1",
+          http_url: "https://example.com/repo.git",
+          git_url: "git@example.com:repo.git",
+          branch: "master",
+          language: "java"
+        }
+      ]
+    });
+    await client.deleteComponent({ cloud_project_id: "project-1", component_id: "component-1" });
     await client.listPacActions({ domain_id: "domain-1", offset: 0, limit: 20 });
     await client.getPacAction({
       domain_id: "domain-1",
@@ -3706,9 +3728,41 @@ describe("createPipelineClient", () => {
         path: "/v2/project-1/component/component-1/query"
       },
       {
+        method: "GET",
+        path: "/v2/project-1/component/component-1/follow/query"
+      },
+      {
+        method: "PUT",
+        path: "/v2/project-1/component/component-1/follow",
+        body: undefined
+      },
+      {
+        method: "PUT",
+        path: "/v2/project-1/component/component-1/unfollow",
+        body: undefined
+      },
+      {
         method: "PUT",
         path: "/v2/project-1/component/component-1/update",
         body: { desc: "updated service" }
+      },
+      {
+        method: "PUT",
+        path: "/v2/project-1/component/component-1/repo/update",
+        body: [
+          {
+            type: "codehub",
+            repo_id: "repo-1",
+            http_url: "https://example.com/repo.git",
+            git_url: "git@example.com:repo.git",
+            branch: "master",
+            language: "java"
+          }
+        ]
+      },
+      {
+        method: "DELETE",
+        path: "/v2/project-1/component/component-1/delete"
       },
       {
         method: "POST",

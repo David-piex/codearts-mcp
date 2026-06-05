@@ -984,6 +984,11 @@ export const pipelineGetComponentInput = z.object({
   component_id: idSchema
 });
 
+export const pipelineGetComponentFollowStatusInput = z.object({
+  cloud_project_id: idSchema,
+  component_id: idSchema
+});
+
 export const pipelineComponentRepoInput = z.object({
   type: z.string().min(1),
   repo_id: z.string().min(1),
@@ -1008,6 +1013,31 @@ export const pipelineUpdateComponentInput = z.object({
   cloud_project_id: idSchema,
   component_id: idSchema,
   desc: z.string().optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const pipelineUpdateComponentReposInput = z.object({
+  cloud_project_id: idSchema,
+  component_id: idSchema,
+  repos: z.array(pipelineComponentRepoInput).min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const pipelineFollowComponentInput = z.object({
+  cloud_project_id: idSchema,
+  component_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const pipelineUnfollowComponentInput = z.object({
+  cloud_project_id: idSchema,
+  component_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const pipelineDeleteComponentInput = z.object({
+  cloud_project_id: idSchema,
+  component_id: idSchema,
   dry_run: z.boolean().default(true)
 });
 

@@ -6,7 +6,7 @@
 
 模块：`流水线`
 
-API 数量：`144`
+API 数量：`149`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
@@ -1904,6 +1904,64 @@ API 数量：`144`
 }
 ```
 
+### pipeline_delete_component
+
+所属模块：`流水线`
+
+说明：删除流水线的component。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "pipeline_delete_component",
+    "arguments": {
+      "cloud_project_id": "<cloud_project_id>",
+      "component_id": "<component_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `cloud_project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `cloud_project_id` ↔ 原始 CodeArts 流水线 API 同名字段 `cloud_project_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>云项目 ID，用于定位对应的 CodeArts 资源。 |
+| `component_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `component_id` ↔ 原始 CodeArts 流水线 API 同名字段 `component_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>component ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "cloud_project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "component_id": {
+      "$ref": "#/properties/cloud_project_id"
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "cloud_project_id",
+    "component_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### pipeline_delete_extension_endpoint
 
 所属模块：`流水线`
@@ -2605,6 +2663,64 @@ API 数量：`144`
 }
 ```
 
+### pipeline_follow_component
+
+所属模块：`流水线`
+
+说明：执行流水线的component。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "pipeline_follow_component",
+    "arguments": {
+      "cloud_project_id": "<cloud_project_id>",
+      "component_id": "<component_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `cloud_project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `cloud_project_id` ↔ 原始 CodeArts 流水线 API 同名字段 `cloud_project_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>云项目 ID，用于定位对应的 CodeArts 资源。 |
+| `component_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `component_id` ↔ 原始 CodeArts 流水线 API 同名字段 `component_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>component ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "cloud_project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "component_id": {
+      "$ref": "#/properties/cloud_project_id"
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "cloud_project_id",
+    "component_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### pipeline_get_batch_run_result
 
 所属模块：`流水线`
@@ -2743,6 +2859,59 @@ API 数量：`144`
   "method": "tools/call",
   "params": {
     "name": "pipeline_get_component",
+    "arguments": {
+      "cloud_project_id": "<cloud_project_id>",
+      "component_id": "<component_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `cloud_project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `cloud_project_id` ↔ 原始 CodeArts 流水线 API 同名字段 `cloud_project_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>云项目 ID，用于定位对应的 CodeArts 资源。 |
+| `component_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `component_id` ↔ 原始 CodeArts 流水线 API 同名字段 `component_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>component ID，用于定位对应的 CodeArts 资源。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "cloud_project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "component_id": {
+      "$ref": "#/properties/cloud_project_id"
+    }
+  },
+  "required": [
+    "cloud_project_id",
+    "component_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### pipeline_get_component_follow_status
+
+所属模块：`流水线`
+
+说明：获取流水线的componentfollow状态。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "pipeline_get_component_follow_status",
     "arguments": {
       "cloud_project_id": "<cloud_project_id>",
       "component_id": "<component_id>"
@@ -8422,6 +8591,64 @@ API 数量：`144`
 }
 ```
 
+### pipeline_unfollow_component
+
+所属模块：`流水线`
+
+说明：执行流水线的component。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "pipeline_unfollow_component",
+    "arguments": {
+      "cloud_project_id": "<cloud_project_id>",
+      "component_id": "<component_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `cloud_project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `cloud_project_id` ↔ 原始 CodeArts 流水线 API 同名字段 `cloud_project_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>云项目 ID，用于定位对应的 CodeArts 资源。 |
+| `component_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `component_id` ↔ 原始 CodeArts 流水线 API 同名字段 `component_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>component ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "cloud_project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "component_id": {
+      "$ref": "#/properties/cloud_project_id"
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "cloud_project_id",
+    "component_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### pipeline_update_change_request_status
 
 所属模块：`流水线`
@@ -8617,6 +8844,112 @@ API 数量：`144`
   "required": [
     "cloud_project_id",
     "component_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### pipeline_update_component_repos
+
+所属模块：`流水线`
+
+说明：更新流水线的componentrepos。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "pipeline_update_component_repos",
+    "arguments": {
+      "cloud_project_id": "<cloud_project_id>",
+      "component_id": "<component_id>",
+      "repos": "<repos>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `cloud_project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `cloud_project_id` ↔ 原始 CodeArts 流水线 API 同名字段 `cloud_project_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>云项目 ID，用于定位对应的 CodeArts 资源。 |
+| `component_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `component_id` ↔ 原始 CodeArts 流水线 API 同名字段 `component_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>component ID，用于定位对应的 CodeArts 资源。 |
+| `repos` | 是 | `array<object>` |  | 字段对应：<br>MCP 字段 `repos` ↔ 原始 CodeArts 流水线 API 同名字段 `repos`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "cloud_project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "component_id": {
+      "$ref": "#/properties/cloud_project_id"
+    },
+    "repos": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "minLength": 1
+          },
+          "repo_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "http_url": {
+            "type": "string",
+            "minLength": 1
+          },
+          "git_url": {
+            "type": "string",
+            "minLength": 1
+          },
+          "branch": {
+            "type": "string",
+            "minLength": 1
+          },
+          "language": {
+            "type": "string",
+            "minLength": 1
+          },
+          "endpoint_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "repo_id",
+          "http_url",
+          "git_url",
+          "branch",
+          "language"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "cloud_project_id",
+    "component_id",
+    "repos"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

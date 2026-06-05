@@ -1325,6 +1325,10 @@ export type PipelineClient = {
     cloud_project_id: string;
     component_id: string;
   }) => Promise<PipelineRawItemResult>;
+  getComponentFollowStatus: (input: {
+    cloud_project_id: string;
+    component_id: string;
+  }) => Promise<PipelineRawItemResult>;
   createComponent: (input: {
     cloud_project_id: string;
     name: string;
@@ -1346,6 +1350,43 @@ export type PipelineClient = {
     component_id: string;
     desc?: string;
   }) => Promise<PipelineRawItemResult>;
+  updateComponentRepos: (input: {
+    cloud_project_id: string;
+    component_id: string;
+    repos: Array<{
+      type: string;
+      repo_id: string;
+      http_url: string;
+      git_url: string;
+      branch: string;
+      language: string;
+      endpoint_id?: string;
+    }>;
+  }) => Promise<PipelineRawItemResult>;
+  followComponent: (input: {
+    cloud_project_id: string;
+    component_id: string;
+  }) => Promise<{
+    component_id: string;
+    favorite: boolean;
+    raw: PipelineRawRecord;
+  }>;
+  unfollowComponent: (input: {
+    cloud_project_id: string;
+    component_id: string;
+  }) => Promise<{
+    component_id: string;
+    favorite: boolean;
+    raw: PipelineRawRecord;
+  }>;
+  deleteComponent: (input: {
+    cloud_project_id: string;
+    component_id: string;
+  }) => Promise<{
+    component_id: string;
+    deleted: boolean;
+    raw: PipelineRawRecord;
+  }>;
   listPacActions: (input: {
     domain_id: string;
     offset: number;
@@ -4017,6 +4058,28 @@ export function createPipelineClient(
 
       return mapPipelineRawItemResult(getPipelinePayload(response));
     },
+    async getComponentFollowStatus(input) {
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v2/${encodeURIComponent(input.cloud_project_id)}/component/${encodeURIComponent(input.component_id)}/follow/query`
+      ));
+
+      const favorite =
+        typeof response === "boolean"
+          ? response
+          : typeof getPipelinePayload(response).result === "boolean"
+            ? Boolean(getPipelinePayload(response).result)
+            : Boolean(response);
+
+      return {
+        item: {
+          component_id: input.component_id,
+          favorite
+        },
+        raw: asPipelineRecord(
+          typeof response === "boolean" ? { result: response } : response
+        )
+      };
+    },
     async createComponent(input) {
       const response = unwrapPipelinePayload(await _http.post(
         `/v2/${encodeURIComponent(input.cloud_project_id)}/component/create`,
@@ -4040,6 +4103,74 @@ export function createPipelineClient(
       ));
 
       return mapPipelineRawItemResult(getPipelinePayload(response));
+    },
+    async updateComponentRepos(input) {
+      const response = unwrapPipelinePayload(await _http.put(
+        `/v2/${encodeURIComponent(input.cloud_project_id)}/component/${encodeURIComponent(input.component_id)}/repo/update`,
+        input.repos
+      ));
+
+      return mapPipelineRawItemResult(getPipelinePayload(response));
+    },
+    async followComponent(input) {
+      const response = unwrapPipelinePayload(await _http.put(
+        `/v2/${encodeURIComponent(input.cloud_project_id)}/component/${encodeURIComponent(input.component_id)}/follow`
+      ));
+
+      const componentId =
+        typeof response === "string"
+          ? response
+          : typeof getPipelinePayload(response).result === "string"
+            ? String(getPipelinePayload(response).result)
+            : input.component_id;
+
+      return {
+        component_id: componentId,
+        favorite: true,
+        raw: asPipelineRecord(
+          typeof response === "string" ? { result: response } : response
+        )
+      };
+    },
+    async unfollowComponent(input) {
+      const response = unwrapPipelinePayload(await _http.put(
+        `/v2/${encodeURIComponent(input.cloud_project_id)}/component/${encodeURIComponent(input.component_id)}/unfollow`
+      ));
+
+      const componentId =
+        typeof response === "string"
+          ? response
+          : typeof getPipelinePayload(response).result === "string"
+            ? String(getPipelinePayload(response).result)
+            : input.component_id;
+
+      return {
+        component_id: componentId,
+        favorite: false,
+        raw: asPipelineRecord(
+          typeof response === "string" ? { result: response } : response
+        )
+      };
+    },
+    async deleteComponent(input) {
+      const response = unwrapPipelinePayload(await _http.delete(
+        `/v2/${encodeURIComponent(input.cloud_project_id)}/component/${encodeURIComponent(input.component_id)}/delete`
+      ));
+
+      const componentId =
+        typeof response === "string"
+          ? response
+          : typeof getPipelinePayload(response).result === "string"
+            ? String(getPipelinePayload(response).result)
+            : input.component_id;
+
+      return {
+        component_id: componentId,
+        deleted: true,
+        raw: asPipelineRecord(
+          typeof response === "string" ? { result: response } : response
+        )
+      };
     },
     async listPacActions(input) {
       const response = unwrapPipelinePayload(await _http.post(
