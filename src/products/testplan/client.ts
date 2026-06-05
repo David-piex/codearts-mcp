@@ -408,6 +408,53 @@ export type TestPlanClient = {
     version_uri?: string;
     raw: Record<string, unknown>;
   }>;
+  createTestReport: (input: {
+    project_id: string;
+    version_uri: string;
+    name: string;
+    test_conclusion?: string;
+    test_conclusion_details?: string;
+    risk_analysis?: string;
+    iterator_uris?: string[];
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    project_id: string;
+    version_uri: string;
+    report_id?: string;
+    name?: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  updateTestReport: (input: {
+    project_id: string;
+    version_uri: string;
+    report_uri: string;
+    name: string;
+    test_conclusion?: string;
+    test_conclusion_details?: string;
+    risk_analysis?: string;
+    iterator_uris?: string[];
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    project_id: string;
+    version_uri: string;
+    report_id: string;
+    name?: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  updateTestReportQualityAttributes: (input: {
+    project_id: string;
+    version_uri: string;
+    report_uri: string;
+    body: Record<string, unknown>;
+  }) => Promise<{
+    project_id: string;
+    version_uri: string;
+    report_id: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
   getServiceTypeOverview: (input: TestPlanOverviewFilterInput) => Promise<{
     raw: Record<string, unknown>;
   }>;
@@ -624,6 +671,23 @@ export type TestPlanClient = {
   }) => Promise<{
     reports: Array<Record<string, unknown>>;
     total?: number;
+  }>;
+  refreshCustomTemplateReport: (input: {
+    project_id: string;
+    version_uri: string;
+    uri?: string;
+    name: string;
+    type?: string | number;
+    workpiece_type?: string;
+    template_config?: Record<string, unknown>;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    project_id: string;
+    version_uri: string;
+    report_id?: string;
+    name?: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
   }>;
   listTestReports: (input: {
     project_id: string;
@@ -3541,6 +3605,59 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         raw: report
       };
     },
+    async createTestReport(input) {
+      const body: Record<string, unknown> = { name: input.name };
+      if (input.body) {
+        Object.assign(body, input.body);
+      } else {
+        if (input.test_conclusion !== undefined) body.test_conclusion = input.test_conclusion;
+        if (input.test_conclusion_details !== undefined) body.test_conclusion_details = input.test_conclusion_details;
+        if (input.risk_analysis !== undefined) body.risk_analysis = input.risk_analysis;
+        if (input.iterator_uris !== undefined) body.iterator_uris = input.iterator_uris;
+      }
+
+      const response = await _http.post(
+        `/v4/${encodeURIComponent(input.project_id)}/versions/${encodeURIComponent(input.version_uri)}/test-reports`,
+        body
+      );
+      const payload = readResultPayload(response);
+      const value = payload.value ?? payload.result;
+
+      return {
+        project_id: input.project_id,
+        version_uri: input.version_uri,
+        report_id: typeof value === "string" ? value : undefined,
+        name: input.name,
+        value,
+        raw: payload
+      };
+    },
+    async updateTestReport(input) {
+      const body: Record<string, unknown> = { name: input.name };
+      if (input.body) {
+        Object.assign(body, input.body);
+      } else {
+        if (input.test_conclusion !== undefined) body.test_conclusion = input.test_conclusion;
+        if (input.test_conclusion_details !== undefined) body.test_conclusion_details = input.test_conclusion_details;
+        if (input.risk_analysis !== undefined) body.risk_analysis = input.risk_analysis;
+        if (input.iterator_uris !== undefined) body.iterator_uris = input.iterator_uris;
+      }
+
+      const response = await _http.put(
+        `/v4/${encodeURIComponent(input.project_id)}/versions/${encodeURIComponent(input.version_uri)}/test-reports/${encodeURIComponent(input.report_uri)}`,
+        body
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        project_id: input.project_id,
+        version_uri: input.version_uri,
+        report_id: input.report_uri,
+        name: input.name,
+        value: payload.value ?? payload.result,
+        raw: payload
+      };
+    },
     async getServiceTypeOverview(input) {
       const response = await _http.post(
         `/v5/projects/${encodeURIComponent(input.project_id)}/service-types/overview`,
@@ -3910,6 +4027,21 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         has_more: typeof payload.has_more === "boolean" ? payload.has_more : undefined
       };
     },
+    async updateTestReportQualityAttributes(input) {
+      const response = await _http.put(
+        `/v4/${encodeURIComponent(input.project_id)}/versions/${encodeURIComponent(input.version_uri)}/test-reports/${encodeURIComponent(input.report_uri)}/quality-attributes`,
+        input.body
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        project_id: input.project_id,
+        version_uri: input.version_uri,
+        report_id: input.report_uri,
+        value: payload.value ?? payload.result,
+        raw: payload
+      };
+    },
     async listCustomReports(input) {
       const query = new URLSearchParams();
       appendQueryValue(query, "type", input.type);
@@ -3978,6 +4110,33 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       return {
         reports,
         total: readTotal(payload, response, reports.length)
+      };
+    },
+    async refreshCustomTemplateReport(input) {
+      const body: Record<string, unknown> = { name: input.name };
+      if (input.body) {
+        Object.assign(body, input.body);
+      } else {
+        if (input.uri !== undefined) body.uri = input.uri;
+        if (input.type !== undefined) body.type = input.type;
+        if (input.workpiece_type !== undefined) body.workpiece_type = input.workpiece_type;
+        if (input.template_config !== undefined) body.template_config = input.template_config;
+      }
+
+      const response = await _http.post(
+        `/v4/${encodeURIComponent(input.project_id)}/versions/${encodeURIComponent(input.version_uri)}/custom-template-reports/refresh`,
+        body
+      );
+      const payload = readResultPayload(response);
+      const value = payload.value ?? payload.result;
+
+      return {
+        project_id: input.project_id,
+        version_uri: input.version_uri,
+        report_id: typeof value === "string" ? value : undefined,
+        name: input.name,
+        value,
+        raw: payload
       };
     },
     async listTestReports(input) {

@@ -118,6 +118,39 @@ export const testPlanGetTestReportInput = z.object({
   report_uri: idSchema
 });
 
+export const testPlanCreateTestReportInput = z.object({
+  project_id: idSchema,
+  version_uri: idSchema,
+  name: z.string().min(1),
+  test_conclusion: z.string().optional(),
+  test_conclusion_details: z.string().optional(),
+  risk_analysis: z.string().optional(),
+  iterator_uris: z.array(z.string().min(1)).optional(),
+  body: z.record(z.string(), z.unknown()).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanUpdateTestReportInput = z.object({
+  project_id: idSchema,
+  version_uri: idSchema,
+  report_uri: idSchema,
+  name: z.string().min(1),
+  test_conclusion: z.string().optional(),
+  test_conclusion_details: z.string().optional(),
+  risk_analysis: z.string().optional(),
+  iterator_uris: z.array(z.string().min(1)).optional(),
+  body: z.record(z.string(), z.unknown()).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanUpdateTestReportQualityAttributesInput = z.object({
+  project_id: idSchema,
+  version_uri: idSchema,
+  report_uri: idSchema,
+  body: z.record(z.string(), z.unknown()),
+  dry_run: z.boolean().default(true)
+});
+
 const testPlanOverviewPiFilterInput = z
   .object({
     all_pi: z.boolean().optional(),
@@ -308,6 +341,18 @@ export const testPlanListCustomTemplateReportsInput = pagingSchema.extend({
   project_id: idSchema,
   version_uri: idSchema,
   type: z.string().min(1).optional()
+});
+
+export const testPlanRefreshCustomTemplateReportInput = z.object({
+  project_id: idSchema,
+  version_uri: idSchema,
+  uri: z.string().min(1).optional(),
+  name: z.string().min(1),
+  type: z.union([z.string().min(1), z.number().int()]).optional(),
+  workpiece_type: z.string().min(1).optional(),
+  template_config: z.record(z.string(), z.unknown()).optional(),
+  body: z.record(z.string(), z.unknown()).optional(),
+  dry_run: z.boolean().default(true)
 });
 
 export const testPlanListTestReportsInput = pagingSchema.extend({

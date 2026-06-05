@@ -9,6 +9,7 @@ import {
   testPlanCheckApiTestTaskNameInput,
   testPlanCheckProjectMemberExistsInput,
   testPlanCheckResourceExistsInput,
+  testPlanCreateTestReportInput,
   testPlanCreateDefectAssociationInput,
   testPlanCheckUserDefinedConfigUsedInput,
   testPlanCheckUserInfoInput,
@@ -282,8 +283,11 @@ import {
   testPlanShowSensitivePropertyByIdInput,
   testPlanShowTimeOutViewInput,
   testPlanShowVariablesDecryptInput,
+  testPlanRefreshCustomTemplateReportInput,
   testPlanUpdateAwCataFirstInput,
   testPlanUpdateDefectAssociationInput,
+  testPlanUpdateTestReportInput,
+  testPlanUpdateTestReportQualityAttributesInput,
   testPlanUpdateTimeOutViewInput,
   testPlanStopTaskExecutionInput,
   testPlanDeleteDefectAssociationInput,
@@ -303,6 +307,12 @@ import {
   createTestPlanDeleteDefectAssociationHandler,
   createTestPlanUpdateDefectAssociationHandler
 } from "../products/testplan/tools/defect-association.js";
+import {
+  createTestPlanCreateTestReportHandler,
+  createTestPlanRefreshCustomTemplateReportHandler,
+  createTestPlanUpdateTestReportHandler,
+  createTestPlanUpdateTestReportQualityAttributesHandler
+} from "../products/testplan/tools/report-write-tools.js";
 import { createTestPlanGetApiTestAvailableConfigHandler } from "../products/testplan/tools/get-api-test-available-config.js";
 import { createTestPlanGetApiTestBasicAwV3Handler } from "../products/testplan/tools/get-api-test-basic-aw-v3.js";
 import { createTestPlanGetApiTestBasicAwV4Handler } from "../products/testplan/tools/get-api-test-basic-aw-v4.js";
@@ -2051,6 +2061,12 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanCreateDefectAssociationHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanCreateDefectAssociationHandler
   }),
+  "testplan_create_test_report": defineProductTool({
+    description: "Create a CodeArts TestPlan test report",
+    inputSchema: testPlanCreateTestReportInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanCreateTestReportHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanCreateTestReportHandler
+  }),
   "testplan_get_project_data_dashboard": defineProductTool({
     description: "Get CodeArts TestPlan project data dashboard overview",
     inputSchema: testPlanGetProjectDataDashboardInput,
@@ -2309,11 +2325,29 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanDeleteDefectAssociationHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanDeleteDefectAssociationHandler
   }),
+  "testplan_refresh_custom_template_report": defineProductTool({
+    description: "Refresh a CodeArts TestPlan custom template report",
+    inputSchema: testPlanRefreshCustomTemplateReportInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanRefreshCustomTemplateReportHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanRefreshCustomTemplateReportHandler
+  }),
   "testplan_update_defect_association": defineProductTool({
     description: "Move a CodeArts TestPlan defect association between iterators",
     inputSchema: testPlanUpdateDefectAssociationInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanUpdateDefectAssociationHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanUpdateDefectAssociationHandler
+  }),
+  "testplan_update_test_report": defineProductTool({
+    description: "Update a CodeArts TestPlan test report overview",
+    inputSchema: testPlanUpdateTestReportInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanUpdateTestReportHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanUpdateTestReportHandler
+  }),
+  "testplan_update_test_report_quality_attributes": defineProductTool({
+    description: "Update CodeArts TestPlan test report quality attributes",
+    inputSchema: testPlanUpdateTestReportQualityAttributesInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanUpdateTestReportQualityAttributesHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanUpdateTestReportQualityAttributesHandler
   }),
   "testplan_run_cases": defineProductTool({
     description: "Run CodeArts TestPlan cases",

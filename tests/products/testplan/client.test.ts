@@ -383,6 +383,117 @@ describe("createTestPlanClient", () => {
     ]);
   });
 
+  it("creates, updates, refreshes report writes and quality attributes with expected payloads", async () => {
+    const requests: Array<{ method: string; path: string; body: unknown }> = [];
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requests.push({ method: "post", path, body });
+        return { result: "report-created" };
+      },
+      put: async (path: string, body?: unknown) => {
+        requests.push({ method: "put", path, body });
+        return { result: "success" };
+      }
+    } as never);
+
+    const createResult = await client.createTestReport({
+      project_id: "project-1",
+      version_uri: "version-1",
+      name: "report-a",
+      test_conclusion: "ok",
+      risk_analysis: "none",
+      iterator_uris: ["iter-1"]
+    });
+    const updateResult = await client.updateTestReport({
+      project_id: "project-1",
+      version_uri: "version-1",
+      report_uri: "report-1",
+      name: "report-b",
+      body: {
+        test_conclusion_details: "detail"
+      }
+    });
+    const qualityResult = await client.updateTestReportQualityAttributes({
+      project_id: "project-1",
+      version_uri: "version-1",
+      report_uri: "report-1",
+      body: {
+        value: [{ key: "quality", value: "A" }]
+      }
+    });
+    const refreshResult = await client.refreshCustomTemplateReport({
+      project_id: "project-1",
+      version_uri: "version-1",
+      name: "report-c",
+      type: "custom",
+      workpiece_type: "issue",
+      template_config: { sections: ["summary"] }
+    });
+
+    expect(createResult).toMatchObject({
+      project_id: "project-1",
+      version_uri: "version-1",
+      report_id: "report-created",
+      name: "report-a"
+    });
+    expect(updateResult).toMatchObject({
+      project_id: "project-1",
+      version_uri: "version-1",
+      report_id: "report-1",
+      name: "report-b",
+      value: "success"
+    });
+    expect(qualityResult).toMatchObject({
+      project_id: "project-1",
+      version_uri: "version-1",
+      report_id: "report-1",
+      value: "success"
+    });
+    expect(refreshResult).toMatchObject({
+      project_id: "project-1",
+      version_uri: "version-1",
+      report_id: "report-created",
+      name: "report-c"
+    });
+    expect(requests).toEqual([
+      {
+        method: "post",
+        path: "/v4/project-1/versions/version-1/test-reports",
+        body: {
+          name: "report-a",
+          test_conclusion: "ok",
+          risk_analysis: "none",
+          iterator_uris: ["iter-1"]
+        }
+      },
+      {
+        method: "put",
+        path: "/v4/project-1/versions/version-1/test-reports/report-1",
+        body: {
+          name: "report-b",
+          test_conclusion_details: "detail"
+        }
+      },
+      {
+        method: "put",
+        path: "/v4/project-1/versions/version-1/test-reports/report-1/quality-attributes",
+        body: {
+          value: [{ key: "quality", value: "A" }]
+        }
+      },
+      {
+        method: "post",
+        path: "/v4/project-1/versions/version-1/custom-template-reports/refresh",
+        body: {
+          name: "report-c",
+          type: "custom",
+          workpiece_type: "issue",
+          template_config: { sections: ["summary"] }
+        }
+      }
+    ]);
+  });
+
   it("maps run case aliases to the execute payload", async () => {
     let requestedPath = "";
     let requestedBody: Record<string, unknown> | undefined;

@@ -168,6 +168,35 @@ describe("registerTestPlanTool", () => {
     }
   });
 
+  it("registers test report write tools", () => {
+    const registerTool = vi.fn();
+    const tools = [
+      ["testplan_create_test_report", "Create a CodeArts TestPlan test report"],
+      ["testplan_update_test_report", "Update a CodeArts TestPlan test report overview"],
+      ["testplan_update_test_report_quality_attributes", "Update CodeArts TestPlan test report quality attributes"],
+      ["testplan_refresh_custom_template_report", "Refresh a CodeArts TestPlan custom template report"]
+    ] as const;
+
+    for (const [toolName, description] of tools) {
+      const handled = registerTestPlanTool({
+        toolName,
+        server: { registerTool },
+        mode: "stdio",
+        stdioClient: {} as never
+      });
+
+      expect(handled).toBe(true);
+      expect(registerTool).toHaveBeenLastCalledWith(
+        toolName,
+        expect.objectContaining({
+          title: toolName,
+          description
+        }),
+        expect.any(Function)
+      );
+    }
+  });
+
   it("registers functional test status read tools", () => {
     const registerTool = vi.fn();
 

@@ -1213,6 +1213,7 @@ export const expectedToolNames = [
   "testplan_create_resource_uri_v4",
   "testplan_create_task",
   "testplan_create_task_relations",
+  "testplan_create_test_report",
   "testplan_delete_asset",
   "testplan_delete_attachment",
   "testplan_delete_aw_catas",
@@ -1463,6 +1464,7 @@ export const expectedToolNames = [
   "testplan_list_variables_by_group_with_sensitive",
   "testplan_list_variables_v3",
   "testplan_list_visible_services",
+  "testplan_refresh_custom_template_report",
   "testplan_request_official_api",
   "testplan_run_cases",
   "testplan_save_aw_refresh_to_all",
@@ -1483,6 +1485,8 @@ export const expectedToolNames = [
   "testplan_update_defect_association",
   "testplan_update_dynamic_global_variable",
   "testplan_update_task",
+  "testplan_update_test_report",
+  "testplan_update_test_report_quality_attributes",
   "testplan_update_time_out_view",
   "testplan_update_user_infos"
 ];
