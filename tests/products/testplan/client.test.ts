@@ -4603,6 +4603,184 @@ describe("createTestPlanClient", () => {
     ]);
   });
 
+  it("creates iterators, batch adds iterator testcases, and updates or deletes testhub services", async () => {
+    const requests: Array<{ method: string; path: string; body?: unknown }> = [];
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requests.push({ method: "POST", path, body });
+        if (path.includes("/iterators") && !path.includes("/batch-add")) {
+          return {
+            status: "success",
+            result: {
+              plan_id: "iterator-2"
+            }
+          };
+        }
+
+        return {};
+      },
+      put: async (path: string, body?: unknown) => {
+        requests.push({ method: "PUT", path, body });
+        return {
+          status: "success",
+          result: {
+            service_id: 12,
+            service_name: "manual"
+          }
+        };
+      },
+      delete: async (path: string) => {
+        requests.push({ method: "DELETE", path });
+        return {};
+      }
+    } as never);
+
+    await expect(
+      client.createTesthubIterator({
+        project_id: "project-1",
+        name: "Sprint 2",
+        assigned_id: "user-1",
+        service_id_list: [3],
+        plan_cycle: {
+          start_date: "2024-07-24 10:00:00",
+          end_date: "2024-07-24 18:00:00"
+        },
+        branch_uri: "branch-1"
+      })
+    ).resolves.toEqual({
+      iterator_id: "iterator-2",
+      name: "Sprint 2",
+      status: "success",
+      raw: {
+        plan_id: "iterator-2"
+      }
+    });
+
+    await expect(
+      client.batchAddIteratorTestcases({
+        project_id: "project-1",
+        iterator_uri: "iterator-2",
+        service_id: 3,
+        testcase_id_list: ["case-1", "case-2"]
+      })
+    ).resolves.toEqual({
+      iterator_uri: "iterator-2",
+      testcase_count: 2,
+      added: true,
+      raw: {}
+    });
+
+    await expect(
+      client.updateTesthubService({
+        service_id: 12,
+        service_name: "manual",
+        server_host: "https://example.com",
+        server_type: 0
+      })
+    ).resolves.toEqual({
+      service_id: "12",
+      service_name: "manual",
+      status: "success",
+      raw: {
+        service_id: 12,
+        service_name: "manual"
+      }
+    });
+
+    await expect(
+      client.deleteTesthubService({
+        service_id: 12
+      })
+    ).resolves.toEqual({
+      service_id: "12",
+      deleted: true,
+      raw: {}
+    });
+
+    expect(requests).toEqual([
+      {
+        method: "POST",
+        path: "/v4/testhub/projects/project-1/iterators",
+        body: {
+          name: "Sprint 2",
+          assigned_id: "user-1",
+          service_id_list: [3],
+          plan_cycle: {
+            start_date: "2024-07-24 10:00:00",
+            end_date: "2024-07-24 18:00:00"
+          },
+          branch_uri: "branch-1"
+        }
+      },
+      {
+        method: "POST",
+        path: "/v4/testhub/projects/project-1/iterator/iterator-2/testcases/batch-add",
+        body: {
+          service_id: 3,
+          testcase_id_list: ["case-1", "case-2"]
+        }
+      },
+      {
+        method: "PUT",
+        path: "/v4/testhub/services/12",
+        body: {
+          service_name: "manual",
+          server_host: "https://example.com",
+          server_type: 0
+        }
+      },
+      {
+        method: "DELETE",
+        path: "/v4/testhub/services/12"
+      }
+    ]);
+  });
+
+  it("batch updates task attributes through the official endpoint", async () => {
+    const requests: Array<{ path: string; body?: unknown }> = [];
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requests.push({ path, body });
+        return {
+          value: "success"
+        };
+      }
+    } as never);
+
+    await expect(
+      client.batchUpdateTaskAttributes({
+        project_id: "project-1",
+        task_uris: ["task-1", "task-2"],
+        tag_names: ["p0"],
+        version_uri: "version-1",
+        project_uuid: "project-uuid-1",
+        is_async: false,
+        is_delete: false
+      })
+    ).resolves.toEqual({
+      project_id: "project-1",
+      task_uris: ["task-1", "task-2"],
+      value: "success",
+      raw: {
+        value: "success"
+      }
+    });
+
+    expect(requests).toEqual([
+      {
+        path: "/v4/project-1/tasks/batch-update",
+        body: {
+          task_uris: ["task-1", "task-2"],
+          tag_names: ["p0"],
+          version_uri: "version-1",
+          project_uuid: "project-uuid-1",
+          is_async: false,
+          is_delete: false
+        }
+      }
+    ]);
+  });
+
   it("lists attachments and project field configurations", async () => {
     const requests: string[] = [];
     const client = createTestPlanClient({

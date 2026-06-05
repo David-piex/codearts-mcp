@@ -10,6 +10,13 @@ import {
   createTestPlanUpdateTaskExecutionInfoHandler,
   createTestPlanUpdateTaskExecutionStatusHandler
 } from "../../../../src/products/testplan/tools/task-execution-mutations.js";
+import {
+  createTestPlanBatchAddIteratorTestcasesHandler,
+  createTestPlanBatchUpdateTaskAttributesHandler,
+  createTestPlanCreateTesthubIteratorHandler,
+  createTestPlanDeleteTesthubServiceHandler,
+  createTestPlanUpdateTesthubServiceHandler
+} from "../../../../src/products/testplan/tools/testhub-write-tools.js";
 import { createTestPlanUpdateTaskHandler } from "../../../../src/products/testplan/tools/update-task.js";
 
 describe("testplan task write handlers", () => {
@@ -61,6 +68,31 @@ describe("testplan task write handlers", () => {
     });
     const batchUpdateExecutionInfoHandler = createTestPlanBatchUpdateTestcaseExecutionInfoHandler({
       batchUpdateTestcaseExecutionInfo: async () => {
+        throw new Error("should not execute in dry run");
+      }
+    });
+    const batchUpdateTaskAttributesHandler = createTestPlanBatchUpdateTaskAttributesHandler({
+      batchUpdateTaskAttributes: async () => {
+        throw new Error("should not execute in dry run");
+      }
+    });
+    const createIteratorHandler = createTestPlanCreateTesthubIteratorHandler({
+      createTesthubIterator: async () => {
+        throw new Error("should not execute in dry run");
+      }
+    });
+    const batchAddIteratorTestcasesHandler = createTestPlanBatchAddIteratorTestcasesHandler({
+      batchAddIteratorTestcases: async () => {
+        throw new Error("should not execute in dry run");
+      }
+    });
+    const updateTesthubServiceHandler = createTestPlanUpdateTesthubServiceHandler({
+      updateTesthubService: async () => {
+        throw new Error("should not execute in dry run");
+      }
+    });
+    const deleteTesthubServiceHandler = createTestPlanDeleteTesthubServiceHandler({
+      deleteTesthubService: async () => {
         throw new Error("should not execute in dry run");
       }
     });
@@ -161,6 +193,71 @@ describe("testplan task write handlers", () => {
         item: { executed: false, caseCount: 1 }
       }
     });
+    await expect(
+      batchUpdateTaskAttributesHandler({
+        project_id: "project-1",
+        task_uris: ["task-1"],
+        tag_names: ["p0"],
+        version_uri: "version-1"
+      })
+    ).resolves.toMatchObject({
+      structuredContent: {
+        summary: "Dry run: batch update test plan task attributes",
+        item: { executed: false }
+      }
+    });
+    await expect(
+      createIteratorHandler({
+        project_id: "project-1",
+        name: "Sprint 2",
+        assigned_id: "user-1",
+        service_id_list: [3],
+        plan_cycle: {
+          start_date: "2024-07-24 10:00:00",
+          end_date: "2024-07-24 18:00:00"
+        }
+      })
+    ).resolves.toMatchObject({
+      structuredContent: {
+        summary: "Dry run: create TestHub iterator Sprint 2",
+        item: { executed: false }
+      }
+    });
+    await expect(
+      batchAddIteratorTestcasesHandler({
+        project_id: "project-1",
+        iterator_uri: "iterator-1",
+        service_id: 3,
+        testcase_id_list: ["case-1"]
+      })
+    ).resolves.toMatchObject({
+      structuredContent: {
+        summary: "Dry run: batch add testcases to iterator iterator-1",
+        item: { executed: false }
+      }
+    });
+    await expect(
+      updateTesthubServiceHandler({
+        service_id: 12,
+        service_name: "manual",
+        server_host: "https://example.com"
+      })
+    ).resolves.toMatchObject({
+      structuredContent: {
+        summary: "Dry run: update TestHub service 12",
+        item: { executed: false }
+      }
+    });
+    await expect(
+      deleteTesthubServiceHandler({
+        service_id: 12
+      })
+    ).resolves.toMatchObject({
+      structuredContent: {
+        summary: "Dry run: delete TestHub service 12",
+        item: { executed: false }
+      }
+    });
   });
 
   it("executes when dry_run is false", async () => {
@@ -238,6 +335,45 @@ describe("testplan task write handlers", () => {
         project_id: input.project_id,
         value: "success",
         updated: true
+      })
+    });
+    const batchUpdateTaskAttributesHandler = createTestPlanBatchUpdateTaskAttributesHandler({
+      batchUpdateTaskAttributes: async (input) => ({
+        project_id: input.project_id,
+        task_uris: input.task_uris,
+        value: "success",
+        raw: { value: "success" }
+      })
+    });
+    const createIteratorHandler = createTestPlanCreateTesthubIteratorHandler({
+      createTesthubIterator: async (input) => ({
+        iterator_id: "iterator-1",
+        name: input.name,
+        status: "success",
+        raw: { plan_id: "iterator-1" }
+      })
+    });
+    const batchAddIteratorTestcasesHandler = createTestPlanBatchAddIteratorTestcasesHandler({
+      batchAddIteratorTestcases: async (input) => ({
+        iterator_uri: input.iterator_uri,
+        testcase_count: input.testcase_id_list.length,
+        added: true,
+        raw: {}
+      })
+    });
+    const updateTesthubServiceHandler = createTestPlanUpdateTesthubServiceHandler({
+      updateTesthubService: async (input) => ({
+        service_id: String(input.service_id),
+        service_name: input.service_name,
+        status: "success",
+        raw: { service_id: input.service_id, service_name: input.service_name }
+      })
+    });
+    const deleteTesthubServiceHandler = createTestPlanDeleteTesthubServiceHandler({
+      deleteTesthubService: async (input) => ({
+        service_id: String(input.service_id),
+        deleted: true,
+        raw: {}
       })
     });
 
@@ -358,6 +494,71 @@ describe("testplan task write handlers", () => {
     ).resolves.toMatchObject({
       structuredContent: {
         item: { id: "task-1", executed: true, updated: true, caseCount: 1 }
+      }
+    });
+    await expect(
+      batchUpdateTaskAttributesHandler({
+        project_id: "project-1",
+        task_uris: ["task-1"],
+        tag_names: ["p0"],
+        version_uri: "version-1",
+        dry_run: false
+      })
+    ).resolves.toMatchObject({
+      structuredContent: {
+        item: { id: "project-1", executed: true, value: "success" }
+      }
+    });
+    await expect(
+      createIteratorHandler({
+        project_id: "project-1",
+        name: "Sprint 2",
+        assigned_id: "user-1",
+        service_id_list: [3],
+        plan_cycle: {
+          start_date: "2024-07-24 10:00:00",
+          end_date: "2024-07-24 18:00:00"
+        },
+        dry_run: false
+      })
+    ).resolves.toMatchObject({
+      structuredContent: {
+        item: { id: "iterator-1", executed: true, status: "success" }
+      }
+    });
+    await expect(
+      batchAddIteratorTestcasesHandler({
+        project_id: "project-1",
+        iterator_uri: "iterator-1",
+        service_id: 3,
+        testcase_id_list: ["case-1", "case-2"],
+        dry_run: false
+      })
+    ).resolves.toMatchObject({
+      structuredContent: {
+        item: { id: "iterator-1", executed: true, testcaseCount: 2, added: true }
+      }
+    });
+    await expect(
+      updateTesthubServiceHandler({
+        service_id: 12,
+        service_name: "manual",
+        server_host: "https://example.com",
+        dry_run: false
+      })
+    ).resolves.toMatchObject({
+      structuredContent: {
+        item: { id: "12", executed: true, status: "success" }
+      }
+    });
+    await expect(
+      deleteTesthubServiceHandler({
+        service_id: 12,
+        dry_run: false
+      })
+    ).resolves.toMatchObject({
+      structuredContent: {
+        item: { id: "12", executed: true, deleted: true }
       }
     });
   });

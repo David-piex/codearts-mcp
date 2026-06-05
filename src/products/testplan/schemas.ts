@@ -608,6 +608,19 @@ export const testPlanDeleteMindmapBackupInput = z.object({
 
 export const testPlanListTesthubServicesInput = z.object({});
 
+export const testPlanUpdateTesthubServiceInput = z.object({
+  service_id: z.union([idSchema, z.number().int()]),
+  service_name: z.string().min(1),
+  server_host: z.string().min(1),
+  server_type: z.number().int().optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanDeleteTesthubServiceInput = z.object({
+  service_id: z.union([idSchema, z.number().int()]),
+  dry_run: z.boolean().default(true)
+});
+
 export const testPlanGetTesthubCaseInput = z.object({
   project_id: idSchema,
   case_uri: idSchema
@@ -1682,6 +1695,19 @@ export const testPlanGetIteratorInput = z.object({
   iterator_uri: idSchema
 });
 
+export const testPlanCreateTesthubIteratorInput = z.object({
+  project_id: idSchema,
+  name: z.string().min(1),
+  assigned_id: idSchema,
+  service_id_list: z.array(z.number().int()).min(1),
+  plan_cycle: z.object({
+    start_date: z.string().min(1),
+    end_date: z.string().min(1)
+  }),
+  branch_uri: idSchema.optional(),
+  dry_run: z.boolean().default(true)
+});
+
 export const testPlanGetGt3kIteratorInput = z.object({
   project_uuid: idSchema,
   iterator_id: idSchema
@@ -1696,6 +1722,14 @@ export const testPlanListIteratorIssueCasesInput = z.object({
   project_id: idSchema,
   iterator_uri: idSchema,
   workitem_list: z.array(z.record(z.string(), z.unknown())).min(1)
+});
+
+export const testPlanBatchAddIteratorTestcasesInput = z.object({
+  project_id: idSchema,
+  iterator_uri: idSchema,
+  service_id: z.number().int(),
+  testcase_id_list: z.array(idSchema).min(1),
+  dry_run: z.boolean().default(true)
 });
 
 export const testPlanListIteratorHistoriesInput = pagingSchema.extend({
@@ -1715,6 +1749,17 @@ export const testPlanCreateTaskInput = z.object({
   uri: idSchema.optional(),
   description: z.string().optional(),
   version_uri: idSchema.optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanBatchUpdateTaskAttributesInput = z.object({
+  project_id: idSchema,
+  task_uris: z.array(idSchema).min(1),
+  tag_names: z.array(z.string().min(1)).min(1),
+  version_uri: idSchema,
+  project_uuid: idSchema.optional(),
+  is_async: z.boolean().optional(),
+  is_delete: z.boolean().optional(),
   dry_run: z.boolean().default(true)
 });
 

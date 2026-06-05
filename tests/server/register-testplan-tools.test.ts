@@ -587,6 +587,36 @@ describe("registerTestPlanTool", () => {
     }
   });
 
+  it("registers testhub and task attribute write tools", () => {
+    const registerTool = vi.fn();
+    const tools = [
+      ["testplan_batch_update_task_attributes", "Batch update CodeArts TestPlan task attributes"],
+      ["testplan_create_testhub_iterator", "Create CodeArts TestPlan TestHub iterator"],
+      ["testplan_batch_add_iterator_testcases", "Batch add CodeArts TestPlan testcases to a TestHub iterator"],
+      ["testplan_update_testhub_service", "Update CodeArts TestPlan TestHub service"],
+      ["testplan_delete_testhub_service", "Delete CodeArts TestPlan TestHub service"]
+    ] as const;
+
+    for (const [toolName, description] of tools) {
+      const handled = registerTestPlanTool({
+        toolName,
+        server: { registerTool },
+        mode: "stdio",
+        stdioClient: {} as never
+      });
+
+      expect(handled).toBe(true);
+      expect(registerTool).toHaveBeenLastCalledWith(
+        toolName,
+        expect.objectContaining({
+          title: toolName,
+          description
+        }),
+        expect.any(Function)
+      );
+    }
+  });
+
   it("returns false for non-testplan tools", () => {
     const registerTool = vi.fn();
 

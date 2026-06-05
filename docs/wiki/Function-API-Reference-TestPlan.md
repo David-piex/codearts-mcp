@@ -6,11 +6,85 @@
 
 模块：`测试计划`
 
-API 数量：`303`
+API 数量：`308`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
 ## API 清单
+
+### testplan_batch_add_iterator_testcases
+
+所属模块：`测试计划`
+
+说明：批量处理测试计划的additeratortestcases。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "testplan_batch_add_iterator_testcases",
+    "arguments": {
+      "project_id": "<project_id>",
+      "iterator_uri": "<iterator_uri>",
+      "service_id": "<service_id>",
+      "testcase_id_list": "<testcase_id_list>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 测试计划 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `iterator_uri` | 是 | `string` |  | 字段对应：<br>MCP 字段 `iterator_uri` ↔ 原始 CodeArts 测试计划 API 同名字段 `iterator_uri`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `service_id` | 是 | `integer` |  | 字段对应：<br>MCP 字段 `service_id` ↔ 原始 CodeArts 测试计划 API 同名字段 `service_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>service ID，用于定位对应的 CodeArts 资源。 |
+| `testcase_id_list` | 是 | `array<object>` |  | 字段对应：<br>MCP 字段 `testcase_id_list` ↔ 原始 CodeArts 测试计划 API 同名字段 `testcase_id_list`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "iterator_uri": {
+      "$ref": "#/properties/project_id"
+    },
+    "service_id": {
+      "type": "integer"
+    },
+    "testcase_id_list": {
+      "type": "array",
+      "items": {
+        "$ref": "#/properties/project_id"
+      },
+      "minItems": 1
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "project_id",
+    "iterator_uri",
+    "service_id",
+    "testcase_id_list"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
 
 ### testplan_batch_delete_factors
 
@@ -212,6 +286,97 @@ API 数量：`303`
   },
   "required": [
     "project_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### testplan_batch_update_task_attributes
+
+所属模块：`测试计划`
+
+说明：批量处理测试计划的update任务attributes。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "testplan_batch_update_task_attributes",
+    "arguments": {
+      "project_id": "<project_id>",
+      "task_uris": "<task_uris>",
+      "tag_names": "<tag_names>",
+      "version_uri": "<version_uri>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 测试计划 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `task_uris` | 是 | `array<object>` |  | 字段对应：<br>MCP 字段 `task_uris` ↔ 原始 CodeArts 测试计划 API 同名字段 `task_uris`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `tag_names` | 是 | `array<string>` |  | 字段对应：<br>MCP 字段 `tag_names` ↔ 原始 CodeArts 测试计划 API 同名字段 `tag_names`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `version_uri` | 是 | `string` |  | 字段对应：<br>MCP 字段 `version_uri` ↔ 原始 CodeArts 测试计划 API 同名字段 `version_uri`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `project_uuid` | 否 | `string` |  | 字段对应：<br>MCP 字段 `project_uuid` ↔ 原始 CodeArts 测试计划 API 中表示项目 UUID 的字段，常见原字段名为 `project_uuid`、`projectUuid` 或 `projectUUId`，以对应接口实际定义为准。<br>CodeArts 项目 UUID，常用于 Repo 仓库创建、仓库查询和项目级资源定位。可通过项目列表或控制台项目详情获取。 |
+| `is_async` | 否 | `boolean` |  | 字段对应：<br>MCP 字段 `is_async` ↔ 原始 CodeArts 测试计划 API 同名字段 `is_async`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `is_delete` | 否 | `boolean` |  | 字段对应：<br>MCP 字段 `is_delete` ↔ 原始 CodeArts 测试计划 API 同名字段 `is_delete`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "task_uris": {
+      "type": "array",
+      "items": {
+        "$ref": "#/properties/project_id"
+      },
+      "minItems": 1
+    },
+    "tag_names": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "version_uri": {
+      "$ref": "#/properties/project_id"
+    },
+    "project_uuid": {
+      "$ref": "#/properties/project_id"
+    },
+    "is_async": {
+      "type": "boolean"
+    },
+    "is_delete": {
+      "type": "boolean"
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "project_id",
+    "task_uris",
+    "tag_names",
+    "version_uri"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -1488,6 +1653,106 @@ API 数量：`303`
 }
 ```
 
+### testplan_create_testhub_iterator
+
+所属模块：`测试计划`
+
+说明：创建测试计划的testhubiterator。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "testplan_create_testhub_iterator",
+    "arguments": {
+      "project_id": "<project_id>",
+      "name": "<name>",
+      "assigned_id": "<assigned_id>",
+      "service_id_list": "<service_id_list>",
+      "plan_cycle": "<plan_cycle>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 测试计划 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `name` | 是 | `string` |  | 字段对应：<br>MCP 字段 `name` ↔ 原始 CodeArts 测试计划 API 同名字段 `name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
+| `assigned_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `assigned_id` ↔ 原始 CodeArts 测试计划 API 同名字段 `assigned_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>处理人 ID，用于定位对应的 CodeArts 资源。 |
+| `service_id_list` | 是 | `array<integer>` |  | 字段对应：<br>MCP 字段 `service_id_list` ↔ 原始 CodeArts 测试计划 API 同名字段 `service_id_list`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `plan_cycle` | 是 | `object` |  | 字段对应：<br>MCP 字段 `plan_cycle` ↔ 原始 CodeArts 测试计划 API 同名字段 `plan_cycle`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `branch_uri` | 否 | `string` |  | 字段对应：<br>MCP 字段 `branch_uri` ↔ 原始 CodeArts 测试计划 API 同名字段 `branch_uri`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "assigned_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "service_id_list": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      },
+      "minItems": 1
+    },
+    "plan_cycle": {
+      "type": "object",
+      "properties": {
+        "start_date": {
+          "type": "string",
+          "minLength": 1
+        },
+        "end_date": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "start_date",
+        "end_date"
+      ],
+      "additionalProperties": false
+    },
+    "branch_uri": {
+      "$ref": "#/properties/project_id"
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "project_id",
+    "name",
+    "assigned_id",
+    "service_id_list",
+    "plan_cycle"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### testplan_delete_asset
 
 所属模块：`测试计划`
@@ -2564,6 +2829,65 @@ API 数量：`303`
   "required": [
     "project_id",
     "testcases"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### testplan_delete_testhub_service
+
+所属模块：`测试计划`
+
+说明：删除测试计划的testhubservice。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "testplan_delete_testhub_service",
+    "arguments": {
+      "service_id": "<service_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `service_id` | 是 | `string \| integer` |  | 字段对应：<br>MCP 字段 `service_id` ↔ 原始 CodeArts 测试计划 API 同名字段 `service_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>service ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "service_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "integer"
+        }
+      ]
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "service_id"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -20626,6 +20950,83 @@ API 数量：`303`
     "version_uri",
     "report_uri",
     "body"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### testplan_update_testhub_service
+
+所属模块：`测试计划`
+
+说明：更新测试计划的testhubservice。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "testplan_update_testhub_service",
+    "arguments": {
+      "service_id": "<service_id>",
+      "service_name": "<service_name>",
+      "server_host": "<server_host>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `service_id` | 是 | `string \| integer` |  | 字段对应：<br>MCP 字段 `service_id` ↔ 原始 CodeArts 测试计划 API 同名字段 `service_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>service ID，用于定位对应的 CodeArts 资源。 |
+| `service_name` | 是 | `string` |  | 字段对应：<br>MCP 字段 `service_name` ↔ 原始 CodeArts 测试计划 API 同名字段 `service_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>service名称。 |
+| `server_host` | 是 | `string` |  | 字段对应：<br>MCP 字段 `server_host` ↔ 原始 CodeArts 测试计划 API 同名字段 `server_host`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `server_type` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `server_type` ↔ 原始 CodeArts 测试计划 API 同名字段 `server_type`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "service_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "integer"
+        }
+      ]
+    },
+    "service_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "server_host": {
+      "type": "string",
+      "minLength": 1
+    },
+    "server_type": {
+      "type": "integer"
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "service_id",
+    "service_name",
+    "server_host"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

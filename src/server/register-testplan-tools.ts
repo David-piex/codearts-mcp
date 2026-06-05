@@ -4,6 +4,7 @@ import { createTestPlanClient } from "../products/testplan/client.js";
 import {
   testPlanBatchDeleteTasksInput,
   testPlanBatchSendNotificationsInput,
+  testPlanBatchUpdateTaskAttributesInput,
   testPlanCheckAlertTemplateNameInput,
   testPlanCheckAlertUserNameInput,
   testPlanCheckApiTestTaskNameInput,
@@ -23,6 +24,7 @@ import {
   testPlanCreateTestStepByCollectionInput,
   testPlanDeleteAssetInput,
   testPlanDeleteAttachmentInput,
+  testPlanDeleteTesthubServiceInput,
   testPlanDeleteAwCatasInput,
   testPlanDeleteBasicAwsV1Input,
   testPlanDeleteBasicAwsV2Input,
@@ -168,6 +170,7 @@ import {
   testPlanListVariableSynchronizationTwoInput,
   testPlanGetSuiteInfoPageUrlInput,
   testPlanInitTaskExecutionInput,
+  testPlanCreateTesthubIteratorInput,
   testPlanStopTaskExecutionByCaseInput,
   testPlanListApiTestAwNameViewsInput,
   testPlanListApiTestBasicAwsBatchInput,
@@ -210,6 +213,7 @@ import {
   testPlanListGt3kVisibleServicesInput,
   testPlanListIssueCaseCountsInput,
   testPlanListIssueTestcasesInput,
+  testPlanBatchAddIteratorTestcasesInput,
   testPlanListIteratorIssueCasesInput,
   testPlanListIteratorInfosInput,
   testPlanListIteratorHistoriesInput,
@@ -295,6 +299,7 @@ import {
   testPlanRefreshCustomTemplateReportInput,
   testPlanUpdateAwCataFirstInput,
   testPlanUpdateDefectAssociationInput,
+  testPlanUpdateTesthubServiceInput,
   testPlanUpdateTestReportInput,
   testPlanUpdateTestReportQualityAttributesInput,
   testPlanUpdateTimeOutViewInput,
@@ -627,6 +632,13 @@ import { createTestPlanSearchFeaturesByCaseHandler } from "../products/testplan/
 import { createTestPlanSearchFeaturesHandler } from "../products/testplan/tools/search-features.js";
 import { createTestPlanSearchTestcaseUrisUsedForAutomationHandler } from "../products/testplan/tools/search-testcase-uris-used-for-automation.js";
 import { createTestPlanStopTaskExecutionHandler } from "../products/testplan/tools/stop-task-execution.js";
+import {
+  createTestPlanBatchAddIteratorTestcasesHandler,
+  createTestPlanBatchUpdateTaskAttributesHandler,
+  createTestPlanCreateTesthubIteratorHandler,
+  createTestPlanDeleteTesthubServiceHandler,
+  createTestPlanUpdateTesthubServiceHandler
+} from "../products/testplan/tools/testhub-write-tools.js";
 import { createTestPlanUpdateTaskHandler } from "../products/testplan/tools/update-task.js";
 import { createOfficialApiRequestHandler } from "../products/shared-tools/request-official-api.js";
 import { defineProductTool, registerDefinedTool } from "./product-tool-registry.js";
@@ -786,6 +798,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanGetIteratorInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetIteratorHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetIteratorHandler
+  }),
+  "testplan_create_testhub_iterator": defineProductTool({
+    description: "Create CodeArts TestPlan TestHub iterator",
+    inputSchema: testPlanCreateTesthubIteratorInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanCreateTesthubIteratorHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanCreateTesthubIteratorHandler
   }),
   "testplan_get_gt3k_iterator": defineProductTool({
     description: "Get CodeArts TestPlan GT3K iterator detail with summary statistics",
@@ -984,6 +1002,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListIssueTestcasesInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListIssueTestcasesHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListIssueTestcasesHandler
+  }),
+  "testplan_batch_add_iterator_testcases": defineProductTool({
+    description: "Batch add CodeArts TestPlan testcases to a TestHub iterator",
+    inputSchema: testPlanBatchAddIteratorTestcasesInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanBatchAddIteratorTestcasesHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanBatchAddIteratorTestcasesHandler
   }),
   "testplan_list_iterator_issue_cases": defineProductTool({
     description: "List CodeArts TestPlan testcase references related to iterator issues",
@@ -2137,6 +2161,12 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanCreateTaskHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanCreateTaskHandler
   }),
+  "testplan_batch_update_task_attributes": defineProductTool({
+    description: "Batch update CodeArts TestPlan task attributes",
+    inputSchema: testPlanBatchUpdateTaskAttributesInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanBatchUpdateTaskAttributesHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanBatchUpdateTaskAttributesHandler
+  }),
   "testplan_create_task_relations": defineProductTool({
     description: "Create CodeArts TestPlan task and case relations",
     inputSchema: testPlanCreateTaskRelationsInput,
@@ -2208,6 +2238,18 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListTesthubServicesInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTesthubServicesHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListTesthubServicesHandler
+  }),
+  "testplan_update_testhub_service": defineProductTool({
+    description: "Update CodeArts TestPlan TestHub service",
+    inputSchema: testPlanUpdateTesthubServiceInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanUpdateTesthubServiceHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanUpdateTesthubServiceHandler
+  }),
+  "testplan_delete_testhub_service": defineProductTool({
+    description: "Delete CodeArts TestPlan TestHub service",
+    inputSchema: testPlanDeleteTesthubServiceInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanDeleteTesthubServiceHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanDeleteTesthubServiceHandler
   }),
   "testplan_list_iterator_issues": defineProductTool({
     description: "List CodeArts TestPlan issues under a TestHub iterator",

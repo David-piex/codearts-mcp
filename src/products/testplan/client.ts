@@ -1061,6 +1061,24 @@ export type TestPlanClient = {
     services: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  updateTesthubService: (input: {
+    service_id: string | number;
+    service_name: string;
+    server_host: string;
+    server_type?: number;
+  }) => Promise<{
+    service_id: string;
+    service_name?: string;
+    status?: string;
+    raw: Record<string, unknown>;
+  }>;
+  deleteTesthubService: (input: {
+    service_id: string | number;
+  }) => Promise<{
+    service_id: string;
+    deleted: boolean;
+    raw: Record<string, unknown>;
+  }>;
   getTesthubCase: (input: {
     project_id: string;
     case_uri: string;
@@ -2325,6 +2343,22 @@ export type TestPlanClient = {
     name?: string;
     raw: Record<string, unknown>;
   }>;
+  createTesthubIterator: (input: {
+    project_id: string;
+    name: string;
+    assigned_id: string;
+    service_id_list: number[];
+    plan_cycle: {
+      start_date: string;
+      end_date: string;
+    };
+    branch_uri?: string;
+  }) => Promise<{
+    iterator_id: string;
+    name?: string;
+    status?: string;
+    raw: Record<string, unknown>;
+  }>;
   getGt3kIterator: (input: {
     project_uuid: string;
     iterator_id: string;
@@ -2349,6 +2383,17 @@ export type TestPlanClient = {
   }) => Promise<{
     case_ids: Array<Record<string, unknown>>;
     total?: number;
+  }>;
+  batchAddIteratorTestcases: (input: {
+    project_id: string;
+    iterator_uri: string;
+    service_id: number;
+    testcase_id_list: string[];
+  }) => Promise<{
+    iterator_uri: string;
+    testcase_count: number;
+    added: boolean;
+    raw: Record<string, unknown>;
   }>;
   listIteratorHistories: (input: {
     project_id: string;
@@ -2380,6 +2425,20 @@ export type TestPlanClient = {
     version_uri?: string;
     status_code?: number;
     status_name?: string;
+  }>;
+  batchUpdateTaskAttributes: (input: {
+    project_id: string;
+    task_uris: string[];
+    tag_names: string[];
+    version_uri: string;
+    project_uuid?: string;
+    is_async?: boolean;
+    is_delete?: boolean;
+  }) => Promise<{
+    project_id: string;
+    task_uris: string[];
+    value?: unknown;
+    raw: Record<string, unknown>;
   }>;
   updateTask: (input: {
     project_id: string;
@@ -2704,9 +2763,18 @@ function readOptionalNumber(input: unknown) {
   return typeof input === "number" ? input : undefined;
 }
 
+function readOptionalString(input: unknown) {
+  return typeof input === "string" ? input : undefined;
+}
+
 function readResultPayload(input: unknown) {
   const envelope = readEnvelope(input) ?? {};
   return readEnvelope(envelope.result) ?? envelope;
+}
+
+function readResultStatus(input: unknown, payload?: Record<string, unknown>) {
+  const envelope = readEnvelope(input) ?? {};
+  return readOptionalString(envelope.status) ?? readOptionalString(payload?.status);
 }
 
 function readResultValue(input: unknown, payload: Record<string, unknown>) {
@@ -4089,7 +4157,7 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         project_id: input.project_id,
         defect_id: input.defect_id,
         iterator_uri: input.iterator_uri,
-        status: typeof payload.status === "string" ? payload.status : undefined,
+        status: readResultStatus(response, payload),
         value: payload.value ?? payload.result,
         raw: payload
       };
@@ -4109,7 +4177,7 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         defect_id: input.defect_id,
         old_iterator_uri: input.old_iterator_uri,
         new_iterator_uri: input.new_iterator_uri,
-        status: typeof payload.status === "string" ? payload.status : undefined,
+        status: readResultStatus(response, payload),
         value: payload.value ?? payload.result,
         raw: payload
       };
@@ -4127,7 +4195,7 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         project_id: input.project_id,
         defect_id: input.defect_id,
         iterator_uri: input.iterator_uri,
-        status: typeof payload.status === "string" ? payload.status : undefined,
+        status: readResultStatus(response, payload),
         value: payload.value ?? payload.result,
         raw: payload
       };
@@ -5002,6 +5070,38 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       return {
         services,
         total: readTotal(payload, response, services.length)
+      };
+    },
+    async updateTesthubService(input) {
+      const response = await _http.put(
+        `/v4/testhub/services/${encodeURIComponent(String(input.service_id))}`,
+        {
+          service_name: input.service_name,
+          server_host: input.server_host,
+          server_type: input.server_type
+        }
+      );
+      const payload = readResultPayload(response);
+      const service = readEnvelope(payload.result) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        service_id: String(service.service_id ?? input.service_id),
+        service_name:
+          typeof service.service_name === "string" ? service.service_name : input.service_name,
+        status: readResultStatus(response, payload),
+        raw: service
+      };
+    },
+    async deleteTesthubService(input) {
+      const response = await _http.delete(
+        `/v4/testhub/services/${encodeURIComponent(String(input.service_id))}`
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        service_id: String(input.service_id),
+        deleted: true,
+        raw: payload
       };
     },
     async getTesthubCase(input) {
@@ -7787,6 +7887,27 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         raw: iterator
       };
     },
+    async createTesthubIterator(input) {
+      const response = await _http.post(
+        `/v4/testhub/projects/${encodeURIComponent(input.project_id)}/iterators`,
+        {
+          name: input.name,
+          assigned_id: input.assigned_id,
+          service_id_list: input.service_id_list,
+          plan_cycle: input.plan_cycle,
+          branch_uri: input.branch_uri
+        }
+      );
+      const payload = readResultPayload(response);
+      const result = readEnvelope(payload.result) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        iterator_id: String(result.plan_id ?? result.iterator_id ?? result.uri ?? ""),
+        name: input.name,
+        status: readResultStatus(response, payload),
+        raw: result
+      };
+    },
     async getGt3kIterator(input) {
       const query = new URLSearchParams({
         project_uuid: input.project_uuid
@@ -7835,6 +7956,23 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       return {
         case_ids: caseIds,
         total: readTotal(payload, response, caseIds.length)
+      };
+    },
+    async batchAddIteratorTestcases(input) {
+      const response = await _http.post(
+        `/v4/testhub/projects/${encodeURIComponent(input.project_id)}/iterator/${encodeURIComponent(input.iterator_uri)}/testcases/batch-add`,
+        {
+          service_id: input.service_id,
+          testcase_id_list: input.testcase_id_list
+        }
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        iterator_uri: input.iterator_uri,
+        testcase_count: input.testcase_id_list.length,
+        added: true,
+        raw: payload
       };
     },
     async listIteratorHistories(input) {
@@ -7895,6 +8033,27 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         version_uri: item.version_uri ?? input.version_uri,
         status_code: item.status_code,
         status_name: item.status_name
+      };
+    },
+    async batchUpdateTaskAttributes(input) {
+      const response = await _http.post(
+        `/v4/${encodeURIComponent(input.project_id)}/tasks/batch-update`,
+        {
+          task_uris: input.task_uris,
+          tag_names: input.tag_names,
+          version_uri: input.version_uri,
+          project_uuid: input.project_uuid,
+          is_async: input.is_async,
+          is_delete: input.is_delete
+        }
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        project_id: input.project_id,
+        task_uris: input.task_uris,
+        value: readResultValue(response, payload),
+        raw: payload
       };
     },
     async updateTask(input) {

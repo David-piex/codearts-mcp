@@ -1,6 +1,8 @@
 export const testPlanToolNames = [
+  "testplan_batch_add_iterator_testcases",
   "testplan_batch_delete_tasks",
   "testplan_batch_send_notifications",
+  "testplan_batch_update_task_attributes",
   "testplan_check_alert_template_name",
   "testplan_check_alert_user_name",
   "testplan_check_api_test_task_name",
@@ -17,6 +19,7 @@ export const testPlanToolNames = [
   "testplan_create_resource_uri_v4",
   "testplan_create_task",
   "testplan_create_task_relations",
+  "testplan_create_testhub_iterator",
   "testplan_count_mindmaps",
   "testplan_delete_asset",
   "testplan_delete_attachment",
@@ -34,6 +37,7 @@ export const testPlanToolNames = [
   "testplan_delete_recycle_resource",
   "testplan_delete_test_design_template",
   "testplan_delete_testcases_v3",
+  "testplan_delete_testhub_service",
   "testplan_delete_vectors",
   "testplan_get_api_test_available_config",
   "testplan_get_api_test_basic_aw_v3",
@@ -301,5 +305,6 @@ export const testPlanToolNames = [
   "testplan_delete_dynamic_global_variable",
   "testplan_batch_update_testcase_execution_info",
   "testplan_stop_task_execution",
+  "testplan_update_testhub_service",
   "testplan_update_task"
 ];

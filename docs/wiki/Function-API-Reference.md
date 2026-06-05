@@ -32,8 +32,8 @@
 | 流水线 | 126 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 372 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 343 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
-| 测试计划 | 303 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **1510** | |
+| 测试计划 | 308 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
+| **总计** | **1515** | |
 
 ## 字段对应
 
@@ -1250,9 +1250,11 @@
 | `req_validate_module_name` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_validate_module_name) |
 | `req_validate_project_template_name` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_validate_project_template_name) |
 | `req_watch_work_item` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_watch_work_item) |
+| `testplan_batch_add_iterator_testcases` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_batch_add_iterator_testcases) |
 | `testplan_batch_delete_factors` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_batch_delete_factors) |
 | `testplan_batch_delete_tasks` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_batch_delete_tasks) |
 | `testplan_batch_send_notifications` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_batch_send_notifications) |
+| `testplan_batch_update_task_attributes` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_batch_update_task_attributes) |
 | `testplan_batch_update_testcase_execution_info` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_batch_update_testcase_execution_info) |
 | `testplan_check_alert_template_name` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_check_alert_template_name) |
 | `testplan_check_alert_user_name` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_check_alert_user_name) |
@@ -1271,6 +1273,7 @@
 | `testplan_create_task_relations` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_create_task_relations) |
 | `testplan_create_test_report` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_create_test_report) |
 | `testplan_create_test_step_by_collection` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_create_test_step_by_collection) |
+| `testplan_create_testhub_iterator` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_create_testhub_iterator) |
 | `testplan_delete_asset` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_delete_asset) |
 | `testplan_delete_attachment` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_delete_attachment) |
 | `testplan_delete_aw_catas` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_delete_aw_catas) |
@@ -1288,6 +1291,7 @@
 | `testplan_delete_recycle_resource` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_delete_recycle_resource) |
 | `testplan_delete_test_design_template` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_delete_test_design_template) |
 | `testplan_delete_testcases_v3` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_delete_testcases_v3) |
+| `testplan_delete_testhub_service` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_delete_testhub_service) |
 | `testplan_delete_vectors` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_delete_vectors) |
 | `testplan_download_asset_template` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_download_asset_template) |
 | `testplan_download_classes` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_download_classes) |
@@ -1548,6 +1552,7 @@
 | `testplan_update_task_execution_status` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_update_task_execution_status) |
 | `testplan_update_test_report` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_update_test_report) |
 | `testplan_update_test_report_quality_attributes` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_update_test_report_quality_attributes) |
+| `testplan_update_testhub_service` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_update_testhub_service) |
 | `testplan_update_time_out_view` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_update_time_out_view) |
 | `testplan_update_user_infos` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_update_user_infos) |
 | `testplan_upload_background` | 测试计划 | [查看](./Function-API-Reference-TestPlan.md#testplan_upload_background) |
