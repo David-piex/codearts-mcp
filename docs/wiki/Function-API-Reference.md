@@ -26,14 +26,14 @@
 | --- | ---: | --- |
 | 制品仓 | 52 | [Function-API-Reference-Artifact.md](./Function-API-Reference-Artifact.md) |
 | 鉴权会话 | 2 | [Function-API-Reference-Auth-Session.md](./Function-API-Reference-Auth-Session.md) |
-| 编译构建 | 99 | [Function-API-Reference-Build.md](./Function-API-Reference-Build.md) |
+| 编译构建 | 106 | [Function-API-Reference-Build.md](./Function-API-Reference-Build.md) |
 | 代码检查 | 92 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
 | 部署 | 74 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
 | 流水线 | 126 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 372 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 343 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 285 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **1445** | |
+| **总计** | **1452** | |
 
 ## 字段对应
 
@@ -101,11 +101,15 @@
 | `build_append_release_upload_step` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_append_release_upload_step) |
 | `build_check_job_count_limit` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_check_job_count_limit) |
 | `build_check_job_name_exists` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_check_job_name_exists) |
+| `build_clear_recycling_jobs` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_clear_recycling_jobs) |
 | `build_configure_release_upload_step` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_configure_release_upload_step) |
+| `build_delete_job` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_delete_job) |
+| `build_delete_recycling_jobs` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_delete_recycling_jobs) |
 | `build_download_build_log_v4` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_download_build_log_v4) |
 | `build_download_full_log` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_download_full_log) |
 | `build_download_task_log` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_download_task_log) |
 | `build_download_task_log_v4` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_download_task_log_v4) |
+| `build_follow_job` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_follow_job) |
 | `build_get_build_details` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_build_details) |
 | `build_get_coverage_metrics` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_coverage_metrics) |
 | `build_get_dockerfile_template` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_get_dockerfile_template) |
@@ -191,10 +195,13 @@
 | `build_prepare_deployable_node_app` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_prepare_deployable_node_app) |
 | `build_prepare_node_runtime_bundle` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_prepare_node_runtime_bundle) |
 | `build_request_official_api` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_request_official_api) |
+| `build_restore_recycling_jobs` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_restore_recycling_jobs) |
 | `build_run_job` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_run_job) |
+| `build_set_keep_time` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_set_keep_time) |
 | `build_show_domains_statuses` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_show_domains_statuses) |
 | `build_show_package_spec_countdown` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_show_package_spec_countdown) |
 | `build_stop_job` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_stop_job) |
+| `build_unfollow_job` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_unfollow_job) |
 | `build_update_job_step` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_update_job_step) |
 | `check_create_pdf_async_job` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_create_pdf_async_job) |
 | `check_create_task` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_create_task) |

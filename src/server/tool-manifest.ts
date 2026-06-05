@@ -82,6 +82,7 @@ const WRITE_ACTIONS = new Set([
   "delete",
   "disable",
   "enable",
+  "follow",
   "inherit",
     "import",
     "init",
@@ -106,6 +107,7 @@ const WRITE_ACTIONS = new Set([
   "stop",
   "switch",
   "transfer",
+  "unfollow",
   "upload",
   "update"
 ]);

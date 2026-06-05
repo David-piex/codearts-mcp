@@ -89,7 +89,14 @@ describe("registerBuildTool", () => {
       ["build_download_build_log_v4", "Download CodeArts Build v4 full log file"],
       ["build_download_task_log_v4", "Download CodeArts Build v4 task log file"],
       ["build_list_usable_keystore_names", "List CodeArts Build usable keystore names"],
-      ["build_get_keystore_permission", "Get CodeArts Build keystore permission"]
+      ["build_get_keystore_permission", "Get CodeArts Build keystore permission"],
+      ["build_delete_job", "Delete CodeArts Build job"],
+      ["build_set_keep_time", "Set CodeArts Build recycling keep time"],
+      ["build_delete_recycling_jobs", "Delete CodeArts Build recycling jobs permanently"],
+      ["build_clear_recycling_jobs", "Clear all CodeArts Build recycling jobs"],
+      ["build_restore_recycling_jobs", "Restore CodeArts Build recycling jobs"],
+      ["build_follow_job", "Follow CodeArts Build job"],
+      ["build_unfollow_job", "Unfollow CodeArts Build job"]
     ] as const;
 
     for (const [toolName, description] of tools) {

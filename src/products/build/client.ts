@@ -748,6 +748,36 @@ export type BuildClient = {
     build_no: number;
     result?: boolean;
   }>;
+  deleteJob: (input: { job_id: string }) => Promise<{
+    job_id: string;
+    project_id?: string;
+    status?: string;
+  }>;
+  setKeepTime: (input: { keep_time: number }) => Promise<{
+    keep_time: number;
+    status?: string;
+  }>;
+  deleteRecyclingJobs: (input: { job_ids: string[] }) => Promise<{
+    job_ids: string[];
+    status?: string;
+  }>;
+  clearRecyclingJobs: () => Promise<{
+    status?: string;
+  }>;
+  restoreRecyclingJobs: (input: { job_ids: string[] }) => Promise<{
+    job_ids: string[];
+    status?: string;
+  }>;
+  followJob: (input: { job_id: string }) => Promise<{
+    job_id: string;
+    favorite?: boolean;
+    status?: string;
+  }>;
+  unfollowJob: (input: { job_id: string }) => Promise<{
+    job_id: string;
+    favorite?: boolean;
+    status?: string;
+  }>;
   updateJobStep: (input: {
     job_id: string;
     step_name: string;
@@ -3172,6 +3202,108 @@ export function createBuildClient(
         job_id: input.job_id,
         build_no: input.build_no,
         result: response.result
+      };
+    },
+    async deleteJob(input) {
+      const response = unwrapBuildPayload((await _http.delete(
+        `/v1/job/${encodeURIComponent(input.job_id)}/delete`
+      )) as {
+        status?: string;
+        result?: {
+          job_id?: string;
+          project_id?: string;
+        };
+      });
+      const item = response.result ?? {};
+
+      return {
+        job_id: item.job_id ?? input.job_id,
+        project_id: item.project_id,
+        status: response.status
+      };
+    },
+    async setKeepTime(input) {
+      const response = unwrapBuildPayload((await _http.post("/v1/job/keep-time", {
+        keep_time: input.keep_time
+      })) as {
+        status?: string;
+        result?: {
+          keep_time?: string | number;
+        };
+      });
+      const value = response.result?.keep_time;
+
+      return {
+        keep_time:
+          value === undefined || Number.isNaN(Number(value))
+            ? input.keep_time
+            : Number(value),
+        status: response.status
+      };
+    },
+    async deleteRecyclingJobs(input) {
+      const response = unwrapBuildPayload((await _http.delete("/v1/job/recycling-deletion", {
+        job_ids: input.job_ids
+      })) as {
+        status?: string;
+      });
+
+      return {
+        job_ids: input.job_ids,
+        status: response.status
+      };
+    },
+    async clearRecyclingJobs() {
+      const response = unwrapBuildPayload((await _http.delete("/v1/job/recycling-empty")) as {
+        status?: string;
+      });
+
+      return {
+        status: response.status
+      };
+    },
+    async restoreRecyclingJobs(input) {
+      const response = unwrapBuildPayload((await _http.post("/v1/job/recycling-restoration", {
+        job_ids: input.job_ids
+      })) as {
+        status?: string;
+      });
+
+      return {
+        job_ids: input.job_ids,
+        status: response.status
+      };
+    },
+    async followJob(input) {
+      const response = unwrapBuildPayload((await _http.post(
+        `/v1/job/${encodeURIComponent(input.job_id)}/follow`
+      )) as {
+        status?: string;
+        result?: {
+          favorite?: boolean;
+        };
+      });
+
+      return {
+        job_id: input.job_id,
+        favorite: response.result?.favorite,
+        status: response.status
+      };
+    },
+    async unfollowJob(input) {
+      const response = unwrapBuildPayload((await _http.post(
+        `/v1/job/${encodeURIComponent(input.job_id)}/unfollow`
+      )) as {
+        status?: string;
+        result?: {
+          favorite?: boolean;
+        };
+      });
+
+      return {
+        job_id: input.job_id,
+        favorite: response.result?.favorite,
+        status: response.status
       };
     },
     async updateJobStep(input) {

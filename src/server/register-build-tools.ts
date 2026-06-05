@@ -4,7 +4,10 @@ import { createBuildClient } from "../products/build/client.js";
 import {
   buildAppendReleaseUploadStepInput,
   buildAppendJobStepInput,
+  buildClearRecyclingJobsInput,
   buildConfigureReleaseUploadStepInput,
+  buildDeleteJobInput,
+  buildDeleteRecyclingJobsInput,
   buildPrepareDeployableNodeAppInput,
   buildDownloadBuildLogV4Input,
   buildGetErrorLogInput,
@@ -95,10 +98,14 @@ import {
   buildListSystemParametersInput,
   buildListTemplatesInput,
   buildListUsableKeystoreNamesInput,
+  buildFollowJobInput,
+  buildRestoreRecyclingJobsInput,
+  buildSetKeepTimeInput,
   buildShowDomainsStatusesInput,
   buildShowPackageSpecCountdownInput,
   buildRunJobInput,
   buildStopJobInput,
+  buildUnfollowJobInput,
   buildUpdateJobStepInput
 } from "../products/build/schemas.js";
 import { createBuildGetErrorLogHandler } from "../products/build/tools/get-error-log.js";
@@ -201,6 +208,15 @@ import { createBuildListTemplatesHandler } from "../products/build/tools/list-te
 import { createBuildRunJobHandler } from "../products/build/tools/run-job.js";
 import { createBuildStopJobHandler } from "../products/build/tools/stop-job.js";
 import { createBuildUpdateJobStepHandler } from "../products/build/tools/update-job-step.js";
+import {
+  createBuildClearRecyclingJobsHandler,
+  createBuildDeleteJobHandler,
+  createBuildDeleteRecyclingJobsHandler,
+  createBuildFollowJobHandler,
+  createBuildRestoreRecyclingJobsHandler,
+  createBuildSetKeepTimeHandler,
+  createBuildUnfollowJobHandler
+} from "../products/build/tools/additional-mutation-tools.js";
 import { createOfficialApiRequestHandler } from "../products/shared-tools/request-official-api.js";
 import { defineProductTool, registerDefinedTool } from "./product-tool-registry.js";
 import type { RateLimiter } from "./rate-limiter.js";
@@ -719,6 +735,48 @@ const buildToolDefinitions = {
     inputSchema: buildRunJobInput,
     selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildRunJobHandler>[0] }) => clients.buildClient,
     createProductHandler: createBuildRunJobHandler
+  }),
+  "build_delete_job": defineProductTool({
+    description: "Delete CodeArts Build job",
+    inputSchema: buildDeleteJobInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildDeleteJobHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildDeleteJobHandler
+  }),
+  "build_set_keep_time": defineProductTool({
+    description: "Set CodeArts Build recycling keep time",
+    inputSchema: buildSetKeepTimeInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildSetKeepTimeHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildSetKeepTimeHandler
+  }),
+  "build_delete_recycling_jobs": defineProductTool({
+    description: "Delete CodeArts Build recycling jobs permanently",
+    inputSchema: buildDeleteRecyclingJobsInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildDeleteRecyclingJobsHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildDeleteRecyclingJobsHandler
+  }),
+  "build_clear_recycling_jobs": defineProductTool({
+    description: "Clear all CodeArts Build recycling jobs",
+    inputSchema: buildClearRecyclingJobsInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildClearRecyclingJobsHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildClearRecyclingJobsHandler
+  }),
+  "build_restore_recycling_jobs": defineProductTool({
+    description: "Restore CodeArts Build recycling jobs",
+    inputSchema: buildRestoreRecyclingJobsInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildRestoreRecyclingJobsHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildRestoreRecyclingJobsHandler
+  }),
+  "build_follow_job": defineProductTool({
+    description: "Follow CodeArts Build job",
+    inputSchema: buildFollowJobInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildFollowJobHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildFollowJobHandler
+  }),
+  "build_unfollow_job": defineProductTool({
+    description: "Unfollow CodeArts Build job",
+    inputSchema: buildUnfollowJobInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildUnfollowJobHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildUnfollowJobHandler
   }),
   "build_append_job_step": defineProductTool({
     description: "Append a new step to a CodeArts Build job",

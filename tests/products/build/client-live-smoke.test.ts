@@ -417,6 +417,16 @@ if (hasLiveEnv(process.env)) {
       }
     }, 30000);
 
+    it("follows and unfollows the known live build job sample", async () => {
+      const followed = await client.followJob({ job_id: jobId });
+      const unfollowed = await client.unfollowJob({ job_id: jobId });
+
+      expect(followed.job_id).toBe(jobId);
+      expect(followed.favorite).toBe(true);
+      expect(unfollowed.job_id).toBe(jobId);
+      expect(unfollowed.favorite).toBe(false);
+    }, 30000);
+
     it("gets Build domain and permission metadata", async () => {
       const [
         userPermission,

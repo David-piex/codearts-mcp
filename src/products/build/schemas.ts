@@ -397,6 +397,40 @@ export const buildRunJobInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const buildDeleteJobInput = z.object({
+  job_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const buildSetKeepTimeInput = z.object({
+  keep_time: z.number().int().min(1).max(30),
+  dry_run: z.boolean().default(true)
+});
+
+export const buildDeleteRecyclingJobsInput = z.object({
+  job_ids: z.array(idSchema).min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const buildClearRecyclingJobsInput = z.object({
+  dry_run: z.boolean().default(true)
+});
+
+export const buildRestoreRecyclingJobsInput = z.object({
+  job_ids: z.array(idSchema).min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const buildFollowJobInput = z.object({
+  job_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const buildUnfollowJobInput = z.object({
+  job_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
 export const buildStopJobInput = z.object({
   job_id: idSchema,
   build_no: z.number().int().positive(),

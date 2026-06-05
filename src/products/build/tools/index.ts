@@ -95,6 +95,13 @@ export const buildToolNames = [
   "build_list_build_parameters",
   "build_list_records",
   "build_run_job",
+  "build_delete_job",
+  "build_set_keep_time",
+  "build_delete_recycling_jobs",
+  "build_clear_recycling_jobs",
+  "build_restore_recycling_jobs",
+  "build_follow_job",
+  "build_unfollow_job",
   "build_stop_job",
   "build_update_job_step",
   "build_request_official_api"
