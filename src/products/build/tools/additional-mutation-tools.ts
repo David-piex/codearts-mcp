@@ -10,10 +10,14 @@ import {
   buildCheckWebhookUrlInput,
   buildClearRecyclingJobsInput,
   buildDeleteJobGroupInput,
+  buildDisableJobInput,
+  buildDisableJobNoticeInput,
+  buildDisableJobV3Input,
   buildDeleteJobV3Input,
   buildDeleteJobInput,
   buildDeleteKeystoreInput,
   buildDeleteKeystorePermissionInput,
+  buildEditKeystorePermissionInput,
   buildDeleteRecyclingJobsInput,
   buildDeleteTemplateInput,
   buildFollowCustomTemplateInput,
@@ -34,6 +38,8 @@ import {
   buildUpdateJobRolePermissionInput,
   buildMoveJobGroupInput,
   buildSwapJobGroupInput
+  ,
+  buildUpdateJobGroupInput
 } from "../schemas.js";
 
 export function createBuildDeleteJobHandler(client: {
@@ -69,6 +75,39 @@ export function createBuildDeleteJobHandler(client: {
       content: [{ type: "text" as const, text: result.summary }],
       structuredContent: result
     };
+  };
+}
+
+export function createBuildDisableJobHandler(client: {
+  disableJob: (input: { job_id: string; disabled: boolean; reason?: string }) => Promise<{
+    job_id: string;
+    disabled: boolean;
+    reason?: string;
+    status?: string;
+  }>;
+}) {
+  return async (input: unknown) => {
+    const parsed = buildDisableJobInput.parse(input);
+    const preview = asItemResult(`Dry run: disable build job ${parsed.job_id}`, {
+      id: parsed.job_id,
+      disabled: parsed.disabled,
+      reason: parsed.reason,
+      executed: !parsed.dry_run
+    });
+
+    if (parsed.dry_run) {
+      return { content: [{ type: "text" as const, text: preview.summary }], structuredContent: preview };
+    }
+
+    const response = await client.disableJob(parsed);
+    const result = asItemResult(`Updated build job disable state ${response.job_id}`, {
+      id: response.job_id,
+      disabled: response.disabled,
+      reason: response.reason,
+      status: response.status,
+      executed: true
+    });
+    return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
   };
 }
 
@@ -599,6 +638,33 @@ export function createBuildRecoverJobV3Handler(client: {
   };
 }
 
+export function createBuildDisableJobV3Handler(client: {
+  disableJobV3: (input: { job_id: string }) => Promise<{
+    job_id: string;
+    status?: string;
+  }>;
+}) {
+  return async (input: unknown) => {
+    const parsed = buildDisableJobV3Input.parse(input);
+    const preview = asItemResult(`Dry run: disable build v3 job ${parsed.job_id}`, {
+      id: parsed.job_id,
+      executed: !parsed.dry_run
+    });
+
+    if (parsed.dry_run) {
+      return { content: [{ type: "text" as const, text: preview.summary }], structuredContent: preview };
+    }
+
+    const response = await client.disableJobV3(parsed);
+    const result = asItemResult(`Disabled build v3 job ${response.job_id}`, {
+      id: response.job_id,
+      status: response.status,
+      executed: true
+    });
+    return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+  };
+}
+
 export function createBuildCheckWebhookUrlHandler(client: {
   checkWebhookUrl: (input: {
     job_id: string;
@@ -856,6 +922,58 @@ export function createBuildMoveJobGroupHandler(client: {
   };
 }
 
+export function createBuildUpdateJobGroupHandler(client: {
+  updateJobGroup: (input: {
+    project_id: string;
+    id: string;
+    name: string;
+    parent_id?: string;
+    ordinal?: number;
+    path_id?: string;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    project_id: string;
+    id: string;
+    name: string;
+    parent_id?: string;
+    ordinal?: number;
+    path_id?: string;
+    status?: string;
+    raw: Record<string, unknown>;
+  }>;
+}) {
+  return async (input: unknown) => {
+    const parsed = buildUpdateJobGroupInput.parse(input);
+    const preview = asItemResult(`Dry run: update build job group ${parsed.id}`, {
+      id: parsed.id,
+      projectId: parsed.project_id,
+      name: parsed.name,
+      parentId: parsed.parent_id,
+      ordinal: parsed.ordinal,
+      pathId: parsed.path_id,
+      executed: !parsed.dry_run
+    });
+
+    if (parsed.dry_run) {
+      return { content: [{ type: "text" as const, text: preview.summary }], structuredContent: preview };
+    }
+
+    const response = await client.updateJobGroup(parsed);
+    const result = asItemResult(`Updated build job group ${response.id}`, {
+      id: response.id,
+      projectId: response.project_id,
+      name: response.name,
+      parentId: response.parent_id,
+      ordinal: response.ordinal,
+      pathId: response.path_id,
+      status: response.status,
+      raw: response.raw,
+      executed: true
+    });
+    return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+  };
+}
+
 export function createBuildDeleteJobGroupHandler(client: {
   deleteJobGroup: (input: {
     project_id: string;
@@ -966,6 +1084,55 @@ export function createBuildAddKeystorePermissionHandler(client: {
       userId: response.user_id,
       userName: response.user_name,
       status: response.status,
+      executed: true
+    });
+
+    return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+  };
+}
+
+export function createBuildEditKeystorePermissionHandler(client: {
+  editKeystorePermission: (input: {
+    x_auth_token: string;
+    id: string;
+    keystore_id: string;
+    user_name: string;
+    modify: boolean;
+    usage: boolean;
+    delete: boolean;
+    can_absent: boolean;
+  }) => Promise<{
+    id: string;
+    keystore_id: string;
+    user_name: string;
+    status?: string;
+    result?: string;
+  }>;
+}) {
+  return async (input: unknown) => {
+    const parsed = buildEditKeystorePermissionInput.parse(input);
+    const preview = asItemResult(`Dry run: edit build keystore permission ${parsed.id}`, {
+      id: parsed.id,
+      keystoreId: parsed.keystore_id,
+      userName: parsed.user_name,
+      modify: parsed.modify,
+      usage: parsed.usage,
+      delete: parsed.delete,
+      canAbsent: parsed.can_absent,
+      executed: !parsed.dry_run
+    });
+
+    if (parsed.dry_run) {
+      return { content: [{ type: "text" as const, text: preview.summary }], structuredContent: preview };
+    }
+
+    const response = await client.editKeystorePermission(parsed);
+    const result = asItemResult(`Edited build keystore permission ${response.id}`, {
+      id: response.id,
+      keystoreId: response.keystore_id,
+      userName: response.user_name,
+      status: response.status,
+      result: response.result,
       executed: true
     });
 
@@ -1098,6 +1265,36 @@ export function createBuildUpdateJobNoticeHandler(client: {
       executed: true
     });
 
+    return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+  };
+}
+
+export function createBuildDisableJobNoticeHandler(client: {
+  disableJobNotice: (input: { job_id: string; notice_type: string }) => Promise<{
+    job_id: string;
+    notice_type: string;
+    status?: string;
+  }>;
+}) {
+  return async (input: unknown) => {
+    const parsed = buildDisableJobNoticeInput.parse(input);
+    const preview = asItemResult(`Dry run: disable build job notice ${parsed.notice_type} for ${parsed.job_id}`, {
+      id: parsed.job_id,
+      noticeType: parsed.notice_type,
+      executed: !parsed.dry_run
+    });
+
+    if (parsed.dry_run) {
+      return { content: [{ type: "text" as const, text: preview.summary }], structuredContent: preview };
+    }
+
+    const response = await client.disableJobNotice(parsed);
+    const result = asItemResult(`Disabled build job notice ${response.notice_type} for ${response.job_id}`, {
+      id: response.job_id,
+      noticeType: response.notice_type,
+      status: response.status,
+      executed: true
+    });
     return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
   };
 }

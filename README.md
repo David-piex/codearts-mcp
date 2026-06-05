@@ -282,9 +282,9 @@ npm run cli -- call req_list_projects `
 
 <!-- GENERATED:readme-exposure-summary:start -->
 - `8` product modules
-- `1490` product tools
+- `1499` product tools
 - `2` session/auth tools for shared `http` mode
-- `1492` total MCP tools in shared `http` mode
+- `1501` total MCP tools in shared `http` mode
 <!-- GENERATED:readme-exposure-summary:end -->
 
 工具读写分布：读操作 177 (63.7%) / 写操作 101 (36.3%)
@@ -295,10 +295,10 @@ npm run cli -- call req_list_projects `
 | Req | 343 | Partial | Expanded Req surface with current-user info/role and user-feature reads, project bug/summary/statistics/metric reads, project domain reads, work-item-tree count/list, work-item tag/index-count reads, project work-item history reads, child work-item reads, work-hours/work-hour-type reads, issue image upload/download, attachment upload/download/delete, associated wiki reads, plan work-item management, plan image update, plan-context work item creation, work-item template/copy writes, project-template update/delete writes, project due-days-after/workhour-config reads, status-name check, status/status-attribute/status-detail/workflow-config/template/template-config/custom-field/status-rule-flag/status-config/optional-status-config/tracker-handler and project-public-config reads plus field/cache reads and board work-item reads; see `docs/wiki/Req-Live-Validated.md` for validated paths and remaining live-depth gaps |
 | Repo | 372 | Partial | `25 Full / 0 Reachable / 0 Unpublished / 6 Code` |
 | Pipeline | 126 | Partial | `16 Full / 0 Reachable / 0 Unpublished / 51 Code` |
-| Check | 96 | Partial | `14 Full / 0 Reachable / 0 Unpublished / 5 Code` |
+| Check | 100 | Partial | `14 Full / 0 Reachable / 0 Unpublished / 5 Code` |
 | TestPlan | 294 | Partial | `1 Full / 2 Reachable / 4 Unpublished / 0 Code` |
 | Deploy | 74 | Partial | Expanded v4 surface with partial live closure; see `docs/wiki/Module-Live-Readiness.md` |
-| Build | 133 | Validated | Expanded metadata read surface with live smoke coverage |
+| Build | 138 | Validated | Expanded metadata read surface with live smoke coverage |
 | Artifact | 52 | Partial | `5 Full / 0 Reachable / 7 Unpublished / 0 Code` |
 <!-- GENERATED:readme-module-numbers:end -->
 
@@ -377,6 +377,18 @@ Live 状态说明：
 | `npm run stats:check-docs` | 检查 README/Wiki 统计块是否漂移 |
 | `npm run stats:sync-docs` | 同步自动统计区块到文档 |
 | `npm run probe:edge` | 对共享 HTTP 入口做多轮连通性与延迟采样 |
+
+Windows 本机 Node/npm 包装脚本：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\npmw.ps1 run check
+powershell -ExecutionPolicy Bypass -File .\scripts\npmw.ps1 run test:live
+powershell -ExecutionPolicy Bypass -File .\scripts\nodew.ps1 .\dist\src\server\cli.js tools
+```
+
+说明：
+- 这两个脚本会优先使用本机 `npm.cmd` / `node.exe`，避免误落到不可用的内置运行时。
+- 可通过 `CODEARTS_MCP_NPM_CMD`、`CODEARTS_MCP_NODE_EXE` 显式覆盖路径。
 
 ## 安全特性
 

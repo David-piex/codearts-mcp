@@ -39,6 +39,7 @@ import {
   checkGetIssueFilterInput,
   checkGetTaskNotificationInput,
   checkGetTaskOwnerMatchingSwitchInput,
+  checkUpdateTaskOwnerMatchingSwitchInput,
   checkGetTaskPreCheckScriptInput,
   checkGetTaskProgressInput,
   checkGetTaskResourcePoolInput,
@@ -48,6 +49,8 @@ import {
   checkGetTaskSettingsInput,
   checkGetTaskWebhookInfoInput,
   checkGetTaskWebhookInfoV4Input,
+  checkUpdateTaskWebhookInput,
+  checkUpdateTaskConfigParametersInput,
   checkGetTransmissionNotificationInput,
   checkGetVpcepAuthorizationInput,
   checkListAllCriterionsetsInput,
@@ -57,6 +60,7 @@ import {
   checkListCriterionsetsByLanguageInput,
   checkListCodehubRepositoriesInput,
   checkListDefaultRulesetsInput,
+  checkSetDefaultRulesetInput,
   checkListDefectNextStatusesInput,
   checkListIssuesByFilterInput,
   checkListMeasureFilesInput,
@@ -154,6 +158,7 @@ import { createCheckGetTaskCronHandler } from "../products/check/tools/get-task-
 import { createCheckGetTaskLogDetailHandler } from "../products/check/tools/get-task-log-detail.js";
 import { createCheckGetTaskNotificationHandler } from "../products/check/tools/get-task-notification.js";
 import { createCheckGetTaskOwnerMatchingSwitchHandler } from "../products/check/tools/get-task-owner-matching-switch.js";
+import { createCheckUpdateTaskOwnerMatchingSwitchHandler } from "../products/check/tools/update-task-owner-matching-switch.js";
 import { createCheckGetTaskPreCheckScriptHandler } from "../products/check/tools/get-task-pre-check-script.js";
 import { createCheckGetTaskProgressHandler } from "../products/check/tools/get-task-progress.js";
 import { createCheckGetTaskResourcePoolHandler } from "../products/check/tools/get-task-resource-pool.js";
@@ -162,6 +167,8 @@ import { createCheckGetTaskRulesetCheckParametersV2Handler } from "../products/c
 import { createCheckGetTaskRulesetCheckParametersV3Handler } from "../products/check/tools/get-task-ruleset-check-parameters-v3.js";
 import { createCheckGetTaskSettingsHandler } from "../products/check/tools/get-task-settings.js";
 import { createCheckGetTaskWebhookInfoHandler } from "../products/check/tools/get-task-webhook-info.js";
+import { createCheckUpdateTaskWebhookHandler } from "../products/check/tools/update-task-webhook.js";
+import { createCheckUpdateTaskConfigParametersHandler } from "../products/check/tools/update-task-config-parameters.js";
 import { createCheckGetTransmissionNotificationHandler } from "../products/check/tools/get-transmission-notification.js";
 import { createCheckGetVpcepAuthorizationHandler } from "../products/check/tools/get-vpcep-authorization.js";
 import { createCheckListAllCriterionsetsHandler } from "../products/check/tools/list-all-criterionsets.js";
@@ -170,6 +177,7 @@ import { createCheckListCriterionsHandler } from "../products/check/tools/list-c
 import { createCheckListCriterionsetsByLanguageHandler } from "../products/check/tools/list-criterionsets-by-language.js";
 import { createCheckListCodehubRepositoriesHandler } from "../products/check/tools/list-codehub-repositories.js";
 import { createCheckListDefaultRulesetsHandler } from "../products/check/tools/list-default-rulesets.js";
+import { createCheckSetDefaultRulesetHandler } from "../products/check/tools/set-default-ruleset.js";
 import { createCheckListPluginsHandler } from "../products/check/tools/list-plugins.js";
 import { createCheckListProjectTaskGroupsHandler } from "../products/check/tools/list-project-task-groups.js";
 import { createCheckListRulesHandler } from "../products/check/tools/list-rules.js";
@@ -298,6 +306,12 @@ const checkToolDefinitions = {
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetTaskOwnerMatchingSwitchHandler>[0] }) => clients.checkClient,
     createProductHandler: createCheckGetTaskOwnerMatchingSwitchHandler
   }),
+  "check_update_task_owner_matching_switch": defineProductTool({
+    description: "Update CodeArts Check task owner matching switch",
+    inputSchema: checkUpdateTaskOwnerMatchingSwitchInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckUpdateTaskOwnerMatchingSwitchHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckUpdateTaskOwnerMatchingSwitchHandler
+  }),
   "check_get_task_cron": defineProductTool({
     description: "Get CodeArts Check task cron",
     inputSchema: checkGetTaskCronInput,
@@ -370,6 +384,12 @@ const checkToolDefinitions = {
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListDefaultRulesetsHandler>[0] }) => clients.checkClient,
     createProductHandler: createCheckListDefaultRulesetsHandler
   }),
+  "check_set_default_ruleset": defineProductTool({
+    description: "Set CodeArts Check default ruleset",
+    inputSchema: checkSetDefaultRulesetInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckSetDefaultRulesetHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckSetDefaultRulesetHandler
+  }),
   "check_list_supported_languages": defineProductTool({
     description: "List CodeArts Check supported languages",
     inputSchema: checkListSupportedLanguagesInput,
@@ -405,6 +425,12 @@ const checkToolDefinitions = {
     inputSchema: checkGetTaskWebhookInfoV4Input,
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetTaskWebhookInfoV4Handler>[0] }) => clients.checkClient,
     createProductHandler: createCheckGetTaskWebhookInfoV4Handler
+  }),
+  "check_update_task_webhook": defineProductTool({
+    description: "Update CodeArts Check task webhook via official v4 API",
+    inputSchema: checkUpdateTaskWebhookInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckUpdateTaskWebhookHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckUpdateTaskWebhookHandler
   }),
   "check_get_code_health_svg": defineProductTool({
     description: "Get CodeArts Check code health SVG",
@@ -705,6 +731,12 @@ const checkToolDefinitions = {
     inputSchema: checkGetTaskSettingsInput,
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckGetTaskSettingsHandler>[0] }) => clients.checkClient,
     createProductHandler: createCheckGetTaskSettingsHandler
+  }),
+  "check_update_task_config_parameters": defineProductTool({
+    description: "Update CodeArts Check task config parameters",
+    inputSchema: checkUpdateTaskConfigParametersInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckUpdateTaskConfigParametersHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckUpdateTaskConfigParametersHandler
   }),
   "check_list_task_branches": defineProductTool({
     description: "List CodeArts Check task branches",

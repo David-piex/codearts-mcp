@@ -17,9 +17,13 @@ import {
   buildCreateJobInput,
   buildDeleteJobGroupInput,
   buildDeleteJobInput,
+  buildDisableJobInput,
+  buildDisableJobNoticeInput,
+  buildDisableJobV3Input,
   buildDeleteJobV3Input,
   buildDeleteKeystoreInput,
   buildDeleteKeystorePermissionInput,
+  buildEditKeystorePermissionInput,
   buildDeleteRecyclingJobsInput,
   buildDeleteTemplateInput,
   buildPrepareDeployableNodeAppInput,
@@ -131,6 +135,7 @@ import {
   buildUpdateJobRolePermissionInput,
   buildUploadKeystoreInput,
   buildMoveJobGroupInput,
+  buildUpdateJobGroupInput,
   buildSaveTemplateUsedInfoInput,
   buildSwapJobGroupInput,
   buildUpdateJobStepInput
@@ -250,15 +255,20 @@ import {
   createBuildCreateJobHandler,
   createBuildDeleteJobGroupHandler,
   createBuildDeleteJobHandler,
+  createBuildDisableJobHandler,
+  createBuildDisableJobNoticeHandler,
+  createBuildDisableJobV3Handler,
   createBuildDeleteJobV3Handler,
   createBuildDeleteKeystoreHandler,
   createBuildDeleteKeystorePermissionHandler,
+  createBuildEditKeystorePermissionHandler,
   createBuildDeleteRecyclingJobsHandler,
   createBuildDeleteTemplateHandler,
   createBuildFollowCustomTemplateHandler,
   createBuildFollowJobHandler,
   createBuildFollowOfficialTemplateHandler,
   createBuildMoveJobGroupHandler,
+  createBuildUpdateJobGroupHandler,
   createBuildRecoverJobV3Handler,
   createBuildRestoreRecyclingJobsHandler,
   createBuildSaveTemplateUsedInfoHandler,
@@ -808,6 +818,12 @@ const buildToolDefinitions = {
     selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildDeleteJobHandler>[0] }) => clients.buildClient,
     createProductHandler: createBuildDeleteJobHandler
   }),
+  "build_disable_job": defineProductTool({
+    description: "Disable CodeArts Build job",
+    inputSchema: buildDisableJobInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildDisableJobHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildDisableJobHandler
+  }),
   "build_set_keep_time": defineProductTool({
     description: "Set CodeArts Build recycling keep time",
     inputSchema: buildSetKeepTimeInput,
@@ -904,6 +920,12 @@ const buildToolDefinitions = {
     selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildRecoverJobV3Handler>[0] }) => clients.buildClient,
     createProductHandler: createBuildRecoverJobV3Handler
   }),
+  "build_disable_job_v3": defineProductTool({
+    description: "Disable CodeArts Build v3 job",
+    inputSchema: buildDisableJobV3Input,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildDisableJobV3Handler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildDisableJobV3Handler
+  }),
   "build_check_webhook_url": defineProductTool({
     description: "Check CodeArts Build webhook URL parameters",
     inputSchema: buildCheckWebhookUrlInput,
@@ -946,6 +968,12 @@ const buildToolDefinitions = {
     selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildMoveJobGroupHandler>[0] }) => clients.buildClient,
     createProductHandler: createBuildMoveJobGroupHandler
   }),
+  "build_update_job_group": defineProductTool({
+    description: "Update CodeArts Build job group",
+    inputSchema: buildUpdateJobGroupInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildUpdateJobGroupHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildUpdateJobGroupHandler
+  }),
   "build_create_job": defineProductTool({
     description: "Create CodeArts Build job",
     inputSchema: buildCreateJobInput,
@@ -963,6 +991,12 @@ const buildToolDefinitions = {
     inputSchema: buildUpdateJobNoticeInput,
     selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildUpdateJobNoticeHandler>[0] }) => clients.buildClient,
     createProductHandler: createBuildUpdateJobNoticeHandler
+  }),
+  "build_disable_job_notice": defineProductTool({
+    description: "Disable CodeArts Build job notice",
+    inputSchema: buildDisableJobNoticeInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildDisableJobNoticeHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildDisableJobNoticeHandler
   }),
   "build_create_job_group": defineProductTool({
     description: "Create CodeArts Build job group",
@@ -993,6 +1027,12 @@ const buildToolDefinitions = {
     inputSchema: buildAddKeystorePermissionInput,
     selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildAddKeystorePermissionHandler>[0] }) => clients.buildClient,
     createProductHandler: createBuildAddKeystorePermissionHandler
+  }),
+  "build_edit_keystore_permission": defineProductTool({
+    description: "Edit CodeArts Build keystore permission via token-only official API",
+    inputSchema: buildEditKeystorePermissionInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildEditKeystorePermissionHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildEditKeystorePermissionHandler
   }),
   "build_append_job_step": defineProductTool({
     description: "Append a new step to a CodeArts Build job",

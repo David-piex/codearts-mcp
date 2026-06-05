@@ -72,7 +72,11 @@ describe("registerCheckTool", () => {
       ["check_create_ruleset", "Create CodeArts Check ruleset"],
       ["check_delete_ruleset", "Delete CodeArts Check ruleset"],
       ["check_update_task_resource_pool", "Update CodeArts Check task resource pool"],
-      ["check_update_pipeline_task", "Update CodeArts Check pipeline task"]
+      ["check_update_pipeline_task", "Update CodeArts Check pipeline task"],
+      ["check_update_task_owner_matching_switch", "Update CodeArts Check task owner matching switch"],
+      ["check_set_default_ruleset", "Set CodeArts Check default ruleset"],
+      ["check_update_task_webhook", "Update CodeArts Check task webhook via official v4 API"],
+      ["check_update_task_config_parameters", "Update CodeArts Check task config parameters"]
     ] as const;
 
     for (const [toolName, description] of tools) {

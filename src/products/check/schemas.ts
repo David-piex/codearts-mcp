@@ -45,6 +45,13 @@ export const checkGetTaskOwnerMatchingSwitchInput = z.object({
   task_id: idSchema
 });
 
+export const checkUpdateTaskOwnerMatchingSwitchInput = z.object({
+  task_id: idSchema,
+  enabled: z.boolean(),
+  body: z.record(z.string(), z.unknown()).optional(),
+  dry_run: z.boolean().default(true)
+});
+
 export const checkGetTaskCronInput = z.object({
   task_id: idSchema
 });
@@ -103,6 +110,14 @@ export const checkListDefaultRulesetsInput = z.object({
   project_id: idSchema
 });
 
+export const checkSetDefaultRulesetInput = z.object({
+  project_id: idSchema,
+  ruleset_id: idSchema,
+  language: z.string().min(1),
+  body: z.record(z.string(), z.unknown()).optional(),
+  dry_run: z.boolean().default(true)
+});
+
 export const checkListSupportedLanguagesInput = z.object({});
 
 export const checkGetTaskNotificationInput = z.object({
@@ -123,6 +138,12 @@ export const checkGetTaskWebhookInfoInput = z.object({
 });
 
 export const checkGetTaskWebhookInfoV4Input = checkGetTaskWebhookInfoInput;
+
+export const checkUpdateTaskWebhookInput = z.object({
+  task_id: idSchema,
+  body: z.record(z.string(), z.unknown()),
+  dry_run: z.boolean().default(true)
+});
 
 export const checkGetCodeHealthSvgInput = z.object({
   task_id: idSchema
@@ -447,6 +468,13 @@ export const checkGetTaskRulesetCheckParametersV3Input = z.object({
 export const checkGetTaskSettingsInput = z.object({
   project_id: idSchema,
   task_id: idSchema
+});
+
+export const checkUpdateTaskConfigParametersInput = z.object({
+  project_id: idSchema,
+  task_id: idSchema,
+  body: z.record(z.string(), z.unknown()),
+  dry_run: z.boolean().default(true)
 });
 
 export const checkListTaskBranchesInput = z.object({

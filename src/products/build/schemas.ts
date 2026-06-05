@@ -413,6 +413,13 @@ export const buildDeleteJobInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const buildDisableJobInput = z.object({
+  job_id: idSchema,
+  disabled: z.boolean().default(true),
+  reason: z.string().default(""),
+  dry_run: z.boolean().default(true)
+});
+
 export const buildSetKeepTimeInput = z.object({
   keep_time: z.number().int().min(1).max(30),
   dry_run: z.boolean().default(true)
@@ -489,6 +496,11 @@ export const buildDeleteJobV3Input = z.object({
 });
 
 export const buildRecoverJobV3Input = z.object({
+  job_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const buildDisableJobV3Input = z.object({
   job_id: idSchema,
   dry_run: z.boolean().default(true)
 });
@@ -571,6 +583,17 @@ export const buildMoveJobGroupInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const buildUpdateJobGroupInput = z.object({
+  project_id: idSchema,
+  id: idSchema,
+  name: z.string().min(1).max(128),
+  parent_id: idSchema.optional(),
+  ordinal: z.number().int().optional(),
+  path_id: idSchema.optional(),
+  body: z.record(z.string(), z.unknown()).default({}),
+  dry_run: z.boolean().default(true)
+});
+
 export const buildDeleteJobGroupInput = z.object({
   project_id: idSchema,
   id: idSchema,
@@ -592,6 +615,18 @@ export const buildAddKeystorePermissionInput = z.object({
   delete: z.boolean().default(false),
   modify: z.boolean().default(true),
   usage: z.boolean().default(true),
+  can_absent: z.boolean().default(true),
+  dry_run: z.boolean().default(true)
+});
+
+export const buildEditKeystorePermissionInput = z.object({
+  x_auth_token: z.string().min(1),
+  id: idSchema,
+  keystore_id: idSchema,
+  user_name: z.string().min(1),
+  modify: z.boolean().default(true),
+  usage: z.boolean().default(true),
+  delete: z.boolean().default(false),
   can_absent: z.boolean().default(true),
   dry_run: z.boolean().default(true)
 });
@@ -624,6 +659,14 @@ export const buildUpdateJobNoticeInput = z.object({
   send_switch: z.string().min(1).optional(),
   webhook_url: z.string().min(1).optional(),
   body: z.record(z.string(), z.unknown()).default({}),
+  dry_run: z.boolean().default(true)
+});
+
+export const buildDisableJobNoticeInput = z.object({
+  job_id: idSchema,
+  notice_type: z.enum(["message", "mail", "wecom", "ding_talk", "feishu"]).or(
+    z.enum(["MESSAGE", "MAIL", "WECOM", "DING_TALK", "FEISHU"])
+  ),
   dry_run: z.boolean().default(true)
 });
 

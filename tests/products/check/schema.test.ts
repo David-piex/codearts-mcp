@@ -6,7 +6,11 @@ import {
   checkDetectTaskLanguageInput,
   checkGetMeasureTotalInput,
   checkGetProjectConfigInput,
+  checkSetDefaultRulesetInput,
   checkUpdatePipelineTaskInput,
+  checkUpdateTaskConfigParametersInput,
+  checkUpdateTaskOwnerMatchingSwitchInput,
+  checkUpdateTaskWebhookInput,
   checkUpdateTaskResourcePoolInput,
   checkListConfigItemsInput,
   checkListCodehubRepositoriesInput,
@@ -255,6 +259,48 @@ describe("check schemas", () => {
       body: {
         task_name: "pipeline-check"
       },
+      dry_run: true
+    });
+  });
+
+  it("accepts new check mutation schemas", () => {
+    expect(checkUpdateTaskOwnerMatchingSwitchInput.parse({
+      task_id: "task-1",
+      enabled: true
+    })).toEqual({
+      task_id: "task-1",
+      enabled: true,
+      dry_run: true
+    });
+
+    expect(checkSetDefaultRulesetInput.parse({
+      project_id: "project-1",
+      ruleset_id: "ruleset-1",
+      language: "JAVA"
+    })).toEqual({
+      project_id: "project-1",
+      ruleset_id: "ruleset-1",
+      language: "JAVA",
+      dry_run: true
+    });
+
+    expect(checkUpdateTaskWebhookInput.parse({
+      task_id: "task-1",
+      body: { enabled: true, url: "https://example.com/hook" }
+    })).toEqual({
+      task_id: "task-1",
+      body: { enabled: true, url: "https://example.com/hook" },
+      dry_run: true
+    });
+
+    expect(checkUpdateTaskConfigParametersInput.parse({
+      project_id: "project-1",
+      task_id: "task-1",
+      body: { scan_type: "full" }
+    })).toEqual({
+      project_id: "project-1",
+      task_id: "task-1",
+      body: { scan_type: "full" },
       dry_run: true
     });
   });

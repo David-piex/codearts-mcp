@@ -183,6 +183,16 @@ export type CheckClient = {
     task_id: string;
     raw: Record<string, unknown>;
   }>;
+  updateTaskOwnerMatchingSwitch: (input: {
+    task_id: string;
+    enabled: boolean;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    task_id: string;
+    status?: string;
+    result?: string;
+    raw: Record<string, unknown>;
+  }>;
   getTaskCron: (input: { task_id: string }) => Promise<{
     task_id: string;
     raw: Record<string, unknown>;
@@ -254,6 +264,19 @@ export type CheckClient = {
     project_id: string;
     raw: Record<string, unknown>;
   }>;
+  setDefaultRuleset: (input: {
+    project_id: string;
+    ruleset_id: string;
+    language: string;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    project_id: string;
+    ruleset_id: string;
+    language: string;
+    status?: string;
+    result?: string;
+    raw: Record<string, unknown>;
+  }>;
   listSupportedLanguages: () => Promise<{
     languages: string[];
   }>;
@@ -275,6 +298,15 @@ export type CheckClient = {
   }>;
   getTaskWebhookInfo: (input: { task_id: string }) => Promise<{
     task_id: string;
+    raw: Record<string, unknown>;
+  }>;
+  updateTaskWebhook: (input: {
+    task_id: string;
+    body: Record<string, unknown>;
+  }) => Promise<{
+    task_id: string;
+    status?: string;
+    result?: string;
     raw: Record<string, unknown>;
   }>;
   getCodeHealthSvg: (input: { task_id: string }) => Promise<{
@@ -680,6 +712,16 @@ export type CheckClient = {
   }>;
   getTaskSettings: (input: { project_id: string; task_id: string }) => Promise<{
     task_id: string;
+    raw: Record<string, unknown>;
+  }>;
+  updateTaskConfigParameters: (input: {
+    project_id: string;
+    task_id: string;
+    body: Record<string, unknown>;
+  }) => Promise<{
+    task_id: string;
+    status?: string;
+    result?: string;
     raw: Record<string, unknown>;
   }>;
   listTaskBranches: (input: { project_id: string; task_id: string }) => Promise<{
@@ -1238,6 +1280,20 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
         raw: switchState
       };
     },
+    async updateTaskOwnerMatchingSwitch(input) {
+      const response = await _http.put(
+        `/v1/tasks/${encodeURIComponent(input.task_id)}/owner-matching-switch`,
+        input.body ?? { enabled: input.enabled }
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        task_id: input.task_id,
+        status: typeof payload.status === "string" ? payload.status : undefined,
+        result: typeof payload.result === "string" ? payload.result : undefined,
+        raw: payload
+      };
+    },
     async getTaskCron(input) {
       const response = await _http.get(`/v1/tasks/${encodeURIComponent(input.task_id)}/taskcron`);
       const payload = readResultPayload(response);
@@ -1404,6 +1460,22 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
         raw: rulesets
       };
     },
+    async setDefaultRuleset(input) {
+      const response = await _http.post(
+        `/v2/${encodeURIComponent(input.project_id)}/ruleset/${encodeURIComponent(input.ruleset_id)}/${encodeURIComponent(input.language)}/default`,
+        input.body ?? {}
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        project_id: input.project_id,
+        ruleset_id: input.ruleset_id,
+        language: input.language,
+        status: typeof payload.status === "string" ? payload.status : undefined,
+        result: typeof payload.result === "string" ? payload.result : undefined,
+        raw: payload
+      };
+    },
     async listSupportedLanguages() {
       const response = await _http.get("/v2/excute/language/all");
       const payload = readResultPayload(response);
@@ -1464,6 +1536,20 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
       return {
         task_id: input.task_id,
         raw: webhookInfo
+      };
+    },
+    async updateTaskWebhook(input) {
+      const response = await _http.put(
+        `/v4/tasks/${encodeURIComponent(input.task_id)}/webhook`,
+        input.body
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        task_id: input.task_id,
+        status: typeof payload.status === "string" ? payload.status : undefined,
+        result: typeof payload.result === "string" ? payload.result : undefined,
+        raw: payload
       };
     },
     async getCodeHealthSvg(input) {
@@ -2278,6 +2364,20 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
       return {
         task_id: input.task_id,
         raw: settings
+      };
+    },
+    async updateTaskConfigParameters(input) {
+      const response = await _http.post(
+        `/v2/${encodeURIComponent(input.project_id)}/tasks/${encodeURIComponent(input.task_id)}/config-parameters`,
+        input.body
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        task_id: input.task_id,
+        status: typeof payload.status === "string" ? payload.status : undefined,
+        result: typeof payload.result === "string" ? payload.result : undefined,
+        raw: payload
       };
     },
     async listTaskBranches(input) {

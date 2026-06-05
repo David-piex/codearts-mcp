@@ -6,7 +6,7 @@
 
 模块：`编译构建`
 
-API 数量：`133`
+API 数量：`138`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
@@ -1542,6 +1542,190 @@ API 数量：`133`
 }
 ```
 
+### build_disable_job
+
+所属模块：`编译构建`
+
+说明：停用编译构建的任务。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "build_disable_job",
+    "arguments": {
+      "job_id": "<job_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `job_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `job_id` ↔ 原始 CodeArts 编译构建 API 同名字段 `job_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>构建任务 ID，用于定位对应的 CodeArts 资源。 |
+| `disabled` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `disabled` ↔ 原始 CodeArts 编译构建 API 同名字段 `disabled`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `reason` | 否 | `string` | "" | 字段对应：<br>MCP 字段 `reason` ↔ 原始 CodeArts 编译构建 API 同名字段 `reason`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>原因说明，用于取消、拒绝、关闭或回滚等操作的补充说明。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "job_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "disabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "reason": {
+      "type": "string",
+      "default": ""
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "job_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### build_disable_job_notice
+
+所属模块：`编译构建`
+
+说明：停用编译构建的任务notice。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "build_disable_job_notice",
+    "arguments": {
+      "job_id": "<job_id>",
+      "notice_type": "<notice_type>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `job_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `job_id` ↔ 原始 CodeArts 编译构建 API 同名字段 `job_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>构建任务 ID，用于定位对应的 CodeArts 资源。 |
+| `notice_type` | 是 | `"message" \| "mail" \| "wecom" \| "ding_talk" \| "feishu" \| "MESSAGE" \| "MAIL" \| "WECOM" \| "DING_TALK" \| "FEISHU"` |  | 字段对应：<br>MCP 字段 `notice_type` ↔ 原始 CodeArts 编译构建 API 同名字段 `notice_type`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。可选值：`message`、`mail`、`wecom`、`ding_talk`、`feishu`、`MESSAGE`、`MAIL`、`WECOM`、`DING_TALK`、`FEISHU`。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "job_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "notice_type": {
+      "type": "string",
+      "enum": [
+        "message",
+        "mail",
+        "wecom",
+        "ding_talk",
+        "feishu",
+        "MESSAGE",
+        "MAIL",
+        "WECOM",
+        "DING_TALK",
+        "FEISHU"
+      ]
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "job_id",
+    "notice_type"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### build_disable_job_v3
+
+所属模块：`编译构建`
+
+说明：停用编译构建的任务v3。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "build_disable_job_v3",
+    "arguments": {
+      "job_id": "<job_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `job_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `job_id` ↔ 原始 CodeArts 编译构建 API 同名字段 `job_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>构建任务 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "job_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "job_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### build_download_build_log_v4
 
 所属模块：`编译构建`
@@ -1863,6 +2047,98 @@ API 数量：`133`
   "required": [
     "record_id",
     "task_name"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### build_edit_keystore_permission
+
+所属模块：`编译构建`
+
+说明：执行编译构建的keystorepermission。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "build_edit_keystore_permission",
+    "arguments": {
+      "x_auth_token": "<x_auth_token>",
+      "id": "<id>",
+      "keystore_id": "<keystore_id>",
+      "user_name": "<user_name>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x_auth_token` | 是 | `string` |  | 字段对应：<br>MCP 字段 `x_auth_token` ↔ 原始 CodeArts 编译构建 API 同名字段 `x_auth_token`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `id` ↔ 原始 CodeArts 编译构建 API 同名字段 `id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>资源 ID，表示当前接口操作对象的唯一标识。具体含义由所在 API 决定，例如工作项 ID、记录 ID、任务 ID。 |
+| `keystore_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `keystore_id` ↔ 原始 CodeArts 编译构建 API 同名字段 `keystore_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>keystore ID，用于定位对应的 CodeArts 资源。 |
+| `user_name` | 是 | `string` |  | 字段对应：<br>MCP 字段 `user_name` ↔ 原始 CodeArts 编译构建 API 同名字段 `user_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>用户名称。 |
+| `modify` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `modify` ↔ 原始 CodeArts 编译构建 API 同名字段 `modify`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `usage` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `usage` ↔ 原始 CodeArts 编译构建 API 同名字段 `usage`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `delete` | 否 | `boolean` | false | 字段对应：<br>MCP 字段 `delete` ↔ 原始 CodeArts 编译构建 API 同名字段 `delete`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `can_absent` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `can_absent` ↔ 原始 CodeArts 编译构建 API 同名字段 `can_absent`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "x_auth_token": {
+      "type": "string",
+      "minLength": 1
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "keystore_id": {
+      "$ref": "#/properties/id"
+    },
+    "user_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "modify": {
+      "type": "boolean",
+      "default": true
+    },
+    "usage": {
+      "type": "boolean",
+      "default": true
+    },
+    "delete": {
+      "type": "boolean",
+      "default": false
+    },
+    "can_absent": {
+      "type": "boolean",
+      "default": true
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "x_auth_token",
+    "id",
+    "keystore_id",
+    "user_name"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -7461,6 +7737,90 @@ API 数量：`133`
   },
   "required": [
     "uuid"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### build_update_job_group
+
+所属模块：`编译构建`
+
+说明：更新编译构建的任务组。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "build_update_job_group",
+    "arguments": {
+      "project_id": "<project_id>",
+      "id": "<id>",
+      "name": "<name>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 编译构建 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `id` ↔ 原始 CodeArts 编译构建 API 同名字段 `id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>资源 ID，表示当前接口操作对象的唯一标识。具体含义由所在 API 决定，例如工作项 ID、记录 ID、任务 ID。 |
+| `name` | 是 | `string` |  | 字段对应：<br>MCP 字段 `name` ↔ 原始 CodeArts 编译构建 API 同名字段 `name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
+| `parent_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `parent_id` ↔ 原始 CodeArts 编译构建 API 同名字段 `parent_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>父级 ID，用于指定当前资源挂载到哪个父节点、父分组、父模块或父工作项下。 |
+| `ordinal` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `ordinal` ↔ 原始 CodeArts 编译构建 API 同名字段 `ordinal`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `path_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `path_id` ↔ 原始 CodeArts 编译构建 API 同名字段 `path_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>path ID，用于定位对应的 CodeArts 资源。 |
+| `body` | 否 | `object` | {} | 字段对应：<br>MCP 字段 `body` ↔ 原始 CodeArts 编译构建 API 同名字段 `body`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>请求体或正文内容。复杂接口会把多个业务字段放在 body 中提交。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "id": {
+      "$ref": "#/properties/project_id"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "parent_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "ordinal": {
+      "type": "integer"
+    },
+    "path_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "body": {
+      "type": "object",
+      "additionalProperties": {},
+      "default": {}
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "project_id",
+    "id",
+    "name"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

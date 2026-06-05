@@ -93,6 +93,7 @@ describe("registerBuildTool", () => {
       ["build_list_usable_keystore_names", "List CodeArts Build usable keystore names"],
       ["build_get_keystore_permission", "Get CodeArts Build keystore permission"],
       ["build_delete_job", "Delete CodeArts Build job"],
+      ["build_disable_job", "Disable CodeArts Build job"],
       ["build_set_keep_time", "Set CodeArts Build recycling keep time"],
       ["build_delete_recycling_jobs", "Delete CodeArts Build recycling jobs permanently"],
       ["build_clear_recycling_jobs", "Clear all CodeArts Build recycling jobs"],
@@ -109,6 +110,7 @@ describe("registerBuildTool", () => {
       ["build_delete_keystore_permission", "Delete CodeArts Build keystore permission"],
       ["build_delete_job_v3", "Delete CodeArts Build v3 job"],
       ["build_recover_job_v3", "Recover CodeArts Build v3 job"],
+      ["build_disable_job_v3", "Disable CodeArts Build v3 job"],
       ["build_check_webhook_url", "Check CodeArts Build webhook URL parameters"],
       ["build_auto_execute_job", "Auto-execute CodeArts Build job from source update event payload"],
       ["build_batch_update_job_permissions", "Batch update CodeArts Build job permissions"],
@@ -116,14 +118,17 @@ describe("registerBuildTool", () => {
       ["build_batch_set_agency", "Batch set CodeArts Build job agency"],
       ["build_update_job_role_permission", "Update CodeArts Build job role permission"],
       ["build_move_job_group", "Move CodeArts Build jobs to a target group"],
+      ["build_update_job_group", "Update CodeArts Build job group"],
       ["build_create_job", "Create CodeArts Build job"],
       ["build_copy_job", "Copy CodeArts Build job"],
       ["build_update_job_notice", "Update CodeArts Build job notice"],
+      ["build_disable_job_notice", "Disable CodeArts Build job notice"],
       ["build_create_job_group", "Create CodeArts Build job group"],
       ["build_upload_keystore", "Upload CodeArts Build keystore file"],
       ["build_delete_job_group", "Delete CodeArts Build job group"],
       ["build_swap_job_group", "Swap CodeArts Build job group order"],
-      ["build_add_keystore_permission", "Add CodeArts Build keystore permission"]
+      ["build_add_keystore_permission", "Add CodeArts Build keystore permission"],
+      ["build_edit_keystore_permission", "Edit CodeArts Build keystore permission via token-only official API"]
     ] as const;
 
     for (const [toolName, description] of tools) {

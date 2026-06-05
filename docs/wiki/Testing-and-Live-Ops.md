@@ -53,6 +53,14 @@ npm run stats:check-docs
 npm run probe:edge
 ```
 
+Windows 本机 Node/npm 包装脚本：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\npmw.ps1 run check
+powershell -ExecutionPolicy Bypass -File .\scripts\npmw.ps1 run test:live
+powershell -ExecutionPolicy Bypass -File .\scripts\nodew.ps1 .\dist\src\server\cli.js schema req_get_work_item_issue_details
+```
+
 ## Live 联调最小环境变量
 
 通用变量：

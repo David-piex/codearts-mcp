@@ -104,6 +104,10 @@ describe("createBuildClient admin mutations", () => {
           return { status: "success" };
         }
 
+        if (path.includes("/keystore/permission/edit")) {
+          return { status: "success" };
+        }
+
         if (path.includes("/follow")) {
           return {
             status: "success",
@@ -148,6 +152,12 @@ describe("createBuildClient admin mutations", () => {
     await expect(client.deleteJob({ job_id: "job-1" })).resolves.toEqual({
       job_id: "job-1",
       project_id: "project-1",
+      status: "success"
+    });
+    await expect(client.disableJob({ job_id: "job-1", disabled: true, reason: "maintenance" })).resolves.toEqual({
+      job_id: "job-1",
+      disabled: true,
+      reason: "maintenance",
       status: "success"
     });
     await expect(client.setKeepTime({ keep_time: 29 })).resolves.toEqual({
@@ -225,6 +235,10 @@ describe("createBuildClient admin mutations", () => {
       job_id: "job-v3",
       status: "success"
     });
+    await expect(client.disableJobV3({ job_id: "job-v3" })).resolves.toEqual({
+      job_id: "job-v3",
+      status: "success"
+    });
     await expect(client.checkWebhookUrl({
       job_id: "job-2",
       notice_type: "DING_TALK",
@@ -293,6 +307,21 @@ describe("createBuildClient admin mutations", () => {
       jobs: [],
       status: "success"
     });
+    await expect(client.updateJobGroup({
+      project_id: "project-1",
+      id: "group-1",
+      name: "Group-New",
+      parent_id: "parent-1"
+    })).resolves.toEqual({
+      project_id: "project-1",
+      id: "group-1",
+      name: "Group-New",
+      parent_id: "parent-1",
+      ordinal: undefined,
+      path_id: undefined,
+      status: "success",
+      raw: { status: "success" }
+    });
     await expect(client.deleteJobGroup({
       project_id: "project-1",
       id: "group-1"
@@ -330,6 +359,22 @@ describe("createBuildClient admin mutations", () => {
       user_name: "alice",
       status: "success"
     });
+    await expect(client.editKeystorePermission({
+      x_auth_token: "token-123456",
+      id: "perm-1",
+      keystore_id: "key-1",
+      user_name: "alice",
+      modify: true,
+      usage: false,
+      delete: false,
+      can_absent: true
+    })).resolves.toEqual({
+      id: "perm-1",
+      keystore_id: "key-1",
+      user_name: "alice",
+      status: "success",
+      result: undefined
+    });
     await expect(client.createJob({
       project_id: "project-1",
       job_name: "build-new",
@@ -366,6 +411,14 @@ describe("createBuildClient admin mutations", () => {
       status: "success",
       raw: { status: "success" }
     });
+    await expect(client.disableJobNotice({
+      job_id: "job-2",
+      notice_type: "MESSAGE"
+    })).resolves.toEqual({
+      job_id: "job-2",
+      notice_type: "MESSAGE",
+      status: "success"
+    });
     await expect(client.createJobGroup({
       project_id: "project-1",
       name: "Group-A",
@@ -398,6 +451,14 @@ describe("createBuildClient admin mutations", () => {
         method: "DELETE",
         path: "/v1/job/job-1/delete",
         body: undefined
+      },
+      {
+        method: "POST",
+        path: "/v1/job/job-1/disable",
+        body: {
+          disabled: true,
+          reason: "maintenance"
+        }
       },
       {
         method: "POST",
@@ -490,6 +551,11 @@ describe("createBuildClient admin mutations", () => {
       },
       {
         method: "POST",
+        path: "/v3/jobs/job-v3/disable",
+        body: undefined
+      },
+      {
+        method: "POST",
         path: "/v1/job/check/webhook-url",
         body: {
           job_id: "job-2",
@@ -551,6 +617,15 @@ describe("createBuildClient admin mutations", () => {
         }
       },
       {
+        method: "PUT",
+        path: "/v1/job/project-1/group/update",
+        body: {
+          id: "group-1",
+          name: "Group-New",
+          parent_id: "parent-1"
+        }
+      },
+      {
         method: "DELETE",
         path: "/v1/job/project-1/group/delete?id=group-1",
         body: undefined
@@ -571,6 +646,19 @@ describe("createBuildClient admin mutations", () => {
           delete: false,
           modify: false,
           usage: false,
+          can_absent: true
+        }
+      },
+      {
+        method: "POST",
+        path: "/v2/keystore/permission/edit",
+        body: {
+          id: "perm-1",
+          keystore_id: "key-1",
+          user_name: "alice",
+          modify: true,
+          usage: false,
+          delete: false,
           can_absent: true
         }
       },
@@ -603,6 +691,11 @@ describe("createBuildClient admin mutations", () => {
           enabled_event_type_names: ["buildJobSuccess", "buildJobFail"],
           webhook_url: "https://oapi.example.com/hook"
         }
+      },
+      {
+        method: "POST",
+        path: "/v3/jobs/notice/job-2/disable?notice_type=message",
+        body: undefined
       },
       {
         method: "POST",

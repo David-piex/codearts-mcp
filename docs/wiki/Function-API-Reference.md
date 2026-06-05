@@ -26,14 +26,14 @@
 | --- | ---: | --- |
 | 制品仓 | 52 | [Function-API-Reference-Artifact.md](./Function-API-Reference-Artifact.md) |
 | 鉴权会话 | 2 | [Function-API-Reference-Auth-Session.md](./Function-API-Reference-Auth-Session.md) |
-| 编译构建 | 133 | [Function-API-Reference-Build.md](./Function-API-Reference-Build.md) |
-| 代码检查 | 96 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
+| 编译构建 | 138 | [Function-API-Reference-Build.md](./Function-API-Reference-Build.md) |
+| 代码检查 | 100 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
 | 部署 | 74 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
 | 流水线 | 126 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 372 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 343 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 294 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **1492** | |
+| **总计** | **1501** | |
 
 ## 字段对应
 
@@ -119,12 +119,16 @@
 | `build_delete_keystore_permission` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_delete_keystore_permission) |
 | `build_delete_recycling_jobs` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_delete_recycling_jobs) |
 | `build_delete_template` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_delete_template) |
+| `build_disable_job` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_disable_job) |
+| `build_disable_job_notice` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_disable_job_notice) |
+| `build_disable_job_v3` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_disable_job_v3) |
 | `build_download_build_log_v4` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_download_build_log_v4) |
 | `build_download_full_log` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_download_full_log) |
 | `build_download_keystore_v2` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_download_keystore_v2) |
 | `build_download_keystore_v3` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_download_keystore_v3) |
 | `build_download_task_log` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_download_task_log) |
 | `build_download_task_log_v4` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_download_task_log_v4) |
+| `build_edit_keystore_permission` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_edit_keystore_permission) |
 | `build_follow_custom_template` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_follow_custom_template) |
 | `build_follow_job` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_follow_job) |
 | `build_follow_official_template` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_follow_official_template) |
@@ -226,6 +230,7 @@
 | `build_unfollow_custom_template` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_unfollow_custom_template) |
 | `build_unfollow_job` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_unfollow_job) |
 | `build_unfollow_official_template` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_unfollow_official_template) |
+| `build_update_job_group` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_update_job_group) |
 | `build_update_job_notice` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_update_job_notice) |
 | `build_update_job_role_permission` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_update_job_role_permission) |
 | `build_update_job_step` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_update_job_step) |
@@ -319,13 +324,17 @@
 | `check_modify_criterionset_relations` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_modify_criterionset_relations) |
 | `check_request_official_api` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_request_official_api) |
 | `check_run_task` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_run_task) |
+| `check_set_default_ruleset` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_set_default_ruleset) |
 | `check_stop_task` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_stop_task) |
 | `check_update_check_mode` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_update_check_mode) |
 | `check_update_code_gate` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_update_code_gate) |
 | `check_update_ignore_files` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_update_ignore_files) |
 | `check_update_issue_status` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_update_issue_status) |
 | `check_update_pipeline_task` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_update_pipeline_task) |
+| `check_update_task_config_parameters` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_update_task_config_parameters) |
+| `check_update_task_owner_matching_switch` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_update_task_owner_matching_switch) |
 | `check_update_task_resource_pool` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_update_task_resource_pool) |
+| `check_update_task_webhook` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_update_task_webhook) |
 | `deploy_add_v4_environment_hosts` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_add_v4_environment_hosts) |
 | `deploy_cancel_v4_deploy_record` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_cancel_v4_deploy_record) |
 | `deploy_check_application_creatable` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_check_application_creatable) |

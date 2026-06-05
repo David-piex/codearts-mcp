@@ -1254,6 +1254,46 @@ describe("createCheckClient", () => {
     ]);
   });
 
+  it("uses documented check mutation endpoints for webhook, owner switch, default ruleset, and config parameters", async () => {
+    const requests: Array<{ method: string; path: string; body?: unknown }> = [];
+    const client = createClient({
+      put: async (path: string, body: unknown) => {
+        requests.push({ method: "PUT", path, body });
+        return { status: "ok", result: "success" };
+      },
+      post: async (path: string, body: unknown) => {
+        requests.push({ method: "POST", path, body });
+        return { status: "ok", result: "success" };
+      }
+    });
+
+    await expect(client.updateTaskWebhook({
+      task_id: "task-1",
+      body: { enabled: true, url: "https://example.com/hook" }
+    })).resolves.toMatchObject({ task_id: "task-1", status: "ok" });
+    await expect(client.updateTaskOwnerMatchingSwitch({
+      task_id: "task-1",
+      enabled: false
+    })).resolves.toMatchObject({ task_id: "task-1", status: "ok" });
+    await expect(client.setDefaultRuleset({
+      project_id: "project-1",
+      ruleset_id: "ruleset-1",
+      language: "JAVA"
+    })).resolves.toMatchObject({ project_id: "project-1", ruleset_id: "ruleset-1", language: "JAVA" });
+    await expect(client.updateTaskConfigParameters({
+      project_id: "project-1",
+      task_id: "task-1",
+      body: { scan_type: "full" }
+    })).resolves.toMatchObject({ task_id: "task-1", status: "ok" });
+
+    expect(requests).toEqual([
+      { method: "PUT", path: "/v4/tasks/task-1/webhook", body: { enabled: true, url: "https://example.com/hook" } },
+      { method: "PUT", path: "/v1/tasks/task-1/owner-matching-switch", body: { enabled: false } },
+      { method: "POST", path: "/v2/project-1/ruleset/ruleset-1/JAVA/default", body: {} },
+      { method: "POST", path: "/v2/project-1/tasks/task-1/config-parameters", body: { scan_type: "full" } }
+    ]);
+  });
+
   it("uses documented ruleset metadata endpoints", async () => {
     const requests: string[] = [];
     const client = createClient({

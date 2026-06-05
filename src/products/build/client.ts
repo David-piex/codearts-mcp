@@ -776,6 +776,16 @@ export type BuildClient = {
     project_id?: string;
     status?: string;
   }>;
+  disableJob: (input: {
+    job_id: string;
+    disabled: boolean;
+    reason?: string;
+  }) => Promise<{
+    job_id: string;
+    disabled: boolean;
+    reason?: string;
+    status?: string;
+  }>;
   setKeepTime: (input: { keep_time: number }) => Promise<{
     keep_time: number;
     status?: string;
@@ -851,6 +861,10 @@ export type BuildClient = {
     job_id: string;
     status?: string;
   }>;
+  disableJobV3: (input: { job_id: string }) => Promise<{
+    job_id: string;
+    status?: string;
+  }>;
   checkWebhookUrl: (input: {
     job_id: string;
     notice_type: string;
@@ -918,6 +932,24 @@ export type BuildClient = {
     jobs: Array<{ job_id?: string; group_path_id?: string }>;
     status?: string;
   }>;
+  updateJobGroup: (input: {
+    project_id: string;
+    id: string;
+    name: string;
+    parent_id?: string;
+    ordinal?: number;
+    path_id?: string;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    project_id: string;
+    id: string;
+    name: string;
+    parent_id?: string;
+    ordinal?: number;
+    path_id?: string;
+    status?: string;
+    raw: Record<string, unknown>;
+  }>;
   deleteJobGroup: (input: {
     project_id: string;
     id: string;
@@ -951,6 +983,22 @@ export type BuildClient = {
     user_id: string;
     user_name: string;
     status?: string;
+  }>;
+  editKeystorePermission: (input: {
+    x_auth_token: string;
+    id: string;
+    keystore_id: string;
+    user_name: string;
+    modify: boolean;
+    usage: boolean;
+    delete: boolean;
+    can_absent: boolean;
+  }) => Promise<{
+    id: string;
+    keystore_id: string;
+    user_name: string;
+    status?: string;
+    result?: string;
   }>;
   createJob: (input: {
     project_id: string;
@@ -993,6 +1041,14 @@ export type BuildClient = {
     job_id: string;
     status?: string;
     raw: Record<string, unknown>;
+  }>;
+  disableJobNotice: (input: {
+    job_id: string;
+    notice_type: string;
+  }) => Promise<{
+    job_id: string;
+    notice_type: string;
+    status?: string;
   }>;
   createJobGroup: (input: {
     project_id: string;
@@ -3499,6 +3555,24 @@ export function createBuildClient(
         status: response.status
       };
     },
+    async disableJob(input) {
+      const response = unwrapBuildPayload((await _http.post(
+        `/v1/job/${encodeURIComponent(input.job_id)}/disable`,
+        {
+          disabled: input.disabled,
+          reason: input.reason ?? ""
+        }
+      )) as {
+        status?: string;
+      });
+
+      return {
+        job_id: input.job_id,
+        disabled: input.disabled,
+        reason: input.reason,
+        status: response.status
+      };
+    },
     async setKeepTime(input) {
       const response = unwrapBuildPayload((await _http.post("/v1/job/keep-time", {
         keep_time: input.keep_time
@@ -3728,6 +3802,18 @@ export function createBuildClient(
         status: response.status
       };
     },
+    async disableJobV3(input) {
+      const response = unwrapBuildPayload((await _http.post(
+        `/v3/jobs/${encodeURIComponent(input.job_id)}/disable`
+      )) as {
+        status?: string;
+      });
+
+      return {
+        job_id: input.job_id,
+        status: response.status
+      };
+    },
     async checkWebhookUrl(input) {
       const response = unwrapBuildPayload((await _http.post("/v1/job/check/webhook-url", {
         job_id: input.job_id,
@@ -3856,6 +3942,32 @@ export function createBuildClient(
         status: response.status
       };
     },
+    async updateJobGroup(input) {
+      const payload = {
+        ...input.body,
+        id: input.id,
+        name: input.name,
+        ...(input.parent_id ? { parent_id: input.parent_id } : {}),
+        ...(input.ordinal === undefined ? {} : { ordinal: input.ordinal }),
+        ...(input.path_id ? { path_id: input.path_id } : {})
+      };
+      const response = await _http.put(
+        `/v1/job/${encodeURIComponent(input.project_id)}/group/update`,
+        payload
+      );
+      const payloadRecord = readBuildPayload(response);
+
+      return {
+        project_id: input.project_id,
+        id: input.id,
+        name: input.name,
+        parent_id: input.parent_id,
+        ordinal: input.ordinal,
+        path_id: input.path_id,
+        status: typeof payloadRecord.status === "string" ? payloadRecord.status : undefined,
+        raw: readBuildRawRecord(readBuildPayloadValue(response))
+      };
+    },
     async deleteJobGroup(input) {
       const query = new URLSearchParams({
         id: input.id
@@ -3911,6 +4023,34 @@ export function createBuildClient(
         user_id: input.user_id,
         user_name: input.user_name,
         status: response.status
+      };
+    },
+    async editKeystorePermission(input) {
+      const response = unwrapBuildPayload((await _http.post(
+        "/v2/keystore/permission/edit",
+        {
+          id: input.id,
+          keystore_id: input.keystore_id,
+          user_name: input.user_name,
+          modify: input.modify,
+          usage: input.usage,
+          delete: input.delete,
+          can_absent: input.can_absent
+        },
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
+      )) as {
+        status?: string;
+        result?: string;
+      });
+
+      return {
+        id: input.id,
+        keystore_id: input.keystore_id,
+        user_name: input.user_name,
+        status: response.status,
+        result: response.result
       };
     },
     async createJob(input) {
@@ -3986,6 +4126,22 @@ export function createBuildClient(
         job_id: input.job_id,
         status: typeof payloadRecord.status === "string" ? payloadRecord.status : undefined,
         raw: readBuildRawRecord(readBuildPayloadValue(response))
+      };
+    },
+    async disableJobNotice(input) {
+      const query = new URLSearchParams({
+        notice_type: input.notice_type.toLowerCase()
+      });
+      const response = unwrapBuildPayload((await _http.post(
+        `/v3/jobs/notice/${encodeURIComponent(input.job_id)}/disable?${query.toString()}`
+      )) as {
+        status?: string;
+      });
+
+      return {
+        job_id: input.job_id,
+        notice_type: input.notice_type,
+        status: response.status
       };
     },
     async createJobGroup(input) {
