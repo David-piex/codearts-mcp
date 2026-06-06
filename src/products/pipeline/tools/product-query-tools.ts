@@ -1,5 +1,6 @@
 import {
   pipelineBatchGetPipelineStatusInput,
+  pipelineBatchShowPipelinesStatusInput,
   pipelineCheckComponentInput,
   pipelineCheckProjectInput,
   pipelineDashboardQueryInput,
@@ -11,10 +12,14 @@ import {
   pipelineGetComponentInput,
   pipelineGetComponentFollowStatusInput,
   pipelineGetDevucAuthInput,
+  pipelineGetManifestVersionsInput,
   pipelineGetNoticeMessagesInput,
   pipelineGetOauthAuthorizationUrlInput,
   pipelineGetPacActionInput,
+  pipelineListArtifactVersionsInput,
   pipelineCheckVariableGroupRightsInput,
+  pipelineListPipelineBuildRecordsInput,
+  pipelineListPipelineBuildResultsInput,
   pipelineListChangeRequestOperationLogsInput,
   pipelineListChangeRequestCreatorsInput,
   pipelineListChangeRequestWorkItemsInput,
@@ -24,8 +29,15 @@ import {
   pipelineListCodeRepositoriesInput,
   pipelineListExecutionPlansInput,
   pipelineListRelatedProjectsInput,
+  pipelineListPipelinesV3Input,
+  pipelineListPluginVersionNumbersInput,
   pipelineListPacActionsInput,
-  pipelineListReusableJobsInput
+  pipelineListReusableJobsInput,
+  pipelineListTemplatesV3Input,
+  pipelineQueryManifestVersionsInput,
+  pipelineShowPipelineDetailV3Input,
+  pipelineShowPipelineStatusInput,
+  pipelineShowTemplateDetailV3Input
 } from "../schemas.js";
 import { createPipelineRawItemHandler, createPipelineRawListHandler } from "./raw-query-tools.js";
 
@@ -34,6 +46,87 @@ type RawListResponse = { records: RawRecord[]; total?: number; raw: RawRecord };
 type RawItemResponse = { item: RawRecord; raw: RawRecord };
 
 export type PipelineProductQueryClient = {
+  listArtifactVersions: (input: {
+    cloud_project_id: string;
+    query?: string;
+    page_index: number;
+    page_size: number;
+    parent_id?: string;
+    metadata_type?: string;
+    name?: string;
+    repo_branch?: string;
+  }) => Promise<RawListResponse>;
+  queryManifestVersions: (input: {
+    project_id: string;
+    pipeline_ids: string[];
+    body?: RawRecord[];
+  }) => Promise<RawListResponse>;
+  getManifestVersions: (input: {
+    pipeline_ids: string[];
+    body?: RawRecord[];
+  }) => Promise<RawListResponse>;
+  listPluginVersionNumbers: (input: {
+    domain_id: string;
+    plugin_name: string;
+    offset: number;
+    limit: number;
+  }) => Promise<RawListResponse>;
+  listTemplatesV3: (input: {
+    template_type: string;
+    is_build_in: boolean;
+    offset: number;
+    limit: number;
+    name?: string;
+    sort?: string;
+    asc?: boolean;
+  }) => Promise<RawListResponse>;
+  showTemplateDetailV3: (input: {
+    template_id: string;
+    template_type: string;
+    source?: string;
+  }) => Promise<RawItemResponse>;
+  batchShowPipelinesStatus: (input: {
+    pipeline_ids: string[];
+  }) => Promise<RawListResponse>;
+  listPipelinesV3: (input: {
+    project_id?: string;
+    project_ids?: string[];
+    pipeline_name?: string;
+    creator_ids?: string[];
+    executor_ids?: string[];
+    status?: string;
+    outcome?: string;
+    sort_key?: string;
+    sort_dir?: "asc" | "desc";
+    git_url?: string;
+    offset: number;
+    limit: number;
+    body?: RawRecord;
+  }) => Promise<RawListResponse>;
+  showPipelineStatus: (input: {
+    pipeline_id: string;
+    build_id?: string;
+  }) => Promise<RawItemResponse>;
+  listPipelineBuildResults: (input: {
+    project_id: string;
+    start_date: string;
+    end_date: string;
+    offset: number;
+    limit: number;
+  }) => Promise<RawListResponse>;
+  showPipelineDetailV3: (input: {
+    pipeline_id: string;
+    build_id?: string;
+  }) => Promise<RawItemResponse>;
+  listPipelineBuildRecords: (input: {
+    pipeline_id: string;
+    start_date?: string;
+    end_date?: string;
+    offset: number;
+    limit: number;
+    status?: string;
+    outcome?: string;
+  }) => Promise<RawListResponse>;
   batchGetPipelineStatus: (input: {
     project_id: string;
     pipeline_ids?: string[];
@@ -174,6 +267,114 @@ export type PipelineProductQueryClient = {
     query?: RawRecord;
   }) => Promise<RawItemResponse>;
 };
+
+export const createPipelineListArtifactVersionsHandler = (client: PipelineProductQueryClient) =>
+  createPipelineRawListHandler({
+    inputSchema: pipelineListArtifactVersionsInput,
+    call: (input) => client.listArtifactVersions(input),
+    noun: "pipeline artifact versions",
+    itemKey: "artifactVersion",
+    rawKey: "artifactVersions"
+  });
+
+export const createPipelineQueryManifestVersionsHandler = (client: PipelineProductQueryClient) =>
+  createPipelineRawListHandler({
+    inputSchema: pipelineQueryManifestVersionsInput,
+    call: (input) => client.queryManifestVersions(input),
+    noun: "pipeline manifest versions",
+    itemKey: "manifestVersion",
+    rawKey: "manifestVersions"
+  });
+
+export const createPipelineGetManifestVersionsHandler = (client: PipelineProductQueryClient) =>
+  createPipelineRawListHandler({
+    inputSchema: pipelineGetManifestVersionsInput,
+    call: (input) => client.getManifestVersions(input),
+    noun: "pipeline manifest versions",
+    itemKey: "manifestVersion",
+    rawKey: "manifestVersions"
+  });
+
+export const createPipelineListPluginVersionNumbersHandler = (client: PipelineProductQueryClient) =>
+  createPipelineRawListHandler({
+    inputSchema: pipelineListPluginVersionNumbersInput,
+    call: (input) => client.listPluginVersionNumbers(input),
+    noun: "pipeline plugin version numbers",
+    itemKey: "pluginVersionNumber",
+    rawKey: "pluginVersionNumbers"
+  });
+
+export const createPipelineListTemplatesV3Handler = (client: PipelineProductQueryClient) =>
+  createPipelineRawListHandler({
+    inputSchema: pipelineListTemplatesV3Input,
+    call: (input) => client.listTemplatesV3(input),
+    noun: "Pipeline V3 templates",
+    itemKey: "template",
+    rawKey: "templates"
+  });
+
+export const createPipelineShowTemplateDetailV3Handler = (client: PipelineProductQueryClient) =>
+  createPipelineRawItemHandler({
+    inputSchema: pipelineShowTemplateDetailV3Input,
+    call: (input) => client.showTemplateDetailV3(input),
+    summary: "Loaded Pipeline V3 template detail",
+    itemKey: "template",
+    id: (input) => input.template_id
+  });
+
+export const createPipelineBatchShowPipelinesStatusHandler = (client: PipelineProductQueryClient) =>
+  createPipelineRawListHandler({
+    inputSchema: pipelineBatchShowPipelinesStatusInput,
+    call: (input) => client.batchShowPipelinesStatus(input),
+    noun: "Pipeline V3 status records",
+    itemKey: "pipelineStatus",
+    rawKey: "pipelineStatuses"
+  });
+
+export const createPipelineListPipelinesV3Handler = (client: PipelineProductQueryClient) =>
+  createPipelineRawListHandler({
+    inputSchema: pipelineListPipelinesV3Input,
+    call: (input) => client.listPipelinesV3(input),
+    noun: "Pipeline V3 pipelines",
+    itemKey: "pipeline",
+    rawKey: "pipelines"
+  });
+
+export const createPipelineShowPipelineStatusHandler = (client: PipelineProductQueryClient) =>
+  createPipelineRawItemHandler({
+    inputSchema: pipelineShowPipelineStatusInput,
+    call: (input) => client.showPipelineStatus(input),
+    summary: "Loaded Pipeline V3 pipeline status",
+    itemKey: "pipelineStatus",
+    id: (input) => input.pipeline_id
+  });
+
+export const createPipelineListPipelineBuildResultsHandler = (client: PipelineProductQueryClient) =>
+  createPipelineRawListHandler({
+    inputSchema: pipelineListPipelineBuildResultsInput,
+    call: (input) => client.listPipelineBuildResults(input),
+    noun: "Pipeline V3 build results",
+    itemKey: "buildResult",
+    rawKey: "buildResults"
+  });
+
+export const createPipelineShowPipelineDetailV3Handler = (client: PipelineProductQueryClient) =>
+  createPipelineRawItemHandler({
+    inputSchema: pipelineShowPipelineDetailV3Input,
+    call: (input) => client.showPipelineDetailV3(input),
+    summary: "Loaded Pipeline V3 pipeline detail",
+    itemKey: "pipelineDetail",
+    id: (input) => input.pipeline_id
+  });
+
+export const createPipelineListPipelineBuildRecordsHandler = (client: PipelineProductQueryClient) =>
+  createPipelineRawListHandler({
+    inputSchema: pipelineListPipelineBuildRecordsInput,
+    call: (input) => client.listPipelineBuildRecords(input),
+    noun: "Pipeline V3 build records",
+    itemKey: "buildRecord",
+    rawKey: "buildRecords"
+  });
 
 export const createPipelineBatchGetPipelineStatusHandler = (client: PipelineProductQueryClient) =>
   createPipelineRawListHandler({

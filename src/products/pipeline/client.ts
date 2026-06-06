@@ -1303,6 +1303,87 @@ export type PipelineClient = {
     records: Array<{ pipeline_run_id: string; status?: string; executor_name?: string }>;
     total?: number;
   }>;
+  listArtifactVersions: (input: {
+    cloud_project_id: string;
+    query?: string;
+    page_index: number;
+    page_size: number;
+    parent_id?: string;
+    metadata_type?: string;
+    name?: string;
+    repo_branch?: string;
+  }) => Promise<PipelineRawListResult>;
+  queryManifestVersions: (input: {
+    project_id: string;
+    pipeline_ids: string[];
+    body?: PipelineRawRecord[];
+  }) => Promise<PipelineRawListResult>;
+  getManifestVersions: (input: {
+    pipeline_ids: string[];
+    body?: PipelineRawRecord[];
+  }) => Promise<PipelineRawListResult>;
+  listPluginVersionNumbers: (input: {
+    domain_id: string;
+    plugin_name: string;
+    offset: number;
+    limit: number;
+  }) => Promise<PipelineRawListResult>;
+  listTemplatesV3: (input: {
+    template_type: string;
+    is_build_in: boolean;
+    offset: number;
+    limit: number;
+    name?: string;
+    sort?: string;
+    asc?: boolean;
+  }) => Promise<PipelineRawListResult>;
+  showTemplateDetailV3: (input: {
+    template_id: string;
+    template_type: string;
+    source?: string;
+  }) => Promise<PipelineRawItemResult>;
+  batchShowPipelinesStatus: (input: {
+    pipeline_ids: string[];
+  }) => Promise<PipelineRawListResult>;
+  listPipelinesV3: (input: {
+    project_id?: string;
+    project_ids?: string[];
+    pipeline_name?: string;
+    creator_ids?: string[];
+    executor_ids?: string[];
+    status?: string;
+    outcome?: string;
+    sort_key?: string;
+    sort_dir?: "asc" | "desc";
+    git_url?: string;
+    offset: number;
+    limit: number;
+    body?: PipelineRawRecord;
+  }) => Promise<PipelineRawListResult>;
+  showPipelineStatus: (input: {
+    pipeline_id: string;
+    build_id?: string;
+  }) => Promise<PipelineRawItemResult>;
+  listPipelineBuildResults: (input: {
+    project_id: string;
+    start_date: string;
+    end_date: string;
+    offset: number;
+    limit: number;
+  }) => Promise<PipelineRawListResult>;
+  showPipelineDetailV3: (input: {
+    pipeline_id: string;
+    build_id?: string;
+  }) => Promise<PipelineRawItemResult>;
+  listPipelineBuildRecords: (input: {
+    pipeline_id: string;
+    start_date?: string;
+    end_date?: string;
+    offset: number;
+    limit: number;
+    status?: string;
+    outcome?: string;
+  }) => Promise<PipelineRawListResult>;
   batchGetPipelineStatus: (input: {
     project_id: string;
     pipeline_ids?: string[];
@@ -1513,6 +1594,28 @@ function unwrapPipelinePayload<T>(input: T): T {
     });
   }
 
+  if (
+    input &&
+    typeof input === "object" &&
+    "status" in input &&
+    (input as { status?: unknown }).status === "error"
+  ) {
+    const error = "error" in input ? (input as { error?: unknown }).error : undefined;
+    const errorRecord = asPipelineRecord(error);
+    const message =
+      typeof errorRecord.reason === "string"
+        ? errorRecord.reason
+        : typeof errorRecord.message === "string"
+          ? errorRecord.message
+          : "Pipeline provider returned an error payload";
+
+    throw normalizeProviderError({
+      status: 400,
+      message,
+      code: typeof errorRecord.code === "string" ? errorRecord.code : undefined
+    });
+  }
+
   return input;
 }
 
@@ -1528,16 +1631,73 @@ function getPipelinePayload(input: unknown): PipelineRawRecord {
 }
 
 function readPipelineRecordList(payload: PipelineRawRecord): PipelineRawRecord[] {
-  for (const key of ["records", "items", "list", "data", "values", "variables", "historys"]) {
+  for (const key of [
+    "records",
+    "items",
+    "list",
+    "result",
+    "data",
+    "values",
+    "variables",
+    "historys",
+    "build_results",
+    "content",
+    "templates",
+    "versions",
+    "pipelines"
+  ]) {
     const value = payload[key];
     if (Array.isArray(value)) {
-      return value.filter((item): item is PipelineRawRecord => (
-        item !== null && typeof item === "object" && !Array.isArray(item)
-      ));
+      return value
+        .filter((item) => item !== null && item !== undefined)
+        .map((item) => (
+          item !== null && typeof item === "object" && !Array.isArray(item)
+            ? (item as PipelineRawRecord)
+            : { value: item }
+        ));
     }
   }
 
+  const manifestVersion = payload.pipelineId;
+  if (manifestVersion && typeof manifestVersion === "object" && !Array.isArray(manifestVersion)) {
+    return [manifestVersion as PipelineRawRecord];
+  }
+
+  const keyedManifestVersions: PipelineRawRecord[] = [];
+  for (const [key, value] of Object.entries(payload)) {
+    if (!value || typeof value !== "object" || Array.isArray(value)) {
+      continue;
+    }
+
+    const record = value as PipelineRawRecord;
+    if (!("manifestVersion" in record) && !("manifest_version" in record)) {
+      continue;
+    }
+
+    keyedManifestVersions.push({
+      pipelineId: record.pipelineId ?? record.pipeline_id ?? key,
+      ...record
+    });
+  }
+
+  if (keyedManifestVersions.length > 0) {
+    return keyedManifestVersions;
+  }
+
   return [];
+}
+
+function getPipelineListPayload(input: unknown): PipelineRawRecord {
+  if (Array.isArray(input)) {
+    return { data: input };
+  }
+
+  const response = asPipelineRecord(input);
+  if (Array.isArray(response.result) || Array.isArray(response.data) || Array.isArray(response.value)) {
+    return response;
+  }
+
+  return getPipelinePayload(response);
 }
 
 function readPipelineTotal(payload: PipelineRawRecord, fallback?: number) {
@@ -4099,6 +4259,162 @@ export function createPipelineClient(
         executor_name: response.executor_name,
         trigger_type: response.trigger_type
       };
+    },
+    async listArtifactVersions(input) {
+      const suffix = buildQuery({
+        query: input.query,
+        page_index: input.page_index,
+        page_size: input.page_size,
+        parent_id: input.parent_id,
+        metadata_type: input.metadata_type,
+        name: input.name,
+        repo_branch: input.repo_branch
+      });
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v2/${encodeURIComponent(input.cloud_project_id)}/artifact/versions${suffix}`
+      ));
+
+      return mapPipelineRawListResult(getPipelineListPayload(response));
+    },
+    async queryManifestVersions(input) {
+      const body = input.body ?? input.pipeline_ids.map((pipelineId) => ({
+        pipeline_id: pipelineId
+      }));
+      const response = unwrapPipelinePayload(await _http.post(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipelines/pipelines-version`,
+        body
+      ));
+
+      return mapPipelineRawListResult(getPipelineListPayload(response));
+    },
+    async getManifestVersions(input) {
+      const body = input.body ?? input.pipeline_ids.map((pipelineId) => ({
+        pipeline_id: pipelineId
+      }));
+      const response = unwrapPipelinePayload(await _http.post(
+        "/v5/pipelines/pipelines-version",
+        body
+      ));
+
+      return mapPipelineRawListResult(getPipelineListPayload(response));
+    },
+    async listPluginVersionNumbers(input) {
+      const suffix = buildQuery({
+        plugin_name: input.plugin_name,
+        offset: input.offset,
+        limit: input.limit
+      });
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v1/${encodeURIComponent(input.domain_id)}/agent-plugin/all-version${suffix}`
+      ));
+
+      return mapPipelineRawListResult(getPipelineListPayload(response));
+    },
+    async listTemplatesV3(input) {
+      const suffix = buildQuery({
+        template_type: input.template_type,
+        is_build_in: input.is_build_in,
+        offset: input.offset,
+        limit: input.limit,
+        name: input.name,
+        sort: input.sort,
+        asc: input.asc
+      });
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v3/templates${suffix}`
+      ));
+
+      return mapPipelineRawListResult(getPipelineListPayload(response));
+    },
+    async showTemplateDetailV3(input) {
+      const suffix = buildQuery({
+        template_type: input.template_type,
+        source: input.source
+      });
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v3/templates/${encodeURIComponent(input.template_id)}${suffix}`
+      ));
+
+      return mapPipelineRawItemResult(getPipelinePayload(response));
+    },
+    async batchShowPipelinesStatus(input) {
+      const suffix = buildQuery({
+        pipeline_ids: input.pipeline_ids.join(",")
+      });
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v3/pipelines/status${suffix}`
+      ));
+
+      return mapPipelineRawListResult(getPipelineListPayload(response));
+    },
+    async listPipelinesV3(input) {
+      const projectIds = input.project_ids ?? (input.project_id ? [input.project_id] : undefined);
+      const body = {
+        ...(input.body ?? {}),
+        ...(input.pipeline_name !== undefined ? { pipeline_name: input.pipeline_name } : {}),
+        ...(projectIds !== undefined ? { project_ids: projectIds.join(",") } : {}),
+        ...(input.creator_ids !== undefined ? { creator_ids: input.creator_ids.join(",") } : {}),
+        ...(input.executor_ids !== undefined ? { executor_ids: input.executor_ids.join(",") } : {}),
+        ...(input.status !== undefined ? { status: input.status } : {}),
+        ...(input.outcome !== undefined ? { outcome: input.outcome } : {}),
+        ...(input.sort_key !== undefined ? { sort_key: input.sort_key } : {}),
+        ...(input.sort_dir !== undefined ? { sort_dir: input.sort_dir } : {}),
+        ...(input.git_url !== undefined ? { git_url: input.git_url } : {}),
+        offset: input.offset,
+        limit: input.limit
+      };
+      const response = unwrapPipelinePayload(await _http.post("/v3/pipelines/list", body));
+
+      return mapPipelineRawListResult(getPipelineListPayload(response));
+    },
+    async showPipelineStatus(input) {
+      const suffix = buildQuery({
+        build_id: input.build_id
+      });
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v3/pipelines/${encodeURIComponent(input.pipeline_id)}/status${suffix}`
+      ));
+
+      return mapPipelineRawItemResult(getPipelinePayload(response));
+    },
+    async listPipelineBuildResults(input) {
+      const suffix = buildQuery({
+        project_id: input.project_id,
+        start_date: input.start_date,
+        end_date: input.end_date,
+        offset: input.offset,
+        limit: input.limit
+      });
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v3/pipelines/build-result${suffix}`
+      ));
+
+      return mapPipelineRawListResult(getPipelineListPayload(response));
+    },
+    async showPipelineDetailV3(input) {
+      const suffix = buildQuery({
+        build_id: input.build_id
+      });
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v3/pipelines/${encodeURIComponent(input.pipeline_id)}/detail${suffix}`
+      ));
+
+      return mapPipelineRawItemResult(getPipelinePayload(response));
+    },
+    async listPipelineBuildRecords(input) {
+      const suffix = buildQuery({
+        start_date: input.start_date,
+        end_date: input.end_date,
+        offset: input.offset,
+        limit: input.limit,
+        status: input.status,
+        outcome: input.outcome
+      });
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v3/pipelines/${encodeURIComponent(input.pipeline_id)}/build-records${suffix}`
+      ));
+
+      return mapPipelineRawListResult(getPipelineListPayload(response));
     },
     async batchGetPipelineStatus(input) {
       const response = unwrapPipelinePayload(await _http.post(

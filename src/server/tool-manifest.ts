@@ -143,6 +143,7 @@ const moduleLiveStatus: Record<ProductToolModule, ToolLiveStatus> = {
 export function classifyToolAccess(toolName: string): ToolAccess {
   if (
     toolName === "pipeline_batch_get_pipeline_status" ||
+    toolName === "pipeline_batch_show_pipelines_status" ||
     toolName === "pipeline_check_project" ||
     toolName === "pipeline_check_component"
   ) {

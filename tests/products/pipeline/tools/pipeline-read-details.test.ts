@@ -1,10 +1,12 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { createPipelineGetTemplateHandler, mapPipelineTemplate } from "../../../../src/products/pipeline/tools/get-template.js";
 import { createPipelineGetWebhookInfoHandler } from "../../../../src/products/pipeline/tools/get-webhook-info.js";
 import { createPipelineListPipelineVarsHandler } from "../../../../src/products/pipeline/tools/list-pipeline-vars.js";
 import {
+  createPipelineBatchShowPipelinesStatusHandler,
   createPipelineCheckVariableGroupRightsHandler,
   createPipelineGetChangeRequestHandler,
+  createPipelineGetManifestVersionsHandler,
   createPipelineGetPackageUsageHandler,
   createPipelineGetRepositoryNumberHandler,
   createPipelineGetTenantPackageIsFreezeHandler,
@@ -12,6 +14,7 @@ import {
   createPipelineGetDashboardConcurrencyHandler,
   createPipelineGetDevucAuthHandler,
   createPipelineGetOauthAuthorizationUrlHandler,
+  createPipelineListArtifactVersionsHandler,
   createPipelineGetTenantVersionDetailHandler,
   createPipelineListCodeBranchesHandler,
   createPipelineListCodeRepositoriesHandler,
@@ -20,7 +23,16 @@ import {
   createPipelineListRelatedProjectsHandler,
   createPipelineListChangeRequestWorkItemsHandler,
   createPipelineListExecutionPlansHandler,
-  createPipelineListReusableJobsHandler
+  createPipelineListPipelineBuildRecordsHandler,
+  createPipelineListPipelineBuildResultsHandler,
+  createPipelineListPipelinesV3Handler,
+  createPipelineListPluginVersionNumbersHandler,
+  createPipelineListReusableJobsHandler,
+  createPipelineListTemplatesV3Handler,
+  createPipelineQueryManifestVersionsHandler,
+  createPipelineShowPipelineDetailV3Handler,
+  createPipelineShowPipelineStatusHandler,
+  createPipelineShowTemplateDetailV3Handler
 } from "../../../../src/products/pipeline/tools/product-query-tools.js";
 
 describe("Pipeline read detail tools", () => {
@@ -414,6 +426,246 @@ describe("Pipeline read detail tools", () => {
     });
     expect(devucResult.structuredContent.item?.devucAuth).toEqual({
       authorized: true
+    });
+  });
+
+  it("returns official Pipeline V3 read query outputs", async () => {
+    const listArtifactVersions = vi.fn(async () => ({
+      records: [{ id: "artifact-1", name: "release.zip" }],
+      total: 1,
+      raw: { data: [{ id: "artifact-1", name: "release.zip" }], total: 1 }
+    }));
+    const queryManifestVersions = vi.fn(async () => ({
+      records: [{ pipelineId: "pipe-1", manifestVersion: "3.0" }],
+      total: 1,
+      raw: { pipelineId: { pipelineId: "pipe-1", manifestVersion: "3.0" } }
+    }));
+    const getManifestVersions = vi.fn(async () => ({
+      records: [{ pipelineId: "pipe-2", manifestVersion: "3.0" }],
+      total: 1,
+      raw: { pipelineId: { pipelineId: "pipe-2", manifestVersion: "3.0" } }
+    }));
+    const listPluginVersionNumbers = vi.fn(async () => ({
+      records: [{ value: "1.0.0" }],
+      total: 1,
+      raw: { data: ["1.0.0"], total: 1 }
+    }));
+    const listTemplatesV3 = vi.fn(async () => ({
+      records: [{ template_id: "tpl-1", template_name: "Node.js" }],
+      total: 1,
+      raw: { content: [{ template_id: "tpl-1", template_name: "Node.js" }], total: 1 }
+    }));
+    const showTemplateDetailV3 = vi.fn(async () => ({
+      item: { template_id: "tpl-1", template_name: "Node.js" },
+      raw: { template_id: "tpl-1", template_name: "Node.js" }
+    }));
+    const batchShowPipelinesStatus = vi.fn(async () => ({
+      records: [{ pipeline_id: "pipe-1", status: "completed" }],
+      total: 1,
+      raw: { data: [{ pipeline_id: "pipe-1", status: "completed" }] }
+    }));
+    const listPipelinesV3 = vi.fn(async () => ({
+      records: [{ pipeline_id: "pipe-1", pipeline_name: "release-main" }],
+      total: 1,
+      raw: { result: [{ pipeline_id: "pipe-1", pipeline_name: "release-main" }], total: 1 }
+    }));
+    const showPipelineStatus = vi.fn(async () => ({
+      item: { pipeline_id: "pipe-1", status: "running" },
+      raw: { pipeline_id: "pipe-1", status: "running" }
+    }));
+    const listPipelineBuildResults = vi.fn(async () => ({
+      records: [{ pipeline_id: "pipe-1", build_id: "build-1", status: "completed" }],
+      total: 1,
+      raw: {
+        build_results: [{ pipeline_id: "pipe-1", build_id: "build-1", status: "completed" }],
+        total: 1
+      }
+    }));
+    const showPipelineDetailV3 = vi.fn(async () => ({
+      item: { workflow: { pipeline_id: "pipe-1" }, states: [] },
+      raw: { workflow: { pipeline_id: "pipe-1" }, states: [] }
+    }));
+    const listPipelineBuildRecords = vi.fn(async () => ({
+      records: [{ pipeline_id: "pipe-1", build_id: "build-1", outcome: "success" }],
+      total: 1,
+      raw: {
+        records: [{ pipeline_id: "pipe-1", build_id: "build-1", outcome: "success" }],
+        total: 1
+      }
+    }));
+    const artifactVersions = createPipelineListArtifactVersionsHandler({
+      listArtifactVersions
+    } as never);
+    const queriedManifestVersions = createPipelineQueryManifestVersionsHandler({
+      queryManifestVersions
+    } as never);
+    const manifestVersions = createPipelineGetManifestVersionsHandler({
+      getManifestVersions
+    } as never);
+    const pluginVersionNumbers = createPipelineListPluginVersionNumbersHandler({
+      listPluginVersionNumbers
+    } as never);
+    const templates = createPipelineListTemplatesV3Handler({
+      listTemplatesV3
+    } as never);
+    const templateDetail = createPipelineShowTemplateDetailV3Handler({
+      showTemplateDetailV3
+    } as never);
+    const pipelineStatuses = createPipelineBatchShowPipelinesStatusHandler({
+      batchShowPipelinesStatus
+    } as never);
+    const pipelinesV3 = createPipelineListPipelinesV3Handler({
+      listPipelinesV3
+    } as never);
+    const pipelineStatus = createPipelineShowPipelineStatusHandler({
+      showPipelineStatus
+    } as never);
+    const buildResults = createPipelineListPipelineBuildResultsHandler({
+      listPipelineBuildResults
+    } as never);
+    const pipelineDetail = createPipelineShowPipelineDetailV3Handler({
+      showPipelineDetailV3
+    } as never);
+    const buildRecords = createPipelineListPipelineBuildRecordsHandler({
+      listPipelineBuildRecords
+    } as never);
+
+    const artifactResult = await artifactVersions({ cloud_project_id: "project-1" });
+    const queriedManifestResult = await queriedManifestVersions({
+      project_id: "project-1",
+      pipeline_ids: ["pipe-1"]
+    });
+    const manifestResult = await manifestVersions({ pipeline_ids: ["pipe-2"] });
+    const pluginVersionResult = await pluginVersionNumbers({
+      domain_id: "domain-1",
+      plugin_name: "deploy"
+    });
+    const templatesResult = await templates({ template_type: "pipeline" });
+    const templateDetailResult = await templateDetail({
+      template_id: "tpl-1",
+      template_type: "pipeline"
+    });
+    const pipelineStatusesResult = await pipelineStatuses({ pipeline_ids: ["pipe-1"] });
+    const pipelinesV3Result = await pipelinesV3({ project_id: "project-1" });
+    const pipelineStatusResult = await pipelineStatus({ pipeline_id: "pipe-1" });
+    const buildResultsResult = await buildResults({
+      project_id: "project-1",
+      start_date: "2026-01-01",
+      end_date: "2026-01-31"
+    });
+    const pipelineDetailResult = await pipelineDetail({ pipeline_id: "pipe-1" });
+    const buildRecordsResult = await buildRecords({ pipeline_id: "pipe-1" });
+
+    expect(artifactResult.content[0]?.text).toContain("Loaded 1 pipeline artifact versions");
+    expect(artifactResult.structuredContent.items?.[0]?.artifactVersion).toEqual({
+      id: "artifact-1",
+      name: "release.zip"
+    });
+    expect(queriedManifestResult.structuredContent.items?.[0]?.manifestVersion).toEqual({
+      pipelineId: "pipe-1",
+      manifestVersion: "3.0"
+    });
+    expect(queriedManifestResult.structuredContent.items?.[0]?.id).toBe("pipe-1");
+    expect(manifestResult.structuredContent.items?.[0]?.manifestVersion).toEqual({
+      pipelineId: "pipe-2",
+      manifestVersion: "3.0"
+    });
+    expect(manifestResult.structuredContent.items?.[0]?.id).toBe("pipe-2");
+    expect(pluginVersionResult.structuredContent.items?.[0]?.pluginVersionNumber).toEqual({
+      value: "1.0.0"
+    });
+    expect(templatesResult.structuredContent.items?.[0]?.template).toEqual({
+      template_id: "tpl-1",
+      template_name: "Node.js"
+    });
+    expect(templateDetailResult.structuredContent.item?.template).toEqual({
+      template_id: "tpl-1",
+      template_name: "Node.js"
+    });
+    expect(pipelineStatusesResult.structuredContent.items?.[0]?.pipelineStatus).toEqual({
+      pipeline_id: "pipe-1",
+      status: "completed"
+    });
+    expect(pipelinesV3Result.structuredContent.items?.[0]?.pipeline).toEqual({
+      pipeline_id: "pipe-1",
+      pipeline_name: "release-main"
+    });
+    expect(pipelineStatusResult.structuredContent.item?.pipelineStatus).toEqual({
+      pipeline_id: "pipe-1",
+      status: "running"
+    });
+    expect(buildResultsResult.structuredContent.items?.[0]?.buildResult).toEqual({
+      pipeline_id: "pipe-1",
+      build_id: "build-1",
+      status: "completed"
+    });
+    expect(pipelineDetailResult.structuredContent.item?.pipelineDetail).toEqual({
+      workflow: { pipeline_id: "pipe-1" },
+      states: []
+    });
+    expect(buildRecordsResult.structuredContent.items?.[0]?.buildRecord).toEqual({
+      pipeline_id: "pipe-1",
+      build_id: "build-1",
+      outcome: "success"
+    });
+    expect(listArtifactVersions).toHaveBeenCalledWith({
+      cloud_project_id: "project-1",
+      query: "",
+      page_index: 1,
+      page_size: 10,
+      parent_id: "",
+      metadata_type: "generic",
+      name: "",
+      repo_branch: ""
+    });
+    expect(queryManifestVersions).toHaveBeenCalledWith({
+      project_id: "project-1",
+      pipeline_ids: ["pipe-1"]
+    });
+    expect(getManifestVersions).toHaveBeenCalledWith({
+      pipeline_ids: ["pipe-2"]
+    });
+    expect(listPluginVersionNumbers).toHaveBeenCalledWith({
+      domain_id: "domain-1",
+      plugin_name: "deploy",
+      offset: 0,
+      limit: 20
+    });
+    expect(listTemplatesV3).toHaveBeenCalledWith({
+      template_type: "pipeline",
+      is_build_in: false,
+      offset: 0,
+      limit: 20
+    });
+    expect(showTemplateDetailV3).toHaveBeenCalledWith({
+      template_id: "tpl-1",
+      template_type: "pipeline"
+    });
+    expect(batchShowPipelinesStatus).toHaveBeenCalledWith({
+      pipeline_ids: ["pipe-1"]
+    });
+    expect(listPipelinesV3).toHaveBeenCalledWith({
+      project_id: "project-1",
+      offset: 0,
+      limit: 10
+    });
+    expect(showPipelineStatus).toHaveBeenCalledWith({
+      pipeline_id: "pipe-1"
+    });
+    expect(listPipelineBuildResults).toHaveBeenCalledWith({
+      project_id: "project-1",
+      start_date: "2026-01-01",
+      end_date: "2026-01-31",
+      offset: 0,
+      limit: 20
+    });
+    expect(showPipelineDetailV3).toHaveBeenCalledWith({
+      pipeline_id: "pipe-1"
+    });
+    expect(listPipelineBuildRecords).toHaveBeenCalledWith({
+      pipeline_id: "pipe-1",
+      offset: 0,
+      limit: 20
     });
   });
 });

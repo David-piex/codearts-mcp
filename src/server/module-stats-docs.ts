@@ -60,7 +60,7 @@ const readWriteMatrixMeta: Record<ModuleName, ReadWriteMatrixMeta> = {
   Pipeline: {
     live: "Partial",
     keyGaps:
-      "The original execution surface is live-validated, but the 51 newly added extension-endpoint/group/variable-group/rule-management/tag-management/tenant-strategy/project-strategy tools still need real AK/SK validation"
+      "The original execution surface is live-validated. Official V2/V3/V5 read tools for artifact versions, manifest versions, plugin versions, templates, V3 pipeline list/status/detail/build-result/build-records are implemented; V3 status/detail live coverage still depends on a V3-compatible pipeline_id/build_id sample. The extension-endpoint/group/variable-group/rule-management/tag-management/tenant-strategy/project-strategy tools still need real AK/SK validation"
   },
   Check: {
     live: "Partial",
@@ -102,7 +102,7 @@ const implementationStatusMeta: Record<ModuleName, ImplementationStatusMeta> = {
   Pipeline: {
     live: "Partial",
     notes:
-      "The original 16-tool execution surface remains live-validated. The newly added delete/enable/disable, extension-endpoint, tag-management, group-management, variable-group, rule-management, tenant-strategy, and project-strategy tools currently have unit regression coverage, but real AK/SK validation is still pending."
+      "The original 16-tool execution surface remains live-validated. Official Pipeline read/query tools now include artifact versions, manifest versions, plugin version numbers, V3 templates, V3 pipeline list, V3 status/detail, and V3 build-result/build-records. Artifact/build-result and manifest-version paths are AK/SK-smoked; V3 status/detail/build-records need a V3-compatible pipeline_id/build_id sample. The delete/enable/disable, extension-endpoint, tag-management, group-management, variable-group, rule-management, tenant-strategy, and project-strategy tools currently have unit regression coverage, but real AK/SK validation is still pending."
   },
   Check: {
     live: "Partial",
@@ -144,9 +144,9 @@ const toolStatusSummaryMeta: Record<ModuleName, ToolStatusSummaryMeta> = {
       "`repo_create_repository` remains live-validated with the previous Repo surface. The repository import / remote mirror tools are code-complete and unit-tested, but not yet counted as AK/SK Full."
   },
   Pipeline: {
-    summary: "`16 Full / 0 Reachable / 0 Unpublished / 51 Code`",
+    summary: "`16 Full / 4 Reachable / 1 Unpublished / 52 Code`",
     conclusion:
-      "Core execution closure remains complete, but the new extension-endpoint/tag/group/variable-group/rule-management/tenant-strategy/project-strategy tools still need live AK/SK validation."
+      "Core execution closure remains complete. Official Pipeline read/query tools are implemented; artifact/build-result and manifest-version paths have AK/SK smoke coverage, while V3 status/detail/build-records still need a V3-compatible pipeline_id/build_id sample. The new extension-endpoint/tag/group/variable-group/rule-management/tenant-strategy/project-strategy tools still need live AK/SK validation."
   },
   Check: {
     summary: "`14 Full / 0 Reachable / 0 Unpublished / 5 Code`",
@@ -187,7 +187,7 @@ const readmeModuleNumbersMeta: Record<ModuleName, ReadmeModuleNumbersMeta> = {
   },
   Pipeline: {
     liveStatus: "Partial",
-    breakdown: "`16 Full / 0 Reachable / 0 Unpublished / 51 Code`"
+    breakdown: "`16 Full / 4 Reachable / 1 Unpublished / 52 Code`"
   },
   Check: {
     liveStatus: "Partial",

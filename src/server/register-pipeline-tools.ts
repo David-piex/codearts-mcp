@@ -6,6 +6,7 @@ import {
   pipelineBatchRunResultInput,
   pipelineBatchDeleteInput,
   pipelineBatchGetPipelineStatusInput,
+  pipelineBatchShowPipelinesStatusInput,
   pipelineBatchRunInput,
   pipelineCancelQueueInput,
   pipelineGetPluginPartsInput,
@@ -43,6 +44,7 @@ import {
   pipelineGetComponentFollowStatusInput,
   pipelineGetDevucAuthInput,
   pipelineGetExecLogInput,
+  pipelineGetManifestVersionsInput,
   pipelineGetOauthAuthorizationUrlInput,
   pipelineGetPackageUsageInput,
   pipelineGetPacActionInput,
@@ -63,6 +65,7 @@ import {
   pipelineGetProjectStrategyDetailInput,
   pipelineGetProjectStrategyInput,
   pipelineGetProjectStrategyRelatedInfoInput,
+  pipelineListArtifactVersionsInput,
   pipelineListArtifactsInput,
   pipelineListChangeRequestCreatorsInput,
   pipelineListChangeRequestOperationLogsInput,
@@ -102,6 +105,10 @@ import {
   pipelineListAvailablePublishersInput,
   pipelineListBasePluginsInput,
   pipelineListBasePluginsPagedInput,
+  pipelineListPipelineBuildRecordsInput,
+  pipelineListPipelineBuildResultsInput,
+  pipelineListPipelinesV3Input,
+  pipelineListPluginVersionNumbersInput,
   pipelineListPluginVersionsInput,
   pipelineListPluginsInput,
   pipelineListPublishersInput,
@@ -118,6 +125,8 @@ import {
   pipelineSetTagsForPipelinesInput,
   pipelineListVariableGroupsInput,
   pipelineListTemplatesInput,
+  pipelineListTemplatesV3Input,
+  pipelineQueryManifestVersionsInput,
   pipelineRunInput,
   pipelineInheritProjectStrategyInput,
   pipelineSwitchProjectStrategyInput,
@@ -150,7 +159,10 @@ import {
   pipelineUpdateStrategyInput,
   pipelineUpdateGroupInput,
   pipelineUpdateUserPermissionInput,
-  pipelineUpdateVariableGroupInput
+  pipelineUpdateVariableGroupInput,
+  pipelineShowPipelineDetailV3Input,
+  pipelineShowPipelineStatusInput,
+  pipelineShowTemplateDetailV3Input
 } from "../products/pipeline/schemas.js";
 import { createPipelineApproveRunHandler } from "../products/pipeline/tools/approve-run.js";
 import { createPipelineAcceptCheckpointHandler } from "../products/pipeline/tools/accept-checkpoint.js";
@@ -248,10 +260,12 @@ import { createPipelineGetRunHandler } from "../products/pipeline/tools/get-run.
 import { createPipelineGetStepOutputsHandler } from "../products/pipeline/tools/get-step-outputs.js";
 import {
   createPipelineBatchGetPipelineStatusHandler,
+  createPipelineBatchShowPipelinesStatusHandler,
   createPipelineCheckComponentHandler,
   createPipelineCheckProjectHandler,
   createPipelineCheckVariableGroupRightsHandler,
   createPipelineGetChangeRequestHandler,
+  createPipelineGetManifestVersionsHandler,
   createPipelineGetPackageUsageHandler,
   createPipelineGetRepositoryNumberHandler,
   createPipelineGetTenantPackageIsFreezeHandler,
@@ -273,9 +287,19 @@ import {
   createPipelineListComponentsHandler,
   createPipelineListDashboardPipelineCountsHandler,
   createPipelineListExecutionPlansHandler,
+  createPipelineListArtifactVersionsHandler,
+  createPipelineListPipelineBuildRecordsHandler,
+  createPipelineListPipelineBuildResultsHandler,
+  createPipelineListPipelinesV3Handler,
   createPipelineListPacActionsHandler,
+  createPipelineListPluginVersionNumbersHandler,
   createPipelineListRelatedProjectsHandler,
-  createPipelineListReusableJobsHandler
+  createPipelineListReusableJobsHandler,
+  createPipelineListTemplatesV3Handler,
+  createPipelineQueryManifestVersionsHandler,
+  createPipelineShowPipelineDetailV3Handler,
+  createPipelineShowPipelineStatusHandler,
+  createPipelineShowTemplateDetailV3Handler
 } from "../products/pipeline/tools/product-query-tools.js";
 import { createPipelineListArtifactsHandler } from "../products/pipeline/tools/list-artifacts.js";
 import { createPipelineListAvailablePublishersHandler } from "../products/pipeline/tools/list-available-publishers.js";
@@ -1040,6 +1064,78 @@ const pipelineToolDefinitions = {
     inputSchema: pipelineBatchGetPipelineStatusInput,
     selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineBatchGetPipelineStatusHandler>[0] }) => clients.pipelineClient,
     createProductHandler: createPipelineBatchGetPipelineStatusHandler
+  }),
+  "pipeline_list_artifact_versions": defineProductTool({
+    description: "List CodeArts Pipeline artifact versions",
+    inputSchema: pipelineListArtifactVersionsInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineListArtifactVersionsHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineListArtifactVersionsHandler
+  }),
+  "pipeline_query_manifest_versions": defineProductTool({
+    description: "Query CodeArts Pipeline manifest versions",
+    inputSchema: pipelineQueryManifestVersionsInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineQueryManifestVersionsHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineQueryManifestVersionsHandler
+  }),
+  "pipeline_get_manifest_versions": defineProductTool({
+    description: "Get CodeArts Pipeline manifest versions",
+    inputSchema: pipelineGetManifestVersionsInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineGetManifestVersionsHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineGetManifestVersionsHandler
+  }),
+  "pipeline_list_plugin_version_numbers": defineProductTool({
+    description: "List CodeArts Pipeline plugin version numbers",
+    inputSchema: pipelineListPluginVersionNumbersInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineListPluginVersionNumbersHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineListPluginVersionNumbersHandler
+  }),
+  "pipeline_list_templates_v3": defineProductTool({
+    description: "List CodeArts Pipeline V3 templates",
+    inputSchema: pipelineListTemplatesV3Input,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineListTemplatesV3Handler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineListTemplatesV3Handler
+  }),
+  "pipeline_show_template_detail_v3": defineProductTool({
+    description: "Show CodeArts Pipeline V3 template detail",
+    inputSchema: pipelineShowTemplateDetailV3Input,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineShowTemplateDetailV3Handler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineShowTemplateDetailV3Handler
+  }),
+  "pipeline_batch_show_pipelines_status": defineProductTool({
+    description: "Batch show CodeArts Pipeline V3 status records",
+    inputSchema: pipelineBatchShowPipelinesStatusInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineBatchShowPipelinesStatusHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineBatchShowPipelinesStatusHandler
+  }),
+  "pipeline_list_pipelines_v3": defineProductTool({
+    description: "List CodeArts Pipeline V3 pipelines",
+    inputSchema: pipelineListPipelinesV3Input,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineListPipelinesV3Handler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineListPipelinesV3Handler
+  }),
+  "pipeline_show_pipeline_status": defineProductTool({
+    description: "Show CodeArts Pipeline V3 pipeline status",
+    inputSchema: pipelineShowPipelineStatusInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineShowPipelineStatusHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineShowPipelineStatusHandler
+  }),
+  "pipeline_list_pipeline_build_results": defineProductTool({
+    description: "List CodeArts Pipeline V3 build results",
+    inputSchema: pipelineListPipelineBuildResultsInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineListPipelineBuildResultsHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineListPipelineBuildResultsHandler
+  }),
+  "pipeline_show_pipeline_detail_v3": defineProductTool({
+    description: "Show CodeArts Pipeline V3 pipeline detail",
+    inputSchema: pipelineShowPipelineDetailV3Input,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineShowPipelineDetailV3Handler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineShowPipelineDetailV3Handler
+  }),
+  "pipeline_list_pipeline_build_records": defineProductTool({
+    description: "List CodeArts Pipeline V3 build records",
+    inputSchema: pipelineListPipelineBuildRecordsInput,
+    selectHttpClient: (clients: { pipelineClient: Parameters<typeof createPipelineListPipelineBuildRecordsHandler>[0] }) => clients.pipelineClient,
+    createProductHandler: createPipelineListPipelineBuildRecordsHandler
   }),
   "pipeline_get_notice_messages": defineProductTool({
     description: "Get CodeArts Pipeline notice messages",

@@ -905,6 +905,51 @@ export const pipelineGetTenantVersionDetailInput = z.object({
   tenant_id: idSchema
 });
 
+export const pipelineListArtifactVersionsInput = z.object({
+  cloud_project_id: idSchema,
+  query: z.string().default(""),
+  page_index: z.number().int().min(1).default(1),
+  page_size: z.number().int().min(1).max(200).default(10),
+  parent_id: z.string().default(""),
+  metadata_type: z.string().min(1).default("generic"),
+  name: z.string().default(""),
+  repo_branch: z.string().default("")
+});
+
+export const pipelineQueryManifestVersionsInput = z.object({
+  project_id: idSchema,
+  pipeline_ids: z.array(idSchema).min(1),
+  body: z.array(pipelineRawQueryInput).optional()
+});
+
+export const pipelineGetManifestVersionsInput = z.object({
+  pipeline_ids: z.array(idSchema).min(1),
+  body: z.array(pipelineRawQueryInput).optional()
+});
+
+export const pipelineListPluginVersionNumbersInput = z.object({
+  domain_id: idSchema,
+  plugin_name: z.string().min(1),
+  offset: z.number().int().min(0).default(0),
+  limit: z.number().int().min(1).max(100).default(20)
+});
+
+export const pipelineListTemplatesV3Input = z.object({
+  template_type: z.string().min(1).default("pipeline"),
+  is_build_in: z.boolean().default(false),
+  offset: z.number().int().min(0).default(0),
+  limit: z.number().int().min(1).max(200).default(20),
+  name: z.string().min(1).optional(),
+  sort: z.string().min(1).optional(),
+  asc: z.boolean().optional()
+});
+
+export const pipelineShowTemplateDetailV3Input = z.object({
+  template_id: idSchema,
+  template_type: z.string().min(1).default("pipeline"),
+  source: z.string().min(1).optional()
+});
+
 export const pipelineGetTemplateInput = z.object({
   tenant_id: idSchema,
   template_id: idSchema
@@ -956,6 +1001,54 @@ export const pipelineBatchGetPipelineStatusInput = z.object({
   project_id: idSchema,
   pipeline_ids: z.array(idSchema).min(1).optional(),
   body: pipelineRawQueryInput.optional()
+});
+
+export const pipelineBatchShowPipelinesStatusInput = z.object({
+  pipeline_ids: z.array(idSchema).min(1)
+});
+
+export const pipelineListPipelinesV3Input = z.object({
+  project_id: idSchema.optional(),
+  project_ids: z.array(idSchema).min(1).max(10).optional(),
+  pipeline_name: z.string().min(1).optional(),
+  creator_ids: z.array(idSchema).min(1).max(10).optional(),
+  executor_ids: z.array(idSchema).min(1).max(10).optional(),
+  status: z.string().min(1).optional(),
+  outcome: z.string().min(1).optional(),
+  sort_key: z.string().min(1).optional(),
+  sort_dir: z.enum(["asc", "desc"]).optional(),
+  git_url: z.string().min(1).optional(),
+  offset: z.number().int().min(0).default(0),
+  limit: z.number().int().min(1).max(50).default(10),
+  body: pipelineRawQueryInput.optional()
+});
+
+export const pipelineShowPipelineStatusInput = z.object({
+  pipeline_id: idSchema,
+  build_id: idSchema.optional()
+});
+
+export const pipelineListPipelineBuildResultsInput = z.object({
+  project_id: idSchema,
+  start_date: z.string().min(1),
+  end_date: z.string().min(1),
+  offset: z.number().int().min(0).default(0),
+  limit: z.number().int().min(1).max(200).default(20)
+});
+
+export const pipelineShowPipelineDetailV3Input = z.object({
+  pipeline_id: idSchema,
+  build_id: idSchema.optional()
+});
+
+export const pipelineListPipelineBuildRecordsInput = z.object({
+  pipeline_id: idSchema,
+  start_date: z.string().min(1).optional(),
+  end_date: z.string().min(1).optional(),
+  offset: z.number().int().min(0).default(0),
+  limit: z.number().int().min(1).max(200).default(20),
+  status: z.string().min(1).optional(),
+  outcome: z.string().min(1).optional()
 });
 
 export const pipelineGetNoticeMessagesInput = z.object({

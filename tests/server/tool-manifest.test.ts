@@ -18,6 +18,20 @@ const inferHubFunctionNameLimit = 64;
 const approvedOverLimitNames = [
   "codearts_repo_list_project_merge_request_can_be_assigned_reviewers"
 ] as const;
+const officialPipelineReadToolNames = [
+  "pipeline_list_artifact_versions",
+  "pipeline_query_manifest_versions",
+  "pipeline_get_manifest_versions",
+  "pipeline_list_plugin_version_numbers",
+  "pipeline_list_templates_v3",
+  "pipeline_show_template_detail_v3",
+  "pipeline_batch_show_pipelines_status",
+  "pipeline_list_pipelines_v3",
+  "pipeline_show_pipeline_status",
+  "pipeline_list_pipeline_build_results",
+  "pipeline_show_pipeline_detail_v3",
+  "pipeline_list_pipeline_build_records"
+] as const;
 
 describe("ToolManifest", () => {
   it("is the product tool-name source of truth", () => {
@@ -77,6 +91,14 @@ describe("ToolManifest", () => {
       liveStatus: "partial",
       requiresExplicitLiveSample: false
     });
+    for (const toolName of officialPipelineReadToolNames) {
+      expect(findToolManifestEntry(toolName)).toMatchObject({
+        access: "read",
+        supportsDryRun: false,
+        riskLevel: "low",
+        docGroup: "pipeline"
+      });
+    }
     expect(findToolManifestEntry("deploy_start_app")).toMatchObject({
       riskLevel: "high",
       requiresExplicitLiveSample: true

@@ -9,10 +9,12 @@ function readString(input: unknown) {
 
 function readRecordId(record: RawRecord, fallback = "") {
   return String(
-    record.id ??
+      record.id ??
       record.uuid ??
+      record.pipelineId ??
       record.pipeline_id ??
       record.pipeline_run_id ??
+      record.build_id ??
       record.record_id ??
       record.name ??
       fallback
