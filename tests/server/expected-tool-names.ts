@@ -644,6 +644,7 @@ export const expectedToolNames = [
   "repo_get_repository",
   "repo_get_repository_blame",
   "repo_get_repository_file_content_v4",
+  "repo_get_repository_id_by_name",
   "repo_get_repository_webhook",
   "repo_get_repository_webhook_log",
   "repo_get_tag",

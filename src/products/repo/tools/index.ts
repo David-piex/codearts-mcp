@@ -79,6 +79,7 @@ export const repoToolNames = [
   "repo_get_protected_tag",
   "repo_get_repository_webhook",
   "repo_get_repository_webhook_log",
+  "repo_get_repository_id_by_name",
   "repo_import_repository",
   "repo_list_repository_events",
   "repo_list_events",

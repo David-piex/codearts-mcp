@@ -6,7 +6,7 @@
 
 模块：`代码仓库`
 
-API 数量：`383`
+API 数量：`384`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
@@ -8319,6 +8319,62 @@ API 数量：`383`
     "repository_id",
     "file_path",
     "sha"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### repo_get_repository_id_by_name
+
+所属模块：`代码仓库`
+
+说明：获取代码仓库的仓库idbyname。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_get_repository_id_by_name",
+    "arguments": {
+      "group_name": "<group_name>",
+      "repository_name": "<repository_name>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `group_name` | 是 | `string` |  | 字段对应：<br>MCP 字段 `group_name` ↔ 原始 CodeArts 代码仓库 API 同名字段 `group_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>分组名称。 |
+| `repository_name` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repository_name` ↔ 原始 CodeArts 代码仓库 API 同名字段 `repository_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>仓库名称。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "group_name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "repository_name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    }
+  },
+  "required": [
+    "group_name",
+    "repository_name"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

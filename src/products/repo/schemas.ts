@@ -2451,6 +2451,11 @@ export const repoShowRepositoryMasterInput = z.object({
   repository_uuid: idSchema
 });
 
+export const repoGetRepositoryIdByNameInput = z.object({
+  group_name: z.string().min(1).max(255),
+  repository_name: z.string().min(1).max(255)
+});
+
 export const repoShowRepoLastStatisticsInput = z.object({
   repository_id: idSchema,
   branch_name: z.string().min(1).max(2000)

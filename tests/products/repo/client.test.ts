@@ -144,6 +144,9 @@ describe("createRepoClient", () => {
         if (path.endsWith("/master")) {
           return { result: true };
         }
+        if (path.includes("/repositories/repoid?")) {
+          return { result: 100, status: "success" };
+        }
         if (path.includes("/commit-lines?")) {
           return { result: { additions: 10, deletions: 4 } };
         }
@@ -159,6 +162,7 @@ describe("createRepoClient", () => {
     await client.showRepoLastStatistics({ repository_id: "100", branch_name: "feature/main" });
     await client.showRepositoryStatisticData({ repository_uuid: "repo-uuid-1" });
     await client.showRepositoryMaster({ repository_uuid: "repo-uuid-1" });
+    await client.getRepositoryIdByName({ group_name: "demo-group", repository_name: "demo-repo" });
     await client.showRepositoryCommitLines({
       repository_id: "100",
       ref_name: "feature/main",
@@ -174,6 +178,7 @@ describe("createRepoClient", () => {
       "/v4/repositories/100/repository/stats/last-statistics?branch_name=feature%2Fmain",
       "/v1/repositories/repo-uuid-1/statistic-data",
       "/v1/repositories/repo-uuid-1/master",
+      "/v1/repositories/repoid?group_name=demo-group&repository_name=demo-repo",
       "/v3/repositories/100/commit-lines?ref_name=feature%2Fmain&begin_date=2026-06-01&end_date=2026-06-30"
     ]);
   });

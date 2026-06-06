@@ -197,6 +197,12 @@ export type RepoRepositoryStatisticData = {
   archiveUrl?: string;
 };
 
+export type RepoRepositoryIdByNameResult = {
+  repository_id?: number | string;
+  status?: string;
+  error?: unknown;
+};
+
 export type RepoCommitLines = {
   additions?: number;
   deletions?: number;
@@ -4101,6 +4107,10 @@ export type RepoClient = {
     blames: RepoBlame[];
     total?: number;
   }>;
+  getRepositoryIdByName: (input: {
+    group_name: string;
+    repository_name: string;
+  }) => Promise<RepoRepositoryIdByNameResult>;
   showRepositoryReadmeFile: (input: { repository_id: string }) => Promise<RepoReadmeFile>;
   listCommitAssociatedRefs: (input: {
     repository_id: string;
@@ -8836,6 +8846,30 @@ export function createRepoClient(
         : response;
 
       return Boolean(payload);
+    },
+    async getRepositoryIdByName(input) {
+      const query = new URLSearchParams({
+        group_name: input.group_name,
+        repository_name: input.repository_name
+      });
+      const response = await _http.get(`/v1/repositories/repoid?${query.toString()}`);
+      const payload = unwrapRepoPayload(response) as {
+        result?: number | string;
+        status?: string;
+        error?: unknown;
+      } | number | string;
+
+      if (typeof payload === "string" || typeof payload === "number") {
+        return {
+          repository_id: payload
+        };
+      }
+
+      return {
+        repository_id: payload?.result,
+        status: payload?.status,
+        error: payload?.error
+      };
     },
     async showRepoLastStatistics(input) {
       const query = new URLSearchParams({

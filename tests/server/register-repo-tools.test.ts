@@ -70,7 +70,7 @@ describe("registerRepoTool", () => {
     const registerTool = vi.fn();
 
     const handled = registerRepoTool({
-      toolName: "repo_show_repository_statistic_data",
+      toolName: "repo_get_repository_id_by_name",
       server: { registerTool },
       mode: "http",
       sessionStore: createSessionCredentialStore()
@@ -78,10 +78,10 @@ describe("registerRepoTool", () => {
 
     expect(handled).toBe(true);
     expect(registerTool).toHaveBeenCalledWith(
-      "repo_show_repository_statistic_data",
+      "repo_get_repository_id_by_name",
       expect.objectContaining({
-        title: "repo_show_repository_statistic_data",
-        description: "Show CodeArts Repo repository statistic data through the official ShowRepositoryStatisticData endpoint"
+        title: "repo_get_repository_id_by_name",
+        description: "Get CodeArts Repo repository id by group and repository name through the official GetRepositoryIdByName endpoint"
       }),
       expect.any(Function)
     );

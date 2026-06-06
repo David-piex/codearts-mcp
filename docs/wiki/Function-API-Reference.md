@@ -30,10 +30,10 @@
 | 代码检查 | 104 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
 | 部署 | 87 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
 | 流水线 | 161 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
-| 代码仓库 | 383 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
+| 代码仓库 | 384 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 343 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 313 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **1583** | |
+| **总计** | **1584** | |
 
 ## 字段对应
 
@@ -690,6 +690,7 @@
 | `repo_get_repository` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_get_repository) |
 | `repo_get_repository_blame` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_get_repository_blame) |
 | `repo_get_repository_file_content_v4` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_get_repository_file_content_v4) |
+| `repo_get_repository_id_by_name` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_get_repository_id_by_name) |
 | `repo_get_repository_webhook` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_get_repository_webhook) |
 | `repo_get_repository_webhook_log` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_get_repository_webhook_log) |
 | `repo_get_tag` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_get_tag) |

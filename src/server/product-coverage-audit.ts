@@ -76,7 +76,12 @@ export const productCoverageConfigs: ProductCoverageConfig[] = [
     endpointAliases: {
       "DELETE /v1/users/sshkey/{id}": "DELETE /v4/user/keys/{key_id}",
       "GET /v1/users/sshkey": "GET /v4/user/keys",
-      "POST /v1/users/sshkey": "POST /v4/user/keys"
+      "POST /v1/users/sshkey": "POST /v4/user/keys",
+      "GET /v1/projects/{project_uuid}/repositories/template_status": "GET /v2/projects/{project_uuid}/repositories/template-status",
+      "GET /v1/repositories/repository_templates": "GET /v4/repository-templates",
+      "GET /v2/repositories/{repository_id}/commit_lines": "GET /v3/repositories/{repository_id}/commit-lines",
+      "GET /v2/repositories/{repository_id}/review_setting": "GET /v4/repositories/{repository_id}/review-setting",
+      "PUT /v1/repositories/{repository_uuid}/template_status": "PUT /v2/repositories/{repository_uuid}/template-status"
     },
     ignoredEndpoints: {
       "POST /v1/users/sshkey/privatekey/verify": "deprecated token-only endpoint that requires raw SSH private key input"

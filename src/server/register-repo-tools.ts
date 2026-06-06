@@ -58,6 +58,7 @@ import {
   repoGetProjectWebhookInput,
   repoGetProjectWebhookLogInput,
   repoGetRepositoryInput,
+  repoGetRepositoryIdByNameInput,
   repoGetRepositoryWebhookInput,
   repoGetRepositoryWebhookLogInput,
   repoGetTagInput,
@@ -395,6 +396,7 @@ import { createRepoGetMergeRequestTemplateHandler } from "../products/repo/tools
 import { createRepoGetProjectWebhookHandler } from "../products/repo/tools/get-project-webhook.js";
 import { createRepoGetProjectWebhookLogHandler } from "../products/repo/tools/get-project-webhook-log.js";
 import { createRepoGetRemoteMirrorHandler } from "../products/repo/tools/get-remote-mirror.js";
+import { createRepoGetRepositoryIdByNameHandler } from "../products/repo/tools/get-repository-id-by-name.js";
 import { createRepoGetRepositoryHandler } from "../products/repo/tools/get-repository.js";
 import { createRepoGetRepositoryBlameHandler } from "../products/repo/tools/get-repository-blame.js";
 import { createRepoGetRepositoryFileContentV4Handler } from "../products/repo/tools/get-repository-file-content-v4.js";
@@ -701,6 +703,7 @@ const repoToolDefinitions = {
   "repo_associate_repository_user_group": defineProductTool({ description: "Associate a CodeArts Repo repository with a user group through the official AssociateRepositoryUserGroup endpoint", inputSchema: repoAssociateRepositoryUserGroupInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoAssociateRepositoryUserGroupHandler>[0] }) => clients.repoClient, createProductHandler: createRepoAssociateRepositoryUserGroupHandler }),
   "repo_list_repositories": defineProductTool({ description: "List CodeArts Repo repositories", inputSchema: repoListRepositoriesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoriesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoriesHandler }),
   "repo_list_project_repositories": defineProductTool({ description: "List CodeArts Repo project repositories through the official ListProjectRepositories endpoint", inputSchema: repoListRepositoriesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoriesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoriesHandler }),
+  "repo_get_repository_id_by_name": defineProductTool({ description: "Get CodeArts Repo repository id by group and repository name through the official GetRepositoryIdByName endpoint", inputSchema: repoGetRepositoryIdByNameInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoGetRepositoryIdByNameHandler>[0] }) => clients.repoClient, createProductHandler: createRepoGetRepositoryIdByNameHandler }),
   "repo_get_repository": defineProductTool({ description: "Get CodeArts Repo repository detail", inputSchema: repoGetRepositoryInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoGetRepositoryHandler>[0] }) => clients.repoClient, createProductHandler: createRepoGetRepositoryHandler }),
   "repo_show_repository": defineProductTool({ description: "Show CodeArts Repo repository detail through the official ShowRepository endpoint", inputSchema: repoGetRepositoryInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoGetRepositoryHandler>[0] }) => clients.repoClient, createProductHandler: createRepoGetRepositoryHandler }),
   "repo_create_repository": defineProductTool({ description: "Create CodeArts Repo repository", inputSchema: repoCreateRepositoryInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoCreateRepositoryHandler>[0] }) => clients.repoClient, createProductHandler: createRepoCreateRepositoryHandler }),
