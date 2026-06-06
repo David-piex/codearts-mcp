@@ -1,4 +1,5 @@
 import { formatReqTimestampText } from "./time-format.js";
+import { buildReqFullName } from "./user-name.js";
 import { mapReqWorkItemAssignee, type ReqWorkItemAssignee } from "./work-item-assignee.js";
 
 function toStringValue(value: unknown) {
@@ -9,8 +10,17 @@ function readRecord(value: unknown) {
   return typeof value === "object" && value !== null ? value as Record<string, unknown> : undefined;
 }
 
-export function pickReqNamedEntityId(value: unknown) {
+export function normalizeReqRecord(value: unknown) {
   const record = readRecord(value);
+  if (!record) {
+    return undefined;
+  }
+
+  return Object.keys(record).length > 0 ? record : undefined;
+}
+
+export function pickReqNamedEntityId(value: unknown) {
+  const record = normalizeReqRecord(value);
   return toStringValue(record?.id ?? record?.module_id ?? record?.tracker_id ?? record?.status_id ?? record?.version_id);
 }
 
@@ -19,7 +29,7 @@ export function pickReqNamedEntityName(value: unknown) {
     return String(value);
   }
 
-  const record = readRecord(value);
+  const record = normalizeReqRecord(value);
   return toStringValue(
     record?.name ??
     record?.title ??
@@ -48,14 +58,12 @@ export function mapReqNamedEntity(value: unknown) {
 }
 
 export function mapReqUserEntity(value: unknown) {
-  const record = readRecord(value);
+  const record = normalizeReqRecord(value);
   if (!record) {
     return undefined;
   }
 
-  const firstName = toStringValue(record.first_name ?? record.firstName);
-  const lastName = toStringValue(record.last_name ?? record.lastName);
-  const fullName = [firstName, lastName].filter(Boolean).join(" ").trim() || undefined;
+  const fullName = buildReqFullName(record.first_name ?? record.firstName, record.last_name ?? record.lastName);
   const userName = toStringValue(record.name ?? record.user_name ?? record.userName ?? record.identifier);
   const nickName = toStringValue(record.nick_name ?? record.nickName);
   const displayName = nickName ?? fullName ?? userName;

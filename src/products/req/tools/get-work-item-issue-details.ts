@@ -2,11 +2,13 @@ import { asItemResult } from "../../../contracts/tool-result.js";
 import { formatItemToolText } from "../../../contracts/tool-result-text.js";
 import { reqGetWorkItemIssueDetailsInput } from "../schemas.js";
 import { formatReqTimestampText } from "./time-format.js";
+import { buildReqFullName } from "./user-name.js";
 import { mapReqWorkItemAssignee, type ReqWorkItemAssignee } from "./work-item-assignee.js";
 import {
   mapReqNamedEntity,
   mapReqUserEntity,
-  mapReqWorkItemSummaryFields
+  mapReqWorkItemSummaryFields,
+  normalizeReqRecord
 } from "./work-item-summary.js";
 
 type ReqWorkItemIssueDetails = {
@@ -96,7 +98,7 @@ function mapJournalAuthor(user?: {
   return {
     id: typeof user.id === "undefined" ? undefined : String(user.id),
     userName: user.name ?? user.identifier,
-    nickName: [user.first_name, user.last_name].filter(Boolean).join(" ").trim() || undefined,
+    nickName: buildReqFullName(user.first_name, user.last_name),
     userNumId: user.user_num_id
   };
 }
@@ -132,14 +134,17 @@ export function mapReqWorkItemIssueDetails(input: ReqWorkItemIssueDetails) {
   const latestComment = comments.at(-1)?.content;
   const assigneeText = summaryFields.assignedToName ? ` (assignee: ${summaryFields.assignedToName})` : "";
   const attachments = (input.accessories_list ?? []).map((item) => mapAttachment(item));
-  const statusAttribute = typeof input.status_attribute === "object" && input.status_attribute !== null
-    ? input.status_attribute
-    : undefined;
+  const statusAttribute = normalizeReqRecord(input.status_attribute);
   const normalizedStatusAttribute = mapReqNamedEntity(statusAttribute);
   const moduleEntity = mapReqNamedEntity(input.module);
   const domainEntity = mapReqNamedEntity(input.domain);
   const fixedVersionEntity = mapReqNamedEntity(input.fixed_version);
   const parentIssueEntity = mapReqNamedEntity(input.parent_issue);
+  const author = mapReqUserEntity(input.author);
+  const developer = mapReqUserEntity(input.developer);
+  const closeder = mapReqUserEntity(input.closeder);
+  const project = normalizeReqRecord(input.project);
+  const customValueNew = normalizeReqRecord(input.custom_value_new ?? input.customValueNew);
 
   return asItemResult(`Loaded work item issue details ${input.id ?? ""}${assigneeText}`, {
     ...summaryFields,
@@ -168,26 +173,25 @@ export function mapReqWorkItemIssueDetails(input: ReqWorkItemIssueDetails) {
     priority: input.priority,
     severity: input.severity,
     assignedCcUsers: input.assigned_cc_user ?? [],
-    project: input.project,
-    module: input.module,
+    project,
+    module: moduleEntity,
     moduleId: moduleEntity?.id,
     moduleName: moduleEntity?.name,
-    domain: input.domain,
+    domain: domainEntity,
     domainId: domainEntity?.id,
     domainName: domainEntity?.name,
-    storyPoint: input.story_point,
-    fixedVersion: input.fixed_version,
+    fixedVersion: fixedVersionEntity,
     fixedVersionId: fixedVersionEntity?.id,
     fixedVersionName: fixedVersionEntity?.name,
-    parentIssue: input.parent_issue,
+    parentIssue: parentIssueEntity,
     parentIssueId: parentIssueEntity?.id,
     parentIssueName: parentIssueEntity?.name,
     children: input.children ?? [],
-    author: input.author,
-    developer: input.developer,
-    closeder: input.closeder,
+    author,
+    developer,
+    closeder,
     customFields: input.customFields ?? input.custom_fields ?? [],
-    customValueNew: input.custom_value_new ?? input.customValueNew,
+    customValueNew,
     tagList: input.tagList ?? [],
     attachments,
     journals: input.journals ?? [],

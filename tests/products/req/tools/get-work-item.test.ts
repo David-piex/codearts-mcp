@@ -131,4 +131,32 @@ describe("createReqGetWorkItemHandler", () => {
     expect(result.content[0]?.text).toContain("type: Story");
     expect(result.structuredContent.item?.description).toBe("Clarify edge cases");
   });
+
+  it("collapses duplicated first and last names for assignee display", async () => {
+    const client = {
+      getWorkItem: vi.fn(async () => ({
+        id: 10,
+        subject: "Name normalization",
+        assigned_to: {
+          id: 100,
+          identifier: "user-100",
+          name: "readyrunning",
+          first_name: "readyrunning",
+          last_name: "readyrunning"
+        }
+      }))
+    };
+    const handler = createReqGetWorkItemHandler(client);
+
+    const result = await handler({
+      project_id: "project-1",
+      work_item_id: "10"
+    });
+
+    expect(result.structuredContent.item?.assignee).toMatchObject({
+      displayName: "readyrunning"
+    });
+    expect(result.content[0]?.text).toContain("assignee: readyrunning");
+    expect(result.content[0]?.text).not.toContain("readyrunning readyrunning");
+  });
 });

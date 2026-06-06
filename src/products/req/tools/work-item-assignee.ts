@@ -1,3 +1,5 @@
+import { buildReqFullName } from "./user-name.js";
+
 export type ReqWorkItemAssignee = {
   id?: number | string;
   user_id?: string;
@@ -25,16 +27,14 @@ export function pickReqAssigneeDisplayName(input?: ReqWorkItemAssignee) {
     return undefined;
   }
 
-  const firstName = input.first_name ?? input.firstName;
-  const lastName = input.last_name ?? input.lastName;
-  const fullName = [firstName, lastName].filter(Boolean).join(" ").trim();
+  const fullName = buildReqFullName(input.first_name ?? input.firstName, input.last_name ?? input.lastName);
 
   return (
     input.assigned_nick_name ??
     input.assignedNickName ??
     input.nick_name ??
     input.nickName ??
-    (fullName || undefined) ??
+    fullName ??
     input.name ??
     input.user_name ??
     input.userName ??

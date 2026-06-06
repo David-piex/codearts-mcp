@@ -165,27 +165,45 @@ describe("mapReqWorkItemIssueDetails", () => {
       assignedToName: "Bob",
       assignedCcUsers: [{ id: 18888, name: "tenant/cc" }],
       project: { identifier: "p-1", name: "Project A" },
-      module: { id: 8, name: "Module A" },
+      module: { id: "8", name: "Module A" },
       moduleId: "8",
       moduleName: "Module A",
-      domain: { id: 14, name: "Performance" },
+      domain: { id: "14", name: "Performance" },
       domainId: "14",
       domainName: "Performance",
-      storyPoint: { id: 3, name: "1" },
+      storyPoint: { id: "3", name: "1" },
       storyPointName: "1",
-      fixedVersion: { id: 4, name: "Sprint 1" },
+      fixedVersion: { id: "4", name: "Sprint 1" },
       fixedVersionId: "4",
       fixedVersionName: "Sprint 1",
-      parentIssue: { id: 200, name: "Parent story" },
+      parentIssue: { id: "200", name: "Parent story" },
       parentIssueId: "200",
       parentIssueName: "Parent story",
       children: [{ id: 300, subject: "Child task" }],
       childrenCount: 1,
-      author: { id: 15533, name: "tenant/alice" },
+      author: {
+        id: "15533",
+        userId: undefined,
+        userName: "tenant/alice",
+        nickName: undefined,
+        displayName: "tenant/alice"
+      },
       authorName: "tenant/alice",
-      developer: { id: 17777, name: "tenant/dev" },
+      developer: {
+        id: "17777",
+        userId: undefined,
+        userName: "tenant/dev",
+        nickName: undefined,
+        displayName: "tenant/dev"
+      },
       developerName: "tenant/dev",
-      closeder: { id: 19999, name: "tenant/closer" },
+      closeder: {
+        id: "19999",
+        userId: undefined,
+        userName: "tenant/closer",
+        nickName: undefined,
+        displayName: "tenant/closer"
+      },
       customFields: [{ name: "business_area", value: "payment" }],
       customValueNew: { field_name: "business_area", value: "payment" },
       tagList: [{ id: 1, name: "tag-a" }],
@@ -341,6 +359,46 @@ describe("mapReqWorkItemIssueDetails", () => {
       }
     });
     expect(result.summary).toBe("Loaded work item issue details 2884248 (assignee: Bob)");
+  });
+
+  it("suppresses empty detail objects and duplicated person names", () => {
+    const result = mapReqWorkItemIssueDetails({
+      id: "70824317",
+      subject: "Live normalization",
+      module: {},
+      domain: {},
+      fixed_version: {},
+      parent_issue: {},
+      project: {},
+      custom_value_new: {},
+      author: {
+        id: 1,
+        name: "readyrunning",
+        first_name: "readyrunning",
+        last_name: "readyrunning"
+      },
+      developer: {},
+      closeder: {},
+      assigned_to: {
+        id: 2,
+        name: "readyrunning",
+        first_name: "readyrunning",
+        last_name: "readyrunning"
+      }
+    });
+
+    expect(result.item).toMatchObject({
+      assignedToName: "readyrunning",
+      authorName: "readyrunning",
+      module: undefined,
+      domain: undefined,
+      fixedVersion: undefined,
+      parentIssue: undefined,
+      project: undefined,
+      customValueNew: undefined,
+      developer: undefined,
+      closeder: undefined
+    });
   });
 });
 
