@@ -39,6 +39,7 @@ type ReqUpdatePlanImageClient = {
     project_id: string;
     plan_id: string;
     img_url: string;
+    x_auth_token?: string;
   }) => Promise<{
     id: number | string;
     name?: string;

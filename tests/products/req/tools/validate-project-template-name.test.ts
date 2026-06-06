@@ -24,7 +24,8 @@ describe("mapValidatedProjectTemplateName", () => {
 describe("reqValidateProjectTemplateNameInput exports", () => {
   it("keeps the barrel export compatible with the project schema module", () => {
     const input = {
-      name: "Scrum Template"
+      name: "Scrum Template",
+      x_auth_token: "token-123456"
     };
 
     expect(reqValidateProjectTemplateNameInput.parse(input)).toEqual(input);
@@ -42,11 +43,13 @@ describe("createReqValidateProjectTemplateNameHandler", () => {
     const handler = createReqValidateProjectTemplateNameHandler(client);
 
     const result = await handler({
-      name: "Scrum Template"
+      name: "Scrum Template",
+      x_auth_token: "token-123456"
     });
 
     expect(client.validateProjectTemplateName).toHaveBeenCalledWith({
-      name: "Scrum Template"
+      name: "Scrum Template",
+      x_auth_token: "token-123456"
     });
     expect(result).toEqual({
       content: [{ type: "text", text: "Project template name Scrum Template is available" }],

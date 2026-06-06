@@ -88,6 +88,7 @@ export const reqUpdatePlanImageInput = z.object({
   project_id: idSchema,
   plan_id: idSchema,
   img_url: z.string().min(1),
+  x_auth_token: z.string().min(1).optional(),
   dry_run: z.boolean().default(true)
 });
 

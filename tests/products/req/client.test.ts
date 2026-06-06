@@ -764,9 +764,11 @@ describe("createReqClient", () => {
 
   it("maps project template name validation to the documented V2 endpoint", async () => {
     let requestedPath = "";
+    let requestedOptions: Record<string, unknown> | undefined;
     const client = createReqClient({
-      get: async (path: string) => {
+      get: async (path: string, options?: Record<string, unknown>) => {
         requestedPath = path;
+        requestedOptions = options;
 
         return {
           result: {
@@ -778,12 +780,52 @@ describe("createReqClient", () => {
     } as never);
 
     const result = await client.validateProjectTemplateName({
-      name: "Scrum Template"
+      name: "Scrum Template",
+      x_auth_token: "token-123456"
     });
 
     expect(requestedPath).toBe("/v2/project-template/name-validation?name=Scrum+Template");
+    expect(requestedOptions).toEqual({
+      headers: {
+        "X-Auth-Token": "token-123456"
+      }
+    });
     expect(result).toEqual({
       exist: false
+    });
+  });
+
+  it("maps module name validation to the documented V2 token-header endpoint", async () => {
+    let requestedPath = "";
+    let requestedOptions: Record<string, unknown> | undefined;
+    const client = createReqClient({
+      get: async (path: string, options?: Record<string, unknown>) => {
+        requestedPath = path;
+        requestedOptions = options;
+
+        return {
+          result: {
+            exist: true
+          },
+          status: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.validateModuleName({
+      project_id: "p-1",
+      module_name: "Promotion",
+      x_auth_token: "token-123456"
+    });
+
+    expect(requestedPath).toBe("/v2/module/module-name-validation?project_id=p-1&module_name=Promotion");
+    expect(requestedOptions).toEqual({
+      headers: {
+        "X-Auth-Token": "token-123456"
+      }
+    });
+    expect(result).toEqual({
+      exist: true
     });
   });
 
@@ -5957,6 +5999,7 @@ describe("createReqClient", () => {
       method: string;
       path: string;
       body?: Record<string, unknown> | string[];
+      options?: Record<string, unknown>;
     }> = [];
     const client = createReqClient({
       post: async (path: string, body: Record<string, unknown>) => {
@@ -5983,11 +6026,12 @@ describe("createReqClient", () => {
           }
         };
       },
-      put: async (path: string, body: Record<string, unknown>) => {
+      put: async (path: string, body: Record<string, unknown>, options?: Record<string, unknown>) => {
         requests.push({
           method: "PUT",
           path,
-          body
+          body,
+          options
         });
 
         return {
@@ -6163,13 +6207,15 @@ describe("createReqClient", () => {
       method: string;
       path: string;
       body?: Record<string, unknown>;
+      options?: Record<string, unknown>;
     }> = [];
     const client = createReqClient({
-      put: async (path: string, body: Record<string, unknown>) => {
+      put: async (path: string, body: Record<string, unknown>, options?: Record<string, unknown>) => {
         requests.push({
           method: "PUT",
           path,
-          body
+          body,
+          options
         });
 
         return {
@@ -6217,7 +6263,8 @@ describe("createReqClient", () => {
       client.updatePlanImage({
         project_id: "p-1",
         plan_id: "plan-1",
-        img_url: "/v1/upload/demo/202604/abc123.png"
+        img_url: "/v1/upload/demo/202604/abc123.png",
+        x_auth_token: "token-123456"
       }),
       client.listPlans({
         project_id: "p-1",
@@ -6236,6 +6283,11 @@ describe("createReqClient", () => {
         path: "/v3/plan/p-1/management/plan-1/img",
         body: {
           img_url: "/v1/upload/demo/202604/abc123.png"
+        },
+        options: {
+          headers: {
+            "X-Auth-Token": "token-123456"
+          }
         }
       },
       {
@@ -6340,7 +6392,8 @@ describe("createReqClient", () => {
       client.updatePlanImage({
         project_id: "p-1",
         plan_id: "plan-1",
-        img_url: "/v1/upload/demo/202604/abc123.png"
+        img_url: "/v1/upload/demo/202604/abc123.png",
+        x_auth_token: "token-123456"
       })
     ).rejects.toThrow(/did not report success/i);
   });

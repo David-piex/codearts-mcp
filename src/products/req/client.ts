@@ -364,10 +364,10 @@ export type ReqClient = {
     modules: Array<Record<string, unknown>>;
     total?: number;
   }>;
-  validateModuleName: (input: { project_id: string; module_name: string }) => Promise<{
+  validateModuleName: (input: { project_id: string; module_name: string; x_auth_token?: string }) => Promise<{
     exist: boolean;
   }>;
-  validateProjectTemplateName: (input: { name: string }) => Promise<{
+  validateProjectTemplateName: (input: { name: string; x_auth_token?: string }) => Promise<{
     exist: boolean;
   }>;
   createProjectModule: (input: {
@@ -845,6 +845,7 @@ export type ReqClient = {
     project_id: string;
     plan_id: string;
     img_url: string;
+    x_auth_token?: string;
   }) => Promise<{
     id: number | string;
     name?: string;
@@ -4444,7 +4445,12 @@ export function createReqClient(
         module_name: input.module_name
       });
       const response = (await _http.get(
-        `/v2/module/module-name-validation?${query.toString()}`
+        `/v2/module/module-name-validation?${query.toString()}`,
+        input.x_auth_token
+          ? {
+              headers: { "X-Auth-Token": input.x_auth_token }
+            }
+          : undefined
       )) as {
         result?: {
           exist?: boolean;
@@ -4460,7 +4466,14 @@ export function createReqClient(
       const query = new URLSearchParams({
         name: input.name
       });
-      const response = await _http.get(`/v2/project-template/name-validation?${query.toString()}`);
+      const response = await _http.get(
+        `/v2/project-template/name-validation?${query.toString()}`,
+        input.x_auth_token
+          ? {
+              headers: { "X-Auth-Token": input.x_auth_token }
+            }
+          : undefined
+      );
       const result = unwrapReqResult(response);
 
       return {
@@ -5399,7 +5412,12 @@ export function createReqClient(
         `/v3/plan/${encodeURIComponent(input.project_id)}/management/${encodeURIComponent(input.plan_id)}/img`,
         {
           img_url: input.img_url
-        }
+        },
+        input.x_auth_token
+          ? {
+              headers: { "X-Auth-Token": input.x_auth_token }
+            }
+          : undefined
       )) as {
         status?: string;
         result?: {

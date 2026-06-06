@@ -18,7 +18,7 @@ export function mapValidatedProjectTemplateName(input: {
 }
 
 type ReqValidateProjectTemplateNameClient = {
-  validateProjectTemplateName: (input: { name: string }) => Promise<{
+  validateProjectTemplateName: (input: { name: string; x_auth_token?: string }) => Promise<{
     exist: boolean;
   }>;
 };

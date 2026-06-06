@@ -177,11 +177,13 @@ export const reqDeleteProjectModuleInput = z.object({
 
 export const reqValidateModuleNameInput = z.object({
   project_id: idSchema,
-  module_name: z.string().min(1).max(30)
+  module_name: z.string().min(1).max(30),
+  x_auth_token: z.string().min(1).optional()
 });
 
 export const reqValidateProjectTemplateNameInput = z.object({
-  name: z.string().min(1)
+  name: z.string().min(1),
+  x_auth_token: z.string().min(1).optional()
 });
 
 export const reqDeleteProjectTemplateInput = z.object({

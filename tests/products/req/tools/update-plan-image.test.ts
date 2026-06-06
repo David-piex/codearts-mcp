@@ -54,7 +54,8 @@ describe("reqUpdatePlanImageInput exports", () => {
     const input = {
       project_id: "project-1",
       plan_id: "plan-1",
-      img_url: "/v1/upload/demo/202604/abc123.png"
+      img_url: "/v1/upload/demo/202604/abc123.png",
+      x_auth_token: "token-123456"
     };
 
     expect(reqUpdatePlanImageInput.parse(input)).toEqual({
@@ -79,6 +80,7 @@ describe("createReqUpdatePlanImageHandler", () => {
       project_id: "project-1",
       plan_id: "plan-1",
       img_url: "/v1/upload/demo/202604/abc123.png",
+      x_auth_token: "token-123456",
       dry_run: true
     });
 
@@ -115,6 +117,7 @@ describe("createReqUpdatePlanImageHandler", () => {
       project_id: "project-1",
       plan_id: "plan-1",
       img_url: "/v1/upload/demo/202604/abc123.png",
+      x_auth_token: "token-123456",
       dry_run: false
     });
 
@@ -122,6 +125,7 @@ describe("createReqUpdatePlanImageHandler", () => {
       project_id: "project-1",
       plan_id: "plan-1",
       img_url: "/v1/upload/demo/202604/abc123.png",
+      x_auth_token: "token-123456",
       dry_run: false
     });
     expect(result).toEqual({

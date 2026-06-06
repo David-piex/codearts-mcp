@@ -22391,6 +22391,7 @@ API 数量：`343`
 | `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 需求管理 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 | `plan_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `plan_id` ↔ 原始 CodeArts 需求管理 API 同名字段 `plan_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>计划 ID，用于定位对应的 CodeArts 资源。 |
 | `img_url` | 是 | `string` |  | 字段对应：<br>MCP 字段 `img_url` ↔ 原始 CodeArts 需求管理 API 同名字段 `img_url`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>img URL，用于指定服务地址、资源地址或回调地址。 |
+| `x_auth_token` | 否 | `string` |  | 字段对应：<br>MCP 字段 `x_auth_token` ↔ 原始 CodeArts 需求管理 API 同名字段 `x_auth_token`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
 | `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -22407,6 +22408,10 @@ API 数量：`343`
       "$ref": "#/properties/project_id"
     },
     "img_url": {
+      "type": "string",
+      "minLength": 1
+    },
+    "x_auth_token": {
       "type": "string",
       "minLength": 1
     },
@@ -24147,6 +24152,7 @@ API 数量：`343`
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 需求管理 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
 | `module_name` | 是 | `string` |  | 字段对应：<br>MCP 字段 `module_name` ↔ 原始 CodeArts 需求管理 API 同名字段 `module_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>模块名称。 |
+| `x_auth_token` | 否 | `string` |  | 字段对应：<br>MCP 字段 `x_auth_token` ↔ 原始 CodeArts 需求管理 API 同名字段 `x_auth_token`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
 
 输入 JSON Schema：
 
@@ -24162,6 +24168,10 @@ API 数量：`343`
       "type": "string",
       "minLength": 1,
       "maxLength": 30
+    },
+    "x_auth_token": {
+      "type": "string",
+      "minLength": 1
     }
   },
   "required": [
@@ -24200,6 +24210,7 @@ API 数量：`343`
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `name` | 是 | `string` |  | 字段对应：<br>MCP 字段 `name` ↔ 原始 CodeArts 需求管理 API 同名字段 `name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
+| `x_auth_token` | 否 | `string` |  | 字段对应：<br>MCP 字段 `x_auth_token` ↔ 原始 CodeArts 需求管理 API 同名字段 `x_auth_token`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
 
 输入 JSON Schema：
 
@@ -24208,6 +24219,10 @@ API 数量：`343`
   "type": "object",
   "properties": {
     "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "x_auth_token": {
       "type": "string",
       "minLength": 1
     }

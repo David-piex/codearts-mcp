@@ -20,7 +20,7 @@ export function mapValidatedModuleName(input: {
 }
 
 type ReqValidateModuleNameClient = {
-  validateModuleName: (input: { project_id: string; module_name: string }) => Promise<{
+  validateModuleName: (input: { project_id: string; module_name: string; x_auth_token?: string }) => Promise<{
     exist: boolean;
   }>;
 };

@@ -27,7 +27,8 @@ describe("reqValidateModuleNameInput exports", () => {
   it("keeps the barrel export compatible with the project schema module", () => {
     const input = {
       project_id: "project-1",
-      module_name: "Backend"
+      module_name: "Backend",
+      x_auth_token: "token-123456"
     };
 
     expect(reqValidateModuleNameInput.parse(input)).toEqual(input);
@@ -46,12 +47,14 @@ describe("createReqValidateModuleNameHandler", () => {
 
     const result = await handler({
       project_id: "project-1",
-      module_name: "Backend"
+      module_name: "Backend",
+      x_auth_token: "token-123456"
     });
 
     expect(client.validateModuleName).toHaveBeenCalledWith({
       project_id: "project-1",
-      module_name: "Backend"
+      module_name: "Backend",
+      x_auth_token: "token-123456"
     });
     expect(result).toEqual({
       content: [{ type: "text", text: "Module name Backend is available in project project-1" }],
