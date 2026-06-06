@@ -12,6 +12,7 @@ import { createRepoShowRepositoryInheritSettingSourceHandler } from "../../../..
 import { createRepoShowRepositoryInheritSettingHandler } from "../../../../src/products/repo/tools/show-repository-inherit-setting.js";
 import { createRepoShowRepositoryWatermarkHandler } from "../../../../src/products/repo/tools/show-repository-watermark.js";
 import { createRepoShowUserRefPermissionHandler } from "../../../../src/products/repo/tools/show-user-ref-permission.js";
+import { createRepoUpdateRepositoryPipelineHandler } from "../../../../src/products/repo/tools/update-repository-pipeline.js";
 import { createRepoUpdateRepositoryTemplateStatusHandler } from "../../../../src/products/repo/tools/update-repository-template-status.js";
 import {
   mapNotificationSubscriptionsStatus,
@@ -22,6 +23,7 @@ import {
   mapRepositoryCommitRulesList,
   mapRepositoryGeneralCommitRule,
   mapRepositoryInheritSettingSource,
+  mapRepositoryPipelineMutation,
   mapRepositoryTemplateStatusMutation,
   mapRepositoryTemplatesList,
   mapRepositoryWatermark,
@@ -188,6 +190,17 @@ describe("repository settings result mappers", () => {
       status: "success"
     }).item).toEqual({
       result: null,
+      status: "success",
+      executed: true
+    });
+
+    expect(mapRepositoryPipelineMutation("Updated repository pipeline state", {
+      repository_uuid: "repo-uuid-1",
+      result: true,
+      status: "success"
+    }).item).toEqual({
+      repositoryUuid: "repo-uuid-1",
+      result: true,
       status: "success",
       executed: true
     });
@@ -376,6 +389,7 @@ describe("repository settings handlers", () => {
     const handler = createRepoUpdateRepositoryTemplateStatusHandler({
       updateRepositoryTemplateStatus: async (input) => {
         expect(input).toEqual({
+          x_auth_token: "token-1",
           repository_uuid: "repo-uuid-1",
           template_type: "PUBLIC"
         });
@@ -384,11 +398,13 @@ describe("repository settings handlers", () => {
     });
 
     const dryRun = await handler({
+      x_auth_token: "token-1",
       repository_uuid: "repo-uuid-1",
       template_type: "PUBLIC",
       dry_run: true
     });
     const executed = await handler({
+      x_auth_token: "token-1",
       repository_uuid: "repo-uuid-1",
       template_type: "PUBLIC",
       dry_run: false
@@ -396,11 +412,47 @@ describe("repository settings handlers", () => {
 
     expect(dryRun.structuredContent.item).toMatchObject({
       repositoryUuid: "repo-uuid-1",
+      tokenProvided: true,
       templateType: "PUBLIC",
       executed: false
     });
     expect(executed.structuredContent.item).toEqual({
       result: null,
+      status: "success",
+      executed: true
+    });
+  });
+
+  it("supports dry run and write execution for repository pipeline status", async () => {
+    const handler = createRepoUpdateRepositoryPipelineHandler({
+      updateRepositoryPipeline: async (input) => {
+        expect(input).toEqual({
+          x_auth_token: "token-1",
+          repository_uuid: "repo-uuid-1"
+        });
+        return { repository_uuid: "repo-uuid-1", result: true, status: "success" };
+      }
+    });
+
+    const dryRun = await handler({
+      x_auth_token: "token-1",
+      repository_uuid: "repo-uuid-1",
+      dry_run: true
+    });
+    const executed = await handler({
+      x_auth_token: "token-1",
+      repository_uuid: "repo-uuid-1",
+      dry_run: false
+    });
+
+    expect(dryRun.structuredContent.item).toMatchObject({
+      repositoryUuid: "repo-uuid-1",
+      tokenProvided: true,
+      executed: false
+    });
+    expect(executed.structuredContent.item).toEqual({
+      repositoryUuid: "repo-uuid-1",
+      result: true,
       status: "success",
       executed: true
     });

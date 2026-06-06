@@ -15,6 +15,11 @@ import {
   previewDeleteRepositoryMember
 } from "../../../../src/products/repo/tools/delete-repository-member.js";
 import {
+  createRepoUpdateRepositoryMemberHandler,
+  mapUpdatedRepositoryMember,
+  previewUpdateRepositoryMember
+} from "../../../../src/products/repo/tools/update-repository-member.js";
+import {
   createRepoForkRepositoryHandler,
   mapForkedRepository,
   previewForkRepository
@@ -24,6 +29,10 @@ import {
   mapValidatedHttpsInfo,
   previewValidateHttpsInfo
 } from "../../../../src/products/repo/tools/validate-https-info.js";
+import {
+  createRepoValidateProjectRepositoryNameHandler,
+  mapValidatedProjectRepositoryName
+} from "../../../../src/products/repo/tools/validate-project-repository-name.js";
 
 describe("repo admin mutation tool previews", () => {
   it("redacts deploy key content in previews", () => {
@@ -62,6 +71,20 @@ describe("repo admin mutation tool previews", () => {
     }).item).toEqual({
       repositoryUuid: "repo-1",
       memberId: "member-1",
+      executed: false
+    });
+
+    expect(previewUpdateRepositoryMember({
+      x_auth_token: "token-1",
+      repository_uuid: "repo-1",
+      member_id: "member-1",
+      role: 40,
+      dry_run: true
+    }).item).toEqual({
+      repositoryUuid: "repo-1",
+      memberId: "member-1",
+      role: 40,
+      tokenProvided: true,
       executed: false
     });
 
@@ -133,6 +156,21 @@ describe("repo admin mutation tool mappers", () => {
       executed: true
     });
 
+    expect(mapUpdatedRepositoryMember({
+      repository_uuid: "repo-1",
+      member_id: "member-1",
+      role: 40,
+      status: "success",
+      result: {}
+    }).item).toEqual({
+      repositoryUuid: "repo-1",
+      memberId: "member-1",
+      role: 40,
+      status: "success",
+      result: {},
+      executed: true
+    });
+
     expect(mapForkedRepository({
       repository_uuid: "repo-uuid-1",
       project_uuid: "project-1",
@@ -166,6 +204,19 @@ describe("repo admin mutation tool mappers", () => {
       status: "success",
       executed: true
     });
+
+    expect(mapValidatedProjectRepositoryName({
+      project_uuid: "project-1",
+      repository_name: "demo-repo",
+      result: true,
+      status: "success"
+    }).item).toEqual({
+      projectUuid: "project-1",
+      repositoryName: "demo-repo",
+      available: true,
+      status: "success",
+      executed: true
+    });
   });
 });
 
@@ -174,6 +225,7 @@ describe("repo admin mutation handlers", () => {
     const addRepositoryDeployKey = vi.fn();
     const deleteRepository = vi.fn();
     const deleteRepositoryMember = vi.fn();
+    const updateRepositoryMember = vi.fn();
     const forkRepository = vi.fn();
     const validateHttpsInfo = vi.fn();
 
@@ -189,6 +241,12 @@ describe("repo admin mutation handlers", () => {
       repository_uuid: "repo-1",
       member_id: "member-1"
     });
+    await createRepoUpdateRepositoryMemberHandler({ updateRepositoryMember })({
+      x_auth_token: "token-1",
+      repository_uuid: "repo-1",
+      member_id: "member-1",
+      role: 40
+    });
     await createRepoForkRepositoryHandler({ forkRepository })({
       project_name: "demo-project",
       repo_name: "demo-repo",
@@ -202,7 +260,38 @@ describe("repo admin mutation handlers", () => {
     expect(addRepositoryDeployKey).not.toHaveBeenCalled();
     expect(deleteRepository).not.toHaveBeenCalled();
     expect(deleteRepositoryMember).not.toHaveBeenCalled();
+    expect(updateRepositoryMember).not.toHaveBeenCalled();
     expect(forkRepository).not.toHaveBeenCalled();
     expect(validateHttpsInfo).not.toHaveBeenCalled();
+  });
+
+  it("calls repository name validation reads without dry-run", async () => {
+    const validateProjectRepositoryName = vi.fn(async () => ({
+      project_uuid: "project-1",
+      repository_name: "demo-repo",
+      result: true,
+      status: "success"
+    }));
+
+    const result = await createRepoValidateProjectRepositoryNameHandler({
+      validateProjectRepositoryName
+    })({
+      x_auth_token: "token-1",
+      project_uuid: "project-1",
+      repository_name: "demo-repo"
+    });
+
+    expect(validateProjectRepositoryName).toHaveBeenCalledWith({
+      x_auth_token: "token-1",
+      project_uuid: "project-1",
+      repository_name: "demo-repo"
+    });
+    expect(result.structuredContent.item).toEqual({
+      projectUuid: "project-1",
+      repositoryName: "demo-repo",
+      available: true,
+      status: "success",
+      executed: true
+    });
   });
 });

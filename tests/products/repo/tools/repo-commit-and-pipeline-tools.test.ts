@@ -10,7 +10,9 @@ import { createRepoShowCommitFileDiffHandler } from "../../../../src/products/re
 import { createRepoShowDiffCommitHandler } from "../../../../src/products/repo/tools/show-diff-commit.js";
 import { createRepoShowRepositoryCommitLinesHandler } from "../../../../src/products/repo/tools/show-repository-commit-lines.js";
 import { createRepoShowRepositoryMasterHandler } from "../../../../src/products/repo/tools/show-repository-master.js";
+import { createRepoShowRepositoryStatusHandler } from "../../../../src/products/repo/tools/show-repository-status.js";
 import { createRepoShowRepositoryStatisticDataHandler } from "../../../../src/products/repo/tools/show-repository-statistic-data.js";
+import { createRepoUpdateRepositoryPipelineHandler } from "../../../../src/products/repo/tools/update-repository-pipeline.js";
 
 describe("repo commit and pipeline handlers", () => {
   it("supports dry run for create commit and revert", async () => {
@@ -142,6 +144,15 @@ describe("repo commit and pipeline handlers", () => {
         return true;
       }
     });
+    const statusHandler = createRepoShowRepositoryStatusHandler({
+      showRepositoryStatus: async (input) => {
+        expect(input).toEqual({
+          x_auth_token: "token-1",
+          repository_uuid: "repo-uuid-1"
+        });
+        return { repository_uuid: "repo-uuid-1", result: 1, status: "success" };
+      }
+    });
     const commitLinesHandler = createRepoShowRepositoryCommitLinesHandler({
       showRepositoryCommitLines: async (input) => {
         expect(input).toEqual({
@@ -161,6 +172,14 @@ describe("repo commit and pipeline handlers", () => {
     expect((await masterHandler({ repository_uuid: "repo-uuid-1" })).structuredContent.item).toEqual({
       isMaster: true
     });
+    expect((await statusHandler({
+      x_auth_token: "token-1",
+      repository_uuid: "repo-uuid-1"
+    })).structuredContent.item).toEqual({
+      repositoryUuid: "repo-uuid-1",
+      result: 1,
+      status: "success"
+    });
     expect((await commitLinesHandler({
       repository_id: "100",
       ref_name: "feature/main",
@@ -169,6 +188,45 @@ describe("repo commit and pipeline handlers", () => {
     })).structuredContent.item).toEqual({
       additions: 10,
       deletions: 4
+    });
+  });
+
+  it("supports dry run and write execution for repository pipeline updates", async () => {
+    const handler = createRepoUpdateRepositoryPipelineHandler({
+      updateRepositoryPipeline: async (input) => {
+        expect(input).toEqual({
+          x_auth_token: "token-1",
+          repository_uuid: "repo-uuid-1"
+        });
+        return {
+          repository_uuid: "repo-uuid-1",
+          result: true,
+          status: "success"
+        };
+      }
+    });
+
+    const dryRun = await handler({
+      x_auth_token: "token-1",
+      repository_uuid: "repo-uuid-1",
+      dry_run: true
+    });
+    const executed = await handler({
+      x_auth_token: "token-1",
+      repository_uuid: "repo-uuid-1",
+      dry_run: false
+    });
+
+    expect(dryRun.structuredContent.item).toMatchObject({
+      repositoryUuid: "repo-uuid-1",
+      tokenProvided: true,
+      executed: false
+    });
+    expect(executed.structuredContent.item).toEqual({
+      repositoryUuid: "repo-uuid-1",
+      result: true,
+      status: "success",
+      executed: true
     });
   });
 });

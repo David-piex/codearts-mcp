@@ -7,6 +7,7 @@ import {
 
 type RepoUpdateRepositoryTemplateStatusClient = {
   updateRepositoryTemplateStatus: (input: {
+    x_auth_token: string;
     repository_uuid: string;
     template_type: "SHARE" | "PUBLIC";
     code_title?: string;
@@ -28,6 +29,7 @@ export function createRepoUpdateRepositoryTemplateStatusHandler(client: RepoUpda
     if (parsed.dry_run) {
       const preview = previewRepositorySimpleMutation("Dry run: update repository template status", {
         repositoryUuid: parsed.repository_uuid,
+        tokenProvided: true,
         templateType: parsed.template_type,
         codeTitle: parsed.code_title,
         creatorName: parsed.creator_name,

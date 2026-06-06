@@ -91,6 +91,18 @@ export function mapRepositoryMaster(input: boolean) {
   });
 }
 
+export function mapRepositoryStatus(input: {
+  repository_uuid: string;
+  result?: number;
+  status?: string;
+}) {
+  return asItemResult("Fetched repository status", {
+    repositoryUuid: input.repository_uuid,
+    result: input.result,
+    status: input.status
+  });
+}
+
 export function mapRepositoryCommitLines(input: RepoCommitLines) {
   return asItemResult("Fetched repository commit line statistics", {
     additions: input.additions,

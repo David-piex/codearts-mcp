@@ -3,7 +3,9 @@ import {
   mapCommitAssociatedRefs,
   mapDefaultReviewCategories,
   mapNoteRequiredAttributes,
+  mapRepositoryFileDetail,
   mapRepositoryFileList,
+  mapRepositoryLogsTree,
   mapRepositoryReadmeFile,
   mapRepositoryReviewAuthors,
   mapRepositoryReviews,
@@ -33,6 +35,19 @@ describe("repository browse result mappers", () => {
       id: "src/index.ts",
       path: "src/index.ts"
     });
+
+    const logTrees = mapRepositoryLogsTree(
+      [{ id: "2", name: "src", type: "tree", path: "src", blob_id: "blob-1" }],
+      1,
+      20,
+      1
+    ).items ?? [];
+    expect(logTrees[0]).toMatchObject({
+      id: "2",
+      name: "src",
+      path: "src",
+      blobId: "blob-1"
+    });
   });
 
   it("maps README and commit associated refs", () => {
@@ -56,6 +71,24 @@ describe("repository browse result mappers", () => {
     expect(refs[0]).toEqual({
       id: "master",
       name: "master"
+    });
+
+    expect(
+      mapRepositoryFileDetail({
+        name: "index.ts",
+        path: "src/index.ts",
+        size: 12,
+        encoding: "base64",
+        ref: "feature/demo",
+        blob_id: "blob-1",
+        file_type: "text",
+        content: "Y29uc29sZS5sb2coJ29rJyk7"
+      }).item
+    ).toMatchObject({
+      name: "index.ts",
+      path: "src/index.ts",
+      blobId: "blob-1",
+      fileType: "text"
     });
   });
 

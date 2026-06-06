@@ -5,6 +5,7 @@ import {
   mapRepoStatisticsSummary,
   mapRepositoryCommitLines,
   mapRepositoryMaster,
+  mapRepositoryStatus,
   mapRepositoryStatisticData,
   mapRepositoryStatisticsStatus,
   mapRepositoryStatisticsSummary
@@ -112,6 +113,16 @@ describe("repository statistics result mappers", () => {
 
     expect(mapRepositoryMaster(true).item).toEqual({
       isMaster: true
+    });
+
+    expect(mapRepositoryStatus({
+      repository_uuid: "repo-uuid-1",
+      result: 1,
+      status: "success"
+    }).item).toEqual({
+      repositoryUuid: "repo-uuid-1",
+      result: 1,
+      status: "success"
     });
 
     expect(mapRepositoryCommitLines({

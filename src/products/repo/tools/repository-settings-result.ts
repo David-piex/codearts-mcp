@@ -395,6 +395,19 @@ export function mapRepositoryTemplateStatusMutation(summary: string, input?: {
   });
 }
 
+export function mapRepositoryPipelineMutation(summary: string, input?: {
+  repository_uuid?: string;
+  result?: boolean;
+  status?: string;
+}) {
+  return asItemResult(summary, {
+    repositoryUuid: input?.repository_uuid,
+    result: input?.result,
+    status: input?.status,
+    executed: true
+  });
+}
+
 function firstDefined<T>(...values: Array<T | undefined>): T | undefined {
   for (const value of values) {
     if (value !== undefined) {

@@ -533,6 +533,39 @@ export type RepoAddRepositoryMembersResult = {
   result?: RepoAddRepositoryMemberResultItem[];
 };
 
+export type RepoUpdateRepositoryMemberResult = {
+  repository_uuid: string;
+  member_id: string;
+  role: 20 | 30 | 40;
+  status?: string;
+  result?: unknown;
+};
+
+export type RepoVerifyUserSshPrivateKeyResult = {
+  repository_uuid: string;
+  result?: string;
+  status?: string;
+};
+
+export type RepoValidateProjectRepositoryNameResult = {
+  project_uuid: string;
+  repository_name: string;
+  result?: boolean;
+  status?: string;
+};
+
+export type RepoUpdateRepositoryPipelineResult = {
+  repository_uuid: string;
+  result?: boolean;
+  status?: string;
+};
+
+export type RepoRepositoryStatusResult = {
+  repository_uuid: string;
+  result?: number;
+  status?: string;
+};
+
 export type RepoDeleteRepositoryResult = {
   result?: boolean | string;
   status?: string;
@@ -3537,6 +3570,10 @@ export type RepoClient = {
   showRepoStatisticsSummary: (input: { repository_id: string }) => Promise<RepoStatsSummary>;
   showRepositoryStatisticData: (input: { repository_uuid: string }) => Promise<RepoRepositoryStatisticData>;
   showRepositoryMaster: (input: { repository_uuid: string }) => Promise<boolean>;
+  showRepositoryStatus: (input: {
+    x_auth_token: string;
+    repository_uuid: string;
+  }) => Promise<RepoRepositoryStatusResult>;
   showRepoLastStatistics: (input: { repository_id: string; branch_name: string }) => Promise<RepoLastStatistics>;
   listPersonalRecentPushEvents: (input: {
     project_id?: string;
@@ -3569,6 +3606,7 @@ export type RepoClient = {
     total?: number;
   }>;
   updateRepositoryTemplateStatus: (input: {
+    x_auth_token: string;
     repository_uuid: string;
     template_type: "SHARE" | "PUBLIC";
     code_title?: string;
@@ -3581,6 +3619,10 @@ export type RepoClient = {
     result?: string | null;
     status?: string;
   }>;
+  updateRepositoryPipeline: (input: {
+    x_auth_token: string;
+    repository_uuid: string;
+  }) => Promise<RepoUpdateRepositoryPipelineResult>;
   listSubmodules: (input: {
     repository_id: string;
     sha: string;
@@ -3747,6 +3789,12 @@ export type RepoClient = {
     repository_id: string;
     file_path: string;
     ref?: string;
+  }) => Promise<RepoRepositoryFileDetail>;
+  showBranchFile: (input: {
+    x_auth_token: string;
+    repository_uuid: string;
+    branch_name: string;
+    file_path: string;
   }) => Promise<RepoRepositoryFileDetail>;
   deleteFile: (input: {
     repository_id: string;
@@ -4013,6 +4061,12 @@ export type RepoClient = {
     repository_id: string;
     users: RepoAddRepositoryMemberInputItem[];
   }) => Promise<RepoAddRepositoryMembersResult>;
+  updateRepositoryMember: (input: {
+    x_auth_token: string;
+    repository_uuid: string;
+    member_id: string;
+    role: 20 | 30 | 40;
+  }) => Promise<RepoUpdateRepositoryMemberResult>;
   deleteRepositoryMember: (input: {
     repository_uuid: string;
     member_id: string;
@@ -4080,6 +4134,17 @@ export type RepoClient = {
     page: number;
     page_size: number;
     ref?: string;
+  }) => Promise<{
+    trees: RepoLogTreeObject[];
+    total?: number;
+  }>;
+  listBranchSubFiles: (input: {
+    x_auth_token: string;
+    repository_uuid: string;
+    branch_name: string;
+    path?: string;
+    page: number;
+    page_size: number;
   }) => Promise<{
     trees: RepoLogTreeObject[];
     total?: number;
@@ -4275,6 +4340,16 @@ export type RepoClient = {
     keys: RepoUserSshKey[];
     total?: number;
   }>;
+  verifyUserSshPrivateKey: (input: {
+    x_auth_token: string;
+    repository_uuid: string;
+    private_key: string;
+  }) => Promise<RepoVerifyUserSshPrivateKeyResult>;
+  validateProjectRepositoryName: (input: {
+    x_auth_token: string;
+    project_uuid: string;
+    repository_name: string;
+  }) => Promise<RepoValidateProjectRepositoryNameResult>;
   createUserSshKey: (input: {
     title?: string | number;
     key?: string | null;
@@ -8847,6 +8922,29 @@ export function createRepoClient(
 
       return Boolean(payload);
     },
+    async showRepositoryStatus(input) {
+      const response = unwrapRepoPayload(await _http.get(
+        `/v1/repositories/${encodeURIComponent(input.repository_uuid)}/status`,
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
+      ));
+      const payload = response as { result?: unknown; status?: unknown } | number;
+
+      return {
+        repository_uuid: input.repository_uuid,
+        result:
+          typeof payload === "number"
+            ? payload
+            : typeof payload === "object" && payload && typeof payload.result === "number"
+              ? payload.result
+              : undefined,
+        status:
+          typeof payload === "object" && payload && typeof payload.status === "string"
+            ? payload.status
+            : undefined
+      };
+    },
     async getRepositoryIdByName(input) {
       const query = new URLSearchParams({
         group_name: input.group_name,
@@ -8937,14 +9035,32 @@ export function createRepoClient(
       };
     },
     async updateRepositoryTemplateStatus(input) {
-      const { repository_uuid, ...body } = input;
+      const { repository_uuid, x_auth_token, ...body } = input;
       const response = unwrapRepoPayload(await _http.put(
         `/v2/repositories/${encodeURIComponent(repository_uuid)}/template-status`,
-        omitUndefinedFields(body)
+        omitUndefinedFields(body),
+        {
+          headers: { "X-Auth-Token": x_auth_token }
+        }
       )) as { result?: string | null; status?: string } | undefined;
 
       return {
         result: response?.result ?? null,
+        status: response?.status
+      };
+    },
+    async updateRepositoryPipeline(input) {
+      const response = unwrapRepoPayload(await _http.put(
+        `/v1/repositories/${encodeURIComponent(input.repository_uuid)}/pipeline`,
+        undefined,
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
+      )) as { result?: boolean; status?: string } | undefined;
+
+      return {
+        repository_uuid: input.repository_uuid,
+        result: response?.result,
         status: response?.status
       };
     },
@@ -9286,6 +9402,39 @@ export function createRepoClient(
       )) as RepoRepositoryFileDetail;
 
       return response;
+    },
+    async showBranchFile(input) {
+      const query = new URLSearchParams({
+        path: input.file_path
+      });
+      const response = unwrapRepoPayload(await _http.get(
+        `/v1/repositories/${encodeURIComponent(input.repository_uuid)}/branch/${encodeURIComponent(input.branch_name)}/file?${query.toString()}`,
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
+      ));
+      const payload = Array.isArray(response)
+        ? response[0]
+        : typeof response === "object" && response && "result" in response && Array.isArray((response as { result?: unknown }).result)
+          ? ((response as { result?: unknown[] }).result?.[0] ?? {})
+          : response;
+      const file = payload as Record<string, unknown>;
+
+      return {
+        name:
+          typeof file.name === "string"
+            ? file.name
+            : typeof file.file_name === "string"
+              ? file.file_name
+              : undefined,
+        path: typeof file.file_path === "string" ? file.file_path : input.file_path,
+        size: typeof file.size === "number" ? file.size : undefined,
+        encoding: typeof file.encoding === "string" ? file.encoding : undefined,
+        ref: typeof file.ref === "string" ? file.ref : input.branch_name,
+        blob_id: typeof file.blob_id === "string" ? file.blob_id : undefined,
+        file_type: typeof file.file_type === "string" ? file.file_type : undefined,
+        content: typeof file.content === "string" ? file.content : undefined
+      };
     },
     async deleteFile(input) {
       const query = new URLSearchParams({
@@ -9788,6 +9937,30 @@ export function createRepoClient(
 
       return extractAddRepositoryMembersResult(rawResponse);
     },
+    async updateRepositoryMember(input) {
+      const rawResponse = await _http.put(
+        `/v1/repositories/${encodeURIComponent(input.repository_uuid)}/members/${encodeURIComponent(input.member_id)}`,
+        { role: input.role },
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
+      );
+      const payload = unwrapRepoPayload(rawResponse as { status?: string; result?: unknown });
+
+      return {
+        repository_uuid: input.repository_uuid,
+        member_id: input.member_id,
+        role: input.role,
+        status:
+          typeof payload === "object" && payload !== null && "status" in payload && typeof payload.status === "string"
+            ? payload.status
+            : undefined,
+        result:
+          typeof payload === "object" && payload !== null && "result" in payload
+            ? payload.result
+            : payload
+      };
+    },
     async deleteRepositoryMember(input) {
       await _http.delete?.(
         `/v1/repositories/${encodeURIComponent(input.repository_uuid)}/members/${encodeURIComponent(input.member_id)}`
@@ -9933,6 +10106,50 @@ export function createRepoClient(
 
       return {
         trees: extracted.items,
+        total: extracted.total
+      };
+    },
+    async listBranchSubFiles(input) {
+      const query = buildOffsetLimitQuery(input);
+      appendOptionalQuery(query, input, ["path"]);
+      const response = unwrapRepoPayload(await _http.get(
+        `/v1/repositories/${encodeURIComponent(input.repository_uuid)}/branch/${encodeURIComponent(input.branch_name)}/sub-files?${query.toString()}`,
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
+      ));
+      const extracted = extractArrayWithOptionalTotal<Record<string, unknown>>(
+        response as Record<string, unknown>[] | { result?: Record<string, unknown>[]; total?: number }
+      );
+      const trees = extracted.items;
+
+      return {
+        trees: trees.map((item) => ({
+          id:
+            typeof item.id === "string"
+              ? item.id
+              : typeof item.blob_id === "string"
+                ? item.blob_id
+                : undefined,
+          name:
+            typeof item.name === "string"
+              ? item.name
+              : typeof item.file_name === "string"
+                ? item.file_name
+                : undefined,
+          path:
+            typeof item.path === "string"
+              ? item.path
+              : typeof item.file_path === "string"
+                ? item.file_path
+                : undefined,
+          type: typeof item.type === "string" ? item.type : undefined,
+          md5: typeof item.md5 === "string" ? item.md5 : undefined,
+          blob_id: typeof item.blob_id === "string" ? item.blob_id : undefined,
+          commit: typeof item.commit === "object" && item.commit
+            ? item.commit as RepoMergeRequestCommit
+            : undefined
+        })),
         total: extracted.total
       };
     },
@@ -10411,6 +10628,33 @@ export function createRepoClient(
 
       return extractUserSshKeysResponse(rawResponse);
     },
+    async verifyUserSshPrivateKey(input) {
+      const rawResponse = await _http.post(
+        "/v1/users/sshkey/privatekey/verify",
+        {
+          repository_uuid: input.repository_uuid,
+          private_key: input.private_key
+        },
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
+      );
+      const payload = unwrapRepoPayload(rawResponse as { result?: string; status?: string });
+
+      return {
+        repository_uuid: input.repository_uuid,
+        result:
+          typeof payload === "object" && payload !== null && "result" in payload && typeof payload.result === "string"
+            ? payload.result
+            : typeof payload === "string"
+              ? payload
+              : undefined,
+        status:
+          typeof payload === "object" && payload !== null && "status" in payload && typeof payload.status === "string"
+            ? payload.status
+            : undefined
+      };
+    },
     async createUserSshKey(input) {
       const rawResponse = (await _http.post(
         "/v4/user/keys",
@@ -10431,6 +10675,30 @@ export function createRepoClient(
       return {
         key_id: input.key_id,
         deleted: true
+      };
+    },
+    async validateProjectRepositoryName(input) {
+      const rawResponse = await _http.get(
+        `/v1/projects/${encodeURIComponent(input.project_uuid)}/repositories/validation/${encodeURIComponent(input.repository_name)}`,
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
+      );
+      const payload = unwrapRepoPayload(rawResponse as { result?: boolean; status?: string });
+
+      return {
+        project_uuid: input.project_uuid,
+        repository_name: input.repository_name,
+        result:
+          typeof payload === "object" && payload !== null && "result" in payload && typeof payload.result === "boolean"
+            ? payload.result
+            : typeof payload === "boolean"
+              ? payload
+              : undefined,
+        status:
+          typeof payload === "object" && payload !== null && "status" in payload && typeof payload.status === "string"
+            ? payload.status
+            : undefined
       };
     },
     async exportTenantRepositories(input) {

@@ -990,6 +990,7 @@ export const repoValidateHttpsInfoInput = z.object({
 });
 
 export const repoUpdateRepositoryTemplateStatusInput = z.object({
+  x_auth_token: z.string().min(1),
   repository_uuid: idSchema,
   template_type: z.enum(["SHARE", "PUBLIC"]),
   code_title: z.string().min(1).max(255).optional(),
@@ -998,6 +999,12 @@ export const repoUpdateRepositoryTemplateStatusInput = z.object({
   languages: z.array(z.string().min(1).max(128)).optional(),
   plateform: z.array(z.string().min(1).max(128)).optional(),
   entertype: z.array(z.string().min(1).max(128)).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoUpdateRepositoryPipelineInput = z.object({
+  x_auth_token: z.string().min(1),
+  repository_uuid: idSchema,
   dry_run: z.boolean().default(true)
 });
 
@@ -1047,6 +1054,27 @@ export const repoDeleteRepositoryMemberInput = z.object({
   repository_uuid: idSchema,
   member_id: idSchema,
   dry_run: z.boolean().default(true)
+});
+
+export const repoUpdateRepositoryMemberInput = z.object({
+  x_auth_token: z.string().min(1),
+  repository_uuid: idSchema,
+  member_id: idSchema,
+  role: z.union([z.literal(20), z.literal(30), z.literal(40)]),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoVerifyUserSshPrivateKeyInput = z.object({
+  x_auth_token: z.string().min(1),
+  repository_uuid: idSchema,
+  private_key: z.string().min(1).max(4096),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoValidateProjectRepositoryNameInput = z.object({
+  x_auth_token: z.string().min(1),
+  project_uuid: idSchema,
+  repository_name: z.string().min(1).max(255)
 });
 
 export const repoSendUserEmailVerifyCodeInput = z.object({
@@ -2291,6 +2319,13 @@ export const repoShowFileInput = z.object({
   ref: z.string().min(1).max(2000).optional()
 });
 
+export const repoShowBranchFileInput = z.object({
+  x_auth_token: z.string().min(1),
+  repository_uuid: idSchema,
+  branch_name: z.string().min(1).max(200),
+  file_path: z.string().min(1).max(200)
+});
+
 export const repoDeleteFileInput = z.object({
   repository_id: idSchema,
   file_path: z.string().min(1).max(10000),
@@ -2451,6 +2486,11 @@ export const repoShowRepositoryMasterInput = z.object({
   repository_uuid: idSchema
 });
 
+export const repoShowRepositoryStatusInput = z.object({
+  x_auth_token: z.string().min(1),
+  repository_uuid: idSchema
+});
+
 export const repoGetRepositoryIdByNameInput = z.object({
   group_name: z.string().min(1).max(255),
   repository_name: z.string().min(1).max(255)
@@ -2480,6 +2520,14 @@ export const repoListSubmodulesInput = pagingSchema.extend({
   repository_id: idSchema,
   sha: z.string().min(1),
   page_size: z.number().int().positive().max(100).default(20)
+});
+
+export const repoListBranchSubFilesInput = pagingSchema.extend({
+  x_auth_token: z.string().min(1),
+  repository_uuid: idSchema,
+  branch_name: z.string().min(1).max(200),
+  path: z.string().min(1).optional(),
+  page_size: z.number().int().positive().max(100).default(100)
 });
 
 export const repoShowCommitStatisticsInput = z.object({

@@ -33,7 +33,10 @@ import {
   repoDeleteUserSshKeyInput,
   repoDeleteRepositoryInput,
   repoValidateHttpsInfoInput,
+  repoValidateProjectRepositoryNameInput,
   repoDeleteRepositoryMemberInput,
+  repoUpdateRepositoryMemberInput,
+  repoVerifyUserSshPrivateKeyInput,
   repoAddRepositoryDeployKeyInput,
   repoListPersonalRepositoryImportRecordsInput,
   repoListProjectMergeRequestsInput,
@@ -64,19 +67,23 @@ import {
   repoShowRepositoryReadmeFileInput,
   repoShowRepositoryCommitLinesInput,
   repoShowRepositoryMasterInput,
+  repoShowRepositoryStatusInput,
   repoShowRepositoryStatisticDataInput,
   repoShowRepositoryWatermarkInput,
   repoShowRepoLastStatisticsInput,
   repoShowUserRefPermissionInput,
   repoGetRepositoryBlameInput,
   repoGetRepositoryFileContentV4Input,
+  repoShowBranchFileInput,
   repoStartRemoteMirrorSynchronizationInput,
   repoTransferRepositoryInput,
   repoRebuildRepositoryNavigationInput,
   repoUpdateMergeRequestInput,
+  repoUpdateRepositoryPipelineInput,
   repoUpdateRepositoryTemplateStatusInput,
   repoDeleteMergeRequestDiscussionInput,
-  repoUpdateRemoteMirrorInput
+  repoUpdateRemoteMirrorInput,
+  repoListBranchSubFilesInput
 } from "../../../src/products/repo/schemas.js";
 
 describe("repo schemas", () => {
@@ -162,15 +169,69 @@ describe("repo schemas", () => {
 
     expect(
       repoUpdateRepositoryTemplateStatusInput.parse({
+        x_auth_token: "token-1",
         repository_uuid: "repo-uuid-1",
         template_type: "SHARE",
         code_title: "Demo Template",
         languages: ["TypeScript"]
       })
     ).toMatchObject({
+      x_auth_token: "token-1",
       repository_uuid: "repo-uuid-1",
       template_type: "SHARE",
       code_title: "Demo Template",
+      dry_run: true
+    });
+
+    expect(
+      repoShowBranchFileInput.parse({
+        x_auth_token: "token-1",
+        repository_uuid: "repo-uuid-1",
+        branch_name: "feature/demo",
+        file_path: "src/index.ts"
+      })
+    ).toEqual({
+      x_auth_token: "token-1",
+      repository_uuid: "repo-uuid-1",
+      branch_name: "feature/demo",
+      file_path: "src/index.ts"
+    });
+
+    expect(
+      repoListBranchSubFilesInput.parse({
+        x_auth_token: "token-1",
+        repository_uuid: "repo-uuid-1",
+        branch_name: "feature/demo",
+        path: "src",
+        page_size: 50
+      })
+    ).toMatchObject({
+      x_auth_token: "token-1",
+      repository_uuid: "repo-uuid-1",
+      branch_name: "feature/demo",
+      path: "src",
+      page: 1,
+      page_size: 50
+    });
+
+    expect(
+      repoShowRepositoryStatusInput.parse({
+        x_auth_token: "token-1",
+        repository_uuid: "repo-uuid-1"
+      })
+    ).toEqual({
+      x_auth_token: "token-1",
+      repository_uuid: "repo-uuid-1"
+    });
+
+    expect(
+      repoUpdateRepositoryPipelineInput.parse({
+        x_auth_token: "token-1",
+        repository_uuid: "repo-uuid-1"
+      })
+    ).toEqual({
+      x_auth_token: "token-1",
+      repository_uuid: "repo-uuid-1",
       dry_run: true
     });
 
@@ -351,6 +412,37 @@ describe("repo schemas", () => {
     expect(repoDeleteUserSshKeyInput.parse({ key_id: 123 })).toEqual({
       key_id: "123",
       dry_run: true
+    });
+    expect(repoVerifyUserSshPrivateKeyInput.parse({
+      x_auth_token: "token-1",
+      repository_uuid: "repo-uuid-1",
+      private_key: "-----BEGIN PRIVATE KEY-----demo"
+    })).toMatchObject({
+      x_auth_token: "token-1",
+      repository_uuid: "repo-uuid-1",
+      private_key: "-----BEGIN PRIVATE KEY-----demo",
+      dry_run: true
+    });
+    expect(repoUpdateRepositoryMemberInput.parse({
+      x_auth_token: "token-1",
+      repository_uuid: "repo-uuid-1",
+      member_id: "member-1",
+      role: 40
+    })).toMatchObject({
+      x_auth_token: "token-1",
+      repository_uuid: "repo-uuid-1",
+      member_id: "member-1",
+      role: 40,
+      dry_run: true
+    });
+    expect(repoValidateProjectRepositoryNameInput.parse({
+      x_auth_token: "token-1",
+      project_uuid: "project-uuid-1",
+      repository_name: "demo-repo"
+    })).toEqual({
+      x_auth_token: "token-1",
+      project_uuid: "project-uuid-1",
+      repository_name: "demo-repo"
     });
   });
 

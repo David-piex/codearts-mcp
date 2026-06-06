@@ -184,7 +184,7 @@ describe("createRepoClient", () => {
   });
 
   it("uses official repository template and related commit paths", async () => {
-    const calls: Array<{ method: string; path: string; body?: unknown }> = [];
+    const calls: Array<{ method: string; path: string; body?: unknown; options?: unknown }> = [];
     const client = createRepoClient({
       get: async (path: string) => {
         calls.push({ method: "GET", path });
@@ -197,8 +197,8 @@ describe("createRepoClient", () => {
 
         throw new Error(`unexpected path: ${path}`);
       },
-      put: async (path: string, body: unknown) => {
-        calls.push({ method: "PUT", path, body });
+      put: async (path: string, body: unknown, options?: unknown) => {
+        calls.push({ method: "PUT", path, body, options });
         return { result: null, status: "success" };
       }
     } as never);
@@ -216,6 +216,7 @@ describe("createRepoClient", () => {
       per_page: 5
     });
     await client.updateRepositoryTemplateStatus({
+      x_auth_token: "token-1",
       repository_uuid: "repo-uuid-1",
       template_type: "PUBLIC",
       code_title: "Demo Template",
@@ -238,7 +239,8 @@ describe("createRepoClient", () => {
           template_type: "PUBLIC",
           code_title: "Demo Template",
           languages: ["TypeScript"]
-        }
+        },
+        options: { headers: { "X-Auth-Token": "token-1" } }
       }
     ]);
   });
@@ -2407,6 +2409,233 @@ describe("createRepoClient", () => {
       {
         path: "/v1/user/iam-1/validateHttpsInfo",
         body: { pwd: "secret" }
+      }
+    ]);
+  });
+
+  it("uses official repository member update, SSH private key verify and project repository name validation paths", async () => {
+    const calls: Array<{
+      method: string;
+      path: string;
+      body?: unknown;
+      options?: unknown;
+    }> = [];
+    const client = createRepoClient({
+      put: async (path: string, body?: unknown, options?: unknown) => {
+        calls.push({ method: "PUT", path, body, options });
+        return { result: {}, status: "success" };
+      },
+      post: async (path: string, body?: unknown, options?: unknown) => {
+        calls.push({ method: "POST", path, body, options });
+        return { result: "verificationPassed", status: "success" };
+      },
+      get: async (path: string, options?: unknown) => {
+        calls.push({ method: "GET", path, options });
+        return { result: true, status: "success" };
+      }
+    } as never);
+
+    const updated = await client.updateRepositoryMember({
+      x_auth_token: "token-1",
+      repository_uuid: "repo-uuid-1",
+      member_id: "member-1",
+      role: 40
+    });
+    const verified = await client.verifyUserSshPrivateKey({
+      x_auth_token: "token-1",
+      repository_uuid: "repo-uuid-1",
+      private_key: "-----BEGIN PRIVATE KEY-----demo"
+    });
+    const validated = await client.validateProjectRepositoryName({
+      x_auth_token: "token-1",
+      project_uuid: "project-1",
+      repository_name: "demo-repo"
+    });
+
+    expect(updated).toEqual({
+      repository_uuid: "repo-uuid-1",
+      member_id: "member-1",
+      role: 40,
+      status: "success",
+      result: {}
+    });
+    expect(verified).toEqual({
+      repository_uuid: "repo-uuid-1",
+      result: "verificationPassed",
+      status: "success"
+    });
+    expect(validated).toEqual({
+      project_uuid: "project-1",
+      repository_name: "demo-repo",
+      result: true,
+      status: "success"
+    });
+    expect(calls).toEqual([
+      {
+        method: "PUT",
+        path: "/v1/repositories/repo-uuid-1/members/member-1",
+        body: { role: 40 },
+        options: { headers: { "X-Auth-Token": "token-1" } }
+      },
+      {
+        method: "POST",
+        path: "/v1/users/sshkey/privatekey/verify",
+        body: {
+          repository_uuid: "repo-uuid-1",
+          private_key: "-----BEGIN PRIVATE KEY-----demo"
+        },
+        options: { headers: { "X-Auth-Token": "token-1" } }
+      },
+      {
+        method: "GET",
+        path: "/v1/projects/project-1/repositories/validation/demo-repo",
+        options: { headers: { "X-Auth-Token": "token-1" } }
+      }
+    ]);
+  });
+
+  it("uses official branch file, branch sub-files, repository status and pipeline paths", async () => {
+    const calls: Array<{
+      method: string;
+      path: string;
+      body?: unknown;
+      options?: unknown;
+    }> = [];
+    const client = createRepoClient({
+      get: async (path: string, options?: unknown) => {
+        calls.push({ method: "GET", path, options });
+        if (path.includes("/branch/feature%2Fdemo/file?")) {
+          return {
+            name: "index.ts",
+            path: "src/index.ts",
+            size: 12,
+            encoding: "base64",
+            ref: "feature/demo",
+            blob_id: "blob-1",
+            file_type: "text",
+            content: "Y29uc29sZS5sb2coJ29rJyk7"
+          };
+        }
+        if (path.includes("/branch/feature%2Fdemo/sub-files?")) {
+          return {
+            result: [
+              {
+                id: "tree-1",
+                name: "src",
+                type: "tree",
+                path: "src",
+                blob_id: "blob-tree-1"
+              }
+            ],
+            total: 1,
+            status: "success"
+          };
+        }
+        if (path.endsWith("/status")) {
+          return { result: 1, status: "success" };
+        }
+
+        throw new Error(`unexpected path: ${path}`);
+      },
+      put: async (path: string, body?: unknown, options?: unknown) => {
+        calls.push({ method: "PUT", path, body, options });
+        return { result: true, status: "success" };
+      }
+    } as never);
+
+    const file = await client.showBranchFile({
+      x_auth_token: "token-1",
+      repository_uuid: "repo-uuid-1",
+      branch_name: "feature/demo",
+      file_path: "src/index.ts"
+    });
+    const subFiles = await client.listBranchSubFiles({
+      x_auth_token: "token-1",
+      repository_uuid: "repo-uuid-1",
+      branch_name: "feature/demo",
+      path: "src",
+      page: 2,
+      page_size: 10
+    });
+    const status = await client.showRepositoryStatus({
+      x_auth_token: "token-1",
+      repository_uuid: "repo-uuid-1"
+    });
+    const pipeline = await client.updateRepositoryPipeline({
+      x_auth_token: "token-1",
+      repository_uuid: "repo-uuid-1"
+    });
+    const templateStatus = await client.updateRepositoryTemplateStatus({
+      x_auth_token: "token-1",
+      repository_uuid: "repo-uuid-1",
+      template_type: "PUBLIC",
+      code_title: "Demo Template",
+      languages: ["TypeScript"]
+    });
+
+    expect(file).toMatchObject({
+      name: "index.ts",
+      path: "src/index.ts",
+      blob_id: "blob-1",
+      content: "Y29uc29sZS5sb2coJ29rJyk7"
+    });
+    expect(subFiles).toEqual({
+      trees: [
+        {
+          id: "tree-1",
+          name: "src",
+          type: "tree",
+          path: "src",
+          blob_id: "blob-tree-1"
+        }
+      ],
+      total: 1
+    });
+    expect(status).toEqual({
+      repository_uuid: "repo-uuid-1",
+      result: 1,
+      status: "success"
+    });
+    expect(pipeline).toEqual({
+      repository_uuid: "repo-uuid-1",
+      result: true,
+      status: "success"
+    });
+    expect(templateStatus).toEqual({
+      result: true,
+      status: "success"
+    });
+    expect(calls).toEqual([
+      {
+        method: "GET",
+        path: "/v1/repositories/repo-uuid-1/branch/feature%2Fdemo/file?path=src%2Findex.ts",
+        options: { headers: { "X-Auth-Token": "token-1" } }
+      },
+      {
+        method: "GET",
+        path: "/v1/repositories/repo-uuid-1/branch/feature%2Fdemo/sub-files?offset=10&limit=10&path=src",
+        options: { headers: { "X-Auth-Token": "token-1" } }
+      },
+      {
+        method: "GET",
+        path: "/v1/repositories/repo-uuid-1/status",
+        options: { headers: { "X-Auth-Token": "token-1" } }
+      },
+      {
+        method: "PUT",
+        path: "/v1/repositories/repo-uuid-1/pipeline",
+        body: undefined,
+        options: { headers: { "X-Auth-Token": "token-1" } }
+      },
+      {
+        method: "PUT",
+        path: "/v2/repositories/repo-uuid-1/template-status",
+        body: {
+          template_type: "PUBLIC",
+          code_title: "Demo Template",
+          languages: ["TypeScript"]
+        },
+        options: { headers: { "X-Auth-Token": "token-1" } }
       }
     ]);
   });

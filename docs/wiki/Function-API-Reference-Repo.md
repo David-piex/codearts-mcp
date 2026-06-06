@@ -6,7 +6,7 @@
 
 模块：`代码仓库`
 
-API 数量：`384`
+API 数量：`391`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
@@ -9014,6 +9014,102 @@ API 数量：`384`
   },
   "required": [
     "repository_id",
+    "branch_name"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### repo_list_branch_sub_files
+
+所属模块：`代码仓库`
+
+说明：查询代码仓库的分支sub文件。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_list_branch_sub_files",
+    "arguments": {
+      "x_auth_token": "<x_auth_token>",
+      "repository_uuid": "<repository_uuid>",
+      "branch_name": "<branch_name>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 字段对应：<br>MCP 字段 `page` ↔ 原始 CodeArts 代码仓库 API 的分页页码或由 `offset/limit` 换算得到的页码。<br>页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 100 | 字段对应：<br>MCP 字段 `page_size` ↔ 原始 CodeArts 代码仓库 API 的分页大小字段，常见原字段名为 `page_size`、`limit` 或 `pageSize`。<br>每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 字段对应：<br>MCP 字段 `keyword` ↔ 原始 CodeArts 代码仓库 API 的搜索关键字字段，常见原字段名为 `keyword`、`search` 或 `name`。<br>搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 字段对应：<br>MCP 字段 `sort_by` ↔ 原始 CodeArts 代码仓库 API 同名字段 `sort_by`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 字段对应：<br>MCP 字段 `sort_order` ↔ 原始 CodeArts 代码仓库 API 同名字段 `sort_order`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `x_auth_token` | 是 | `string` |  | 字段对应：<br>MCP 字段 `x_auth_token` ↔ 原始 CodeArts 代码仓库 API 同名字段 `x_auth_token`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `repository_uuid` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repository_uuid` ↔ 原始 CodeArts 代码仓库 API 同名字段 `repository_uuid`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>CodeArts Repo 代码仓库 UUID，用于定位具体仓库，适合跨接口传递。 |
+| `branch_name` | 是 | `string` |  | 字段对应：<br>MCP 字段 `branch_name` ↔ 原始 CodeArts 代码仓库 API 同名字段 `branch_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>Git 分支名称，例如 master、main、develop 或 feature/login。 |
+| `path` | 否 | `string` |  | 字段对应：<br>MCP 字段 `path` ↔ 原始 CodeArts 代码仓库 API 同名字段 `path`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>资源路径。制品仓场景表示制品或目录路径；代码仓场景表示仓库内文件路径。通常从仓库或制品仓根目录开始填写。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "page": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "default": 1
+    },
+    "page_size": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 100,
+      "default": 100
+    },
+    "keyword": {
+      "type": "string"
+    },
+    "sort_by": {
+      "type": "string"
+    },
+    "sort_order": {
+      "type": "string",
+      "enum": [
+        "asc",
+        "desc"
+      ]
+    },
+    "x_auth_token": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repository_uuid": {
+      "type": "string",
+      "minLength": 1
+    },
+    "branch_name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "path": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "x_auth_token",
+    "repository_uuid",
     "branch_name"
   ],
   "additionalProperties": false,
@@ -19596,6 +19692,76 @@ API 数量：`384`
 }
 ```
 
+### repo_show_branch_file
+
+所属模块：`代码仓库`
+
+说明：执行代码仓库的分支文件。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_show_branch_file",
+    "arguments": {
+      "x_auth_token": "<x_auth_token>",
+      "repository_uuid": "<repository_uuid>",
+      "branch_name": "<branch_name>",
+      "file_path": "<file_path>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x_auth_token` | 是 | `string` |  | 字段对应：<br>MCP 字段 `x_auth_token` ↔ 原始 CodeArts 代码仓库 API 同名字段 `x_auth_token`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `repository_uuid` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repository_uuid` ↔ 原始 CodeArts 代码仓库 API 同名字段 `repository_uuid`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>CodeArts Repo 代码仓库 UUID，用于定位具体仓库，适合跨接口传递。 |
+| `branch_name` | 是 | `string` |  | 字段对应：<br>MCP 字段 `branch_name` ↔ 原始 CodeArts 代码仓库 API 同名字段 `branch_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>Git 分支名称，例如 master、main、develop 或 feature/login。 |
+| `file_path` | 是 | `string` |  | 字段对应：<br>MCP 字段 `file_path` ↔ 原始 CodeArts 代码仓库 API 同名字段 `file_path`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>仓库内文件路径，从仓库根目录开始填写，例如 src/index.ts；不要带仓库 URL。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "x_auth_token": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repository_uuid": {
+      "type": "string",
+      "minLength": 1
+    },
+    "branch_name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "file_path": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    }
+  },
+  "required": [
+    "x_auth_token",
+    "repository_uuid",
+    "branch_name",
+    "file_path"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### repo_show_commit
 
 所属模块：`代码仓库`
@@ -23737,6 +23903,60 @@ API 数量：`384`
   },
   "required": [
     "repository_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### repo_show_repository_status
+
+所属模块：`代码仓库`
+
+说明：执行代码仓库的仓库状态。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_show_repository_status",
+    "arguments": {
+      "x_auth_token": "<x_auth_token>",
+      "repository_uuid": "<repository_uuid>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x_auth_token` | 是 | `string` |  | 字段对应：<br>MCP 字段 `x_auth_token` ↔ 原始 CodeArts 代码仓库 API 同名字段 `x_auth_token`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `repository_uuid` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repository_uuid` ↔ 原始 CodeArts 代码仓库 API 同名字段 `repository_uuid`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>CodeArts Repo 代码仓库 UUID，用于定位具体仓库，适合跨接口传递。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "x_auth_token": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repository_uuid": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "x_auth_token",
+    "repository_uuid"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -28407,6 +28627,82 @@ API 数量：`384`
 }
 ```
 
+### repo_update_repository_member
+
+所属模块：`代码仓库`
+
+说明：更新代码仓库的仓库成员。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_update_repository_member",
+    "arguments": {
+      "x_auth_token": "<x_auth_token>",
+      "repository_uuid": "<repository_uuid>",
+      "member_id": "<member_id>",
+      "role": "<role>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x_auth_token` | 是 | `string` |  | 字段对应：<br>MCP 字段 `x_auth_token` ↔ 原始 CodeArts 代码仓库 API 同名字段 `x_auth_token`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `repository_uuid` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repository_uuid` ↔ 原始 CodeArts 代码仓库 API 同名字段 `repository_uuid`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>CodeArts Repo 代码仓库 UUID，用于定位具体仓库，适合跨接口传递。 |
+| `member_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `member_id` ↔ 原始 CodeArts 代码仓库 API 同名字段 `member_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>成员 ID，用于定位对应的 CodeArts 资源。 |
+| `role` | 是 | `20 \| 30 \| 40` |  | 字段对应：<br>MCP 字段 `role` ↔ 原始 CodeArts 代码仓库 API 同名字段 `role`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。可选值：`20`、`30`、`40`。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "x_auth_token": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repository_uuid": {
+      "type": "string",
+      "minLength": 1
+    },
+    "member_id": {
+      "$ref": "#/properties/repository_uuid"
+    },
+    "role": {
+      "type": "number",
+      "enum": [
+        20,
+        30,
+        40
+      ]
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "x_auth_token",
+    "repository_uuid",
+    "member_id",
+    "role"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### repo_update_repository_permission_inherit_enabled
 
 所属模块：`代码仓库`
@@ -28459,6 +28755,65 @@ API 数量：`384`
   "required": [
     "repository_id",
     "inherit_parent_permission"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### repo_update_repository_pipeline
+
+所属模块：`代码仓库`
+
+说明：更新代码仓库的仓库流水线。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_update_repository_pipeline",
+    "arguments": {
+      "x_auth_token": "<x_auth_token>",
+      "repository_uuid": "<repository_uuid>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x_auth_token` | 是 | `string` |  | 字段对应：<br>MCP 字段 `x_auth_token` ↔ 原始 CodeArts 代码仓库 API 同名字段 `x_auth_token`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `repository_uuid` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repository_uuid` ↔ 原始 CodeArts 代码仓库 API 同名字段 `repository_uuid`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>CodeArts Repo 代码仓库 UUID，用于定位具体仓库，适合跨接口传递。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "x_auth_token": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repository_uuid": {
+      "type": "string",
+      "minLength": 1
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "x_auth_token",
+    "repository_uuid"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -28667,6 +29022,7 @@ API 数量：`384`
   "params": {
     "name": "repo_update_repository_template_status",
     "arguments": {
+      "x_auth_token": "<x_auth_token>",
       "repository_uuid": "<repository_uuid>",
       "template_type": "<template_type>"
     }
@@ -28678,6 +29034,7 @@ API 数量：`384`
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
+| `x_auth_token` | 是 | `string` |  | 字段对应：<br>MCP 字段 `x_auth_token` ↔ 原始 CodeArts 代码仓库 API 同名字段 `x_auth_token`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
 | `repository_uuid` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repository_uuid` ↔ 原始 CodeArts 代码仓库 API 同名字段 `repository_uuid`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>CodeArts Repo 代码仓库 UUID，用于定位具体仓库，适合跨接口传递。 |
 | `template_type` | 是 | `"SHARE" \| "PUBLIC"` |  | 字段对应：<br>MCP 字段 `template_type` ↔ 原始 CodeArts 代码仓库 API 同名字段 `template_type`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。可选值：`SHARE`、`PUBLIC`。 |
 | `code_title` | 否 | `string` |  | 字段对应：<br>MCP 字段 `code_title` ↔ 原始 CodeArts 代码仓库 API 同名字段 `code_title`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
@@ -28694,6 +29051,10 @@ API 数量：`384`
 {
   "type": "object",
   "properties": {
+    "x_auth_token": {
+      "type": "string",
+      "minLength": 1
+    },
     "repository_uuid": {
       "type": "string",
       "minLength": 1
@@ -28750,6 +29111,7 @@ API 数量：`384`
     }
   },
   "required": [
+    "x_auth_token",
     "repository_uuid",
     "template_type"
   ],
@@ -29337,6 +29699,135 @@ API 数量：`384`
   "required": [
     "iam_user_uuid",
     "pwd"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### repo_validate_project_repository_name
+
+所属模块：`代码仓库`
+
+说明：校验代码仓库的项目仓库name。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_validate_project_repository_name",
+    "arguments": {
+      "x_auth_token": "<x_auth_token>",
+      "project_uuid": "<project_uuid>",
+      "repository_name": "<repository_name>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x_auth_token` | 是 | `string` |  | 字段对应：<br>MCP 字段 `x_auth_token` ↔ 原始 CodeArts 代码仓库 API 同名字段 `x_auth_token`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `project_uuid` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_uuid` ↔ 原始 CodeArts 代码仓库 API 中表示项目 UUID 的字段，常见原字段名为 `project_uuid`、`projectUuid` 或 `projectUUId`，以对应接口实际定义为准。<br>CodeArts 项目 UUID，常用于 Repo 仓库创建、仓库查询和项目级资源定位。可通过项目列表或控制台项目详情获取。 |
+| `repository_name` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repository_name` ↔ 原始 CodeArts 代码仓库 API 同名字段 `repository_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>仓库名称。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "x_auth_token": {
+      "type": "string",
+      "minLength": 1
+    },
+    "project_uuid": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repository_name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    }
+  },
+  "required": [
+    "x_auth_token",
+    "project_uuid",
+    "repository_name"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### repo_verify_user_ssh_private_key
+
+所属模块：`代码仓库`
+
+说明：执行代码仓库的用户sshprivatekey。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_verify_user_ssh_private_key",
+    "arguments": {
+      "x_auth_token": "<x_auth_token>",
+      "repository_uuid": "<repository_uuid>",
+      "private_key": "<private_key>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `x_auth_token` | 是 | `string` |  | 字段对应：<br>MCP 字段 `x_auth_token` ↔ 原始 CodeArts 代码仓库 API 同名字段 `x_auth_token`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `repository_uuid` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repository_uuid` ↔ 原始 CodeArts 代码仓库 API 同名字段 `repository_uuid`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>CodeArts Repo 代码仓库 UUID，用于定位具体仓库，适合跨接口传递。 |
+| `private_key` | 是 | `string` |  | 字段对应：<br>MCP 字段 `private_key` ↔ 原始 CodeArts 代码仓库 API 同名字段 `private_key`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "x_auth_token": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repository_uuid": {
+      "type": "string",
+      "minLength": 1
+    },
+    "private_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "x_auth_token",
+    "repository_uuid",
+    "private_key"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

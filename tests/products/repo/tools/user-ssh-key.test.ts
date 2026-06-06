@@ -9,6 +9,11 @@ import {
   mapDeletedUserSshKey,
   previewDeleteUserSshKey
 } from "../../../../src/products/repo/tools/delete-user-ssh-key.js";
+import {
+  createRepoVerifyUserSshPrivateKeyHandler,
+  mapVerifiedUserSshPrivateKey,
+  previewVerifyUserSshPrivateKey
+} from "../../../../src/products/repo/tools/verify-user-ssh-private-key.js";
 
 describe("user SSH key tool previews", () => {
   it("redacts key material in create previews", () => {
@@ -36,6 +41,23 @@ describe("user SSH key tool previews", () => {
     expect(result.item).toEqual({
       id: "123",
       keyId: "123",
+      executed: false
+    });
+  });
+
+  it("redacts private key material in verify previews", () => {
+    const result = previewVerifyUserSshPrivateKey({
+      x_auth_token: "token-1",
+      repository_uuid: "repo-uuid-1",
+      private_key: "-----BEGIN PRIVATE KEY-----demo",
+      dry_run: true
+    });
+
+    expect(result.summary).toContain("Dry run");
+    expect(result.item).toEqual({
+      repositoryUuid: "repo-uuid-1",
+      tokenProvided: true,
+      privateKeyProvided: true,
       executed: false
     });
   });
@@ -72,12 +94,28 @@ describe("user SSH key tool mappers", () => {
       executed: true
     });
   });
+
+  it("maps verified SSH private keys", () => {
+    const result = mapVerifiedUserSshPrivateKey({
+      repository_uuid: "repo-uuid-1",
+      result: "verificationPassed",
+      status: "success"
+    });
+
+    expect(result.item).toEqual({
+      repositoryUuid: "repo-uuid-1",
+      result: "verificationPassed",
+      status: "success",
+      executed: true
+    });
+  });
 });
 
 describe("user SSH key handlers", () => {
   it("skips client calls for dry-run writes", async () => {
     const createUserSshKey = vi.fn();
     const deleteUserSshKey = vi.fn();
+    const verifyUserSshPrivateKey = vi.fn();
 
     await createRepoCreateUserSshKeyHandler({ createUserSshKey })({
       title: "laptop",
@@ -86,8 +124,14 @@ describe("user SSH key handlers", () => {
     await createRepoDeleteUserSshKeyHandler({ deleteUserSshKey })({
       key_id: "123"
     });
+    await createRepoVerifyUserSshPrivateKeyHandler({ verifyUserSshPrivateKey })({
+      x_auth_token: "token-1",
+      repository_uuid: "repo-uuid-1",
+      private_key: "-----BEGIN PRIVATE KEY-----demo"
+    });
 
     expect(createUserSshKey).not.toHaveBeenCalled();
     expect(deleteUserSshKey).not.toHaveBeenCalled();
+    expect(verifyUserSshPrivateKey).not.toHaveBeenCalled();
   });
 });
