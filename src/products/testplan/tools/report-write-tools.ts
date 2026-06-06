@@ -1,5 +1,6 @@
 import { asItemResult } from "../../../contracts/tool-result.js";
 import {
+  testPlanBatchDeleteTestReportsInput,
   testPlanCreateProgressReportInput,
   testPlanCreateCustomTemplateReportInput,
   testPlanDeleteCustomTemplateReportInput,
@@ -9,6 +10,7 @@ import {
   testPlanRefreshCustomTemplateReportInput,
   testPlanUpdateCustomTemplateReportInput,
   testPlanUpdateProgressReportInput,
+  testPlanUpdateRuleCheckViolationInput,
   testPlanUpdateTestReportInput,
   testPlanUpdateTestReportQualityAttributesInput
 } from "../schemas.js";
@@ -400,6 +402,74 @@ export function createTestPlanDeleteProgressReportHandler(client: {
       projectUuid: response.project_uuid,
       versionUri: response.version_uri,
       deleted: response.deleted,
+      value: response.value,
+      response: response.raw
+    });
+    return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+  };
+}
+
+export function createTestPlanBatchDeleteTestReportsHandler(client: {
+  batchDeleteTestReports: (input: Omit<ReturnType<typeof testPlanBatchDeleteTestReportsInput.parse>, "dry_run">) => Promise<{
+    project_id: string;
+    report_ids: string[];
+    deleted: boolean;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+}) {
+  return async (input: unknown) => {
+    const parsed = testPlanBatchDeleteTestReportsInput.parse(input);
+    if (parsed.dry_run) {
+      const result = preview(`Dry run: batch-delete ${parsed.report_uris.length} test report(s)`, {
+        id: parsed.project_id,
+        projectId: parsed.project_id,
+        reportIds: parsed.report_uris
+      });
+      return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+    }
+    const response = await client.batchDeleteTestReports(parsed);
+    const result = executed(`Batch-deleted ${response.report_ids.length} test report(s)`, {
+      id: response.project_id,
+      projectId: response.project_id,
+      reportIds: response.report_ids,
+      deleted: response.deleted,
+      value: response.value,
+      response: response.raw
+    });
+    return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+  };
+}
+
+export function createTestPlanUpdateRuleCheckViolationHandler(client: {
+  updateRuleCheckViolation: (input: Omit<ReturnType<typeof testPlanUpdateRuleCheckViolationInput.parse>, "dry_run">) => Promise<{
+    project_id: string;
+    version_uri: string;
+    violation_id: string;
+    status: number;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+}) {
+  return async (input: unknown) => {
+    const parsed = testPlanUpdateRuleCheckViolationInput.parse(input);
+    if (parsed.dry_run) {
+      const result = preview(`Dry run: update rule check violation ${parsed.violation_uri}`, {
+        id: parsed.violation_uri,
+        violationId: parsed.violation_uri,
+        projectId: parsed.project_id,
+        versionUri: parsed.version_uri,
+        status: parsed.status
+      });
+      return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+    }
+    const response = await client.updateRuleCheckViolation(parsed);
+    const result = executed(`Updated rule check violation ${response.violation_id}`, {
+      id: response.violation_id,
+      violationId: response.violation_id,
+      projectId: response.project_id,
+      versionUri: response.version_uri,
+      status: response.status,
       value: response.value,
       response: response.raw
     });

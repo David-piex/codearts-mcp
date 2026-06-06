@@ -331,7 +331,30 @@ export const testPlanQueryTesthubEtlDataInput = z
     end_time: z.string().min(1),
     filter_time_field: z.string().min(1),
     sort_field: z.string().min(1).optional(),
-    schema_no: z.string().min(1)
+    schema_no: z.string().min(1),
+    project_uuid: idSchema.optional(),
+    query_fields: z.array(z.string().min(1)).optional()
+  })
+  .passthrough();
+
+export const testPlanQueryUserEtlDataInput = testPlanQueryTesthubEtlDataInput.extend({
+  project_uuid: idSchema
+});
+
+export const testPlanGetUserEtlDataTotalInput = testPlanQueryUserEtlDataInput;
+
+export const testPlanGetTesthubEtlDataTotalInput = testPlanQueryTesthubEtlDataInput.extend({
+  project_uuid: idSchema
+});
+
+export const testPlanQueryTesthubEtlDataListInput = testPlanQueryTesthubEtlDataInput;
+
+export const testPlanGetTesthubEtlMaxRowSizeInput = z
+  .object({
+    table_name: z.string().min(1),
+    schema_no: z.string().min(1).optional(),
+    project_uuid: idSchema.optional(),
+    query_fields: z.array(z.string().min(1)).optional()
   })
   .passthrough();
 
@@ -545,6 +568,19 @@ export const testPlanDeleteProgressReportInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const testPlanDownloadTestReportInput = z.object({
+  project_id: idSchema,
+  version_uri: idSchema,
+  report_uri: idSchema
+});
+
+export const testPlanBatchDeleteTestReportsInput = z.object({
+  project_id: idSchema,
+  report_uris: z.array(z.string().min(1)).min(1),
+  body: z.array(z.string().min(1)).optional(),
+  dry_run: z.boolean().default(true)
+});
+
 export const testPlanListTestReportsInput = pagingSchema.extend({
   project_id: idSchema,
   keyword: z.string().min(1).optional(),
@@ -569,6 +605,24 @@ export const testPlanGetRuleCheckTaskSummaryInput = z.object({
   task_uri: idSchema,
   severity: z.string().min(1).optional(),
   status: z.number().int().optional()
+});
+
+export const testPlanListRuleCheckViolationCasesInput = pagingSchema.extend({
+  project_id: idSchema,
+  version_uri: idSchema,
+  task_uri: idSchema,
+  severity: z.union([z.string().min(1), z.number().int()]).optional(),
+  status: z.union([z.string().min(1), z.number().int()]).optional(),
+  body: z.record(z.string(), z.unknown()).optional()
+});
+
+export const testPlanUpdateRuleCheckViolationInput = z.object({
+  project_id: idSchema,
+  version_uri: idSchema,
+  violation_uri: idSchema,
+  status: z.number().int(),
+  body: z.record(z.string(), z.unknown()).optional(),
+  dry_run: z.boolean().default(true)
 });
 
 export const testPlanListBranchTestcaseDuplicateNumbersInput = z.object({

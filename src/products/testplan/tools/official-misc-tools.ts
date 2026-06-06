@@ -9,7 +9,12 @@ import {
   testPlanGetTepRegisterCodeInput,
   testPlanGetTestSuitesVarListForPipelineInput,
   testPlanListTepsInput,
+  testPlanGetTesthubEtlDataTotalInput,
+  testPlanGetTesthubEtlMaxRowSizeInput,
+  testPlanGetUserEtlDataTotalInput,
+  testPlanQueryTesthubEtlDataListInput,
   testPlanQueryTesthubEtlDataInput,
+  testPlanQueryUserEtlDataInput,
   testPlanSearchAutotaskInput,
   testPlanUpdateTepShareInput,
   testPlanUpdateUserInfosInput
@@ -152,6 +157,16 @@ type QueryTesthubEtlDataInput = {
   filter_time_field: string;
   sort_field?: string;
   schema_no: string;
+  project_uuid?: string;
+  query_fields?: string[];
+  [key: string]: unknown;
+};
+
+type TesthubEtlMaxRowSizeInput = {
+  table_name: string;
+  schema_no?: string;
+  project_uuid?: string;
+  query_fields?: string[];
   [key: string]: unknown;
 };
 
@@ -636,6 +651,114 @@ export function createTestPlanQueryTesthubEtlDataHandler(client: {
         ...result,
         response: response.raw
       }
+    };
+  };
+}
+
+function createEtlTotalHandler<const MethodName extends "getUserEtlDataTotal" | "getTesthubEtlDataTotal">(
+  schema: { parse: (input: unknown) => QueryTesthubEtlDataInput & { project_uuid?: string } },
+  clientMethodName: MethodName,
+  summary: string
+) {
+  return (client: Record<MethodName, (input: QueryTesthubEtlDataInput & { project_uuid?: string }) => Promise<{
+    total?: number;
+    status?: string;
+    raw: Record<string, unknown>;
+  }>>) =>
+    async (input: unknown) => {
+      const parsed = schema.parse(input);
+      const response = await client[clientMethodName](parsed);
+      const result = mapTestPlanRecordItem(summary, parsed.table_name, "etlTotal", response.raw, {
+        tableName: parsed.table_name,
+        projectUuid: parsed.project_uuid,
+        total: response.total,
+        status: response.status
+      });
+
+      return {
+        content: [{ type: "text" as const, text: result.summary }],
+        structuredContent: result
+      };
+    };
+}
+
+function createEtlDataListHandler<const MethodName extends "queryUserEtlData" | "queryTesthubEtlDataList">(
+  schema: { parse: (input: unknown) => QueryTesthubEtlDataInput & { project_uuid?: string } },
+  clientMethodName: MethodName,
+  noun: string
+) {
+  return (client: Record<MethodName, (input: QueryTesthubEtlDataInput & { project_uuid?: string }) => Promise<{
+    rows: Array<Record<string, unknown>>;
+    total?: number;
+    status?: string;
+    raw: Record<string, unknown>;
+  }>>) =>
+    async (input: unknown) => {
+      const parsed = schema.parse(input);
+      const response = await client[clientMethodName](parsed);
+      const result = mapTestPlanRecordList(response.rows, response.total, noun, "row");
+
+      return {
+        content: [{ type: "text" as const, text: formatTestPlanRecordListText(result) }],
+        structuredContent: {
+          ...result,
+          status: response.status,
+          response: response.raw
+        }
+      };
+    };
+}
+
+export const createTestPlanGetUserEtlDataTotalHandler = createEtlTotalHandler(
+  testPlanGetUserEtlDataTotalInput,
+  "getUserEtlDataTotal",
+  "Loaded TestPlan user ETL data total"
+);
+
+export const createTestPlanQueryUserEtlDataHandler = createEtlDataListHandler(
+  testPlanQueryUserEtlDataInput,
+  "queryUserEtlData",
+  "User ETL rows"
+);
+
+export const createTestPlanGetTesthubEtlDataTotalHandler = createEtlTotalHandler(
+  testPlanGetTesthubEtlDataTotalInput,
+  "getTesthubEtlDataTotal",
+  "Loaded TestPlan TestHub ETL data total"
+);
+
+export const createTestPlanQueryTesthubEtlDataListHandler = createEtlDataListHandler(
+  testPlanQueryTesthubEtlDataListInput,
+  "queryTesthubEtlDataList",
+  "TestHub ETL data-list rows"
+);
+
+export function createTestPlanGetTesthubEtlMaxRowSizeHandler(client: {
+  getTesthubEtlMaxRowSize: (input: TesthubEtlMaxRowSizeInput) => Promise<{
+    size?: number;
+    status?: string;
+    raw: Record<string, unknown>;
+  }>;
+}) {
+  return async (input: unknown) => {
+    const parsed = testPlanGetTesthubEtlMaxRowSizeInput.parse(input);
+    const response = await client.getTesthubEtlMaxRowSize(parsed);
+    const result = mapTestPlanRecordItem(
+      "Loaded TestPlan TestHub ETL max row size",
+      parsed.table_name,
+      "etlMaxRowSize",
+      response.raw,
+      {
+        tableName: parsed.table_name,
+        projectUuid: parsed.project_uuid,
+        size: response.size,
+        status: response.status
+      }
+    );
+
+    return {
+      content: [{ type: "text" as const, text: result.summary }],
+      structuredContent: result
     };
   };
 }

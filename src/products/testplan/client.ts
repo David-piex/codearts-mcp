@@ -96,6 +96,21 @@ type TestPlanTesthubTestcasesV5Input = {
   execution_type_id?: number;
 };
 
+type TestPlanEtlQueryInput = {
+  offset: number;
+  limit: number;
+  table_name: string;
+  is_bak?: boolean | string;
+  start_time: string;
+  end_time: string;
+  filter_time_field: string;
+  sort_field?: string;
+  schema_no: string;
+  project_uuid?: string;
+  query_fields?: string[];
+  [key: string]: unknown;
+};
+
 type TestPlanTestcaseUrisInput = {
   project_id: string;
   page: number;
@@ -839,6 +854,28 @@ export type TestPlanClient = {
     reports: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  downloadTestReport: (input: {
+    project_id: string;
+    version_uri: string;
+    report_uri: string;
+  }) => Promise<{
+    project_id: string;
+    version_uri: string;
+    report_id: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  batchDeleteTestReports: (input: {
+    project_id: string;
+    report_uris: string[];
+    body?: string[];
+  }) => Promise<{
+    project_id: string;
+    report_ids: string[];
+    deleted: boolean;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
   getRuleCheckTaskReport: (input: {
     project_id: string;
     version_uri: string;
@@ -867,6 +904,34 @@ export type TestPlanClient = {
     status?: number;
   }) => Promise<{
     task_uri: string;
+    raw: Record<string, unknown>;
+  }>;
+  listRuleCheckViolationCases: (input: {
+    project_id: string;
+    version_uri: string;
+    task_uri: string;
+    page: number;
+    page_size: number;
+    severity?: string | number;
+    status?: string | number;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    violations: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
+  updateRuleCheckViolation: (input: {
+    project_id: string;
+    version_uri: string;
+    violation_uri: string;
+    status: number;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    project_id: string;
+    version_uri: string;
+    violation_id: string;
+    status: number;
+    value?: unknown;
     raw: Record<string, unknown>;
   }>;
   listBranchTestcaseDuplicateNumbers: (input: {
@@ -2126,18 +2191,40 @@ export type TestPlanClient = {
   }) => Promise<{
     raw: Record<string, unknown>;
   }>;
-  queryTesthubEtlData: (input: {
-    offset: number;
-    limit: number;
+  getUserEtlDataTotal: (input: TestPlanEtlQueryInput & { project_uuid: string }) => Promise<{
+    total?: number;
+    status?: string;
+    raw: Record<string, unknown>;
+  }>;
+  queryUserEtlData: (input: TestPlanEtlQueryInput & { project_uuid: string }) => Promise<{
+    rows: Array<Record<string, unknown>>;
+    total?: number;
+    status?: string;
+    raw: Record<string, unknown>;
+  }>;
+  getTesthubEtlDataTotal: (input: TestPlanEtlQueryInput & { project_uuid: string }) => Promise<{
+    total?: number;
+    status?: string;
+    raw: Record<string, unknown>;
+  }>;
+  queryTesthubEtlDataList: (input: TestPlanEtlQueryInput) => Promise<{
+    rows: Array<Record<string, unknown>>;
+    total?: number;
+    status?: string;
+    raw: Record<string, unknown>;
+  }>;
+  getTesthubEtlMaxRowSize: (input: {
     table_name: string;
-    is_bak?: boolean | string;
-    start_time: string;
-    end_time: string;
-    filter_time_field: string;
-    sort_field?: string;
-    schema_no: string;
+    schema_no?: string;
+    project_uuid?: string;
+    query_fields?: string[];
     [key: string]: unknown;
   }) => Promise<{
+    size?: number;
+    status?: string;
+    raw: Record<string, unknown>;
+  }>;
+  queryTesthubEtlData: (input: TestPlanEtlQueryInput) => Promise<{
     rows: Array<Record<string, unknown>>;
     total?: number;
     raw: Record<string, unknown>;
@@ -3276,6 +3363,17 @@ function readOptionalNumber(input: unknown) {
   return typeof input === "number" ? input : undefined;
 }
 
+function readNumberLike(input: unknown) {
+  if (typeof input === "number") {
+    return input;
+  }
+  if (typeof input === "string" && input.trim() !== "") {
+    const parsed = Number(input);
+    return Number.isFinite(parsed) ? parsed : undefined;
+  }
+  return undefined;
+}
+
 function readOptionalString(input: unknown) {
   return typeof input === "string" ? input : undefined;
 }
@@ -3307,6 +3405,23 @@ function readTotal(payload: Record<string, unknown>, response: unknown, fallback
     readOptionalNumber(envelope.total_size) ??
     fallback
   );
+}
+
+function readRowsFromPayload(payload: Record<string, unknown>) {
+  const value = readEnvelope(payload.value) ?? readEnvelope(payload.result) ?? payload;
+  return readArray<unknown>(value.values ?? value.value ?? value.items ?? value.list).map((item) =>
+    typeof item === "object" && item !== null ? (item as Record<string, unknown>) : { value: item }
+  );
+}
+
+function readEtlStatus(response: unknown, payload: Record<string, unknown>) {
+  const envelope = readEnvelope(response) ?? {};
+  return readOptionalString(envelope.status) ?? readOptionalString(payload.status);
+}
+
+function readEtlTotal(payload: Record<string, unknown>, response: unknown, fallback?: number) {
+  const value = readEnvelope(payload.value) ?? readEnvelope(payload.result) ?? payload;
+  return readTotal(value, response, fallback);
 }
 
 function createOverviewBody(input: TestPlanOverviewFilterInput) {
@@ -5072,6 +5187,37 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         total: readTotal(payload, response, reports.length)
       };
     },
+    async downloadTestReport(input) {
+      const response = await _http.post(
+        `/v4/${encodeURIComponent(input.project_id)}/versions/${encodeURIComponent(input.version_uri)}/reports/${encodeURIComponent(input.report_uri)}/download`,
+        {}
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        project_id: input.project_id,
+        version_uri: input.version_uri,
+        report_id: input.report_uri,
+        value: readResultValue(response, payload),
+        raw: payload
+      };
+    },
+    async batchDeleteTestReports(input) {
+      const body = input.body ?? input.report_uris;
+      const response = await _http.delete(
+        `/testreport/v4/${encodeURIComponent(input.project_id)}/test-reports/batch-delete`,
+        body
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        project_id: input.project_id,
+        report_ids: input.report_uris,
+        deleted: true,
+        value: readResultValue(response, payload),
+        raw: payload
+      };
+    },
     async getRuleCheckTaskReport(input) {
       const response = await _http.get(
         `/v4/${encodeURIComponent(input.project_id)}/versions/${encodeURIComponent(input.version_uri)}/rule-check/tasks/${encodeURIComponent(input.task_uri)}`
@@ -5124,6 +5270,54 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       return {
         task_uri: input.task_uri,
         raw: summary
+      };
+    },
+    async listRuleCheckViolationCases(input) {
+      const body: Record<string, unknown> = input.body
+        ? { ...input.body }
+        : {
+            page_no: input.page,
+            page_size: input.page_size
+          };
+      if (input.severity !== undefined) {
+        body.severity = input.severity;
+      }
+      if (input.status !== undefined) {
+        body.status = input.status;
+      }
+
+      const response = await _http.post(
+        `/v4/${encodeURIComponent(input.project_id)}/versions/${encodeURIComponent(input.version_uri)}/rule-check/tasks/${encodeURIComponent(input.task_uri)}/violation-cases`,
+        body
+      );
+      const payload = readResultPayload(response);
+      const violations = readArray<Record<string, unknown>>(
+        payload.value ?? payload.violations ?? payload.items ?? payload.list
+      );
+
+      return {
+        violations,
+        total: readTotal(payload, response, violations.length),
+        raw: payload
+      };
+    },
+    async updateRuleCheckViolation(input) {
+      const body: Record<string, unknown> = input.body ? { ...input.body } : {};
+      body.status = input.status;
+
+      const response = await _http.put(
+        `/v4/${encodeURIComponent(input.project_id)}/versions/${encodeURIComponent(input.version_uri)}/rule-check/violations/${encodeURIComponent(input.violation_uri)}`,
+        body
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        project_id: input.project_id,
+        version_uri: input.version_uri,
+        violation_id: input.violation_uri,
+        status: input.status,
+        value: readResultValue(response, payload),
+        raw: payload
       };
     },
     async listBranchTestcaseDuplicateNumbers(input) {
@@ -7731,12 +7925,69 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         raw: result
       };
     },
+    async getUserEtlDataTotal(input) {
+      const response = await _http.post("/testreport/v4/user/etl/query/data-total", input);
+      const payload = readResultPayload(response);
+
+      return {
+        total: readEtlTotal(payload, response),
+        status: readEtlStatus(response, payload),
+        raw: payload
+      };
+    },
+    async queryUserEtlData(input) {
+      const response = await _http.post("/testreport/v4/user/etl/query/data-list", input);
+      const payload = readResultPayload(response);
+      const rows = readRowsFromPayload(payload);
+
+      return {
+        rows,
+        total: readEtlTotal(payload, response, rows.length),
+        status: readEtlStatus(response, payload),
+        raw: payload
+      };
+    },
+    async getTesthubEtlDataTotal(input) {
+      const response = await _http.post("/testreport/v4/testhub/etl/query/data-total", input);
+      const payload = readResultPayload(response);
+
+      return {
+        total: readEtlTotal(payload, response),
+        status: readEtlStatus(response, payload),
+        raw: payload
+      };
+    },
+    async queryTesthubEtlDataList(input) {
+      const response = await _http.post("/testreport/v4/testhub/etl/query/data-list", input);
+      const payload = readResultPayload(response);
+      const rows = readRowsFromPayload(payload);
+
+      return {
+        rows,
+        total: readEtlTotal(payload, response, rows.length),
+        status: readEtlStatus(response, payload),
+        raw: payload
+      };
+    },
+    async getTesthubEtlMaxRowSize(input) {
+      const response = await _http.post("/testreport/v4/testhub/etl/query/max-row-size", input);
+      const payload = readResultPayload(response);
+      const value = readEnvelope(payload.value) ?? readEnvelope(payload.result) ?? payload;
+
+      return {
+        size:
+          readNumberLike(value.size) ??
+          readNumberLike(value.max_row_size) ??
+          readNumberLike(value.maxRowSize) ??
+          readNumberLike(value.total),
+        status: readEtlStatus(response, payload),
+        raw: payload
+      };
+    },
     async queryTesthubEtlData(input) {
       const response = await _http.post("/v4/testhub/etl/query-data", input);
       const payload = readResultPayload(response);
-      const rows = readArray<unknown>(payload.value ?? payload.values ?? payload.items ?? payload.list).map((item) =>
-        typeof item === "object" && item !== null ? (item as Record<string, unknown>) : { value: item }
-      ) as Array<Record<string, unknown>>;
+      const rows = readRowsFromPayload(payload);
 
       return {
         rows,

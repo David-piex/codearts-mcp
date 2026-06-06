@@ -4,6 +4,9 @@ import {
   createTestPlanCreateResourceUriV4Handler,
   createTestPlanDownloadClassesHandler,
   createTestPlanGetDesignDataHandler,
+  createTestPlanGetTesthubEtlDataTotalHandler,
+  createTestPlanGetTesthubEtlMaxRowSizeHandler,
+  createTestPlanGetUserEtlDataTotalHandler,
   createTestPlanGetTepRegisterCodeHandler,
   createTestPlanGetTestSuitesVarListForPipelineHandler,
   createTestPlanListIpdIssuesTreeHandler,
@@ -11,6 +14,8 @@ import {
   createTestPlanListIteratorStageCountsHandler,
   createTestPlanListTepsHandler,
   createTestPlanQueryTesthubEtlDataHandler,
+  createTestPlanQueryTesthubEtlDataListHandler,
+  createTestPlanQueryUserEtlDataHandler,
   createTestPlanSearchAutotaskHandler,
   createTestPlanUpdateTepShareHandler,
   createTestPlanUpdateUserInfosHandler
@@ -315,6 +320,95 @@ describe("official TestPlan misc handlers", () => {
       structuredContent: {
         summary: "1 TestHub ETL rows found",
         items: [{ id: "row-1", row: { id: "row-1", suite_name: "smoke" } }]
+      }
+    });
+  });
+
+  it("maps official ETL testreport handlers", async () => {
+    const getUserTotalHandler = createTestPlanGetUserEtlDataTotalHandler({
+      getUserEtlDataTotal: async () => ({
+        total: 2,
+        status: "success",
+        raw: { total: 2 }
+      })
+    });
+    const queryUserDataHandler = createTestPlanQueryUserEtlDataHandler({
+      queryUserEtlData: async () => ({
+        rows: [{ id: "row-1", name: "user row" }],
+        total: 1,
+        status: "success",
+        raw: { values: [{ id: "row-1", name: "user row" }], total: 1 }
+      })
+    });
+    const getTesthubTotalHandler = createTestPlanGetTesthubEtlDataTotalHandler({
+      getTesthubEtlDataTotal: async () => ({
+        total: 3,
+        status: "success",
+        raw: { total: 3 }
+      })
+    });
+    const queryTesthubDataListHandler = createTestPlanQueryTesthubEtlDataListHandler({
+      queryTesthubEtlDataList: async () => ({
+        rows: [{ id: "row-2", name: "testhub row" }],
+        total: 1,
+        status: "success",
+        raw: { values: [{ id: "row-2", name: "testhub row" }], total: 1 }
+      })
+    });
+    const getMaxRowSizeHandler = createTestPlanGetTesthubEtlMaxRowSizeHandler({
+      getTesthubEtlMaxRowSize: async () => ({
+        size: 500,
+        status: "success",
+        raw: { size: 500 }
+      })
+    });
+    const base = {
+      offset: 0,
+      limit: 50,
+      table_name: "relation",
+      start_time: "2026-06-01 00:00:00",
+      end_time: "2026-06-06 23:59:59",
+      filter_time_field: "CREATIONDATE",
+      schema_no: "3",
+      project_uuid: "project-1"
+    };
+
+    await expect(getUserTotalHandler(base)).resolves.toMatchObject({
+      structuredContent: {
+        summary: "Loaded TestPlan user ETL data total",
+        item: { id: "relation", total: 2, status: "success" }
+      }
+    });
+    await expect(queryUserDataHandler(base)).resolves.toMatchObject({
+      structuredContent: {
+        summary: "1 User ETL rows found",
+        items: [{ id: "row-1", row: { id: "row-1", name: "user row" } }],
+        status: "success"
+      }
+    });
+    await expect(getTesthubTotalHandler(base)).resolves.toMatchObject({
+      structuredContent: {
+        summary: "Loaded TestPlan TestHub ETL data total",
+        item: { id: "relation", total: 3, status: "success" }
+      }
+    });
+    await expect(queryTesthubDataListHandler(base)).resolves.toMatchObject({
+      structuredContent: {
+        summary: "1 TestHub ETL data-list rows found",
+        items: [{ id: "row-2", row: { id: "row-2", name: "testhub row" } }],
+        status: "success"
+      }
+    });
+    await expect(
+      getMaxRowSizeHandler({
+        table_name: "relation",
+        schema_no: "3",
+        project_uuid: "project-1"
+      })
+    ).resolves.toMatchObject({
+      structuredContent: {
+        summary: "Loaded TestPlan TestHub ETL max row size",
+        item: { id: "relation", size: 500, status: "success" }
       }
     });
   });

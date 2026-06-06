@@ -115,7 +115,8 @@ describe("registerTestPlanTool", () => {
       ["testplan_get_testcase_dataset", "Get CodeArts TestPlan testcase dataset by case URI and group ID"],
       ["testplan_get_case_logdata_upload_url", "Get CodeArts TestPlan case logdata upload URL"],
       ["testplan_get_case_logdata_archive", "Get CodeArts TestPlan case logdata archive request data"],
-      ["testplan_list_resource_operation_records", "List CodeArts TestPlan resource operation records"]
+      ["testplan_list_resource_operation_records", "List CodeArts TestPlan resource operation records"],
+      ["testplan_download_test_report", "Get CodeArts TestPlan test report download metadata"]
     ] as const;
 
     for (const [toolName, description] of tools) {
@@ -150,7 +151,8 @@ describe("registerTestPlanTool", () => {
       ["testplan_copy_task_relations", "Copy CodeArts TestPlan task relations to another task (dry-run by default)"],
       ["testplan_create_defect_association", "Associate a CodeArts TestPlan defect with an iterator"],
       ["testplan_update_defect_association", "Move a CodeArts TestPlan defect association between iterators"],
-      ["testplan_delete_defect_association", "Remove a CodeArts TestPlan defect association from an iterator"]
+      ["testplan_delete_defect_association", "Remove a CodeArts TestPlan defect association from an iterator"],
+      ["testplan_list_rule_check_violation_cases", "List CodeArts TestPlan rule check violation cases"]
     ] as const;
 
     for (const [toolName, description] of tools) {
@@ -186,6 +188,8 @@ describe("registerTestPlanTool", () => {
       ["testplan_create_progress_report", "Create a CodeArts TestPlan progress report"],
       ["testplan_update_test_report", "Update a CodeArts TestPlan test report overview"],
       ["testplan_update_test_report_quality_attributes", "Update CodeArts TestPlan test report quality attributes"],
+      ["testplan_batch_delete_test_reports", "Batch-delete CodeArts TestPlan test reports (dry-run by default)"],
+      ["testplan_update_rule_check_violation", "Update a CodeArts TestPlan rule check violation case (dry-run by default)"],
       ["testplan_refresh_custom_template_report", "Refresh a CodeArts TestPlan custom template report"]
     ] as const;
 
@@ -443,6 +447,26 @@ describe("registerTestPlanTool", () => {
       [
         "testplan_query_testhub_etl_data",
         "Query CodeArts TestPlan TestHub ETL data rows"
+      ],
+      [
+        "testplan_get_user_etl_data_total",
+        "Get CodeArts TestPlan user ETL data total through the official testreport API"
+      ],
+      [
+        "testplan_query_user_etl_data",
+        "Query CodeArts TestPlan user ETL data rows through the official testreport API"
+      ],
+      [
+        "testplan_get_testhub_etl_data_total",
+        "Get CodeArts TestPlan TestHub ETL data total through the official testreport API"
+      ],
+      [
+        "testplan_query_testhub_etl_data_list",
+        "Query CodeArts TestPlan TestHub ETL data-list rows through the official testreport API"
+      ],
+      [
+        "testplan_get_testhub_etl_max_row_size",
+        "Get CodeArts TestPlan TestHub ETL max row size through the official testreport API"
       ],
       [
         "testplan_get_design_data",

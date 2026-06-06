@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  createTestPlanBatchDeleteTestReportsHandler,
   createTestPlanCreateProgressReportHandler,
   createTestPlanCreateCustomTemplateReportHandler,
   createTestPlanCreateTestReportHandler,
@@ -9,6 +10,7 @@ import {
   createTestPlanRefreshCustomTemplateReportHandler,
   createTestPlanUpdateCustomTemplateReportHandler,
   createTestPlanUpdateProgressReportHandler,
+  createTestPlanUpdateRuleCheckViolationHandler,
   createTestPlanUpdateTestReportHandler,
   createTestPlanUpdateTestReportQualityAttributesHandler
 } from "../../../../src/products/testplan/tools/report-write-tools.js";
@@ -67,6 +69,16 @@ describe("testplan report write handlers", () => {
     });
     const deleteProgressHandler = createTestPlanDeleteProgressReportHandler({
       deleteProgressReport: async () => {
+        throw new Error("should not execute");
+      }
+    });
+    const batchDeleteReportsHandler = createTestPlanBatchDeleteTestReportsHandler({
+      batchDeleteTestReports: async () => {
+        throw new Error("should not execute");
+      }
+    });
+    const updateViolationHandler = createTestPlanUpdateRuleCheckViolationHandler({
+      updateRuleCheckViolation: async () => {
         throw new Error("should not execute");
       }
     });
@@ -144,6 +156,20 @@ describe("testplan report write handlers", () => {
         report_uri: "progress-1"
       })
     ).resolves.toMatchObject({ structuredContent: { item: { executed: false } } });
+    await expect(
+      batchDeleteReportsHandler({
+        project_id: "project-1",
+        report_uris: ["report-1", "report-2"]
+      })
+    ).resolves.toMatchObject({ structuredContent: { item: { executed: false, reportIds: ["report-1", "report-2"] } } });
+    await expect(
+      updateViolationHandler({
+        project_id: "project-1",
+        version_uri: "version-1",
+        violation_uri: "violation-1",
+        status: 1
+      })
+    ).resolves.toMatchObject({ structuredContent: { item: { executed: false, status: 1 } } });
   });
 
   it("executes when dry_run is false", async () => {
@@ -257,6 +283,25 @@ describe("testplan report write handlers", () => {
         raw: { value: "success" }
       })
     });
+    const batchDeleteReportsHandler = createTestPlanBatchDeleteTestReportsHandler({
+      batchDeleteTestReports: async (input) => ({
+        project_id: input.project_id,
+        report_ids: input.report_uris,
+        deleted: true,
+        value: "deleted",
+        raw: { value: "deleted" }
+      })
+    });
+    const updateViolationHandler = createTestPlanUpdateRuleCheckViolationHandler({
+      updateRuleCheckViolation: async (input) => ({
+        project_id: input.project_id,
+        version_uri: input.version_uri,
+        violation_id: input.violation_uri,
+        status: input.status,
+        value: "success",
+        raw: { value: "success" }
+      })
+    });
 
     await expect(
       createHandler({
@@ -361,6 +406,26 @@ describe("testplan report write handlers", () => {
       })
     ).resolves.toMatchObject({
       structuredContent: { item: { id: "progress-1", executed: true, deleted: true } }
+    });
+    await expect(
+      batchDeleteReportsHandler({
+        project_id: "project-1",
+        report_uris: ["report-1", "report-2"],
+        dry_run: false
+      })
+    ).resolves.toMatchObject({
+      structuredContent: { item: { id: "project-1", executed: true, deleted: true, reportIds: ["report-1", "report-2"] } }
+    });
+    await expect(
+      updateViolationHandler({
+        project_id: "project-1",
+        version_uri: "version-1",
+        violation_uri: "violation-1",
+        status: 1,
+        dry_run: false
+      })
+    ).resolves.toMatchObject({
+      structuredContent: { item: { id: "violation-1", executed: true, status: 1 } }
     });
   });
 });

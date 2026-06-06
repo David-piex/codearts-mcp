@@ -3,6 +3,7 @@ import { officialApiRequestInput } from "../products/official-api.js";
 import { createTestPlanClient } from "../products/testplan/client.js";
 import {
   testPlanBatchDeleteTasksInput,
+  testPlanBatchDeleteTestReportsInput,
   testPlanBatchSendNotificationsInput,
   testPlanBatchUpdateTaskAttributesInput,
   testPlanAddProjectUsersInput,
@@ -47,6 +48,7 @@ import {
   testPlanDeleteTestcasesV3Input,
   testPlanDeleteVectorsInput,
   testPlanDownloadClassesInput,
+  testPlanDownloadTestReportInput,
   testPlanImportTasksInput,
   testPlanGetExecutorElementsInput,
   testPlanSaveAwRefreshToAllInput,
@@ -150,7 +152,11 @@ import {
   testPlanGetProjectTestcaseGlobalConfigInput,
   testPlanGetProjectLocalConfigInput,
   testPlanGetQualityReportOverviewInput,
+  testPlanGetTesthubEtlDataTotalInput,
+  testPlanGetTesthubEtlMaxRowSizeInput,
+  testPlanGetUserEtlDataTotalInput,
   testPlanListRuleCheckTasksInput,
+  testPlanListRuleCheckViolationCasesInput,
   testPlanGetRuleCheckTaskReportInput,
   testPlanGetRuleCheckTaskSummaryInput,
   testPlanGetServiceTypeOverviewInput,
@@ -205,6 +211,8 @@ import {
   testPlanGetTestSuitesVarListForPipelineInput,
   testPlanListTepsInput,
   testPlanQueryTesthubEtlDataInput,
+  testPlanQueryTesthubEtlDataListInput,
+  testPlanQueryUserEtlDataInput,
   testPlanStopCaseTaskInput,
   testPlanListApiTestcaseExecuteHistoriesInput,
   testPlanListApiTestcaseHistoryInput,
@@ -337,6 +345,7 @@ import {
   testPlanUpdateTesthubServiceInput,
   testPlanUpdateTestReportInput,
   testPlanUpdateTestReportQualityAttributesInput,
+  testPlanUpdateRuleCheckViolationInput,
   testPlanUpdateTimeOutViewInput,
   testPlanUploadResourceAttachmentInput,
   testPlanStopTaskExecutionInput,
@@ -360,6 +369,7 @@ import {
   createTestPlanUpdateDefectAssociationHandler
 } from "../products/testplan/tools/defect-association.js";
 import {
+  createTestPlanBatchDeleteTestReportsHandler,
   createTestPlanCreateProgressReportHandler,
   createTestPlanCreateCustomTemplateReportHandler,
   createTestPlanCreateTestReportHandler,
@@ -369,6 +379,7 @@ import {
   createTestPlanRefreshProgressReportHandler,
   createTestPlanUpdateCustomTemplateReportHandler,
   createTestPlanUpdateProgressReportHandler,
+  createTestPlanUpdateRuleCheckViolationHandler,
   createTestPlanUpdateTestReportHandler,
   createTestPlanUpdateTestReportQualityAttributesHandler
 } from "../products/testplan/tools/report-write-tools.js";
@@ -465,6 +476,9 @@ import {
   createTestPlanCreateResourceUriV4Handler,
   createTestPlanDownloadClassesHandler,
   createTestPlanGetDesignDataHandler,
+  createTestPlanGetTesthubEtlDataTotalHandler,
+  createTestPlanGetTesthubEtlMaxRowSizeHandler,
+  createTestPlanGetUserEtlDataTotalHandler,
   createTestPlanGetTepRegisterCodeHandler,
   createTestPlanGetTestSuitesVarListForPipelineHandler,
   createTestPlanListIpdIssuesTreeHandler,
@@ -472,6 +486,8 @@ import {
   createTestPlanListIteratorStageCountsHandler,
   createTestPlanListTepsHandler,
   createTestPlanQueryTesthubEtlDataHandler,
+  createTestPlanQueryTesthubEtlDataListHandler,
+  createTestPlanQueryUserEtlDataHandler,
   createTestPlanSearchAutotaskHandler,
   createTestPlanUpdateTepShareHandler,
   createTestPlanUpdateUserInfosHandler
@@ -541,6 +557,7 @@ import { createTestPlanGetProjectTestcaseGlobalConfigHandler } from "../products
 import { createTestPlanGetProjectLocalConfigHandler } from "../products/testplan/tools/get-project-local-config.js";
 import { createTestPlanGetQualityReportOverviewHandler } from "../products/testplan/tools/get-quality-report-overview.js";
 import { createTestPlanListRuleCheckTasksHandler } from "../products/testplan/tools/list-rule-check-tasks.js";
+import { createTestPlanListRuleCheckViolationCasesHandler } from "../products/testplan/tools/list-rule-check-violation-cases.js";
 import { createTestPlanGetRuleCheckTaskReportHandler } from "../products/testplan/tools/get-rule-check-task-report.js";
 import { createTestPlanGetRuleCheckTaskSummaryHandler } from "../products/testplan/tools/get-rule-check-task-summary.js";
 import { createTestPlanGetServiceTypeOverviewHandler } from "../products/testplan/tools/get-service-type-overview.js";
@@ -550,6 +567,7 @@ import { createTestPlanGetHomePageDefectStatusOverviewHandler } from "../product
 import { createTestPlanGetHomePageOverviewV5Handler } from "../products/testplan/tools/get-home-page-overview-v5.js";
 import { createTestPlanGetTestReportHandler } from "../products/testplan/tools/get-test-report.js";
 import { createTestPlanDownloadAssetTemplateHandler } from "../products/testplan/tools/download-asset-template.js";
+import { createTestPlanDownloadTestReportHandler } from "../products/testplan/tools/download-test-report.js";
 import { createTestPlanDownloadTestDesignTemplateHandler } from "../products/testplan/tools/download-test-design-template.js";
 import { createTestPlanExportMindmapHandler } from "../products/testplan/tools/export-mindmap.js";
 import { createTestPlanGetTestDesignTemplateHandler } from "../products/testplan/tools/get-test-design-template.js";
@@ -773,6 +791,41 @@ const testPlanToolDefinitions = {
       clients.testPlanClient,
     createProductHandler: createTestPlanQueryTesthubEtlDataHandler
   }),
+  "testplan_get_user_etl_data_total": defineProductTool({
+    description: "Get CodeArts TestPlan user ETL data total through the official testreport API",
+    inputSchema: testPlanGetUserEtlDataTotalInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetUserEtlDataTotalHandler>[0] }) =>
+      clients.testPlanClient,
+    createProductHandler: createTestPlanGetUserEtlDataTotalHandler
+  }),
+  "testplan_query_user_etl_data": defineProductTool({
+    description: "Query CodeArts TestPlan user ETL data rows through the official testreport API",
+    inputSchema: testPlanQueryUserEtlDataInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanQueryUserEtlDataHandler>[0] }) =>
+      clients.testPlanClient,
+    createProductHandler: createTestPlanQueryUserEtlDataHandler
+  }),
+  "testplan_get_testhub_etl_data_total": defineProductTool({
+    description: "Get CodeArts TestPlan TestHub ETL data total through the official testreport API",
+    inputSchema: testPlanGetTesthubEtlDataTotalInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetTesthubEtlDataTotalHandler>[0] }) =>
+      clients.testPlanClient,
+    createProductHandler: createTestPlanGetTesthubEtlDataTotalHandler
+  }),
+  "testplan_query_testhub_etl_data_list": defineProductTool({
+    description: "Query CodeArts TestPlan TestHub ETL data-list rows through the official testreport API",
+    inputSchema: testPlanQueryTesthubEtlDataListInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanQueryTesthubEtlDataListHandler>[0] }) =>
+      clients.testPlanClient,
+    createProductHandler: createTestPlanQueryTesthubEtlDataListHandler
+  }),
+  "testplan_get_testhub_etl_max_row_size": defineProductTool({
+    description: "Get CodeArts TestPlan TestHub ETL max row size through the official testreport API",
+    inputSchema: testPlanGetTesthubEtlMaxRowSizeInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetTesthubEtlMaxRowSizeHandler>[0] }) =>
+      clients.testPlanClient,
+    createProductHandler: createTestPlanGetTesthubEtlMaxRowSizeHandler
+  }),
   "testplan_list_plans": defineProductTool({
     description: "List CodeArts TestPlan plans",
     inputSchema: testPlanListPlansInput,
@@ -952,6 +1005,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanDownloadTestDesignTemplateInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanDownloadTestDesignTemplateHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanDownloadTestDesignTemplateHandler
+  }),
+  "testplan_download_test_report": defineProductTool({
+    description: "Get CodeArts TestPlan test report download metadata",
+    inputSchema: testPlanDownloadTestReportInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanDownloadTestReportHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanDownloadTestReportHandler
   }),
   "testplan_download_asset_template": defineProductTool({
     description: "Get CodeArts TestPlan asset template download metadata via official v1 API",
@@ -2280,6 +2339,13 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListRuleCheckTasksHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListRuleCheckTasksHandler
   }),
+  "testplan_list_rule_check_violation_cases": defineProductTool({
+    description: "List CodeArts TestPlan rule check violation cases",
+    inputSchema: testPlanListRuleCheckViolationCasesInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListRuleCheckViolationCasesHandler>[0] }) =>
+      clients.testPlanClient,
+    createProductHandler: createTestPlanListRuleCheckViolationCasesHandler
+  }),
   "testplan_get_rule_check_task_summary": defineProductTool({
     description: "Get CodeArts TestPlan rule check task summary",
     inputSchema: testPlanGetRuleCheckTaskSummaryInput,
@@ -2381,6 +2447,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanCreateTestReportInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanCreateTestReportHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanCreateTestReportHandler
+  }),
+  "testplan_batch_delete_test_reports": defineProductTool({
+    description: "Batch-delete CodeArts TestPlan test reports (dry-run by default)",
+    inputSchema: testPlanBatchDeleteTestReportsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanBatchDeleteTestReportsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanBatchDeleteTestReportsHandler
   }),
   "testplan_create_custom_template_report": defineProductTool({
     description: "Create a CodeArts TestPlan custom template report",
@@ -2778,6 +2850,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanUpdateTestReportQualityAttributesInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanUpdateTestReportQualityAttributesHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanUpdateTestReportQualityAttributesHandler
+  }),
+  "testplan_update_rule_check_violation": defineProductTool({
+    description: "Update a CodeArts TestPlan rule check violation case (dry-run by default)",
+    inputSchema: testPlanUpdateRuleCheckViolationInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanUpdateRuleCheckViolationHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanUpdateRuleCheckViolationHandler
   }),
   "testplan_run_cases": defineProductTool({
     description: "Run CodeArts TestPlan cases",

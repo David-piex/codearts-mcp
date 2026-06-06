@@ -4338,11 +4338,75 @@ describe("createTestPlanClient", () => {
     ]);
   });
 
+  it("downloads and batch-deletes test reports through official report APIs", async () => {
+    const requests: Array<{ method: string; path: string; body?: unknown }> = [];
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requests.push({ method: "POST", path, body });
+        return { value: "download-token-1" };
+      },
+      delete: async (path: string, body?: unknown) => {
+        requests.push({ method: "DELETE", path, body });
+        return { value: "deleted" };
+      }
+    } as never);
+
+    await expect(
+      client.downloadTestReport({
+        project_id: "project-1",
+        version_uri: "version-1",
+        report_uri: "report-1"
+      })
+    ).resolves.toEqual({
+      project_id: "project-1",
+      version_uri: "version-1",
+      report_id: "report-1",
+      value: "download-token-1",
+      raw: { value: "download-token-1" }
+    });
+    await expect(
+      client.batchDeleteTestReports({
+        project_id: "project-1",
+        report_uris: ["report-1", "report-2"]
+      })
+    ).resolves.toEqual({
+      project_id: "project-1",
+      report_ids: ["report-1", "report-2"],
+      deleted: true,
+      value: "deleted",
+      raw: { value: "deleted" }
+    });
+    expect(requests).toEqual([
+      {
+        method: "POST",
+        path: "/v4/project-1/versions/version-1/reports/report-1/download",
+        body: {}
+      },
+      {
+        method: "DELETE",
+        path: "/testreport/v4/project-1/test-reports/batch-delete",
+        body: ["report-1", "report-2"]
+      }
+    ]);
+  });
+
   it("lists rule check tasks and loads report and summary", async () => {
     const requests: string[] = [];
     const client = createTestPlanClient({
       post: async (path: string, body: unknown) => {
         requests.push(`${path} ${JSON.stringify(body)}`);
+        if (path.endsWith("/violation-cases")) {
+          return {
+            total: 1,
+            value: [
+              {
+                uri: "violation-1",
+                case_name: "case one",
+                status: 0
+              }
+            ]
+          };
+        }
         return {
           result: {
             value: [
@@ -4357,6 +4421,10 @@ describe("createTestPlanClient", () => {
             page_size: 10
           }
         };
+      },
+      put: async (path: string, body: unknown) => {
+        requests.push(`${path} ${JSON.stringify(body)}`);
+        return { value: "success" };
       },
       get: async (path: string) => {
         requests.push(path);
@@ -4435,10 +4503,56 @@ describe("createTestPlanClient", () => {
         severity_list: [{ severity: "2", count: 3 }]
       }
     });
+    await expect(
+      client.listRuleCheckViolationCases({
+        project_id: "project-1",
+        version_uri: "version-1",
+        task_uri: "task-1",
+        page: 1,
+        page_size: 10,
+        status: 0
+      })
+    ).resolves.toEqual({
+      violations: [
+        {
+          uri: "violation-1",
+          case_name: "case one",
+          status: 0
+        }
+      ],
+      total: 1,
+      raw: {
+        total: 1,
+        value: [
+          {
+            uri: "violation-1",
+            case_name: "case one",
+            status: 0
+          }
+        ]
+      }
+    });
+    await expect(
+      client.updateRuleCheckViolation({
+        project_id: "project-1",
+        version_uri: "version-1",
+        violation_uri: "violation-1",
+        status: 1
+      })
+    ).resolves.toEqual({
+      project_id: "project-1",
+      version_uri: "version-1",
+      violation_id: "violation-1",
+      status: 1,
+      value: "success",
+      raw: { value: "success" }
+    });
     expect(requests).toEqual([
       '/v4/project-1/versions/version-1/rule-check/tasks {"page_no":1,"page_size":10,"name":"rule"}',
       "/v4/project-1/versions/version-1/rule-check/tasks/task-1",
-      "/v4/project-1/versions/version-1/rule-check/tasks/task-1/summary?severity=2&status=0"
+      "/v4/project-1/versions/version-1/rule-check/tasks/task-1/summary?severity=2&status=0",
+      '/v4/project-1/versions/version-1/rule-check/tasks/task-1/violation-cases {"page_no":1,"page_size":10,"status":0}',
+      '/v4/project-1/versions/version-1/rule-check/violations/violation-1 {"status":1}'
     ]);
   });
 
@@ -6723,6 +6837,77 @@ describe("createTestPlanClient", () => {
         }
       }
     ]);
+  });
+
+  it("queries official TestPlan ETL testreport endpoints", async () => {
+    const requests: Array<{ path: string; body: unknown }> = [];
+    const client = createTestPlanClient({
+      post: async (path: string, body: unknown) => {
+        requests.push({ path, body });
+        if (path.endsWith("/max-row-size")) {
+          return { status: "success", result: { size: "500" } };
+        }
+        if (path.endsWith("/data-total")) {
+          return { status: "success", result: { total: 2 } };
+        }
+        return {
+          status: "success",
+          result: {
+            total: 1,
+            values: [{ id: "row-1", name: "etl row" }]
+          }
+        };
+      }
+    } as never);
+    const base = {
+      offset: 0,
+      limit: 50,
+      table_name: "relation",
+      start_time: "2026-06-01 00:00:00",
+      end_time: "2026-06-06 23:59:59",
+      filter_time_field: "CREATIONDATE",
+      schema_no: "3",
+      project_uuid: "project-1",
+      query_fields: ["TESTCASEURI"]
+    };
+
+    await expect(client.getUserEtlDataTotal(base)).resolves.toMatchObject({
+      total: 2,
+      status: "success",
+      raw: { total: 2 }
+    });
+    await expect(client.queryUserEtlData(base)).resolves.toMatchObject({
+      rows: [{ id: "row-1", name: "etl row" }],
+      total: 1,
+      status: "success"
+    });
+    await expect(client.getTesthubEtlDataTotal(base)).resolves.toMatchObject({
+      total: 2,
+      status: "success"
+    });
+    await expect(client.queryTesthubEtlDataList(base)).resolves.toMatchObject({
+      rows: [{ id: "row-1", name: "etl row" }],
+      total: 1,
+      status: "success"
+    });
+    await expect(
+      client.getTesthubEtlMaxRowSize({
+        table_name: "relation",
+        schema_no: "3",
+        project_uuid: "project-1"
+      })
+    ).resolves.toMatchObject({
+      size: 500,
+      status: "success"
+    });
+    expect(requests.map((request) => request.path)).toEqual([
+      "/testreport/v4/user/etl/query/data-total",
+      "/testreport/v4/user/etl/query/data-list",
+      "/testreport/v4/testhub/etl/query/data-total",
+      "/testreport/v4/testhub/etl/query/data-list",
+      "/testreport/v4/testhub/etl/query/max-row-size"
+    ]);
+    expect(requests[0]?.body).toEqual(base);
   });
 
   it("lists iterator issue testcase references", async () => {
