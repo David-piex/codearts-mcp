@@ -22,7 +22,7 @@ describe("createArtifactSearchArtifactsHandler", () => {
     const result = await handler({
       artifact_name: "gateway",
       project_id: "project-1",
-      repo_name: "libs-release",
+      artifact_type: "maven2",
       page: 1,
       page_size: 10
     });
@@ -40,7 +40,7 @@ describe("createArtifactSearchArtifactsHandler", () => {
     });
   });
 
-  it("falls back to requested project_id and repo_name for artifact search results", async () => {
+  it("falls back to requested project_id for artifact search results", async () => {
     const handler = createArtifactSearchArtifactsHandler({
       searchArtifacts: async () => ({
         artifacts: [
@@ -59,20 +59,19 @@ describe("createArtifactSearchArtifactsHandler", () => {
     const result = await handler({
       artifact_name: "gateway",
       project_id: "project-9",
-      repo_name: "libs-snapshot",
       page: 1,
       page_size: 10
     });
 
-    expect(result.structuredContent.items?.[0]).toEqual({
+    expect(result.structuredContent.items?.[0]).toMatchObject({
       id: "repo-1:/com/demo/gateway/1.0.1/gateway-1.0.1.jar",
       projectId: "project-9",
       name: "gateway-1.0.1.jar",
       path: "/com/demo/gateway/1.0.1",
       repositoryId: "repo-1",
-      repositoryName: "libs-snapshot",
       displayName: "gateway-1.0.1.jar",
       repositoryType: "maven2"
     });
+    expect(result.structuredContent.items?.[0]?.repositoryName).toBeUndefined();
   });
 });

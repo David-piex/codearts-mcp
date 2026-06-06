@@ -4,7 +4,6 @@ import { artifactSearchArtifactsInput } from "../schemas.js";
 
 export function mapArtifactSearchResults(
   projectId: string | undefined,
-  repoName: string | undefined,
   items: Array<{
     name?: string;
     relative_path?: string;
@@ -25,7 +24,7 @@ export function mapArtifactSearchResults(
       name: item.name ?? "",
       path: item.relative_path,
       repositoryId: item.repo,
-      repositoryName: item.repo_name ?? repoName,
+      repositoryName: item.repo_name,
       displayName: item.display_name,
       repositoryType: item.repo_type
     })),
@@ -38,8 +37,9 @@ type ArtifactSearchArtifactsClient = {
     artifact_name: string;
     page: number;
     page_size: number;
-    repo_name?: string;
+    artifact_type?: string;
     project_id?: string;
+    in_project?: boolean;
   }) => Promise<{
     artifacts: Array<{
       name?: string;
@@ -59,7 +59,6 @@ export function createArtifactSearchArtifactsHandler(client: ArtifactSearchArtif
     const response = await client.searchArtifacts(parsed);
     const result = mapArtifactSearchResults(
       parsed.project_id,
-      parsed.repo_name,
       response.artifacts,
       parsed.page,
       parsed.page_size,

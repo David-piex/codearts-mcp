@@ -23,7 +23,12 @@ import {
   checkListTaskAllFilesInput,
   checkListTaskIssuesInput,
   checkModifyCriterionsetRelationsInput,
-  checkRunTaskInput
+  checkRunTaskInput,
+  checkStopTaskV1Input,
+  checkUpdateTaskRulesetInput,
+  checkUpdateIgnorePathInput,
+  checkUpdateDefectStatusInput,
+  checkBatchCopyAsyncTasksInput
 } from "../../../src/products/check/schemas.js";
 
 describe("check schemas", () => {
@@ -387,6 +392,92 @@ describe("check schemas", () => {
       project_id: "project-1",
       task_id: "task-1",
       body: { scan_type: "full" },
+      dry_run: true
+    });
+  });
+
+  it("accepts official task mutation schemas with dry-run defaults", () => {
+    expect(checkStopTaskV1Input.parse({
+      task_id: "task-1",
+      job_id: "job-1",
+      operator: "szh"
+    })).toEqual({
+      task_id: "task-1",
+      job_id: "job-1",
+      operator: "szh",
+      dry_run: true
+    });
+
+    expect(checkUpdateTaskRulesetInput.parse({
+      task_id: "task-1",
+      rulesets: [
+        {
+          language: "cpp",
+          rule_set_id: "ruleset-1",
+          if_use: "1"
+        }
+      ]
+    })).toEqual({
+      task_id: "task-1",
+      rulesets: [
+        {
+          language: "cpp",
+          rule_set_id: "ruleset-1",
+          if_use: "1",
+          status: "1"
+        }
+      ],
+      dry_run: true
+    });
+
+    expect(checkUpdateIgnorePathInput.parse({
+      project_id: "project-1",
+      task_id: "task-1",
+      ignore_path_settings: [
+        {
+          file_path: ".LAST_RELEASE",
+          checkbox_status: "all"
+        }
+      ]
+    })).toEqual({
+      project_id: "project-1",
+      task_id: "task-1",
+      ignore_path_settings: [
+        {
+          file_path: ".LAST_RELEASE",
+          checkbox_status: "all"
+        }
+      ],
+      dry_run: true
+    });
+
+    expect(checkUpdateDefectStatusInput.parse({
+      task_id: "task-1",
+      defect_id: "defect-1",
+      defect_status: "1"
+    })).toEqual({
+      task_id: "task-1",
+      defect_id: "defect-1",
+      defect_status: "1",
+      dry_run: true
+    });
+
+    expect(checkBatchCopyAsyncTasksInput.parse({
+      task_id: "task-1",
+      tasks: [
+        {
+          task_id: "source-task-1",
+          task_name: "copied-check"
+        }
+      ]
+    })).toEqual({
+      task_id: "task-1",
+      tasks: [
+        {
+          task_id: "source-task-1",
+          task_name: "copied-check"
+        }
+      ],
       dry_run: true
     });
   });

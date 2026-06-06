@@ -24,16 +24,16 @@
 
 | 模块 | API 数量 | 明细文档 |
 | --- | ---: | --- |
-| 制品仓 | 52 | [Function-API-Reference-Artifact.md](./Function-API-Reference-Artifact.md) |
+| 制品仓 | 53 | [Function-API-Reference-Artifact.md](./Function-API-Reference-Artifact.md) |
 | 鉴权会话 | 2 | [Function-API-Reference-Auth-Session.md](./Function-API-Reference-Auth-Session.md) |
 | 编译构建 | 146 | [Function-API-Reference-Build.md](./Function-API-Reference-Build.md) |
-| 代码检查 | 106 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
-| 部署 | 87 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
+| 代码检查 | 111 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
+| 部署 | 88 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
 | 流水线 | 173 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 391 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 344 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 360 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **1661** | |
+| **总计** | **1668** | |
 
 ## 字段对应
 
@@ -65,6 +65,7 @@
 | `artifact_list_maven_project_repositories` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_maven_project_repositories) |
 | `artifact_list_maven_repositories` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_maven_repositories) |
 | `artifact_list_maven_repository_list` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_maven_repository_list) |
+| `artifact_list_net_proxy` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_net_proxy) |
 | `artifact_list_project_release_files` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_project_release_files) |
 | `artifact_list_project_role_permissions` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_project_role_permissions) |
 | `artifact_list_project_users` | 制品仓 | [查看](./Function-API-Reference-Artifact.md#artifact_list_project_users) |
@@ -243,6 +244,7 @@
 | `build_upload_junit_coverage` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_upload_junit_coverage) |
 | `build_upload_junit_report` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_upload_junit_report) |
 | `build_upload_keystore` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_upload_keystore) |
+| `check_batch_copy_async_tasks` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_batch_copy_async_tasks) |
 | `check_create_pdf_async_job` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_create_pdf_async_job) |
 | `check_create_ruleset` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_create_ruleset) |
 | `check_create_task` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_create_task) |
@@ -339,14 +341,18 @@
 | `check_run_task` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_run_task) |
 | `check_set_default_ruleset` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_set_default_ruleset) |
 | `check_stop_task` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_stop_task) |
+| `check_stop_task_v1` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_stop_task_v1) |
 | `check_update_check_mode` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_update_check_mode) |
 | `check_update_code_gate` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_update_code_gate) |
+| `check_update_defect_status` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_update_defect_status) |
 | `check_update_ignore_files` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_update_ignore_files) |
+| `check_update_ignore_path` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_update_ignore_path) |
 | `check_update_issue_status` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_update_issue_status) |
 | `check_update_pipeline_task` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_update_pipeline_task) |
 | `check_update_task_config_parameters` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_update_task_config_parameters) |
 | `check_update_task_owner_matching_switch` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_update_task_owner_matching_switch) |
 | `check_update_task_resource_pool` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_update_task_resource_pool) |
+| `check_update_task_ruleset` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_update_task_ruleset) |
 | `check_update_task_settings` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_update_task_settings) |
 | `check_update_task_webhook` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_update_task_webhook) |
 | `deploy_add_v4_environment_hosts` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_add_v4_environment_hosts) |
@@ -355,6 +361,7 @@
 | `deploy_check_application_creatable` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_check_application_creatable) |
 | `deploy_check_application_exists` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_check_application_exists) |
 | `deploy_check_host_group_creatable` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_check_host_group_creatable) |
+| `deploy_copy_application` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_copy_application) |
 | `deploy_create_application` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_create_application) |
 | `deploy_create_application_group` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_create_application_group) |
 | `deploy_create_environment` | 部署 | [查看](./Function-API-Reference-Deploy.md#deploy_create_environment) |

@@ -34,6 +34,7 @@ export const artifactToolNames = [
   "artifact_list_project_users",
   "artifact_list_project_role_permissions",
   "artifact_list_child_proxy_repositories",
+  "artifact_list_net_proxy",
   "artifact_list_domain_ip_configs",
   "artifact_list_storage_statistics",
   "artifact_list_attentions",

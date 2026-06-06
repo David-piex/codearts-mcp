@@ -60,6 +60,62 @@ export type CheckClient = {
     task_id: string;
     status?: string;
   }>;
+  stopTaskV1: (input: { task_id: string; job_id?: string; operator?: string }) => Promise<{
+    task_id: string;
+    job_id?: string;
+    status?: string;
+    result?: string;
+    raw: Record<string, unknown>;
+  }>;
+  updateTaskRuleset: (input: {
+    task_id: string;
+    rulesets: Array<{
+      language: string;
+      rule_set_id: string;
+      if_use: "0" | "1";
+      status: string;
+    }>;
+  }) => Promise<{
+    task_id: string;
+    status?: string;
+    result?: string;
+    raw: Record<string, unknown>;
+  }>;
+  updateIgnorePath: (input: {
+    project_id: string;
+    task_id: string;
+    ignore_path_settings: Array<{
+      file_path: string;
+      checkbox_status: "unchecked" | "all" | "half";
+    }>;
+  }) => Promise<{
+    project_id: string;
+    task_id: string;
+    status?: string;
+    result?: string;
+    raw: Record<string, unknown>;
+  }>;
+  updateDefectStatus: (input: {
+    task_id: string;
+    defect_id: string;
+    defect_status: "0" | "1" | "2";
+  }) => Promise<{
+    task_id: string;
+    defect_id: string;
+    defect_status: string;
+    status?: string;
+    result?: string;
+    raw: Record<string, unknown>;
+  }>;
+  batchCopyAsyncTasks: (input: {
+    task_id: string;
+    tasks: Array<Record<string, unknown>>;
+  }) => Promise<{
+    task_id: string;
+    status?: string;
+    result?: string;
+    raw: Record<string, unknown>;
+  }>;
   updateIssueStatus: (input: {
     task_id: string;
     status: "0" | "2" | "5";
@@ -1081,6 +1137,94 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
       return {
         task_id: item.task_id ?? input.task_id,
         status: item.status === undefined ? undefined : String(item.status)
+      };
+    },
+    async stopTaskV1(input) {
+      const response = await _http.put(
+        `/v1/tasks/${encodeURIComponent(input.task_id)}/stop${buildQuery({ job_id: input.job_id })}`,
+        {},
+        input.operator ? { headers: { operator: input.operator } } : undefined
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        task_id: input.task_id,
+        job_id: input.job_id,
+        status: typeof payload.status === "string" ? payload.status : undefined,
+        result: typeof payload.result === "string" ? payload.result : undefined,
+        raw: payload
+      };
+    },
+    async updateTaskRuleset(input) {
+      const response = await _http.put(
+        `/v2/tasks/${encodeURIComponent(input.task_id)}/ruleset`,
+        input.rulesets.map((item) => ({
+          language: item.language,
+          rule_set_id: item.rule_set_id,
+          if_use: item.if_use,
+          status: item.status
+        }))
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        task_id: input.task_id,
+        status: typeof payload.status === "string" ? payload.status : undefined,
+        result: typeof payload.result === "string" ? payload.result : undefined,
+        raw: payload
+      };
+    },
+    async updateIgnorePath(input) {
+      const response = await _http.post(
+        `/v2/${encodeURIComponent(input.project_id)}/tasks/${encodeURIComponent(input.task_id)}/config-ignorepath`,
+        {
+          ignore_path_settings: input.ignore_path_settings.map((item) => ({
+            file_path: item.file_path,
+            checkbox_status: item.checkbox_status
+          }))
+        }
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        project_id: input.project_id,
+        task_id: input.task_id,
+        status: typeof payload.status === "string" ? payload.status : undefined,
+        result: typeof payload.result === "string" ? payload.result : undefined,
+        raw: payload
+      };
+    },
+    async updateDefectStatus(input) {
+      const response = await _http.put(
+        `/v2/tasks/${encodeURIComponent(input.task_id)}/defect-status`,
+        {
+          defect_id: input.defect_id,
+          defect_status: input.defect_status
+        }
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        task_id: input.task_id,
+        defect_id: input.defect_id,
+        defect_status: input.defect_status,
+        status: typeof payload.status === "string" ? payload.status : undefined,
+        result: typeof payload.result === "string" ? payload.result : undefined,
+        raw: payload
+      };
+    },
+    async batchCopyAsyncTasks(input) {
+      const response = await _http.post(
+        `/v4/tasks/${encodeURIComponent(input.task_id)}/batch/async-copy`,
+        input.tasks
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        task_id: input.task_id,
+        status: typeof payload.status === "string" ? payload.status : undefined,
+        result: typeof payload.result === "string" ? payload.result : undefined,
+        raw: payload
       };
     },
     async updateIssueStatus(input) {

@@ -3047,6 +3047,52 @@ describe("createDeployClient", () => {
     });
   });
 
+  it("copies an application through the documented duplicate endpoint", async () => {
+    const requests: Array<{ method: string; path: string; body?: unknown }> = [];
+    const client = createClient({
+      post: async (path: string, body?: unknown) => {
+        requests.push({ method: "POST", path, body });
+        return {
+          result: {
+            id: "app-copy-1",
+            name: "Test_Copy_92131",
+            region: "region-a",
+            is_disable: false
+          },
+          status: "success"
+        };
+      }
+    });
+
+    const copied = await client.copyApplication({
+      app_id: "app/source 1"
+    });
+
+    expect(requests).toEqual([
+      {
+        method: "POST",
+        path: "/v1/applications/app%2Fsource%201/duplicate",
+        body: undefined
+      }
+    ]);
+    expect(copied).toEqual({
+      id: "app-copy-1",
+      name: "Test_Copy_92131",
+      region: "region-a",
+      is_disable: false,
+      status: "success",
+      raw: {
+        result: {
+          id: "app-copy-1",
+          name: "Test_Copy_92131",
+          region: "region-a",
+          is_disable: false
+        },
+        status: "success"
+      }
+    });
+  });
+
   it("creates, updates, deletes, and moves application groups", async () => {
     const requests: Array<{ method: string; path: string; body?: unknown }> = [];
     const client = createClient({

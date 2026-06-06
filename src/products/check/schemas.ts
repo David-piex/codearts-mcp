@@ -590,6 +590,49 @@ export const checkStopTaskInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const checkStopTaskV1Input = z.object({
+  task_id: idSchema,
+  job_id: idSchema.optional(),
+  operator: z.string().min(1).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+const checkTaskRulesetItemInput = z.object({
+  language: z.string().min(1),
+  rule_set_id: idSchema,
+  if_use: z.union([z.literal("0"), z.literal("1")]),
+  status: z.string().min(1).default("1")
+});
+
+export const checkUpdateTaskRulesetInput = z.object({
+  task_id: idSchema,
+  rulesets: z.array(checkTaskRulesetItemInput).min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const checkUpdateIgnorePathInput = z.object({
+  project_id: idSchema,
+  task_id: idSchema,
+  ignore_path_settings: z.array(z.object({
+    file_path: z.string().min(1),
+    checkbox_status: z.enum(["unchecked", "all", "half"])
+  })).min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const checkUpdateDefectStatusInput = z.object({
+  task_id: idSchema,
+  defect_id: idSchema,
+  defect_status: z.union([z.literal("0"), z.literal("1"), z.literal("2")]),
+  dry_run: z.boolean().default(true)
+});
+
+export const checkBatchCopyAsyncTasksInput = z.object({
+  task_id: idSchema,
+  tasks: z.array(z.record(z.string(), z.unknown())).min(1),
+  dry_run: z.boolean().default(true)
+});
+
 export const checkUpdateIssueStatusInput = z.object({
   task_id: idSchema,
   status: z.union([z.literal("0"), z.literal("2"), z.literal("5")]),

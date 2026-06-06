@@ -434,6 +434,14 @@ export type DeployClient = {
     name: string;
     task_id?: string;
   }>;
+  copyApplication: (input: { app_id: string }) => Promise<{
+    id: string;
+    name: string;
+    region?: string;
+    is_disable?: boolean;
+    status?: string;
+    raw: unknown;
+  }>;
   checkApplicationExists: (input: { project_id: string; name: string }) => Promise<{
     project_id: string;
     name: string;
@@ -1947,6 +1955,34 @@ export function createDeployClient(_http: ReturnTypeCreateHttpClient): DeployCli
         application_id: item.application_id ?? item.id ?? input.id,
         name: item.name ?? item.application_name ?? input.name,
         task_id: firstTask?.task_id ?? firstTask?.id
+      };
+    },
+    async copyApplication(input) {
+      const response = (await _http.post(
+        `/v1/applications/${encodeURIComponent(input.app_id)}/duplicate`
+      )) as {
+        result?: {
+          id?: string;
+          name?: string;
+          region?: string;
+          is_disable?: boolean;
+        };
+        id?: string;
+        name?: string;
+        region?: string;
+        is_disable?: boolean;
+        status?: string;
+      };
+
+      const item = response.result ?? response;
+
+      return {
+        id: item.id ?? input.app_id,
+        name: item.name ?? "",
+        region: item.region,
+        is_disable: item.is_disable,
+        status: response.status,
+        raw: response
       };
     },
     async createTaskByTemplate(input) {

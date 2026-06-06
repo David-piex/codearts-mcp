@@ -299,6 +299,11 @@ export const deployBatchDeleteApplicationsInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const deployCopyApplicationInput = z.object({
+  app_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
 export const deployUpdateApplicationPermissionLevelInput = z.object({
   project_id: idSchema,
   application_ids: z.array(idSchema).min(1),

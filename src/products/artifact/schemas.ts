@@ -209,9 +209,12 @@ export const artifactShowOpenSourceEnabledInput = z.object({});
 
 export const artifactSearchArtifactsInput = pagingSchema.extend({
   artifact_name: z.string().min(1),
-  repo_name: z.string().optional(),
-  project_id: idSchema.optional()
+  artifact_type: z.string().min(1).optional(),
+  project_id: idSchema.optional(),
+  in_project: z.boolean().optional()
 });
+
+export const artifactListNetProxyInput = z.object({});
 
 export const artifactSearchByChecksumInput = pagingSchema.extend({
   checksum: z.string().min(1),

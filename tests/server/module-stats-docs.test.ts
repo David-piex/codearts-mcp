@@ -64,10 +64,10 @@ describe("module stats doc rendering", () => {
     const markdown = renderReadWriteMatrixMarkdown();
 
     expect(markdown).toContain("| Module | Read | Write | Live | Key Gaps |");
-    expect(markdown).toContain("| Deploy | 59 | 28 | Partial |");
+    expect(markdown).toContain("| Deploy | 59 | 29 | Partial |");
     expect(markdown).toContain("| Build | 100 | 46 | Validated |");
     expect(markdown).toContain("| TestPlan | 283 | 77 | Partial |");
-    expect(markdown).toContain("| Check | 86 | 20 | Partial |");
+    expect(markdown).toContain("| Check | 86 | 25 | Partial |");
   });
 
   it("renders API reference scale tables from current module stats", () => {
@@ -132,7 +132,7 @@ describe("syncModuleStatsDocuments", () => {
       `- Total MCP tools exposed: \`${collectHttpToolTotal()}\``,
     );
     expect(synced["docs/wiki/Module-Live-Readiness.md"]).toContain(
-      "| Deploy | 87 |",
+      "| Deploy | 88 |",
     );
     expect(synced["docs/wiki/Req-API-Reference.md"]).toContain(
       `| ${collectHttpToolTotal()} |`,

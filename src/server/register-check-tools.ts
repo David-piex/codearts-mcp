@@ -100,12 +100,17 @@ import {
   checkListTaskRulesetsV2Input,
   checkListTaskRulesetsV3Input,
   checkListTasksInput,
+  checkBatchCopyAsyncTasksInput,
   checkRunTaskInput,
   checkStopTaskInput,
+  checkStopTaskV1Input,
+  checkUpdateDefectStatusInput,
   checkUpdateCheckModeInput,
   checkUpdateCodeGateInput,
   checkUpdateIgnoreFilesInput,
+  checkUpdateIgnorePathInput,
   checkUpdatePipelineTaskInput,
+  checkUpdateTaskRulesetInput,
   checkUpdateIssueStatusInput
 } from "../products/check/schemas.js";
 import { createCheckCreateTaskHandler } from "../products/check/tools/create-task.js";
@@ -210,14 +215,19 @@ import { createCheckListTaskRepositoryBranchesHandler } from "../products/check/
 import { createCheckListTaskRulesetsV2Handler } from "../products/check/tools/list-task-rulesets-v2.js";
 import { createCheckListTaskRulesetsV3Handler } from "../products/check/tools/list-task-rulesets-v3.js";
 import { createCheckListTasksHandler } from "../products/check/tools/list-tasks.js";
+import { createCheckBatchCopyAsyncTasksHandler } from "../products/check/tools/batch-copy-async-tasks.js";
 import { createCheckRefreshJobResultHandler } from "../products/check/tools/refresh-job-result.js";
 import { createCheckRunTaskHandler } from "../products/check/tools/run-task.js";
 import { createCheckStopTaskHandler } from "../products/check/tools/stop-task.js";
+import { createCheckStopTaskV1Handler } from "../products/check/tools/stop-task-v1.js";
 import { createCheckUpdateCheckModeHandler } from "../products/check/tools/update-check-mode.js";
 import { createCheckUpdateCodeGateHandler } from "../products/check/tools/update-code-gate.js";
+import { createCheckUpdateDefectStatusHandler } from "../products/check/tools/update-defect-status.js";
 import { createCheckUpdateIgnoreFilesHandler } from "../products/check/tools/update-ignore-files.js";
+import { createCheckUpdateIgnorePathHandler } from "../products/check/tools/update-ignore-path.js";
 import { createCheckUpdateIssueStatusHandler } from "../products/check/tools/update-issue-status.js";
 import { createCheckUpdatePipelineTaskHandler } from "../products/check/tools/update-pipeline-task.js";
+import { createCheckUpdateTaskRulesetHandler } from "../products/check/tools/update-task-ruleset.js";
 import { createCheckUpdateTaskSettingsHandler } from "../products/check/tools/update-task-settings.js";
 import { createOfficialApiRequestHandler } from "../products/shared-tools/request-official-api.js";
 import { defineProductTool, registerDefinedTool } from "./product-tool-registry.js";
@@ -821,6 +831,36 @@ const checkToolDefinitions = {
     inputSchema: checkStopTaskInput,
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckStopTaskHandler>[0] }) => clients.checkClient,
     createProductHandler: createCheckStopTaskHandler
+  }),
+  "check_stop_task_v1": defineProductTool({
+    description: "Stop CodeArts Check task via official v1 API",
+    inputSchema: checkStopTaskV1Input,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckStopTaskV1Handler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckStopTaskV1Handler
+  }),
+  "check_update_task_ruleset": defineProductTool({
+    description: "Update CodeArts Check task ruleset",
+    inputSchema: checkUpdateTaskRulesetInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckUpdateTaskRulesetHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckUpdateTaskRulesetHandler
+  }),
+  "check_update_ignore_path": defineProductTool({
+    description: "Update CodeArts Check ignore path settings",
+    inputSchema: checkUpdateIgnorePathInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckUpdateIgnorePathHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckUpdateIgnorePathHandler
+  }),
+  "check_update_defect_status": defineProductTool({
+    description: "Update CodeArts Check defect status",
+    inputSchema: checkUpdateDefectStatusInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckUpdateDefectStatusHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckUpdateDefectStatusHandler
+  }),
+  "check_batch_copy_async_tasks": defineProductTool({
+    description: "Batch copy CodeArts Check tasks asynchronously",
+    inputSchema: checkBatchCopyAsyncTasksInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckBatchCopyAsyncTasksHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckBatchCopyAsyncTasksHandler
   }),
   "check_update_issue_status": defineProductTool({
     description: "Update CodeArts Check issue status",

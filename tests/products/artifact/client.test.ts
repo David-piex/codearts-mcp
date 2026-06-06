@@ -440,31 +440,49 @@ describe("createArtifactClient", () => {
     ]);
   });
 
-  it("maps search artifact responses with nested result", async () => {
+  it("uses official tree artifact search endpoint and maps nested result", async () => {
+    let requestedPath = "";
+    let requestedBody: unknown;
     const client = createClient({
-      post: async () => ({
-        result: {
-          artifacts: [
-            {
-              name: "gateway-1.0.0.jar",
-              relativePath: "/com/demo/gateway/1.0.0",
-              repo: "repo-1",
-              repoName: "libs-release",
-              displayName: "gateway-1.0.0.jar",
-              repoType: "maven2"
-            }
-          ],
-          total_count: 1
-        }
-      })
+      post: async (path: string, body: unknown) => {
+        requestedPath = path;
+        requestedBody = body;
+        return {
+          result: {
+            artifacts: [
+              {
+                name: "gateway-1.0.0.jar",
+                relativePath: "/com/demo/gateway/1.0.0",
+                repo: "repo-1",
+                repoName: "libs-release",
+                displayName: "gateway-1.0.0.jar",
+                repoType: "maven2"
+              }
+            ],
+            total_count: 1
+          }
+        };
+      }
     });
 
     const result = await client.searchArtifacts({
       artifact_name: "gateway",
+      artifact_type: "maven2",
       page: 1,
-      page_size: 10
+      page_size: 10,
+      project_id: "project-1",
+      in_project: true
     });
 
+    expect(requestedPath).toBe("/cloudartifact/v5/tree/repos/artifacts");
+    expect(requestedBody).toEqual({
+      artifact_name: "gateway",
+      artifact_type: "maven2",
+      page_no: 1,
+      page_size: 10,
+      project_id: "project-1",
+      in_project: true
+    });
     expect(result.artifacts).toEqual([
       {
         name: "gateway-1.0.0.jar",
@@ -476,6 +494,38 @@ describe("createArtifactClient", () => {
       }
     ]);
     expect(result.total).toBe(1);
+  });
+
+  it("uses net proxy endpoint", async () => {
+    let requestedPath = "";
+    const client = createClient({
+      get: async (path: string) => {
+        requestedPath = path;
+        return {
+          result: [
+            {
+              id: 30039,
+              host: "https://proxy.example.com",
+              port: 8080,
+              password: "secret"
+            }
+          ]
+        };
+      }
+    });
+
+    await expect(client.listNetProxy()).resolves.toEqual({
+      proxies: [
+        {
+          id: 30039,
+          host: "https://proxy.example.com",
+          port: 8080,
+          password: "***"
+        }
+      ],
+      total: 1
+    });
+    expect(requestedPath).toBe("/cloudartifact/v5/tree/net/proxy");
   });
 
   it("uses checksum search and Maven project repository endpoints", async () => {

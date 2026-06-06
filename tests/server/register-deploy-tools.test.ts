@@ -84,6 +84,7 @@ describe("registerDeployTool", () => {
       ["deploy_get_application_environment", "Get CodeArts Deploy application environment detail"],
       ["deploy_update_application_environment", "Update CodeArts Deploy application environment"],
       ["deploy_delete_application_environment", "Delete CodeArts Deploy application environment"],
+      ["deploy_copy_application", "Copy CodeArts Deploy application"],
       ["deploy_batch_delete_applications", "Batch delete CodeArts Deploy applications"],
       ["deploy_update_application_permission_level", "Update CodeArts Deploy application permission level"]
     ] as const;

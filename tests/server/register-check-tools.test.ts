@@ -69,10 +69,15 @@ describe("registerCheckTool", () => {
   it("registers new check mutation tools", () => {
     const registerTool = vi.fn();
     const tools = [
+      ["check_batch_copy_async_tasks", "Batch copy CodeArts Check tasks asynchronously"],
       ["check_create_ruleset", "Create CodeArts Check ruleset"],
       ["check_delete_task", "Delete CodeArts Check task via official v2 token-header API"],
       ["check_delete_ruleset", "Delete CodeArts Check ruleset"],
       ["check_update_task_resource_pool", "Update CodeArts Check task resource pool"],
+      ["check_stop_task_v1", "Stop CodeArts Check task via official v1 API"],
+      ["check_update_task_ruleset", "Update CodeArts Check task ruleset"],
+      ["check_update_ignore_path", "Update CodeArts Check ignore path settings"],
+      ["check_update_defect_status", "Update CodeArts Check defect status"],
       ["check_update_pipeline_task", "Update CodeArts Check pipeline task"],
       ["check_update_task_owner_matching_switch", "Update CodeArts Check task owner matching switch"],
       ["check_set_default_ruleset", "Set CodeArts Check default ruleset"],

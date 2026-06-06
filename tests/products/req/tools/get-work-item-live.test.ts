@@ -15,7 +15,9 @@ describe("createReqGetWorkItemHandler", () => {
 
     const result = await handler({ project_id: "p-1", work_item_id: "101" });
 
-    expect(result.structuredContent.item).toEqual({
+    const item = result.structuredContent.item;
+    expect(item).toBeDefined();
+    expect(item!).toMatchObject({
       id: "101",
       title: "Implement SSO",
       status: "Done",
@@ -39,5 +41,8 @@ describe("createReqGetWorkItemHandler", () => {
         description: "SSO delivery"
       }
     });
+    expect(item!.customFields).toEqual([]);
+    expect(item!.tagList).toEqual([]);
+    expect(item!.children).toEqual([]);
   });
 });

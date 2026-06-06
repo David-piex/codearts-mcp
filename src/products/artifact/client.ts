@@ -190,8 +190,9 @@ export type ArtifactClient = {
     artifact_name: string;
     page: number;
     page_size: number;
-    repo_name?: string;
+    artifact_type?: string;
     project_id?: string;
+    in_project?: boolean;
   }) => Promise<{
     artifacts: Array<{
       name?: string;
@@ -201,6 +202,10 @@ export type ArtifactClient = {
       display_name?: string;
       repo_type?: string;
     }>;
+    total?: number;
+  }>;
+  listNetProxy: () => Promise<{
+    proxies: Array<Record<string, unknown>>;
     total?: number;
   }>;
   searchByChecksum: (input: {
@@ -1088,13 +1093,13 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
       };
     },
     async searchArtifacts(input) {
-      const offset = (input.page - 1) * input.page_size;
-      const response = unwrapArtifactPayload((await _http.post("/cloudartifact/v5/artifacts", {
+      const response = unwrapArtifactPayload((await _http.post("/cloudartifact/v5/tree/repos/artifacts", {
         artifact_name: input.artifact_name,
-        offset,
-        limit: input.page_size,
-        repo_name: input.repo_name,
-        project_id: input.project_id
+        artifact_type: input.artifact_type,
+        page_no: input.page,
+        page_size: input.page_size,
+        project_id: input.project_id,
+        in_project: input.in_project
       })) as {
         artifacts?: unknown;
         total?: number;
@@ -1130,6 +1135,23 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
           repo_type: item.repo_type ?? item.repoType
         })),
         total: payload.total ?? payload.total_count
+      };
+    },
+    async listNetProxy() {
+      const { response, payload } = readStoragePayload(
+        await _http.get("/cloudartifact/v5/tree/net/proxy")
+      );
+      const proxies = sanitizeArtifactRecordArray(readRecordList(payload, response, [
+        "proxies",
+        "proxy",
+        "data",
+        "items",
+        "list"
+      ]));
+
+      return {
+        proxies,
+        total: readTotal(payload, response, proxies.length)
       };
     },
     async searchByChecksum(input) {

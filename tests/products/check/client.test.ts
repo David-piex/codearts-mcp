@@ -311,6 +311,140 @@ describe("createCheckClient", () => {
     });
   });
 
+  it("uses documented official Check task mutation endpoints", async () => {
+    const requests: Array<{ method: string; path: string; body?: unknown; options?: unknown }> = [];
+    const client = createClient({
+      put: async (path: string, body?: unknown, options?: unknown) => {
+        requests.push({ method: "PUT", path, body, options });
+        return { status: "ok", result: "success" };
+      },
+      post: async (path: string, body?: unknown, options?: unknown) => {
+        requests.push({ method: "POST", path, body, options });
+        return { status: "ok", result: "success" };
+      }
+    });
+
+    await expect(client.stopTaskV1({
+      task_id: "task-1",
+      job_id: "job-1",
+      operator: "szh"
+    })).resolves.toMatchObject({
+      task_id: "task-1",
+      job_id: "job-1",
+      status: "ok",
+      result: "success"
+    });
+    await expect(client.updateTaskRuleset({
+      task_id: "task-1",
+      rulesets: [
+        {
+          language: "cpp",
+          rule_set_id: "ruleset-1",
+          if_use: "1",
+          status: "1"
+        }
+      ]
+    })).resolves.toMatchObject({
+      task_id: "task-1",
+      status: "ok",
+      result: "success"
+    });
+    await expect(client.updateIgnorePath({
+      project_id: "project-1",
+      task_id: "task-1",
+      ignore_path_settings: [
+        {
+          file_path: ".LAST_RELEASE",
+          checkbox_status: "all"
+        }
+      ]
+    })).resolves.toMatchObject({
+      project_id: "project-1",
+      task_id: "task-1",
+      status: "ok",
+      result: "success"
+    });
+    await expect(client.updateDefectStatus({
+      task_id: "task-1",
+      defect_id: "defect-1",
+      defect_status: "1"
+    })).resolves.toMatchObject({
+      task_id: "task-1",
+      defect_id: "defect-1",
+      defect_status: "1",
+      status: "ok",
+      result: "success"
+    });
+    await expect(client.batchCopyAsyncTasks({
+      task_id: "task-1",
+      tasks: [
+        {
+          task_id: "source-task-1",
+          task_name: "copied-check"
+        }
+      ]
+    })).resolves.toMatchObject({
+      task_id: "task-1",
+      status: "ok",
+      result: "success"
+    });
+
+    expect(requests).toEqual([
+      {
+        method: "PUT",
+        path: "/v1/tasks/task-1/stop?job_id=job-1",
+        body: {},
+        options: { headers: { operator: "szh" } }
+      },
+      {
+        method: "PUT",
+        path: "/v2/tasks/task-1/ruleset",
+        body: [
+          {
+            language: "cpp",
+            rule_set_id: "ruleset-1",
+            if_use: "1",
+            status: "1"
+          }
+        ],
+        options: undefined
+      },
+      {
+        method: "POST",
+        path: "/v2/project-1/tasks/task-1/config-ignorepath",
+        body: {
+          ignore_path_settings: [
+            {
+              file_path: ".LAST_RELEASE",
+              checkbox_status: "all"
+            }
+          ]
+        },
+        options: undefined
+      },
+      {
+        method: "PUT",
+        path: "/v2/tasks/task-1/defect-status",
+        body: {
+          defect_id: "defect-1",
+          defect_status: "1"
+        },
+        options: undefined
+      },
+      {
+        method: "POST",
+        path: "/v4/tasks/task-1/batch/async-copy",
+        body: [
+          {
+            task_id: "source-task-1",
+            task_name: "copied-check"
+          }
+        ],
+        options: undefined
+      }
+    ]);
+  });
+
   it("uses documented Check issue status and PDF async job endpoints", async () => {
     const requests: Array<{ method: string; path: string; body?: unknown }> = [];
     const client = createClient({

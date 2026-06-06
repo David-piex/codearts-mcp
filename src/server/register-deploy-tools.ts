@@ -9,6 +9,7 @@ import {
   deployUpdateApplicationEnvironmentInput,
   deployDeleteApplicationEnvironmentInput,
   deployCreateApplicationInput,
+  deployCopyApplicationInput,
   deployCreateApplicationGroupInput,
   deployCheckApplicationCreatableInput,
   deployCheckHostGroupCreatableInput,
@@ -96,6 +97,7 @@ import { createDeployGetApplicationEnvironmentHandler } from "../products/deploy
 import { createDeployUpdateApplicationEnvironmentHandler } from "../products/deploy/tools/update-application-environment.js";
 import { createDeployDeleteApplicationEnvironmentHandler } from "../products/deploy/tools/delete-application-environment.js";
 import { createDeployCreateApplicationHandler } from "../products/deploy/tools/create-application.js";
+import { createDeployCopyApplicationHandler } from "../products/deploy/tools/copy-application.js";
 import {
   createDeployCreateApplicationGroupHandler,
   createDeployDeleteApplicationGroupHandler,
@@ -230,6 +232,7 @@ const deployToolDefinitions = {
   "deploy_update_application_environment": defineProductTool({ description: "Update CodeArts Deploy application environment", inputSchema: deployUpdateApplicationEnvironmentInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployUpdateApplicationEnvironmentHandler>[0] }) => clients.deployClient, createProductHandler: createDeployUpdateApplicationEnvironmentHandler, rateLimitAction: "deploy_update_application_environment" }),
   "deploy_delete_application_environment": defineProductTool({ description: "Delete CodeArts Deploy application environment", inputSchema: deployDeleteApplicationEnvironmentInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployDeleteApplicationEnvironmentHandler>[0] }) => clients.deployClient, createProductHandler: createDeployDeleteApplicationEnvironmentHandler, rateLimitAction: "deploy_delete_application_environment" }),
   "deploy_create_application": defineProductTool({ description: "Create CodeArts Deploy application", inputSchema: deployCreateApplicationInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployCreateApplicationHandler>[0] }) => clients.deployClient, createProductHandler: createDeployCreateApplicationHandler, rateLimitAction: "deploy_create_application" }),
+  "deploy_copy_application": defineProductTool({ description: "Copy CodeArts Deploy application", inputSchema: deployCopyApplicationInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployCopyApplicationHandler>[0] }) => clients.deployClient, createProductHandler: createDeployCopyApplicationHandler, rateLimitAction: "deploy_copy_application" }),
   "deploy_check_application_exists": defineProductTool({ description: "Check whether a CodeArts Deploy application name exists", inputSchema: deployCheckApplicationExistsInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployCheckApplicationExistsHandler>[0] }) => clients.deployClient, createProductHandler: createDeployCheckApplicationExistsHandler }),
   "deploy_check_application_creatable": defineProductTool({ description: "Check whether CodeArts Deploy application creation is allowed", inputSchema: deployCheckApplicationCreatableInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployCheckApplicationCreatableHandler>[0] }) => clients.deployClient, createProductHandler: createDeployCheckApplicationCreatableHandler }),
   "deploy_list_application_permissions": defineProductTool({ description: "List CodeArts Deploy application permissions", inputSchema: deployListApplicationPermissionsInput, selectHttpClient: (clients: { deployClient: Parameters<typeof createDeployListApplicationPermissionsHandler>[0] }) => clients.deployClient, createProductHandler: createDeployListApplicationPermissionsHandler }),

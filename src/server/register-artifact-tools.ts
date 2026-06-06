@@ -24,6 +24,7 @@ import {
   artifactListMavenRepositoryListInput,
   artifactListMavenRepositoriesInput,
   artifactListMavenProjectRepositoriesInput,
+  artifactListNetProxyInput,
   artifactListProjectRolePermissionsInput,
   artifactListProjectReleaseFilesInput,
   artifactListProjectUsersInput,
@@ -84,6 +85,7 @@ import { createArtifactListChildProxyRepositoriesHandler } from "../products/art
 import { createArtifactListFilesHandler } from "../products/artifact/tools/list-files.js";
 import { createArtifactListLatestVersionFilesHandler } from "../products/artifact/tools/list-latest-version-files.js";
 import { createArtifactListMavenProjectRepositoriesHandler } from "../products/artifact/tools/list-maven-project-repositories.js";
+import { createArtifactListNetProxyHandler } from "../products/artifact/tools/list-net-proxy.js";
 import { createArtifactListProjectRolePermissionsHandler } from "../products/artifact/tools/list-project-role-permissions.js";
 import { createArtifactListRepositoriesHandler } from "../products/artifact/tools/list-repositories.js";
 import { createArtifactListRepositoryUsersHandler } from "../products/artifact/tools/list-repository-users.js";
@@ -417,6 +419,14 @@ const artifactToolDefinitions = {
       >[0];
     }) => clients.artifactClient,
     createProductHandler: createArtifactListChildProxyRepositoriesHandler,
+  }),
+  artifact_list_net_proxy: defineProductTool({
+    description: "List CodeArts Artifact network proxies",
+    inputSchema: artifactListNetProxyInput,
+    selectHttpClient: (clients: {
+      artifactClient: Parameters<typeof createArtifactListNetProxyHandler>[0];
+    }) => clients.artifactClient,
+    createProductHandler: createArtifactListNetProxyHandler,
   }),
   artifact_list_domain_ip_configs: defineProductTool({
     description: "List CodeArts Artifact domain IP configs",

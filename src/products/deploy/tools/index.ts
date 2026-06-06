@@ -5,6 +5,7 @@ export const deployToolNames = [
   "deploy_check_host_group_creatable",
   "deploy_check_application_exists",
   "deploy_check_application_creatable",
+  "deploy_copy_application",
   "deploy_create_application",
   "deploy_create_application_group",
   "deploy_list_application_permissions",
