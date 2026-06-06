@@ -6,7 +6,7 @@
 
 模块：`测试计划`
 
-API 数量：`354`
+API 数量：`360`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
@@ -13329,6 +13329,91 @@ API 数量：`354`
 }
 ```
 
+### testplan_list_default_templates
+
+所属模块：`测试计划`
+
+说明：查询测试计划的default模板。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "testplan_list_default_templates",
+    "arguments": {
+      "project_id": "<project_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 字段对应：<br>MCP 字段 `page` ↔ 原始 CodeArts 测试计划 API 的分页页码或由 `offset/limit` 换算得到的页码。<br>页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 字段对应：<br>MCP 字段 `page_size` ↔ 原始 CodeArts 测试计划 API 的分页大小字段，常见原字段名为 `page_size`、`limit` 或 `pageSize`。<br>每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 字段对应：<br>MCP 字段 `keyword` ↔ 原始 CodeArts 测试计划 API 的搜索关键字字段，常见原字段名为 `keyword`、`search` 或 `name`。<br>搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 字段对应：<br>MCP 字段 `sort_by` ↔ 原始 CodeArts 测试计划 API 同名字段 `sort_by`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 字段对应：<br>MCP 字段 `sort_order` ↔ 原始 CodeArts 测试计划 API 同名字段 `sort_order`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 测试计划 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `offset` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `offset` ↔ 原始 CodeArts 测试计划 API 同名字段 `offset`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>分页偏移量，表示从结果集第几条开始返回，常与 limit 配合使用。 |
+| `name` | 否 | `string` |  | 字段对应：<br>MCP 字段 `name` ↔ 原始 CodeArts 测试计划 API 同名字段 `name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "page": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "default": 1
+    },
+    "page_size": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 200,
+      "default": 20
+    },
+    "keyword": {
+      "type": "string"
+    },
+    "sort_by": {
+      "type": "string"
+    },
+    "sort_order": {
+      "type": "string",
+      "enum": [
+        "asc",
+        "desc"
+      ]
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "offset": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "name": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "project_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### testplan_list_defect_iterators
 
 所属模块：`测试计划`
@@ -17968,6 +18053,100 @@ API 数量：`354`
 }
 ```
 
+### testplan_list_scenes_page
+
+所属模块：`测试计划`
+
+说明：查询测试计划的scenespage。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "testplan_list_scenes_page",
+    "arguments": {
+      "project_id": "<project_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 字段对应：<br>MCP 字段 `page` ↔ 原始 CodeArts 测试计划 API 的分页页码或由 `offset/limit` 换算得到的页码。<br>页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 字段对应：<br>MCP 字段 `page_size` ↔ 原始 CodeArts 测试计划 API 的分页大小字段，常见原字段名为 `page_size`、`limit` 或 `pageSize`。<br>每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 字段对应：<br>MCP 字段 `keyword` ↔ 原始 CodeArts 测试计划 API 的搜索关键字字段，常见原字段名为 `keyword`、`search` 或 `name`。<br>搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 字段对应：<br>MCP 字段 `sort_by` ↔ 原始 CodeArts 测试计划 API 同名字段 `sort_by`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 字段对应：<br>MCP 字段 `sort_order` ↔ 原始 CodeArts 测试计划 API 同名字段 `sort_order`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 测试计划 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `offset` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `offset` ↔ 原始 CodeArts 测试计划 API 同名字段 `offset`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>分页偏移量，表示从结果集第几条开始返回，常与 limit 配合使用。 |
+| `deleted` | 否 | `string` |  | 字段对应：<br>MCP 字段 `deleted` ↔ 原始 CodeArts 测试计划 API 同名字段 `deleted`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `mindmap_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `mindmap_id` ↔ 原始 CodeArts 测试计划 API 同名字段 `mindmap_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>mindmap ID，用于定位对应的 CodeArts 资源。 |
+| `node_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `node_id` ↔ 原始 CodeArts 测试计划 API 同名字段 `node_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>Node ID，用于定位对应的 CodeArts 资源。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "page": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "default": 1
+    },
+    "page_size": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 200,
+      "default": 20
+    },
+    "keyword": {
+      "type": "string"
+    },
+    "sort_by": {
+      "type": "string"
+    },
+    "sort_order": {
+      "type": "string",
+      "enum": [
+        "asc",
+        "desc"
+      ]
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "offset": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "deleted": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mindmap_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "node_id": {
+      "$ref": "#/properties/project_id"
+    }
+  },
+  "required": [
+    "project_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### testplan_list_service_offerings
 
 所属模块：`测试计划`
@@ -18066,6 +18245,88 @@ API 数量：`354`
           "type": "integer"
         }
       ]
+    }
+  },
+  "required": [
+    "project_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### testplan_list_system_configs
+
+所属模块：`测试计划`
+
+说明：查询测试计划的system配置。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "testplan_list_system_configs",
+    "arguments": {
+      "project_id": "<project_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 测试计划 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `params` | 否 | `object` |  | 字段对应：<br>MCP 字段 `params` ↔ 原始 CodeArts 测试计划 API 同名字段 `params`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>参数对象，承载接口需要透传给下游任务、部署步骤或流水线的键值配置。 |
+| `id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `id` ↔ 原始 CodeArts 测试计划 API 同名字段 `id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>资源 ID，表示当前接口操作对象的唯一标识。具体含义由所在 API 决定，例如工作项 ID、记录 ID、任务 ID。 |
+| `key` | 否 | `object` |  | 字段对应：<br>MCP 字段 `key` ↔ 原始 CodeArts 测试计划 API 同名字段 `key`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `value` | 否 | `string` |  | 字段对应：<br>MCP 字段 `value` ↔ 原始 CodeArts 测试计划 API 同名字段 `value`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `remark` | 否 | `string` |  | 字段对应：<br>MCP 字段 `remark` ↔ 原始 CodeArts 测试计划 API 同名字段 `remark`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `region_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `region_id` ↔ 原始 CodeArts 测试计划 API 同名字段 `region_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>region ID，用于定位对应的 CodeArts 资源。 |
+| `update_time` | 否 | `string` |  | 字段对应：<br>MCP 字段 `update_time` ↔ 原始 CodeArts 测试计划 API 同名字段 `update_time`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `update_name` | 否 | `string` |  | 字段对应：<br>MCP 字段 `update_name` ↔ 原始 CodeArts 测试计划 API 同名字段 `update_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>update名称。 |
+| `update_num` | 否 | `string` |  | 字段对应：<br>MCP 字段 `update_num` ↔ 原始 CodeArts 测试计划 API 同名字段 `update_num`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "params": {
+      "type": "object",
+      "additionalProperties": {}
+    },
+    "id": {
+      "$ref": "#/properties/project_id"
+    },
+    "key": {},
+    "value": {
+      "type": "string"
+    },
+    "remark": {
+      "type": "string"
+    },
+    "region_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "update_time": {
+      "type": "string"
+    },
+    "update_name": {
+      "type": "string"
+    },
+    "update_num": {
+      "$ref": "#/properties/project_id"
     }
   },
   "required": [
@@ -20330,6 +20591,316 @@ API 数量：`354`
 }
 ```
 
+### testplan_list_testcases_batch
+
+所属模块：`测试计划`
+
+说明：查询测试计划的testcasesbatch。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "testplan_list_testcases_batch",
+    "arguments": {
+      "project_id": "<project_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 字段对应：<br>MCP 字段 `page` ↔ 原始 CodeArts 测试计划 API 的分页页码或由 `offset/limit` 换算得到的页码。<br>页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 字段对应：<br>MCP 字段 `page_size` ↔ 原始 CodeArts 测试计划 API 的分页大小字段，常见原字段名为 `page_size`、`limit` 或 `pageSize`。<br>每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 字段对应：<br>MCP 字段 `keyword` ↔ 原始 CodeArts 测试计划 API 的搜索关键字字段，常见原字段名为 `keyword`、`search` 或 `name`。<br>搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 字段对应：<br>MCP 字段 `sort_by` ↔ 原始 CodeArts 测试计划 API 同名字段 `sort_by`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 字段对应：<br>MCP 字段 `sort_order` ↔ 原始 CodeArts 测试计划 API 同名字段 `sort_order`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 测试计划 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `useOffset` | 否 | `boolean` |  | 字段对应：<br>MCP 字段 `useOffset` ↔ 原始 CodeArts 测试计划 API 同名字段 `useOffset`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `version_uri` | 否 | `string` |  | 字段对应：<br>MCP 字段 `version_uri` ↔ 原始 CodeArts 测试计划 API 同名字段 `version_uri`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `case_uris` | 否 | `array<object>` |  | 字段对应：<br>MCP 字段 `case_uris` ↔ 原始 CodeArts 测试计划 API 同名字段 `case_uris`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `owner_ids` | 否 | `array<object>` |  | 字段对应：<br>MCP 字段 `owner_ids` ↔ 原始 CodeArts 测试计划 API 同名字段 `owner_ids`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>拥有者 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `status_codes` | 否 | `array<integer>` |  | 字段对应：<br>MCP 字段 `status_codes` ↔ 原始 CodeArts 测试计划 API 同名字段 `status_codes`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `rank_ids` | 否 | `array<object>` |  | 字段对应：<br>MCP 字段 `rank_ids` ↔ 原始 CodeArts 测试计划 API 同名字段 `rank_ids`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>rank ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `module_ids` | 否 | `array<object>` |  | 字段对应：<br>MCP 字段 `module_ids` ↔ 原始 CodeArts 测试计划 API 同名字段 `module_ids`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>模块 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `issue_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `issue_id` ↔ 原始 CodeArts 测试计划 API 同名字段 `issue_id`，表示工作项/议题 ID。<br>工作项 ID，用于定位对应的 CodeArts 资源。 |
+| `creator_ids` | 否 | `array<object>` |  | 字段对应：<br>MCP 字段 `creator_ids` ↔ 原始 CodeArts 测试计划 API 同名字段 `creator_ids`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>creator ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `result_codes` | 否 | `array<integer>` |  | 字段对应：<br>MCP 字段 `result_codes` ↔ 原始 CodeArts 测试计划 API 同名字段 `result_codes`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `iteration_ids` | 否 | `array<object>` |  | 字段对应：<br>MCP 字段 `iteration_ids` ↔ 原始 CodeArts 测试计划 API 同名字段 `iteration_ids`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>迭代 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `create_start_time` | 否 | `string` |  | 字段对应：<br>MCP 字段 `create_start_time` ↔ 原始 CodeArts 测试计划 API 同名字段 `create_start_time`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `create_end_time` | 否 | `string` |  | 字段对应：<br>MCP 字段 `create_end_time` ↔ 原始 CodeArts 测试计划 API 同名字段 `create_end_time`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `associated_issue` | 否 | `boolean` |  | 字段对应：<br>MCP 字段 `associated_issue` ↔ 原始 CodeArts 测试计划 API 同名字段 `associated_issue`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `associated_defects` | 否 | `boolean` |  | 字段对应：<br>MCP 字段 `associated_defects` ↔ 原始 CodeArts 测试计划 API 同名字段 `associated_defects`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `include_sub_issue` | 否 | `boolean` |  | 字段对应：<br>MCP 字段 `include_sub_issue` ↔ 原始 CodeArts 测试计划 API 同名字段 `include_sub_issue`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `include_sub_feature` | 否 | `boolean` |  | 字段对应：<br>MCP 字段 `include_sub_feature` ↔ 原始 CodeArts 测试计划 API 同名字段 `include_sub_feature`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `label_ids` | 否 | `array<object>` |  | 字段对应：<br>MCP 字段 `label_ids` ↔ 原始 CodeArts 测试计划 API 同名字段 `label_ids`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>标签 ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `execute_start_time` | 否 | `string` |  | 字段对应：<br>MCP 字段 `execute_start_time` ↔ 原始 CodeArts 测试计划 API 同名字段 `execute_start_time`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `execute_end_time` | 否 | `string` |  | 字段对应：<br>MCP 字段 `execute_end_time` ↔ 原始 CodeArts 测试计划 API 同名字段 `execute_end_time`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `executor_ids` | 否 | `array<object>` |  | 字段对应：<br>MCP 字段 `executor_ids` ↔ 原始 CodeArts 测试计划 API 同名字段 `executor_ids`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>executor ID 列表，用于批量定位对应的 CodeArts 资源。 |
+| `test_types` | 否 | `array<integer>` |  | 字段对应：<br>MCP 字段 `test_types` ↔ 原始 CodeArts 测试计划 API 同名字段 `test_types`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `is_keyword` | 否 | `boolean` |  | 字段对应：<br>MCP 字段 `is_keyword` ↔ 原始 CodeArts 测试计划 API 同名字段 `is_keyword`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `issue_tree_search` | 否 | `boolean` |  | 字段对应：<br>MCP 字段 `issue_tree_search` ↔ 原始 CodeArts 测试计划 API 同名字段 `issue_tree_search`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `service_type` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `service_type` ↔ 原始 CodeArts 测试计划 API 同名字段 `service_type`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `service_types` | 否 | `array<integer>` |  | 字段对应：<br>MCP 字段 `service_types` ↔ 原始 CodeArts 测试计划 API 同名字段 `service_types`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `stage_type` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `stage_type` ↔ 原始 CodeArts 测试计划 API 同名字段 `stage_type`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `feature_uri` | 否 | `string` |  | 字段对应：<br>MCP 字段 `feature_uri` ↔ 原始 CodeArts 测试计划 API 同名字段 `feature_uri`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `sort_field` | 否 | `string` |  | 字段对应：<br>MCP 字段 `sort_field` ↔ 原始 CodeArts 测试计划 API 同名字段 `sort_field`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `sort_type` | 否 | `string` |  | 字段对应：<br>MCP 字段 `sort_type` ↔ 原始 CodeArts 测试计划 API 同名字段 `sort_type`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `case_type` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `case_type` ↔ 原始 CodeArts 测试计划 API 同名字段 `case_type`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `custom_field_info` | 否 | `object \| array<object>` |  | 字段对应：<br>MCP 字段 `custom_field_info` ↔ 原始 CodeArts 测试计划 API 同名字段 `custom_field_info`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `task_uri` | 否 | `string` |  | 字段对应：<br>MCP 字段 `task_uri` ↔ 原始 CodeArts 测试计划 API 同名字段 `task_uri`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `associate_issue_detail` | 否 | `boolean` |  | 字段对应：<br>MCP 字段 `associate_issue_detail` ↔ 原始 CodeArts 测试计划 API 同名字段 `associate_issue_detail`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `not_assign_task` | 否 | `boolean` |  | 字段对应：<br>MCP 字段 `not_assign_task` ↔ 原始 CodeArts 测试计划 API 同名字段 `not_assign_task`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `test_designs` | 否 | `array<string \| boolean>` |  | 字段对应：<br>MCP 字段 `test_designs` ↔ 原始 CodeArts 测试计划 API 同名字段 `test_designs`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `review_status` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `review_status` ↔ 原始 CodeArts 测试计划 API 同名字段 `review_status`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `just_return_id` | 否 | `boolean` |  | 字段对应：<br>MCP 字段 `just_return_id` ↔ 原始 CodeArts 测试计划 API 同名字段 `just_return_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>justreturn ID，用于定位对应的 CodeArts 资源。 |
+| `exeplatforms` | 否 | `array<string>` |  | 字段对应：<br>MCP 字段 `exeplatforms` ↔ 原始 CodeArts 测试计划 API 同名字段 `exeplatforms`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `own` | 否 | `boolean` |  | 字段对应：<br>MCP 字段 `own` ↔ 原始 CodeArts 测试计划 API 同名字段 `own`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `queryByDisplayCfg` | 否 | `boolean` |  | 字段对应：<br>MCP 字段 `queryByDisplayCfg` ↔ 原始 CodeArts 测试计划 API 同名字段 `queryByDisplayCfg`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "page": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "default": 1
+    },
+    "page_size": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 200,
+      "default": 20
+    },
+    "keyword": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sort_by": {
+      "type": "string"
+    },
+    "sort_order": {
+      "type": "string",
+      "enum": [
+        "asc",
+        "desc"
+      ]
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "useOffset": {
+      "type": "boolean"
+    },
+    "version_uri": {
+      "$ref": "#/properties/project_id"
+    },
+    "case_uris": {
+      "type": "array",
+      "items": {
+        "$ref": "#/properties/project_id"
+      }
+    },
+    "owner_ids": {
+      "type": "array",
+      "items": {
+        "$ref": "#/properties/project_id"
+      }
+    },
+    "status_codes": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      }
+    },
+    "rank_ids": {
+      "type": "array",
+      "items": {
+        "$ref": "#/properties/project_id"
+      }
+    },
+    "module_ids": {
+      "type": "array",
+      "items": {
+        "$ref": "#/properties/project_id"
+      }
+    },
+    "issue_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "creator_ids": {
+      "type": "array",
+      "items": {
+        "$ref": "#/properties/project_id"
+      }
+    },
+    "result_codes": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      }
+    },
+    "iteration_ids": {
+      "type": "array",
+      "items": {
+        "$ref": "#/properties/project_id"
+      }
+    },
+    "create_start_time": {
+      "type": "string",
+      "minLength": 1
+    },
+    "create_end_time": {
+      "type": "string",
+      "minLength": 1
+    },
+    "associated_issue": {
+      "type": "boolean"
+    },
+    "associated_defects": {
+      "type": "boolean"
+    },
+    "include_sub_issue": {
+      "type": "boolean"
+    },
+    "include_sub_feature": {
+      "type": "boolean"
+    },
+    "label_ids": {
+      "type": "array",
+      "items": {
+        "$ref": "#/properties/project_id"
+      }
+    },
+    "execute_start_time": {
+      "type": "string",
+      "minLength": 1
+    },
+    "execute_end_time": {
+      "type": "string",
+      "minLength": 1
+    },
+    "executor_ids": {
+      "type": "array",
+      "items": {
+        "$ref": "#/properties/project_id"
+      }
+    },
+    "test_types": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      }
+    },
+    "is_keyword": {
+      "type": "boolean"
+    },
+    "issue_tree_search": {
+      "type": "boolean"
+    },
+    "service_type": {
+      "type": "integer"
+    },
+    "service_types": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      }
+    },
+    "stage_type": {
+      "type": "integer"
+    },
+    "feature_uri": {
+      "$ref": "#/properties/project_id"
+    },
+    "sort_field": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sort_type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "case_type": {
+      "type": "integer"
+    },
+    "custom_field_info": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": {}
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {}
+          }
+        }
+      ]
+    },
+    "task_uri": {
+      "$ref": "#/properties/project_id"
+    },
+    "associate_issue_detail": {
+      "type": "boolean"
+    },
+    "not_assign_task": {
+      "type": "boolean"
+    },
+    "test_designs": {
+      "type": "array",
+      "items": {
+        "anyOf": [
+          {
+            "type": "string",
+            "minLength": 1
+          },
+          {
+            "type": "boolean"
+          }
+        ]
+      }
+    },
+    "review_status": {
+      "type": "integer"
+    },
+    "just_return_id": {
+      "type": "boolean"
+    },
+    "exeplatforms": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "own": {
+      "type": "boolean"
+    },
+    "queryByDisplayCfg": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "project_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### testplan_list_testexecutor_resource_pools
 
 所属模块：`测试计划`
@@ -21004,6 +21575,100 @@ API 数量：`354`
 }
 ```
 
+### testplan_list_testpoints_page
+
+所属模块：`测试计划`
+
+说明：查询测试计划的testpointspage。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "testplan_list_testpoints_page",
+    "arguments": {
+      "project_id": "<project_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 字段对应：<br>MCP 字段 `page` ↔ 原始 CodeArts 测试计划 API 的分页页码或由 `offset/limit` 换算得到的页码。<br>页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 字段对应：<br>MCP 字段 `page_size` ↔ 原始 CodeArts 测试计划 API 的分页大小字段，常见原字段名为 `page_size`、`limit` 或 `pageSize`。<br>每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 字段对应：<br>MCP 字段 `keyword` ↔ 原始 CodeArts 测试计划 API 的搜索关键字字段，常见原字段名为 `keyword`、`search` 或 `name`。<br>搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 字段对应：<br>MCP 字段 `sort_by` ↔ 原始 CodeArts 测试计划 API 同名字段 `sort_by`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 字段对应：<br>MCP 字段 `sort_order` ↔ 原始 CodeArts 测试计划 API 同名字段 `sort_order`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 测试计划 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `offset` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `offset` ↔ 原始 CodeArts 测试计划 API 同名字段 `offset`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>分页偏移量，表示从结果集第几条开始返回，常与 limit 配合使用。 |
+| `deleted` | 否 | `string` |  | 字段对应：<br>MCP 字段 `deleted` ↔ 原始 CodeArts 测试计划 API 同名字段 `deleted`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `mindmap_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `mindmap_id` ↔ 原始 CodeArts 测试计划 API 同名字段 `mindmap_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>mindmap ID，用于定位对应的 CodeArts 资源。 |
+| `node_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `node_id` ↔ 原始 CodeArts 测试计划 API 同名字段 `node_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>Node ID，用于定位对应的 CodeArts 资源。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "page": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "default": 1
+    },
+    "page_size": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 200,
+      "default": 20
+    },
+    "keyword": {
+      "type": "string"
+    },
+    "sort_by": {
+      "type": "string"
+    },
+    "sort_order": {
+      "type": "string",
+      "enum": [
+        "asc",
+        "desc"
+      ]
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "offset": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "deleted": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mindmap_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "node_id": {
+      "$ref": "#/properties/project_id"
+    }
+  },
+  "required": [
+    "project_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### testplan_list_timeout_settings
 
 所属模块：`测试计划`
@@ -21397,6 +22062,90 @@ API 数量：`354`
     "testcase_uri",
     "project_uuid",
     "version_uri"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### testplan_list_variable_group_names
+
+所属模块：`测试计划`
+
+说明：查询测试计划的变量组names。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "testplan_list_variable_group_names",
+    "arguments": {
+      "project_id": "<project_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `page` | 否 | `integer` | 1 | 字段对应：<br>MCP 字段 `page` ↔ 原始 CodeArts 测试计划 API 的分页页码或由 `offset/limit` 换算得到的页码。<br>页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 20 | 字段对应：<br>MCP 字段 `page_size` ↔ 原始 CodeArts 测试计划 API 的分页大小字段，常见原字段名为 `page_size`、`limit` 或 `pageSize`。<br>每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `keyword` | 否 | `string` |  | 字段对应：<br>MCP 字段 `keyword` ↔ 原始 CodeArts 测试计划 API 的搜索关键字字段，常见原字段名为 `keyword`、`search` 或 `name`。<br>搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
+| `sort_by` | 否 | `string` |  | 字段对应：<br>MCP 字段 `sort_by` ↔ 原始 CodeArts 测试计划 API 同名字段 `sort_by`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
+| `sort_order` | 否 | `"asc" \| "desc"` |  | 字段对应：<br>MCP 字段 `sort_order` ↔ 原始 CodeArts 测试计划 API 同名字段 `sort_order`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 测试计划 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `query` | 否 | `string` |  | 字段对应：<br>MCP 字段 `query` ↔ 原始 CodeArts 测试计划 API 同名字段 `query`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>查询条件或搜索表达式，用于过滤列表结果；具体支持的字段由对应接口决定。 |
+| `name` | 否 | `string` |  | 字段对应：<br>MCP 字段 `name` ↔ 原始 CodeArts 测试计划 API 同名字段 `name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "page": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "default": 1
+    },
+    "page_size": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 200,
+      "default": 20
+    },
+    "keyword": {
+      "type": "string"
+    },
+    "sort_by": {
+      "type": "string"
+    },
+    "sort_order": {
+      "type": "string",
+      "enum": [
+        "asc",
+        "desc"
+      ]
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "query": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "project_id"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

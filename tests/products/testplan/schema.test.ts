@@ -25,9 +25,15 @@ import {
   testPlanListIssuesTreeInput,
   testPlanListIteratorStageCountsInput,
   testPlanListIssuesInput,
+  testPlanListDefaultTemplatesInput,
   testPlanListTepsInput,
   testPlanListDynamicGlobalVariablesInput,
+  testPlanListScenesPageInput,
+  testPlanListSystemConfigsInput,
+  testPlanListTestcasesBatchInput,
   testPlanListTestcaseDefectStatisticsInput,
+  testPlanListTestpointsPageInput,
+  testPlanListVariableGroupNamesInput,
   testPlanListUserExecuteTestcaseStatisticsInput,
   testPlanQueryTesthubEtlDataInput,
   testPlanRefreshProgressReportInput,
@@ -80,6 +86,107 @@ describe("testplan schemas", () => {
       },
       page: 1,
       page_size: 20
+    });
+  });
+
+  it("accepts official TestPlan page and batch read inputs", () => {
+    expect(
+      testPlanListTestpointsPageInput.parse({
+        project_id: "project-1",
+        page: 2,
+        page_size: 5,
+        offset: 5,
+        deleted: "0",
+        mindmap_id: "mindmap-1",
+        node_id: "node-1"
+      })
+    ).toMatchObject({
+      project_id: "project-1",
+      page: 2,
+      page_size: 5,
+      offset: 5,
+      deleted: "0",
+      mindmap_id: "mindmap-1",
+      node_id: "node-1"
+    });
+
+    expect(
+      testPlanListScenesPageInput.parse({
+        project_id: "project-1",
+        deleted: "0"
+      })
+    ).toMatchObject({
+      project_id: "project-1",
+      page: 1,
+      page_size: 20,
+      deleted: "0"
+    });
+
+    expect(
+      testPlanListDefaultTemplatesInput.parse({
+        project_id: "project-1",
+        name: ""
+      })
+    ).toMatchObject({
+      project_id: "project-1",
+      page: 1,
+      page_size: 20,
+      name: ""
+    });
+
+    expect(
+      testPlanListTestcasesBatchInput.parse({
+        project_id: "project-1",
+        page: 1,
+        page_size: 10,
+        keyword: "checkout",
+        service_type: -1,
+        exeplatforms: ["api"],
+        own: true,
+        queryByDisplayCfg: false,
+        custom_field_info: [{ field: "priority", value: "P1" }],
+        test_designs: [true, "design-1"]
+      })
+    ).toMatchObject({
+      project_id: "project-1",
+      page: 1,
+      page_size: 10,
+      service_type: -1,
+      exeplatforms: ["api"],
+      own: true,
+      queryByDisplayCfg: false,
+      custom_field_info: [{ field: "priority", value: "P1" }],
+      test_designs: [true, "design-1"]
+    });
+
+    expect(
+      testPlanListSystemConfigsInput.parse({
+        project_id: "project-1",
+        params: { project_id: "project-1" },
+        id: "config-1",
+        key: 100,
+        value: "enabled"
+      })
+    ).toMatchObject({
+      project_id: "project-1",
+      params: { project_id: "project-1" },
+      id: "config-1",
+      key: 100,
+      value: "enabled"
+    });
+
+    expect(
+      testPlanListVariableGroupNamesInput.parse({
+        project_id: "project-1",
+        query: "{\"pageNo\":1,\"pageSize\":10}",
+        name: "Default"
+      })
+    ).toMatchObject({
+      project_id: "project-1",
+      page: 1,
+      page_size: 20,
+      query: "{\"pageNo\":1,\"pageSize\":10}",
+      name: "Default"
     });
   });
 

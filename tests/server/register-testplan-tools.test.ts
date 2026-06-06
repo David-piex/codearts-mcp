@@ -290,6 +290,37 @@ describe("registerTestPlanTool", () => {
     );
   });
 
+  it("registers official TestPlan page and batch read tools", () => {
+    const registerTool = vi.fn();
+    const tools = [
+      ["testplan_list_testpoints_page", "List CodeArts TestPlan testpoints by official v2 page API"],
+      ["testplan_list_scenes_page", "List CodeArts TestPlan scenes by official v2 page API"],
+      ["testplan_list_default_templates", "List CodeArts TestPlan default mindmap templates"],
+      ["testplan_list_testcases_batch", "List CodeArts TestPlan testcases by official v4 batch-list API"],
+      ["testplan_list_system_configs", "List CodeArts TestPlan system configs by official v1 API"],
+      ["testplan_list_variable_group_names", "List CodeArts TestPlan variable group names by official v1 API"]
+    ] as const;
+
+    for (const [toolName, description] of tools) {
+      const handled = registerTestPlanTool({
+        toolName,
+        server: { registerTool },
+        mode: "stdio",
+        stdioClient: {} as never
+      });
+
+      expect(handled).toBe(true);
+      expect(registerTool).toHaveBeenLastCalledWith(
+        toolName,
+        expect.objectContaining({
+          title: toolName,
+          description
+        }),
+        expect.any(Function)
+      );
+    }
+  });
+
   it("registers official v1 TestPlan read aliases", () => {
     const registerTool = vi.fn();
     const tools = [

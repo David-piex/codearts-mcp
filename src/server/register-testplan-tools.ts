@@ -132,6 +132,9 @@ import {
   testPlanListMindmapRecyclesInput,
   testPlanListMindmapsV2Input,
   testPlanListMindmapsV3Input,
+  testPlanListTestpointsPageInput,
+  testPlanListScenesPageInput,
+  testPlanListDefaultTemplatesInput,
   testPlanExportMindmapInput,
   testPlanGetPlanInput,
   testPlanGetProjectTestcaseInput,
@@ -149,6 +152,7 @@ import {
   testPlanGetProjectServiceConfigInput,
   testPlanGetProjectServiceRepoInput,
   testPlanGetProjectSystemConfigInput,
+  testPlanListSystemConfigsInput,
   testPlanGetProjectTestcaseGlobalConfigInput,
   testPlanGetProjectLocalConfigInput,
   testPlanGetQualityReportOverviewInput,
@@ -307,6 +311,7 @@ import {
   testPlanListTesthubIteratorsV5Input,
   testPlanListTesthubTestcasesInput,
   testPlanListTesthubTestcasesV5Input,
+  testPlanListTestcasesBatchInput,
   testPlanListTesthubServicesInput,
   testPlanCreateTesthubServiceInput,
   testPlanListV1BranchesInput,
@@ -314,6 +319,7 @@ import {
   testPlanListV4ProjectFieldConfigsInput,
   testPlanListV4TestcaseReviewsInput,
   testPlanListVariableGroupsInput,
+  testPlanListVariableGroupNamesInput,
   testPlanListVariablesByGroupInput,
   testPlanListVariablesByGroupWithSensitiveInput,
   testPlanListVariablesV3Input,
@@ -530,6 +536,9 @@ import { createTestPlanDeleteWorkItemTestRelationHandler } from "../products/tes
 import { createTestPlanListMindmapBackupsHandler } from "../products/testplan/tools/list-mindmap-backups.js";
 import { createTestPlanListMindmapsV2Handler } from "../products/testplan/tools/list-mindmaps-v2.js";
 import { createTestPlanListMindmapsV3Handler } from "../products/testplan/tools/list-mindmaps-v3.js";
+import { createTestPlanListTestpointsPageHandler } from "../products/testplan/tools/list-testpoints-page.js";
+import { createTestPlanListScenesPageHandler } from "../products/testplan/tools/list-scenes-page.js";
+import { createTestPlanListDefaultTemplatesHandler } from "../products/testplan/tools/list-default-templates.js";
 import { createTestPlanListMindmapRecyclesHandler } from "../products/testplan/tools/list-mindmap-recycles.js";
 import { createTestPlanGetPlanHandler } from "../products/testplan/tools/get-plan.js";
 import { createTestPlanGetProjectTestcaseHandler } from "../products/testplan/tools/get-project-testcase.js";
@@ -553,6 +562,7 @@ import { createTestPlanGetProjectProgressHandler } from "../products/testplan/to
 import { createTestPlanGetProjectServiceConfigHandler } from "../products/testplan/tools/get-project-service-config.js";
 import { createTestPlanGetProjectServiceRepoHandler } from "../products/testplan/tools/get-project-service-repo.js";
 import { createTestPlanGetProjectSystemConfigHandler } from "../products/testplan/tools/get-project-system-config.js";
+import { createTestPlanListSystemConfigsHandler } from "../products/testplan/tools/list-system-configs.js";
 import { createTestPlanGetProjectTestcaseGlobalConfigHandler } from "../products/testplan/tools/get-project-testcase-global-config.js";
 import { createTestPlanGetProjectLocalConfigHandler } from "../products/testplan/tools/get-project-local-config.js";
 import { createTestPlanGetQualityReportOverviewHandler } from "../products/testplan/tools/get-quality-report-overview.js";
@@ -698,6 +708,7 @@ import { createTestPlanListTestReportQualityAttributesHandler } from "../product
 import { createTestPlanListTestcaseRelationsHandler } from "../products/testplan/tools/list-testcase-relations.js";
 import { createTestPlanListTestcaseUriInfosV5Handler } from "../products/testplan/tools/list-testcase-uri-infos-v5.js";
 import { createTestPlanListTestcaseUrisV4Handler } from "../products/testplan/tools/list-testcase-uris-v4.js";
+import { createTestPlanListTestcasesBatchHandler } from "../products/testplan/tools/list-testcases-batch.js";
 import { createTestPlanListTestcaseCommentsHandler } from "../products/testplan/tools/list-testcase-comments.js";
 import { createTestPlanListTestcaseDefectStatisticsHandler } from "../products/testplan/tools/list-testcase-defect-statistics.js";
 import { createTestPlanListTestcaseFieldsHandler } from "../products/testplan/tools/list-testcase-fields.js";
@@ -718,6 +729,7 @@ import { createTestPlanListV4BranchesHandler } from "../products/testplan/tools/
 import { createTestPlanListV4ProjectFieldConfigsHandler } from "../products/testplan/tools/list-v4-project-field-configs.js";
 import { createTestPlanListV4TestcaseReviewsHandler } from "../products/testplan/tools/list-v4-testcase-reviews.js";
 import { createTestPlanListVariableGroupsHandler } from "../products/testplan/tools/list-variable-groups.js";
+import { createTestPlanListVariableGroupNamesHandler } from "../products/testplan/tools/list-variable-group-names.js";
 import { createTestPlanListVariablesByGroupHandler } from "../products/testplan/tools/list-variables-by-group.js";
 import { createTestPlanListVariablesV3Handler } from "../products/testplan/tools/list-variables-v3.js";
 import { createTestPlanListUserExecuteTestcaseStatisticsHandler } from "../products/testplan/tools/list-user-execute-testcase-statistics.js";
@@ -927,6 +939,24 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListMindmapsV3Input,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListMindmapsV3Handler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListMindmapsV3Handler
+  }),
+  "testplan_list_testpoints_page": defineProductTool({
+    description: "List CodeArts TestPlan testpoints by official v2 page API",
+    inputSchema: testPlanListTestpointsPageInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTestpointsPageHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListTestpointsPageHandler
+  }),
+  "testplan_list_scenes_page": defineProductTool({
+    description: "List CodeArts TestPlan scenes by official v2 page API",
+    inputSchema: testPlanListScenesPageInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListScenesPageHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListScenesPageHandler
+  }),
+  "testplan_list_default_templates": defineProductTool({
+    description: "List CodeArts TestPlan default mindmap templates",
+    inputSchema: testPlanListDefaultTemplatesInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListDefaultTemplatesHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListDefaultTemplatesHandler
   }),
   "testplan_list_mindmap_recycles": defineProductTool({
     description: "List CodeArts TestPlan mindmap recycle entries",
@@ -1240,6 +1270,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanGetProjectSystemConfigInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetProjectSystemConfigHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetProjectSystemConfigHandler
+  }),
+  "testplan_list_system_configs": defineProductTool({
+    description: "List CodeArts TestPlan system configs by official v1 API",
+    inputSchema: testPlanListSystemConfigsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListSystemConfigsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListSystemConfigsHandler
   }),
   "testplan_check_project_member_exists": defineProductTool({
     description: "Check whether the current user is a CodeArts TestPlan project member",
@@ -1746,6 +1782,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListVariableGroupsInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListVariableGroupsHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListVariableGroupsHandler
+  }),
+  "testplan_list_variable_group_names": defineProductTool({
+    description: "List CodeArts TestPlan variable group names by official v1 API",
+    inputSchema: testPlanListVariableGroupNamesInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListVariableGroupNamesHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListVariableGroupNamesHandler
   }),
   "testplan_list_notice_configs": defineProductTool({
     description: "List CodeArts TestPlan notice configurations",
@@ -2712,6 +2754,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListTestcaseUrisV4Input,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTestcaseUrisV4Handler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListTestcaseUrisV4Handler
+  }),
+  "testplan_list_testcases_batch": defineProductTool({
+    description: "List CodeArts TestPlan testcases by official v4 batch-list API",
+    inputSchema: testPlanListTestcasesBatchInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTestcasesBatchHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListTestcasesBatchHandler
   }),
   "testplan_list_solution_templates": defineProductTool({
     description: "List CodeArts TestPlan solution templates",

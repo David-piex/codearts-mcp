@@ -156,6 +156,35 @@ type TestPlanTestcaseUrisInput = {
   just_return_id?: boolean;
 };
 
+type TestPlanTestcasesBatchInput = Omit<
+  TestPlanTestcaseUrisInput,
+  "custom_field_info" | "test_designs"
+> & {
+  exeplatforms?: string[];
+  own?: boolean;
+  queryByDisplayCfg?: boolean;
+  custom_field_info?: Record<string, unknown> | Array<Record<string, unknown>>;
+  test_designs?: Array<string | boolean>;
+};
+
+type TestPlanOfficialPageQueryInput = {
+  project_id: string;
+  page: number;
+  page_size: number;
+  offset?: number;
+  deleted?: string;
+  mindmap_id?: string;
+  node_id?: string;
+};
+
+type TestPlanListDefaultTemplatesInput = {
+  project_id: string;
+  page: number;
+  page_size: number;
+  offset?: number;
+  name?: string;
+};
+
 type TestPlanTokenUploadResult = {
   value?: unknown;
   raw: Record<string, unknown>;
@@ -306,6 +335,11 @@ export type TestPlanClient = {
     raw: Record<string, unknown>;
   }>;
   listTestcaseUriInfosV5: (input: TestPlanTestcaseUrisInput) => Promise<{
+    cases: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
+  listTestcasesBatch: (input: TestPlanTestcasesBatchInput) => Promise<{
     cases: Array<Record<string, unknown>>;
     total?: number;
     raw: Record<string, unknown>;
@@ -1103,6 +1137,21 @@ export type TestPlanClient = {
     total?: number;
     raw: Record<string, unknown>;
   }>;
+  listTestpointsPage: (input: TestPlanOfficialPageQueryInput) => Promise<{
+    testpoints: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
+  listScenesPage: (input: TestPlanOfficialPageQueryInput) => Promise<{
+    scenes: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
+  listDefaultTemplates: (input: TestPlanListDefaultTemplatesInput) => Promise<{
+    templates: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
   listMindmapRecycles: (input: {
     project_id: string;
     page: number;
@@ -1894,6 +1943,22 @@ export type TestPlanClient = {
     value?: unknown;
     raw: Record<string, unknown>;
   }>;
+  listSystemConfigs: (input: {
+    project_id: string;
+    params?: Record<string, unknown>;
+    id?: string;
+    key?: unknown;
+    value?: string;
+    remark?: string;
+    region_id?: string;
+    update_time?: string;
+    update_name?: string;
+    update_num?: string;
+  }) => Promise<{
+    configs: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
   checkProjectMemberExists: () => Promise<{
     value?: unknown;
     raw: Record<string, unknown>;
@@ -2676,6 +2741,17 @@ export type TestPlanClient = {
   }) => Promise<{
     groups: Array<Record<string, unknown>>;
     total?: number;
+  }>;
+  listVariableGroupNames: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    query?: string;
+    name?: string;
+  }) => Promise<{
+    groups: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
   }>;
   listNoticeConfigs: (input: { project_id: string }) => Promise<{
     notices: Array<Record<string, unknown>>;
@@ -3659,6 +3735,155 @@ function createTestcaseUrisBody(input: TestPlanTestcaseUrisInput) {
   return body;
 }
 
+function createTestcasesBatchBody(input: TestPlanTestcasesBatchInput) {
+  const body: Record<string, unknown> = {
+    page_no: input.page,
+    page_size: input.page_size
+  };
+  for (const key of [
+    "keyword",
+    "useOffset",
+    "version_uri",
+    "case_uris",
+    "owner_ids",
+    "status_codes",
+    "rank_ids",
+    "module_ids",
+    "issue_id",
+    "creator_ids",
+    "result_codes",
+    "iteration_ids",
+    "create_start_time",
+    "create_end_time",
+    "associated_issue",
+    "associated_defects",
+    "include_sub_issue",
+    "include_sub_feature",
+    "label_ids",
+    "execute_start_time",
+    "execute_end_time",
+    "executor_ids",
+    "test_types",
+    "is_keyword",
+    "issue_tree_search",
+    "service_type",
+    "service_types",
+    "stage_type",
+    "feature_uri",
+    "sort_field",
+    "sort_type",
+    "case_type",
+    "custom_field_info",
+    "task_uri",
+    "associate_issue_detail",
+    "not_assign_task",
+    "test_designs",
+    "review_status",
+    "just_return_id",
+    "exeplatforms",
+    "own",
+    "queryByDisplayCfg"
+  ] as const) {
+    const value = input[key];
+    if (value !== undefined) {
+      body[key] = value;
+    }
+  }
+  return body;
+}
+
+function createOfficialPageParams(input: TestPlanOfficialPageQueryInput) {
+  const params: Record<string, unknown> = {
+    offset: input.offset ?? input.page,
+    limit: input.page_size
+  };
+  const deleted =
+    input.deleted === "0" ? "no" : input.deleted === "1" ? "yes" : input.deleted;
+  if (deleted !== undefined) {
+    params.deleted = deleted;
+  }
+  for (const key of ["mindmap_id", "node_id"] as const) {
+    const value = input[key];
+    if (value !== undefined) {
+      params[key] = value;
+    }
+  }
+  return params;
+}
+
+function createDefaultTemplatesParams(input: TestPlanListDefaultTemplatesInput) {
+  const params: Record<string, unknown> = {};
+  if (input.name !== undefined) {
+    params.name = input.name;
+  }
+  return params;
+}
+
+function createVariableGroupNamePagingBody(input: {
+  page: number;
+  page_size: number;
+  query?: string;
+  name?: string;
+}) {
+  if (input.query !== undefined) {
+    try {
+      const parsed = JSON.parse(input.query) as unknown;
+      if (readEnvelope(parsed)?.ListVariableGroupNamePagingRequestBody !== undefined) {
+        return parsed;
+      }
+      if (Array.isArray(parsed)) {
+        return { ListVariableGroupNamePagingRequestBody: parsed };
+      }
+      return { ListVariableGroupNamePagingRequestBody: [parsed] };
+    } catch {
+      return { ListVariableGroupNamePagingRequestBody: [input.query] };
+    }
+  }
+
+  if (input.name === undefined) {
+    return { ListVariableGroupNamePagingRequestBody: [null] };
+  }
+
+  const query: Record<string, unknown> = {
+    pageNo: input.page,
+    pageSize: input.page_size
+  };
+  query.name = input.name;
+
+  return { ListVariableGroupNamePagingRequestBody: [query] };
+}
+
+function createSystemConfigsParams(input: {
+  project_id: string;
+  params?: Record<string, unknown>;
+  id?: string;
+  key?: unknown;
+  value?: string;
+  remark?: string;
+  region_id?: string;
+  update_time?: string;
+  update_name?: string;
+  update_num?: string;
+}) {
+  const params: Record<string, unknown> = { project_id: input.project_id, ...(input.params ?? {}) };
+  for (const key of [
+    "id",
+    "key",
+    "value",
+    "remark",
+    "region_id",
+    "update_time",
+    "update_name",
+    "update_num"
+  ] as const) {
+    const value = input[key];
+    if (value !== undefined) {
+      params[key] = value;
+    }
+  }
+  return params;
+}
+
 function readNameFromObject(input: unknown) {
   const value = readEnvelope(input);
   return typeof value?.name === "string" ? value.name : undefined;
@@ -4148,6 +4373,22 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       const payload = readResultPayload(response);
       const cases = readArray<Record<string, unknown>>(
         payload.value ?? payload.values ?? payload.items ?? payload.list
+      );
+
+      return {
+        cases,
+        total: readTotal(payload, response, cases.length),
+        raw: payload
+      };
+    },
+    async listTestcasesBatch(input) {
+      const response = await _http.post(
+        `/v4/${encodeURIComponent(input.project_id)}/testcases/batch-list`,
+        createTestcasesBatchBody(input)
+      );
+      const payload = readResultPayload(response);
+      const cases = readArray<Record<string, unknown>>(
+        payload.value ?? payload.values ?? payload.data ?? payload.items ?? payload.list ?? payload.testcases
       );
 
       return {
@@ -5645,6 +5886,48 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       return {
         mindmaps,
         total: readPageTotal(payload, response, mindmaps.length),
+        raw: payload
+      };
+    },
+    async listTestpointsPage(input) {
+      const response = await _http.post(
+        `/v2/${encodeURIComponent(input.project_id)}/testpoints/page`,
+        { params: createOfficialPageParams(input) }
+      );
+      const payload = readResultPayload(response);
+      const testpoints = readPageItems(payload);
+
+      return {
+        testpoints,
+        total: readPageTotal(payload, response, testpoints.length),
+        raw: payload
+      };
+    },
+    async listScenesPage(input) {
+      const response = await _http.post(
+        `/v2/${encodeURIComponent(input.project_id)}/scenes/page`,
+        { params: createOfficialPageParams(input) }
+      );
+      const payload = readResultPayload(response);
+      const scenes = readPageItems(payload);
+
+      return {
+        scenes,
+        total: readPageTotal(payload, response, scenes.length),
+        raw: payload
+      };
+    },
+    async listDefaultTemplates(input) {
+      const response = await _http.post(
+        `/v2/${encodeURIComponent(input.project_id)}/templates/templates-default`,
+        { params: createDefaultTemplatesParams(input) }
+      );
+      const payload = readResultPayload(response);
+      const templates = readPageItems(payload);
+
+      return {
+        templates,
+        total: readPageTotal(payload, response, templates.length),
         raw: payload
       };
     },
@@ -7242,6 +7525,22 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
 
       return {
         value,
+        raw: payload
+      };
+    },
+    async listSystemConfigs(input) {
+      const response = await _http.post(
+        `/v1/${encodeURIComponent(input.project_id)}/system-config/find-all`,
+        { params: createSystemConfigsParams(input) }
+      );
+      const payload = readResultPayload(response);
+      const configs = readArray<Record<string, unknown>>(
+        payload.value ?? payload.values ?? payload.data ?? payload.items ?? payload.list ?? payload.configs
+      );
+
+      return {
+        configs,
+        total: readTotal(payload, response, configs.length),
         raw: payload
       };
     },
@@ -8886,6 +9185,26 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       return {
         groups,
         total: readTotal(payload, response, groups.length)
+      };
+    },
+    async listVariableGroupNames(input) {
+      const response = await _http.post(
+        `/v1/${encodeURIComponent(input.project_id)}/variables/variablegroup_namepaging`,
+        createVariableGroupNamePagingBody(input)
+      );
+      const payload = readResultPayload(response);
+      const envelope = readEnvelope(response) ?? {};
+      const rawResult = envelope.result ?? payload.result;
+      const result =
+        readEnvelope(rawResult) ?? (Array.isArray(rawResult) ? { variableGroupName: rawResult } : payload);
+      const groups = readArray<Record<string, unknown>>(
+        result.variableGroupName ?? result.value ?? result.values ?? result.items ?? result.list
+      );
+
+      return {
+        groups,
+        total: readTotal(result, response, groups.length),
+        raw: payload
       };
     },
     async listNoticeConfigs(input) {

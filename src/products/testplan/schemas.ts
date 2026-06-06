@@ -737,6 +737,24 @@ export const testPlanListMindmapsV3Input = testPlanListMindmapsV2Input.extend({
   confidentiality_code_collection: z.array(z.string().min(1)).optional()
 });
 
+export const testPlanOfficialPageQueryInput = pagingSchema.extend({
+  project_id: idSchema,
+  offset: z.number().int().nonnegative().optional(),
+  deleted: z.string().min(1).optional(),
+  mindmap_id: idSchema.optional(),
+  node_id: idSchema.optional()
+});
+
+export const testPlanListTestpointsPageInput = testPlanOfficialPageQueryInput;
+
+export const testPlanListScenesPageInput = testPlanOfficialPageQueryInput;
+
+export const testPlanListDefaultTemplatesInput = pagingSchema.extend({
+  project_id: idSchema,
+  offset: z.number().int().nonnegative().optional(),
+  name: z.string().optional()
+});
+
 export const testPlanListMindmapRecyclesInput = pagingSchema.extend({
   project_id: idSchema,
   creator_num: idSchema.optional(),
@@ -1237,6 +1255,19 @@ export const testPlanListTestcaseUrisV4Input = pagingSchema.extend({
 
 export const testPlanListTestcaseUriInfosV5Input = testPlanListTestcaseUrisV4Input;
 
+export const testPlanListTestcasesBatchInput = testPlanListTestcaseUrisV4Input.extend({
+  exeplatforms: z.array(z.string().min(1)).optional(),
+  own: z.boolean().optional(),
+  queryByDisplayCfg: z.boolean().optional(),
+  custom_field_info: z
+    .union([
+      z.record(z.string(), z.unknown()),
+      z.array(z.record(z.string(), z.unknown()))
+    ])
+    .optional(),
+  test_designs: z.array(z.union([z.string().min(1), z.boolean()])).optional()
+});
+
 export const testPlanGetGt3kTestcaseChangeStatisticsInput = z.object({
   project_id: idSchema,
   version_id: idSchema
@@ -1328,6 +1359,19 @@ export const testPlanGetProjectSystemConfigInput = z.object({
   project_uuid: idSchema,
   owner_id: idSchema,
   feature_name: z.string().min(1)
+});
+
+export const testPlanListSystemConfigsInput = z.object({
+  project_id: idSchema,
+  params: z.record(z.string(), z.unknown()).optional(),
+  id: idSchema.optional(),
+  key: z.unknown().optional(),
+  value: z.string().optional(),
+  remark: z.string().optional(),
+  region_id: idSchema.optional(),
+  update_time: z.string().optional(),
+  update_name: z.string().optional(),
+  update_num: idSchema.optional()
 });
 
 export const testPlanCheckProjectMemberExistsInput = z.object({});
@@ -1781,6 +1825,12 @@ export const testPlanGetTestcaseScriptDetailV4Input = z.object({
 
 export const testPlanListVariableGroupsInput = pagingSchema.extend({
   project_id: idSchema
+});
+
+export const testPlanListVariableGroupNamesInput = pagingSchema.extend({
+  project_id: idSchema,
+  query: z.string().optional(),
+  name: z.string().optional()
 });
 
 export const testPlanListNoticeConfigsInput = z.object({

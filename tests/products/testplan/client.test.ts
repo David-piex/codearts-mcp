@@ -383,6 +383,194 @@ describe("createTestPlanClient", () => {
     ]);
   });
 
+  it("posts official TestPlan page and batch read requests", async () => {
+    const requests: Array<{ path: string; body: unknown }> = [];
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requests.push({ path, body });
+        if (path === "/v2/project-1/testpoints/page") {
+          return { result: { page_list: [{ id: "testpoint-1", name: "Checkout point" }], total: 1 } };
+        }
+        if (path === "/v2/project-1/scenes/page") {
+          return { result: { page_list: [{ id: "scene-1", name: "Checkout scene" }], total: 1 } };
+        }
+        if (path === "/v2/project-1/templates/templates-default") {
+          return { result: { page_list: [{ id: "template-1", name: "Default template" }], total: 1 } };
+        }
+        if (path === "/v4/project-1/testcases/batch-list") {
+          return { result: { testcases: [{ id: "case-1", name: "API case" }], total: 1 } };
+        }
+        if (path === "/v1/project-1/system-config/find-all") {
+          return { result: { value: [{ id: "config-1", name: "timeout" }], total: 1 } };
+        }
+
+        return { result: { variableGroupName: [{ id: "group-1", name: "Default" }], total: 1 } };
+      }
+    } as never);
+
+    await expect(
+      client.listTestpointsPage({
+        project_id: "project-1",
+        page: 2,
+        page_size: 5,
+        deleted: "0",
+        mindmap_id: "mindmap-1",
+        node_id: "node-1"
+      })
+    ).resolves.toEqual({
+      testpoints: [{ id: "testpoint-1", name: "Checkout point" }],
+      total: 1,
+      raw: { page_list: [{ id: "testpoint-1", name: "Checkout point" }], total: 1 }
+    });
+    await expect(
+      client.listScenesPage({
+        project_id: "project-1",
+        page: 1,
+        page_size: 10,
+        offset: 3,
+        deleted: "0"
+      })
+    ).resolves.toMatchObject({
+      scenes: [{ id: "scene-1", name: "Checkout scene" }],
+      total: 1
+    });
+    await expect(
+      client.listDefaultTemplates({
+        project_id: "project-1",
+        page: 1,
+        page_size: 20,
+        name: ""
+      })
+    ).resolves.toMatchObject({
+      templates: [{ id: "template-1", name: "Default template" }],
+      total: 1
+    });
+    await expect(
+      client.listTestcasesBatch({
+        project_id: "project-1",
+        page: 3,
+        page_size: 10,
+        keyword: "checkout",
+        useOffset: false,
+        version_uri: "version-1",
+        service_type: -1,
+        exeplatforms: ["api"],
+        own: true,
+        queryByDisplayCfg: false,
+        custom_field_info: [{ field: "priority", value: "P1" }],
+        test_designs: [true, "design-1"]
+      })
+    ).resolves.toMatchObject({
+      cases: [{ id: "case-1", name: "API case" }],
+      total: 1
+    });
+    await expect(
+      client.listSystemConfigs({
+        project_id: "project-1",
+        params: { project_id: "project-1" },
+        id: "config-1",
+        key: 100,
+        value: "enabled"
+      })
+    ).resolves.toMatchObject({
+      configs: [{ id: "config-1", name: "timeout" }],
+      total: 1
+    });
+    await expect(
+      client.listVariableGroupNames({
+        project_id: "project-1",
+        page: 1,
+        page_size: 10,
+        query: "{\"pageNo\":1,\"pageSize\":10}"
+      })
+    ).resolves.toMatchObject({
+      groups: [{ id: "group-1", name: "Default" }],
+      total: 1
+    });
+    await expect(
+      client.listVariableGroupNames({
+        project_id: "project-1",
+        page: 1,
+        page_size: 10
+      })
+    ).resolves.toMatchObject({
+      groups: [{ id: "group-1", name: "Default" }],
+      total: 1
+    });
+
+    expect(requests).toEqual([
+      {
+        path: "/v2/project-1/testpoints/page",
+        body: {
+          params: {
+            offset: 2,
+            limit: 5,
+            deleted: "no",
+            mindmap_id: "mindmap-1",
+            node_id: "node-1"
+          }
+        }
+      },
+      {
+        path: "/v2/project-1/scenes/page",
+        body: {
+          params: {
+            offset: 3,
+            limit: 10,
+            deleted: "no"
+          }
+        }
+      },
+      {
+        path: "/v2/project-1/templates/templates-default",
+        body: {
+          params: {
+            name: ""
+          }
+        }
+      },
+      {
+        path: "/v4/project-1/testcases/batch-list",
+        body: {
+          page_no: 3,
+          page_size: 10,
+          keyword: "checkout",
+          useOffset: false,
+          version_uri: "version-1",
+          service_type: -1,
+          custom_field_info: [{ field: "priority", value: "P1" }],
+          test_designs: [true, "design-1"],
+          exeplatforms: ["api"],
+          own: true,
+          queryByDisplayCfg: false
+        }
+      },
+      {
+        path: "/v1/project-1/system-config/find-all",
+        body: {
+          params: {
+            project_id: "project-1",
+            id: "config-1",
+            key: 100,
+            value: "enabled"
+          }
+        }
+      },
+      {
+        path: "/v1/project-1/variables/variablegroup_namepaging",
+        body: {
+          ListVariableGroupNamePagingRequestBody: [{ pageNo: 1, pageSize: 10 }]
+        }
+      },
+      {
+        path: "/v1/project-1/variables/variablegroup_namepaging",
+        body: {
+          ListVariableGroupNamePagingRequestBody: [null]
+        }
+      }
+    ]);
+  });
+
   it("searches official autotasks and issues tree endpoints", async () => {
     const requests: Array<{ path: string; body: unknown }> = [];
     const client = createTestPlanClient({
