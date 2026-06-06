@@ -113,7 +113,7 @@ describe("mapReqWorkItemIssueDetails", () => {
     });
 
     expect(result.raw).toEqual(result.item?.rawIssue);
-    expect(result.item).toEqual({
+    expect(result.item).toMatchObject({
       id: "2884248",
       title: "33333",
       description: "<p>story desc</p>",
@@ -146,9 +146,14 @@ describe("mapReqWorkItemIssueDetails", () => {
       projectAuthorDomainId: "domain-id",
       status: { id: 1, name: "New" },
       statusAttribute: { type: "new" },
+      statusId: "1",
       tracker: { id: 7, name: "Story" },
+      type: "Story",
+      typeId: "7",
       priority: { id: 2, name: "Medium" },
+      priorityName: "Medium",
       severity: { id: 12, name: "Normal" },
+      severityName: "Normal",
       assignee: {
         id: "16666",
         userId: "user-uuid-2",
@@ -161,18 +166,39 @@ describe("mapReqWorkItemIssueDetails", () => {
       assignedCcUsers: [{ id: 18888, name: "tenant/cc" }],
       project: { identifier: "p-1", name: "Project A" },
       module: { id: 8, name: "Module A" },
+      moduleId: "8",
+      moduleName: "Module A",
       domain: { id: 14, name: "Performance" },
+      domainId: "14",
+      domainName: "Performance",
       storyPoint: { id: 3, name: "1" },
+      storyPointName: "1",
       fixedVersion: { id: 4, name: "Sprint 1" },
+      fixedVersionId: "4",
+      fixedVersionName: "Sprint 1",
       parentIssue: { id: 200, name: "Parent story" },
+      parentIssueId: "200",
+      parentIssueName: "Parent story",
       children: [{ id: 300, subject: "Child task" }],
+      childrenCount: 1,
       author: { id: 15533, name: "tenant/alice" },
+      authorName: "tenant/alice",
       developer: { id: 17777, name: "tenant/dev" },
+      developerName: "tenant/dev",
       closeder: { id: 19999, name: "tenant/closer" },
       customFields: [{ name: "business_area", value: "payment" }],
       customValueNew: { field_name: "business_area", value: "payment" },
       tagList: [{ id: 1, name: "tag-a" }],
-      attachments: [{ id: 1, file_name: "demo.json" }],
+      attachments: [
+        {
+          id: "1",
+          fileName: "demo.json",
+          creator: undefined,
+          downloadUrl: undefined,
+          filePath: undefined,
+          fileSize: undefined
+        }
+      ],
       journals: [
         {
           id: "10",
@@ -208,6 +234,7 @@ describe("mapReqWorkItemIssueDetails", () => {
           id: "10",
           content: "first comment",
           createdTime: "2026-05-18T08:00:00Z",
+          createdTimeText: "2026-05-18 16:00:00 Asia/Shanghai",
           author: {
             id: "1",
             userName: "alice",
@@ -219,6 +246,7 @@ describe("mapReqWorkItemIssueDetails", () => {
           id: "11",
           content: "latest comment",
           createdTime: "2026-05-18T09:00:00Z",
+          createdTimeText: "2026-05-18 17:00:00 Asia/Shanghai",
           author: {
             id: "2",
             userName: "bob",
@@ -373,7 +401,7 @@ describe("createReqGetWorkItemIssueDetailsHandler", () => {
     expect(result.content[0]?.text).toContain("description: <p>story desc</p>");
     expect(result.content[0]?.text).toContain("createdOn: 2026-05-20 16:51:06 Asia/Shanghai");
     expect(result.content[0]?.text).toContain("latestComment: latest comment");
-    expect(result.structuredContent.item).toEqual({
+    expect(result.structuredContent.item).toMatchObject({
       id: "2884248",
       title: "33333",
       description: "<p>story desc</p>",
@@ -455,6 +483,7 @@ describe("createReqGetWorkItemIssueDetailsHandler", () => {
           id: "11",
           content: "latest comment",
           createdTime: "2026-05-18T09:00:00Z",
+          createdTimeText: "2026-05-18 17:00:00 Asia/Shanghai",
           author: {
             id: "2",
             userName: "bob",

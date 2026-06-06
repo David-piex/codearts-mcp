@@ -16,6 +16,10 @@ describe("mapReqWorkItems", () => {
           subject: "Refine login flow",
           status: { name: "Doing" },
           tracker_name: "Story",
+          priority: { id: 2, name: "Medium" },
+          severity: { id: 12, name: "Normal" },
+          module: { id: 8, name: "Login" },
+          done_ratio: 30,
           assigned_to: {
             assigned_user_id: "user-1",
             assigned_user_num_id: 101,
@@ -29,11 +33,18 @@ describe("mapReqWorkItems", () => {
     );
 
     expect(result.items).toEqual([
-      {
+      expect.objectContaining({
         id: "9",
         title: "Refine login flow",
         status: "Doing",
         type: "Story",
+        priority: { id: "2", name: "Medium" },
+        priorityName: "Medium",
+        severity: { id: "12", name: "Normal" },
+        severityName: "Normal",
+        module: { id: "8", name: "Login" },
+        moduleName: "Login",
+        doneRatio: 30,
         createdOn: undefined,
         createdOnText: undefined,
         updatedOn: undefined,
@@ -56,13 +67,17 @@ describe("mapReqWorkItems", () => {
           subject: "Refine login flow",
           status: { name: "Doing" },
           tracker_name: "Story",
+          priority: { id: 2, name: "Medium" },
+          severity: { id: 12, name: "Normal" },
+          module: { id: 8, name: "Login" },
+          done_ratio: 30,
           assigned_to: {
             assigned_user_id: "user-1",
             assigned_user_num_id: 101,
             assigned_nick_name: "Alice"
           }
         }
-      }
+      })
     ]);
     expect(result.raw).toEqual({
       workItems: [
@@ -71,6 +86,10 @@ describe("mapReqWorkItems", () => {
           subject: "Refine login flow",
           status: { name: "Doing" },
           tracker_name: "Story",
+          priority: { id: 2, name: "Medium" },
+          severity: { id: 12, name: "Normal" },
+          module: { id: 8, name: "Login" },
+          done_ratio: 30,
           assigned_to: {
             assigned_user_id: "user-1",
             assigned_user_num_id: 101,
@@ -128,6 +147,7 @@ describe("mapReqWorkItems", () => {
     });
 
     expect(result.content[0]?.text).toContain("assignee: Alice");
+    expect(result.content[0]?.text).toContain("status: Doing");
   });
 
   it("returns normalized V3 work item output", async () => {

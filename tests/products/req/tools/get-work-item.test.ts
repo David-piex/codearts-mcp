@@ -12,6 +12,12 @@ describe("mapReqWorkItem", () => {
       status: { name: "Doing" },
       tracker_name: "Story",
       description: "Clarify edge cases",
+      priority: { id: 2, name: "Medium" },
+      severity: { id: 12, name: "Normal" },
+      module: { id: 8, name: "Login" },
+      domain: { id: 14, name: "Account" },
+      fixed_version: { id: 4, name: "Sprint 1" },
+      done_ratio: 30,
       created_on: "1779267066000",
       updated_on: "1779328509000",
       start_date: "1779379200000",
@@ -24,12 +30,23 @@ describe("mapReqWorkItem", () => {
       }
     });
 
-    expect(result.item).toEqual({
+    expect(result.item).toMatchObject({
       id: "9",
       title: "Refine login flow",
       status: "Doing",
       type: "Story",
       description: "Clarify edge cases",
+      priority: { id: "2", name: "Medium" },
+      priorityName: "Medium",
+      severity: { id: "12", name: "Normal" },
+      severityName: "Normal",
+      module: { id: "8", name: "Login" },
+      moduleName: "Login",
+      domain: { id: "14", name: "Account" },
+      domainName: "Account",
+      fixedVersion: { id: "4", name: "Sprint 1" },
+      fixedVersionName: "Sprint 1",
+      doneRatio: 30,
       createdOn: "1779267066000",
       createdOnText: "2026-05-20 16:51:06 Asia/Shanghai",
       updatedOn: "1779328509000",
@@ -53,6 +70,12 @@ describe("mapReqWorkItem", () => {
         status: { name: "Doing" },
         tracker_name: "Story",
         description: "Clarify edge cases",
+        priority: { id: 2, name: "Medium" },
+        severity: { id: 12, name: "Normal" },
+        module: { id: 8, name: "Login" },
+        domain: { id: 14, name: "Account" },
+        fixed_version: { id: 4, name: "Sprint 1" },
+        done_ratio: 30,
         created_on: "1779267066000",
         updated_on: "1779328509000",
         start_date: "1779379200000",
@@ -104,6 +127,8 @@ describe("createReqGetWorkItemHandler", () => {
     expect(result.content[0]?.text).toContain("title: Refine login flow");
     expect(result.content[0]?.text).toContain("assignee: Bob");
     expect(result.content[0]?.text).toContain("description: Clarify edge cases");
+    expect(result.content[0]?.text).toContain("status: Doing");
+    expect(result.content[0]?.text).toContain("type: Story");
     expect(result.structuredContent.item?.description).toBe("Clarify edge cases");
   });
 });

@@ -3,6 +3,11 @@ import { formatItemToolText } from "../../../contracts/tool-result-text.js";
 import { reqGetWorkItemIssueDetailsInput } from "../schemas.js";
 import { formatReqTimestampText } from "./time-format.js";
 import { mapReqWorkItemAssignee, type ReqWorkItemAssignee } from "./work-item-assignee.js";
+import {
+  mapReqNamedEntity,
+  mapReqUserEntity,
+  mapReqWorkItemSummaryFields
+} from "./work-item-summary.js";
 
 type ReqWorkItemIssueDetails = {
   [key: string]: unknown;
@@ -96,32 +101,49 @@ function mapJournalAuthor(user?: {
   };
 }
 
+function stringValue(value: unknown) {
+  return typeof value === "string" || typeof value === "number" ? String(value) : undefined;
+}
+
+function mapAttachment(input: Record<string, unknown>) {
+  return {
+    id: stringValue(input.id ?? input.file_id ?? input.attachment_id),
+    fileName: stringValue(input.file_name ?? input.filename ?? input.name),
+    filePath: stringValue(input.file_path ?? input.path),
+    downloadUrl: stringValue(input.download_url ?? input.url),
+    fileSize: typeof input.file_size === "number" ? input.file_size : typeof input.size === "number" ? input.size : undefined,
+    creator: mapReqUserEntity(input.creator),
+    raw: input
+  };
+}
+
 export function mapReqWorkItemIssueDetails(input: ReqWorkItemIssueDetails) {
-  const assignee = mapReqWorkItemAssignee(input);
+  const summaryFields = mapReqWorkItemSummaryFields({
+    ...input,
+    id: input.id ?? ""
+  });
   const comments = (input.journals ?? []).map((journal) => ({
     id: String(journal.id ?? ""),
     content: journal.notes,
     createdTime: journal.created_on,
+    createdTimeText: formatReqTimestampText(journal.created_on),
     author: mapJournalAuthor(journal.user)
   }));
   const latestComment = comments.at(-1)?.content;
-  const assigneeText = assignee?.displayName ? ` (assignee: ${assignee.displayName})` : "";
+  const assigneeText = summaryFields.assignedToName ? ` (assignee: ${summaryFields.assignedToName})` : "";
+  const attachments = (input.accessories_list ?? []).map((item) => mapAttachment(item));
+  const statusAttribute = typeof input.status_attribute === "object" && input.status_attribute !== null
+    ? input.status_attribute
+    : undefined;
+  const normalizedStatusAttribute = mapReqNamedEntity(statusAttribute);
+  const moduleEntity = mapReqNamedEntity(input.module);
+  const domainEntity = mapReqNamedEntity(input.domain);
+  const fixedVersionEntity = mapReqNamedEntity(input.fixed_version);
+  const parentIssueEntity = mapReqNamedEntity(input.parent_issue);
 
   return asItemResult(`Loaded work item issue details ${input.id ?? ""}${assigneeText}`, {
-    id: String(input.id ?? ""),
-    title: input.subject ?? "",
+    ...summaryFields,
     description: input.description,
-    createdOn: input.created_on,
-    createdOnText: formatReqTimestampText(input.created_on),
-    updatedOn: input.updated_on,
-    updatedOnText: formatReqTimestampText(input.updated_on),
-    startDate: input.start_date,
-    startDateText: formatReqTimestampText(input.start_date),
-    dueDate: input.due_date,
-    dueDateText: formatReqTimestampText(input.due_date),
-    doneRatio: input.done_ratio,
-    expectedWorkHours: input.expected_work_hours,
-    actualWorkHours: input.actual_work_hours,
     releaseDev: input.release_dev ?? input.releaseDev,
     findReleaseDev: input.find_release_dev ?? input.findReleaseDev,
     innerText: input.inner_text,
@@ -139,19 +161,27 @@ export function mapReqWorkItemIssueDetails(input: ReqWorkItemIssueDetails) {
     authorImageId: input.authorImageId,
     projectAuthorDomainId: input.projectAuthorDomainId,
     status: input.status,
-    statusAttribute: input.status_attribute,
+    statusAttribute,
+    statusAttributeId: normalizedStatusAttribute?.id,
+    statusAttributeName: normalizedStatusAttribute?.name,
     tracker: input.tracker,
     priority: input.priority,
     severity: input.severity,
-    assignee,
-    assignedToName: assignee?.displayName,
     assignedCcUsers: input.assigned_cc_user ?? [],
     project: input.project,
     module: input.module,
+    moduleId: moduleEntity?.id,
+    moduleName: moduleEntity?.name,
     domain: input.domain,
+    domainId: domainEntity?.id,
+    domainName: domainEntity?.name,
     storyPoint: input.story_point,
     fixedVersion: input.fixed_version,
+    fixedVersionId: fixedVersionEntity?.id,
+    fixedVersionName: fixedVersionEntity?.name,
     parentIssue: input.parent_issue,
+    parentIssueId: parentIssueEntity?.id,
+    parentIssueName: parentIssueEntity?.name,
     children: input.children ?? [],
     author: input.author,
     developer: input.developer,
@@ -159,7 +189,7 @@ export function mapReqWorkItemIssueDetails(input: ReqWorkItemIssueDetails) {
     customFields: input.customFields ?? input.custom_fields ?? [],
     customValueNew: input.custom_value_new ?? input.customValueNew,
     tagList: input.tagList ?? [],
-    attachments: input.accessories_list ?? [],
+    attachments,
     journals: input.journals ?? [],
     journalsTotal: input.journals_total,
     latestComment,
@@ -196,6 +226,10 @@ export function createReqGetWorkItemIssueDetailsHandler(client: ReqGetWorkItemIs
         { label: "doneRatio", get: (item) => item.doneRatio },
         { label: "expectedWorkHours", get: (item) => item.expectedWorkHours },
         { label: "actualWorkHours", get: (item) => item.actualWorkHours },
+        { label: "priority", get: (item) => (typeof item.priorityName === "string" ? item.priorityName : undefined) },
+        { label: "severity", get: (item) => (typeof item.severityName === "string" ? item.severityName : undefined) },
+        { label: "module", get: (item) => item.moduleName },
+        { label: "domain", get: (item) => item.domainName },
         { label: "latestComment", get: (item) => item.latestComment },
         { label: "journalsTotal", get: (item) => item.journalsTotal }
       ]
