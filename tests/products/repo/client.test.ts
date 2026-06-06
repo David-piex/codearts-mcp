@@ -138,6 +138,15 @@ describe("createRepoClient", () => {
         if (path.includes("/repository/stats/last-statistics?")) {
           return { total: 1, statistics: [{ id: 1, branch: "master" }] };
         }
+        if (path.endsWith("/statistic-data")) {
+          return { result: { repoName: "demo", commitCount: 8 } };
+        }
+        if (path.endsWith("/master")) {
+          return { result: true };
+        }
+        if (path.includes("/commit-lines?")) {
+          return { result: { additions: 10, deletions: 4 } };
+        }
 
         throw new Error(`unexpected path: ${path}`);
       }
@@ -148,13 +157,84 @@ describe("createRepoClient", () => {
     await client.showRepositoryStatisticsSummary({ repository_id: "100" });
     await client.showRepoStatisticsSummary({ repository_id: "100" });
     await client.showRepoLastStatistics({ repository_id: "100", branch_name: "feature/main" });
+    await client.showRepositoryStatisticData({ repository_uuid: "repo-uuid-1" });
+    await client.showRepositoryMaster({ repository_uuid: "repo-uuid-1" });
+    await client.showRepositoryCommitLines({
+      repository_id: "100",
+      ref_name: "feature/main",
+      begin_date: "2026-06-01",
+      end_date: "2026-06-30"
+    });
 
     expect(calls).toEqual([
       "/v4/repositories/100/repository/statistics-status",
       "/v4/repositories/100/last-push-event",
       "/v4/repositories/100/statistics-summary",
       "/v4/repositories/100/repository/stats/summary",
-      "/v4/repositories/100/repository/stats/last-statistics?branch_name=feature%2Fmain"
+      "/v4/repositories/100/repository/stats/last-statistics?branch_name=feature%2Fmain",
+      "/v1/repositories/repo-uuid-1/statistic-data",
+      "/v1/repositories/repo-uuid-1/master",
+      "/v3/repositories/100/commit-lines?ref_name=feature%2Fmain&begin_date=2026-06-01&end_date=2026-06-30"
+    ]);
+  });
+
+  it("uses official repository template and related commit paths", async () => {
+    const calls: Array<{ method: string; path: string; body?: unknown }> = [];
+    const client = createRepoClient({
+      get: async (path: string) => {
+        calls.push({ method: "GET", path });
+        if (path.includes("/repositories/template-status?")) {
+          return { result: { repos: [{ uuid: "repo-uuid-1", repo_id: 100 }], total_count: 1 } };
+        }
+        if (path.includes("/related-commits?")) {
+          return { result: { list: [{ id: 1, commitId: "c1" }], total: 1 } };
+        }
+
+        throw new Error(`unexpected path: ${path}`);
+      },
+      put: async (path: string, body: unknown) => {
+        calls.push({ method: "PUT", path, body });
+        return { result: null, status: "success" };
+      }
+    } as never);
+
+    await client.listProjectTemplateStatusRepositories({
+      project_uuid: "project-uuid-1",
+      page_no: 2,
+      page_size: 10
+    });
+    await client.listRepositoryRelatedCommits({
+      repository_uuid: "repo-uuid-1",
+      type: 1,
+      search: "feature",
+      page: 3,
+      per_page: 5
+    });
+    await client.updateRepositoryTemplateStatus({
+      repository_uuid: "repo-uuid-1",
+      template_type: "PUBLIC",
+      code_title: "Demo Template",
+      languages: ["TypeScript"]
+    });
+
+    expect(calls).toEqual([
+      {
+        method: "GET",
+        path: "/v2/projects/project-uuid-1/repositories/template-status?page_no=2&page_size=10"
+      },
+      {
+        method: "GET",
+        path: "/v2/repositories/repo-uuid-1/related-commits?type=1&page=3&per_page=5&search=feature"
+      },
+      {
+        method: "PUT",
+        path: "/v2/repositories/repo-uuid-1/template-status",
+        body: {
+          template_type: "PUBLIC",
+          code_title: "Demo Template",
+          languages: ["TypeScript"]
+        }
+      }
     ]);
   });
 

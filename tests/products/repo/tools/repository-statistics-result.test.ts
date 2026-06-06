@@ -3,6 +3,9 @@ import {
   mapLastPushEventInRepository,
   mapRepoLastStatistics,
   mapRepoStatisticsSummary,
+  mapRepositoryCommitLines,
+  mapRepositoryMaster,
+  mapRepositoryStatisticData,
   mapRepositoryStatisticsStatus,
   mapRepositoryStatisticsSummary
 } from "../../../../src/products/repo/tools/repository-statistics-result.js";
@@ -95,6 +98,28 @@ describe("repository statistics result mappers", () => {
       lastCommitTime: "2026-05-15T01:00:00.000Z",
       codeLines: 120,
       branchCount: 2
+    });
+
+    expect(mapRepositoryStatisticData({
+      repoName: "demo",
+      commitCount: 8,
+      archiveUrl: "https://example.com/archive.zip"
+    }).item).toMatchObject({
+      repoName: "demo",
+      commitCount: 8,
+      archiveUrl: "https://example.com/archive.zip"
+    });
+
+    expect(mapRepositoryMaster(true).item).toEqual({
+      isMaster: true
+    });
+
+    expect(mapRepositoryCommitLines({
+      additions: 10,
+      deletions: 4
+    }).item).toEqual({
+      additions: 10,
+      deletions: 4
     });
   });
 

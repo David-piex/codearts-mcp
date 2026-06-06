@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { createRepoListPersonalRecentPushEventsHandler } from "../../../../src/products/repo/tools/list-personal-recent-push-events.js";
+import { createRepoListProjectTemplateStatusRepositoriesHandler } from "../../../../src/products/repo/tools/list-project-template-status-repositories.js";
 import { createRepoListRepositoryCommitRulesHandler } from "../../../../src/products/repo/tools/list-repository-commit-rules.js";
+import { createRepoListRepositoryRelatedCommitsHandler } from "../../../../src/products/repo/tools/list-repository-related-commits.js";
 import { createRepoListRepositoryTemplatesHandler } from "../../../../src/products/repo/tools/list-repository-templates.js";
 import { createRepoShowNotificationSubscriptionHandler } from "../../../../src/products/repo/tools/show-notification-subscription.js";
 import { createRepoShowNotificationSubscriptionsStatusHandler } from "../../../../src/products/repo/tools/show-notification-subscriptions-status.js";
@@ -10,13 +12,17 @@ import { createRepoShowRepositoryInheritSettingSourceHandler } from "../../../..
 import { createRepoShowRepositoryInheritSettingHandler } from "../../../../src/products/repo/tools/show-repository-inherit-setting.js";
 import { createRepoShowRepositoryWatermarkHandler } from "../../../../src/products/repo/tools/show-repository-watermark.js";
 import { createRepoShowUserRefPermissionHandler } from "../../../../src/products/repo/tools/show-user-ref-permission.js";
+import { createRepoUpdateRepositoryTemplateStatusHandler } from "../../../../src/products/repo/tools/update-repository-template-status.js";
 import {
   mapNotificationSubscriptionsStatus,
   mapNotificationSubscription,
   mapPersonalRecentPushEventsList,
+  mapProjectTemplateStatusRepositoriesList,
+  mapRepositoryRelatedCommitsList,
   mapRepositoryCommitRulesList,
   mapRepositoryGeneralCommitRule,
   mapRepositoryInheritSettingSource,
+  mapRepositoryTemplateStatusMutation,
   mapRepositoryTemplatesList,
   mapRepositoryWatermark,
   mapUserRefPermission
@@ -158,6 +164,33 @@ describe("repository settings result mappers", () => {
       system: true,
       tags: ["Java"]
     });
+
+    expect(mapProjectTemplateStatusRepositoriesList([
+      { uuid: "repo-uuid-1", repo_id: 10, repo_name: "demo", ssh_url: "ssh://demo" }
+    ], 1, 20, 1).items?.[0]).toMatchObject({
+      uuid: "repo-uuid-1",
+      repositoryId: "10",
+      repositoryName: "demo",
+      sshUrl: "ssh://demo"
+    });
+
+    expect(mapRepositoryRelatedCommitsList([
+      { id: 1, commitId: "c1", commitMsg: "feat: demo", createdAt: "2026-06-01T00:00:00Z" }
+    ], 1, 20, 1).items?.[0]).toMatchObject({
+      id: "1",
+      commitId: "c1",
+      commitMessage: "feat: demo",
+      createdAt: "2026-06-01T00:00:00Z"
+    });
+
+    expect(mapRepositoryTemplateStatusMutation("Updated repository template status", {
+      result: null,
+      status: "success"
+    }).item).toEqual({
+      result: null,
+      status: "success",
+      executed: true
+    });
   });
 });
 
@@ -235,6 +268,28 @@ describe("repository settings handlers", () => {
         return { templates: [{ repository_id: 10, name: "demo" }], total: 1 };
       }
     });
+    const projectTemplateStatusHandler = createRepoListProjectTemplateStatusRepositoriesHandler({
+      listProjectTemplateStatusRepositories: async (input) => {
+        expect(input).toEqual({
+          project_uuid: "project-uuid-1",
+          page_no: 1,
+          page_size: 20
+        });
+        return { repositories: [{ uuid: "repo-uuid-1", repo_id: 10, repo_name: "demo" }], total: 1 };
+      }
+    });
+    const relatedCommitsHandler = createRepoListRepositoryRelatedCommitsHandler({
+      listRepositoryRelatedCommits: async (input) => {
+        expect(input).toEqual({
+          repository_uuid: "repo-uuid-1",
+          type: 1,
+          search: "feature",
+          page: 1,
+          per_page: 20
+        });
+        return { commits: [{ id: 1, commitId: "c1", commitMsg: "feat: demo" }], total: 1 };
+      }
+    });
 
     expect(
       (await pushEventsHandler({ project_id: "project-1", size: 5 })).structuredContent.items?.[0]
@@ -244,6 +299,18 @@ describe("repository settings handlers", () => {
     expect((await templatesHandler({ search: "demo" })).structuredContent.items?.[0]).toMatchObject({
       repositoryId: "10",
       name: "demo"
+    });
+    expect((await projectTemplateStatusHandler({ project_uuid: "project-uuid-1" })).structuredContent.items?.[0]).toMatchObject({
+      uuid: "repo-uuid-1",
+      repositoryId: "10"
+    });
+    expect((await relatedCommitsHandler({
+      repository_uuid: "repo-uuid-1",
+      type: 1,
+      search: "feature"
+    })).structuredContent.items?.[0]).toMatchObject({
+      id: "1",
+      commitId: "c1"
     });
   });
 
@@ -302,6 +369,40 @@ describe("repository settings handlers", () => {
     });
     expect(permission.structuredContent.item).toMatchObject({
       push: { hasPermission: true, protect: true }
+    });
+  });
+
+  it("supports dry run and write execution for repository template status", async () => {
+    const handler = createRepoUpdateRepositoryTemplateStatusHandler({
+      updateRepositoryTemplateStatus: async (input) => {
+        expect(input).toEqual({
+          repository_uuid: "repo-uuid-1",
+          template_type: "PUBLIC"
+        });
+        return { result: null, status: "success" };
+      }
+    });
+
+    const dryRun = await handler({
+      repository_uuid: "repo-uuid-1",
+      template_type: "PUBLIC",
+      dry_run: true
+    });
+    const executed = await handler({
+      repository_uuid: "repo-uuid-1",
+      template_type: "PUBLIC",
+      dry_run: false
+    });
+
+    expect(dryRun.structuredContent.item).toMatchObject({
+      repositoryUuid: "repo-uuid-1",
+      templateType: "PUBLIC",
+      executed: false
+    });
+    expect(executed.structuredContent.item).toEqual({
+      result: null,
+      status: "success",
+      executed: true
     });
   });
 });

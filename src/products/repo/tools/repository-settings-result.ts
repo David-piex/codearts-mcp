@@ -5,6 +5,8 @@ import type {
   RepoNotificationSubscriptionsStatus,
   RepoLabelDetail,
   RepoPersonalRecentPushEvent,
+  RepoProjectTemplateStatusRepository,
+  RepoRelatedCommit,
   RepoRepositoryCommitRule,
   RepoRepositoryGeneralCommitRule,
   RepoRepositoryInheritSettingSource,
@@ -354,6 +356,98 @@ export function mapRepositoryTemplatesList(
   return asListResult(
     `${input.length} repository templates found`,
     input.map(mapRepositoryTemplate),
+    toPageInfo(page, pageSize, total)
+  );
+}
+
+function mapProjectTemplateStatusRepository(input: RepoProjectTemplateStatusRepository) {
+  return {
+    uuid: input.uuid,
+    repositoryId: input.repo_id !== undefined ? String(input.repo_id) : undefined,
+    repositoryName: input.repo_name,
+    sshUrl: input.ssh_url,
+    codeUrl: input.code_url,
+    detailUrl: input.detail_url
+  };
+}
+
+export function mapProjectTemplateStatusRepositoriesList(
+  input: RepoProjectTemplateStatusRepository[],
+  page: number,
+  pageSize: number,
+  total?: number
+) {
+  return asListResult(
+    `${input.length} project template status repositories found`,
+    input.map(mapProjectTemplateStatusRepository),
+    toPageInfo(page, pageSize, total)
+  );
+}
+
+export function mapRepositoryTemplateStatusMutation(summary: string, input?: {
+  result?: string | null;
+  status?: string;
+}) {
+  return asItemResult(summary, {
+    result: input?.result ?? null,
+    status: input?.status,
+    executed: true
+  });
+}
+
+function firstDefined<T>(...values: Array<T | undefined>): T | undefined {
+  for (const value of values) {
+    if (value !== undefined) {
+      return value;
+    }
+  }
+
+  return undefined;
+}
+
+function mapRelatedCommit(input: RepoRelatedCommit) {
+  const raw = input as RepoRelatedCommit & Record<string, unknown>;
+
+  return {
+    id: input.id !== undefined ? String(input.id) : undefined,
+    iamId: input.iamId,
+    userId: input.userId !== undefined ? String(input.userId) : undefined,
+    userName: input.userName,
+    tenantName: input.tenantName,
+    nickName: input.nickName,
+    repositoryId: input.repoId !== undefined ? String(input.repoId) : undefined,
+    branchName: input.branchName,
+    commitId: input.commitId,
+    commitShortId: input.commitShortId,
+    commitMessage: input.commitMsg,
+    commitUrl: input.commitUrl,
+    relatedId: input.relatedId !== undefined ? String(input.relatedId) : undefined,
+    relatedUrl: input.relatedUrl,
+    result: input.result,
+    createdAt: firstDefined(
+      input.createdAt,
+      input.createAt,
+      raw.created_at as string | undefined,
+      raw.create_at as string | undefined
+    ),
+    updatedAt: firstDefined(
+      input.updatedAt,
+      input.updateAt,
+      raw.updated_at as string | undefined,
+      raw.update_at as string | undefined
+    )
+  };
+}
+
+export function mapRepositoryRelatedCommitsList(
+  input: RepoRelatedCommit[],
+  page: number,
+  pageSize: number,
+  total?: number
+) {
+  return asListResult(
+    `${input.length} repository related commits found`,
+    input.map(mapRelatedCommit),
     toPageInfo(page, pageSize, total)
   );
 }

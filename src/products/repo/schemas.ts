@@ -854,6 +854,12 @@ export const repoListRepositoryTemplatesInput = pagingSchema.extend({
   project_id: idSchema.optional()
 });
 
+export const repoListProjectTemplateStatusRepositoriesInput = z.object({
+  project_uuid: idSchema,
+  page_no: z.number().int().positive().default(1),
+  page_size: z.number().int().positive().max(100).default(20)
+});
+
 export const repoShowProjectSettingsInheritCfgInput = z.object({
   project_id: idSchema
 });
@@ -980,6 +986,18 @@ export const repoShowHttpsPasswordSettingInput = z.object({});
 export const repoValidateHttpsInfoInput = z.object({
   iam_user_uuid: z.string().min(1).max(128),
   pwd: z.string().min(1).max(256),
+  dry_run: z.boolean().default(true)
+});
+
+export const repoUpdateRepositoryTemplateStatusInput = z.object({
+  repository_uuid: idSchema,
+  template_type: z.enum(["SHARE", "PUBLIC"]),
+  code_title: z.string().min(1).max(255).optional(),
+  creator_name: z.string().min(1).max(255).optional(),
+  code_description: z.string().min(1).max(4000).optional(),
+  languages: z.array(z.string().min(1).max(128)).optional(),
+  plateform: z.array(z.string().min(1).max(128)).optional(),
+  entertype: z.array(z.string().min(1).max(128)).optional(),
   dry_run: z.boolean().default(true)
 });
 
@@ -2425,9 +2443,32 @@ export const repoShowRepoStatisticsSummaryInput = z.object({
   repository_id: idSchema
 });
 
+export const repoShowRepositoryStatisticDataInput = z.object({
+  repository_uuid: idSchema
+});
+
+export const repoShowRepositoryMasterInput = z.object({
+  repository_uuid: idSchema
+});
+
 export const repoShowRepoLastStatisticsInput = z.object({
   repository_id: idSchema,
   branch_name: z.string().min(1).max(2000)
+});
+
+export const repoShowRepositoryCommitLinesInput = z.object({
+  repository_id: idSchema,
+  ref_name: z.string().min(1).max(2000),
+  begin_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  end_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/)
+});
+
+export const repoListRepositoryRelatedCommitsInput = z.object({
+  repository_uuid: idSchema,
+  type: z.number().int().min(0).max(1).default(0),
+  search: z.string().min(1).max(255).optional(),
+  page: z.number().int().positive().default(1),
+  per_page: z.number().int().positive().max(100).default(20)
 });
 
 export const repoListSubmodulesInput = pagingSchema.extend({

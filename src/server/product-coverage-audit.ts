@@ -154,6 +154,9 @@ const tokenAliases: Record<string, string[]> = {
   testsuites: ["suite", "testsuite"]
 };
 
+const fileTextCache = new Map<string, string>();
+const toolTokenCache = new Map<string, Set<string>>();
+
 function normalizeToken(value: string) {
   return value.replace(/[{}]/g, "").replace(/\..*$/, "");
 }
@@ -167,7 +170,15 @@ function endpointTokens(path: string) {
 }
 
 function toolTokens(toolName: string, family: ProductToolFamily) {
-  return new Set(toolName.replace(new RegExp(`^${family}_`), "").split("_").filter(Boolean));
+  const cacheKey = `${family}:${toolName}`;
+  const cached = toolTokenCache.get(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
+  const tokens = new Set(toolName.replace(new RegExp(`^${family}_`), "").split("_").filter(Boolean));
+  toolTokenCache.set(cacheKey, tokens);
+  return tokens;
 }
 
 function collectEndpoints(docText: string) {
@@ -215,7 +226,18 @@ function findMatchedTools(
 }
 
 function readClientText(clientPaths: string[]) {
-  return clientPaths.map((path) => readFileSync(path, "utf8")).join("\n");
+  return clientPaths
+    .map((path) => {
+      const cached = fileTextCache.get(path);
+      if (cached !== undefined) {
+        return cached;
+      }
+
+      const text = readFileSync(path, "utf8");
+      fileTextCache.set(path, text);
+      return text;
+    })
+    .join("\n");
 }
 
 export function auditProductCoverage(input: {
@@ -223,7 +245,18 @@ export function auditProductCoverage(input: {
   docText?: string;
   clientText?: string;
 }) {
-  const docText = input.docText ?? readFileSync(input.config.docPath, "utf8");
+  const docText =
+    input.docText ??
+    (() => {
+      const cached = fileTextCache.get(input.config.docPath);
+      if (cached !== undefined) {
+        return cached;
+      }
+
+      const text = readFileSync(input.config.docPath, "utf8");
+      fileTextCache.set(input.config.docPath, text);
+      return text;
+    })();
   const clientText = input.clientText ?? readClientText(input.config.clientPaths);
 
   return collectEndpoints(docText)

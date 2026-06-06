@@ -30,10 +30,10 @@
 | 代码检查 | 104 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
 | 部署 | 87 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
 | 流水线 | 161 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
-| 代码仓库 | 377 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
+| 代码仓库 | 383 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 343 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 313 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **1577** | |
+| **总计** | **1583** | |
 
 ## 字段对应
 
@@ -764,6 +764,7 @@
 | `repo_list_project_protected_tags` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_project_protected_tags) |
 | `repo_list_project_repositories` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_project_repositories) |
 | `repo_list_project_subgroups_and_repositories` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_project_subgroups_and_repositories) |
+| `repo_list_project_template_status_repositories` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_project_template_status_repositories) |
 | `repo_list_project_webhook_logs` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_project_webhook_logs) |
 | `repo_list_project_webhooks` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_project_webhooks) |
 | `repo_list_protected_branches` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_protected_branches) |
@@ -785,6 +786,7 @@
 | `repo_list_repository_merge_requests` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_merge_requests) |
 | `repo_list_repository_navigation_references` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_navigation_references) |
 | `repo_list_repository_protected_refs_user_groups` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_protected_refs_user_groups) |
+| `repo_list_repository_related_commits` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_related_commits) |
 | `repo_list_repository_resource_permissions` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_resource_permissions) |
 | `repo_list_repository_review_authors` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_review_authors) |
 | `repo_list_repository_reviews` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_list_repository_reviews) |
@@ -885,11 +887,13 @@
 | `repo_show_repo_statistics_summary` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_repo_statistics_summary) |
 | `repo_show_repository` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_repository) |
 | `repo_show_repository_approver_settings` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_repository_approver_settings) |
+| `repo_show_repository_commit_lines` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_repository_commit_lines) |
 | `repo_show_repository_e2e_setting` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_repository_e2e_setting) |
 | `repo_show_repository_general_commit_rule` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_repository_general_commit_rule) |
 | `repo_show_repository_general_policy` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_repository_general_policy) |
 | `repo_show_repository_inherit_setting` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_repository_inherit_setting) |
 | `repo_show_repository_inherit_setting_source` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_repository_inherit_setting_source) |
+| `repo_show_repository_master` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_repository_master) |
 | `repo_show_repository_merge_request_setting` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_repository_merge_request_setting) |
 | `repo_show_repository_merge_requests_statistic` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_repository_merge_requests_statistic) |
 | `repo_show_repository_navigation_language` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_repository_navigation_language) |
@@ -897,6 +901,7 @@
 | `repo_show_repository_navigation_schema` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_repository_navigation_schema) |
 | `repo_show_repository_permission_inherit_enabled` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_repository_permission_inherit_enabled) |
 | `repo_show_repository_readme_file` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_repository_readme_file) |
+| `repo_show_repository_statistic_data` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_repository_statistic_data) |
 | `repo_show_repository_statistics_status` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_repository_statistics_status) |
 | `repo_show_repository_statistics_summary` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_repository_statistics_summary) |
 | `repo_show_repository_watermark` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_show_repository_watermark) |
@@ -957,6 +962,7 @@
 | `repo_update_repository_permission_inherit_enabled` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_update_repository_permission_inherit_enabled) |
 | `repo_update_repository_remote_mirror` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_update_repository_remote_mirror) |
 | `repo_update_repository_resource_permissions` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_update_repository_resource_permissions) |
+| `repo_update_repository_template_status` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_update_repository_template_status) |
 | `repo_update_repository_watermark` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_update_repository_watermark) |
 | `repo_update_repository_webhook` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_update_repository_webhook) |
 | `repo_update_tenant_repo_encryption_setting` | 代码仓库 | [查看](./Function-API-Reference-Repo.md#repo_update_tenant_repo_encryption_setting) |

@@ -1,7 +1,9 @@
 import { asItemResult } from "../../../contracts/tool-result.js";
 import type {
+  RepoCommitLines,
   RepoLastPushEvent,
   RepoLastStatistics,
+  RepoRepositoryStatisticData,
   RepoRepositoryStatisticsStatus,
   RepoRepositoryStatisticsSummary,
   RepoStatisticEvent,
@@ -68,6 +70,31 @@ export function mapRepoStatisticsSummary(input: RepoStatsSummary) {
     lastCommitTime: input.last_commit_time,
     codeLines: input.code_lines,
     branchCount: input.branch_count
+  });
+}
+
+export function mapRepositoryStatisticData(input: RepoRepositoryStatisticData) {
+  return asItemResult("Fetched repository statistic data", {
+    repoName: input.repoName,
+    commitCount: input.commitCount,
+    repoSize: input.repoSize,
+    lastCommitTime: input.lastCommitTime,
+    codeLines: input.codeLines,
+    branchCount: input.branchCount,
+    archiveUrl: input.archiveUrl
+  });
+}
+
+export function mapRepositoryMaster(input: boolean) {
+  return asItemResult("Fetched repository master flag", {
+    isMaster: input
+  });
+}
+
+export function mapRepositoryCommitLines(input: RepoCommitLines) {
+  return asItemResult("Fetched repository commit line statistics", {
+    additions: input.additions,
+    deletions: input.deletions
   });
 }
 

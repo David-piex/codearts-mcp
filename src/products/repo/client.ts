@@ -187,6 +187,21 @@ export type RepoStatsSummary = {
   branch_count?: number;
 };
 
+export type RepoRepositoryStatisticData = {
+  repoName?: string;
+  commitCount?: number | string;
+  repoSize?: string;
+  lastCommitTime?: string;
+  codeLines?: number | string;
+  branchCount?: number | string;
+  archiveUrl?: string;
+};
+
+export type RepoCommitLines = {
+  additions?: number;
+  deletions?: number;
+};
+
 export type RepoLastStatistics = {
   event?: RepoStatisticEvent;
   total?: number;
@@ -1637,6 +1652,37 @@ export type RepoRepositoryTemplate = {
   liked_times?: number;
   creator_name?: string;
   https_url?: string;
+};
+
+export type RepoProjectTemplateStatusRepository = {
+  uuid?: string;
+  repo_id?: number | string;
+  repo_name?: string;
+  ssh_url?: string;
+  code_url?: string;
+  detail_url?: string;
+};
+
+export type RepoRelatedCommit = {
+  id?: number | string;
+  iamId?: string;
+  userId?: number | string;
+  userName?: string;
+  tenantName?: string;
+  nickName?: string;
+  repoId?: number | string;
+  branchName?: string;
+  commitId?: string;
+  commitShortId?: string;
+  commitMsg?: string;
+  commitUrl?: string;
+  relatedId?: number | string;
+  relatedUrl?: string;
+  result?: number | string;
+  createAt?: string;
+  updateAt?: string;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 export type RepoProjectSubgroupOrRepository = {
@@ -3483,6 +3529,8 @@ export type RepoClient = {
   showLastPushEventInRepository: (input: { repository_id: string }) => Promise<RepoLastPushEvent>;
   showRepositoryStatisticsSummary: (input: { repository_id: string }) => Promise<RepoRepositoryStatisticsSummary>;
   showRepoStatisticsSummary: (input: { repository_id: string }) => Promise<RepoStatsSummary>;
+  showRepositoryStatisticData: (input: { repository_uuid: string }) => Promise<RepoRepositoryStatisticData>;
+  showRepositoryMaster: (input: { repository_uuid: string }) => Promise<boolean>;
   showRepoLastStatistics: (input: { repository_id: string; branch_name: string }) => Promise<RepoLastStatistics>;
   listPersonalRecentPushEvents: (input: {
     project_id?: string;
@@ -3506,6 +3554,27 @@ export type RepoClient = {
     templates: RepoRepositoryTemplate[];
     total?: number;
   }>;
+  listProjectTemplateStatusRepositories: (input: {
+    project_uuid: string;
+    page_no: number;
+    page_size: number;
+  }) => Promise<{
+    repositories: RepoProjectTemplateStatusRepository[];
+    total?: number;
+  }>;
+  updateRepositoryTemplateStatus: (input: {
+    repository_uuid: string;
+    template_type: "SHARE" | "PUBLIC";
+    code_title?: string;
+    creator_name?: string;
+    code_description?: string;
+    languages?: string[];
+    plateform?: string[];
+    entertype?: string[];
+  }) => Promise<{
+    result?: string | null;
+    status?: string;
+  }>;
   listSubmodules: (input: {
     repository_id: string;
     sha: string;
@@ -3513,6 +3582,22 @@ export type RepoClient = {
     page_size: number;
   }) => Promise<{
     submodules: RepoSubmodule[];
+    total?: number;
+  }>;
+  showRepositoryCommitLines: (input: {
+    repository_id: string;
+    ref_name: string;
+    begin_date: string;
+    end_date: string;
+  }) => Promise<RepoCommitLines>;
+  listRepositoryRelatedCommits: (input: {
+    repository_uuid: string;
+    type: number;
+    search?: string;
+    page: number;
+    per_page: number;
+  }) => Promise<{
+    commits: RepoRelatedCommit[];
     total?: number;
   }>;
   showCommitStatistics: (input: { repository_id: string; branch_name: string }) => Promise<RepoCommitStatistics>;
@@ -8732,6 +8817,26 @@ export function createRepoClient(
         `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/stats/summary`
       )) as RepoStatsSummary;
     },
+    async showRepositoryStatisticData(input) {
+      const response = unwrapRepoPayload(await _http.get(
+        `/v1/repositories/${encodeURIComponent(input.repository_uuid)}/statistic-data`
+      ));
+      const payload = (typeof response === "object" && response && "result" in response && response.result && typeof response.result === "object"
+        ? response.result
+        : response) as RepoRepositoryStatisticData;
+
+      return payload ?? {};
+    },
+    async showRepositoryMaster(input) {
+      const response = unwrapRepoPayload(await _http.get(
+        `/v1/repositories/${encodeURIComponent(input.repository_uuid)}/master`
+      ));
+      const payload = typeof response === "object" && response && "result" in response
+        ? (response as { result?: unknown }).result
+        : response;
+
+      return Boolean(payload);
+    },
     async showRepoLastStatistics(input) {
       const query = new URLSearchParams({
         branch_name: input.branch_name
@@ -8755,6 +8860,28 @@ export function createRepoClient(
         total: extracted.total
       };
     },
+    async listProjectTemplateStatusRepositories(input) {
+      const query = new URLSearchParams({
+        page_no: String(input.page_no),
+        page_size: String(input.page_size)
+      });
+      const response = unwrapRepoPayload(await _http.get(
+        `/v2/projects/${encodeURIComponent(input.project_uuid)}/repositories/template-status?${query.toString()}`
+      ));
+      const payload = response as {
+        repos?: RepoProjectTemplateStatusRepository[];
+        total_count?: number;
+        result?: {
+          repos?: RepoProjectTemplateStatusRepository[];
+          total_count?: number;
+        };
+      };
+
+      return {
+        repositories: payload.result?.repos ?? payload.repos ?? [],
+        total: payload.result?.total_count ?? payload.total_count
+      };
+    },
     async listRepositoryTemplates(input) {
       const query = buildOffsetLimitQuery(input);
       query.set("type", input.type);
@@ -8775,6 +8902,18 @@ export function createRepoClient(
         total: extracted.total
       };
     },
+    async updateRepositoryTemplateStatus(input) {
+      const { repository_uuid, ...body } = input;
+      const response = unwrapRepoPayload(await _http.put(
+        `/v2/repositories/${encodeURIComponent(repository_uuid)}/template-status`,
+        omitUndefinedFields(body)
+      )) as { result?: string | null; status?: string } | undefined;
+
+      return {
+        result: response?.result ?? null,
+        status: response?.status
+      };
+    },
     async listSubmodules(input) {
       const query = buildOffsetLimitQuery(input);
       query.set("sha", input.sha);
@@ -8786,6 +8925,45 @@ export function createRepoClient(
       return {
         submodules: extracted.items,
         total: extracted.total
+      };
+    },
+    async showRepositoryCommitLines(input) {
+      const query = new URLSearchParams({
+        ref_name: input.ref_name,
+        begin_date: input.begin_date,
+        end_date: input.end_date
+      });
+      const response = unwrapRepoPayload(await _http.get(
+        `/v3/repositories/${encodeURIComponent(input.repository_id)}/commit-lines?${query.toString()}`
+      ));
+      const payload = (typeof response === "object" && response && "result" in response && response.result && typeof response.result === "object"
+        ? response.result
+        : response) as RepoCommitLines;
+
+      return payload ?? {};
+    },
+    async listRepositoryRelatedCommits(input) {
+      const query = new URLSearchParams({
+        type: String(input.type),
+        page: String(input.page),
+        per_page: String(input.per_page)
+      });
+      appendOptionalQuery(query, input, ["search"]);
+      const response = unwrapRepoPayload(await _http.get(
+        `/v2/repositories/${encodeURIComponent(input.repository_uuid)}/related-commits?${query.toString()}`
+      ));
+      const payload = response as {
+        total?: number;
+        list?: RepoRelatedCommit[];
+        result?: {
+          total?: number;
+          list?: RepoRelatedCommit[];
+        };
+      };
+
+      return {
+        commits: payload.result?.list ?? payload.list ?? [],
+        total: payload.result?.total ?? payload.total
       };
     },
     async showCommitStatistics(input) {

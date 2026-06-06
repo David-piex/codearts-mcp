@@ -38,6 +38,8 @@ import {
   repoListPersonalRepositoryImportRecordsInput,
   repoListProjectMergeRequestsInput,
   repoListPersonalRecentPushEventsInput,
+  repoListProjectTemplateStatusRepositoriesInput,
+  repoListRepositoryRelatedCommitsInput,
   repoListRepositoryTemplatesInput,
   repoListProjectWebhookLogsInput,
   repoListProjectWebhooksInput,
@@ -60,6 +62,9 @@ import {
   repoShowRepositoryNavigationOutlineInput,
   repoShowRepositoryNavigationSchemaInput,
   repoShowRepositoryReadmeFileInput,
+  repoShowRepositoryCommitLinesInput,
+  repoShowRepositoryMasterInput,
+  repoShowRepositoryStatisticDataInput,
   repoShowRepositoryWatermarkInput,
   repoShowRepoLastStatisticsInput,
   repoShowUserRefPermissionInput,
@@ -69,6 +74,7 @@ import {
   repoTransferRepositoryInput,
   repoRebuildRepositoryNavigationInput,
   repoUpdateMergeRequestInput,
+  repoUpdateRepositoryTemplateStatusInput,
   repoDeleteMergeRequestDiscussionInput,
   repoUpdateRemoteMirrorInput
 } from "../../../src/products/repo/schemas.js";
@@ -105,9 +111,69 @@ describe("repo schemas", () => {
       repository_id: "100",
       branch_name: "feature/main"
     });
+
+    expect(repoShowRepositoryStatisticDataInput.parse({ repository_uuid: "repo-uuid-1" })).toEqual({
+      repository_uuid: "repo-uuid-1"
+    });
+
+    expect(repoShowRepositoryMasterInput.parse({ repository_uuid: "repo-uuid-1" })).toEqual({
+      repository_uuid: "repo-uuid-1"
+    });
+
+    expect(repoShowRepositoryCommitLinesInput.parse({
+      repository_id: "100",
+      ref_name: "feature/main",
+      begin_date: "2026-06-01",
+      end_date: "2026-06-30"
+    })).toEqual({
+      repository_id: "100",
+      ref_name: "feature/main",
+      begin_date: "2026-06-01",
+      end_date: "2026-06-30"
+    });
   });
 
   it("accepts repository content read query fields", () => {
+    expect(
+      repoListProjectTemplateStatusRepositoriesInput.parse({
+        project_uuid: "project-uuid-1",
+        page_size: 100
+      })
+    ).toMatchObject({
+      project_uuid: "project-uuid-1",
+      page_no: 1,
+      page_size: 100
+    });
+
+    expect(
+      repoListRepositoryRelatedCommitsInput.parse({
+        repository_uuid: "repo-uuid-1",
+        type: 1,
+        search: "feature",
+        per_page: 50
+      })
+    ).toMatchObject({
+      repository_uuid: "repo-uuid-1",
+      type: 1,
+      search: "feature",
+      page: 1,
+      per_page: 50
+    });
+
+    expect(
+      repoUpdateRepositoryTemplateStatusInput.parse({
+        repository_uuid: "repo-uuid-1",
+        template_type: "SHARE",
+        code_title: "Demo Template",
+        languages: ["TypeScript"]
+      })
+    ).toMatchObject({
+      repository_uuid: "repo-uuid-1",
+      template_type: "SHARE",
+      code_title: "Demo Template",
+      dry_run: true
+    });
+
     expect(
       repoListSubmodulesInput.parse({
         repository_id: "100",

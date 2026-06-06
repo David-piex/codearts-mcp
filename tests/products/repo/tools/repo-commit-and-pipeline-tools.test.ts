@@ -8,6 +8,9 @@ import { createRepoListProductPermissionResourcesGrantedUsersHandler } from "../
 import { createRepoShowCommitDiffMetadataHandler } from "../../../../src/products/repo/tools/show-commit-diff-metadata.js";
 import { createRepoShowCommitFileDiffHandler } from "../../../../src/products/repo/tools/show-commit-file-diff.js";
 import { createRepoShowDiffCommitHandler } from "../../../../src/products/repo/tools/show-diff-commit.js";
+import { createRepoShowRepositoryCommitLinesHandler } from "../../../../src/products/repo/tools/show-repository-commit-lines.js";
+import { createRepoShowRepositoryMasterHandler } from "../../../../src/products/repo/tools/show-repository-master.js";
+import { createRepoShowRepositoryStatisticDataHandler } from "../../../../src/products/repo/tools/show-repository-statistic-data.js";
 
 describe("repo commit and pipeline handlers", () => {
   it("supports dry run for create commit and revert", async () => {
@@ -123,6 +126,49 @@ describe("repo commit and pipeline handlers", () => {
       canCreateGroup: true,
       canCraeteProject: false,
       canSetGroup: true
+    });
+  });
+
+  it("maps repository statistic data, master flag and commit line reads", async () => {
+    const statisticDataHandler = createRepoShowRepositoryStatisticDataHandler({
+      showRepositoryStatisticData: async (input) => {
+        expect(input).toEqual({ repository_uuid: "repo-uuid-1" });
+        return { repoName: "demo", commitCount: 8 };
+      }
+    });
+    const masterHandler = createRepoShowRepositoryMasterHandler({
+      showRepositoryMaster: async (input) => {
+        expect(input).toEqual({ repository_uuid: "repo-uuid-1" });
+        return true;
+      }
+    });
+    const commitLinesHandler = createRepoShowRepositoryCommitLinesHandler({
+      showRepositoryCommitLines: async (input) => {
+        expect(input).toEqual({
+          repository_id: "100",
+          ref_name: "feature/main",
+          begin_date: "2026-06-01",
+          end_date: "2026-06-30"
+        });
+        return { additions: 10, deletions: 4 };
+      }
+    });
+
+    expect((await statisticDataHandler({ repository_uuid: "repo-uuid-1" })).structuredContent.item).toMatchObject({
+      repoName: "demo",
+      commitCount: 8
+    });
+    expect((await masterHandler({ repository_uuid: "repo-uuid-1" })).structuredContent.item).toEqual({
+      isMaster: true
+    });
+    expect((await commitLinesHandler({
+      repository_id: "100",
+      ref_name: "feature/main",
+      begin_date: "2026-06-01",
+      end_date: "2026-06-30"
+    })).structuredContent.item).toEqual({
+      additions: 10,
+      deletions: 4
     });
   });
 });

@@ -66,6 +66,27 @@ describe("registerRepoTool", () => {
     );
   });
 
+  it("registers newly added repo read tools", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerRepoTool({
+      toolName: "repo_show_repository_statistic_data",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore()
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "repo_show_repository_statistic_data",
+      expect.objectContaining({
+        title: "repo_show_repository_statistic_data",
+        description: "Show CodeArts Repo repository statistic data through the official ShowRepositoryStatisticData endpoint"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("returns false for non-repo tools", () => {
     const registerTool = vi.fn();
 

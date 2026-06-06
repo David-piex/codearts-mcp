@@ -6,7 +6,7 @@
 
 模块：`代码仓库`
 
-API 数量：`377`
+API 数量：`383`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
@@ -14567,6 +14567,66 @@ API 数量：`377`
 }
 ```
 
+### repo_list_project_template_status_repositories
+
+所属模块：`代码仓库`
+
+说明：查询代码仓库的项目模板状态仓库。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_list_project_template_status_repositories",
+    "arguments": {
+      "project_uuid": "<project_uuid>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_uuid` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_uuid` ↔ 原始 CodeArts 代码仓库 API 中表示项目 UUID 的字段，常见原字段名为 `project_uuid`、`projectUuid` 或 `projectUUId`，以对应接口实际定义为准。<br>CodeArts 项目 UUID，常用于 Repo 仓库创建、仓库查询和项目级资源定位。可通过项目列表或控制台项目详情获取。 |
+| `page_no` | 否 | `integer` | 1 | 字段对应：<br>MCP 字段 `page_no` ↔ 原始 CodeArts 代码仓库 API 同名字段 `page_no`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `page_size` | 否 | `integer` | 20 | 字段对应：<br>MCP 字段 `page_size` ↔ 原始 CodeArts 代码仓库 API 的分页大小字段，常见原字段名为 `page_size`、`limit` 或 `pageSize`。<br>每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_uuid": {
+      "type": "string",
+      "minLength": 1
+    },
+    "page_no": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "default": 1
+    },
+    "page_size": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 100,
+      "default": 20
+    }
+  },
+  "required": [
+    "project_uuid"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### repo_list_project_webhook_logs
 
 所属模块：`代码仓库`
@@ -16374,6 +16434,79 @@ API 数量：`377`
   },
   "required": [
     "repository_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### repo_list_repository_related_commits
+
+所属模块：`代码仓库`
+
+说明：查询代码仓库的仓库相关提交。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_list_repository_related_commits",
+    "arguments": {
+      "repository_uuid": "<repository_uuid>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `repository_uuid` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repository_uuid` ↔ 原始 CodeArts 代码仓库 API 同名字段 `repository_uuid`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>CodeArts Repo 代码仓库 UUID，用于定位具体仓库，适合跨接口传递。 |
+| `type` | 否 | `integer` | 0 | 字段对应：<br>MCP 字段 `type` ↔ 原始 CodeArts 代码仓库 API 同名字段 `type`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>类型字段，用于区分资源类别、操作类别或查询类别；具体取值以该接口的业务对象为准。 |
+| `search` | 否 | `string` |  | 字段对应：<br>MCP 字段 `search` ↔ 原始 CodeArts 代码仓库 API 同名字段 `search`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>搜索关键字，用于按名称、标题、编号等文本条件过滤列表。 |
+| `page` | 否 | `integer` | 1 | 字段对应：<br>MCP 字段 `page` ↔ 原始 CodeArts 代码仓库 API 的分页页码或由 `offset/limit` 换算得到的页码。<br>页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `per_page` | 否 | `integer` | 20 | 字段对应：<br>MCP 字段 `per_page` ↔ 原始 CodeArts 代码仓库 API 同名字段 `per_page`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "repository_uuid": {
+      "type": "string",
+      "minLength": 1
+    },
+    "type": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 0
+    },
+    "search": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "page": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "default": 1
+    },
+    "per_page": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 100,
+      "default": 20
+    }
+  },
+  "required": [
+    "repository_uuid"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -22659,6 +22792,75 @@ API 数量：`377`
 }
 ```
 
+### repo_show_repository_commit_lines
+
+所属模块：`代码仓库`
+
+说明：执行代码仓库的仓库提交lines。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_show_repository_commit_lines",
+    "arguments": {
+      "repository_id": "<repository_id>",
+      "ref_name": "<ref_name>",
+      "begin_date": "<begin_date>",
+      "end_date": "<end_date>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `repository_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repository_id` ↔ 原始 CodeArts 代码仓库 API 中的仓库 ID 字段，通常位于路径参数或 Query 参数。<br>CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
+| `ref_name` | 是 | `string` |  | 字段对应：<br>MCP 字段 `ref_name` ↔ 原始 CodeArts 代码仓库 API 同名字段 `ref_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>ref名称。 |
+| `begin_date` | 是 | `string` |  | 字段对应：<br>MCP 字段 `begin_date` ↔ 原始 CodeArts 代码仓库 API 同名字段 `begin_date`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `end_date` | 是 | `string` |  | 字段对应：<br>MCP 字段 `end_date` ↔ 原始 CodeArts 代码仓库 API 同名字段 `end_date`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>结束日期，通常使用 yyyy-MM-dd 或接口要求的日期格式。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "repository_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ref_name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "begin_date": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "end_date": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    }
+  },
+  "required": [
+    "repository_id",
+    "ref_name",
+    "begin_date",
+    "end_date"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### repo_show_repository_e2e_setting
 
 所属模块：`代码仓库`
@@ -22903,6 +23105,53 @@ API 数量：`377`
   "required": [
     "repository_id",
     "name"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### repo_show_repository_master
+
+所属模块：`代码仓库`
+
+说明：执行代码仓库的仓库master。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_show_repository_master",
+    "arguments": {
+      "repository_uuid": "<repository_uuid>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `repository_uuid` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repository_uuid` ↔ 原始 CodeArts 代码仓库 API 同名字段 `repository_uuid`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>CodeArts Repo 代码仓库 UUID，用于定位具体仓库，适合跨接口传递。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "repository_uuid": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "repository_uuid"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -23291,6 +23540,53 @@ API 数量：`377`
   },
   "required": [
     "repository_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### repo_show_repository_statistic_data
+
+所属模块：`代码仓库`
+
+说明：执行代码仓库的仓库统计data。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_show_repository_statistic_data",
+    "arguments": {
+      "repository_uuid": "<repository_uuid>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `repository_uuid` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repository_uuid` ↔ 原始 CodeArts 代码仓库 API 同名字段 `repository_uuid`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>CodeArts Repo 代码仓库 UUID，用于定位具体仓库，适合跨接口传递。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "repository_uuid": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "repository_uuid"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -28293,6 +28589,113 @@ API 数量：`377`
     "repository_id",
     "resource_name",
     "data"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### repo_update_repository_template_status
+
+所属模块：`代码仓库`
+
+说明：更新代码仓库的仓库模板状态。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "repo_update_repository_template_status",
+    "arguments": {
+      "repository_uuid": "<repository_uuid>",
+      "template_type": "<template_type>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `repository_uuid` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repository_uuid` ↔ 原始 CodeArts 代码仓库 API 同名字段 `repository_uuid`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>CodeArts Repo 代码仓库 UUID，用于定位具体仓库，适合跨接口传递。 |
+| `template_type` | 是 | `"SHARE" \| "PUBLIC"` |  | 字段对应：<br>MCP 字段 `template_type` ↔ 原始 CodeArts 代码仓库 API 同名字段 `template_type`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。可选值：`SHARE`、`PUBLIC`。 |
+| `code_title` | 否 | `string` |  | 字段对应：<br>MCP 字段 `code_title` ↔ 原始 CodeArts 代码仓库 API 同名字段 `code_title`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `creator_name` | 否 | `string` |  | 字段对应：<br>MCP 字段 `creator_name` ↔ 原始 CodeArts 代码仓库 API 同名字段 `creator_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>creator名称。 |
+| `code_description` | 否 | `string` |  | 字段对应：<br>MCP 字段 `code_description` ↔ 原始 CodeArts 代码仓库 API 同名字段 `code_description`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `languages` | 否 | `array<string>` |  | 字段对应：<br>MCP 字段 `languages` ↔ 原始 CodeArts 代码仓库 API 同名字段 `languages`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `plateform` | 否 | `array<string>` |  | 字段对应：<br>MCP 字段 `plateform` ↔ 原始 CodeArts 代码仓库 API 同名字段 `plateform`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `entertype` | 否 | `array<string>` |  | 字段对应：<br>MCP 字段 `entertype` ↔ 原始 CodeArts 代码仓库 API 同名字段 `entertype`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "repository_uuid": {
+      "type": "string",
+      "minLength": 1
+    },
+    "template_type": {
+      "type": "string",
+      "enum": [
+        "SHARE",
+        "PUBLIC"
+      ]
+    },
+    "code_title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "creator_name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "code_description": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4000
+    },
+    "languages": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128
+      }
+    },
+    "plateform": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128
+      }
+    },
+    "entertype": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128
+      }
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "repository_uuid",
+    "template_type"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
