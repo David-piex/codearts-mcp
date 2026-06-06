@@ -8,13 +8,14 @@ import {
 
 type Client = {
   addRepositoryMembers: (input: {
-    repository_id: string;
+    x_auth_token: string;
+    repository_uuid: string;
     users: Array<{
-      user_iam_id?: string;
-      user_name?: string;
-      tenant_name?: string;
-      tenant_id?: string;
-      repository_role_Id?: string;
+      id: string;
+      name: string;
+      role: 20 | 30 | 40;
+      domain_id?: string;
+      domain_name?: string;
     }>;
   }) => Promise<RepoAddRepositoryMembersResult>;
 };

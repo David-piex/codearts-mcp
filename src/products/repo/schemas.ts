@@ -30,6 +30,12 @@ export const repoListRepositoriesInput = pagingSchema.extend({
   project_id: idSchema
 });
 
+export const repoListProjectRepositoriesInput = pagingSchema.extend({
+  x_auth_token: z.string().min(1),
+  project_uuid: idSchema,
+  search: z.string().min(1).max(256).optional()
+});
+
 export const repoListCurrentUserRepositoriesInput = pagingSchema.extend({
   page_size: z.number().int().positive().max(100).default(20),
   order_by: z.enum(["created_at", "updated_at"]).optional(),
@@ -855,6 +861,7 @@ export const repoListRepositoryTemplatesInput = pagingSchema.extend({
 });
 
 export const repoListProjectTemplateStatusRepositoriesInput = z.object({
+  x_auth_token: z.string().min(1),
   project_uuid: idSchema,
   page_no: z.number().int().positive().default(1),
   page_size: z.number().int().positive().max(100).default(20)
@@ -1028,24 +1035,23 @@ export const repoTransferGroupInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
-export const repoListMembersInput = pagingSchema.extend({
-  repository_id: idSchema,
-  search: z.string().min(1).max(255).optional(),
-  permission: z.enum(["repository", "code", "member", "branch", "tag", "mr", "label"]).optional(),
-  action: z.string().min(1).max(64).optional(),
+export const repoListMembersInput = z.object({
+  x_auth_token: z.string().min(1),
+  repository_uuid: idSchema,
+  subject: z.string().min(1).max(128).optional(),
+  page: z.number().int().positive().default(1),
   page_size: z.number().int().positive().max(100).default(20)
 });
 
 export const repoAddRepositoryMembersInput = z.object({
-  repository_id: idSchema,
+  x_auth_token: z.string().min(1),
+  repository_uuid: idSchema,
   users: z.array(z.object({
-    user_iam_id: z.string().min(1).max(128).optional(),
-    user_name: z.string().min(1).max(255).optional(),
-    tenant_name: z.string().min(1).max(255).optional(),
-    tenant_id: z.string().min(1).max(128).optional(),
-    repository_role_Id: z.string().min(1).max(128).optional()
-  }).refine((value) => Boolean(value.user_iam_id || value.user_name), {
-    message: "user_iam_id or user_name is required"
+    id: z.string().min(1).max(128),
+    name: z.string().min(1).max(255),
+    role: z.union([z.literal(20), z.literal(30), z.literal(40)]),
+    domain_id: z.string().min(1).max(128).optional(),
+    domain_name: z.string().min(1).max(255).optional()
   })).min(1),
   dry_run: z.boolean().default(true)
 });
@@ -2509,6 +2515,7 @@ export const repoShowRepositoryCommitLinesInput = z.object({
 });
 
 export const repoListRepositoryRelatedCommitsInput = z.object({
+  x_auth_token: z.string().min(1),
   repository_uuid: idSchema,
   type: z.number().int().min(0).max(1).default(0),
   search: z.string().min(1).max(255).optional(),

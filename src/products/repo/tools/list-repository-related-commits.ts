@@ -4,6 +4,7 @@ import { mapRepositoryRelatedCommitsList } from "./repository-settings-result.js
 
 type RepoListRepositoryRelatedCommitsClient = {
   listRepositoryRelatedCommits: (input: {
+    x_auth_token: string;
     repository_uuid: string;
     type: number;
     search?: string;

@@ -14,7 +14,9 @@ import {
   repoListGroupWebhookLogsInput,
   repoListGroupWebhooksInput,
   repoListMergeRequestCommitsInput,
+  repoListMembersInput,
   repoListRefsInput,
+  repoAddRepositoryMembersInput,
   repoListRepositoryContributorsInput,
   repoListRepositoryCommitRulesInput,
   repoListRepositoryFileListInput,
@@ -41,6 +43,7 @@ import {
   repoListPersonalRepositoryImportRecordsInput,
   repoListProjectMergeRequestsInput,
   repoListPersonalRecentPushEventsInput,
+  repoListProjectRepositoriesInput,
   repoListProjectTemplateStatusRepositoriesInput,
   repoListRepositoryRelatedCommitsInput,
   repoListRepositoryTemplatesInput,
@@ -142,11 +145,28 @@ describe("repo schemas", () => {
 
   it("accepts repository content read query fields", () => {
     expect(
+      repoListProjectRepositoriesInput.parse({
+        x_auth_token: "token-1",
+        project_uuid: "project-uuid-1",
+        search: "demo",
+        page_size: 100
+      })
+    ).toMatchObject({
+      x_auth_token: "token-1",
+      project_uuid: "project-uuid-1",
+      search: "demo",
+      page: 1,
+      page_size: 100
+    });
+
+    expect(
       repoListProjectTemplateStatusRepositoriesInput.parse({
+        x_auth_token: "token-1",
         project_uuid: "project-uuid-1",
         page_size: 100
       })
     ).toMatchObject({
+      x_auth_token: "token-1",
       project_uuid: "project-uuid-1",
       page_no: 1,
       page_size: 100
@@ -154,17 +174,47 @@ describe("repo schemas", () => {
 
     expect(
       repoListRepositoryRelatedCommitsInput.parse({
+        x_auth_token: "token-1",
         repository_uuid: "repo-uuid-1",
         type: 1,
         search: "feature",
         per_page: 50
       })
     ).toMatchObject({
+      x_auth_token: "token-1",
       repository_uuid: "repo-uuid-1",
       type: 1,
       search: "feature",
       page: 1,
       per_page: 50
+    });
+
+    expect(
+      repoListMembersInput.parse({
+        x_auth_token: "token-1",
+        repository_uuid: "repo-uuid-1",
+        subject: "dev",
+        page_size: 50
+      })
+    ).toMatchObject({
+      x_auth_token: "token-1",
+      repository_uuid: "repo-uuid-1",
+      subject: "dev",
+      page: 1,
+      page_size: 50
+    });
+
+    expect(
+      repoAddRepositoryMembersInput.parse({
+        x_auth_token: "token-1",
+        repository_uuid: "repo-uuid-1",
+        users: [{ id: "u-1", name: "dev", role: 40, domain_id: "d-1", domain_name: "tenant-a" }]
+      })
+    ).toMatchObject({
+      x_auth_token: "token-1",
+      repository_uuid: "repo-uuid-1",
+      dry_run: true,
+      users: [{ id: "u-1", name: "dev", role: 40, domain_id: "d-1", domain_name: "tenant-a" }]
     });
 
     expect(

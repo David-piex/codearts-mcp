@@ -4,6 +4,7 @@ import { mapProjectTemplateStatusRepositoriesList } from "./repository-settings-
 
 type RepoListProjectTemplateStatusRepositoriesClient = {
   listProjectTemplateStatusRepositories: (input: {
+    x_auth_token: string;
     project_uuid: string;
     page_no: number;
     page_size: number;

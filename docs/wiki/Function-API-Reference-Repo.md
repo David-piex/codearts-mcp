@@ -354,7 +354,8 @@ API 数量：`391`
   "params": {
     "name": "repo_add_repository_members",
     "arguments": {
-      "repository_id": "<repository_id>",
+      "x_auth_token": "<x_auth_token>",
+      "repository_uuid": "<repository_uuid>",
       "users": "<users>"
     }
   }
@@ -365,7 +366,8 @@ API 数量：`391`
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `repository_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repository_id` ↔ 原始 CodeArts 代码仓库 API 中的仓库 ID 字段，通常位于路径参数或 Query 参数。<br>CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
+| `x_auth_token` | 是 | `string` |  | 字段对应：<br>MCP 字段 `x_auth_token` ↔ 原始 CodeArts 代码仓库 API 同名字段 `x_auth_token`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `repository_uuid` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repository_uuid` ↔ 原始 CodeArts 代码仓库 API 同名字段 `repository_uuid`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>CodeArts Repo 代码仓库 UUID，用于定位具体仓库，适合跨接口传递。 |
 | `users` | 是 | `array<object>` |  | 字段对应：<br>MCP 字段 `users` ↔ 原始 CodeArts 代码仓库 API 同名字段 `users`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
 | `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -375,7 +377,11 @@ API 数量：`391`
 {
   "type": "object",
   "properties": {
-    "repository_id": {
+    "x_auth_token": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repository_uuid": {
       "type": "string",
       "minLength": 1
     },
@@ -384,32 +390,40 @@ API 数量：`391`
       "items": {
         "type": "object",
         "properties": {
-          "user_iam_id": {
+          "id": {
             "type": "string",
             "minLength": 1,
             "maxLength": 128
           },
-          "user_name": {
+          "name": {
             "type": "string",
             "minLength": 1,
             "maxLength": 255
           },
-          "tenant_name": {
+          "role": {
+            "type": "number",
+            "enum": [
+              20,
+              30,
+              40
+            ]
+          },
+          "domain_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "domain_name": {
             "type": "string",
             "minLength": 1,
             "maxLength": 255
-          },
-          "tenant_id": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
-          },
-          "repository_role_Id": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
           }
         },
+        "required": [
+          "id",
+          "name",
+          "role"
+        ],
         "additionalProperties": false
       },
       "minItems": 1
@@ -420,7 +434,8 @@ API 数量：`391`
     }
   },
   "required": [
-    "repository_id",
+    "x_auth_token",
+    "repository_uuid",
     "users"
   ],
   "additionalProperties": false,
@@ -11857,7 +11872,8 @@ API 数量：`391`
   "params": {
     "name": "repo_list_members",
     "arguments": {
-      "repository_id": "<repository_id>"
+      "x_auth_token": "<x_auth_token>",
+      "repository_uuid": "<repository_uuid>"
     }
   }
 }
@@ -11867,15 +11883,11 @@ API 数量：`391`
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
+| `x_auth_token` | 是 | `string` |  | 字段对应：<br>MCP 字段 `x_auth_token` ↔ 原始 CodeArts 代码仓库 API 同名字段 `x_auth_token`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `repository_uuid` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repository_uuid` ↔ 原始 CodeArts 代码仓库 API 同名字段 `repository_uuid`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>CodeArts Repo 代码仓库 UUID，用于定位具体仓库，适合跨接口传递。 |
+| `subject` | 否 | `string` |  | 字段对应：<br>MCP 字段 `subject` ↔ 原始 CodeArts 代码仓库 API 同名字段 `subject`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>主题或摘要，用于工作项、评论、通知等内容的简短说明。 |
 | `page` | 否 | `integer` | 1 | 字段对应：<br>MCP 字段 `page` ↔ 原始 CodeArts 代码仓库 API 的分页页码或由 `offset/limit` 换算得到的页码。<br>页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
 | `page_size` | 否 | `integer` | 20 | 字段对应：<br>MCP 字段 `page_size` ↔ 原始 CodeArts 代码仓库 API 的分页大小字段，常见原字段名为 `page_size`、`limit` 或 `pageSize`。<br>每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
-| `keyword` | 否 | `string` |  | 字段对应：<br>MCP 字段 `keyword` ↔ 原始 CodeArts 代码仓库 API 的搜索关键字字段，常见原字段名为 `keyword`、`search` 或 `name`。<br>搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
-| `sort_by` | 否 | `string` |  | 字段对应：<br>MCP 字段 `sort_by` ↔ 原始 CodeArts 代码仓库 API 同名字段 `sort_by`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
-| `sort_order` | 否 | `"asc" \| "desc"` |  | 字段对应：<br>MCP 字段 `sort_order` ↔ 原始 CodeArts 代码仓库 API 同名字段 `sort_order`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `repository_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repository_id` ↔ 原始 CodeArts 代码仓库 API 中的仓库 ID 字段，通常位于路径参数或 Query 参数。<br>CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
-| `search` | 否 | `string` |  | 字段对应：<br>MCP 字段 `search` ↔ 原始 CodeArts 代码仓库 API 同名字段 `search`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>搜索关键字，用于按名称、标题、编号等文本条件过滤列表。 |
-| `permission` | 否 | `"repository" \| "code" \| "member" \| "branch" \| "tag" \| "mr" \| "label"` |  | 字段对应：<br>MCP 字段 `permission` ↔ 原始 CodeArts 代码仓库 API 同名字段 `permission`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。可选值：`repository`、`code`、`member`、`branch`、`tag`、`mr`、`label`。 |
-| `action` | 否 | `string` |  | 字段对应：<br>MCP 字段 `action` ↔ 原始 CodeArts 代码仓库 API 同名字段 `action`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
 
 输入 JSON Schema：
 
@@ -11883,6 +11895,19 @@ API 数量：`391`
 {
   "type": "object",
   "properties": {
+    "x_auth_token": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repository_uuid": {
+      "type": "string",
+      "minLength": 1
+    },
+    "subject": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
     "page": {
       "type": "integer",
       "exclusiveMinimum": 0,
@@ -11893,49 +11918,11 @@ API 数量：`391`
       "exclusiveMinimum": 0,
       "maximum": 100,
       "default": 20
-    },
-    "keyword": {
-      "type": "string"
-    },
-    "sort_by": {
-      "type": "string"
-    },
-    "sort_order": {
-      "type": "string",
-      "enum": [
-        "asc",
-        "desc"
-      ]
-    },
-    "repository_id": {
-      "type": "string",
-      "minLength": 1
-    },
-    "search": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 255
-    },
-    "permission": {
-      "type": "string",
-      "enum": [
-        "repository",
-        "code",
-        "member",
-        "branch",
-        "tag",
-        "mr",
-        "label"
-      ]
-    },
-    "action": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 64
     }
   },
   "required": [
-    "repository_id"
+    "x_auth_token",
+    "repository_uuid"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -14548,7 +14535,8 @@ API 数量：`391`
   "params": {
     "name": "repo_list_project_repositories",
     "arguments": {
-      "project_id": "<project_id>"
+      "x_auth_token": "<x_auth_token>",
+      "project_uuid": "<project_uuid>"
     }
   }
 }
@@ -14563,7 +14551,9 @@ API 数量：`391`
 | `keyword` | 否 | `string` |  | 字段对应：<br>MCP 字段 `keyword` ↔ 原始 CodeArts 代码仓库 API 的搜索关键字字段，常见原字段名为 `keyword`、`search` 或 `name`。<br>搜索关键字，用于按名称、标题、编号、路径等文本条件过滤列表。 |
 | `sort_by` | 否 | `string` |  | 字段对应：<br>MCP 字段 `sort_by` ↔ 原始 CodeArts 代码仓库 API 同名字段 `sort_by`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 字段对应：<br>MCP 字段 `sort_order` ↔ 原始 CodeArts 代码仓库 API 同名字段 `sort_order`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
-| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 代码仓库 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `x_auth_token` | 是 | `string` |  | 字段对应：<br>MCP 字段 `x_auth_token` ↔ 原始 CodeArts 代码仓库 API 同名字段 `x_auth_token`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `project_uuid` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_uuid` ↔ 原始 CodeArts 代码仓库 API 中表示项目 UUID 的字段，常见原字段名为 `project_uuid`、`projectUuid` 或 `projectUUId`，以对应接口实际定义为准。<br>CodeArts 项目 UUID，常用于 Repo 仓库创建、仓库查询和项目级资源定位。可通过项目列表或控制台项目详情获取。 |
+| `search` | 否 | `string` |  | 字段对应：<br>MCP 字段 `search` ↔ 原始 CodeArts 代码仓库 API 同名字段 `search`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>搜索关键字，用于按名称、标题、编号等文本条件过滤列表。 |
 
 输入 JSON Schema：
 
@@ -14595,13 +14585,23 @@ API 数量：`391`
         "desc"
       ]
     },
-    "project_id": {
+    "x_auth_token": {
       "type": "string",
       "minLength": 1
+    },
+    "project_uuid": {
+      "type": "string",
+      "minLength": 1
+    },
+    "search": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
     }
   },
   "required": [
-    "project_id"
+    "x_auth_token",
+    "project_uuid"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -14735,6 +14735,7 @@ API 数量：`391`
   "params": {
     "name": "repo_list_project_template_status_repositories",
     "arguments": {
+      "x_auth_token": "<x_auth_token>",
       "project_uuid": "<project_uuid>"
     }
   }
@@ -14745,6 +14746,7 @@ API 数量：`391`
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
+| `x_auth_token` | 是 | `string` |  | 字段对应：<br>MCP 字段 `x_auth_token` ↔ 原始 CodeArts 代码仓库 API 同名字段 `x_auth_token`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
 | `project_uuid` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_uuid` ↔ 原始 CodeArts 代码仓库 API 中表示项目 UUID 的字段，常见原字段名为 `project_uuid`、`projectUuid` 或 `projectUUId`，以对应接口实际定义为准。<br>CodeArts 项目 UUID，常用于 Repo 仓库创建、仓库查询和项目级资源定位。可通过项目列表或控制台项目详情获取。 |
 | `page_no` | 否 | `integer` | 1 | 字段对应：<br>MCP 字段 `page_no` ↔ 原始 CodeArts 代码仓库 API 同名字段 `page_no`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
 | `page_size` | 否 | `integer` | 20 | 字段对应：<br>MCP 字段 `page_size` ↔ 原始 CodeArts 代码仓库 API 的分页大小字段，常见原字段名为 `page_size`、`limit` 或 `pageSize`。<br>每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
@@ -14755,6 +14757,10 @@ API 数量：`391`
 {
   "type": "object",
   "properties": {
+    "x_auth_token": {
+      "type": "string",
+      "minLength": 1
+    },
     "project_uuid": {
       "type": "string",
       "minLength": 1
@@ -14772,6 +14778,7 @@ API 数量：`391`
     }
   },
   "required": [
+    "x_auth_token",
     "project_uuid"
   ],
   "additionalProperties": false,
@@ -16608,6 +16615,7 @@ API 数量：`391`
   "params": {
     "name": "repo_list_repository_related_commits",
     "arguments": {
+      "x_auth_token": "<x_auth_token>",
       "repository_uuid": "<repository_uuid>"
     }
   }
@@ -16618,6 +16626,7 @@ API 数量：`391`
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
+| `x_auth_token` | 是 | `string` |  | 字段对应：<br>MCP 字段 `x_auth_token` ↔ 原始 CodeArts 代码仓库 API 同名字段 `x_auth_token`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
 | `repository_uuid` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repository_uuid` ↔ 原始 CodeArts 代码仓库 API 同名字段 `repository_uuid`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>CodeArts Repo 代码仓库 UUID，用于定位具体仓库，适合跨接口传递。 |
 | `type` | 否 | `integer` | 0 | 字段对应：<br>MCP 字段 `type` ↔ 原始 CodeArts 代码仓库 API 同名字段 `type`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>类型字段，用于区分资源类别、操作类别或查询类别；具体取值以该接口的业务对象为准。 |
 | `search` | 否 | `string` |  | 字段对应：<br>MCP 字段 `search` ↔ 原始 CodeArts 代码仓库 API 同名字段 `search`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>搜索关键字，用于按名称、标题、编号等文本条件过滤列表。 |
@@ -16630,6 +16639,10 @@ API 数量：`391`
 {
   "type": "object",
   "properties": {
+    "x_auth_token": {
+      "type": "string",
+      "minLength": 1
+    },
     "repository_uuid": {
       "type": "string",
       "minLength": 1
@@ -16658,6 +16671,7 @@ API 数量：`391`
     }
   },
   "required": [
+    "x_auth_token",
     "repository_uuid"
   ],
   "additionalProperties": false,

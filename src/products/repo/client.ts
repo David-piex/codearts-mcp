@@ -512,6 +512,11 @@ export type RepoTransferGroupResult = RepoRepositorySummary & {
 };
 
 export type RepoAddRepositoryMemberInputItem = {
+  id?: string;
+  name?: string;
+  role?: 20 | 30 | 40;
+  domain_id?: string;
+  domain_name?: string;
   user_iam_id?: string;
   user_name?: string;
   tenant_name?: string;
@@ -520,6 +525,8 @@ export type RepoAddRepositoryMemberInputItem = {
 };
 
 export type RepoAddRepositoryMemberResultItem = {
+  id?: string;
+  name?: string;
   user_iam_id?: string;
   user_name?: string;
   user_nick_name?: string;
@@ -3598,6 +3605,7 @@ export type RepoClient = {
     total?: number;
   }>;
   listProjectTemplateStatusRepositories: (input: {
+    x_auth_token: string;
     project_uuid: string;
     page_no: number;
     page_size: number;
@@ -3639,6 +3647,7 @@ export type RepoClient = {
     end_date: string;
   }) => Promise<RepoCommitLines>;
   listRepositoryRelatedCommits: (input: {
+    x_auth_token: string;
     repository_uuid: string;
     type: number;
     search?: string;
@@ -3861,6 +3870,16 @@ export type RepoClient = {
     repositories: Array<{ id: number | string; name: string; ssh_url?: string; http_url?: string }>;
     total?: number;
   }>;
+  listProjectRepositories: (input: {
+    x_auth_token: string;
+    project_uuid: string;
+    page: number;
+    page_size: number;
+    search?: string;
+  }) => Promise<{
+    repositories: Array<{ id: number | string; name: string; ssh_url?: string; http_url?: string }>;
+    total?: number;
+  }>;
   listCurrentUserRepositories: (input: {
     page: number;
     page_size: number;
@@ -4047,18 +4066,18 @@ export type RepoClient = {
     namespace: string;
   }) => Promise<RepoRepositorySummary>;
   listMembers: (input: {
-    repository_id: string;
+    x_auth_token: string;
+    repository_uuid: string;
     page: number;
     page_size: number;
-    search?: string;
-    permission?: "repository" | "code" | "member" | "branch" | "tag" | "mr" | "label";
-    action?: string;
+    subject?: string;
   }) => Promise<{
     members: RepoRepositoryMember[];
     total?: number;
   }>;
   addRepositoryMembers: (input: {
-    repository_id: string;
+    x_auth_token: string;
+    repository_uuid: string;
     users: RepoAddRepositoryMemberInputItem[];
   }) => Promise<RepoAddRepositoryMembersResult>;
   updateRepositoryMember: (input: {
@@ -5307,13 +5326,17 @@ function extractAddRepositoryMembersResult(
   response: RepoAddRepositoryMembersResult | { result?: RepoAddRepositoryMembersResult | RepoAddRepositoryMemberResultItem[] }
 ) {
   const payload = unwrapRepoPayload(response);
+  const topLevelStatus =
+    typeof payload === "object" && payload !== null && "status" in payload && typeof payload.status === "string"
+      ? payload.status
+      : undefined;
   const data = ("result" in payload && payload.result ? payload.result : payload) as
     | RepoAddRepositoryMembersResult
     | RepoAddRepositoryMemberResultItem[];
 
   if (Array.isArray(data)) {
     return {
-      status: undefined,
+      status: topLevelStatus,
       result: data
     };
   }
@@ -8998,7 +9021,10 @@ export function createRepoClient(
         page_size: String(input.page_size)
       });
       const response = unwrapRepoPayload(await _http.get(
-        `/v2/projects/${encodeURIComponent(input.project_uuid)}/repositories/template-status?${query.toString()}`
+        `/v2/projects/${encodeURIComponent(input.project_uuid)}/repositories/template-status?${query.toString()}`,
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
       ));
       const payload = response as {
         repos?: RepoProjectTemplateStatusRepository[];
@@ -9100,7 +9126,10 @@ export function createRepoClient(
       });
       appendOptionalQuery(query, input, ["search"]);
       const response = unwrapRepoPayload(await _http.get(
-        `/v2/repositories/${encodeURIComponent(input.repository_uuid)}/related-commits?${query.toString()}`
+        `/v2/repositories/${encodeURIComponent(input.repository_uuid)}/related-commits?${query.toString()}`,
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
       ));
       const payload = response as {
         total?: number;
@@ -9576,6 +9605,35 @@ export function createRepoClient(
 
       return cached.value;
     },
+    async listProjectRepositories(input) {
+      const query = new URLSearchParams({
+        page_index: String(input.page),
+        page_size: String(input.page_size)
+      });
+
+      if (input.search) {
+        query.set("search", input.search);
+      }
+
+      const response = unwrapRepoPayload(await _http.get(
+        `/v2/projects/${encodeURIComponent(input.project_uuid)}/repositories?${query.toString()}`,
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
+      )) as {
+        repositories?: Array<{ id: number | string; name: string; ssh_url?: string; http_url?: string }>;
+        total?: number;
+        result?: {
+          repositories?: Array<{ id: number | string; name: string; ssh_url?: string; http_url?: string }>;
+          total?: number;
+        };
+      };
+
+      return {
+        repositories: response.result?.repositories ?? response.repositories ?? [],
+        total: response.result?.total ?? response.total
+      };
+    },
     async listCurrentUserRepositories(input) {
       const query = buildOffsetLimitQuery(input);
       appendOptionalQuery(query, input, [
@@ -9906,14 +9964,20 @@ export function createRepoClient(
       return extractTransferGroupResult(rawResponse);
     },
     async listMembers(input) {
-      const query = buildOffsetLimitQuery(input);
-      appendOptionalQuery(query, input, ["search", "permission", "action"]);
+      const query = new URLSearchParams({
+        page_index: String(input.page),
+        page_size: String(input.page_size)
+      });
+      appendOptionalQuery(query, input, ["subject"]);
       const response = await _http.get(
-        `/v4/repositories/${encodeURIComponent(input.repository_id)}/members?${query.toString()}`
+        `/v1/repositories/${encodeURIComponent(input.repository_uuid)}/members?${query.toString()}`,
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
       );
       const extracted = extractArrayFromFields<RepoRepositoryMember>(
         response as RepoRepositoryMember[] | Record<string, unknown>,
-        ["members", "items", "records"]
+        ["members", "users", "items", "records", "result"]
       );
 
       return {
@@ -9923,15 +9987,18 @@ export function createRepoClient(
     },
     async addRepositoryMembers(input) {
       const rawResponse = (await _http.post(
-        `/v4/repositories/${encodeURIComponent(input.repository_id)}/members`,
+        `/v1/repositories/${encodeURIComponent(input.repository_uuid)}/members`,
         {
           users: input.users.map((user) => omitUndefinedFields({
-            user_iam_id: user.user_iam_id,
-            user_name: user.user_name,
-            tenant_name: user.tenant_name,
-            tenant_id: user.tenant_id,
-            repository_role_Id: user.repository_role_Id
+            id: user.id ?? user.user_iam_id,
+            name: user.name ?? user.user_name,
+            role: user.role ?? (user.repository_role_Id !== undefined ? Number(user.repository_role_Id) : undefined),
+            domain_id: user.domain_id ?? user.tenant_id,
+            domain_name: user.domain_name ?? user.tenant_name
           }))
+        },
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
         }
       )) as RepoAddRepositoryMembersResult;
 

@@ -165,6 +165,7 @@ import {
   repoListMergeRequestValidAssignedCandidatesInput,
   repoMergeMergeRequestInput,
   repoListRepositoriesInput,
+  repoListProjectRepositoriesInput,
   repoListGroupMergeRequestCanBeAssignedReviewersInput,
   repoListGroupMergeRequestValidAssignedCandidatesInput,
   repoListProjectMergeRequestCanBeAssignedReviewersInput,
@@ -479,6 +480,7 @@ import { createRepoListProjectSubgroupsAndRepositoriesHandler } from "../product
 import { createRepoListProjectWebhookLogsHandler } from "../products/repo/tools/list-project-webhook-logs.js";
 import { createRepoListProjectWebhooksHandler } from "../products/repo/tools/list-project-webhooks.js";
 import { createRepoListProjectTemplateStatusRepositoriesHandler } from "../products/repo/tools/list-project-template-status-repositories.js";
+import { createRepoListProjectRepositoriesHandler } from "../products/repo/tools/list-project-repositories.js";
 import { createRepoListProtectedBranchesHandler } from "../products/repo/tools/list-protected-branches.js";
 import { createRepoListRefsHandler } from "../products/repo/tools/list-refs.js";
 import { createRepoListRepositoriesHandler } from "../products/repo/tools/list-repositories.js";
@@ -716,7 +718,7 @@ const repoToolDefinitions = {
   "repo_batch_delete_branch": defineProductTool({ description: "Batch delete CodeArts Repo branches through the official BatchDeleteBranch endpoint", inputSchema: repoBatchDeleteBranchInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoBatchDeleteBranchHandler>[0] }) => clients.repoClient, createProductHandler: createRepoBatchDeleteBranchHandler }),
   "repo_associate_repository_user_group": defineProductTool({ description: "Associate a CodeArts Repo repository with a user group through the official AssociateRepositoryUserGroup endpoint", inputSchema: repoAssociateRepositoryUserGroupInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoAssociateRepositoryUserGroupHandler>[0] }) => clients.repoClient, createProductHandler: createRepoAssociateRepositoryUserGroupHandler }),
   "repo_list_repositories": defineProductTool({ description: "List CodeArts Repo repositories", inputSchema: repoListRepositoriesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoriesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoriesHandler }),
-  "repo_list_project_repositories": defineProductTool({ description: "List CodeArts Repo project repositories through the official ListProjectRepositories endpoint", inputSchema: repoListRepositoriesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListRepositoriesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListRepositoriesHandler }),
+  "repo_list_project_repositories": defineProductTool({ description: "List CodeArts Repo project repositories through the official ListProjectRepositories endpoint", inputSchema: repoListProjectRepositoriesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListProjectRepositoriesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListProjectRepositoriesHandler }),
   "repo_get_repository_id_by_name": defineProductTool({ description: "Get CodeArts Repo repository id by group and repository name through the official GetRepositoryIdByName endpoint", inputSchema: repoGetRepositoryIdByNameInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoGetRepositoryIdByNameHandler>[0] }) => clients.repoClient, createProductHandler: createRepoGetRepositoryIdByNameHandler }),
   "repo_get_repository": defineProductTool({ description: "Get CodeArts Repo repository detail", inputSchema: repoGetRepositoryInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoGetRepositoryHandler>[0] }) => clients.repoClient, createProductHandler: createRepoGetRepositoryHandler }),
   "repo_show_repository": defineProductTool({ description: "Show CodeArts Repo repository detail through the official ShowRepository endpoint", inputSchema: repoGetRepositoryInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoGetRepositoryHandler>[0] }) => clients.repoClient, createProductHandler: createRepoGetRepositoryHandler }),

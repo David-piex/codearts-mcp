@@ -166,8 +166,10 @@ export function mapAddRepositoryMembersResult(summary: string, input: RepoAddRep
   return asItemResult(summary, {
     status: input.status,
     result: (input.result ?? []).map((item) => ({
+      id: item.id,
+      name: item.name,
       userIamId: item.user_iam_id,
-      userName: item.user_name,
+      userName: item.user_name ?? item.name,
       userNickName: item.user_nick_name,
       tenantName: item.tenant_name,
       status: item.status,
@@ -177,24 +179,24 @@ export function mapAddRepositoryMembersResult(summary: string, input: RepoAddRep
 }
 
 export function previewAddRepositoryMembersMutation(input: {
-  repository_id: string;
+  repository_uuid: string;
   users: Array<{
-    user_iam_id?: string;
-    user_name?: string;
-    tenant_name?: string;
-    tenant_id?: string;
-    repository_role_Id?: string;
+    id: string;
+    name: string;
+    role: 20 | 30 | 40;
+    domain_id?: string;
+    domain_name?: string;
   }>;
   dry_run: boolean;
 }) {
   return {
-    repositoryId: input.repository_id,
+    repositoryUuid: input.repository_uuid,
     users: input.users.map((user) => ({
-      userIamId: user.user_iam_id,
-      userName: user.user_name,
-      tenantName: user.tenant_name,
-      tenantId: user.tenant_id,
-      repositoryRoleId: user.repository_role_Id
+      id: user.id,
+      name: user.name,
+      role: user.role,
+      domainId: user.domain_id,
+      domainName: user.domain_name
     })),
     executed: !input.dry_run
   };

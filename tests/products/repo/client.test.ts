@@ -186,8 +186,8 @@ describe("createRepoClient", () => {
   it("uses official repository template and related commit paths", async () => {
     const calls: Array<{ method: string; path: string; body?: unknown; options?: unknown }> = [];
     const client = createRepoClient({
-      get: async (path: string) => {
-        calls.push({ method: "GET", path });
+      get: async (path: string, options?: unknown) => {
+        calls.push({ method: "GET", path, options });
         if (path.includes("/repositories/template-status?")) {
           return { result: { repos: [{ uuid: "repo-uuid-1", repo_id: 100 }], total_count: 1 } };
         }
@@ -204,11 +204,13 @@ describe("createRepoClient", () => {
     } as never);
 
     await client.listProjectTemplateStatusRepositories({
+      x_auth_token: "token-1",
       project_uuid: "project-uuid-1",
       page_no: 2,
       page_size: 10
     });
     await client.listRepositoryRelatedCommits({
+      x_auth_token: "token-1",
       repository_uuid: "repo-uuid-1",
       type: 1,
       search: "feature",
@@ -226,11 +228,13 @@ describe("createRepoClient", () => {
     expect(calls).toEqual([
       {
         method: "GET",
-        path: "/v2/projects/project-uuid-1/repositories/template-status?page_no=2&page_size=10"
+        path: "/v2/projects/project-uuid-1/repositories/template-status?page_no=2&page_size=10",
+        options: { headers: { "X-Auth-Token": "token-1" } }
       },
       {
         method: "GET",
-        path: "/v2/repositories/repo-uuid-1/related-commits?type=1&page=3&per_page=5&search=feature"
+        path: "/v2/repositories/repo-uuid-1/related-commits?type=1&page=3&per_page=5&search=feature",
+        options: { headers: { "X-Auth-Token": "token-1" } }
       },
       {
         method: "PUT",
@@ -241,6 +245,91 @@ describe("createRepoClient", () => {
           languages: ["TypeScript"]
         },
         options: { headers: { "X-Auth-Token": "token-1" } }
+      }
+    ]);
+  });
+
+  it("uses official project repository and member management paths", async () => {
+    const calls: Array<{ method: string; path: string; body?: unknown; options?: unknown }> = [];
+    const client = createRepoClient({
+      get: async (path: string, options?: unknown) => {
+        calls.push({ method: "GET", path, options });
+        if (path.includes("/v2/projects/project-uuid-1/repositories?")) {
+          return {
+            result: {
+              repositories: [{ id: 1, name: "repo-a", ssh_url: "git@example.com:repo-a.git" }],
+              total: 1
+            }
+          };
+        }
+        if (path.includes("/v1/repositories/repo-uuid-1/members?")) {
+          return {
+            result: [{ id: "u-1", name: "dev", tenant_name: "tenant-a", status: "active" }],
+            total: 1
+          };
+        }
+
+        throw new Error(`unexpected path: ${path}`);
+      },
+      post: async (path: string, body?: unknown, options?: unknown) => {
+        calls.push({ method: "POST", path, body, options });
+        return {
+          status: "success",
+          result: [{ id: "u-1", name: "dev", status: "success", message: "added" }]
+        };
+      }
+    } as never);
+
+    const repositories = await client.listProjectRepositories({
+      x_auth_token: "token-1",
+      project_uuid: "project-uuid-1",
+      page: 2,
+      page_size: 10,
+      search: "repo"
+    });
+    const members = await client.listMembers({
+      x_auth_token: "token-2",
+      repository_uuid: "repo-uuid-1",
+      page: 3,
+      page_size: 5,
+      subject: "dev"
+    });
+    const added = await client.addRepositoryMembers({
+      x_auth_token: "token-3",
+      repository_uuid: "repo-uuid-1",
+      users: [{ id: "u-1", name: "dev", role: 40, domain_id: "d-1", domain_name: "tenant-a" }]
+    });
+
+    expect(repositories).toEqual({
+      repositories: [{ id: 1, name: "repo-a", ssh_url: "git@example.com:repo-a.git" }],
+      total: 1
+    });
+    expect(members).toEqual({
+      members: [{ id: "u-1", name: "dev", tenant_name: "tenant-a", status: "active" }],
+      total: 1
+    });
+    expect(added).toEqual({
+      status: "success",
+      result: [{ id: "u-1", name: "dev", status: "success", message: "added" }]
+    });
+    expect(calls).toEqual([
+      {
+        method: "GET",
+        path: "/v2/projects/project-uuid-1/repositories?page_index=2&page_size=10&search=repo",
+        options: { headers: { "X-Auth-Token": "token-1" } }
+      },
+      {
+        method: "GET",
+        path: "/v1/repositories/repo-uuid-1/members?page_index=3&page_size=5&subject=dev",
+        options: { headers: { "X-Auth-Token": "token-2" } }
+      },
+      {
+        method: "POST",
+        path: "/v1/repositories/repo-uuid-1/members",
+        body: {
+          users: [{ id: "u-1", name: "dev", role: 40, domain_id: "d-1", domain_name: "tenant-a" }]
+        },
+        options: { headers: { "X-Auth-Token": "token-3" } }
       }
     ]);
   });

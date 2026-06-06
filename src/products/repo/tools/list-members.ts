@@ -4,12 +4,11 @@ import { mapRepositoryMembers } from "./repository-list-result.js";
 
 type Client = {
   listMembers: (input: {
-    repository_id: string;
+    x_auth_token: string;
+    repository_uuid: string;
     page: number;
     page_size: number;
-    search?: string;
-    permission?: "repository" | "code" | "member" | "branch" | "tag" | "mr" | "label";
-    action?: string;
+    subject?: string;
   }) => Promise<{
     members: RepoRepositoryMember[];
     total?: number;

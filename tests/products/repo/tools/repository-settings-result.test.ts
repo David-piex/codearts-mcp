@@ -284,6 +284,7 @@ describe("repository settings handlers", () => {
     const projectTemplateStatusHandler = createRepoListProjectTemplateStatusRepositoriesHandler({
       listProjectTemplateStatusRepositories: async (input) => {
         expect(input).toEqual({
+          x_auth_token: "token-1",
           project_uuid: "project-uuid-1",
           page_no: 1,
           page_size: 20
@@ -294,6 +295,7 @@ describe("repository settings handlers", () => {
     const relatedCommitsHandler = createRepoListRepositoryRelatedCommitsHandler({
       listRepositoryRelatedCommits: async (input) => {
         expect(input).toEqual({
+          x_auth_token: "token-1",
           repository_uuid: "repo-uuid-1",
           type: 1,
           search: "feature",
@@ -313,11 +315,15 @@ describe("repository settings handlers", () => {
       repositoryId: "10",
       name: "demo"
     });
-    expect((await projectTemplateStatusHandler({ project_uuid: "project-uuid-1" })).structuredContent.items?.[0]).toMatchObject({
+    expect((await projectTemplateStatusHandler({
+      x_auth_token: "token-1",
+      project_uuid: "project-uuid-1"
+    })).structuredContent.items?.[0]).toMatchObject({
       uuid: "repo-uuid-1",
       repositoryId: "10"
     });
     expect((await relatedCommitsHandler({
+      x_auth_token: "token-1",
       repository_uuid: "repo-uuid-1",
       type: 1,
       search: "feature"
