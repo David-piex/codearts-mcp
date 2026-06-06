@@ -3,6 +3,7 @@ import {
   createBuildGetBuildDetailsHandler,
   createBuildDownloadKeystoreV2Handler,
   createBuildDownloadKeystoreV3Handler,
+  createBuildDownloadLogByRecordIdV3Handler,
   createBuildGetJobRunningStatusV3Handler,
   createBuildGetJobInfoHandler,
   createBuildGetJobOutputHandler,
@@ -12,11 +13,13 @@ import {
   createBuildListAllJobsHandler,
   createBuildListBriefRecordsHandler,
   createBuildListCustomTemplatesHandler,
+  createBuildListJobConfigV3Handler,
   createBuildListJobHistoryV3Handler,
   createBuildListJobNoticesV3Handler,
   createBuildListJobUpdateHistoryHandler,
   createBuildListKeystoreFilesHandler,
-  createBuildListUsableKeystoreNamesHandler
+  createBuildListUsableKeystoreNamesHandler,
+  createBuildShowFlowGraphV3Handler
 } from "../../../../src/products/build/tools/additional-read-tools.js";
 
 describe("Build additional read tool handlers", () => {
@@ -79,6 +82,12 @@ describe("Build additional read tool handlers", () => {
         raw: { total: 1 }
       })
     } as never)({ job_id: "job-1", page: 1, page_size: 10 });
+    const jobConfig = await createBuildListJobConfigV3Handler({
+      listJobConfigV3: async () => ({
+        job_id: "job-1",
+        raw: { job_name: "gateway" }
+      })
+    } as never)({ job_id: "job-1", get_all_params: "true" });
     const status = await createBuildGetJobRunningStatusV3Handler({
       getJobRunningStatusV3: async () => ({
         job_id: "job-1",
@@ -99,6 +108,10 @@ describe("Build additional read tool handlers", () => {
     expect(history.structuredContent.items?.[0]).toMatchObject({
       id: "history-1",
       record: { id: "history-1", status: "success" }
+    });
+    expect(jobConfig.structuredContent.item).toMatchObject({
+      id: "job-1",
+      jobConfig: { job_name: "gateway" }
     });
     expect(status.structuredContent.item).toMatchObject({
       id: "job-1",
@@ -146,6 +159,15 @@ describe("Build additional read tool handlers", () => {
       })
     } as never)({ file_name: "android.jks", domain_id: "domain-1" });
 
+    const logByRecord = await createBuildDownloadLogByRecordIdV3Handler({
+      downloadLogByRecordIdV3: async () => ({
+        record_id: "record-1",
+        body: new Uint8Array([6, 7, 8]),
+        content_type: "text/plain",
+        file_name: "build.log"
+      })
+    } as never)({ record_id: "record-1" });
+
     expect(downloadV2.structuredContent.item).toMatchObject({
       id: "ks-1",
       keystore: {
@@ -163,6 +185,15 @@ describe("Build additional read tool handlers", () => {
         fileName: "android.jks",
         contentType: "application/octet-stream",
         sizeBytes: 2
+      }
+    });
+    expect(logByRecord.structuredContent.item).toMatchObject({
+      id: "record-1",
+      recordId: "record-1",
+      log: {
+        fileName: "build.log",
+        contentType: "text/plain",
+        sizeBytes: 3
       }
     });
   });
@@ -230,6 +261,15 @@ describe("Build additional read tool handlers", () => {
       })
     } as never)({ job_id: "job-1" });
 
+    const flowGraph = await createBuildShowFlowGraphV3Handler({
+      showFlowGraphV3: async () => ({
+        build_flow_record_id: "flow-1",
+        nodes: [{ id: "node-1" }],
+        edges: [{ source: "node-1", target: "node-2" }],
+        raw: { nodes: [{ id: "node-1" }], edges: [{ source: "node-1", target: "node-2" }] }
+      })
+    } as never)({ build_flow_record_id: "flow-1" });
+
     expect(jobInfo.structuredContent.item).toMatchObject({
       id: "job-1",
       jobInfo: { name: "build-main" }
@@ -265,6 +305,16 @@ describe("Build additional read tool handlers", () => {
     expect(notices.structuredContent.items?.[0]).toMatchObject({
       id: "notice-1",
       notice: { id: "notice-1", endpoint: "email" }
+    });
+    expect(flowGraph.structuredContent.item).toMatchObject({
+      id: "flow-1",
+      buildFlowRecordId: "flow-1",
+      nodeCount: 1,
+      edgeCount: 1,
+      flowGraph: {
+        nodes: [{ id: "node-1" }],
+        edges: [{ source: "node-1", target: "node-2" }]
+      }
     });
   });
 });

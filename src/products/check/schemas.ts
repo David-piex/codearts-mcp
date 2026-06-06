@@ -239,6 +239,13 @@ export const checkListAllCriterionsetsInput = pagingSchema.extend({
   operator: z.string().min(1).optional()
 });
 
+export const checkListCriterionsetsByIdsInput = z.object({
+  ids: z.array(idSchema).min(1),
+  project_id: idSchema.optional(),
+  toolVersion: z.string().min(1).optional(),
+  arch: z.enum(["X86", "ARM"]).optional()
+});
+
 export const checkListCriterionFiltersInput = z.object({
   project_id: idSchema,
   language: z.string().min(1),
@@ -652,4 +659,12 @@ export const checkGetMetricsInput = z.object({
 export const checkListRulesetsInput = pagingSchema.extend({
   project_id: idSchema,
   language: z.string().optional()
+});
+
+export const checkListRulesetsV3Input = z.object({
+  project_id: idSchema,
+  page: z.number().int().positive().default(1),
+  page_size: z.number().int().positive().max(50).default(10),
+  category: z.enum(["0", "1", "2"]).optional(),
+  need_selected_status: z.enum(["true", "false"]).default("true")
 });

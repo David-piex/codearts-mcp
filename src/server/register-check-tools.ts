@@ -61,6 +61,7 @@ import {
   checkListConfigItemsInput,
   checkListCriterionFiltersInput,
   checkListCriterionsInput,
+  checkListCriterionsetsByIdsInput,
   checkListCriterionsetsByLanguageInput,
   checkListCodehubRepositoriesInput,
   checkListDefaultRulesetsInput,
@@ -76,6 +77,7 @@ import {
   checkListProjectTaskGroupsInput,
   checkListRulesInput,
   checkListRulesetsInput,
+  checkListRulesetsV3Input,
   checkListRulesetRulesInput,
   checkListSupportedLanguagesInput,
   checkListTemplateTasksInput,
@@ -132,8 +134,10 @@ import {
   createCheckListIssuesByFilterHandler,
   createCheckListRelatedDuplicateBlocksHandler,
   createCheckListRelatedDuplicateBlocksV2Handler,
+  createCheckListCriterionsetsByIdsHandler,
   createCheckListConfigItemsHandler,
-  createCheckListDefectNextStatusesHandler
+  createCheckListDefectNextStatusesHandler,
+  createCheckListRulesetsV3Handler
 } from "../products/check/tools/additional-read-tools.js";
 import {
   createCheckGetDefectTaskMeasuresV1Handler,
@@ -536,6 +540,12 @@ const checkToolDefinitions = {
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListAllCriterionsetsHandler>[0] }) => clients.checkClient,
     createProductHandler: createCheckListAllCriterionsetsHandler
   }),
+  "check_list_criterionsets_by_ids": defineProductTool({
+    description: "List CodeArts Check criterionsets by ID list via official batch API",
+    inputSchema: checkListCriterionsetsByIdsInput,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListCriterionsetsByIdsHandler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckListCriterionsetsByIdsHandler
+  }),
   "check_list_criterion_filters": defineProductTool({
     description: "List CodeArts Check criterion filters",
     inputSchema: checkListCriterionFiltersInput,
@@ -781,6 +791,12 @@ const checkToolDefinitions = {
     inputSchema: checkListRulesetsInput,
     selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListRulesetsHandler>[0] }) => clients.checkClient,
     createProductHandler: createCheckListRulesetsHandler
+  }),
+  "check_list_rulesets_v3": defineProductTool({
+    description: "List CodeArts Check v3 project rulesets",
+    inputSchema: checkListRulesetsV3Input,
+    selectHttpClient: (clients: { checkClient: Parameters<typeof createCheckListRulesetsV3Handler>[0] }) => clients.checkClient,
+    createProductHandler: createCheckListRulesetsV3Handler
   }),
   "check_list_task_issues": defineProductTool({
     description: "List CodeArts Check task issues",

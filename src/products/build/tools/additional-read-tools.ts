@@ -5,6 +5,7 @@ import {
   buildDownloadKeystoreV2Input,
   buildDownloadKeystoreV3Input,
   buildDownloadFullLogInput,
+  buildDownloadLogByRecordIdV3Input,
   buildDownloadTaskLogInput,
   buildDownloadTaskLogV4Input,
   buildGetBuildDetailsInput,
@@ -24,6 +25,7 @@ import {
   buildListCustomTemplatesInput,
   buildListAllJobsInput,
   buildListBriefRecordsInput,
+  buildListJobConfigV3Input,
   buildListJobNoticesV3Input,
   buildListJobBadgeBranchesInput,
   buildListJobHistoryV3Input,
@@ -33,6 +35,7 @@ import {
   buildListRecommendedOfficialTemplatesInput,
   buildListUsableKeystoreNamesInput,
   buildShowDomainsStatusesInput,
+  buildShowFlowGraphV3Input,
   buildShowPackageSpecCountdownInput
 } from "../schemas.js";
 import { formatBuildRecordListText, mapBuildRecordItem, mapBuildRecordList, mapBuildValueItem } from "./generic-read-tools.js";
@@ -74,6 +77,13 @@ type Client = {
   }) => Promise<{
     records: Array<Record<string, unknown>>;
     total?: number;
+    raw: Record<string, unknown>;
+  }>;
+  listJobConfigV3: (input: {
+    job_id: string;
+    get_all_params?: "true" | "false";
+  }) => Promise<{
+    job_id: string;
     raw: Record<string, unknown>;
   }>;
   getJobOutput: (input: { job_id: string; build_no: number }) => Promise<{
@@ -165,6 +175,14 @@ type Client = {
     content_type?: string;
     file_name?: string;
   }>;
+  downloadLogByRecordIdV3: (input: {
+    record_id: string;
+  }) => Promise<{
+    record_id: string;
+    body: Uint8Array;
+    content_type?: string;
+    file_name?: string;
+  }>;
   downloadTaskLogV4: (input: {
     record_id: string;
     task_name: string;
@@ -239,6 +257,12 @@ type Client = {
     notices: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  showFlowGraphV3: (input: { build_flow_record_id: string }) => Promise<{
+    build_flow_record_id: string;
+    nodes: Array<Record<string, unknown>>;
+    edges: Array<Record<string, unknown>>;
+    raw: Record<string, unknown>;
+  }>;
 };
 
 function itemResponse<T>(result: ToolResult<T>) {
@@ -295,6 +319,14 @@ export function createBuildListJobHistoryV3Handler(client: Client) {
     return listResponse(
       mapBuildRecordList(response.records, response.total, "Build v3 job history records", "record", parsed.page, parsed.page_size)
     );
+  };
+}
+
+export function createBuildListJobConfigV3Handler(client: Client) {
+  return async (input: unknown) => {
+    const parsed = buildListJobConfigV3Input.parse(input);
+    const response = await client.listJobConfigV3(parsed);
+    return itemResponse(mapBuildRecordItem("Loaded Build v3 job config", response.job_id, "jobConfig", response.raw));
   };
 }
 
@@ -457,6 +489,23 @@ export function createBuildDownloadBuildLogV4Handler(client: Client) {
   };
 }
 
+export function createBuildDownloadLogByRecordIdV3Handler(client: Client) {
+  return async (input: unknown) => {
+    const parsed = buildDownloadLogByRecordIdV3Input.parse(input);
+    const response = await client.downloadLogByRecordIdV3(parsed);
+    const result = mapBuildRecordItem("Downloaded Build v3 log by record id", response.record_id, "log", {
+      fileName: response.file_name,
+      contentType: response.content_type,
+      sizeBytes: response.body.byteLength,
+      contentBase64: Buffer.from(response.body).toString("base64")
+    }, {
+      recordId: response.record_id
+    });
+
+    return itemResponse(result);
+  };
+}
+
 export function createBuildDownloadTaskLogV4Handler(client: Client) {
   return async (input: unknown) => {
     const parsed = buildDownloadTaskLogV4Input.parse(input);
@@ -574,5 +623,19 @@ export function createBuildListJobNoticesV3Handler(client: Client) {
     const parsed = buildListJobNoticesV3Input.parse(input);
     const response = await client.listJobNoticesV3(parsed);
     return listResponse(mapBuildRecordList(response.notices, response.total, "Build v3 job notices", "notice"));
+  };
+}
+
+export function createBuildShowFlowGraphV3Handler(client: Client) {
+  return async (input: unknown) => {
+    const parsed = buildShowFlowGraphV3Input.parse(input);
+    const response = await client.showFlowGraphV3(parsed);
+    return itemResponse(mapBuildRecordItem("Loaded Build v3 flow graph", response.build_flow_record_id, "flowGraph", response.raw, {
+      buildFlowRecordId: response.build_flow_record_id,
+      nodeCount: response.nodes.length,
+      edgeCount: response.edges.length,
+      nodes: response.nodes,
+      edges: response.edges
+    }));
   };
 }

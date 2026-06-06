@@ -39,6 +39,7 @@ import {
   buildGetJobCopyNameInput,
   buildGetJobDisableCheckInput,
   buildDownloadFullLogInput,
+  buildDownloadLogByRecordIdV3Input,
   buildDownloadTaskLogInput,
   buildGetBuildDetailsInput,
   buildGetDomainChargeTypeInput,
@@ -101,6 +102,7 @@ import {
   buildListJobBadgeBranchesInput,
   buildListJobGroupTreeInput,
   buildListJobHistoryV3Input,
+  buildListJobConfigV3Input,
   buildListJobsInput,
   buildListJobNoticesV3Input,
   buildListJobPermissionRolesInput,
@@ -127,6 +129,7 @@ import {
   buildRestoreRecyclingJobsInput,
   buildSetKeepTimeInput,
   buildShowDomainsStatusesInput,
+  buildShowFlowGraphV3Input,
   buildShowPackageSpecCountdownInput,
   buildRunJobInput,
   buildStopJobInput,
@@ -169,6 +172,7 @@ import {
   createBuildDownloadKeystoreV2Handler,
   createBuildDownloadKeystoreV3Handler,
   createBuildDownloadFullLogHandler,
+  createBuildDownloadLogByRecordIdV3Handler,
   createBuildDownloadTaskLogHandler,
   createBuildDownloadTaskLogV4Handler,
   createBuildGetBuildDetailsHandler,
@@ -189,6 +193,7 @@ import {
   createBuildListBriefRecordsHandler,
   createBuildListCustomTemplatesHandler,
   createBuildListJobBadgeBranchesHandler,
+  createBuildListJobConfigV3Handler,
   createBuildListJobHistoryV3Handler,
   createBuildListJobNoticesV3Handler,
   createBuildListJobUpdateHistoryHandler,
@@ -197,6 +202,7 @@ import {
   createBuildListRecommendedOfficialTemplatesHandler,
   createBuildListUsableKeystoreNamesHandler,
   createBuildShowDomainsStatusesHandler,
+  createBuildShowFlowGraphV3Handler,
   createBuildShowPackageSpecCountdownHandler
 } from "../products/build/tools/additional-read-tools.js";
 import { createBuildGetDomainChargeTypeHandler } from "../products/build/tools/get-domain-charge-type.js";
@@ -648,6 +654,12 @@ const buildToolDefinitions = {
     selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListJobHistoryV3Handler>[0] }) => clients.buildClient,
     createProductHandler: createBuildListJobHistoryV3Handler
   }),
+  "build_list_job_config_v3": defineProductTool({
+    description: "List CodeArts Build v3 job configuration via official query API",
+    inputSchema: buildListJobConfigV3Input,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildListJobConfigV3Handler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildListJobConfigV3Handler
+  }),
   "build_get_job_output": defineProductTool({
     description: "Get CodeArts Build job output",
     inputSchema: buildGetJobOutputInput,
@@ -677,6 +689,12 @@ const buildToolDefinitions = {
     inputSchema: buildShowDomainsStatusesInput,
     selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildShowDomainsStatusesHandler>[0] }) => clients.buildClient,
     createProductHandler: createBuildShowDomainsStatusesHandler
+  }),
+  "build_show_flow_graph_v3": defineProductTool({
+    description: "Show CodeArts Build v3 flow graph",
+    inputSchema: buildShowFlowGraphV3Input,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildShowFlowGraphV3Handler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildShowFlowGraphV3Handler
   }),
   "build_list_job_badge_branches": defineProductTool({
     description: "List CodeArts Build job badge branches",
@@ -719,6 +737,12 @@ const buildToolDefinitions = {
     inputSchema: buildDownloadBuildLogV4Input,
     selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildDownloadBuildLogV4Handler>[0] }) => clients.buildClient,
     createProductHandler: createBuildDownloadBuildLogV4Handler
+  }),
+  "build_download_log_by_record_id_v3": defineProductTool({
+    description: "Download CodeArts Build v3 log by record ID",
+    inputSchema: buildDownloadLogByRecordIdV3Input,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildDownloadLogByRecordIdV3Handler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildDownloadLogByRecordIdV3Handler
   }),
   "build_download_task_log_v4": defineProductTool({
     description: "Download CodeArts Build v4 task log file",

@@ -1,3 +1,4 @@
+import { AppError } from "../../core/errors/app-error.js";
 import type { ReturnTypeCreateHttpClient } from "../types.js";
 import { createOfficialApiRequester, type OfficialApiRequestInput, type OfficialApiRequestResult } from "../official-api.js";
 
@@ -424,6 +425,16 @@ export type CheckClient = {
     criterionsets: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  listCriterionsetsByIds: (input: {
+    ids: string[];
+    project_id?: string;
+    toolVersion?: string;
+    arch?: "X86" | "ARM";
+  }) => Promise<{
+    criterionsets: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
   listCriterionFilters: (input: {
     project_id: string;
     language: string;
@@ -817,6 +828,17 @@ export type CheckClient = {
       is_system?: boolean;
     }>;
     total?: number;
+  }>;
+  listRulesetsV3: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    category?: "0" | "1" | "2";
+    need_selected_status?: "true" | "false";
+  }) => Promise<{
+    rulesets: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
   }>;
 };
 
@@ -1867,6 +1889,59 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
         total: readTotal(listPayload, response, criterionsets.length)
       };
     },
+    async listCriterionsetsByIds(input) {
+      const path = `/v1/criterionsets/batch${buildQuery({
+        project_id: input.project_id
+      })}`;
+      const requestBody = {
+        ids: input.ids,
+        toolVersion: input.toolVersion,
+        arch: input.arch
+      };
+      let response: unknown;
+
+      try {
+        response = await _http.post(path, requestBody);
+      } catch (error) {
+        if (!(error instanceof AppError) || error.code !== "CC.00100006.400") {
+          throw error;
+        }
+
+        const criterionsets = await Promise.all(
+          input.ids.map(async (setId) => {
+            const detailResponse = await _http.get(`/v1/criterionsets/${encodeURIComponent(setId)}`);
+            const detailPayload = readResultPayload(detailResponse);
+            return readEnvelope(detailPayload.data) ?? readEnvelope(detailPayload.value) ?? detailPayload;
+          })
+        );
+
+        return {
+          criterionsets,
+          total: criterionsets.length,
+          raw: {
+            fallback: "get-criterionset-by-id",
+            batch_error: {
+              code: error.code,
+              message: error.message,
+              requestId: error.requestId,
+              status: error.status
+            },
+            result: criterionsets
+          }
+        };
+      }
+      const payload = readResultPayload(response);
+      const listPayload = readEnvelope(payload.result) ?? payload;
+      const criterionsets = readArray<Record<string, unknown>>(
+        payload.result ?? listPayload.criterionSetList ?? listPayload.criterionsets ?? listPayload.data ?? listPayload.value ?? listPayload.items ?? listPayload.list ?? []
+      );
+
+      return {
+        criterionsets,
+        total: readTotal(listPayload, response, criterionsets.length),
+        raw: payload
+      };
+    },
     async listCriterionFilters(input) {
       const query = new URLSearchParams({
         project_id: input.project_id,
@@ -2699,6 +2774,39 @@ export function createCheckClient(_http: ReturnTypeCreateHttpClient): CheckClien
           is_system: item.is_system ?? item.creator_id === "system"
         })),
         total: response.total ?? response.total_count ?? rulesets.length
+      };
+    },
+    async listRulesetsV3(input) {
+      const offset = (input.page - 1) * input.page_size;
+      const query = new URLSearchParams({
+        offset: String(offset),
+        limit: String(input.page_size)
+      });
+
+      if (input.category) {
+        query.set("category", input.category);
+      }
+
+      if (input.need_selected_status) {
+        query.set("need_selected_status", input.need_selected_status);
+      }
+
+      const response = await _http.get(
+        `/v3/${encodeURIComponent(input.project_id)}/rulesets?${query.toString()}`
+      );
+      const payload = readResultPayload(response);
+      const rulesets = readArray<Record<string, unknown>>(
+        payload.info ?? payload.rulesets ?? payload.data ?? payload.value ?? payload.items ?? payload.list ?? (Array.isArray(response) ? response : [])
+      );
+
+      return {
+        rulesets: rulesets.map((item) => ({
+          ...item,
+          id: String(item.id ?? item.ruleset_id ?? item.template_id ?? ""),
+          name: String(item.name ?? item.template_name ?? "")
+        })),
+        total: readTotal(payload, response, rulesets.length),
+        raw: payload
       };
     }
   };

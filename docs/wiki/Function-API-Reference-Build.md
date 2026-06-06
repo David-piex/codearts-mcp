@@ -6,7 +6,7 @@
 
 模块：`编译构建`
 
-API 数量：`143`
+API 数量：`146`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
@@ -2119,6 +2119,53 @@ API 数量：`143`
   "required": [
     "file_name",
     "domain_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### build_download_log_by_record_id_v3
+
+所属模块：`编译构建`
+
+说明：下载编译构建的日志by记录idv3。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "build_download_log_by_record_id_v3",
+    "arguments": {
+      "record_id": "<record_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `record_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `record_id` ↔ 原始 CodeArts 编译构建 API 同名字段 `record_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>执行记录 ID，用于定位对应的 CodeArts 资源。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "record_id"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -5592,6 +5639,61 @@ API 数量：`143`
 }
 ```
 
+### build_list_job_config_v3
+
+所属模块：`编译构建`
+
+说明：查询编译构建的任务配置v3。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "build_list_job_config_v3",
+    "arguments": {
+      "job_id": "<job_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `job_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `job_id` ↔ 原始 CodeArts 编译构建 API 同名字段 `job_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>构建任务 ID，用于定位对应的 CodeArts 资源。 |
+| `get_all_params` | 否 | `"true" \| "false"` |  | 字段对应：<br>MCP 字段 `get_all_params` ↔ 原始 CodeArts 编译构建 API 同名字段 `get_all_params`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。可选值：`true`、`false`。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "job_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "get_all_params": {
+      "type": "string",
+      "enum": [
+        "true",
+        "false"
+      ]
+    }
+  },
+  "required": [
+    "job_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### build_list_job_group_tree
 
 所属模块：`编译构建`
@@ -7598,6 +7700,53 @@ API 数量：`143`
       "default": {}
     }
   },
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### build_show_flow_graph_v3
+
+所属模块：`编译构建`
+
+说明：执行编译构建的流程图v3。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "build_show_flow_graph_v3",
+    "arguments": {
+      "build_flow_record_id": "<build_flow_record_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `build_flow_record_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `build_flow_record_id` ↔ 原始 CodeArts 编译构建 API 同名字段 `build_flow_record_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>构建流程记录 ID，用于定位对应的 CodeArts 资源。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "build_flow_record_id": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "build_flow_record_id"
+  ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
 }

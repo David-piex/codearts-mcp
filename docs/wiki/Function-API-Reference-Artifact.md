@@ -1177,8 +1177,7 @@ API 数量：`52`
   "params": {
     "name": "artifact_list_files",
     "arguments": {
-      "project_id": "<project_id>",
-      "repo_name": "<repo_name>"
+      "project_id": "<project_id>"
     }
   }
 }
@@ -1194,7 +1193,15 @@ API 数量：`52`
 | `sort_by` | 否 | `string` |  | 字段对应：<br>MCP 字段 `sort_by` ↔ 原始 CodeArts 制品仓 API 同名字段 `sort_by`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>排序字段，用于选择服务端排序依据，例如 created_at、updated_at、name。 |
 | `sort_order` | 否 | `"asc" \| "desc"` |  | 字段对应：<br>MCP 字段 `sort_order` ↔ 原始 CodeArts 制品仓 API 同名字段 `sort_order`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>排序方向。asc 表示升序，desc 表示降序。可选值：`asc`、`desc`。 |
 | `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 制品仓 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
-| `repo_name` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repo_name` ↔ 原始 CodeArts 制品仓 API 同名字段 `repo_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>仓库名称。制品仓场景表示制品仓仓库名；Repo 场景表示代码仓库名。 |
+| `repo_name` | 否 | `string` |  | 字段对应：<br>MCP 字段 `repo_name` ↔ 原始 CodeArts 制品仓 API 同名字段 `repo_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>仓库名称。制品仓场景表示制品仓仓库名；Repo 场景表示代码仓库名。 |
+| `parent_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `parent_id` ↔ 原始 CodeArts 制品仓 API 同名字段 `parent_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>父级 ID，用于指定当前资源挂载到哪个父节点、父分组、父模块或父工作项下。 |
+| `search_name` | 否 | `string` |  | 字段对应：<br>MCP 字段 `search_name` ↔ 原始 CodeArts 制品仓 API 同名字段 `search_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>search名称。 |
+| `search_type` | 否 | `string` |  | 字段对应：<br>MCP 字段 `search_type` ↔ 原始 CodeArts 制品仓 API 同名字段 `search_type`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `extension` | 否 | `string` |  | 字段对应：<br>MCP 字段 `extension` ↔ 原始 CodeArts 制品仓 API 同名字段 `extension`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `order_by` | 否 | `string` |  | 字段对应：<br>MCP 字段 `order_by` ↔ 原始 CodeArts 制品仓 API 同名字段 `order_by`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>排序字段，用于选择服务端排序依据。 |
+| `sort` | 否 | `string` |  | 字段对应：<br>MCP 字段 `sort` ↔ 原始 CodeArts 制品仓 API 同名字段 `sort`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>排序方向。asc 表示升序，desc 表示降序。 |
+| `status` | 否 | `string` |  | 字段对应：<br>MCP 字段 `status` ↔ 原始 CodeArts 制品仓 API 同名字段 `status`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>状态过滤条件或目标状态。用于列表查询时表示筛选状态，用于更新/流转时表示要变更到的目标状态；具体取值以对应资源的状态字典为准。 |
+| `category` | 否 | `string` |  | 字段对应：<br>MCP 字段 `category` ↔ 原始 CodeArts 制品仓 API 同名字段 `category`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>分类字段，用于按资源类别、工作项分类或制品分类过滤；具体字典以对应接口返回为准。 |
 
 输入 JSON Schema：
 
@@ -1233,11 +1240,41 @@ API 数量：`52`
     "repo_name": {
       "type": "string",
       "minLength": 1
+    },
+    "parent_id": {
+      "$ref": "#/properties/project_id"
+    },
+    "search_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "search_type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "extension": {
+      "type": "string",
+      "minLength": 1
+    },
+    "order_by": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sort": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string",
+      "minLength": 1
+    },
+    "category": {
+      "type": "string",
+      "minLength": 1
     }
   },
   "required": [
-    "project_id",
-    "repo_name"
+    "project_id"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

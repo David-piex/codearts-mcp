@@ -31,7 +31,15 @@ export const artifactGetRepositoryInput = z.object({
 
 export const artifactListFilesInput = pagingSchema.extend({
   project_id: idSchema,
-  repo_name: z.string().min(1)
+  repo_name: z.string().min(1).optional(),
+  parent_id: idSchema.optional(),
+  search_name: z.string().min(1).optional(),
+  search_type: z.string().min(1).optional(),
+  extension: z.string().min(1).optional(),
+  order_by: z.string().min(1).optional(),
+  sort: z.string().min(1).optional(),
+  status: z.string().min(1).optional(),
+  category: z.string().min(1).optional()
 });
 
 export const artifactGetFileInput = z.object({

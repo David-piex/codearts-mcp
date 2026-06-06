@@ -17,6 +17,8 @@ import {
   checkUpdateTaskWebhookInput,
   checkUpdateTaskResourcePoolInput,
   checkListConfigItemsInput,
+  checkListCriterionsetsByIdsInput,
+  checkListRulesetsV3Input,
   checkListCodehubRepositoriesInput,
   checkListTaskAllFilesInput,
   checkListTaskIssuesInput,
@@ -197,6 +199,29 @@ describe("check schemas", () => {
       query: {
         branch: "main"
       }
+    });
+
+    expect(checkListCriterionsetsByIdsInput.parse({
+      ids: ["ruleset-1", "ruleset-2"],
+      project_id: "project-1",
+      toolVersion: "1.0.0",
+      arch: "ARM"
+    })).toEqual({
+      ids: ["ruleset-1", "ruleset-2"],
+      project_id: "project-1",
+      toolVersion: "1.0.0",
+      arch: "ARM"
+    });
+
+    expect(checkListRulesetsV3Input.parse({
+      project_id: "project-1",
+      category: "1"
+    })).toEqual({
+      project_id: "project-1",
+      page: 1,
+      page_size: 10,
+      category: "1",
+      need_selected_status: "true"
     });
   });
 

@@ -71,6 +71,7 @@ describe("registerBuildTool", () => {
     const tools = [
       ["build_get_project_default_permission", "Get CodeArts Build project default permission"],
       ["build_get_job_info", "Get CodeArts Build job build information"],
+      ["build_list_job_config_v3", "List CodeArts Build v3 job configuration via official query API"],
       ["build_get_build_details", "Get CodeArts Build build status details"],
       ["build_get_output_info_v3", "Get CodeArts Build v3 output info"],
       ["build_get_record_info_v4", "Get CodeArts Build v4 record info"],
@@ -85,8 +86,10 @@ describe("registerBuildTool", () => {
       ["build_list_brief_records", "List CodeArts Build brief records by build project IDs"],
       ["build_list_job_history_v3", "List CodeArts Build v3 job history records"],
       ["build_list_project_endpoints", "List CodeArts Build project endpoints"],
+      ["build_show_flow_graph_v3", "Show CodeArts Build v3 flow graph"],
       ["build_get_task_log_page", "Get CodeArts Build finished task step log page"],
       ["build_download_build_log_v4", "Download CodeArts Build v4 full log file"],
+      ["build_download_log_by_record_id_v3", "Download CodeArts Build v3 log by record ID"],
       ["build_download_task_log_v4", "Download CodeArts Build v4 task log file"],
       ["build_download_keystore_v2", "Download CodeArts Build v2 keystore file"],
       ["build_download_keystore_v3", "Download CodeArts Build v3 keystore file"],

@@ -966,28 +966,56 @@ describe("createArtifactClient", () => {
   });
 
   it("reads files and total from nested result payload", async () => {
+    let requestedPath = "";
+    let requestedBody: unknown;
     const client = createClient({
-      post: async () => ({
-        result: {
-          total: 1,
-          files: [
-            {
-              path: "/gateway/1.0.0/gateway.jar",
-              file_name: "gateway.jar",
-              type: "file",
-              size: 2048
-            }
-          ]
-        }
-      })
+      post: async (path: string, body: unknown) => {
+        requestedPath = path;
+        requestedBody = body;
+        return {
+          result: {
+            total_records: 1,
+            data: [
+              {
+                path: "/gateway/1.0.0/gateway.jar",
+                file_name: "gateway.jar",
+                type: "file",
+                size: 2048
+              }
+            ]
+          }
+        };
+      }
     });
 
     const result = await client.listFiles(
       createProjectPageInput({
-        repo_name: "libs-release"
+        repo_name: "libs-release",
+        parent_id: "0",
+        search_name: "gateway",
+        search_type: "name",
+        extension: "jar",
+        order_by: "created_time",
+        sort: "desc",
+        status: "active",
+        category: "prod"
       })
     );
 
+    expect(requestedPath).toBe("/devreposerver/v5/files/list");
+    expect(requestedBody).toEqual({
+      project_id: "project-1",
+      page_no: 1,
+      page_size: 20,
+      parent_id: "0",
+      search_name: "gateway",
+      search_type: "name",
+      extension: "jar",
+      order_by: "created_time",
+      sort: "desc",
+      status: "active",
+      category: "prod"
+    });
     expect(result.files).toEqual([
       {
         path: "/gateway/1.0.0/gateway.jar",

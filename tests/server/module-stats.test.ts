@@ -42,10 +42,10 @@ describe("collectModuleStats", () => {
       { module: "Req", total: 344, read: 208, write: 136 },
       { module: "Repo", total: 391, read: 254, write: 137 },
       { module: "Pipeline", total: 173, read: 101, write: 72 },
-      { module: "Check", total: 104, read: 84, write: 20 },
+      { module: "Check", total: 106, read: 86, write: 20 },
       { module: "TestPlan", total: 354, read: 277, write: 77 },
       { module: "Deploy", total: 87, read: 59, write: 28 },
-      { module: "Build", total: 143, read: 97, write: 46 },
+      { module: "Build", total: 146, read: 100, write: 46 },
       { module: "Artifact", total: 52, read: 44, write: 8 },
     ]);
   });
@@ -54,7 +54,7 @@ describe("collectModuleStats", () => {
     expect(collectProductToolStats()).toEqual({
       modules: 8,
       total: collectProductToolManifest().length,
-      read: 1124,
+      read: 1129,
       write: 524,
     });
   });
@@ -79,16 +79,16 @@ describe("collectModuleStats", () => {
         { module: "Req", total: 344, read: 208, write: 136 },
         { module: "Repo", total: 391, read: 254, write: 137 },
         { module: "Pipeline", total: 173, read: 101, write: 72 },
-        { module: "Check", total: 104, read: 84, write: 20 },
+        { module: "Check", total: 106, read: 86, write: 20 },
         { module: "TestPlan", total: 354, read: 277, write: 77 },
         { module: "Deploy", total: 87, read: 59, write: 28 },
-        { module: "Build", total: 143, read: 97, write: 46 },
+        { module: "Build", total: 146, read: 100, write: 46 },
         { module: "Artifact", total: 52, read: 44, write: 8 },
       ],
       totals: {
         modules: 8,
         total: collectProductToolManifest().length,
-        read: 1124,
+        read: 1129,
         write: 524,
         httpTotalWithAuth: collectHttpToolTotal(),
       },

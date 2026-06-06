@@ -414,10 +414,18 @@ export type ArtifactClient = {
   }>;
   listFiles: (input: {
     project_id: string;
-    repo_name: string;
+    repo_name?: string;
     page: number;
     page_size: number;
     keyword?: string;
+    parent_id?: string;
+    search_name?: string;
+    search_type?: string;
+    extension?: string;
+    order_by?: string;
+    sort?: string;
+    status?: string;
+    category?: string;
   }) => Promise<{
     files: Array<{
       path: string;
@@ -1604,38 +1612,59 @@ export function createArtifactClient(_http: ReturnTypeCreateHttpClient): Artifac
       };
     },
     async listFiles(input) {
-      const offset = (input.page - 1) * input.page_size;
-      const response = unwrapArtifactPayload((await _http.post("/cloudartifact/v5/file-detail", {
+      const body: Record<string, string | number> = {
         project_id: input.project_id,
-        repo_name: input.repo_name,
-        offset,
-        limit: input.page_size,
-        search: input.keyword
-      })) as {
+        page_no: input.page,
+        page_size: input.page_size
+      };
+      const searchName = input.search_name ?? input.keyword;
+      if (input.parent_id) body.parent_id = input.parent_id;
+      if (searchName) body.search_name = searchName;
+      if (input.search_type) body.search_type = input.search_type;
+      if (input.extension) body.extension = input.extension;
+      if (input.order_by) body.order_by = input.order_by;
+      if (input.sort) body.sort = input.sort;
+      if (input.status) body.status = input.status;
+      if (input.category) body.category = input.category;
+
+      const response = unwrapArtifactPayload((await _http.post("/devreposerver/v5/files/list", body)) as {
         files?: unknown;
         result?: unknown;
         total?: number;
         total_count?: number;
-      });
+        total_records?: number;
+      }) as Record<string, unknown>;
       const payload = readEnvelope(response.result) ?? response;
       const files = readArray<{
+        id?: string | number;
+        file_id?: string | number;
         path?: string;
+        full_path?: string;
+        repo_file_path?: string;
         name?: string;
         file_name?: string;
         type?: string;
         size?: string | number;
-      }>(payload.files);
+      }>(payload.files ?? payload.data ?? payload.items ?? payload.list);
 
       return {
         files: files.map((item) => ({
-          path: item.path ?? item.name ?? "",
+          path:
+            item.path ??
+            item.full_path ??
+            item.repo_file_path ??
+            item.name ??
+            item.file_name ??
+            String(item.file_id ?? item.id ?? ""),
           name: item.name ?? item.file_name ?? "",
           type: item.type,
           size: item.size === undefined ? undefined : String(item.size)
         })),
         total:
+          readOptionalNumber(payload.total_records) ??
           readOptionalNumber(payload.total) ??
           readOptionalNumber(payload.total_count) ??
+          readOptionalNumber(response.total_records) ??
           readOptionalNumber(response.total) ??
           readOptionalNumber(response.total_count)
       };

@@ -4,7 +4,7 @@ import { artifactListFilesInput } from "../schemas.js";
 
 export function mapArtifactFiles(
   projectId: string,
-  repoName: string,
+  repoName: string | undefined,
   items: Array<{ path: string; name: string; type?: string; size?: string }>,
   page: number,
   pageSize: number,
@@ -29,10 +29,18 @@ export function mapArtifactFiles(
 type ArtifactListFilesClient = {
   listFiles: (input: {
     project_id: string;
-    repo_name: string;
+    repo_name?: string;
     page: number;
     page_size: number;
     keyword?: string;
+    parent_id?: string;
+    search_name?: string;
+    search_type?: string;
+    extension?: string;
+    order_by?: string;
+    sort?: string;
+    status?: string;
+    category?: string;
   }) => Promise<{
     files: Array<{ path: string; name: string; type?: string; size?: string }>;
     total?: number;
@@ -57,7 +65,9 @@ export function createArtifactListFilesHandler(client: ArtifactListFilesClient) 
         : [
             result.summary,
             "",
-            `Hint: If you expected artifact files here, confirm project_id \`${parsed.project_id}\` and repo_name \`${parsed.repo_name}\` point to a repository visible to the current account and that files have already been published into it.`
+            parsed.repo_name
+              ? `Hint: If you expected artifact files here, confirm project_id \`${parsed.project_id}\` and repo_name \`${parsed.repo_name}\` point to a repository visible to the current account and that files have already been published into it.`
+              : `Hint: If you expected artifact files here, confirm project_id \`${parsed.project_id}\` points to a project visible to the current account and that files have already been published into it.`
           ].join("\n");
 
     return {

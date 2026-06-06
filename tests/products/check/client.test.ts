@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { AppError } from "../../../src/core/errors/app-error.js";
 import { createCheckClient } from "../../../src/products/check/client.js";
 
 function createClient(transport: Record<string, unknown>) {
@@ -621,6 +622,200 @@ describe("createCheckClient", () => {
       ],
       total: 1
     });
+  });
+
+  it("uses documented v3 rulesets and criterionsets-by-ids endpoints", async () => {
+    const requests: Array<{ method: string; path: string; body?: unknown }> = [];
+    const client = createClient({
+      get: async (path: string) => {
+        requests.push({ method: "GET", path });
+        return {
+          info: [
+            {
+              template_id: "ruleset-1",
+              template_name: "Java Default",
+              language: "JAVA",
+              is_used: "1"
+            }
+          ],
+          total: 1
+        };
+      },
+      post: async (path: string, body?: unknown) => {
+        requests.push({ method: "POST", path, body });
+        return {
+          httpStatus: "OK",
+          status: "success",
+          result: [
+            {
+              id: "set-1",
+              name: "Java Default",
+              language: "JAVA",
+              canEdit: true
+            }
+          ]
+        };
+      }
+    });
+
+    await expect(client.listRulesetsV3({
+      project_id: "project-1",
+      page: 2,
+      page_size: 10,
+      category: "1",
+      need_selected_status: "false"
+    })).resolves.toEqual({
+      rulesets: [
+        {
+          id: "ruleset-1",
+          name: "Java Default",
+          template_id: "ruleset-1",
+          template_name: "Java Default",
+          language: "JAVA",
+          is_used: "1"
+        }
+      ],
+      total: 1,
+      raw: {
+        info: [
+          {
+            template_id: "ruleset-1",
+            template_name: "Java Default",
+            language: "JAVA",
+            is_used: "1"
+          }
+        ],
+        total: 1
+      }
+    });
+    await expect(client.listCriterionsetsByIds({
+      ids: ["set-1"],
+      project_id: "project-1",
+      toolVersion: "1.0.0",
+      arch: "ARM"
+    })).resolves.toEqual({
+      criterionsets: [
+        {
+          id: "set-1",
+          name: "Java Default",
+          language: "JAVA",
+          canEdit: true
+        }
+      ],
+      total: 1,
+      raw: {
+        httpStatus: "OK",
+        status: "success",
+        result: [
+          {
+            id: "set-1",
+            name: "Java Default",
+            language: "JAVA",
+            canEdit: true
+          }
+        ]
+      }
+    });
+
+    expect(requests).toEqual([
+      {
+        method: "GET",
+        path: "/v3/project-1/rulesets?offset=10&limit=10&category=1&need_selected_status=false"
+      },
+      {
+        method: "POST",
+        path: "/v1/criterionsets/batch?project_id=project-1",
+        body: {
+          ids: ["set-1"],
+          toolVersion: "1.0.0",
+          arch: "ARM"
+        }
+      }
+    ]);
+  });
+
+  it("falls back to official criterionset detail reads when the batch endpoint rejects ids as empty", async () => {
+    const requests: Array<{ method: string; path: string; body?: unknown }> = [];
+    const client = createClient({
+      get: async (path: string) => {
+        requests.push({ method: "GET", path });
+        return {
+          id: path.split("/").pop(),
+          name: "Java Default",
+          language: "JAVA"
+        };
+      },
+      post: async (path: string, body?: unknown) => {
+        requests.push({ method: "POST", path, body });
+        throw new AppError(
+          "provider_error",
+          "规则集ID参数为空",
+          "CC.00100006.400",
+          "request-1",
+          400
+        );
+      }
+    });
+
+    await expect(client.listCriterionsetsByIds({
+      ids: ["set-1", "set-2"],
+      project_id: "project-1"
+    })).resolves.toEqual({
+      criterionsets: [
+        {
+          id: "set-1",
+          name: "Java Default",
+          language: "JAVA"
+        },
+        {
+          id: "set-2",
+          name: "Java Default",
+          language: "JAVA"
+        }
+      ],
+      total: 2,
+      raw: {
+        fallback: "get-criterionset-by-id",
+        batch_error: {
+          code: "CC.00100006.400",
+          message: "规则集ID参数为空",
+          requestId: "request-1",
+          status: 400
+        },
+        result: [
+          {
+            id: "set-1",
+            name: "Java Default",
+            language: "JAVA"
+          },
+          {
+            id: "set-2",
+            name: "Java Default",
+            language: "JAVA"
+          }
+        ]
+      }
+    });
+
+    expect(requests).toEqual([
+      {
+        method: "POST",
+        path: "/v1/criterionsets/batch?project_id=project-1",
+        body: {
+          ids: ["set-1", "set-2"],
+          toolVersion: undefined,
+          arch: undefined
+        }
+      },
+      {
+        method: "GET",
+        path: "/v1/criterionsets/set-1"
+      },
+      {
+        method: "GET",
+        path: "/v1/criterionsets/set-2"
+      }
+    ]);
   });
 
   it("uses the documented defects-detail endpoint for task issues", async () => {

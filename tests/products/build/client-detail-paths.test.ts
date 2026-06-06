@@ -211,6 +211,7 @@ describe("createBuildClient detail paths", () => {
     await client.downloadFullLog({ record_id: "record-1" });
     await client.downloadTaskLog({ record_id: "record-1" });
     await client.downloadBuildLogV4({ record_id: "record-1", log_level: "DEBUG" });
+    await client.downloadLogByRecordIdV3({ record_id: "record-1" });
     await client.downloadTaskLogV4({ record_id: "record-1", task_name: "stage1", log_level: "INFO" });
     await client.downloadKeystoreV2({ name: "android.jks", domain_id: "domain-1", id: "ks-1" });
     await client.downloadKeystoreV3({ file_name: "android.jks", domain_id: "domain-1" });
@@ -237,6 +238,7 @@ describe("createBuildClient detail paths", () => {
       "/v1/log/record-1/download-log",
       "/v1/log/record-1/task-log",
       "/v4/record-1/download-log?log_level=DEBUG",
+      "/v3/record-1/download-log",
       "/v4/record-1/task-log?task_name=stage1&log_level=INFO",
       "/v2/keystore/download?name=android.jks&domain_id=domain-1&id=ks-1",
       "/v3/keystore?file_name=android.jks&domain_id=domain-1",
@@ -244,6 +246,56 @@ describe("createBuildClient detail paths", () => {
       "/v1/template/job-1/default-template",
       "/v2/keystore/list?page=1&page_size=10",
       "/v2/keystore/permission/ks-1/query"
+    ]);
+  });
+
+  it("uses official v3 job config and flow graph endpoints", async () => {
+    const gets: string[] = [];
+    const client = createBuildClient({
+      get: async (path: string) => {
+        gets.push(path);
+        if (path.includes("/flow-graph")) {
+          return {
+            result: {
+              nodes: [{ id: "node-1" }],
+              edges: [{ source: "node-1", target: "node-2" }]
+            }
+          };
+        }
+        return {
+          result: {
+            job_id: "job-1",
+            job_name: "build-main"
+          }
+        };
+      }
+    } as never);
+
+    await expect(client.listJobConfigV3({
+      job_id: "job-1",
+      get_all_params: "true"
+    })).resolves.toEqual({
+      job_id: "job-1",
+      raw: {
+        job_id: "job-1",
+        job_name: "build-main"
+      }
+    });
+    await expect(client.showFlowGraphV3({
+      build_flow_record_id: "flow-1"
+    })).resolves.toEqual({
+      build_flow_record_id: "flow-1",
+      nodes: [{ id: "node-1" }],
+      edges: [{ source: "node-1", target: "node-2" }],
+      raw: {
+        nodes: [{ id: "node-1" }],
+        edges: [{ source: "node-1", target: "node-2" }]
+      }
+    });
+
+    expect(gets).toEqual([
+      "/v3/jobs/job-1/query?get_all_params=true",
+      "/v3/flow-1/flow-graph"
     ]);
   });
 });

@@ -9,6 +9,8 @@ import {
   createCheckGetSingleDefectHandler,
   createCheckGetTaskByIdHandler,
   createCheckListConfigItemsHandler,
+  createCheckListCriterionsetsByIdsHandler,
+  createCheckListRulesetsV3Handler,
   createCheckListDefectNextStatusesHandler
 } from "../../../../src/products/check/tools/additional-read-tools.js";
 
@@ -188,6 +190,71 @@ describe("Check additional read tool handlers", () => {
     });
     expect(result.structuredContent.raw).toEqual({
       data: [{ id: "rule-1", name: "AvoidHardcode" }]
+    });
+  });
+
+  it("maps criterionsets by ids and v3 rulesets with raw payloads", async () => {
+    const byIdsHandler = createCheckListCriterionsetsByIdsHandler({
+      listCriterionsetsByIds: async () => ({
+        criterionsets: [{ id: "set-1", name: "Java default", language: "JAVA" }],
+        total: 1,
+        raw: {
+          status: "success",
+          result: [{ id: "set-1", name: "Java default", language: "JAVA" }]
+        }
+      })
+    } as never);
+    const rulesetsV3Handler = createCheckListRulesetsV3Handler({
+      listRulesetsV3: async () => ({
+        rulesets: [{
+          id: "ruleset-1",
+          name: "Java Default",
+          template_id: "ruleset-1",
+          template_name: "Java Default"
+        }],
+        total: 1,
+        raw: {
+          info: [{ template_id: "ruleset-1", template_name: "Java Default" }],
+          total: 1
+        }
+      })
+    } as never);
+
+    const byIds = await byIdsHandler({
+      ids: ["set-1"],
+      project_id: "project-1",
+      arch: "X86"
+    });
+    const rulesetsV3 = await rulesetsV3Handler({
+      project_id: "project-1",
+      page: 1,
+      page_size: 10
+    });
+
+    expect(byIds.content[0]?.text).toContain("1 criterionsets found");
+    expect(byIds.structuredContent.items?.[0]).toMatchObject({
+      id: "set-1",
+      name: "Java default",
+      criterionset: { id: "set-1", name: "Java default", language: "JAVA" }
+    });
+    expect(byIds.structuredContent.raw).toEqual({
+      status: "success",
+      result: [{ id: "set-1", name: "Java default", language: "JAVA" }]
+    });
+    expect(rulesetsV3.content[0]?.text).toContain("1 v3 rulesets found");
+    expect(rulesetsV3.structuredContent.items?.[0]).toMatchObject({
+      id: "ruleset-1",
+      name: "Java Default",
+      ruleset: {
+        id: "ruleset-1",
+        name: "Java Default",
+        template_id: "ruleset-1",
+        template_name: "Java Default"
+      }
+    });
+    expect(rulesetsV3.structuredContent.raw).toEqual({
+      info: [{ template_id: "ruleset-1", template_name: "Java Default" }],
+      total: 1
     });
   });
 });

@@ -34,6 +34,11 @@ export const buildGetJobInput = z.object({
   job_id: idSchema
 });
 
+export const buildListJobConfigV3Input = z.object({
+  job_id: idSchema,
+  get_all_params: z.enum(["true", "false"]).optional()
+});
+
 export const buildGetJobInfoInput = z.object({
   job_id: idSchema
 });
@@ -326,6 +331,10 @@ export const buildDownloadBuildLogV4Input = z.object({
   log_level: buildLogLevelSchema
 });
 
+export const buildDownloadLogByRecordIdV3Input = z.object({
+  record_id: idSchema
+});
+
 export const buildDownloadTaskLogV4Input = z.object({
   record_id: idSchema,
   task_name: z.string().min(1),
@@ -400,6 +409,10 @@ export const buildGetProjectRecordStatisticsInput = z.object({
 
 export const buildGetRecordFlowGraphInput = z.object({
   record_id: idSchema
+});
+
+export const buildShowFlowGraphV3Input = z.object({
+  build_flow_record_id: idSchema
 });
 
 export const buildRunJobInput = z.object({

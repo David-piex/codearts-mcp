@@ -20,8 +20,10 @@ import {
   checkListIssuesByFilterInput,
   checkListRelatedDuplicateBlocksInput,
   checkListMeasureFilesInput,
+  checkListCriterionsetsByIdsInput,
   checkListConfigItemsInput,
-  checkListDefectNextStatusesInput
+  checkListDefectNextStatusesInput,
+  checkListRulesetsV3Input
 } from "../schemas.js";
 import { formatCheckRecordListText, mapCheckRecordItem, mapCheckRecordList } from "./generic-read-tools.js";
 
@@ -144,6 +146,19 @@ type Client = {
   }) => Promise<{ task_id: string; raw: RawRecord }>;
   getProjectConfig: (input: { id: string; operator?: string }) => Promise<{ id: string; raw: RawRecord }>;
   listConfigItems: (input: { ids: string[] }) => Promise<{ items: RawRecord[]; total?: number; raw: RawRecord }>;
+  listCriterionsetsByIds: (input: {
+    ids: string[];
+    project_id?: string;
+    toolVersion?: string;
+    arch?: "X86" | "ARM";
+  }) => Promise<{ criterionsets: RawRecord[]; total?: number; raw: RawRecord }>;
+  listRulesetsV3: (input: {
+    project_id: string;
+    page: number;
+    page_size: number;
+    category?: "0" | "1" | "2";
+    need_selected_status?: "true" | "false";
+  }) => Promise<{ rulesets: RawRecord[]; total?: number; raw: RawRecord }>;
   getMeasureTotal: (input: {
     task_id: string;
     query?: Record<string, string | number | boolean>;
@@ -349,6 +364,28 @@ export function createCheckListConfigItemsHandler(client: Client) {
     const parsed = checkListConfigItemsInput.parse(input);
     const response = await client.listConfigItems(parsed);
     return listResponse(mapCheckRecordList(response.items, response.total, "config items", "configItem"), response.raw);
+  };
+}
+
+export function createCheckListCriterionsetsByIdsHandler(client: Client) {
+  return async (input: unknown) => {
+    const parsed = checkListCriterionsetsByIdsInput.parse(input);
+    const response = await client.listCriterionsetsByIds(parsed);
+    return listResponse(
+      mapCheckRecordList(response.criterionsets, response.total, "criterionsets", "criterionset"),
+      response.raw
+    );
+  };
+}
+
+export function createCheckListRulesetsV3Handler(client: Client) {
+  return async (input: unknown) => {
+    const parsed = checkListRulesetsV3Input.parse(input);
+    const response = await client.listRulesetsV3(parsed);
+    return listResponse(
+      mapCheckRecordList(response.rulesets, response.total, "v3 rulesets", "ruleset"),
+      response.raw
+    );
   };
 }
 

@@ -113,6 +113,12 @@ export type BuildClient = {
       target?: string;
     }>;
   }>;
+  showFlowGraphV3: (input: { build_flow_record_id: string }) => Promise<{
+    build_flow_record_id: string;
+    nodes: Array<Record<string, unknown>>;
+    edges: Array<Record<string, unknown>>;
+    raw: Record<string, unknown>;
+  }>;
   getProjectRecordStatistics: (input: {
     project_id: string;
     build_project_id?: string;
@@ -540,6 +546,14 @@ export type BuildClient = {
     content_type?: string;
     file_name?: string;
   }>;
+  downloadLogByRecordIdV3: (input: {
+    record_id: string;
+  }) => Promise<{
+    record_id: string;
+    body: Uint8Array;
+    content_type?: string;
+    file_name?: string;
+  }>;
   downloadTaskLogV4: (input: {
     record_id: string;
     task_name: string;
@@ -728,6 +742,13 @@ export type BuildClient = {
       pre_condition?: string;
       properties?: Record<string, unknown>;
     }>;
+  }>;
+  listJobConfigV3: (input: {
+    job_id: string;
+    get_all_params?: "true" | "false";
+  }) => Promise<{
+    job_id: string;
+    raw: Record<string, unknown>;
   }>;
   listRecords: (input: {
     job_id: string;
@@ -1676,6 +1697,27 @@ export function createBuildClient(
         record_id: input.record_id,
         nodes: item.nodes ?? [],
         edges: item.edges ?? []
+      };
+    },
+    async showFlowGraphV3(input) {
+      const response = await _http.get(
+        `/v3/${encodeURIComponent(input.build_flow_record_id)}/flow-graph`
+      );
+      const raw = readBuildPayloadValue(response);
+      const payload = readBuildPayload(response);
+      const rawRecord = readBuildRawRecord(raw);
+      const nodes = readBuildArray<Record<string, unknown>>(
+        rawRecord.nodes ?? payload.nodes ?? payload.vertexes ?? payload.items ?? []
+      );
+      const edges = readBuildArray<Record<string, unknown>>(
+        rawRecord.edges ?? payload.edges ?? payload.lines ?? []
+      );
+
+      return {
+        build_flow_record_id: input.build_flow_record_id,
+        nodes,
+        edges,
+        raw: rawRecord
       };
     },
     async getProjectRecordStatistics(input) {
@@ -2838,6 +2880,18 @@ export function createBuildClient(
         file_name: response.fileName
       };
     },
+    async downloadLogByRecordIdV3(input) {
+      const response = await _http.getBinary(
+        `/v3/${encodeURIComponent(input.record_id)}/download-log`
+      );
+
+      return {
+        record_id: input.record_id,
+        body: response.body,
+        content_type: response.contentType,
+        file_name: response.fileName
+      };
+    },
     async downloadTaskLogV4(input) {
       const response = await _http.getBinary(
         `/v4/${encodeURIComponent(input.record_id)}/task-log${buildOptionalQuerySuffix({
@@ -3377,6 +3431,19 @@ export function createBuildClient(
         primary_image: steps[0]?.image,
         scm_repositories: scmRepositories,
         steps
+      };
+    },
+    async listJobConfigV3(input) {
+      const response = await _http.get(
+        `/v3/jobs/${encodeURIComponent(input.job_id)}/query${buildOptionalQuerySuffix({
+          ...(input.get_all_params ? { get_all_params: input.get_all_params } : {})
+        })}`
+      );
+      const raw = readBuildPayloadValue(response);
+
+      return {
+        job_id: input.job_id,
+        raw: readBuildRawRecord(raw)
       };
     },
     async listRecords(input) {

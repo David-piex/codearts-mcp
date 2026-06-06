@@ -6,7 +6,7 @@
 
 模块：`代码检查`
 
-API 数量：`104`
+API 数量：`106`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
@@ -3216,6 +3216,74 @@ API 数量：`104`
 }
 ```
 
+### check_list_criterionsets_by_ids
+
+所属模块：`代码检查`
+
+说明：查询代码检查的criterionsetsbyids。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "check_list_criterionsets_by_ids",
+    "arguments": {
+      "ids": "<ids>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `ids` | 是 | `array<string>` |  | 字段对应：<br>MCP 字段 `ids` ↔ 原始 CodeArts 代码检查 API 同名字段 `ids`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `project_id` | 否 | `object` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 代码检查 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `toolVersion` | 否 | `string` |  | 字段对应：<br>MCP 字段 `toolVersion` ↔ 原始 CodeArts 代码检查 API 同名字段 `toolVersion`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `arch` | 否 | `"X86" \| "ARM"` |  | 字段对应：<br>MCP 字段 `arch` ↔ 原始 CodeArts 代码检查 API 同名字段 `arch`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。可选值：`X86`、`ARM`。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "project_id": {
+      "$ref": "#/properties/ids/items"
+    },
+    "toolVersion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "arch": {
+      "type": "string",
+      "enum": [
+        "X86",
+        "ARM"
+      ]
+    }
+  },
+  "required": [
+    "ids"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### check_list_criterionsets_by_language
 
 所属模块：`代码检查`
@@ -4212,6 +4280,84 @@ API 数量：`104`
     },
     "language": {
       "type": "string"
+    }
+  },
+  "required": [
+    "project_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### check_list_rulesets_v3
+
+所属模块：`代码检查`
+
+说明：查询代码检查的rulesetsv3。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "check_list_rulesets_v3",
+    "arguments": {
+      "project_id": "<project_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 代码检查 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `page` | 否 | `integer` | 1 | 字段对应：<br>MCP 字段 `page` ↔ 原始 CodeArts 代码检查 API 的分页页码或由 `offset/limit` 换算得到的页码。<br>页码，从服务端约定的起始页开始，用于 page/page_size 分页。 |
+| `page_size` | 否 | `integer` | 10 | 字段对应：<br>MCP 字段 `page_size` ↔ 原始 CodeArts 代码检查 API 的分页大小字段，常见原字段名为 `page_size`、`limit` 或 `pageSize`。<br>每页数量，用于分页查询；建议按接口限制设置，避免一次返回过多数据。 |
+| `category` | 否 | `"0" \| "1" \| "2"` |  | 字段对应：<br>MCP 字段 `category` ↔ 原始 CodeArts 代码检查 API 同名字段 `category`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>分类字段，用于按资源类别、工作项分类或制品分类过滤；具体字典以对应接口返回为准。可选值：`0`、`1`、`2`。 |
+| `need_selected_status` | 否 | `"true" \| "false"` | "true" | 字段对应：<br>MCP 字段 `need_selected_status` ↔ 原始 CodeArts 代码检查 API 同名字段 `need_selected_status`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。可选值：`true`、`false`。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "page": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "default": 1
+    },
+    "page_size": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 50,
+      "default": 10
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "0",
+        "1",
+        "2"
+      ]
+    },
+    "need_selected_status": {
+      "type": "string",
+      "enum": [
+        "true",
+        "false"
+      ],
+      "default": "true"
     }
   },
   "required": [

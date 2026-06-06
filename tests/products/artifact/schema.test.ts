@@ -3,6 +3,7 @@ import {
   artifactCreateRepositoryInput,
   artifactDeleteTrashRepositoriesInput,
   artifactGetFileTreeInput,
+  artifactListFilesInput,
   artifactListRepositoriesInput,
   artifactRestoreTrashRepositoriesInput,
   artifactUpdateRepositoryInput
@@ -39,6 +40,34 @@ describe("artifact schemas", () => {
     });
 
     expect(parsed.path).toBe("/");
+  });
+
+  it("accepts official file list body fields", () => {
+    const parsed = artifactListFilesInput.parse({
+      project_id: "project-1",
+      parent_id: "0",
+      search_name: "gateway",
+      search_type: "name",
+      extension: "jar",
+      order_by: "created_time",
+      sort: "desc",
+      status: "active",
+      category: "prod"
+    });
+
+    expect(parsed).toMatchObject({
+      project_id: "project-1",
+      parent_id: "0",
+      search_name: "gateway",
+      search_type: "name",
+      extension: "jar",
+      order_by: "created_time",
+      sort: "desc",
+      status: "active",
+      category: "prod",
+      page: 1,
+      page_size: 20
+    });
   });
 
   it("defaults repository mutation inputs to dry run", () => {
