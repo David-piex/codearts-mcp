@@ -6,10 +6,15 @@ import { mapRepositories } from "./list-repositories.js";
 type RepoListProjectRepositoriesClient = {
   listProjectRepositories: (input: {
     x_auth_token: string;
-    project_uuid: string;
+    project_id?: string;
+    project_uuid?: string;
     page: number;
     page_size: number;
     search?: string;
+    order_by?: "id" | "name" | "created_at" | "updated_at";
+    sort?: "asc" | "desc";
+    offset?: number;
+    limit?: number;
   }) => Promise<{
     repositories: Array<{ id: number | string; name: string; ssh_url?: string; http_url?: string }>;
     total?: number;
@@ -19,14 +24,17 @@ type RepoListProjectRepositoriesClient = {
 export function createRepoListProjectRepositoriesHandler(client: RepoListProjectRepositoriesClient) {
   return async (input: unknown) => {
     const parsed = repoListProjectRepositoriesInput.parse(input);
+    const pageSize = parsed.limit ?? parsed.page_size;
+    const page = parsed.offset !== undefined ? Math.floor(parsed.offset / pageSize) + 1 : parsed.page;
+    const projectId = parsed.project_id ?? parsed.project_uuid ?? "";
     const response = await client.listProjectRepositories(parsed);
-    const result = mapRepositories(response.repositories, parsed.page, parsed.page_size, response.total);
+    const result = mapRepositories(response.repositories, page, pageSize, response.total);
     const text = formatListToolText(result, {
       emptyText: formatProjectScopedEmptyText({
         summary: result.summary,
-        page: parsed.page,
+        page,
         keyword: parsed.search,
-        projectId: parsed.project_uuid,
+        projectId,
         resourceLabel: "repositories",
         serviceLabel: "Repo"
       }),

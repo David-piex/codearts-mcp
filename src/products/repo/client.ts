@@ -3872,10 +3872,15 @@ export type RepoClient = {
   }>;
   listProjectRepositories: (input: {
     x_auth_token: string;
-    project_uuid: string;
+    project_id?: string;
+    project_uuid?: string;
     page: number;
     page_size: number;
     search?: string;
+    order_by?: "id" | "name" | "created_at" | "updated_at";
+    sort?: "asc" | "desc";
+    offset?: number;
+    limit?: number;
   }) => Promise<{
     repositories: Array<{ id: number | string; name: string; ssh_url?: string; http_url?: string }>;
     total?: number;
@@ -4067,10 +4072,16 @@ export type RepoClient = {
   }) => Promise<RepoRepositorySummary>;
   listMembers: (input: {
     x_auth_token: string;
-    repository_uuid: string;
+    repository_id?: string;
+    repository_uuid?: string;
     page: number;
     page_size: number;
+    search?: string;
     subject?: string;
+    permission?: "repository" | "code" | "member" | "branch" | "tag" | "mr" | "label";
+    action?: string;
+    offset?: number;
+    limit?: number;
   }) => Promise<{
     members: RepoRepositoryMember[];
     total?: number;
@@ -9606,32 +9617,29 @@ export function createRepoClient(
       return cached.value;
     },
     async listProjectRepositories(input) {
+      const pageSize = input.limit ?? input.page_size;
+      const offset = input.offset ?? ((input.page - 1) * pageSize);
+      const projectId = input.project_id ?? input.project_uuid;
       const query = new URLSearchParams({
-        page_index: String(input.page),
-        page_size: String(input.page_size)
+        offset: String(offset),
+        limit: String(pageSize)
       });
-
-      if (input.search) {
-        query.set("search", input.search);
-      }
+      appendOptionalQuery(query, input, ["search", "order_by", "sort"]);
 
       const response = unwrapRepoPayload(await _http.get(
-        `/v2/projects/${encodeURIComponent(input.project_uuid)}/repositories?${query.toString()}`,
+        `/v4/projects/${encodeURIComponent(projectId ?? "")}/repositories?${query.toString()}`,
         {
           headers: { "X-Auth-Token": input.x_auth_token }
         }
-      )) as {
-        repositories?: Array<{ id: number | string; name: string; ssh_url?: string; http_url?: string }>;
-        total?: number;
-        result?: {
-          repositories?: Array<{ id: number | string; name: string; ssh_url?: string; http_url?: string }>;
-          total?: number;
-        };
-      };
+      ));
+      const extracted = extractArrayFromFields<{ id: number | string; name: string; ssh_url?: string; http_url?: string }>(
+        response as Array<{ id: number | string; name: string; ssh_url?: string; http_url?: string }> | Record<string, unknown>,
+        ["repositories", "items", "records", "result"]
+      );
 
       return {
-        repositories: response.result?.repositories ?? response.repositories ?? [],
-        total: response.result?.total ?? response.total
+        repositories: extracted.items,
+        total: extracted.total
       };
     },
     async listCurrentUserRepositories(input) {
@@ -9964,13 +9972,19 @@ export function createRepoClient(
       return extractTransferGroupResult(rawResponse);
     },
     async listMembers(input) {
+      const pageSize = input.limit ?? input.page_size;
+      const offset = input.offset ?? ((input.page - 1) * pageSize);
+      const repositoryId = input.repository_id ?? input.repository_uuid;
       const query = new URLSearchParams({
-        page_index: String(input.page),
-        page_size: String(input.page_size)
+        offset: String(offset),
+        limit: String(pageSize)
       });
-      appendOptionalQuery(query, input, ["subject"]);
+      if (input.search ?? input.subject) {
+        query.set("search", input.search ?? input.subject ?? "");
+      }
+      appendOptionalQuery(query, input, ["permission", "action"]);
       const response = await _http.get(
-        `/v1/repositories/${encodeURIComponent(input.repository_uuid)}/members?${query.toString()}`,
+        `/v4/repositories/${encodeURIComponent(repositoryId ?? "")}/members?${query.toString()}`,
         {
           headers: { "X-Auth-Token": input.x_auth_token }
         }

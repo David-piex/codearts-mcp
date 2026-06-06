@@ -160,6 +160,26 @@ describe("repo schemas", () => {
     });
 
     expect(
+      repoListProjectRepositoriesInput.parse({
+        x_auth_token: "token-1",
+        project_id: "project-id-1",
+        search: "demo",
+        offset: 20,
+        limit: 10,
+        order_by: "updated_at",
+        sort: "desc"
+      })
+    ).toMatchObject({
+      x_auth_token: "token-1",
+      project_id: "project-id-1",
+      search: "demo",
+      offset: 20,
+      limit: 10,
+      order_by: "updated_at",
+      sort: "desc"
+    });
+
+    expect(
       repoListProjectTemplateStatusRepositoriesInput.parse({
         x_auth_token: "token-1",
         project_uuid: "project-uuid-1",
@@ -202,6 +222,26 @@ describe("repo schemas", () => {
       subject: "dev",
       page: 1,
       page_size: 50
+    });
+
+    expect(
+      repoListMembersInput.parse({
+        x_auth_token: "token-1",
+        repository_id: "repo-id-1",
+        search: "dev",
+        permission: "member",
+        action: "update",
+        offset: 10,
+        limit: 5
+      })
+    ).toMatchObject({
+      x_auth_token: "token-1",
+      repository_id: "repo-id-1",
+      search: "dev",
+      permission: "member",
+      action: "update",
+      offset: 10,
+      limit: 5
     });
 
     expect(

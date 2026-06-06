@@ -30,10 +30,19 @@ export const repoListRepositoriesInput = pagingSchema.extend({
   project_id: idSchema
 });
 
-export const repoListProjectRepositoriesInput = pagingSchema.extend({
+export const repoListProjectRepositoriesInput = z.object({
   x_auth_token: z.string().min(1),
-  project_uuid: idSchema,
-  search: z.string().min(1).max(256).optional()
+  project_id: idSchema.optional(),
+  project_uuid: idSchema.optional(),
+  search: z.string().min(1).max(256).optional(),
+  order_by: z.enum(["id", "name", "created_at", "updated_at"]).optional(),
+  sort: z.enum(["asc", "desc"]).optional(),
+  offset: z.number().int().min(0).optional(),
+  limit: z.number().int().positive().max(100).optional(),
+  page: z.number().int().positive().default(1),
+  page_size: z.number().int().positive().max(100).default(20)
+}).refine((input) => input.project_id !== undefined || input.project_uuid !== undefined, {
+  message: "project_id or project_uuid is required"
 });
 
 export const repoListCurrentUserRepositoriesInput = pagingSchema.extend({
@@ -1037,10 +1046,18 @@ export const repoTransferGroupInput = z.object({
 
 export const repoListMembersInput = z.object({
   x_auth_token: z.string().min(1),
-  repository_uuid: idSchema,
+  repository_id: idSchema.optional(),
+  repository_uuid: idSchema.optional(),
+  search: z.string().min(1).max(128).optional(),
   subject: z.string().min(1).max(128).optional(),
+  permission: z.enum(["repository", "code", "member", "branch", "tag", "mr", "label"]).optional(),
+  action: z.string().min(1).max(64).optional(),
+  offset: z.number().int().min(0).optional(),
+  limit: z.number().int().positive().max(100).optional(),
   page: z.number().int().positive().default(1),
   page_size: z.number().int().positive().max(100).default(20)
+}).refine((input) => input.repository_id !== undefined || input.repository_uuid !== undefined, {
+  message: "repository_id or repository_uuid is required"
 });
 
 export const repoAddRepositoryMembersInput = z.object({

@@ -254,15 +254,13 @@ describe("createRepoClient", () => {
     const client = createRepoClient({
       get: async (path: string, options?: unknown) => {
         calls.push({ method: "GET", path, options });
-        if (path.includes("/v2/projects/project-uuid-1/repositories?")) {
+        if (path.includes("/v4/projects/project-uuid-1/repositories?")) {
           return {
-            result: {
-              repositories: [{ id: 1, name: "repo-a", ssh_url: "git@example.com:repo-a.git" }],
-              total: 1
-            }
+            repositories: [{ id: 1, name: "repo-a", ssh_url: "git@example.com:repo-a.git" }],
+            total: 1
           };
         }
-        if (path.includes("/v1/repositories/repo-uuid-1/members?")) {
+        if (path.includes("/v4/repositories/repo-uuid-1/members?")) {
           return {
             result: [{ id: "u-1", name: "dev", tenant_name: "tenant-a", status: "active" }],
             total: 1
@@ -315,12 +313,12 @@ describe("createRepoClient", () => {
     expect(calls).toEqual([
       {
         method: "GET",
-        path: "/v2/projects/project-uuid-1/repositories?page_index=2&page_size=10&search=repo",
+        path: "/v4/projects/project-uuid-1/repositories?offset=10&limit=10&search=repo",
         options: { headers: { "X-Auth-Token": "token-1" } }
       },
       {
         method: "GET",
-        path: "/v1/repositories/repo-uuid-1/members?page_index=3&page_size=5&subject=dev",
+        path: "/v4/repositories/repo-uuid-1/members?offset=10&limit=5&search=dev",
         options: { headers: { "X-Auth-Token": "token-2" } }
       },
       {
@@ -330,6 +328,73 @@ describe("createRepoClient", () => {
           users: [{ id: "u-1", name: "dev", role: 40, domain_id: "d-1", domain_name: "tenant-a" }]
         },
         options: { headers: { "X-Auth-Token": "token-3" } }
+      }
+    ]);
+  });
+
+  it("supports official v4 repository list/member fields", async () => {
+    const calls: Array<{ method: string; path: string; options?: unknown }> = [];
+    const client = createRepoClient({
+      get: async (path: string, options?: unknown) => {
+        calls.push({ method: "GET", path, options });
+        if (path.includes("/v4/projects/project-id-2/repositories?")) {
+          return {
+            items: [{ id: 2, name: "repo-b", http_url: "https://example.com/repo-b.git" }],
+            total: 3
+          };
+        }
+        if (path.includes("/v4/repositories/repo-id-2/members?")) {
+          return {
+            members: [{ user_id: "u-2", user_name: "alice", repository_role_name: "Maintainer" }],
+            total: 2
+          };
+        }
+
+        throw new Error(`unexpected path: ${path}`);
+      }
+    } as never);
+
+    const repositories = await client.listProjectRepositories({
+      x_auth_token: "token-4",
+      project_id: "project-id-2",
+      page: 1,
+      page_size: 20,
+      offset: 20,
+      limit: 10,
+      search: "repo",
+      order_by: "updated_at",
+      sort: "desc"
+    });
+    const members = await client.listMembers({
+      x_auth_token: "token-5",
+      repository_id: "repo-id-2",
+      page: 1,
+      page_size: 20,
+      offset: 5,
+      limit: 5,
+      search: "alice",
+      permission: "member",
+      action: "update"
+    });
+
+    expect(repositories).toEqual({
+      repositories: [{ id: 2, name: "repo-b", http_url: "https://example.com/repo-b.git" }],
+      total: 3
+    });
+    expect(members).toEqual({
+      members: [{ user_id: "u-2", user_name: "alice", repository_role_name: "Maintainer" }],
+      total: 2
+    });
+    expect(calls).toEqual([
+      {
+        method: "GET",
+        path: "/v4/projects/project-id-2/repositories?offset=20&limit=10&search=repo&order_by=updated_at&sort=desc",
+        options: { headers: { "X-Auth-Token": "token-4" } }
+      },
+      {
+        method: "GET",
+        path: "/v4/repositories/repo-id-2/members?offset=5&limit=5&search=alice&permission=member&action=update",
+        options: { headers: { "X-Auth-Token": "token-5" } }
       }
     ]);
   });
