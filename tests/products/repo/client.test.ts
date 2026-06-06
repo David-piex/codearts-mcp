@@ -1378,32 +1378,43 @@ describe("createRepoClient", () => {
   });
 
   it("calls remote mirror endpoints with normalized bodies", async () => {
-    const calls: Array<{ method: string; path: string; body?: Record<string, unknown> }> = [];
+    const calls: Array<{
+      method: string;
+      path: string;
+      body?: Record<string, unknown>;
+      options?: Record<string, unknown>;
+    }> = [];
     const client = createRepoClient({
       get: async (path: string) => {
         calls.push({ method: "get", path });
         return { id: 1, repository_id: 2, url: "https://example.com/repo.git" };
       },
-      post: async (path: string, body: Record<string, unknown>) => {
-        calls.push({ method: "post", path, body });
+      post: async (path: string, body: Record<string, unknown>, options?: Record<string, unknown>) => {
+        calls.push({ method: "post", path, body, options });
         return path.endsWith("/associate")
           ? { id: 1, repository_id: 2, url: body.url as string }
           : { jid: "job-1" };
       },
-      put: async (path: string, body: Record<string, unknown>) => {
-        calls.push({ method: "put", path, body });
+      put: async (path: string, body: Record<string, unknown>, options?: Record<string, unknown>) => {
+        calls.push({ method: "put", path, body, options });
         return { url: body.url as string, mirroring_enabled: body.mirroring_enabled as boolean };
       }
     } as never);
 
-    await client.associateRemoteMirror({ repository_id: "repo-1", url: "https://example.com/repo.git" });
+    await client.associateRemoteMirror({
+      x_auth_token: "token-1",
+      repository_id: "repo-1",
+      url: "https://example.com/repo.git"
+    });
     await client.startRemoteMirrorSynchronization({
+      x_auth_token: "token-1",
       repository_id: "repo-1",
       endpoint_uuid: "endpoint-1",
       force_fetch: true
     });
     await client.getRemoteMirror({ repository_id: "repo-1" });
     await client.updateRemoteMirror({
+      x_auth_token: "token-1",
       repository_id: "repo-1",
       url: "https://example.com/updated.git",
       mirroring_enabled: true,
@@ -1414,12 +1425,14 @@ describe("createRepoClient", () => {
       {
         method: "post",
         path: "/v4/repositories/repo-1/remote-mirror/associate",
-        body: { url: "https://example.com/repo.git" }
+        body: { url: "https://example.com/repo.git" },
+        options: { headers: { "X-Auth-Token": "token-1" } }
       },
       {
         method: "post",
         path: "/v4/repositories/repo-1/remote-mirror",
-        body: { endpoint_uuid: "endpoint-1", force_fetch: true }
+        body: { endpoint_uuid: "endpoint-1", force_fetch: true },
+        options: { headers: { "X-Auth-Token": "token-1" } }
       },
       {
         method: "get",
@@ -1432,7 +1445,8 @@ describe("createRepoClient", () => {
           url: "https://example.com/updated.git",
           mirroring_enabled: true,
           sync_branch_type: "default"
-        }
+        },
+        options: { headers: { "X-Auth-Token": "token-1" } }
       }
     ]);
   });

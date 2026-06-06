@@ -3,6 +3,7 @@ import { repoAssociateRemoteMirrorInput } from "../schemas.js";
 import { mapRemoteMirror, type RemoteMirror } from "./remote-mirror-result.js";
 
 export function previewAssociateRemoteMirror(input: {
+  x_auth_token?: string;
   repository_id: string;
   url: string;
   dry_run: boolean;
@@ -10,12 +11,13 @@ export function previewAssociateRemoteMirror(input: {
   return asItemResult("Dry run: associate remote mirror", {
     repositoryId: input.repository_id,
     url: input.url,
+    tokenProvided: Boolean(input.x_auth_token),
     executed: !input.dry_run
   });
 }
 
 type RepoAssociateRemoteMirrorClient = {
-  associateRemoteMirror: (input: { repository_id: string; url: string }) => Promise<RemoteMirror>;
+  associateRemoteMirror: (input: { x_auth_token: string; repository_id: string; url: string }) => Promise<RemoteMirror>;
 };
 
 export function createRepoAssociateRemoteMirrorHandler(client: RepoAssociateRemoteMirrorClient) {

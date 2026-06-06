@@ -73,6 +73,7 @@ import {
   repoShowRepositoryStatusInput,
   repoShowRepositoryStatisticDataInput,
   repoShowRepositoryWatermarkInput,
+  repoAssociateRemoteMirrorInput,
   repoShowRepoLastStatisticsInput,
   repoShowUserRefPermissionInput,
   repoGetRepositoryBlameInput,
@@ -1217,22 +1218,39 @@ describe("repo schemas", () => {
 
   it("defaults remote mirror write tools to dry run", () => {
     expect(
+      repoAssociateRemoteMirrorInput.parse({
+        x_auth_token: "token-1",
+        repository_id: "repo-1",
+        url: "https://example.com/repo.git"
+      })
+    ).toMatchObject({
+      x_auth_token: "token-1",
+      repository_id: "repo-1",
+      url: "https://example.com/repo.git",
+      dry_run: true
+    });
+
+    expect(
       repoStartRemoteMirrorSynchronizationInput.parse({
+        x_auth_token: "token-1",
         repository_id: "repo-1",
         endpoint_uuid: "endpoint-1",
         force_fetch: true
       })
     ).toMatchObject({
+      x_auth_token: "token-1",
       dry_run: true
     });
 
     expect(
       repoUpdateRemoteMirrorInput.parse({
+        x_auth_token: "token-1",
         repository_id: "repo-1",
         mirroring_enabled: true,
         sync_branch_type: "all"
       })
     ).toMatchObject({
+      x_auth_token: "token-1",
       dry_run: true,
       sync_branch_type: "all"
     });

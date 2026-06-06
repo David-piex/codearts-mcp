@@ -1753,12 +1753,14 @@ export const repoListImpersonationTokensInput = pagingSchema.extend({
 });
 
 export const repoAssociateRemoteMirrorInput = z.object({
+  x_auth_token: z.string().min(1),
   repository_id: idSchema,
   url: z.string().min(1),
   dry_run: z.boolean().default(true)
 });
 
 export const repoStartRemoteMirrorSynchronizationInput = z.object({
+  x_auth_token: z.string().min(1),
   repository_id: idSchema,
   username: z.string().min(1).optional(),
   password: z.string().min(1).optional(),
@@ -1772,6 +1774,7 @@ export const repoGetRemoteMirrorInput = z.object({
 });
 
 export const repoUpdateRemoteMirrorInput = z.object({
+  x_auth_token: z.string().min(1),
   repository_id: idSchema,
   url: z.string().min(1).optional(),
   sync_branch_type: z.enum(["all", "default"]).optional(),

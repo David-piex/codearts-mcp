@@ -2777,10 +2777,12 @@ export type RepoClient = {
     total?: number;
   }>;
   associateRemoteMirror: (input: {
+    x_auth_token: string;
     repository_id: string;
     url: string;
   }) => Promise<RepoRemoteMirror>;
   startRemoteMirrorSynchronization: (input: {
+    x_auth_token: string;
     repository_id: string;
     username?: string;
     password?: string;
@@ -2793,6 +2795,7 @@ export type RepoClient = {
     repository_id: string;
   }) => Promise<RepoRemoteMirror>;
   updateRemoteMirror: (input: {
+    x_auth_token: string;
     repository_id: string;
     url?: string;
     sync_branch_type?: "all" | "default";
@@ -7648,6 +7651,9 @@ export function createRepoClient(
         `/v4/repositories/${encodeURIComponent(input.repository_id)}/remote-mirror/associate`,
         {
           url: input.url
+        },
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
         }
       )) as RepoRemoteMirror;
     },
@@ -7659,7 +7665,10 @@ export function createRepoClient(
           password: input.password,
           endpoint_uuid: input.endpoint_uuid,
           force_fetch: input.force_fetch
-        })
+        }),
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
       )) as { jid?: string };
 
       return {
@@ -7679,7 +7688,10 @@ export function createRepoClient(
           sync_branch_type: input.sync_branch_type,
           mirroring_enabled: input.mirroring_enabled,
           endpoint_uuid: input.endpoint_uuid
-        })
+        }),
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
       )) as RepoRemoteMirror;
     },
     async listRepositoryLabels(input) {

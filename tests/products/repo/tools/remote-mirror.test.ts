@@ -26,6 +26,7 @@ describe("remote mirror previews", () => {
 
     expect(result.item).toEqual({
       repositoryId: "repo-1",
+      tokenProvided: false,
       usernameProvided: true,
       passwordProvided: true,
       endpointUuid: "endpoint-1",
@@ -37,17 +38,20 @@ describe("remote mirror previews", () => {
   it("returns dry-run summaries for mirror association and update", () => {
     expect(
       previewAssociateRemoteMirror({
+        x_auth_token: "token-1",
         repository_id: "repo-1",
         url: "https://example.com/repo.git",
         dry_run: true
       }).item
     ).toMatchObject({
       repositoryId: "repo-1",
+      tokenProvided: true,
       executed: false
     });
 
     expect(
       previewUpdateRemoteMirror({
+        x_auth_token: "token-1",
         repository_id: "repo-1",
         mirroring_enabled: true,
         sync_branch_type: "all",
@@ -55,6 +59,7 @@ describe("remote mirror previews", () => {
       }).item
     ).toMatchObject({
       repositoryId: "repo-1",
+      tokenProvided: true,
       mirroringEnabled: true,
       syncBranchType: "all",
       executed: false
@@ -69,13 +74,16 @@ describe("remote mirror handlers", () => {
     const update = vi.fn();
 
     await createRepoAssociateRemoteMirrorHandler({ associateRemoteMirror: associate })({
+      x_auth_token: "token-1",
       repository_id: "repo-1",
       url: "https://example.com/repo.git"
     });
     await createRepoStartRemoteMirrorSynchronizationHandler({ startRemoteMirrorSynchronization: start })({
+      x_auth_token: "token-1",
       repository_id: "repo-1"
     });
     await createRepoUpdateRemoteMirrorHandler({ updateRemoteMirror: update })({
+      x_auth_token: "token-1",
       repository_id: "repo-1",
       mirroring_enabled: true
     });
@@ -111,9 +119,10 @@ describe("remote mirror handlers", () => {
       startRemoteMirrorSynchronization: start
     });
 
-    const result = await handler({ repository_id: "repo-1", dry_run: false });
+    const result = await handler({ x_auth_token: "token-1", repository_id: "repo-1", dry_run: false });
 
     expect(start).toHaveBeenCalledWith({
+      x_auth_token: "token-1",
       repository_id: "repo-1",
       dry_run: false
     });

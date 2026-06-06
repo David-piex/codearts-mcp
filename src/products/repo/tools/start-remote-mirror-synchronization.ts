@@ -2,6 +2,7 @@ import { asItemResult } from "../../../contracts/tool-result.js";
 import { repoStartRemoteMirrorSynchronizationInput } from "../schemas.js";
 
 export function previewStartRemoteMirrorSynchronization(input: {
+  x_auth_token?: string;
   repository_id: string;
   username?: string;
   password?: string;
@@ -11,6 +12,7 @@ export function previewStartRemoteMirrorSynchronization(input: {
 }) {
   return asItemResult("Dry run: start remote mirror synchronization", {
     repositoryId: input.repository_id,
+    tokenProvided: Boolean(input.x_auth_token),
     usernameProvided: input.username !== undefined,
     passwordProvided: input.password !== undefined,
     endpointUuid: input.endpoint_uuid,
@@ -21,6 +23,7 @@ export function previewStartRemoteMirrorSynchronization(input: {
 
 type RepoStartRemoteMirrorSynchronizationClient = {
   startRemoteMirrorSynchronization: (input: {
+    x_auth_token: string;
     repository_id: string;
     username?: string;
     password?: string;

@@ -3,6 +3,7 @@ import { repoUpdateRemoteMirrorInput } from "../schemas.js";
 import { mapRemoteMirror, type RemoteMirror } from "./remote-mirror-result.js";
 
 export function previewUpdateRemoteMirror(input: {
+  x_auth_token?: string;
   repository_id: string;
   url?: string;
   sync_branch_type?: "all" | "default";
@@ -16,12 +17,14 @@ export function previewUpdateRemoteMirror(input: {
     syncBranchType: input.sync_branch_type,
     mirroringEnabled: input.mirroring_enabled,
     endpointUuid: input.endpoint_uuid,
+    tokenProvided: Boolean(input.x_auth_token),
     executed: !input.dry_run
   });
 }
 
 type RepoUpdateRemoteMirrorClient = {
   updateRemoteMirror: (input: {
+    x_auth_token: string;
     repository_id: string;
     url?: string;
     sync_branch_type?: "all" | "default";
