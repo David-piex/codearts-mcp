@@ -11,6 +11,8 @@ import {
   createBuildCopyJobHandler,
   createBuildCreateJobGroupHandler,
   createBuildCreateJobHandler,
+  createBuildCreateTemplateHandler,
+  createBuildCreateTemplateV3Handler,
   createBuildDeleteJobGroupHandler,
   createBuildDeleteJobHandler,
   createBuildDeleteJobV3Handler,
@@ -31,6 +33,9 @@ import {
   createBuildUnfollowJobHandler,
   createBuildUnfollowOfficialTemplateHandler,
   createBuildUpdateJobNoticeHandler,
+  createBuildUpdateKeystoreHandler,
+  createBuildUploadJunitCoverageHandler,
+  createBuildUploadJunitReportHandler,
   createBuildUploadKeystoreHandler,
   createBuildUpdateJobRolePermissionHandler
 } from "../../../../src/products/build/tools/additional-mutation-tools.js";
@@ -591,6 +596,132 @@ describe("build additional mutation tools", () => {
       description: "android signing",
       status: "success",
       raw: { id: "key-1" },
+      executed: true
+    });
+  });
+
+  it("maps template creation, keystore update, and junit uploads", async () => {
+    const createTemplateHandler = createBuildCreateTemplateHandler({
+      createTemplate: async () => ({
+        name: "tpl-v1",
+        uuid: "tpl-v1-id",
+        status: "success",
+        raw: { uuid: "tpl-v1-id" }
+      })
+    });
+    const createTemplateV3Handler = createBuildCreateTemplateV3Handler({
+      createTemplateV3: async () => ({
+        name: "tpl-v3",
+        uuid: "tpl-v3-id",
+        status: "success",
+        raw: { uuid: "tpl-v3-id" }
+      })
+    });
+    const updateKeystoreHandler = createBuildUpdateKeystoreHandler({
+      updateKeystore: async () => ({
+        id: "key-1",
+        keystore_name: "android-renamed.jks",
+        share: 1,
+        description: "updated",
+        status: "success",
+        result: null
+      })
+    });
+    const uploadJunitReportHandler = createBuildUploadJunitReportHandler({
+      uploadJunitReport: async () => ({
+        job_id: "job-1",
+        build_no: 1,
+        node_id: "step-1",
+        file_names: ["junit-report.xml"],
+        status: "success",
+        result: null
+      })
+    });
+    const uploadJunitCoverageHandler = createBuildUploadJunitCoverageHandler({
+      uploadJunitCoverage: async () => ({
+        job_id: "job-1",
+        build_no: 1,
+        node_id: "step-1",
+        file_names: ["junit-coverage.xml"],
+        status: "success",
+        result: null
+      })
+    });
+
+    const createTemplateResult = await createTemplateHandler({
+      x_auth_token: "token-123456",
+      name: "tpl-v1",
+      template: { steps: [] },
+      dry_run: false
+    });
+    const createTemplateV3Result = await createTemplateV3Handler({
+      x_auth_token: "token-123456",
+      name: "tpl-v3",
+      template: { steps: [] },
+      dry_run: false
+    });
+    const updateKeystoreResult = await updateKeystoreHandler({
+      x_auth_token: "token-123456",
+      id: "key-1",
+      keystore_name: "android-renamed.jks",
+      share: 1,
+      description: "updated",
+      dry_run: false
+    });
+    const uploadJunitReportResult = await uploadJunitReportHandler({
+      job_id: "job-1",
+      build_no: 1,
+      node_id: "step-1",
+      file_paths: [resolve("tests/fixtures/build/junit-report.xml")],
+      dry_run: false
+    });
+    const uploadJunitCoverageResult = await uploadJunitCoverageHandler({
+      job_id: "job-1",
+      build_no: 1,
+      node_id: "step-1",
+      file_paths: [resolve("tests/fixtures/build/junit-coverage.xml")],
+      dry_run: false
+    });
+
+    expect(createTemplateResult.structuredContent.item).toEqual({
+      id: "tpl-v1-id",
+      name: "tpl-v1",
+      status: "success",
+      raw: { uuid: "tpl-v1-id" },
+      executed: true
+    });
+    expect(createTemplateV3Result.structuredContent.item).toEqual({
+      id: "tpl-v3-id",
+      name: "tpl-v3",
+      status: "success",
+      raw: { uuid: "tpl-v3-id" },
+      executed: true
+    });
+    expect(updateKeystoreResult.structuredContent.item).toEqual({
+      id: "key-1",
+      keystoreName: "android-renamed.jks",
+      share: 1,
+      description: "updated",
+      status: "success",
+      result: null,
+      executed: true
+    });
+    expect(uploadJunitReportResult.structuredContent.item).toEqual({
+      jobId: "job-1",
+      buildNo: 1,
+      nodeId: "step-1",
+      fileNames: ["junit-report.xml"],
+      status: "success",
+      result: null,
+      executed: true
+    });
+    expect(uploadJunitCoverageResult.structuredContent.item).toEqual({
+      jobId: "job-1",
+      buildNo: 1,
+      nodeId: "step-1",
+      fileNames: ["junit-coverage.xml"],
+      status: "success",
+      result: null,
       executed: true
     });
   });

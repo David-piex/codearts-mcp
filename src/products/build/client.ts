@@ -1079,6 +1079,76 @@ export type BuildClient = {
     status?: string;
     raw: Record<string, unknown>;
   }>;
+  createTemplate: (input: {
+    x_auth_token: string;
+    name: string;
+    description?: string;
+    tool_type?: string;
+    template: Record<string, unknown>;
+    parameters?: Array<Record<string, unknown>>;
+    resource_limit?: Record<string, unknown>;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    name: string;
+    uuid?: string;
+    status?: string;
+    raw: Record<string, unknown>;
+  }>;
+  createTemplateV3: (input: {
+    x_auth_token: string;
+    name: string;
+    description?: string;
+    tool_type?: string;
+    template: Record<string, unknown>;
+    parameters?: Array<Record<string, unknown>>;
+    resource_limit?: Record<string, unknown>;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    name: string;
+    uuid?: string;
+    status?: string;
+    raw: Record<string, unknown>;
+  }>;
+  updateKeystore: (input: {
+    x_auth_token: string;
+    id: string;
+    keystore_name: string;
+    share?: number;
+    description?: string;
+  }) => Promise<{
+    id: string;
+    keystore_name: string;
+    share?: number;
+    description?: string;
+    status?: string;
+    result?: unknown;
+  }>;
+  uploadJunitReport: (input: {
+    job_id: string;
+    build_no: number;
+    node_id: string;
+    files: Array<{ file_name: string; file_content: Uint8Array; content_type?: string }>;
+  }) => Promise<{
+    job_id: string;
+    build_no: number;
+    node_id: string;
+    file_names: string[];
+    status?: string;
+    result?: unknown;
+  }>;
+  uploadJunitCoverage: (input: {
+    job_id: string;
+    build_no: number;
+    node_id: string;
+    files: Array<{ file_name: string; file_content: Uint8Array; content_type?: string }>;
+  }) => Promise<{
+    job_id: string;
+    build_no: number;
+    node_id: string;
+    file_names: string[];
+    status?: string;
+    result?: unknown;
+  }>;
   updateJobStep: (input: {
     job_id: string;
     step_name: string;
@@ -1253,6 +1323,10 @@ function readBuildArray<T>(input: unknown): T[] {
 
 function readBuildNumber(input: unknown) {
   return typeof input === "number" ? input : undefined;
+}
+
+function readBuildString(input: unknown) {
+  return typeof input === "string" ? input : undefined;
 }
 
 function readBuildTotal(payload: Record<string, unknown>, response: unknown, fallback?: number) {
@@ -4203,6 +4277,136 @@ export function createBuildClient(
         description: input.description,
         status: typeof payloadRecord.status === "string" ? payloadRecord.status : undefined,
         raw: readBuildRawRecord(readBuildPayloadValue(response))
+      };
+    },
+    async createTemplate(input) {
+      const payload = {
+        ...input.body,
+        name: input.name,
+        template: input.template,
+        ...(input.description ? { description: input.description } : {}),
+        ...(input.tool_type ? { tool_type: input.tool_type } : {}),
+        ...(input.parameters ? { parameters: input.parameters } : {}),
+        ...(input.resource_limit ? { resource_limit: input.resource_limit } : {})
+      };
+      const response = await _http.post("/v1/template/create", payload, {
+        headers: { "X-Auth-Token": input.x_auth_token }
+      });
+      const payloadRecord = readBuildPayload(response);
+      const raw = readBuildRawRecord(readBuildPayloadValue(response));
+      const resultRecord = readBuildEnvelope(payloadRecord.result) ?? {};
+
+      return {
+        name: input.name,
+        uuid: readBuildString(resultRecord.uuid) ?? readBuildString(payloadRecord.uuid),
+        status: readBuildString(payloadRecord.status),
+        raw
+      };
+    },
+    async createTemplateV3(input) {
+      const payload = {
+        ...input.body,
+        name: input.name,
+        template: input.template,
+        ...(input.description ? { description: input.description } : {}),
+        ...(input.tool_type ? { tool_type: input.tool_type } : {}),
+        ...(input.parameters ? { parameters: input.parameters } : {}),
+        ...(input.resource_limit ? { resource_limit: input.resource_limit } : {})
+      };
+      const response = await _http.post("/v3/templates/create", payload, {
+        headers: { "X-Auth-Token": input.x_auth_token }
+      });
+      const payloadRecord = readBuildPayload(response);
+      const raw = readBuildRawRecord(readBuildPayloadValue(response));
+      const resultRecord = readBuildEnvelope(payloadRecord.result) ?? {};
+
+      return {
+        name: input.name,
+        uuid: readBuildString(resultRecord.uuid) ?? readBuildString(payloadRecord.uuid),
+        status: readBuildString(payloadRecord.status),
+        raw
+      };
+    },
+    async updateKeystore(input) {
+      const response = unwrapBuildPayload((await _http.post(
+        `/v2/keystore/update/${encodeURIComponent(input.id)}`,
+        {
+          id: input.id,
+          keystore_name: input.keystore_name,
+          share: input.share ?? 0,
+          ...(typeof input.description === "string" ? { description: input.description } : {})
+        },
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
+      )) as {
+        status?: string;
+        result?: unknown;
+      });
+
+      return {
+        id: input.id,
+        keystore_name: input.keystore_name,
+        share: input.share ?? 0,
+        description: input.description,
+        status: readBuildString(response.status),
+        result: response.result
+      };
+    },
+    async uploadJunitReport(input) {
+      const query = new URLSearchParams({
+        job_id: input.job_id,
+        build_no: String(input.build_no),
+        node_id: input.node_id
+      });
+      const form = new FormData();
+      for (const file of input.files) {
+        form.append(
+          "files",
+          new Blob([Buffer.from(file.file_content)], {
+            type: file.content_type ?? "application/octet-stream"
+          }),
+          file.file_name
+        );
+      }
+      const response = await _http.postMultipart(`/v1/report/junit/report/upload?${query.toString()}`, form);
+      const payloadRecord = readBuildPayload(response);
+
+      return {
+        job_id: input.job_id,
+        build_no: input.build_no,
+        node_id: input.node_id,
+        file_names: input.files.map((file) => file.file_name),
+        status: readBuildString(payloadRecord.status),
+        result: payloadRecord.result
+      };
+    },
+    async uploadJunitCoverage(input) {
+      const query = new URLSearchParams({
+        job_id: input.job_id,
+        build_no: String(input.build_no),
+        node_id: input.node_id
+      });
+      const form = new FormData();
+      for (const file of input.files) {
+        form.append(
+          "files",
+          new Blob([Buffer.from(file.file_content)], {
+            type: file.content_type ?? "application/octet-stream"
+          }),
+          file.file_name
+        );
+      }
+      const response = await _http.postMultipart(`/v1/report/junit/coverage/upload?${query.toString()}`, form);
+      const payloadRecord = readBuildPayload(response);
+
+      return {
+        job_id: input.job_id,
+        build_no: input.build_no,
+        node_id: input.node_id,
+        file_names: input.files.map((file) => file.file_name),
+        status: readBuildString(payloadRecord.status),
+        result: payloadRecord.result
       };
     },
     async updateJobStep(input) {

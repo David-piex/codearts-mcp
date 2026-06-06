@@ -26,14 +26,14 @@
 | --- | ---: | --- |
 | 制品仓 | 52 | [Function-API-Reference-Artifact.md](./Function-API-Reference-Artifact.md) |
 | 鉴权会话 | 2 | [Function-API-Reference-Auth-Session.md](./Function-API-Reference-Auth-Session.md) |
-| 编译构建 | 138 | [Function-API-Reference-Build.md](./Function-API-Reference-Build.md) |
+| 编译构建 | 143 | [Function-API-Reference-Build.md](./Function-API-Reference-Build.md) |
 | 代码检查 | 104 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
 | 部署 | 87 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
 | 流水线 | 161 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 384 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
 | 需求管理 | 343 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 313 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **1584** | |
+| **总计** | **1589** | |
 
 ## 字段对应
 
@@ -112,6 +112,8 @@
 | `build_copy_job` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_copy_job) |
 | `build_create_job` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_create_job) |
 | `build_create_job_group` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_create_job_group) |
+| `build_create_template` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_create_template) |
+| `build_create_template_v3` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_create_template_v3) |
 | `build_delete_job` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_delete_job) |
 | `build_delete_job_group` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_delete_job_group) |
 | `build_delete_job_v3` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_delete_job_v3) |
@@ -234,6 +236,9 @@
 | `build_update_job_notice` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_update_job_notice) |
 | `build_update_job_role_permission` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_update_job_role_permission) |
 | `build_update_job_step` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_update_job_step) |
+| `build_update_keystore` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_update_keystore) |
+| `build_upload_junit_coverage` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_upload_junit_coverage) |
+| `build_upload_junit_report` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_upload_junit_report) |
 | `build_upload_keystore` | 编译构建 | [查看](./Function-API-Reference-Build.md#build_upload_keystore) |
 | `check_create_pdf_async_job` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_create_pdf_async_job) |
 | `check_create_ruleset` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_create_ruleset) |

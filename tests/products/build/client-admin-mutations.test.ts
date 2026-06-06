@@ -139,9 +139,10 @@ describe("createBuildClient admin mutations", () => {
         return { status: "success" };
       },
       postMultipart: async (path: string, body: FormData) => {
+        const file = (body.get("file") as File | null) ?? (body.get("files") as File | null);
         multipartRequests.push({
           path,
-          fileName: (body.get("file") as File | null)?.name,
+          fileName: file?.name,
           privacy: body.get("privacy") ? String(body.get("privacy")) : null,
           description: body.get("description") ? String(body.get("description")) : null
         });
@@ -445,6 +446,66 @@ describe("createBuildClient admin mutations", () => {
       status: undefined,
       raw: { id: "key-new-1", name: "android.jks" }
     });
+    await expect(client.createTemplate({
+      x_auth_token: "token-123456",
+      name: "tpl-v1",
+      template: { steps: [] }
+    })).resolves.toEqual({
+      name: "tpl-v1",
+      uuid: undefined,
+      status: undefined,
+      raw: { favorite: false }
+    });
+    await expect(client.createTemplateV3({
+      x_auth_token: "token-123456",
+      name: "tpl-v3",
+      template: { steps: [] }
+    })).resolves.toEqual({
+      name: "tpl-v3",
+      uuid: undefined,
+      status: undefined,
+      raw: { favorite: false }
+    });
+    await expect(client.updateKeystore({
+      x_auth_token: "token-123456",
+      id: "key-1",
+      keystore_name: "android-renamed.jks",
+      share: 1,
+      description: "updated"
+    })).resolves.toEqual({
+      id: "key-1",
+      keystore_name: "android-renamed.jks",
+      share: 1,
+      description: "updated",
+      status: "success",
+      result: { favorite: false }
+    });
+    await expect(client.uploadJunitReport({
+      job_id: "job-1",
+      build_no: 1,
+      node_id: "step-1",
+      files: [{ file_name: "junit-report.xml", file_content: new Uint8Array([1, 2, 3]), content_type: "application/xml" }]
+    })).resolves.toEqual({
+      job_id: "job-1",
+      build_no: 1,
+      node_id: "step-1",
+      file_names: ["junit-report.xml"],
+      status: undefined,
+      result: undefined
+    });
+    await expect(client.uploadJunitCoverage({
+      job_id: "job-1",
+      build_no: 1,
+      node_id: "step-1",
+      files: [{ file_name: "junit-coverage.xml", file_content: new Uint8Array([1, 2, 3]), content_type: "application/xml" }]
+    })).resolves.toEqual({
+      job_id: "job-1",
+      build_no: 1,
+      node_id: "step-1",
+      file_names: ["junit-coverage.xml"],
+      status: undefined,
+      result: undefined
+    });
 
     expect(requests).toEqual([
       {
@@ -705,6 +766,32 @@ describe("createBuildClient admin mutations", () => {
           name: "Group-A",
           parent_id: "parent-1"
         }
+      },
+      {
+        method: "POST",
+        path: "/v1/template/create",
+        body: {
+          name: "tpl-v1",
+          template: { steps: [] }
+        }
+      },
+      {
+        method: "POST",
+        path: "/v3/templates/create",
+        body: {
+          name: "tpl-v3",
+          template: { steps: [] }
+        }
+      },
+      {
+        method: "POST",
+        path: "/v2/keystore/update/key-1",
+        body: {
+          id: "key-1",
+          keystore_name: "android-renamed.jks",
+          share: 1,
+          description: "updated"
+        }
       }
     ]);
     expect(multipartRequests).toEqual([
@@ -713,6 +800,18 @@ describe("createBuildClient admin mutations", () => {
         fileName: "android.jks",
         privacy: "true",
         description: "android signing"
+      },
+      {
+        path: "/v1/report/junit/report/upload?job_id=job-1&build_no=1&node_id=step-1",
+        fileName: "junit-report.xml",
+        privacy: null,
+        description: null
+      },
+      {
+        path: "/v1/report/junit/coverage/upload?job_id=job-1&build_no=1&node_id=step-1",
+        fileName: "junit-coverage.xml",
+        privacy: null,
+        description: null
       }
     ]);
   });

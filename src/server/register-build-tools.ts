@@ -12,6 +12,8 @@ import {
   buildCheckWebhookUrlInput,
   buildClearRecyclingJobsInput,
   buildCopyJobInput,
+  buildCreateTemplateInput,
+  buildCreateTemplateV3Input,
   buildConfigureReleaseUploadStepInput,
   buildCreateJobGroupInput,
   buildCreateJobInput,
@@ -133,6 +135,9 @@ import {
   buildUnfollowOfficialTemplateInput,
   buildUpdateJobNoticeInput,
   buildUpdateJobRolePermissionInput,
+  buildUpdateKeystoreInput,
+  buildUploadJunitCoverageInput,
+  buildUploadJunitReportInput,
   buildUploadKeystoreInput,
   buildMoveJobGroupInput,
   buildUpdateJobGroupInput,
@@ -253,6 +258,8 @@ import {
   createBuildCopyJobHandler,
   createBuildCreateJobGroupHandler,
   createBuildCreateJobHandler,
+  createBuildCreateTemplateHandler,
+  createBuildCreateTemplateV3Handler,
   createBuildDeleteJobGroupHandler,
   createBuildDeleteJobHandler,
   createBuildDisableJobHandler,
@@ -278,6 +285,9 @@ import {
   createBuildUnfollowJobHandler,
   createBuildUnfollowOfficialTemplateHandler,
   createBuildUpdateJobNoticeHandler,
+  createBuildUpdateKeystoreHandler,
+  createBuildUploadJunitCoverageHandler,
+  createBuildUploadJunitReportHandler,
   createBuildUploadKeystoreHandler,
   createBuildUpdateJobRolePermissionHandler
 } from "../products/build/tools/additional-mutation-tools.js";
@@ -1003,6 +1013,36 @@ const buildToolDefinitions = {
     inputSchema: buildCreateJobGroupInput,
     selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildCreateJobGroupHandler>[0] }) => clients.buildClient,
     createProductHandler: createBuildCreateJobGroupHandler
+  }),
+  "build_create_template": defineProductTool({
+    description: "Create CodeArts Build template through the official v1 template create endpoint",
+    inputSchema: buildCreateTemplateInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildCreateTemplateHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildCreateTemplateHandler
+  }),
+  "build_create_template_v3": defineProductTool({
+    description: "Create CodeArts Build template through the official v3 templates create endpoint",
+    inputSchema: buildCreateTemplateV3Input,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildCreateTemplateV3Handler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildCreateTemplateV3Handler
+  }),
+  "build_update_keystore": defineProductTool({
+    description: "Update CodeArts Build keystore metadata through the official token-only endpoint",
+    inputSchema: buildUpdateKeystoreInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildUpdateKeystoreHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildUpdateKeystoreHandler
+  }),
+  "build_upload_junit_report": defineProductTool({
+    description: "Upload CodeArts Build JUnit report files through the official upload endpoint",
+    inputSchema: buildUploadJunitReportInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildUploadJunitReportHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildUploadJunitReportHandler
+  }),
+  "build_upload_junit_coverage": defineProductTool({
+    description: "Upload CodeArts Build JUnit coverage files through the official upload endpoint",
+    inputSchema: buildUploadJunitCoverageInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildUploadJunitCoverageHandler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildUploadJunitCoverageHandler
   }),
   "build_upload_keystore": defineProductTool({
     description: "Upload CodeArts Build keystore file",

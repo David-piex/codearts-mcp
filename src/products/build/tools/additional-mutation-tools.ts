@@ -20,6 +20,8 @@ import {
   buildEditKeystorePermissionInput,
   buildDeleteRecyclingJobsInput,
   buildDeleteTemplateInput,
+  buildCreateTemplateInput,
+  buildCreateTemplateV3Input,
   buildFollowCustomTemplateInput,
   buildFollowJobInput,
   buildFollowOfficialTemplateInput,
@@ -35,6 +37,9 @@ import {
   buildUnfollowOfficialTemplateInput,
   buildUpdateJobNoticeInput,
   buildUploadKeystoreInput,
+  buildUpdateKeystoreInput,
+  buildUploadJunitCoverageInput,
+  buildUploadJunitReportInput,
   buildUpdateJobRolePermissionInput,
   buildMoveJobGroupInput,
   buildSwapJobGroupInput
@@ -1401,6 +1406,264 @@ export function createBuildUploadKeystoreHandler(client: {
       description: response.description,
       status: response.status,
       raw: response.raw,
+      executed: true
+    });
+
+    return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+  };
+}
+
+export function createBuildCreateTemplateHandler(client: {
+  createTemplate: (input: {
+    x_auth_token: string;
+    name: string;
+    description?: string;
+    tool_type?: string;
+    template: Record<string, unknown>;
+    parameters?: Array<Record<string, unknown>>;
+    resource_limit?: Record<string, unknown>;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    name: string;
+    uuid?: string;
+    status?: string;
+    raw: Record<string, unknown>;
+  }>;
+}) {
+  return async (input: unknown) => {
+    const parsed = buildCreateTemplateInput.parse(input);
+    const preview = asItemResult(`Dry run: create build template ${parsed.name}`, {
+      name: parsed.name,
+      toolType: parsed.tool_type,
+      executed: !parsed.dry_run
+    });
+
+    if (parsed.dry_run) {
+      return { content: [{ type: "text" as const, text: preview.summary }], structuredContent: preview };
+    }
+
+    const response = await client.createTemplate(parsed);
+    const result = asItemResult(`Created build template ${response.name}`, {
+      id: response.uuid,
+      name: response.name,
+      status: response.status,
+      raw: response.raw,
+      executed: true
+    });
+
+    return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+  };
+}
+
+export function createBuildCreateTemplateV3Handler(client: {
+  createTemplateV3: (input: {
+    x_auth_token: string;
+    name: string;
+    description?: string;
+    tool_type?: string;
+    template: Record<string, unknown>;
+    parameters?: Array<Record<string, unknown>>;
+    resource_limit?: Record<string, unknown>;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    name: string;
+    uuid?: string;
+    status?: string;
+    raw: Record<string, unknown>;
+  }>;
+}) {
+  return async (input: unknown) => {
+    const parsed = buildCreateTemplateV3Input.parse(input);
+    const preview = asItemResult(`Dry run: create build v3 template ${parsed.name}`, {
+      name: parsed.name,
+      toolType: parsed.tool_type,
+      executed: !parsed.dry_run
+    });
+
+    if (parsed.dry_run) {
+      return { content: [{ type: "text" as const, text: preview.summary }], structuredContent: preview };
+    }
+
+    const response = await client.createTemplateV3(parsed);
+    const result = asItemResult(`Created build v3 template ${response.name}`, {
+      id: response.uuid,
+      name: response.name,
+      status: response.status,
+      raw: response.raw,
+      executed: true
+    });
+
+    return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+  };
+}
+
+export function createBuildUpdateKeystoreHandler(client: {
+  updateKeystore: (input: {
+    x_auth_token: string;
+    id: string;
+    keystore_name: string;
+    share?: number;
+    description?: string;
+  }) => Promise<{
+    id: string;
+    keystore_name: string;
+    share?: number;
+    description?: string;
+    status?: string;
+    result?: unknown;
+  }>;
+}) {
+  return async (input: unknown) => {
+    const parsed = buildUpdateKeystoreInput.parse(input);
+    const preview = asItemResult(`Dry run: update build keystore ${parsed.id}`, {
+      id: parsed.id,
+      keystoreName: parsed.keystore_name,
+      share: parsed.share,
+      description: parsed.description,
+      executed: !parsed.dry_run
+    });
+
+    if (parsed.dry_run) {
+      return { content: [{ type: "text" as const, text: preview.summary }], structuredContent: preview };
+    }
+
+    const response = await client.updateKeystore(parsed);
+    const result = asItemResult(`Updated build keystore ${response.id}`, {
+      id: response.id,
+      keystoreName: response.keystore_name,
+      share: response.share,
+      description: response.description,
+      status: response.status,
+      result: response.result,
+      executed: true
+    });
+
+    return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+  };
+}
+
+function detectBuildUploadContentType(fileName: string) {
+  const normalized = fileName.toLowerCase();
+  if (normalized.endsWith(".xml")) return "application/xml";
+  if (normalized.endsWith(".json")) return "application/json";
+  if (normalized.endsWith(".txt")) return "text/plain";
+  if (normalized.endsWith(".html")) return "text/html";
+  return "application/octet-stream";
+}
+
+export function createBuildUploadJunitReportHandler(client: {
+  uploadJunitReport: (input: {
+    job_id: string;
+    build_no: number;
+    node_id: string;
+    files: Array<{ file_name: string; file_content: Uint8Array; content_type?: string }>;
+  }) => Promise<{
+    job_id: string;
+    build_no: number;
+    node_id: string;
+    file_names: string[];
+    status?: string;
+    result?: unknown;
+  }>;
+}) {
+  return async (input: unknown) => {
+    const parsed = buildUploadJunitReportInput.parse(input);
+    const fileNames = parsed.file_paths.map((filePath) => basename(filePath));
+    const preview = asItemResult(`Dry run: upload ${fileNames.length} JUnit report file(s) for ${parsed.job_id}`, {
+      jobId: parsed.job_id,
+      buildNo: parsed.build_no,
+      nodeId: parsed.node_id,
+      fileNames,
+      executed: !parsed.dry_run
+    });
+
+    if (parsed.dry_run) {
+      return { content: [{ type: "text" as const, text: preview.summary }], structuredContent: preview };
+    }
+
+    const files = await Promise.all(parsed.file_paths.map(async (filePath) => {
+      const fileName = basename(filePath);
+      const content = await readFile(filePath);
+      return {
+        file_name: fileName,
+        file_content: new Uint8Array(content),
+        content_type: detectBuildUploadContentType(fileName)
+      };
+    }));
+
+    const response = await client.uploadJunitReport({
+      job_id: parsed.job_id,
+      build_no: parsed.build_no,
+      node_id: parsed.node_id,
+      files
+    });
+    const result = asItemResult(`Uploaded ${response.file_names.length} JUnit report file(s) for ${response.job_id}`, {
+      jobId: response.job_id,
+      buildNo: response.build_no,
+      nodeId: response.node_id,
+      fileNames: response.file_names,
+      status: response.status,
+      result: response.result,
+      executed: true
+    });
+
+    return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+  };
+}
+
+export function createBuildUploadJunitCoverageHandler(client: {
+  uploadJunitCoverage: (input: {
+    job_id: string;
+    build_no: number;
+    node_id: string;
+    files: Array<{ file_name: string; file_content: Uint8Array; content_type?: string }>;
+  }) => Promise<{
+    job_id: string;
+    build_no: number;
+    node_id: string;
+    file_names: string[];
+    status?: string;
+    result?: unknown;
+  }>;
+}) {
+  return async (input: unknown) => {
+    const parsed = buildUploadJunitCoverageInput.parse(input);
+    const fileNames = parsed.file_paths.map((filePath) => basename(filePath));
+    const preview = asItemResult(`Dry run: upload ${fileNames.length} JUnit coverage file(s) for ${parsed.job_id}`, {
+      jobId: parsed.job_id,
+      buildNo: parsed.build_no,
+      nodeId: parsed.node_id,
+      fileNames,
+      executed: !parsed.dry_run
+    });
+
+    if (parsed.dry_run) {
+      return { content: [{ type: "text" as const, text: preview.summary }], structuredContent: preview };
+    }
+
+    const files = await Promise.all(parsed.file_paths.map(async (filePath) => {
+      const fileName = basename(filePath);
+      const content = await readFile(filePath);
+      return {
+        file_name: fileName,
+        file_content: new Uint8Array(content),
+        content_type: detectBuildUploadContentType(fileName)
+      };
+    }));
+
+    const response = await client.uploadJunitCoverage({
+      job_id: parsed.job_id,
+      build_no: parsed.build_no,
+      node_id: parsed.node_id,
+      files
+    });
+    const result = asItemResult(`Uploaded ${response.file_names.length} JUnit coverage file(s) for ${response.job_id}`, {
+      jobId: response.job_id,
+      buildNo: response.build_no,
+      nodeId: response.node_id,
+      fileNames: response.file_names,
+      status: response.status,
+      result: response.result,
       executed: true
     });
 

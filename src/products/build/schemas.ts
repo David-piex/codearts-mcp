@@ -687,6 +687,41 @@ export const buildUploadKeystoreInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+const buildTemplateBodySchema = z.record(z.string(), z.unknown());
+
+export const buildCreateTemplateInput = z.object({
+  x_auth_token: z.string().min(1),
+  name: z.string().min(1),
+  description: z.string().optional(),
+  tool_type: z.string().min(1).optional(),
+  template: buildTemplateBodySchema,
+  parameters: z.array(buildTemplateBodySchema).optional(),
+  resource_limit: buildTemplateBodySchema.optional(),
+  body: buildTemplateBodySchema.default({}),
+  dry_run: z.boolean().default(true)
+});
+
+export const buildCreateTemplateV3Input = buildCreateTemplateInput;
+
+export const buildUpdateKeystoreInput = z.object({
+  x_auth_token: z.string().min(1),
+  id: idSchema,
+  keystore_name: z.string().min(1),
+  share: z.number().int().min(0).max(1).default(0),
+  description: z.string().optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const buildUploadJunitReportInput = z.object({
+  job_id: idSchema,
+  build_no: z.number().int().positive(),
+  node_id: z.string().min(1),
+  file_paths: z.array(z.string().min(1)).min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const buildUploadJunitCoverageInput = buildUploadJunitReportInput;
+
 export const buildStopJobInput = z.object({
   job_id: idSchema,
   build_no: z.number().int().positive(),

@@ -16,7 +16,7 @@
 | Check | 84 | 20 | Partial | Core Check task/ruleset/metrics/defect reads and the six official read routes are AK/SK validated; newer write/trigger configuration tools are dry-run safe and still need dedicated real-write samples |
 | TestPlan | 257 | 56 | Partial | `get_plan / list_runs / get_case / run_cases` are unpublished in Beijing 4 |
 | Deploy | 59 | 28 | Partial | Expanded Deploy v4 environment/record/variable surface is implemented, but execute-class write paths still require dedicated runtime samples |
-| Build | 97 | 41 | Validated | Core Build job, record, log, parameter, domain metadata, permission, code-tag, report, and resource-spec tools have live or smoke coverage; optional Git-code endpoint reads need endpoint-specific samples |
+| Build | 97 | 46 | Validated | Core Build job, record, log, parameter, domain metadata, permission, code-tag, report, and resource-spec tools have live or smoke coverage; optional Git-code endpoint reads need endpoint-specific samples |
 | Artifact | 44 | 8 | Partial | 5 tools are fully live-validated, and 7 routes are now re-confirmed by live smoke as unpublished in Beijing 4 |
 <!-- GENERATED:capability-matrix:end -->
 
