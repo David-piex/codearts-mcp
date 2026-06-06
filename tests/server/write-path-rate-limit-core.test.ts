@@ -879,6 +879,42 @@ describe("write path rate limits", () => {
         },
         status: "success"
       }
+    },
+    {
+      toolName: "req_update_issue_v3",
+      dryRunInput: {
+        project_id: "project-1",
+        work_item_id: "70779173",
+        type: "scrum",
+        x_auth_token: "token-1234567890",
+        title: "Updated title",
+        dry_run: true
+      },
+      liveInput: (index: number) => ({
+        project_id: "project-1",
+        work_item_id: `${index}`,
+        type: "scrum",
+        x_auth_token: "token-1234567890",
+        title: `Updated ${index}`,
+        dry_run: false
+      }),
+      blockedInput: {
+        project_id: "project-1",
+        work_item_id: "blocked",
+        type: "scrum",
+        x_auth_token: "token-1234567890",
+        title: "Blocked update",
+        dry_run: false
+      },
+      responsePayload: {
+        result: {
+          issue: {
+            id: 70779173,
+            subject: "Updated title"
+          }
+        },
+        status: "success"
+      }
     }
   ])("does not let $toolName dry runs consume write quota", async ({
     toolName,

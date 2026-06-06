@@ -39,16 +39,16 @@ describe("product coverage audit", () => {
       },
       {
         method: "GET",
-        path: "/v2/repositories/{repository_id}/branches",
-        clientScore: 3,
-        matchedTools: ["repo_list_branches", "repo_get_repository"],
+        path: "/v2/repositories/{repository_id}",
+        clientScore: 12,
+        matchedTools: ["repo_get_repository"],
         ignoredReason: undefined
       },
       {
         method: "GET",
-        path: "/v2/repositories/{repository_id}",
-        clientScore: 12,
-        matchedTools: ["repo_get_repository"],
+        path: "/v2/repositories/{repository_id}/branches",
+        clientScore: 13,
+        matchedTools: ["repo_list_branches", "repo_get_repository"],
         ignoredReason: undefined
       }
     ]);

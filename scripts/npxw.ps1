@@ -10,6 +10,11 @@ function Resolve-NodeExe {
     return $env:CODEARTS_MCP_NODE_EXE
   }
 
+  $command = Get-Command node.exe -ErrorAction SilentlyContinue
+  if ($command -and $command.Source) {
+    return $command.Source
+  }
+
   foreach ($candidate in @(
     "C:\nvm4w\nodejs\node.exe",
     "C:\Users\Yao\AppData\Local\nvm\v22.22.1\node.exe",
@@ -20,11 +25,6 @@ function Resolve-NodeExe {
     }
   }
 
-  $command = Get-Command node.exe -ErrorAction SilentlyContinue
-  if ($command -and $command.Source) {
-    return $command.Source
-  }
-
   return $null
 }
 
@@ -33,12 +33,22 @@ function Resolve-NpxCmd {
     return $env:CODEARTS_MCP_NPX_CMD
   }
 
+  $command = Get-Command npx.cmd -ErrorAction SilentlyContinue
+  if ($command -and $command.Source) {
+    return $command.Source
+  }
+
   $nodeExe = Resolve-NodeExe
   if ($nodeExe) {
     $nodeDir = Split-Path -Parent $nodeExe
     $pairedNpx = Join-Path $nodeDir "npx.cmd"
     if (Test-Path $pairedNpx) {
       return $pairedNpx
+    }
+
+    $pairedPx = Join-Path $nodeDir "px.cmd"
+    if (Test-Path $pairedPx) {
+      return $pairedPx
     }
   }
 
@@ -50,11 +60,6 @@ function Resolve-NpxCmd {
     if (Test-Path $candidate) {
       return $candidate
     }
-  }
-
-  $command = Get-Command npx.cmd -ErrorAction SilentlyContinue
-  if ($command -and $command.Source) {
-    return $command.Source
   }
 
   return $null

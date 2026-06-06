@@ -112,6 +112,27 @@ export const reqUpdateWorkItemInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const reqUpdateIssueV3Input = z.object({
+  project_id: idSchema,
+  work_item_id: idSchema,
+  type: z.string().min(1).default("scrum"),
+  x_auth_token: z.string().min(10),
+  title: z.string().min(1).optional(),
+  work_item_type: z.string().min(1).optional(),
+  description: z.string().optional(),
+  status_id: z.number().int().positive().optional(),
+  priority_id: z.number().int().positive().optional(),
+  iteration_id: idSchema.optional(),
+  module_id: idSchema.optional(),
+  severity_id: z.number().int().positive().optional(),
+  assigned_id: idSchema.optional(),
+  done_ratio: z.number().int().nonnegative().optional(),
+  expected_work_hours: z.number().nonnegative().optional(),
+  start_date: z.number().int().positive().optional(),
+  due_date: z.number().int().positive().optional(),
+  dry_run: z.boolean().default(true)
+});
+
 export const reqDeleteWorkItemInput = z.object({
   project_id: idSchema,
   work_item_id: idSchema,

@@ -245,6 +245,7 @@ export const reqToolNames = [
   "req_update_work_item_comment",
   "req_update_issue_flow",
   "req_update_work_item_flow",
+  "req_update_issue_v3",
   "req_update_work_item",
   "req_update_issue_v4",
   "req_update_working_hours",

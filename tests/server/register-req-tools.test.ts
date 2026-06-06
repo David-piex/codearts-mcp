@@ -263,6 +263,10 @@ describe("registerReqTool", () => {
       {
         toolName: "req_delete_version_v2",
         description: "Delete CodeArts Req V2 version from the token-header endpoint"
+      },
+      {
+        toolName: "req_update_issue_v3",
+        description: "Update CodeArts Req work item through the official V3 token-header endpoint"
       }
     ];
 
@@ -2060,6 +2064,27 @@ describe("registerReqTool", () => {
     );
   });
 
+  it("registers the update issue V3 tool with rate-limited metadata", () => {
+    const registerTool = vi.fn();
+
+    const handled = registerReqTool({
+      toolName: "req_update_issue_v3",
+      server: { registerTool },
+      mode: "stdio",
+      stdioClient: {} as never
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      "req_update_issue_v3",
+      expect.objectContaining({
+        title: "req_update_issue_v3",
+        description: "Update CodeArts Req work item through the official V3 token-header endpoint"
+      }),
+      expect.any(Function)
+    );
+  });
+
   it("registers the add project member tool with the expected metadata", () => {
     const registerTool = vi.fn();
 
@@ -2674,6 +2699,61 @@ describe("registerReqTool", () => {
     expect(rateLimiter.check).toHaveBeenCalledWith(
       "req_update_work_item_flow:session-1",
       "req_update_work_item_flow"
+    );
+    expect(rateLimiter.check).toHaveBeenCalledTimes(1);
+  });
+
+  it("enforces rate limiting before handling update issue V3 in http mode", async () => {
+    const registerTool = vi.fn();
+    const rateLimiter = { check: vi.fn() };
+
+    registerReqTool({
+      toolName: "req_update_issue_v3",
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore(),
+      rateLimiter: rateLimiter as never
+    });
+
+    const handler = registerTool.mock.calls[0]?.[2] as
+      | ((input: unknown, extra: { sessionId?: string; authId?: string }) => Promise<unknown>)
+      | undefined;
+
+    expect(handler).toBeTypeOf("function");
+
+    await handler?.(
+      {
+        project_id: "project-1",
+        work_item_id: "wi-9",
+        type: "scrum",
+        x_auth_token: "token-1234567890",
+        title: "Updated title",
+        dry_run: true
+      },
+      {
+        sessionId: "session-1",
+        authId: "auth-1"
+      }
+    );
+
+    await handler?.(
+      {
+        project_id: "project-1",
+        work_item_id: "wi-9",
+        type: "scrum",
+        x_auth_token: "token-1234567890",
+        title: "Updated title",
+        dry_run: false
+      },
+      {
+        sessionId: "session-1",
+        authId: "auth-1"
+      }
+    );
+
+    expect(rateLimiter.check).toHaveBeenCalledWith(
+      "req_update_issue_v3:session-1",
+      "req_update_issue_v3"
     );
     expect(rateLimiter.check).toHaveBeenCalledTimes(1);
   });

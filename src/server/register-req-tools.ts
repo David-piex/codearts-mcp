@@ -219,6 +219,7 @@ import {
   reqUpdatePlanInput,
   reqUpdateReleasePlanInput,
   reqUpdateCurrentUserNicknameInput,
+  reqUpdateIssueV3Input,
   reqUpdateIpdChangeReviewFormInput,
   reqUpdateIpdFeatureSetInput,
   reqUpdateIpdLabelInput,
@@ -406,6 +407,7 @@ import { createReqSearchMyWorkItemsHandler } from "../products/req/tools/search-
 import { createReqSearchTodoWorkItemsHandler } from "../products/req/tools/search-todo-work-items.js";
 import { createReqUpdatePlanHandler } from "../products/req/tools/update-plan.js";
 import { createReqUpdateCurrentUserNicknameHandler } from "../products/req/tools/update-current-user-nickname.js";
+import { createReqUpdateIssueV3Handler } from "../products/req/tools/update-issue-v3.js";
 import { createReqUpdatePlanImageHandler } from "../products/req/tools/update-plan-image.js";
 import { createReqUpdateReleasePlanHandler } from "../products/req/tools/update-release-plan.js";
 import { createReqUpdateIterationHandler } from "../products/req/tools/update-iteration.js";
@@ -2958,6 +2960,13 @@ const reqToolDefinitions = {
     selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUpdateWorkItemHandler>[0] }) => clients.reqClient,
     createProductHandler: createReqUpdateWorkItemHandler,
     rateLimitAction: "req_update_work_item"
+  }),
+  "req_update_issue_v3": defineProductTool({
+    description: "Update CodeArts Req work item through the official V3 token-header endpoint",
+    inputSchema: reqUpdateIssueV3Input,
+    selectHttpClient: (clients: { reqClient: Parameters<typeof createReqUpdateIssueV3Handler>[0] }) => clients.reqClient,
+    createProductHandler: createReqUpdateIssueV3Handler,
+    rateLimitAction: "req_update_issue_v3"
   }),
   "req_update_issue_v4": defineProductTool({
     description: "Update CodeArts Req work item through the official V4 issue endpoint",

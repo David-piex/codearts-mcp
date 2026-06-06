@@ -13,6 +13,7 @@ import {
 import {
   createTestPlanBatchAddIteratorTestcasesHandler,
   createTestPlanBatchUpdateTaskAttributesHandler,
+  createTestPlanCreateTesthubServiceHandler,
   createTestPlanCreateTesthubIteratorHandler,
   createTestPlanDeleteTesthubServiceHandler,
   createTestPlanUpdateTesthubServiceHandler
@@ -78,6 +79,11 @@ describe("testplan task write handlers", () => {
     });
     const createIteratorHandler = createTestPlanCreateTesthubIteratorHandler({
       createTesthubIterator: async () => {
+        throw new Error("should not execute in dry run");
+      }
+    });
+    const createTesthubServiceHandler = createTestPlanCreateTesthubServiceHandler({
+      createTesthubService: async () => {
         throw new Error("should not execute in dry run");
       }
     });
@@ -224,6 +230,18 @@ describe("testplan task write handlers", () => {
       }
     });
     await expect(
+      createTesthubServiceHandler({
+        service_name: "manual",
+        server_host: "https://example.com",
+        server_type: 0
+      })
+    ).resolves.toMatchObject({
+      structuredContent: {
+        summary: "Dry run: create TestHub service manual",
+        item: { executed: false }
+      }
+    });
+    await expect(
       batchAddIteratorTestcasesHandler({
         project_id: "project-1",
         iterator_uri: "iterator-1",
@@ -351,6 +369,14 @@ describe("testplan task write handlers", () => {
         name: input.name,
         status: "success",
         raw: { plan_id: "iterator-1" }
+      })
+    });
+    const createTesthubServiceHandler = createTestPlanCreateTesthubServiceHandler({
+      createTesthubService: async (input) => ({
+        service_id: "12",
+        service_name: input.service_name,
+        status: "success",
+        raw: { service_id: 12, service_name: input.service_name }
       })
     });
     const batchAddIteratorTestcasesHandler = createTestPlanBatchAddIteratorTestcasesHandler({
@@ -524,6 +550,18 @@ describe("testplan task write handlers", () => {
     ).resolves.toMatchObject({
       structuredContent: {
         item: { id: "iterator-1", executed: true, status: "success" }
+      }
+    });
+    await expect(
+      createTesthubServiceHandler({
+        service_name: "manual",
+        server_host: "https://example.com",
+        server_type: 0,
+        dry_run: false
+      })
+    ).resolves.toMatchObject({
+      structuredContent: {
+        item: { id: "12", executed: true, status: "success" }
       }
     });
     await expect(

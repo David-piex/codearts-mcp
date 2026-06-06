@@ -383,6 +383,129 @@ describe("createTestPlanClient", () => {
     ]);
   });
 
+  it("searches official autotasks and issues tree endpoints", async () => {
+    const requests: Array<{ path: string; body: unknown }> = [];
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requests.push({ path, body });
+        if (path === "/v4/testcase/autotask/search") {
+          return {
+            result: {
+              total: 1,
+              value: [{ id: "task-1", name: "nightly smoke" }]
+            }
+          };
+        }
+        if (path === "/v4/projects/project-1/issues-tree") {
+          return {
+            result: {
+              total: 1,
+              value: [{ id: "issue-1", subject: "story root" }]
+            }
+          };
+        }
+
+        return {
+          result: {
+            total: 1,
+            value: [{ id: "ipd-1", subject: "ipd root" }]
+          }
+        };
+      }
+    } as never);
+
+    await expect(
+      client.searchAutotask({
+        project_uuid: "project-uuid-1",
+        versionUri: "version-1",
+        page: 2,
+        page_size: 10,
+        order: "desc",
+        by: "create_time",
+        condition: { key: "name", type: "like", value: "smoke" }
+      })
+    ).resolves.toEqual({
+      tasks: [{ id: "task-1", name: "nightly smoke" }],
+      total: 1,
+      raw: { total: 1, value: [{ id: "task-1", name: "nightly smoke" }] }
+    });
+    await expect(
+      client.listIssuesTree({
+        project_id: "project-1",
+        page_number: 2,
+        page_size: 20,
+        parent_id: "parent-1",
+        tracker_id: "tracker-1",
+        include_sub_issue: true,
+        filter: {
+          owner_ids: ["user-1"]
+        }
+      })
+    ).resolves.toEqual({
+      issues: [{ id: "issue-1", subject: "story root" }],
+      total: 1,
+      raw: { total: 1, value: [{ id: "issue-1", subject: "story root" }] }
+    });
+    await expect(
+      client.listIpdIssuesTree({
+        project_id: "project-1",
+        page_number: 1,
+        page_size: 50,
+        tracker_id: "7",
+        filter: {
+          owner_ids: ["user-2"],
+          keyword: "checkout"
+        }
+      })
+    ).resolves.toEqual({
+      issues: [{ id: "ipd-1", subject: "ipd root" }],
+      total: 1,
+      raw: { total: 1, value: [{ id: "ipd-1", subject: "ipd root" }] }
+    });
+
+    expect(requests).toEqual([
+      {
+        path: "/v4/testcase/autotask/search",
+        body: {
+          versionUri: "version-1",
+          pageNo: 2,
+          pageSize: 10,
+          project_uuid: "project-uuid-1",
+          offset: 10,
+          limit: 10,
+          order: "desc",
+          by: "create_time",
+          condition: { key: "name", type: "like", value: "smoke" }
+        }
+      },
+      {
+        path: "/v4/projects/project-1/issues-tree",
+        body: {
+          page_number: 2,
+          page_size: 20,
+          parent_id: "parent-1",
+          tracker_id: "tracker-1",
+          include_sub_issue: true,
+          filter: {
+            owner_ids: ["user-1"]
+          }
+        }
+      },
+      {
+        path: "/v4/projects/project-1/ipd/issues-tree",
+        body: {
+          page_number: 1,
+          page_size: 50,
+          tracker_id: "7",
+          filter: {
+            owner_ids: ["user-2"],
+            keyword: "checkout"
+          }
+        }
+      }
+    ]);
+  });
+
   it("creates, updates, refreshes report writes and quality attributes with expected payloads", async () => {
     const requests: Array<{ method: string; path: string; body: unknown }> = [];
     const client = createTestPlanClient({
@@ -489,6 +612,355 @@ describe("createTestPlanClient", () => {
           type: "custom",
           workpiece_type: "issue",
           template_config: { sections: ["summary"] }
+        }
+      }
+    ]);
+  });
+
+  it("adds, deletes, and updates project settings writes with expected payloads", async () => {
+    const requests: Array<{ method: string; path: string; body: unknown }> = [];
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requests.push({ method: "post", path, body });
+        return { status: "success", value: "success" };
+      },
+      delete: async (path: string, body?: unknown) => {
+        requests.push({ method: "delete", path, body });
+        return { status: "success", value: "success" };
+      },
+      put: async (path: string, body?: unknown) => {
+        requests.push({ method: "put", path, body });
+        return { status: "success", value: "success" };
+      }
+    } as never);
+
+    const addResult = await client.addProjectUsers({
+      project_id: "project-1",
+      user_id_List: ["user-1", "user-2"]
+    });
+    const deleteResult = await client.deleteProjectUsers({
+      project_id: "project-1",
+      user_id_List: ["user-1"]
+    });
+    const issueResult = await client.updateProjectIssueUpdateNotification({
+      project_id: "project-1",
+      owner_id: "user-1",
+      is_display: "0"
+    });
+    const noticeResult = await client.updateProjectMessageNotices({
+      project_id: "project-1",
+      id: "notice-1",
+      type: 1,
+      send_email: true,
+      send_message: false,
+      notice_users: [{ id: "user-1", name: "alice" }]
+    });
+
+    expect(addResult).toMatchObject({
+      project_id: "project-1",
+      user_id_List: ["user-1", "user-2"],
+      value: "success",
+      status: "success"
+    });
+    expect(deleteResult).toMatchObject({
+      project_id: "project-1",
+      user_id_List: ["user-1"],
+      value: "success",
+      status: "success"
+    });
+    expect(issueResult).toMatchObject({
+      project_id: "project-1",
+      owner_id: "user-1",
+      value: "success",
+      status: "success"
+    });
+    expect(noticeResult).toMatchObject({
+      project_id: "project-1",
+      id: "notice-1",
+      value: "success",
+      status: "success"
+    });
+    expect(requests).toEqual([
+      {
+        method: "post",
+        path: "/v4/projects/project-1/users",
+        body: { user_id_List: ["user-1", "user-2"] }
+      },
+      {
+        method: "delete",
+        path: "/v4/projects/project-1/users",
+        body: { user_id_List: ["user-1"] }
+      },
+      {
+        method: "put",
+        path: "/v4/projects/project-1/issue-update-notification",
+        body: { owner_id: "user-1", is_display: "0" }
+      },
+      {
+        method: "put",
+        path: "/v4/projects/project-1/message-notices",
+        body: {
+          id: "notice-1",
+          type: 1,
+          send_email: true,
+          send_message: false,
+          project_id: "project-1",
+          notice_users: [{ id: "user-1", name: "alice" }]
+        }
+      }
+    ]);
+  });
+
+  it("creates custom template reports and updates or deletes progress reports", async () => {
+    const requests: Array<{ method: string; path: string; body?: unknown }> = [];
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requests.push({ method: "post", path, body });
+        return { value: "custom-report-1" };
+      },
+      put: async (path: string, body?: unknown) => {
+        requests.push({ method: "put", path, body });
+        return { status: "success", value: "success" };
+      },
+      delete: async (path: string) => {
+        requests.push({ method: "delete", path });
+        return { status: "success", value: "success" };
+      }
+    } as never);
+
+    const createResult = await client.createCustomTemplateReport({
+      project_id: "project-1",
+      version_uri: "version-1",
+      name: "custom-report",
+      type: "custom",
+      workpiece_type: "issue",
+      template_config: { sections: ["summary"] },
+      data: [{ issue_id: "70844211" }]
+    });
+    const updateResult = await client.updateProgressReport({
+      project_uuid: "project-1",
+      version_uri: "version-1",
+      report_uri: "progress-1",
+      name: "progress-report",
+      analysis_dim_row: "owner",
+      compare_dim_column: "status",
+      filter: {
+        ownerIds: "user-1",
+        status: "new"
+      }
+    });
+    const deleteResult = await client.deleteProgressReport({
+      project_uuid: "project-1",
+      version_uri: "version-1",
+      report_uri: "progress-1"
+    });
+
+    expect(createResult).toMatchObject({
+      project_id: "project-1",
+      version_uri: "version-1",
+      report_id: "custom-report-1",
+      name: "custom-report",
+      value: "custom-report-1"
+    });
+    expect(updateResult).toMatchObject({
+      project_uuid: "project-1",
+      version_uri: "version-1",
+      report_id: "progress-1",
+      value: "success"
+    });
+    expect(deleteResult).toMatchObject({
+      project_uuid: "project-1",
+      version_uri: "version-1",
+      report_id: "progress-1",
+      deleted: true,
+      value: "success"
+    });
+    expect(requests).toEqual([
+      {
+        method: "post",
+        path: "/v4/project-1/versions/version-1/custom-template-reports",
+        body: {
+          name: "custom-report",
+          type: "custom",
+          workpiece_type: "issue",
+          template_config: { sections: ["summary"] },
+          data: [{ issue_id: "70844211" }]
+        }
+      },
+      {
+        method: "put",
+        path: "/v4/project-1/versions/version-1/progress-reports/progress-1",
+        body: {
+          name: "progress-report",
+          analysis_dim_row: "owner",
+          compare_dim_column: "status",
+          filter: {
+            ownerIds: "user-1",
+            status: "new"
+          }
+        }
+      },
+      {
+        method: "delete",
+        path: "/v4/project-1/versions/version-1/progress-reports/progress-1"
+      }
+    ]);
+  });
+
+  it("updates and deletes custom template reports and refreshes or creates progress reports", async () => {
+    const requests: Array<{ method: string; path: string; body?: unknown }> = [];
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requests.push({ method: "post", path, body });
+        if (path === "/v4/project-1/versions/version-1/progress-reports/refresh") {
+          return {
+            result: {
+              is_async_operate: true,
+              async_uri: "operation-refresh-1",
+              return_value: "refresh-queued"
+            }
+          };
+        }
+        return {
+          is_async_operate: true,
+          async_uri: "operation-create-1"
+        };
+      },
+      put: async (path: string, body?: unknown) => {
+        requests.push({ method: "put", path, body });
+        return { status: "success", value: "success" };
+      },
+      delete: async (path: string) => {
+        requests.push({ method: "delete", path });
+        return { status: "success", value: "deleted-report-1" };
+      }
+    } as never);
+
+    const updateResult = await client.updateCustomTemplateReport({
+      project_id: "project-1",
+      version_uri: "version-1",
+      report_uri: "custom-report-1",
+      name: "custom-report-updated",
+      type: "custom",
+      workpiece_type: "issue",
+      template_config: { sections: ["summary"] },
+      data: [{ issue_id: "70844211" }]
+    });
+    const deleteResult = await client.deleteCustomTemplateReport({
+      project_id: "project-1",
+      version_uri: "version-1",
+      report_uri: "custom-report-1"
+    });
+    const refreshResult = await client.refreshProgressReport({
+      project_uuid: "project-1",
+      version_uri: "version-1",
+      name: "progress-report",
+      workpiece_type: "suite",
+      analysis_dim_row: "owner",
+      compare_dim_column: "status",
+      filter: {
+        ownerIds: "user-1",
+        status: "new",
+        featureUris: ["feature-1"]
+      }
+    });
+    const createResult = await client.createProgressReport({
+      project_uuid: "project-1",
+      version_uri: "version-1",
+      name: "progress-created",
+      type: "2",
+      workpiece_type: "progress",
+      analysis_dim_row: "progress",
+      filter: {
+        startTime: "2025-10-01 23:59:59",
+        endTime: "2025-10-18 23:59:59",
+        featureUris: ["feature-1"]
+      }
+    });
+
+    expect(updateResult).toMatchObject({
+      project_id: "project-1",
+      version_uri: "version-1",
+      report_id: "custom-report-1",
+      name: "custom-report-updated",
+      value: "success"
+    });
+    expect(deleteResult).toMatchObject({
+      project_id: "project-1",
+      version_uri: "version-1",
+      report_id: "custom-report-1",
+      deleted: true,
+      value: "deleted-report-1"
+    });
+    expect(refreshResult).toEqual({
+      project_uuid: "project-1",
+      version_uri: "version-1",
+      operation_uri: "operation-refresh-1",
+      is_async_operate: true,
+      return_value: "refresh-queued",
+      value: undefined,
+      raw: {
+        is_async_operate: true,
+        async_uri: "operation-refresh-1",
+        return_value: "refresh-queued"
+      }
+    });
+    expect(createResult).toEqual({
+      project_uuid: "project-1",
+      version_uri: "version-1",
+      operation_uri: "operation-create-1",
+      is_async_operate: true,
+      return_value: undefined,
+      value: undefined,
+      raw: {
+        is_async_operate: true,
+        async_uri: "operation-create-1"
+      }
+    });
+    expect(requests).toEqual([
+      {
+        method: "put",
+        path: "/v4/project-1/versions/version-1/custom-template-reports/custom-report-1",
+        body: {
+          name: "custom-report-updated",
+          type: "custom",
+          workpiece_type: "issue",
+          template_config: { sections: ["summary"] },
+          data: [{ issue_id: "70844211" }]
+        }
+      },
+      {
+        method: "delete",
+        path: "/v4/project-1/versions/version-1/custom-template-reports/custom-report-1"
+      },
+      {
+        method: "post",
+        path: "/v4/project-1/versions/version-1/progress-reports/refresh",
+        body: {
+          name: "progress-report",
+          workpiece_type: "suite",
+          analysis_dim_row: "owner",
+          compare_dim_column: "status",
+          filter: {
+            ownerIds: "user-1",
+            status: "new",
+            featureUris: ["feature-1"]
+          }
+        }
+      },
+      {
+        method: "post",
+        path: "/v5/project-1/versions/version-1/progress-reports",
+        body: {
+          name: "progress-created",
+          type: "2",
+          workpiece_type: "progress",
+          analysis_dim_row: "progress",
+          filter: {
+            startTime: "2025-10-01 23:59:59",
+            endTime: "2025-10-18 23:59:59",
+            featureUris: ["feature-1"]
+          }
         }
       }
     ]);
@@ -1322,6 +1794,100 @@ describe("createTestPlanClient", () => {
     expect((collectionFile as File).name).toBe("collection.json");
     expect((gitFile as File).name).toBe("payload.txt");
     expect((v3File as File).name).toBe("script.yaml");
+  });
+
+  it("calls TestPlan attachment association and resource upload endpoints", async () => {
+    const requests: Array<{
+      method: string;
+      path: string;
+      body?: unknown;
+      headers?: Record<string, string>;
+    }> = [];
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requests.push({ method: "POST", path, body });
+        return { status: "success", result: "success" };
+      },
+      postMultipart: async (path: string, body: FormData, options?: { headers?: Record<string, string> }) => {
+        requests.push({ method: "POST_MULTIPART", path, body, headers: options?.headers });
+        return {
+          status: "success",
+          result: {
+            value:
+              '[{\"docsize\":\"20270\",\"file_path\":\"attachment_obs/demo/TestCase/evidence.png\",\"storage_system\":\"obs\",\"doc_name\":\"evidence.png\"}]'
+          }
+        };
+      }
+    } as never);
+
+    await expect(
+      client.associateAttachments({
+        project_id: "project-1",
+        resource_uri: "case-1",
+        attachments: [
+          {
+            file_name: "evidence.png",
+            doc_id: "doc-1",
+            related_type: "1",
+            override: true
+          }
+        ],
+        resource_type: "TestCase",
+        system_type: "docman",
+        version_uri: "version-1"
+      })
+    ).resolves.toEqual({
+      project_id: "project-1",
+      resource_uri: "case-1",
+      value: "success",
+      raw: { status: "success", result: "success" }
+    });
+    await expect(
+      client.uploadResourceAttachment({
+        project_id: "project-1",
+        resource_uri: "case-1",
+        resource_type: "TestCase",
+        version_uri: "version-1",
+        file_name: "evidence.png",
+        file_content: new Uint8Array([1, 2, 3]),
+        content_type: "image/png"
+      })
+    ).resolves.toMatchObject({
+      value: {
+        value:
+          '[{\"docsize\":\"20270\",\"file_path\":\"attachment_obs/demo/TestCase/evidence.png\",\"storage_system\":\"obs\",\"doc_name\":\"evidence.png\"}]'
+      },
+      raw: {
+        value:
+          '[{\"docsize\":\"20270\",\"file_path\":\"attachment_obs/demo/TestCase/evidence.png\",\"storage_system\":\"obs\",\"doc_name\":\"evidence.png\"}]'
+      }
+    });
+
+    expect(requests).toHaveLength(2);
+    expect(requests[0]).toEqual({
+      method: "POST",
+      path: "/v4/project-1/resources/case-1/attachments/association",
+      body: {
+        attachments: [
+          {
+            file_name: "evidence.png",
+            doc_id: "doc-1",
+            related_type: "1",
+            override: true
+          }
+        ],
+        resource_type: "TestCase",
+        system_type: "docman",
+        version_uri: "version-1"
+      }
+    });
+    expect(requests[1]?.path).toBe("/v4/project-1/resources/case-1/attachments/upload");
+    const uploadFile = (requests[1]?.body as FormData).get("file");
+    expect(uploadFile).toBeInstanceOf(File);
+    expect((uploadFile as File).name).toBe("evidence.png");
+    expect((requests[1]?.body as FormData).get("version_uri")).toBe("version-1");
+    expect((requests[1]?.body as FormData).get("resource_type")).toBe("TestCase");
+    expect((requests[1]?.body as FormData).get("resource_uri")).toBe("case-1");
   });
 
   it("lists test suite tasks using the v4 batch query endpoint", async () => {
@@ -3417,6 +3983,46 @@ describe("createTestPlanClient", () => {
     });
   });
 
+  it("deletes work item testcase relations through the official v4 endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    const client = createTestPlanClient({
+      delete: async (path: string, body?: unknown) => {
+        requestedPath = path;
+        requestedBody = body as Record<string, unknown>;
+        return {
+          value: "success"
+        };
+      }
+    } as never);
+
+    const result = await client.deleteWorkItemTestRelation({
+      work_item_id: "REQ-1",
+      test_case_uris: ["case-1", "case-2"],
+      project_uuid: "project-1",
+      version_uri: "version-1",
+      relate_type: "requirement"
+    });
+
+    expect(requestedPath).toBe("/v4/workitems/REQ-1/relations/testrelation");
+    expect(requestedBody).toEqual({
+      test_case_uris: ["case-1", "case-2"],
+      project_uuid: "project-1",
+      version_uri: "version-1",
+      relate_type: "requirement"
+    });
+    expect(result).toEqual({
+      work_item_id: "REQ-1",
+      test_case_uris: ["case-1", "case-2"],
+      project_uuid: "project-1",
+      version_uri: "version-1",
+      relate_type: "requirement",
+      value: "success",
+      deleted: true,
+      raw: { value: "success" }
+    });
+  });
+
   it("initializes and stops task execution through documented endpoints", async () => {
     const requests: Array<{ method: string; path: string; body?: unknown }> = [];
     const client = createTestPlanClient({
@@ -5306,6 +5912,15 @@ describe("createTestPlanClient", () => {
         }
 
         return { value: 1 };
+      },
+      post: async (path: string) => {
+        requests.push(path);
+
+        if (path === "/v4/project-1/resources/exist?version_uri=version-1&type=3") {
+          return { value: 1 };
+        }
+
+        return {};
       }
     } as never);
 
@@ -5377,9 +5992,459 @@ describe("createTestPlanClient", () => {
       "/GT3KServer/v4/project-1/versions/version-1/testcases/change-statistics",
       "/v4/project-1/versions/version-2/testcases/change-statistics",
       "/GT3KServer/v4/project-1/testcases/case-1/comments?page_no=1&page_size=10&version_uri=version-1",
-      "/v4/project-1/resources/resource-1/exist?version_uri=version-1&type=3",
+      "/v4/project-1/resources/exist?version_uri=version-1&type=3",
       "/GT3KServer/v4/testcases/case-1/review?project_uuid=project-1&version_uri=version-1&page_no=2&page_size=5",
       "/v4/testcases/case-1/review?project_uuid=project-1&version_uri=version-1&page_no=1&page_size=10"
+    ]);
+  });
+
+  it("posts TEP and official resource existence requests with expected payloads", async () => {
+    const requests: Array<{
+      method: string;
+      path: string;
+      body?: unknown;
+      options?: unknown;
+    }> = [];
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown, options?: unknown) => {
+        requests.push({ method: "post", path, body, options });
+        if (path === "/v4/project-1/resources/exist?version_uri=version-1&type=3") {
+          return { value: 2 };
+        }
+        if (path === "/v3/hutaf-ticc/tm/teps/action/query") {
+          return {
+            result: [{ id: "tep-1", name: "tep-one" }],
+            total: "1",
+            status: "success"
+          };
+        }
+        if (path === "/v1/project-1/query/designData") {
+          return {
+            result: { testcaseId: "case-1", variableGroupID: "group-1" }
+          };
+        }
+        if (path === "/v2/queryTestSuitesVarList4PL/service-1") {
+          return {
+            result: { suiteVars: [{ id: "var-1", name: "base_url" }] }
+          };
+        }
+
+        return {};
+      },
+      get: async (path: string, options?: unknown) => {
+        requests.push({ method: "get", path, options });
+        return { result: { code: "tep-register-code" } };
+      },
+      put: async (path: string, body?: unknown, options?: unknown) => {
+        requests.push({ method: "put", path, body, options });
+        return { status: "success", result: "ok" };
+      }
+    } as never);
+
+    await expect(
+      client.checkResourceExists({
+        project_id: "project-1",
+        version_uri: "version-1",
+        type: 3,
+        resource_uris: ["resource-1", "resource-2"]
+      })
+    ).resolves.toEqual({
+      value: 2,
+      raw: { value: 2 }
+    });
+    await expect(
+      client.updateTepShare({
+        x_auth_tenantid: "tenant-1",
+        x_auth_groups: "project-1",
+        x_user_name: "alice",
+        x_auth_token: "token-1",
+        isShare: true
+      })
+    ).resolves.toEqual({
+      value: "ok",
+      raw: { status: "success", result: "ok" }
+    });
+    await expect(
+      client.getTepRegisterCode({
+        x_auth_tenantid: "tenant-1",
+        x_auth_groups: "project-1",
+        x_user_name: "alice",
+        x_auth_token: "token-1"
+      })
+    ).resolves.toEqual({
+      raw: { code: "tep-register-code" }
+    });
+    await expect(
+      client.listTeps({
+        x_auth_tenantid: "tenant-1",
+        x_auth_groups: "project-1",
+        x_user_name: "alice",
+        x_auth_token: "token-1",
+        where: [{ key: "name", type: "eq", value: "tep-one" }]
+      })
+    ).resolves.toEqual({
+      teps: [{ id: "tep-1", name: "tep-one" }],
+      total: 1,
+      status: "success"
+    });
+    await expect(
+      client.getDesignData({
+        project_id: "project-1",
+        x_auth_token: "token-1",
+        testcaseId: "case-1",
+        variableGroupID: "group-1"
+      })
+    ).resolves.toEqual({
+      raw: { testcaseId: "case-1", variableGroupID: "group-1" }
+    });
+    await expect(
+      client.getTestSuitesVarListForPipeline({
+        testServiceId: "service-1",
+        x_auth_token: "token-1",
+        body: { suiteIds: ["suite-1"] }
+      })
+    ).resolves.toEqual({
+      raw: { suiteVars: [{ id: "var-1", name: "base_url" }] }
+    });
+
+    expect(requests).toEqual([
+      {
+        method: "post",
+        path: "/v4/project-1/resources/exist?version_uri=version-1&type=3",
+        body: ["resource-1", "resource-2"],
+        options: undefined
+      },
+      {
+        method: "put",
+        path: "/v3/hutaf-ticc/tm/tep/share?isShare=true",
+        body: undefined,
+        options: {
+          headers: {
+            "x-auth-tenantid": "tenant-1",
+            "x-auth-groups": "project-1",
+            "x-user-name": "alice",
+            "x-auth-token": "token-1"
+          }
+        }
+      },
+      {
+        method: "get",
+        path: "/v3/hutaf-ticc/tm/tep/register-code",
+        options: {
+          headers: {
+            "x-auth-tenantid": "tenant-1",
+            "x-auth-groups": "project-1",
+            "x-user-name": "alice",
+            "x-auth-token": "token-1"
+          }
+        }
+      },
+      {
+        method: "post",
+        path: "/v3/hutaf-ticc/tm/teps/action/query",
+        body: {
+          where: [{ key: "name", type: "eq", value: "tep-one" }]
+        },
+        options: {
+          headers: {
+            "x-auth-tenantid": "tenant-1",
+            "x-auth-groups": "project-1",
+            "x-user-name": "alice",
+            "x-auth-token": "token-1"
+          }
+        }
+      },
+      {
+        method: "post",
+        path: "/v1/project-1/query/designData",
+        body: {
+          variableGroupID: "group-1",
+          testcaseId: "case-1"
+        },
+        options: {
+          headers: { "X-Auth-Token": "token-1" }
+        }
+      },
+      {
+        method: "post",
+        path: "/v2/queryTestSuitesVarList4PL/service-1",
+        body: { suiteIds: ["suite-1"] },
+        options: {
+          headers: { "X-Auth-Token": "token-1" }
+        }
+      }
+    ]);
+  });
+
+  it("calls legacy TestPlan write endpoints with X-Auth-Token headers", async () => {
+    const requests: Array<{
+      method: string;
+      path: string;
+      body?: unknown;
+      options?: unknown;
+    }> = [];
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown, options?: unknown) => {
+        requests.push({ method: "post", path, body, options });
+        return { status: "success", result: "ok" };
+      },
+      delete: async (path: string, body?: unknown, options?: unknown) => {
+        requests.push({ method: "delete", path, body, options });
+        return { status: "success", result: "stopped" };
+      }
+    } as never);
+
+    await expect(
+      client.deleteProjectNotice({
+        testServiceId: "service-1",
+        x_auth_token: "token-1",
+        body: { noticeIds: ["notice-1"] }
+      })
+    ).resolves.toEqual({
+      status: "success",
+      value: "ok",
+      raw: { status: "success", result: "ok" }
+    });
+    await expect(
+      client.stopCaseTask({
+        testServiceId: "service-1",
+        caseId: "case-1",
+        x_auth_token: "token-1"
+      })
+    ).resolves.toEqual({
+      status: "success",
+      value: "stopped",
+      raw: { status: "success", result: "stopped" }
+    });
+
+    expect(requests).toEqual([
+      {
+        method: "post",
+        path: "/v2/delprojectnotice/service-1",
+        body: { noticeIds: ["notice-1"] },
+        options: {
+          headers: { "X-Auth-Token": "token-1" }
+        }
+      },
+      {
+        method: "delete",
+        path: "/v2/stopCase/service-1/case-1",
+        body: undefined,
+        options: {
+          headers: { "X-Auth-Token": "token-1" }
+        }
+      }
+    ]);
+  });
+
+  it("calls task-group and repository task helper endpoints with documented headers", async () => {
+    const requests: Array<{
+      method: string;
+      path: string;
+      body?: unknown;
+      options?: unknown;
+    }> = [];
+    const client = createTestPlanClient({
+      get: async (path: string, options?: unknown) => {
+        requests.push({ method: "get", path, options });
+        return {
+          result: {
+            data: [{ id: "task-1", name: "nightly task" }],
+            pageInfo: { total: 1 }
+          }
+        };
+      },
+      post: async (path: string, body?: unknown, options?: unknown) => {
+        requests.push({ method: "post", path, body, options });
+        if (path === "/v3/task-group/detail/history") {
+          return {
+            result: {
+              id: "group-1",
+              testServiceId: "service-1",
+              progress: 100
+            },
+            status: "success"
+          };
+        }
+        if (path === "/v3/task-group/execution") {
+          return {
+            status: "success",
+            result: {
+              id: "group-1",
+              value: "started"
+            }
+          };
+        }
+        if (path === "/v1/projects/project-1/repository/testsuites") {
+          return {
+            testsuite_id: "suite-1",
+            testcase_ids: ["case-1", "case-2"]
+          };
+        }
+
+        return {
+          value: "copy-ok"
+        };
+      }
+    } as never);
+
+    await expect(
+      client.getTaskGroupDetail({
+        task_id: "task-1",
+        x_auth_tenantid: "tenant-1",
+        x_auth_groups: "project-1",
+        x_user_name: "alice",
+        x_auth_token: "token-1"
+      })
+    ).resolves.toEqual({
+      task_id: "task-1",
+      tasks: [{ id: "task-1", name: "nightly task" }],
+      total: 1,
+      raw: {
+        data: [{ id: "task-1", name: "nightly task" }],
+        pageInfo: { total: 1 }
+      }
+    });
+
+    await expect(
+      client.getTaskGroupHistory({
+        request_id: "req-1",
+        taskGroupId: "group-1",
+        testServiceId: "service-1",
+        x_auth_groups: "project-1",
+        x_user_name: "alice",
+        x_auth_token: "token-1",
+        coldDataFlag: true
+      })
+    ).resolves.toEqual({
+      task_group_id: "group-1",
+      test_service_id: "service-1",
+      raw: {
+        id: "group-1",
+        testServiceId: "service-1",
+        progress: 100
+      }
+    });
+
+    await expect(
+      client.executeTaskGroup({
+        x_auth_token: "token-1",
+        x_auth_groups: "project-1",
+        id: "group-1",
+        testServiceId: "service-1",
+        taskGroupName: "nightly",
+        tasks: [{ id: "task-1" }]
+      })
+    ).resolves.toEqual({
+      task_group_id: "group-1",
+      status: "success",
+      value: "started",
+      raw: {
+        id: "group-1",
+        value: "started"
+      }
+    });
+
+    await expect(
+      client.createRepositoryTestsuite({
+        project_id: "project-1",
+        x_auth_token: "token-1",
+        testsuite_name: "swaggerSuite",
+        repository_id: "repo-1",
+        repository_branch: "main",
+        file_path: "api/swagger.yaml"
+      })
+    ).resolves.toEqual({
+      testsuite_id: "suite-1",
+      testcase_ids: ["case-1", "case-2"],
+      raw: {
+        testsuite_id: "suite-1",
+        testcase_ids: ["case-1", "case-2"]
+      }
+    });
+
+    await expect(
+      client.copyTaskRelations({
+        project_id: "project-1",
+        original_task_uri: "task-1",
+        dest_task_uri: "task-2"
+      })
+    ).resolves.toEqual({
+      project_id: "project-1",
+      original_task_uri: "task-1",
+      dest_task_uri: "task-2",
+      value: "copy-ok",
+      raw: { value: "copy-ok" }
+    });
+
+    expect(requests).toEqual([
+      {
+        method: "get",
+        path: "/v3/task-group/detail/task-1",
+        options: {
+          headers: {
+            "x-auth-tenantid": "tenant-1",
+            "x-auth-groups": "project-1",
+            "x-user-name": "alice",
+            "x-auth-token": "token-1"
+          }
+        }
+      },
+      {
+        method: "post",
+        path: "/v3/task-group/detail/history",
+        body: {
+          taskGroupId: "group-1",
+          testServiceId: "service-1",
+          coldDataFlag: true
+        },
+        options: {
+          headers: {
+            "x-auth-groups": "project-1",
+            "x-user-name": "alice",
+            "x-auth-token": "token-1",
+            requestId: "req-1"
+          }
+        }
+      },
+      {
+        method: "post",
+        path: "/v3/task-group/execution",
+        body: {
+          id: "group-1",
+          testServiceId: "service-1",
+          taskGroupName: "nightly",
+          tasks: [{ id: "task-1" }]
+        },
+        options: {
+          headers: {
+            "X-Auth-Token": "token-1",
+            "x-auth-groups": "project-1"
+          }
+        }
+      },
+      {
+        method: "post",
+        path: "/v1/projects/project-1/repository/testsuites",
+        body: {
+          testsuite_name: "swaggerSuite",
+          repository_id: "repo-1",
+          repository_branch: "main",
+          file_path: "api/swagger.yaml"
+        },
+        options: {
+          headers: { "X-Auth-Token": "token-1" }
+        }
+      },
+      {
+        method: "post",
+        path: "/v5/project-1/task/relation-copy",
+        body: {
+          original_task_uri: "task-1",
+          dest_task_uri: "task-2"
+        },
+        options: undefined
+      }
     ]);
   });
 
@@ -5561,6 +6626,102 @@ describe("createTestPlanClient", () => {
       "/v4/projects/project-1/testcase/global/config",
       "/v4/projects/project-1/system-config?owner_id=user-1&feature_name=DisplayOldFunctionTest",
       "/v4/projects/member/exist"
+    ]);
+  });
+
+  it("lists iterator stage counts and queries TestHub ETL rows", async () => {
+    const requests: Array<{ path: string; body: unknown }> = [];
+    const client = createTestPlanClient({
+      post: async (path: string, body?: unknown) => {
+        requests.push({ path, body });
+        if (path === "/v4/project-1/iterators/stage-count") {
+          return {
+            result: {
+              value: {
+                todo: 2,
+                doing: 1,
+                done: 5
+              }
+            }
+          };
+        }
+
+        return {
+          result: {
+            total: 1,
+            value: [{ id: "row-1", suite_name: "smoke" }]
+          }
+        };
+      }
+    } as never);
+
+    await expect(
+      client.listIteratorStageCounts({
+        project_uuid: "project-1",
+        iterator_uri: "iterator-1",
+        branch_uri: "branch-1",
+        owner_ids: ["user-1"],
+        filter: {
+          iterator_ids: ["iterator-1"]
+        }
+      })
+    ).resolves.toEqual({
+      value: {
+        todo: 2,
+        doing: 1,
+        done: 5
+      },
+      raw: {
+        value: {
+          todo: 2,
+          doing: 1,
+          done: 5
+        }
+      }
+    });
+
+    await expect(
+      client.queryTesthubEtlData({
+        offset: 0,
+        limit: 100,
+        table_name: "execute_case_result",
+        start_time: "2026-06-01 00:00:00",
+        end_time: "2026-06-06 23:59:59",
+        filter_time_field: "create_time",
+        sort_field: "create_time",
+        schema_no: "schema-1"
+      })
+    ).resolves.toEqual({
+      rows: [{ id: "row-1", suite_name: "smoke" }],
+      total: 1,
+      raw: { total: 1, value: [{ id: "row-1", suite_name: "smoke" }] }
+    });
+
+    expect(requests).toEqual([
+      {
+        path: "/v4/project-1/iterators/stage-count",
+        body: {
+          iterator_uri: "iterator-1",
+          branch_uri: "branch-1",
+          owner_ids: ["user-1"],
+          filter: {
+            iterator_ids: ["iterator-1"]
+          }
+        }
+      },
+      {
+        path: "/v4/testhub/etl/query-data",
+        body: {
+          offset: 0,
+          limit: 100,
+          table_name: "execute_case_result",
+          start_time: "2026-06-01 00:00:00",
+          end_time: "2026-06-06 23:59:59",
+          filter_time_field: "create_time",
+          sort_field: "create_time",
+          schema_no: "schema-1"
+        }
+      }
     ]);
   });
 

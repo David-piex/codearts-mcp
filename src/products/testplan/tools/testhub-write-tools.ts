@@ -3,6 +3,7 @@ import {
   testPlanBatchAddIteratorTestcasesInput,
   testPlanBatchUpdateTaskAttributesInput,
   testPlanCreateTesthubIteratorInput,
+  testPlanCreateTesthubServiceInput,
   testPlanDeleteTesthubServiceInput,
   testPlanUpdateTesthubServiceInput
 } from "../schemas.js";
@@ -136,6 +137,50 @@ export function createTestPlanBatchAddIteratorTestcasesHandler(client: {
       iteratorUri: response.iterator_uri,
       testcaseCount: response.testcase_count,
       added: response.added,
+      executed: true
+    }, response.raw);
+
+    return {
+      content: [{ type: "text" as const, text: result.summary }],
+      structuredContent: result
+    };
+  };
+}
+
+export function createTestPlanCreateTesthubServiceHandler(client: {
+  createTesthubService: (input: Omit<
+    ReturnType<typeof testPlanCreateTesthubServiceInput.parse>,
+    "dry_run"
+  >) => Promise<{
+    service_id: string;
+    service_name?: string;
+    status?: string;
+    raw: Record<string, unknown>;
+  }>;
+}) {
+  return async (input: unknown) => {
+    const parsed = testPlanCreateTesthubServiceInput.parse(input);
+
+    if (parsed.dry_run) {
+      const result = asItemResult(`Dry run: create TestHub service ${parsed.service_name}`, {
+        serviceName: parsed.service_name,
+        serverHost: parsed.server_host,
+        serverType: parsed.server_type,
+        executed: false
+      });
+
+      return {
+        content: [{ type: "text" as const, text: result.summary }],
+        structuredContent: result
+      };
+    }
+
+    const response = await client.createTesthubService(parsed);
+    const result = asItemResult(`Created TestHub service ${response.service_name ?? response.service_id}`, {
+      id: response.service_id,
+      serviceId: response.service_id,
+      serviceName: response.service_name,
+      status: response.status,
       executed: true
     }, response.raw);
 

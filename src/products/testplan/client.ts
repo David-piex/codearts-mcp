@@ -522,6 +522,24 @@ export type TestPlanClient = {
     total?: number;
     raw: Record<string, unknown>;
   }>;
+  searchAutotask: (input: {
+    project_uuid: string;
+    versionUri: string;
+    page: number;
+    page_size: number;
+    ticcTaskId?: string;
+    result?: string;
+    condition?: Record<string, unknown>;
+    order?: string;
+    by?: string;
+    offset?: number;
+    limit?: number;
+    [key: string]: unknown;
+  }) => Promise<{
+    tasks: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
   getProjectDataDashboard: (input: TestPlanRecordBodyInput) => Promise<{
     raw: Record<string, unknown>;
   }>;
@@ -685,12 +703,129 @@ export type TestPlanClient = {
     type?: string | number;
     workpiece_type?: string;
     template_config?: Record<string, unknown>;
+    data?: Array<Record<string, unknown>>;
     body?: Record<string, unknown>;
   }) => Promise<{
     project_id: string;
     version_uri: string;
     report_id?: string;
     name?: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  createCustomTemplateReport: (input: {
+    project_id: string;
+    version_uri: string;
+    uri?: string;
+    name: string;
+    type?: string | number;
+    workpiece_type?: string;
+    template_config?: Record<string, unknown>;
+    data?: Array<Record<string, unknown>>;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    project_id: string;
+    version_uri: string;
+    report_id?: string;
+    name?: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  updateCustomTemplateReport: (input: {
+    project_id: string;
+    version_uri: string;
+    report_uri: string;
+    uri?: string;
+    name?: string;
+    type?: string | number;
+    workpiece_type?: string;
+    template_config?: Record<string, unknown>;
+    data?: Array<Record<string, unknown>>;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    project_id: string;
+    version_uri: string;
+    report_id: string;
+    name?: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  deleteCustomTemplateReport: (input: {
+    project_id: string;
+    version_uri: string;
+    report_uri: string;
+  }) => Promise<{
+    project_id: string;
+    version_uri: string;
+    report_id: string;
+    deleted: boolean;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  refreshProgressReport: (input: {
+    project_uuid: string;
+    version_uri: string;
+    name?: string;
+    workpiece_type?: string;
+    analysis_dim_row?: string;
+    compare_dim_column?: string;
+    filter?: Record<string, unknown>;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    project_uuid: string;
+    version_uri: string;
+    operation_uri?: string;
+    is_async_operate?: boolean;
+    return_value?: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  createProgressReport: (input: {
+    project_uuid: string;
+    version_uri: string;
+    name: string;
+    type: string | number;
+    workpiece_type: string;
+    analysis_dim_row: string;
+    compare_dim_column?: string;
+    filter: Record<string, unknown>;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    project_uuid: string;
+    version_uri: string;
+    operation_uri?: string;
+    is_async_operate?: boolean;
+    return_value?: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  updateProgressReport: (input: {
+    project_uuid: string;
+    version_uri: string;
+    report_uri: string;
+    name?: string;
+    type?: string | number;
+    workpiece_type?: string;
+    analysis_dim_row?: string;
+    compare_dim_column?: string;
+    filter?: Record<string, unknown>;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    project_uuid: string;
+    version_uri: string;
+    report_id: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  deleteProgressReport: (input: {
+    project_uuid: string;
+    version_uri: string;
+    report_uri: string;
+  }) => Promise<{
+    project_uuid: string;
+    version_uri: string;
+    report_id: string;
+    deleted: boolean;
     value?: unknown;
     raw: Record<string, unknown>;
   }>;
@@ -1061,6 +1196,16 @@ export type TestPlanClient = {
     services: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  createTesthubService: (input: {
+    service_name: string;
+    server_host: string;
+    server_type?: number;
+  }) => Promise<{
+    service_id: string;
+    service_name?: string;
+    status?: string;
+    raw: Record<string, unknown>;
+  }>;
   updateTesthubService: (input: {
     service_id: string | number;
     service_name: string;
@@ -1112,6 +1257,19 @@ export type TestPlanClient = {
     value?: unknown;
     raw: Record<string, unknown>;
   }>;
+  associateAttachments: (input: {
+    project_id: string;
+    resource_uri: string;
+    attachments: Array<Record<string, unknown>>;
+    resource_type: string;
+    system_type: string;
+    version_uri?: string;
+  }) => Promise<{
+    project_id: string;
+    resource_uri: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
   listProjectFieldConfigs: (input: {
     project_id: string;
   }) => Promise<{
@@ -1149,6 +1307,36 @@ export type TestPlanClient = {
     issues: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  listIssuesTree: (input: {
+    project_id: string;
+    service_type?: number;
+    service_types?: number[];
+    parent_id?: string;
+    page_number?: number;
+    page_size?: number;
+    filter?: Record<string, unknown>;
+    tracker_id?: string;
+    module_id?: string;
+    task_uri?: string;
+    include_sub_issue?: boolean;
+    [key: string]: unknown;
+  }) => Promise<{
+    issues: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
+  listIpdIssuesTree: (input: {
+    project_id: string;
+    page_number?: number;
+    page_size?: number;
+    filter?: Record<string, unknown>;
+    tracker_id?: string | number;
+    [key: string]: unknown;
+  }) => Promise<{
+    issues: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
   listProjectUsers: (input: {
     project_id: string;
     page: number;
@@ -1157,6 +1345,26 @@ export type TestPlanClient = {
   }) => Promise<{
     users: Array<Record<string, unknown>>;
     total?: number;
+  }>;
+  addProjectUsers: (input: {
+    project_id: string;
+    user_id_List: string[];
+  }) => Promise<{
+    project_id: string;
+    user_id_List: string[];
+    value?: unknown;
+    status?: string;
+    raw: Record<string, unknown>;
+  }>;
+  deleteProjectUsers: (input: {
+    project_id: string;
+    user_id_List: string[];
+  }) => Promise<{
+    project_id: string;
+    user_id_List: string[];
+    value?: unknown;
+    status?: string;
+    raw: Record<string, unknown>;
   }>;
   getCurrentUserPackagePermission: (input: {
     project_id: string;
@@ -1251,12 +1459,43 @@ export type TestPlanClient = {
     notices: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  updateProjectMessageNotices: (input: {
+    project_id: string;
+    id: string;
+    name?: string;
+    type: number;
+    send_email: boolean;
+    send_message: boolean;
+    notice_users?: Array<{
+      id?: string;
+      name?: string;
+    }>;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    project_id: string;
+    id: string;
+    value?: unknown;
+    status?: string;
+    raw: Record<string, unknown>;
+  }>;
   getProjectIssueUpdateNotification: (input: {
     project_id: string;
     owner_id: string;
   }) => Promise<{
     project_id: string;
     owner_id: string;
+    raw: Record<string, unknown>;
+  }>;
+  updateProjectIssueUpdateNotification: (input: {
+    project_id: string;
+    owner_id: string;
+    is_display: string;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    project_id: string;
+    owner_id: string;
+    value?: unknown;
+    status?: string;
     raw: Record<string, unknown>;
   }>;
   getProjectMasterVersion: (input: {
@@ -1435,12 +1674,45 @@ export type TestPlanClient = {
   }>;
   checkResourceExists: (input: {
     project_id: string;
-    resource_uri: string;
     version_uri: string;
     type: number;
+    resource_uri?: string;
+    resource_uris?: string[];
+    body?: string[];
   }) => Promise<{
     value?: unknown;
     raw: Record<string, unknown>;
+  }>;
+  updateTepShare: (input: {
+    x_auth_tenantid: string;
+    x_auth_groups: string;
+    x_user_name: string;
+    x_auth_token: string;
+    isShare: boolean;
+  }) => Promise<{
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  getTepRegisterCode: (input: {
+    x_auth_tenantid: string;
+    x_auth_groups: string;
+    x_user_name: string;
+    x_auth_token: string;
+  }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  listTeps: (input: {
+    x_auth_tenantid: string;
+    x_auth_groups: string;
+    x_user_name: string;
+    x_auth_token: string;
+    where?: Array<Record<string, unknown>>;
+    option?: Record<string, unknown>;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    teps: Array<Record<string, unknown>>;
+    total?: number;
+    status?: string;
   }>;
   listTestcaseReviews: (input: {
     testcase_uri: string;
@@ -1500,6 +1772,18 @@ export type TestPlanClient = {
     iterators: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  listIteratorStageCounts: (input: {
+    project_uuid: string;
+    name?: string;
+    filter?: Record<string, unknown>;
+    branch_uri?: string;
+    iterator_uri?: string;
+    owner_ids?: string[];
+    [key: string]: unknown;
+  }) => Promise<{
+    value?: Record<string, unknown>;
+    raw: Record<string, unknown>;
+  }>;
   listVisibleServices: (input: { project_id: string }) => Promise<{
     services: Array<Record<string, unknown>>;
     total?: number;
@@ -1518,6 +1802,16 @@ export type TestPlanClient = {
   getApiTestProjectInfo: (input: {
     project_id: string;
     group_id?: string;
+  }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  getDesignData: (input: {
+    project_id: string;
+    x_auth_token: string;
+    variableGroupID?: string;
+    testcaseId?: string;
+    testcaseIds?: string[];
+    body?: Record<string, unknown>;
   }) => Promise<{
     raw: Record<string, unknown>;
   }>;
@@ -1804,7 +2098,129 @@ export type TestPlanClient = {
     status?: string;
     raw: Record<string, unknown>;
   }>;
+  deleteProjectNotice: (input: {
+    testServiceId: string;
+    x_auth_token: string;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    status?: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  stopCaseTask: (input: {
+    testServiceId: string;
+    caseId: string;
+    x_auth_token: string;
+  }) => Promise<{
+    status?: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
   getFreeTestTime: (input: { testServiceId: string }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  getTestSuitesVarListForPipeline: (input: {
+    testServiceId: string;
+    x_auth_token: string;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    raw: Record<string, unknown>;
+  }>;
+  queryTesthubEtlData: (input: {
+    offset: number;
+    limit: number;
+    table_name: string;
+    is_bak?: boolean | string;
+    start_time: string;
+    end_time: string;
+    filter_time_field: string;
+    sort_field?: string;
+    schema_no: string;
+    [key: string]: unknown;
+  }) => Promise<{
+    rows: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
+  getTaskGroupDetail: (input: {
+    task_id: string;
+    x_auth_tenantid: string;
+    x_auth_groups: string;
+    x_user_name: string;
+    x_auth_token: string;
+  }) => Promise<{
+    task_id: string;
+    tasks: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
+  getTaskGroupHistory: (input: {
+    request_id: string;
+    taskGroupId: string;
+    testServiceId: string;
+    x_auth_groups: string;
+    x_user_name: string;
+    x_auth_token: string;
+    coldDataFlag?: boolean;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    task_group_id: string;
+    test_service_id: string;
+    raw: Record<string, unknown>;
+  }>;
+  executeTaskGroup: (input: {
+    x_auth_token: string;
+    x_auth_groups?: string;
+    branchId?: string;
+    branchName?: string;
+    versionId?: string;
+    versionName?: string;
+    id?: string;
+    author?: string;
+    analyser?: string;
+    testServiceId?: string;
+    userName?: string;
+    taskGroupName?: string;
+    scheduledTime?: string;
+    intervalTime?: string;
+    intervalTimeUnit?: string;
+    taskPolicy?: number;
+    taskGroupExeParam?: Record<string, unknown>;
+    taskStrategy?: Record<string, unknown>;
+    circle?: Record<string, unknown>;
+    overTimeParam?: Record<string, unknown>;
+    tmssInfo?: Record<string, unknown>;
+    tasks?: Array<Record<string, unknown>>;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    task_group_id?: string;
+    status?: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  createRepositoryTestsuite: (input: {
+    project_id: string;
+    x_auth_token: string;
+    testsuite_name: string;
+    repository_id: string;
+    repository_branch: string;
+    file_path: string;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    testsuite_id?: string;
+    testcase_ids: string[];
+    raw: Record<string, unknown>;
+  }>;
+  copyTaskRelations: (input: {
+    project_id: string;
+    original_task_uri: string;
+    dest_task_uri: string;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    project_id: string;
+    original_task_uri: string;
+    dest_task_uri: string;
+    value?: unknown;
     raw: Record<string, unknown>;
   }>;
   listApiTestsuiteHistory: (input: {
@@ -1930,6 +2346,15 @@ export type TestPlanClient = {
   uploadFileV3: (input: {
     project_id: string;
     x_auth_token: string;
+    file_name: string;
+    file_content: Uint8Array;
+    content_type?: string;
+  }) => Promise<TestPlanTokenUploadResult>;
+  uploadResourceAttachment: (input: {
+    project_id: string;
+    resource_uri: string;
+    resource_type: string;
+    version_uri: string;
     file_name: string;
     file_content: Uint8Array;
     content_type?: string;
@@ -2560,6 +2985,22 @@ export type TestPlanClient = {
     version_uri?: string;
     status_code?: number;
     status_name?: string;
+  }>;
+  deleteWorkItemTestRelation: (input: {
+    work_item_id: string;
+    test_case_uris: string[];
+    project_uuid: string;
+    version_uri?: string;
+    relate_type?: string;
+  }) => Promise<{
+    work_item_id: string;
+    test_case_uris: string[];
+    project_uuid: string;
+    version_uri?: string;
+    relate_type?: string;
+    value?: unknown;
+    deleted: boolean;
+    raw: Record<string, unknown>;
   }>;
   initTaskExecution: (input: {
     project_id: string;
@@ -4057,6 +4498,35 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         raw: payload
       };
     },
+    async searchAutotask(input) {
+      const body: Record<string, unknown> = {
+        versionUri: input.versionUri,
+        pageNo: input.page,
+        pageSize: input.page_size,
+        project_uuid: input.project_uuid,
+        offset: input.offset ?? pageToOffset(input.page, input.page_size),
+        limit: input.limit ?? input.page_size
+      };
+
+      for (const [key, value] of Object.entries(input)) {
+        if (["page", "page_size", "project_uuid", "versionUri", "offset", "limit"].includes(key) || value === undefined) {
+          continue;
+        }
+        body[key] = value;
+      }
+
+      const response = await _http.post("/v4/testcase/autotask/search", body);
+      const payload = readResultPayload(response);
+      const tasks = readArray<unknown>(payload.value ?? payload.values ?? payload.items ?? payload.list).map((item) =>
+        typeof item === "object" && item !== null ? (item as Record<string, unknown>) : { value: item }
+      ) as Array<Record<string, unknown>>;
+
+      return {
+        tasks,
+        total: readTotal(payload, response, tasks.length),
+        raw: payload
+      };
+    },
     async getProjectDataDashboard(input) {
       const response = await _http.post(
         `/v1/${encodeURIComponent(input.project_id)}/data-dashboard/overview`,
@@ -4372,6 +4842,77 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         total: readTotal(payload, response, reports.length)
       };
     },
+    async createCustomTemplateReport(input) {
+      const body: Record<string, unknown> = { name: input.name };
+      if (input.body) {
+        Object.assign(body, input.body);
+      } else {
+        if (input.uri !== undefined) body.uri = input.uri;
+        if (input.type !== undefined) body.type = input.type;
+        if (input.workpiece_type !== undefined) body.workpiece_type = input.workpiece_type;
+        if (input.template_config !== undefined) body.template_config = input.template_config;
+        if (input.data !== undefined) body.data = input.data;
+      }
+
+      const response = await _http.post(
+        `/v4/${encodeURIComponent(input.project_id)}/versions/${encodeURIComponent(input.version_uri)}/custom-template-reports`,
+        body
+      );
+      const payload = readResultPayload(response);
+      const value = payload.value ?? payload.result;
+
+      return {
+        project_id: input.project_id,
+        version_uri: input.version_uri,
+        report_id: typeof value === "string" ? value : undefined,
+        name: input.name,
+        value,
+        raw: payload
+      };
+    },
+    async updateCustomTemplateReport(input) {
+      const body: Record<string, unknown> = {};
+      if (input.body) {
+        Object.assign(body, input.body);
+      } else {
+        if (input.uri !== undefined) body.uri = input.uri;
+        if (input.name !== undefined) body.name = input.name;
+        if (input.type !== undefined) body.type = input.type;
+        if (input.workpiece_type !== undefined) body.workpiece_type = input.workpiece_type;
+        if (input.template_config !== undefined) body.template_config = input.template_config;
+        if (input.data !== undefined) body.data = input.data;
+      }
+
+      const response = await _http.put(
+        `/v4/${encodeURIComponent(input.project_id)}/versions/${encodeURIComponent(input.version_uri)}/custom-template-reports/${encodeURIComponent(input.report_uri)}`,
+        body
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        project_id: input.project_id,
+        version_uri: input.version_uri,
+        report_id: input.report_uri,
+        name: input.name,
+        value: payload.value ?? payload.result,
+        raw: payload
+      };
+    },
+    async deleteCustomTemplateReport(input) {
+      const response = await _http.delete(
+        `/v4/${encodeURIComponent(input.project_id)}/versions/${encodeURIComponent(input.version_uri)}/custom-template-reports/${encodeURIComponent(input.report_uri)}`
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        project_id: input.project_id,
+        version_uri: input.version_uri,
+        report_id: input.report_uri,
+        deleted: true,
+        value: payload.value ?? payload.result,
+        raw: payload
+      };
+    },
     async refreshCustomTemplateReport(input) {
       const body: Record<string, unknown> = { name: input.name };
       if (input.body) {
@@ -4396,6 +4937,117 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         report_id: typeof value === "string" ? value : undefined,
         name: input.name,
         value,
+        raw: payload
+      };
+    },
+    async refreshProgressReport(input) {
+      const body: Record<string, unknown> = {};
+      if (input.body) {
+        Object.assign(body, input.body);
+      } else {
+        if (input.name !== undefined) body.name = input.name;
+        if (input.workpiece_type !== undefined) body.workpiece_type = input.workpiece_type;
+        if (input.analysis_dim_row !== undefined) body.analysis_dim_row = input.analysis_dim_row;
+        if (input.compare_dim_column !== undefined) body.compare_dim_column = input.compare_dim_column;
+        if (input.filter !== undefined) body.filter = input.filter;
+      }
+
+      const response = await _http.post(
+        `/v4/${encodeURIComponent(input.project_uuid)}/versions/${encodeURIComponent(input.version_uri)}/progress-reports/refresh`,
+        body
+      );
+      const payload = readResultPayload(response);
+      const value = readEnvelope(payload.value) ?? payload;
+
+      return {
+        project_uuid: input.project_uuid,
+        version_uri: input.version_uri,
+        operation_uri:
+          typeof value.async_uri === "string"
+            ? value.async_uri
+            : typeof value.operation_uri === "string"
+              ? value.operation_uri
+              : undefined,
+        is_async_operate: typeof value.is_async_operate === "boolean" ? value.is_async_operate : undefined,
+        return_value: typeof value.return_value === "string" ? value.return_value : undefined,
+        value: payload.value ?? payload.result,
+        raw: value
+      };
+    },
+    async createProgressReport(input) {
+      const body: Record<string, unknown> = {};
+      if (input.body) {
+        Object.assign(body, input.body);
+      } else {
+        body.name = input.name;
+        body.type = input.type;
+        body.workpiece_type = input.workpiece_type;
+        body.analysis_dim_row = input.analysis_dim_row;
+        if (input.compare_dim_column !== undefined) body.compare_dim_column = input.compare_dim_column;
+        body.filter = input.filter;
+      }
+
+      const response = await _http.post(
+        `/v5/${encodeURIComponent(input.project_uuid)}/versions/${encodeURIComponent(input.version_uri)}/progress-reports`,
+        body
+      );
+      const payload = readResultPayload(response);
+      const value = readEnvelope(payload.value) ?? payload;
+
+      return {
+        project_uuid: input.project_uuid,
+        version_uri: input.version_uri,
+        operation_uri:
+          typeof value.async_uri === "string"
+            ? value.async_uri
+            : typeof value.operation_uri === "string"
+              ? value.operation_uri
+              : undefined,
+        is_async_operate: typeof value.is_async_operate === "boolean" ? value.is_async_operate : undefined,
+        return_value: typeof value.return_value === "string" ? value.return_value : undefined,
+        value: payload.value ?? payload.result,
+        raw: value
+      };
+    },
+    async updateProgressReport(input) {
+      const body: Record<string, unknown> = {};
+      if (input.body) {
+        Object.assign(body, input.body);
+      } else {
+        if (input.name !== undefined) body.name = input.name;
+        if (input.type !== undefined) body.type = input.type;
+        if (input.workpiece_type !== undefined) body.workpiece_type = input.workpiece_type;
+        if (input.analysis_dim_row !== undefined) body.analysis_dim_row = input.analysis_dim_row;
+        if (input.compare_dim_column !== undefined) body.compare_dim_column = input.compare_dim_column;
+        if (input.filter !== undefined) body.filter = input.filter;
+      }
+
+      const response = await _http.put(
+        `/v4/${encodeURIComponent(input.project_uuid)}/versions/${encodeURIComponent(input.version_uri)}/progress-reports/${encodeURIComponent(input.report_uri)}`,
+        body
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        project_uuid: input.project_uuid,
+        version_uri: input.version_uri,
+        report_id: input.report_uri,
+        value: payload.value ?? payload.result,
+        raw: payload
+      };
+    },
+    async deleteProgressReport(input) {
+      const response = await _http.delete(
+        `/v4/${encodeURIComponent(input.project_uuid)}/versions/${encodeURIComponent(input.version_uri)}/progress-reports/${encodeURIComponent(input.report_uri)}`
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        project_uuid: input.project_uuid,
+        version_uri: input.version_uri,
+        report_id: input.report_uri,
+        deleted: true,
+        value: payload.value ?? payload.result,
         raw: payload
       };
     },
@@ -5144,6 +5796,23 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         total: readTotal(payload, response, services.length)
       };
     },
+    async createTesthubService(input) {
+      const response = await _http.post("/v4/testhub/services", {
+        service_name: input.service_name,
+        server_host: input.server_host,
+        server_type: input.server_type
+      });
+      const payload = readResultPayload(response);
+      const service = readEnvelope(payload.result) ?? readEnvelope(payload.value) ?? payload;
+
+      return {
+        service_id: String(service.service_id ?? service.id ?? payload.value ?? input.service_name),
+        service_name:
+          typeof service.service_name === "string" ? service.service_name : input.service_name,
+        status: readResultStatus(response, payload),
+        raw: service
+      };
+    },
     async updateTesthubService(input) {
       const response = await _http.put(
         `/v4/testhub/services/${encodeURIComponent(String(input.service_id))}`,
@@ -5237,6 +5906,29 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         raw: payload
       };
     },
+    async associateAttachments(input) {
+      const body: Record<string, unknown> = {
+        attachments: input.attachments,
+        resource_type: input.resource_type,
+        system_type: input.system_type
+      };
+      if (input.version_uri !== undefined) {
+        body.version_uri = input.version_uri;
+      }
+
+      const response = await _http.post(
+        `/v4/${encodeURIComponent(input.project_id)}/resources/${encodeURIComponent(input.resource_uri)}/attachments/association`,
+        body
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        project_id: input.project_id,
+        resource_uri: input.resource_uri,
+        value: readResultValue(response, payload),
+        raw: payload
+      };
+    },
     async listProjectFieldConfigs(input) {
       const response = await _http.get(
         `/GT3KServer/v4/projects/${encodeURIComponent(input.project_id)}/field-configs`
@@ -5312,6 +6004,38 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         total: readTotal(payload, response, issues.length)
       };
     },
+    async listIssuesTree(input) {
+      const response = await _http.post(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/issues-tree`,
+        createBodyWithoutProjectId(input as TestPlanRecordBodyInput)
+      );
+      const payload = readResultPayload(response);
+      const issues = readArray<Record<string, unknown>>(
+        payload.value ?? payload.issues ?? payload.items ?? payload.list
+      );
+
+      return {
+        issues,
+        total: readTotal(payload, response, issues.length),
+        raw: payload
+      };
+    },
+    async listIpdIssuesTree(input) {
+      const response = await _http.post(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/ipd/issues-tree`,
+        createBodyWithoutProjectId(input as TestPlanRecordBodyInput)
+      );
+      const payload = readResultPayload(response);
+      const issues = readArray<Record<string, unknown>>(
+        payload.value ?? payload.issues ?? payload.items ?? payload.list
+      );
+
+      return {
+        issues,
+        total: readTotal(payload, response, issues.length),
+        raw: payload
+      };
+    },
     async listProjectUsers(input) {
       const query = new URLSearchParams({
         page_no: String(input.page),
@@ -5330,6 +6054,36 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       return {
         users,
         total: readTotal(payload, response, users.length)
+      };
+    },
+    async addProjectUsers(input) {
+      const response = await _http.post(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/users`,
+        { user_id_List: input.user_id_List }
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        project_id: input.project_id,
+        user_id_List: input.user_id_List,
+        value: payload.value ?? payload.result,
+        status: readResultStatus(response, payload),
+        raw: payload
+      };
+    },
+    async deleteProjectUsers(input) {
+      const response = await _http.delete(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/users`,
+        { user_id_List: input.user_id_List }
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        project_id: input.project_id,
+        user_id_List: input.user_id_List,
+        value: payload.value ?? payload.result,
+        status: readResultStatus(response, payload),
+        raw: payload
       };
     },
     async getCurrentUserPackagePermission(input) {
@@ -5530,6 +6284,32 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         total: readTotal(payload, response, notices.length)
       };
     },
+    async updateProjectMessageNotices(input) {
+      const body: Record<string, unknown> =
+        input.body ?? {
+          id: input.id,
+          ...(input.name === undefined ? {} : { name: input.name }),
+          type: input.type,
+          send_email: input.send_email,
+          send_message: input.send_message,
+          project_id: input.project_id,
+          ...(input.notice_users === undefined ? {} : { notice_users: input.notice_users })
+        };
+
+      const response = await _http.put(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/message-notices`,
+        body
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        project_id: input.project_id,
+        id: input.id,
+        value: payload.value ?? payload.result,
+        status: readResultStatus(response, payload),
+        raw: payload
+      };
+    },
     async getProjectIssueUpdateNotification(input) {
       const query = new URLSearchParams({
         owner_id: input.owner_id
@@ -5545,6 +6325,27 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         project_id: input.project_id,
         owner_id: input.owner_id,
         raw: notification
+      };
+    },
+    async updateProjectIssueUpdateNotification(input) {
+      const body: Record<string, unknown> =
+        input.body ?? {
+          owner_id: input.owner_id,
+          is_display: input.is_display
+        };
+
+      const response = await _http.put(
+        `/v4/projects/${encodeURIComponent(input.project_id)}/issue-update-notification`,
+        body
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        project_id: input.project_id,
+        owner_id: input.owner_id,
+        value: payload.value ?? payload.result,
+        status: readResultStatus(response, payload),
+        raw: payload
       };
     },
     async getProjectMasterVersion(input) {
@@ -5888,9 +6689,14 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         version_uri: input.version_uri,
         type: String(input.type)
       });
+      const body =
+        input.body ??
+        input.resource_uris ??
+        (input.resource_uri !== undefined ? [input.resource_uri] : []);
 
-      const response = await _http.get(
-        `/v4/${encodeURIComponent(input.project_id)}/resources/${encodeURIComponent(input.resource_uri)}/exist?${query.toString()}`
+      const response = await _http.post(
+        `/v4/${encodeURIComponent(input.project_id)}/resources/exist?${query.toString()}`,
+        body
       );
       const payload = readResultPayload(response);
       const value = payload.value;
@@ -5898,6 +6704,98 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       return {
         value,
         raw: payload
+      };
+    },
+    async updateTepShare(input) {
+      const query = new URLSearchParams({
+        isShare: String(input.isShare)
+      });
+      const response = await _http.put(
+        `/v3/hutaf-ticc/tm/tep/share?${query.toString()}`,
+        undefined,
+        {
+          headers: {
+            "x-auth-tenantid": input.x_auth_tenantid,
+            "x-auth-groups": input.x_auth_groups,
+            "x-user-name": input.x_user_name,
+            "x-auth-token": input.x_auth_token
+          }
+        }
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        value: readResultValue(response, payload),
+        raw: payload
+      };
+    },
+    async getTepRegisterCode(input) {
+      const response = await _http.get("/v3/hutaf-ticc/tm/tep/register-code", {
+        headers: {
+          "x-auth-tenantid": input.x_auth_tenantid,
+          "x-auth-groups": input.x_auth_groups,
+          "x-user-name": input.x_user_name,
+          "x-auth-token": input.x_auth_token
+        }
+      });
+      const payload = readResultPayload(response);
+      const result = readEnvelope(payload.result) ?? payload;
+
+      return {
+        raw: result
+      };
+    },
+    async listTeps(input) {
+      const body =
+        input.body ??
+        {
+          ...(input.where !== undefined ? { where: input.where } : {}),
+          ...(input.option !== undefined ? { option: input.option } : {})
+        };
+      const response = await _http.post(
+        "/v3/hutaf-ticc/tm/teps/action/query",
+        body,
+        {
+          headers: {
+            "x-auth-tenantid": input.x_auth_tenantid,
+            "x-auth-groups": input.x_auth_groups,
+            "x-user-name": input.x_user_name,
+            "x-auth-token": input.x_auth_token
+          }
+        }
+      );
+      const payload = readResultPayload(response);
+      const teps = readArray<Record<string, unknown>>(payload.result ?? payload.value ?? payload.items ?? payload.list);
+
+      return {
+        teps,
+        total:
+          typeof payload.total === "string"
+            ? Number.parseInt(payload.total, 10)
+            : readTotal(payload, response, teps.length),
+        status: readResultStatus(response, payload)
+      };
+    },
+    async getDesignData(input) {
+      const body =
+        input.body ??
+        {
+          ...(input.variableGroupID !== undefined ? { variableGroupID: input.variableGroupID } : {}),
+          ...(input.testcaseId !== undefined ? { testcaseId: input.testcaseId } : {}),
+          ...(input.testcaseIds !== undefined ? { testcaseIds: input.testcaseIds } : {})
+        };
+      const response = await _http.post(
+        `/v1/${encodeURIComponent(input.project_id)}/query/designData`,
+        body,
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
+      );
+      const payload = readResultPayload(response);
+      const result = readEnvelope(payload.result) ?? payload;
+
+      return {
+        raw: result
       };
     },
     async listTestcaseReviews(input) {
@@ -6046,6 +6944,20 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       return {
         iterators,
         total: readTotal(payload, response, iterators.length)
+      };
+    },
+    async listIteratorStageCounts(input) {
+      const { project_uuid: _projectUuid, ...body } = input;
+      const response = await _http.post(
+        `/v4/${encodeURIComponent(input.project_uuid)}/iterators/stage-count`,
+        body
+      );
+      const payload = readResultPayload(response);
+      const value = readEnvelope(payload.value) ?? payload;
+
+      return {
+        value,
+        raw: payload
       };
     },
     async listVisibleServices(input) {
@@ -6761,6 +7673,38 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         raw: result
       };
     },
+    async deleteProjectNotice(input) {
+      const response = await _http.post(
+        `/v2/delprojectnotice/${encodeURIComponent(input.testServiceId)}`,
+        input.body ?? {},
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        status: readResultStatus(response, payload),
+        value: readResultValue(response, payload),
+        raw: payload
+      };
+    },
+    async stopCaseTask(input) {
+      const response = await _http.delete(
+        `/v2/stopCase/${encodeURIComponent(input.testServiceId)}/${encodeURIComponent(input.caseId)}`,
+        undefined,
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        status: readResultStatus(response, payload),
+        value: readResultValue(response, payload),
+        raw: payload
+      };
+    },
     async getFreeTestTime(input) {
       const response = await _http.get(
         `/v2/queryFreeTestTime/${encodeURIComponent(input.testServiceId)}`
@@ -6770,6 +7714,170 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
 
       return {
         raw: freeTime
+      };
+    },
+    async getTestSuitesVarListForPipeline(input) {
+      const response = await _http.post(
+        `/v2/queryTestSuitesVarList4PL/${encodeURIComponent(input.testServiceId)}`,
+        input.body ?? {},
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
+      );
+      const payload = readResultPayload(response);
+      const result = readEnvelope(payload.result) ?? payload;
+
+      return {
+        raw: result
+      };
+    },
+    async queryTesthubEtlData(input) {
+      const response = await _http.post("/v4/testhub/etl/query-data", input);
+      const payload = readResultPayload(response);
+      const rows = readArray<unknown>(payload.value ?? payload.values ?? payload.items ?? payload.list).map((item) =>
+        typeof item === "object" && item !== null ? (item as Record<string, unknown>) : { value: item }
+      ) as Array<Record<string, unknown>>;
+
+      return {
+        rows,
+        total: readTotal(payload, response, rows.length),
+        raw: payload
+      };
+    },
+    async getTaskGroupDetail(input) {
+      const response = await _http.get(
+        `/v3/task-group/detail/${encodeURIComponent(input.task_id)}`,
+        {
+          headers: {
+            "x-auth-tenantid": input.x_auth_tenantid,
+            "x-auth-groups": input.x_auth_groups,
+            "x-user-name": input.x_user_name,
+            "x-auth-token": input.x_auth_token
+          }
+        }
+      );
+      const payload = readResultPayload(response);
+      const result = readEnvelope(payload.result) ?? payload;
+      const tasks = readArray<Record<string, unknown>>(
+        result.data ?? result.tasks ?? result.items ?? result.list ?? result.value
+      );
+      const pageInfo = readEnvelope(result.pageInfo);
+
+      return {
+        task_id: input.task_id,
+        tasks,
+        total: readOptionalNumber(pageInfo?.total) ?? readTotal(result, response, tasks.length),
+        raw: result
+      };
+    },
+    async getTaskGroupHistory(input) {
+      const response = await _http.post(
+        `/v3/task-group/detail/history`,
+        input.body ?? {
+          taskGroupId: input.taskGroupId,
+          testServiceId: input.testServiceId,
+          ...(input.coldDataFlag !== undefined ? { coldDataFlag: input.coldDataFlag } : {})
+        },
+        {
+          headers: {
+            "x-auth-groups": input.x_auth_groups,
+            "x-user-name": input.x_user_name,
+            "x-auth-token": input.x_auth_token,
+            requestId: input.request_id
+          }
+        }
+      );
+      const payload = readResultPayload(response);
+      const result = readEnvelope(payload.result) ?? payload;
+
+      return {
+        task_group_id: input.taskGroupId,
+        test_service_id: input.testServiceId,
+        raw: result
+      };
+    },
+    async executeTaskGroup(input) {
+      const body =
+        input.body ??
+        {
+          ...(input.branchId !== undefined ? { branchId: input.branchId } : {}),
+          ...(input.branchName !== undefined ? { branchName: input.branchName } : {}),
+          ...(input.versionId !== undefined ? { versionId: input.versionId } : {}),
+          ...(input.versionName !== undefined ? { versionName: input.versionName } : {}),
+          ...(input.id !== undefined ? { id: input.id } : {}),
+          ...(input.author !== undefined ? { author: input.author } : {}),
+          ...(input.analyser !== undefined ? { analyser: input.analyser } : {}),
+          ...(input.testServiceId !== undefined ? { testServiceId: input.testServiceId } : {}),
+          ...(input.userName !== undefined ? { userName: input.userName } : {}),
+          ...(input.taskGroupName !== undefined ? { taskGroupName: input.taskGroupName } : {}),
+          ...(input.scheduledTime !== undefined ? { scheduledTime: input.scheduledTime } : {}),
+          ...(input.intervalTime !== undefined ? { intervalTime: input.intervalTime } : {}),
+          ...(input.intervalTimeUnit !== undefined ? { intervalTimeUnit: input.intervalTimeUnit } : {}),
+          ...(input.taskPolicy !== undefined ? { taskPolicy: input.taskPolicy } : {}),
+          ...(input.taskGroupExeParam !== undefined ? { taskGroupExeParam: input.taskGroupExeParam } : {}),
+          ...(input.taskStrategy !== undefined ? { taskStrategy: input.taskStrategy } : {}),
+          ...(input.circle !== undefined ? { circle: input.circle } : {}),
+          ...(input.overTimeParam !== undefined ? { overTimeParam: input.overTimeParam } : {}),
+          ...(input.tmssInfo !== undefined ? { tmssInfo: input.tmssInfo } : {}),
+          ...(input.tasks !== undefined ? { tasks: input.tasks } : {})
+        };
+      const headers: Record<string, string> = {
+        "X-Auth-Token": input.x_auth_token
+      };
+      if (input.x_auth_groups !== undefined) {
+        headers["x-auth-groups"] = input.x_auth_groups;
+      }
+      const response = await _http.post(`/v3/task-group/execution`, body, {
+        headers
+      });
+      const payload = readResultPayload(response);
+      const result = readEnvelope(payload.result) ?? payload;
+
+      return {
+        task_group_id: readOptionalString(result.id) ?? readOptionalString(result.taskGroupId),
+        status: readResultStatus(response, payload),
+        value: result.value ?? payload.value ?? payload.result,
+        raw: result
+      };
+    },
+    async createRepositoryTestsuite(input) {
+      const response = await _http.post(
+        `/v1/projects/${encodeURIComponent(input.project_id)}/repository/testsuites`,
+        input.body ?? {
+          testsuite_name: input.testsuite_name,
+          repository_id: input.repository_id,
+          repository_branch: input.repository_branch,
+          file_path: input.file_path
+        },
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
+      );
+      const payload = readResultPayload(response);
+      const result = readEnvelope(payload.result) ?? payload;
+
+      return {
+        testsuite_id: readOptionalString(result.testsuite_id) ?? readOptionalString(result.testsuiteId),
+        testcase_ids: readArray<string>(result.testcase_ids ?? result.testcaseIds ?? result.value),
+        raw: result
+      };
+    },
+    async copyTaskRelations(input) {
+      const response = await _http.post(
+        `/v5/${encodeURIComponent(input.project_id)}/task/relation-copy`,
+        input.body ?? {
+          original_task_uri: input.original_task_uri,
+          dest_task_uri: input.dest_task_uri
+        }
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        project_id: input.project_id,
+        original_task_uri: input.original_task_uri,
+        dest_task_uri: input.dest_task_uri,
+        value: readResultValue(response, payload),
+        raw: payload
       };
     },
     async listApiTestsuiteHistory(input) {
@@ -7064,6 +8172,29 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         {
           headers: { "X-Auth-Token": input.x_auth_token }
         }
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        value: readResultValue(response, payload),
+        raw: payload
+      };
+    },
+    async uploadResourceAttachment(input) {
+      const form = new FormData();
+      form.append(
+        "file",
+        new Blob([Buffer.from(input.file_content)], {
+          type: input.content_type ?? "application/octet-stream"
+        }),
+        input.file_name
+      );
+      form.append("version_uri", input.version_uri);
+      form.append("resource_type", input.resource_type);
+      form.append("resource_uri", input.resource_uri);
+      const response = await _http.postMultipart(
+        `/v4/${encodeURIComponent(input.project_id)}/resources/${encodeURIComponent(input.resource_uri)}/attachments/upload`,
+        form
       );
       const payload = readResultPayload(response);
 
@@ -8367,6 +9498,35 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         version_uri: item.version_uri ?? input.version_uri,
         status_code: item.status_code,
         status_name: item.status_name
+      };
+    },
+    async deleteWorkItemTestRelation(input) {
+      const body: Record<string, unknown> = {
+        test_case_uris: input.test_case_uris,
+        project_uuid: input.project_uuid
+      };
+      if (input.version_uri !== undefined) {
+        body.version_uri = input.version_uri;
+      }
+      if (input.relate_type !== undefined) {
+        body.relate_type = input.relate_type;
+      }
+
+      const response = await _http.delete(
+        `/v4/workitems/${encodeURIComponent(input.work_item_id)}/relations/testrelation`,
+        body
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        work_item_id: input.work_item_id,
+        test_case_uris: input.test_case_uris,
+        project_uuid: input.project_uuid,
+        version_uri: input.version_uri,
+        relate_type: input.relate_type,
+        value: readResultValue(response, payload),
+        deleted: true,
+        raw: payload
       };
     },
     async initTaskExecution(input) {

@@ -143,6 +143,11 @@ describe("registerTestPlanTool", () => {
     const tools = [
       ["testplan_check_testcase_exists", "Check whether CodeArts TestPlan testcase URIs exist"],
       ["testplan_search_testcase_uris_used_for_automation", "Search CodeArts TestPlan testcase URIs used for automation"],
+      ["testplan_list_iterator_stage_counts", "List CodeArts TestPlan iterator stage counts"],
+      ["testplan_list_issues_tree", "List CodeArts TestPlan issues tree"],
+      ["testplan_list_ipd_issues_tree", "List CodeArts TestPlan IPD issues tree"],
+      ["testplan_delete_work_item_testrelation", "Delete testcase relations from a CodeArts TestPlan work item"],
+      ["testplan_copy_task_relations", "Copy CodeArts TestPlan task relations to another task (dry-run by default)"],
       ["testplan_create_defect_association", "Associate a CodeArts TestPlan defect with an iterator"],
       ["testplan_update_defect_association", "Move a CodeArts TestPlan defect association between iterators"],
       ["testplan_delete_defect_association", "Remove a CodeArts TestPlan defect association from an iterator"]
@@ -172,9 +177,51 @@ describe("registerTestPlanTool", () => {
     const registerTool = vi.fn();
     const tools = [
       ["testplan_create_test_report", "Create a CodeArts TestPlan test report"],
+      ["testplan_create_custom_template_report", "Create a CodeArts TestPlan custom template report"],
+      ["testplan_update_custom_template_report", "Update a CodeArts TestPlan custom template report"],
+      ["testplan_delete_custom_template_report", "Delete a CodeArts TestPlan custom template report"],
+      ["testplan_update_progress_report", "Update a CodeArts TestPlan progress report"],
+      ["testplan_delete_progress_report", "Delete a CodeArts TestPlan progress report"],
+      ["testplan_refresh_progress_report", "Refresh a CodeArts TestPlan progress report"],
+      ["testplan_create_progress_report", "Create a CodeArts TestPlan progress report"],
       ["testplan_update_test_report", "Update a CodeArts TestPlan test report overview"],
       ["testplan_update_test_report_quality_attributes", "Update CodeArts TestPlan test report quality attributes"],
       ["testplan_refresh_custom_template_report", "Refresh a CodeArts TestPlan custom template report"]
+    ] as const;
+
+    for (const [toolName, description] of tools) {
+      const handled = registerTestPlanTool({
+        toolName,
+        server: { registerTool },
+        mode: "stdio",
+        stdioClient: {} as never
+      });
+
+      expect(handled).toBe(true);
+      expect(registerTool).toHaveBeenLastCalledWith(
+        toolName,
+        expect.objectContaining({
+          title: toolName,
+          description
+        }),
+        expect.any(Function)
+      );
+    }
+  });
+
+  it("registers project settings write tools", () => {
+    const registerTool = vi.fn();
+    const tools = [
+      ["testplan_add_project_users", "Add CodeArts TestPlan project users (dry-run by default)"],
+      ["testplan_delete_project_users", "Delete CodeArts TestPlan project users (dry-run by default)"],
+      [
+        "testplan_update_project_issue_update_notification",
+        "Update CodeArts TestPlan project issue update notification setting (dry-run by default)"
+      ],
+      [
+        "testplan_update_project_message_notices",
+        "Update CodeArts TestPlan project message notice configuration (dry-run by default)"
+      ]
     ] as const;
 
     for (const [toolName, description] of tools) {
@@ -378,6 +425,34 @@ describe("registerTestPlanTool", () => {
         "Get CodeArts TestPlan executor runtime elements via official v1 API"
       ],
       [
+        "testplan_update_tep_share",
+        "Update CodeArts TestPlan TEP share setting (dry-run by default)"
+      ],
+      [
+        "testplan_get_tep_register_code",
+        "Get CodeArts TestPlan TEP register code"
+      ],
+      [
+        "testplan_list_teps",
+        "List CodeArts TestPlan TEP executors"
+      ],
+      [
+        "testplan_search_autotask",
+        "Search CodeArts TestPlan autotasks"
+      ],
+      [
+        "testplan_query_testhub_etl_data",
+        "Query CodeArts TestPlan TestHub ETL data rows"
+      ],
+      [
+        "testplan_get_design_data",
+        "Get CodeArts TestPlan API design data"
+      ],
+      [
+        "testplan_get_test_suites_var_list_for_pipeline",
+        "Get CodeArts TestPlan pipeline environment parameter list"
+      ],
+      [
         "testplan_update_user_infos",
         "Update CodeArts TestPlan resource owner user information via official v1 API (dry-run by default)"
       ]
@@ -535,7 +610,35 @@ describe("registerTestPlanTool", () => {
         "Create CodeArts TestPlan steps from a Postman collection upload (dry-run by default)"
       ],
       ["testplan_upload_file_to_git", "Upload a CodeArts TestPlan step file to git-backed storage (dry-run by default)"],
-      ["testplan_upload_file_v3", "Upload a CodeArts TestPlan v3 step file (dry-run by default)"]
+      ["testplan_upload_file_v3", "Upload a CodeArts TestPlan v3 step file (dry-run by default)"],
+      ["testplan_create_repository_testsuite", "Create a CodeArts TestPlan testsuite from a repository file (dry-run by default)"]
+    ] as const;
+
+    for (const [toolName, description] of tools) {
+      const handled = registerTestPlanTool({
+        toolName,
+        server: { registerTool },
+        mode: "stdio",
+        stdioClient: {} as never
+      });
+
+      expect(handled).toBe(true);
+      expect(registerTool).toHaveBeenLastCalledWith(
+        toolName,
+        expect.objectContaining({
+          title: toolName,
+          description
+        }),
+        expect.any(Function)
+      );
+    }
+  });
+
+  it("registers attachment write tools", () => {
+    const registerTool = vi.fn();
+    const tools = [
+      ["testplan_associate_attachments", "Associate attachments with a CodeArts TestPlan resource"],
+      ["testplan_upload_resource_attachment", "Upload an attachment to a CodeArts TestPlan resource"]
     ] as const;
 
     for (const [toolName, description] of tools) {
@@ -564,7 +667,8 @@ describe("registerTestPlanTool", () => {
       ["testplan_update_task_execution_info", "Update CodeArts TestPlan testcase execution info for a task"],
       ["testplan_update_task_execution_status", "Update CodeArts TestPlan testcase execution status for a task"],
       ["testplan_stop_task_execution_by_case", "Stop CodeArts TestPlan testcase execution for a task by official execution-stop API"],
-      ["testplan_batch_update_testcase_execution_info", "Batch update CodeArts TestPlan testcase execution info"]
+      ["testplan_batch_update_testcase_execution_info", "Batch update CodeArts TestPlan testcase execution info"],
+      ["testplan_execute_task_group", "Execute a CodeArts TestPlan task group (dry-run by default)"]
     ] as const;
 
     for (const [toolName, description] of tools) {
@@ -609,6 +713,14 @@ describe("registerTestPlanTool", () => {
       [
         "testplan_create_cases_task",
         "Create a CodeArts TestPlan legacy cases task via official v2 API (dry-run by default)"
+      ],
+      [
+        "testplan_delete_project_notice",
+        "Delete CodeArts TestPlan project notice via official v2 API (dry-run by default)"
+      ],
+      [
+        "testplan_stop_case_task",
+        "Stop CodeArts TestPlan legacy case task via official v2 API (dry-run by default)"
       ]
     ] as const;
 
@@ -637,9 +749,37 @@ describe("registerTestPlanTool", () => {
     const tools = [
       ["testplan_batch_update_task_attributes", "Batch update CodeArts TestPlan task attributes"],
       ["testplan_create_testhub_iterator", "Create CodeArts TestPlan TestHub iterator"],
+      ["testplan_create_testhub_service", "Create CodeArts TestPlan TestHub service"],
       ["testplan_batch_add_iterator_testcases", "Batch add CodeArts TestPlan testcases to a TestHub iterator"],
       ["testplan_update_testhub_service", "Update CodeArts TestPlan TestHub service"],
       ["testplan_delete_testhub_service", "Delete CodeArts TestPlan TestHub service"]
+    ] as const;
+
+    for (const [toolName, description] of tools) {
+      const handled = registerTestPlanTool({
+        toolName,
+        server: { registerTool },
+        mode: "stdio",
+        stdioClient: {} as never
+      });
+
+      expect(handled).toBe(true);
+      expect(registerTool).toHaveBeenLastCalledWith(
+        toolName,
+        expect.objectContaining({
+          title: toolName,
+          description
+        }),
+        expect.any(Function)
+      );
+    }
+  });
+
+  it("registers task group read tools", () => {
+    const registerTool = vi.fn();
+    const tools = [
+      ["testplan_get_task_group_detail", "Get CodeArts TestPlan task group detail"],
+      ["testplan_list_task_group_detail_history", "List CodeArts TestPlan task group detail history"]
     ] as const;
 
     for (const [toolName, description] of tools) {

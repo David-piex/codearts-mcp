@@ -1,7 +1,14 @@
 import { asItemResult } from "../../../contracts/tool-result.js";
 import {
+  testPlanCreateProgressReportInput,
+  testPlanCreateCustomTemplateReportInput,
+  testPlanDeleteCustomTemplateReportInput,
+  testPlanDeleteProgressReportInput,
   testPlanCreateTestReportInput,
+  testPlanRefreshProgressReportInput,
   testPlanRefreshCustomTemplateReportInput,
+  testPlanUpdateCustomTemplateReportInput,
+  testPlanUpdateProgressReportInput,
   testPlanUpdateTestReportInput,
   testPlanUpdateTestReportQualityAttributesInput
 } from "../schemas.js";
@@ -41,6 +48,111 @@ export function createTestPlanCreateTestReportHandler(client: {
       projectId: response.project_id,
       versionUri: response.version_uri,
       name: response.name,
+      value: response.value,
+      response: response.raw
+    });
+    return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+  };
+}
+
+export function createTestPlanCreateCustomTemplateReportHandler(client: {
+  createCustomTemplateReport: (input: Omit<ReturnType<typeof testPlanCreateCustomTemplateReportInput.parse>, "dry_run">) => Promise<{
+    project_id: string;
+    version_uri: string;
+    report_id?: string;
+    name?: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+}) {
+  return async (input: unknown) => {
+    const parsed = testPlanCreateCustomTemplateReportInput.parse(input);
+    if (parsed.dry_run) {
+      const result = preview(`Dry run: create custom template report ${parsed.name}`, {
+        projectId: parsed.project_id,
+        versionUri: parsed.version_uri,
+        name: parsed.name
+      });
+      return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+    }
+    const response = await client.createCustomTemplateReport(parsed);
+    const result = executed(`Created custom template report ${response.name ?? response.report_id ?? parsed.name}`, {
+      id: response.report_id ?? parsed.name,
+      reportId: response.report_id,
+      projectId: response.project_id,
+      versionUri: response.version_uri,
+      name: response.name,
+      value: response.value,
+      response: response.raw
+    });
+    return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+  };
+}
+
+export function createTestPlanUpdateCustomTemplateReportHandler(client: {
+  updateCustomTemplateReport: (input: Omit<ReturnType<typeof testPlanUpdateCustomTemplateReportInput.parse>, "dry_run">) => Promise<{
+    project_id: string;
+    version_uri: string;
+    report_id: string;
+    name?: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+}) {
+  return async (input: unknown) => {
+    const parsed = testPlanUpdateCustomTemplateReportInput.parse(input);
+    if (parsed.dry_run) {
+      const result = preview(`Dry run: update custom template report ${parsed.report_uri}`, {
+        id: parsed.report_uri,
+        reportId: parsed.report_uri,
+        projectId: parsed.project_id,
+        versionUri: parsed.version_uri,
+        name: parsed.name
+      });
+      return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+    }
+    const response = await client.updateCustomTemplateReport(parsed);
+    const result = executed(`Updated custom template report ${response.name ?? response.report_id}`, {
+      id: response.report_id,
+      reportId: response.report_id,
+      projectId: response.project_id,
+      versionUri: response.version_uri,
+      name: response.name,
+      value: response.value,
+      response: response.raw
+    });
+    return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+  };
+}
+
+export function createTestPlanDeleteCustomTemplateReportHandler(client: {
+  deleteCustomTemplateReport: (input: Omit<ReturnType<typeof testPlanDeleteCustomTemplateReportInput.parse>, "dry_run">) => Promise<{
+    project_id: string;
+    version_uri: string;
+    report_id: string;
+    deleted: boolean;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+}) {
+  return async (input: unknown) => {
+    const parsed = testPlanDeleteCustomTemplateReportInput.parse(input);
+    if (parsed.dry_run) {
+      const result = preview(`Dry run: delete custom template report ${parsed.report_uri}`, {
+        id: parsed.report_uri,
+        reportId: parsed.report_uri,
+        projectId: parsed.project_id,
+        versionUri: parsed.version_uri
+      });
+      return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+    }
+    const response = await client.deleteCustomTemplateReport(parsed);
+    const result = executed(`Deleted custom template report ${response.report_id}`, {
+      id: response.report_id,
+      reportId: response.report_id,
+      projectId: response.project_id,
+      versionUri: response.version_uri,
+      deleted: response.deleted,
       value: response.value,
       response: response.raw
     });
@@ -144,6 +256,150 @@ export function createTestPlanRefreshCustomTemplateReportHandler(client: {
       projectId: response.project_id,
       versionUri: response.version_uri,
       name: response.name,
+      value: response.value,
+      response: response.raw
+    });
+    return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+  };
+}
+
+export function createTestPlanRefreshProgressReportHandler(client: {
+  refreshProgressReport: (input: Omit<ReturnType<typeof testPlanRefreshProgressReportInput.parse>, "dry_run">) => Promise<{
+    project_uuid: string;
+    version_uri: string;
+    operation_uri?: string;
+    is_async_operate?: boolean;
+    return_value?: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+}) {
+  return async (input: unknown) => {
+    const parsed = testPlanRefreshProgressReportInput.parse(input);
+    if (parsed.dry_run) {
+      const result = preview("Dry run: refresh progress report", {
+        projectUuid: parsed.project_uuid,
+        versionUri: parsed.version_uri,
+        name: parsed.name
+      });
+      return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+    }
+    const response = await client.refreshProgressReport(parsed);
+    const result = executed(`Refreshed progress report ${response.operation_uri ?? response.return_value ?? parsed.name ?? parsed.version_uri}`, {
+      id: response.operation_uri ?? response.return_value ?? parsed.version_uri,
+      operationUri: response.operation_uri,
+      projectUuid: response.project_uuid,
+      versionUri: response.version_uri,
+      isAsyncOperate: response.is_async_operate,
+      returnValue: response.return_value,
+      value: response.value,
+      response: response.raw
+    });
+    return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+  };
+}
+
+export function createTestPlanUpdateProgressReportHandler(client: {
+  updateProgressReport: (input: Omit<ReturnType<typeof testPlanUpdateProgressReportInput.parse>, "dry_run">) => Promise<{
+    project_uuid: string;
+    version_uri: string;
+    report_id: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+}) {
+  return async (input: unknown) => {
+    const parsed = testPlanUpdateProgressReportInput.parse(input);
+    if (parsed.dry_run) {
+      const result = preview(`Dry run: update progress report ${parsed.report_uri}`, {
+        id: parsed.report_uri,
+        reportId: parsed.report_uri,
+        projectUuid: parsed.project_uuid,
+        versionUri: parsed.version_uri,
+        name: parsed.name
+      });
+      return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+    }
+    const response = await client.updateProgressReport(parsed);
+    const result = executed(`Updated progress report ${response.report_id}`, {
+      id: response.report_id,
+      reportId: response.report_id,
+      projectUuid: response.project_uuid,
+      versionUri: response.version_uri,
+      value: response.value,
+      response: response.raw
+    });
+    return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+  };
+}
+
+export function createTestPlanCreateProgressReportHandler(client: {
+  createProgressReport: (input: Omit<ReturnType<typeof testPlanCreateProgressReportInput.parse>, "dry_run">) => Promise<{
+    project_uuid: string;
+    version_uri: string;
+    operation_uri?: string;
+    is_async_operate?: boolean;
+    return_value?: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+}) {
+  return async (input: unknown) => {
+    const parsed = testPlanCreateProgressReportInput.parse(input);
+    if (parsed.dry_run) {
+      const result = preview(`Dry run: create progress report ${parsed.name}`, {
+        projectUuid: parsed.project_uuid,
+        versionUri: parsed.version_uri,
+        name: parsed.name,
+        type: parsed.type
+      });
+      return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+    }
+    const response = await client.createProgressReport(parsed);
+    const result = executed(`Created progress report ${response.operation_uri ?? response.return_value ?? parsed.name}`, {
+      id: response.operation_uri ?? response.return_value ?? parsed.name,
+      operationUri: response.operation_uri,
+      projectUuid: response.project_uuid,
+      versionUri: response.version_uri,
+      name: parsed.name,
+      type: parsed.type,
+      isAsyncOperate: response.is_async_operate,
+      returnValue: response.return_value,
+      value: response.value,
+      response: response.raw
+    });
+    return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+  };
+}
+
+export function createTestPlanDeleteProgressReportHandler(client: {
+  deleteProgressReport: (input: Omit<ReturnType<typeof testPlanDeleteProgressReportInput.parse>, "dry_run">) => Promise<{
+    project_uuid: string;
+    version_uri: string;
+    report_id: string;
+    deleted: boolean;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+}) {
+  return async (input: unknown) => {
+    const parsed = testPlanDeleteProgressReportInput.parse(input);
+    if (parsed.dry_run) {
+      const result = preview(`Dry run: delete progress report ${parsed.report_uri}`, {
+        id: parsed.report_uri,
+        reportId: parsed.report_uri,
+        projectUuid: parsed.project_uuid,
+        versionUri: parsed.version_uri
+      });
+      return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+    }
+    const response = await client.deleteProgressReport(parsed);
+    const result = executed(`Deleted progress report ${response.report_id}`, {
+      id: response.report_id,
+      reportId: response.report_id,
+      projectUuid: response.project_uuid,
+      versionUri: response.version_uri,
+      deleted: response.deleted,
       value: response.value,
       response: response.raw
     });

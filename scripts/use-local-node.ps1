@@ -6,8 +6,7 @@ $ErrorActionPreference = "Stop"
 
 function Resolve-FirstExistingPath {
   param(
-    [string[]]$Candidates,
-    [string]$CommandName
+    [string[]]$Candidates
   )
 
   foreach ($candidate in $Candidates) {
@@ -20,22 +19,28 @@ function Resolve-FirstExistingPath {
     }
   }
 
-  if ($CommandName) {
-    $command = Get-Command $CommandName -ErrorAction SilentlyContinue
-    if ($command -and $command.Source) {
-      return $command.Source
-    }
-  }
-
   return $null
 }
 
-$resolvedNode = Resolve-FirstExistingPath -Candidates @(
-  $env:CODEARTS_MCP_NODE_EXE,
-  "C:\nvm4w\nodejs\node.exe",
-  "C:\Users\Yao\AppData\Local\nvm\v22.22.1\node.exe",
-  "C:\Program Files\nodejs\node.exe"
-) -CommandName "node.exe"
+$resolvedNode = $null
+if ($env:CODEARTS_MCP_NODE_EXE -and (Test-Path $env:CODEARTS_MCP_NODE_EXE)) {
+  $resolvedNode = (Resolve-Path $env:CODEARTS_MCP_NODE_EXE).Path
+}
+
+if (-not $resolvedNode) {
+  $nodeCommand = Get-Command node.exe -ErrorAction SilentlyContinue
+  if ($nodeCommand -and $nodeCommand.Source) {
+    $resolvedNode = $nodeCommand.Source
+  }
+}
+
+if (-not $resolvedNode) {
+  $resolvedNode = Resolve-FirstExistingPath -Candidates @(
+    "C:\nvm4w\nodejs\node.exe",
+    "C:\Users\Yao\AppData\Local\nvm\v22.22.1\node.exe",
+    "C:\Program Files\nodejs\node.exe"
+  )
+}
 
 if (-not $resolvedNode) {
   throw "Unable to locate node.exe. Set CODEARTS_MCP_NODE_EXE or install Node.js locally."
@@ -43,25 +48,52 @@ if (-not $resolvedNode) {
 
 $nodeDir = Split-Path -Parent $resolvedNode
 
-$resolvedNpm = Resolve-FirstExistingPath -Candidates @(
-  $env:CODEARTS_MCP_NPM_CMD,
-  (Join-Path $nodeDir "npm.cmd"),
-  "C:\nvm4w\nodejs\npm.cmd",
-  "C:\Users\Yao\AppData\Local\nvm\v22.22.1\npm.cmd",
-  "C:\Program Files\nodejs\npm.cmd"
-) -CommandName "npm.cmd"
+$resolvedNpm = $null
+if ($env:CODEARTS_MCP_NPM_CMD -and (Test-Path $env:CODEARTS_MCP_NPM_CMD)) {
+  $resolvedNpm = (Resolve-Path $env:CODEARTS_MCP_NPM_CMD).Path
+}
+
+if (-not $resolvedNpm) {
+  $npmCommand = Get-Command npm.cmd -ErrorAction SilentlyContinue
+  if ($npmCommand -and $npmCommand.Source) {
+    $resolvedNpm = $npmCommand.Source
+  }
+}
+
+if (-not $resolvedNpm) {
+  $resolvedNpm = Resolve-FirstExistingPath -Candidates @(
+    (Join-Path $nodeDir "npm.cmd"),
+    "C:\nvm4w\nodejs\npm.cmd",
+    "C:\Users\Yao\AppData\Local\nvm\v22.22.1\npm.cmd",
+    "C:\Program Files\nodejs\npm.cmd"
+  )
+}
 
 if (-not $resolvedNpm) {
   throw "Unable to locate npm.cmd. Set CODEARTS_MCP_NPM_CMD or install Node.js locally."
 }
 
-$resolvedNpx = Resolve-FirstExistingPath -Candidates @(
-  $env:CODEARTS_MCP_NPX_CMD,
-  (Join-Path $nodeDir "npx.cmd"),
-  "C:\nvm4w\nodejs\npx.cmd",
-  "C:\Users\Yao\AppData\Local\nvm\v22.22.1\npx.cmd",
-  "C:\Program Files\nodejs\npx.cmd"
-) -CommandName "npx.cmd"
+$resolvedNpx = $null
+if ($env:CODEARTS_MCP_NPX_CMD -and (Test-Path $env:CODEARTS_MCP_NPX_CMD)) {
+  $resolvedNpx = (Resolve-Path $env:CODEARTS_MCP_NPX_CMD).Path
+}
+
+if (-not $resolvedNpx) {
+  $npxCommand = Get-Command npx.cmd -ErrorAction SilentlyContinue
+  if ($npxCommand -and $npxCommand.Source) {
+    $resolvedNpx = $npxCommand.Source
+  }
+}
+
+if (-not $resolvedNpx) {
+  $resolvedNpx = Resolve-FirstExistingPath -Candidates @(
+    (Join-Path $nodeDir "npx.cmd"),
+    (Join-Path $nodeDir "px.cmd"),
+    "C:\nvm4w\nodejs\npx.cmd",
+    "C:\Users\Yao\AppData\Local\nvm\v22.22.1\npx.cmd",
+    "C:\Program Files\nodejs\npx.cmd"
+  )
+}
 
 if (-not $resolvedNpx) {
   throw "Unable to locate npx.cmd. Set CODEARTS_MCP_NPX_CMD or install Node.js locally."

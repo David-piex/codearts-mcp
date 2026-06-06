@@ -10,6 +10,11 @@ function Resolve-NodeExe {
     return $env:CODEARTS_MCP_NODE_EXE
   }
 
+  $command = Get-Command node.exe -ErrorAction SilentlyContinue
+  if ($command -and $command.Source) {
+    return $command.Source
+  }
+
   foreach ($candidate in @(
     "C:\nvm4w\nodejs\node.exe",
     "C:\Users\Yao\AppData\Local\nvm\v22.22.1\node.exe",
@@ -20,17 +25,17 @@ function Resolve-NodeExe {
     }
   }
 
-  $command = Get-Command node.exe -ErrorAction SilentlyContinue
-  if ($command -and $command.Source) {
-    return $command.Source
-  }
-
   return $null
 }
 
 function Resolve-NpmCmd {
   if ($env:CODEARTS_MCP_NPM_CMD -and (Test-Path $env:CODEARTS_MCP_NPM_CMD)) {
     return $env:CODEARTS_MCP_NPM_CMD
+  }
+
+  $command = Get-Command npm.cmd -ErrorAction SilentlyContinue
+  if ($command -and $command.Source) {
+    return $command.Source
   }
 
   $nodeExe = Resolve-NodeExe
@@ -50,11 +55,6 @@ function Resolve-NpmCmd {
     if (Test-Path $candidate) {
       return $candidate
     }
-  }
-
-  $command = Get-Command npm.cmd -ErrorAction SilentlyContinue
-  if ($command -and $command.Source) {
-    return $command.Source
   }
 
   return $null

@@ -231,6 +231,70 @@ function createReqUpdateWorkItemInput<T extends Record<string, unknown>>(
   } & T;
 }
 
+function createReqUpdateIssueV3Input<T extends Record<string, unknown>>(
+  overrides?: T
+): {
+  project_id: string;
+  work_item_id: string;
+  type: string;
+  x_auth_token: string;
+  title: string;
+  work_item_type: string;
+  description: string;
+  status_id: number;
+  priority_id: number;
+  iteration_id: string;
+  module_id: string;
+  severity_id: number;
+  assigned_id: string;
+  done_ratio: number;
+  expected_work_hours: number;
+  start_date: number;
+  due_date: number;
+  dry_run: boolean;
+} & T {
+  return {
+    project_id: "project-1",
+    work_item_id: "70779173",
+    type: "scrum",
+    x_auth_token: "token-1234567890",
+    title: "Refine login flow",
+    work_item_type: "Story",
+    description: "Clarify edge cases",
+    status_id: 3,
+    priority_id: 1,
+    iteration_id: "iteration-1",
+    module_id: "module-1",
+    severity_id: 11,
+    assigned_id: "user-2",
+    done_ratio: 60,
+    expected_work_hours: 13,
+    start_date: 1839340800000,
+    due_date: 1839945600000,
+    dry_run: false,
+    ...(overrides ?? {})
+  } as {
+    project_id: string;
+    work_item_id: string;
+    type: string;
+    x_auth_token: string;
+    title: string;
+    work_item_type: string;
+    description: string;
+    status_id: number;
+    priority_id: number;
+    iteration_id: string;
+    module_id: string;
+    severity_id: number;
+    assigned_id: string;
+    done_ratio: number;
+    expected_work_hours: number;
+    start_date: number;
+    due_date: number;
+    dry_run: boolean;
+  } & T;
+}
+
 function createReqBatchUpdateWorkItemsInput<T extends Record<string, unknown>>(
   overrides?: T
 ): {
@@ -1945,6 +2009,77 @@ const writePathCases: WritePathCase[] = [
     }
   },
   {
+    name: "executes req_update_issue_v3 through the registered session-aware runtime client",
+    createHandler: (store: SessionStore) =>
+      readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_update_issue_v3"),
+    input: createReqUpdateIssueV3Input(),
+    responsePayload: {
+      status: "success",
+      result: {
+        issue: {
+          id: 70779173,
+          projectUUId: "project-1",
+          subject: "Refine login flow",
+          description: "Clarify edge cases",
+          tracker_id: 7,
+          status_id: 3,
+          priority_id: 1,
+          assigned_to_id: "user-2",
+          start_date: "1839340800000",
+          due_date: "1839945600000",
+          lockVersion: 4,
+          updated_on: "1839900000000"
+        }
+      }
+    },
+    expectedItem: {
+      id: "70779173",
+      projectId: "project-1",
+      projectUuid: "project-1",
+      type: "scrum",
+      typeId: 7,
+      title: "Refine login flow",
+      description: "Clarify edge cases",
+      status: undefined,
+      statusId: 3,
+      priorityId: 1,
+      severityId: undefined,
+      assignedToId: "user-2",
+      iterationId: undefined,
+      moduleId: undefined,
+      doneRatio: undefined,
+      expectedWorkHours: undefined,
+      startDate: "1839340800000",
+      dueDate: "1839945600000",
+      createdOn: undefined,
+      updatedOn: "1839900000000",
+      lockVersion: "4",
+      mutationStatus: "success",
+      executed: true
+    },
+    expectedRequest: {
+      path: "/v3/issues/update",
+      bodyIncludes: [
+        "\"id\":\"70779173\"",
+        "\"project_id\":\"project-1\"",
+        "\"type\":\"scrum\"",
+        "\"subject\":\"Refine login flow\"",
+        "\"description\":\"Clarify edge cases\"",
+        "\"status_id\":3",
+        "\"tracker_id\":7",
+        "\"priority_id\":1",
+        "\"iteration_id\":\"iteration-1\"",
+        "\"module_id\":\"module-1\"",
+        "\"severity_id\":11",
+        "\"assigned_to_id\":\"user-2\"",
+        "\"done_ratio\":60",
+        "\"expected_work_hours\":13",
+        "\"start_date\":\"1839340800000\"",
+        "\"due_date\":\"1839945600000\""
+      ]
+    }
+  },
+  {
     name: "executes req_batch_update_work_items through the registered session-aware runtime client",
     createHandler: (store: SessionStore) =>
       readRegisteredHandler(bootstrapHttpRuntime({ store }).server, "req_batch_update_work_items"),
@@ -2838,6 +2973,34 @@ const dryRunCases: DryRunCase[] = [
       expectedWorkHours: 13,
       startDate: 1839340800000,
       dueDate: 1839945600000,
+      executed: false
+    }
+  },
+  {
+    name: "short-circuits req_update_issue_v3 dry runs without HTTP or rate-limit consumption",
+    toolName: "req_update_issue_v3",
+    input: createReqUpdateIssueV3Input({
+      dry_run: true
+    }),
+    expectedItem: {
+      projectId: "project-1",
+      workItemId: "70779173",
+      type: "scrum",
+      xAuthToken: "toke...7890",
+      title: "Refine login flow",
+      workItemType: "Story",
+      description: "Clarify edge cases",
+      statusId: 3,
+      priorityId: 1,
+      iterationId: "iteration-1",
+      moduleId: "module-1",
+      severityId: 11,
+      assignedId: "user-2",
+      doneRatio: 60,
+      expectedWorkHours: 13,
+      startDate: 1839340800000,
+      dueDate: 1839945600000,
+      endpoint: "/v3/issues/update",
       executed: false
     }
   },

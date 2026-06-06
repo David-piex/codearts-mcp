@@ -436,6 +436,32 @@ export type ReqClient = {
     status?: { id?: number; name?: string };
     tracker?: { id?: number; name?: string };
   }>;
+  updateIssueV3: (input: {
+    project_id: string;
+    work_item_id: string;
+    type: string;
+    x_auth_token: string;
+    title?: string;
+    work_item_type?: string;
+    description?: string;
+    status_id?: number;
+    priority_id?: number;
+    iteration_id?: string;
+    module_id?: string;
+    severity_id?: number;
+    assigned_id?: string;
+    done_ratio?: number;
+    expected_work_hours?: number;
+    start_date?: number;
+    due_date?: number;
+  }) => Promise<{
+    project_id: string;
+    work_item_id: string;
+    type: string;
+    status?: string;
+    issue: Record<string, unknown>;
+    raw?: unknown;
+  }>;
   deleteWorkItem: (input: { project_id: string; work_item_id: string }) => Promise<{
     project_id: string;
     work_item_id: string;
@@ -5852,6 +5878,55 @@ export function createReqClient(
         description: response.description,
         status: response.status,
         tracker: response.tracker
+      };
+    },
+    async updateIssueV3(input) {
+      const response = (await _http.post(
+        "/v3/issues/update",
+        {
+          id: input.work_item_id,
+          project_id: input.project_id,
+          type: input.type,
+          ...(typeof input.title !== "undefined" ? { subject: input.title } : {}),
+          ...(typeof input.description !== "undefined" ? { description: input.description } : {}),
+          ...(typeof input.status_id !== "undefined" ? { status_id: input.status_id } : {}),
+          ...(typeof input.work_item_type !== "undefined"
+            ? { tracker_id: toTrackerId(input.work_item_type) }
+            : {}),
+          ...(typeof input.priority_id !== "undefined"
+            ? { priority_id: toPriorityId(input.priority_id) }
+            : {}),
+          ...(typeof input.iteration_id !== "undefined" ? { iteration_id: input.iteration_id } : {}),
+          ...(typeof input.module_id !== "undefined" ? { module_id: input.module_id } : {}),
+          ...(typeof input.severity_id !== "undefined" ? { severity_id: input.severity_id } : {}),
+          ...(typeof input.assigned_id !== "undefined"
+            ? { assigned_to_id: toOptionalNumericId(input.assigned_id) }
+            : {}),
+          ...(typeof input.done_ratio !== "undefined" ? { done_ratio: input.done_ratio } : {}),
+          ...(typeof input.expected_work_hours !== "undefined"
+            ? { expected_work_hours: input.expected_work_hours }
+            : {}),
+          ...(typeof input.start_date !== "undefined" ? { start_date: String(input.start_date) } : {}),
+          ...(typeof input.due_date !== "undefined" ? { due_date: String(input.due_date) } : {})
+        },
+        {
+          headers: { "X-Auth-Token": input.x_auth_token }
+        }
+      )) as {
+        status?: string;
+        result?: {
+          issue?: Record<string, unknown>;
+        };
+      };
+      assertReqMutationSucceeded("update V3 work item", response.status);
+
+      return {
+        project_id: input.project_id,
+        work_item_id: input.work_item_id,
+        type: input.type,
+        status: response.status,
+        issue: response.result?.issue ?? {},
+        raw: response
       };
     },
     async deleteWorkItem(input) {

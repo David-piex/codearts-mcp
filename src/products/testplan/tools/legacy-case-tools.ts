@@ -1,12 +1,14 @@
 import { asItemResult } from "../../../contracts/tool-result.js";
 import {
   testPlanCreateCasesTaskInput,
+  testPlanDeleteProjectNoticeInput,
+  testPlanStopCaseTaskInput,
   testPlanListCaseHistoryInput,
   testPlanListCasesByStidInput,
   testPlanListCasesStatusInput,
   testPlanListCasesStatusV3Input
 } from "../schemas.js";
-import { formatTestPlanRecordListText, mapTestPlanRecordList } from "./generic-read-tools.js";
+import { formatTestPlanRecordListText, mapTestPlanRecordList, mapTestPlanRecordItem } from "./generic-read-tools.js";
 
 export function createTestPlanListCasesStatusHandler(client: {
   listCasesStatus: (input: ReturnType<typeof testPlanListCasesStatusInput.parse>) => Promise<{
@@ -149,6 +151,108 @@ export function createTestPlanCreateCasesTaskHandler(client: {
       isPopup: response.is_popup,
       executed: true
     }, response.raw);
+
+    return {
+      content: [{ type: "text" as const, text: result.summary }],
+      structuredContent: result
+    };
+  };
+}
+
+export function createTestPlanDeleteProjectNoticeHandler(client: {
+  deleteProjectNotice: (input: Omit<ReturnType<typeof testPlanDeleteProjectNoticeInput.parse>, "dry_run">) => Promise<{
+    status?: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+}) {
+  return async (input: unknown) => {
+    const parsed = testPlanDeleteProjectNoticeInput.parse(input);
+
+    if (parsed.dry_run) {
+      const result = mapTestPlanRecordItem(
+        "Dry run: delete legacy TestPlan project notice",
+        parsed.testServiceId,
+        "projectNotice",
+        parsed.body ?? {},
+        {
+          testServiceId: parsed.testServiceId,
+          executed: false
+        }
+      );
+
+      return {
+        content: [{ type: "text" as const, text: result.summary }],
+        structuredContent: result
+      };
+    }
+
+    const { dry_run: _dryRun, ...request } = parsed;
+    const response = await client.deleteProjectNotice(request);
+    const result = mapTestPlanRecordItem(
+      "Deleted legacy TestPlan project notice",
+      parsed.testServiceId,
+      "projectNotice",
+      response.raw,
+      {
+        testServiceId: parsed.testServiceId,
+        value: response.value,
+        status: response.status,
+        executed: true
+      }
+    );
+
+    return {
+      content: [{ type: "text" as const, text: result.summary }],
+      structuredContent: result
+    };
+  };
+}
+
+export function createTestPlanStopCaseTaskHandler(client: {
+  stopCaseTask: (input: Omit<ReturnType<typeof testPlanStopCaseTaskInput.parse>, "dry_run">) => Promise<{
+    status?: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+}) {
+  return async (input: unknown) => {
+    const parsed = testPlanStopCaseTaskInput.parse(input);
+
+    if (parsed.dry_run) {
+      const result = mapTestPlanRecordItem(
+        "Dry run: stop legacy TestPlan case task",
+        parsed.caseId,
+        "caseTask",
+        {},
+        {
+          testServiceId: parsed.testServiceId,
+          caseId: parsed.caseId,
+          executed: false
+        }
+      );
+
+      return {
+        content: [{ type: "text" as const, text: result.summary }],
+        structuredContent: result
+      };
+    }
+
+    const { dry_run: _dryRun, ...request } = parsed;
+    const response = await client.stopCaseTask(request);
+    const result = mapTestPlanRecordItem(
+      `Stopped legacy TestPlan case task ${parsed.caseId}`,
+      parsed.caseId,
+      "caseTask",
+      response.raw,
+      {
+        testServiceId: parsed.testServiceId,
+        caseId: parsed.caseId,
+        value: response.value,
+        status: response.status,
+        executed: true
+      }
+    );
 
     return {
       content: [{ type: "text" as const, text: result.summary }],

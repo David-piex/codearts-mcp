@@ -222,6 +222,38 @@ const testPlanSearchConditionInput = z.object({
   value: z.unknown().optional()
 }).passthrough();
 
+const testPlanIssueListPiFilterInput = z
+  .object({
+    pi_id: z.string().min(1).optional(),
+    sprints: z.array(z.string().min(1)).optional()
+  })
+  .passthrough();
+
+const testPlanIssuesTreeFilterInput = z
+  .object({
+    iteration_ids: z.array(z.string().min(1)).optional(),
+    pi_sprints: z.array(testPlanIssueListPiFilterInput).optional(),
+    subject: z.string().min(1).optional(),
+    module_id: z.string().min(1).optional(),
+    status_id: z.string().min(1).optional()
+  })
+  .passthrough();
+
+const testPlanIpdIssuesTreeFilterInput = testPlanIssuesTreeFilterInput
+  .extend({
+    module_ids: z.array(z.string().min(1)).optional(),
+    status_code_list: z.array(z.string().min(1)).optional()
+  })
+  .passthrough();
+
+const testPlanIteratorListFilterInput = z
+  .object({
+    pi_sprints: z.array(testPlanIssueListPiFilterInput).optional(),
+    plan_end_date_start: z.string().min(1).optional(),
+    plan_end_date_end: z.string().min(1).optional()
+  })
+  .passthrough();
+
 export const testPlanSearchTestcaseUrisUsedForAutomationInput = pagingSchema.extend({
   project_uuid: idSchema,
   keyword: z.string().min(1).optional(),
@@ -239,6 +271,69 @@ export const testPlanSearchTestcaseUrisUsedForAutomationInput = pagingSchema.ext
   issue_id: z.string().min(1).optional(),
   creator_ids: z.array(z.string().min(1)).optional()
 }).passthrough();
+
+export const testPlanSearchAutotaskInput = pagingSchema.extend({
+  project_uuid: idSchema,
+  versionUri: z.string().min(1),
+  ticcTaskId: z.string().min(1).optional(),
+  result: z.string().min(1).optional(),
+  condition: testPlanSearchConditionInput.optional(),
+  order: z.string().min(1).optional(),
+  by: z.string().min(1).optional(),
+  offset: z.number().int().min(0).optional(),
+  limit: z.number().int().min(1).optional()
+}).passthrough();
+
+export const testPlanListIssuesTreeInput = z
+  .object({
+    project_id: idSchema,
+    service_type: z.number().int().optional(),
+    service_types: z.array(z.number().int()).optional(),
+    parent_id: z.string().min(1).optional(),
+    page_number: z.number().int().positive().optional(),
+    page_size: z.number().int().positive().optional(),
+    filter: testPlanIssuesTreeFilterInput.optional(),
+    tracker_id: z.string().min(1).optional(),
+    module_id: z.string().min(1).optional(),
+    task_uri: z.string().min(1).optional(),
+    include_sub_issue: z.boolean().optional()
+  })
+  .passthrough();
+
+export const testPlanListIpdIssuesTreeInput = z
+  .object({
+    project_id: idSchema,
+    page_number: z.number().int().positive().optional(),
+    page_size: z.number().int().positive().optional(),
+    filter: testPlanIpdIssuesTreeFilterInput.optional(),
+    tracker_id: z.union([z.string().min(1), z.number().int()]).optional()
+  })
+  .passthrough();
+
+export const testPlanListIteratorStageCountsInput = z
+  .object({
+    project_uuid: idSchema,
+    name: z.string().optional(),
+    filter: testPlanIteratorListFilterInput.optional(),
+    branch_uri: z.string().min(1).optional(),
+    iterator_uri: z.string().min(1).optional(),
+    owner_ids: z.array(z.string().min(1)).optional()
+  })
+  .passthrough();
+
+export const testPlanQueryTesthubEtlDataInput = z
+  .object({
+    offset: z.number().int().min(0),
+    limit: z.number().int().min(1).max(1000),
+    table_name: z.string().min(1),
+    is_bak: z.union([z.boolean(), z.string().min(1)]).optional(),
+    start_time: z.string().min(1),
+    end_time: z.string().min(1),
+    filter_time_field: z.string().min(1),
+    sort_field: z.string().min(1).optional(),
+    schema_no: z.string().min(1)
+  })
+  .passthrough();
 
 export const testPlanGetProjectDataDashboardInput = z
   .object({
@@ -352,6 +447,101 @@ export const testPlanRefreshCustomTemplateReportInput = z.object({
   workpiece_type: z.string().min(1).optional(),
   template_config: z.record(z.string(), z.unknown()).optional(),
   body: z.record(z.string(), z.unknown()).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanCreateCustomTemplateReportInput = z.object({
+  project_id: idSchema,
+  version_uri: idSchema,
+  uri: z.string().min(1).optional(),
+  name: z.string().min(1),
+  type: z.union([z.string().min(1), z.number().int()]).optional(),
+  workpiece_type: z.string().min(1).optional(),
+  template_config: z.record(z.string(), z.unknown()).optional(),
+  data: z.array(z.record(z.string(), z.unknown())).optional(),
+  body: z.record(z.string(), z.unknown()).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanUpdateCustomTemplateReportInput = z.object({
+  project_id: idSchema,
+  version_uri: idSchema,
+  report_uri: idSchema,
+  uri: z.string().min(1).optional(),
+  name: z.string().min(1).optional(),
+  type: z.union([z.string().min(1), z.number().int()]).optional(),
+  workpiece_type: z.string().min(1).optional(),
+  template_config: z.record(z.string(), z.unknown()).optional(),
+  data: z.array(z.record(z.string(), z.unknown())).optional(),
+  body: z.record(z.string(), z.unknown()).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanDeleteCustomTemplateReportInput = z.object({
+  project_id: idSchema,
+  version_uri: idSchema,
+  report_uri: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanProgressReportFilterInput = z.object({
+  creatorIds: z.string().min(1).optional(),
+  ownerIds: z.string().min(1).optional(),
+  ranks: z.string().min(1).optional(),
+  releaseIds: z.string().min(1).optional(),
+  status: z.string().min(1).optional(),
+  moduleIds: z.string().min(1).optional(),
+  results: z.string().min(1).optional(),
+  labelIds: z.string().min(1).optional(),
+  startTime: z.string().min(1).optional(),
+  endTime: z.string().min(1).optional(),
+  isAssociateIssue: z.union([z.string().min(1), z.boolean()]).optional(),
+  featureUris: z.union([z.string().min(1), z.array(z.string().min(1))]).optional()
+});
+
+export const testPlanUpdateProgressReportInput = z.object({
+  project_uuid: idSchema,
+  version_uri: idSchema,
+  report_uri: idSchema,
+  name: z.string().min(1).optional(),
+  type: z.union([z.string().min(1), z.number().int()]).optional(),
+  workpiece_type: z.string().min(1).optional(),
+  analysis_dim_row: z.string().min(1).optional(),
+  compare_dim_column: z.string().min(1).optional(),
+  filter: testPlanProgressReportFilterInput.optional(),
+  body: z.record(z.string(), z.unknown()).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanRefreshProgressReportInput = z.object({
+  project_uuid: idSchema,
+  version_uri: idSchema,
+  name: z.string().min(1).optional(),
+  workpiece_type: z.string().min(1).optional(),
+  analysis_dim_row: z.string().min(1).optional(),
+  compare_dim_column: z.string().min(1).optional(),
+  filter: testPlanProgressReportFilterInput.optional(),
+  body: z.record(z.string(), z.unknown()).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanCreateProgressReportInput = z.object({
+  project_uuid: idSchema,
+  version_uri: idSchema,
+  name: z.string().min(1),
+  type: z.union([z.string().min(1), z.number().int()]),
+  workpiece_type: z.string().min(1),
+  analysis_dim_row: z.string().min(1),
+  compare_dim_column: z.string().min(1).optional(),
+  filter: testPlanProgressReportFilterInput,
+  body: z.record(z.string(), z.unknown()).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanDeleteProgressReportInput = z.object({
+  project_uuid: idSchema,
+  version_uri: idSchema,
+  report_uri: idSchema,
   dry_run: z.boolean().default(true)
 });
 
@@ -608,6 +798,13 @@ export const testPlanDeleteMindmapBackupInput = z.object({
 
 export const testPlanListTesthubServicesInput = z.object({});
 
+export const testPlanCreateTesthubServiceInput = z.object({
+  service_name: z.string().min(1),
+  server_host: z.string().min(1),
+  server_type: z.number().int().optional(),
+  dry_run: z.boolean().default(true)
+});
+
 export const testPlanUpdateTesthubServiceInput = z.object({
   service_id: z.union([idSchema, z.number().int()]),
   service_name: z.string().min(1),
@@ -644,6 +841,29 @@ export const testPlanDeleteAttachmentInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+const testPlanAttachmentAssociationItemInput = z
+  .object({
+    override: z.boolean().optional(),
+    doc_id: z.string().min(1).optional(),
+    file_name: z.string().min(1),
+    file_path: z.string().min(1).optional(),
+    file_type: z.string().min(1).optional(),
+    file_size: z.union([z.string().min(1), z.number().int().nonnegative()]).optional(),
+    override_id: z.string().min(1).optional(),
+    related_type: z.union([z.string().min(1), z.number().int()]).optional()
+  })
+  .passthrough();
+
+export const testPlanAssociateAttachmentsInput = z.object({
+  project_id: idSchema,
+  resource_uri: idSchema,
+  attachments: z.array(testPlanAttachmentAssociationItemInput).min(1),
+  resource_type: z.string().min(1),
+  system_type: z.string().min(1),
+  version_uri: idSchema.optional(),
+  dry_run: z.boolean().default(true)
+});
+
 export const testPlanListProjectFieldConfigsInput = z.object({
   project_id: idSchema
 });
@@ -672,6 +892,18 @@ export const testPlanListProjectIssuesInput = pagingSchema.extend({
 export const testPlanListProjectUsersInput = pagingSchema.extend({
   project_id: idSchema,
   keyword: z.string().min(1).optional()
+});
+
+export const testPlanAddProjectUsersInput = z.object({
+  project_id: idSchema,
+  user_id_List: z.array(idSchema).min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanDeleteProjectUsersInput = z.object({
+  project_id: idSchema,
+  user_id_List: z.array(idSchema).min(1),
+  dry_run: z.boolean().default(true)
 });
 
 export const testPlanGetCurrentUserPackagePermissionInput = z.object({
@@ -729,9 +961,36 @@ export const testPlanGetProjectMessageNoticesInput = z.object({
   project_id: idSchema
 });
 
+export const testPlanUpdateProjectMessageNoticesInput = z.object({
+  project_id: idSchema,
+  id: z.string().min(1),
+  name: z.string().min(1).optional(),
+  type: z.number().int(),
+  send_email: z.boolean(),
+  send_message: z.boolean(),
+  notice_users: z
+    .array(
+      z.object({
+        id: z.string().min(1).optional(),
+        name: z.string().min(1).optional()
+      })
+    )
+    .optional(),
+  body: z.record(z.string(), z.unknown()).optional(),
+  dry_run: z.boolean().default(true)
+});
+
 export const testPlanGetProjectIssueUpdateNotificationInput = z.object({
   project_id: idSchema,
   owner_id: idSchema
+});
+
+export const testPlanUpdateProjectIssueUpdateNotificationInput = z.object({
+  project_id: idSchema,
+  owner_id: idSchema,
+  is_display: z.string().min(1),
+  body: z.record(z.string(), z.unknown()).optional(),
+  dry_run: z.boolean().default(true)
 });
 
 export const testPlanGetProjectMasterVersionInput = z.object({
@@ -942,9 +1201,13 @@ export const testPlanListTestcaseCommentsInput = pagingSchema.extend({
 
 export const testPlanCheckResourceExistsInput = z.object({
   project_id: idSchema,
-  resource_uri: idSchema,
   version_uri: idSchema,
-  type: z.number().int()
+  type: z.number().int(),
+  resource_uri: idSchema.optional(),
+  resource_uris: z.array(idSchema).min(1).optional(),
+  body: z.array(z.string().min(1)).min(1).optional()
+}).refine((value) => Boolean(value.body ?? value.resource_uris ?? value.resource_uri), {
+  message: "resource_uri, resource_uris, or body is required"
 });
 
 export const testPlanListTestcaseReviewsInput = pagingSchema.extend({
@@ -1053,6 +1316,147 @@ export const testPlanGetServiceConfigInput = z.object({
   service_id: idSchema,
   key: z.string().min(1),
   type: z.string().min(1)
+});
+
+const testPlanTepHeadersInput = z.object({
+  x_auth_tenantid: z.string().min(1),
+  x_auth_groups: z.string().min(1),
+  x_user_name: z.string().min(1),
+  x_auth_token: z.string().min(1)
+});
+
+const testPlanTaskGroupHeadersInput = z.object({
+  x_auth_groups: z.string().min(1),
+  x_user_name: z.string().min(1),
+  x_auth_token: z.string().min(1)
+});
+
+export const testPlanUpdateTepShareInput = testPlanTepHeadersInput.extend({
+  isShare: z.boolean(),
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanGetTepRegisterCodeInput = testPlanTepHeadersInput;
+
+const testPlanTepWhereInput = z.object({
+  key: z.string().min(1),
+  type: z.string().min(1),
+  value: z.unknown()
+});
+
+const testPlanTepOptionInput = z.object({
+  order_by: z.string().min(1).optional(),
+  order_sort: z.string().min(1).optional(),
+  order_limit: z.union([z.number().int(), z.string().min(1)]).optional(),
+  order_start: z.union([z.number().int(), z.string().min(1)]).optional()
+});
+
+export const testPlanListTepsInput = testPlanTepHeadersInput.extend({
+  where: z.array(testPlanTepWhereInput).optional(),
+  option: testPlanTepOptionInput.optional(),
+  body: z.record(z.string(), z.unknown()).optional()
+});
+
+export const testPlanGetDesignDataInput = z.object({
+  project_id: idSchema,
+  x_auth_token: z.string().min(1),
+  variableGroupID: z.string().min(1).optional(),
+  testcaseId: z.string().min(1).optional(),
+  testcaseIds: z.array(z.string().min(1)).optional(),
+  body: z.record(z.string(), z.unknown()).optional()
+}).refine((value) => Boolean(value.body ?? value.variableGroupID ?? value.testcaseId ?? value.testcaseIds), {
+  message: "body, variableGroupID, testcaseId, or testcaseIds is required"
+});
+
+export const testPlanDeleteProjectNoticeInput = z.object({
+  testServiceId: idSchema,
+  x_auth_token: z.string().min(1),
+  body: z.record(z.string(), z.unknown()).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanStopCaseTaskInput = z.object({
+  testServiceId: idSchema,
+  caseId: idSchema,
+  x_auth_token: z.string().min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanGetTestSuitesVarListForPipelineInput = z.object({
+  testServiceId: idSchema,
+  x_auth_token: z.string().min(1),
+  body: z.record(z.string(), z.unknown()).optional()
+});
+
+export const testPlanGetTaskGroupDetailInput = testPlanTaskGroupHeadersInput.extend({
+  task_id: idSchema,
+  x_auth_tenantid: z.string().min(1)
+});
+
+export const testPlanGetTaskGroupHistoryInput = testPlanTaskGroupHeadersInput.extend({
+  request_id: z.string().min(1),
+  taskGroupId: idSchema,
+  testServiceId: idSchema,
+  coldDataFlag: z.boolean().optional(),
+  body: z.record(z.string(), z.unknown()).optional()
+});
+
+export const testPlanExecuteTaskGroupInput = z.object({
+  x_auth_token: z.string().min(1),
+  x_auth_groups: z.string().min(1).optional(),
+  branchId: z.string().min(1).optional(),
+  branchName: z.string().min(1).optional(),
+  versionId: z.string().min(1).optional(),
+  versionName: z.string().min(1).optional(),
+  id: z.string().min(1).optional(),
+  author: z.string().min(1).optional(),
+  analyser: z.string().min(1).optional(),
+  testServiceId: z.string().min(1).optional(),
+  userName: z.string().min(1).optional(),
+  taskGroupName: z.string().min(1).optional(),
+  scheduledTime: z.string().min(1).optional(),
+  intervalTime: z.string().min(1).optional(),
+  intervalTimeUnit: z.string().min(1).optional(),
+  taskPolicy: z.number().int().optional(),
+  taskGroupExeParam: z.record(z.string(), z.unknown()).optional(),
+  taskStrategy: z.record(z.string(), z.unknown()).optional(),
+  circle: z.record(z.string(), z.unknown()).optional(),
+  overTimeParam: z.record(z.string(), z.unknown()).optional(),
+  tmssInfo: z.record(z.string(), z.unknown()).optional(),
+  tasks: z.array(z.record(z.string(), z.unknown())).optional(),
+  body: z.record(z.string(), z.unknown()).optional(),
+  dry_run: z.boolean().default(true)
+}).refine(
+  (value) =>
+    Boolean(
+      value.body ??
+        value.id ??
+        value.taskGroupName ??
+        value.testServiceId ??
+        value.tasks?.length
+    ),
+  {
+    message: "body, id, taskGroupName, testServiceId, or tasks is required"
+  }
+);
+
+export const testPlanCreateRepositoryTestsuiteInput = z.object({
+  project_id: idSchema,
+  x_auth_token: z.string().min(1),
+  testsuite_name: z.string().min(1),
+  repository_id: idSchema,
+  repository_branch: z.string().min(1),
+  file_path: z.string().min(1),
+  body: z.record(z.string(), z.unknown()).optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanCopyTaskRelationsInput = z.object({
+  project_id: idSchema,
+  original_task_uri: idSchema,
+  dest_task_uri: idSchema,
+  body: z.record(z.string(), z.unknown()).optional(),
+  dry_run: z.boolean().default(true)
 });
 
 export const testPlanGetProjectServiceConfigInput = z.object({
@@ -1443,6 +1847,15 @@ export const testPlanUploadFileToGitInput = z.object({
 export const testPlanUploadFileV3Input = z.object({
   project_id: idSchema,
   x_auth_token: z.string().min(1),
+  file_path: z.string().min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanUploadResourceAttachmentInput = z.object({
+  project_id: idSchema,
+  resource_uri: idSchema,
+  resource_type: z.string().min(1),
+  version_uri: idSchema,
   file_path: z.string().min(1),
   dry_run: z.boolean().default(true)
 });
@@ -1850,6 +2263,15 @@ export const testPlanCreateTaskRelationsInput = z.object({
   status_code: z.number().int().optional(),
   ext_param: z.string().min(1).optional(),
   execute_way: z.number().int().optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanDeleteWorkItemTestRelationInput = z.object({
+  work_item_id: z.string().min(1),
+  test_case_uris: z.array(idSchema).min(1),
+  project_uuid: idSchema,
+  version_uri: idSchema.optional(),
+  relate_type: z.string().min(1).optional(),
   dry_run: z.boolean().default(true)
 });
 

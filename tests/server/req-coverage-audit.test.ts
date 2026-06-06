@@ -21,19 +21,22 @@ describe("Req coverage audit", () => {
         method: "GET",
         path: "/v2/issues/show",
         clientScore: 0,
-        matchedTools: ["req_get_work_item_issue_details"]
+        matchedTools: ["req_get_work_item_issue_details"],
+        ignoredReason: undefined
       },
       {
         method: "POST",
         path: "/v1/custom/missing-endpoint",
         clientScore: 0,
-        matchedTools: []
+        matchedTools: [],
+        ignoredReason: undefined
       },
       {
         method: "GET",
         path: "/v4/projects/{project_id}/work-items",
-        clientScore: 3,
-        matchedTools: ["req_list_board_work_items", "req_get_work_item_issue_details"]
+        clientScore: 13,
+        matchedTools: ["req_list_board_work_items", "req_get_work_item_issue_details"],
+        ignoredReason: undefined
       }
     ]);
   });
@@ -47,9 +50,9 @@ describe("Req coverage audit", () => {
 
     expect(report).toContain("Req official endpoints: 2");
     expect(report).toContain("Weak client/tool matches: 1");
-    expect(report).toContain("Low-confidence semantic matches: 1");
+    expect(report).toContain("Low-confidence semantic matches: 0");
     expect(report).toContain("| POST | `/v1/custom/missing-endpoint` | 0 | - |");
-    expect(report).toContain("| GET | `/v4/projects/{project_id}/work-items` | 3 | req_list_board_work_items |");
+    expect(report).not.toContain("| Suspect method | Suspect path | Client score | Matched tools |");
   });
 
   it("matches common official path abbreviations to semantic tool names", () => {

@@ -166,6 +166,14 @@ function normalizeToken(value: string) {
   return value.replace(/[{}]/g, "").replace(/\..*$/, "");
 }
 
+function normalizeClientTemplateText(value: string) {
+  return value.replace(/\$\{[^}]+\}/g, "{}");
+}
+
+function normalizeEndpointTemplatePath(path: string) {
+  return path.replace(/\{[^}]+\}/g, "{}");
+}
+
 function endpointTokens(path: string) {
   return path
     .split("/")
@@ -207,8 +215,14 @@ function collectEndpoints(docText: string) {
 
 function scoreClientPath(path: string, clientText: string) {
   const stableTokens = endpointTokens(path);
-  const prefix = path.replace(/\{[^}]+\}/g, "");
-  const pathBonus = prefix.length > 4 && clientText.includes(prefix) ? 10 : 0;
+  const rawPrefix = path.replace(/\{[^}]+\}/g, "");
+  const normalizedPrefix = normalizeEndpointTemplatePath(path);
+  const normalizedClientText = normalizeClientTemplateText(clientText);
+  const pathBonus =
+    (rawPrefix.length > 4 && clientText.includes(rawPrefix)) ||
+    (normalizedPrefix.length > 4 && normalizedClientText.includes(normalizedPrefix))
+      ? 10
+      : 0;
 
   return pathBonus + stableTokens.filter((token) => clientText.includes(token)).length;
 }

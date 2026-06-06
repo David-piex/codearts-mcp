@@ -1148,6 +1148,7 @@ API 数量：`391`
   "params": {
     "name": "repo_associate_remote_mirror",
     "arguments": {
+      "x_auth_token": "<x_auth_token>",
       "repository_id": "<repository_id>",
       "url": "<url>"
     }
@@ -1159,6 +1160,7 @@ API 数量：`391`
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
+| `x_auth_token` | 是 | `string` |  | 字段对应：<br>MCP 字段 `x_auth_token` ↔ 原始 CodeArts 代码仓库 API 同名字段 `x_auth_token`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
 | `repository_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repository_id` ↔ 原始 CodeArts 代码仓库 API 中的仓库 ID 字段，通常位于路径参数或 Query 参数。<br>CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
 | `url` | 是 | `string` |  | 字段对应：<br>MCP 字段 `url` ↔ 原始 CodeArts 代码仓库 API 同名字段 `url`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>远程仓库或镜像地址。 |
 | `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
@@ -1169,6 +1171,10 @@ API 数量：`391`
 {
   "type": "object",
   "properties": {
+    "x_auth_token": {
+      "type": "string",
+      "minLength": 1
+    },
     "repository_id": {
       "type": "string",
       "minLength": 1
@@ -1183,6 +1189,7 @@ API 数量：`391`
     }
   },
   "required": [
+    "x_auth_token",
     "repository_id",
     "url"
   ],
@@ -24689,6 +24696,7 @@ API 数量：`391`
   "params": {
     "name": "repo_start_remote_mirror_synchronization",
     "arguments": {
+      "x_auth_token": "<x_auth_token>",
       "repository_id": "<repository_id>"
     }
   }
@@ -24699,6 +24707,7 @@ API 数量：`391`
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
+| `x_auth_token` | 是 | `string` |  | 字段对应：<br>MCP 字段 `x_auth_token` ↔ 原始 CodeArts 代码仓库 API 同名字段 `x_auth_token`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
 | `repository_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repository_id` ↔ 原始 CodeArts 代码仓库 API 中的仓库 ID 字段，通常位于路径参数或 Query 参数。<br>CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
 | `username` | 否 | `string` |  | 字段对应：<br>MCP 字段 `username` ↔ 原始 CodeArts 代码仓库 API 同名字段 `username`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>远程镜像认证用户名。按官方接口要求需要传入 base64 后的值。 |
 | `password` | 否 | `string` |  | 字段对应：<br>MCP 字段 `password` ↔ 原始 CodeArts 代码仓库 API 同名字段 `password`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>远程镜像认证密码。按官方接口要求需要传入 base64 后的值。 |
@@ -24712,6 +24721,10 @@ API 数量：`391`
 {
   "type": "object",
   "properties": {
+    "x_auth_token": {
+      "type": "string",
+      "minLength": 1
+    },
     "repository_id": {
       "type": "string",
       "minLength": 1
@@ -24737,6 +24750,7 @@ API 数量：`391`
     }
   },
   "required": [
+    "x_auth_token",
     "repository_id"
   ],
   "additionalProperties": false,
@@ -28185,6 +28199,7 @@ API 数量：`391`
   "params": {
     "name": "repo_update_remote_mirror",
     "arguments": {
+      "x_auth_token": "<x_auth_token>",
       "repository_id": "<repository_id>"
     }
   }
@@ -28195,6 +28210,7 @@ API 数量：`391`
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
+| `x_auth_token` | 是 | `string` |  | 字段对应：<br>MCP 字段 `x_auth_token` ↔ 原始 CodeArts 代码仓库 API 同名字段 `x_auth_token`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
 | `repository_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repository_id` ↔ 原始 CodeArts 代码仓库 API 中的仓库 ID 字段，通常位于路径参数或 Query 参数。<br>CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
 | `url` | 否 | `string` |  | 字段对应：<br>MCP 字段 `url` ↔ 原始 CodeArts 代码仓库 API 同名字段 `url`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>远程仓库或镜像地址。 |
 | `sync_branch_type` | 否 | `"all" \| "default"` |  | 字段对应：<br>MCP 字段 `sync_branch_type` ↔ 原始 CodeArts 代码仓库 API 同名字段 `sync_branch_type`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>远程镜像同步分支范围，all 表示全部分支，default 表示默认分支。可选值：`all`、`default`。 |
@@ -28208,6 +28224,10 @@ API 数量：`391`
 {
   "type": "object",
   "properties": {
+    "x_auth_token": {
+      "type": "string",
+      "minLength": 1
+    },
     "repository_id": {
       "type": "string",
       "minLength": 1
@@ -28236,6 +28256,7 @@ API 数量：`391`
     }
   },
   "required": [
+    "x_auth_token",
     "repository_id"
   ],
   "additionalProperties": false,
@@ -28903,6 +28924,7 @@ API 数量：`391`
   "params": {
     "name": "repo_update_repository_remote_mirror",
     "arguments": {
+      "x_auth_token": "<x_auth_token>",
       "repository_id": "<repository_id>"
     }
   }
@@ -28913,6 +28935,7 @@ API 数量：`391`
 
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
+| `x_auth_token` | 是 | `string` |  | 字段对应：<br>MCP 字段 `x_auth_token` ↔ 原始 CodeArts 代码仓库 API 同名字段 `x_auth_token`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
 | `repository_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repository_id` ↔ 原始 CodeArts 代码仓库 API 中的仓库 ID 字段，通常位于路径参数或 Query 参数。<br>CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
 | `url` | 否 | `string` |  | 字段对应：<br>MCP 字段 `url` ↔ 原始 CodeArts 代码仓库 API 同名字段 `url`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>远程仓库或镜像地址。 |
 | `sync_branch_type` | 否 | `"all" \| "default"` |  | 字段对应：<br>MCP 字段 `sync_branch_type` ↔ 原始 CodeArts 代码仓库 API 同名字段 `sync_branch_type`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>远程镜像同步分支范围，all 表示全部分支，default 表示默认分支。可选值：`all`、`default`。 |
@@ -28926,6 +28949,10 @@ API 数量：`391`
 {
   "type": "object",
   "properties": {
+    "x_auth_token": {
+      "type": "string",
+      "minLength": 1
+    },
     "repository_id": {
       "type": "string",
       "minLength": 1
@@ -28954,6 +28981,7 @@ API 数量：`391`
     }
   },
   "required": [
+    "x_auth_token",
     "repository_id"
   ],
   "additionalProperties": false,

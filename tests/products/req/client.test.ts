@@ -1336,6 +1336,128 @@ describe("createReqClient", () => {
     });
   });
 
+  it("maps updateIssueV3 to the official token-header endpoint", async () => {
+    let requestedPath = "";
+    let requestedBody: Record<string, unknown> | undefined;
+    let requestedHeaders: Record<string, string> | undefined;
+    const client = createReqClient({
+      post: async (
+        path: string,
+        body: Record<string, unknown>,
+        options?: { headers?: Record<string, string> }
+      ) => {
+        requestedPath = path;
+        requestedBody = body;
+        requestedHeaders = options?.headers;
+
+        return {
+          status: "success",
+          result: {
+            issue: {
+              id: 70779173,
+              projectUUId: "p-1",
+              subject: "Refine login flow",
+              description: "Clarify edge cases",
+              tracker_id: 7,
+              status_id: 3,
+              priority_id: 1,
+              assigned_to_id: "user-2",
+              lockVersion: 4,
+              start_date: "1839340800000",
+              due_date: "1839945600000",
+              created_on: "1839000000000",
+              updated_on: "1839900000000"
+            }
+          }
+        };
+      }
+    } as never);
+
+    const result = await client.updateIssueV3({
+      project_id: "p-1",
+      work_item_id: "70779173",
+      type: "scrum",
+      x_auth_token: "token-1234567890",
+      title: "Refine login flow",
+      description: "Clarify edge cases",
+      status_id: 3,
+      work_item_type: "Story",
+      priority_id: 1,
+      iteration_id: "iteration-1",
+      module_id: "module-1",
+      severity_id: 11,
+      assigned_id: "user-2",
+      done_ratio: 60,
+      expected_work_hours: 13,
+      start_date: 1839340800000,
+      due_date: 1839945600000
+    });
+
+    expect(requestedPath).toBe("/v3/issues/update");
+    expect(requestedHeaders).toEqual({
+      "X-Auth-Token": "token-1234567890"
+    });
+    expect(requestedBody).toEqual({
+      id: "70779173",
+      project_id: "p-1",
+      type: "scrum",
+      subject: "Refine login flow",
+      description: "Clarify edge cases",
+      status_id: 3,
+      tracker_id: 7,
+      priority_id: 1,
+      iteration_id: "iteration-1",
+      module_id: "module-1",
+      severity_id: 11,
+      assigned_to_id: "user-2",
+      done_ratio: 60,
+      expected_work_hours: 13,
+      start_date: "1839340800000",
+      due_date: "1839945600000"
+    });
+    expect(result).toEqual({
+      project_id: "p-1",
+      work_item_id: "70779173",
+      type: "scrum",
+      status: "success",
+      issue: {
+        id: 70779173,
+        projectUUId: "p-1",
+        subject: "Refine login flow",
+        description: "Clarify edge cases",
+        tracker_id: 7,
+        status_id: 3,
+        priority_id: 1,
+        assigned_to_id: "user-2",
+        lockVersion: 4,
+        start_date: "1839340800000",
+        due_date: "1839945600000",
+        created_on: "1839000000000",
+        updated_on: "1839900000000"
+      },
+      raw: {
+        status: "success",
+        result: {
+          issue: {
+            id: 70779173,
+            projectUUId: "p-1",
+            subject: "Refine login flow",
+            description: "Clarify edge cases",
+            tracker_id: 7,
+            status_id: 3,
+            priority_id: 1,
+            assigned_to_id: "user-2",
+            lockVersion: 4,
+            start_date: "1839340800000",
+            due_date: "1839945600000",
+            created_on: "1839000000000",
+            updated_on: "1839900000000"
+          }
+        }
+      }
+    });
+  });
+
   it("uses issues endpoints when listing and getting work items", async () => {
     const requestedPaths: string[] = [];
     const client = createReqClient({

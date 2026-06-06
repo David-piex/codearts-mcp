@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
   createTestPlanCreateCasesTaskHandler,
+  createTestPlanDeleteProjectNoticeHandler,
   createTestPlanListCaseHistoryHandler,
   createTestPlanListCasesByStidHandler,
   createTestPlanListCasesStatusHandler,
-  createTestPlanListCasesStatusV3Handler
+  createTestPlanListCasesStatusV3Handler,
+  createTestPlanStopCaseTaskHandler
 } from "../../../../src/products/testplan/tools/legacy-case-tools.js";
 
 describe("testplan legacy case handlers", () => {
@@ -160,6 +162,86 @@ describe("testplan legacy case handlers", () => {
           isPopup: false,
           executed: true
         }
+      }
+    });
+  });
+
+  it("returns dry-run previews for additional legacy write tools", async () => {
+    const deleteNoticeHandler = createTestPlanDeleteProjectNoticeHandler({
+      deleteProjectNotice: async () => {
+        throw new Error("should not execute in dry run");
+      }
+    });
+    const stopCaseTaskHandler = createTestPlanStopCaseTaskHandler({
+      stopCaseTask: async () => {
+        throw new Error("should not execute in dry run");
+      }
+    });
+
+    await expect(
+      deleteNoticeHandler({
+        testServiceId: "service-1",
+        x_auth_token: "token-1"
+      })
+    ).resolves.toMatchObject({
+      structuredContent: {
+        summary: "Dry run: delete legacy TestPlan project notice",
+        item: { id: "service-1", testServiceId: "service-1", executed: false }
+      }
+    });
+    await expect(
+      stopCaseTaskHandler({
+        testServiceId: "service-1",
+        caseId: "case-1",
+        x_auth_token: "token-1"
+      })
+    ).resolves.toMatchObject({
+      structuredContent: {
+        summary: "Dry run: stop legacy TestPlan case task",
+        item: { id: "case-1", testServiceId: "service-1", caseId: "case-1", executed: false }
+      }
+    });
+  });
+
+  it("executes additional legacy write tools when dry_run is false", async () => {
+    const deleteNoticeHandler = createTestPlanDeleteProjectNoticeHandler({
+      deleteProjectNotice: async () => ({
+        status: "success",
+        value: "ok",
+        raw: { result: "ok" }
+      })
+    });
+    const stopCaseTaskHandler = createTestPlanStopCaseTaskHandler({
+      stopCaseTask: async () => ({
+        status: "success",
+        value: "stopped",
+        raw: { result: "stopped" }
+      })
+    });
+
+    await expect(
+      deleteNoticeHandler({
+        testServiceId: "service-1",
+        x_auth_token: "token-1",
+        dry_run: false
+      })
+    ).resolves.toMatchObject({
+      structuredContent: {
+        summary: "Deleted legacy TestPlan project notice",
+        item: { id: "service-1", value: "ok", status: "success", executed: true }
+      }
+    });
+    await expect(
+      stopCaseTaskHandler({
+        testServiceId: "service-1",
+        caseId: "case-1",
+        x_auth_token: "token-1",
+        dry_run: false
+      })
+    ).resolves.toMatchObject({
+      structuredContent: {
+        summary: "Stopped legacy TestPlan case task case-1",
+        item: { id: "case-1", value: "stopped", status: "success", executed: true }
       }
     });
   });

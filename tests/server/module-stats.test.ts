@@ -39,11 +39,11 @@ describe("classifyToolAccess", () => {
 describe("collectModuleStats", () => {
   it("returns the current per-module tool totals and read/write split", () => {
     expect(collectModuleStats()).toEqual([
-      { module: "Req", total: 343, read: 208, write: 135 },
+      { module: "Req", total: 344, read: 208, write: 136 },
       { module: "Repo", total: 391, read: 254, write: 137 },
       { module: "Pipeline", total: 161, read: 89, write: 72 },
       { module: "Check", total: 104, read: 84, write: 20 },
-      { module: "TestPlan", total: 313, read: 257, write: 56 },
+      { module: "TestPlan", total: 345, read: 270, write: 75 },
       { module: "Deploy", total: 87, read: 59, write: 28 },
       { module: "Build", total: 143, read: 97, write: 46 },
       { module: "Artifact", total: 52, read: 44, write: 8 },
@@ -54,8 +54,8 @@ describe("collectModuleStats", () => {
     expect(collectProductToolStats()).toEqual({
       modules: 8,
       total: collectProductToolManifest().length,
-      read: 1092,
-      write: 502,
+      read: 1105,
+      write: 522,
     });
   });
 
@@ -76,11 +76,11 @@ describe("collectModuleStats", () => {
   it("renders a json report from the current stats", () => {
     expect(JSON.parse(renderModuleStatsReportJson())).toEqual({
       modules: [
-        { module: "Req", total: 343, read: 208, write: 135 },
+        { module: "Req", total: 344, read: 208, write: 136 },
         { module: "Repo", total: 391, read: 254, write: 137 },
         { module: "Pipeline", total: 161, read: 89, write: 72 },
         { module: "Check", total: 104, read: 84, write: 20 },
-        { module: "TestPlan", total: 313, read: 257, write: 56 },
+        { module: "TestPlan", total: 345, read: 270, write: 75 },
         { module: "Deploy", total: 87, read: 59, write: 28 },
         { module: "Build", total: 143, read: 97, write: 46 },
         { module: "Artifact", total: 52, read: 44, write: 8 },
@@ -88,8 +88,8 @@ describe("collectModuleStats", () => {
       totals: {
         modules: 8,
         total: collectProductToolManifest().length,
-        read: 1092,
-        write: 502,
+        read: 1105,
+        write: 522,
         httpTotalWithAuth: collectHttpToolTotal(),
       },
     });

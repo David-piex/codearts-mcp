@@ -5,12 +5,15 @@ import {
   testPlanBatchDeleteTasksInput,
   testPlanBatchSendNotificationsInput,
   testPlanBatchUpdateTaskAttributesInput,
+  testPlanAddProjectUsersInput,
   testPlanCheckAlertTemplateNameInput,
   testPlanCheckAlertUserNameInput,
   testPlanCheckApiTestTaskNameInput,
   testPlanCheckProjectMemberExistsInput,
   testPlanCheckResourceExistsInput,
   testPlanCreateTestReportInput,
+  testPlanCreateCustomTemplateReportInput,
+  testPlanCreateProgressReportInput,
   testPlanCreateDefectAssociationInput,
   testPlanCheckUserDefinedConfigUsedInput,
   testPlanCheckUserInfoInput,
@@ -18,12 +21,16 @@ import {
   testPlanCountMindmapsInput,
   testPlanCreateTaskInput,
   testPlanCreateTaskRelationsInput,
+  testPlanCreateRepositoryTestsuiteInput,
   testPlanBatchDeleteFactorsInput,
   testPlanCreateAwCataFirstInput,
   testPlanCreateResourceUriV4Input,
   testPlanCreateTestStepByCollectionInput,
   testPlanDeleteAssetInput,
   testPlanDeleteAttachmentInput,
+  testPlanDeleteCustomTemplateReportInput,
+  testPlanDeleteProgressReportInput,
+  testPlanDeleteProjectUsersInput,
   testPlanDeleteTesthubServiceInput,
   testPlanDeleteAwCatasInput,
   testPlanDeleteBasicAwsV1Input,
@@ -55,6 +62,10 @@ import {
   testPlanGetApiTestPackageChargeMessageInput,
   testPlanGetApiTestPackageChargePopupInput,
   testPlanGetApiTestProjectInfoInput,
+  testPlanGetDesignDataInput,
+  testPlanListIpdIssuesTreeInput,
+  testPlanListIssuesTreeInput,
+  testPlanListIteratorStageCountsInput,
   testPlanGetApiTestTaskStatusInput,
   testPlanGetApiTestTaskStatusV2Input,
   testPlanShowTaskStatusInput,
@@ -157,6 +168,8 @@ import {
   testPlanGetTesthubTaskInput,
   testPlanGetTaskExecutionParamInput,
   testPlanGetTaskInput,
+  testPlanGetTaskGroupDetailInput,
+  testPlanGetTaskGroupHistoryInput,
   testPlanGetTaskResultDetailInput,
   testPlanGetTaskSuccessTestCasesCountInput,
   testPlanBatchUpdateTestcaseExecutionInfoInput,
@@ -187,10 +200,17 @@ import {
   testPlanListCaseHistoryInput,
   testPlanListCasesByStidInput,
   testPlanCreateCasesTaskInput,
+  testPlanDeleteProjectNoticeInput,
+  testPlanGetTepRegisterCodeInput,
+  testPlanGetTestSuitesVarListForPipelineInput,
+  testPlanListTepsInput,
+  testPlanQueryTesthubEtlDataInput,
+  testPlanStopCaseTaskInput,
   testPlanListApiTestcaseExecuteHistoriesInput,
   testPlanListApiTestcaseHistoryInput,
   testPlanListApiTestsuiteHistoryInput,
   testPlanListAttachmentsInput,
+  testPlanAssociateAttachmentsInput,
   testPlanListAlertTemplatesInput,
   testPlanListAssetsInput,
   testPlanListAssetTreeInput,
@@ -280,6 +300,7 @@ import {
   testPlanListTesthubTestcasesInput,
   testPlanListTesthubTestcasesV5Input,
   testPlanListTesthubServicesInput,
+  testPlanCreateTesthubServiceInput,
   testPlanListV1BranchesInput,
   testPlanListV4BranchesInput,
   testPlanListV4ProjectFieldConfigsInput,
@@ -293,7 +314,10 @@ import {
   testPlanListTestReportsInput,
   testPlanGetServiceConfigInput,
   testPlanRunCasesInput,
+  testPlanCopyTaskRelationsInput,
+  testPlanExecuteTaskGroupInput,
   testPlanSearchApiTestBasicAwInfosInput,
+  testPlanSearchAutotaskInput,
   testPlanSearchFeaturesByCaseInput,
   testPlanSearchFeaturesInput,
   testPlanSearchTestcaseUrisUsedForAutomationInput,
@@ -302,16 +326,25 @@ import {
   testPlanShowTimeOutViewInput,
   testPlanShowVariablesDecryptInput,
   testPlanRefreshCustomTemplateReportInput,
+  testPlanRefreshProgressReportInput,
+  testPlanUpdateCustomTemplateReportInput,
+  testPlanUpdateProgressReportInput,
+  testPlanUpdateProjectIssueUpdateNotificationInput,
+  testPlanUpdateProjectMessageNoticesInput,
   testPlanUpdateAwCataFirstInput,
   testPlanUpdateDefectAssociationInput,
+  testPlanUpdateTepShareInput,
   testPlanUpdateTesthubServiceInput,
   testPlanUpdateTestReportInput,
   testPlanUpdateTestReportQualityAttributesInput,
   testPlanUpdateTimeOutViewInput,
+  testPlanUploadResourceAttachmentInput,
   testPlanStopTaskExecutionInput,
   testPlanDeleteDefectAssociationInput,
+  testPlanDeleteWorkItemTestRelationInput,
   testPlanUpdateTaskInput
 } from "../products/testplan/schemas.js";
+import { createTestPlanAssociateAttachmentsHandler } from "../products/testplan/tools/associate-attachments.js";
 import { createTestPlanCheckUserExistsHandler } from "../products/testplan/tools/check-user-exists.js";
 import { createTestPlanCheckProjectMemberExistsHandler } from "../products/testplan/tools/check-project-member-exists.js";
 import { createTestPlanCheckResourceExistsHandler } from "../products/testplan/tools/check-resource-exists.js";
@@ -327,8 +360,15 @@ import {
   createTestPlanUpdateDefectAssociationHandler
 } from "../products/testplan/tools/defect-association.js";
 import {
+  createTestPlanCreateProgressReportHandler,
+  createTestPlanCreateCustomTemplateReportHandler,
   createTestPlanCreateTestReportHandler,
+  createTestPlanDeleteCustomTemplateReportHandler,
+  createTestPlanDeleteProgressReportHandler,
   createTestPlanRefreshCustomTemplateReportHandler,
+  createTestPlanRefreshProgressReportHandler,
+  createTestPlanUpdateCustomTemplateReportHandler,
+  createTestPlanUpdateProgressReportHandler,
   createTestPlanUpdateTestReportHandler,
   createTestPlanUpdateTestReportQualityAttributesHandler
 } from "../products/testplan/tools/report-write-tools.js";
@@ -369,6 +409,7 @@ import { createTestPlanGetBranchHandler } from "../products/testplan/tools/get-b
 import { createTestPlanGetCaseTemplateHandler } from "../products/testplan/tools/get-case-template.js";
 import { createTestPlanCreateTaskHandler } from "../products/testplan/tools/create-task.js";
 import { createTestPlanCreateTaskRelationsHandler } from "../products/testplan/tools/create-task-relations.js";
+import { createTestPlanCopyTaskRelationsHandler } from "../products/testplan/tools/copy-task-relations.js";
 import { createTestPlanGetCaseHandler } from "../products/testplan/tools/get-case.js";
 import { createTestPlanGetCustomTemplateHandler } from "../products/testplan/tools/get-custom-template.js";
 import { createTestPlanGetCurrentUserPackagePermissionHandler } from "../products/testplan/tools/get-current-user-package-permission.js";
@@ -423,14 +464,26 @@ import {
   createTestPlanBatchSendNotificationsHandler,
   createTestPlanCreateResourceUriV4Handler,
   createTestPlanDownloadClassesHandler,
+  createTestPlanGetDesignDataHandler,
+  createTestPlanGetTepRegisterCodeHandler,
+  createTestPlanGetTestSuitesVarListForPipelineHandler,
+  createTestPlanListIpdIssuesTreeHandler,
+  createTestPlanListIssuesTreeHandler,
+  createTestPlanListIteratorStageCountsHandler,
+  createTestPlanListTepsHandler,
+  createTestPlanQueryTesthubEtlDataHandler,
+  createTestPlanSearchAutotaskHandler,
+  createTestPlanUpdateTepShareHandler,
   createTestPlanUpdateUserInfosHandler
 } from "../products/testplan/tools/official-misc-tools.js";
 import {
   createTestPlanCreateCasesTaskHandler,
+  createTestPlanDeleteProjectNoticeHandler,
   createTestPlanListCaseHistoryHandler,
   createTestPlanListCasesByStidHandler,
   createTestPlanListCasesStatusHandler,
-  createTestPlanListCasesStatusV3Handler
+  createTestPlanListCasesStatusV3Handler,
+  createTestPlanStopCaseTaskHandler
 } from "../products/testplan/tools/legacy-case-tools.js";
 import {
   createTestPlanCreateTestStepByCollectionHandler,
@@ -439,6 +492,7 @@ import {
   createTestPlanUploadFileToGitHandler,
   createTestPlanUploadFileV3Handler
 } from "../products/testplan/tools/upload-import-tools.js";
+import { createTestPlanUploadResourceAttachmentHandler } from "../products/testplan/tools/upload-resource-attachment.js";
 import {
   createTestPlanBatchDeleteFactorsHandler,
   createTestPlanDeleteAttachmentHandler,
@@ -456,6 +510,7 @@ import {
   createTestPlanDeleteTestcasesV3Handler,
   createTestPlanDeleteVectorsHandler
 } from "../products/testplan/tools/delete-official-resources.js";
+import { createTestPlanDeleteWorkItemTestRelationHandler } from "../products/testplan/tools/delete-work-item-testrelation.js";
 import { createTestPlanListMindmapBackupsHandler } from "../products/testplan/tools/list-mindmap-backups.js";
 import { createTestPlanListMindmapsV2Handler } from "../products/testplan/tools/list-mindmaps-v2.js";
 import { createTestPlanListMindmapsV3Handler } from "../products/testplan/tools/list-mindmaps-v3.js";
@@ -470,6 +525,12 @@ import { createTestPlanGetProjectDomainDetailInfoHandler } from "../products/tes
 import { createTestPlanGetProjectIssueUpdateNotificationHandler } from "../products/testplan/tools/get-project-issue-update-notification.js";
 import { createTestPlanGetProjectMasterVersionHandler } from "../products/testplan/tools/get-project-master-version.js";
 import { createTestPlanGetProjectMessageNoticesHandler } from "../products/testplan/tools/get-project-message-notices.js";
+import {
+  createTestPlanAddProjectUsersHandler,
+  createTestPlanDeleteProjectUsersHandler,
+  createTestPlanUpdateProjectIssueUpdateNotificationHandler,
+  createTestPlanUpdateProjectMessageNoticesHandler
+} from "../products/testplan/tools/project-settings-write-tools.js";
 import { createTestPlanGetProgressHandler } from "../products/testplan/tools/get-progress.js";
 import { createTestPlanGetProjectDataDashboardHandler } from "../products/testplan/tools/get-project-data-dashboard.js";
 import { createTestPlanGetProjectProgressHandler } from "../products/testplan/tools/get-project-progress.js";
@@ -500,6 +561,11 @@ import { createTestPlanGetTesthubProgressHandler } from "../products/testplan/to
 import { createTestPlanGetTesthubTaskHandler } from "../products/testplan/tools/get-testhub-task.js";
 import { createTestPlanGetTaskExecutionParamHandler } from "../products/testplan/tools/get-task-execution-param.js";
 import { createTestPlanGetTaskHandler } from "../products/testplan/tools/get-task.js";
+import {
+  createTestPlanExecuteTaskGroupHandler,
+  createTestPlanGetTaskGroupDetailHandler,
+  createTestPlanListTaskGroupDetailHistoryHandler
+} from "../products/testplan/tools/task-group-tools.js";
 import { createTestPlanGetTaskResultDetailHandler } from "../products/testplan/tools/get-task-result-detail.js";
 import { createTestPlanGetTaskSuccessTestCasesCountHandler } from "../products/testplan/tools/get-task-success-testcases-count.js";
 import { createTestPlanGetTestcaseChangeStatisticsHandler } from "../products/testplan/tools/get-testcase-change-statistics.js";
@@ -587,6 +653,7 @@ import { createTestPlanListProjectTagsHandler } from "../products/testplan/tools
 import { createTestPlanListProjectUsersHandler } from "../products/testplan/tools/list-project-users.js";
 import { createTestPlanListPublicAwLibAndAwsHandler } from "../products/testplan/tools/list-public-aw-lib-and-aws.js";
 import { createTestPlanListProgressReportsHandler } from "../products/testplan/tools/list-progress-reports.js";
+import { createTestPlanCreateRepositoryTestsuiteHandler } from "../products/testplan/tools/repository-testsuite-tools.js";
 import { createTestPlanListRequirementsOverviewDefectsHandler } from "../products/testplan/tools/list-requirements-overview-defects.js";
 import { createTestPlanListRequirementsOverviewHandler } from "../products/testplan/tools/list-requirements-overview.js";
 import { createTestPlanListRequirementsOverviewTestcasesHandler } from "../products/testplan/tools/list-requirements-overview-testcases.js";
@@ -647,6 +714,7 @@ import { createTestPlanStopTaskExecutionHandler } from "../products/testplan/too
 import {
   createTestPlanBatchAddIteratorTestcasesHandler,
   createTestPlanBatchUpdateTaskAttributesHandler,
+  createTestPlanCreateTesthubServiceHandler,
   createTestPlanCreateTesthubIteratorHandler,
   createTestPlanDeleteTesthubServiceHandler,
   createTestPlanUpdateTesthubServiceHandler
@@ -672,6 +740,38 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanBatchSendNotificationsInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanBatchSendNotificationsHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanBatchSendNotificationsHandler
+  }),
+  "testplan_update_tep_share": defineProductTool({
+    description: "Update CodeArts TestPlan TEP share setting (dry-run by default)",
+    inputSchema: testPlanUpdateTepShareInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanUpdateTepShareHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanUpdateTepShareHandler
+  }),
+  "testplan_get_tep_register_code": defineProductTool({
+    description: "Get CodeArts TestPlan TEP register code",
+    inputSchema: testPlanGetTepRegisterCodeInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetTepRegisterCodeHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetTepRegisterCodeHandler
+  }),
+  "testplan_list_teps": defineProductTool({
+    description: "List CodeArts TestPlan TEP executors",
+    inputSchema: testPlanListTepsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTepsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListTepsHandler
+  }),
+  "testplan_search_autotask": defineProductTool({
+    description: "Search CodeArts TestPlan autotasks",
+    inputSchema: testPlanSearchAutotaskInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanSearchAutotaskHandler>[0] }) =>
+      clients.testPlanClient,
+    createProductHandler: createTestPlanSearchAutotaskHandler
+  }),
+  "testplan_query_testhub_etl_data": defineProductTool({
+    description: "Query CodeArts TestPlan TestHub ETL data rows",
+    inputSchema: testPlanQueryTesthubEtlDataInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanQueryTesthubEtlDataHandler>[0] }) =>
+      clients.testPlanClient,
+    createProductHandler: createTestPlanQueryTesthubEtlDataHandler
   }),
   "testplan_list_plans": defineProductTool({
     description: "List CodeArts TestPlan plans",
@@ -997,6 +1097,13 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListIteratorInfosHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListIteratorInfosHandler
   }),
+  "testplan_list_iterator_stage_counts": defineProductTool({
+    description: "List CodeArts TestPlan iterator stage counts",
+    inputSchema: testPlanListIteratorStageCountsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListIteratorStageCountsHandler>[0] }) =>
+      clients.testPlanClient,
+    createProductHandler: createTestPlanListIteratorStageCountsHandler
+  }),
   "testplan_list_gt3k_iterator_infos": defineProductTool({
     description: "List CodeArts TestPlan GT3K iterator information",
     inputSchema: testPlanListGt3kIteratorInfosInput,
@@ -1111,6 +1218,12 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetApiTestProjectInfoHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetApiTestProjectInfoHandler
   }),
+  "testplan_get_design_data": defineProductTool({
+    description: "Get CodeArts TestPlan API design data",
+    inputSchema: testPlanGetDesignDataInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetDesignDataHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetDesignDataHandler
+  }),
   "testplan_get_background_info": defineProductTool({
     description: "Get CodeArts TestPlan background information",
     inputSchema: testPlanGetBackgroundInfoInput,
@@ -1153,6 +1266,18 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListCasesByStidHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListCasesByStidHandler
   }),
+  "testplan_delete_project_notice": defineProductTool({
+    description: "Delete CodeArts TestPlan project notice via official v2 API (dry-run by default)",
+    inputSchema: testPlanDeleteProjectNoticeInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanDeleteProjectNoticeHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanDeleteProjectNoticeHandler
+  }),
+  "testplan_stop_case_task": defineProductTool({
+    description: "Stop CodeArts TestPlan legacy case task via official v2 API (dry-run by default)",
+    inputSchema: testPlanStopCaseTaskInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanStopCaseTaskHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanStopCaseTaskHandler
+  }),
   "testplan_list_api_testcase_execute_histories": defineProductTool({
     description: "List CodeArts TestPlan API testcase execution histories",
     inputSchema: testPlanListApiTestcaseExecuteHistoriesInput,
@@ -1170,6 +1295,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanGetFreeTestTimeInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetFreeTestTimeHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetFreeTestTimeHandler
+  }),
+  "testplan_get_test_suites_var_list_for_pipeline": defineProductTool({
+    description: "Get CodeArts TestPlan pipeline environment parameter list",
+    inputSchema: testPlanGetTestSuitesVarListForPipelineInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetTestSuitesVarListForPipelineHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanGetTestSuitesVarListForPipelineHandler
   }),
   "testplan_list_api_testsuite_history": defineProductTool({
     description: "List CodeArts TestPlan API testsuite execution history",
@@ -1374,6 +1505,20 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanUploadFileV3Input,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanUploadFileV3Handler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanUploadFileV3Handler
+  }),
+  "testplan_create_repository_testsuite": defineProductTool({
+    description: "Create a CodeArts TestPlan testsuite from a repository file (dry-run by default)",
+    inputSchema: testPlanCreateRepositoryTestsuiteInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanCreateRepositoryTestsuiteHandler>[0] }) =>
+      clients.testPlanClient,
+    createProductHandler: createTestPlanCreateRepositoryTestsuiteHandler
+  }),
+  "testplan_upload_resource_attachment": defineProductTool({
+    description: "Upload an attachment to a CodeArts TestPlan resource",
+    inputSchema: testPlanUploadResourceAttachmentInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanUploadResourceAttachmentHandler>[0] }) =>
+      clients.testPlanClient,
+    createProductHandler: createTestPlanUploadResourceAttachmentHandler
   }),
   "testplan_delete_aw_catas": defineProductTool({
     description: "Batch delete CodeArts TestPlan AW keywords and catalogs via official v1 API (dry-run by default)",
@@ -1927,6 +2072,18 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanCheckUserDefinedConfigUsedHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanCheckUserDefinedConfigUsedHandler
   }),
+  "testplan_add_project_users": defineProductTool({
+    description: "Add CodeArts TestPlan project users (dry-run by default)",
+    inputSchema: testPlanAddProjectUsersInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanAddProjectUsersHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanAddProjectUsersHandler
+  }),
+  "testplan_delete_project_users": defineProductTool({
+    description: "Delete CodeArts TestPlan project users (dry-run by default)",
+    inputSchema: testPlanDeleteProjectUsersInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanDeleteProjectUsersHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanDeleteProjectUsersHandler
+  }),
   "testplan_get_project_message_notices": defineProductTool({
     description: "Get CodeArts TestPlan project message notice configurations",
     inputSchema: testPlanGetProjectMessageNoticesInput,
@@ -1938,6 +2095,18 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanGetProjectIssueUpdateNotificationInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetProjectIssueUpdateNotificationHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetProjectIssueUpdateNotificationHandler
+  }),
+  "testplan_update_project_issue_update_notification": defineProductTool({
+    description: "Update CodeArts TestPlan project issue update notification setting (dry-run by default)",
+    inputSchema: testPlanUpdateProjectIssueUpdateNotificationInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanUpdateProjectIssueUpdateNotificationHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanUpdateProjectIssueUpdateNotificationHandler
+  }),
+  "testplan_update_project_message_notices": defineProductTool({
+    description: "Update CodeArts TestPlan project message notice configuration (dry-run by default)",
+    inputSchema: testPlanUpdateProjectMessageNoticesInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanUpdateProjectMessageNoticesHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanUpdateProjectMessageNoticesHandler
   }),
   "testplan_get_project_master_version": defineProductTool({
     description: "Get CodeArts TestPlan project master version URI",
@@ -1993,6 +2162,13 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListAttachmentsHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListAttachmentsHandler
   }),
+  "testplan_associate_attachments": defineProductTool({
+    description: "Associate attachments with a CodeArts TestPlan resource",
+    inputSchema: testPlanAssociateAttachmentsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanAssociateAttachmentsHandler>[0] }) =>
+      clients.testPlanClient,
+    createProductHandler: createTestPlanAssociateAttachmentsHandler
+  }),
   "testplan_delete_attachment": defineProductTool({
     description: "Delete a CodeArts TestPlan testcase attachment by URI (dry-run by default)",
     inputSchema: testPlanDeleteAttachmentInput,
@@ -2023,6 +2199,20 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListProjectIssuesHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListProjectIssuesHandler
   }),
+  "testplan_list_issues_tree": defineProductTool({
+    description: "List CodeArts TestPlan issues tree",
+    inputSchema: testPlanListIssuesTreeInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListIssuesTreeHandler>[0] }) =>
+      clients.testPlanClient,
+    createProductHandler: createTestPlanListIssuesTreeHandler
+  }),
+  "testplan_list_ipd_issues_tree": defineProductTool({
+    description: "List CodeArts TestPlan IPD issues tree",
+    inputSchema: testPlanListIpdIssuesTreeInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListIpdIssuesTreeHandler>[0] }) =>
+      clients.testPlanClient,
+    createProductHandler: createTestPlanListIpdIssuesTreeHandler
+  }),
   "testplan_list_project_users": defineProductTool({
     description: "List CodeArts TestPlan project users",
     inputSchema: testPlanListProjectUsersInput,
@@ -2052,6 +2242,13 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanGetTaskInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetTaskHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanGetTaskHandler
+  }),
+  "testplan_get_task_group_detail": defineProductTool({
+    description: "Get CodeArts TestPlan task group detail",
+    inputSchema: testPlanGetTaskGroupDetailInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanGetTaskGroupDetailHandler>[0] }) =>
+      clients.testPlanClient,
+    createProductHandler: createTestPlanGetTaskGroupDetailHandler
   }),
   "testplan_get_task_execution_param": defineProductTool({
     description: "Get CodeArts TestPlan test suite task execution parameters",
@@ -2185,6 +2382,26 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanCreateTestReportHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanCreateTestReportHandler
   }),
+  "testplan_create_custom_template_report": defineProductTool({
+    description: "Create a CodeArts TestPlan custom template report",
+    inputSchema: testPlanCreateCustomTemplateReportInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanCreateCustomTemplateReportHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanCreateCustomTemplateReportHandler
+  }),
+  "testplan_update_custom_template_report": defineProductTool({
+    description: "Update a CodeArts TestPlan custom template report",
+    inputSchema: testPlanUpdateCustomTemplateReportInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanUpdateCustomTemplateReportHandler>[0] }) =>
+      clients.testPlanClient,
+    createProductHandler: createTestPlanUpdateCustomTemplateReportHandler
+  }),
+  "testplan_delete_custom_template_report": defineProductTool({
+    description: "Delete a CodeArts TestPlan custom template report",
+    inputSchema: testPlanDeleteCustomTemplateReportInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanDeleteCustomTemplateReportHandler>[0] }) =>
+      clients.testPlanClient,
+    createProductHandler: createTestPlanDeleteCustomTemplateReportHandler
+  }),
   "testplan_get_project_data_dashboard": defineProductTool({
     description: "Get CodeArts TestPlan project data dashboard overview",
     inputSchema: testPlanGetProjectDataDashboardInput,
@@ -2196,6 +2413,32 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListProgressReportsInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListProgressReportsHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListProgressReportsHandler
+  }),
+  "testplan_update_progress_report": defineProductTool({
+    description: "Update a CodeArts TestPlan progress report",
+    inputSchema: testPlanUpdateProgressReportInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanUpdateProgressReportHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanUpdateProgressReportHandler
+  }),
+  "testplan_delete_progress_report": defineProductTool({
+    description: "Delete a CodeArts TestPlan progress report",
+    inputSchema: testPlanDeleteProgressReportInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanDeleteProgressReportHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanDeleteProgressReportHandler
+  }),
+  "testplan_refresh_progress_report": defineProductTool({
+    description: "Refresh a CodeArts TestPlan progress report",
+    inputSchema: testPlanRefreshProgressReportInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanRefreshProgressReportHandler>[0] }) =>
+      clients.testPlanClient,
+    createProductHandler: createTestPlanRefreshProgressReportHandler
+  }),
+  "testplan_create_progress_report": defineProductTool({
+    description: "Create a CodeArts TestPlan progress report",
+    inputSchema: testPlanCreateProgressReportInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanCreateProgressReportHandler>[0] }) =>
+      clients.testPlanClient,
+    createProductHandler: createTestPlanCreateProgressReportHandler
   }),
   "testplan_create_task": defineProductTool({
     description: "Create CodeArts TestPlan test suite task",
@@ -2214,6 +2457,13 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanCreateTaskRelationsInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanCreateTaskRelationsHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanCreateTaskRelationsHandler
+  }),
+  "testplan_copy_task_relations": defineProductTool({
+    description: "Copy CodeArts TestPlan task relations to another task (dry-run by default)",
+    inputSchema: testPlanCopyTaskRelationsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanCopyTaskRelationsHandler>[0] }) =>
+      clients.testPlanClient,
+    createProductHandler: createTestPlanCopyTaskRelationsHandler
   }),
   "testplan_update_task": defineProductTool({
     description: "Update CodeArts TestPlan test suite task",
@@ -2244,6 +2494,13 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListTaskResultsInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTaskResultsHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListTaskResultsHandler
+  }),
+  "testplan_list_task_group_detail_history": defineProductTool({
+    description: "List CodeArts TestPlan task group detail history",
+    inputSchema: testPlanGetTaskGroupHistoryInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTaskGroupDetailHistoryHandler>[0] }) =>
+      clients.testPlanClient,
+    createProductHandler: createTestPlanListTaskGroupDetailHistoryHandler
   }),
   "testplan_list_testhub_branches": defineProductTool({
     description: "List CodeArts TestPlan TestHub branches",
@@ -2280,6 +2537,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListTesthubServicesInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTesthubServicesHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListTesthubServicesHandler
+  }),
+  "testplan_create_testhub_service": defineProductTool({
+    description: "Create CodeArts TestPlan TestHub service",
+    inputSchema: testPlanCreateTesthubServiceInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanCreateTesthubServiceHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanCreateTesthubServiceHandler
   }),
   "testplan_update_testhub_service": defineProductTool({
     description: "Update CodeArts TestPlan TestHub service",
@@ -2358,6 +2621,13 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListTestcaseRelationsInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTestcaseRelationsHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListTestcaseRelationsHandler
+  }),
+  "testplan_delete_work_item_testrelation": defineProductTool({
+    description: "Delete testcase relations from a CodeArts TestPlan work item",
+    inputSchema: testPlanDeleteWorkItemTestRelationInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanDeleteWorkItemTestRelationHandler>[0] }) =>
+      clients.testPlanClient,
+    createProductHandler: createTestPlanDeleteWorkItemTestRelationHandler
   }),
   "testplan_list_testcase_uri_infos_v5": defineProductTool({
     description: "List CodeArts TestPlan v5 testcase URI info records",
@@ -2514,6 +2784,13 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanRunCasesInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanRunCasesHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanRunCasesHandler
+  }),
+  "testplan_execute_task_group": defineProductTool({
+    description: "Execute a CodeArts TestPlan task group (dry-run by default)",
+    inputSchema: testPlanExecuteTaskGroupInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanExecuteTaskGroupHandler>[0] }) =>
+      clients.testPlanClient,
+    createProductHandler: createTestPlanExecuteTaskGroupHandler
   }),
   "testplan_search_api_test_basic_aw_infos": defineProductTool({
     description: "Search CodeArts TestPlan API test v4 basic AW information entries with catalog details",
