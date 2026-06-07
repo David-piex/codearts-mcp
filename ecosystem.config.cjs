@@ -9,6 +9,9 @@ module.exports = {
         NODE_ENV: "production",
         MCP_TRANSPORT: "http",
         MCP_HTTP_PORT: "3000",
+        MCP_HTTP_HOST: process.env.MCP_HTTP_HOST ?? "127.0.0.1",
+        MCP_HTTP_ALLOWED_ORIGINS:
+          process.env.MCP_HTTP_ALLOWED_ORIGINS ?? "",
         MCP_SERVER_NAME: "codearts-mcp",
         MCP_SERVER_VERSION: "0.1.0",
         MCP_AUTH_MASTER_KEY: process.env.MCP_AUTH_MASTER_KEY,

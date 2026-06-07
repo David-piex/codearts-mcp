@@ -94,7 +94,9 @@ describe("loadServerMetadataConfig", () => {
     ).toEqual({
       serverName: "codearts-mcp",
       serverVersion: "0.1.0",
+      httpHost: "127.0.0.1",
       httpPort: 3100,
+      httpAllowedOrigins: [],
       productWriteRateLimit: {
         maxRequests: 3000,
         windowMs: 60_000
@@ -125,7 +127,9 @@ describe("loadServerMetadataConfig", () => {
     ).toEqual({
       serverName: "codearts-mcp",
       serverVersion: "0.1.0",
+      httpHost: "127.0.0.1",
       httpPort: 3000,
+      httpAllowedOrigins: [],
       productWriteRateLimit: {
         maxRequests: 1200,
         windowMs: 30_000
@@ -159,6 +163,34 @@ describe("loadServerMetadataConfig", () => {
         MCP_AUTH_WRITE_RATE_LIMIT_WINDOW_MS: "1.5"
       })
     ).toThrow(/MCP_AUTH_WRITE_RATE_LIMIT_WINDOW_MS/);
+  });
+
+  it("loads HTTP host and allowed Origin overrides", () => {
+    expect(
+      loadServerMetadataConfig({
+        MCP_SERVER_NAME: "codearts-mcp",
+        MCP_SERVER_VERSION: "0.1.0",
+        MCP_HTTP_HOST: "0.0.0.0",
+        MCP_HTTP_ALLOWED_ORIGINS:
+          "https://allowed.example, https://allowed.example/path, http://localhost:5173"
+      })
+    ).toMatchObject({
+      httpHost: "0.0.0.0",
+      httpAllowedOrigins: [
+        "https://allowed.example",
+        "http://localhost:5173"
+      ]
+    });
+  });
+
+  it("rejects invalid HTTP allowed Origin entries", () => {
+    expect(() =>
+      loadServerMetadataConfig({
+        MCP_SERVER_NAME: "codearts-mcp",
+        MCP_SERVER_VERSION: "0.1.0",
+        MCP_HTTP_ALLOWED_ORIGINS: "not a url"
+      })
+    ).toThrow(/MCP_HTTP_ALLOWED_ORIGINS/);
   });
 });
 

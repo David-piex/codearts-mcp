@@ -11,6 +11,7 @@ import {
 } from "@modelcontextprotocol/sdk/server/zod-compat.js";
 import { loadEnvConfig } from "../core/config/env.js";
 import { createServer, readRegisteredTools, type RegisteredToolInfo } from "./create-server.js";
+import { resolveMcpProtocolVersion } from "./mcp-protocol.js";
 import { findToolManifestEntry } from "./tool-manifest.js";
 
 type CliOutputFormat = "json" | "text" | "table";
@@ -64,8 +65,6 @@ type HttpJsonRpcResponse = {
     data?: unknown;
   };
 };
-
-const MCP_PROTOCOL_VERSION = "2025-03-26";
 
 class CliError extends Error {
   constructor(
@@ -464,6 +463,7 @@ function buildHttpMcpHeaders(options: {
   token?: string;
   sessionId?: string;
   includeContentType?: boolean;
+  protocolVersion: string;
 }) {
   const headers: Record<string, string> = {
     accept: "application/json, text/event-stream"
@@ -479,7 +479,7 @@ function buildHttpMcpHeaders(options: {
 
   if (options.sessionId) {
     headers["mcp-session-id"] = options.sessionId;
-    headers["mcp-protocol-version"] = MCP_PROTOCOL_VERSION;
+    headers["mcp-protocol-version"] = options.protocolVersion;
   }
 
   return headers;
@@ -499,6 +499,7 @@ function getResponseHeader(
 async function initializeHttpSession(options: {
   endpoint?: string;
   token?: string;
+  protocolVersion: string;
   fetch: typeof fetch;
 }) {
   if (!options.endpoint) {
@@ -509,14 +510,15 @@ async function initializeHttpSession(options: {
     method: "POST",
     headers: buildHttpMcpHeaders({
       token: options.token,
-      includeContentType: true
+      includeContentType: true,
+      protocolVersion: options.protocolVersion
     }),
     body: JSON.stringify({
       jsonrpc: "2.0",
       id: "codearts-cli-init",
       method: "initialize",
       params: {
-        protocolVersion: MCP_PROTOCOL_VERSION,
+        protocolVersion: options.protocolVersion,
         capabilities: {},
         clientInfo: {
           name: "codearts-cli",
@@ -544,6 +546,7 @@ async function closeHttpSession(options: {
   endpoint?: string;
   token?: string;
   sessionId: string;
+  protocolVersion: string;
   fetch: typeof fetch;
 }) {
   if (!options.endpoint) {
@@ -555,7 +558,8 @@ async function closeHttpSession(options: {
       method: "DELETE",
       headers: buildHttpMcpHeaders({
         token: options.token,
-        sessionId: options.sessionId
+        sessionId: options.sessionId,
+        protocolVersion: options.protocolVersion
       })
     });
   } catch {
@@ -568,13 +572,18 @@ async function callHttpTool(options: {
   token?: string;
   toolName: string;
   input: unknown;
+  env: Record<string, string | undefined>;
   fetch: typeof fetch;
 }) {
   if (!options.endpoint) {
     throw new CliError("HTTP transport requires --endpoint or CODEARTS_MCP_URL.");
   }
 
-  const sessionId = await initializeHttpSession(options);
+  const protocolVersion = resolveMcpProtocolVersion(options.env);
+  const sessionId = await initializeHttpSession({
+    ...options,
+    protocolVersion
+  });
 
   try {
     const response = await options.fetch(options.endpoint, {
@@ -582,7 +591,8 @@ async function callHttpTool(options: {
       headers: buildHttpMcpHeaders({
         token: options.token,
         sessionId,
-        includeContentType: true
+        includeContentType: true,
+        protocolVersion
       }),
       body: JSON.stringify({
         jsonrpc: "2.0",
@@ -606,6 +616,7 @@ async function callHttpTool(options: {
       endpoint: options.endpoint,
       token: options.token,
       sessionId,
+      protocolVersion,
       fetch: options.fetch
     });
   }
@@ -614,13 +625,18 @@ async function callHttpTool(options: {
 async function listHttpTools(options: {
   endpoint?: string;
   token?: string;
+  env: Record<string, string | undefined>;
   fetch: typeof fetch;
 }) {
   if (!options.endpoint) {
     throw new CliError("HTTP transport requires --endpoint or CODEARTS_MCP_URL.");
   }
 
-  const sessionId = await initializeHttpSession(options);
+  const protocolVersion = resolveMcpProtocolVersion(options.env);
+  const sessionId = await initializeHttpSession({
+    ...options,
+    protocolVersion
+  });
 
   try {
     const response = await options.fetch(options.endpoint, {
@@ -628,7 +644,8 @@ async function listHttpTools(options: {
       headers: buildHttpMcpHeaders({
         token: options.token,
         sessionId,
-        includeContentType: true
+        includeContentType: true,
+        protocolVersion
       }),
       body: JSON.stringify({
         jsonrpc: "2.0",
@@ -649,6 +666,7 @@ async function listHttpTools(options: {
       endpoint: options.endpoint,
       token: options.token,
       sessionId,
+      protocolVersion,
       fetch: options.fetch
     });
   }
@@ -745,6 +763,7 @@ export async function runCli(options: CliRunOptions = {}) {
             ? await listHttpTools({
                 endpoint: parsed.endpoint,
                 token: parsed.token,
+                env: commandEnv,
                 fetch: options.fetch ?? fetch
               })
             : getLocalTools(commandEnv).map(toolToListEntry);
@@ -785,6 +804,7 @@ export async function runCli(options: CliRunOptions = {}) {
           const tools = await listHttpTools({
             endpoint: parsed.endpoint,
             token: parsed.token,
+            env: commandEnv,
             fetch: options.fetch ?? fetch
           });
           const tool = tools.find(
@@ -843,6 +863,7 @@ export async function runCli(options: CliRunOptions = {}) {
             token: parsed.token,
             toolName,
             input,
+            env: commandEnv,
             fetch: options.fetch ?? fetch
           });
         } else {

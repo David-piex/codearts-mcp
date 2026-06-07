@@ -91,6 +91,31 @@ function normalizeHeaderValue(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
 }
 
+function normalizeOriginHeader(value: string | string[] | undefined) {
+  const origin = normalizeHeaderValue(value);
+
+  if (!origin) {
+    return undefined;
+  }
+
+  try {
+    return new URL(origin).origin;
+  } catch {
+    return "__invalid_origin__";
+  }
+}
+
+function isOriginAllowed(
+  origin: string | undefined,
+  allowedOrigins: readonly string[]
+) {
+  if (!origin) {
+    return true;
+  }
+
+  return allowedOrigins.includes(origin);
+}
+
 function appendSetCookieHeader(res: ServerResponse, value: string) {
   const current = res.getHeader("set-cookie");
 
@@ -175,33 +200,33 @@ function installRequestLogging(
   const startedAt = Date.now();
   let logged = false;
 
-    const logRequest = () => {
-      if (logged) {
-        return;
-      }
+  const logRequest = () => {
+    if (logged) {
+      return;
+    }
 
-      const diagnostics = getCurrentRequestDiagnostics();
-      const responseSessionId = normalizeHeaderValue(
-        res.getHeader("mcp-session-id") as string | string[] | undefined
-      );
-      const entry = {
-        ...details,
-        method: req.method ?? "UNKNOWN",
-        path: pathname,
-        statusCode: res.statusCode,
-        durationMs: Date.now() - startedAt,
-        sessionId: details.sessionId ?? responseSessionId,
-        cacheHits: diagnostics?.cacheHits ?? [],
-        phaseTimings: diagnostics?.phaseTimings ?? [],
-        upstreamRequestCount: diagnostics?.upstreamRequestCount ?? 0,
-        upstreamDurationMs: diagnostics?.upstreamDurationMs ?? 0,
-        upstreamStatusCodes: diagnostics?.upstreamStatusCodes ?? []
-      };
-
-      logged = true;
-      options.onRequestCompleted?.(entry);
-      options.requestLogger?.(entry);
+    const diagnostics = getCurrentRequestDiagnostics();
+    const responseSessionId = normalizeHeaderValue(
+      res.getHeader("mcp-session-id") as string | string[] | undefined
+    );
+    const entry = {
+      ...details,
+      method: req.method ?? "UNKNOWN",
+      path: pathname,
+      statusCode: res.statusCode,
+      durationMs: Date.now() - startedAt,
+      sessionId: details.sessionId ?? responseSessionId,
+      cacheHits: diagnostics?.cacheHits ?? [],
+      phaseTimings: diagnostics?.phaseTimings ?? [],
+      upstreamRequestCount: diagnostics?.upstreamRequestCount ?? 0,
+      upstreamDurationMs: diagnostics?.upstreamDurationMs ?? 0,
+      upstreamStatusCodes: diagnostics?.upstreamStatusCodes ?? []
     };
+
+    logged = true;
+    options.onRequestCompleted?.(entry);
+    options.requestLogger?.(entry);
+  };
 
   res.once("finish", logRequest);
   res.once("close", logRequest);
@@ -399,6 +424,12 @@ export function createHttpApp(
         return;
       }
 
+      const origin = normalizeOriginHeader(req.headers.origin);
+      if (!isOriginAllowed(origin, config.httpAllowedOrigins ?? [])) {
+        writeJson(res, 403, { error: "Origin is not allowed for MCP requests." });
+        return;
+      }
+
       if (req.method === "GET") {
         res.setHeader("allow", "POST, DELETE");
         writeJson(res, 405, {
@@ -465,9 +496,14 @@ export function createHttpApp(
             sessionStore.bind(sessionId!, authContext.authId);
           }
 
+          if (sessionId && !transport) {
+            writeJson(res, 404, { error: "Unknown MCP session ID." });
+            return;
+          }
+
           if (!transport) {
             if (!parsedBody || !isInitializeRequest(parsedBody)) {
-              writeJson(res, 400, { error: "Missing or invalid MCP session." });
+              writeJson(res, 400, { error: "Missing MCP session ID." });
               return;
             }
 
@@ -500,8 +536,13 @@ export function createHttpApp(
         }
 
         if (req.method === "DELETE") {
-          if (!sessionId || !transports[sessionId]) {
-            writeJson(res, 400, { error: "Invalid or missing session ID." });
+          if (!sessionId) {
+            writeJson(res, 400, { error: "Missing MCP session ID." });
+            return;
+          }
+
+          if (!transports[sessionId]) {
+            writeJson(res, 404, { error: "Unknown MCP session ID." });
             return;
           }
 

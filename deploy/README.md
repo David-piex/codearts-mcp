@@ -60,6 +60,7 @@ bash deploy/manage-shared.sh start
 ```env
 MCP_TRANSPORT=http
 MCP_HTTP_PORT=3000
+MCP_HTTP_HOST=0.0.0.0
 MCP_SERVER_NAME=codearts-mcp
 MCP_SERVER_VERSION=0.1.0
 MCP_AUTH_MASTER_KEY=replace-with-a-long-random-secret
@@ -163,6 +164,7 @@ npm run build
 ```bash
 export MCP_TRANSPORT=http
 export MCP_HTTP_PORT=3000
+export MCP_HTTP_HOST=127.0.0.1
 export MCP_SERVER_NAME=codearts-mcp
 export MCP_SERVER_VERSION=0.1.0
 export MCP_AUTH_MASTER_KEY=replace-with-a-long-random-secret

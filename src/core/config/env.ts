@@ -39,7 +39,9 @@ export type AppConfig = {
 export type ServerMetadataConfig = {
   serverName: string;
   serverVersion: string;
+  httpHost?: string;
   httpPort: number;
+  httpAllowedOrigins?: string[];
   productWriteRateLimit?: FixedWindowRateLimitConfig;
   authWriteRateLimit?: FixedWindowRateLimitConfig;
   readCacheTtls?: ReadCacheTtls;
@@ -97,6 +99,30 @@ function parseReadCacheTtlMs(
   }
 
   return parsed;
+}
+
+function parseAllowedOrigins(value: string | undefined, envName: string) {
+  if (value === undefined || value.trim().length === 0) {
+    return [];
+  }
+
+  const origins = new Set<string>();
+
+  for (const rawOrigin of value.split(",")) {
+    const trimmed = rawOrigin.trim();
+
+    if (!trimmed) {
+      continue;
+    }
+
+    try {
+      origins.add(new URL(trimmed).origin);
+    } catch {
+      throw new Error(`${envName} must be a comma-separated list of valid origins.`);
+    }
+  }
+
+  return [...origins];
 }
 
 function loadReadCacheTtls(
@@ -186,7 +212,12 @@ export function loadServerMetadataConfig(
   return {
     serverName,
     serverVersion,
+    httpHost: source.MCP_HTTP_HOST ?? "127.0.0.1",
     httpPort: Number(source.MCP_HTTP_PORT ?? "3000"),
+    httpAllowedOrigins: parseAllowedOrigins(
+      source.MCP_HTTP_ALLOWED_ORIGINS,
+      "MCP_HTTP_ALLOWED_ORIGINS"
+    ),
     productWriteRateLimit: loadFixedWindowRateLimitConfig(
       source,
       "MCP_PRODUCT_WRITE_RATE_LIMIT_MAX_REQUESTS",

@@ -174,6 +174,91 @@ describe("http app", () => {
     expect(body.error).toContain("GET /mcp SSE is not supported");
   });
 
+  it("rejects MCP requests from untrusted browser origins", async () => {
+    const { port } = await servers.start();
+    const initialized = await initializeSession(port, {
+      headers: {
+        origin: "https://evil.example"
+      }
+    });
+    const body = (await initialized.response.json()) as {
+      error?: string;
+    };
+
+    expect(initialized.response.status).toBe(403);
+    expect(body.error).toBe("Origin is not allowed for MCP requests.");
+    expect(initialized.sessionId).toBeNull();
+  });
+
+  it("allows MCP requests from configured browser origins", async () => {
+    const { port } = await servers.start(undefined, {
+      config: {
+        httpAllowedOrigins: ["https://allowed.example"]
+      }
+    });
+    const initialized = await initializeSession(port, {
+      headers: {
+        origin: "https://allowed.example"
+      }
+    });
+
+    expect(initialized.response.status).toBe(200);
+    expect(initialized.sessionId).toBeTruthy();
+  });
+
+  it("distinguishes missing and unknown MCP session IDs for POST requests", async () => {
+    const { port } = await servers.start();
+
+    const missingSessionResponse = await callTool(port, {
+      id: "missing-session",
+      name: "req_list_projects",
+      arguments: {}
+    });
+
+    expect(missingSessionResponse.response.status).toBe(400);
+    expect(missingSessionResponse.body).toEqual({
+      error: "Missing MCP session ID."
+    });
+
+    const unknownSessionResponse = await callTool(port, {
+      id: "unknown-session",
+      name: "req_list_projects",
+      arguments: {},
+      sessionId: "unknown-session-id"
+    });
+
+    expect(unknownSessionResponse.response.status).toBe(404);
+    expect(unknownSessionResponse.body).toEqual({
+      error: "Unknown MCP session ID."
+    });
+  });
+
+  it("distinguishes missing and unknown MCP session IDs for DELETE requests", async () => {
+    const { port } = await servers.start();
+    const missingSessionResponse = await fetch(`http://127.0.0.1:${port}/mcp`, {
+      method: "DELETE"
+    });
+    const missingSessionBody = (await missingSessionResponse.json()) as {
+      error?: string;
+    };
+
+    expect(missingSessionResponse.status).toBe(400);
+    expect(missingSessionBody.error).toBe("Missing MCP session ID.");
+
+    const unknownSessionResponse = await fetch(`http://127.0.0.1:${port}/mcp`, {
+      method: "DELETE",
+      headers: {
+        "mcp-session-id": "unknown-session-id"
+      }
+    });
+    const unknownSessionBody = (await unknownSessionResponse.json()) as {
+      error?: string;
+    };
+
+    expect(unknownSessionResponse.status).toBe(404);
+    expect(unknownSessionBody.error).toBe("Unknown MCP session ID.");
+  });
+
   it("emits a structured request log after the response completes", async () => {
     const { logs, requestLogger } = createRequestLogCapture();
     const { port } = await servers.start(undefined, { requestLogger });

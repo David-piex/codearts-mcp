@@ -112,7 +112,7 @@ curl -i http://127.0.0.1:3000/mcp \
     "id": 1,
     "method": "initialize",
     "params": {
-      "protocolVersion": "2024-11-05",
+      "protocolVersion": "2025-11-25",
       "capabilities": {},
       "clientInfo": {
         "name": "example-client",
@@ -136,7 +136,7 @@ content-type: application/json
   "jsonrpc": "2.0",
   "id": 1,
   "result": {
-    "protocolVersion": "2024-11-05",
+    "protocolVersion": "2025-11-25",
     "capabilities": {
       "tools": {}
     },
@@ -479,11 +479,19 @@ curl -X DELETE http://127.0.0.1:3000/mcp \
   -H "mcp-session-id: <session-id>"
 ```
 
-如果缺少或传入了无效 session：
+如果缺少 session：
 
 ```json
 {
-  "error": "Invalid or missing session ID."
+  "error": "Missing MCP session ID."
+}
+```
+
+如果传入了未知或已过期 session：
+
+```json
+{
+  "error": "Unknown MCP session ID."
 }
 ```
 
@@ -491,7 +499,7 @@ curl -X DELETE http://127.0.0.1:3000/mcp \
 
 ### 7.1 未初始化会话
 
-非 `initialize` 请求没有携带有效 `mcp-session-id` 时：
+非 `initialize` 请求没有携带 `mcp-session-id` 时：
 
 ```http
 HTTP/1.1 400 Bad Request
@@ -499,7 +507,19 @@ HTTP/1.1 400 Bad Request
 
 ```json
 {
-  "error": "Missing or invalid MCP session."
+  "error": "Missing MCP session ID."
+}
+```
+
+携带未知或已过期 `mcp-session-id` 时：
+
+```http
+HTTP/1.1 404 Not Found
+```
+
+```json
+{
+  "error": "Unknown MCP session ID."
 }
 ```
 
@@ -552,6 +572,20 @@ allow: POST, DELETE
 }
 ```
 
+### 7.5 Origin 不在白名单
+
+携带 `Origin` 的浏览器请求必须匹配 `MCP_HTTP_ALLOWED_ORIGINS`：
+
+```http
+HTTP/1.1 403 Forbidden
+```
+
+```json
+{
+  "error": "Origin is not allowed for MCP requests."
+}
+```
+
 ## 8. 限流与缓存
 
 | 类型 | 规则 |
@@ -568,6 +602,8 @@ allow: POST, DELETE
 | `MCP_SERVER_NAME` | MCP server 名称 | 无，必填 |
 | `MCP_SERVER_VERSION` | MCP server 版本 | 无，必填 |
 | `MCP_HTTP_PORT` | HTTP 监听端口 | `3000` |
+| `MCP_HTTP_HOST` | HTTP 监听地址；本地默认只监听回环地址，共享/容器部署需显式设为 `0.0.0.0` | `127.0.0.1` |
+| `MCP_HTTP_ALLOWED_ORIGINS` | 允许携带 `Origin` 访问 `/mcp` 的浏览器来源，多个值用英文逗号分隔 | 空 |
 | `MCP_PRODUCT_WRITE_RATE_LIMIT_MAX_REQUESTS` | 产品写入每个 action/session 的限流次数 | `3000` |
 | `MCP_PRODUCT_WRITE_RATE_LIMIT_WINDOW_MS` | 产品写入限流窗口，单位毫秒 | `60000` |
 | `MCP_AUTH_MASTER_KEY` | HTTP 持久化凭证加密主密钥 | HTTP 模式必填 |

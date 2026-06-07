@@ -24,7 +24,7 @@ const httpAuthConfig = {
   allowQueryAuthToken: false
 };
 
-function createFakeListeningServer(onListen?: () => void) {
+function createFakeListeningServer(onListen?: (port: number, host: string) => void) {
   return Object.assign(new EventEmitter(), {
     keepAliveTimeout: 5_000,
     headersTimeout: 60_000,
@@ -38,8 +38,8 @@ function createFakeListeningServer(onListen?: () => void) {
       EventEmitter.prototype.off.call(this, event, listener);
       return this;
     },
-    listen(_port: number, _host: string, callback: () => void) {
-      onListen?.();
+    listen(port: number, host: string, callback: () => void) {
+      onListen?.(port, host);
       callback();
       return this;
     }
@@ -101,7 +101,8 @@ describe("startHttpServer", () => {
       expect.objectContaining({
         event: "http_server_listening",
         message: "HTTP server listening",
-        port: 0
+        port: 0,
+        host: "127.0.0.1"
       })
     );
 
@@ -138,6 +139,47 @@ describe("startHttpServer", () => {
         path: "/health",
         statusCode: 200,
         durationMs: 12
+      })
+    );
+  });
+
+  it("uses the local-only HTTP host by default", async () => {
+    const app = vi.fn();
+    const listen = vi.fn();
+    const fakeServer = createFakeListeningServer(listen);
+
+    await startHttpServer(0, createStartHttpServerOptions({
+      createHttpApp: () => app as never,
+      createNodeServer: (() => fakeServer) as never
+    }));
+
+    expect(listen).toHaveBeenCalledWith(0, "127.0.0.1");
+  });
+
+  it("uses a configured HTTP host for shared deployments", async () => {
+    const app = vi.fn();
+    const logger = {
+      info: vi.fn(),
+      error: vi.fn()
+    };
+    const listen = vi.fn();
+    const fakeServer = createFakeListeningServer(listen);
+
+    await startHttpServer(0, createStartHttpServerOptions({
+      createHttpApp: () => app as never,
+      createNodeServer: (() => fakeServer) as never,
+      logger: logger as never,
+      loadServerMetadataConfig: () => ({
+        ...serverMetadataConfig,
+        httpHost: "0.0.0.0"
+      })
+    }));
+
+    expect(listen).toHaveBeenCalledWith(0, "0.0.0.0");
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.objectContaining({
+        event: "http_server_listening",
+        host: "0.0.0.0"
       })
     );
   });

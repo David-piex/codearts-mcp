@@ -1,4 +1,5 @@
 import process from "node:process";
+import { resolveMcpProtocolVersion } from "./mcp-protocol.js";
 
 export type ProbeStep = "health" | "initialize" | "auth_configure_session";
 export type ProbeOutputFormat = "json" | "ndjson" | "summary";
@@ -335,6 +336,7 @@ async function requestJson(
   options: {
     timeoutMs: number;
     sessionId?: string;
+    protocolVersion: string;
   }
 ) {
   const controller = new AbortController();
@@ -348,7 +350,7 @@ async function requestJson(
 
     if (options.sessionId) {
       headers["mcp-session-id"] = options.sessionId;
-      headers["mcp-protocol-version"] = "2025-03-26";
+      headers["mcp-protocol-version"] = options.protocolVersion;
     }
 
     const response = await fetch(url, {
@@ -370,6 +372,7 @@ async function requestJson(
 
 async function runSingleSample(options: EdgeProbeOptions, iteration: number): Promise<ProbeSample[]> {
   const samples: ProbeSample[] = [];
+  const protocolVersion = resolveMcpProtocolVersion(process.env);
   const healthStartedAt = new Date().toISOString();
   const healthStartedMs = Date.now();
 
@@ -412,7 +415,7 @@ async function runSingleSample(options: EdgeProbeOptions, iteration: number): Pr
         id: `initialize-${Date.now()}`,
         method: "initialize",
         params: {
-          protocolVersion: "2025-03-26",
+          protocolVersion,
           capabilities: {},
           clientInfo: {
             name: "codearts-edge-probe",
@@ -420,7 +423,7 @@ async function runSingleSample(options: EdgeProbeOptions, iteration: number): Pr
           }
         }
       },
-      { timeoutMs: options.timeoutMs }
+      { timeoutMs: options.timeoutMs, protocolVersion }
     );
 
     sessionId = initializeResponse.headers.get("mcp-session-id") ?? undefined;
@@ -478,7 +481,8 @@ async function runSingleSample(options: EdgeProbeOptions, iteration: number): Pr
       },
       {
         timeoutMs: options.timeoutMs,
-        sessionId
+        sessionId,
+        protocolVersion
       }
     );
 

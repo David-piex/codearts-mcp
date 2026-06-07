@@ -169,6 +169,7 @@ docker compose -f docker-compose.ssl.yml up -d --build
 ```env
 MCP_TRANSPORT=http
 MCP_HTTP_PORT=3000
+MCP_HTTP_HOST=0.0.0.0
 MCP_SERVER_NAME=codearts-mcp
 MCP_SERVER_VERSION=0.1.0
 MCP_AUTH_MASTER_KEY=replace-with-a-long-random-secret
@@ -325,6 +326,8 @@ Live 状态说明：
 | 变量 | 说明 | 默认值 |
 | --- | --- | --- |
 | `MCP_HTTP_PORT` | HTTP 监听端口 | `3000` |
+| `MCP_HTTP_HOST` | HTTP 监听地址；本地默认只监听回环地址，共享/容器部署需显式设为 `0.0.0.0` | `127.0.0.1` |
+| `MCP_HTTP_ALLOWED_ORIGINS` | 允许携带 `Origin` 访问 `/mcp` 的浏览器来源，多个值用英文逗号分隔 | — |
 | `MCP_PRODUCT_WRITE_RATE_LIMIT_MAX_REQUESTS` | 产品写入每个 action/session 的限流次数 | `3000` |
 | `MCP_PRODUCT_WRITE_RATE_LIMIT_WINDOW_MS` | 产品写入限流窗口 | `60000` |
 | `MCP_AUTH_WRITE_RATE_LIMIT_MAX_REQUESTS` | 鉴权写入每个 session 的限流次数 | `3000` |

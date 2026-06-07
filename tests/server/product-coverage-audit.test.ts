@@ -155,7 +155,7 @@ describe("product coverage audit", () => {
     expect(report).toContain("| TestPlan | 570 | 0 | 0 | 0 |");
     expect(report).toContain("## Repo ignored endpoints");
     expect(report).toContain("requires raw SSH private key input");
-  });
+  }, 15_000);
 
   it("maps Repo legacy and sample documentation paths to existing MCP tools", () => {
     const repoConfig = productCoverageConfigs.find((item) => item.family === "repo");

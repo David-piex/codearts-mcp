@@ -3,6 +3,7 @@ import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { runCli } from "../../src/server/cli.js";
+import { DEFAULT_MCP_PROTOCOL_VERSION } from "../../src/server/mcp-protocol.js";
 import { startTestHttpServer } from "./http-mcp-test-helpers.js";
 
 const baseEnv = {
@@ -128,7 +129,7 @@ describe("CLI", () => {
               jsonrpc: "2.0",
               id: "codearts-cli-init",
               result: {
-                protocolVersion: "2025-03-26",
+                protocolVersion: DEFAULT_MCP_PROTOCOL_VERSION,
                 capabilities: {
                   tools: {}
                 },
@@ -143,7 +144,7 @@ describe("CLI", () => {
 
         expect(init.headers).toMatchObject({
           "mcp-session-id": "session-1",
-          "mcp-protocol-version": "2025-03-26"
+          "mcp-protocol-version": DEFAULT_MCP_PROTOCOL_VERSION
         });
         expect(payload).toMatchObject({
           method: "tools/call",
@@ -176,7 +177,7 @@ describe("CLI", () => {
       expect(init?.method).toBe("DELETE");
       expect(init?.headers).toMatchObject({
         "mcp-session-id": "session-1",
-        "mcp-protocol-version": "2025-03-26"
+        "mcp-protocol-version": DEFAULT_MCP_PROTOCOL_VERSION
       });
 
       return {
@@ -228,7 +229,7 @@ describe("CLI", () => {
             }),
             json: async () => ({
               result: {
-                protocolVersion: "2025-03-26",
+                protocolVersion: DEFAULT_MCP_PROTOCOL_VERSION,
                 capabilities: {
                   tools: {}
                 }
@@ -239,7 +240,7 @@ describe("CLI", () => {
 
         expect(init.headers).toMatchObject({
           "mcp-session-id": "session-tools",
-          "mcp-protocol-version": "2025-03-26"
+          "mcp-protocol-version": DEFAULT_MCP_PROTOCOL_VERSION
         });
         expect(payload).toMatchObject({
           method: "tools/list"
@@ -310,7 +311,7 @@ describe("CLI", () => {
             }),
             json: async () => ({
               result: {
-                protocolVersion: "2025-03-26",
+                protocolVersion: DEFAULT_MCP_PROTOCOL_VERSION,
                 capabilities: {
                   tools: {}
                 }
@@ -389,7 +390,7 @@ describe("CLI", () => {
             }),
             json: async () => ({
               result: {
-                protocolVersion: "2025-03-26",
+                protocolVersion: DEFAULT_MCP_PROTOCOL_VERSION,
                 capabilities: {
                   tools: {}
                 }

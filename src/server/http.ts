@@ -27,6 +27,7 @@ export async function startHttpServer(
   const loadMetadata = dependencies.loadServerMetadataConfig ?? loadServerMetadataConfig;
   const metadata = loadMetadata();
   const resolvedPort = port ?? metadata.httpPort;
+  const resolvedHost = metadata.httpHost ?? "127.0.0.1";
   const logger =
     dependencies.logger ??
     createStructuredLogger({
@@ -76,13 +77,13 @@ export async function startHttpServer(
 
   await new Promise<void>((resolve, reject) => {
     server.once("error", reject);
-    server.listen(resolvedPort, "0.0.0.0", () => {
+    server.listen(resolvedPort, resolvedHost, () => {
       server.off("error", reject);
       logger.info({
         event: "http_server_listening",
         message: "HTTP server listening",
         port: resolvedPort,
-        host: "0.0.0.0"
+        host: resolvedHost
       });
       resolve();
     });

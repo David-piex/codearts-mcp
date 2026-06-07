@@ -3,11 +3,12 @@ import { mkdtempSync } from "node:fs";
 import { createServer } from "node:http";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { HttpAuthConfig } from "../../src/core/config/env.js";
+import type { HttpAuthConfig, ServerMetadataConfig } from "../../src/core/config/env.js";
 import { createHttpApp } from "../../src/server/http-app.js";
+import { DEFAULT_MCP_PROTOCOL_VERSION } from "../../src/server/mcp-protocol.js";
 import { masterKey } from "./http-test-helpers.js";
 
-export const MCP_PROTOCOL_VERSION = "2025-03-26";
+export const MCP_PROTOCOL_VERSION = DEFAULT_MCP_PROTOCOL_VERSION;
 
 type TestHttpServer = Awaited<ReturnType<typeof startTestHttpServer>>;
 
@@ -33,16 +34,21 @@ export async function startTestHttpServer(
   authConfig?: HttpAuthConfig,
   options?: {
     requestLogger?: (entry: unknown) => void;
+    config?: Partial<ServerMetadataConfig>;
   }
 ): Promise<{ server: ReturnType<typeof createServer>; port: number }> {
+  const { config: configOverrides, ...appOptions } = options ?? {};
   const app = createHttpApp(
     {
       serverName: "codearts-mcp",
       serverVersion: "0.1.0",
-      httpPort: 0
+      httpHost: "127.0.0.1",
+      httpAllowedOrigins: [],
+      httpPort: 0,
+      ...configOverrides
     },
     authConfig,
-    options
+    appOptions
   );
   const server = createServer(app);
   server.listen(0, "127.0.0.1");
@@ -67,6 +73,7 @@ export function createTestHttpServerRegistry() {
       authConfig?: HttpAuthConfig,
       options?: {
         requestLogger?: (entry: unknown) => void;
+        config?: Partial<ServerMetadataConfig>;
       }
     ) {
       const started = await startTestHttpServer(authConfig, options);
@@ -101,11 +108,13 @@ export async function postJsonRpc(
     sessionId?: string;
     cookie?: string;
     queryToken?: string;
+    headers?: Record<string, string>;
   }
 ) {
   const headers: Record<string, string> = {
     accept: "application/json, text/event-stream",
-    "content-type": "application/json"
+    "content-type": "application/json",
+    ...options?.headers
   };
 
   if (options?.sessionId) {
@@ -135,6 +144,7 @@ export async function initializeSession(
     cookie?: string;
     queryToken?: string;
     clientName?: string;
+    headers?: Record<string, string>;
   }
 ) {
   const response = await postJsonRpc(
