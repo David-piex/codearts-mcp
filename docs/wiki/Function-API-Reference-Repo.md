@@ -7325,6 +7325,7 @@ API 数量：`391`
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `repository_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `repository_id` ↔ 原始 CodeArts 代码仓库 API 中的仓库 ID 字段，通常位于路径参数或 Query 参数。<br>CodeArts Repo 代码仓库 ID 或 UUID，用于定位具体仓库。仓库列表接口通常会同时返回数字 ID 和 UUID。 |
+| `branch_name` | 否 | `string` |  | 字段对应：<br>MCP 字段 `branch_name` ↔ 原始 CodeArts 代码仓库 API 同名字段 `branch_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>Git 分支名称，例如 master、main、develop 或 feature/login。 |
 | `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
 输入 JSON Schema：
@@ -7336,6 +7337,11 @@ API 数量：`391`
     "repository_id": {
       "type": "string",
       "minLength": 1
+    },
+    "branch_name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
     },
     "dry_run": {
       "type": "boolean",
@@ -9512,7 +9518,11 @@ API 数量：`391`
 | `ref_name` | 否 | `string` |  | 字段对应：<br>MCP 字段 `ref_name` ↔ 原始 CodeArts 代码仓库 API 同名字段 `ref_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>ref名称。 |
 | `since` | 否 | `string` |  | 字段对应：<br>MCP 字段 `since` ↔ 原始 CodeArts 代码仓库 API 同名字段 `since`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>起始边界。常用于时间范围、提交范围或分页游标的开始位置。 |
 | `until` | 否 | `string` |  | 字段对应：<br>MCP 字段 `until` ↔ 原始 CodeArts 代码仓库 API 同名字段 `until`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>结束边界。常用于时间范围、提交范围或分页游标的截止位置。 |
+| `path` | 否 | `string` |  | 字段对应：<br>MCP 字段 `path` ↔ 原始 CodeArts 代码仓库 API 同名字段 `path`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>资源路径。制品仓场景表示制品或目录路径；代码仓场景表示仓库内文件路径。通常从仓库或制品仓根目录开始填写。 |
+| `message` | 否 | `string` |  | 字段对应：<br>MCP 字段 `message` ↔ 原始 CodeArts 代码仓库 API 同名字段 `message`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>消息内容或提交说明。代码仓场景常用于提交信息，通知场景用于消息正文。 |
+| `author` | 否 | `string` |  | 字段对应：<br>MCP 字段 `author` ↔ 原始 CodeArts 代码仓库 API 同名字段 `author`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
 | `order_by_date` | 否 | `boolean` |  | 字段对应：<br>MCP 字段 `order_by_date` ↔ 原始 CodeArts 代码仓库 API 同名字段 `order_by_date`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>按日期排序或过滤的日期字段，用于选择创建时间、更新时间、结束时间等口径。 |
+| `follow` | 否 | `boolean` |  | 字段对应：<br>MCP 字段 `follow` ↔ 原始 CodeArts 代码仓库 API 同名字段 `follow`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
 | `with_stats` | 否 | `boolean` |  | 字段对应：<br>MCP 字段 `with_stats` ↔ 原始 CodeArts 代码仓库 API 同名字段 `with_stats`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>是否返回统计信息。true 表示结果中附带数量、占比或汇总指标。 |
 
 输入 JSON Schema：
@@ -9558,7 +9568,19 @@ API 数量：`391`
     "until": {
       "type": "string"
     },
+    "path": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    },
+    "author": {
+      "type": "string"
+    },
     "order_by_date": {
+      "type": "boolean"
+    },
+    "follow": {
       "type": "boolean"
     },
     "with_stats": {
@@ -20691,8 +20713,7 @@ API 数量：`391`
   "params": {
     "name": "repo_show_group_inherit_setting",
     "arguments": {
-      "group_id": "<group_id>",
-      "setting_type": "<setting_type>"
+      "group_id": "<group_id>"
     }
   }
 }
@@ -20703,7 +20724,6 @@ API 数量：`391`
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `group_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `group_id` ↔ 原始 CodeArts 代码仓库 API 同名字段 `group_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>分组 ID，用于定位对应的 CodeArts 资源。 |
-| `setting_type` | 是 | `"protected_branches" \| "protected_tags" \| "push_rules" \| "merge_requests" \| "mr_branch_policies" \| "reviews" \| "e2e_settings" \| "webhook_settings" \| "deploy_keys" \| "watermark" \| "repository_settings"` |  | 字段对应：<br>MCP 字段 `setting_type` ↔ 原始 CodeArts 代码仓库 API 同名字段 `setting_type`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。可选值：`protected_branches`、`protected_tags`、`push_rules`、`merge_requests`、`mr_branch_policies`、`reviews`、`e2e_settings`、`webhook_settings`、`deploy_keys`、`watermark`、`repository_settings`。 |
 
 输入 JSON Schema：
 
@@ -20714,27 +20734,10 @@ API 数量：`391`
     "group_id": {
       "type": "string",
       "minLength": 1
-    },
-    "setting_type": {
-      "type": "string",
-      "enum": [
-        "protected_branches",
-        "protected_tags",
-        "push_rules",
-        "merge_requests",
-        "mr_branch_policies",
-        "reviews",
-        "e2e_settings",
-        "webhook_settings",
-        "deploy_keys",
-        "watermark",
-        "repository_settings"
-      ]
     }
   },
   "required": [
-    "group_id",
-    "setting_type"
+    "group_id"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

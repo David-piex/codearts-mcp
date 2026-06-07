@@ -54,6 +54,8 @@ import {
   repoShowNotificationSubscriptionInput,
   repoShowNotificationSubscriptionsStatusInput,
   repoShowGroupInheritSettingInput,
+  repoShowGroupsInheritInput,
+  repoExecuteRepositoryStatisticsInput,
   repoShowMergeRequestStatisticInput,
   repoShowMergeRequestVotesInput,
   repoShowBlobsInput,
@@ -97,7 +99,11 @@ describe("repo schemas", () => {
       ref_name: "master",
       since: "2026-01-01T00:00:00Z",
       until: "2026-02-01T00:00:00Z",
+      path: "src/index.ts",
+      message: "fix checkout",
+      author: "alice",
       order_by_date: true,
+      follow: true,
       with_stats: true
     });
 
@@ -105,7 +111,11 @@ describe("repo schemas", () => {
       ref_name: "master",
       since: "2026-01-01T00:00:00Z",
       until: "2026-02-01T00:00:00Z",
+      path: "src/index.ts",
+      message: "fix checkout",
+      author: "alice",
       order_by_date: true,
+      follow: true,
       with_stats: true,
       page: 1,
       page_size: 20
@@ -471,12 +481,32 @@ describe("repo schemas", () => {
 
     expect(
       repoShowGroupInheritSettingInput.parse({
+        group_id: "9"
+      })
+    ).toEqual({
+      group_id: "9"
+    });
+
+    expect(
+      repoShowGroupsInheritInput.parse({
         group_id: "9",
         setting_type: "merge_requests"
       })
     ).toEqual({
       group_id: "9",
       setting_type: "merge_requests"
+    });
+
+    expect(
+      repoExecuteRepositoryStatisticsInput.parse({
+        repository_id: "100",
+        branch_name: "feature/main",
+        dry_run: false
+      })
+    ).toEqual({
+      repository_id: "100",
+      branch_name: "feature/main",
+      dry_run: false
     });
 
     expect(

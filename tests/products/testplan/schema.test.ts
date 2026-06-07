@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
   testPlanAssociateAttachmentsInput,
+  testPlanBatchCreateTestcasesInput,
+  testPlanBatchDeleteBranchesV4Input,
+  testPlanBatchDeleteIteratorsV4Input,
+  testPlanBatchDeleteTestcasesV4Input,
+  testPlanBatchUpdateTestcasesV4Input,
   testPlanCreateProgressReportInput,
   testPlanAddProjectUsersInput,
   testPlanCheckResourceExistsInput,
@@ -24,6 +29,7 @@ import {
   testPlanListIpdIssuesTreeInput,
   testPlanListIssuesTreeInput,
   testPlanListIteratorStageCountsInput,
+  testPlanListIteratorsV4WithStatsInput,
   testPlanListIssuesInput,
   testPlanListDefaultTemplatesInput,
   testPlanListTepsInput,
@@ -914,6 +920,79 @@ describe("testplan schemas", () => {
     ).toMatchObject({
       original_task_uri: "task-1",
       dest_task_uri: "task-2",
+      dry_run: true
+    });
+  });
+
+  it("accepts official v4 batch testcase, iterator, and branch inputs", () => {
+    expect(
+      testPlanBatchCreateTestcasesInput.parse({
+        project_id: "project-1",
+        testcases: [{ name: "case one" }]
+      })
+    ).toMatchObject({
+      project_id: "project-1",
+      testcases: [{ name: "case one" }],
+      dry_run: true
+    });
+
+    expect(
+      testPlanBatchDeleteTestcasesV4Input.parse({
+        project_id: "project-1",
+        testcase_uris: ["case-1"]
+      })
+    ).toMatchObject({
+      project_id: "project-1",
+      testcase_uris: ["case-1"],
+      dry_run: true
+    });
+
+    expect(
+      testPlanBatchUpdateTestcasesV4Input.parse({
+        project_id: "project-1",
+        body: { testcases: [{ uri: "case-1", name: "case one" }] }
+      })
+    ).toMatchObject({
+      project_id: "project-1",
+      body: { testcases: [{ uri: "case-1", name: "case one" }] },
+      dry_run: true
+    });
+
+    expect(
+      testPlanListIteratorsV4WithStatsInput.parse({
+        project_id: "project-1",
+        page: 2,
+        page_size: 10,
+        with_stats: true
+      })
+    ).toMatchObject({
+      project_id: "project-1",
+      page: 2,
+      page_size: 10,
+      with_stats: true
+    });
+
+    expect(
+      testPlanBatchDeleteIteratorsV4Input.parse({
+        project_id: "project-1",
+        iterator_uris: ["iterator-1"]
+      })
+    ).toMatchObject({
+      project_id: "project-1",
+      iterator_uris: ["iterator-1"],
+      dry_run: true
+    });
+
+    expect(
+      testPlanBatchDeleteBranchesV4Input.parse({
+        project_id: "project-1",
+        branch_uris: ["branch-1"],
+        is_async: false
+      })
+    ).toMatchObject({
+      project_id: "project-1",
+      branch_uris: ["branch-1"],
+      is_async: false,
       dry_run: true
     });
   });

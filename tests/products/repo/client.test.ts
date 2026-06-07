@@ -118,11 +118,46 @@ describe("createRepoClient", () => {
     expect(result.branches[0]?.name).toBe("master");
   });
 
-  it("uses official repository statistics paths", async () => {
+  it("uses the official v4 commit-list path when listing commits", async () => {
     const calls: string[] = [];
     const client = createRepoClient({
       get: async (path: string) => {
         calls.push(path);
+        return {
+          commits: [{ id: "abc123", short_id: "abc123", title: "fix bug", author_name: "Alice" }],
+          total: 1
+        };
+      }
+    } as never);
+
+    const result = await client.listCommits({
+      repository_id: "100",
+      page: 2,
+      page_size: 10,
+      ref_name: "main",
+      since: "2026-01-01T00:00:00Z",
+      until: "2026-02-01T00:00:00Z",
+      path: "src/index.ts",
+      message: "fix bug",
+      author: "Alice",
+      order_by_date: true,
+      follow: true
+    });
+
+    expect(result).toEqual({
+      commits: [{ id: "abc123", short_id: "abc123", title: "fix bug", author_name: "Alice" }],
+      total: 1
+    });
+    expect(calls).toEqual([
+      "/v4/repositories/100/repository/commit-list?offset=10&limit=10&ref_name=main&since=2026-01-01T00%3A00%3A00Z&until=2026-02-01T00%3A00%3A00Z&path=src%2Findex.ts&message=fix+bug&author=Alice&order_by_date=true&follow=true"
+    ]);
+  });
+
+  it("uses official repository statistics paths", async () => {
+    const calls: Array<{ method: string; path: string; body?: unknown }> = [];
+    const client = createRepoClient({
+      get: async (path: string) => {
+        calls.push({ method: "GET", path });
         if (path.endsWith("/repository/statistics-status")) {
           return { can_statistics: true, reason: 0 };
         }
@@ -152,9 +187,18 @@ describe("createRepoClient", () => {
         }
 
         throw new Error(`unexpected path: ${path}`);
+      },
+      post: async (path: string, body?: unknown) => {
+        calls.push({ method: "POST", path, body });
+        if (path.endsWith("/repository/statistics")) {
+          return {};
+        }
+
+        throw new Error(`unexpected path: ${path}`);
       }
     } as never);
 
+    await client.executeRepositoryStatistics({ repository_id: "100", branch_name: "feature/main" });
     await client.showRepositoryStatisticsStatus({ repository_id: "100" });
     await client.showLastPushEventInRepository({ repository_id: "100" });
     await client.showRepositoryStatisticsSummary({ repository_id: "100" });
@@ -171,15 +215,16 @@ describe("createRepoClient", () => {
     });
 
     expect(calls).toEqual([
-      "/v4/repositories/100/repository/statistics-status",
-      "/v4/repositories/100/last-push-event",
-      "/v4/repositories/100/statistics-summary",
-      "/v4/repositories/100/repository/stats/summary",
-      "/v4/repositories/100/repository/stats/last-statistics?branch_name=feature%2Fmain",
-      "/v1/repositories/repo-uuid-1/statistic-data",
-      "/v1/repositories/repo-uuid-1/master",
-      "/v1/repositories/repoid?group_name=demo-group&repository_name=demo-repo",
-      "/v3/repositories/100/commit-lines?ref_name=feature%2Fmain&begin_date=2026-06-01&end_date=2026-06-30"
+      { method: "POST", path: "/v4/repositories/100/repository/statistics", body: { branch_name: "feature/main" } },
+      { method: "GET", path: "/v4/repositories/100/repository/statistics-status" },
+      { method: "GET", path: "/v4/repositories/100/last-push-event" },
+      { method: "GET", path: "/v4/repositories/100/statistics-summary" },
+      { method: "GET", path: "/v4/repositories/100/repository/stats/summary" },
+      { method: "GET", path: "/v4/repositories/100/repository/stats/last-statistics?branch_name=feature%2Fmain" },
+      { method: "GET", path: "/v1/repositories/repo-uuid-1/statistic-data" },
+      { method: "GET", path: "/v1/repositories/repo-uuid-1/master" },
+      { method: "GET", path: "/v1/repositories/repoid?group_name=demo-group&repository_name=demo-repo" },
+      { method: "GET", path: "/v3/repositories/100/commit-lines?ref_name=feature%2Fmain&begin_date=2026-06-01&end_date=2026-06-30" }
     ]);
   });
 
@@ -469,6 +514,9 @@ describe("createRepoClient", () => {
         if (path.includes("/subgroups-and-repositories?")) {
           return [{ id: 11, name: "service", descendant_type: "repository" }];
         }
+        if (path.endsWith("/inherit-setting")) {
+          return { group_id: 9, source_setting: "group", project_id: "project-1" };
+        }
         if (path.includes("/inherit?")) {
           return { group_id: 9, source_setting: "group", project_id: "project-1" };
         }
@@ -508,6 +556,9 @@ describe("createRepoClient", () => {
       archived: false
     });
     await client.showGroupInheritSetting({
+      group_id: "9"
+    });
+    await client.showGroupsInherit({
       group_id: "9",
       setting_type: "merge_requests"
     });
@@ -524,6 +575,7 @@ describe("createRepoClient", () => {
       "/v4/groups/9/members/addable-list?offset=10&limit=10&project_id=project-1",
       "/v4/groups/9/user-groups/addable-list?offset=0&limit=20&project_id=project-1",
       "/v4/groups/9/subgroups-and-repositories?offset=0&limit=20&filter=service&order_by=name&sort=asc&archived=false",
+      "/v4/groups/9/inherit-setting",
       "/v4/groups/9/inherit?setting_type=merge_requests",
       "/v4/projects/project-1/members?offset=0&limit=20&query=qa",
       "/v4/user/gpg-keys?query=signing",

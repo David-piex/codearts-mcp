@@ -62,6 +62,30 @@ export const pipelineStopRunInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const pipelineCreateTemplateTaskV3Input = z.object({
+  flow: z.record(z.string(), z.record(z.string(), z.string())).optional(),
+  states: z.record(z.string(), pipelineRawQueryInput).optional(),
+  workflow: pipelineRawQueryInput.optional(),
+  body: pipelineRawQueryInput.optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const pipelineStartNewPipelineV3Input = z.object({
+  pipeline_id: idSchema,
+  build_params: z.array(z.object({
+    name: z.string().min(1),
+    value: z.string()
+  })).optional(),
+  body: pipelineRawQueryInput.optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const pipelineStopPipelineV3Input = z.object({
+  pipeline_id: idSchema,
+  build_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
 export const pipelineRetryRunInput = z.object({
   project_id: idSchema,
   pipeline_id: idSchema,
@@ -100,6 +124,7 @@ export const pipelineCreateByTemplateInput = z.object({
   template_id: idSchema,
   name: z.string().min(1),
   description: z.string().max(1024).optional(),
+  component_id: idSchema.optional(),
   group_id: idSchema.optional(),
   dry_run: z.boolean().default(true)
 });
@@ -498,6 +523,13 @@ export const pipelineMovePipelinesToGroupInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const pipelineSwapPipelineGroupOrderInput = z.object({
+  project_id: idSchema,
+  group_id_1: idSchema,
+  group_id_2: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
 export const pipelineCreateVariableGroupInput = z.object({
   project_id: idSchema,
   name: pipelineVariableGroupNameSchema,
@@ -609,6 +641,101 @@ export const pipelineGetPluginVersionInput = z.object({
   domain_id: idSchema,
   plugin_name: z.string().min(1),
   version: z.string().min(1)
+});
+
+export const pipelinePluginPartQueryInput = z.object({
+  plugin_name: z.string().min(1),
+  display_name: z.string().min(1).optional(),
+  version: z.string().min(1),
+  plugin_attribution: pipelinePluginAttributionSchema,
+  version_attribution: z.string().min(1).optional()
+});
+
+export const pipelineGetPluginMetricsInput = z.object({
+  domain_id: idSchema,
+  body: z.array(pipelinePluginPartQueryInput).min(1)
+});
+
+export const pipelinePluginDraftInput = z.object({
+  domain_id: idSchema,
+  unique_id: idSchema.optional(),
+  icon_url: z.string().min(1).optional(),
+  runtime_attribution: z.enum(["agent", "agentless"]).optional(),
+  plugin_name: z.string().min(1).optional(),
+  display_name: z.string().min(1).optional(),
+  business_type: pipelinePluginBusinessTypeSchema.optional(),
+  business_type_display_name: z.string().min(1).optional(),
+  description: z.string().min(1).optional(),
+  is_private: z.number().int().min(0).max(1).optional(),
+  region: z.string().min(1).optional(),
+  maintainers: z.string().min(1).optional(),
+  plugin_composition_type: z.enum(["single", "multi"]).optional(),
+  manifest_version: z.string().min(1).optional(),
+  version: z.string().min(1).optional(),
+  version_description: z.string().optional(),
+  execution_info: pipelineRawQueryInput.optional(),
+  output_info: z.array(pipelineRawQueryInput).optional(),
+  input_info: z.array(pipelineRawQueryInput).optional(),
+  body: pipelineRawQueryInput.optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const pipelinePublishPluginDraftInput = z.object({
+  domain_id: idSchema,
+  plugin_name: z.string().min(1),
+  display_name: z.string().min(1),
+  version: z.string().min(1),
+  plugin_attribution: pipelinePluginAttributionSchema,
+  version_attribution: z.string().min(1).optional(),
+  body: pipelineRawQueryInput.optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const pipelineDeletePluginDraftInput = z.object({
+  domain_id: idSchema,
+  plugin_name: z.string().min(1),
+  version: z.string().min(1),
+  dry_run: z.boolean().default(true)
+});
+
+export const pipelinePublishPluginInput = z.object({
+  domain_id: idSchema,
+  plugin_name: z.string().min(1),
+  version: z.string().optional(),
+  publisher_unique_id: z.string().min(1),
+  body: pipelineRawQueryInput.optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const pipelinePublishPluginBindInput = z.object({
+  domain_id: idSchema,
+  plugin_name: z.string().min(1),
+  version: z.string().optional(),
+  publisher_unique_id: z.string().min(1),
+  body: pipelineRawQueryInput.optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const pipelineUpdatePluginBaseInfoInput = z.object({
+  domain_id: idSchema,
+  plugin_name: z.string().min(1),
+  display_name: z.string().min(1).optional(),
+  business_type: pipelinePluginBusinessTypeSchema.optional(),
+  business_type_display_name: z.string().min(1).optional(),
+  icon_url: z.string().min(1).optional(),
+  description: z.string().optional(),
+  maintainers: z.string().min(1).optional(),
+  body: pipelineRawQueryInput.optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const pipelineUploadPluginIconInput = z.object({
+  domain_id: idSchema,
+  plugin_name: z.string().min(1),
+  file_name: z.string().min(1),
+  file_content: z.string().min(1),
+  content_type: z.string().min(1).default("application/octet-stream"),
+  dry_run: z.boolean().default(true)
 });
 
 export const pipelineListExtensionModulesInput = z.object({
@@ -950,6 +1077,10 @@ export const pipelineShowTemplateDetailV3Input = z.object({
   source: z.string().min(1).optional()
 });
 
+export const pipelineShowTemplateTaskStatusInput = z.object({
+  task_id: idSchema
+});
+
 export const pipelineGetTemplateInput = z.object({
   tenant_id: idSchema,
   template_id: idSchema
@@ -1086,6 +1217,15 @@ export const pipelineDashboardQueryInput = z.object({
   start_time: z.string().min(1).optional(),
   end_time: z.string().min(1).optional(),
   query: pipelineRawQueryInput.optional()
+});
+
+export const pipelineGetTenantPopupStatusInput = z.object({
+  tenant_id: idSchema,
+  project_id: idSchema
+});
+
+export const pipelineGetAcceptFreeDeclarationInput = z.object({
+  tenant_id: idSchema
 });
 
 const pipelineChangeRequestStatusSchema = z.enum([

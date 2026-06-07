@@ -18,6 +18,15 @@ const coreHandlerExports = [
 const pipelinePluginReadExports = [
   "createSessionAwarePipelineListPublishersHandler",
   "createSessionAwarePipelineListPluginsHandler",
+  "createSessionAwarePipelineGetPluginMetricsHandler",
+  "createSessionAwarePipelineCreatePluginDraftHandler",
+  "createSessionAwarePipelineUpdatePluginDraftHandler",
+  "createSessionAwarePipelinePublishPluginDraftHandler",
+  "createSessionAwarePipelineDeletePluginDraftHandler",
+  "createSessionAwarePipelinePublishPluginHandler",
+  "createSessionAwarePipelinePublishPluginBindHandler",
+  "createSessionAwarePipelineUpdatePluginBaseInfoHandler",
+  "createSessionAwarePipelineUploadPluginIconHandler",
   "createSessionAwarePipelineGetPluginInputsHandler",
   "createSessionAwarePipelineGetPluginOutputsHandler",
   "createSessionAwarePipelineListPluginVersionsHandler",
@@ -30,6 +39,7 @@ const pipelineManagementExports = [
   "createSessionAwarePipelineUpdateGroupHandler",
   "createSessionAwarePipelineDeleteGroupHandler",
   "createSessionAwarePipelineMovePipelinesToGroupHandler",
+  "createSessionAwarePipelineSwapPipelineGroupOrderHandler",
   "createSessionAwarePipelineListTagsHandler",
   "createSessionAwarePipelineCreateTagHandler",
   "createSessionAwarePipelineUpdateTagHandler",
@@ -78,6 +88,18 @@ const pipelineManagementExports = [
   "createSessionAwarePipelineDeleteExtensionEndpointHandler"
 ] as const;
 
+const pipelineAdditionalQueryExports = [
+  "createSessionAwarePipelineGetTenantPopupStatusHandler",
+  "createSessionAwarePipelineGetAcceptFreeDeclarationHandler",
+  "createSessionAwarePipelineShowTemplateTaskStatusHandler"
+] as const;
+
+const pipelineLegacyV3MutationExports = [
+  "createSessionAwarePipelineCreateTemplateTaskV3Handler",
+  "createSessionAwarePipelineStartNewPipelineV3Handler",
+  "createSessionAwarePipelineStopPipelineV3Handler"
+] as const;
+
 const pipelineAliasExports = [
   "createSessionAwarePipelineListPipelinesHandler",
   "createSessionAwarePipelineListRunsHandler"
@@ -94,6 +116,14 @@ describe("session-aware product handlers module", () => {
 
   it("exports pipeline management handler factories", () => {
     expectExportedHandlers([...pipelineManagementExports]);
+  });
+
+  it("exports pipeline additional query handler factories", () => {
+    expectExportedHandlers([...pipelineAdditionalQueryExports]);
+  });
+
+  it("exports pipeline legacy V3 mutation handler factories", () => {
+    expectExportedHandlers([...pipelineLegacyV3MutationExports]);
   });
 
   it("exports tool-name aligned pipeline list handler aliases", () => {

@@ -42,4 +42,40 @@ describe("createBuildClient stopJob errors", () => {
       status: 400
     });
   });
+
+  it("stops a build job through the official v1 endpoint", async () => {
+    const requests: Array<{ method: string; path: string; body?: unknown }> = [];
+    const client = createBuildClient({
+      post: async (path: string, body?: unknown) => {
+        requests.push({ method: "POST", path, body });
+        return {
+          status: "success",
+          result: true
+        };
+      }
+    } as never);
+
+    await expect(
+      client.stopJobV1({
+        job_id: "job-1",
+        build_no: 3
+      })
+    ).resolves.toEqual({
+      job_id: "job-1",
+      build_no: 3,
+      status: "success",
+      result: true,
+      raw: { value: true }
+    });
+
+    expect(requests).toEqual([
+      {
+        method: "POST",
+        path: "/v1/job/job-1/stop",
+        body: {
+          build_no: 3
+        }
+      }
+    ]);
+  });
 });

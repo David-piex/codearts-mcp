@@ -1,11 +1,19 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { officialApiRequestInput } from "../products/official-api.js";
+import { getTestPlanOfficialEndpointTool } from "../products/testplan/official-endpoint-tools.js";
 import { createTestPlanClient } from "../products/testplan/client.js";
 import {
   testPlanBatchDeleteTasksInput,
   testPlanBatchDeleteTestReportsInput,
   testPlanBatchSendNotificationsInput,
   testPlanBatchUpdateTaskAttributesInput,
+  testPlanBatchCloseTestcaseReviewsInput,
+  testPlanBatchCreateTestcasesInput,
+  testPlanBatchCreateTestcaseReviewsInput,
+  testPlanBatchDeleteBranchesV4Input,
+  testPlanBatchDeleteIteratorsV4Input,
+  testPlanBatchDeleteTestcasesV4Input,
+  testPlanBatchUpdateTestcasesV4Input,
   testPlanAddProjectUsersInput,
   testPlanCheckAlertTemplateNameInput,
   testPlanCheckAlertUserNameInput,
@@ -21,8 +29,10 @@ import {
   testPlanCheckUserExistsInput,
   testPlanCountMindmapsInput,
   testPlanCreateTaskInput,
+  testPlanCreateExecutionTaskV1Input,
   testPlanCreateTaskRelationsInput,
   testPlanCreateRepositoryTestsuiteInput,
+  testPlanCreateApiTestcaseV4Input,
   testPlanBatchDeleteFactorsInput,
   testPlanCreateAwCataFirstInput,
   testPlanCreateResourceUriV4Input,
@@ -253,6 +263,7 @@ import {
   testPlanBatchAddIteratorTestcasesInput,
   testPlanListIteratorIssueCasesInput,
   testPlanListIteratorInfosInput,
+  testPlanListIteratorsV4WithStatsInput,
   testPlanListIteratorHistoriesInput,
   testPlanListIteratorIssueIdsInput,
   testPlanListIteratorIssuesInput,
@@ -749,14 +760,59 @@ import {
   createTestPlanDeleteTesthubServiceHandler,
   createTestPlanUpdateTesthubServiceHandler
 } from "../products/testplan/tools/testhub-write-tools.js";
+import {
+  createTestPlanBatchCloseTestcaseReviewsHandler,
+  createTestPlanBatchCreateTestcasesHandler,
+  createTestPlanBatchCreateTestcaseReviewsHandler,
+  createTestPlanBatchDeleteBranchesV4Handler,
+  createTestPlanBatchDeleteIteratorsV4Handler,
+  createTestPlanBatchDeleteTestcasesV4Handler,
+  createTestPlanBatchUpdateTestcasesV4Handler,
+  createTestPlanCreateApiTestcaseV4Handler,
+  createTestPlanCreateExecutionTaskV1Handler,
+  createTestPlanListIteratorsV4WithStatsHandler
+} from "../products/testplan/tools/official-batch-tools.js";
+import { createTestPlanOfficialEndpointToolHandler } from "../products/testplan/tools/official-endpoint-tool.js";
 import { createTestPlanUpdateTaskHandler } from "../products/testplan/tools/update-task.js";
 import { createOfficialApiRequestHandler } from "../products/shared-tools/request-official-api.js";
+import { testPlanOfficialEndpointToolInput } from "../products/testplan/schemas.js";
 import { defineProductTool, registerDefinedTool } from "./product-tool-registry.js";
 import type { RateLimiter } from "./rate-limiter.js";
 import type { SessionCredentialStore } from "./session-store.js";
 
 type RegisterableServer = Pick<McpServer, "registerTool">;
 type TestPlanStdioClient = ReturnType<typeof createTestPlanClient>;
+
+function registerTestPlanOfficialEndpointTool(options: {
+  toolName: string;
+  server: RegisterableServer;
+  mode: "http" | "stdio";
+  sessionStore?: SessionCredentialStore;
+  stdioClient?: TestPlanStdioClient;
+  rateLimiter?: RateLimiter;
+}) {
+  const endpointTool = getTestPlanOfficialEndpointTool(options.toolName);
+  if (!endpointTool) {
+    return false;
+  }
+
+  return registerDefinedTool({
+    toolName: options.toolName,
+    server: options.server,
+    definitions: {
+      [options.toolName]: defineProductTool({
+        description: endpointTool.description,
+        inputSchema: testPlanOfficialEndpointToolInput,
+        selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanOfficialEndpointToolHandler>[1] }) => clients.testPlanClient,
+        createProductHandler: (client) => createTestPlanOfficialEndpointToolHandler(endpointTool, client)
+      })
+    },
+    mode: options.mode,
+    sessionStore: options.sessionStore,
+    stdioClient: options.stdioClient,
+    rateLimiter: options.rateLimiter
+  });
+}
 
 const testPlanToolDefinitions = {
   "testplan_request_official_api": defineProductTool({
@@ -1216,6 +1272,18 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanBatchAddIteratorTestcasesInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanBatchAddIteratorTestcasesHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanBatchAddIteratorTestcasesHandler
+  }),
+  "testplan_batch_delete_iterators_v4": defineProductTool({
+    description: "Batch delete CodeArts TestPlan v4 iterators (dry-run by default)",
+    inputSchema: testPlanBatchDeleteIteratorsV4Input,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanBatchDeleteIteratorsV4Handler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanBatchDeleteIteratorsV4Handler
+  }),
+  "testplan_batch_delete_branches_v4": defineProductTool({
+    description: "Batch delete CodeArts TestPlan v4 branches (dry-run by default)",
+    inputSchema: testPlanBatchDeleteBranchesV4Input,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanBatchDeleteBranchesV4Handler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanBatchDeleteBranchesV4Handler
   }),
   "testplan_list_iterator_issue_cases": defineProductTool({
     description: "List CodeArts TestPlan testcase references related to iterator issues",
@@ -2560,6 +2628,12 @@ const testPlanToolDefinitions = {
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanCreateTaskHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanCreateTaskHandler
   }),
+  "testplan_create_execution_task_v1": defineProductTool({
+    description: "Create a CodeArts TestPlan execution task via official v1 API (dry-run by default)",
+    inputSchema: testPlanCreateExecutionTaskV1Input,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanCreateExecutionTaskV1Handler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanCreateExecutionTaskV1Handler
+  }),
   "testplan_batch_update_task_attributes": defineProductTool({
     description: "Batch update CodeArts TestPlan task attributes",
     inputSchema: testPlanBatchUpdateTaskAttributesInput,
@@ -2627,6 +2701,12 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListTesthubIteratorsInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTesthubIteratorsHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListTesthubIteratorsHandler
+  }),
+  "testplan_list_iterators_v4_with_stats": defineProductTool({
+    description: "List CodeArts TestPlan v4 iterators with statistics by official batch-query API",
+    inputSchema: testPlanListIteratorsV4WithStatsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListIteratorsV4WithStatsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanListIteratorsV4WithStatsHandler
   }),
   "testplan_list_testhub_iterators_v5": defineProductTool({
     description: "List CodeArts TestPlan TestHub v5 iterators",
@@ -2760,6 +2840,42 @@ const testPlanToolDefinitions = {
     inputSchema: testPlanListTestcasesBatchInput,
     selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanListTestcasesBatchHandler>[0] }) => clients.testPlanClient,
     createProductHandler: createTestPlanListTestcasesBatchHandler
+  }),
+  "testplan_batch_create_testcases": defineProductTool({
+    description: "Batch create CodeArts TestPlan testcases by official v4 API (dry-run by default)",
+    inputSchema: testPlanBatchCreateTestcasesInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanBatchCreateTestcasesHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanBatchCreateTestcasesHandler
+  }),
+  "testplan_batch_delete_testcases_v4": defineProductTool({
+    description: "Batch delete CodeArts TestPlan v4 testcases (dry-run by default)",
+    inputSchema: testPlanBatchDeleteTestcasesV4Input,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanBatchDeleteTestcasesV4Handler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanBatchDeleteTestcasesV4Handler
+  }),
+  "testplan_batch_update_testcases_v4": defineProductTool({
+    description: "Batch update CodeArts TestPlan v4 testcases (dry-run by default)",
+    inputSchema: testPlanBatchUpdateTestcasesV4Input,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanBatchUpdateTestcasesV4Handler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanBatchUpdateTestcasesV4Handler
+  }),
+  "testplan_batch_create_testcase_reviews": defineProductTool({
+    description: "Batch create CodeArts TestPlan testcase reviews via official v4 API (dry-run by default)",
+    inputSchema: testPlanBatchCreateTestcaseReviewsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanBatchCreateTestcaseReviewsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanBatchCreateTestcaseReviewsHandler
+  }),
+  "testplan_batch_close_testcase_reviews": defineProductTool({
+    description: "Batch close CodeArts TestPlan testcase reviews via official v4 API (dry-run by default)",
+    inputSchema: testPlanBatchCloseTestcaseReviewsInput,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanBatchCloseTestcaseReviewsHandler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanBatchCloseTestcaseReviewsHandler
+  }),
+  "testplan_create_api_testcase_v4": defineProductTool({
+    description: "Create a CodeArts TestPlan API testcase via official v4 API (dry-run by default)",
+    inputSchema: testPlanCreateApiTestcaseV4Input,
+    selectHttpClient: (clients: { testPlanClient: Parameters<typeof createTestPlanCreateApiTestcaseV4Handler>[0] }) => clients.testPlanClient,
+    createProductHandler: createTestPlanCreateApiTestcaseV4Handler
   }),
   "testplan_list_solution_templates": defineProductTool({
     description: "List CodeArts TestPlan solution templates",
@@ -2952,6 +3068,10 @@ export function registerTestPlanTool(options: {
   stdioClient?: TestPlanStdioClient;
   rateLimiter?: RateLimiter;
 }) {
+  if (registerTestPlanOfficialEndpointTool(options)) {
+    return true;
+  }
+
   return registerDefinedTool({
     toolName: options.toolName,
     server: options.server,

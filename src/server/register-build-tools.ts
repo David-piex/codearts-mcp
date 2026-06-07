@@ -17,6 +17,7 @@ import {
   buildConfigureReleaseUploadStepInput,
   buildCreateJobGroupInput,
   buildCreateJobInput,
+  buildCreateJobV3Input,
   buildDeleteJobGroupInput,
   buildDeleteJobInput,
   buildDisableJobInput,
@@ -132,11 +133,13 @@ import {
   buildShowFlowGraphV3Input,
   buildShowPackageSpecCountdownInput,
   buildRunJobInput,
+  buildRunJobV3Input,
   buildStopJobInput,
   buildUnfollowCustomTemplateInput,
   buildUnfollowJobInput,
   buildUnfollowOfficialTemplateInput,
   buildUpdateJobNoticeInput,
+  buildUpdateJobV3Input,
   buildUpdateJobRolePermissionInput,
   buildUpdateKeystoreInput,
   buildUploadJunitCoverageInput,
@@ -264,6 +267,7 @@ import {
   createBuildCopyJobHandler,
   createBuildCreateJobGroupHandler,
   createBuildCreateJobHandler,
+  createBuildCreateJobV3Handler,
   createBuildCreateTemplateHandler,
   createBuildCreateTemplateV3Handler,
   createBuildDeleteJobGroupHandler,
@@ -281,16 +285,19 @@ import {
   createBuildFollowJobHandler,
   createBuildFollowOfficialTemplateHandler,
   createBuildMoveJobGroupHandler,
+  createBuildRunJobV3Handler,
   createBuildUpdateJobGroupHandler,
   createBuildRecoverJobV3Handler,
   createBuildRestoreRecyclingJobsHandler,
   createBuildSaveTemplateUsedInfoHandler,
   createBuildSetKeepTimeHandler,
   createBuildSwapJobGroupHandler,
+  createBuildStopJobV1Handler,
   createBuildUnfollowCustomTemplateHandler,
   createBuildUnfollowJobHandler,
   createBuildUnfollowOfficialTemplateHandler,
   createBuildUpdateJobNoticeHandler,
+  createBuildUpdateJobV3Handler,
   createBuildUpdateKeystoreHandler,
   createBuildUploadJunitCoverageHandler,
   createBuildUploadJunitReportHandler,
@@ -846,6 +853,12 @@ const buildToolDefinitions = {
     selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildRunJobHandler>[0] }) => clients.buildClient,
     createProductHandler: createBuildRunJobHandler
   }),
+  "build_run_job_v3": defineProductTool({
+    description: "Run CodeArts Build job through the official v3 build endpoint",
+    inputSchema: buildRunJobV3Input,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildRunJobV3Handler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildRunJobV3Handler
+  }),
   "build_delete_job": defineProductTool({
     description: "Delete CodeArts Build job",
     inputSchema: buildDeleteJobInput,
@@ -960,6 +973,12 @@ const buildToolDefinitions = {
     selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildDisableJobV3Handler>[0] }) => clients.buildClient,
     createProductHandler: createBuildDisableJobV3Handler
   }),
+  "build_stop_job_v1": defineProductTool({
+    description: "Stop CodeArts Build job through the official v1 stop endpoint",
+    inputSchema: buildStopJobInput,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildStopJobV1Handler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildStopJobV1Handler
+  }),
   "build_check_webhook_url": defineProductTool({
     description: "Check CodeArts Build webhook URL parameters",
     inputSchema: buildCheckWebhookUrlInput,
@@ -1013,6 +1032,18 @@ const buildToolDefinitions = {
     inputSchema: buildCreateJobInput,
     selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildCreateJobHandler>[0] }) => clients.buildClient,
     createProductHandler: createBuildCreateJobHandler
+  }),
+  "build_create_job_v3": defineProductTool({
+    description: "Create CodeArts Build job through the official v3 create endpoint",
+    inputSchema: buildCreateJobV3Input,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildCreateJobV3Handler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildCreateJobV3Handler
+  }),
+  "build_update_job_v3": defineProductTool({
+    description: "Update CodeArts Build job through the official v3 update endpoint",
+    inputSchema: buildUpdateJobV3Input,
+    selectHttpClient: (clients: { buildClient: Parameters<typeof createBuildUpdateJobV3Handler>[0] }) => clients.buildClient,
+    createProductHandler: createBuildUpdateJobV3Handler
   }),
   "build_copy_job": defineProductTool({
     description: "Copy CodeArts Build job",

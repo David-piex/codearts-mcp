@@ -5,6 +5,7 @@ import { deployToolNames } from "../products/deploy/tools/index.js";
 import { pipelineToolNames } from "../products/pipeline/tools/index.js";
 import { repoToolNames } from "../products/repo/tools/index.js";
 import { reqToolNames } from "../products/req/tools/index.js";
+import { getTestPlanOfficialEndpointTool } from "../products/testplan/official-endpoint-tools.js";
 import { testPlanToolNames } from "../products/testplan/tools/index.js";
 import type { ProductToolFamily } from "./register-product-tools.js";
 
@@ -141,6 +142,11 @@ const moduleLiveStatus: Record<ProductToolModule, ToolLiveStatus> = {
 };
 
 export function classifyToolAccess(toolName: string): ToolAccess {
+  const testPlanEndpointTool = getTestPlanOfficialEndpointTool(toolName);
+  if (testPlanEndpointTool) {
+    return testPlanEndpointTool.write ? "write" : "read";
+  }
+
   if (
     toolName === "pipeline_batch_get_pipeline_status" ||
     toolName === "pipeline_batch_show_pipelines_status" ||

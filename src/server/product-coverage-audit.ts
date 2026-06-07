@@ -6,6 +6,7 @@ import { deployToolNames } from "../products/deploy/tools/index.js";
 import { pipelineToolNames } from "../products/pipeline/tools/index.js";
 import { repoToolNames } from "../products/repo/tools/index.js";
 import { reqToolNames } from "../products/req/tools/index.js";
+import { testPlanOfficialEndpointTools } from "../products/testplan/official-endpoint-tools.js";
 import { testPlanToolNames } from "../products/testplan/tools/index.js";
 import type { ProductToolFamily } from "./register-product-tools.js";
 
@@ -25,6 +26,7 @@ export type ProductCoverageConfig = {
   toolNames: readonly string[];
   endpointAliases?: Record<string, string>;
   ignoredEndpoints?: Record<string, string>;
+  implementedEndpoints?: Record<string, string>;
 };
 
 export const productCoverageConfigs: ProductCoverageConfig[] = [
@@ -78,9 +80,34 @@ export const productCoverageConfigs: ProductCoverageConfig[] = [
       "GET /v1/users/sshkey": "GET /v4/user/keys",
       "POST /v1/users/sshkey": "POST /v4/user/keys",
       "GET /v1/projects/{project_uuid}/repositories/template_status": "GET /v2/projects/{project_uuid}/repositories/template-status",
+      "GET /v1/repositories/{repository_id}/branches": "GET /v4/repositories/{repository_id}/repository/branches",
+      "GET /v1/repositories/{repository_id}/commits": "GET /v4/repositories/{repository_id}/repository/commit-list",
+      "GET /v1/repositories/{repository_id}/statistics": "GET /v4/repositories/{repository_id}/repository/stats/summary",
       "GET /v1/repositories/repository_templates": "GET /v4/repository-templates",
+      "POST /v1/repositories/{repository_id}/deploy_keys": "POST /v2/repositories/{repository_id}/deploy-keys",
+      "POST /v1/repositories/{repository_id}/statistics": "POST /v4/repositories/{repository_id}/repository/statistics",
+      "GET /v2/repositories/{repository_id}/branches": "GET /v4/repositories/{repository_id}/repository/branches",
+      "POST /v2/repositories/{repository_id}/branches": "POST /v4/repositories/{repository_id}/repository/branches",
       "GET /v2/repositories/{repository_id}/commit_lines": "GET /v3/repositories/{repository_id}/commit-lines",
+      "GET /v2/repositories/{repository_id}/merge_request": "GET /v4/repositories/{repository_id}/merge-requests",
+      "DELETE /v2/repositories/{repository_id}/protected-branches": "DELETE /v4/repositories/{repository_id}/protected-branches/bulk-deletion",
+      "POST /v2/repositories/{repository_id}/protected-tags": "POST /v4/repositories/{repository_id}/protected-tags",
       "GET /v2/repositories/{repository_id}/review_setting": "GET /v4/repositories/{repository_id}/review-setting",
+      "GET /v2/repositories/{repository_uuid}/archive": "GET /v4/repositories/{repository_id}/repository/archive",
+      "GET /v2/repositories/repository-templates": "GET /v4/repository-templates",
+      "POST /v4/repositories/123/file-push-permissions": "POST /v4/repositories/{repository_id}/file-push-permissions",
+      "PUT /v4/repositories/123/file-push-permissions": "PUT /v4/repositories/{repository_id}/file-push-permissions",
+      "PUT /v4/repositories/123/general-policy": "PUT /v4/repositories/{repository_id}/general-policy",
+      "PUT /v4/repositories/123/inherit-setting": "PUT /v4/repositories/{repository_id}/inherit-setting",
+      "POST /v4/repositories/123/labels": "POST /v4/repositories/{repository_id}/labels",
+      "PUT /v4/repositories/123/label": "PUT /v4/repositories/{repository_id}/label",
+      "PUT /v4/repositories/123/protected-branch?branch_name=tt*": "PUT /v4/repositories/{repository_id}/protected-branch",
+      "POST /v4/repositories/123/protected-branches": "POST /v4/repositories/{repository_id}/protected-branches",
+      "PUT /v4/repositories/123/protected-branches": "PUT /v4/repositories/{repository_id}/protected-branches",
+      "PUT /v4/repositories/123/protected-tag?tag_name=t1": "PUT /v4/repositories/{repository_id}/protected-tag",
+      "POST /v4/repositories/123/protected-tags": "POST /v4/repositories/{repository_id}/protected-tags",
+      "PUT /v4/repositories/123/protected-tags": "PUT /v4/repositories/{repository_id}/protected-tags",
+      "POST /v4/repositories/123/remote-mirror": "POST /v4/repositories/{repository_id}/remote-mirror",
       "PUT /v1/repositories/{repository_uuid}/template_status": "PUT /v2/repositories/{repository_uuid}/template-status"
     },
     ignoredEndpoints: {
@@ -92,7 +119,11 @@ export const productCoverageConfigs: ProductCoverageConfig[] = [
     module: "Req",
     docPath: "tmp/pdf-text/_____CodeArts_Req_API__.txt",
     clientPaths: ["src/products/req/client.ts"],
-    toolNames: reqToolNames
+    toolNames: reqToolNames,
+    endpointAliases: {
+      "GET /v4/irs/4647058403938004992/histories": "GET /v4/irs/{ir_id}/histories",
+      "GET /v4/rrs/4647058403938004992/histories": "GET /v4/rrs/{rr_id}/histories"
+    }
   },
   {
     family: "testplan",
@@ -100,6 +131,9 @@ export const productCoverageConfigs: ProductCoverageConfig[] = [
     docPath: "tmp/pdf-text/_____CodeArts_TestPlan_API__.txt",
     clientPaths: ["src/products/testplan/client.ts"],
     toolNames: testPlanToolNames,
+    implementedEndpoints: Object.fromEntries(
+      testPlanOfficialEndpointTools.map((tool) => [`${tool.method} ${tool.pathTemplate}`, tool.name])
+    ),
     endpointAliases: {
       "GET /v1/{project_id}/aw_cata/child_cata_data": "GET /v1/{project_id}/api-test-child-basic-aws",
       "GET /v1/{project_id}/get_awName_view": "GET /v1/{project_id}/api-test-aw-name-views"
@@ -145,6 +179,7 @@ const parameterTokens = new Set([
 
 const tokenAliases: Record<string, string[]> = {
   apps: ["application"],
+  branches: ["branch"],
   envs: ["environment"],
   img: ["image"],
   irs: ["ir"],
@@ -229,19 +264,25 @@ function scoreClientPath(path: string, clientText: string) {
 
 function findMatchedTools(
   endpoint: { method: string; path: string },
-  config: Pick<ProductCoverageConfig, "family" | "toolNames" | "endpointAliases">
+  config: Pick<ProductCoverageConfig, "family" | "toolNames" | "endpointAliases" | "implementedEndpoints">
 ) {
-  const aliasKey = config.endpointAliases?.[`${endpoint.method} ${endpoint.path}`];
+  const endpointKey = `${endpoint.method} ${endpoint.path}`;
+  const implementedTool = config.implementedEndpoints?.[endpointKey];
+  const aliasKey = config.endpointAliases?.[endpointKey];
   const path = aliasKey?.replace(/^[A-Z]+\s+/, "") ?? endpoint.path;
   const tokens = endpointTokens(path)
     .flatMap((token) => token.split(/[-_]/g))
     .filter((token) => token.length > 1)
     .flatMap((token) => [token, ...(tokenAliases[token] ?? [])]);
 
-  return config.toolNames.filter((toolName) => {
+  const matchedTools = config.toolNames.filter((toolName) => {
     const set = toolTokens(toolName, config.family);
     return tokens.some((token) => set.has(token));
   });
+
+  return implementedTool && !matchedTools.includes(implementedTool)
+    ? [implementedTool, ...matchedTools]
+    : matchedTools;
 }
 
 function readClientText(clientPaths: string[]) {
@@ -279,12 +320,19 @@ export function auditProductCoverage(input: {
   const clientText = input.clientText ?? readClientText(input.config.clientPaths);
 
   return collectEndpoints(docText)
-    .map<ProductCoverageEndpoint>((endpoint) => ({
-      ...endpoint,
-      clientScore: scoreClientPath(endpoint.path, clientText),
-      matchedTools: findMatchedTools(endpoint, input.config),
-      ignoredReason: input.config.ignoredEndpoints?.[`${endpoint.method} ${endpoint.path}`]
-    }))
+    .map<ProductCoverageEndpoint>((endpoint) => {
+      const endpointKey = `${endpoint.method} ${endpoint.path}`;
+      const implementedTool = input.config.implementedEndpoints?.[endpointKey];
+      const aliasKey = input.config.endpointAliases?.[endpointKey];
+      const scorePath = aliasKey?.replace(/^[A-Z]+\s+/, "") ?? endpoint.path;
+
+      return {
+        ...endpoint,
+        clientScore: implementedTool ? Math.max(10, scoreClientPath(scorePath, clientText)) : scoreClientPath(scorePath, clientText),
+        matchedTools: findMatchedTools(endpoint, input.config),
+        ignoredReason: input.config.ignoredEndpoints?.[`${endpoint.method} ${endpoint.path}`]
+      };
+    })
     .sort((left, right) => {
       if (left.clientScore !== right.clientScore) {
         return left.clientScore - right.clientScore;

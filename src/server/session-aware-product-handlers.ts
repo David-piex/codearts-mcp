@@ -149,11 +149,26 @@ import { createPipelineListArtifactsHandler } from "../products/pipeline/tools/l
 import { createPipelineListAvailablePublishersHandler } from "../products/pipeline/tools/list-available-publishers.js";
 import { createPipelineListBasePluginsHandler } from "../products/pipeline/tools/list-base-plugins.js";
 import { createPipelineListBasePluginsPagedHandler } from "../products/pipeline/tools/list-base-plugins-paged.js";
+import {
+  createPipelineGetAcceptFreeDeclarationHandler,
+  createPipelineGetPluginMetricsHandler,
+  createPipelineGetTenantPopupStatusHandler,
+  createPipelineShowTemplateTaskStatusHandler
+} from "../products/pipeline/tools/additional-query-tools.js";
 import { createPipelineListExtensionEndpointsHandler } from "../products/pipeline/tools/list-extension-endpoints.js";
 import { createPipelineListExtensionModulesHandler } from "../products/pipeline/tools/list-extension-modules.js";
 import { createPipelineListGroupsHandler } from "../products/pipeline/tools/list-groups.js";
 import { createPipelineListPluginVersionsHandler } from "../products/pipeline/tools/list-plugin-versions.js";
 import { createPipelineListPluginsHandler } from "../products/pipeline/tools/list-plugins.js";
+import {
+  createPipelineCreatePluginDraftHandler,
+  createPipelineDeletePluginDraftHandler,
+  createPipelinePublishPluginBindHandler,
+  createPipelinePublishPluginDraftHandler,
+  createPipelinePublishPluginHandler,
+  createPipelineUpdatePluginBaseInfoHandler,
+  createPipelineUpdatePluginDraftHandler
+} from "../products/pipeline/tools/plugin-draft.js";
 import { createPipelineListPipelinesHandler } from "../products/pipeline/tools/list-pipelines.js";
 import { createPipelineListProjectStrategiesHandler } from "../products/pipeline/tools/list-project-strategies.js";
 import { createPipelineListPublishersHandler } from "../products/pipeline/tools/list-publishers.js";
@@ -170,11 +185,17 @@ import {
   createPipelineListVariableGroupsHandler
 } from "../products/pipeline/tools/list-variable-groups.js";
 import { createPipelineMovePipelinesToGroupHandler } from "../products/pipeline/tools/move-pipelines-to-group.js";
+import { createPipelineSwapPipelineGroupOrderHandler } from "../products/pipeline/tools/swap-pipeline-group-order.js";
 import { createPipelineRejectRunHandler } from "../products/pipeline/tools/reject-run.js";
 import { createPipelineRetryRunHandler } from "../products/pipeline/tools/retry-run.js";
 import { createPipelineRunPipelineHandler } from "../products/pipeline/tools/run-pipeline.js";
 import { createPipelineSetTagsForPipelinesHandler } from "../products/pipeline/tools/set-tags-for-pipelines.js";
 import { createPipelineStopRunHandler } from "../products/pipeline/tools/stop-run.js";
+import {
+  createPipelineCreateTemplateTaskV3Handler,
+  createPipelineStartNewPipelineV3Handler,
+  createPipelineStopPipelineV3Handler
+} from "../products/pipeline/tools/legacy-v3-mutations.js";
 import { createPipelineSwitchProjectStrategyHandler } from "../products/pipeline/tools/switch-project-strategy.js";
 import { createPipelineSwitchStrategyHandler } from "../products/pipeline/tools/switch-strategy.js";
 import { createPipelineUpdateExtensionEndpointHandler } from "../products/pipeline/tools/update-extension-endpoint.js";
@@ -184,6 +205,7 @@ import { createPipelineUpdateRuleHandler } from "../products/pipeline/tools/upda
 import { createPipelineUpdateStrategyHandler } from "../products/pipeline/tools/update-strategy.js";
 import { createPipelineUpdateTagHandler } from "../products/pipeline/tools/update-tag.js";
 import { createPipelineUpdateVariableGroupHandler } from "../products/pipeline/tools/update-variable-group.js";
+import { createPipelineUploadPluginIconHandler } from "../products/pipeline/tools/upload-plugin-icon.js";
 import { createRepoCloseMergeRequestHandler } from "../products/repo/tools/close-merge-request.js";
 import { createRepoCompareRefsHandler } from "../products/repo/tools/compare-refs.js";
 import { createRepoCreateMergeRequestDiscussionHandler } from "../products/repo/tools/create-merge-request-discussion.js";
@@ -1859,6 +1881,17 @@ export function createSessionAwarePipelineRunPipelineHandler(
   );
 }
 
+export function createSessionAwarePipelineStartNewPipelineV3Handler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineStartNewPipelineV3Handler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineStartNewPipelineV3Handler
+  );
+}
+
 export function createSessionAwarePipelineStopRunHandler(
   store: SessionCredentialStore,
   injectedClient?: Parameters<typeof createPipelineStopRunHandler>[0]
@@ -1867,6 +1900,17 @@ export function createSessionAwarePipelineStopRunHandler(
     store,
     injectedClient,
     createPipelineStopRunHandler
+  );
+}
+
+export function createSessionAwarePipelineStopPipelineV3Handler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineStopPipelineV3Handler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineStopPipelineV3Handler
   );
 }
 
@@ -2043,6 +2087,17 @@ export function createSessionAwarePipelineMovePipelinesToGroupHandler(
     store,
     injectedClient,
     createPipelineMovePipelinesToGroupHandler
+  );
+}
+
+export function createSessionAwarePipelineSwapPipelineGroupOrderHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineSwapPipelineGroupOrderHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineSwapPipelineGroupOrderHandler
   );
 }
 
@@ -2541,6 +2596,105 @@ export function createSessionAwarePipelineListPluginsHandler(
   );
 }
 
+export function createSessionAwarePipelineGetPluginMetricsHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineGetPluginMetricsHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineGetPluginMetricsHandler
+  );
+}
+
+export function createSessionAwarePipelineCreatePluginDraftHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineCreatePluginDraftHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineCreatePluginDraftHandler
+  );
+}
+
+export function createSessionAwarePipelineUpdatePluginDraftHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineUpdatePluginDraftHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineUpdatePluginDraftHandler
+  );
+}
+
+export function createSessionAwarePipelinePublishPluginDraftHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelinePublishPluginDraftHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelinePublishPluginDraftHandler
+  );
+}
+
+export function createSessionAwarePipelineDeletePluginDraftHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineDeletePluginDraftHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineDeletePluginDraftHandler
+  );
+}
+
+export function createSessionAwarePipelinePublishPluginHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelinePublishPluginHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelinePublishPluginHandler
+  );
+}
+
+export function createSessionAwarePipelinePublishPluginBindHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelinePublishPluginBindHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelinePublishPluginBindHandler
+  );
+}
+
+export function createSessionAwarePipelineUpdatePluginBaseInfoHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineUpdatePluginBaseInfoHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineUpdatePluginBaseInfoHandler
+  );
+}
+
+export function createSessionAwarePipelineUploadPluginIconHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineUploadPluginIconHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineUploadPluginIconHandler
+  );
+}
+
 export function createSessionAwarePipelineGetPluginInputsHandler(
   store: SessionCredentialStore,
   injectedClient?: Parameters<typeof createPipelineGetPluginInputsHandler>[0]
@@ -2593,6 +2747,50 @@ export function createSessionAwarePipelineListTemplatesHandler(
     store,
     injectedClient,
     createPipelineListTemplatesHandler
+  );
+}
+
+export function createSessionAwarePipelineGetTenantPopupStatusHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineGetTenantPopupStatusHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineGetTenantPopupStatusHandler
+  );
+}
+
+export function createSessionAwarePipelineGetAcceptFreeDeclarationHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineGetAcceptFreeDeclarationHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineGetAcceptFreeDeclarationHandler
+  );
+}
+
+export function createSessionAwarePipelineShowTemplateTaskStatusHandler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineShowTemplateTaskStatusHandler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineShowTemplateTaskStatusHandler
+  );
+}
+
+export function createSessionAwarePipelineCreateTemplateTaskV3Handler(
+  store: SessionCredentialStore,
+  injectedClient?: Parameters<typeof createPipelineCreateTemplateTaskV3Handler>[0]
+) {
+  return createSessionAwarePipelineToolHandler(
+    store,
+    injectedClient,
+    createPipelineCreateTemplateTaskV3Handler
   );
 }
 

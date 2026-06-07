@@ -119,6 +119,10 @@ export const repoListGroupSubgroupsAndRepositoriesInput = pagingSchema.extend({
 });
 
 export const repoShowGroupInheritSettingInput = z.object({
+  group_id: idSchema
+});
+
+export const repoShowGroupsInheritInput = z.object({
   group_id: idSchema,
   setting_type: z.enum([
     "protected_branches",
@@ -1838,6 +1842,7 @@ export const repoUpdateNotificationSubscriptionInput = z.object({
 
 export const repoExecuteRepositoryStatisticsInput = z.object({
   repository_id: idSchema,
+  branch_name: z.string().min(1).max(200).optional(),
   dry_run: z.boolean().default(true)
 });
 
@@ -2419,10 +2424,15 @@ export const repoGetTagInput = z.object({
 
 export const repoListCommitsInput = pagingSchema.extend({
   repository_id: idSchema,
+  keyword: z.string().optional(),
   ref_name: z.string().optional(),
   since: z.string().optional(),
   until: z.string().optional(),
+  path: z.string().optional(),
+  message: z.string().optional(),
+  author: z.string().optional(),
   order_by_date: z.boolean().optional(),
+  follow: z.boolean().optional(),
   with_stats: z.boolean().optional()
 });
 

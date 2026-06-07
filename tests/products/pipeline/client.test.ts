@@ -2926,7 +2926,7 @@ describe("createPipelineClient", () => {
       description: "release"
     });
 
-    expect(post).toHaveBeenNthCalledWith(1, "/v5/project-1/api/pipelines/template/template-1", {
+    expect(post).toHaveBeenNthCalledWith(1, "/v5/project-1/api/pipeline-templates/template-1/create-pipeline", {
       name: "Created From Template",
       description: "desc",
       group_id: "group-1"
@@ -2942,10 +2942,10 @@ describe("createPipelineClient", () => {
       is_publish: true,
       manifest_version: "3.1"
     });
-    expect(del).toHaveBeenCalledWith("/v5/project-1/api/pipelines/batch", {
+    expect(post).toHaveBeenNthCalledWith(3, "/v5/project-1/api/pipelines/batch-delete", {
       pipeline_ids: ["pipe-a", "pipe-b"]
     });
-    expect(post).toHaveBeenNthCalledWith(3, "/v5/project-1/api/pipelines/batch-run", {
+    expect(post).toHaveBeenNthCalledWith(4, "/v5/project-1/api/pipelines/batch-run", {
       pipeline_ids: ["pipe-a", "pipe-b"],
       description: "release",
       sources: [
@@ -4998,6 +4998,90 @@ describe("createPipelineClient", () => {
         value: "main",
         value_type: "string",
         is_runtime: true
+      }
+    ]);
+  });
+
+  it("calls legacy V3 pipeline mutation endpoints", async () => {
+    const calls: Array<{ method: string; path: string; body?: unknown }> = [];
+    const client = createClient({
+      post: async (path: string, body?: unknown) => {
+        calls.push({ method: "POST", path, body });
+        if (path === "/v3/templates/task") {
+          return {
+            task_id: "task-1"
+          };
+        }
+        if (path.endsWith("/start")) {
+          return {
+            pipeline_id: "pipeline-1",
+            build_id: "23"
+          };
+        }
+        return {
+          pipeline_id: "pipeline-1",
+          pipeline_name: "release-main"
+        };
+      }
+    });
+
+    await client.createTemplateTaskV3({
+      body: {
+        workflow: {
+          name: "Legacy V3 pipeline"
+        }
+      },
+      flow: {
+        initial: {
+          state_1: "always"
+        }
+      }
+    });
+    await client.startNewPipelineV3({
+      pipeline_id: "pipeline-1",
+      build_params: [
+        {
+          name: "ServiceName",
+          value: "pipeline-Test"
+        }
+      ]
+    });
+    await client.stopPipelineV3({
+      pipeline_id: "pipeline-1",
+      build_id: "23"
+    });
+
+    expect(calls).toEqual([
+      {
+        method: "POST",
+        path: "/v3/templates/task",
+        body: {
+          workflow: {
+            name: "Legacy V3 pipeline"
+          },
+          flow: {
+            initial: {
+              state_1: "always"
+            }
+          }
+        }
+      },
+      {
+        method: "POST",
+        path: "/v3/pipelines/pipeline-1/start",
+        body: {
+          build_params: [
+            {
+              name: "ServiceName",
+              value: "pipeline-Test"
+            }
+          ]
+        }
+      },
+      {
+        method: "POST",
+        path: "/v3/pipelines/pipeline-1/stop?build_id=23",
+        body: undefined
       }
     ]);
   });

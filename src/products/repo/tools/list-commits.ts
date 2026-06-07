@@ -30,7 +30,11 @@ type RepoListCommitsClient = {
     ref_name?: string;
     since?: string;
     until?: string;
+    path?: string;
+    message?: string;
+    author?: string;
     order_by_date?: boolean;
+    follow?: boolean;
     with_stats?: boolean;
   }) => Promise<{
     commits: Array<{ id: string; short_id?: string; title?: string; author_name?: string }>;

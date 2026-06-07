@@ -5,6 +5,7 @@ import { previewRepositorySimpleMutation } from "./repository-settings-result.js
 type RepoExecuteRepositoryStatisticsClient = {
   executeRepositoryStatistics: (input: {
     repository_id: string;
+    branch_name?: string;
   }) => Promise<{
     repository_id: string;
     executed: boolean;
@@ -19,7 +20,8 @@ export function createRepoExecuteRepositoryStatisticsHandler(
 
     if (parsed.dry_run) {
       const result = previewRepositorySimpleMutation("Dry run: execute repository statistics", {
-        repositoryId: parsed.repository_id
+        repositoryId: parsed.repository_id,
+        branchName: parsed.branch_name
       });
 
       return {

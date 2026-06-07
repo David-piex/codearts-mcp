@@ -96,4 +96,59 @@ describe("createBuildClient runJob", () => {
       status: "success"
     });
   });
+
+  it("runs a build job through the official v3 endpoint", async () => {
+    const requests: Array<{ method: string; path: string; body?: unknown }> = [];
+    const client = createBuildClient({
+      post: async (path: string, body?: unknown) => {
+        requests.push({ method: "POST", path, body });
+        return {
+          result: {
+            job_id: "job-1",
+            record_id: "record-1",
+            actual_build_number: "5",
+            daily_build_number: "20260607.5",
+            status: "RUNNING"
+          }
+        };
+      }
+    } as never);
+
+    const result = await client.runJobV3({
+      job_id: "job-1",
+      branch: "main",
+      parameter: [{ name: "env", value: "test" }],
+      body: { custom: true }
+    });
+
+    expect(result).toEqual({
+      job_id: "job-1",
+      record_id: "record-1",
+      build_no: 5,
+      daily_build_number: "20260607.5",
+      status: "RUNNING",
+      raw: {
+        job_id: "job-1",
+        record_id: "record-1",
+        actual_build_number: "5",
+        daily_build_number: "20260607.5",
+        status: "RUNNING"
+      }
+    });
+    expect(requests).toEqual([
+      {
+        method: "POST",
+        path: "/v3/jobs/build",
+        body: {
+          custom: true,
+          job_id: "job-1",
+          parameter: [{ name: "env", value: "test" }],
+          scm: {
+            branch: "main",
+            build_type: "branch"
+          }
+        }
+      }
+    ]);
+  });
 });

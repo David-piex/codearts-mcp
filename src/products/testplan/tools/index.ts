@@ -1,11 +1,20 @@
+import { testPlanOfficialEndpointToolNames } from "../official-endpoint-tools.js";
+
 export const testPlanToolNames = [
   "testplan_add_project_users",
   "testplan_associate_attachments",
   "testplan_batch_add_iterator_testcases",
+  "testplan_batch_close_testcase_reviews",
+  "testplan_batch_create_testcase_reviews",
+  "testplan_batch_create_testcases",
+  "testplan_batch_delete_branches_v4",
+  "testplan_batch_delete_iterators_v4",
   "testplan_batch_delete_tasks",
   "testplan_batch_delete_test_reports",
+  "testplan_batch_delete_testcases_v4",
   "testplan_batch_send_notifications",
   "testplan_batch_update_task_attributes",
+  "testplan_batch_update_testcases_v4",
   "testplan_check_alert_template_name",
   "testplan_check_alert_user_name",
   "testplan_check_api_test_task_name",
@@ -20,6 +29,8 @@ export const testPlanToolNames = [
   "testplan_create_progress_report",
   "testplan_create_repository_testsuite",
   "testplan_create_defect_association",
+  "testplan_create_api_testcase_v4",
+  "testplan_create_execution_task_v1",
   "testplan_create_test_step_by_collection",
   "testplan_create_test_report",
   "testplan_create_testhub_service",
@@ -232,6 +243,7 @@ export const testPlanToolNames = [
   "testplan_list_ipd_issues_tree",
   "testplan_list_iterator_issue_cases",
   "testplan_list_iterator_infos",
+  "testplan_list_iterators_v4_with_stats",
   "testplan_list_iterator_stage_counts",
   "testplan_list_iterator_histories",
   "testplan_list_iterator_issue_ids",
@@ -358,5 +370,6 @@ export const testPlanToolNames = [
   "testplan_stop_task_execution",
   "testplan_update_tep_share",
   "testplan_update_testhub_service",
-  "testplan_update_task"
+  "testplan_update_task",
+  ...testPlanOfficialEndpointToolNames
 ];

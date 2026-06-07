@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { createRepoExecuteRepositoryStatisticsHandler } from "../../../../src/products/repo/tools/execute-repository-statistics.js";
 import {
   mapLastPushEventInRepository,
   mapRepoLastStatistics,
@@ -12,6 +13,37 @@ import {
 } from "../../../../src/products/repo/tools/repository-statistics-result.js";
 
 describe("repository statistics result mappers", () => {
+  it("passes branch name through execute repository statistics tool", async () => {
+    const calls: unknown[] = [];
+    const handler = createRepoExecuteRepositoryStatisticsHandler({
+      executeRepositoryStatistics: async (input) => {
+        calls.push(input);
+        return {
+          repository_id: input.repository_id,
+          executed: true
+        };
+      }
+    });
+
+    const result = await handler({
+      repository_id: "100",
+      branch_name: "feature/main",
+      dry_run: false
+    });
+
+    expect(calls).toEqual([
+      {
+        repository_id: "100",
+        branch_name: "feature/main",
+        dry_run: false
+      }
+    ]);
+    expect(result.structuredContent.item).toMatchObject({
+      repositoryId: "100",
+      executed: true
+    });
+  });
+
   it("maps statistics status", () => {
     const result = mapRepositoryStatisticsStatus({
       can_statistics: true,

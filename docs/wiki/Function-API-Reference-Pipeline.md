@@ -6,7 +6,7 @@
 
 模块：`流水线`
 
-API 数量：`173`
+API 数量：`189`
 
 所有函数 API 使用同一个 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数。
 
@@ -1497,6 +1497,7 @@ API 数量：`173`
 | `template_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `template_id` ↔ 原始 CodeArts 流水线 API 同名字段 `template_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>模板 ID，用于定位对应的 CodeArts 资源。 |
 | `name` | 是 | `string` |  | 字段对应：<br>MCP 字段 `name` ↔ 原始 CodeArts 流水线 API 同名字段 `name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>名称字段，用于创建、更新或按名称查询资源。建议填写能区分业务含义的短名称。 |
 | `description` | 否 | `string` |  | 字段对应：<br>MCP 字段 `description` ↔ 原始 CodeArts 流水线 API 同名字段 `description`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
+| `component_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `component_id` ↔ 原始 CodeArts 流水线 API 同名字段 `component_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>component ID，用于定位对应的 CodeArts 资源。 |
 | `group_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `group_id` ↔ 原始 CodeArts 流水线 API 同名字段 `group_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>分组 ID，用于定位对应的 CodeArts 资源。 |
 | `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
 
@@ -1521,6 +1522,9 @@ API 数量：`173`
       "type": "string",
       "maxLength": 1024
     },
+    "component_id": {
+      "$ref": "#/properties/project_id"
+    },
     "group_id": {
       "$ref": "#/properties/project_id"
     },
@@ -1533,6 +1537,167 @@ API 数量：`173`
     "project_id",
     "template_id",
     "name"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### pipeline_create_plugin_draft
+
+所属模块：`流水线`
+
+说明：创建流水线的plugindraft。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "pipeline_create_plugin_draft",
+    "arguments": {
+      "domain_id": "<domain_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `domain_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `domain_id` ↔ 原始 CodeArts 流水线 API 同名字段 `domain_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>租户账号 ID，也称 domainId，用于按租户维度查询 CodeArts 资源。 |
+| `unique_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `unique_id` ↔ 原始 CodeArts 流水线 API 同名字段 `unique_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>unique ID，用于定位对应的 CodeArts 资源。 |
+| `icon_url` | 否 | `string` |  | 字段对应：<br>MCP 字段 `icon_url` ↔ 原始 CodeArts 流水线 API 同名字段 `icon_url`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>icon URL，用于指定服务地址、资源地址或回调地址。 |
+| `runtime_attribution` | 否 | `"agent" \| "agentless"` |  | 字段对应：<br>MCP 字段 `runtime_attribution` ↔ 原始 CodeArts 流水线 API 同名字段 `runtime_attribution`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。可选值：`agent`、`agentless`。 |
+| `plugin_name` | 否 | `string` |  | 字段对应：<br>MCP 字段 `plugin_name` ↔ 原始 CodeArts 流水线 API 同名字段 `plugin_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>插件名称。 |
+| `display_name` | 否 | `string` |  | 字段对应：<br>MCP 字段 `display_name` ↔ 原始 CodeArts 流水线 API 同名字段 `display_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>display名称。 |
+| `business_type` | 否 | `"Build" \| "Gate" \| "Deploy" \| "Test" \| "Normal"` |  | 字段对应：<br>MCP 字段 `business_type` ↔ 原始 CodeArts 流水线 API 同名字段 `business_type`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>业务类型，用于按服务或场景区分不同资源。可选值：`Build`、`Gate`、`Deploy`、`Test`、`Normal`。 |
+| `business_type_display_name` | 否 | `string` |  | 字段对应：<br>MCP 字段 `business_type_display_name` ↔ 原始 CodeArts 流水线 API 同名字段 `business_type_display_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>businesstypedisplay名称。 |
+| `description` | 否 | `string` |  | 字段对应：<br>MCP 字段 `description` ↔ 原始 CodeArts 流水线 API 同名字段 `description`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
+| `is_private` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `is_private` ↔ 原始 CodeArts 流水线 API 同名字段 `is_private`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `region` | 否 | `string` |  | 字段对应：<br>MCP 字段 `region` 用于选择华为云区域和服务端点，原始业务请求体通常无对应字段。<br>华为云区域标识，例如 cn-north-4。 |
+| `maintainers` | 否 | `string` |  | 字段对应：<br>MCP 字段 `maintainers` ↔ 原始 CodeArts 流水线 API 同名字段 `maintainers`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `plugin_composition_type` | 否 | `"single" \| "multi"` |  | 字段对应：<br>MCP 字段 `plugin_composition_type` ↔ 原始 CodeArts 流水线 API 同名字段 `plugin_composition_type`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。可选值：`single`、`multi`。 |
+| `manifest_version` | 否 | `string` |  | 字段对应：<br>MCP 字段 `manifest_version` ↔ 原始 CodeArts 流水线 API 同名字段 `manifest_version`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `version` | 否 | `string` |  | 字段对应：<br>MCP 字段 `version` ↔ 原始 CodeArts 流水线 API 同名字段 `version`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>版本号。制品仓场景表示制品版本；插件或模板场景表示对应资源版本。 |
+| `version_description` | 否 | `string` |  | 字段对应：<br>MCP 字段 `version_description` ↔ 原始 CodeArts 流水线 API 同名字段 `version_description`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `execution_info` | 否 | `object` |  | 字段对应：<br>MCP 字段 `execution_info` ↔ 原始 CodeArts 流水线 API 同名字段 `execution_info`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `output_info` | 否 | `array<object>` |  | 字段对应：<br>MCP 字段 `output_info` ↔ 原始 CodeArts 流水线 API 同名字段 `output_info`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `input_info` | 否 | `array<object>` |  | 字段对应：<br>MCP 字段 `input_info` ↔ 原始 CodeArts 流水线 API 同名字段 `input_info`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `body` | 否 | `object` |  | 字段对应：<br>MCP 字段 `body` ↔ 原始 CodeArts 流水线 API 同名字段 `body`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>请求体或正文内容。复杂接口会把多个业务字段放在 body 中提交。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "domain_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "unique_id": {
+      "$ref": "#/properties/domain_id"
+    },
+    "icon_url": {
+      "type": "string",
+      "minLength": 1
+    },
+    "runtime_attribution": {
+      "type": "string",
+      "enum": [
+        "agent",
+        "agentless"
+      ]
+    },
+    "plugin_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "display_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "business_type": {
+      "type": "string",
+      "enum": [
+        "Build",
+        "Gate",
+        "Deploy",
+        "Test",
+        "Normal"
+      ]
+    },
+    "business_type_display_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "is_private": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "region": {
+      "type": "string",
+      "minLength": 1
+    },
+    "maintainers": {
+      "type": "string",
+      "minLength": 1
+    },
+    "plugin_composition_type": {
+      "type": "string",
+      "enum": [
+        "single",
+        "multi"
+      ]
+    },
+    "manifest_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version_description": {
+      "type": "string"
+    },
+    "execution_info": {
+      "type": "object",
+      "additionalProperties": {}
+    },
+    "output_info": {
+      "type": "array",
+      "items": {
+        "$ref": "#/properties/execution_info"
+      }
+    },
+    "input_info": {
+      "type": "array",
+      "items": {
+        "$ref": "#/properties/execution_info"
+      }
+    },
+    "body": {
+      "$ref": "#/properties/execution_info"
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "domain_id"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -2016,6 +2181,74 @@ API 数量：`173`
 }
 ```
 
+### pipeline_create_template_task_v3
+
+所属模块：`流水线`
+
+说明：创建流水线的模板任务v3。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "pipeline_create_template_task_v3",
+    "arguments": {}
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `flow` | 否 | `object` |  | 字段对应：<br>MCP 字段 `flow` ↔ 原始 CodeArts 流水线 API 同名字段 `flow`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `states` | 否 | `object` |  | 字段对应：<br>MCP 字段 `states` ↔ 原始 CodeArts 流水线 API 同名字段 `states`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `workflow` | 否 | `object` |  | 字段对应：<br>MCP 字段 `workflow` ↔ 原始 CodeArts 流水线 API 同名字段 `workflow`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `body` | 否 | `object` |  | 字段对应：<br>MCP 字段 `body` ↔ 原始 CodeArts 流水线 API 同名字段 `body`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>请求体或正文内容。复杂接口会把多个业务字段放在 body 中提交。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "flow": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "string"
+        }
+      }
+    },
+    "states": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": {}
+      }
+    },
+    "workflow": {
+      "$ref": "#/properties/states/additionalProperties"
+    },
+    "body": {
+      "$ref": "#/properties/states/additionalProperties"
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### pipeline_create_variable_group
 
 所属模块：`流水线`
@@ -2334,6 +2567,72 @@ API 数量：`173`
   "required": [
     "project_id",
     "pipeline_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### pipeline_delete_plugin_draft
+
+所属模块：`流水线`
+
+说明：删除流水线的plugindraft。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "pipeline_delete_plugin_draft",
+    "arguments": {
+      "domain_id": "<domain_id>",
+      "plugin_name": "<plugin_name>",
+      "version": "<version>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `domain_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `domain_id` ↔ 原始 CodeArts 流水线 API 同名字段 `domain_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>租户账号 ID，也称 domainId，用于按租户维度查询 CodeArts 资源。 |
+| `plugin_name` | 是 | `string` |  | 字段对应：<br>MCP 字段 `plugin_name` ↔ 原始 CodeArts 流水线 API 同名字段 `plugin_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>插件名称。 |
+| `version` | 是 | `string` |  | 字段对应：<br>MCP 字段 `version` ↔ 原始 CodeArts 流水线 API 同名字段 `version`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>版本号。制品仓场景表示制品版本；插件或模板场景表示对应资源版本。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "domain_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "plugin_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "domain_id",
+    "plugin_name",
+    "version"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -2920,6 +3219,53 @@ API 数量：`173`
   "required": [
     "cloud_project_id",
     "component_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### pipeline_get_accept_free_declaration
+
+所属模块：`流水线`
+
+说明：获取流水线的acceptfreedeclaration。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "pipeline_get_accept_free_declaration",
+    "arguments": {
+      "tenant_id": "<tenant_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `tenant_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `tenant_id` ↔ 原始 CodeArts 流水线 API 同名字段 `tenant_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>租户 ID 或 CodeArts 租户级项目标识，用于制品仓等服务定位当前租户/项目空间。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "tenant_id"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -4195,6 +4541,94 @@ API 数量：`173`
 }
 ```
 
+### pipeline_get_plugin_metrics
+
+所属模块：`流水线`
+
+说明：获取流水线的pluginmetrics。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "pipeline_get_plugin_metrics",
+    "arguments": {
+      "domain_id": "<domain_id>",
+      "body": "<body>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `domain_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `domain_id` ↔ 原始 CodeArts 流水线 API 同名字段 `domain_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>租户账号 ID，也称 domainId，用于按租户维度查询 CodeArts 资源。 |
+| `body` | 是 | `array<object>` |  | 字段对应：<br>MCP 字段 `body` ↔ 原始 CodeArts 流水线 API 同名字段 `body`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>请求体或正文内容。复杂接口会把多个业务字段放在 body 中提交。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "domain_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "body": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "plugin_name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "display_name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "version": {
+            "type": "string",
+            "minLength": 1
+          },
+          "plugin_attribution": {
+            "type": "string",
+            "enum": [
+              "custom",
+              "official"
+            ]
+          },
+          "version_attribution": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "plugin_name",
+          "version",
+          "plugin_attribution"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    }
+  },
+  "required": [
+    "domain_id",
+    "body"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### pipeline_get_plugin_outputs
 
 所属模块：`流水线`
@@ -5375,6 +5809,59 @@ API 数量：`173`
   },
   "required": [
     "tenant_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### pipeline_get_tenant_popup_status
+
+所属模块：`流水线`
+
+说明：获取流水线的租户popup状态。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "pipeline_get_tenant_popup_status",
+    "arguments": {
+      "tenant_id": "<tenant_id>",
+      "project_id": "<project_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `tenant_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `tenant_id` ↔ 原始 CodeArts 流水线 API 同名字段 `tenant_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>租户 ID 或 CodeArts 租户级项目标识，用于制品仓等服务定位当前租户/项目空间。 |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 流水线 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "tenant_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "project_id": {
+      "$ref": "#/properties/tenant_id"
+    }
+  },
+  "required": [
+    "tenant_id",
+    "project_id"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -8832,6 +9319,249 @@ API 数量：`173`
 }
 ```
 
+### pipeline_publish_plugin
+
+所属模块：`流水线`
+
+说明：执行流水线的plugin。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "pipeline_publish_plugin",
+    "arguments": {
+      "domain_id": "<domain_id>",
+      "plugin_name": "<plugin_name>",
+      "publisher_unique_id": "<publisher_unique_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `domain_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `domain_id` ↔ 原始 CodeArts 流水线 API 同名字段 `domain_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>租户账号 ID，也称 domainId，用于按租户维度查询 CodeArts 资源。 |
+| `plugin_name` | 是 | `string` |  | 字段对应：<br>MCP 字段 `plugin_name` ↔ 原始 CodeArts 流水线 API 同名字段 `plugin_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>插件名称。 |
+| `version` | 否 | `string` |  | 字段对应：<br>MCP 字段 `version` ↔ 原始 CodeArts 流水线 API 同名字段 `version`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>版本号。制品仓场景表示制品版本；插件或模板场景表示对应资源版本。 |
+| `publisher_unique_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `publisher_unique_id` ↔ 原始 CodeArts 流水线 API 同名字段 `publisher_unique_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>publisherunique ID，用于定位对应的 CodeArts 资源。 |
+| `body` | 否 | `object` |  | 字段对应：<br>MCP 字段 `body` ↔ 原始 CodeArts 流水线 API 同名字段 `body`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>请求体或正文内容。复杂接口会把多个业务字段放在 body 中提交。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "domain_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "plugin_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "string"
+    },
+    "publisher_unique_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "body": {
+      "type": "object",
+      "additionalProperties": {}
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "domain_id",
+    "plugin_name",
+    "publisher_unique_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### pipeline_publish_plugin_bind
+
+所属模块：`流水线`
+
+说明：执行流水线的pluginbind。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "pipeline_publish_plugin_bind",
+    "arguments": {
+      "domain_id": "<domain_id>",
+      "plugin_name": "<plugin_name>",
+      "publisher_unique_id": "<publisher_unique_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `domain_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `domain_id` ↔ 原始 CodeArts 流水线 API 同名字段 `domain_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>租户账号 ID，也称 domainId，用于按租户维度查询 CodeArts 资源。 |
+| `plugin_name` | 是 | `string` |  | 字段对应：<br>MCP 字段 `plugin_name` ↔ 原始 CodeArts 流水线 API 同名字段 `plugin_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>插件名称。 |
+| `version` | 否 | `string` |  | 字段对应：<br>MCP 字段 `version` ↔ 原始 CodeArts 流水线 API 同名字段 `version`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>版本号。制品仓场景表示制品版本；插件或模板场景表示对应资源版本。 |
+| `publisher_unique_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `publisher_unique_id` ↔ 原始 CodeArts 流水线 API 同名字段 `publisher_unique_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>publisherunique ID，用于定位对应的 CodeArts 资源。 |
+| `body` | 否 | `object` |  | 字段对应：<br>MCP 字段 `body` ↔ 原始 CodeArts 流水线 API 同名字段 `body`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>请求体或正文内容。复杂接口会把多个业务字段放在 body 中提交。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "domain_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "plugin_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "string"
+    },
+    "publisher_unique_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "body": {
+      "type": "object",
+      "additionalProperties": {}
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "domain_id",
+    "plugin_name",
+    "publisher_unique_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### pipeline_publish_plugin_draft
+
+所属模块：`流水线`
+
+说明：执行流水线的plugindraft。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "pipeline_publish_plugin_draft",
+    "arguments": {
+      "domain_id": "<domain_id>",
+      "plugin_name": "<plugin_name>",
+      "display_name": "<display_name>",
+      "version": "<version>",
+      "plugin_attribution": "<plugin_attribution>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `domain_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `domain_id` ↔ 原始 CodeArts 流水线 API 同名字段 `domain_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>租户账号 ID，也称 domainId，用于按租户维度查询 CodeArts 资源。 |
+| `plugin_name` | 是 | `string` |  | 字段对应：<br>MCP 字段 `plugin_name` ↔ 原始 CodeArts 流水线 API 同名字段 `plugin_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>插件名称。 |
+| `display_name` | 是 | `string` |  | 字段对应：<br>MCP 字段 `display_name` ↔ 原始 CodeArts 流水线 API 同名字段 `display_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>display名称。 |
+| `version` | 是 | `string` |  | 字段对应：<br>MCP 字段 `version` ↔ 原始 CodeArts 流水线 API 同名字段 `version`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>版本号。制品仓场景表示制品版本；插件或模板场景表示对应资源版本。 |
+| `plugin_attribution` | 是 | `"custom" \| "official"` |  | 字段对应：<br>MCP 字段 `plugin_attribution` ↔ 原始 CodeArts 流水线 API 同名字段 `plugin_attribution`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>插件归属信息，用于标识插件来源、所属服务或扩展点。可选值：`custom`、`official`。 |
+| `version_attribution` | 否 | `string` |  | 字段对应：<br>MCP 字段 `version_attribution` ↔ 原始 CodeArts 流水线 API 同名字段 `version_attribution`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `body` | 否 | `object` |  | 字段对应：<br>MCP 字段 `body` ↔ 原始 CodeArts 流水线 API 同名字段 `body`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>请求体或正文内容。复杂接口会把多个业务字段放在 body 中提交。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "domain_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "plugin_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "display_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "plugin_attribution": {
+      "type": "string",
+      "enum": [
+        "custom",
+        "official"
+      ]
+    },
+    "version_attribution": {
+      "type": "string",
+      "minLength": 1
+    },
+    "body": {
+      "type": "object",
+      "additionalProperties": {}
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "domain_id",
+    "plugin_name",
+    "display_name",
+    "version",
+    "plugin_attribution"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### pipeline_query_manifest_versions
 
 所属模块：`流水线`
@@ -9754,6 +10484,189 @@ API 数量：`173`
 }
 ```
 
+### pipeline_show_template_task_status
+
+所属模块：`流水线`
+
+说明：执行流水线的模板任务状态。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "pipeline_show_template_task_status",
+    "arguments": {
+      "task_id": "<task_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `task_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `task_id` ↔ 原始 CodeArts 流水线 API 同名字段 `task_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>任务 ID，用于定位对应的 CodeArts 资源。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "task_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### pipeline_start_new_pipeline_v3
+
+所属模块：`流水线`
+
+说明：启动流水线的new流水线v3。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "pipeline_start_new_pipeline_v3",
+    "arguments": {
+      "pipeline_id": "<pipeline_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `pipeline_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `pipeline_id` ↔ 原始 CodeArts 流水线 API 同名字段 `pipeline_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>流水线 ID，用于定位对应的 CodeArts 资源。 |
+| `build_params` | 否 | `array<object>` |  | 字段对应：<br>MCP 字段 `build_params` ↔ 原始 CodeArts 流水线 API 同名字段 `build_params`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `body` | 否 | `object` |  | 字段对应：<br>MCP 字段 `body` ↔ 原始 CodeArts 流水线 API 同名字段 `body`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>请求体或正文内容。复杂接口会把多个业务字段放在 body 中提交。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "pipeline_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "build_params": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "value": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "value"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "body": {
+      "type": "object",
+      "additionalProperties": {}
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "pipeline_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### pipeline_stop_pipeline_v3
+
+所属模块：`流水线`
+
+说明：停止流水线的流水线v3。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "pipeline_stop_pipeline_v3",
+    "arguments": {
+      "pipeline_id": "<pipeline_id>",
+      "build_id": "<build_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `pipeline_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `pipeline_id` ↔ 原始 CodeArts 流水线 API 同名字段 `pipeline_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>流水线 ID，用于定位对应的 CodeArts 资源。 |
+| `build_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `build_id` ↔ 原始 CodeArts 流水线 API 同名字段 `build_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>构建 ID，用于定位对应的 CodeArts 资源。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "pipeline_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "build_id": {
+      "$ref": "#/properties/pipeline_id"
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "pipeline_id",
+    "build_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### pipeline_stop_run
 
 所属模块：`流水线`
@@ -9806,6 +10719,70 @@ API 数量：`173`
   "required": [
     "pipeline_id",
     "run_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### pipeline_swap_pipeline_group_order
+
+所属模块：`流水线`
+
+说明：执行流水线的流水线组order。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "pipeline_swap_pipeline_group_order",
+    "arguments": {
+      "project_id": "<project_id>",
+      "group_id_1": "<group_id_1>",
+      "group_id_2": "<group_id_2>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 流水线 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
+| `group_id_1` | 是 | `string` |  | 字段对应：<br>MCP 字段 `group_id_1` ↔ 原始 CodeArts 流水线 API 同名字段 `group_id_1`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `group_id_2` | 是 | `string` |  | 字段对应：<br>MCP 字段 `group_id_2` ↔ 原始 CodeArts 流水线 API 同名字段 `group_id_2`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "group_id_1": {
+      "$ref": "#/properties/project_id"
+    },
+    "group_id_2": {
+      "$ref": "#/properties/project_id"
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "project_id",
+    "group_id_1",
+    "group_id_2"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -10937,6 +11914,266 @@ API 数量：`173`
 }
 ```
 
+### pipeline_update_plugin_base_info
+
+所属模块：`流水线`
+
+说明：更新流水线的pluginbase信息。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "pipeline_update_plugin_base_info",
+    "arguments": {
+      "domain_id": "<domain_id>",
+      "plugin_name": "<plugin_name>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `domain_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `domain_id` ↔ 原始 CodeArts 流水线 API 同名字段 `domain_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>租户账号 ID，也称 domainId，用于按租户维度查询 CodeArts 资源。 |
+| `plugin_name` | 是 | `string` |  | 字段对应：<br>MCP 字段 `plugin_name` ↔ 原始 CodeArts 流水线 API 同名字段 `plugin_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>插件名称。 |
+| `display_name` | 否 | `string` |  | 字段对应：<br>MCP 字段 `display_name` ↔ 原始 CodeArts 流水线 API 同名字段 `display_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>display名称。 |
+| `business_type` | 否 | `"Build" \| "Gate" \| "Deploy" \| "Test" \| "Normal"` |  | 字段对应：<br>MCP 字段 `business_type` ↔ 原始 CodeArts 流水线 API 同名字段 `business_type`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>业务类型，用于按服务或场景区分不同资源。可选值：`Build`、`Gate`、`Deploy`、`Test`、`Normal`。 |
+| `business_type_display_name` | 否 | `string` |  | 字段对应：<br>MCP 字段 `business_type_display_name` ↔ 原始 CodeArts 流水线 API 同名字段 `business_type_display_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>businesstypedisplay名称。 |
+| `icon_url` | 否 | `string` |  | 字段对应：<br>MCP 字段 `icon_url` ↔ 原始 CodeArts 流水线 API 同名字段 `icon_url`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>icon URL，用于指定服务地址、资源地址或回调地址。 |
+| `description` | 否 | `string` |  | 字段对应：<br>MCP 字段 `description` ↔ 原始 CodeArts 流水线 API 同名字段 `description`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
+| `maintainers` | 否 | `string` |  | 字段对应：<br>MCP 字段 `maintainers` ↔ 原始 CodeArts 流水线 API 同名字段 `maintainers`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `body` | 否 | `object` |  | 字段对应：<br>MCP 字段 `body` ↔ 原始 CodeArts 流水线 API 同名字段 `body`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>请求体或正文内容。复杂接口会把多个业务字段放在 body 中提交。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "domain_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "plugin_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "display_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "business_type": {
+      "type": "string",
+      "enum": [
+        "Build",
+        "Gate",
+        "Deploy",
+        "Test",
+        "Normal"
+      ]
+    },
+    "business_type_display_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "icon_url": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string"
+    },
+    "maintainers": {
+      "type": "string",
+      "minLength": 1
+    },
+    "body": {
+      "type": "object",
+      "additionalProperties": {}
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "domain_id",
+    "plugin_name"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### pipeline_update_plugin_draft
+
+所属模块：`流水线`
+
+说明：更新流水线的plugindraft。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "pipeline_update_plugin_draft",
+    "arguments": {
+      "domain_id": "<domain_id>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `domain_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `domain_id` ↔ 原始 CodeArts 流水线 API 同名字段 `domain_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>租户账号 ID，也称 domainId，用于按租户维度查询 CodeArts 资源。 |
+| `unique_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `unique_id` ↔ 原始 CodeArts 流水线 API 同名字段 `unique_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>unique ID，用于定位对应的 CodeArts 资源。 |
+| `icon_url` | 否 | `string` |  | 字段对应：<br>MCP 字段 `icon_url` ↔ 原始 CodeArts 流水线 API 同名字段 `icon_url`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>icon URL，用于指定服务地址、资源地址或回调地址。 |
+| `runtime_attribution` | 否 | `"agent" \| "agentless"` |  | 字段对应：<br>MCP 字段 `runtime_attribution` ↔ 原始 CodeArts 流水线 API 同名字段 `runtime_attribution`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。可选值：`agent`、`agentless`。 |
+| `plugin_name` | 否 | `string` |  | 字段对应：<br>MCP 字段 `plugin_name` ↔ 原始 CodeArts 流水线 API 同名字段 `plugin_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>插件名称。 |
+| `display_name` | 否 | `string` |  | 字段对应：<br>MCP 字段 `display_name` ↔ 原始 CodeArts 流水线 API 同名字段 `display_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>display名称。 |
+| `business_type` | 否 | `"Build" \| "Gate" \| "Deploy" \| "Test" \| "Normal"` |  | 字段对应：<br>MCP 字段 `business_type` ↔ 原始 CodeArts 流水线 API 同名字段 `business_type`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>业务类型，用于按服务或场景区分不同资源。可选值：`Build`、`Gate`、`Deploy`、`Test`、`Normal`。 |
+| `business_type_display_name` | 否 | `string` |  | 字段对应：<br>MCP 字段 `business_type_display_name` ↔ 原始 CodeArts 流水线 API 同名字段 `business_type_display_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>businesstypedisplay名称。 |
+| `description` | 否 | `string` |  | 字段对应：<br>MCP 字段 `description` ↔ 原始 CodeArts 流水线 API 同名字段 `description`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>描述信息，用于补充资源用途、背景或变更说明，便于后续维护和检索。 |
+| `is_private` | 否 | `integer` |  | 字段对应：<br>MCP 字段 `is_private` ↔ 原始 CodeArts 流水线 API 同名字段 `is_private`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `region` | 否 | `string` |  | 字段对应：<br>MCP 字段 `region` 用于选择华为云区域和服务端点，原始业务请求体通常无对应字段。<br>华为云区域标识，例如 cn-north-4。 |
+| `maintainers` | 否 | `string` |  | 字段对应：<br>MCP 字段 `maintainers` ↔ 原始 CodeArts 流水线 API 同名字段 `maintainers`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `plugin_composition_type` | 否 | `"single" \| "multi"` |  | 字段对应：<br>MCP 字段 `plugin_composition_type` ↔ 原始 CodeArts 流水线 API 同名字段 `plugin_composition_type`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。可选值：`single`、`multi`。 |
+| `manifest_version` | 否 | `string` |  | 字段对应：<br>MCP 字段 `manifest_version` ↔ 原始 CodeArts 流水线 API 同名字段 `manifest_version`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `version` | 否 | `string` |  | 字段对应：<br>MCP 字段 `version` ↔ 原始 CodeArts 流水线 API 同名字段 `version`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>版本号。制品仓场景表示制品版本；插件或模板场景表示对应资源版本。 |
+| `version_description` | 否 | `string` |  | 字段对应：<br>MCP 字段 `version_description` ↔ 原始 CodeArts 流水线 API 同名字段 `version_description`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `execution_info` | 否 | `object` |  | 字段对应：<br>MCP 字段 `execution_info` ↔ 原始 CodeArts 流水线 API 同名字段 `execution_info`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `output_info` | 否 | `array<object>` |  | 字段对应：<br>MCP 字段 `output_info` ↔ 原始 CodeArts 流水线 API 同名字段 `output_info`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `input_info` | 否 | `array<object>` |  | 字段对应：<br>MCP 字段 `input_info` ↔ 原始 CodeArts 流水线 API 同名字段 `input_info`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `body` | 否 | `object` |  | 字段对应：<br>MCP 字段 `body` ↔ 原始 CodeArts 流水线 API 同名字段 `body`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>请求体或正文内容。复杂接口会把多个业务字段放在 body 中提交。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "domain_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "unique_id": {
+      "$ref": "#/properties/domain_id"
+    },
+    "icon_url": {
+      "type": "string",
+      "minLength": 1
+    },
+    "runtime_attribution": {
+      "type": "string",
+      "enum": [
+        "agent",
+        "agentless"
+      ]
+    },
+    "plugin_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "display_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "business_type": {
+      "type": "string",
+      "enum": [
+        "Build",
+        "Gate",
+        "Deploy",
+        "Test",
+        "Normal"
+      ]
+    },
+    "business_type_display_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "is_private": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "region": {
+      "type": "string",
+      "minLength": 1
+    },
+    "maintainers": {
+      "type": "string",
+      "minLength": 1
+    },
+    "plugin_composition_type": {
+      "type": "string",
+      "enum": [
+        "single",
+        "multi"
+      ]
+    },
+    "manifest_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version_description": {
+      "type": "string"
+    },
+    "execution_info": {
+      "type": "object",
+      "additionalProperties": {}
+    },
+    "output_info": {
+      "type": "array",
+      "items": {
+        "$ref": "#/properties/execution_info"
+      }
+    },
+    "input_info": {
+      "type": "array",
+      "items": {
+        "$ref": "#/properties/execution_info"
+      }
+    },
+    "body": {
+      "$ref": "#/properties/execution_info"
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "domain_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### pipeline_update_project_notice_event_switch
 
 所属模块：`流水线`
@@ -11902,6 +13139,85 @@ API 数量：`173`
     "project_id",
     "id",
     "name"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### pipeline_upload_plugin_icon
+
+所属模块：`流水线`
+
+说明：上传流水线的pluginicon。
+
+调用示例：
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "pipeline_upload_plugin_icon",
+    "arguments": {
+      "domain_id": "<domain_id>",
+      "plugin_name": "<plugin_name>",
+      "file_name": "<file_name>",
+      "file_content": "<file_content>"
+    }
+  }
+}
+```
+
+参数：
+
+| 参数 | 必填 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `domain_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `domain_id` ↔ 原始 CodeArts 流水线 API 同名字段 `domain_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>租户账号 ID，也称 domainId，用于按租户维度查询 CodeArts 资源。 |
+| `plugin_name` | 是 | `string` |  | 字段对应：<br>MCP 字段 `plugin_name` ↔ 原始 CodeArts 流水线 API 同名字段 `plugin_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>插件名称。 |
+| `file_name` | 是 | `string` |  | 字段对应：<br>MCP 字段 `file_name` ↔ 原始 CodeArts 流水线 API 同名字段 `file_name`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>文件名称。 |
+| `file_content` | 是 | `string` |  | 字段对应：<br>MCP 字段 `file_content` ↔ 原始 CodeArts 流水线 API 同名字段 `file_content`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `content_type` | 否 | `string` | "application/octet-stream" | 字段对应：<br>MCP 字段 `content_type` ↔ 原始 CodeArts 流水线 API 同名字段 `content_type`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
+| `dry_run` | 否 | `boolean` | true | 字段对应：<br>MCP 字段 `dry_run` 是本工具安全开关，原始 CodeArts API 无对应字段，不会提交给上游。<br>为 true 时仅做参数校验和请求预览，不执行真实写入；需要真正创建、更新或删除时设为 false。 |
+
+输入 JSON Schema：
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "domain_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "plugin_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "file_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "file_content": {
+      "type": "string",
+      "minLength": 1
+    },
+    "content_type": {
+      "type": "string",
+      "minLength": 1,
+      "default": "application/octet-stream"
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "domain_id",
+    "plugin_name",
+    "file_name",
+    "file_content"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

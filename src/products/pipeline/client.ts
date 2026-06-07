@@ -577,6 +577,13 @@ export type PipelineClient = {
   getTenantVersionDetail: (input: {
     tenant_id: string;
   }) => Promise<PipelineRawItemResult>;
+  getTenantPopupStatus: (input: {
+    tenant_id: string;
+    project_id: string;
+  }) => Promise<PipelineRawItemResult>;
+  getAcceptFreeDeclaration: (input: {
+    tenant_id: string;
+  }) => Promise<PipelineRawItemResult>;
   listTriggerFailedRecords: (input: {
     project_id: string;
     pipeline_id: string;
@@ -713,6 +720,24 @@ export type PipelineClient = {
   }) => Promise<{
     pipeline_run_id?: string;
   }>;
+  createTemplateTaskV3: (input: {
+    flow?: Record<string, Record<string, string>>;
+    states?: Record<string, PipelineRawRecord>;
+    workflow?: PipelineRawRecord;
+    body?: PipelineRawRecord;
+  }) => Promise<PipelineRawItemResult>;
+  startNewPipelineV3: (input: {
+    pipeline_id: string;
+    build_params?: Array<{
+      name: string;
+      value: string;
+    }>;
+    body?: PipelineRawRecord;
+  }) => Promise<PipelineRawItemResult>;
+  stopPipelineV3: (input: {
+    pipeline_id: string;
+    build_id: string;
+  }) => Promise<PipelineRawItemResult>;
   deletePipeline: (input: { project_id: string; pipeline_id: string }) => Promise<{
     pipeline_id: string;
     deleted: boolean;
@@ -722,6 +747,7 @@ export type PipelineClient = {
     template_id: string;
     name: string;
     description?: string;
+    component_id?: string;
     group_id?: string;
   }) => Promise<{
     pipeline_id?: string;
@@ -757,6 +783,7 @@ export type PipelineClient = {
   }) => Promise<{
     pipeline_ids: string[];
     deleted: boolean;
+    results?: PipelineRawRecord[];
   }>;
   batchRunPipelines: (input: {
     project_id: string;
@@ -807,6 +834,13 @@ export type PipelineClient = {
     }>;
   }) => Promise<{
     results: PipelineMoveToGroupResult[];
+  }>;
+  swapPipelineGroupOrder: (input: {
+    project_id: string;
+    group_id_1: string;
+    group_id_2: string;
+  }) => Promise<{
+    success: boolean;
   }>;
   createVariableGroup: (input: {
     project_id: string;
@@ -1127,6 +1161,49 @@ export type PipelineClient = {
   }) => Promise<{
     item: PipelinePluginVersion;
   }>;
+  getPluginMetrics: (input: {
+    domain_id: string;
+    body: PipelineRawRecord[];
+  }) => Promise<PipelineRawListResult>;
+  createPluginDraft: (input: {
+    domain_id: string;
+    body: PipelineRawRecord;
+  }) => Promise<PipelineRawItemResult>;
+  updatePluginDraft: (input: {
+    domain_id: string;
+    body: PipelineRawRecord;
+  }) => Promise<PipelineRawItemResult>;
+  publishPluginDraft: (input: {
+    domain_id: string;
+    body: PipelineRawRecord;
+  }) => Promise<PipelineRawItemResult>;
+  deletePluginDraft: (input: {
+    domain_id: string;
+    plugin_name: string;
+    version: string;
+  }) => Promise<PipelineRawItemResult>;
+  publishPlugin: (input: {
+    domain_id: string;
+    body: PipelineRawRecord;
+  }) => Promise<PipelineRawItemResult>;
+  publishPluginBind: (input: {
+    domain_id: string;
+    body: PipelineRawRecord;
+  }) => Promise<PipelineRawItemResult>;
+  updatePluginBaseInfo: (input: {
+    domain_id: string;
+    body: PipelineRawRecord;
+  }) => Promise<PipelineRawItemResult>;
+  uploadPluginIcon: (input: {
+    domain_id: string;
+    plugin_name: string;
+    file_name: string;
+    file_content: string;
+    content_type?: string;
+  }) => Promise<{
+    url?: string;
+    raw: unknown;
+  }>;
   listExtensionModules: (input: {
     locations: string[];
     project_id?: string;
@@ -1341,6 +1418,9 @@ export type PipelineClient = {
     template_id: string;
     template_type: string;
     source?: string;
+  }) => Promise<PipelineRawItemResult>;
+  showTemplateTaskStatus: (input: {
+    task_id: string;
   }) => Promise<PipelineRawItemResult>;
   batchShowPipelinesStatus: (input: {
     pipeline_ids: string[];
@@ -2615,6 +2695,23 @@ export function createPipelineClient(
 
       return mapPipelineRawItemResult(getPipelinePayload(response));
     },
+    async getTenantPopupStatus(input) {
+      const suffix = buildQuery({
+        project_id: input.project_id
+      });
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v5/${encodeURIComponent(input.tenant_id)}/api/popup-status${suffix}`
+      ));
+
+      return mapPipelineRawItemResult(getPipelinePayload(response));
+    },
+    async getAcceptFreeDeclaration(input) {
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v5/${encodeURIComponent(input.tenant_id)}/api/is-accept-free-declaration`
+      ));
+
+      return mapPipelineRawItemResult({ value: response });
+    },
     async listTriggerFailedRecords(input) {
       const offset = (input.page - 1) * input.page_size;
       const query = new URLSearchParams({
@@ -2844,6 +2941,42 @@ export function createPipelineClient(
         pipeline_run_id: response.pipeline_run_id
       };
     },
+    async createTemplateTaskV3(input) {
+      const body = {
+        ...(input.body ?? {}),
+        ...(input.flow !== undefined ? { flow: input.flow } : {}),
+        ...(input.states !== undefined ? { states: input.states } : {}),
+        ...(input.workflow !== undefined ? { workflow: input.workflow } : {})
+      };
+      const response = unwrapPipelinePayload(await _http.post(
+        "/v3/templates/task",
+        body
+      ));
+
+      return mapPipelineRawItemResult(getPipelinePayload(response));
+    },
+    async startNewPipelineV3(input) {
+      const body = {
+        ...(input.body ?? {}),
+        ...(input.build_params !== undefined ? { build_params: input.build_params } : {})
+      };
+      const response = unwrapPipelinePayload(await _http.post(
+        `/v3/pipelines/${encodeURIComponent(input.pipeline_id)}/start`,
+        body
+      ));
+
+      return mapPipelineRawItemResult(getPipelinePayload(response));
+    },
+    async stopPipelineV3(input) {
+      const suffix = buildQuery({
+        build_id: input.build_id
+      });
+      const response = unwrapPipelinePayload(await _http.post(
+        `/v3/pipelines/${encodeURIComponent(input.pipeline_id)}/stop${suffix}`
+      ));
+
+      return mapPipelineRawItemResult(getPipelinePayload(response));
+    },
     async deletePipeline(input) {
       clearProjectListCache(input.project_id);
       const response = (await _http.delete(
@@ -2859,8 +2992,12 @@ export function createPipelineClient(
     },
     async createPipelineByTemplate(input) {
       clearProjectListCache(input.project_id);
+      const query = new URLSearchParams();
+      if (input.component_id) {
+        query.set("component_id", input.component_id);
+      }
       const response = unwrapPipelinePayload((await _http.post(
-        `/v5/${encodeURIComponent(input.project_id)}/api/pipelines/template/${encodeURIComponent(input.template_id)}`,
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipeline-templates/${encodeURIComponent(input.template_id)}/create-pipeline${query.size > 0 ? `?${query.toString()}` : ""}`,
         {
           name: input.name,
           ...(input.description ? { description: input.description } : {}),
@@ -2923,16 +3060,17 @@ export function createPipelineClient(
     },
     async batchDeletePipelines(input) {
       clearProjectListCache(input.project_id);
-      await _http.delete(
-        `/v5/${encodeURIComponent(input.project_id)}/api/pipelines/batch`,
+      const response = unwrapPipelinePayload((await _http.post(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipelines/batch-delete`,
         {
           pipeline_ids: input.pipeline_ids
         }
-      );
+      )) as { result?: PipelineRawRecord[]; results?: PipelineRawRecord[] });
 
       return {
         pipeline_ids: input.pipeline_ids,
-        deleted: true
+        deleted: true,
+        results: response.result ?? response.results
       };
     },
     async batchRunPipelines(input) {
@@ -3069,6 +3207,19 @@ export function createPipelineClient(
 
       return {
         results: Array.isArray(response) ? response : (response.results ?? [])
+      };
+    },
+    async swapPipelineGroupOrder(input) {
+      const query = new URLSearchParams({
+        groupId1: input.group_id_1,
+        groupId2: input.group_id_2
+      });
+      const response = unwrapPipelinePayload((await _http.post(
+        `/v5/${encodeURIComponent(input.project_id)}/api/pipeline-group/swap?${query.toString()}`
+      )) as boolean | { success?: boolean });
+
+      return {
+        success: typeof response === "boolean" ? response : response.success ?? true
       };
     },
     async createVariableGroup(input) {
@@ -3673,6 +3824,31 @@ export function createPipelineClient(
         raw: response
       };
     },
+    async uploadPluginIcon(input) {
+      const query = new URLSearchParams({
+        plugin_name: input.plugin_name
+      });
+      const form = new FormData();
+      form.append(
+        "upload_file",
+        new Blob([Buffer.from(input.file_content)], {
+          type: input.content_type ?? "application/octet-stream"
+        }),
+        input.file_name
+      );
+
+      const response = unwrapPipelinePayload(
+        (await _http.postMultipart(
+          `/v1/${encodeURIComponent(input.domain_id)}/common/upload-plugin-icon?${query.toString()}`,
+          form
+        )) as unknown
+      );
+
+      return {
+        url: typeof response === "string" ? response : undefined,
+        raw: response
+      };
+    },
     async listStagePlugins(input) {
       const response = unwrapPipelinePayload((await _http.post(
         `/v1/${encodeURIComponent(input.domain_id)}/relation/stage-plugins`,
@@ -3815,6 +3991,73 @@ export function createPipelineClient(
       return {
         item
       };
+    },
+    async getPluginMetrics(input) {
+      const response = unwrapPipelinePayload(await _http.post(
+        `/v1/${encodeURIComponent(input.domain_id)}/agent-plugin/plugin-metrics`,
+        input.body
+      ));
+
+      return mapPipelineRawListResult(getPipelineListPayload(response));
+    },
+    async createPluginDraft(input) {
+      const response = unwrapPipelinePayload(await _http.post(
+        `/v1/${encodeURIComponent(input.domain_id)}/agent-plugin/create-draft`,
+        input.body
+      ));
+
+      return mapPipelineRawItemResult(getPipelinePayload(response));
+    },
+    async updatePluginDraft(input) {
+      const response = unwrapPipelinePayload(await _http.post(
+        `/v1/${encodeURIComponent(input.domain_id)}/agent-plugin/edit-draft`,
+        input.body
+      ));
+
+      return mapPipelineRawItemResult(getPipelinePayload(response));
+    },
+    async publishPluginDraft(input) {
+      const response = unwrapPipelinePayload(await _http.post(
+        `/v1/${encodeURIComponent(input.domain_id)}/agent-plugin/publish-draft`,
+        input.body
+      ));
+
+      return mapPipelineRawItemResult({ value: response });
+    },
+    async deletePluginDraft(input) {
+      const query = new URLSearchParams({
+        plugin_name: input.plugin_name,
+        version: input.version
+      });
+      const response = unwrapPipelinePayload(await _http.delete(
+        `/v1/${encodeURIComponent(input.domain_id)}/agent-plugin/delete-draft?${query.toString()}`
+      ));
+
+      return mapPipelineRawItemResult({ value: response });
+    },
+    async publishPlugin(input) {
+      const response = unwrapPipelinePayload(await _http.post(
+        `/v1/${encodeURIComponent(input.domain_id)}/agent-plugin/publish-plugin`,
+        input.body
+      ));
+
+      return mapPipelineRawItemResult({ value: response });
+    },
+    async publishPluginBind(input) {
+      const response = unwrapPipelinePayload(await _http.post(
+        `/v1/${encodeURIComponent(input.domain_id)}/agent-plugin/publish-plugin-bind`,
+        input.body
+      ));
+
+      return mapPipelineRawItemResult({ value: response });
+    },
+    async updatePluginBaseInfo(input) {
+      const response = unwrapPipelinePayload(await _http.post(
+        `/v1/${encodeURIComponent(input.domain_id)}/agent-plugin/update-info`,
+        input.body
+      ));
+
+      return mapPipelineRawItemResult(getPipelinePayload(response));
     },
     async listExtensionModules(input) {
       const query = new URLSearchParams();
@@ -4333,6 +4576,13 @@ export function createPipelineClient(
       });
       const response = unwrapPipelinePayload(await _http.get(
         `/v3/templates/${encodeURIComponent(input.template_id)}${suffix}`
+      ));
+
+      return mapPipelineRawItemResult(getPipelinePayload(response));
+    },
+    async showTemplateTaskStatus(input) {
+      const response = unwrapPipelinePayload(await _http.get(
+        `/v3/templates/${encodeURIComponent(input.task_id)}/status`
       ));
 
       return mapPipelineRawItemResult(getPipelinePayload(response));

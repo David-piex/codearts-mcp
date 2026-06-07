@@ -167,6 +167,11 @@ type TestPlanTestcasesBatchInput = Omit<
   test_designs?: Array<string | boolean>;
 };
 
+type TestPlanOfficialBatchBodyInput = {
+  body?: Record<string, unknown>;
+  [key: string]: unknown;
+};
+
 type TestPlanOfficialPageQueryInput = {
   project_id: string;
   page: number;
@@ -342,6 +347,77 @@ export type TestPlanClient = {
   listTestcasesBatch: (input: TestPlanTestcasesBatchInput) => Promise<{
     cases: Array<Record<string, unknown>>;
     total?: number;
+    raw: Record<string, unknown>;
+  }>;
+  batchCreateTestcases: (input: TestPlanOfficialBatchBodyInput & {
+    project_id?: string;
+    testcases?: Array<Record<string, unknown>>;
+    testcase_list?: Array<Record<string, unknown>>;
+    case_list?: Array<Record<string, unknown>>;
+  }) => Promise<{
+    project_id?: string;
+    testcase_count: number;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  batchDeleteTestcasesV4: (input: TestPlanOfficialBatchBodyInput & {
+    project_id?: string;
+    testcase_uris?: string[];
+    case_uris?: string[];
+  }) => Promise<{
+    project_id?: string;
+    testcase_uris: string[];
+    deleted: boolean;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  batchUpdateTestcasesV4: (input: TestPlanOfficialBatchBodyInput & {
+    project_id: string;
+    testcases?: Array<Record<string, unknown>>;
+    testcase_list?: Array<Record<string, unknown>>;
+    case_list?: Array<Record<string, unknown>>;
+  }) => Promise<{
+    project_id: string;
+    testcase_count: number;
+    updated: boolean;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  batchCreateTestcaseReviews: (input: TestPlanOfficialBatchBodyInput & {
+    project_id?: string;
+    testcase_uris?: string[];
+    case_uris?: string[];
+    reviewer_ids?: string[];
+    review_title?: string;
+  }) => Promise<{
+    project_id?: string;
+    review_count: number;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  batchCloseTestcaseReviews: (input: TestPlanOfficialBatchBodyInput & {
+    project_id?: string;
+    review_ids?: string[];
+    review_uris?: string[];
+    testcase_uris?: string[];
+    case_uris?: string[];
+  }) => Promise<{
+    project_id?: string;
+    review_ids: string[];
+    closed: boolean;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  createApiTestcaseV4: (input: TestPlanOfficialBatchBodyInput & {
+    project_id: string;
+    name?: string;
+    test_type?: string;
+    testcase?: Record<string, unknown>;
+  }) => Promise<{
+    project_id: string;
+    testcase_id?: string;
+    name?: string;
+    value?: unknown;
     raw: Record<string, unknown>;
   }>;
   listTasks: (input: {
@@ -2982,6 +3058,19 @@ export type TestPlanClient = {
     iterators: Array<Record<string, unknown>>;
     total?: number;
   }>;
+  listIteratorsV4WithStats: (input: TestPlanOfficialBatchBodyInput & {
+    project_id?: string;
+    page: number;
+    page_size: number;
+    name?: string;
+    current_stage?: string;
+    branch_uri?: string;
+    with_stats?: boolean;
+  }) => Promise<{
+    iterators: Array<Record<string, unknown>>;
+    total?: number;
+    raw: Record<string, unknown>;
+  }>;
   listTesthubIteratorsV5: (input: {
     project_id: string;
     page: number;
@@ -3055,6 +3144,29 @@ export type TestPlanClient = {
     added: boolean;
     raw: Record<string, unknown>;
   }>;
+  batchDeleteIteratorsV4: (input: TestPlanOfficialBatchBodyInput & {
+    project_id?: string;
+    iterator_uris?: string[];
+    iterator_ids?: string[];
+  }) => Promise<{
+    project_id?: string;
+    iterator_uris: string[];
+    deleted: boolean;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
+  batchDeleteBranchesV4: (input: TestPlanOfficialBatchBodyInput & {
+    project_id?: string;
+    branch_uris?: string[];
+    branch_ids?: string[];
+    is_async?: boolean;
+  }) => Promise<{
+    project_id?: string;
+    branch_uris: string[];
+    deleted: boolean;
+    value?: unknown;
+    raw: Record<string, unknown>;
+  }>;
   listIteratorHistories: (input: {
     project_id: string;
     iterator_uri: string;
@@ -3085,6 +3197,21 @@ export type TestPlanClient = {
     version_uri?: string;
     status_code?: number;
     status_name?: string;
+  }>;
+  createExecutionTaskV1: (input: TestPlanOfficialBatchBodyInput & {
+    project_id: string;
+    name?: string;
+    uri?: string;
+    description?: string;
+    version_uri?: string;
+  }) => Promise<{
+    task_id: string;
+    name?: string;
+    version_uri?: string;
+    status_code?: number;
+    status_name?: string;
+    value?: unknown;
+    raw: Record<string, unknown>;
   }>;
   batchUpdateTaskAttributes: (input: {
     project_id: string;
@@ -3467,6 +3594,20 @@ function readResultStatus(input: unknown, payload?: Record<string, unknown>) {
 function readResultValue(input: unknown, payload: Record<string, unknown>) {
   const envelope = readEnvelope(input) ?? {};
   return envelope.result ?? envelope.value ?? envelope.data ?? payload.result ?? payload.value ?? payload.data;
+}
+
+function readBodyOverride(input: TestPlanOfficialBatchBodyInput, fallback: Record<string, unknown>) {
+  return input.body ?? fallback;
+}
+
+function readRecordCount(...inputs: unknown[]) {
+  for (const input of inputs) {
+    if (Array.isArray(input)) {
+      return input.length;
+    }
+  }
+
+  return 0;
 }
 
 function readTotal(payload: Record<string, unknown>, response: unknown, fallback?: number) {
@@ -4394,6 +4535,120 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
       return {
         cases,
         total: readTotal(payload, response, cases.length),
+        raw: payload
+      };
+    },
+    async batchCreateTestcases(input) {
+      const body = readBodyOverride(input, {
+        project_id: input.project_id,
+        testcases: input.testcases,
+        testcase_list: input.testcase_list,
+        case_list: input.case_list
+      });
+      const response = await _http.post("/v4/testcases/batch-add", body);
+      const payload = readResultPayload(response);
+
+      return {
+        project_id: input.project_id,
+        testcase_count: readRecordCount(input.testcases, input.testcase_list, input.case_list),
+        value: readResultValue(response, payload),
+        raw: payload
+      };
+    },
+    async batchDeleteTestcasesV4(input) {
+      const testcaseUris = input.testcase_uris ?? input.case_uris ?? [];
+      const body = readBodyOverride(input, {
+        project_id: input.project_id,
+        testcase_uris: input.testcase_uris,
+        case_uris: input.case_uris
+      });
+      const response = await _http.delete("/v4/testcases/batch-delete", body);
+      const payload = readResultPayload(response);
+
+      return {
+        project_id: input.project_id,
+        testcase_uris: testcaseUris,
+        deleted: true,
+        value: readResultValue(response, payload),
+        raw: payload
+      };
+    },
+    async batchUpdateTestcasesV4(input) {
+      const body = readBodyOverride(input, {
+        testcases: input.testcases,
+        testcase_list: input.testcase_list,
+        case_list: input.case_list
+      });
+      const response = await _http.put(
+        `/v4/${encodeURIComponent(input.project_id)}/testcases/batch-update`,
+        body
+      );
+      const payload = readResultPayload(response);
+
+      return {
+        project_id: input.project_id,
+        testcase_count: readRecordCount(input.testcases, input.testcase_list, input.case_list),
+        updated: true,
+        value: readResultValue(response, payload),
+        raw: payload
+      };
+    },
+    async batchCreateTestcaseReviews(input) {
+      const body = readBodyOverride(input, {
+        project_id: input.project_id,
+        testcase_uris: input.testcase_uris,
+        case_uris: input.case_uris,
+        reviewer_ids: input.reviewer_ids,
+        review_title: input.review_title
+      });
+      const response = await _http.post("/v4/testcases/batch-review", body);
+      const payload = readResultPayload(response);
+
+      return {
+        project_id: input.project_id,
+        review_count: readRecordCount(input.testcase_uris, input.case_uris),
+        value: readResultValue(response, payload),
+        raw: payload
+      };
+    },
+    async batchCloseTestcaseReviews(input) {
+      const reviewIds = input.review_ids ?? input.review_uris ?? [];
+      const body = readBodyOverride(input, {
+        project_id: input.project_id,
+        review_ids: input.review_ids,
+        review_uris: input.review_uris,
+        testcase_uris: input.testcase_uris,
+        case_uris: input.case_uris
+      });
+      const response = await _http.post("/v4/testcases/review/batch-close", body);
+      const payload = readResultPayload(response);
+
+      return {
+        project_id: input.project_id,
+        review_ids: reviewIds,
+        closed: true,
+        value: readResultValue(response, payload),
+        raw: payload
+      };
+    },
+    async createApiTestcaseV4(input) {
+      const body = readBodyOverride(input, {
+        name: input.name,
+        test_type: input.test_type,
+        testcase: input.testcase
+      });
+      const response = await _http.post(
+        `/v4/${encodeURIComponent(input.project_id)}/automatic/testcases`,
+        body
+      );
+      const payload = readResultPayload(response);
+      const item = readEnvelope(payload.value) ?? payload;
+
+      return {
+        project_id: input.project_id,
+        testcase_id: readOptionalString(item.uri) ?? readOptionalString(item.testcase_uri) ?? readOptionalString(item.id),
+        name: readOptionalString(item.name) ?? input.name,
+        value: readResultValue(response, payload),
         raw: payload
       };
     },
@@ -9775,6 +10030,30 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         total: readTotal(payload, response, iterators.length)
       };
     },
+    async listIteratorsV4WithStats(input) {
+      const body = readBodyOverride(input, {
+        project_id: input.project_id,
+        page_no: input.page,
+        page_size: input.page_size,
+        offset: pageToOffset(input.page, input.page_size),
+        limit: input.page_size,
+        name: input.name,
+        current_stage: input.current_stage,
+        branch_uri: input.branch_uri,
+        with_stats: input.with_stats
+      });
+      const response = await _http.post("/v4/iterators/batch-query", body);
+      const payload = readResultPayload(response);
+      const iterators = readArray<Record<string, unknown>>(
+        payload.iterators ?? payload.value ?? payload.values ?? payload.data ?? payload.items ?? payload.list
+      );
+
+      return {
+        iterators,
+        total: readTotal(payload, response, iterators.length),
+        raw: payload
+      };
+    },
     async listTesthubIteratorsV5(input) {
       const query = new URLSearchParams({
         offset: String(pageToOffset(input.page, input.page_size)),
@@ -9904,6 +10183,45 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         raw: payload
       };
     },
+    async batchDeleteIteratorsV4(input) {
+      const iteratorUris = input.iterator_uris ?? input.iterator_ids ?? [];
+      const body = readBodyOverride(input, {
+        project_id: input.project_id,
+        iterator_uris: input.iterator_uris,
+        iterator_ids: input.iterator_ids
+      });
+      const response = await _http.delete("/v4/iterators/batch-delete", body);
+      const payload = readResultPayload(response);
+
+      return {
+        project_id: input.project_id,
+        iterator_uris: iteratorUris,
+        deleted: true,
+        value: readResultValue(response, payload),
+        raw: payload
+      };
+    },
+    async batchDeleteBranchesV4(input) {
+      const branchUris = input.branch_uris ?? input.branch_ids ?? [];
+      const body = readBodyOverride(input, {
+        project_id: input.project_id,
+        branch_uris: input.branch_uris,
+        branch_ids: input.branch_ids
+      });
+      const query = new URLSearchParams();
+      appendQueryValue(query, "is_async", input.is_async);
+      const suffix = query.toString() ? `?${query.toString()}` : "";
+      const response = await _http.delete(`/v4/branches/batch-delete${suffix}`, body);
+      const payload = readResultPayload(response);
+
+      return {
+        project_id: input.project_id,
+        branch_uris: branchUris,
+        deleted: true,
+        value: readResultValue(response, payload),
+        raw: payload
+      };
+    },
     async listIteratorHistories(input) {
       const query = new URLSearchParams({
         offset: String(pageToOffset(input.page, input.page_size)),
@@ -9962,6 +10280,30 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
         version_uri: item.version_uri ?? input.version_uri,
         status_code: item.status_code,
         status_name: item.status_name
+      };
+    },
+    async createExecutionTaskV1(input) {
+      const body = readBodyOverride(input, {
+        uri: input.uri,
+        name: input.name,
+        description: input.description,
+        version_uri: input.version_uri
+      });
+      const response = await _http.post(
+        `/v1/${encodeURIComponent(input.project_id)}/tasks`,
+        body
+      );
+      const payload = readResultPayload(response);
+      const item = readEnvelope(payload.value) ?? payload;
+
+      return {
+        task_id: String(item.uri ?? item.task_uri ?? item.id ?? input.uri ?? ""),
+        name: readOptionalString(item.name) ?? input.name,
+        version_uri: readOptionalString(item.version_uri) ?? input.version_uri,
+        status_code: readOptionalNumber(item.status_code),
+        status_name: readOptionalString(item.status_name),
+        value: readResultValue(response, payload),
+        raw: payload
       };
     },
     async batchUpdateTaskAttributes(input) {

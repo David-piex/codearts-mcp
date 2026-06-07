@@ -41,11 +41,11 @@ describe("collectModuleStats", () => {
     expect(collectModuleStats()).toEqual([
       { module: "Req", total: 344, read: 208, write: 136 },
       { module: "Repo", total: 391, read: 254, write: 137 },
-      { module: "Pipeline", total: 173, read: 101, write: 72 },
+      { module: "Pipeline", total: 189, read: 109, write: 80 },
       { module: "Check", total: 111, read: 86, write: 25 },
-      { module: "TestPlan", total: 360, read: 283, write: 77 },
+      { module: "TestPlan", total: 458, read: 310, write: 148 },
       { module: "Deploy", total: 88, read: 59, write: 29 },
-      { module: "Build", total: 146, read: 100, write: 46 },
+      { module: "Build", total: 150, read: 100, write: 50 },
       { module: "Artifact", total: 53, read: 45, write: 8 },
     ]);
   });
@@ -54,8 +54,8 @@ describe("collectModuleStats", () => {
     expect(collectProductToolStats()).toEqual({
       modules: 8,
       total: collectProductToolManifest().length,
-      read: 1136,
-      write: 530,
+      read: 1171,
+      write: 613,
     });
   });
 
@@ -78,18 +78,18 @@ describe("collectModuleStats", () => {
       modules: [
         { module: "Req", total: 344, read: 208, write: 136 },
         { module: "Repo", total: 391, read: 254, write: 137 },
-        { module: "Pipeline", total: 173, read: 101, write: 72 },
+        { module: "Pipeline", total: 189, read: 109, write: 80 },
         { module: "Check", total: 111, read: 86, write: 25 },
-        { module: "TestPlan", total: 360, read: 283, write: 77 },
+        { module: "TestPlan", total: 458, read: 310, write: 148 },
         { module: "Deploy", total: 88, read: 59, write: 29 },
-        { module: "Build", total: 146, read: 100, write: 46 },
+        { module: "Build", total: 150, read: 100, write: 50 },
         { module: "Artifact", total: 53, read: 45, write: 8 },
       ],
       totals: {
         modules: 8,
         total: collectProductToolManifest().length,
-        read: 1136,
-        write: 530,
+        read: 1171,
+        write: 613,
         httpTotalWithAuth: collectHttpToolTotal(),
       },
     });

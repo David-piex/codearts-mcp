@@ -2229,6 +2229,7 @@ export type RepoClient = {
   }>;
   executeRepositoryStatistics: (input: {
     repository_id: string;
+    branch_name?: string;
   }) => Promise<{
     repository_id: string;
     executed: boolean;
@@ -3859,7 +3860,11 @@ export type RepoClient = {
     ref_name?: string;
     since?: string;
     until?: string;
+    path?: string;
+    message?: string;
+    author?: string;
     order_by_date?: boolean;
+    follow?: boolean;
     with_stats?: boolean;
   }) => Promise<{
     commits: Array<{ id: string; short_id?: string; title?: string; author_name?: string }>;
@@ -3989,6 +3994,9 @@ export type RepoClient = {
     total?: number;
   }>;
   showGroupInheritSetting: (input: {
+    group_id: string;
+  }) => Promise<RepoGroupInheritSetting>;
+  showGroupsInherit: (input: {
     group_id: string;
     setting_type: string;
   }) => Promise<RepoGroupInheritSetting>;
@@ -6380,7 +6388,10 @@ export function createRepoClient(
     },
     async executeRepositoryStatistics(input) {
       await _http.post(
-        `/v4/repositories/${encodeURIComponent(input.repository_id)}/statistics`
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/statistics`,
+        omitUndefinedFields({
+          branch_name: input.branch_name
+        })
       );
 
       return {
@@ -6421,7 +6432,7 @@ export function createRepoClient(
     },
     async startHouseKeeping(input) {
       await _http.post(
-        `/v4/repositories/${encodeURIComponent(input.repository_id)}/house-keeping`
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/housekeeping`
       );
 
       return {
@@ -9556,7 +9567,7 @@ export function createRepoClient(
       });
 
       if (input.keyword) {
-        query.set("search", input.keyword);
+        query.set("message", input.keyword);
       }
 
       if (input.ref_name) {
@@ -9568,15 +9579,24 @@ export function createRepoClient(
       if (input.until) {
         query.set("until", input.until);
       }
+      if (input.path) {
+        query.set("path", input.path);
+      }
+      if (input.message) {
+        query.set("message", input.message);
+      }
+      if (input.author) {
+        query.set("author", input.author);
+      }
       if (typeof input.order_by_date !== "undefined") {
         query.set("order_by_date", String(input.order_by_date));
       }
-      if (typeof input.with_stats !== "undefined") {
-        query.set("with_stats", String(input.with_stats));
+      if (typeof input.follow !== "undefined") {
+        query.set("follow", String(input.follow));
       }
 
       const response = (await _http.get(
-        `/v2/projects/${encodeURIComponent(input.repository_id)}/repository/commits?${query.toString()}`
+        `/v4/repositories/${encodeURIComponent(input.repository_id)}/repository/commit-list?${query.toString()}`
       )) as {
         commits?: Array<{ id: string; short_id?: string; title?: string; author_name?: string }>;
         total?: number;
@@ -9805,6 +9825,11 @@ export function createRepoClient(
       return extractProjectSubgroupsAndRepositoriesResponse(rawResponse);
     },
     async showGroupInheritSetting(input) {
+      return (await _http.get(
+        `/v4/groups/${encodeURIComponent(input.group_id)}/inherit-setting`
+      )) as RepoGroupInheritSetting;
+    },
+    async showGroupsInherit(input) {
       const query = new URLSearchParams({
         setting_type: input.setting_type
       });

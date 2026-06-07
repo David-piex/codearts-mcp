@@ -421,6 +421,20 @@ export const buildRunJobInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+const buildRunJobParameterInput = z.object({
+  name: z.string().min(1),
+  value: z.string()
+});
+
+export const buildRunJobV3Input = z.object({
+  job_id: idSchema,
+  branch: z.string().min(1).optional(),
+  parameter: z.array(buildRunJobParameterInput).optional(),
+  scm: z.record(z.string(), z.unknown()).optional(),
+  body: z.record(z.string(), z.unknown()).default({}),
+  dry_run: z.boolean().default(true)
+});
+
 export const buildDeleteJobInput = z.object({
   job_id: idSchema,
   dry_run: z.boolean().default(true)
@@ -652,6 +666,36 @@ export const buildCreateJobInput = z.object({
   flavor: z.string().min(1).optional(),
   body: z.record(z.string(), z.unknown()).default({}),
   dry_run: z.boolean().default(true)
+});
+
+const buildJobV3BodyExtension = {
+  arch: z.string().min(1).optional(),
+  auto_update_sub_module: z.boolean().optional(),
+  flavor: z.string().min(1).optional(),
+  host_type: z.string().min(1).optional(),
+  build_config_type: z.string().min(1).optional(),
+  description: z.string().optional(),
+  agency_urn: z.string().min(1).optional(),
+  source_code: z.string().min(1).optional(),
+  parameters: z.array(z.record(z.string(), z.unknown())).optional(),
+  scms: z.array(z.record(z.string(), z.unknown())).optional(),
+  steps: z.array(z.record(z.string(), z.unknown())).optional(),
+  body: z.record(z.string(), z.unknown()).default({}),
+  dry_run: z.boolean().default(true)
+};
+
+export const buildCreateJobV3Input = z.object({
+  project_id: idSchema,
+  job_name: z.string().min(1),
+  ...buildJobV3BodyExtension,
+  arch: z.string().min(1)
+});
+
+export const buildUpdateJobV3Input = z.object({
+  project_id: idSchema,
+  job_id: idSchema,
+  job_name: z.string().min(1),
+  ...buildJobV3BodyExtension
 });
 
 export const buildCopyJobInput = z.object({

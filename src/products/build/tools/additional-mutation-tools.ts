@@ -28,13 +28,17 @@ import {
   buildCopyJobInput,
   buildCreateJobGroupInput,
   buildCreateJobInput,
+  buildCreateJobV3Input,
   buildRecoverJobV3Input,
   buildRestoreRecyclingJobsInput,
+  buildRunJobV3Input,
   buildSaveTemplateUsedInfoInput,
   buildSetKeepTimeInput,
+  buildStopJobInput,
   buildUnfollowCustomTemplateInput,
   buildUnfollowJobInput,
   buildUnfollowOfficialTemplateInput,
+  buildUpdateJobV3Input,
   buildUpdateJobNoticeInput,
   buildUploadKeystoreInput,
   buildUpdateKeystoreInput,
@@ -670,6 +674,87 @@ export function createBuildDisableJobV3Handler(client: {
   };
 }
 
+export function createBuildStopJobV1Handler(client: {
+  stopJobV1: (input: { job_id: string; build_no: number }) => Promise<{
+    job_id: string;
+    build_no: number;
+    status?: string;
+    result?: boolean;
+    raw: Record<string, unknown>;
+  }>;
+}) {
+  return async (input: unknown) => {
+    const parsed = buildStopJobInput.parse(input);
+    const preview = asItemResult(`Dry run: stop Build v1 job ${parsed.job_id}`, {
+      id: parsed.job_id,
+      buildNo: parsed.build_no,
+      executed: !parsed.dry_run
+    });
+
+    if (parsed.dry_run) {
+      return { content: [{ type: "text" as const, text: preview.summary }], structuredContent: preview };
+    }
+
+    const response = await client.stopJobV1(parsed);
+    const result = asItemResult(`Stopped Build v1 job ${response.job_id}`, {
+      id: response.job_id,
+      buildNo: response.build_no,
+      status: response.status,
+      stopped: response.result ?? false,
+      raw: response.raw,
+      executed: true
+    });
+
+    return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+  };
+}
+
+export function createBuildRunJobV3Handler(client: {
+  runJobV3: (input: {
+    job_id: string;
+    branch?: string;
+    parameter?: Array<{ name: string; value: string }>;
+    scm?: Record<string, unknown>;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    job_id: string;
+    record_id?: string;
+    build_no?: number;
+    daily_build_number?: string;
+    status?: string;
+    raw: Record<string, unknown>;
+  }>;
+}) {
+  return async (input: unknown) => {
+    const parsed = buildRunJobV3Input.parse(input);
+    const preview = asItemResult(`Dry run: run Build v3 job ${parsed.job_id}`, {
+      id: parsed.job_id,
+      branch: parsed.branch,
+      parameters: parsed.parameter,
+      scm: parsed.scm,
+      body: parsed.body,
+      executed: !parsed.dry_run
+    });
+
+    if (parsed.dry_run) {
+      return { content: [{ type: "text" as const, text: preview.summary }], structuredContent: preview };
+    }
+
+    const response = await client.runJobV3(parsed);
+    const result = asItemResult(`Executed Build v3 job ${response.job_id}`, {
+      id: response.job_id,
+      recordId: response.record_id,
+      buildNo: response.build_no,
+      dailyBuildNumber: response.daily_build_number,
+      status: response.status,
+      raw: response.raw,
+      executed: true
+    });
+
+    return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+  };
+}
+
 export function createBuildCheckWebhookUrlHandler(client: {
   checkWebhookUrl: (input: {
     job_id: string;
@@ -1175,6 +1260,111 @@ export function createBuildCreateJobHandler(client: {
 
     const response = await client.createJob(parsed);
     const result = asItemResult(`Created build job ${response.job_name}`, {
+      id: response.job_id,
+      projectId: response.project_id,
+      name: response.job_name,
+      status: response.status,
+      raw: response.raw,
+      executed: true
+    });
+
+    return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+  };
+}
+
+export function createBuildCreateJobV3Handler(client: {
+  createJobV3: (input: {
+    project_id: string;
+    job_name: string;
+    arch: string;
+    auto_update_sub_module?: boolean;
+    flavor?: string;
+    host_type?: string;
+    build_config_type?: string;
+    description?: string;
+    agency_urn?: string;
+    source_code?: string;
+    parameters?: Array<Record<string, unknown>>;
+    scms?: Array<Record<string, unknown>>;
+    steps?: Array<Record<string, unknown>>;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    project_id: string;
+    job_name: string;
+    job_id?: string;
+    status?: string;
+    raw: Record<string, unknown>;
+  }>;
+}) {
+  return async (input: unknown) => {
+    const parsed = buildCreateJobV3Input.parse(input);
+    const preview = asItemResult(`Dry run: create Build v3 job ${parsed.job_name}`, {
+      projectId: parsed.project_id,
+      name: parsed.job_name,
+      arch: parsed.arch,
+      body: parsed.body,
+      executed: !parsed.dry_run
+    });
+
+    if (parsed.dry_run) {
+      return { content: [{ type: "text" as const, text: preview.summary }], structuredContent: preview };
+    }
+
+    const response = await client.createJobV3(parsed);
+    const result = asItemResult(`Created Build v3 job ${response.job_name}`, {
+      id: response.job_id,
+      projectId: response.project_id,
+      name: response.job_name,
+      status: response.status,
+      raw: response.raw,
+      executed: true
+    });
+
+    return { content: [{ type: "text" as const, text: result.summary }], structuredContent: result };
+  };
+}
+
+export function createBuildUpdateJobV3Handler(client: {
+  updateJobV3: (input: {
+    project_id: string;
+    job_id: string;
+    job_name: string;
+    arch?: string;
+    auto_update_sub_module?: boolean;
+    flavor?: string;
+    host_type?: string;
+    build_config_type?: string;
+    description?: string;
+    agency_urn?: string;
+    source_code?: string;
+    parameters?: Array<Record<string, unknown>>;
+    scms?: Array<Record<string, unknown>>;
+    steps?: Array<Record<string, unknown>>;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    project_id: string;
+    job_id: string;
+    job_name: string;
+    status?: string;
+    raw: Record<string, unknown>;
+  }>;
+}) {
+  return async (input: unknown) => {
+    const parsed = buildUpdateJobV3Input.parse(input);
+    const preview = asItemResult(`Dry run: update Build v3 job ${parsed.job_id}`, {
+      id: parsed.job_id,
+      projectId: parsed.project_id,
+      name: parsed.job_name,
+      body: parsed.body,
+      executed: !parsed.dry_run
+    });
+
+    if (parsed.dry_run) {
+      return { content: [{ type: "text" as const, text: preview.summary }], structuredContent: preview };
+    }
+
+    const response = await client.updateJobV3(parsed);
+    const result = asItemResult(`Updated Build v3 job ${response.job_id}`, {
       id: response.job_id,
       projectId: response.project_id,
       name: response.job_name,

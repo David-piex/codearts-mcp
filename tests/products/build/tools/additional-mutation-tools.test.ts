@@ -11,6 +11,7 @@ import {
   createBuildCopyJobHandler,
   createBuildCreateJobGroupHandler,
   createBuildCreateJobHandler,
+  createBuildCreateJobV3Handler,
   createBuildCreateTemplateHandler,
   createBuildCreateTemplateV3Handler,
   createBuildDeleteJobGroupHandler,
@@ -25,14 +26,17 @@ import {
   createBuildFollowOfficialTemplateHandler,
   createBuildMoveJobGroupHandler,
   createBuildRecoverJobV3Handler,
+  createBuildRunJobV3Handler,
   createBuildRestoreRecyclingJobsHandler,
   createBuildSaveTemplateUsedInfoHandler,
   createBuildSetKeepTimeHandler,
+  createBuildStopJobV1Handler,
   createBuildSwapJobGroupHandler,
   createBuildUnfollowCustomTemplateHandler,
   createBuildUnfollowJobHandler,
   createBuildUnfollowOfficialTemplateHandler,
   createBuildUpdateJobNoticeHandler,
+  createBuildUpdateJobV3Handler,
   createBuildUpdateKeystoreHandler,
   createBuildUploadJunitCoverageHandler,
   createBuildUploadJunitReportHandler,
@@ -597,6 +601,114 @@ describe("build additional mutation tools", () => {
       status: "success",
       raw: { id: "key-1" },
       executed: true
+    });
+  });
+
+  it("maps official v1/v3 build mutation responses", async () => {
+    const stopJobV1Handler = createBuildStopJobV1Handler({
+      stopJobV1: async () => ({
+        job_id: "job-1",
+        build_no: 8,
+        status: "success",
+        result: true,
+        raw: { status: "success" }
+      })
+    });
+    const runJobV3Handler = createBuildRunJobV3Handler({
+      runJobV3: async () => ({
+        job_id: "job-1",
+        record_id: "record-1",
+        build_no: 8,
+        daily_build_number: "20260607.8",
+        status: "RUNNING",
+        raw: { record_id: "record-1" }
+      })
+    });
+    const createJobV3Handler = createBuildCreateJobV3Handler({
+      createJobV3: async () => ({
+        project_id: "project-1",
+        job_name: "build-v3",
+        job_id: "job-v3",
+        status: "success",
+        raw: { job_id: "job-v3" }
+      })
+    });
+    const updateJobV3Handler = createBuildUpdateJobV3Handler({
+      updateJobV3: async () => ({
+        project_id: "project-1",
+        job_id: "job-v3",
+        job_name: "build-v3-new",
+        status: "success",
+        raw: { job_id: "job-v3" }
+      })
+    });
+
+    await expect(stopJobV1Handler({
+      job_id: "job-1",
+      build_no: 8,
+      dry_run: false
+    })).resolves.toMatchObject({
+      structuredContent: {
+        item: {
+          id: "job-1",
+          buildNo: 8,
+          status: "success",
+          stopped: true,
+          raw: { status: "success" },
+          executed: true
+        }
+      }
+    });
+    await expect(runJobV3Handler({
+      job_id: "job-1",
+      branch: "main",
+      dry_run: false
+    })).resolves.toMatchObject({
+      structuredContent: {
+        item: {
+          id: "job-1",
+          recordId: "record-1",
+          buildNo: 8,
+          dailyBuildNumber: "20260607.8",
+          status: "RUNNING",
+          raw: { record_id: "record-1" },
+          executed: true
+        }
+      }
+    });
+    await expect(createJobV3Handler({
+      project_id: "project-1",
+      job_name: "build-v3",
+      arch: "x86-64",
+      dry_run: false
+    })).resolves.toMatchObject({
+      structuredContent: {
+        item: {
+          id: "job-v3",
+          projectId: "project-1",
+          name: "build-v3",
+          status: "success",
+          raw: { job_id: "job-v3" },
+          executed: true
+        }
+      }
+    });
+    await expect(updateJobV3Handler({
+      project_id: "project-1",
+      job_id: "job-v3",
+      job_name: "build-v3-new",
+      dry_run: false
+    })).resolves.toMatchObject({
+      structuredContent: {
+        item: {
+          id: "job-v3",
+          projectId: "project-1",
+          name: "build-v3-new",
+          status: "success",
+          raw: { job_id: "job-v3" },
+          executed: true
+        }
+      }
     });
   });
 

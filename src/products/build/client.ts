@@ -773,6 +773,20 @@ export type BuildClient = {
     daily_build_number?: string;
     status?: string;
   }>;
+  runJobV3: (input: {
+    job_id: string;
+    branch?: string;
+    parameter?: Array<{ name: string; value: string }>;
+    scm?: Record<string, unknown>;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    job_id: string;
+    record_id?: string;
+    build_no?: number;
+    daily_build_number?: string;
+    status?: string;
+    raw: Record<string, unknown>;
+  }>;
   getRecord: (input: { record_id: string }) => Promise<{
     record_id: string;
     job_id?: string;
@@ -791,6 +805,13 @@ export type BuildClient = {
     job_id: string;
     build_no: number;
     result?: boolean;
+  }>;
+  stopJobV1: (input: { job_id: string; build_no: number }) => Promise<{
+    job_id: string;
+    build_no: number;
+    status?: string;
+    result?: boolean;
+    raw: Record<string, unknown>;
   }>;
   deleteJob: (input: { job_id: string }) => Promise<{
     job_id: string;
@@ -1032,6 +1053,51 @@ export type BuildClient = {
     project_id: string;
     job_name: string;
     job_id?: string;
+    status?: string;
+    raw: Record<string, unknown>;
+  }>;
+  createJobV3: (input: {
+    project_id: string;
+    job_name: string;
+    arch: string;
+    auto_update_sub_module?: boolean;
+    flavor?: string;
+    host_type?: string;
+    build_config_type?: string;
+    description?: string;
+    agency_urn?: string;
+    source_code?: string;
+    parameters?: Array<Record<string, unknown>>;
+    scms?: Array<Record<string, unknown>>;
+    steps?: Array<Record<string, unknown>>;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    project_id: string;
+    job_name: string;
+    job_id?: string;
+    status?: string;
+    raw: Record<string, unknown>;
+  }>;
+  updateJobV3: (input: {
+    project_id: string;
+    job_id: string;
+    job_name: string;
+    arch?: string;
+    auto_update_sub_module?: boolean;
+    flavor?: string;
+    host_type?: string;
+    build_config_type?: string;
+    description?: string;
+    agency_urn?: string;
+    source_code?: string;
+    parameters?: Array<Record<string, unknown>>;
+    scms?: Array<Record<string, unknown>>;
+    steps?: Array<Record<string, unknown>>;
+    body?: Record<string, unknown>;
+  }) => Promise<{
+    project_id: string;
+    job_id: string;
+    job_name: string;
     status?: string;
     raw: Record<string, unknown>;
   }>;
@@ -3582,6 +3648,43 @@ export function createBuildClient(
         status: item.status ?? "success"
       };
     },
+    async runJobV3(input) {
+      const effectiveScm =
+        input.scm ??
+        (input.branch === undefined
+          ? undefined
+          : {
+              branch: input.branch,
+              build_type: "branch"
+            });
+      const response = await _http.post("/v3/jobs/build", {
+        ...input.body,
+        job_id: input.job_id,
+        ...(input.parameter === undefined ? {} : { parameter: input.parameter }),
+        ...(effectiveScm === undefined ? {} : { scm: effectiveScm })
+      });
+      const raw = readBuildRawRecord(readBuildPayloadValue(response));
+      const item = readBuildPayload(response) as {
+        job_id?: string;
+        record_id?: string;
+        build_no?: number;
+        actual_build_number?: string | number;
+        daily_build_number?: string;
+        status?: string;
+      };
+      const buildNo =
+        item.build_no ??
+        (item.actual_build_number === undefined ? undefined : Number(item.actual_build_number));
+
+      return {
+        job_id: item.job_id ?? input.job_id,
+        record_id: item.record_id,
+        build_no: Number.isNaN(buildNo) ? undefined : buildNo,
+        daily_build_number: item.daily_build_number,
+        status: item.status,
+        raw
+      };
+    },
     async getRecord(input) {
       const response = unwrapBuildPayload((await _http.get(
         `/v1/record/${encodeURIComponent(input.record_id)}/info`
@@ -3676,6 +3779,36 @@ export function createBuildClient(
         job_id: input.job_id,
         build_no: input.build_no,
         result: response.result
+      };
+    },
+    async stopJobV1(input) {
+      const rawResponse = await _http.post(
+        `/v1/job/${encodeURIComponent(input.job_id)}/stop`,
+        { build_no: input.build_no }
+      );
+      if (
+        rawResponse === null ||
+        rawResponse === undefined ||
+        (typeof rawResponse === "string" && rawResponse.trim() === "")
+      ) {
+        return {
+          job_id: input.job_id,
+          build_no: input.build_no,
+          result: true,
+          raw: {}
+        };
+      }
+      const payload = readBuildPayload(rawResponse) as {
+        status?: string;
+        result?: boolean;
+      };
+
+      return {
+        job_id: input.job_id,
+        build_no: input.build_no,
+        status: payload.status,
+        result: payload.result ?? payload.status === "success",
+        raw: readBuildRawRecord(readBuildPayloadValue(rawResponse))
       };
     },
     async deleteJob(input) {
@@ -4218,6 +4351,79 @@ export function createBuildClient(
             : typeof payloadRecord.id === "string"
               ? payloadRecord.id
               : undefined,
+        status: typeof payloadRecord.status === "string" ? payloadRecord.status : undefined,
+        raw
+      };
+    },
+    async createJobV3(input) {
+      const payload = {
+        ...input.body,
+        project_id: input.project_id,
+        job_name: input.job_name,
+        arch: input.arch,
+        ...(typeof input.auto_update_sub_module === "boolean"
+          ? { auto_update_sub_module: String(input.auto_update_sub_module) }
+          : {}),
+        ...(input.flavor ? { flavor: input.flavor } : {}),
+        ...(input.host_type ? { host_type: input.host_type } : {}),
+        ...(input.build_config_type ? { build_config_type: input.build_config_type } : {}),
+        ...(input.description === undefined ? {} : { description: input.description }),
+        ...(input.agency_urn ? { agency_urn: input.agency_urn } : {}),
+        ...(input.source_code ? { source_code: input.source_code } : {}),
+        ...(input.parameters === undefined ? {} : { parameters: input.parameters }),
+        ...(input.scms === undefined ? {} : { scms: input.scms }),
+        ...(input.steps === undefined ? {} : { steps: input.steps })
+      };
+      const response = await _http.post("/v3/jobs/create", payload);
+      const raw = readBuildRawRecord(readBuildPayloadValue(response));
+      const payloadRecord = readBuildPayload(response);
+
+      return {
+        project_id: input.project_id,
+        job_name: String(payloadRecord.job_name ?? payloadRecord.name ?? input.job_name),
+        job_id:
+          typeof payloadRecord.job_id === "string"
+            ? payloadRecord.job_id
+            : typeof payloadRecord.id === "string"
+              ? payloadRecord.id
+              : undefined,
+        status: typeof payloadRecord.status === "string" ? payloadRecord.status : undefined,
+        raw
+      };
+    },
+    async updateJobV3(input) {
+      const payload = {
+        ...input.body,
+        project_id: input.project_id,
+        job_id: input.job_id,
+        job_name: input.job_name,
+        ...(input.arch ? { arch: input.arch } : {}),
+        ...(typeof input.auto_update_sub_module === "boolean"
+          ? { auto_update_sub_module: String(input.auto_update_sub_module) }
+          : {}),
+        ...(input.flavor ? { flavor: input.flavor } : {}),
+        ...(input.host_type ? { host_type: input.host_type } : {}),
+        ...(input.build_config_type ? { build_config_type: input.build_config_type } : {}),
+        ...(input.description === undefined ? {} : { description: input.description }),
+        ...(input.agency_urn ? { agency_urn: input.agency_urn } : {}),
+        ...(input.source_code ? { source_code: input.source_code } : {}),
+        ...(input.parameters === undefined ? {} : { parameters: input.parameters }),
+        ...(input.scms === undefined ? {} : { scms: input.scms }),
+        ...(input.steps === undefined ? {} : { steps: input.steps })
+      };
+      const response = await _http.post("/v3/jobs/update", payload);
+      const raw = readBuildRawRecord(readBuildPayloadValue(response));
+      const payloadRecord = readBuildPayload(response);
+
+      return {
+        project_id: input.project_id,
+        job_id:
+          typeof payloadRecord.job_id === "string"
+            ? payloadRecord.job_id
+            : typeof payloadRecord.id === "string"
+              ? payloadRecord.id
+              : input.job_id,
+        job_name: String(payloadRecord.job_name ?? payloadRecord.name ?? input.job_name),
         status: typeof payloadRecord.status === "string" ? payloadRecord.status : undefined,
         raw
       };

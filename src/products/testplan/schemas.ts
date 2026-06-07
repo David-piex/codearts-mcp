@@ -8,6 +8,22 @@ const queryValueSchema = z.union([
   z.array(z.string())
 ]);
 
+const officialEndpointQueryValueSchema = z.union([
+  z.string(),
+  z.number(),
+  z.boolean(),
+  z.array(z.union([z.string(), z.number(), z.boolean()]))
+]);
+
+export const testPlanOfficialEndpointToolInput = z
+  .object({
+    path_params: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).optional(),
+    query: z.record(z.string(), officialEndpointQueryValueSchema).optional(),
+    body: z.unknown().optional(),
+    dry_run: z.boolean().default(true)
+  })
+  .catchall(z.unknown());
+
 export const testPlanListPlansInput = pagingSchema.extend({
   project_id: idSchema
 });
@@ -1268,6 +1284,80 @@ export const testPlanListTestcasesBatchInput = testPlanListTestcaseUrisV4Input.e
   test_designs: z.array(z.union([z.string().min(1), z.boolean()])).optional()
 });
 
+const testPlanOfficialTestcaseBatchBodyInput = z
+  .object({
+    testcases: z.array(z.record(z.string(), z.unknown())).optional(),
+    testcase_list: z.array(z.record(z.string(), z.unknown())).optional(),
+    case_list: z.array(z.record(z.string(), z.unknown())).optional()
+  })
+  .passthrough();
+
+export const testPlanBatchCreateTestcasesInput = testPlanOfficialTestcaseBatchBodyInput.extend({
+  project_id: idSchema.optional(),
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanBatchDeleteTestcasesV4Input = z
+  .object({
+    project_id: idSchema.optional(),
+    testcase_uris: z.array(idSchema).min(1).optional(),
+    case_uris: z.array(idSchema).min(1).optional(),
+    body: z.record(z.string(), z.unknown()).optional(),
+    dry_run: z.boolean().default(true)
+  })
+  .refine((value) => Boolean(value.body ?? value.testcase_uris ?? value.case_uris), {
+    message: "body, testcase_uris, or case_uris is required"
+  });
+
+export const testPlanBatchUpdateTestcasesV4Input = testPlanOfficialTestcaseBatchBodyInput.extend({
+  project_id: idSchema,
+  dry_run: z.boolean().default(true)
+});
+
+export const testPlanBatchCreateTestcaseReviewsInput = z
+  .object({
+    project_id: idSchema.optional(),
+    testcase_uris: z.array(idSchema).min(1).optional(),
+    case_uris: z.array(idSchema).min(1).optional(),
+    reviewer_ids: z.array(idSchema).min(1).optional(),
+    review_title: z.string().min(1).optional(),
+    body: z.record(z.string(), z.unknown()).optional(),
+    dry_run: z.boolean().default(true)
+  })
+  .passthrough()
+  .refine((value) => Boolean(value.body ?? value.testcase_uris ?? value.case_uris), {
+    message: "body, testcase_uris, or case_uris is required"
+  });
+
+export const testPlanBatchCloseTestcaseReviewsInput = z
+  .object({
+    project_id: idSchema.optional(),
+    review_ids: z.array(idSchema).min(1).optional(),
+    review_uris: z.array(idSchema).min(1).optional(),
+    testcase_uris: z.array(idSchema).min(1).optional(),
+    case_uris: z.array(idSchema).min(1).optional(),
+    body: z.record(z.string(), z.unknown()).optional(),
+    dry_run: z.boolean().default(true)
+  })
+  .passthrough()
+  .refine((value) => Boolean(value.body ?? value.review_ids ?? value.review_uris ?? value.testcase_uris ?? value.case_uris), {
+    message: "body, review_ids, review_uris, testcase_uris, or case_uris is required"
+  });
+
+export const testPlanCreateApiTestcaseV4Input = z
+  .object({
+    project_id: idSchema,
+    name: z.string().min(1).optional(),
+    test_type: z.string().min(1).optional(),
+    testcase: z.record(z.string(), z.unknown()).optional(),
+    body: z.record(z.string(), z.unknown()).optional(),
+    dry_run: z.boolean().default(true)
+  })
+  .passthrough()
+  .refine((value) => Boolean(value.body ?? value.name ?? value.testcase), {
+    message: "body, name, or testcase is required"
+  });
+
 export const testPlanGetGt3kTestcaseChangeStatisticsInput = z.object({
   project_id: idSchema,
   version_id: idSchema
@@ -2248,6 +2338,17 @@ export const testPlanListTesthubIteratorsInput = pagingSchema.extend({
   branch_uri: idSchema.optional()
 });
 
+export const testPlanListIteratorsV4WithStatsInput = pagingSchema
+  .extend({
+    project_id: idSchema.optional(),
+    name: z.string().min(1).optional(),
+    current_stage: z.string().min(1).optional(),
+    branch_uri: idSchema.optional(),
+    with_stats: z.boolean().optional(),
+    body: z.record(z.string(), z.unknown()).optional()
+  })
+  .passthrough();
+
 export const testPlanListTesthubIteratorsV5Input = pagingSchema.extend({
   project_id: idSchema,
   name: z.string().min(1).optional(),
@@ -2299,6 +2400,31 @@ export const testPlanBatchAddIteratorTestcasesInput = z.object({
   dry_run: z.boolean().default(true)
 });
 
+export const testPlanBatchDeleteIteratorsV4Input = z
+  .object({
+    project_id: idSchema.optional(),
+    iterator_uris: z.array(idSchema).min(1).optional(),
+    iterator_ids: z.array(idSchema).min(1).optional(),
+    body: z.record(z.string(), z.unknown()).optional(),
+    dry_run: z.boolean().default(true)
+  })
+  .refine((value) => Boolean(value.body ?? value.iterator_uris ?? value.iterator_ids), {
+    message: "body, iterator_uris, or iterator_ids is required"
+  });
+
+export const testPlanBatchDeleteBranchesV4Input = z
+  .object({
+    project_id: idSchema.optional(),
+    branch_uris: z.array(idSchema).min(1).optional(),
+    branch_ids: z.array(idSchema).min(1).optional(),
+    is_async: z.boolean().optional(),
+    body: z.record(z.string(), z.unknown()).optional(),
+    dry_run: z.boolean().default(true)
+  })
+  .refine((value) => Boolean(value.body ?? value.branch_uris ?? value.branch_ids), {
+    message: "body, branch_uris, or branch_ids is required"
+  });
+
 export const testPlanListIteratorHistoriesInput = pagingSchema.extend({
   project_id: idSchema,
   iterator_uri: idSchema
@@ -2318,6 +2444,21 @@ export const testPlanCreateTaskInput = z.object({
   version_uri: idSchema.optional(),
   dry_run: z.boolean().default(true)
 });
+
+export const testPlanCreateExecutionTaskV1Input = z
+  .object({
+    project_id: idSchema,
+    name: z.string().min(1).optional(),
+    uri: idSchema.optional(),
+    description: z.string().optional(),
+    version_uri: idSchema.optional(),
+    body: z.record(z.string(), z.unknown()).optional(),
+    dry_run: z.boolean().default(true)
+  })
+  .passthrough()
+  .refine((value) => Boolean(value.body ?? value.name), {
+    message: "body or name is required"
+  });
 
 export const testPlanBatchUpdateTaskAttributesInput = z.object({
   project_id: idSchema,

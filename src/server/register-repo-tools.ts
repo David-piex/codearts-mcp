@@ -182,6 +182,7 @@ import {
   repoShowDiffLinesInput,
   repoShowGroupE2eSettingInput,
   repoShowGroupInheritSettingInput,
+  repoShowGroupsInheritInput,
   repoShowGroupApproverSettingsInput,
   repoShowGroupGeneralPolicyInput,
   repoShowGroupInput,
@@ -568,6 +569,7 @@ import { createRepoReviewMergeRequestHandler } from "../products/repo/tools/revi
 import { createRepoShowGroupE2eSettingHandler } from "../products/repo/tools/show-group-e2e-setting.js";
 import { createRepoShowGroupApproverSettingsHandler } from "../products/repo/tools/show-group-approver-settings.js";
 import { createRepoShowGroupInheritSettingHandler } from "../products/repo/tools/show-group-inherit-setting.js";
+import { createRepoShowGroupsInheritHandler } from "../products/repo/tools/show-groups-inherit.js";
 import { createRepoShowGroupMergeRequestSettingHandler } from "../products/repo/tools/show-group-merge-request-setting.js";
 import { createRepoShowGroupReviewSettingsHandler } from "../products/repo/tools/show-group-review-settings.js";
 import { createRepoShowGroupPermissionInheritEnabledHandler } from "../products/repo/tools/show-group-permission-inherit-enabled.js";
@@ -746,7 +748,7 @@ const repoToolDefinitions = {
   "repo_list_group_subgroups_and_repositories": defineProductTool({ description: "List CodeArts Repo subgroups and repositories in a group", inputSchema: repoListGroupSubgroupsAndRepositoriesInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoListGroupSubgroupsAndRepositoriesHandler>[0] }) => clients.repoClient, createProductHandler: createRepoListGroupSubgroupsAndRepositoriesHandler }),
   "repo_associate_group_user_group": defineProductTool({ description: "Associate a CodeArts Repo user group to a group through the official AssociateGroupUserGroup endpoint", inputSchema: repoAssociateGroupUserGroupInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoAssociateGroupUserGroupHandler>[0] }) => clients.repoClient, createProductHandler: createRepoAssociateGroupUserGroupHandler }),
   "repo_show_group_inherit_setting": defineProductTool({ description: "Show CodeArts Repo group inherit setting", inputSchema: repoShowGroupInheritSettingInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowGroupInheritSettingHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowGroupInheritSettingHandler }),
-  "repo_show_groups_inherit": defineProductTool({ description: "Show CodeArts Repo groups inherit through the official ShowGroupsInherit endpoint", inputSchema: repoShowGroupInheritSettingInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowGroupInheritSettingHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowGroupInheritSettingHandler }),
+  "repo_show_groups_inherit": defineProductTool({ description: "Show CodeArts Repo groups inherit through the official ShowGroupsInherit endpoint", inputSchema: repoShowGroupsInheritInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowGroupsInheritHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowGroupsInheritHandler }),
   "repo_show_group_settings_inherit_cfg": defineProductTool({ description: "Show CodeArts Repo group settings inherit configuration through the official ShowGroupSettingsInheritCfg endpoint", inputSchema: repoShowGroupSettingsInheritCfgInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowGroupSettingsInheritCfgHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowGroupSettingsInheritCfgHandler }),
   "repo_show_groups_general_policy": defineProductTool({ description: "Show CodeArts Repo groups general policy through the official ShowGroupsGeneralPolicy endpoint", inputSchema: repoShowGroupsGeneralPolicyInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowGroupsGeneralPolicyHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowGroupsGeneralPolicyHandler }),
   "repo_show_repository_merge_request_setting": defineProductTool({ description: "Show CodeArts Repo repository merge request setting", inputSchema: repoShowRepositoryMergeRequestSettingInput, selectHttpClient: (clients: { repoClient: Parameters<typeof createRepoShowRepositoryMergeRequestSettingHandler>[0] }) => clients.repoClient, createProductHandler: createRepoShowRepositoryMergeRequestSettingHandler }),

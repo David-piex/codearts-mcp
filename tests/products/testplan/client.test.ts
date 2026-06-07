@@ -2,6 +2,150 @@ import { describe, expect, it } from "vitest";
 import { createTestPlanClient } from "../../../src/products/testplan/client.js";
 
 describe("createTestPlanClient", () => {
+  it("calls official v4 testcase, iterator, and branch batch endpoints", async () => {
+    const requests: Array<{ method: string; path: string; body?: unknown }> = [];
+    const client = createTestPlanClient({
+      post: async (path: string, body: unknown) => {
+        requests.push({ method: "POST", path, body });
+        return { value: [{ uri: "iterator-1", name: "Sprint 1" }], total: 1 };
+      },
+      put: async (path: string, body: unknown) => {
+        requests.push({ method: "PUT", path, body });
+        return { value: "updated" };
+      },
+      delete: async (path: string, body: unknown) => {
+        requests.push({ method: "DELETE", path, body });
+        return { value: "deleted" };
+      }
+    } as never);
+
+    await client.batchCreateTestcases({
+      project_id: "project-1",
+      testcases: [{ name: "case one" }]
+    });
+    await client.batchDeleteTestcasesV4({
+      project_id: "project-1",
+      testcase_uris: ["case-1"]
+    });
+    await client.batchUpdateTestcasesV4({
+      project_id: "project-1",
+      case_list: [{ uri: "case-1", name: "case one" }]
+    });
+    await client.batchCreateTestcaseReviews({
+      project_id: "project-1",
+      testcase_uris: ["case-1"],
+      reviewer_ids: ["user-1"]
+    });
+    await client.batchCloseTestcaseReviews({
+      project_id: "project-1",
+      review_ids: ["review-1"]
+    });
+    await client.createApiTestcaseV4({
+      project_id: "project-1",
+      name: "api case",
+      test_type: "api"
+    });
+    const iterators = await client.listIteratorsV4WithStats({
+      project_id: "project-1",
+      page: 2,
+      page_size: 10,
+      with_stats: true
+    });
+    await client.batchDeleteIteratorsV4({
+      project_id: "project-1",
+      iterator_uris: ["iterator-1"]
+    });
+    await client.batchDeleteBranchesV4({
+      project_id: "project-1",
+      branch_uris: ["branch-1"],
+      is_async: false
+    });
+    await client.createExecutionTaskV1({
+      project_id: "project-1",
+      name: "task one",
+      version_uri: "version-1"
+    });
+
+    expect(iterators).toMatchObject({
+      iterators: [{ uri: "iterator-1", name: "Sprint 1" }],
+      total: 1
+    });
+    expect(requests).toEqual([
+      {
+        method: "POST",
+        path: "/v4/testcases/batch-add",
+        body: { project_id: "project-1", testcases: [{ name: "case one" }] }
+      },
+      {
+        method: "DELETE",
+        path: "/v4/testcases/batch-delete",
+        body: { project_id: "project-1", testcase_uris: ["case-1"], case_uris: undefined }
+      },
+      {
+        method: "PUT",
+        path: "/v4/project-1/testcases/batch-update",
+        body: { testcases: undefined, testcase_list: undefined, case_list: [{ uri: "case-1", name: "case one" }] }
+      },
+      {
+        method: "POST",
+        path: "/v4/testcases/batch-review",
+        body: {
+          project_id: "project-1",
+          testcase_uris: ["case-1"],
+          case_uris: undefined,
+          reviewer_ids: ["user-1"],
+          review_title: undefined
+        }
+      },
+      {
+        method: "POST",
+        path: "/v4/testcases/review/batch-close",
+        body: {
+          project_id: "project-1",
+          review_ids: ["review-1"],
+          review_uris: undefined,
+          testcase_uris: undefined,
+          case_uris: undefined
+        }
+      },
+      {
+        method: "POST",
+        path: "/v4/project-1/automatic/testcases",
+        body: { name: "api case", test_type: "api", testcase: undefined }
+      },
+      {
+        method: "POST",
+        path: "/v4/iterators/batch-query",
+        body: {
+          project_id: "project-1",
+          page_no: 2,
+          page_size: 10,
+          offset: 10,
+          limit: 10,
+          name: undefined,
+          current_stage: undefined,
+          branch_uri: undefined,
+          with_stats: true
+        }
+      },
+      {
+        method: "DELETE",
+        path: "/v4/iterators/batch-delete",
+        body: { project_id: "project-1", iterator_uris: ["iterator-1"], iterator_ids: undefined }
+      },
+      {
+        method: "DELETE",
+        path: "/v4/branches/batch-delete?is_async=false",
+        body: { project_id: "project-1", branch_uris: ["branch-1"], branch_ids: undefined }
+      },
+      {
+        method: "POST",
+        path: "/v1/project-1/tasks",
+        body: { uri: undefined, name: "task one", description: undefined, version_uri: "version-1" }
+      }
+    ]);
+  });
+
   it("uses paging query params when listing plan issues", async () => {
     let requestedPath = "";
     const client = createTestPlanClient({

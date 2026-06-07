@@ -65,8 +65,8 @@ describe("module stats doc rendering", () => {
 
     expect(markdown).toContain("| Module | Read | Write | Live | Key Gaps |");
     expect(markdown).toContain("| Deploy | 59 | 29 | Partial |");
-    expect(markdown).toContain("| Build | 100 | 46 | Validated |");
-    expect(markdown).toContain("| TestPlan | 283 | 77 | Partial |");
+    expect(markdown).toContain("| Build | 100 | 50 | Validated |");
+    expect(markdown).toContain("| TestPlan | 310 | 148 | Partial |");
     expect(markdown).toContain("| Check | 86 | 25 | Partial |");
   });
 
@@ -117,7 +117,7 @@ describe("syncModuleStatsDocuments", () => {
     expect(synced["README.md"]).toContain(
       `- \`${collectProductToolStats().total}\` product tools`,
     );
-    expect(synced["README.md"]).toContain("| Pipeline | 173 | Partial |");
+    expect(synced["README.md"]).toContain("| Pipeline | 189 | Partial |");
     expect(synced["README.md"]).toContain("| Req | 344 | Partial |");
     expect(synced["docs/wiki/Capability-Matrix.md"]).toContain(
       "| Req | 208 | 136 | Partial |",

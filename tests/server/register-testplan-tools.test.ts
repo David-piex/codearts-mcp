@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { testPlanOfficialEndpointTools } from "../../src/products/testplan/official-endpoint-tools.js";
 import { registerTestPlanTool } from "../../src/server/register-testplan-tools.js";
 import { createSessionCredentialStore } from "../../src/server/session-store.js";
 
@@ -297,6 +298,7 @@ describe("registerTestPlanTool", () => {
       ["testplan_list_scenes_page", "List CodeArts TestPlan scenes by official v2 page API"],
       ["testplan_list_default_templates", "List CodeArts TestPlan default mindmap templates"],
       ["testplan_list_testcases_batch", "List CodeArts TestPlan testcases by official v4 batch-list API"],
+      ["testplan_list_iterators_v4_with_stats", "List CodeArts TestPlan v4 iterators with statistics by official batch-query API"],
       ["testplan_list_system_configs", "List CodeArts TestPlan system configs by official v1 API"],
       ["testplan_list_variable_group_names", "List CodeArts TestPlan variable group names by official v1 API"]
     ] as const;
@@ -799,6 +801,31 @@ describe("registerTestPlanTool", () => {
     }
   });
 
+  it("registers every dynamic official endpoint tool", () => {
+    const registerTool = vi.fn();
+
+    for (const endpointTool of testPlanOfficialEndpointTools) {
+      const handled = registerTestPlanTool({
+        toolName: endpointTool.name,
+        server: { registerTool },
+        mode: "stdio",
+        stdioClient: {} as never
+      });
+
+      expect(handled).toBe(true);
+      expect(registerTool).toHaveBeenLastCalledWith(
+        endpointTool.name,
+        expect.objectContaining({
+          title: endpointTool.name,
+          description: endpointTool.description
+        }),
+        expect.any(Function)
+      );
+    }
+
+    expect(registerTool).toHaveBeenCalledTimes(testPlanOfficialEndpointTools.length);
+  });
+
   it("registers testhub and task attribute write tools", () => {
     const registerTool = vi.fn();
     const tools = [
@@ -806,6 +833,15 @@ describe("registerTestPlanTool", () => {
       ["testplan_create_testhub_iterator", "Create CodeArts TestPlan TestHub iterator"],
       ["testplan_create_testhub_service", "Create CodeArts TestPlan TestHub service"],
       ["testplan_batch_add_iterator_testcases", "Batch add CodeArts TestPlan testcases to a TestHub iterator"],
+      ["testplan_batch_delete_iterators_v4", "Batch delete CodeArts TestPlan v4 iterators (dry-run by default)"],
+      ["testplan_batch_delete_branches_v4", "Batch delete CodeArts TestPlan v4 branches (dry-run by default)"],
+      ["testplan_batch_create_testcases", "Batch create CodeArts TestPlan testcases by official v4 API (dry-run by default)"],
+      ["testplan_batch_delete_testcases_v4", "Batch delete CodeArts TestPlan v4 testcases (dry-run by default)"],
+      ["testplan_batch_update_testcases_v4", "Batch update CodeArts TestPlan v4 testcases (dry-run by default)"],
+      ["testplan_batch_create_testcase_reviews", "Batch create CodeArts TestPlan testcase reviews via official v4 API (dry-run by default)"],
+      ["testplan_batch_close_testcase_reviews", "Batch close CodeArts TestPlan testcase reviews via official v4 API (dry-run by default)"],
+      ["testplan_create_api_testcase_v4", "Create a CodeArts TestPlan API testcase via official v4 API (dry-run by default)"],
+      ["testplan_create_execution_task_v1", "Create a CodeArts TestPlan execution task via official v1 API (dry-run by default)"],
       ["testplan_update_testhub_service", "Update CodeArts TestPlan TestHub service"],
       ["testplan_delete_testhub_service", "Delete CodeArts TestPlan TestHub service"]
     ] as const;
