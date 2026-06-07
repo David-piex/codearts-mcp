@@ -65,6 +65,8 @@ type HttpJsonRpcResponse = {
   };
 };
 
+const MCP_PROTOCOL_VERSION = "2025-03-26";
+
 class CliError extends Error {
   constructor(
     message: string,
@@ -458,6 +460,109 @@ function jsonFromMcpResult(result: unknown) {
   return result;
 }
 
+function buildHttpMcpHeaders(options: {
+  token?: string;
+  sessionId?: string;
+  includeContentType?: boolean;
+}) {
+  const headers: Record<string, string> = {
+    accept: "application/json, text/event-stream"
+  };
+
+  if (options.includeContentType) {
+    headers["content-type"] = "application/json";
+  }
+
+  if (options.token) {
+    headers.authorization = `Bearer ${options.token}`;
+  }
+
+  if (options.sessionId) {
+    headers["mcp-session-id"] = options.sessionId;
+    headers["mcp-protocol-version"] = MCP_PROTOCOL_VERSION;
+  }
+
+  return headers;
+}
+
+function getResponseHeader(
+  response: Pick<Response, "headers"> | { headers?: { get?: (name: string) => string | null } },
+  name: string
+) {
+  if (!response.headers || typeof response.headers.get !== "function") {
+    return null;
+  }
+
+  return response.headers.get(name);
+}
+
+async function initializeHttpSession(options: {
+  endpoint?: string;
+  token?: string;
+  fetch: typeof fetch;
+}) {
+  if (!options.endpoint) {
+    throw new CliError("HTTP transport requires --endpoint or CODEARTS_MCP_URL.");
+  }
+
+  const response = await options.fetch(options.endpoint, {
+    method: "POST",
+    headers: buildHttpMcpHeaders({
+      token: options.token,
+      includeContentType: true
+    }),
+    body: JSON.stringify({
+      jsonrpc: "2.0",
+      id: "codearts-cli-init",
+      method: "initialize",
+      params: {
+        protocolVersion: MCP_PROTOCOL_VERSION,
+        capabilities: {},
+        clientInfo: {
+          name: "codearts-cli",
+          version: "0.1.0"
+        }
+      }
+    })
+  });
+  const body = (await response.json()) as HttpJsonRpcResponse;
+
+  if (!response.ok || body.error) {
+    throw new CliError(body.error?.message ?? `HTTP MCP request failed with status ${response.status}`);
+  }
+
+  const sessionId = getResponseHeader(response, "mcp-session-id");
+
+  if (!sessionId) {
+    throw new CliError("HTTP MCP initialize did not return an MCP session id.");
+  }
+
+  return sessionId;
+}
+
+async function closeHttpSession(options: {
+  endpoint?: string;
+  token?: string;
+  sessionId: string;
+  fetch: typeof fetch;
+}) {
+  if (!options.endpoint) {
+    return;
+  }
+
+  try {
+    await options.fetch(options.endpoint, {
+      method: "DELETE",
+      headers: buildHttpMcpHeaders({
+        token: options.token,
+        sessionId: options.sessionId
+      })
+    });
+  } catch {
+    // Best-effort cleanup so command results are not hidden by session close failures.
+  }
+}
+
 async function callHttpTool(options: {
   endpoint?: string;
   token?: string;
@@ -469,29 +574,41 @@ async function callHttpTool(options: {
     throw new CliError("HTTP transport requires --endpoint or CODEARTS_MCP_URL.");
   }
 
-  const response = await options.fetch(options.endpoint, {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      ...(options.token ? { authorization: `Bearer ${options.token}` } : {})
-    },
-    body: JSON.stringify({
-      jsonrpc: "2.0",
-      id: 1,
-      method: "tools/call",
-      params: {
-        name: options.toolName,
-        arguments: options.input
-      }
-    })
-  });
-  const body = (await response.json()) as HttpJsonRpcResponse;
+  const sessionId = await initializeHttpSession(options);
 
-  if (!response.ok || body.error) {
-    throw new CliError(body.error?.message ?? `HTTP MCP request failed with status ${response.status}`);
+  try {
+    const response = await options.fetch(options.endpoint, {
+      method: "POST",
+      headers: buildHttpMcpHeaders({
+        token: options.token,
+        sessionId,
+        includeContentType: true
+      }),
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: 1,
+        method: "tools/call",
+        params: {
+          name: options.toolName,
+          arguments: options.input
+        }
+      })
+    });
+    const body = (await response.json()) as HttpJsonRpcResponse;
+
+    if (!response.ok || body.error) {
+      throw new CliError(body.error?.message ?? `HTTP MCP request failed with status ${response.status}`);
+    }
+
+    return body.result;
+  } finally {
+    await closeHttpSession({
+      endpoint: options.endpoint,
+      token: options.token,
+      sessionId,
+      fetch: options.fetch
+    });
   }
-
-  return body.result;
 }
 
 async function listHttpTools(options: {
@@ -503,26 +620,38 @@ async function listHttpTools(options: {
     throw new CliError("HTTP transport requires --endpoint or CODEARTS_MCP_URL.");
   }
 
-  const response = await options.fetch(options.endpoint, {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      ...(options.token ? { authorization: `Bearer ${options.token}` } : {})
-    },
-    body: JSON.stringify({
-      jsonrpc: "2.0",
-      id: 1,
-      method: "tools/list"
-    })
-  });
-  const body = (await response.json()) as HttpJsonRpcResponse;
+  const sessionId = await initializeHttpSession(options);
 
-  if (!response.ok || body.error) {
-    throw new CliError(body.error?.message ?? `HTTP MCP request failed with status ${response.status}`);
+  try {
+    const response = await options.fetch(options.endpoint, {
+      method: "POST",
+      headers: buildHttpMcpHeaders({
+        token: options.token,
+        sessionId,
+        includeContentType: true
+      }),
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: 1,
+        method: "tools/list"
+      })
+    });
+    const body = (await response.json()) as HttpJsonRpcResponse;
+
+    if (!response.ok || body.error) {
+      throw new CliError(body.error?.message ?? `HTTP MCP request failed with status ${response.status}`);
+    }
+
+    const result = body.result as { tools?: unknown };
+    return Array.isArray(result.tools) ? result.tools : [];
+  } finally {
+    await closeHttpSession({
+      endpoint: options.endpoint,
+      token: options.token,
+      sessionId,
+      fetch: options.fetch
+    });
   }
-
-  const result = body.result as { tools?: unknown };
-  return Array.isArray(result.tools) ? result.tools : [];
 }
 
 function renderHelp() {

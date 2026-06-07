@@ -3,6 +3,7 @@ import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { runCli } from "../../src/server/cli.js";
+import { startTestHttpServer } from "./http-mcp-test-helpers.js";
 
 const baseEnv = {
   HUAWEICLOUD_AK: "ak-test",
@@ -113,31 +114,76 @@ describe("CLI", () => {
   it("calls HTTP MCP tools", async () => {
     const output = createOutputCapture();
     const fetchMock = vi.fn(async (_url: string | URL | Request, init?: RequestInit) => {
-      expect(init?.method).toBe("POST");
-      expect(JSON.parse(String(init?.body))).toMatchObject({
-        method: "tools/call",
-        params: {
-          name: "req_list_projects",
-          arguments: {
-            page: 1
-          }
+      if (init?.method === "POST") {
+        const payload = JSON.parse(String(init.body));
+
+        if (payload.method === "initialize") {
+          return {
+            ok: true,
+            status: 200,
+            headers: new Headers({
+              "mcp-session-id": "session-1"
+            }),
+            json: async () => ({
+              jsonrpc: "2.0",
+              id: "codearts-cli-init",
+              result: {
+                protocolVersion: "2025-03-26",
+                capabilities: {
+                  tools: {}
+                },
+                serverInfo: {
+                  name: "codearts-mcp",
+                  version: "0.1.0"
+                }
+              }
+            })
+          } as Response;
         }
+
+        expect(init.headers).toMatchObject({
+          "mcp-session-id": "session-1",
+          "mcp-protocol-version": "2025-03-26"
+        });
+        expect(payload).toMatchObject({
+          method: "tools/call",
+          params: {
+            name: "req_list_projects",
+            arguments: {
+              page: 1
+            }
+          }
+        });
+
+        return {
+          ok: true,
+          status: 200,
+          headers: new Headers(),
+          json: async () => ({
+            jsonrpc: "2.0",
+            id: 1,
+            result: {
+              structuredContent: {
+                summary: "1 project found",
+                items: [{ id: "project-1", name: "Demo" }]
+              },
+              content: [{ type: "text", text: "1 project found" }]
+            }
+          })
+        } as Response;
+      }
+
+      expect(init?.method).toBe("DELETE");
+      expect(init?.headers).toMatchObject({
+        "mcp-session-id": "session-1",
+        "mcp-protocol-version": "2025-03-26"
       });
 
       return {
         ok: true,
         status: 200,
-        json: async () => ({
-          jsonrpc: "2.0",
-          id: 1,
-          result: {
-            structuredContent: {
-              summary: "1 project found",
-              items: [{ id: "project-1", name: "Demo" }]
-            },
-            content: [{ type: "text", text: "1 project found" }]
-          }
-        })
+        headers: new Headers(),
+        json: async () => ({})
       } as Response;
     });
 
@@ -164,19 +210,60 @@ describe("CLI", () => {
     expect(JSON.parse(output.stdout.join(""))).toMatchObject({
       summary: "1 project found"
     });
+    expect(fetchMock).toHaveBeenCalledTimes(3);
   });
 
   it("lists HTTP tools", async () => {
     const output = createOutputCapture();
-    const fetchMock = vi.fn(async () => ({
-      ok: true,
-      status: 200,
-      json: async () => ({
-        result: {
-          tools: [{ name: "req_list_projects" }]
+    const fetchMock = vi.fn(async (_url: string | URL | Request, init?: RequestInit) => {
+      if (init?.method === "POST") {
+        const payload = JSON.parse(String(init.body));
+
+        if (payload.method === "initialize") {
+          return {
+            ok: true,
+            status: 200,
+            headers: new Headers({
+              "mcp-session-id": "session-tools"
+            }),
+            json: async () => ({
+              result: {
+                protocolVersion: "2025-03-26",
+                capabilities: {
+                  tools: {}
+                }
+              }
+            })
+          } as Response;
         }
-      })
-    })) as unknown as typeof fetch;
+
+        expect(init.headers).toMatchObject({
+          "mcp-session-id": "session-tools",
+          "mcp-protocol-version": "2025-03-26"
+        });
+        expect(payload).toMatchObject({
+          method: "tools/list"
+        });
+
+        return {
+          ok: true,
+          status: 200,
+          headers: new Headers(),
+          json: async () => ({
+            result: {
+              tools: [{ name: "req_list_projects" }]
+            }
+          })
+        } as Response;
+      }
+
+      return {
+        ok: true,
+        status: 200,
+        headers: new Headers(),
+        json: async () => ({})
+      } as Response;
+    }) as unknown as typeof fetch;
 
     await expect(
       runCli({
@@ -189,6 +276,7 @@ describe("CLI", () => {
     ).resolves.toBe(0);
 
     expect(output.stdout.join("")).toBe("req_list_projects\n");
+    expect(fetchMock).toHaveBeenCalledTimes(3);
   });
 
   it("renders tools as a table", async () => {
@@ -209,18 +297,50 @@ describe("CLI", () => {
 
   it("renders call result items as a table", async () => {
     const output = createOutputCapture();
-    const fetchMock = vi.fn(async () => ({
-      ok: true,
-      status: 200,
-      json: async () => ({
-        result: {
-          structuredContent: {
-            summary: "1 project found",
-            items: [{ id: "project-1", name: "Demo" }]
-          }
+    const fetchMock = vi.fn(async (_url: string | URL | Request, init?: RequestInit) => {
+      if (init?.method === "POST") {
+        const payload = JSON.parse(String(init.body));
+
+        if (payload.method === "initialize") {
+          return {
+            ok: true,
+            status: 200,
+            headers: new Headers({
+              "mcp-session-id": "session-table"
+            }),
+            json: async () => ({
+              result: {
+                protocolVersion: "2025-03-26",
+                capabilities: {
+                  tools: {}
+                }
+              }
+            })
+          } as Response;
         }
-      })
-    })) as unknown as typeof fetch;
+
+        return {
+          ok: true,
+          status: 200,
+          headers: new Headers(),
+          json: async () => ({
+            result: {
+              structuredContent: {
+                summary: "1 project found",
+                items: [{ id: "project-1", name: "Demo" }]
+              }
+            }
+          })
+        } as Response;
+      }
+
+      return {
+        ok: true,
+        status: 200,
+        headers: new Headers(),
+        json: async () => ({})
+      } as Response;
+    }) as unknown as typeof fetch;
 
     await expect(
       runCli({
@@ -257,14 +377,44 @@ describe("CLI", () => {
         authorization: "Bearer profile-token"
       });
 
+      if (init?.method === "POST") {
+        const payload = JSON.parse(String(init.body));
+
+        if (payload.method === "initialize") {
+          return {
+            ok: true,
+            status: 200,
+            headers: new Headers({
+              "mcp-session-id": "profile-session"
+            }),
+            json: async () => ({
+              result: {
+                protocolVersion: "2025-03-26",
+                capabilities: {
+                  tools: {}
+                }
+              }
+            })
+          } as Response;
+        }
+
+        return {
+          ok: true,
+          status: 200,
+          headers: new Headers(),
+          json: async () => ({
+            result: {
+              tools: [{ name: "req_list_projects" }]
+            }
+          })
+        } as Response;
+      }
+
       return {
         ok: true,
         status: 200,
-        json: async () => ({
-          result: {
-            tools: [{ name: "req_list_projects" }]
-          }
-        })
+        headers: new Headers(),
+        json: async () => ({})
       } as Response;
     });
 
@@ -296,6 +446,36 @@ describe("CLI", () => {
       expect(output.stdout.join("")).toBe("req_list_projects\n");
     } finally {
       rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("initializes a real HTTP MCP session before listing tools", async () => {
+    const output = createOutputCapture();
+    const { server, port } = await startTestHttpServer();
+
+    try {
+      await expect(
+        runCli({
+          argv: [
+            "tools",
+            "--transport",
+            "http",
+            "--endpoint",
+            `http://127.0.0.1:${port}/mcp`,
+            "--format",
+            "text"
+          ],
+          env: {},
+          stdout: output.writeStdout,
+          stderr: output.writeStderr
+        })
+      ).resolves.toBe(0);
+
+      expect(output.stdout.join("")).toContain("auth_configure_session");
+      expect(output.stdout.join("")).toContain("req_list_projects");
+      expect(output.stderr.join("")).toBe("");
+    } finally {
+      server.close();
     }
   });
 
