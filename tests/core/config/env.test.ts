@@ -77,6 +77,19 @@ describe("loadEnvConfig", () => {
       buildListJobsMs: 2_000
     });
   });
+
+  it("allows filtering enabled product families in local mode", () => {
+    const config = loadEnvConfig({
+      HUAWEICLOUD_REGION: "cn-north-4",
+      HUAWEICLOUD_AK: "ak",
+      HUAWEICLOUD_SK: "sk",
+      MCP_SERVER_NAME: "codearts-mcp",
+      MCP_SERVER_VERSION: "0.1.0",
+      MCP_ENABLED_PRODUCT_FAMILIES: "req,repo"
+    });
+
+    expect(config.enabledProductFamilies).toEqual(["req", "repo"]);
+  });
 });
 
 describe("loadServerMetadataConfig", () => {
@@ -191,6 +204,26 @@ describe("loadServerMetadataConfig", () => {
         MCP_HTTP_ALLOWED_ORIGINS: "not a url"
       })
     ).toThrow(/MCP_HTTP_ALLOWED_ORIGINS/);
+  });
+
+  it("loads enabled product family filters for HTTP mode", () => {
+    expect(
+      loadServerMetadataConfig({
+        MCP_SERVER_NAME: "codearts-mcp",
+        MCP_SERVER_VERSION: "0.1.0",
+        MCP_ENABLED_PRODUCT_FAMILIES: "req,repo"
+      }).enabledProductFamilies
+    ).toEqual(["req", "repo"]);
+  });
+
+  it("rejects invalid enabled product families", () => {
+    expect(() =>
+      loadServerMetadataConfig({
+        MCP_SERVER_NAME: "codearts-mcp",
+        MCP_SERVER_VERSION: "0.1.0",
+        MCP_ENABLED_PRODUCT_FAMILIES: "req,govern"
+      })
+    ).toThrow(/MCP_ENABLED_PRODUCT_FAMILIES/);
   });
 });
 

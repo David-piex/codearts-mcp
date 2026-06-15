@@ -9,6 +9,19 @@
 - 用户首次调用 `auth_configure_session` 后，服务端加密持久化保存凭证
 - 正常重连或服务重启后，不需要重复填写 `AK/SK`
 
+同一实例还可以同时暴露 8 个产品级子入口：
+
+- `/mcp/req`
+- `/mcp/repo`
+- `/mcp/pipeline`
+- `/mcp/check`
+- `/mcp/testplan`
+- `/mcp/deploy`
+- `/mcp/build`
+- `/mcp/artifact`
+
+这些子入口和 `/mcp` 共用同一套鉴权持久化、Cookie 与 `auth_token`，但每个入口的 `mcp-session-id` 独立管理。
+
 ## 1. 推荐部署方式
 
 优先推荐两种：
@@ -65,6 +78,8 @@ MCP_SERVER_NAME=codearts-mcp
 MCP_SERVER_VERSION=0.1.0
 MCP_AUTH_MASTER_KEY=replace-with-a-long-random-secret
 MCP_AUTH_DATA_PATH=/app/.codearts-mcp/auth-store.json
+# 可选：只暴露指定产品族，例如 req,repo
+# MCP_ENABLED_PRODUCT_FAMILIES=req,repo
 ```
 
 如果你的公网入口是 HTTPS，建议同时改成：
@@ -255,9 +270,22 @@ bash deploy/manage-shared.sh start-ssl
 - `/mcp`
 - `/health`
 
+如果客户端希望按产品拆分接入，也可以额外暴露这些路径：
+
+- `/mcp/req`
+- `/mcp/repo`
+- `/mcp/pipeline`
+- `/mcp/check`
+- `/mcp/testplan`
+- `/mcp/deploy`
+- `/mcp/build`
+- `/mcp/artifact`
+
 例如：
 
 - `https://your-domain.example.com/mcp`
+- `https://your-domain.example.com/mcp/req`
+- `https://your-domain.example.com/mcp/repo`
 - `https://your-domain.example.com/health`
 
 ## 7. 团队成员第一次怎么用
@@ -270,6 +298,23 @@ bash deploy/manage-shared.sh start-ssl
     "codearts": {
       "type": "http",
       "url": "https://your-domain.example.com/mcp"
+    }
+  }
+}
+```
+
+如果你准备按产品拆开给客户端配置，也可以这样配：
+
+```json
+{
+  "mcpServers": {
+    "codearts-req": {
+      "type": "http",
+      "url": "https://your-domain.example.com/mcp/req"
+    },
+    "codearts-repo": {
+      "type": "http",
+      "url": "https://your-domain.example.com/mcp/repo"
     }
   }
 }

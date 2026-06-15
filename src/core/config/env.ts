@@ -1,5 +1,9 @@
 import { z } from "zod";
 import {
+  isProductToolFamily,
+  type ProductToolFamily
+} from "../../contracts/product-families.js";
+import {
   resolveReadCacheTtls,
   type ReadCacheTtls
 } from "../cache/read-cache-ttl.js";
@@ -34,6 +38,7 @@ export type AppConfig = {
   buildBaseUrl: string;
   artifactBaseUrl: string;
   readCacheTtls?: ReadCacheTtls;
+  enabledProductFamilies?: ProductToolFamily[];
 };
 
 export type ServerMetadataConfig = {
@@ -45,6 +50,7 @@ export type ServerMetadataConfig = {
   productWriteRateLimit?: FixedWindowRateLimitConfig;
   authWriteRateLimit?: FixedWindowRateLimitConfig;
   readCacheTtls?: ReadCacheTtls;
+  enabledProductFamilies?: ProductToolFamily[];
 };
 
 export type FixedWindowRateLimitConfig = {
@@ -125,6 +131,35 @@ function parseAllowedOrigins(value: string | undefined, envName: string) {
   return [...origins];
 }
 
+function parseEnabledProductFamilies(
+  value: string | undefined,
+  envName: string
+): ProductToolFamily[] | undefined {
+  if (value === undefined || value.trim().length === 0) {
+    return undefined;
+  }
+
+  const candidates = [...new Set(value.split(",").map((item) => item.trim()).filter(Boolean))];
+
+  if (candidates.length === 0) {
+    return undefined;
+  }
+
+  const families: ProductToolFamily[] = [];
+
+  for (const family of candidates) {
+    if (!isProductToolFamily(family)) {
+      throw new Error(
+        `${envName} must be a comma-separated list of artifact, build, check, deploy, pipeline, repo, req, testplan.`
+      );
+    }
+
+    families.push(family);
+  }
+
+  return families;
+}
+
 function loadReadCacheTtls(
   source: Record<string, string | undefined>
 ): ReadCacheTtls {
@@ -195,7 +230,11 @@ export function loadEnvConfig(source: Record<string, string | undefined> = proce
     deployBaseUrl: defaults.deploy_base_url,
     buildBaseUrl: defaults.build_base_url,
     artifactBaseUrl: defaults.artifact_base_url,
-    readCacheTtls: loadReadCacheTtls(source)
+    readCacheTtls: loadReadCacheTtls(source),
+    enabledProductFamilies: parseEnabledProductFamilies(
+      source.MCP_ENABLED_PRODUCT_FAMILIES,
+      "MCP_ENABLED_PRODUCT_FAMILIES"
+    )
   };
 }
 
@@ -228,7 +267,11 @@ export function loadServerMetadataConfig(
       "MCP_AUTH_WRITE_RATE_LIMIT_MAX_REQUESTS",
       "MCP_AUTH_WRITE_RATE_LIMIT_WINDOW_MS"
     ),
-    readCacheTtls: loadReadCacheTtls(source)
+    readCacheTtls: loadReadCacheTtls(source),
+    enabledProductFamilies: parseEnabledProductFamilies(
+      source.MCP_ENABLED_PRODUCT_FAMILIES,
+      "MCP_ENABLED_PRODUCT_FAMILIES"
+    )
   };
 }
 

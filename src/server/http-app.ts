@@ -16,6 +16,7 @@ import {
 } from "./request-context.js";
 import { createSessionReuseDiagnosticsStore } from "./session-reuse-diagnostics.js";
 import { createSessionCredentialStore } from "./session-store.js";
+import { isProductToolFamily, type ProductToolFamily } from "../contracts/product-families.js";
 
 type SessionTransportMap = Record<string, StreamableHTTPServerTransport>;
 
@@ -40,6 +41,22 @@ export type HttpRequestLogEntry = {
 type HttpAppOptions = {
   requestLogger?: (entry: HttpRequestLogEntry) => void;
 };
+
+type HttpAppRouteConfig = {
+  enabledProductFamilies?: ProductToolFamily[];
+};
+
+type ResolvedMcpRoute =
+  | {
+      routeKey: "all";
+      path: "/mcp";
+      enabledProductFamilies?: ProductToolFamily[];
+    }
+  | {
+      routeKey: ProductToolFamily;
+      path: `/mcp/${ProductToolFamily}`;
+      enabledProductFamilies: [ProductToolFamily];
+    };
 
 export type HttpAppPrewarmResult = {
   warmedComponents: string[];
@@ -336,12 +353,45 @@ function resolvePersistenceReadiness(authConfig?: HttpAuthConfig): ReadinessResp
   }
 }
 
+function resolveMcpRoute(
+  pathname: string,
+  enabledProductFamilies?: ProductToolFamily[]
+): ResolvedMcpRoute | undefined {
+  if (pathname === "/mcp") {
+    return {
+      routeKey: "all",
+      path: "/mcp",
+      enabledProductFamilies
+    };
+  }
+
+  const routeMatch = pathname.match(/^\/mcp\/([a-z]+)\/?$/);
+  const family = routeMatch?.[1];
+
+  if (!family || !isProductToolFamily(family)) {
+    return undefined;
+  }
+
+  if (enabledProductFamilies?.length && !enabledProductFamilies.includes(family)) {
+    return undefined;
+  }
+
+  return {
+    routeKey: family,
+    path: `/mcp/${family}`,
+    enabledProductFamilies: [family]
+  };
+}
+
 export function createHttpApp(
   config = loadServerMetadataConfig(),
   authConfig?: HttpAuthConfig,
-  options: HttpAppOptions = {}
+  options: HttpAppOptions = {},
+  routeConfig: HttpAppRouteConfig = {}
 ): HttpApp {
-  const transports: SessionTransportMap = {};
+  const enabledProductFamilies = routeConfig.enabledProductFamilies ?? config.enabledProductFamilies;
+  const transportsByRoute = new Map<string, SessionTransportMap>();
+  const serverFactoryByRoute = new Map<string, ReturnType<typeof createServerFactory>>();
   const sessionStore = createSessionCredentialStore({
     ttlMs: authConfig ? authConfig.authTokenTtlSeconds * 1000 : undefined
   });
@@ -351,13 +401,6 @@ export function createHttpApp(
       })
     : undefined;
   const sessionReuseDiagnostics = createSessionReuseDiagnosticsStore();
-  const createMcpServer = createServerFactory({
-    mode: "http",
-    config,
-    sessionStore,
-    authRepository,
-    authMasterKey: authConfig?.masterKey
-  });
   const authResolver =
     authConfig && authRepository
       ? createAuthContextResolver({
@@ -368,6 +411,42 @@ export function createHttpApp(
         })
       : undefined;
 
+  function getRouteTransports(routeKey: string) {
+    const transports = transportsByRoute.get(routeKey);
+
+    if (transports) {
+      return transports;
+    }
+
+    const created: SessionTransportMap = {};
+    transportsByRoute.set(routeKey, created);
+    return created;
+  }
+
+  function getRouteServerFactory(route: ResolvedMcpRoute) {
+    const cached = serverFactoryByRoute.get(route.routeKey);
+
+    if (cached) {
+      return cached;
+    }
+
+    const routeServerFactory = createServerFactory({
+      mode: "http",
+      config: {
+        ...config,
+        serverName:
+          route.routeKey === "all" ? config.serverName : `${config.serverName}-${route.routeKey}`
+      },
+      sessionStore,
+      authRepository,
+      authMasterKey: authConfig?.masterKey,
+      enabledProductFamilies: route.enabledProductFamilies
+    });
+
+    serverFactoryByRoute.set(route.routeKey, routeServerFactory);
+    return routeServerFactory;
+  }
+
   const app = async (req: IncomingMessage, res: ServerResponse) => {
     return await runWithRequestDiagnostics(async () => {
       if (!req.url || !req.method) {
@@ -376,6 +455,7 @@ export function createHttpApp(
       }
 
       const url = new URL(req.url, "http://127.0.0.1");
+      const resolvedRoute = resolveMcpRoute(url.pathname, enabledProductFamilies);
       const sessionIdHeader = req.headers["mcp-session-id"];
       const sessionId = Array.isArray(sessionIdHeader) ? sessionIdHeader[0] : sessionIdHeader;
       const requestLogDetails: HttpRequestLogEntry = {
@@ -419,7 +499,7 @@ export function createHttpApp(
         return;
       }
 
-      if (url.pathname !== "/mcp") {
+      if (!resolvedRoute) {
         writeJson(res, 404, { error: "Not found." });
         return;
       }
@@ -433,7 +513,7 @@ export function createHttpApp(
       if (req.method === "GET") {
         res.setHeader("allow", "POST, DELETE");
         writeJson(res, 405, {
-          error: "GET /mcp SSE is not supported by this deployment. Use POST /mcp for MCP requests."
+          error: `GET ${resolvedRoute.path} SSE is not supported by this deployment. Use POST ${resolvedRoute.path} for MCP requests.`
         });
         return;
       }
@@ -490,7 +570,8 @@ export function createHttpApp(
           const parsedBody = await readJsonBody(req);
           recordRequestPhase("request_body_read", Date.now() - bodyReadStartedAt);
           Object.assign(requestLogDetails, readMcpRequestDetails(parsedBody));
-          let transport = sessionId ? transports[sessionId] : undefined;
+          const routeTransports = getRouteTransports(resolvedRoute.routeKey);
+          let transport = sessionId ? routeTransports[sessionId] : undefined;
 
           if (transport && authContext?.authId) {
             sessionStore.bind(sessionId!, authContext.authId);
@@ -513,19 +594,19 @@ export function createHttpApp(
               sessionIdGenerator: () => randomUUID(),
               onsessioninitialized: (newSessionId) => {
                 requestLogDetails.sessionId = newSessionId;
-                transports[newSessionId] = transport!;
+                routeTransports[newSessionId] = transport!;
                 if (authContext?.authId) {
                   sessionStore.bind(newSessionId, authContext.authId);
                 }
               },
               onsessionclosed: (closedSessionId) => {
-                delete transports[closedSessionId];
+                delete routeTransports[closedSessionId];
                 sessionStore.clear(closedSessionId);
               }
             });
             recordRequestPhase("transport_create", Date.now() - transportCreateStartedAt);
 
-            const server = createMcpServer();
+            const server = getRouteServerFactory(resolvedRoute)();
             const transportConnectStartedAt = Date.now();
             await server.connect(transport);
             recordRequestPhase("transport_connect", Date.now() - transportConnectStartedAt);
@@ -541,12 +622,14 @@ export function createHttpApp(
             return;
           }
 
-          if (!transports[sessionId]) {
+          const routeTransports = getRouteTransports(resolvedRoute.routeKey);
+
+          if (!routeTransports[sessionId]) {
             writeJson(res, 404, { error: "Unknown MCP session ID." });
             return;
           }
 
-          await transports[sessionId].handleRequest(req, res);
+          await routeTransports[sessionId].handleRequest(req, res);
           return;
         }
 

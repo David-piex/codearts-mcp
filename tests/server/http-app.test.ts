@@ -1,7 +1,8 @@
-import { mkdtempSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
+import { productToolFamilies } from "../../src/contracts/product-families.js";
 import {
   clearSessionTool,
   callTool,
@@ -9,7 +10,9 @@ import {
   createTestHttpAuthConfig,
   fetchJsonFromTestServer,
   initializeConfiguredSession,
-  initializeSession
+  initializeSession,
+  postJsonRpc,
+  MCP_PROTOCOL_VERSION
 } from "./http-mcp-test-helpers.js";
 import { masterKey } from "./http-test-helpers.js";
 
@@ -37,6 +40,29 @@ describe("http app", () => {
         logs.push(entry);
       }
     };
+  }
+
+  async function listToolsForPath(port: number, sessionId: string, path: string) {
+    const toolsResponse = await postJsonRpc(
+      port,
+      {
+        jsonrpc: "2.0",
+        id: `tools-list:${path}`,
+        method: "tools/list",
+        params: {}
+      },
+      {
+        sessionId,
+        path
+      }
+    );
+    const body = (await toolsResponse.json()) as {
+      result?: {
+        tools?: Array<{ name: string }>;
+      };
+    };
+
+    return (body.result?.tools ?? []).map((tool) => tool.name);
   }
 
   afterEach(async () => {
@@ -172,6 +198,140 @@ describe("http app", () => {
     expect(response.status).toBe(405);
     expect(response.headers.get("allow")).toBe("POST, DELETE");
     expect(body.error).toContain("GET /mcp SSE is not supported");
+  });
+
+  it("serves all product-scoped MCP routes with only that module plus auth tools", async () => {
+    const { port } = await servers.start();
+    for (const family of productToolFamilies) {
+      const path = `/mcp/${family}`;
+      const initialized = await initializeSession(port, {
+        path
+      });
+
+      expect(initialized.response.status).toBe(200);
+      expect(initialized.sessionId).toBeTruthy();
+
+      const toolNames = await listToolsForPath(port, initialized.sessionId!, path);
+
+      expect(toolNames).toContain("auth_configure_session");
+      expect(toolNames).toContain("auth_clear_session");
+      expect(toolNames.some((name) => name.startsWith(`${family}_`))).toBe(true);
+      expect(
+        toolNames.every((name) => name.startsWith(`${family}_`) || name.startsWith("auth_"))
+      ).toBe(true);
+    }
+  });
+
+  it("reuses auth across product-scoped routes while keeping MCP sessions route-specific", async () => {
+    const { authConfig, port } = await startConfiguredServer();
+    const {
+      sessionId: reqSessionId,
+      authId,
+      authToken
+    } = await initializeConfiguredSession(port, {
+      path: "/mcp/req"
+    });
+
+    expect(reqSessionId).toBeTruthy();
+    expect(authId).toBeTruthy();
+    expect(authToken).toBeTruthy();
+
+    const repoInitialized = await initializeSession(port, {
+      path: "/mcp/repo",
+      headers: {
+        authorization: `Bearer ${authToken}`
+      }
+    });
+    const repoSessionId = repoInitialized.sessionId;
+
+    expect(repoInitialized.response.status).toBe(200);
+    expect(repoSessionId).toBeTruthy();
+    expect(repoSessionId).not.toBe(reqSessionId);
+
+    const wrongRouteResponse = await postJsonRpc(
+      port,
+      {
+        jsonrpc: "2.0",
+        id: "cross-route-tools-list",
+        method: "tools/list",
+        params: {}
+      },
+      {
+        sessionId: reqSessionId ?? undefined,
+        path: "/mcp/repo"
+      }
+    );
+    const wrongRouteBody = (await wrongRouteResponse.json()) as {
+      error?: string;
+    };
+
+    expect(wrongRouteResponse.status).toBe(404);
+    expect(wrongRouteBody.error).toBe("Unknown MCP session ID.");
+
+    const cleared = await clearSessionTool(port, {
+      sessionId: repoSessionId ?? undefined,
+      path: "/mcp/repo"
+    });
+
+    expect(cleared.response.status).toBe(200);
+    expect(cleared.body.result?.structuredContent?.cleared).toBe(true);
+
+    const authStore = JSON.parse(readFileSync(authConfig.authDataPath, "utf8")) as {
+      records?: Array<{
+        auth_id: string;
+        revoked_at?: string;
+      }>;
+    };
+    const record = authStore.records?.find((item) => item.auth_id === authId);
+
+    expect(record?.revoked_at).toBeTruthy();
+  });
+
+  it("returns 404 for unsupported product MCP routes", async () => {
+    const response = await fetch(`http://127.0.0.1:${(await servers.start()).port}/mcp/govern`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json"
+      },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: "init-invalid",
+        method: "initialize",
+        params: {
+          protocolVersion: MCP_PROTOCOL_VERSION,
+          capabilities: {},
+          clientInfo: {
+            name: "vitest",
+            version: "0.1.0"
+          }
+        }
+      })
+    });
+    const body = (await response.json()) as { error?: string };
+
+    expect(response.status).toBe(404);
+    expect(body.error).toBe("Not found.");
+  });
+
+  it("can restrict available product routes through enabled family config", async () => {
+    const { port } = await servers.start(undefined, {
+      config: {
+        enabledProductFamilies: ["req", "repo"]
+      }
+    });
+
+    const reqInit = await initializeSession(port, {
+      path: "/mcp/req"
+    });
+    expect(reqInit.response.status).toBe(200);
+
+    const pipelineInit = await initializeSession(port, {
+      path: "/mcp/pipeline"
+    });
+    const pipelineBody = (await pipelineInit.response.json()) as { error?: string };
+
+    expect(pipelineInit.response.status).toBe(404);
+    expect(pipelineBody.error).toBe("Not found.");
   });
 
   it("rejects MCP requests from untrusted browser origins", async () => {

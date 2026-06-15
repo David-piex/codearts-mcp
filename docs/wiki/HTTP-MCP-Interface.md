@@ -16,6 +16,19 @@
 
 业务能力不以传统 REST 路由暴露，而是通过 MCP 的 `tools/list` 和 `tools/call` 统一访问。也就是说，`/mcp` 是唯一业务调用入口，具体能力由 `tools/call.params.name` 决定。
 
+除完整入口 `/mcp` 外，服务端还支持按产品拆分的子入口：
+
+- `/mcp/req`
+- `/mcp/repo`
+- `/mcp/pipeline`
+- `/mcp/check`
+- `/mcp/testplan`
+- `/mcp/deploy`
+- `/mcp/build`
+- `/mcp/artifact`
+
+这些子入口只暴露对应产品工具，加上 `auth_configure_session` 与 `auth_clear_session` 两个共享鉴权工具。
+
 ## 2. HTTP 端点
 
 | Method | Path | 说明 | 是否需要 MCP 会话 |
@@ -27,6 +40,11 @@
 | `POST` | `/mcp` | MCP JSON-RPC 请求入口 | 首次 `initialize` 不需要，之后需要 |
 | `DELETE` | `/mcp` | 关闭 MCP 会话 | 是 |
 | `GET` | `/mcp` | 不支持 SSE，固定返回 405 | 否 |
+| `POST` | `/mcp/<family>` | 产品级 MCP JSON-RPC 请求入口，只暴露单产品工具与 auth 工具 | 首次 `initialize` 不需要，之后需要 |
+| `DELETE` | `/mcp/<family>` | 关闭该产品入口上的 MCP 会话 | 是 |
+| `GET` | `/mcp/<family>` | 不支持 SSE，固定返回 405 | 否 |
+
+其中 `<family>` 只能是 `req`、`repo`、`pipeline`、`check`、`testplan`、`deploy`、`build`、`artifact`。
 
 ### 2.1 存活检查
 
@@ -146,6 +164,26 @@ content-type: application/json
     }
   }
 }
+```
+
+如果你走产品级子入口，初始化方法完全相同，只是把路径换成对应子路径。例如：
+
+```bash
+curl -i http://127.0.0.1:3000/mcp/repo \
+  -H "content-type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "initialize",
+    "params": {
+      "protocolVersion": "2025-11-25",
+      "capabilities": {},
+      "clientInfo": {
+        "name": "example-client",
+        "version": "1.0.0"
+      }
+    }
+  }'
 ```
 
 ### 3.2 发送 initialized 通知
@@ -304,6 +342,8 @@ curl -i http://127.0.0.1:3000/mcp \
 | Bearer | `Authorization: Bearer <opaque-token>` |
 
 如果请求携带了有效 token，服务端会把 token 对应的凭证绑定到当前 MCP session。Query token 默认关闭，因为 URL 容易进入代理日志、浏览器历史和监控系统；只有遗留客户端确实无法设置 header 或保留 Cookie 时，才应显式启用 `MCP_AUTH_ALLOW_QUERY_TOKEN=true`。
+
+完整入口 `/mcp` 与产品级子入口 `/mcp/<family>` 共用同一套凭证仓库，因此可以跨路径复用 Cookie 或 Bearer token；但 `mcp-session-id` 是按入口路径隔离的，不能把 `/mcp/req` 的 session 直接拿去请求 `/mcp/repo`。
 
 ### 4.3 清除会话凭证
 
@@ -604,6 +644,7 @@ HTTP/1.1 403 Forbidden
 | `MCP_HTTP_PORT` | HTTP 监听端口 | `3000` |
 | `MCP_HTTP_HOST` | HTTP 监听地址；本地默认只监听回环地址，共享/容器部署需显式设为 `0.0.0.0` | `127.0.0.1` |
 | `MCP_HTTP_ALLOWED_ORIGINS` | 允许携带 `Origin` 访问 `/mcp` 的浏览器来源，多个值用英文逗号分隔 | 空 |
+| `MCP_ENABLED_PRODUCT_FAMILIES` | 限制当前实例可暴露的产品族；可填 `artifact,build,check,deploy,pipeline,repo,req,testplan` 的逗号列表 | 空 |
 | `MCP_PRODUCT_WRITE_RATE_LIMIT_MAX_REQUESTS` | 产品写入每个 action/session 的限流次数 | `3000` |
 | `MCP_PRODUCT_WRITE_RATE_LIMIT_WINDOW_MS` | 产品写入限流窗口，单位毫秒 | `60000` |
 | `MCP_AUTH_MASTER_KEY` | HTTP 持久化凭证加密主密钥 | HTTP 模式必填 |

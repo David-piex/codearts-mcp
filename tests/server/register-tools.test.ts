@@ -7,6 +7,17 @@ describe("collectToolNames", () => {
     expect(collectToolNames()).toEqual(expectedToolNames);
   });
 
+  it("can expose only selected product-family tool names", () => {
+    const filtered = collectToolNames({
+      families: ["req", "repo"]
+    });
+
+    expect(filtered.length).toBeGreaterThan(0);
+    expect(filtered.every((name) => name.startsWith("req_") || name.startsWith("repo_"))).toBe(
+      true
+    );
+  });
+
   it("builds server info from config values", () => {
     expect(
       createServerInfo({
