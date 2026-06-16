@@ -127,7 +127,7 @@ export async function postJsonRpc(
     headers.cookie = options.cookie;
   }
 
-  const url = new URL(`http://127.0.0.1:${port}${options?.path ?? "/mcp"}`);
+  const url = new URL(`http://127.0.0.1:${port}${options?.path ?? "/mcp/req"}`);
   if (options?.queryToken) {
     url.searchParams.set("auth_token", options.queryToken);
   }

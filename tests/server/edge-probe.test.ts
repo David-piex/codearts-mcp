@@ -56,7 +56,7 @@ function createProbeReport(
 
   return {
     options: {
-      url: "http://127.0.0.1/mcp",
+      url: "http://127.0.0.1/mcp/req",
       region: "cn-north-4",
       iterations: 1,
       timeoutMs: 30_000,
@@ -190,7 +190,7 @@ describe("edge probe summary", () => {
       options: {
         iterations: 2,
         sleepMs: 500,
-        url: "http://127.0.0.1/mcp",
+        url: "http://127.0.0.1/mcp/req",
         region: "cn-north-4",
         timeoutMs: 30_000
       },

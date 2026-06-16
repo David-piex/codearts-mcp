@@ -62,7 +62,8 @@ function divide(numerator: number, denominator: number) {
 }
 
 function isRetainedEvent(event: SessionReuseDiagnosticsEvent) {
-  return event.path === "/mcp" && Boolean(event.mcpMethod || event.toolName);
+  const family = event.path.match(/^\/mcp\/([a-z]+)\/?$/)?.[1];
+  return Boolean(family && isProductToolFamily(family) && (event.mcpMethod || event.toolName));
 }
 
 export function createSessionReuseDiagnosticsStore(options?: {
@@ -243,3 +244,4 @@ export function createSessionReuseDiagnosticsStore(options?: {
     }
   };
 }
+import { isProductToolFamily } from "../contracts/product-families.js";

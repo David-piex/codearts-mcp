@@ -4,7 +4,7 @@
 
 目标是部署出一套可供团队共享使用的 HTTP MCP 服务：
 
-- 服务端只暴露一个 `/mcp` 入口
+- 服务端只暴露 8 个产品级 `/mcp/<family>` 入口
 - 每个用户用自己的 `AK/SK`
 - 用户首次调用 `auth_configure_session` 后，服务端加密持久化保存凭证
 - 正常重连或服务重启后，不需要重复填写 `AK/SK`
@@ -20,7 +20,7 @@
 - `/mcp/build`
 - `/mcp/artifact`
 
-这些子入口和 `/mcp` 共用同一套鉴权持久化、Cookie 与 `auth_token`，但每个入口的 `mcp-session-id` 独立管理。
+这些子入口共用同一套鉴权持久化、Cookie 与 `auth_token`，但每个入口的 `mcp-session-id` 独立管理。
 
 ## 1. 推荐部署方式
 
@@ -267,7 +267,6 @@ bash deploy/manage-shared.sh start-ssl
 
 推荐只暴露两个路径：
 
-- `/mcp`
 - `/health`
 
 如果客户端希望按产品拆分接入，也可以额外暴露这些路径：
@@ -283,7 +282,6 @@ bash deploy/manage-shared.sh start-ssl
 
 例如：
 
-- `https://your-domain.example.com/mcp`
 - `https://your-domain.example.com/mcp/req`
 - `https://your-domain.example.com/mcp/repo`
 - `https://your-domain.example.com/health`
@@ -291,19 +289,6 @@ bash deploy/manage-shared.sh start-ssl
 ## 7. 团队成员第一次怎么用
 
 团队成员在客户端里加共享 HTTP MCP 地址，例如：
-
-```json
-{
-  "mcpServers": {
-    "codearts": {
-      "type": "http",
-      "url": "https://your-domain.example.com/mcp"
-    }
-  }
-}
-```
-
-如果你准备按产品拆开给客户端配置，也可以这样配：
 
 ```json
 {

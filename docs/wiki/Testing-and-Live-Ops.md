@@ -130,7 +130,7 @@ MCP_SERVER_VERSION=0.1.0
 优先检查：
 
 1. `/health`
-2. `/mcp`
+2. `/mcp/req`
 3. `auth_configure_session`
 4. `req_list_projects`
 5. `repo_list_repositories`

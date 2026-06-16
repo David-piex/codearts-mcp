@@ -188,16 +188,16 @@ describe("http app", () => {
     expect(body.status).toBe("ok");
   });
 
-  it("rejects GET /mcp because this deployment only supports JSON-over-POST MCP requests", async () => {
+  it("returns 404 for the removed shared /mcp endpoint", async () => {
     const { port } = await servers.start();
     const response = await fetch(`http://127.0.0.1:${port}/mcp`);
     const body = (await response.json()) as {
       error?: string;
     };
 
-    expect(response.status).toBe(405);
-    expect(response.headers.get("allow")).toBe("POST, DELETE");
-    expect(body.error).toContain("GET /mcp SSE is not supported");
+    expect(response.status).toBe(404);
+    expect(response.headers.get("allow")).toBeNull();
+    expect(body.error).toBe("Not found.");
   });
 
   it("serves all product-scoped MCP routes with only that module plus auth tools", async () => {
@@ -395,7 +395,7 @@ describe("http app", () => {
 
   it("distinguishes missing and unknown MCP session IDs for DELETE requests", async () => {
     const { port } = await servers.start();
-    const missingSessionResponse = await fetch(`http://127.0.0.1:${port}/mcp`, {
+    const missingSessionResponse = await fetch(`http://127.0.0.1:${port}/mcp/req`, {
       method: "DELETE"
     });
     const missingSessionBody = (await missingSessionResponse.json()) as {
@@ -405,7 +405,7 @@ describe("http app", () => {
     expect(missingSessionResponse.status).toBe(400);
     expect(missingSessionBody.error).toBe("Missing MCP session ID.");
 
-    const unknownSessionResponse = await fetch(`http://127.0.0.1:${port}/mcp`, {
+    const unknownSessionResponse = await fetch(`http://127.0.0.1:${port}/mcp/req`, {
       method: "DELETE",
       headers: {
         "mcp-session-id": "unknown-session-id"
@@ -451,7 +451,7 @@ describe("http app", () => {
     expect(logs).toContainEqual(
       expect.objectContaining({
         method: "POST",
-        path: "/mcp",
+        path: "/mcp/req",
         statusCode: 200,
         mcpMethod: "tools/call",
         toolName: "auth_configure_session",
@@ -469,7 +469,7 @@ describe("http app", () => {
     expect(logs).toContainEqual(
       expect.objectContaining({
         method: "POST",
-        path: "/mcp",
+        path: "/mcp/req",
         sessionId: initialized.sessionId,
         mcpMethod: "initialize",
         phaseTimings: expect.arrayContaining([

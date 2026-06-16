@@ -46,17 +46,11 @@ type HttpAppRouteConfig = {
   enabledProductFamilies?: ProductToolFamily[];
 };
 
-type ResolvedMcpRoute =
-  | {
-      routeKey: "all";
-      path: "/mcp";
-      enabledProductFamilies?: ProductToolFamily[];
-    }
-  | {
-      routeKey: ProductToolFamily;
-      path: `/mcp/${ProductToolFamily}`;
-      enabledProductFamilies: [ProductToolFamily];
-    };
+type ResolvedMcpRoute = {
+  routeKey: ProductToolFamily;
+  path: `/mcp/${ProductToolFamily}`;
+  enabledProductFamilies: [ProductToolFamily];
+};
 
 export type HttpAppPrewarmResult = {
   warmedComponents: string[];
@@ -357,14 +351,6 @@ function resolveMcpRoute(
   pathname: string,
   enabledProductFamilies?: ProductToolFamily[]
 ): ResolvedMcpRoute | undefined {
-  if (pathname === "/mcp") {
-    return {
-      routeKey: "all",
-      path: "/mcp",
-      enabledProductFamilies
-    };
-  }
-
   const routeMatch = pathname.match(/^\/mcp\/([a-z]+)\/?$/);
   const family = routeMatch?.[1];
 
@@ -434,8 +420,7 @@ export function createHttpApp(
       mode: "http",
       config: {
         ...config,
-        serverName:
-          route.routeKey === "all" ? config.serverName : `${config.serverName}-${route.routeKey}`
+        serverName: `${config.serverName}-${route.routeKey}`
       },
       sessionStore,
       authRepository,

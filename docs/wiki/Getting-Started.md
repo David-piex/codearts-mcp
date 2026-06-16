@@ -42,9 +42,9 @@ node dist/src/server/index.js
 ```json
 {
   "mcpServers": {
-    "codearts": {
+    "codearts-req": {
       "type": "http",
-      "url": "http://your-server-ip/mcp"
+      "url": "http://your-server-ip/mcp/req"
     }
   }
 }
@@ -144,7 +144,7 @@ npm run cli -- call req_list_projects --input '{"page":1,"page_size":20}' --form
 ```powershell
 npm run cli -- call req_list_projects `
   --transport http `
-  --endpoint http://your-server-ip/mcp `
+  --endpoint http://your-server-ip/mcp/req `
   --token replace-with-auth-token `
   --input '{"page":1}' `
   --format table
