@@ -88,35 +88,35 @@ node dist/src/server/index.js
 ```json
 {
   "mcpServers": {
-    "codearts-req": {
+    "req": {
       "type": "http",
       "url": "http://your-server-ip/mcp/req"
     },
-    "codearts-repo": {
+    "repo": {
       "type": "http",
       "url": "http://your-server-ip/mcp/repo"
     },
-    "codearts-pipeline": {
+    "pipeline": {
       "type": "http",
       "url": "http://your-server-ip/mcp/pipeline"
     },
-    "codearts-check": {
+    "check": {
       "type": "http",
       "url": "http://your-server-ip/mcp/check"
     },
-    "codearts-testplan": {
+    "testplan": {
       "type": "http",
       "url": "http://your-server-ip/mcp/testplan"
     },
-    "codearts-deploy": {
+    "deploy": {
       "type": "http",
       "url": "http://your-server-ip/mcp/deploy"
     },
-    "codearts-build": {
+    "build": {
       "type": "http",
       "url": "http://your-server-ip/mcp/build"
     },
-    "codearts-artifact": {
+    "artifact": {
       "type": "http",
       "url": "http://your-server-ip/mcp/artifact"
     }
@@ -129,49 +129,49 @@ node dist/src/server/index.js
 ```json
 {
   "mcpServers": {
-    "codearts-req": {
+    "req": {
       "disabled": false,
       "timeout": 60,
       "type": "streamableHttp",
       "url": "http://39.106.183.205/mcp/req"
     },
-    "codearts-repo": {
+    "repo": {
       "disabled": false,
       "timeout": 60,
       "type": "streamableHttp",
       "url": "http://39.106.183.205/mcp/repo"
     },
-    "codearts-pipeline": {
+    "pipeline": {
       "disabled": false,
       "timeout": 60,
       "type": "streamableHttp",
       "url": "http://39.106.183.205/mcp/pipeline"
     },
-    "codearts-check": {
+    "check": {
       "disabled": false,
       "timeout": 60,
       "type": "streamableHttp",
       "url": "http://39.106.183.205/mcp/check"
     },
-    "codearts-testplan": {
+    "testplan": {
       "disabled": false,
       "timeout": 60,
       "type": "streamableHttp",
       "url": "http://39.106.183.205/mcp/testplan"
     },
-    "codearts-deploy": {
+    "deploy": {
       "disabled": false,
       "timeout": 60,
       "type": "streamableHttp",
       "url": "http://39.106.183.205/mcp/deploy"
     },
-    "codearts-build": {
+    "build": {
       "disabled": false,
       "timeout": 60,
       "type": "streamableHttp",
       "url": "http://39.106.183.205/mcp/build"
     },
-    "codearts-artifact": {
+    "artifact": {
       "disabled": false,
       "timeout": 60,
       "type": "streamableHttp",

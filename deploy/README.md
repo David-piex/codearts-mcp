@@ -293,11 +293,11 @@ bash deploy/manage-shared.sh start-ssl
 ```json
 {
   "mcpServers": {
-    "codearts-req": {
+    "req": {
       "type": "http",
       "url": "https://your-domain.example.com/mcp/req"
     },
-    "codearts-repo": {
+    "repo": {
       "type": "http",
       "url": "https://your-domain.example.com/mcp/repo"
     }

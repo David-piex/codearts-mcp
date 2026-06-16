@@ -13,11 +13,17 @@ import {
 
 const liveStatuses: ToolLiveStatus[] = ["validated", "partial", "unpublished", "unknown"];
 const riskLevels: ToolRiskLevel[] = ["low", "medium", "high"];
-const recommendedClientAlias = "codearts";
 const inferHubFunctionNameLimit = 64;
-const approvedOverLimitNames = [
-  "codearts_repo_list_project_merge_request_can_be_assigned_reviewers"
-] as const;
+const recommendedServerNamesByFamily = {
+  artifact: "artifact",
+  build: "build",
+  check: "check",
+  deploy: "deploy",
+  pipeline: "pipeline",
+  repo: "repo",
+  req: "req",
+  testplan: "testplan"
+} as const;
 const officialPipelineReadToolNames = [
   "pipeline_list_artifact_versions",
   "pipeline_query_manifest_versions",
@@ -57,12 +63,15 @@ describe("ToolManifest", () => {
     ).toBe(true);
   });
 
-  it("keeps recommended client-prefixed function names within InferHub's limit", () => {
-    const overLimitNames = collectManifestToolNames({ mode: "http" })
-      .map((name) => `${recommendedClientAlias}_${name}`)
-      .filter((name) => name.length > inferHubFunctionNameLimit);
+  it("keeps recommended product-scoped server-prefixed function names within InferHub's limit", () => {
+    const overLimitNames = collectProductToolManifest()
+      .map((entry) => ({
+        family: entry.family!,
+        combinedName: `${recommendedServerNamesByFamily[entry.family!]}_${entry.name}`
+      }))
+      .filter((entry) => entry.combinedName.length > inferHubFunctionNameLimit);
 
-    expect(overLimitNames).toEqual(approvedOverLimitNames);
+    expect(overLimitNames).toEqual([]);
   });
 
   it("matches actual stdio and HTTP server registration", () => {
