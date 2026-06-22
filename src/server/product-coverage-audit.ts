@@ -6,6 +6,10 @@ import { deployToolNames } from "../products/deploy/tools/index.js";
 import { pipelineToolNames } from "../products/pipeline/tools/index.js";
 import { repoToolNames } from "../products/repo/tools/index.js";
 import { reqToolNames } from "../products/req/tools/index.js";
+import {
+  getOfficialEndpointToolNamesByFamily,
+  getOfficialEndpointToolsByFamily
+} from "../products/official-endpoint-tools.js";
 import { testPlanOfficialEndpointTools } from "../products/testplan/official-endpoint-tools.js";
 import { testPlanToolNames } from "../products/testplan/tools/index.js";
 import type { ProductToolFamily } from "./register-product-tools.js";
@@ -29,27 +33,46 @@ export type ProductCoverageConfig = {
   implementedEndpoints?: Record<string, string>;
 };
 
+function officialEndpointImplementedEndpoints(family: ProductToolFamily) {
+  return Object.fromEntries(
+    getOfficialEndpointToolsByFamily(family).map((tool) => [
+      `${tool.method} ${tool.pathTemplate}`,
+      tool.name
+    ])
+  );
+}
+
+function productToolNamesWithOfficialEndpoints(
+  family: ProductToolFamily,
+  toolNames: readonly string[]
+) {
+  return [...toolNames, ...getOfficialEndpointToolNamesByFamily(family)];
+}
+
 export const productCoverageConfigs: ProductCoverageConfig[] = [
   {
     family: "artifact",
     module: "Artifact",
     docPath: "tmp/pdf-text/_____CodeArts_Artifact_API__.txt",
     clientPaths: ["src/products/artifact/client.ts"],
-    toolNames: artifactToolNames
+    toolNames: productToolNamesWithOfficialEndpoints("artifact", artifactToolNames),
+    implementedEndpoints: officialEndpointImplementedEndpoints("artifact")
   },
   {
     family: "build",
     module: "Build",
     docPath: "tmp/pdf-text/_____CodeArts_Build_API__.txt",
     clientPaths: ["src/products/build/client.ts"],
-    toolNames: buildToolNames
+    toolNames: productToolNamesWithOfficialEndpoints("build", buildToolNames),
+    implementedEndpoints: officialEndpointImplementedEndpoints("build")
   },
   {
     family: "check",
     module: "Check",
     docPath: "tmp/pdf-text/_____CodeArts_Check_API__.txt",
     clientPaths: ["src/products/check/client.ts"],
-    toolNames: checkToolNames,
+    toolNames: productToolNamesWithOfficialEndpoints("check", checkToolNames),
+    implementedEndpoints: officialEndpointImplementedEndpoints("check"),
     endpointAliases: {
       "GET /v1/simple-": "GET /v1/simple-query/{id}",
       "POST /v1/config-": "POST /v1/config-items"
@@ -60,21 +83,24 @@ export const productCoverageConfigs: ProductCoverageConfig[] = [
     module: "Deploy",
     docPath: "tmp/pdf-text/___CodeArts_Deploy_API__.txt",
     clientPaths: ["src/products/deploy/client.ts"],
-    toolNames: deployToolNames
+    toolNames: productToolNamesWithOfficialEndpoints("deploy", deployToolNames),
+    implementedEndpoints: officialEndpointImplementedEndpoints("deploy")
   },
   {
     family: "pipeline",
     module: "Pipeline",
     docPath: "tmp/pdf-text/____CodeArts_Pipeline_API__.txt",
     clientPaths: ["src/products/pipeline/client.ts"],
-    toolNames: pipelineToolNames
+    toolNames: productToolNamesWithOfficialEndpoints("pipeline", pipelineToolNames),
+    implementedEndpoints: officialEndpointImplementedEndpoints("pipeline")
   },
   {
     family: "repo",
     module: "Repo",
     docPath: "tmp/pdf-text/_____CodeArts_Repo_API__.txt",
     clientPaths: ["src/products/repo/client.ts"],
-    toolNames: repoToolNames,
+    toolNames: productToolNamesWithOfficialEndpoints("repo", repoToolNames),
+    implementedEndpoints: officialEndpointImplementedEndpoints("repo"),
     endpointAliases: {
       "DELETE /v1/users/sshkey/{id}": "DELETE /v4/user/keys/{key_id}",
       "GET /v1/users/sshkey": "GET /v4/user/keys",
@@ -119,7 +145,8 @@ export const productCoverageConfigs: ProductCoverageConfig[] = [
     module: "Req",
     docPath: "tmp/pdf-text/_____CodeArts_Req_API__.txt",
     clientPaths: ["src/products/req/client.ts"],
-    toolNames: reqToolNames,
+    toolNames: productToolNamesWithOfficialEndpoints("req", reqToolNames),
+    implementedEndpoints: officialEndpointImplementedEndpoints("req"),
     endpointAliases: {
       "GET /v4/irs/4647058403938004992/histories": "GET /v4/irs/{ir_id}/histories",
       "GET /v4/rrs/4647058403938004992/histories": "GET /v4/rrs/{rr_id}/histories"
@@ -130,10 +157,13 @@ export const productCoverageConfigs: ProductCoverageConfig[] = [
     module: "TestPlan",
     docPath: "tmp/pdf-text/_____CodeArts_TestPlan_API__.txt",
     clientPaths: ["src/products/testplan/client.ts"],
-    toolNames: testPlanToolNames,
-    implementedEndpoints: Object.fromEntries(
-      testPlanOfficialEndpointTools.map((tool) => [`${tool.method} ${tool.pathTemplate}`, tool.name])
-    ),
+    toolNames: productToolNamesWithOfficialEndpoints("testplan", testPlanToolNames),
+    implementedEndpoints: {
+      ...officialEndpointImplementedEndpoints("testplan"),
+      ...Object.fromEntries(
+        testPlanOfficialEndpointTools.map((tool) => [`${tool.method} ${tool.pathTemplate}`, tool.name])
+      )
+    },
     endpointAliases: {
       "GET /v1/{project_id}/aw_cata/child_cata_data": "GET /v1/{project_id}/api-test-child-basic-aws",
       "GET /v1/{project_id}/get_awName_view": "GET /v1/{project_id}/api-test-aw-name-views"

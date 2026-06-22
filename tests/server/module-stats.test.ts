@@ -39,14 +39,14 @@ describe("classifyToolAccess", () => {
 describe("collectModuleStats", () => {
   it("returns the current per-module tool totals and read/write split", () => {
     expect(collectModuleStats()).toEqual([
-      { module: "Req", total: 344, read: 208, write: 136 },
-      { module: "Repo", total: 391, read: 254, write: 137 },
-      { module: "Pipeline", total: 189, read: 109, write: 80 },
-      { module: "Check", total: 111, read: 86, write: 25 },
-      { module: "TestPlan", total: 458, read: 310, write: 148 },
-      { module: "Deploy", total: 88, read: 59, write: 29 },
-      { module: "Build", total: 150, read: 100, write: 50 },
-      { module: "Artifact", total: 53, read: 45, write: 8 },
+      { module: "Req", total: 363, read: 219, write: 144 },
+      { module: "Repo", total: 459, read: 287, write: 172 },
+      { module: "Pipeline", total: 257, read: 146, write: 111 },
+      { module: "Check", total: 135, read: 101, write: 34 },
+      { module: "TestPlan", total: 762, read: 363, write: 399 },
+      { module: "Deploy", total: 110, read: 61, write: 49 },
+      { module: "Build", total: 167, read: 113, write: 54 },
+      { module: "Artifact", total: 81, read: 61, write: 20 },
     ]);
   });
 
@@ -54,8 +54,8 @@ describe("collectModuleStats", () => {
     expect(collectProductToolStats()).toEqual({
       modules: 8,
       total: collectProductToolManifest().length,
-      read: 1171,
-      write: 613,
+      read: 1351,
+      write: 983,
     });
   });
 
@@ -63,7 +63,7 @@ describe("collectModuleStats", () => {
     expect(renderModuleStatsMarkdown()).toContain(
       "| Module | Total | Read | Write |",
     );
-    expect(renderModuleStatsMarkdown()).toContain("| Deploy | 88 | 59 | 29 |");
+    expect(renderModuleStatsMarkdown()).toContain("| Deploy | 110 | 61 | 49 |");
     expect(renderModuleStatsMarkdown()).toContain("- Product modules: `8`");
     expect(renderModuleStatsMarkdown()).toContain(
       `- Product tools: \`${collectProductToolManifest().length}\``,
@@ -76,20 +76,20 @@ describe("collectModuleStats", () => {
   it("renders a json report from the current stats", () => {
     expect(JSON.parse(renderModuleStatsReportJson())).toEqual({
       modules: [
-        { module: "Req", total: 344, read: 208, write: 136 },
-        { module: "Repo", total: 391, read: 254, write: 137 },
-        { module: "Pipeline", total: 189, read: 109, write: 80 },
-        { module: "Check", total: 111, read: 86, write: 25 },
-        { module: "TestPlan", total: 458, read: 310, write: 148 },
-        { module: "Deploy", total: 88, read: 59, write: 29 },
-        { module: "Build", total: 150, read: 100, write: 50 },
-        { module: "Artifact", total: 53, read: 45, write: 8 },
+        { module: "Req", total: 363, read: 219, write: 144 },
+        { module: "Repo", total: 459, read: 287, write: 172 },
+        { module: "Pipeline", total: 257, read: 146, write: 111 },
+        { module: "Check", total: 135, read: 101, write: 34 },
+        { module: "TestPlan", total: 762, read: 363, write: 399 },
+        { module: "Deploy", total: 110, read: 61, write: 49 },
+        { module: "Build", total: 167, read: 113, write: 54 },
+        { module: "Artifact", total: 81, read: 61, write: 20 },
       ],
       totals: {
         modules: 8,
         total: collectProductToolManifest().length,
-        read: 1171,
-        write: 613,
+        read: 1351,
+        write: 983,
         httpTotalWithAuth: collectHttpToolTotal(),
       },
     });

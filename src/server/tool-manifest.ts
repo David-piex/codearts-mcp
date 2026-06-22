@@ -5,6 +5,10 @@ import { deployToolNames } from "../products/deploy/tools/index.js";
 import { pipelineToolNames } from "../products/pipeline/tools/index.js";
 import { repoToolNames } from "../products/repo/tools/index.js";
 import { reqToolNames } from "../products/req/tools/index.js";
+import {
+  getOfficialEndpointTool,
+  getOfficialEndpointToolNamesByFamily
+} from "../products/official-endpoint-tools.js";
 import { getTestPlanOfficialEndpointTool } from "../products/testplan/official-endpoint-tools.js";
 import { testPlanToolNames } from "../products/testplan/tools/index.js";
 import type { ProductToolFamily } from "../contracts/product-families.js";
@@ -54,14 +58,46 @@ const productToolSources: Array<{
   module: ProductToolModule;
   names: readonly string[];
 }> = [
-  { family: "artifact", module: "Artifact", names: artifactToolNames },
-  { family: "build", module: "Build", names: buildToolNames },
-  { family: "check", module: "Check", names: checkToolNames },
-  { family: "deploy", module: "Deploy", names: deployToolNames },
-  { family: "pipeline", module: "Pipeline", names: pipelineToolNames },
-  { family: "repo", module: "Repo", names: repoToolNames },
-  { family: "req", module: "Req", names: reqToolNames },
-  { family: "testplan", module: "TestPlan", names: testPlanToolNames }
+  {
+    family: "artifact",
+    module: "Artifact",
+    names: [...artifactToolNames, ...getOfficialEndpointToolNamesByFamily("artifact")]
+  },
+  {
+    family: "build",
+    module: "Build",
+    names: [...buildToolNames, ...getOfficialEndpointToolNamesByFamily("build")]
+  },
+  {
+    family: "check",
+    module: "Check",
+    names: [...checkToolNames, ...getOfficialEndpointToolNamesByFamily("check")]
+  },
+  {
+    family: "deploy",
+    module: "Deploy",
+    names: [...deployToolNames, ...getOfficialEndpointToolNamesByFamily("deploy")]
+  },
+  {
+    family: "pipeline",
+    module: "Pipeline",
+    names: [...pipelineToolNames, ...getOfficialEndpointToolNamesByFamily("pipeline")]
+  },
+  {
+    family: "repo",
+    module: "Repo",
+    names: [...repoToolNames, ...getOfficialEndpointToolNamesByFamily("repo")]
+  },
+  {
+    family: "req",
+    module: "Req",
+    names: [...reqToolNames, ...getOfficialEndpointToolNamesByFamily("req")]
+  },
+  {
+    family: "testplan",
+    module: "TestPlan",
+    names: [...testPlanToolNames, ...getOfficialEndpointToolNamesByFamily("testplan")]
+  }
 ];
 
 const WRITE_ACTIONS = new Set([
@@ -142,6 +178,11 @@ const moduleLiveStatus: Record<ProductToolModule, ToolLiveStatus> = {
 };
 
 export function classifyToolAccess(toolName: string): ToolAccess {
+  const officialEndpointTool = getOfficialEndpointTool(toolName);
+  if (officialEndpointTool) {
+    return officialEndpointTool.write ? "write" : "read";
+  }
+
   const testPlanEndpointTool = getTestPlanOfficialEndpointTool(toolName);
   if (testPlanEndpointTool) {
     return testPlanEndpointTool.write ? "write" : "read";
@@ -165,6 +206,20 @@ function getToolAction(toolName: string) {
 }
 
 function inferRiskLevel(toolName: string): ToolRiskLevel {
+  const officialEndpointTool = getOfficialEndpointTool(toolName);
+  if (officialEndpointTool) {
+    if (
+      officialEndpointTool.method === "DELETE" ||
+      /(?:^|\/)(delete|execute|rollback|run|start|stop)(?:\/|$|-)/i.test(
+        officialEndpointTool.pathTemplate
+      )
+    ) {
+      return "high";
+    }
+
+    return officialEndpointTool.write ? "medium" : "low";
+  }
+
   const action = getToolAction(toolName);
 
   if (HIGH_RISK_ACTIONS.has(action)) {
@@ -175,6 +230,36 @@ function inferRiskLevel(toolName: string): ToolRiskLevel {
 }
 
 function inferDocGroup(toolName: string, family: ProductToolFamily) {
+  const officialEndpointTool = getOfficialEndpointTool(toolName);
+  if (officialEndpointTool) {
+    if (family === "req") {
+      if (officialEndpointTool.pathTemplate.includes("ipdprojectservice")) {
+        if (
+          officialEndpointTool.pathTemplate.includes("work-hour") ||
+          officialEndpointTool.pathTemplate.includes("work-hours")
+        ) {
+          return "req:work-hour";
+        }
+        if (
+          officialEndpointTool.pathTemplate.includes("attachment") ||
+          officialEndpointTool.pathTemplate.includes("image")
+        ) {
+          return "req:attachment";
+        }
+        return "req:ipd";
+      }
+
+      if (
+        officialEndpointTool.pathTemplate.includes("work-hour") ||
+        officialEndpointTool.pathTemplate.includes("work-hours")
+      ) {
+        return "req:work-hour";
+      }
+    }
+
+    return family;
+  }
+
   if (family !== "req") {
     return family;
   }
@@ -235,6 +320,11 @@ function inferDocGroup(toolName: string, family: ProductToolFamily) {
 }
 
 function requiresExplicitLiveSample(toolName: string) {
+  const officialEndpointTool = getOfficialEndpointTool(toolName);
+  if (officialEndpointTool?.write) {
+    return true;
+  }
+
   const action = getToolAction(toolName);
 
   return explicitLiveSampleActions.has(action) || toolName.includes("_execute_");

@@ -3,6 +3,12 @@ import type { ProductToolFamily } from "../contracts/product-families.js";
 export { productToolFamilies, isProductToolFamily } from "../contracts/product-families.js";
 export type { ProductToolFamily } from "../contracts/product-families.js";
 import { buildClientsFromCredentialConfig } from "./auth-session-runtime.js";
+import { getOfficialEndpointTool } from "../products/official-endpoint-tools.js";
+import {
+  createOfficialEndpointToolHandler,
+  officialEndpointToolInput,
+  type OfficialEndpointRequestClient
+} from "../products/shared-tools/official-endpoint-tool.js";
 import { registerArtifactTool } from "./register-artifact-tools.js";
 import { registerBuildTool } from "./register-build-tools.js";
 import { registerCheckTool } from "./register-check-tools.js";
@@ -11,6 +17,7 @@ import { registerPipelineTool } from "./register-pipeline-tools.js";
 import { registerRepoTool } from "./register-repo-tools.js";
 import { registerReqTool } from "./register-req-tools.js";
 import { registerTestPlanTool } from "./register-testplan-tools.js";
+import { defineProductTool, registerDefinedTool } from "./product-tool-registry.js";
 import type { RateLimiter } from "./rate-limiter.js";
 import type { SessionCredentialStore } from "./session-store.js";
 import { findToolManifestEntry } from "./tool-manifest.js";
@@ -27,6 +34,68 @@ export function resolveProductToolFamily(toolName: string): ProductToolFamily | 
   return undefined;
 }
 
+function selectOfficialEndpointClient(
+  family: ProductToolFamily,
+  clients: ReturnType<typeof buildClientsFromCredentialConfig>
+): OfficialEndpointRequestClient {
+  switch (family) {
+    case "artifact":
+      return clients.artifactClient;
+    case "build":
+      return clients.buildClient;
+    case "check":
+      return clients.checkClient;
+    case "deploy":
+      return clients.deployClient;
+    case "pipeline":
+      return clients.pipelineClient;
+    case "repo":
+      return clients.repoClient;
+    case "req":
+      return clients.reqClient;
+    case "testplan":
+      return clients.testPlanClient;
+  }
+}
+
+function registerOfficialEndpointTool(options: {
+  toolName: string;
+  server: RegisterableServer;
+  mode: "http" | "stdio";
+  sessionStore?: SessionCredentialStore;
+  stdioClients?: ReturnType<typeof buildClientsFromCredentialConfig>;
+  rateLimiter?: RateLimiter;
+}) {
+  const endpointTool = getOfficialEndpointTool(options.toolName);
+
+  if (!endpointTool) {
+    return false;
+  }
+
+  const family = endpointTool.family as ProductToolFamily;
+
+  return registerDefinedTool({
+    toolName: options.toolName,
+    server: options.server,
+    definitions: {
+      [options.toolName]: defineProductTool({
+        description: endpointTool.description,
+        inputSchema: officialEndpointToolInput,
+        selectHttpClient: (clients: ReturnType<typeof buildClientsFromCredentialConfig>) =>
+          selectOfficialEndpointClient(family, clients),
+        createProductHandler: (client: OfficialEndpointRequestClient) =>
+          createOfficialEndpointToolHandler(endpointTool, client)
+      })
+    },
+    mode: options.mode,
+    sessionStore: options.sessionStore,
+    stdioClient: options.stdioClients
+      ? selectOfficialEndpointClient(family, options.stdioClients)
+      : undefined,
+    rateLimiter: options.rateLimiter
+  });
+}
+
 export function registerProductTool(options: {
   toolName: string;
   server: RegisterableServer;
@@ -35,6 +104,10 @@ export function registerProductTool(options: {
   stdioClients?: ReturnType<typeof buildClientsFromCredentialConfig>;
   rateLimiter?: RateLimiter;
 }) {
+  if (registerOfficialEndpointTool(options)) {
+    return true;
+  }
+
   switch (resolveProductToolFamily(options.toolName)) {
     case "artifact":
       return registerArtifactTool({
