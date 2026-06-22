@@ -5774,7 +5774,7 @@ export function createRepoClient(
     ...createOfficialApiRequester({
       product: "Repo",
       http: _http,
-      allowedPrefixes: ["/v1/","/v2/","/v4/"]
+      allowedPrefixes: ["/v1/","/v2/","/v4/","/api/v4/"]
     }),
     async batchDeleteBranch(input) {
       await _http.post(

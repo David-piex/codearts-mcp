@@ -4171,7 +4171,7 @@ export function createTestPlanClient(_http: ReturnTypeCreateHttpClient): TestPla
     ...createOfficialApiRequester({
       product: "TestPlan",
       http: _http,
-      allowedPrefixes: ["/v1/","/v2/","/v3/","/v4/","/GT3KServer/","/attask/","/dynamic-global-variable/","/testrelation/","/testreport/"]
+      allowedPrefixes: ["/v1/","/v2/","/v3/","/v4/","/v5/","/GT3KServer/","/attask/","/config/","/dynamic-global-variable/","/testrelation/","/testreport/"]
     }),
     async listIssues(input) {
       const offset = (input.page - 1) * input.page_size;
