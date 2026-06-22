@@ -1,7 +1,40 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { createTestPlanClient } from "../../../src/products/testplan/client.js";
 
 describe("createTestPlanClient", () => {
+  it("allows generated official API dry-runs under config and v5 prefixes", async () => {
+    const post = vi.fn();
+    const put = vi.fn();
+    const client = createTestPlanClient({ post, put } as never);
+
+    await expect(
+      client.requestOfficialApi({
+        method: "POST",
+        path: "/config/v2/systemconfig/tasktemplate",
+        body: {},
+        dry_run: true
+      })
+    ).resolves.toMatchObject({
+      method: "POST",
+      path: "/config/v2/systemconfig/tasktemplate",
+      dryRun: true
+    });
+    await expect(
+      client.requestOfficialApi({
+        method: "PUT",
+        path: "/v5/project-1/tasks",
+        body: {},
+        dry_run: true
+      })
+    ).resolves.toMatchObject({
+      method: "PUT",
+      path: "/v5/project-1/tasks",
+      dryRun: true
+    });
+    expect(post).not.toHaveBeenCalled();
+    expect(put).not.toHaveBeenCalled();
+  });
+
   it("calls official v4 testcase, iterator, and branch batch endpoints", async () => {
     const requests: Array<{ method: string; path: string; body?: unknown }> = [];
     const client = createTestPlanClient({

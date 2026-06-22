@@ -3,6 +3,25 @@ import { AppError } from "../../../src/core/errors/app-error.js";
 import { createRepoClient } from "../../../src/products/repo/client.js";
 
 describe("createRepoClient", () => {
+  it("allows generated official API dry-runs under the legacy api/v4 prefix", async () => {
+    const post = vi.fn();
+    const client = createRepoClient({ post } as never);
+
+    const result = await client.requestOfficialApi({
+      method: "POST",
+      path: "/api/v4/repository-names/validations",
+      body: {},
+      dry_run: true
+    });
+
+    expect(result).toMatchObject({
+      method: "POST",
+      path: "/api/v4/repository-names/validations",
+      dryRun: true
+    });
+    expect(post).not.toHaveBeenCalled();
+  });
+
   it("supports array responses when listing repositories", async () => {
     const client = createRepoClient({
       get: async () => [{ id: 1, name: "sample", ssh_url: "git@example.com:sample.git" }]
