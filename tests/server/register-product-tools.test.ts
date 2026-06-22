@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { getOfficialEndpointToolsByFamily } from "../../src/products/official-endpoint-tools.js";
 import {
   registerProductTool,
   resolveProductToolFamily
@@ -23,6 +24,34 @@ describe("registerProductTool", () => {
       "pipeline_list_pipelines",
       expect.objectContaining({
         title: "pipeline_list_pipelines"
+      }),
+      expect.any(Function)
+    );
+  });
+
+  it("registers generated official endpoint tools", () => {
+    const registerTool = vi.fn();
+    const endpointTool = getOfficialEndpointToolsByFamily("build").find(
+      (tool) => tool.pathTemplate === "/v1/log/{job_id}/{build_no}/real-time-log"
+    );
+
+    expect(endpointTool).toBeDefined();
+    expect(resolveProductToolFamily(endpointTool!.name)).toBe("build");
+
+    const handled = registerProductTool({
+      toolName: endpointTool!.name,
+      server: { registerTool },
+      mode: "http",
+      sessionStore: createSessionCredentialStore(),
+      stdioClients: undefined
+    });
+
+    expect(handled).toBe(true);
+    expect(registerTool).toHaveBeenCalledWith(
+      endpointTool!.name,
+      expect.objectContaining({
+        title: endpointTool!.name,
+        description: endpointTool!.description
       }),
       expect.any(Function)
     );

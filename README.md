@@ -283,9 +283,9 @@ npm run cli -- call req_list_projects `
 
 <!-- GENERATED:readme-exposure-summary:start -->
 - `8` product modules
-- `1784` product tools
+- `2334` product tools
 - `2` session/auth tools for shared `http` mode
-- `1786` total MCP tools in shared `http` mode
+- `2336` total MCP tools in shared `http` mode
 <!-- GENERATED:readme-exposure-summary:end -->
 
 工具读写分布：读操作 177 (63.7%) / 写操作 101 (36.3%)
@@ -293,14 +293,14 @@ npm run cli -- call req_list_projects `
 <!-- GENERATED:readme-module-numbers:start -->
 | Module | Tools | Live status | Current breakdown |
 | --- | --- | --- | --- |
-| Req | 344 | Partial | Expanded Req surface with current-user info/role and user-feature reads, project bug/summary/statistics/metric reads, project domain reads, work-item-tree count/list, work-item tag/index-count reads, project work-item history reads, child work-item reads, work-hours/work-hour-type reads, issue image upload/download, attachment upload/download/delete, associated wiki reads, plan work-item management, plan image update, plan-context work item creation, work-item template/copy writes, project-template update/delete writes, project due-days-after/workhour-config reads, status-name check, status/status-attribute/status-detail/workflow-config/template/template-config/custom-field/status-rule-flag/status-config/optional-status-config/tracker-handler and project-public-config reads plus field/cache reads and board work-item reads; see `docs/wiki/Req-Live-Validated.md` for validated paths and remaining live-depth gaps |
-| Repo | 391 | Partial | `25 Full / 0 Reachable / 0 Unpublished / 6 Code` |
-| Pipeline | 189 | Partial | `16 Full / 4 Reachable / 1 Unpublished / 52 Code` |
-| Check | 111 | Partial | `14 Full / 0 Reachable / 0 Unpublished / 5 Code` |
-| TestPlan | 458 | Partial | `1 Full / 2 Reachable / 4 Unpublished / 0 Code` |
-| Deploy | 88 | Partial | Expanded v4 surface with partial live closure; see `docs/wiki/Module-Live-Readiness.md` |
-| Build | 150 | Validated | Expanded metadata read surface with live smoke coverage |
-| Artifact | 53 | Partial | `5 Full / 0 Reachable / 7 Unpublished / 0 Code` |
+| Req | 363 | Partial | Expanded Req surface with current-user info/role and user-feature reads, project bug/summary/statistics/metric reads, project domain reads, work-item-tree count/list, work-item tag/index-count reads, project work-item history reads, child work-item reads, work-hours/work-hour-type reads, issue image upload/download, attachment upload/download/delete, associated wiki reads, plan work-item management, plan image update, plan-context work item creation, work-item template/copy writes, project-template update/delete writes, project due-days-after/workhour-config reads, status-name check, status/status-attribute/status-detail/workflow-config/template/template-config/custom-field/status-rule-flag/status-config/optional-status-config/tracker-handler and project-public-config reads plus field/cache reads and board work-item reads; see `docs/wiki/Req-Live-Validated.md` for validated paths and remaining live-depth gaps |
+| Repo | 459 | Partial | `25 Full / 0 Reachable / 0 Unpublished / 6 Code` |
+| Pipeline | 257 | Partial | `16 Full / 4 Reachable / 1 Unpublished / 52 Code` |
+| Check | 135 | Partial | `14 Full / 0 Reachable / 0 Unpublished / 5 Code` |
+| TestPlan | 762 | Partial | `1 Full / 2 Reachable / 4 Unpublished / 0 Code` |
+| Deploy | 110 | Partial | Expanded v4 surface with partial live closure; see `docs/wiki/Module-Live-Readiness.md` |
+| Build | 167 | Validated | Expanded metadata read surface with live smoke coverage |
+| Artifact | 81 | Partial | `5 Full / 0 Reachable / 7 Unpublished / 0 Code` |
 <!-- GENERATED:readme-module-numbers:end -->
 
 Live 状态说明：
