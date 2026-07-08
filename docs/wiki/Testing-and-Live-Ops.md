@@ -96,6 +96,34 @@ MCP_SERVER_VERSION=0.1.0
 
 ## 最近一轮真实结论
 
+### 2026-07-08 shared HTTP product-route smoke
+
+在本机 shared HTTP staging 上，用真实 AK/SK 做过一轮产品拆分入口体验验证：
+
+- `GET /health` 正常。
+- 8 个产品入口全部可以 `initialize` 和 `tools/list`。
+- 每个 `/mcp/<family>` 只暴露对应产品工具，加上 `auth_configure_session` 和 `auth_clear_session`。
+- `auth_configure_session` 可签发 bearer token，token 可跨产品入口复用。
+- `mcp-session-id` 按产品入口隔离，不能跨 `/mcp/req`、`/mcp/repo` 等路径复用。
+- 低风险项目级读链路已跑通：`req_get_current_user_info`、`req_list_projects`、`repo_list_repositories`、`pipeline_list_pipelines`、`build_list_jobs`、`check_list_project_task_groups`、`testplan_list_project_users`、`deploy_list_v4_applications`、`artifact_list_repositories`。
+
+同一轮还做了读工具覆盖式体验：
+
+| Item | Count |
+| --- | ---: |
+| Total read tools | 1351 |
+| Attempted live read calls | 685 |
+| Successful live read calls | 418 |
+| Tool-level provider/business errors | 265 |
+| JSON-RPC errors | 0 |
+| Missing resource-context skips | 617 |
+| Download/log/large-file skips | 49 |
+| Timeouts | 2 |
+
+这不是“所有读工具都应该成功”的结论。许多读工具天然需要 `pipeline_id`、`job_id`、`task_id`、`case_id`、`environment_id`、`attachment_id` 等二级资源样本；没有样本时应跳过，而不是构造假 ID。下载、日志、大文件类读工具也不建议在普通体验测试里盲目拉取。
+
+### Historical live suite
+
 按 `2026-05-24` 在北京四租户上做的全量 `*live*.test.ts` 扫描结果：
 
 - `131` 个 live 相关测试文件中，`127 passed / 4 skipped / 0 failed`
@@ -130,10 +158,11 @@ MCP_SERVER_VERSION=0.1.0
 优先检查：
 
 1. `/health`
-2. `/mcp/req`
+2. `/mcp/req` initialize
 3. `auth_configure_session`
 4. `req_list_projects`
-5. `repo_list_repositories`
+5. `tools/list` on every enabled `/mcp/<family>` route
+6. one low-risk read on each product route that has the required project/resource context
 
 ### 排查慢调用
 
@@ -161,8 +190,10 @@ MCP_SERVER_VERSION=0.1.0
 1. `npm run check`
 2. `npm run test:live`
 3. `GET /health`
-4. `auth_configure_session`
-5. 4 个低风险读工具
-6. `req_create_work_item`
-7. `pipeline_run_pipeline`
-8. Deploy 受控写路径
+4. `POST /mcp/req` initialize
+5. `auth_configure_session`
+6. `tools/list` on all 8 product routes
+7. 低风险项目级读工具
+8. 显式样本上的 gated write smoke，例如 `req_create_work_item`
+9. `pipeline_run_pipeline`
+10. Deploy 受控写路径

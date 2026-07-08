@@ -11,7 +11,12 @@ The server supports two runtime modes:
 
 The default application HTTP port is `3000`. The Docker Compose setup exposes Nginx on host port `80`.
 
-The current working tree is not clean. Repo-related changes are present, including a new `associate-branch-work-items` tool and related docs, manifest, registration, and tests. Treat those changes as part of the current project state unless explicitly reviewing only `origin/master`.
+Current Gitee state after the July 2026 merge:
+
+- `origin/master` and `origin/split-mcp-product` both point at `02d4a94a`.
+- The shared HTTP `/mcp` endpoint has been removed; use `/mcp/<family>`.
+- `req_list_work_item_queries` was fixed to send only the documented `projectId` query parameter, avoiding duplicate `projectId` / `project_id` signing failures.
+- The latest full local gate passed with `452` test files and `2629` tests.
 
 ## Architecture
 
@@ -60,6 +65,8 @@ The product domains are:
 
 Shared HTTP mode does not share one global CodeArts credential. Users call `auth_configure_session` to store encrypted credentials, and later tool calls recover credentials from cookie/token/session context.
 
+HTTP MCP is split by product family. Each `/mcp/<family>` route creates a route-specific MCP session and registers only that product's tools plus `auth_configure_session` and `auth_clear_session`. Auth cookies or bearer tokens can be reused across product routes, but `mcp-session-id` values are route-scoped and cannot be reused between paths.
+
 The project has explicit consistency checks around tool metadata and docs:
 
 - `npm run tool-manifest:check`
@@ -77,17 +84,28 @@ Large-maintenance areas are concentrated in:
 
 ## Current State Notes
 
-The working tree currently contains uncommitted Repo module work. Before modifying Repo-related files, inspect the local diff and preserve existing changes.
+Current module scale:
 
-Important affected areas include:
+- Product modules: `8`
+- Product tools: `2334`
+- Product reads: `1351`
+- Product writes: `983`
+- Shared HTTP total with auth tools: `2336`
 
-- Repo client and schema changes.
-- Repo tool index and registration.
-- Tool manifest and expected tool list.
-- Function API docs and module stats docs.
-- Repo client/tool tests.
+Current HTTP product routes:
 
-The docs currently show encoding issues when read from the local terminal. Code structure remains readable, but any future documentation work should explicitly preserve UTF-8 and avoid accidental newline or encoding churn.
+- `/mcp/req`
+- `/mcp/repo`
+- `/mcp/pipeline`
+- `/mcp/check`
+- `/mcp/testplan`
+- `/mcp/deploy`
+- `/mcp/build`
+- `/mcp/artifact`
+
+The official endpoint coverage audit currently reports `0` weak client/tool matches and `0` low-confidence semantic matches across all products. Repo explicitly ignores one deprecated raw-private-key endpoint.
+
+The docs include generated sections. When changing tool names, schemas, manifest metadata, or module counts, run the synchronization/check commands before committing.
 
 ## Risks
 
@@ -98,6 +116,8 @@ Live tests may touch real CodeArts resources. Treat any live write path as unsaf
 Production deployment should prefer HTTPS. Public HTTP examples are risky when auth cookies or bearer tokens are involved.
 
 The repository contains large generated/reference docs and large product files. Small tool changes can require updates across manifests, docs, registrations, and tests.
+
+Generated official endpoint tools can still fail at runtime if an upstream route is unpublished, if a product is not enabled for the tenant, or if a path/query parameter mapping is wrong. Treat repeated provider errors with stable parameters as candidates for focused client tests.
 
 ## Verification Commands
 
@@ -116,20 +136,17 @@ Use the full gate before release or handoff:
 npm run check
 ```
 
-When validating the current Repo tool work, verify:
+For HTTP shared-mode smoke after deployment, verify:
 
-- Repo client method behavior.
-- Repo schema exports.
-- Repo tool index and server registration.
-- Tool manifest entry.
-- Expected tool names.
-- Repo client/tool tests.
-- Function API reference synchronization.
+- `GET /health`
+- `POST /mcp/req` initialize
+- `auth_configure_session`
+- `req_list_projects`
+- `tools/list` on each product route
+- one low-risk read per enabled product route
 
 ## Assumptions
 
-This brief describes the current working tree state, not only `origin/master`.
+This brief describes the current Gitee `master` and `split-mcp-product` state after the July 2026 merge.
 
 This document is a handoff aid. It does not implement runtime fixes, refactors, cleanup, service startup, or deployment changes.
-
-Existing uncommitted changes are treated as user work and must not be overwritten without explicit instruction.

@@ -2,7 +2,7 @@
 
 这一页只说明 Req 模块的真实 AK/SK 联调边界，不把“工具已经实现”直接等同于“已经真实 live 跑过”。
 
-当前 Req 已导出 `243` 个工具，功能面覆盖：
+当前 Req 已导出 `363` 个工具，功能面覆盖：
 
 - `project`：项目查询、创建、更新、删除、名称校验、域内未添加项目查询
 - `module`：项目模块列表、创建、更新、删除
@@ -29,6 +29,31 @@
 - `tests/products/req/client-live-smoke.test.ts`
 
 这份 smoke 会在配置好 `HUAWEICLOUD_AK`、`HUAWEICLOUD_SK`、`HUAWEICLOUD_REQ_BASE_URL` 等环境变量后，对真实 Req 样本做读写探测。文件名包含 `*-live.test.ts` 但内容仍是 handler 映射单测的，不计入真实 AK/SK 联调证据。
+
+## 2026-07-08 Shared HTTP 实测补充
+
+在产品拆分 HTTP 入口合并后，`/mcp/req` 做过真实 AK/SK 体验验证：
+
+- `auth_configure_session` 成功签发 token。
+- `req_get_current_user_info` 成功。
+- `req_list_projects` 成功，能发现真实项目。
+- `req_get_project`、`req_get_current_user_role`、`req_list_project_members`、`req_list_iterations`、`req_list_issues_v4`、`req_list_project_work_hour_types` 均能正常返回。
+- `req_list_work_item_queries` 曾因同时发送 `projectId` 和 `project_id` 导致 AK/SK 签名失败；当前已修复为只发送 `projectId`，实测返回 `0 work item queries found` 且 `isError=false`。
+- `req_list_work_item_tags` 在当前样本中仍可能返回上游 `网络繁忙，请稍后再试`，应归类为 provider/business error，而不是 MCP 协议错误。
+
+Req 读工具覆盖式体验结果：
+
+| Item | Count |
+| --- | ---: |
+| Req read tools | 219 |
+| Attempted live read calls | 127 |
+| Successful live read calls | 86 |
+| Tool-level provider/business errors | 40 |
+| Missing resource-context skips | 84 |
+| Download/log/large-file skips | 8 |
+| Timeout observations | 1 |
+
+这个结果说明基础 Req 链路可用，但深层工具仍依赖更完整的二级资源样本，例如迭代、规划、工作项、IPD issue、附件和 program/IR/RR。
 
 ## 已纳入真实 AK/SK Smoke 的路径
 

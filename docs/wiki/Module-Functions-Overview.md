@@ -27,7 +27,7 @@
 
 Req 是当前最像“把项目协作动作做成 MCP 工具”的模块，而且已经不只是最初那 8 个核心工具。
 
-当前 Req 已扩展到 `243` 个工具，基本可以按 17 个资源面理解：
+当前 Req 已扩展到 `363` 个工具，基本可以按 17 个资源面理解：
 
 - `project`：`req_list_projects` `req_get_project` `req_create_project` `req_update_project` `req_delete_project` `req_check_project_name` `req_list_not_added_projects`
 - `module`：`req_list_project_modules` `req_create_project_module` `req_update_project_module` `req_delete_project_module`

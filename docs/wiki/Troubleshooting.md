@@ -51,6 +51,8 @@ docker compose logs
 3. 看是不是只有某个产品不通
 4. 检查对应产品的 `HUAWEICLOUD_*_BASE_URL`
 
+如果是 shared HTTP 模式，确认你正在调用正确的产品入口。例如 Req 工具应打到 `/mcp/req`，Repo 工具应打到 `/mcp/repo`。每个入口的 `mcp-session-id` 是路径隔离的；跨产品复用应使用 Cookie 或 `Authorization: Bearer <auth_token>`，不要复用另一个路径返回的 session id。
+
 ## 5. 写工具报 `429`
 
 这是共享 `http` 模式里的会话级限流，不一定是 bug。
@@ -106,7 +108,31 @@ npm run stats:check-docs
 npm run stats:sync-docs
 ```
 
-## 10. 推荐排查顺序
+## 10. Req saved query 签名失败
+
+如果 `req_list_work_item_queries` 返回类似：
+
+```text
+verify ak sk signature failed
+```
+
+并且 canonical request 里同时出现：
+
+```text
+projectId=...
+project_id=...
+```
+
+说明运行的服务还是旧代码。当前实现只发送官方参数 `projectId`，这个问题已通过 `fix(req): avoid duplicate project query parameter` 修复。处理方式：
+
+1. 确认服务代码包含该修复。
+2. 重新 `npm run build`。
+3. 重启 HTTP 服务或容器。
+4. 重新调用 `req_list_work_item_queries`。
+
+修复后该工具应返回正常列表结果；没有保存查询时返回 `0 work item queries found`，这不是错误。
+
+## 11. 推荐排查顺序
 
 无论是本地还是共享部署，建议都按这个顺序排：
 
