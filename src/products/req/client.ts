@@ -3895,8 +3895,7 @@ export function createReqClient(
     },
     async listWorkItemQueries(input) {
       const query = new URLSearchParams({
-        projectId: input.project_id,
-        project_id: input.project_id
+        projectId: input.project_id
       });
       const response = await _http.get(`/v2/query/list-all?${query.toString()}`);
       const result = unwrapReqResult(response);

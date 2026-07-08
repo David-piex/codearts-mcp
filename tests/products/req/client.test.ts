@@ -849,7 +849,7 @@ describe("createReqClient", () => {
       project_id: "p-1"
     });
 
-    expect(requestedPath).toBe("/v2/query/list-all?projectId=p-1&project_id=p-1");
+    expect(requestedPath).toBe("/v2/query/list-all?projectId=p-1");
     expect(result).toEqual({
       shared: [{ id: "q-1", name: "Shared query" }],
       created: [{ id: "q-2", name: "My query" }]
