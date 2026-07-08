@@ -1,4 +1,7 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type { ProductToolFamily } from "../contracts/product-families.js";
+export { productToolFamilies, isProductToolFamily } from "../contracts/product-families.js";
+export type { ProductToolFamily } from "../contracts/product-families.js";
 import { buildClientsFromCredentialConfig } from "./auth-session-runtime.js";
 import { getOfficialEndpointTool } from "../products/official-endpoint-tools.js";
 import {
@@ -20,15 +23,6 @@ import type { SessionCredentialStore } from "./session-store.js";
 import { findToolManifestEntry } from "./tool-manifest.js";
 
 type RegisterableServer = Pick<McpServer, "registerTool">;
-export type ProductToolFamily =
-  | "artifact"
-  | "build"
-  | "check"
-  | "deploy"
-  | "pipeline"
-  | "repo"
-  | "req"
-  | "testplan";
 
 export function resolveProductToolFamily(toolName: string): ProductToolFamily | undefined {
   const manifestEntry = findToolManifestEntry(toolName);

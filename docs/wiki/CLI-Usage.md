@@ -2,7 +2,7 @@
 
 这页只讲命令行怎么用。先记住一句话：
 
-`codearts-mcp` 的 CLI 可以直接调用所有 MCP 工具，既能本地用 AK/SK 调 CodeArts，也能调用已经部署好的共享 `/mcp` 服务。
+`codearts-mcp` 的 CLI 可以直接调用所有 MCP 工具，既能本地用 AK/SK 调 CodeArts，也能调用已经部署好的产品级 `/mcp/<family>` 服务。
 
 ## 1. 先选模式
 
@@ -43,12 +43,12 @@ npm run cli -- call req_list_projects --input '{"page":1,"page_size":20}' --form
 
 ## 3. 远程模式
 
-远程模式会把请求发到共享 MCP 服务的 `/mcp`。
+远程模式会把请求发到共享 MCP 服务的产品级入口 `/mcp/<family>`。
 
 ```powershell
 npm run cli -- call req_list_projects `
   --transport http `
-  --endpoint https://your-domain.example/mcp `
+  --endpoint https://your-domain.example/mcp/req `
   --token replace-with-auth-token `
   --input '{"page":1}' `
   --format table
@@ -58,7 +58,7 @@ npm run cli -- call req_list_projects `
 
 ```powershell
 $env:CODEARTS_CLI_TRANSPORT="http"
-$env:CODEARTS_MCP_URL="https://your-domain.example/mcp"
+$env:CODEARTS_MCP_URL="https://your-domain.example/mcp/req"
 $env:CODEARTS_MCP_AUTH_TOKEN="replace-with-auth-token"
 
 npm run cli -- tools --format table
@@ -124,7 +124,7 @@ Windows PowerShell 可以这样写：
   "profiles": {
     "shared": {
       "transport": "http",
-      "endpoint": "https://your-domain.example/mcp",
+      "endpoint": "https://your-domain.example/mcp/req",
       "token": "replace-with-auth-token",
       "format": "table"
     },
@@ -179,6 +179,6 @@ npm run cli -- completion zsh
 | 问题 | 处理方式 |
 | --- | --- |
 | 提示缺少 `HUAWEICLOUD_AK` / `HUAWEICLOUD_SK` | 你在用本地模式，先设置本机 AK/SK，或者改用远程模式 |
-| 远程模式提示需要 endpoint | 加 `--endpoint https://.../mcp`，或设置 `CODEARTS_MCP_URL` |
+| 远程模式提示需要 endpoint | 加 `--endpoint https://.../mcp/<family>`，或设置 `CODEARTS_MCP_URL` |
 | JSON 参数报错 | 参数必须是合法 JSON；参数多时建议写到 `params.json` 后用 `--file` |
 | 不知道工具需要哪些字段 | 先跑 `npm run cli -- schema <tool>` |

@@ -11,7 +11,7 @@ import {
 } from "../products/official-endpoint-tools.js";
 import { getTestPlanOfficialEndpointTool } from "../products/testplan/official-endpoint-tools.js";
 import { testPlanToolNames } from "../products/testplan/tools/index.js";
-import type { ProductToolFamily } from "./register-product-tools.js";
+import type { ProductToolFamily } from "../contracts/product-families.js";
 
 export type ToolManifestKind = "auth" | "product";
 export type ToolManifestTransport = "all" | "http";
@@ -388,9 +388,19 @@ export const toolManifest = sortManifestEntries([
 export function collectToolManifest(options?: {
   mode?: "http" | "stdio";
   kind?: ToolManifestKind;
+  families?: readonly ProductToolFamily[];
 }) {
   return toolManifest.filter((entry) => {
     if (options?.kind && entry.kind !== options.kind) {
+      return false;
+    }
+
+    if (
+      options?.families &&
+      options.families.length > 0 &&
+      entry.kind === "product" &&
+      (!entry.family || !options.families.includes(entry.family))
+    ) {
       return false;
     }
 
@@ -402,8 +412,16 @@ export function collectToolManifest(options?: {
   });
 }
 
-export function collectProductToolManifest() {
-  return productToolManifest;
+export function collectProductToolManifest(options?: {
+  families?: readonly ProductToolFamily[];
+}) {
+  if (!options?.families || options.families.length === 0) {
+    return productToolManifest;
+  }
+
+  return productToolManifest.filter(
+    (entry) => entry.family && options.families?.includes(entry.family)
+  );
 }
 
 export function collectManifestToolNames(options?: Parameters<typeof collectToolManifest>[0]) {

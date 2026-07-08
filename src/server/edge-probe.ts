@@ -531,7 +531,7 @@ function parseCliArgs(argv: string[]): EdgeProbeOptions {
     index += 1;
   }
 
-  const url = values.get("url") ?? process.env.CODEARTS_MCP_URL ?? "http://127.0.0.1/mcp";
+  const url = values.get("url") ?? process.env.CODEARTS_MCP_URL ?? "http://127.0.0.1/mcp/req";
   const accessKey = values.get("access-key") ?? process.env.HUAWEICLOUD_AK ?? "";
   const secretKey = values.get("secret-key") ?? process.env.HUAWEICLOUD_SK ?? "";
   const region = values.get("region") ?? process.env.HUAWEICLOUD_REGION ?? "cn-north-4";

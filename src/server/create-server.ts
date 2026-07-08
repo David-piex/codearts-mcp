@@ -1,4 +1,5 @@
 import { McpServer, type RegisteredTool as McpRegisteredTool } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type { ProductToolFamily } from "../contracts/product-families.js";
 import { toJsonSchemaCompat } from "@modelcontextprotocol/sdk/server/zod-json-schema-compat.js";
 import {
   type AnyObjectSchema,
@@ -127,6 +128,7 @@ type CreateServerOptions =
   | {
       mode: "stdio";
       config: AppConfig;
+      enabledProductFamilies?: ProductToolFamily[];
     }
   | {
       mode: "http";
@@ -134,6 +136,7 @@ type CreateServerOptions =
       sessionStore: SessionCredentialStore;
       authRepository?: AuthRepository;
       authMasterKey?: string;
+      enabledProductFamilies?: ProductToolFamily[];
     };
 
 type CreateServerFactoryDependencies = {
@@ -453,7 +456,12 @@ function captureRegisteredTools(
         : undefined
   });
 
-  for (const toolManifestEntry of dependencies.collectProductToolManifest()) {
+  const enabledFamilies =
+    options.enabledProductFamilies ?? options.config.enabledProductFamilies;
+
+  for (const toolManifestEntry of dependencies.collectProductToolManifest({
+    families: enabledFamilies
+  })) {
     const toolName = toolManifestEntry.name;
 
     if (

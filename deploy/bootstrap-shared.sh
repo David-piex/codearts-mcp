@@ -59,6 +59,6 @@ Next steps:
    curl http://127.0.0.1/health
 4. Check container status:
    docker compose ps
-5. Let users connect to /mcp and call auth_configure_session once.
+5. Let users connect to one of /mcp/<family> and call auth_configure_session once.
 6. Use deploy/ops-shared.sh for status / logs / backup / restore.
 EOF

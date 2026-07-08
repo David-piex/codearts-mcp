@@ -18,7 +18,7 @@
 
 ```mermaid
 graph LR
-    A["MCP Client"] --> B["/mcp"]
+    A["MCP Client"] --> B["/mcp/<family>"]
     B --> C["http-app.ts"]
     C --> D["auth-context / session-store"]
     D --> E["create-server.ts"]
@@ -29,7 +29,7 @@ graph LR
 
 `src/server/http-app.ts` 负责：
 
-- 暴露 `/health` 与 `/mcp`
+- 暴露 `/health` 与 `/mcp/<family>`
 - 解析请求体和 MCP method
 - 管理 Cookie / `auth_token`
 - 组装请求日志和诊断信息

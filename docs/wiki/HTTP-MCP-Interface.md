@@ -10,11 +10,22 @@
 | 本地 nginx / docker | `http://127.0.0.1` |
 | 当前部署示例 | `http://123.249.85.184` |
 | 协议 | MCP Streamable HTTP + JSON-RPC 2.0 |
-| 业务入口 | `POST /mcp` |
+| 业务入口 | `POST /mcp/<family>` |
 | 会话头 | `mcp-session-id` |
 | 内容类型 | `application/json` |
 
-业务能力不以传统 REST 路由暴露，而是通过 MCP 的 `tools/list` 和 `tools/call` 统一访问。也就是说，`/mcp` 是唯一业务调用入口，具体能力由 `tools/call.params.name` 决定。
+业务能力不以传统 REST 路由暴露，而是通过 MCP 的 `tools/list` 和 `tools/call` 统一访问。服务端当前只保留按产品拆分的 MCP 入口，具体能力由 `tools/call.params.name` 决定：
+
+- `/mcp/req`
+- `/mcp/repo`
+- `/mcp/pipeline`
+- `/mcp/check`
+- `/mcp/testplan`
+- `/mcp/deploy`
+- `/mcp/build`
+- `/mcp/artifact`
+
+这些子入口只暴露对应产品工具，加上 `auth_configure_session` 与 `auth_clear_session` 两个共享鉴权工具。
 
 ## 2. HTTP 端点
 
@@ -24,9 +35,11 @@
 | `GET` | `/health` | 存活检查 | 否 |
 | `GET` | `/health/ready` | 就绪检查，包含鉴权持久化文件可读写状态 | 否 |
 | `GET` | `/diagnostics/session-reuse` | 会话复用诊断快照 | 否 |
-| `POST` | `/mcp` | MCP JSON-RPC 请求入口 | 首次 `initialize` 不需要，之后需要 |
-| `DELETE` | `/mcp` | 关闭 MCP 会话 | 是 |
-| `GET` | `/mcp` | 不支持 SSE，固定返回 405 | 否 |
+| `POST` | `/mcp/<family>` | 产品级 MCP JSON-RPC 请求入口，只暴露单产品工具与 auth 工具 | 首次 `initialize` 不需要，之后需要 |
+| `DELETE` | `/mcp/<family>` | 关闭该产品入口上的 MCP 会话 | 是 |
+| `GET` | `/mcp/<family>` | 不支持 SSE，固定返回 405 | 否 |
+
+其中 `<family>` 只能是 `req`、`repo`、`pipeline`、`check`、`testplan`、`deploy`、`build`、`artifact`。
 
 ### 2.1 存活检查
 
@@ -102,10 +115,10 @@ curl http://127.0.0.1:3000/diagnostics/session-reuse
 
 ### 3.1 初始化会话
 
-首次访问 `POST /mcp` 必须发送 `initialize`。服务端会在响应头返回 `mcp-session-id`，后续所有 MCP 请求都要携带这个头。
+首次访问某个产品入口 `POST /mcp/<family>` 必须发送 `initialize`。服务端会在响应头返回 `mcp-session-id`，后续同一路径上的 MCP 请求都要携带这个头。
 
 ```bash
-curl -i http://127.0.0.1:3000/mcp \
+curl -i http://127.0.0.1:3000/mcp/req \
   -H "content-type: application/json" \
   -d '{
     "jsonrpc": "2.0",
@@ -148,12 +161,32 @@ content-type: application/json
 }
 ```
 
+如果你切换到另一个产品入口，初始化方法完全相同，只是把路径换成对应子路径。例如：
+
+```bash
+curl -i http://127.0.0.1:3000/mcp/repo \
+  -H "content-type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "initialize",
+    "params": {
+      "protocolVersion": "2025-11-25",
+      "capabilities": {},
+      "clientInfo": {
+        "name": "example-client",
+        "version": "1.0.0"
+      }
+    }
+  }'
+```
+
 ### 3.2 发送 initialized 通知
 
 部分 MCP 客户端会在 `initialize` 后发送通知：
 
 ```bash
-curl http://127.0.0.1:3000/mcp \
+curl http://127.0.0.1:3000/mcp/req \
   -H "content-type: application/json" \
   -H "mcp-session-id: <session-id>" \
   -d '{
@@ -167,7 +200,7 @@ curl http://127.0.0.1:3000/mcp \
 ### 3.3 查询工具列表
 
 ```bash
-curl http://127.0.0.1:3000/mcp \
+curl http://127.0.0.1:3000/mcp/req \
   -H "content-type: application/json" \
   -H "mcp-session-id: <session-id>" \
   -d '{
@@ -203,12 +236,12 @@ curl http://127.0.0.1:3000/mcp \
 
 ### 3.4 通过 CLI 访问 HTTP MCP
 
-如果你只是想从命令行调用共享 `/mcp`，不用手写 JSON-RPC，可以直接用 CLI：
+如果你只是想从命令行调用某个产品入口，不用手写 JSON-RPC，可以直接用 CLI：
 
 ```powershell
 npm run cli -- call req_list_projects `
   --transport http `
-  --endpoint http://127.0.0.1:3000/mcp `
+  --endpoint http://127.0.0.1:3000/mcp/req `
   --token replace-with-auth-token `
   --input '{"page":1,"page_size":20}' `
   --format table
@@ -232,7 +265,7 @@ HTTP 模式下有两个共享鉴权工具：
 ### 4.1 配置当前会话凭证
 
 ```bash
-curl -i http://127.0.0.1:3000/mcp \
+curl -i http://127.0.0.1:3000/mcp/req \
   -H "content-type: application/json" \
   -H "mcp-session-id: <session-id>" \
   -d '{
@@ -305,10 +338,12 @@ curl -i http://127.0.0.1:3000/mcp \
 
 如果请求携带了有效 token，服务端会把 token 对应的凭证绑定到当前 MCP session。Query token 默认关闭，因为 URL 容易进入代理日志、浏览器历史和监控系统；只有遗留客户端确实无法设置 header 或保留 Cookie 时，才应显式启用 `MCP_AUTH_ALLOW_QUERY_TOKEN=true`。
 
+8 个产品级子入口共用同一套凭证仓库，因此可以跨路径复用 Cookie 或 Bearer token；但 `mcp-session-id` 是按入口路径隔离的，不能把 `/mcp/req` 的 session 直接拿去请求 `/mcp/repo`。
+
 ### 4.3 清除会话凭证
 
 ```bash
-curl http://127.0.0.1:3000/mcp \
+curl http://127.0.0.1:3000/mcp/req \
   -H "content-type: application/json" \
   -H "mcp-session-id: <session-id>" \
   -d '{
@@ -362,7 +397,7 @@ curl http://127.0.0.1:3000/mcp \
 ### 5.1 查询项目列表
 
 ```bash
-curl http://127.0.0.1:3000/mcp \
+curl http://127.0.0.1:3000/mcp/req \
   -H "content-type: application/json" \
   -H "mcp-session-id: <session-id>" \
   -d '{
@@ -475,7 +510,7 @@ curl http://127.0.0.1:3000/mcp \
 ## 6. 关闭会话
 
 ```bash
-curl -X DELETE http://127.0.0.1:3000/mcp \
+curl -X DELETE http://127.0.0.1:3000/mcp/req \
   -H "mcp-session-id: <session-id>"
 ```
 
@@ -532,7 +567,7 @@ allow: POST, DELETE
 
 ```json
 {
-  "error": "GET /mcp SSE is not supported by this deployment. Use POST /mcp for MCP requests."
+  "error": "GET /mcp/req SSE is not supported by this deployment. Use POST /mcp/req for MCP requests."
 }
 ```
 
@@ -603,7 +638,8 @@ HTTP/1.1 403 Forbidden
 | `MCP_SERVER_VERSION` | MCP server 版本 | 无，必填 |
 | `MCP_HTTP_PORT` | HTTP 监听端口 | `3000` |
 | `MCP_HTTP_HOST` | HTTP 监听地址；本地默认只监听回环地址，共享/容器部署需显式设为 `0.0.0.0` | `127.0.0.1` |
-| `MCP_HTTP_ALLOWED_ORIGINS` | 允许携带 `Origin` 访问 `/mcp` 的浏览器来源，多个值用英文逗号分隔 | 空 |
+| `MCP_HTTP_ALLOWED_ORIGINS` | 允许携带 `Origin` 访问 `/mcp/<family>` 的浏览器来源，多个值用英文逗号分隔 | 空 |
+| `MCP_ENABLED_PRODUCT_FAMILIES` | 限制当前实例可暴露的产品族；可填 `artifact,build,check,deploy,pipeline,repo,req,testplan` 的逗号列表 | 空 |
 | `MCP_PRODUCT_WRITE_RATE_LIMIT_MAX_REQUESTS` | 产品写入每个 action/session 的限流次数 | `3000` |
 | `MCP_PRODUCT_WRITE_RATE_LIMIT_WINDOW_MS` | 产品写入限流窗口，单位毫秒 | `60000` |
 | `MCP_AUTH_MASTER_KEY` | HTTP 持久化凭证加密主密钥 | HTTP 模式必填 |
@@ -611,7 +647,7 @@ HTTP/1.1 403 Forbidden
 | `MCP_AUTH_COOKIE_NAME` | 鉴权 Cookie 名称 | `codearts_mcp_auth` |
 | `MCP_AUTH_COOKIE_SECURE` | 是否设置 Secure Cookie | `false` |
 | `MCP_AUTH_TOKEN_TTL_SECONDS` | 鉴权 token TTL | `2592000` |
-| `MCP_AUTH_ALLOW_QUERY_TOKEN` | 是否允许 `/mcp?auth_token=...` 兼容模式 | `false` |
+| `MCP_AUTH_ALLOW_QUERY_TOKEN` | 是否允许 `/mcp/<family>?auth_token=...` 兼容模式 | `false` |
 | `MCP_AUTH_WRITE_RATE_LIMIT_MAX_REQUESTS` | 鉴权写入每个 session 的限流次数 | `3000` |
 | `MCP_AUTH_WRITE_RATE_LIMIT_WINDOW_MS` | 鉴权写入限流窗口，单位毫秒 | `60000` |
 | `MCP_REQ_LIST_PROJECTS_CACHE_TTL_MS` | Req 项目列表读缓存 TTL | 由代码默认策略决定 |
@@ -643,4 +679,4 @@ HTTP/1.1 403 Forbidden
 4. 后续请求同时携带 `mcp-session-id` 和 Cookie 或 Bearer token。
 5. 通过 `tools/list` 生成客户端侧参数表单或校验逻辑。
 6. 写入接口先使用支持的 `dry_run: true` 预检，再执行真实写入。
-7. 退出或换租户时调用 `auth_clear_session`，最后 `DELETE /mcp` 关闭 session。
+7. 退出或换租户时调用 `auth_clear_session`，最后 `DELETE /mcp/<family>` 关闭当前产品入口的 session。

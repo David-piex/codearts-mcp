@@ -10,7 +10,7 @@ function createEvent(
   return {
     recordedAt: "2026-04-23T07:00:00.000Z",
     method: "POST",
-    path: "/mcp",
+    path: "/mcp/req",
     statusCode: 200,
     ...overrides
   };

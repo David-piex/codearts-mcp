@@ -7,7 +7,7 @@
 The server supports two runtime modes:
 
 - `stdio`: local, single-user usage. Credentials come from process environment.
-- `http`: shared service usage. Each user binds their own AK/SK through session auth, while the service provides a shared MCP entrypoint.
+- `http`: shared service usage. Each user binds their own AK/SK through session auth, while the service provides product-scoped MCP entrypoints.
 
 The default application HTTP port is `3000`. The Docker Compose setup exposes Nginx on host port `80`.
 
@@ -23,7 +23,7 @@ The main entrypoint is `src/server/index.ts`. It chooses the runtime mode from `
 HTTP mode is built around `src/server/http.ts` and `src/server/http-app.ts`:
 
 - `http.ts` starts the Node HTTP server.
-- `http-app.ts` handles `/health`, `/mcp`, request logging, auth token and cookie handling, session recovery, and MCP transport lifecycle.
+- `http-app.ts` handles `/health`, `/mcp/<family>`, request logging, auth token and cookie handling, session recovery, and MCP transport lifecycle.
 
 MCP server creation is centralized in `src/server/create-server.ts`:
 

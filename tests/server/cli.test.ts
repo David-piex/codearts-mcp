@@ -196,7 +196,7 @@ describe("CLI", () => {
           "--transport",
           "http",
           "--endpoint",
-          "https://example.test/mcp",
+          "https://example.test/mcp/req",
           "--input",
           "{\"page\":1}",
           "--pretty"
@@ -268,7 +268,7 @@ describe("CLI", () => {
 
     await expect(
       runCli({
-        argv: ["tools", "--transport", "http", "--endpoint", "https://example.test/mcp", "--format", "text"],
+        argv: ["tools", "--transport", "http", "--endpoint", "https://example.test/mcp/req", "--format", "text"],
         env: baseEnv,
         fetch: fetchMock,
         stdout: output.writeStdout,
@@ -351,7 +351,7 @@ describe("CLI", () => {
           "--transport",
           "http",
           "--endpoint",
-          "https://example.test/mcp",
+          "https://example.test/mcp/req",
           "--input",
           "{\"page\":1}",
           "--format",
@@ -373,7 +373,7 @@ describe("CLI", () => {
     const configPath = join(dir, "profiles.json");
     const output = createOutputCapture();
     const fetchMock = vi.fn(async (url: string | URL | Request, init?: RequestInit) => {
-      expect(String(url)).toBe("https://profile.example/mcp");
+      expect(String(url)).toBe("https://profile.example/mcp/req");
       expect(init?.headers).toMatchObject({
         authorization: "Bearer profile-token"
       });
@@ -426,7 +426,7 @@ describe("CLI", () => {
         profiles: {
           shared: {
             transport: "http",
-            endpoint: "https://profile.example/mcp",
+            endpoint: "https://profile.example/mcp/req",
             token: "profile-token"
           }
         }
@@ -462,7 +462,7 @@ describe("CLI", () => {
             "--transport",
             "http",
             "--endpoint",
-            `http://127.0.0.1:${port}/mcp`,
+            `http://127.0.0.1:${port}/mcp/req`,
             "--format",
             "text"
           ],

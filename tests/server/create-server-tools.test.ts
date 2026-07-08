@@ -104,6 +104,20 @@ describe("createServer tool registration", () => {
     expect(toolNames).not.toContain("auth_clear_session");
   });
 
+  it("can register only selected product families in stdio mode", () => {
+    const server = createServer({
+      mode: "stdio",
+      config: stdioConfig,
+      enabledProductFamilies: ["req", "repo"]
+    });
+
+    const toolNames = readRegisteredToolNames(server);
+    const expected = collectManifestToolNames({ kind: "product", families: ["req", "repo"] });
+
+    expect(toolNames).toEqual(expected);
+    expect(toolNames.every((name) => name.startsWith("req_") || name.startsWith("repo_"))).toBe(true);
+  });
+
   it("registers the HTTP manifest including auth tools in http mode", () => {
     const server = createHttpServer();
 
@@ -111,6 +125,23 @@ describe("createServer tool registration", () => {
 
     expect(toolNames).toHaveLength(collectManifestToolNames({ mode: "http" }).length);
     expect(toolNames).toEqual(collectManifestToolNames({ mode: "http" }));
+  });
+
+  it("can register only selected product families plus auth tools in http mode", () => {
+    const server = createServer({
+      mode: "http",
+      config: httpConfig,
+      sessionStore: createSessionCredentialStore(),
+      enabledProductFamilies: ["req"]
+    });
+
+    const toolNames = readRegisteredToolNames(server);
+    const expected = collectManifestToolNames({ mode: "http", families: ["req"] });
+
+    expect(toolNames).toEqual(expected);
+    expect(toolNames).toContain("auth_configure_session");
+    expect(toolNames).toContain("auth_clear_session");
+    expect(toolNames.filter((name) => name.startsWith("req_")).length).toBeGreaterThan(0);
   });
 
   it("exposes auth_configure_session with optional endpoint overrides in http mode", () => {

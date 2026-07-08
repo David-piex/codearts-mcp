@@ -109,6 +109,7 @@ export async function postJsonRpc(
     cookie?: string;
     queryToken?: string;
     headers?: Record<string, string>;
+    path?: string;
   }
 ) {
   const headers: Record<string, string> = {
@@ -126,7 +127,7 @@ export async function postJsonRpc(
     headers.cookie = options.cookie;
   }
 
-  const url = new URL(`http://127.0.0.1:${port}/mcp`);
+  const url = new URL(`http://127.0.0.1:${port}${options?.path ?? "/mcp/req"}`);
   if (options?.queryToken) {
     url.searchParams.set("auth_token", options.queryToken);
   }
@@ -145,6 +146,7 @@ export async function initializeSession(
     queryToken?: string;
     clientName?: string;
     headers?: Record<string, string>;
+    path?: string;
   }
 ) {
   const response = await postJsonRpc(
@@ -180,6 +182,7 @@ export async function callTool(
     sessionId?: string;
     cookie?: string;
     queryToken?: string;
+    path?: string;
   }
 ) {
   const response = await postJsonRpc(
@@ -196,7 +199,8 @@ export async function callTool(
     {
       sessionId: input.sessionId,
       cookie: input.cookie,
-      queryToken: input.queryToken
+      queryToken: input.queryToken,
+      path: input.path
     }
   );
   const body = (await response.json()) as {
@@ -228,6 +232,7 @@ export async function configureSessionTool(
     accessKey?: string;
     secretKey?: string;
     region?: string;
+    path?: string;
   }
 ) {
   return callTool(port, {
@@ -240,7 +245,8 @@ export async function configureSessionTool(
     },
     sessionId: options?.sessionId,
     cookie: options?.cookie,
-    queryToken: options?.queryToken
+    queryToken: options?.queryToken,
+    path: options?.path
   });
 }
 
@@ -253,12 +259,14 @@ export async function initializeConfiguredSession(
     accessKey?: string;
     secretKey?: string;
     region?: string;
+    path?: string;
   }
 ) {
   const initialized = await initializeSession(port, {
     cookie: options?.cookie,
     queryToken: options?.queryToken,
-    clientName: options?.clientName
+    clientName: options?.clientName,
+    path: options?.path
   });
   const sessionId = initialized.sessionId;
 
@@ -269,11 +277,12 @@ export async function initializeConfiguredSession(
   const configured = await configureSessionTool(port, {
     sessionId,
     cookie: options?.cookie,
-    queryToken: options?.queryToken,
-    accessKey: options?.accessKey,
-    secretKey: options?.secretKey,
-    region: options?.region
-  });
+      queryToken: options?.queryToken,
+      accessKey: options?.accessKey,
+      secretKey: options?.secretKey,
+      region: options?.region,
+      path: options?.path
+    });
 
   return {
     initialized,
@@ -291,6 +300,7 @@ export async function clearSessionTool(
     sessionId?: string;
     cookie?: string;
     queryToken?: string;
+    path?: string;
   }
 ) {
   return callTool(port, {
@@ -299,6 +309,7 @@ export async function clearSessionTool(
     arguments: {},
     sessionId: options?.sessionId,
     cookie: options?.cookie,
-    queryToken: options?.queryToken
+    queryToken: options?.queryToken,
+    path: options?.path
   });
 }

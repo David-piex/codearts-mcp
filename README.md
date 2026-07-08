@@ -9,7 +9,7 @@
 - **会话隔离** — 共享模式下每个用户使用自己的 AK/SK，互不干扰
 - **加密持久化** — 凭证经 AES-256-GCM 加密落盘，服务重启后可恢复会话
 - **Cookie / Token 双恢复** — 客户端保留 Cookie 或固定 auth_token 均可无缝重连
-- **CLI 兼容** — 复用同一批 MCP 工具 handler，支持本地 AK/SK 直调和远程 HTTP `/mcp` 调用
+- **CLI 兼容** — 复用同一批 MCP 工具 handler，支持本地 AK/SK 直调和远程 HTTP `/mcp/<family>` 调用
 - **速率限制** — 写操作内置 per-session 限流，防止误操作风暴
 - **缓存加速** — 高频读工具带共享缓存与 in-flight dedupe，命中后毫秒级响应
 
@@ -88,28 +88,111 @@ node dist/src/server/index.js
 ```json
 {
   "mcpServers": {
-    "codearts": {
+    "req": {
       "type": "http",
-      "url": "http://your-server-ip/mcp"
+      "url": "http://your-server-ip/mcp/req"
+    },
+    "repo": {
+      "type": "http",
+      "url": "http://your-server-ip/mcp/repo"
+    },
+    "pipeline": {
+      "type": "http",
+      "url": "http://your-server-ip/mcp/pipeline"
+    },
+    "check": {
+      "type": "http",
+      "url": "http://your-server-ip/mcp/check"
+    },
+    "testplan": {
+      "type": "http",
+      "url": "http://your-server-ip/mcp/testplan"
+    },
+    "deploy": {
+      "type": "http",
+      "url": "http://your-server-ip/mcp/deploy"
+    },
+    "build": {
+      "type": "http",
+      "url": "http://your-server-ip/mcp/build"
+    },
+    "artifact": {
+      "type": "http",
+      "url": "http://your-server-ip/mcp/artifact"
     }
   }
 }
 ```
 
-当前已部署的共享服务可以直接使用下面这份配置：
+当前已部署的共享服务按 8 个产品模块拆分接入，可以直接使用下面这份配置：
 
 ```json
 {
   "mcpServers": {
-    "codearts": {
+    "req": {
       "disabled": false,
       "timeout": 60,
       "type": "streamableHttp",
-      "url": "http://39.106.183.205/mcp"
+      "url": "http://39.106.183.205/mcp/req"
+    },
+    "repo": {
+      "disabled": false,
+      "timeout": 60,
+      "type": "streamableHttp",
+      "url": "http://39.106.183.205/mcp/repo"
+    },
+    "pipeline": {
+      "disabled": false,
+      "timeout": 60,
+      "type": "streamableHttp",
+      "url": "http://39.106.183.205/mcp/pipeline"
+    },
+    "check": {
+      "disabled": false,
+      "timeout": 60,
+      "type": "streamableHttp",
+      "url": "http://39.106.183.205/mcp/check"
+    },
+    "testplan": {
+      "disabled": false,
+      "timeout": 60,
+      "type": "streamableHttp",
+      "url": "http://39.106.183.205/mcp/testplan"
+    },
+    "deploy": {
+      "disabled": false,
+      "timeout": 60,
+      "type": "streamableHttp",
+      "url": "http://39.106.183.205/mcp/deploy"
+    },
+    "build": {
+      "disabled": false,
+      "timeout": 60,
+      "type": "streamableHttp",
+      "url": "http://39.106.183.205/mcp/build"
+    },
+    "artifact": {
+      "disabled": false,
+      "timeout": 60,
+      "type": "streamableHttp",
+      "url": "http://39.106.183.205/mcp/artifact"
     }
   }
 }
 ```
+
+当前共享 HTTP MCP 只保留按产品拆开的 8 个子路径：
+
+- `/mcp/req`
+- `/mcp/repo`
+- `/mcp/pipeline`
+- `/mcp/check`
+- `/mcp/testplan`
+- `/mcp/deploy`
+- `/mcp/build`
+- `/mcp/artifact`
+
+这些子路径共用同一套鉴权持久化、Cookie 和 `auth_token`；也就是说，可以先在任意一个入口调用 `auth_configure_session`，再在另一个入口通过 Cookie 或 Bearer token 复用凭证。需要注意的是，`mcp-session-id` 仍然是按路径隔离的，`/mcp/req` 的 session 不能直接拿去请求 `/mcp/repo`。
 
 若客户端不保留 Cookie，请使用 `Authorization: Bearer <auth_token>` 复用凭证。不要把 token 放到 URL query；URL 容易进入代理日志、浏览器历史和监控系统。
 
@@ -244,12 +327,12 @@ npm run cli -- tools --format table
 npm run cli -- call req_list_projects --input '{"page":1,"page_size":20}' --format table
 ```
 
-#### 2. 远程模式：调用共享 `/mcp`
+#### 2. 远程模式：调用产品级 `/mcp/<family>`
 
 ```powershell
 npm run cli -- call req_list_projects `
   --transport http `
-  --endpoint https://your-domain.example/mcp `
+  --endpoint https://your-domain.example/mcp/req `
   --token replace-with-auth-token `
   --input '{"page":1}' `
   --format table
@@ -327,7 +410,8 @@ Live 状态说明：
 | --- | --- | --- |
 | `MCP_HTTP_PORT` | HTTP 监听端口 | `3000` |
 | `MCP_HTTP_HOST` | HTTP 监听地址；本地默认只监听回环地址，共享/容器部署需显式设为 `0.0.0.0` | `127.0.0.1` |
-| `MCP_HTTP_ALLOWED_ORIGINS` | 允许携带 `Origin` 访问 `/mcp` 的浏览器来源，多个值用英文逗号分隔 | — |
+| `MCP_HTTP_ALLOWED_ORIGINS` | 允许携带 `Origin` 访问 `/mcp/<family>` 的浏览器来源，多个值用英文逗号分隔 | — |
+| `MCP_ENABLED_PRODUCT_FAMILIES` | 限制当前实例只暴露指定产品族；可填 `artifact,build,check,deploy,pipeline,repo,req,testplan` 的逗号列表 | — |
 | `MCP_PRODUCT_WRITE_RATE_LIMIT_MAX_REQUESTS` | 产品写入每个 action/session 的限流次数 | `3000` |
 | `MCP_PRODUCT_WRITE_RATE_LIMIT_WINDOW_MS` | 产品写入限流窗口 | `60000` |
 | `MCP_AUTH_WRITE_RATE_LIMIT_MAX_REQUESTS` | 鉴权写入每个 session 的限流次数 | `3000` |
