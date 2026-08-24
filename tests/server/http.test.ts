@@ -21,7 +21,8 @@ const httpAuthConfig = {
   authCookieName: "codearts_mcp_auth",
   authCookieSecure: false,
   authTokenTtlSeconds: 60,
-  allowQueryAuthToken: false
+  allowQueryAuthToken: false,
+  allowClientCredentialHeaders: false
 };
 
 function createFakeListeningServer(onListen?: (port: number, host: string) => void) {

@@ -8,7 +8,7 @@
 
 API 数量：`2`
 
-所有函数 API 使用按产品拆分的 HTTP 入口：`POST /mcp/<family>`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数；当前模块工具应走对应模块的产品入口。
+所有函数 API 默认使用统一 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数；当前模块工具直接在统一入口调用。旧的 `/mcp/<family>` 产品入口仍作为兼容路径保留。
 
 ## API 清单
 

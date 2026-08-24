@@ -18,6 +18,8 @@ services:
       - MCP_AUTH_COOKIE_NAME=${MCP_AUTH_COOKIE_NAME:-codearts_mcp_auth}
       - MCP_AUTH_COOKIE_SECURE=${MCP_AUTH_COOKIE_SECURE:-false}
       - MCP_AUTH_TOKEN_TTL_SECONDS=${MCP_AUTH_TOKEN_TTL_SECONDS:-2592000}
+      - MCP_AUTH_STATIC_TOKEN=${MCP_AUTH_STATIC_TOKEN:-}
+      - MCP_AUTH_ALLOW_CLIENT_CREDENTIAL_HEADERS=${MCP_AUTH_ALLOW_CLIENT_CREDENTIAL_HEADERS:-false}
     volumes:
       - ./.codearts-mcp:/app/.codearts-mcp
     healthcheck:

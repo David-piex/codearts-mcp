@@ -102,7 +102,7 @@ MCP_SERVER_VERSION=0.1.0
 
 - `GET /health` 正常。
 - 8 个产品入口全部可以 `initialize` 和 `tools/list`。
-- 每个 `/mcp/<family>` 只暴露对应产品工具，加上 `auth_configure_session` 和 `auth_clear_session`。
+- 统一 `/mcp` 暴露全部产品工具，加上 `auth_configure_session` 和 `auth_clear_session`；旧 `/mcp/<family>` 仍可用于兼容验证。
 - `auth_configure_session` 可签发 bearer token，token 可跨产品入口复用。
 - `mcp-session-id` 按产品入口隔离，不能跨 `/mcp/req`、`/mcp/repo` 等路径复用。
 - 低风险项目级读链路已跑通：`req_get_current_user_info`、`req_list_projects`、`repo_list_repositories`、`pipeline_list_pipelines`、`build_list_jobs`、`check_list_project_task_groups`、`testplan_list_project_users`、`deploy_list_v4_applications`、`artifact_list_repositories`。
@@ -158,7 +158,7 @@ MCP_SERVER_VERSION=0.1.0
 优先检查：
 
 1. `/health`
-2. `/mcp/req` initialize
+2. `/mcp` initialize
 3. `auth_configure_session`
 4. `req_list_projects`
 5. `tools/list` on every enabled `/mcp/<family>` route
@@ -190,7 +190,7 @@ MCP_SERVER_VERSION=0.1.0
 1. `npm run check`
 2. `npm run test:live`
 3. `GET /health`
-4. `POST /mcp/req` initialize
+4. `POST /mcp` initialize
 5. `auth_configure_session`
 6. `tools/list` on all 8 product routes
 7. 低风险项目级读工具

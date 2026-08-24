@@ -10,11 +10,15 @@
 | 本地 nginx / docker | `http://127.0.0.1` |
 | 当前部署示例 | `http://123.249.85.184` |
 | 协议 | MCP Streamable HTTP + JSON-RPC 2.0 |
-| 业务入口 | `POST /mcp/<family>` |
+| 业务入口 | `POST /mcp` |
 | 会话头 | `mcp-session-id` |
 | 内容类型 | `application/json` |
 
-业务能力不以传统 REST 路由暴露，而是通过 MCP 的 `tools/list` 和 `tools/call` 统一访问。服务端当前只保留按产品拆分的 MCP 入口，具体能力由 `tools/call.params.name` 决定：
+业务能力不以传统 REST 路由暴露，而是通过 MCP 的 `tools/list` 和 `tools/call` 统一访问。服务端首选统一 MCP 入口 `/mcp`，具体能力由 `tools/call.params.name` 决定：
+
+- `/mcp`（推荐，全部产品工具）
+
+旧的产品级入口仍作为兼容路径保留：
 
 - `/mcp/req`
 - `/mcp/repo`
@@ -35,11 +39,12 @@
 | `GET` | `/health` | 存活检查 | 否 |
 | `GET` | `/health/ready` | 就绪检查，包含鉴权持久化文件可读写状态 | 否 |
 | `GET` | `/diagnostics/session-reuse` | 会话复用诊断快照 | 否 |
-| `POST` | `/mcp/<family>` | 产品级 MCP JSON-RPC 请求入口，只暴露单产品工具与 auth 工具 | 首次 `initialize` 不需要，之后需要 |
+| `POST` | `/mcp` | 统一 MCP JSON-RPC 请求入口，暴露全部产品工具与 auth 工具 | 首次 `initialize` 不需要，之后需要 |
+| `POST` | `/mcp/<family>` | 兼容用产品级 MCP JSON-RPC 请求入口 | 首次 `initialize` 不需要，之后需要 |
 | `DELETE` | `/mcp/<family>` | 关闭该产品入口上的 MCP 会话 | 是 |
 | `GET` | `/mcp/<family>` | 不支持 SSE，固定返回 405 | 否 |
 
-其中 `<family>` 只能是 `req`、`repo`、`pipeline`、`check`、`testplan`、`deploy`、`build`、`artifact`。
+其中 `<family>` 只能是 `req`、`repo`、`pipeline`、`check`、`testplan`、`deploy`、`build`、`artifact`；新客户端直接使用 `/mcp`。
 
 ### 2.1 存活检查
 
@@ -115,10 +120,10 @@ curl http://127.0.0.1:3000/diagnostics/session-reuse
 
 ### 3.1 初始化会话
 
-首次访问某个产品入口 `POST /mcp/<family>` 必须发送 `initialize`。服务端会在响应头返回 `mcp-session-id`，后续同一路径上的 MCP 请求都要携带这个头。
+首次访问统一入口 `POST /mcp` 必须发送 `initialize`。服务端会在响应头返回 `mcp-session-id`，后续统一入口请求都要携带这个头。
 
 ```bash
-curl -i http://127.0.0.1:3000/mcp/req \
+curl -i http://127.0.0.1:3000/mcp \
   -H "content-type: application/json" \
   -d '{
     "jsonrpc": "2.0",
@@ -291,10 +296,10 @@ curl -i http://127.0.0.1:3000/mcp/req \
   "repo_base_url": "https://codehub-ext.cn-north-4.myhuaweicloud.com",
   "pipeline_base_url": "https://cloudpipeline-ext.cn-north-4.myhuaweicloud.com",
   "check_base_url": "https://codearts-check.cn-north-4.myhuaweicloud.com",
-  "testplan_base_url": "https://testplan-ext.cn-north-4.myhuaweicloud.com",
-  "deploy_base_url": "https://clouddeploy-ext.cn-north-4.myhuaweicloud.com",
-  "build_base_url": "https://codeartsbuild-ext.cn-north-4.myhuaweicloud.com",
-  "artifact_base_url": "https://cloudartifact-ext.cn-north-4.myhuaweicloud.com"
+  "testplan_base_url": "https://cloudtest-ext.cn-north-4.myhuaweicloud.com",
+  "deploy_base_url": "https://codearts-deploy.cn-north-4.myhuaweicloud.com",
+  "build_base_url": "https://cloudbuild-ext.cn-north-4.myhuaweicloud.com",
+  "artifact_base_url": "https://artifact.cn-north-4.myhuaweicloud.cn"
 }
 ```
 
@@ -647,6 +652,8 @@ HTTP/1.1 403 Forbidden
 | `MCP_AUTH_COOKIE_NAME` | 鉴权 Cookie 名称 | `codearts_mcp_auth` |
 | `MCP_AUTH_COOKIE_SECURE` | 是否设置 Secure Cookie | `false` |
 | `MCP_AUTH_TOKEN_TTL_SECONDS` | 鉴权 token TTL | `2592000` |
+| `MCP_AUTH_STATIC_TOKEN` | 单账号 HTTP 模式的固定 Bearer token；需同时配置 `HUAWEICLOUD_AK/SK/REGION` | 空 |
+| `MCP_AUTH_ALLOW_CLIENT_CREDENTIAL_HEADERS` | 允许每个用户从 MCP 配置 Header 提交自己的 AK/SK/区域；仅限 HTTPS | `false` |
 | `MCP_AUTH_ALLOW_QUERY_TOKEN` | 是否允许 `/mcp/<family>?auth_token=...` 兼容模式 | `false` |
 | `MCP_AUTH_WRITE_RATE_LIMIT_MAX_REQUESTS` | 鉴权写入每个 session 的限流次数 | `3000` |
 | `MCP_AUTH_WRITE_RATE_LIMIT_WINDOW_MS` | 鉴权写入限流窗口，单位毫秒 | `60000` |
@@ -656,6 +663,10 @@ HTTP/1.1 403 Forbidden
 | `MCP_BUILD_LIST_JOBS_CACHE_TTL_MS` | Build 任务列表读缓存 TTL | 由代码默认策略决定 |
 
 静态 stdio 模式还需要 `HUAWEICLOUD_AK`、`HUAWEICLOUD_SK`、`HUAWEICLOUD_REGION`。HTTP 多用户模式推荐使用 `auth_configure_session` 为每个 MCP 会话配置凭证。
+
+HTTP 单账号模式可以在服务端同时配置 `HUAWEICLOUD_AK`、`HUAWEICLOUD_SK`、`HUAWEICLOUD_REGION` 和 `MCP_AUTH_STATIC_TOKEN`。MCP 客户端在服务器配置中加入 `Authorization: Bearer <MCP_AUTH_STATIC_TOKEN>` 后即可直接使用产品工具，无需先调用 `auth_configure_session`。AK/SK 不会发送给 MCP 客户端；轮换静态 token 后重启服务即可使旧 token 失效。
+
+共享服务也可以启用 `MCP_AUTH_ALLOW_CLIENT_CREDENTIAL_HEADERS=true`。启用后，用户在各自的 MCP 配置中填写 `X-CodeArts-AK`、`X-CodeArts-SK` 和 `X-CodeArts-Region`，服务端会为每组凭证建立隔离的加密会话，用户无需调用 `auth_configure_session`。该模式会在每次 MCP 请求中传输 AK/SK，因此只允许通过 HTTPS 使用，并应确认代理和网关不会记录请求头。
 
 服务 base URL 可通过环境变量或 `auth_configure_session` 覆盖：
 

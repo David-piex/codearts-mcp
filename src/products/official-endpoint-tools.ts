@@ -14,7 +14,7 @@ export type ProductOfficialEndpointTool = OfficialEndpointToolDefinition & {
   family: OfficialEndpointProductFamily;
 };
 
-// Generated from tmp/api-audit/current-pdf-mcp-coverage.json.
+// Generated from tmp/api-audit/current-pdf-mcp-coverage.json, with 2026-08-24 online-doc additions.
 export const officialEndpointTools = [
   {
     family: "artifact",
@@ -394,6 +394,14 @@ export const officialEndpointTools = [
   },
   {
     family: "check",
+    name: "check_delete_tenant_configs_5e05bf7f",
+    method: "DELETE",
+    pathTemplate: "/v1/tenant-configs/{id}",
+    description: "Request CodeArts Check official DELETE /v1/tenant-configs/{id} endpoint through a dedicated MCP tool (dry-run by default)",
+    write: true
+  },
+  {
+    family: "check",
     name: "check_get_defect_dd8e1af3",
     method: "GET",
     pathTemplate: "/v1/defect",
@@ -514,6 +522,46 @@ export const officialEndpointTools = [
   },
   {
     family: "check",
+    name: "check_get_backup_backup_infos_d22f99cb",
+    method: "GET",
+    pathTemplate: "/v2/backup/backup-infos",
+    description: "Request CodeArts Check official GET /v2/backup/backup-infos endpoint through a dedicated MCP tool",
+    write: false
+  },
+  {
+    family: "check",
+    name: "check_get_config_simple_792fdd61",
+    method: "GET",
+    pathTemplate: "/v1/config/simple/{config_id}",
+    description: "Request CodeArts Check official GET /v1/config/simple/{config_id} endpoint through a dedicated MCP tool",
+    write: false
+  },
+  {
+    family: "check",
+    name: "check_get_system_configs_11868d53",
+    method: "GET",
+    pathTemplate: "/v2/system-configs",
+    description: "Request CodeArts Check official GET /v2/system-configs endpoint through a dedicated MCP tool",
+    write: false
+  },
+  {
+    family: "check",
+    name: "check_get_tasks_b6b90a38",
+    method: "GET",
+    pathTemplate: "/v2/tasks/",
+    description: "Request CodeArts Check official GET /v2/tasks/ endpoint through a dedicated MCP tool",
+    write: false
+  },
+  {
+    family: "check",
+    name: "check_get_tenant_configs_b7fdea2b",
+    method: "GET",
+    pathTemplate: "/v1/tenant-configs",
+    description: "Request CodeArts Check official GET /v1/tenant-configs endpoint through a dedicated MCP tool",
+    write: false
+  },
+  {
+    family: "check",
     name: "check_post_criterionsets_batch_82dc9053",
     method: "POST",
     pathTemplate: "/v1/criterionsets/batch",
@@ -546,6 +594,38 @@ export const officialEndpointTools = [
   },
   {
     family: "check",
+    name: "check_post_task_recover_data_e8f9b1f6",
+    method: "POST",
+    pathTemplate: "/v1/task/recover-data",
+    description: "Request CodeArts Check official POST /v1/task/recover-data endpoint through a dedicated MCP tool (dry-run by default)",
+    write: true
+  },
+  {
+    family: "check",
+    name: "check_post_tasks_a9409914",
+    method: "POST",
+    pathTemplate: "/v2/tasks/",
+    description: "Request CodeArts Check official POST /v2/tasks/ endpoint through a dedicated MCP tool (dry-run by default)",
+    write: true
+  },
+  {
+    family: "check",
+    name: "check_post_tenant_configs_9e2824ef",
+    method: "POST",
+    pathTemplate: "/v1/tenant-configs",
+    description: "Request CodeArts Check official POST /v1/tenant-configs endpoint through a dedicated MCP tool (dry-run by default)",
+    write: true
+  },
+  {
+    family: "check",
+    name: "check_put_plugins_8916348e",
+    method: "PUT",
+    pathTemplate: "/v2/plugins",
+    description: "Request CodeArts Check official PUT /v2/plugins endpoint through a dedicated MCP tool (dry-run by default)",
+    write: true
+  },
+  {
+    family: "check",
     name: "check_put_defects_file_content_7f966b38",
     method: "PUT",
     pathTemplate: "/v1/defects/file-content",
@@ -566,6 +646,14 @@ export const officialEndpointTools = [
     method: "PUT",
     pathTemplate: "/v1/tasks/{task_id}/stop",
     description: "Request CodeArts Check official PUT /v1/tasks/{task_id}/stop endpoint through a dedicated MCP tool (dry-run by default)",
+    write: true
+  },
+  {
+    family: "check",
+    name: "check_put_tenant_configs_d3383ec0",
+    method: "PUT",
+    pathTemplate: "/v1/tenant-configs/{id}",
+    description: "Request CodeArts Check official PUT /v1/tenant-configs/{id} endpoint through a dedicated MCP tool (dry-run by default)",
     write: true
   },
   {
@@ -1918,6 +2006,14 @@ export const officialEndpointTools = [
     method: "GET",
     pathTemplate: "/v4/projects/{project_id}/templates",
     description: "Request CodeArts Req official GET /v4/projects/{project_id}/templates endpoint through a dedicated MCP tool",
+    write: false
+  },
+  {
+    family: "req",
+    name: "req_get_iterations_histories_50dc28a3",
+    method: "GET",
+    pathTemplate: "/v4/iterations/{iteration_id}/histories",
+    description: "Request CodeArts Req official GET /v4/iterations/{iteration_id}/histories endpoint through a dedicated MCP tool",
     write: false
   },
   {

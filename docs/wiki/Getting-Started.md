@@ -44,13 +44,25 @@ node dist/src/server/index.js
   "mcpServers": {
     "req": {
       "type": "http",
-      "url": "http://your-server-ip/mcp/req"
+      "url": "http://your-server-ip/mcp"
     }
   }
 }
 ```
 
-### 4. 首次调用 `auth_configure_session`
+### 4. 首次鉴权
+
+默认共享模式首次调用 `auth_configure_session` 配置当前会话的 AK/SK。
+
+如果部署的是单账号服务，可以在服务端预置 `HUAWEICLOUD_AK`、`HUAWEICLOUD_SK`、`HUAWEICLOUD_REGION` 和 `MCP_AUTH_STATIC_TOKEN`，再在 MCP 配置中加入：
+
+```json
+"headers": {
+  "Authorization": "Bearer replace-with-mcp-auth-static-token"
+}
+```
+
+这样客户端连接后即可直接调用产品工具，不需要自然语言鉴权；多用户服务仍使用 `auth_configure_session`。
 
 ```json
 {
@@ -144,7 +156,7 @@ npm run cli -- call req_list_projects --input '{"page":1,"page_size":20}' --form
 ```powershell
 npm run cli -- call req_list_projects `
   --transport http `
-  --endpoint http://your-server-ip/mcp/req `
+  --endpoint http://your-server-ip/mcp `
   --token replace-with-auth-token `
   --input '{"page":1}' `
   --format table

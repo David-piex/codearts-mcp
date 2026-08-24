@@ -166,7 +166,8 @@ describe("http app", () => {
       authCookieName: "codearts_mcp_auth",
       authCookieSecure: false,
       authTokenTtlSeconds: 60,
-      allowQueryAuthToken: false
+      allowQueryAuthToken: false,
+      allowClientCredentialHeaders: false
     });
     const { response, body } = await fetchJsonFromTestServer<{
       status: string;
@@ -188,16 +189,98 @@ describe("http app", () => {
     expect(body.status).toBe("ok");
   });
 
-  it("returns 404 for the removed shared /mcp endpoint", async () => {
+  it("serves one unified MCP route with all product tools", async () => {
     const { port } = await servers.start();
-    const response = await fetch(`http://127.0.0.1:${port}/mcp`);
-    const body = (await response.json()) as {
-      error?: string;
-    };
+    const initialized = await initializeSession(port, { path: "/mcp" });
 
-    expect(response.status).toBe(404);
-    expect(response.headers.get("allow")).toBeNull();
-    expect(body.error).toBe("Not found.");
+    expect(initialized.response.status).toBe(200);
+    expect(initialized.sessionId).toBeTruthy();
+
+    const toolNames = await listToolsForPath(port, initialized.sessionId!, "/mcp");
+    expect(toolNames).toContain("auth_configure_session");
+    expect(toolNames).toContain("auth_clear_session");
+
+    for (const family of productToolFamilies) {
+      expect(toolNames.some((name) => name.startsWith(`${family}_`))).toBe(true);
+    }
+  });
+
+  it("accepts a preconfigured static bearer token without auth_configure_session", async () => {
+    const staticToken = "static-test-token";
+    const { port } = await servers.start(
+      createTestHttpAuthConfig({
+        staticAuthToken: staticToken,
+        staticCredentials: {
+          accessKey: "static-ak",
+          secretKey: "static-sk",
+          region: "cn-north-4",
+          reqBaseUrl: "https://projectman.example.com",
+          repoBaseUrl: "https://repo.example.com",
+          pipelineBaseUrl: "https://pipeline.example.com",
+          checkBaseUrl: "https://check.example.com",
+          testPlanBaseUrl: "https://testplan.example.com",
+          deployBaseUrl: "https://deploy.example.com",
+          buildBaseUrl: "https://build.example.com",
+          artifactBaseUrl: "https://artifact.example.com"
+        }
+      })
+    );
+    const initialized = await initializeSession(port, {
+      path: "/mcp",
+      headers: { authorization: `Bearer ${staticToken}` }
+    });
+
+    expect(initialized.response.status).toBe(200);
+    expect(initialized.sessionId).toBeTruthy();
+
+    const cleared = await callTool(port, {
+      id: "clear-static-session",
+      name: "auth_clear_session",
+      arguments: {},
+      sessionId: initialized.sessionId ?? undefined,
+      path: "/mcp",
+      headers: { authorization: `Bearer ${staticToken}` }
+    });
+
+    expect(cleared.response.status).toBe(200);
+    expect(cleared.body.result?.structuredContent).toMatchObject({ cleared: true });
+  });
+
+  it("bootstraps an isolated user session from MCP client credential headers", async () => {
+    const headers = {
+      "x-codearts-ak": "client-ak",
+      "x-codearts-sk": "client-sk",
+      "x-codearts-region": "cn-north-4"
+    };
+    const { port } = await servers.start(
+      createTestHttpAuthConfig({ allowClientCredentialHeaders: true })
+    );
+    const initialized = await initializeSession(port, {
+      path: "/mcp",
+      headers
+    });
+
+    expect(initialized.response.status).toBe(200);
+    expect(initialized.sessionId).toBeTruthy();
+
+    const dryRun = await callTool(port, {
+      id: "client-header-dry-run",
+      name: "check_post_tenant_configs_9e2824ef",
+      arguments: {
+        body: { name: "header-auth-test" }
+      },
+      sessionId: initialized.sessionId ?? undefined,
+      path: "/mcp",
+      headers
+    });
+
+    expect(dryRun.response.status).toBe(200);
+    expect(dryRun.body.result?.isError).not.toBe(true);
+    expect(dryRun.body.result?.structuredContent?.item).toMatchObject({
+      dryRun: true,
+      method: "POST",
+      path: "/v1/tenant-configs"
+    });
   });
 
   it("serves all product-scoped MCP routes with only that module plus auth tools", async () => {

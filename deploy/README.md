@@ -4,9 +4,11 @@
 
 目标是部署出一套可供团队共享使用的 HTTP MCP 服务：
 
-- 服务端只暴露 8 个产品级 `/mcp/<family>` 入口
+- 服务端首选暴露统一 `/mcp` 入口，一次提供全部产品工具
+- 旧的 8 个产品级 `/mcp/<family>` 入口仍作为兼容路径保留
 - 每个用户用自己的 `AK/SK`
-- 用户首次调用 `auth_configure_session` 后，服务端加密持久化保存凭证
+- 默认多用户模式下，用户首次调用 `auth_configure_session` 后，服务端加密持久化保存凭证
+- 单账号模式可在 `.env` 预置 `HUAWEICLOUD_AK/SK/REGION` 与 `MCP_AUTH_STATIC_TOKEN`，客户端用固定 Bearer header 连接，无需自然语言鉴权
 - 正常重连或服务重启后，不需要重复填写 `AK/SK`
 
 同一实例还可以同时暴露 8 个产品级子入口：
@@ -269,7 +271,7 @@ bash deploy/manage-shared.sh start-ssl
 
 - `/health`
 
-如果客户端希望按产品拆分接入，也可以额外暴露这些路径：
+旧客户端如果仍按产品拆分接入，也可以继续使用这些兼容路径：
 
 - `/mcp/req`
 - `/mcp/repo`
@@ -293,13 +295,9 @@ bash deploy/manage-shared.sh start-ssl
 ```json
 {
   "mcpServers": {
-    "req": {
+    "codearts": {
       "type": "http",
-      "url": "https://your-domain.example.com/mcp/req"
-    },
-    "repo": {
-      "type": "http",
-      "url": "https://your-domain.example.com/mcp/repo"
+      "url": "https://your-domain.example.com/mcp"
     }
   }
 }

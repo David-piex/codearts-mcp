@@ -57,6 +57,44 @@ describe("registerProductTool", () => {
     );
   });
 
+  it("registers the latest Check and Req official endpoint additions", () => {
+    const registerTool = vi.fn();
+    const expectedEndpoints = [
+      ["check", "PUT", "/v2/plugins"],
+      ["check", "GET", "/v2/system-configs"],
+      ["check", "PUT", "/v1/tenant-configs/{id}"],
+      ["check", "DELETE", "/v1/tenant-configs/{id}"],
+      ["check", "GET", "/v1/tenant-configs"],
+      ["check", "POST", "/v1/tenant-configs"],
+      ["check", "GET", "/v1/config/simple/{config_id}"],
+      ["check", "POST", "/v1/task/recover-data"],
+      ["check", "GET", "/v2/backup/backup-infos"],
+      ["check", "POST", "/v2/tasks/"],
+      ["check", "GET", "/v2/tasks/"],
+      ["req", "GET", "/v4/iterations/{iteration_id}/histories"]
+    ] as const;
+
+    for (const [family, method, pathTemplate] of expectedEndpoints) {
+      const endpointTool = getOfficialEndpointToolsByFamily(family).find(
+        (tool) => tool.method === method && tool.pathTemplate === pathTemplate
+      );
+
+      expect(endpointTool, `${family} ${method} ${pathTemplate}`).toBeDefined();
+      expect(resolveProductToolFamily(endpointTool!.name)).toBe(family);
+      expect(
+        registerProductTool({
+          toolName: endpointTool!.name,
+          server: { registerTool },
+          mode: "http",
+          sessionStore: createSessionCredentialStore(),
+          stdioClients: undefined
+        })
+      ).toBe(true);
+    }
+
+    expect(registerTool).toHaveBeenCalledTimes(expectedEndpoints.length);
+  });
+
   it("returns false when no product registrar handles the tool", () => {
     const registerTool = vi.fn();
 

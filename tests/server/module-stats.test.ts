@@ -39,10 +39,10 @@ describe("classifyToolAccess", () => {
 describe("collectModuleStats", () => {
   it("returns the current per-module tool totals and read/write split", () => {
     expect(collectModuleStats()).toEqual([
-      { module: "Req", total: 363, read: 219, write: 144 },
+      { module: "Req", total: 364, read: 220, write: 144 },
       { module: "Repo", total: 459, read: 287, write: 172 },
       { module: "Pipeline", total: 257, read: 146, write: 111 },
-      { module: "Check", total: 135, read: 101, write: 34 },
+      { module: "Check", total: 146, read: 106, write: 40 },
       { module: "TestPlan", total: 762, read: 363, write: 399 },
       { module: "Deploy", total: 110, read: 61, write: 49 },
       { module: "Build", total: 167, read: 113, write: 54 },
@@ -54,8 +54,8 @@ describe("collectModuleStats", () => {
     expect(collectProductToolStats()).toEqual({
       modules: 8,
       total: collectProductToolManifest().length,
-      read: 1351,
-      write: 983,
+      read: 1357,
+      write: 989,
     });
   });
 
@@ -76,10 +76,10 @@ describe("collectModuleStats", () => {
   it("renders a json report from the current stats", () => {
     expect(JSON.parse(renderModuleStatsReportJson())).toEqual({
       modules: [
-        { module: "Req", total: 363, read: 219, write: 144 },
+        { module: "Req", total: 364, read: 220, write: 144 },
         { module: "Repo", total: 459, read: 287, write: 172 },
         { module: "Pipeline", total: 257, read: 146, write: 111 },
-        { module: "Check", total: 135, read: 101, write: 34 },
+        { module: "Check", total: 146, read: 106, write: 40 },
         { module: "TestPlan", total: 762, read: 363, write: 399 },
         { module: "Deploy", total: 110, read: 61, write: 49 },
         { module: "Build", total: 167, read: 113, write: 54 },
@@ -88,8 +88,8 @@ describe("collectModuleStats", () => {
       totals: {
         modules: 8,
         total: collectProductToolManifest().length,
-        read: 1351,
-        write: 983,
+        read: 1357,
+        write: 989,
         httpTotalWithAuth: collectHttpToolTotal(),
       },
     });

@@ -2,7 +2,7 @@
 
 这页只讲命令行怎么用。先记住一句话：
 
-`codearts-mcp` 的 CLI 可以直接调用所有 MCP 工具，既能本地用 AK/SK 调 CodeArts，也能调用已经部署好的产品级 `/mcp/<family>` 服务。
+`codearts-mcp` 的 CLI 可以直接调用所有 MCP 工具，既能本地用 AK/SK 调 CodeArts，也能调用已经部署好的统一 `/mcp` 服务。
 
 ## 1. 先选模式
 
@@ -43,12 +43,12 @@ npm run cli -- call req_list_projects --input '{"page":1,"page_size":20}' --form
 
 ## 3. 远程模式
 
-远程模式会把请求发到共享 MCP 服务的产品级入口 `/mcp/<family>`。
+远程模式默认把请求发到共享 MCP 服务的统一入口 `/mcp`；旧 `/mcp/<family>` 仍可兼容使用。
 
 ```powershell
 npm run cli -- call req_list_projects `
   --transport http `
-  --endpoint https://your-domain.example/mcp/req `
+  --endpoint https://your-domain.example/mcp `
   --token replace-with-auth-token `
   --input '{"page":1}' `
   --format table
@@ -58,7 +58,7 @@ npm run cli -- call req_list_projects `
 
 ```powershell
 $env:CODEARTS_CLI_TRANSPORT="http"
-$env:CODEARTS_MCP_URL="https://your-domain.example/mcp/req"
+$env:CODEARTS_MCP_URL="https://your-domain.example/mcp"
 $env:CODEARTS_MCP_AUTH_TOKEN="replace-with-auth-token"
 
 npm run cli -- tools --format table

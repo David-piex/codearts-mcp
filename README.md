@@ -9,7 +9,7 @@
 - **会话隔离** — 共享模式下每个用户使用自己的 AK/SK，互不干扰
 - **加密持久化** — 凭证经 AES-256-GCM 加密落盘，服务重启后可恢复会话
 - **Cookie / Token 双恢复** — 客户端保留 Cookie 或固定 auth_token 均可无缝重连
-- **CLI 兼容** — 复用同一批 MCP 工具 handler，支持本地 AK/SK 直调和远程 HTTP `/mcp/<family>` 调用
+- **CLI 兼容** — 复用同一批 MCP 工具 handler，支持本地 AK/SK 直调和远程统一 HTTP `/mcp` 调用
 - **速率限制** — 写操作内置 per-session 限流，防止误操作风暴
 - **缓存加速** — 高频读工具带共享缓存与 in-flight dedupe，命中后毫秒级响应
 
@@ -88,100 +88,30 @@ node dist/src/server/index.js
 ```json
 {
   "mcpServers": {
-    "req": {
+    "codearts": {
       "type": "http",
-      "url": "http://your-server-ip/mcp/req"
-    },
-    "repo": {
-      "type": "http",
-      "url": "http://your-server-ip/mcp/repo"
-    },
-    "pipeline": {
-      "type": "http",
-      "url": "http://your-server-ip/mcp/pipeline"
-    },
-    "check": {
-      "type": "http",
-      "url": "http://your-server-ip/mcp/check"
-    },
-    "testplan": {
-      "type": "http",
-      "url": "http://your-server-ip/mcp/testplan"
-    },
-    "deploy": {
-      "type": "http",
-      "url": "http://your-server-ip/mcp/deploy"
-    },
-    "build": {
-      "type": "http",
-      "url": "http://your-server-ip/mcp/build"
-    },
-    "artifact": {
-      "type": "http",
-      "url": "http://your-server-ip/mcp/artifact"
+      "url": "http://your-server-ip/mcp"
     }
   }
 }
 ```
 
-当前已部署的共享服务按 8 个产品模块拆分接入，可以直接使用下面这份配置：
+当前已部署的共享服务推荐使用一个统一入口，可以直接使用下面这份配置：
 
 ```json
 {
   "mcpServers": {
-    "req": {
+    "codearts": {
       "disabled": false,
       "timeout": 60,
       "type": "streamableHttp",
-      "url": "http://39.106.183.205/mcp/req"
-    },
-    "repo": {
-      "disabled": false,
-      "timeout": 60,
-      "type": "streamableHttp",
-      "url": "http://39.106.183.205/mcp/repo"
-    },
-    "pipeline": {
-      "disabled": false,
-      "timeout": 60,
-      "type": "streamableHttp",
-      "url": "http://39.106.183.205/mcp/pipeline"
-    },
-    "check": {
-      "disabled": false,
-      "timeout": 60,
-      "type": "streamableHttp",
-      "url": "http://39.106.183.205/mcp/check"
-    },
-    "testplan": {
-      "disabled": false,
-      "timeout": 60,
-      "type": "streamableHttp",
-      "url": "http://39.106.183.205/mcp/testplan"
-    },
-    "deploy": {
-      "disabled": false,
-      "timeout": 60,
-      "type": "streamableHttp",
-      "url": "http://39.106.183.205/mcp/deploy"
-    },
-    "build": {
-      "disabled": false,
-      "timeout": 60,
-      "type": "streamableHttp",
-      "url": "http://39.106.183.205/mcp/build"
-    },
-    "artifact": {
-      "disabled": false,
-      "timeout": 60,
-      "type": "streamableHttp",
-      "url": "http://39.106.183.205/mcp/artifact"
+      "url": "http://39.106.183.205/mcp"
     }
   }
 }
 ```
 
-当前共享 HTTP MCP 只保留按产品拆开的 8 个子路径：
+统一入口 `/mcp` 一次暴露 Req、Repo、Pipeline、Check、TestPlan、Deploy、Build、Artifact 全部工具。旧的产品子路径仍保留兼容：
 
 - `/mcp/req`
 - `/mcp/repo`
@@ -192,7 +122,7 @@ node dist/src/server/index.js
 - `/mcp/build`
 - `/mcp/artifact`
 
-这些子路径共用同一套鉴权持久化、Cookie 和 `auth_token`；也就是说，可以先在任意一个入口调用 `auth_configure_session`，再在另一个入口通过 Cookie 或 Bearer token 复用凭证。需要注意的是，`mcp-session-id` 仍然是按路径隔离的，`/mcp/req` 的 session 不能直接拿去请求 `/mcp/repo`。
+统一入口共用一个 MCP session、鉴权持久化、Cookie 和 `auth_token`。兼容子路径仍按路径隔离 session；新接入不需要配置或切换这些子路径。
 
 若客户端不保留 Cookie，请使用 `Authorization: Bearer <auth_token>` 复用凭证。不要把 token 放到 URL query；URL 容易进入代理日志、浏览器历史和监控系统。
 
@@ -202,7 +132,33 @@ Authorization: Bearer replace-with-auth-token
 
 ### 3. 首次鉴权
 
-连接后调用 `auth_configure_session`：
+共享服务可以由运维侧只开启一次客户端凭证 Header 模式：
+
+```env
+MCP_AUTH_ALLOW_CLIENT_CREDENTIAL_HEADERS=true
+```
+
+之后每个用户在自己的 MCP 配置里填写自己的 AK/SK，不需要管理员预置用户，也不需要调用 `auth_configure_session`：
+
+```json
+{
+  "mcpServers": {
+    "codearts": {
+      "type": "streamableHttp",
+      "url": "https://your-server-domain/mcp",
+      "headers": {
+        "X-CodeArts-AK": "your-ak",
+        "X-CodeArts-SK": "your-sk",
+        "X-CodeArts-Region": "cn-north-4"
+      }
+    }
+  }
+}
+```
+
+该模式必须使用 HTTPS。AK/SK 会保存在用户本机的 MCP 配置中，并随请求发送；服务端不会把它们写入请求日志，但反向代理也必须禁止记录请求头。不同用户的 Header 会建立相互隔离的加密会话。
+
+默认共享模式下，连接后调用 `auth_configure_session`：
 
 ```json
 {
@@ -211,6 +167,24 @@ Authorization: Bearer replace-with-auth-token
   "region": "cn-north-4"
 }
 ```
+
+单账号部署可以在服务端 `.env` 预置 `HUAWEICLOUD_AK`、`HUAWEICLOUD_SK`、`HUAWEICLOUD_REGION` 和随机的 `MCP_AUTH_STATIC_TOKEN`。MCP 客户端直接配置固定 Bearer 请求头即可，不需要再通过自然语言调用鉴权工具：
+
+```json
+{
+  "mcpServers": {
+    "codearts": {
+      "type": "streamableHttp",
+      "url": "http://your-server-ip/mcp",
+      "headers": {
+        "Authorization": "Bearer replace-with-mcp-auth-static-token"
+      }
+    }
+  }
+}
+```
+
+静态模式的 AK/SK 只保留在服务端环境变量中；客户端只保存可轮换的 MCP token。多用户共享场景继续使用 `auth_configure_session`，不要共用一个静态 token。
 
 ### 4. 验证连通
 
@@ -366,9 +340,9 @@ npm run cli -- call req_list_projects `
 
 <!-- GENERATED:readme-exposure-summary:start -->
 - `8` product modules
-- `2334` product tools
+- `2346` product tools
 - `2` session/auth tools for shared `http` mode
-- `2336` total MCP tools in shared `http` mode
+- `2348` total MCP tools in shared `http` mode
 <!-- GENERATED:readme-exposure-summary:end -->
 
 工具读写分布：读操作 177 (63.7%) / 写操作 101 (36.3%)
@@ -376,10 +350,10 @@ npm run cli -- call req_list_projects `
 <!-- GENERATED:readme-module-numbers:start -->
 | Module | Tools | Live status | Current breakdown |
 | --- | --- | --- | --- |
-| Req | 363 | Partial | Expanded Req surface with current-user info/role and user-feature reads, project bug/summary/statistics/metric reads, project domain reads, work-item-tree count/list, work-item tag/index-count reads, project work-item history reads, child work-item reads, work-hours/work-hour-type reads, issue image upload/download, attachment upload/download/delete, associated wiki reads, plan work-item management, plan image update, plan-context work item creation, work-item template/copy writes, project-template update/delete writes, project due-days-after/workhour-config reads, status-name check, status/status-attribute/status-detail/workflow-config/template/template-config/custom-field/status-rule-flag/status-config/optional-status-config/tracker-handler and project-public-config reads plus field/cache reads and board work-item reads; see `docs/wiki/Req-Live-Validated.md` for validated paths and remaining live-depth gaps |
+| Req | 364 | Partial | Expanded Req surface with current-user info/role and user-feature reads, project bug/summary/statistics/metric reads, project domain reads, work-item-tree count/list, work-item tag/index-count reads, project work-item history reads, child work-item reads, work-hours/work-hour-type reads, issue image upload/download, attachment upload/download/delete, associated wiki reads, plan work-item management, plan image update, plan-context work item creation, work-item template/copy writes, project-template update/delete writes, project due-days-after/workhour-config reads, status-name check, status/status-attribute/status-detail/workflow-config/template/template-config/custom-field/status-rule-flag/status-config/optional-status-config/tracker-handler and project-public-config reads plus field/cache reads and board work-item reads; see `docs/wiki/Req-Live-Validated.md` for validated paths and remaining live-depth gaps |
 | Repo | 459 | Partial | `25 Full / 0 Reachable / 0 Unpublished / 6 Code` |
 | Pipeline | 257 | Partial | `16 Full / 4 Reachable / 1 Unpublished / 52 Code` |
-| Check | 135 | Partial | `14 Full / 0 Reachable / 0 Unpublished / 5 Code` |
+| Check | 146 | Partial | `14 Full / 0 Reachable / 0 Unpublished / 5 Code` |
 | TestPlan | 762 | Partial | `1 Full / 2 Reachable / 4 Unpublished / 0 Code` |
 | Deploy | 110 | Partial | Expanded v4 surface with partial live closure; see `docs/wiki/Module-Live-Readiness.md` |
 | Build | 167 | Validated | Expanded metadata read surface with live smoke coverage |
@@ -410,13 +384,15 @@ Live 状态说明：
 | --- | --- | --- |
 | `MCP_HTTP_PORT` | HTTP 监听端口 | `3000` |
 | `MCP_HTTP_HOST` | HTTP 监听地址；本地默认只监听回环地址，共享/容器部署需显式设为 `0.0.0.0` | `127.0.0.1` |
-| `MCP_HTTP_ALLOWED_ORIGINS` | 允许携带 `Origin` 访问 `/mcp/<family>` 的浏览器来源，多个值用英文逗号分隔 | — |
+| `MCP_HTTP_ALLOWED_ORIGINS` | 允许携带 `Origin` 访问 `/mcp` 的浏览器来源，多个值用英文逗号分隔 | — |
 | `MCP_ENABLED_PRODUCT_FAMILIES` | 限制当前实例只暴露指定产品族；可填 `artifact,build,check,deploy,pipeline,repo,req,testplan` 的逗号列表 | — |
 | `MCP_PRODUCT_WRITE_RATE_LIMIT_MAX_REQUESTS` | 产品写入每个 action/session 的限流次数 | `3000` |
 | `MCP_PRODUCT_WRITE_RATE_LIMIT_WINDOW_MS` | 产品写入限流窗口 | `60000` |
 | `MCP_AUTH_WRITE_RATE_LIMIT_MAX_REQUESTS` | 鉴权写入每个 session 的限流次数 | `3000` |
 | `MCP_AUTH_WRITE_RATE_LIMIT_WINDOW_MS` | 鉴权写入限流窗口 | `60000` |
 | `MCP_AUTH_DATA_PATH` | 加密凭证持久化路径 | `.codearts-mcp/auth-store.json` |
+| `MCP_AUTH_STATIC_TOKEN` | 可选单账号 HTTP 模式的固定 Bearer token | — |
+| `MCP_AUTH_ALLOW_CLIENT_CREDENTIAL_HEADERS` | 允许共享服务从 MCP 客户端 Header 接收每用户 AK/SK；仅限 HTTPS | `false` |
 | `MCP_AUTH_COOKIE_SECURE` | HTTPS 环境下设置 Cookie Secure 标志 | `false` |
 | `CODEARTS_CLI_TRANSPORT` | CLI 默认调用模式：`local` 或 `http` | `local` |
 | `CODEARTS_MCP_URL` | CLI 远程 HTTP MCP 入口 | — |
@@ -424,9 +400,9 @@ Live 状态说明：
 | `CODEARTS_CLI_PROFILE` | CLI 默认 profile 名称 | — |
 | `CODEARTS_CLI_CONFIG` | CLI profile 配置文件路径 | `~/.codearts-mcp-cli.json` |
 | `CODEARTS_CLI_FORMAT` | CLI 默认输出格式：`json`、`text` 或 `table` | `json` |
-| `HUAWEICLOUD_AK` | 默认 AK（stdio 模式） | — |
-| `HUAWEICLOUD_SK` | 默认 SK（stdio 模式） | — |
-| `HUAWEICLOUD_REGION` | 默认区域（stdio 模式） | — |
+| `HUAWEICLOUD_AK` | 默认 AK（stdio 或单账号 HTTP 模式） | — |
+| `HUAWEICLOUD_SK` | 默认 SK（stdio 或单账号 HTTP 模式） | — |
+| `HUAWEICLOUD_REGION` | 默认区域（stdio 或单账号 HTTP 模式） | — |
 
 ### 产品 URL 覆盖（cn-north-4 默认值）
 

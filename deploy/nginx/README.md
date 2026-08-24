@@ -14,6 +14,7 @@
 该配置会将以下路径转发到内部 `codearts-mcp:3000`：
 
 - `/health`
+- `/mcp` (recommended unified MCP entry)
 - `/mcp/<family>`
 
 适合场景：
@@ -52,7 +53,7 @@ docker compose -f docker-compose.yml -f docker-compose.ssl.yml up -d --build
 
 ## 推荐做法
 
-- 共享 MCP 服务建议只暴露 `https://your-domain/mcp/<family>`
+- 共享 MCP 服务建议只暴露 `https://your-domain/mcp`
 - 同时保留 `https://your-domain/health` 供健康检查
 - 如果是公网部署，建议在 nginx 前再加一层访问控制
 - 即使服务是共享部署，也不要在服务端写死所有人的 `AK/SK`

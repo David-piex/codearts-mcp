@@ -67,7 +67,7 @@ describe("module stats doc rendering", () => {
     expect(markdown).toContain("| Deploy | 61 | 49 | Partial |");
     expect(markdown).toContain("| Build | 113 | 54 | Validated |");
     expect(markdown).toContain("| TestPlan | 363 | 399 | Partial |");
-    expect(markdown).toContain("| Check | 101 | 34 | Partial |");
+    expect(markdown).toContain("| Check | 106 | 40 | Partial |");
   });
 
   it("renders API reference scale tables from current module stats", () => {
@@ -78,7 +78,7 @@ describe("module stats doc rendering", () => {
       `\`${collectProductToolStats().total}\``,
     );
     expect(reqReference).toContain("| Req MCP");
-    expect(reqReference).toContain("| 363 |");
+    expect(reqReference).toContain("| 364 |");
     expect(reqReference).toContain(`| ${collectHttpToolTotal()} |`);
   });
 });
@@ -118,15 +118,15 @@ describe("syncModuleStatsDocuments", () => {
       `- \`${collectProductToolStats().total}\` product tools`,
     );
     expect(synced["README.md"]).toContain("| Pipeline | 257 | Partial |");
-    expect(synced["README.md"]).toContain("| Req | 363 | Partial |");
+    expect(synced["README.md"]).toContain("| Req | 364 | Partial |");
     expect(synced["docs/wiki/Capability-Matrix.md"]).toContain(
-      "| Req | 219 | 144 | Partial |",
+      "| Req | 220 | 144 | Partial |",
     );
     expect(synced["docs/wiki/API-Reference.md"]).toContain(
       `\`${collectProductToolStats().total}\``,
     );
     expect(synced["docs/wiki/Module-Live-Readiness.md"]).toContain(
-      "| Req | 363 | 219 | 144 | Partial |",
+      "| Req | 364 | 220 | 144 | Partial |",
     );
     expect(synced["docs/wiki/Module-Live-Readiness.md"]).toContain(
       `- Total MCP tools exposed: \`${collectHttpToolTotal()}\``,

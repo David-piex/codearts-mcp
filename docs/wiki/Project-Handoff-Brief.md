@@ -7,14 +7,14 @@
 The server supports two runtime modes:
 
 - `stdio`: local, single-user usage. Credentials come from process environment.
-- `http`: shared service usage. Each user binds their own AK/SK through session auth, while the service provides product-scoped MCP entrypoints.
+- `http`: shared service usage. Each user binds their own AK/SK through session auth, while the service provides one unified MCP entrypoint.
 
 The default application HTTP port is `3000`. The Docker Compose setup exposes Nginx on host port `80`.
 
 Current Gitee state after the July 2026 merge:
 
 - `origin/master` and `origin/split-mcp-product` both point at `02d4a94a`.
-- The shared HTTP `/mcp` endpoint has been removed; use `/mcp/<family>`.
+- The shared HTTP `/mcp` endpoint is the primary unified entry; `/mcp/<family>` remains a compatibility path.
 - `req_list_work_item_queries` was fixed to send only the documented `projectId` query parameter, avoiding duplicate `projectId` / `project_id` signing failures.
 - The latest full local gate passed with `452` test files and `2629` tests.
 
@@ -28,7 +28,7 @@ The main entrypoint is `src/server/index.ts`. It chooses the runtime mode from `
 HTTP mode is built around `src/server/http.ts` and `src/server/http-app.ts`:
 
 - `http.ts` starts the Node HTTP server.
-- `http-app.ts` handles `/health`, `/mcp/<family>`, request logging, auth token and cookie handling, session recovery, and MCP transport lifecycle.
+- `http-app.ts` handles `/health`, `/mcp` and compatibility `/mcp/<family>` routes, request logging, auth token and cookie handling, session recovery, and MCP transport lifecycle.
 
 MCP server creation is centralized in `src/server/create-server.ts`:
 
@@ -65,7 +65,7 @@ The product domains are:
 
 Shared HTTP mode does not share one global CodeArts credential. Users call `auth_configure_session` to store encrypted credentials, and later tool calls recover credentials from cookie/token/session context.
 
-HTTP MCP is split by product family. Each `/mcp/<family>` route creates a route-specific MCP session and registers only that product's tools plus `auth_configure_session` and `auth_clear_session`. Auth cookies or bearer tokens can be reused across product routes, but `mcp-session-id` values are route-scoped and cannot be reused between paths.
+HTTP MCP uses one unified `/mcp` route by default. It creates one MCP session and registers all product tools plus `auth_configure_session` and `auth_clear_session`. The old `/mcp/<family>` routes remain as compatibility aliases and keep route-specific sessions.
 
 The project has explicit consistency checks around tool metadata and docs:
 
@@ -92,7 +92,11 @@ Current module scale:
 - Product writes: `983`
 - Shared HTTP total with auth tools: `2336`
 
-Current HTTP product routes:
+Current HTTP entrypoint:
+
+- `/mcp` (all products, recommended)
+
+Compatibility product routes:
 
 - `/mcp/req`
 - `/mcp/repo`

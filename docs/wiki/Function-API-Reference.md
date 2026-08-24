@@ -4,7 +4,7 @@
 
 为避免单页过大，完整参数表和 JSON Schema 已按模块拆分到子页面。本页只保留通用调用结构、模块目录和工具索引。
 
-所有函数 API 使用按产品拆分的 HTTP 入口：`POST /mcp/<family>`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数；其中 `<family>` 需与工具前缀一致，例如 `req_*` 走 `/mcp/req`，`repo_*` 走 `/mcp/repo`。
+所有函数 API 默认使用统一 HTTP 入口：`POST /mcp`。JSON-RPC 方法为 `tools/call`，通过 `params.name` 选择具体函数；统一入口一次暴露全部产品工具和鉴权工具。旧的 `/mcp/<family>` 产品入口仍作为兼容路径保留。
 
 ## 通用调用结构
 
@@ -27,13 +27,13 @@
 | 制品仓 | 81 | [Function-API-Reference-Artifact.md](./Function-API-Reference-Artifact.md) |
 | 鉴权会话 | 2 | [Function-API-Reference-Auth-Session.md](./Function-API-Reference-Auth-Session.md) |
 | 编译构建 | 167 | [Function-API-Reference-Build.md](./Function-API-Reference-Build.md) |
-| 代码检查 | 135 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
+| 代码检查 | 146 | [Function-API-Reference-Check.md](./Function-API-Reference-Check.md) |
 | 部署 | 110 | [Function-API-Reference-Deploy.md](./Function-API-Reference-Deploy.md) |
 | 流水线 | 257 | [Function-API-Reference-Pipeline.md](./Function-API-Reference-Pipeline.md) |
 | 代码仓库 | 459 | [Function-API-Reference-Repo.md](./Function-API-Reference-Repo.md) |
-| 需求管理 | 363 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
+| 需求管理 | 364 | [Function-API-Reference-Req.md](./Function-API-Reference-Req.md) |
 | 测试计划 | 762 | [Function-API-Reference-TestPlan.md](./Function-API-Reference-TestPlan.md) |
-| **总计** | **2336** | |
+| **总计** | **2348** | |
 
 ## 字段对应
 
@@ -301,14 +301,17 @@
 | `check_delete_ruleset_c78cb768` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_delete_ruleset_c78cb768) |
 | `check_delete_task` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_delete_task) |
 | `check_delete_task_143f951d` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_delete_task_143f951d) |
+| `check_delete_tenant_configs_5e05bf7f` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_delete_tenant_configs_5e05bf7f) |
 | `check_detect_task_language` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_detect_task_language) |
 | `check_download_log_file` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_download_log_file) |
 | `check_extract_task_assistant_summary` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_extract_task_assistant_summary) |
 | `check_get_async_job` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_async_job) |
 | `check_get_async_job_2924ebe9` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_async_job_2924ebe9) |
 | `check_get_async_job_v2` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_async_job_v2) |
+| `check_get_backup_backup_infos_d22f99cb` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_backup_backup_infos_d22f99cb) |
 | `check_get_code_health_svg` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_code_health_svg) |
 | `check_get_code_sum_measures` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_code_sum_measures) |
+| `check_get_config_simple_792fdd61` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_config_simple_792fdd61) |
 | `check_get_console_log` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_console_log) |
 | `check_get_criterion_rule` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_criterion_rule) |
 | `check_get_criterionset` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_criterionset) |
@@ -331,6 +334,7 @@
 | `check_get_pdf_file` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_pdf_file) |
 | `check_get_project_config` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_project_config) |
 | `check_get_single_defect` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_single_defect) |
+| `check_get_system_configs_11868d53` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_system_configs_11868d53) |
 | `check_get_task` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_task) |
 | `check_get_task_by_id` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_task_by_id) |
 | `check_get_task_cron` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_task_cron) |
@@ -349,11 +353,13 @@
 | `check_get_task_webhook_info` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_task_webhook_info) |
 | `check_get_task_webhook_info_v4` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_task_webhook_info_v4) |
 | `check_get_tasks_all_files_17d5d9b9` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_tasks_all_files_17d5d9b9) |
+| `check_get_tasks_b6b90a38` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_tasks_b6b90a38) |
 | `check_get_tasks_cd05bfff` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_tasks_cd05bfff) |
 | `check_get_tasks_log_detail_937f70c1` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_tasks_log_detail_937f70c1) |
 | `check_get_tasks_measure_list_297ff819` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_tasks_measure_list_297ff819) |
 | `check_get_tasks_pdf_file_c7821b71` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_tasks_pdf_file_c7821b71) |
 | `check_get_tasks_related_duplicate_blocks_9ac8cad3` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_tasks_related_duplicate_blocks_9ac8cad3) |
+| `check_get_tenant_configs_b7fdea2b` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_tenant_configs_b7fdea2b) |
 | `check_get_tenant_package_status` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_tenant_package_status) |
 | `check_get_tenant_tenant_package_status_c81081d8` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_tenant_tenant_package_status_c81081d8) |
 | `check_get_transmission_notification` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_get_transmission_notification) |
@@ -406,9 +412,14 @@
 | `check_post_defects_assistant_analysis_task_71c2aaa0` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_post_defects_assistant_analysis_task_71c2aaa0) |
 | `check_post_jobs_3e3cc5b2` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_post_jobs_3e3cc5b2) |
 | `check_post_task_02fd3e9e` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_post_task_02fd3e9e) |
+| `check_post_task_recover_data_e8f9b1f6` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_post_task_recover_data_e8f9b1f6) |
+| `check_post_tasks_a9409914` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_post_tasks_a9409914) |
+| `check_post_tenant_configs_9e2824ef` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_post_tenant_configs_9e2824ef) |
 | `check_put_defects_file_content_7f966b38` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_put_defects_file_content_7f966b38) |
+| `check_put_plugins_8916348e` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_put_plugins_8916348e) |
 | `check_put_tasks_pdf_async_job_bc6f6a3f` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_put_tasks_pdf_async_job_bc6f6a3f) |
 | `check_put_tasks_stop_d00e79b6` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_put_tasks_stop_d00e79b6) |
+| `check_put_tenant_configs_d3383ec0` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_put_tenant_configs_d3383ec0) |
 | `check_refresh_job_result` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_refresh_job_result) |
 | `check_request_official_api` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_request_official_api) |
 | `check_run_task` | 代码检查 | [查看](./Function-API-Reference-Check.md#check_run_task) |
@@ -1373,6 +1384,7 @@
 | `req_get_ipdprojectserv_projects_workflow_a43840bd` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_get_ipdprojectserv_projects_workflow_a43840bd) |
 | `req_get_ir` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_get_ir) |
 | `req_get_iteration` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_get_iteration) |
+| `req_get_iterations_histories_50dc28a3` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_get_iterations_histories_50dc28a3) |
 | `req_get_plan` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_get_plan) |
 | `req_get_project` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_get_project) |
 | `req_get_project_bug_density` | 需求管理 | [查看](./Function-API-Reference-Req.md#req_get_project_bug_density) |

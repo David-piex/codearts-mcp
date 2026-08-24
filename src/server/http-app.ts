@@ -4,8 +4,15 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import { dirname } from "node:path";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { isInitializeRequest } from "@modelcontextprotocol/sdk/types.js";
-import { loadServerMetadataConfig, type HttpAuthConfig, type ServerMetadataConfig } from "../core/config/env.js";
+import {
+  loadServerMetadataConfig,
+  type HttpAuthConfig,
+  type ServerMetadataConfig
+} from "../core/config/env.js";
+import { resolveRegionDefaults } from "../core/config/region-defaults.js";
 import { serializeAuthCookie } from "./auth-cookie.js";
+import { hashAuthToken } from "./auth-token.js";
+import { encryptSecretValue } from "./auth-crypto.js";
 import { createAuthContextResolver } from "./auth-context.js";
 import { createFileAuthRepository } from "./auth-repository.js";
 import { createServerFactory } from "./create-server.js";
@@ -47,9 +54,10 @@ type HttpAppRouteConfig = {
 };
 
 type ResolvedMcpRoute = {
-  routeKey: ProductToolFamily;
-  path: `/mcp/${ProductToolFamily}`;
-  enabledProductFamilies: [ProductToolFamily];
+  routeKey: string;
+  path: string;
+  enabledProductFamilies?: ProductToolFamily[];
+  legacyFamily?: ProductToolFamily;
 };
 
 export type HttpAppPrewarmResult = {
@@ -100,6 +108,24 @@ async function readJsonBody(req: IncomingMessage): Promise<unknown> {
 
 function normalizeHeaderValue(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
+}
+
+function readClientCredentialHeaders(req: IncomingMessage) {
+  const accessKey = normalizeHeaderValue(req.headers["x-codearts-ak"])?.trim();
+  const secretKey = normalizeHeaderValue(req.headers["x-codearts-sk"])?.trim();
+  const region = normalizeHeaderValue(req.headers["x-codearts-region"])?.trim();
+
+  if (!accessKey && !secretKey && !region) {
+    return undefined;
+  }
+
+  if (!accessKey || !secretKey || !region) {
+    throw new Error(
+      "X-CodeArts-AK, X-CodeArts-SK, and X-CodeArts-Region must be provided together."
+    );
+  }
+
+  return { accessKey, secretKey, region };
 }
 
 function normalizeOriginHeader(value: string | string[] | undefined) {
@@ -351,6 +377,14 @@ function resolveMcpRoute(
   pathname: string,
   enabledProductFamilies?: ProductToolFamily[]
 ): ResolvedMcpRoute | undefined {
+  if (/^\/mcp\/?$/.test(pathname)) {
+    return {
+      routeKey: "all",
+      path: "/mcp",
+      enabledProductFamilies
+    };
+  }
+
   const routeMatch = pathname.match(/^\/mcp\/([a-z]+)\/?$/);
   const family = routeMatch?.[1];
 
@@ -365,7 +399,8 @@ function resolveMcpRoute(
   return {
     routeKey: family,
     path: `/mcp/${family}`,
-    enabledProductFamilies: [family]
+    enabledProductFamilies: [family],
+    legacyFamily: family
   };
 }
 
@@ -386,6 +421,97 @@ export function createHttpApp(
         fileCheckIntervalMs: 1_000
       })
     : undefined;
+
+  function provisionClientCredentialAuth(
+    credentials: ReturnType<typeof readClientCredentialHeaders>,
+    requestSessionId?: string
+  ) {
+    if (!credentials) {
+      return undefined;
+    }
+
+    if (!authConfig || !authRepository) {
+      throw new Error("Client credential headers require HTTP auth persistence.");
+    }
+
+    if (!authConfig.allowClientCredentialHeaders) {
+      throw new Error(
+        "Client credential headers are disabled on this server."
+      );
+    }
+
+    const credentialIdentity =
+      `${credentials.accessKey}\u0000${credentials.secretKey}\u0000${credentials.region}`;
+    const authId = `header-${hashAuthToken(credentialIdentity).slice(0, 32)}`;
+    const boundAuthId = requestSessionId ? sessionStore.getAuthId(requestSessionId) : undefined;
+
+    if (boundAuthId && boundAuthId !== authId) {
+      throw new Error("Client credential headers do not match the existing MCP session.");
+    }
+
+    if (boundAuthId === authId && authRepository.findActiveByAuthId(authId)) {
+      return {
+        authId,
+        rawToken: undefined
+      };
+    }
+
+    const endpoints = resolveRegionDefaults(credentials.region);
+    const now = new Date().toISOString();
+    authRepository.upsert({
+      auth_id: authId,
+      token_hash: hashAuthToken(
+        `header-token:${credentials.accessKey}\u0000${credentials.secretKey}\u0000${credentials.region}`
+      ),
+      encrypted_access_key: encryptSecretValue(credentials.accessKey, authConfig.masterKey),
+      encrypted_secret_key: encryptSecretValue(credentials.secretKey, authConfig.masterKey),
+      region: credentials.region,
+      ...endpoints,
+      created_at: now,
+      updated_at: now,
+      last_used_at: now,
+      expires_at: new Date(
+        Date.now() + authConfig.authTokenTtlSeconds * 1000
+      ).toISOString()
+    });
+
+    return {
+      authId,
+      rawToken: undefined
+    };
+  }
+
+  if (authConfig?.staticAuthToken && authConfig.staticCredentials && authRepository) {
+    const now = new Date().toISOString();
+    const staticAuthId = "static-default";
+    authRepository.upsert({
+      auth_id: staticAuthId,
+      token_hash: hashAuthToken(authConfig.staticAuthToken),
+      encrypted_access_key: encryptSecretValue(
+        authConfig.staticCredentials.accessKey,
+        authConfig.masterKey
+      ),
+      encrypted_secret_key: encryptSecretValue(
+        authConfig.staticCredentials.secretKey,
+        authConfig.masterKey
+      ),
+      region: authConfig.staticCredentials.region,
+      req_base_url: authConfig.staticCredentials.reqBaseUrl,
+      repo_base_url: authConfig.staticCredentials.repoBaseUrl,
+      pipeline_base_url: authConfig.staticCredentials.pipelineBaseUrl,
+      check_base_url: authConfig.staticCredentials.checkBaseUrl,
+      testplan_base_url: authConfig.staticCredentials.testPlanBaseUrl,
+      deploy_base_url: authConfig.staticCredentials.deployBaseUrl,
+      build_base_url: authConfig.staticCredentials.buildBaseUrl,
+      artifact_base_url: authConfig.staticCredentials.artifactBaseUrl,
+      created_at: now,
+      updated_at: now,
+      last_used_at: now,
+      expires_at: new Date(
+        Date.now() + authConfig.authTokenTtlSeconds * 1000
+      ).toISOString()
+    });
+  }
   const sessionReuseDiagnostics = createSessionReuseDiagnosticsStore();
   const authResolver =
     authConfig && authRepository
@@ -420,7 +546,7 @@ export function createHttpApp(
       mode: "http",
       config: {
         ...config,
-        serverName: `${config.serverName}-${route.routeKey}`
+        serverName: route.legacyFamily ? `${config.serverName}-${route.routeKey}` : config.serverName
       },
       sessionStore,
       authRepository,
@@ -495,6 +621,19 @@ export function createHttpApp(
         return;
       }
 
+      let clientCredentialAuthContext;
+      try {
+        clientCredentialAuthContext = provisionClientCredentialAuth(
+          readClientCredentialHeaders(req),
+          sessionId
+        );
+      } catch (error) {
+        writeJson(res, 401, {
+          error: error instanceof Error ? error.message : "Invalid client credentials."
+        });
+        return;
+      }
+
       if (req.method === "GET") {
         res.setHeader("allow", "POST, DELETE");
         writeJson(res, 405, {
@@ -504,7 +643,7 @@ export function createHttpApp(
       }
 
       const authResolveStartedAt = Date.now();
-      const authContext = authResolver
+      const authContext = clientCredentialAuthContext ?? (authResolver
         ? await authResolver.resolve({
             sessionId,
             headers: {
@@ -515,7 +654,7 @@ export function createHttpApp(
               ? url.searchParams.get("auth_token") ?? undefined
               : undefined
           })
-        : undefined;
+        : undefined);
       recordRequestPhase("auth_resolve", Date.now() - authResolveStartedAt);
       const responseAuthState = {
         issuedToken: undefined as string | undefined,

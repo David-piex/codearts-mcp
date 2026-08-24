@@ -111,6 +111,47 @@ if (hasLiveEnv(process.env)) {
       await servers.closeAll();
     });
 
+    it("uses MCP client credential headers for a real read-only Req request", async () => {
+      const authConfig = createTestHttpAuthConfig({
+        prefix: "codearts-mcp-http-header-live-auth-",
+        ttlSeconds: 60 * 30,
+        allowClientCredentialHeaders: true
+      });
+      const { port } = await servers.start(authConfig);
+      const headers = {
+        "x-codearts-ak": process.env.HUAWEICLOUD_AK!,
+        "x-codearts-sk": process.env.HUAWEICLOUD_SK!,
+        "x-codearts-region": process.env.HUAWEICLOUD_REGION!
+      };
+      const initialized = await initializeSession(port, {
+        clientName: "vitest-header-live",
+        path: "/mcp",
+        headers
+      });
+
+      expect(initialized.response.status).toBe(200);
+      expect(initialized.sessionId).toBeTruthy();
+
+      const projects = await callTool(port, {
+        id: "req-list-projects-header-live",
+        name: "req_list_projects",
+        arguments: {
+          page: 1,
+          page_size: 10
+        },
+        sessionId: initialized.sessionId ?? undefined,
+        path: "/mcp",
+        headers
+      });
+
+      expect(projects.response.status).toBe(200);
+      expect(
+        projects.body.result?.isError,
+        JSON.stringify(projects.body.result?.content ?? [])
+      ).not.toBe(true);
+      expect(projects.body.result?.structuredContent?.items).toBeInstanceOf(Array);
+    }, 30000);
+
     it("reuses persisted auth across reconnects and executes req/deploy/pipeline write tools over HTTP", async () => {
       const authConfig = createLiveAuthConfig();
       const { port } = await servers.start(authConfig);

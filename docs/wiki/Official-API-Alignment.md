@@ -11,6 +11,23 @@
 3. 能做真实 AK/SK 验证的优先。
 4. 对区域未发布或租户样本缺失的路径，明确标注状态，而不是假装完成。
 
+## 官方资料基线
+
+本页的 endpoint 对齐以华为云官方 API PDF 为基线。官网资料已于 `2026-08-24` 重新核对并下载到本地临时目录；当前官网版本如下：
+
+| 模块 | 官方文档版本 | 发布日期 |
+| --- | ---: | --- |
+| [Req](https://support.huaweicloud.com/intl/en-us/api-projectman/projectman_03_0000.html) | 01 | 2026-07-27 |
+| [Repo](https://support.huaweicloud.com/intl/en-us/api-codeartsrepo/topic_300000001.html) | 01 | 2026-07-22 |
+| [Pipeline](https://support.huaweicloud.com/intl/en-us/api-pipeline/pipeline.html) | 01 | 2026-07-14 |
+| [Check](https://support.huaweicloud.com/intl/en-us/api-codecheck/codecheck_api_0000.html) | 01 | 2026-08-10 |
+| [TestPlan](https://support.huaweicloud.com/intl/en-us/api-testman/cloudtest_03_1000.html) | 01 | 2026-06-09 |
+| [Deploy](https://support.huaweicloud.com/intl/en-us/api-deployman/CloudDeploy_api_0001.html) | 03 | 2026-07-10 |
+| [Build](https://support.huaweicloud.com/intl/en-us/api-codeci/cloudbuild_03_0000.html) | 01 | 2026-06-09 |
+| [Artifact](https://support.huaweicloud.com/intl/en-us/api-cloudartifact/CloudArtifact_api_0012.html) | 01 | 2026-08-10 |
+
+和仓库原来的 `2026-06-22` 快照相比，官网已更新 Req、Repo、Pipeline、Check、Deploy、Artifact。Build 没有变化；TestPlan 官网英文 PDF 的日期为 `2026-06-09`，与仓库此前中文快照日期不同，需以目标区域/语言页面为准。当前对比显示：Check 新增 11 个官方路径、下线 3 个旧路径；Req 新增迭代历史路径；其余产品的路径集合未出现可靠新增。新增路径现已进入 `officialEndpointTools` 专用端点工具，写操作默认 `dry_run=true`；工具采用通用 path/query/body 参数模型，尚未补专用字段 schema 和专用 live 样本。官方文档有新版本时，应重新下载、提取文本、重跑覆盖审计，再同步 `src/products/official-endpoint-tools.ts` 和相关文档。
+
 字段对齐口径：
 
 - MCP 工具名不强求和官方接口名 1:1，但工具参数必须能追溯到原始 CodeArts API 字段。
@@ -22,10 +39,10 @@
 
 | 模块 | 当前 MCP 工具数 | 对齐结论 | 当前重点缺口 |
 | --- | --- | --- | --- |
-| Req | 363 | 已对齐到 Scrum 高频实用层，并补入规划本身 + 规划内工作项管理 + 规划图片更新 + 计划上下文创建工作项、需求池/项目空间只读面、IPD 读取基础面、IPD 树/关联 Wiki/分组/租户列表/统计仪表盘读取、IPD 特性集/追溯/状态读取、IPD 模块/标签/特性集写面、IPD 工作项创建/批量创建/批量更新/批量删除/流程流转写面、IPD 附件/图片面、IPD 工时管理、IPD 字段配置读写，以及工作项状态/公共配置读面 | 需求池写面 / 看板更深写面等仍未进入 MCP；新增路径的 live 仍需继续补 |
+| Req | 364 | 已对齐到 Scrum 高频实用层，并补入规划本身 + 规划内工作项管理 + 规划图片更新 + 计划上下文创建工作项、需求池/项目空间只读面、IPD 读取基础面、IPD 树/关联 Wiki/分组/租户列表/统计仪表盘读取、IPD 特性集/追溯/状态读取、IPD 模块/标签/特性集写面、IPD 工作项创建/批量创建/批量更新/批量删除/流程流转写面、IPD 附件/图片面、IPD 工时管理、IPD 字段配置读写，以及工作项状态/公共配置读面；并补入迭代历史官方端点工具 | 需求池写面 / 看板更深写面等仍未进入 MCP；新增路径的 live 仍需继续补 |
 | Repo | 459 | 已形成完整实用面，并补入仓库导入记录、从外部仓库导入、远程镜像配置与同步，以及大量官方读写端点 | 导入、远程镜像和部分管理面仍需更多稳定 live 样本 |
 | Pipeline | 257 | 覆盖执行面、治理面、扩展点和大量官方读写端点，但 live 深度不均 | 新增管理类工具仍需 AK/SK 实测 |
-| Check | 135 | 核心 task / ruleset / metrics / defects 读路径稳定，并补入官方读面、PDF/异步任务和 dry-run 安全配置写面 | 写入/触发配置类工具仍需专门真实写样本 |
+| Check | 146 | 核心 task / ruleset / metrics / defects 读路径稳定，并补入官方读面、PDF/异步任务和 dry-run 安全配置写面；官网 2026-08-10 新增的租户配置、系统配置、备份信息、任务恢复、任务列表和插件路径已进入专用官方端点工具 | 新增路径使用通用 path/query/body 参数模型，尚未补专用字段 schema 和真实写入/触发样本 |
 | TestPlan | 762 | 已覆盖基础查询、执行入口和更大测试计划读写面，并补入大量官方端点 | 部分北京四路径未发布，深层样本仍需继续补 |
 | Deploy | 110 | 经典路径和 v4 扩展面都已进入 MCP | execute-class 场景仍需专门样本 |
 | Build | 167 | 当前工具面已扩展到构建元数据、日志、记录、资源规格、模板、keystore、通知和受控写面 | 新增官方只读路径已完成单测，后续可继续补 endpoint-specific live 样本 |
@@ -36,7 +53,7 @@
 ### Req
 
 - 当前对齐到官方 Req API 的“Scrum 高频实用层”，并已经补入规划、规划图片更新、计划上下文创建工作项、需求池/项目空间只读面、IPD 读取基础面、IPD 特性集/追溯/状态读取、IPD 模块/标签/特性集写面、工作项状态属性、状态详情、状态配置、可选状态配置和项目公共配置读取能力。
-- 功能面已经覆盖 `project / module / member / iteration / plan / work-item / collaboration / config-read / board-read / cache-read / program-read / requirement-pool-read / ipd-read / ipd-config-write / ipd-work-item-write / ipd-work-hour / ipd-field-config` 十七个资源面，当前 Req 总工具数为 `363`。
+- 功能面已经覆盖 `project / module / member / iteration / plan / work-item / collaboration / config-read / board-read / cache-read / program-read / requirement-pool-read / ipd-read / ipd-config-write / ipd-work-item-write / ipd-work-hour / ipd-field-config` 十七个资源面，当前 Req 总工具数为 `364`。
 - 工作项读面继续补强了信息完整性：`req_list_work_items`、`req_get_work_item`、`req_list_work_item_tree` 和 `req_list_work_item_records` 会保留官方原始字段，并补充 Asia/Shanghai 可读时间；`req_list_user_features` 兼容数组、包裹数组和对象字典响应；`req_list_iteration_status_statistics` 按上游要求把 `status_id` 作为必填参数。
 - `IssueDetailsV2 /v2/issues/show` 是 Req 工作项详情的官方原始接口；当前 MCP 的 `req_get_work_item_issue_details` 只调用该 V2 详情接口，并把 `journals` 映射为 `comments`，同时保留 `assignee` / `assignedToName` 便于查看处理人；该工具不会 fallback 到 `req_get_work_item` 或评论列表接口。工具输出会显式映射基础信息、时间、状态类型、优先级/严重程度、人员、项目结构、自定义字段、附件、标签、锁版本、关注/私有/删除状态和评论字段；时间戳原值会保留，同时追加 `createdOnText`、`updatedOnText`、`startDateText`、`dueDateText` 这类 Asia/Shanghai 可读时间；并通过 `rawIssue` / `raw` 保留官方 V2 原始 issue 响应。
 - `plan` 面现在已经覆盖规划列表、规划详情、创建、更新、删除、规划图片更新、计划上下文创建工作项、规划内工作项查看、当前规划可添加的工作项，以及规划内工作项加入/清空，方便 agent 在迭代与工作项之间补足“规划”这一层上下文，并直接维护规划内工作项集合；其中 `/v3/plan/{project_id}/managements` 并没有新增独立 MCP 工具，而是并入 `req_list_plans` 的增强过滤能力。
@@ -67,7 +84,7 @@
 
 ### Check
 
-- 当前已接入 135 个 Check MCP 工具，核心 task / ruleset / metrics / defects 读路径已用北京四 AK/SK 验证。
+- 当前已接入 146 个 Check MCP 工具，核心 task / ruleset / metrics / defects 读路径已用北京四 AK/SK 验证。
 - 新增的 `check_list_plugins`、`check_get_task_webhook_info`、`check_get_code_health_svg`、`check_list_criterion_filters`、`check_list_criterions`、`check_get_defect_task_statistics`、`check_list_issues_by_filter`、`check_get_issue_filter`、`check_get_async_job`、`check_get_pdf_file`、`check_extract_task_assistant_summary` 已按官方 URI MCP 化，并有单测覆盖；2026-05-23 用北京四 AK/SK 在 `codearts-check.cn-north-4.myhuaweicloud.com` 实测通过，旧 `codecheck-ext` 网关会对这些新路径返回 `APIGW.0101`。
 - `check_update_issue_status`、`check_create_pdf_async_job`、`check_update_code_gate`、`check_update_ignore_files`、`check_update_check_mode` 已接入为 dry-run 优先的受控写/触发工具，真实写闭环仍需要专门样本。
 - 适合和 Repo / Build 一起作为质量分析链路使用；默认 Check endpoint 已切到 `codearts-check`，仍可通过 `HUAWEICLOUD_CHECK_BASE_URL` 覆盖。

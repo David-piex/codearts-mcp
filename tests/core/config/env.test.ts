@@ -241,7 +241,8 @@ describe("loadHttpAuthConfig", () => {
       authCookieName: "codearts_mcp_auth",
       authCookieSecure: false,
       authTokenTtlSeconds: 2592000,
-      allowQueryAuthToken: false
+      allowQueryAuthToken: false,
+      allowClientCredentialHeaders: false
     });
   });
 
@@ -254,6 +255,49 @@ describe("loadHttpAuthConfig", () => {
         MCP_SERVER_VERSION: "0.1.0"
       }).allowQueryAuthToken
     ).toBe(true);
+  });
+
+  it("allows MCP client credential headers only when explicitly enabled", () => {
+    expect(
+      loadHttpAuthConfig({
+        MCP_AUTH_MASTER_KEY: "0123456789abcdef0123456789abcdef",
+        MCP_AUTH_ALLOW_CLIENT_CREDENTIAL_HEADERS: "true",
+        MCP_SERVER_NAME: "codearts-mcp",
+        MCP_SERVER_VERSION: "0.1.0"
+      }).allowClientCredentialHeaders
+    ).toBe(true);
+  });
+
+  it("loads optional static HTTP bearer credentials for MCP client configuration", () => {
+    const config = loadHttpAuthConfig({
+      MCP_AUTH_MASTER_KEY: "0123456789abcdef0123456789abcdef",
+      MCP_AUTH_STATIC_TOKEN: "static-token",
+      HUAWEICLOUD_AK: "static-ak",
+      HUAWEICLOUD_SK: "static-sk",
+      HUAWEICLOUD_REGION: "cn-north-4",
+      MCP_SERVER_NAME: "codearts-mcp",
+      MCP_SERVER_VERSION: "0.1.0"
+    });
+
+    expect(config.staticAuthToken).toBe("static-token");
+    expect(config.staticCredentials).toMatchObject({
+      accessKey: "static-ak",
+      secretKey: "static-sk",
+      region: "cn-north-4",
+      reqBaseUrl: "https://projectman-ext.cn-north-4.myhuaweicloud.com"
+    });
+  });
+
+  it("rejects incomplete static HTTP bearer credentials", () => {
+    expect(() =>
+      loadHttpAuthConfig({
+        MCP_AUTH_MASTER_KEY: "0123456789abcdef0123456789abcdef",
+        MCP_AUTH_STATIC_TOKEN: "static-token",
+        HUAWEICLOUD_AK: "static-ak",
+        MCP_SERVER_NAME: "codearts-mcp",
+        MCP_SERVER_VERSION: "0.1.0"
+      })
+    ).toThrow(/Static HTTP auth requires/);
   });
 
   it("rejects missing master key", () => {

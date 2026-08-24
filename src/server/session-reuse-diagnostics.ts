@@ -63,7 +63,11 @@ function divide(numerator: number, denominator: number) {
 
 function isRetainedEvent(event: SessionReuseDiagnosticsEvent) {
   const family = event.path.match(/^\/mcp\/([a-z]+)\/?$/)?.[1];
-  return Boolean(family && isProductToolFamily(family) && (event.mcpMethod || event.toolName));
+  const isUnifiedRoute = /^\/mcp\/?$/.test(event.path);
+  return Boolean(
+    (isUnifiedRoute || (family && isProductToolFamily(family))) &&
+      (event.mcpMethod || event.toolName)
+  );
 }
 
 export function createSessionReuseDiagnosticsStore(options?: {

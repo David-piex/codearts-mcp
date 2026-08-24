@@ -65,6 +65,21 @@ export type HttpAuthConfig = {
   authCookieSecure: boolean;
   authTokenTtlSeconds: number;
   allowQueryAuthToken: boolean;
+  allowClientCredentialHeaders: boolean;
+  staticAuthToken?: string;
+  staticCredentials?: {
+    accessKey: string;
+    secretKey: string;
+    region: string;
+    reqBaseUrl: string;
+    repoBaseUrl: string;
+    pipelineBaseUrl: string;
+    checkBaseUrl: string;
+    testPlanBaseUrl: string;
+    deployBaseUrl: string;
+    buildBaseUrl: string;
+    artifactBaseUrl: string;
+  };
 };
 
 export const DEFAULT_HTTP_WRITE_RATE_LIMIT: FixedWindowRateLimitConfig = {
@@ -284,12 +299,72 @@ export function loadHttpAuthConfig(
     throw new Error("MCP_AUTH_MASTER_KEY is required in HTTP mode.");
   }
 
+  const staticAuthToken = source.MCP_AUTH_STATIC_TOKEN?.trim() || undefined;
+  const staticCredentialValues = {
+    accessKey: source.HUAWEICLOUD_AK?.trim(),
+    secretKey: source.HUAWEICLOUD_SK?.trim(),
+    region: source.HUAWEICLOUD_REGION?.trim()
+  };
+  const hasStaticCredentials = Object.values(staticCredentialValues).some(Boolean);
+
+  if (staticAuthToken && !hasStaticCredentials) {
+    throw new Error(
+      "MCP_AUTH_STATIC_TOKEN requires HUAWEICLOUD_AK, HUAWEICLOUD_SK, and HUAWEICLOUD_REGION."
+    );
+  }
+
+  if (hasStaticCredentials &&
+      (!staticAuthToken ||
+        !staticCredentialValues.accessKey ||
+        !staticCredentialValues.secretKey ||
+        !staticCredentialValues.region)) {
+    throw new Error(
+      "Static HTTP auth requires MCP_AUTH_STATIC_TOKEN, HUAWEICLOUD_AK, HUAWEICLOUD_SK, and HUAWEICLOUD_REGION."
+    );
+  }
+
+  const staticEndpoints = staticCredentialValues.region
+    ? mergeSessionEndpointOverrides(resolveRegionDefaults(staticCredentialValues.region), {
+        req_base_url: source.HUAWEICLOUD_REQ_BASE_URL,
+        repo_base_url: source.HUAWEICLOUD_REPO_BASE_URL,
+        pipeline_base_url: source.HUAWEICLOUD_PIPELINE_BASE_URL,
+        check_base_url: source.HUAWEICLOUD_CHECK_BASE_URL,
+        testplan_base_url: source.HUAWEICLOUD_TESTPLAN_BASE_URL,
+        deploy_base_url: source.HUAWEICLOUD_DEPLOY_BASE_URL,
+        build_base_url: source.HUAWEICLOUD_BUILD_BASE_URL,
+        artifact_base_url: source.HUAWEICLOUD_ARTIFACT_BASE_URL
+      })
+    : undefined;
+
   return {
     masterKey,
     authDataPath: source.MCP_AUTH_DATA_PATH ?? ".codearts-mcp/auth-store.json",
     authCookieName: source.MCP_AUTH_COOKIE_NAME ?? "codearts_mcp_auth",
     authCookieSecure: source.MCP_AUTH_COOKIE_SECURE === "true",
     authTokenTtlSeconds: Number(source.MCP_AUTH_TOKEN_TTL_SECONDS ?? "2592000"),
-    allowQueryAuthToken: source.MCP_AUTH_ALLOW_QUERY_TOKEN === "true"
+    allowQueryAuthToken: source.MCP_AUTH_ALLOW_QUERY_TOKEN === "true",
+    allowClientCredentialHeaders:
+      source.MCP_AUTH_ALLOW_CLIENT_CREDENTIAL_HEADERS === "true",
+    ...(staticAuthToken ? { staticAuthToken } : {}),
+    ...(staticEndpoints &&
+    staticCredentialValues.accessKey &&
+    staticCredentialValues.secretKey &&
+    staticCredentialValues.region
+      ? {
+          staticCredentials: {
+            accessKey: staticCredentialValues.accessKey,
+            secretKey: staticCredentialValues.secretKey,
+            region: staticCredentialValues.region,
+            reqBaseUrl: staticEndpoints.req_base_url,
+            repoBaseUrl: staticEndpoints.repo_base_url,
+            pipelineBaseUrl: staticEndpoints.pipeline_base_url,
+            checkBaseUrl: staticEndpoints.check_base_url,
+            testPlanBaseUrl: staticEndpoints.testplan_base_url,
+            deployBaseUrl: staticEndpoints.deploy_base_url,
+            buildBaseUrl: staticEndpoints.build_base_url,
+            artifactBaseUrl: staticEndpoints.artifact_base_url
+          }
+        }
+      : {})
   };
 }

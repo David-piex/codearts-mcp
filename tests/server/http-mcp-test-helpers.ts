@@ -16,6 +16,9 @@ export function createTestHttpAuthConfig(options?: {
   prefix?: string;
   ttlSeconds?: number;
   allowQueryAuthToken?: boolean;
+  allowClientCredentialHeaders?: boolean;
+  staticAuthToken?: string;
+  staticCredentials?: HttpAuthConfig["staticCredentials"];
 }): HttpAuthConfig {
   return {
     masterKey,
@@ -26,7 +29,10 @@ export function createTestHttpAuthConfig(options?: {
     authCookieName: "codearts_mcp_auth",
     authCookieSecure: false,
     authTokenTtlSeconds: options?.ttlSeconds ?? 60,
-    allowQueryAuthToken: options?.allowQueryAuthToken ?? false
+    allowQueryAuthToken: options?.allowQueryAuthToken ?? false,
+    allowClientCredentialHeaders: options?.allowClientCredentialHeaders ?? false,
+    ...(options?.staticAuthToken ? { staticAuthToken: options.staticAuthToken } : {}),
+    ...(options?.staticCredentials ? { staticCredentials: options.staticCredentials } : {})
   };
 }
 
@@ -182,6 +188,7 @@ export async function callTool(
     sessionId?: string;
     cookie?: string;
     queryToken?: string;
+    headers?: Record<string, string>;
     path?: string;
   }
 ) {
@@ -200,6 +207,7 @@ export async function callTool(
       sessionId: input.sessionId,
       cookie: input.cookie,
       queryToken: input.queryToken,
+      headers: input.headers,
       path: input.path
     }
   );
