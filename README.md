@@ -105,11 +105,18 @@ node dist/src/server/index.js
       "disabled": false,
       "timeout": 60,
       "type": "streamableHttp",
-      "url": "http://39.106.183.205/mcp"
+      "url": "https://codeartsmcp.top/mcp",
+      "headers": {
+        "X-CodeArts-AK": "your-ak",
+        "X-CodeArts-SK": "your-sk",
+        "X-CodeArts-Region": "cn-north-4"
+      }
     }
   }
 }
 ```
+
+共享服务已启用客户端凭证 Header 模式。每个用户只需在自己的 MCP 配置中填写 AK、SK 和区域即可访问，不需要调用 `auth_configure_session`；请勿把真实凭证提交到代码仓库或发送到群聊。
 
 统一入口 `/mcp` 一次暴露 Req、Repo、Pipeline、Check、TestPlan、Deploy、Build、Artifact 全部工具。旧的产品子路径仍保留兼容：
 
