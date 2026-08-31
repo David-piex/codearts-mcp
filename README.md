@@ -129,6 +129,105 @@ node dist/src/server/index.js
 - `/mcp/build`
 - `/mcp/artifact`
 
+如果客户端希望按产品模块分别启用工具，也可以沿用原来的 8 个服务配置：
+
+```json
+{
+  "mcpServers": {
+    "req": {
+      "disabled": false,
+      "timeout": 60,
+      "type": "streamableHttp",
+      "url": "https://codeartsmcp.top/mcp/req",
+      "headers": {
+        "X-CodeArts-AK": "your-ak",
+        "X-CodeArts-SK": "your-sk",
+        "X-CodeArts-Region": "cn-north-4"
+      }
+    },
+    "repo": {
+      "disabled": false,
+      "timeout": 60,
+      "type": "streamableHttp",
+      "url": "https://codeartsmcp.top/mcp/repo",
+      "headers": {
+        "X-CodeArts-AK": "your-ak",
+        "X-CodeArts-SK": "your-sk",
+        "X-CodeArts-Region": "cn-north-4"
+      }
+    },
+    "pipeline": {
+      "disabled": false,
+      "timeout": 60,
+      "type": "streamableHttp",
+      "url": "https://codeartsmcp.top/mcp/pipeline",
+      "headers": {
+        "X-CodeArts-AK": "your-ak",
+        "X-CodeArts-SK": "your-sk",
+        "X-CodeArts-Region": "cn-north-4"
+      }
+    },
+    "check": {
+      "disabled": false,
+      "timeout": 60,
+      "type": "streamableHttp",
+      "url": "https://codeartsmcp.top/mcp/check",
+      "headers": {
+        "X-CodeArts-AK": "your-ak",
+        "X-CodeArts-SK": "your-sk",
+        "X-CodeArts-Region": "cn-north-4"
+      }
+    },
+    "testplan": {
+      "disabled": false,
+      "timeout": 60,
+      "type": "streamableHttp",
+      "url": "https://codeartsmcp.top/mcp/testplan",
+      "headers": {
+        "X-CodeArts-AK": "your-ak",
+        "X-CodeArts-SK": "your-sk",
+        "X-CodeArts-Region": "cn-north-4"
+      }
+    },
+    "deploy": {
+      "disabled": false,
+      "timeout": 60,
+      "type": "streamableHttp",
+      "url": "https://codeartsmcp.top/mcp/deploy",
+      "headers": {
+        "X-CodeArts-AK": "your-ak",
+        "X-CodeArts-SK": "your-sk",
+        "X-CodeArts-Region": "cn-north-4"
+      }
+    },
+    "build": {
+      "disabled": false,
+      "timeout": 60,
+      "type": "streamableHttp",
+      "url": "https://codeartsmcp.top/mcp/build",
+      "headers": {
+        "X-CodeArts-AK": "your-ak",
+        "X-CodeArts-SK": "your-sk",
+        "X-CodeArts-Region": "cn-north-4"
+      }
+    },
+    "artifact": {
+      "disabled": false,
+      "timeout": 60,
+      "type": "streamableHttp",
+      "url": "https://codeartsmcp.top/mcp/artifact",
+      "headers": {
+        "X-CodeArts-AK": "your-ak",
+        "X-CodeArts-SK": "your-sk",
+        "X-CodeArts-Region": "cn-north-4"
+      }
+    }
+  }
+}
+```
+
+这种配置会在客户端显示 8 个独立 MCP 服务，每个服务只加载对应产品的工具；需要哪个模块就启用哪个。8 个入口可以使用同一组个人 AK/SK，但各自维护独立的 MCP session。
+
 统一入口共用一个 MCP session、鉴权持久化、Cookie 和 `auth_token`。兼容子路径仍按路径隔离 session；新接入不需要配置或切换这些子路径。
 
 若客户端不保留 Cookie，请使用 `Authorization: Bearer <auth_token>` 复用凭证。不要把 token 放到 URL query；URL 容易进入代理日志、浏览器历史和监控系统。
