@@ -13,20 +13,20 @@
 
 ## 官方资料基线
 
-本页的 endpoint 对齐以华为云官方 API PDF 为基线。官网资料已于 `2026-08-24` 重新核对并下载到本地临时目录；当前官网版本如下：
+本页的 endpoint 对齐以华为云中国站官方 API PDF 为基线。中国站资料已于 `2026-09-02` 重新核对并下载到本地临时目录；当前官方 PDF 版本如下：
 
 | 模块 | 官方文档版本 | 发布日期 |
 | --- | ---: | --- |
-| [Req](https://support.huaweicloud.com/intl/en-us/api-projectman/projectman_03_0000.html) | 01 | 2026-07-27 |
-| [Repo](https://support.huaweicloud.com/intl/en-us/api-codeartsrepo/topic_300000001.html) | 01 | 2026-07-22 |
-| [Pipeline](https://support.huaweicloud.com/intl/en-us/api-pipeline/pipeline.html) | 01 | 2026-07-14 |
-| [Check](https://support.huaweicloud.com/intl/en-us/api-codecheck/codecheck_api_0000.html) | 01 | 2026-08-10 |
-| [TestPlan](https://support.huaweicloud.com/intl/en-us/api-testman/cloudtest_03_1000.html) | 01 | 2026-06-09 |
-| [Deploy](https://support.huaweicloud.com/intl/en-us/api-deployman/CloudDeploy_api_0001.html) | 03 | 2026-07-10 |
-| [Build](https://support.huaweicloud.com/intl/en-us/api-codeci/cloudbuild_03_0000.html) | 01 | 2026-06-09 |
-| [Artifact](https://support.huaweicloud.com/intl/en-us/api-cloudartifact/CloudArtifact_api_0012.html) | 01 | 2026-08-10 |
+| [Req](https://support.huaweicloud.com/api-projectman/projectman_03_0000.html) | 01 | 2026-05-18 |
+| [Repo](https://support.huaweicloud.com/api-codeartsrepo/topic_300000001.html) | 01 | 2026-07-14 |
+| [Pipeline](https://support.huaweicloud.com/api-pipeline/pipeline.html) | 37 | 2026-07-14 |
+| [Check](https://support.huaweicloud.com/api-codecheck/codecheck_api_0000.html) | 01 | 2026-08-11 |
+| [TestPlan](https://support.huaweicloud.com/api-testman/cloudtest_03_1000.html) | 03 | 2026-07-30 |
+| [Deploy](https://support.huaweicloud.com/api-deployman/CloudDeploy_api_0001.html) | 04 | 2026-06-30 |
+| [Build](https://support.huaweicloud.com/api-codeci/cloudbuild_03_0000.html) | 01 | 2026-07-22 |
+| [Artifact](https://support.huaweicloud.com/api-cloudartifact/CloudArtifact_api_0012.html) | 04 | 2026-08-11 |
 
-和仓库原来的 `2026-06-22` 快照相比，官网已更新 Req、Repo、Pipeline、Check、Deploy、Artifact。Build 没有变化；TestPlan 官网英文 PDF 的日期为 `2026-06-09`，与仓库此前中文快照日期不同，需以目标区域/语言页面为准。当前对比显示：Check 新增 11 个官方路径、下线 3 个旧路径；Req 新增迭代历史路径；其余产品的路径集合未出现可靠新增。新增路径现已进入 `officialEndpointTools` 专用端点工具，写操作默认 `dry_run=true`；工具采用通用 path/query/body 参数模型，尚未补专用字段 schema 和专用 live 样本。官方文档有新版本时，应重新下载、提取文本、重跑覆盖审计，再同步 `src/products/official-endpoint-tools.ts` 和相关文档。
+和仓库原来的 `2026-06-22` 快照相比，中国站 PDF 的版本/发布日期已经发生变化，尤其是 Pipeline（版本 37）、TestPlan（版本 03）、Deploy（版本 04）和 Artifact（版本 04）。本次按中国站 PDF 重新提取并完成端点集合核对：Req（268）、Repo（431）、Pipeline（214）、Deploy（87）和 Build（152）没有集合变化；Check 的 15 条新增文本是已有接口的目录或尾斜杠变体；TestPlan 净增 20 条文本路径，其中部分已有专用客户端工具，剩余项多为低频内部接口或需要专用参数/样本的路径，暂不直接生成通用工具；Artifact 的两条“移除”路径仍有现有工具覆盖，为保持兼容性暂不删除。当前没有证据表明需要修改业务客户端或删除现有工具；后续若要接入 TestPlan 新路径，应先补参数 schema、权限说明和真实 AK/SK 样本，再同步 `src/products/official-endpoint-tools.ts`、相关测试与 Function API 文档。
 
 字段对齐口径：
 
@@ -86,13 +86,14 @@
 
 - 当前已接入 146 个 Check MCP 工具，核心 task / ruleset / metrics / defects 读路径已用北京四 AK/SK 验证。
 - 新增的 `check_list_plugins`、`check_get_task_webhook_info`、`check_get_code_health_svg`、`check_list_criterion_filters`、`check_list_criterions`、`check_get_defect_task_statistics`、`check_list_issues_by_filter`、`check_get_issue_filter`、`check_get_async_job`、`check_get_pdf_file`、`check_extract_task_assistant_summary` 已按官方 URI MCP 化，并有单测覆盖；2026-05-23 用北京四 AK/SK 在 `codearts-check.cn-north-4.myhuaweicloud.com` 实测通过，旧 `codecheck-ext` 网关会对这些新路径返回 `APIGW.0101`。
-- `check_update_issue_status`、`check_create_pdf_async_job`、`check_update_code_gate`、`check_update_ignore_files`、`check_update_check_mode` 已接入为 dry-run 优先的受控写/触发工具，真实写闭环仍需要专门样本。
+- `check_update_issue_status`、`check_create_pdf_async_job`、`check_update_code_gate`、`check_update_ignore_files`、`check_update_check_mode` 已接入为 dry-run 优先的受控写/触发工具，真实写闭环仍需要专门样本。中国站 2026-08-11 版本的新增文本路径已核对为既有路径变体，没有新增 Check MCP 工具。
 - 适合和 Repo / Build 一起作为质量分析链路使用；默认 Check endpoint 已切到 `codearts-check`，仍可通过 `HUAWEICLOUD_CHECK_BASE_URL` 覆盖。
 
 ### TestPlan
 
 - 当前难点不是实现，而是上游接口在北京四的发布状态。
 - 所以要区分“工具存在”和“服务真的可用”。
+- 中国站 2026-07-30 版本相对旧快照新增 22 条文本路径、移除 2 条；其中 `projects/{project_id}/issues`、`advanced-feature/trial`、`testcases/vector`、`testcases/relations/batch-query` 等已有专用实现或客户端覆盖。其余新增路径暂列为待评估项，不在缺少参数和 live 样本时自动扩展通用工具。
 
 ### Deploy
 
