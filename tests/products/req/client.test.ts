@@ -8153,6 +8153,26 @@ describe("createReqClient", () => {
     expect(deletedFeatureSet).toEqual(expect.objectContaining({ id: "fs-1" }));
   });
 
+  it("maps IPD status queries to the documented categories query parameter", async () => {
+    let requestedPath = "";
+    const client = createReqClient({
+      get: async (path: string) => {
+        requestedPath = path;
+        return { result: [{ id: "status-1", name: "Open" }] };
+      }
+    } as never);
+
+    const result = await client.listIpdStatuses({
+      project_id: "ipd-1",
+      categories: "FE,IR"
+    });
+
+    expect(requestedPath).toBe("/v1/ipdprojectservice/projects/ipd-1/status?categories=FE%2CIR");
+    expect(result).toEqual({
+      statuses: [{ id: "status-1", name: "Open" }]
+    });
+  });
+
   it("maps IPD issue mutations to documented endpoints", async () => {
     const requests: Array<{ method: string; path: string; body?: unknown }> = [];
     const client = createReqClient({

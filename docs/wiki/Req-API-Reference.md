@@ -276,6 +276,8 @@ PDF 复核结论：当前 PDF 中没有明确搜到需求池 IR/RR 的官方创�
 
 ### IPD 读取
 
+`req_list_ipd_statuses` 使用官方 `categories` query 参数（例如 `FE,IR`），调用时必须提供该参数；live smoke 可通过 `HUAWEICLOUD_REQ_LIVE_IPD_CATEGORIES` 配置。
+
 | 分组 | 工具 |
 | --- | --- |
 | 项目与用户 | `req_list_ipd_projects`, `req_list_ipd_project_users` |

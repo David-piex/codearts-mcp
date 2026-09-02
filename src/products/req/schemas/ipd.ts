@@ -169,7 +169,7 @@ export const reqListIpdModulesInput = ipdPagingSchema.extend({
 
 export const reqListIpdStatusesInput = z.object({
   project_id: idSchema,
-  category_id: idSchema.optional()
+  categories: z.string().min(2).max(128)
 });
 
 export const reqListIpdIssueRelationConfigInput = z.object({

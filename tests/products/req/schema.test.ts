@@ -12,6 +12,7 @@ import {
   reqListChildWorkItemsInput,
   reqListIterationWorkItemsInput,
   reqListIpdProjectsInput,
+  reqListIpdStatusesInput,
   reqListIrChildrenInput,
   reqListPlansInput,
   reqListPlanWorkItemsInput,
@@ -75,6 +76,23 @@ describe("req schemas", () => {
       project_id: "ipd-1",
       classification: "security"
     });
+  });
+
+  it("requires categories for IPD status queries", () => {
+    expect(
+      reqListIpdStatusesInput.parse({
+        project_id: "ipd-1",
+        categories: "FE,IR"
+      })
+    ).toEqual({
+      project_id: "ipd-1",
+      categories: "FE,IR"
+    });
+
+    expect(() => reqListIpdStatusesInput.parse({ project_id: "ipd-1" })).toThrow();
+    expect(() =>
+      reqListIpdStatusesInput.parse({ project_id: "ipd-1", category_id: "FE" })
+    ).toThrow();
   });
 
   it("accepts custom program field and query type values", () => {

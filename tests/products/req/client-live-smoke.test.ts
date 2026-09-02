@@ -743,6 +743,7 @@ if (hasLiveEnv(process.env)) {
         }),
         client.listIpdStatuses({
           project_id: String(projectId),
+          categories: process.env.HUAWEICLOUD_REQ_LIVE_IPD_CATEGORIES?.trim() || "FE,IR",
         }),
         client.listIpdIssueRelationConfig({
           project_id: String(projectId),

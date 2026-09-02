@@ -147,7 +147,7 @@ type ReqIpdReadClient = {
     sort?: Array<Record<string, unknown>>;
   }) => Promise<{ issues: ReqIpdIssue[]; total?: number }>;
   listIpdModules: (input: { project_id: string; page: number; page_size: number }) => Promise<{ modules: ReqIpdNamedItem[]; total?: number }>;
-  listIpdStatuses: (input: { project_id: string; category_id?: string }) => Promise<{ statuses: ReqIpdNamedItem[] }>;
+  listIpdStatuses: (input: { project_id: string; categories: string }) => Promise<{ statuses: ReqIpdNamedItem[] }>;
   listIpdIssueRelationConfig: (input: { project_id: string }) => Promise<{ relations: ReqIpdNamedItem[]; raw?: unknown }>;
   listIpdLabels: (input: { project_id: string; page: number; page_size: number }) => Promise<{ labels: ReqIpdNamedItem[]; total?: number }>;
   listIpdProjectFields: (input: { project_id: string; page: number; page_size: number }) => Promise<{ fields: ReqIpdNamedItem[]; total?: number }>;

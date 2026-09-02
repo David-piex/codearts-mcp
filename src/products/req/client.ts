@@ -2448,7 +2448,7 @@ export type ReqClient = {
     modules: ReqIpdNamedItem[];
     total?: number;
   }>;
-  listIpdStatuses: (input: { project_id: string; category_id?: string }) => Promise<{
+  listIpdStatuses: (input: { project_id: string; categories: string }) => Promise<{
     statuses: ReqIpdNamedItem[];
   }>;
   listIpdIssueRelationConfig: (input: { project_id: string }) => Promise<{
@@ -9020,13 +9020,9 @@ export function createReqClient(
       };
     },
     async listIpdStatuses(input) {
-      const query = new URLSearchParams();
-      if (input.category_id) {
-        query.set("category_id", input.category_id);
-      }
-      const suffix = query.toString() ? `?${query.toString()}` : "";
+      const query = new URLSearchParams({ categories: input.categories });
       const response = (await _http.get(
-        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/status${suffix}`
+        `/v1/ipdprojectservice/projects/${encodeURIComponent(input.project_id)}/status?${query.toString()}`
       )) as {
         result?: ReqIpdNamedItem[] | { statuses?: ReqIpdNamedItem[] };
         statuses?: ReqIpdNamedItem[];

@@ -13793,7 +13793,8 @@ API 数量：`364`
   "params": {
     "name": "req_list_ipd_statuses",
     "arguments": {
-      "project_id": "<project_id>"
+      "project_id": "<project_id>",
+      "categories": "<categories>"
     }
   }
 }
@@ -13804,7 +13805,7 @@ API 数量：`364`
 | 参数 | 必填 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `project_id` | 是 | `string` |  | 字段对应：<br>MCP 字段 `project_id` ↔ 原始 CodeArts 需求管理 API 中的项目 ID/项目 UUID 字段，通常位于路径参数或请求 Body。<br>CodeArts 项目的唯一标识，用于确定本次操作所属项目。不同服务可能使用项目 UUID、项目数字 ID 或租户下项目标识，请以对应查询接口返回值为准。 |
-| `category_id` | 否 | `string` |  | 字段对应：<br>MCP 字段 `category_id` ↔ 原始 CodeArts 需求管理 API 同名字段 `category_id`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>分类 ID，用于定位对应的 CodeArts 资源。 |
+| `categories` | 是 | `string` |  | 字段对应：<br>MCP 字段 `categories` ↔ 原始 CodeArts 需求管理 API 同名字段 `categories`。字段所在位置（路径参数、Query 参数或请求 Body）以原始 API 定义为准。<br>透传字段，工具会按字段名原样提交到 CodeArts；请结合所在 API 的请求示例或控制台字段含义填写。 |
 
 输入 JSON Schema：
 
@@ -13816,12 +13817,15 @@ API 数量：`364`
       "type": "string",
       "minLength": 1
     },
-    "category_id": {
-      "$ref": "#/properties/project_id"
+    "categories": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 128
     }
   },
   "required": [
-    "project_id"
+    "project_id",
+    "categories"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

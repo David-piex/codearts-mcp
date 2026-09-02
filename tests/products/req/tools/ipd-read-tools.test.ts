@@ -219,7 +219,7 @@ describe("Req IPD read tools", () => {
     })({ project_id: "ipd-1", page: 1, page_size: 20 });
     const statuses = await createReqListIpdStatusesHandler({
       listIpdStatuses: async () => ({ statuses: [{ id: "s-1", name: "Open" }] })
-    })({ project_id: "ipd-1" });
+    })({ project_id: "ipd-1", categories: "FE,IR" });
     const relations = await createReqListIpdIssueRelationConfigHandler({
       listIpdIssueRelationConfig: async () => ({ relations: [{ id: "r-1", name: "blocks" }] })
     })({ project_id: "ipd-1" });
