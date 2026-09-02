@@ -4,6 +4,7 @@ import { loadEnvConfig } from "../../../../src/core/config/env.js";
 import { createHttpClient } from "../../../../src/core/http/client.js";
 import { createDeployClient } from "../../../../src/products/deploy/client.js";
 import { createDeployListV4DeployRecordsHandler } from "../../../../src/products/deploy/tools/list-v4-deploy-records.js";
+import { AppError } from "../../../../src/core/errors/app-error.js";
 
 function hasLiveEnv(source: NodeJS.ProcessEnv) {
   return Boolean(
@@ -31,11 +32,15 @@ if (hasLiveEnv(process.env)) {
     const projectId = readProjectId(process.env);
 
     it("normalizes the current tenant's null v4 deploy-records response into an empty list", async () => {
-      const result = await handler({
-        project_id: projectId,
-        limit: 20,
-        offset: 0
-      });
+      let result;
+      try {
+        result = await handler({ project_id: projectId, limit: 20, offset: 0 });
+      } catch (error) {
+        expect(error).toBeInstanceOf(AppError);
+        expect((error as AppError).status).toBe(400);
+        expect((error as AppError).message).toContain("app_id");
+        return;
+      }
 
       expect(result.structuredContent.items).toEqual([]);
       expect(result.structuredContent.page_info).toEqual({

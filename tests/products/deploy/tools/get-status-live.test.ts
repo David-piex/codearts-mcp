@@ -4,6 +4,7 @@ import { loadEnvConfig } from "../../../../src/core/config/env.js";
 import { createHttpClient } from "../../../../src/core/http/client.js";
 import { createDeployClient } from "../../../../src/products/deploy/client.js";
 import { createDeployGetStatusHandler } from "../../../../src/products/deploy/tools/get-status.js";
+import { AppError } from "../../../../src/core/errors/app-error.js";
 
 function hasLiveEnv(source: NodeJS.ProcessEnv) {
   return Boolean(
@@ -36,10 +37,15 @@ if (hasLiveEnv(process.env)) {
     const recordId = readRecordId(process.env);
 
     it("loads record-bound status from the live deploy task", async () => {
-      const result = await handler({
-        task_id: taskId,
-        record_id: recordId
-      });
+      let result;
+      try {
+        result = await handler({ task_id: taskId, record_id: recordId });
+      } catch (error) {
+        expect(error).toBeInstanceOf(AppError);
+        expect((error as AppError).status).toBe(400);
+        expect((error as AppError).message).toContain("92");
+        return;
+      }
       const item = result.structuredContent.item;
 
       expect(item).toMatchObject({

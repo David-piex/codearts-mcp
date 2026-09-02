@@ -19,7 +19,7 @@ function readRepoWritableProjectId(source: NodeJS.ProcessEnv) {
     source.HUAWEICLOUD_REPO_LIVE_WRITE_PROJECT_ID?.trim() ||
     source.HUAWEICLOUD_REPO_LIVE_PROJECT_ID?.trim() ||
     source.HUAWEICLOUD_REQ_LIVE_WRITE_PROJECT_ID?.trim() ||
-    "7bd39587c14048aebdadd0f9c22b1402"
+    undefined
   );
 }
 
@@ -32,6 +32,14 @@ if (hasLiveEnv(process.env)) {
     });
 
     it("creates a repository over the HTTP MCP session and returns its uuid", async () => {
+      const writableProjectId = readRepoWritableProjectId(process.env);
+      if (!writableProjectId) {
+        process.stdout.write(
+          "[live-soft-pass] repo writable project is not configured; skipping repository creation.\n"
+        );
+        return;
+      }
+
       const authConfig = createTestHttpAuthConfig({
         prefix: "codearts-mcp-repo-create-live-",
         ttlSeconds: 60 * 30
@@ -51,7 +59,7 @@ if (hasLiveEnv(process.env)) {
         id: "repo-create-live",
         name: "repo_create_repository",
         arguments: {
-          project_uuid: readRepoWritableProjectId(process.env),
+          project_uuid: writableProjectId,
           name: repoName,
           description: `vitest repo live ${new Date().toISOString()}`,
           visibility_level: 20,

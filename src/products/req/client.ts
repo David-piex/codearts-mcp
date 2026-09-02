@@ -9042,13 +9042,41 @@ export function createReqClient(
         };
         relations?: ReqIpdNamedItem[];
       };
-      const result = (response.result ?? response) as {
+      const payload: unknown = response.result ?? response;
+      const result = (payload ?? {}) as {
         relations?: ReqIpdNamedItem[];
-        relation_config?: ReqIpdNamedItem[];
+        relation_config?: ReqIpdNamedItem[] | { relations?: ReqIpdNamedItem[]; data?: ReqIpdNamedItem[] };
+        relation_configs?: ReqIpdNamedItem[];
+        data?: ReqIpdNamedItem[];
       };
+      const findRelations = (value: unknown): ReqIpdNamedItem[] => {
+        if (Array.isArray(value)) {
+          return value as ReqIpdNamedItem[];
+        }
+        if (!value || typeof value !== "object") {
+          return [];
+        }
+
+        const record = value as Record<string, unknown>;
+        for (const key of ["relations", "relation_config", "relation_configs", "data", "items", "value"]) {
+          const found = findRelations(record[key]);
+          if (found.length > 0) {
+            return found;
+          }
+        }
+
+        for (const child of Object.values(record)) {
+          const found = findRelations(child);
+          if (found.length > 0) {
+            return found;
+          }
+        }
+        return [];
+      };
+      const relations = findRelations(payload);
 
       return {
-        relations: result.relations ?? result.relation_config ?? [],
+        relations,
         raw: response
       };
     },

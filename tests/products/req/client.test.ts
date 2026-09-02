@@ -8173,6 +8173,24 @@ describe("createReqClient", () => {
     });
   });
 
+  it("normalizes IPD issue relation config array and wrapped responses", async () => {
+    const arrayClient = createReqClient({
+      get: async () => ({ result: [{ id: "relation-1", name: "blocks" }] })
+    } as never);
+    await expect(arrayClient.listIpdIssueRelationConfig({ project_id: "ipd-1" })).resolves.toEqual({
+      relations: [{ id: "relation-1", name: "blocks" }],
+      raw: { result: [{ id: "relation-1", name: "blocks" }] }
+    });
+
+    const wrappedClient = createReqClient({
+      get: async () => ({ result: { relation_configs: [{ id: "relation-2", name: "relates" }] } })
+    } as never);
+    await expect(wrappedClient.listIpdIssueRelationConfig({ project_id: "ipd-1" })).resolves.toEqual({
+      relations: [{ id: "relation-2", name: "relates" }],
+      raw: { result: { relation_configs: [{ id: "relation-2", name: "relates" }] } }
+    });
+  });
+
   it("maps IPD issue mutations to documented endpoints", async () => {
     const requests: Array<{ method: string; path: string; body?: unknown }> = [];
     const client = createReqClient({
