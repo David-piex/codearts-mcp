@@ -56,6 +56,7 @@ export type SessionToolExtra = {
 
 let httpAuthRuntimeConfig: HttpAuthRuntimeConfig = {};
 const defaultClientCacheTtlMs = 60_000;
+const maxCachedClients = 1_000;
 const cachedClientsByAuthId = new Map<
   string,
   {
@@ -64,6 +65,20 @@ const cachedClientsByAuthId = new Map<
     clients: ProductClients;
   }
 >();
+
+function pruneCachedClients(currentTime: number) {
+  for (const [authId, entry] of cachedClientsByAuthId) {
+    if (entry.expiresAt <= currentTime) {
+      cachedClientsByAuthId.delete(authId);
+    }
+  }
+
+  while (cachedClientsByAuthId.size >= maxCachedClients) {
+    const oldest = cachedClientsByAuthId.keys().next().value;
+    if (oldest === undefined) break;
+    cachedClientsByAuthId.delete(oldest);
+  }
+}
 
 const defaultClientBuilderDependencies: ClientBuilderDependencies = {
   createHttpClient,
@@ -243,9 +258,11 @@ export function buildClientsForSession(store: SessionCredentialStore, extra: Ses
     throw new AppError("auth_error", "HTTP auth persistence is not configured for this server.");
   }
 
+  const currentTime = now();
+  pruneCachedClients(currentTime);
   const cachedEntry = cachedClientsByAuthId.get(authId);
 
-  if (cachedEntry && cachedEntry.expiresAt > now()) {
+  if (cachedEntry && cachedEntry.expiresAt > currentTime) {
     return cachedEntry.clients;
   }
 
@@ -263,7 +280,7 @@ export function buildClientsForSession(store: SessionCredentialStore, extra: Ses
   const signature = createAuthConfigSignature(sessionConfig);
 
   if (cachedEntry?.signature === signature) {
-    cachedEntry.expiresAt = now() + clientCacheTtlMs;
+    cachedEntry.expiresAt = currentTime + clientCacheTtlMs;
     return cachedEntry.clients;
   }
 
@@ -283,7 +300,7 @@ export function buildClientsForSession(store: SessionCredentialStore, extra: Ses
 
   cachedClientsByAuthId.set(authId, {
     signature,
-    expiresAt: now() + clientCacheTtlMs,
+    expiresAt: currentTime + clientCacheTtlMs,
     clients
   });
 

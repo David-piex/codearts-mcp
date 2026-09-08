@@ -80,6 +80,14 @@ MCP_SERVER_NAME=codearts-mcp
 MCP_SERVER_VERSION=0.1.0
 MCP_AUTH_MASTER_KEY=replace-with-a-long-random-secret
 MCP_AUTH_DATA_PATH=/app/.codearts-mcp/auth-store.json
+# 请求体上限，防止异常 MCP 请求耗尽 Node.js 内存
+MCP_HTTP_MAX_REQUEST_BODY_BYTES=8388608
+# 共享实例最多保留的 MCP session 数，达到上限的新初始化会返回 429
+MCP_HTTP_MAX_SESSIONS=128
+# 无请求 session 的回收时间，默认 10 分钟
+MCP_HTTP_SESSION_IDLE_TIMEOUT_MS=600000
+# 共享容器的 Node.js 堆上限，应低于宿主机可用内存
+NODE_OPTIONS=--max-old-space-size=2560
 # 可选：只暴露指定产品族，例如 req,repo
 # MCP_ENABLED_PRODUCT_FAMILIES=req,repo
 ```
@@ -186,6 +194,7 @@ export MCP_SERVER_NAME=codearts-mcp
 export MCP_SERVER_VERSION=0.1.0
 export MCP_AUTH_MASTER_KEY=replace-with-a-long-random-secret
 export MCP_AUTH_DATA_PATH=.codearts-mcp/auth-store.json
+export MCP_HTTP_MAX_REQUEST_BODY_BYTES=8388608
 ```
 
 如果你的入口是 HTTPS：

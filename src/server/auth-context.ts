@@ -65,12 +65,14 @@ export function createAuthContextResolver(options: {
   sessionStore: SessionCredentialStore;
   hashToken?: (raw: string) => string;
   cacheTtlMs?: number;
+  maxCacheEntries?: number;
   authTokenTtlMs?: number;
   renewalWindowMs?: number;
   now?: () => number;
 }) {
   const hashToken = options.hashToken ?? hashAuthToken;
   const cacheTtlMs = options.cacheTtlMs ?? 5_000;
+  const maxCacheEntries = options.maxCacheEntries ?? 10_000;
   const authTokenTtlMs = options.authTokenTtlMs ?? DEFAULT_AUTH_TOKEN_TTL_MS;
   const renewalWindowMs =
     options.renewalWindowMs ?? createDefaultRenewalWindowMs(authTokenTtlMs);
@@ -82,6 +84,20 @@ export function createAuthContextResolver(options: {
       result: ResolvedAuthContext | undefined;
     }
   >();
+
+  function pruneTokenCache(currentTime: number) {
+    for (const [token, entry] of tokenCache) {
+      if (entry.expiresAt <= currentTime) {
+        tokenCache.delete(token);
+      }
+    }
+
+    while (tokenCache.size >= maxCacheEntries) {
+      const oldest = tokenCache.keys().next().value;
+      if (oldest === undefined) break;
+      tokenCache.delete(oldest);
+    }
+  }
 
   return {
     async resolve(request: {
@@ -117,6 +133,8 @@ export function createAuthContextResolver(options: {
       if (cached && cached.expiresAt > currentTime) {
         return cached.result;
       }
+
+      pruneTokenCache(currentTime);
 
       const tokenHash = hashToken(rawToken);
       const record = await options.repository.findByTokenHash(tokenHash);

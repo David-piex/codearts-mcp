@@ -118,6 +118,65 @@ describe("http app", () => {
     await response.arrayBuffer();
   });
 
+  it("limits retained and concurrently initializing MCP sessions", async () => {
+    const { port } = await startConfiguredServer({
+      config: {
+        httpMaxSessions: 1
+      }
+    });
+
+    const first = await initializeSession(port);
+    expect(first.response.status).toBe(200);
+    expect(first.sessionId).toBeTruthy();
+
+    const second = await initializeSession(port);
+    const secondBody = (await second.response.json()) as {
+      error?: string;
+      max_sessions?: number;
+    };
+
+    expect(second.response.status).toBe(429);
+    expect(second.response.headers.get("retry-after")).toBe("60");
+    expect(secondBody.max_sessions).toBe(1);
+    expect(secondBody.error).toMatch(/maximum number of MCP sessions/i);
+
+    await fetch(`http://127.0.0.1:${port}/mcp`, {
+      method: "DELETE",
+      headers: {
+        accept: "application/json, text/event-stream",
+        "mcp-session-id": first.sessionId ?? ""
+      }
+    });
+  });
+
+  it("rejects oversized JSON request bodies before allocating the full payload", async () => {
+    const { port } = await servers.start(undefined, {
+      config: {
+        httpMaxRequestBodyBytes: 64
+      }
+    });
+
+    const response = await postJsonRpc(port, {
+      jsonrpc: "2.0",
+      id: "oversized",
+      method: "initialize",
+      params: {
+        protocolVersion: MCP_PROTOCOL_VERSION,
+        capabilities: {},
+        clientInfo: { name: "vitest", version: "0.1.0" },
+        padding: "x".repeat(256)
+      }
+    });
+    const body = (await response.json()) as {
+      error?: string;
+      max_request_body_bytes?: number;
+    };
+
+    expect(response.status).toBe(413);
+    expect(body.max_request_body_bytes).toBe(64);
+    expect(body.error).toMatch(/64 byte limit/);
+  });
+
   it("serves session reuse diagnostics for recent MCP initialize/auth/tool traffic", async () => {
     const { port } = await startConfiguredServer();
     const {

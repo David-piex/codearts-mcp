@@ -48,6 +48,8 @@ export type ServerMetadataConfig = {
   httpPort: number;
   httpAllowedOrigins?: string[];
   httpSessionIdleTimeoutMs?: number;
+  httpMaxSessions?: number;
+  httpMaxRequestBodyBytes?: number;
   productWriteRateLimit?: FixedWindowRateLimitConfig;
   authWriteRateLimit?: FixedWindowRateLimitConfig;
   readCacheTtls?: ReadCacheTtls;
@@ -87,6 +89,10 @@ export const DEFAULT_HTTP_WRITE_RATE_LIMIT: FixedWindowRateLimitConfig = {
   maxRequests: 3000,
   windowMs: 60_000
 };
+
+export const DEFAULT_HTTP_MAX_REQUEST_BODY_BYTES = 8 * 1024 * 1024;
+export const DEFAULT_HTTP_SESSION_IDLE_TIMEOUT_MS = 10 * 60 * 1000;
+export const DEFAULT_HTTP_MAX_SESSIONS = 128;
 
 function parsePositiveInteger(
   value: string | undefined,
@@ -276,7 +282,17 @@ export function loadServerMetadataConfig(
     httpSessionIdleTimeoutMs: parsePositiveInteger(
       source.MCP_HTTP_SESSION_IDLE_TIMEOUT_MS,
       "MCP_HTTP_SESSION_IDLE_TIMEOUT_MS",
-      1_800_000
+      DEFAULT_HTTP_SESSION_IDLE_TIMEOUT_MS
+    ),
+    httpMaxSessions: parsePositiveInteger(
+      source.MCP_HTTP_MAX_SESSIONS,
+      "MCP_HTTP_MAX_SESSIONS",
+      DEFAULT_HTTP_MAX_SESSIONS
+    ),
+    httpMaxRequestBodyBytes: parsePositiveInteger(
+      source.MCP_HTTP_MAX_REQUEST_BODY_BYTES,
+      "MCP_HTTP_MAX_REQUEST_BODY_BYTES",
+      DEFAULT_HTTP_MAX_REQUEST_BODY_BYTES
     ),
     productWriteRateLimit: loadFixedWindowRateLimitConfig(
       source,

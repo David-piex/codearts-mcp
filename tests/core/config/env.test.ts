@@ -109,7 +109,9 @@ describe("loadServerMetadataConfig", () => {
       serverVersion: "0.1.0",
       httpHost: "127.0.0.1",
       httpPort: 3100,
-      httpSessionIdleTimeoutMs: 1_800_000,
+      httpSessionIdleTimeoutMs: 600_000,
+      httpMaxSessions: 128,
+      httpMaxRequestBodyBytes: 8 * 1024 * 1024,
       httpAllowedOrigins: [],
       productWriteRateLimit: {
         maxRequests: 3000,
@@ -143,7 +145,9 @@ describe("loadServerMetadataConfig", () => {
       serverVersion: "0.1.0",
       httpHost: "127.0.0.1",
       httpPort: 3000,
-      httpSessionIdleTimeoutMs: 1_800_000,
+      httpSessionIdleTimeoutMs: 600_000,
+      httpMaxSessions: 128,
+      httpMaxRequestBodyBytes: 8 * 1024 * 1024,
       httpAllowedOrigins: [],
       productWriteRateLimit: {
         maxRequests: 1200,
@@ -178,6 +182,38 @@ describe("loadServerMetadataConfig", () => {
         MCP_AUTH_WRITE_RATE_LIMIT_WINDOW_MS: "1.5"
       })
     ).toThrow(/MCP_AUTH_WRITE_RATE_LIMIT_WINDOW_MS/);
+  });
+
+  it("rejects a non-positive HTTP request body limit", () => {
+    expect(() =>
+      loadServerMetadataConfig({
+        MCP_SERVER_NAME: "codearts-mcp",
+        MCP_SERVER_VERSION: "0.1.0",
+        MCP_HTTP_MAX_REQUEST_BODY_BYTES: "0"
+      })
+    ).toThrow("MCP_HTTP_MAX_REQUEST_BODY_BYTES must be a positive integer.");
+  });
+
+  it("loads the shared HTTP session safety limits", () => {
+    expect(
+      loadServerMetadataConfig({
+        MCP_SERVER_NAME: "codearts-mcp",
+        MCP_SERVER_VERSION: "0.1.0",
+        MCP_HTTP_SESSION_IDLE_TIMEOUT_MS: "900000",
+        MCP_HTTP_MAX_SESSIONS: "32"
+      })
+    ).toMatchObject({
+      httpSessionIdleTimeoutMs: 900_000,
+      httpMaxSessions: 32
+    });
+
+    expect(() =>
+      loadServerMetadataConfig({
+        MCP_SERVER_NAME: "codearts-mcp",
+        MCP_SERVER_VERSION: "0.1.0",
+        MCP_HTTP_MAX_SESSIONS: "0"
+      })
+    ).toThrow("MCP_HTTP_MAX_SESSIONS must be a positive integer.");
   });
 
   it("loads HTTP host and allowed Origin overrides", () => {

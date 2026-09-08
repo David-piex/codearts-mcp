@@ -644,10 +644,10 @@ HTTP/1.1 403 Forbidden
 | `MCP_HTTP_PORT` | HTTP 监听端口 | `3000` |
 | `MCP_HTTP_HOST` | HTTP 监听地址；本地默认只监听回环地址，共享/容器部署需显式设为 `0.0.0.0` | `127.0.0.1` |
 | `MCP_HTTP_ALLOWED_ORIGINS` | 允许携带 `Origin` 访问 `/mcp/<family>` 的浏览器来源，多个值用英文逗号分隔 | 空 |
-| `MCP_HTTP_SESSION_IDLE_TIMEOUT_MS` | 无请求的有状态 MCP 会话回收时间（毫秒）；会话空闲超过该值后自动关闭并释放内存 | `1800000`（30 分钟） |
+| `MCP_HTTP_SESSION_IDLE_TIMEOUT_MS` | 无请求的有状态 MCP 会话回收时间（毫秒）；会话空闲超过该值后自动关闭并释放内存 | `600000`（10 分钟） |
+| `MCP_HTTP_MAX_SESSIONS` | 单个共享 HTTP 实例允许保留或正在初始化的 MCP session 总数；达到上限时新的初始化请求返回 `429` | `128` |
+| `MCP_HTTP_MAX_REQUEST_BODY_BYTES` | HTTP MCP JSON 请求体最大字节数；超限请求返回 `413`，用于防止请求体导致进程内存耗尽 | `8388608`（8 MiB） |
 | `NODE_OPTIONS` | Node.js 运行时参数；共享容器默认将堆上限设为 2560 MB，需结合宿主机内存调整 | `--max-old-space-size=2560` |
-
-部分 CodeArts 列表接口在数据量较大时可能需要十几秒才返回响应头；服务端读取请求默认等待 30 秒，并对 GET 请求重试一次。
 | `MCP_ENABLED_PRODUCT_FAMILIES` | 限制当前实例可暴露的产品族；可填 `artifact,build,check,deploy,pipeline,repo,req,testplan` 的逗号列表 | 空 |
 | `MCP_PRODUCT_WRITE_RATE_LIMIT_MAX_REQUESTS` | 产品写入每个 action/session 的限流次数 | `3000` |
 | `MCP_PRODUCT_WRITE_RATE_LIMIT_WINDOW_MS` | 产品写入限流窗口，单位毫秒 | `60000` |
@@ -665,6 +665,8 @@ HTTP/1.1 403 Forbidden
 | `MCP_REPO_LIST_REPOSITORIES_CACHE_TTL_MS` | Repo 仓库列表读缓存 TTL | 由代码默认策略决定 |
 | `MCP_PIPELINE_LIST_PIPELINES_CACHE_TTL_MS` | Pipeline 列表读缓存 TTL | 由代码默认策略决定 |
 | `MCP_BUILD_LIST_JOBS_CACHE_TTL_MS` | Build 任务列表读缓存 TTL | 由代码默认策略决定 |
+
+部分 CodeArts 列表接口在数据量较大时可能需要十几秒才返回响应头；服务端读取请求默认等待 30 秒，并对 GET 请求重试一次。
 
 静态 stdio 模式还需要 `HUAWEICLOUD_AK`、`HUAWEICLOUD_SK`、`HUAWEICLOUD_REGION`。HTTP 多用户模式推荐使用 `auth_configure_session` 为每个 MCP 会话配置凭证。
 

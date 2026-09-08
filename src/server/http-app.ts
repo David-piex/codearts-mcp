@@ -5,6 +5,9 @@ import { dirname } from "node:path";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { isInitializeRequest } from "@modelcontextprotocol/sdk/types.js";
 import {
+  DEFAULT_HTTP_MAX_REQUEST_BODY_BYTES,
+  DEFAULT_HTTP_MAX_SESSIONS,
+  DEFAULT_HTTP_SESSION_IDLE_TIMEOUT_MS,
   loadServerMetadataConfig,
   type HttpAuthConfig,
   type ServerMetadataConfig
@@ -93,11 +96,37 @@ function writeJson(res: ServerResponse, status: number, body: unknown) {
   res.end(JSON.stringify(body));
 }
 
-async function readJsonBody(req: IncomingMessage): Promise<unknown> {
+class RequestBodyTooLargeError extends Error {
+  readonly statusCode = 413;
+
+  constructor(readonly maxBytes: number) {
+    super(`Request body exceeds the ${maxBytes} byte limit.`);
+    this.name = "RequestBodyTooLargeError";
+  }
+}
+
+async function readJsonBody(req: IncomingMessage, maxBytes: number): Promise<unknown> {
+  const contentLength = req.headers["content-length"];
+  const declaredLength = typeof contentLength === "string" ? Number(contentLength) : undefined;
+
+  if (declaredLength !== undefined && Number.isFinite(declaredLength) && declaredLength > maxBytes) {
+    req.resume();
+    throw new RequestBodyTooLargeError(maxBytes);
+  }
+
   const chunks: Buffer[] = [];
+  let totalBytes = 0;
 
   for await (const chunk of req) {
-    chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+    const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+    totalBytes += buffer.length;
+
+    if (totalBytes > maxBytes) {
+      req.resume();
+      throw new RequestBodyTooLargeError(maxBytes);
+    }
+
+    chunks.push(buffer);
   }
 
   if (chunks.length === 0) {
@@ -415,7 +444,10 @@ export function createHttpApp(
   const transportsByRoute = new Map<string, SessionTransportMap>();
   const lastActivityByRoute = new Map<string, Map<string, number>>();
   const activeRequestsByRoute = new Map<string, Map<string, number>>();
-  const sessionIdleTimeoutMs = options.sessionIdleTimeoutMs ?? config.httpSessionIdleTimeoutMs ?? 1_800_000;
+  const sessionIdleTimeoutMs = options.sessionIdleTimeoutMs ?? config.httpSessionIdleTimeoutMs ?? DEFAULT_HTTP_SESSION_IDLE_TIMEOUT_MS;
+  const maxSessions = config.httpMaxSessions ?? DEFAULT_HTTP_MAX_SESSIONS;
+  const maxRequestBodyBytes = config.httpMaxRequestBodyBytes ?? DEFAULT_HTTP_MAX_REQUEST_BODY_BYTES;
+  const pendingSessionTransports = new Set<StreamableHTTPServerTransport>();
   const serverFactoryByRoute = new Map<string, ReturnType<typeof createServerFactory>>();
   const sessionStore = createSessionCredentialStore({
     ttlMs: authConfig ? authConfig.authTokenTtlSeconds * 1000 : undefined
@@ -563,6 +595,16 @@ export function createHttpApp(
     return created;
   }
 
+  function countRetainedSessions() {
+    let count = pendingSessionTransports.size;
+
+    for (const transports of transportsByRoute.values()) {
+      count += Object.keys(transports).length;
+    }
+
+    return count;
+  }
+
   const sessionCleanupTimer = setInterval(() => {
     const now = Date.now();
 
@@ -668,7 +710,13 @@ export function createHttpApp(
       if (req.method === "GET" && url.pathname === "/diagnostics/session-reuse") {
         writeJson(res, 200, {
           status: "ok",
-          diagnostics: sessionReuseDiagnostics.snapshot()
+          diagnostics: {
+            ...sessionReuseDiagnostics.snapshot(),
+            retainedSessionCount: countRetainedSessions(),
+            pendingSessionCount: pendingSessionTransports.size,
+            maxSessions,
+            sessionIdleTimeoutMs
+          }
         });
         return;
       }
@@ -754,7 +802,7 @@ export function createHttpApp(
       try {
         if (req.method === "POST") {
           const bodyReadStartedAt = Date.now();
-          const parsedBody = await readJsonBody(req);
+          const parsedBody = await readJsonBody(req, maxRequestBodyBytes);
           recordRequestPhase("request_body_read", Date.now() - bodyReadStartedAt);
           Object.assign(requestLogDetails, readMcpRequestDetails(parsedBody));
           const routeTransports = getRouteTransports(resolvedRoute.routeKey);
@@ -775,11 +823,21 @@ export function createHttpApp(
               return;
             }
 
+            if (countRetainedSessions() >= maxSessions) {
+              res.setHeader("retry-after", "60");
+              writeJson(res, 429, {
+                error: "The maximum number of MCP sessions is currently active. Please retry later.",
+                max_sessions: maxSessions
+              });
+              return;
+            }
+
             const transportCreateStartedAt = Date.now();
             transport = new StreamableHTTPServerTransport({
               enableJsonResponse: true,
               sessionIdGenerator: () => randomUUID(),
               onsessioninitialized: (newSessionId) => {
+                pendingSessionTransports.delete(transport!);
                 requestLogDetails.sessionId = newSessionId;
                 routeTransports[newSessionId] = transport!;
                 getRouteSessionActivity(resolvedRoute.routeKey).set(newSessionId, Date.now());
@@ -789,17 +847,25 @@ export function createHttpApp(
                 }
               },
               onsessionclosed: (closedSessionId) => {
+                pendingSessionTransports.delete(transport!);
                 delete routeTransports[closedSessionId];
                 lastActivityByRoute.get(resolvedRoute.routeKey)?.delete(closedSessionId);
                 activeRequestsByRoute.get(resolvedRoute.routeKey)?.delete(closedSessionId);
                 sessionStore.clear(closedSessionId);
               }
             });
+            pendingSessionTransports.add(transport);
             recordRequestPhase("transport_create", Date.now() - transportCreateStartedAt);
 
             const server = getRouteServerFactory(resolvedRoute)();
             const transportConnectStartedAt = Date.now();
-            await server.connect(transport);
+            try {
+              await server.connect(transport);
+            } catch (error) {
+              pendingSessionTransports.delete(transport);
+              await transport.close().catch(() => undefined);
+              throw error;
+            }
             recordRequestPhase("transport_connect", Date.now() - transportConnectStartedAt);
           }
 
@@ -816,7 +882,13 @@ export function createHttpApp(
               activity.set(sessionId, Date.now());
             }
           } else {
-            await transport.handleRequest(req, res, parsedBody);
+            try {
+              await transport.handleRequest(req, res, parsedBody);
+            } finally {
+              if (pendingSessionTransports.delete(transport)) {
+                await transport.close().catch(() => undefined);
+              }
+            }
           }
           return;
         }
@@ -850,6 +922,14 @@ export function createHttpApp(
 
         writeJson(res, 405, { error: "Method not allowed." });
       } catch (error) {
+        if (error instanceof RequestBodyTooLargeError) {
+          writeJson(res, error.statusCode, {
+            error: error.message,
+            max_request_body_bytes: error.maxBytes
+          });
+          return;
+        }
+
         writeJson(res, 500, {
           error: error instanceof Error ? error.message : "Internal server error"
         });

@@ -6,7 +6,9 @@ const serverMetadataConfig = {
   serverName: "codearts-mcp",
   serverVersion: "0.1.0",
   httpPort: 3000,
-  httpSessionIdleTimeoutMs: 1_800_000
+  httpSessionIdleTimeoutMs: 600_000,
+  httpMaxSessions: 128,
+  httpMaxRequestBodyBytes: 8 * 1024 * 1024
 };
 
 const readCacheTtls = {
