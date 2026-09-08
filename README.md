@@ -492,6 +492,7 @@ Live 状态说明：
 | `MCP_HTTP_HOST` | HTTP 监听地址；本地默认只监听回环地址，共享/容器部署需显式设为 `0.0.0.0` | `127.0.0.1` |
 | `MCP_HTTP_ALLOWED_ORIGINS` | 允许携带 `Origin` 访问 `/mcp` 的浏览器来源，多个值用英文逗号分隔 | — |
 | `MCP_HTTP_SESSION_IDLE_TIMEOUT_MS` | 无请求的有状态 MCP 会话回收时间（毫秒），用于避免异常断开会话长期占用内存 | `1800000`（30 分钟） |
+| `NODE_OPTIONS` | Node.js 运行时参数；共享容器默认将堆上限设为 2560 MB | `--max-old-space-size=2560` |
 | `MCP_ENABLED_PRODUCT_FAMILIES` | 限制当前实例只暴露指定产品族；可填 `artifact,build,check,deploy,pipeline,repo,req,testplan` 的逗号列表 | — |
 | `MCP_PRODUCT_WRITE_RATE_LIMIT_MAX_REQUESTS` | 产品写入每个 action/session 的限流次数 | `3000` |
 | `MCP_PRODUCT_WRITE_RATE_LIMIT_WINDOW_MS` | 产品写入限流窗口 | `60000` |

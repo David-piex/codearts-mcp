@@ -15,6 +15,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV MCP_TRANSPORT=http
 ENV MCP_HTTP_PORT=3000
+ENV NODE_OPTIONS=--max-old-space-size=2560
 
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
