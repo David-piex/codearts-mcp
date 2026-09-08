@@ -47,6 +47,7 @@ export type HttpRequestLogEntry = {
 
 type HttpAppOptions = {
   requestLogger?: (entry: HttpRequestLogEntry) => void;
+  sessionIdleTimeoutMs?: number;
 };
 
 type HttpAppRouteConfig = {
@@ -412,6 +413,9 @@ export function createHttpApp(
 ): HttpApp {
   const enabledProductFamilies = routeConfig.enabledProductFamilies ?? config.enabledProductFamilies;
   const transportsByRoute = new Map<string, SessionTransportMap>();
+  const lastActivityByRoute = new Map<string, Map<string, number>>();
+  const activeRequestsByRoute = new Map<string, Map<string, number>>();
+  const sessionIdleTimeoutMs = options.sessionIdleTimeoutMs ?? config.httpSessionIdleTimeoutMs ?? 1_800_000;
   const serverFactoryByRoute = new Map<string, ReturnType<typeof createServerFactory>>();
   const sessionStore = createSessionCredentialStore({
     ttlMs: authConfig ? authConfig.authTokenTtlSeconds * 1000 : undefined
@@ -534,6 +538,65 @@ export function createHttpApp(
     transportsByRoute.set(routeKey, created);
     return created;
   }
+
+  function getRouteSessionActivity(routeKey: string) {
+    const activity = lastActivityByRoute.get(routeKey);
+
+    if (activity) {
+      return activity;
+    }
+
+    const created = new Map<string, number>();
+    lastActivityByRoute.set(routeKey, created);
+    return created;
+  }
+
+  function getRouteActiveRequests(routeKey: string) {
+    const active = activeRequestsByRoute.get(routeKey);
+
+    if (active) {
+      return active;
+    }
+
+    const created = new Map<string, number>();
+    activeRequestsByRoute.set(routeKey, created);
+    return created;
+  }
+
+  const sessionCleanupTimer = setInterval(() => {
+    const now = Date.now();
+
+    for (const [routeKey, transports] of transportsByRoute) {
+      const activity = lastActivityByRoute.get(routeKey);
+      const activeRequests = activeRequestsByRoute.get(routeKey);
+
+      if (!activity) {
+        continue;
+      }
+
+      for (const [sessionId, transport] of Object.entries(transports)) {
+        const lastActivityAt = activity.get(sessionId) ?? now;
+        const activeRequestCount = activeRequests?.get(sessionId) ?? 0;
+
+        if (
+          activeRequestCount === 0 &&
+          now - lastActivityAt >= sessionIdleTimeoutMs
+        ) {
+          delete transports[sessionId];
+          activity.delete(sessionId);
+          activeRequests?.delete(sessionId);
+          void transport.close().catch(() => undefined);
+        }
+      }
+
+      if (Object.keys(transports).length === 0) {
+        transportsByRoute.delete(routeKey);
+        lastActivityByRoute.delete(routeKey);
+        activeRequestsByRoute.delete(routeKey);
+      }
+    }
+  }, Math.min(sessionIdleTimeoutMs, 60_000));
+  sessionCleanupTimer.unref?.();
 
   function getRouteServerFactory(route: ResolvedMcpRoute) {
     const cached = serverFactoryByRoute.get(route.routeKey);
@@ -719,12 +782,16 @@ export function createHttpApp(
               onsessioninitialized: (newSessionId) => {
                 requestLogDetails.sessionId = newSessionId;
                 routeTransports[newSessionId] = transport!;
+                getRouteSessionActivity(resolvedRoute.routeKey).set(newSessionId, Date.now());
+                getRouteActiveRequests(resolvedRoute.routeKey).set(newSessionId, 0);
                 if (authContext?.authId) {
                   sessionStore.bind(newSessionId, authContext.authId);
                 }
               },
               onsessionclosed: (closedSessionId) => {
                 delete routeTransports[closedSessionId];
+                lastActivityByRoute.get(resolvedRoute.routeKey)?.delete(closedSessionId);
+                activeRequestsByRoute.get(resolvedRoute.routeKey)?.delete(closedSessionId);
                 sessionStore.clear(closedSessionId);
               }
             });
@@ -736,7 +803,21 @@ export function createHttpApp(
             recordRequestPhase("transport_connect", Date.now() - transportConnectStartedAt);
           }
 
-          await transport.handleRequest(req, res, parsedBody);
+          if (sessionId) {
+            const activity = getRouteSessionActivity(resolvedRoute.routeKey);
+            const activeRequests = getRouteActiveRequests(resolvedRoute.routeKey);
+            activity.set(sessionId, Date.now());
+            activeRequests.set(sessionId, (activeRequests.get(sessionId) ?? 0) + 1);
+
+            try {
+              await transport.handleRequest(req, res, parsedBody);
+            } finally {
+              activeRequests.set(sessionId, Math.max(0, (activeRequests.get(sessionId) ?? 1) - 1));
+              activity.set(sessionId, Date.now());
+            }
+          } else {
+            await transport.handleRequest(req, res, parsedBody);
+          }
           return;
         }
 
@@ -753,7 +834,17 @@ export function createHttpApp(
             return;
           }
 
-          await routeTransports[sessionId].handleRequest(req, res);
+          const activity = getRouteSessionActivity(resolvedRoute.routeKey);
+          const activeRequests = getRouteActiveRequests(resolvedRoute.routeKey);
+          activity.set(sessionId, Date.now());
+          activeRequests.set(sessionId, (activeRequests.get(sessionId) ?? 0) + 1);
+
+          try {
+            await routeTransports[sessionId].handleRequest(req, res);
+          } finally {
+            activeRequests.set(sessionId, Math.max(0, (activeRequests.get(sessionId) ?? 1) - 1));
+            activity.set(sessionId, Date.now());
+          }
           return;
         }
 

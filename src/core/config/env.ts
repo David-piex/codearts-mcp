@@ -47,6 +47,7 @@ export type ServerMetadataConfig = {
   httpHost?: string;
   httpPort: number;
   httpAllowedOrigins?: string[];
+  httpSessionIdleTimeoutMs?: number;
   productWriteRateLimit?: FixedWindowRateLimitConfig;
   authWriteRateLimit?: FixedWindowRateLimitConfig;
   readCacheTtls?: ReadCacheTtls;
@@ -271,6 +272,11 @@ export function loadServerMetadataConfig(
     httpAllowedOrigins: parseAllowedOrigins(
       source.MCP_HTTP_ALLOWED_ORIGINS,
       "MCP_HTTP_ALLOWED_ORIGINS"
+    ),
+    httpSessionIdleTimeoutMs: parsePositiveInteger(
+      source.MCP_HTTP_SESSION_IDLE_TIMEOUT_MS,
+      "MCP_HTTP_SESSION_IDLE_TIMEOUT_MS",
+      1_800_000
     ),
     productWriteRateLimit: loadFixedWindowRateLimitConfig(
       source,

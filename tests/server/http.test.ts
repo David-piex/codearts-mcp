@@ -5,7 +5,8 @@ import { startHttpServer } from "../../src/server/http.js";
 const serverMetadataConfig = {
   serverName: "codearts-mcp",
   serverVersion: "0.1.0",
-  httpPort: 3000
+  httpPort: 3000,
+  httpSessionIdleTimeoutMs: 1_800_000
 };
 
 const readCacheTtls = {

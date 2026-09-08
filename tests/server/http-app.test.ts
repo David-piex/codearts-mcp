@@ -91,6 +91,33 @@ describe("http app", () => {
     expect(body.checks.auth_persistence).toBe("ok");
   });
 
+  it("reclaims idle MCP sessions that were not explicitly deleted", async () => {
+    const { port } = await startConfiguredServer({
+      config: {
+        httpSessionIdleTimeoutMs: 25
+      }
+    });
+    const initialized = await initializeSession(port);
+    const sessionId = initialized.sessionId;
+
+    expect(sessionId).toBeTruthy();
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    const response = await postJsonRpc(
+      port,
+      {
+        jsonrpc: "2.0",
+        id: "after-idle-timeout",
+        method: "tools/list",
+        params: {}
+      },
+      { sessionId: sessionId ?? undefined }
+    );
+
+    expect(response.status).toBe(404);
+    await response.arrayBuffer();
+  });
+
   it("serves session reuse diagnostics for recent MCP initialize/auth/tool traffic", async () => {
     const { port } = await startConfiguredServer();
     const {

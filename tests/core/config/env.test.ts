@@ -109,6 +109,7 @@ describe("loadServerMetadataConfig", () => {
       serverVersion: "0.1.0",
       httpHost: "127.0.0.1",
       httpPort: 3100,
+      httpSessionIdleTimeoutMs: 1_800_000,
       httpAllowedOrigins: [],
       productWriteRateLimit: {
         maxRequests: 3000,
@@ -142,6 +143,7 @@ describe("loadServerMetadataConfig", () => {
       serverVersion: "0.1.0",
       httpHost: "127.0.0.1",
       httpPort: 3000,
+      httpSessionIdleTimeoutMs: 1_800_000,
       httpAllowedOrigins: [],
       productWriteRateLimit: {
         maxRequests: 1200,
