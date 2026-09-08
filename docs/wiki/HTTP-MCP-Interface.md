@@ -646,6 +646,8 @@ HTTP/1.1 403 Forbidden
 | `MCP_HTTP_ALLOWED_ORIGINS` | 允许携带 `Origin` 访问 `/mcp/<family>` 的浏览器来源，多个值用英文逗号分隔 | 空 |
 | `MCP_HTTP_SESSION_IDLE_TIMEOUT_MS` | 无请求的有状态 MCP 会话回收时间（毫秒）；会话空闲超过该值后自动关闭并释放内存 | `1800000`（30 分钟） |
 | `NODE_OPTIONS` | Node.js 运行时参数；共享容器默认将堆上限设为 2560 MB，需结合宿主机内存调整 | `--max-old-space-size=2560` |
+
+部分 CodeArts 列表接口在数据量较大时可能需要十几秒才返回响应头；服务端读取请求默认等待 30 秒，并对 GET 请求重试一次。
 | `MCP_ENABLED_PRODUCT_FAMILIES` | 限制当前实例可暴露的产品族；可填 `artifact,build,check,deploy,pipeline,repo,req,testplan` 的逗号列表 | 空 |
 | `MCP_PRODUCT_WRITE_RATE_LIMIT_MAX_REQUESTS` | 产品写入每个 action/session 的限流次数 | `3000` |
 | `MCP_PRODUCT_WRITE_RATE_LIMIT_WINDOW_MS` | 产品写入限流窗口，单位毫秒 | `60000` |

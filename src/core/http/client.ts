@@ -24,7 +24,9 @@ type BinaryResponse = {
   fileName?: string;
 };
 
-const READ_REQUEST_TIMEOUT_MS = 8_000;
+// CodeArts list endpoints can take more than 8 seconds before sending headers,
+// especially for accounts with many repositories or projects.
+const READ_REQUEST_TIMEOUT_MS = 30_000;
 const READ_REQUEST_RETRY_COUNT = 1;
 
 async function prepareRequestBody(url: string, method: string, body?: unknown): Promise<PreparedRequestBody> {
