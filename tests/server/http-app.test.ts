@@ -145,7 +145,7 @@ describe("http app", () => {
     await response.arrayBuffer();
   });
 
-  it("limits retained and concurrently initializing MCP sessions", async () => {
+  it("reclaims the oldest idle session when the MCP session limit is reached", async () => {
     const { port } = await startConfiguredServer({
       config: {
         httpMaxSessions: 1
@@ -157,23 +157,68 @@ describe("http app", () => {
     expect(first.sessionId).toBeTruthy();
 
     const second = await initializeSession(port);
-    const secondBody = (await second.response.json()) as {
-      error?: string;
-      max_sessions?: number;
-    };
+    expect(second.response.status).toBe(200);
+    expect(second.sessionId).toBeTruthy();
 
-    expect(second.response.status).toBe(429);
-    expect(second.response.headers.get("retry-after")).toBe("60");
-    expect(secondBody.max_sessions).toBe(1);
-    expect(secondBody.error).toMatch(/maximum number of MCP sessions/i);
+    const evictedSessionRequest = await postJsonRpc(
+      port,
+      {
+        jsonrpc: "2.0",
+        id: "evicted-session",
+        method: "tools/list",
+        params: {}
+      },
+      { sessionId: first.sessionId ?? undefined }
+    );
+    expect(evictedSessionRequest.status).toBe(404);
+    await evictedSessionRequest.arrayBuffer();
 
     await fetch(`http://127.0.0.1:${port}/mcp`, {
       method: "DELETE",
       headers: {
         accept: "application/json, text/event-stream",
-        "mcp-session-id": first.sessionId ?? ""
+        "mcp-session-id": second.sessionId ?? ""
       }
     });
+  });
+
+  it("reclaims multiple idle sessions in one capacity pass", async () => {
+    const { port } = await startConfiguredServer({
+      config: {
+        httpMaxSessions: 3
+      }
+    });
+    const first = await initializeSession(port);
+    const second = await initializeSession(port);
+    const third = await initializeSession(port);
+
+    const fourth = await initializeSession(port);
+    expect(fourth.response.status).toBe(200);
+    expect(fourth.sessionId).toBeTruthy();
+
+    for (const sessionId of [first.sessionId, second.sessionId, third.sessionId]) {
+      const response = await postJsonRpc(
+        port,
+        {
+          jsonrpc: "2.0",
+          id: "evicted-session-batch",
+          method: "tools/list",
+          params: {}
+        },
+        { sessionId: sessionId ?? undefined }
+      );
+      expect(response.status).toBe(404);
+      await response.arrayBuffer();
+    }
+
+    const diagnostics = await fetchJsonFromTestServer<{
+      diagnostics: {
+        retainedSessionCount: number;
+        evictedSessionCount: number;
+      };
+    }>(port, "/diagnostics/session-reuse");
+    expect(diagnostics.body.diagnostics.retainedSessionCount).toBe(1);
+    expect(diagnostics.body.diagnostics.evictedSessionCount).toBe(3);
   });
 
   it("rejects oversized JSON request bodies before allocating the full payload", async () => {

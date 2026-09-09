@@ -448,6 +448,8 @@ export function createHttpApp(
   const maxSessions = config.httpMaxSessions ?? DEFAULT_HTTP_MAX_SESSIONS;
   const maxRequestBodyBytes = config.httpMaxRequestBodyBytes ?? DEFAULT_HTTP_MAX_REQUEST_BODY_BYTES;
   const pendingSessionTransports = new Set<StreamableHTTPServerTransport>();
+  const sessionReclaimBatchSize = Math.min(16, maxSessions);
+  let evictedSessionCount = 0;
   const serverFactoryByRoute = new Map<string, ReturnType<typeof createServerFactory>>();
   const sessionStore = createSessionCredentialStore({
     ttlMs: authConfig ? authConfig.authTokenTtlSeconds * 1000 : undefined
@@ -605,6 +607,57 @@ export function createHttpApp(
     return count;
   }
 
+  // Keep the capacity bound useful even when idle reclamation is disabled.
+  // A shared instance can otherwise remain permanently full of abandoned
+  // sessions after clients reconnect repeatedly. Evict only an idle session;
+  // requests in flight are never interrupted by this pressure path.
+  function reclaimOldestIdleSessions(maxCount: number) {
+    const candidates: Array<{
+      routeKey: string;
+      sessionId: string;
+      transport: StreamableHTTPServerTransport;
+      lastActivityAt: number;
+    }> = [];
+
+    for (const [routeKey, transports] of transportsByRoute) {
+      const activity = lastActivityByRoute.get(routeKey);
+      const activeRequests = activeRequestsByRoute.get(routeKey);
+
+      for (const [sessionId, transport] of Object.entries(transports)) {
+        if ((activeRequests?.get(sessionId) ?? 0) > 0) {
+          continue;
+        }
+
+        candidates.push({
+          routeKey,
+          sessionId,
+          transport,
+          lastActivityAt: activity?.get(sessionId) ?? 0
+        });
+      }
+    }
+
+    candidates.sort((left, right) => left.lastActivityAt - right.lastActivityAt);
+
+    let reclaimed = 0;
+    for (const candidate of candidates.slice(0, maxCount)) {
+      const transports = transportsByRoute.get(candidate.routeKey);
+      if (!transports || transports[candidate.sessionId] !== candidate.transport) {
+        continue;
+      }
+
+      delete transports[candidate.sessionId];
+      lastActivityByRoute.get(candidate.routeKey)?.delete(candidate.sessionId);
+      activeRequestsByRoute.get(candidate.routeKey)?.delete(candidate.sessionId);
+      sessionStore.clear(candidate.sessionId);
+      evictedSessionCount += 1;
+      reclaimed += 1;
+      void candidate.transport.close().catch(() => undefined);
+    }
+
+    return reclaimed;
+  }
+
   if (sessionIdleTimeoutMs > 0) {
     const sessionCleanupTimer = setInterval(() => {
       const now = Date.now();
@@ -716,6 +769,7 @@ export function createHttpApp(
             ...sessionReuseDiagnostics.snapshot(),
             retainedSessionCount: countRetainedSessions(),
             pendingSessionCount: pendingSessionTransports.size,
+            evictedSessionCount,
             maxSessions,
             sessionIdleTimeoutMs
           }
@@ -834,6 +888,10 @@ export function createHttpApp(
             if (!parsedBody || !isInitializeRequest(parsedBody)) {
               writeJson(res, 400, { error: "Missing MCP session ID." });
               return;
+            }
+
+            if (countRetainedSessions() >= maxSessions) {
+              reclaimOldestIdleSessions(sessionReclaimBatchSize);
             }
 
             if (countRetainedSessions() >= maxSessions) {

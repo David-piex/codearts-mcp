@@ -53,12 +53,13 @@ docker compose logs
 
 如果是 shared HTTP 模式，确认你正在调用正确的产品入口。例如 Req 工具应打到 `/mcp/req`，Repo 工具应打到 `/mcp/repo`。每个入口的 `mcp-session-id` 是路径隔离的；跨产品复用应使用 Cookie 或 `Authorization: Bearer <auth_token>`，不要复用另一个路径返回的 session id。
 
-## 5. 写工具报 `429`
+## 5. 初始化或写工具报 `429`
 
-这是共享 `http` 模式里的会话级限流，不一定是 bug。
+初始化返回 `429` 表示共享实例的 session 容量已满，服务会先批量回收最多 16 个最老的空闲 session；只有所有 session 都有请求进行中时才会拒绝新的初始化。写工具返回 `429` 则是会话级写入限流。
 
 处理方式：
 
+- 初始化 `429`：检查 `/diagnostics/session-reuse` 的 `retainedSessionCount`、`maxSessions`、`pendingSessionCount` 和 `evictedSessionCount`；确认客户端保留 Cookie、Bearer 或 `X-CodeArts-*` Header，以便回收后自动重新初始化并恢复凭证
 - 降低短时间内连续写调用数量
 - 避免自动化脚本并发压同一个会话
 - 稍等限流窗口过去再试

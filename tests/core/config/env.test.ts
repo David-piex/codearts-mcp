@@ -110,7 +110,7 @@ describe("loadServerMetadataConfig", () => {
       httpHost: "127.0.0.1",
       httpPort: 3100,
       httpSessionIdleTimeoutMs: 0,
-      httpMaxSessions: 128,
+      httpMaxSessions: 512,
       httpMaxRequestBodyBytes: 8 * 1024 * 1024,
       httpAllowedOrigins: [],
       productWriteRateLimit: {
@@ -146,7 +146,7 @@ describe("loadServerMetadataConfig", () => {
       httpHost: "127.0.0.1",
       httpPort: 3000,
       httpSessionIdleTimeoutMs: 0,
-      httpMaxSessions: 128,
+      httpMaxSessions: 512,
       httpMaxRequestBodyBytes: 8 * 1024 * 1024,
       httpAllowedOrigins: [],
       productWriteRateLimit: {

@@ -95,7 +95,7 @@ export const DEFAULT_HTTP_MAX_REQUEST_BODY_BYTES = 8 * 1024 * 1024;
 // remains bounded separately, so idle reclamation is opt-in to avoid forcing
 // clients to reinitialize and re-authenticate after a quiet period.
 export const DEFAULT_HTTP_SESSION_IDLE_TIMEOUT_MS = 0;
-export const DEFAULT_HTTP_MAX_SESSIONS = 128;
+export const DEFAULT_HTTP_MAX_SESSIONS = 512;
 
 function parsePositiveInteger(
   value: string | undefined,

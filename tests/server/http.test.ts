@@ -7,7 +7,7 @@ const serverMetadataConfig = {
   serverVersion: "0.1.0",
   httpPort: 3000,
   httpSessionIdleTimeoutMs: 0,
-  httpMaxSessions: 128,
+  httpMaxSessions: 512,
   httpMaxRequestBodyBytes: 8 * 1024 * 1024
 };
 
