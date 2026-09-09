@@ -40,9 +40,10 @@
 | `GET` | `/health/ready` | 就绪检查，包含鉴权持久化文件可读写状态 | 否 |
 | `GET` | `/diagnostics/session-reuse` | 会话复用诊断快照 | 否 |
 | `POST` | `/mcp` | 统一 MCP JSON-RPC 请求入口，暴露全部产品工具与 auth 工具 | 首次 `initialize` 不需要，之后需要 |
+| `GET` | `/mcp` | 为已有 session 建立 Streamable HTTP SSE 长连接 | 是 |
 | `POST` | `/mcp/<family>` | 兼容用产品级 MCP JSON-RPC 请求入口 | 首次 `initialize` 不需要，之后需要 |
+| `GET` | `/mcp/<family>` | 为已有产品 session 建立 Streamable HTTP SSE 长连接 | 是 |
 | `DELETE` | `/mcp/<family>` | 关闭该产品入口上的 MCP 会话 | 是 |
-| `GET` | `/mcp/<family>` | 不支持 SSE，固定返回 405 | 否 |
 
 其中 `<family>` 只能是 `req`、`repo`、`pipeline`、`check`、`testplan`、`deploy`、`build`、`artifact`；新客户端直接使用 `/mcp`。
 
@@ -563,17 +564,15 @@ HTTP/1.1 404 Not Found
 }
 ```
 
-### 7.2 不支持 SSE
+### 7.2 SSE 长连接
 
-```http
-HTTP/1.1 405 Method Not Allowed
-allow: POST, DELETE
-```
+初始化成功后，支持 Streamable HTTP 的客户端可能会发送带 `mcp-session-id` 的 `GET` 请求建立 SSE 长连接。服务端会将该请求交给 MCP transport 处理，连接保持打开用于服务端消息和重连。
 
-```json
-{
-  "error": "GET /mcp/req SSE is not supported by this deployment. Use POST /mcp/req for MCP requests."
-}
+```bash
+curl -N https://your-server.example/mcp \
+  -H "Accept: text/event-stream" \
+  -H "mcp-session-id: <session-id>" \
+  -H "mcp-protocol-version: 2025-06-18"
 ```
 
 ### 7.3 未知路径

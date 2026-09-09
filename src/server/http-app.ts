@@ -801,14 +801,6 @@ export function createHttpApp(
         return;
       }
 
-      if (req.method === "GET") {
-        res.setHeader("allow", "POST, DELETE");
-        writeJson(res, 405, {
-          error: `GET ${resolvedRoute.path} SSE is not supported by this deployment. Use POST ${resolvedRoute.path} for MCP requests.`
-        });
-        return;
-      }
-
       const authResolveStartedAt = Date.now();
       const authContext = clientCredentialAuthContext ?? (authResolver
         ? await authResolver.resolve({
@@ -856,6 +848,34 @@ export function createHttpApp(
       };
 
       try {
+        if (req.method === "GET") {
+          if (!sessionId) {
+            writeJson(res, 400, { error: "Missing MCP session ID." });
+            return;
+          }
+
+          const routeTransports = getRouteTransports(resolvedRoute.routeKey);
+          const transport = routeTransports[sessionId];
+
+          if (!transport) {
+            writeJson(res, 404, { error: "Unknown MCP session ID." });
+            return;
+          }
+
+          const activity = getRouteSessionActivity(resolvedRoute.routeKey);
+          const activeRequests = getRouteActiveRequests(resolvedRoute.routeKey);
+          activity.set(sessionId, Date.now());
+          activeRequests.set(sessionId, (activeRequests.get(sessionId) ?? 0) + 1);
+
+          try {
+            await transport.handleRequest(req, res);
+          } finally {
+            activeRequests.set(sessionId, Math.max(0, (activeRequests.get(sessionId) ?? 1) - 1));
+            activity.set(sessionId, Date.now());
+          }
+          return;
+        }
+
         if (req.method === "POST") {
           const bodyReadStartedAt = Date.now();
           const parsedBody = await readJsonBody(req, maxRequestBodyBytes);

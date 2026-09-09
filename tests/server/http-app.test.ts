@@ -463,6 +463,36 @@ describe("http app", () => {
     }
   });
 
+  it("serves the standalone SSE stream for an initialized MCP session", async () => {
+    const { port } = await servers.start();
+    const initialized = await initializeSession(port, { path: "/mcp" });
+    const sessionId = initialized.sessionId;
+
+    expect(initialized.response.status).toBe(200);
+    expect(sessionId).toBeTruthy();
+
+    const controller = new AbortController();
+    const response = await fetch(`http://127.0.0.1:${port}/mcp`, {
+      method: "GET",
+      headers: {
+        accept: "text/event-stream",
+        "mcp-session-id": sessionId ?? "",
+        "mcp-protocol-version": MCP_PROTOCOL_VERSION
+      },
+      signal: controller.signal
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("content-type")).toContain("text/event-stream");
+
+    controller.abort();
+    try {
+      await response.body?.cancel();
+    } catch (error) {
+      expect((error as Error).name).toBe("AbortError");
+    }
+  });
+
   it("reuses auth across product-scoped routes while keeping MCP sessions route-specific", async () => {
     const { authConfig, port } = await startConfiguredServer();
     const {
