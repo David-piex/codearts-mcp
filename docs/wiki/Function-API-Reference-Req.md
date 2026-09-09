@@ -14989,7 +14989,7 @@ API 数量：`364`
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "maximum": 200,
+      "maximum": 100,
       "default": 20
     },
     "project_id": {
@@ -19333,7 +19333,7 @@ API 数量：`364`
     "page_size": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "maximum": 200,
+      "maximum": 100,
       "default": 20
     },
     "project_id": {

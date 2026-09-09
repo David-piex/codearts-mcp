@@ -24,6 +24,7 @@ import {
   reqListProjectMemberWorkHoursInput,
   reqListProjectVersionsInput,
   reqListRrsInput,
+  reqListWorkItemsV4Input,
   reqListWorkItemStatusDetailsInput,
   reqListWorkItemStayTimesInput,
   reqSearchMyWorkItemsInput,
@@ -438,6 +439,28 @@ describe("req schemas", () => {
       page: 1,
       page_size: 15
     });
+  });
+
+  it("enforces the V4 issues endpoint page size limit", () => {
+    expect(
+      reqListWorkItemsV4Input.parse({
+        project_id: "project-1",
+        page: 2,
+        page_size: 100
+      })
+    ).toEqual({
+      project_id: "project-1",
+      page: 2,
+      page_size: 100
+    });
+
+    expect(() =>
+      reqListWorkItemsV4Input.parse({
+        project_id: "project-1",
+        page: 1,
+        page_size: 101
+      })
+    ).toThrow();
   });
 
   it("accepts custom tracker IDs where project work item types can vary", () => {

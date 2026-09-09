@@ -226,11 +226,16 @@ export const reqListWorkItemsV3Input = pagingSchema
     tracker_id: z.string().min(1).optional()
   });
 
-export const reqListWorkItemsV4Input = pagingSchema
+const reqListWorkItemsV4PagingInput = pagingSchema
   .pick({
-    page: true,
-    page_size: true
+    page: true
   })
+  .extend({
+    // The V4 issues endpoint rejects limit values greater than 100.
+    page_size: z.number().int().positive().max(100).default(20)
+  });
+
+export const reqListWorkItemsV4Input = reqListWorkItemsV4PagingInput
   .extend({
     project_id: idSchema,
     subject: z.string().min(1).optional(),
