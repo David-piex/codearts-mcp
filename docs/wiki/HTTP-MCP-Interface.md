@@ -644,7 +644,7 @@ HTTP/1.1 403 Forbidden
 | `MCP_HTTP_HOST` | HTTP 监听地址；本地默认只监听回环地址，共享/容器部署需显式设为 `0.0.0.0` | `127.0.0.1` |
 | `MCP_HTTP_ALLOWED_ORIGINS` | 允许携带 `Origin` 访问 `/mcp/<family>` 的浏览器来源，多个值用英文逗号分隔 | 空 |
 | `MCP_HTTP_SESSION_IDLE_TIMEOUT_MS` | 无请求的有状态 MCP 会话回收时间（毫秒）；`0` 表示不因空闲主动失效，改用 `MCP_HTTP_MAX_SESSIONS` 控制内存 | `0`（关闭） |
-| `MCP_HTTP_MAX_SESSIONS` | 单个共享 HTTP 实例允许保留或正在初始化的 MCP session 总数；达到上限时一次回收最多 16 个最老的空闲 session，只有全部 session 都在处理请求时才返回 `429` | `512` |
+| `MCP_HTTP_MAX_SESSIONS` | 单个共享 HTTP 实例允许保留或正在初始化的 MCP session 总数；每个 session 都会持有一套 MCP 工具服务器，达到上限时一次回收最多 16 个最老的空闲 session，只有全部 session 都在处理请求时才返回 `429` | `128` |
 | `MCP_HTTP_MAX_REQUEST_BODY_BYTES` | HTTP MCP JSON 请求体最大字节数；超限请求返回 `413`，用于防止请求体导致进程内存耗尽 | `8388608`（8 MiB） |
 | `NODE_OPTIONS` | Node.js 运行时参数；共享容器默认将堆上限设为 2560 MB，需结合宿主机内存调整 | `--max-old-space-size=2560` |
 | `MCP_ENABLED_PRODUCT_FAMILIES` | 限制当前实例可暴露的产品族；可填 `artifact,build,check,deploy,pipeline,repo,req,testplan` 的逗号列表 | 空 |

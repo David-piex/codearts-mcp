@@ -83,7 +83,7 @@ MCP_AUTH_DATA_PATH=/app/.codearts-mcp/auth-store.json
 # 请求体上限，防止异常 MCP 请求耗尽 Node.js 内存
 MCP_HTTP_MAX_REQUEST_BODY_BYTES=8388608
 # 共享实例最多保留的 MCP session 数；达到上限会批量回收最老的空闲 session
-MCP_HTTP_MAX_SESSIONS=512
+MCP_HTTP_MAX_SESSIONS=128
 # 无请求 session 的回收时间；0 表示不因空闲失效，依靠 session 总量上限保护内存
 MCP_HTTP_SESSION_IDLE_TIMEOUT_MS=0
 # 共享容器的 Node.js 堆上限，应低于宿主机可用内存
