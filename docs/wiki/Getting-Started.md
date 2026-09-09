@@ -52,7 +52,7 @@ node dist/src/server/index.js
 
 ### 4. 首次鉴权
 
-默认共享模式首次调用 `auth_configure_session` 配置当前会话的 AK/SK。
+共享模式优先在 MCP 配置中使用客户端凭证 Header，或复用 Bearer/Cookie；这样客户端重建 MCP session 后无需再次配置。未使用这些方式时，才在首次连接后调用 `auth_configure_session` 配置当前会话的 AK/SK。
 
 如果部署的是单账号服务，可以在服务端预置 `HUAWEICLOUD_AK`、`HUAWEICLOUD_SK`、`HUAWEICLOUD_REGION` 和 `MCP_AUTH_STATIC_TOKEN`，再在 MCP 配置中加入：
 
